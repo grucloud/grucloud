@@ -7,3 +7,7 @@ Go the [google cloud console](https://console.cloud.google.com/home/dashboard)
 * Create a new project and retrieve the project id
 
 * Enable the Google Engine API
+
+## Useful commands
+
+    gcloud compute instances list

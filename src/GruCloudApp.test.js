@@ -4,8 +4,8 @@ const GoogleProvider = require("./providers/google");
 
 const config = {
   project: "starhackit",
-  region: "us-central1",
-  zone: "us-central1-f",
+  region: "europe-west4",
+  zone: "europe-west4-a",
 };
 
 const infra = (config) => ({
@@ -22,23 +22,47 @@ const infra = (config) => ({
   ],
   resources: [
     {
-      name: "compute",
+      name: "web",
+      type: "compute",
       provider: "google",
       config: {
-        machine_type: "f1-micro",
+        machineType: "f1-micro",
         zone: config.zone,
         tags: ["www-node"],
       },
     },
   ],
 });
-
+const infraNoResource = (config) => ({
+  providers: [
+    {
+      name: "google",
+      engine: GoogleProvider,
+      config: {
+        region: config.region,
+        project: config.project,
+        zone: config.zone,
+      },
+    },
+  ],
+  resources: [],
+});
 describe("GruCloud", function () {
   describe("plan", function () {
     const gc = GruCloud(infra(config));
-
+    it("plan", async function () {
+      const gc = GruCloud(infra(config));
+      const plan = await gc.plan();
+      console.log(plan);
+    });
+    it.only("NoResource", async function () {
+      const gcNoResource = GruCloud(infraNoResource(config));
+      const planNoResource = await gcNoResource.plan();
+      console.log(planNoResource);
+    });
     it("list", async function () {
-      await gc.list();
+      const result = await gc.list();
+      console.log(result);
     });
   });
 });

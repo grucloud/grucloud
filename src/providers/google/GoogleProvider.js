@@ -1,6 +1,7 @@
 const ComputeResource = require("./resources/Compute");
-module.exports = GoogleProvider = (config) => {
-  console.log("GoogleProvider", config);
+
+module.exports = GoogleProvider = ({ name, infra, config }) => {
+  //console.log("GoogleProvider", config);
 
   const init = () => {
     if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
@@ -12,7 +13,7 @@ module.exports = GoogleProvider = (config) => {
   const resources = [
     {
       name: "compute",
-      engine: ComputeResource(config),
+      engine: ComputeResource({ config }),
     },
   ];
 
@@ -21,14 +22,19 @@ module.exports = GoogleProvider = (config) => {
   };
 
   const list = async () => {
-    console.log("GoogleProvider list resources");
+    //console.log("GoogleProvider list resources");
     const lists = await Promise.all(
-      resources.map((resource) => resource.engine.list())
+      resources.map(async (resource) => ({
+        resource,
+        liveItems: await resource.engine.list(),
+      }))
     );
-    console.log("GoogleProvider", lists);
+    //console.log("GoogleProvider", JSON.stringify(lists, null, 4));
+    return lists;
   };
 
   return {
+    name,
     connect,
     list,
     resource: (name) => {

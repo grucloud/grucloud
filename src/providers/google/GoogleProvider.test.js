@@ -3,8 +3,8 @@ const GoogleProvider = require("./GoogleProvider");
 
 const config = {
   project: "starhackit",
-  region: "us-central1",
-  zone: "us-central1-f",
+  region: "europe-west4",
+  zone: "europe-west4-a",
 };
 
 const createOptions = {
@@ -13,7 +13,7 @@ const createOptions = {
 };
 
 describe("GoogleProvider", function () {
-  const provider = GoogleProvider(config);
+  const provider = GoogleProvider({ config });
   const computeResource = provider.resource("compute");
   assert(computeResource);
 
@@ -22,9 +22,9 @@ describe("GoogleProvider", function () {
     console.log(response);
   });
 
-  it.only("list, create, list, delete, list", async function () {
+  it("list, create, list, delete, list", async function () {
     const listB4 = await computeResource.list();
-    console.log("listB4", listB4);
+    //console.log("listB4", listB4);
 
     const name = `vm-test-${new Date().getTime()}`;
 
@@ -32,14 +32,18 @@ describe("GoogleProvider", function () {
 
     const vm = await computeResource.get(name);
 
-    console.log("listAfterCreation", vm);
+    //console.log("listAfterCreation", vm);
     const { metadata } = vm;
     assert(metadata.machineType.endsWith(createOptions.machineType));
     assert.equal(metadata.status, "RUNNING");
 
     await computeResource.destroy(name);
     const listAfterDestroy = await computeResource.list();
-    console.log("listAfterDestroy", listAfterDestroy);
+    //console.log("listAfterDestroy", listAfterDestroy);
     assert.equal(listB4.length, listAfterDestroy.length);
+  });
+  it("create", async function () {
+    const name = `vm-test-${new Date().getTime()}`;
+    await computeResource.create(name, createOptions);
   });
 });

@@ -1,17 +1,15 @@
 const Compute = require("@google-cloud/compute");
 
-module.exports = (config) => {
-  console.log("Google Compute ", config);
+module.exports = ({ config }) => {
+  //console.log("Google Compute ", config);
   const compute = new Compute();
 
-  const list = async () => {
+  const list = async (options) => {
     console.log("google compute list");
-    const options = {
-      maxResults: 10000,
-    };
-    const response = await compute.getVMs(options);
+    const [vmList] = await compute.getVMs(options);
     //console.log(JSON.stringify(vms, 4, null));
-    return response[0];
+    console.log("vmList", vmList);
+    return vmList;
   };
   const create = async (name, options) => {
     console.log("google create", name, options);
@@ -22,6 +20,7 @@ module.exports = (config) => {
     console.log("google create vm created!");
     return vm;
   };
+
   const get = async (name, options) => {
     const zone = compute.zone(config.zone);
     const vm = zone.vm(name);
@@ -36,12 +35,53 @@ module.exports = (config) => {
     const [operation] = await vm.delete();
     await operation.promise();
     console.log("google destroyed ", name);
-    return;
   };
+
+  const planFindDestroy = async (hotResource) => {
+    console.log("planFindDestroy ", resource, hotResource);
+  };
+
+  const plan = async (resource) => {
+    console.log("plan ", resource);
+
+    try {
+      const { metadata } = await get(resource.name);
+      // Is the same machine type?
+      const sameMachineType = (config, metadata) =>
+        metadata.machineType.endsWith(config.machineType);
+
+      // Is it running ?
+      const sameStatus = (config, metadata) => metadata.status === "RUNNING";
+
+      const isSame = (config, metadata) =>
+        sameMachineType(config, metadata) && sameStatus(config, metadata);
+      if (!isSame(resource.config, metadata)) {
+        return [
+          {
+            action: "RECREATE",
+            resource,
+            metadata,
+          },
+        ];
+      }
+
+      return [];
+    } catch (ex) {
+      console.log(`resource ${resource.name} not found `);
+      return [
+        {
+          action: "CREATE",
+          resource,
+        },
+      ];
+    }
+  };
+
   return {
     get,
     list,
     create,
     destroy,
+    plan,
   };
 };
