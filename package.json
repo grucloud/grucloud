@@ -1,0 +1,23 @@
+{
+  "name": "grucloud",
+  "version": "1.0.0",
+  "description": "Infrastructure as Code",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "NODE_PATH=src nodemon -e ts,js,graphql node src/index.js",
+    "test": "NODE_PATH=src mocha -w 'src/**/*.js'"
+  },
+  "keywords": [
+    "cloud"
+  ],
+  "author": "Frederic Heem",
+  "license": "ISC",
+  "devDependencies": {
+    "mocha": "^7.1.1",
+    "nodemon": "^2.0.2"
+  },
+  "dependencies": {
+    "@google-cloud/compute": "^1.2.0",
+    "dotenv": "^8.2.0"
+  }
+}

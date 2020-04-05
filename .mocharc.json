@@ -1,0 +1,8 @@
+{
+  "watch-files": ["src/**/*.js"],
+  "extension": ["js"],
+  "reporter": "spec",
+  "timeout": 200000,
+  "ui": "bdd",
+  "recursive": true
+}
