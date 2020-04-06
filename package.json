@@ -6,7 +6,8 @@
   "scripts": {
     "start": "NODE_PATH=src nodemon -e ts,js,graphql node src/index.js",
     "test": "NODE_PATH=src mocha -w 'src/**/*.js'",
-    "test:ci": "NODE_PATH=src mocha 'src/**/*.js'"
+    "test:ci": "NODE_PATH=src mocha 'src/**/*.js'",
+    "cpd": "jscpd -r console --format 'javascript,typescript' ./src"
   },
   "keywords": [
     "cloud"
@@ -14,6 +15,7 @@
   "author": "Frederic Heem",
   "license": "ISC",
   "devDependencies": {
+    "jscpd": "^3.1.0",
     "mocha": "^7.1.1",
     "nodemon": "^2.0.2"
   },
