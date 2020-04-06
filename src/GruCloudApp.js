@@ -58,9 +58,7 @@ const GruCloud = (infra) => {
       await planFindDestroy(resources),
       await planFindNewOrUpdate(resources),
     ]);
-    const plans = [...destroy, ...newOrUpdate].flat();
-    //console.log(plans);
-    return plans;
+    return { destroy, newOrUpdate };
   };
 
   return {

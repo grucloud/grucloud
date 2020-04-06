@@ -32,18 +32,6 @@ module.exports = ({ config }) => {
     console.log("google destroyed ", name);
   };
 
-  const planFindDestroy = async (resources) => {
-    const hotResources = await list();
-    const resourcesName = resources.map((resource) => resource.name);
-    const hasName = (names, nameToFind) =>
-      names.some((name) => name === nameToFind);
-
-    const plans = hotResources.filter(
-      (hotResource) => !hasName(resourcesName, hotResource.name)
-    );
-    return plans;
-  };
-
   const plan = async (resource) => {
     try {
       const { metadata } = await get(resource.name);
@@ -83,7 +71,6 @@ module.exports = ({ config }) => {
     list,
     create,
     destroy,
-    planFindDestroy,
     plan,
   };
 };

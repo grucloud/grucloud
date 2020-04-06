@@ -12,7 +12,7 @@ const createOptions = {
   machineType: "f1-micro",
 };
 
-describe("GoogleProvider", function () {
+describe.skip("GoogleProvider", function () {
   const provider = GoogleProvider({ config });
   const computeResource = provider.resource("compute");
   assert(computeResource);

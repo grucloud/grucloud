@@ -42,8 +42,9 @@ describe("GruCloud", function () {
     it("plan", async function () {
       const gc = GruCloud(infra(config));
       const plan = await gc.plan();
-      //console.log(plan);
-      assert(plan);
+      //console.log(JSON.stringify(plan, null, 4));
+      assert(plan.destroy);
+      assert(plan.newOrUpdate);
     });
 
     it("NoResource", async function () {

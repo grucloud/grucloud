@@ -16,11 +16,28 @@ module.exports = CoreProvider = ({ name, type, engineResources, hooks }) => {
     return lists;
   };
 
-  const planFindDestroy = async (resources) =>
-    (await doCommandOverEngines("planFindDestroy", resources)).map((data) => ({
+  const planFindDestroy = async (resources) => {
+    console.log("planFindDestroy ", resources);
+    const plans = (
+      await Promise.all(
+        engineResources.map(async ({ engine }) => {
+          const hotResources = await engine.list();
+          const resourcesName = resources.map((resource) => resource.name);
+          const hasName = (names, nameToFind) =>
+            names.some((name) => name === nameToFind);
+
+          const plans = hotResources.filter(
+            (hotResource) => !hasName(resourcesName, hotResource.name)
+          );
+          return plans;
+        })
+      )
+    ).map((data) => ({
       action: "DESTROY",
       data: data,
     }));
+    return plans;
+  };
 
   if (hooks && hooks.init) {
     hooks.init();
