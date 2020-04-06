@@ -13,7 +13,7 @@ module.exports = GoogleProvider = ({ name, infra, config }) => {
     type: "google",
     engineResources: [
       {
-        name: "compute",
+        type: "compute",
         engine: ComputeResource({ config }),
       },
     ],

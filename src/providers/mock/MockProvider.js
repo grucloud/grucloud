@@ -10,7 +10,7 @@ module.exports = MockProvider = ({ name, infra, config }) => {
     type: "mock",
     engineResources: [
       {
-        name: "compute",
+        type: "compute",
         engine: MockResource({ config }),
       },
     ],

@@ -1,11 +1,4 @@
 module.exports = CoreProvider = ({ name, type, engineResources, hooks }) => {
-  const doCommandOverEngines = async (command, options) =>
-    await Promise.all(
-      engineResources.map(
-        async (engineResource) => await engineResource.engine[command](options)
-      )
-    );
-
   const list = async () => {
     const lists = await Promise.all(
       engineResources.map(async (resource) => ({
@@ -49,8 +42,12 @@ module.exports = CoreProvider = ({ name, type, engineResources, hooks }) => {
     hooks,
     planFindDestroy,
     list,
-    resource: (name) => {
-      return engineResources.find((r) => r.name === name).engine;
+    engineByType: (type) => {
+      const resourceEngine = engineResources.find((r) => r.type === type);
+      if (!resourceEngine) {
+        throw new Error(`Cannot find engine type: ${type}`);
+      }
+      return resourceEngine.engine;
     },
   };
 };

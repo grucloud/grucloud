@@ -10,47 +10,50 @@ const GruCloud = (infra) => {
     ])
   );
 
+  const providerEngines = [...providerMap.values()];
+
+  const providerByName = (name) => {
+    const provider = providerMap.get(name);
+    if (!provider) {
+      const availableProviders = `${infra.providers
+        .map((provider) => provider.name)
+        .join(", ")}`;
+      throw new Error(
+        `Cannot found provider: ${name}, available providers: ${availableProviders}`
+      );
+    }
+    return provider;
+  };
+
   const doCommand = async (command, options) =>
     Promise.all(
-      [...providerMap.values()].map(async (provider) => {
-        return await provider[command](options);
-      })
+      providerEngines.map(async (provider) => await provider[command](options))
     );
 
   const connect = async () => await doCommand("connect");
   const list = async () => (await doCommand("list")).flat();
+  const planFindDestroy = async (resources) =>
+    (await doCommand("planFindDestroy", resources)).flat();
 
-  const planFindNewOrUpdate = async (resources) => {
+  /**
+   * Find live resources to create or update based on the target resources
+   * @function
+   * @param {array} resources - The target resources
+   */
+  const planFindNewOrUpdate = async (resources = []) => {
     const plans = await Promise.all(
       resources.map(async (resource) => {
-        const provider = providerMap.get(resource.provider);
-        if (!provider) {
-          const availableProviders = `${[...providerMap.values()]
-            .map((provider) => provider.name)
-            .join(", ")}`;
-          throw new Error(
-            `resource ${resource.name} has an invalid provider: ${resource.provider}, available providers: ${availableProviders}`
-          );
-        }
-        const resourceEngine = provider.resource(resource.type);
-        if (!resourceEngine) {
-          throw new Error(
-            `resource ${resource.name} has an invalid type: ${resource.type}`
-          );
-        }
-        const plan = await resourceEngine.plan(resource);
+        const provider = providerByName(resource.provider);
+        const engine = provider.engineByType(resource.type);
+        const plan = await engine.plan(resource);
         return {
           resource,
           plan,
         };
-        // What we need to delete
       })
     );
     return plans;
   };
-
-  const planFindDestroy = async (resources) =>
-    (await doCommand("planFindDestroy", resources)).flat();
 
   const plan = async () => {
     const { resources } = infra;

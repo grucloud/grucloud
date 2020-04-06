@@ -14,7 +14,7 @@ const createOptions = {
 
 describe.skip("GoogleProvider", function () {
   const provider = GoogleProvider({ config });
-  const computeResource = provider.resource("compute");
+  const computeResource = provider.engineByType("compute");
   assert(computeResource);
 
   it("list, ", async function () {

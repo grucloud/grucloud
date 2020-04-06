@@ -27,6 +27,7 @@ const infra = (config) => ({
     },
   ],
 });
+
 const infraNoResource = (config) => ({
   providers: [
     {
@@ -37,6 +38,7 @@ const infraNoResource = (config) => ({
   ],
   resources: [],
 });
+
 describe("GruCloud", function () {
   describe("plan", function () {
     it("plan", async function () {
