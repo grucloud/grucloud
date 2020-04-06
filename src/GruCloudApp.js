@@ -2,7 +2,6 @@ require("dotenv").config();
 
 const GruCloud = (infra) => {
   //console.log("GruCloud", utils.inspect(infra, null, 4));
-
   const providerMap = new Map(
     infra.providers.map((provider) => [
       provider.name,

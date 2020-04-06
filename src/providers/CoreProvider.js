@@ -9,26 +9,27 @@ module.exports = CoreProvider = ({ name, type, engineResources, hooks }) => {
     return lists;
   };
 
-  const planFindDestroy = async (resources) => {
-    console.log("planFindDestroy ", resources);
+  const planFindDestroy = async (resources = []) => {
     const plans = (
       await Promise.all(
         engineResources.map(async ({ engine }) => {
           const hotResources = await engine.list();
-          const resourcesName = resources.map((resource) => resource.name);
-          const hasName = (names, nameToFind) =>
-            names.some((name) => name === nameToFind);
-
-          const plans = hotResources.filter(
-            (hotResource) => !hasName(resourcesName, hotResource.name)
+          const resourceNames = resources.map((resource) => resource.name);
+          const hotResourcesToDestroy = hotResources.filter(
+            (hotResource) => !resourceNames.includes(hotResource.name)
           );
-          return plans;
+
+          if (hotResourcesToDestroy.length > 0) {
+            return {
+              provider: name,
+              engine,
+              data: hotResourcesToDestroy,
+            };
+          }
+          return;
         })
       )
-    ).map((data) => ({
-      action: "DESTROY",
-      data: data,
-    }));
+    ).filter((x) => x);
     return plans;
   };
 
