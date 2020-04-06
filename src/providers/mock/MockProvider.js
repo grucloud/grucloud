@@ -1,12 +1,12 @@
-const ComputeResource = require("./resources/Compute");
+const MockResource = require("./resources/MockResource");
 
 module.exports = MockProvider = ({ name, infra, config }) => {
-  //console.log("MockProvider", config);
+  console.log("MockProvider", config);
 
   const engineResources = [
     {
       name: "compute",
-      engine: ComputeResource({ config }),
+      engine: MockResource({ config }),
     },
   ];
 

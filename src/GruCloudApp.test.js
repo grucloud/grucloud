@@ -1,22 +1,18 @@
 const assert = require("assert");
 const GruCloud = require("./GruCloudApp");
-const GoogleProvider = require("./providers/google");
+const MockProvider = require("./providers/mock");
 
-const config = {
-  project: "starhackit",
-  region: "europe-west4",
-  zone: "europe-west4-a",
-};
+const config = {};
 
 const infra = (config) => ({
   providers: [
     {
-      name: "google",
-      engine: GoogleProvider,
+      name: "mock",
+      engine: MockProvider,
       config: {
-        region: config.region,
-        project: config.project,
-        zone: config.zone,
+        compute: {
+          machines: [{ name: "mock-server", machineType: "f1-micro" }],
+        },
       },
     },
   ],
@@ -24,11 +20,9 @@ const infra = (config) => ({
     {
       name: "web",
       type: "compute",
-      provider: "google",
+      provider: "mock",
       config: {
         machineType: "f1-micro",
-        zone: config.zone,
-        tags: ["www-node"],
       },
     },
   ],
@@ -36,13 +30,9 @@ const infra = (config) => ({
 const infraNoResource = (config) => ({
   providers: [
     {
-      name: "google",
-      engine: GoogleProvider,
-      config: {
-        region: config.region,
-        project: config.project,
-        zone: config.zone,
-      },
+      name: "mock",
+      engine: mock,
+      config: {},
     },
   ],
   resources: [],
@@ -50,7 +40,7 @@ const infraNoResource = (config) => ({
 describe("GruCloud", function () {
   describe("plan", function () {
     const gc = GruCloud(infra(config));
-    it("plan", async function () {
+    it.only("plan", async function () {
       const gc = GruCloud(infra(config));
       const plan = await gc.plan();
       //console.log(plan);

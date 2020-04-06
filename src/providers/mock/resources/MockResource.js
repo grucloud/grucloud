@@ -1,10 +1,12 @@
 module.exports = ({ config }) => {
+  const { machines } = config.compute || [];
+
   const list = async (options) => {
-    const vmList = {};
-    return vmList;
+    return machines;
   };
+
   const create = async (name, options) => {
-    return {};
+    return options;
   };
 
   const get = async (name, options) => {
