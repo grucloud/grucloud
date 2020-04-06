@@ -10,23 +10,31 @@ module.exports = GoogleProvider = ({ name, infra, config }) => {
   };
   init();
 
-  const resources = [
+  const engineResources = [
     {
       name: "compute",
       engine: ComputeResource({ config }),
     },
   ];
 
-  const connect = async () => {
-    console.log("GoogleProvider connect");
-  };
+  const doCommandOverEngines = async (command, options) =>
+    await Promise.all(
+      engineResources.map(
+        async (engineResource) => await engineResource.engine[command](options)
+      )
+    );
+
+  const planFindDestroy = async (resources) =>
+    (await doCommandOverEngines("planFindDestroy", resources)).map((data) => ({
+      action: "DESTROY",
+      data: data,
+    }));
 
   const list = async () => {
-    //console.log("GoogleProvider list resources");
     const lists = await Promise.all(
-      resources.map(async (resource) => ({
+      engineResources.map(async (resource) => ({
         resource,
-        liveItems: await resource.engine.list(),
+        data: await resource.engine.list(),
       }))
     );
     //console.log("GoogleProvider", JSON.stringify(lists, null, 4));
@@ -35,10 +43,10 @@ module.exports = GoogleProvider = ({ name, infra, config }) => {
 
   return {
     name,
-    connect,
     list,
     resource: (name) => {
-      return resources.find((r) => r.name === name).engine;
+      return engineResources.find((r) => r.name === name).engine;
     },
+    planFindDestroy,
   };
 };

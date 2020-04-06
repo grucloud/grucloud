@@ -5,19 +5,14 @@ module.exports = ({ config }) => {
   const compute = new Compute();
 
   const list = async (options) => {
-    console.log("google compute list");
     const [vmList] = await compute.getVMs(options);
-    //console.log(JSON.stringify(vms, 4, null));
-    console.log("vmList", vmList);
     return vmList;
   };
   const create = async (name, options) => {
-    console.log("google create", name, options);
     const zone = compute.zone(config.zone);
     const [vm, operation] = await zone.createVM(name, options);
-    console.log(vm);
     await operation.promise();
-    console.log("google create vm created!");
+    console.log("google create vm created", name, options);
     return vm;
   };
 
@@ -25,9 +20,9 @@ module.exports = ({ config }) => {
     const zone = compute.zone(config.zone);
     const vm = zone.vm(name);
     const [instance] = await vm.get(options);
-    console.log("google compute, get", name, instance);
     return instance;
   };
+
   const destroy = async (name) => {
     console.log("google destroying", name);
     const zone = compute.zone(config.zone);
@@ -37,13 +32,19 @@ module.exports = ({ config }) => {
     console.log("google destroyed ", name);
   };
 
-  const planFindDestroy = async (hotResource) => {
-    console.log("planFindDestroy ", resource, hotResource);
+  const planFindDestroy = async (resources) => {
+    const hotResources = await list();
+    const resourcesName = resources.map((resource) => resource.name);
+    const hasName = (names, nameToFind) =>
+      names.some((name) => name === nameToFind);
+
+    const plans = hotResources.filter(
+      (hotResource) => !hasName(resourcesName, hotResource.name)
+    );
+    return plans;
   };
 
   const plan = async (resource) => {
-    console.log("plan ", resource);
-
     try {
       const { metadata } = await get(resource.name);
       // Is the same machine type?
@@ -82,6 +83,7 @@ module.exports = ({ config }) => {
     list,
     create,
     destroy,
+    planFindDestroy,
     plan,
   };
 };

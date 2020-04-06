@@ -19,7 +19,7 @@ describe("GoogleProvider", function () {
 
   it("list, ", async function () {
     const response = await computeResource.list({});
-    console.log(response);
+    //console.log(response);
   });
 
   it("list, create, list, delete, list", async function () {

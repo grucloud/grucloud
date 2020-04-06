@@ -53,16 +53,17 @@ describe("GruCloud", function () {
     it("plan", async function () {
       const gc = GruCloud(infra(config));
       const plan = await gc.plan();
-      console.log(plan);
+      //console.log(plan);
     });
-    it.only("NoResource", async function () {
+
+    it("NoResource", async function () {
       const gcNoResource = GruCloud(infraNoResource(config));
       const planNoResource = await gcNoResource.plan();
-      console.log(planNoResource);
+      //console.log(planNoResource);
     });
     it("list", async function () {
       const result = await gc.list();
-      console.log(result);
+      //console.log(result);
     });
   });
 });

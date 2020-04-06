@@ -21,39 +21,9 @@ const GruCloud = (infra) => {
   const connect = async () => await doCommand("connect");
   const list = async () => (await doCommand("list")).flat();
 
-  const planFindDestroy = async (resources) => {
-    console.log("planFindDestroy resources ", resources);
-    const hotResources = await list();
-    console.log("planFindDestroy hotResources", hotResources);
-
-    const resourcesName = resources.map((resource) => resource.name);
-    const hasName = (names, nameToFind) =>
-      names.some((name) => name === nameToFind);
-
-    const plans = hotResources
-      .map((hotResource) => {
-        console.log("planFindDestroy", hotResource);
-
-        const destroyResources = hotResource.liveItems.filter(
-          (liveItem) => !hasName(resourcesName, liveItem.name)
-        );
-        console.log("destroyResources", destroyResources);
-        return destroyResources;
-      })
-      .flat()
-      .map((liveItems) => ({
-        action: "DESTROY",
-        liveItems,
-      }));
-
-    console.log(plans);
-    return plans;
-  };
-
   const planFindNewOrUpdate = async (resources) => {
     const plans = await Promise.all(
       resources.map(async (resource) => {
-        console.log(resource);
         const provider = providerMap.get(resource.provider);
         if (!provider) {
           const availableProviders = `${[...providerMap.values()]
@@ -70,7 +40,6 @@ const GruCloud = (infra) => {
           );
         }
         const plan = await resourceEngine.plan(resource);
-        console.log(plan);
         return {
           resource,
           plan,
@@ -81,15 +50,18 @@ const GruCloud = (infra) => {
     return plans;
   };
 
+  const planFindDestroy = async (resources) =>
+    (await doCommand("planFindDestroy", resources)).flat();
+
   const plan = async () => {
     const { resources } = infra;
-    console.log("plan", resources);
     const [destroy, newOrUpdate] = await Promise.all([
       await planFindDestroy(resources),
       await planFindNewOrUpdate(resources),
     ]);
-    const plans = [...destroy, newOrUpdate];
-    console.log(JSON.stringify(plans));
+    const plans = [...destroy, ...newOrUpdate].flat();
+    //console.log(plans);
+    return plans;
   };
 
   return {
