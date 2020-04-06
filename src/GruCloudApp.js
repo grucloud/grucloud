@@ -1,5 +1,4 @@
 require("dotenv").config();
-const utils = require("util");
 
 const GruCloud = (infra) => {
   //console.log("GruCloud", utils.inspect(infra, null, 4));
@@ -7,7 +6,7 @@ const GruCloud = (infra) => {
   const providerMap = new Map(
     infra.providers.map((provider) => [
       provider.name,
-      provider.engine({ name: provider.name, infra, config: provider.config }),
+      provider.engine(provider),
     ])
   );
 

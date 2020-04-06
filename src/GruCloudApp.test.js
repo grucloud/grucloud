@@ -31,7 +31,7 @@ const infraNoResource = (config) => ({
   providers: [
     {
       name: "mock",
-      engine: mock,
+      engine: MockProvider,
       config: {},
     },
   ],
@@ -39,11 +39,11 @@ const infraNoResource = (config) => ({
 });
 describe("GruCloud", function () {
   describe("plan", function () {
-    const gc = GruCloud(infra(config));
-    it.only("plan", async function () {
+    it("plan", async function () {
       const gc = GruCloud(infra(config));
       const plan = await gc.plan();
       //console.log(plan);
+      assert(plan);
     });
 
     it("NoResource", async function () {
@@ -52,8 +52,10 @@ describe("GruCloud", function () {
       //console.log(planNoResource);
     });
     it("list", async function () {
+      const gc = GruCloud(infra(config));
       const result = await gc.list();
       //console.log(result);
+      assert(result);
     });
   });
 });

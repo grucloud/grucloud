@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "NODE_PATH=src nodemon -e ts,js,graphql node src/index.js",
-    "test": "NODE_PATH=src mocha -w 'src/**/*.js'"
+    "test": "NODE_PATH=src mocha -w 'src/**/*.js'",
+    "test:ci": "NODE_PATH=src mocha 'src/**/*.js'"
   },
   "keywords": [
     "cloud"
@@ -18,6 +19,7 @@
   },
   "dependencies": {
     "@google-cloud/compute": "^1.2.0",
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "lodash": "^4.17.15"
   }
 }

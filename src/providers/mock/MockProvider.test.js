@@ -1,10 +1,13 @@
 const assert = require("assert");
 const MockProvider = require("./MockProvider");
 
-const config = {};
+const config = {
+  compute: { machines: [] },
+};
+
 const createOptions = {};
 
-describe.only("MockProvider", function () {
+describe("MockProvider", function () {
   const provider = MockProvider({ config });
   const computeResource = provider.resource("compute");
   assert(computeResource);

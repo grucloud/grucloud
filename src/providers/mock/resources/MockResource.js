@@ -1,8 +1,16 @@
+const _ = require("lodash");
+
+const configDefault = {
+  compute: {
+    machines: [],
+  },
+};
+
 module.exports = ({ config }) => {
-  const { machines } = config.compute || [];
+  config = _.defaults(config, configDefault);
 
   const list = async (options) => {
-    return machines;
+    return config.compute.machines;
   };
 
   const create = async (name, options) => {
@@ -14,7 +22,7 @@ module.exports = ({ config }) => {
   };
 
   const destroy = async (name) => {};
-
+  //TODO get this out
   const planFindDestroy = async (resources) => {
     const hotResources = await list();
     const resourcesName = resources.map((resource) => resource.name);

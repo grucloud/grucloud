@@ -19,7 +19,7 @@ describe("GoogleProvider", function () {
 
   it("list, ", async function () {
     const response = await computeResource.list({});
-    //console.log(response);
+    assert(response);
   });
 
   it("list, create, list, delete, list", async function () {
@@ -42,7 +42,7 @@ describe("GoogleProvider", function () {
     //console.log("listAfterDestroy", listAfterDestroy);
     assert.equal(listB4.length, listAfterDestroy.length);
   });
-  it("create", async function () {
+  it.skip("create", async function () {
     const name = `vm-test-${new Date().getTime()}`;
     await computeResource.create(name, createOptions);
   });
