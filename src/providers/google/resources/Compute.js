@@ -1,6 +1,8 @@
 const Compute = require("@google-cloud/compute");
 
-module.exports = ({ config }) => {
+const type = "compute";
+
+module.exports = ({ name, provider }, config) => {
   //console.log("Google Compute ", config);
   const compute = new Compute();
 
@@ -9,6 +11,7 @@ module.exports = ({ config }) => {
     return vmList;
   };
   const create = async (name, options) => {
+    console.log("google create vm", name, options);
     const zone = compute.zone(config.zone);
     const [vm, operation] = await zone.createVM(name, options);
     await operation.promise();
@@ -67,6 +70,9 @@ module.exports = ({ config }) => {
   };
 
   return {
+    name,
+    type,
+    provider,
     get,
     list,
     create,

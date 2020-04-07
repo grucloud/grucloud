@@ -3,7 +3,7 @@ module.exports = CoreProvider = ({ name, type, engineResources, hooks }) => {
     const lists = await Promise.all(
       engineResources.map(async (resource) => ({
         resource,
-        data: await resource.engine.list(),
+        data: await resource.list(),
       }))
     );
     return lists;
@@ -12,7 +12,7 @@ module.exports = CoreProvider = ({ name, type, engineResources, hooks }) => {
   const planFindDestroy = async (resources = []) => {
     const plans = (
       await Promise.all(
-        engineResources.map(async ({ engine }) => {
+        engineResources.map(async (engine) => {
           const hotResources = await engine.list();
           const resourceNames = resources.map((resource) => resource.name);
           const hotResourcesToDestroy = hotResources.filter(
@@ -48,7 +48,7 @@ module.exports = CoreProvider = ({ name, type, engineResources, hooks }) => {
       if (!resourceEngine) {
         throw new Error(`Cannot find engine type: ${type}`);
       }
-      return resourceEngine.engine;
+      return resourceEngine;
     },
   };
 };

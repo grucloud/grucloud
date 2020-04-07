@@ -1,27 +1,31 @@
 const assert = require("assert");
 const GruCloud = require("./GruCloudApp");
 const MockProvider = require("./providers/mock");
+const MockResource = require("./providers/mock/resources/MockResource");
 
+// Create Providers
 const mockConfig = {
   compute: {
     machines: [{ name: "web-server", machineType: "f1-micro" }],
   },
 };
 
-const provider = MockProvider("mock", mockConfig);
+const provider = MockProvider({ name: "mock" }, mockConfig);
 
+// Create Resources
+const webResourceConfig = {
+  machineType: "f1-micro",
+};
+
+const webResource = MockResource(
+  { name: "web-server", provider },
+  webResourceConfig
+);
+
+// The infrastructure
 const infra = {
   providers: [provider],
-  resources: [
-    {
-      name: "web-server",
-      type: "compute",
-      provider: "mock",
-      config: {
-        machineType: "f1-micro",
-      },
-    },
-  ],
+  resources: [webResource],
 };
 
 describe("GruCloud", function () {

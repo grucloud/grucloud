@@ -1,12 +1,14 @@
 const _ = require("lodash");
 
+const type = "mock";
+
 const configDefault = {
   compute: {
     machines: [],
   },
 };
 
-module.exports = ({ config }) => {
+module.exports = ({ name, provider }, config) => {
   config = _.defaults(config, configDefault);
 
   const list = async (options) => {
@@ -36,6 +38,9 @@ module.exports = ({ config }) => {
   };
 
   return {
+    name,
+    type,
+    provider,
     get,
     list,
     create,

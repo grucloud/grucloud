@@ -1,25 +1,6 @@
 require("dotenv").config();
 
 const GruCloud = (infra) => {
-  //console.log("GruCloud", utils.inspect(infra, null, 4));
-
-  const providerMap = new Map(
-    infra.providers.map((provider) => [provider.name(), provider])
-  );
-
-  const providerByName = (name) => {
-    const provider = providerMap.get(name);
-    if (!provider) {
-      const availableProviders = `${infra.providers
-        .map((provider) => provider.name())
-        .join(", ")}`;
-      throw new Error(
-        `Cannot found provider: ${name}, available providers: ${availableProviders}`
-      );
-    }
-    return provider;
-  };
-
   const doCommand = async (command, options) =>
     Promise.all(
       infra.providers.map(async (provider) => await provider[command](options))
@@ -38,7 +19,7 @@ const GruCloud = (infra) => {
   const planFindNewOrUpdate = async (resources = []) => {
     const plans = await Promise.all(
       resources.map(async (resource) => {
-        const provider = providerByName(resource.provider);
+        const provider = resource.provider;
         const engine = provider.engineByType(resource.type);
         const plan = await engine.plan(resource);
         return {

@@ -8,8 +8,8 @@ const config = {
 const createOptions = {};
 
 describe("MockProvider", function () {
-  const provider = MockProvider({ config });
-  const computeResource = provider.engineByType("compute");
+  const provider = MockProvider({ name: "mock" }, config);
+  const computeResource = provider.engineByType("mock");
   assert(computeResource);
 
   it("list, ", async function () {

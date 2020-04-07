@@ -12,8 +12,8 @@ const createOptions = {
   machineType: "f1-micro",
 };
 
-describe.skip("GoogleProvider", function () {
-  const provider = GoogleProvider({ config });
+describe("GoogleProvider", function () {
+  const provider = GoogleProvider({ name: "google" }, config);
   const computeResource = provider.engineByType("compute");
   assert(computeResource);
 
@@ -24,7 +24,6 @@ describe.skip("GoogleProvider", function () {
 
   it("list, create, list, delete, list", async function () {
     const listB4 = await computeResource.list();
-    //console.log("listB4", listB4);
 
     const name = `vm-test-${new Date().getTime()}`;
 
