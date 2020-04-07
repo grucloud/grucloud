@@ -1,7 +1,7 @@
 const ComputeResource = require("./resources/Compute");
 const CoreProvider = require("../CoreProvider");
 
-module.exports = GoogleProvider = ({ name, infra, config }) => {
+module.exports = GoogleProvider = (name, config) => {
   const init = () => {
     if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
       throw new Error("GOOGLE_APPLICATION_CREDENTIALS is not set");

@@ -8,14 +8,10 @@ const mockConfig = {
   },
 };
 
+const provider = MockProvider("mock", mockConfig);
+
 const infra = {
-  providers: [
-    {
-      name: "mock",
-      engine: MockProvider,
-      config: mockConfig,
-    },
-  ],
+  providers: [provider],
   resources: [
     {
       name: "web-server",

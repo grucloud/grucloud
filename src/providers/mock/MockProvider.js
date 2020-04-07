@@ -1,7 +1,7 @@
 const MockResource = require("./resources/MockResource");
 const CoreProvider = require("../CoreProvider");
 
-module.exports = MockProvider = ({ name, infra, config }) => {
+module.exports = MockProvider = (name, config) => {
   const init = () => {
     //Do init stuff here
   };
