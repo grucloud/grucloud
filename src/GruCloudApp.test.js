@@ -3,39 +3,68 @@ const GruCloud = require("./GruCloudApp");
 const MockProvider = require("./providers/mock");
 const MockResource = require("./providers/mock/resources/MockResource");
 
-// Create Providers
-const mockConfig = {
-  compute: {
-    machines: [{ name: "web-server", machineType: "f1-micro" }],
+const config = {
+  /*initialState: [
+    ["web-server", { name: "web-server", machineType: "f1-micro" }],
+  ],*/
+  createOption: {
+    machineType: "f1-micro",
   },
 };
+// Create Providers
+const provider = MockProvider({ name: "mock" }, config);
 
-const provider = MockProvider({ name: "mock" }, mockConfig);
-
-// Create Resources
-const webResourceConfig = {
-  machineType: "f1-micro",
-};
-
-const webResource = MockResource(
-  { name: "web-server", provider },
-  webResourceConfig
-);
+// Create Resources 1
+const mockResource1 = MockResource({ name: "mockResource1", provider }, config);
+// Create Resources 1
+const mockResource2 = MockResource({ name: "mockResource2", provider }, config);
 
 // The infrastructure
 const infra = {
   providers: [provider],
-  resources: [webResource],
+  resources: [mockResource1, mockResource2],
 };
 
 describe("GruCloud", function () {
+  it("destroy", async function () {
+    const gc = GruCloud(infra);
+    const destroyed = await gc.destroy({ all: true });
+    await gc.destroy({});
+
+    console.log(JSON.stringify(destroyed, null, 4));
+    assert(destroyed);
+  });
   describe("plan", function () {
     it("plan", async function () {
       const gc = GruCloud(infra);
+      {
+        const listTargets = await provider.listTargets();
+        assert.equal(listTargets.length, 0);
+      }
+      {
+        const liveResources = await gc.listLives();
+        assert.equal(liveResources.length, 0);
+      }
+
       const plan = await gc.plan();
-      console.log(JSON.stringify(plan, null, 4));
-      assert.equal(plan.destroy.length, 0);
-      assert.equal(plan.newOrUpdate.length, 1);
+      {
+        assert.equal(plan.destroy.length, 0);
+        assert.equal(plan.newOrUpdate.length, 2);
+      }
+      await gc.deployPlan(plan);
+      {
+        const listTargets = await provider.listTargets();
+        assert.equal(listTargets[0].data.length, 2);
+      }
+      {
+        const listLives = await provider.listLives();
+        assert.equal(listLives[0].data.length, 2);
+      }
+      {
+        const plan = await gc.plan();
+        assert.equal(plan.destroy.length, 0);
+        assert.equal(plan.newOrUpdate.length, 0);
+      }
     });
 
     it("NoResource", async function () {
@@ -50,18 +79,8 @@ describe("GruCloud", function () {
       assert.equal(plan.destroy.length, 1);
 
       const destroyItem = plan.destroy[0];
-      assert.equal(
-        destroyItem.data[0].name,
-        mockConfig.compute.machines[0].name
-      );
+      assert.equal(destroyItem.data[0].name, mockResource1.name);
       assert.equal(plan.newOrUpdate.length, 0);
-    });
-
-    it("list", async function () {
-      const gc = GruCloud(infra);
-      const result = await gc.list();
-      //console.log(result);
-      assert(result);
     });
   });
 });

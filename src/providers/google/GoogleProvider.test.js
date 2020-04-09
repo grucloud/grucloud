@@ -1,5 +1,8 @@
 const assert = require("assert");
 const GoogleProvider = require("./GoogleProvider");
+const ComputeResource = require("./resources/Compute");
+
+const GruCloud = require("../../GruCloudApp");
 
 const config = {
   project: "starhackit",
@@ -7,15 +10,37 @@ const config = {
   zone: "europe-west4-a",
 };
 
-const createOptions = {
+const webResourceConfig = {
   os: "ubuntu",
   machineType: "f1-micro",
 };
 
-describe("GoogleProvider", function () {
+describe.skip("GoogleProvider", function () {
   const provider = GoogleProvider({ name: "google" }, config);
-  const computeResource = provider.engineByType("compute");
-  assert(computeResource);
+
+  const webResource = ComputeResource(
+    { name: "web-server", provider },
+    webResourceConfig
+  );
+
+  const infra = {
+    providers: [provider],
+    resources: [webResource],
+  };
+
+  it("engineByType", async function () {
+    const computeResource = provider.engineByType("compute");
+    assert(computeResource);
+  });
+  it("plan", async function () {
+    // The infrastructure
+
+    const gc = GruCloud(infra);
+    const plan = await gc.plan();
+    console.log(JSON.stringify(plan, null, 4));
+    assert.equal(plan.destroy.length, 0);
+    assert.equal(plan.newOrUpdate.length, 1);
+  });
 
   it("list, ", async function () {
     const response = await computeResource.list({});
