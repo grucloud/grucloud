@@ -31,7 +31,6 @@ describe("GruCloud", function () {
     const destroyed = await gc.destroy({ all: true });
     await gc.destroy({});
 
-    console.log(JSON.stringify(destroyed, null, 4));
     assert(destroyed);
   });
   describe("plan", function () {
@@ -54,11 +53,11 @@ describe("GruCloud", function () {
       await gc.deployPlan(plan);
       {
         const listTargets = await provider.listTargets();
-        assert.equal(listTargets[0].data.length, 2);
+        assert.equal(listTargets[0].data.items.length, 2);
       }
       {
         const listLives = await provider.listLives();
-        assert.equal(listLives[0].data.length, 2);
+        assert.equal(listLives[0].data.items.length, 2);
       }
       {
         const plan = await gc.plan();
@@ -75,7 +74,6 @@ describe("GruCloud", function () {
 
       const gruCloud = GruCloud(infraNoResource);
       const plan = await gruCloud.plan();
-      console.log(plan.destroy);
       assert.equal(plan.destroy.length, 1);
 
       const destroyItem = plan.destroy[0];

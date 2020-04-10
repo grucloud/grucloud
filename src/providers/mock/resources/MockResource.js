@@ -15,7 +15,7 @@ module.exports = ({ name = "MockResource", provider }, config) => {
   config = _.defaults(config, configDefault);
 
   const list = async () => {
-    return [...resourceMap.values()];
+    return { data: { items: [...resourceMap.values()] } };
   };
 
   const create = async (name, options) => {
@@ -40,7 +40,7 @@ module.exports = ({ name = "MockResource", provider }, config) => {
   };
 
   const plan = async (resource) => {
-    console.log("plan resource", resource);
+    //console.log("plan resource", resource);
     const liveResource = await get(resource.name);
 
     if (!liveResource) {
@@ -69,10 +69,12 @@ module.exports = ({ name = "MockResource", provider }, config) => {
     config,
     type,
     provider,
-    get,
-    list,
-    create,
-    destroy,
+    client: {
+      get,
+      list,
+      create,
+      destroy,
+    },
     destroyAll,
     plan,
   };

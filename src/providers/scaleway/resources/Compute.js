@@ -1,12 +1,14 @@
-const GoogleClient = require("../GoogleClient");
+const ScalewayClient = require("../ScalewayClient");
 
-const type = "compute";
+const type = "servers";
 
 module.exports = ({ name, provider }, config) => {
-  const { project, region } = config;
-  const client = GoogleClient({
+  const client = ScalewayClient({
     config,
-    url: `/projects/${project}/regions/${region}/addresses/`,
+    onResponse: (data) => {
+      return { items: data.servers };
+    },
+    url: `servers`,
   });
 
   const plan = async (resource) => {
@@ -22,7 +24,6 @@ module.exports = ({ name, provider }, config) => {
       ];
     }
   };
-
   return {
     name,
     type,

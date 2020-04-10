@@ -3,22 +3,23 @@ const Address = require("./resources/Address");
 
 const CoreProvider = require("../CoreProvider");
 
-module.exports = GoogleProvider = ({ name }, config) => {
+module.exports = ScalewayProvider = ({ name }, config) => {
   // TODO check config
   // check the zone, project and region
   const init = () => {
-    //project: "starhackit",
-    //region: "europe-west4",
-    //zone: "europe-west4-a",
     // TODO
-    if (!config.project) {
-      throw new Error("project is not set");
+    if (!config.zone) {
+      throw new Error("zone is not set");
     }
   };
 
   const core = CoreProvider({
-    type: "google",
-    env: ["GOOGLE_APPLICATION_CREDENTIALS"],
+    type: "scaleway",
+    envs: [
+      "SCALEWAY_ORGANISATION_ID",
+      "SCALEWAY_ACCESS_KEY",
+      "SCALEWAY_SECRET_KEY",
+    ],
     name,
     engineResources: [ComputeResource({}, config), Address({}, config)],
     hooks: {

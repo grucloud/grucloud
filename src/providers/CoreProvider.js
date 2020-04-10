@@ -1,6 +1,15 @@
+const checkEnv = (env = []) =>
+  env.forEach((env) => {
+    console.log(env);
+    if (!process.env[env]) {
+      throw new Error(`Please set the environment variable ${env}`);
+    }
+  });
+
 module.exports = CoreProvider = ({
   name,
   type,
+  envs = [],
   engineResources,
   hooks,
   config,
@@ -14,27 +23,27 @@ module.exports = CoreProvider = ({
       await Promise.all(
         engineResources.map(async (resource) => ({
           resource,
-          data: await resource.list(),
+          data: (await resource.client.list()).data,
         }))
       )
-    ).filter((liveResources) => liveResources.data.length > 0);
-    //console.log("listLives", lists);
+    ).filter((liveResources) => liveResources.data.items.length > 0);
+    console.log("listLives", lists);
     return lists;
   };
   const listTargets = async (resources) => {
     const lists = (
       await Promise.all(
         [...targetResources.values()].map(
-          async (resource) => await resource.list()
+          async (resource) => (await resource.client.list()).data
         )
       )
     )
-      .filter((liveResources) => liveResources.length > 0)
+      .filter((liveResources) => liveResources.items.length > 0)
       .map((data) => ({
         //TODO
         data,
       }));
-    //console.log("listTargets", lists);
+    console.log("listTargets", lists);
     return lists;
   };
 
@@ -44,14 +53,14 @@ module.exports = CoreProvider = ({
       await Promise.all(
         engineResources.map(async (resource) => ({
           resource,
-          data: await resource.destroy(),
+          data: await resource.client.destroy(),
         }))
       );
     } else {
       await Promise.all(
         resources.map(async (resource) => ({
           resource,
-          data: await resource.destroy(),
+          data: await resource.client.destroy(),
         }))
       );
     }
@@ -61,7 +70,8 @@ module.exports = CoreProvider = ({
     const plans = (
       await Promise.all(
         engineResources.map(async (engine) => {
-          const hotResources = await engine.list();
+          const { data } = await engine.client.list();
+          const hotResources = data.items;
           const resourceNames = resources.map((resource) => resource.name);
           const hotResourcesToDestroy = hotResources.filter(
             (hotResource) => !resourceNames.includes(hotResource.name)
@@ -82,6 +92,7 @@ module.exports = CoreProvider = ({
     return plans;
   };
 
+  checkEnv(envs);
   if (hooks && hooks.init) {
     hooks.init();
   }

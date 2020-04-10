@@ -15,9 +15,9 @@ const webResourceConfig = {
   machineType: "f1-micro",
 };
 
-describe.skip("GoogleProvider", function () {
+describe.only("GoogleProvider", function () {
   const provider = GoogleProvider({ name: "google" }, config);
-
+  const computeResource = provider.engineByType("compute");
   const webResource = ComputeResource(
     { name: "web-server", provider },
     webResourceConfig
@@ -29,8 +29,8 @@ describe.skip("GoogleProvider", function () {
   };
 
   it("engineByType", async function () {
-    const computeResource = provider.engineByType("compute");
-    assert(computeResource);
+    //const computeResource = provider.engineByType("compute");
+    //assert(computeResource);
   });
   it("plan", async function () {
     // The infrastructure
@@ -43,31 +43,31 @@ describe.skip("GoogleProvider", function () {
   });
 
   it("list, ", async function () {
-    const response = await computeResource.list({});
+    const response = await computeResource.client.list({});
     assert(response);
   });
 
   it("list, create, list, delete, list", async function () {
-    const listB4 = await computeResource.list();
+    const listB4 = await computeResource.client.list();
 
     const name = `vm-test-${new Date().getTime()}`;
 
-    await computeResource.create(name, createOptions);
+    await computeResource.client.create(name, createOptions);
 
-    const vm = await computeResource.get(name);
+    const vm = await computeResource.client.get(name);
 
     //console.log("listAfterCreation", vm);
     const { metadata } = vm;
     assert(metadata.machineType.endsWith(createOptions.machineType));
     assert.equal(metadata.status, "RUNNING");
 
-    await computeResource.destroy(name);
-    const listAfterDestroy = await computeResource.list();
+    await computeResource.client.destroy(name);
+    const listAfterDestroy = await computeResource.client.list();
     //console.log("listAfterDestroy", listAfterDestroy);
     assert.equal(listB4.length, listAfterDestroy.length);
   });
   it.skip("create", async function () {
     const name = `vm-test-${new Date().getTime()}`;
-    await computeResource.create(name, createOptions);
+    await computeResource.client.create(name, createOptions);
   });
 });

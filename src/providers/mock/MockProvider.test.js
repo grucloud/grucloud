@@ -25,31 +25,41 @@ describe("MockProvider", function () {
   it("delete all, create, list, delete by name, delete all", async function () {
     {
       await mockResource.destroyAll();
-      const list = await mockResource.list();
-      assert.equal(list.length, 0);
+      const {
+        data: { items },
+      } = await mockResource.client.list();
+      assert.equal(items.length, 0);
     }
 
     {
-      await mockResource.create(createName("1"), createOptions);
-      const list = await mockResource.list();
-      assert.equal(list.length, 1);
+      await mockResource.client.create(createName("1"), createOptions);
+      const {
+        data: { items },
+      } = await mockResource.client.list();
+      assert.equal(items.length, 1);
     }
     {
-      await mockResource.create(createName("2"), createOptions);
-      const list = await mockResource.list();
-      assert.equal(list.length, 2);
-      assert(list[0].name);
-      await mockResource.destroy(list[0].name);
+      await mockResource.client.create(createName("2"), createOptions);
+      const {
+        data: { items },
+      } = await mockResource.client.list();
+      assert.equal(items.length, 2);
+      assert(items[0].name);
+      await mockResource.client.destroy(items[0].name);
     }
     {
-      const list4 = await mockResource.list();
-      assert.equal(list4.length, 1);
+      const {
+        data: { items },
+      } = await mockResource.client.list();
+      assert.equal(items.length, 1);
     }
     {
       const destroyAll = await mockResource.destroyAll();
       assert(destroyAll);
-      const list = await mockResource.list();
-      assert.equal(list.length, 0);
+      const {
+        data: { items },
+      } = await mockResource.client.list();
+      assert.equal(items.length, 0);
     }
   });
 });

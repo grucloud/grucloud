@@ -76,7 +76,7 @@ const GruCloud = (infra) => {
         await Promise.all(
           planItem.plan.map(async (resource) => {
             //console.log("create resource", resource.name, resource.config);
-            await engine.create(resource.name, resource.config);
+            await engine.client.create(resource.name, resource.config);
           })
         );
       })

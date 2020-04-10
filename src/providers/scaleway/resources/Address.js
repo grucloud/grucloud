@@ -1,16 +1,17 @@
-const GoogleClient = require("../GoogleClient");
-
-const type = "compute";
+const ScalewayClient = require("../ScalewayClient");
+const type = "address";
 
 module.exports = ({ name, provider }, config) => {
-  const { project, region } = config;
-  const client = GoogleClient({
+  const client = ScalewayClient({
     config,
-    url: `/projects/${project}/regions/${region}/addresses/`,
+    onResponse: (data) => ({ items: data.ips }),
+    url: `/ips`,
   });
 
   const plan = async (resource) => {
     try {
+      const { address } = await client.get(resource.name);
+
       return [];
     } catch (ex) {
       console.log(`resource ${resource.name} not found `);
@@ -26,8 +27,8 @@ module.exports = ({ name, provider }, config) => {
   return {
     name,
     type,
-    client,
     provider,
+    client,
     plan,
   };
 };
