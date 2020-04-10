@@ -1,10 +1,6 @@
 const GoogleClient = require("../GoogleClient");
 const type = "address";
 
-// See https://googleapis.dev/nodejs/compute/latest/Address.html
-// https://github.com/googleapis/nodejs-compute
-// https://cloud.google.com/compute/docs/reference/rest/v1/addresses
-
 //compute.googleapis.com/compute/v1/projects/{project}/regions/{region}/addresses/{resourceId}
 
 module.exports = ({ name, provider }, config) => {

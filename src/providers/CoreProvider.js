@@ -67,12 +67,12 @@ module.exports = CoreProvider = ({
   };
 
   const planFindDestroy = async (resources = []) => {
+    const resourceNames = resources.map((resource) => resource.name);
     const plans = (
       await Promise.all(
         engineResources.map(async (engine) => {
           const { data } = await engine.client.list();
           const hotResources = data.items;
-          const resourceNames = resources.map((resource) => resource.name);
           const hotResourcesToDestroy = hotResources.filter(
             (hotResource) => !resourceNames.includes(hotResource.name)
           );

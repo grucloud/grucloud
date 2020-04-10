@@ -15,13 +15,10 @@ const webResourceConfig = {
   machineType: "f1-micro",
 };
 
-describe.only("GoogleProvider", function () {
+describe("GoogleProvider", function () {
   const provider = GoogleProvider({ name: "google" }, config);
   const computeResource = provider.engineByType("compute");
-  const webResource = ComputeResource(
-    { name: "web-server", provider },
-    webResourceConfig
-  );
+  const webResource = ComputeResource({ name: "web-server", provider }, config);
 
   const infra = {
     providers: [provider],
@@ -52,13 +49,13 @@ describe.only("GoogleProvider", function () {
 
     const name = `vm-test-${new Date().getTime()}`;
 
-    await computeResource.client.create(name, createOptions);
+    await computeResource.create(name, webResourceConfig);
 
     const vm = await computeResource.client.get(name);
 
     //console.log("listAfterCreation", vm);
     const { metadata } = vm;
-    assert(metadata.machineType.endsWith(createOptions.machineType));
+    assert(metadata.machineType.endsWith(webResourceConfig.machineType));
     assert.equal(metadata.status, "RUNNING");
 
     await computeResource.client.destroy(name);
@@ -68,6 +65,6 @@ describe.only("GoogleProvider", function () {
   });
   it.skip("create", async function () {
     const name = `vm-test-${new Date().getTime()}`;
-    await computeResource.client.create(name, createOptions);
+    await computeResource.create(name, webResourceConfig);
   });
 });

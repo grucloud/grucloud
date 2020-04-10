@@ -18,7 +18,7 @@ module.exports = GoogleProvider = ({ name }, config) => {
 
   const core = CoreProvider({
     type: "google",
-    env: ["GOOGLE_APPLICATION_CREDENTIALS"],
+    env: ["GOOGLE_SERVICE_ACCOUNT_KEY"],
     name,
     engineResources: [ComputeResource({}, config), Address({}, config)],
     hooks: {

@@ -16,7 +16,12 @@ module.exports = CoreClient = ({
 
     transformRequest: [
       (data, headers) => {
-        //console.log("axios tx ", baseURL, JSON.stringify(data, null, 4));
+        console.log(
+          "axios tx ",
+          baseURL,
+          headers,
+          JSON.stringify(data, null, 4)
+        );
         return JSON.stringify(data);
       },
     ],

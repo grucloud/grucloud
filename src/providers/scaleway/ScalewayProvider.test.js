@@ -16,10 +16,7 @@ const webResourceConfig = {
 describe("ScalewayProvider", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);
 
-  const webResource = ComputeResource(
-    { name: "web-server", provider },
-    webResourceConfig
-  );
+  const webResource = ComputeResource({ name: "web-server", provider }, config);
 
   const infra = {
     providers: [provider],
