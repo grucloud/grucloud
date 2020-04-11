@@ -24,6 +24,7 @@ const apis = () => [
       items: volumes,
     }),
     url: `/volumes`,
+    configTransform: (config) => ({ ...config, id: "generateid" }),
   },
   {
     name: "Server",
@@ -31,6 +32,7 @@ const apis = () => [
       return { items: data.servers };
     },
     url: `servers`,
+    configTransform: (config) => ({ ...config, boot_type: "local" }),
   },
 ];
 

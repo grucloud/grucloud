@@ -5,7 +5,8 @@ const ResourceMaker = ({
   name,
   dependencies,
   client,
-  fnConfig,
+  userConfig,
+  apiConfig,
   provider,
 }) => {
   return {
@@ -14,18 +15,21 @@ const ResourceMaker = ({
     name,
     client,
     config: async () => {
-      return fnConfig(dependencies, (await client.list()).data.items);
+      const { items } = (await client.list()).data;
+      const config = await userConfig(dependencies, items);
+      return apiConfig(config);
     },
   };
 };
-
+const identity = (x) => x;
 const createResourceMakers = ({ apis, config, provider, Client }) =>
   apis(config).reduce((acc, api) => {
-    acc[`make${api.name}`] = (options, fnConfig) =>
+    acc[`make${api.name}`] = (options, userConfig) =>
       ResourceMaker({
         type: api.name,
         ...options,
-        fnConfig,
+        userConfig,
+        apiConfig: api.configTransform || identity,
         provider,
         client: Client({ ...api, config }),
       });
@@ -59,7 +63,7 @@ module.exports = CoreProvider = ({
         }))
       )
     ).filter((liveResources) => liveResources.data.items.length > 0);
-    //console.log("listLives", lists);
+    console.log("listLives", lists);
     return lists;
   };
 
@@ -76,7 +80,7 @@ module.exports = CoreProvider = ({
         //TODO
         data,
       }));
-    //console.log("listTargets", lists);
+    console.log("listTargets", lists);
     return lists;
   };
 

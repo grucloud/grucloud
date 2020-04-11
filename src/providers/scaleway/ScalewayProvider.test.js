@@ -20,7 +20,7 @@ const serverConfig = ({ volume }) => ({
 describe("ScalewayProvider", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);
 
-  const imageResource = provider.makeImage(
+  const image = provider.makeImage(
     { name: "ubuntu" },
     (dependencies, images) => {
       const image = images.find(
@@ -31,24 +31,46 @@ describe("ScalewayProvider", function () {
     }
   );
 
-  const volumeResource = provider.makeVolume({ name: "volume1" }, () => ({
-    volume_type: "l_ssd",
+  const volume = provider.makeVolume({ name: "volume1" }, () => ({
     size: 20000000000,
   }));
 
-  const webResource = provider.makeServer(
-    { name: "web-server", dependencies: { volume: volumeResource } },
-    serverConfig
+  const server = provider.makeServer(
+    {
+      name: "web-server",
+      dependencies: { volume, image },
+    },
+    async ({ volume, image }) => ({
+      name: "web-server",
+      commercial_type: "DEV1-S",
+      image: await image.config(),
+      volumes: {
+        "0": await volume.config(),
+      },
+    })
   );
 
   const infra = {
     providers: [provider],
-    resources: [volumeResource, webResource],
+    resources: [image, volume, server],
   };
-  it.only("image config", async function () {
-    const result = await imageResource.config();
+  it("image config", async function () {
+    const result = await image.config();
     console.log(JSON.stringify(result, null, 4));
     assert(result.id);
+  });
+  it("volume config", async function () {
+    const result = await volume.config();
+    console.log(JSON.stringify(result, null, 4));
+    assert(result.id);
+  });
+  it("server config", async function () {
+    const result = await server.config();
+    console.log(JSON.stringify(result, null, 4));
+    assert(result.name);
+    assert.equal(result.boot_type, "local");
+    assert(result.image);
+    assert(result.volumes);
   });
   it("list lives", async function () {
     const result = await provider.listLives();

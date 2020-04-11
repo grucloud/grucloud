@@ -41,7 +41,7 @@ describe("GruCloud", function () {
     assert(destroyed);
   });
   describe("plan", function () {
-    it("plan", async function () {
+    it.only("plan", async function () {
       const gc = GruCloud(infra);
       {
         const listTargets = await provider.listTargets();
