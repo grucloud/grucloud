@@ -1,6 +1,5 @@
 const assert = require("assert");
 const ScalewayProvider = require("./ScalewayProvider");
-const ComputeResource = require("./resources/Compute");
 
 const GruCloud = require("../../GruCloudApp");
 
@@ -15,8 +14,7 @@ const webResourceConfig = {
 
 describe("ScalewayProvider", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);
-
-  const webResource = ComputeResource({ name: "web-server", provider }, config);
+  const webResource = provider.makeCompute("web-server", config);
 
   const infra = {
     providers: [provider],

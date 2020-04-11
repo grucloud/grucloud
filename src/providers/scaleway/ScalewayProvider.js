@@ -27,5 +27,10 @@ module.exports = ScalewayProvider = ({ name }, config) => {
     },
   });
 
-  return core;
+  return {
+    ...core,
+    makeCompute: (name, config) =>
+      ComputeResource({ name, provider: core }, config),
+    makeAddress: (name, config) => Address({ name, provider: core }, config),
+  };
 };

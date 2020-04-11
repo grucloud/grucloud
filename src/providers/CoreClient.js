@@ -19,7 +19,7 @@ module.exports = CoreClient = ({
         console.log(
           "axios tx ",
           baseURL,
-          headers,
+          //headers,
           JSON.stringify(data, null, 4)
         );
         return JSON.stringify(data);

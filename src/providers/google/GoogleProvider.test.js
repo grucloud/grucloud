@@ -1,6 +1,5 @@
 const assert = require("assert");
 const GoogleProvider = require("./GoogleProvider");
-const ComputeResource = require("./resources/Compute");
 
 const GruCloud = require("../../GruCloudApp");
 
@@ -18,7 +17,7 @@ const webResourceConfig = {
 describe("GoogleProvider", function () {
   const provider = GoogleProvider({ name: "google" }, config);
   const computeResource = provider.engineByType("compute");
-  const webResource = ComputeResource({ name: "web-server", provider }, config);
+  const webResource = provider.makeCompute("web-server", config);
 
   const infra = {
     providers: [provider],
@@ -30,8 +29,6 @@ describe("GoogleProvider", function () {
     //assert(computeResource);
   });
   it("plan", async function () {
-    // The infrastructure
-
     const gc = GruCloud(infra);
     const plan = await gc.plan();
     console.log(JSON.stringify(plan, null, 4));

@@ -15,5 +15,9 @@ module.exports = MockProvider = ({ name }, config) => {
     },
   });
 
-  return core;
+  return {
+    ...core,
+    makeMockResource: (name, config) =>
+      MockResource({ name, provider: core }, config),
+  };
 };

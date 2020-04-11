@@ -1,7 +1,6 @@
 const assert = require("assert");
 const GruCloud = require("../../GruCloudApp");
 const MockProvider = require("./MockProvider");
-const MockResource = require("./resources/MockResource");
 
 const config = {
   compute: { machines: [] },
@@ -12,10 +11,7 @@ const createOptions = {
 };
 
 const provider = MockProvider({ name: "mockProvider" }, config);
-const mockResource = MockResource(
-  { name: "mock1", provider },
-  { initialState: [] }
-);
+const mockResource = provider.makeMockResource("mock1", { initialState: [] });
 
 const gc = GruCloud({ providers: [provider], resources: [mockResource] });
 
