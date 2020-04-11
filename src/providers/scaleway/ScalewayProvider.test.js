@@ -20,8 +20,22 @@ const serverConfig = ({ volume }) => ({
 describe("ScalewayProvider", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);
 
-  const imageResource = provider.makeImage({ name: "myimage" }, () => ({}));
-  const volumeResource = provider.makeVolume({ name: "volume1" }, () => ({}));
+  const imageResource = provider.makeImage(
+    { name: "ubuntu" },
+    (dependencies, images) => {
+      const image = images.find(
+        ({ name, arch, default_bootscript }) =>
+          name.includes("Ubuntu") && arch === "x86_64" && default_bootscript
+      );
+      return image;
+    }
+  );
+
+  const volumeResource = provider.makeVolume({ name: "volume1" }, () => ({
+    volume_type: "l_ssd",
+    size: 20000000000,
+  }));
+
   const webResource = provider.makeServer(
     { name: "web-server", dependencies: { volume: volumeResource } },
     serverConfig
@@ -31,28 +45,14 @@ describe("ScalewayProvider", function () {
     providers: [provider],
     resources: [volumeResource, webResource],
   };
-
-  it("Image", async function () {
-    const {
-      data: { items },
-    } = await imageResource.client.list();
-    items.map((item) => {
-      assert(item.name);
-      assert(item.creation_date);
-      //console.log(`${item.name} ${item.creation_date}`);
-    });
-
-    assert(items);
-  });
-
-  it("volumes", async function () {
-    const {
-      data: { items },
-    } = await volumeResource.client.list();
-    assert(items);
+  it.only("image config", async function () {
+    const result = await imageResource.config();
+    console.log(JSON.stringify(result, null, 4));
+    assert(result.id);
   });
   it("list lives", async function () {
     const result = await provider.listLives();
+    console.log(JSON.stringify(result, null, 4));
     assert(result);
   });
   it("list targets", async function () {
@@ -60,8 +60,6 @@ describe("ScalewayProvider", function () {
     assert(result);
   });
   it("plan", async function () {
-    // The infrastructure
-
     const gc = GruCloud(infra);
     const plan = await gc.plan();
     console.log(JSON.stringify(plan, null, 4));

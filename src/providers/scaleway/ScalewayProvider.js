@@ -8,6 +8,11 @@ const apis = () => [
     url: `/ips`,
   },
   {
+    name: "Bootscript",
+    onResponse: (data) => ({ items: data.bootscripts }),
+    url: `/bootscripts`,
+  },
+  {
     name: "Image",
     onResponse: (data) => ({ items: data.images }),
     url: `/images`,

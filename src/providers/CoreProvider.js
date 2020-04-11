@@ -13,7 +13,9 @@ const ResourceMaker = ({
     provider,
     name,
     client,
-    config: () => fnConfig(dependencies),
+    config: async () => {
+      return fnConfig(dependencies, (await client.list()).data.items);
+    },
   };
 };
 

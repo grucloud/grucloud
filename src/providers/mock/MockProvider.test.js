@@ -6,10 +6,6 @@ const config = {
   compute: { machines: [] },
 };
 
-const createOptions = {
-  machineType: "f1-micro",
-};
-
 const provider = MockProvider({ name: "mockProvider" }, config);
 
 const imageResource = provider.makeImage({ name: "ubuntu" }, () => ({
@@ -72,7 +68,7 @@ describe("MockProvider", function () {
     await testCrud(imageResource);
   });
   it("config", async function () {
-    const config = volumeResource.config();
+    const config = await volumeResource.config();
     assert(config);
   });
 });
