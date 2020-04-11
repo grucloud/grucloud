@@ -5,10 +5,10 @@ const type = "compute";
 module.exports = ({ name, provider }, config) => {
   const { project, zone } = config;
   const client = GoogleClient({
-    config,
+    config: provider.config,
     url: `/projects/${project}/zones/${zone}/instances/`,
     onResponse: (data) => {
-      console.log("AAAAAAAAAAAAAAA", JSON.stringify(data, null, 4));
+      console.log("AAAAAAAAA    TODO", JSON.stringify(data, null, 4));
       return { items: [] };
     },
   });

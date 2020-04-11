@@ -7,7 +7,7 @@ module.exports = ({ name, provider }, config) => {
   //console.log("Google Address ", config);
   const { project, region } = config;
   const client = GoogleClient({
-    config,
+    config: provider.config,
     url: `/projects/${project}/regions/${region}/addresses/`,
   });
 

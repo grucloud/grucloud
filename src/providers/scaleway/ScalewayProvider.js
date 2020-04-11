@@ -21,11 +21,16 @@ module.exports = ScalewayProvider = ({ name }, config) => {
       "SCALEWAY_SECRET_KEY",
     ],
     name,
-    engineResources: [ComputeResource({}, config), Address({}, config)],
+    config,
     hooks: {
       init,
     },
   });
+
+  core.engineAdd([
+    ComputeResource({ provider: core }, config),
+    Address({ provider: core }, config),
+  ]);
 
   return {
     ...core,

@@ -3,7 +3,7 @@ const type = "address";
 
 module.exports = ({ name, provider }, config) => {
   const client = ScalewayClient({
-    config,
+    config: provider.config,
     onResponse: (data) => ({ items: data.ips }),
     url: `/ips`,
   });

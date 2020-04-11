@@ -4,7 +4,7 @@ const type = "servers";
 
 module.exports = ({ name, provider }, config) => {
   const client = ScalewayClient({
-    config,
+    config: provider.config,
     onResponse: (data) => {
       return { items: data.servers };
     },

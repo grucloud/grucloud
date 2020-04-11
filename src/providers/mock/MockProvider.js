@@ -9,11 +9,12 @@ module.exports = MockProvider = ({ name }, config) => {
     name,
     config,
     type: "mock",
-    engineResources: [MockResource({}, config)],
     hooks: {
       init,
     },
   });
+
+  core.engineAdd([MockResource({ provider: core }, config)]);
 
   return {
     ...core,

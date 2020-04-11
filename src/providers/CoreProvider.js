@@ -6,22 +6,33 @@ const checkEnv = (env = []) =>
     }
   });
 
-module.exports = CoreProvider = ({
-  name,
-  type,
-  envs = [],
-  engineResources,
-  hooks,
-  config,
-}) => {
+module.exports = CoreProvider = ({ name, type, envs = [], hooks, config }) => {
+  // Target Resources
   const targetResources = new Map();
   const targetResourcesAdd = (resource) =>
     targetResources.set(resource.name, resource);
+  const getTargetResources = () => [...targetResources.values()];
 
+  //List of engines
+  const engineMap = new Map();
+  const getEngines = () => [...engineMap.values()];
+
+  const engineAdd = (engines) =>
+    engines.forEach((engine) => engineMap.set(engine.type, engine));
+
+  const engineByType = (type) => {
+    const engine = engineMap.get(type);
+    if (!engine) {
+      throw new Error(`Cannot find engine type: ${type}`);
+    }
+    return engine;
+  };
+
+  // API
   const listLives = async () => {
     const lists = (
       await Promise.all(
-        engineResources.map(async (resource) => ({
+        getEngines().map(async (resource) => ({
           resource,
           data: (await resource.client.list()).data,
         }))
@@ -33,7 +44,7 @@ module.exports = CoreProvider = ({
   const listTargets = async (resources) => {
     const lists = (
       await Promise.all(
-        [...targetResources.values()].map(
+        getTargetResources().map(
           async (resource) => (await resource.client.list()).data
         )
       )
@@ -51,7 +62,7 @@ module.exports = CoreProvider = ({
     //console.log("destroy");
     if (options.all) {
       await Promise.all(
-        engineResources.map(async (resource) => ({
+        getEngines().map(async (resource) => ({
           resource,
           data: await resource.client.destroy(),
         }))
@@ -70,7 +81,7 @@ module.exports = CoreProvider = ({
     const resourceNames = resources.map((resource) => resource.name);
     const plans = (
       await Promise.all(
-        engineResources.map(async (engine) => {
+        getEngines().map(async (engine) => {
           const { data } = await engine.client.list();
           const hotResources = data.items;
           const hotResourcesToDestroy = hotResources.filter(
@@ -107,12 +118,7 @@ module.exports = CoreProvider = ({
     listLives,
     listTargets,
     targetResourcesAdd,
-    engineByType: (type) => {
-      const resourceEngine = engineResources.find((r) => r.type === type);
-      if (!resourceEngine) {
-        throw new Error(`Cannot find engine type: ${type}`);
-      }
-      return resourceEngine;
-    },
+    engineAdd,
+    engineByType,
   };
 };

@@ -1,7 +1,7 @@
+const CoreProvider = require("../CoreProvider");
+
 const ComputeResource = require("./resources/Compute");
 const Address = require("./resources/Address");
-
-const CoreProvider = require("../CoreProvider");
 
 module.exports = GoogleProvider = ({ name }, config) => {
   // TODO check config
@@ -20,11 +20,16 @@ module.exports = GoogleProvider = ({ name }, config) => {
     type: "google",
     env: ["GOOGLE_SERVICE_ACCOUNT_KEY"],
     name,
-    engineResources: [ComputeResource({}, config), Address({}, config)],
+    config,
     hooks: {
       init,
     },
   });
+
+  core.engineAdd([
+    ComputeResource({ provider: core }, config),
+    Address({ provider: core }, config),
+  ]);
 
   return {
     ...core,
