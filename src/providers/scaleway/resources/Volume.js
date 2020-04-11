@@ -1,16 +1,6 @@
-const ScalewayClient = require("../ScalewayClient");
 const type = "volume";
 
-module.exports = ({ name, provider }, config) => {
-  const client = ScalewayClient({
-    config: provider.config,
-    onResponse: ({ volumes }) => ({
-      total: volumes.length,
-      items: volumes,
-    }),
-    url: `/volumes`,
-  });
-
+module.exports = ({ name, provider, client }, config) => {
   const plan = async (resource) => {
     return [];
   };

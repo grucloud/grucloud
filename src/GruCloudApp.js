@@ -1,10 +1,6 @@
 require("dotenv").config();
 
 const GruCloud = (infra) => {
-  infra.resources.map((resource) =>
-    resource.provider.targetResourcesAdd(resource)
-  );
-
   const doCommand = async (command, ...options) =>
     Promise.all(
       infra.providers.map(
@@ -37,12 +33,11 @@ const GruCloud = (infra) => {
     const plans = (
       await Promise.all(
         resources.map(async (resource) => {
-          const { provider } = resource;
-          const engine = provider.engineByType(resource.type);
-          const plan = await engine.plan(resource);
+          const plan = []; // = await engine.plan(resource);
           if (plan) {
             return {
-              provider: provider.name(),
+              //TODO
+              //provider: provider.name(),
               resource: resource.type,
               plan,
             };

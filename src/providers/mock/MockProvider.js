@@ -1,28 +1,20 @@
-const MockImage = require("./resources/MockImage");
-const MockVolume = require("./resources/MockVolume");
-
+const MockClient = require("./MockClient");
 const CoreProvider = require("../CoreProvider");
 
-module.exports = MockProvider = ({ name }, config) => {
-  const core = CoreProvider({
+const apis = (config) => [
+  { name: "Image" },
+  { name: "Volume" },
+  { name: "Server" },
+];
+
+module.exports = MockProvider = ({ name }, config) =>
+  CoreProvider({
     name,
     config,
+    apis,
+    Client: MockClient,
     type: "mock",
     hooks: {
       init: () => {},
     },
   });
-
-  core.engineAdd([
-    MockImage({ provider: core }, config),
-    MockVolume({ provider: core }, config),
-  ]);
-
-  return {
-    ...core,
-    makeImage: (options, config) =>
-      MockImage({ ...options, provider: core }, config),
-    makeVolume: (options, config) =>
-      MockVolume({ ...options, provider: core }, config),
-  };
-};

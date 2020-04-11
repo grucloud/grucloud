@@ -17,11 +17,11 @@ const serverConfig = ({ volume }) => ({
   ],
 });
 
-describe.only("ScalewayProvider", function () {
+describe("ScalewayProvider", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);
-  const imageResource = provider.makeImage({ name: "myimage" }, () => ({}));
 
-  const volumeResource = provider.makeVolume({ name: "volume1" }, config);
+  const imageResource = provider.makeImage({ name: "myimage" }, () => ({}));
+  const volumeResource = provider.makeVolume({ name: "volume1" }, () => ({}));
   const webResource = provider.makeServer(
     { name: "web-server", dependencies: { volume: volumeResource } },
     serverConfig
@@ -32,7 +32,7 @@ describe.only("ScalewayProvider", function () {
     resources: [volumeResource, webResource],
   };
 
-  it.only("Image", async function () {
+  it("Image", async function () {
     const {
       data: { items },
     } = await imageResource.client.list();
@@ -51,7 +51,7 @@ describe.only("ScalewayProvider", function () {
     } = await volumeResource.client.list();
     assert(items);
   });
-  it.only("list lives", async function () {
+  it("list lives", async function () {
     const result = await provider.listLives();
     assert(result);
   });

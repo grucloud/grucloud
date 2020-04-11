@@ -1,13 +1,6 @@
-const ScalewayClient = require("../ScalewayClient");
 const type = "images";
 
-module.exports = ({ name, provider }, config) => {
-  const client = ScalewayClient({
-    config: provider.config,
-    onResponse: (data) => ({ items: data.images }),
-    url: `/images`,
-  });
-
+module.exports = ({ name, provider, client }, config) => {
   const plan = async (resource) => {
     return [];
   };

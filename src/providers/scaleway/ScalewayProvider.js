@@ -1,21 +1,36 @@
-const Server = require("./resources/Compute");
-const Image = require("./resources/Images");
-const Address = require("./resources/Address");
-const Volume = require("./resources/Volume");
-
 const CoreProvider = require("../CoreProvider");
+const ScalewayClient = require("./ScalewayClient");
 
-module.exports = ScalewayProvider = ({ name }, config) => {
-  // TODO check config
-  // check the zone, project and region
-  const init = () => {
-    // TODO
-    if (!config.zone) {
-      throw new Error("zone is not set");
-    }
-  };
+const apis = () => [
+  {
+    name: "Ip",
+    onResponse: (data) => ({ items: data.ips }),
+    url: `/ips`,
+  },
+  {
+    name: "Image",
+    onResponse: (data) => ({ items: data.images }),
+    url: `/images`,
+  },
+  {
+    name: "Volume",
+    onResponse: ({ volumes }) => ({
+      total: volumes.length,
+      items: volumes,
+    }),
+    url: `/volumes`,
+  },
+  {
+    name: "Server",
+    onResponse: (data) => {
+      return { items: data.servers };
+    },
+    url: `servers`,
+  },
+];
 
-  const core = CoreProvider({
+module.exports = ScalewayProvider = ({ name }, config) =>
+  CoreProvider({
     type: "scaleway",
     envs: [
       "SCALEWAY_ORGANISATION_ID",
@@ -24,23 +39,13 @@ module.exports = ScalewayProvider = ({ name }, config) => {
     ],
     name,
     config,
+    Client: ScalewayClient,
+    apis,
     hooks: {
-      init,
+      init: () => {
+        if (!config.zone) {
+          throw new Error("zone is not set");
+        }
+      },
     },
   });
-
-  core.engineAdd([
-    Image({ provider: core }, config),
-    Volume({ provider: core }, config),
-    Server({ provider: core }, config),
-    Address({ provider: core }, config),
-  ]);
-
-  return {
-    ...core,
-    makeImage: (name, config) => Image({ name, provider: core }, config),
-    makeVolume: (name, config) => Volume({ name, provider: core }, config),
-    makeServer: (name, config) => Server({ name, provider: core }, config),
-    makeAddress: (name, config) => Address({ name, provider: core }, config),
-  };
-};

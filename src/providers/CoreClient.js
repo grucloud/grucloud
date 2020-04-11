@@ -4,6 +4,7 @@ const noop = () => ({});
 const identity = (x) => x;
 
 module.exports = CoreClient = ({
+  name,
   baseURL,
   onHeaders = noop,
   onResponse = identity,
@@ -27,18 +28,20 @@ module.exports = CoreClient = ({
     ],
     transformResponse: [
       (data) => {
-        console.log(
-          "axios rx ",
-          baseURL,
-          JSON.stringify(JSON.parse(data), null, 4)
-        );
-        return JSON.parse(data);
+        console.log("axios rx ", baseURL, data);
+        try {
+          return JSON.parse(data);
+        } catch (error) {
+          console.error("axios rx could not parse data", data);
+          return data;
+        }
       },
       onResponse,
     ],
   });
 
   return {
+    name,
     get: (name) => axios.request(`/${name}`, { method: "GET" }),
     destroy: (name) => axios.request(`/${name}`, { method: "DELETE" }),
     list: () => axios.request("/", { method: "GET" }),
