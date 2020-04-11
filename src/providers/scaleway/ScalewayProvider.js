@@ -1,5 +1,7 @@
-const ComputeResource = require("./resources/Compute");
+const Server = require("./resources/Compute");
+const Image = require("./resources/Images");
 const Address = require("./resources/Address");
+const Volume = require("./resources/Volume");
 
 const CoreProvider = require("../CoreProvider");
 
@@ -28,14 +30,17 @@ module.exports = ScalewayProvider = ({ name }, config) => {
   });
 
   core.engineAdd([
-    ComputeResource({ provider: core }, config),
+    Image({ provider: core }, config),
+    Volume({ provider: core }, config),
+    Server({ provider: core }, config),
     Address({ provider: core }, config),
   ]);
 
   return {
     ...core,
-    makeCompute: (name, config) =>
-      ComputeResource({ name, provider: core }, config),
+    makeImage: (name, config) => Image({ name, provider: core }, config),
+    makeVolume: (name, config) => Volume({ name, provider: core }, config),
+    makeServer: (name, config) => Server({ name, provider: core }, config),
     makeAddress: (name, config) => Address({ name, provider: core }, config),
   };
 };

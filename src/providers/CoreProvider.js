@@ -38,7 +38,7 @@ module.exports = CoreProvider = ({ name, type, envs = [], hooks, config }) => {
         }))
       )
     ).filter((liveResources) => liveResources.data.items.length > 0);
-    console.log("listLives", lists);
+    //console.log("listLives", lists);
     return lists;
   };
   const listTargets = async (resources) => {

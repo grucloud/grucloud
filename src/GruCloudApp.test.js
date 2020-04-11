@@ -1,7 +1,6 @@
 const assert = require("assert");
 const GruCloud = require("./GruCloudApp");
 const MockProvider = require("./providers/mock");
-const MockResource = require("./providers/mock/resources/MockResource");
 
 const config = {
   /*initialState: [
@@ -12,17 +11,24 @@ const config = {
   },
 };
 // Create Providers
-const provider = MockProvider({ name: "mock" }, config);
+const provider = MockProvider({ name: "mockProvider" }, config);
 
-// Create Resources 1
-const mockResource1 = MockResource({ name: "mockResource1", provider }, config);
-// Create Resources 1
-const mockResource2 = MockResource({ name: "mockResource2", provider }, config);
+const imageResource = provider.makeImage({ name: "ubuntu" }, () => ({
+  imageName: "ubuntu-os-cloud-18.04",
+}));
+
+const volumeResource = provider.makeVolume(
+  { name: "disk", dependencies: { imageResource } },
+  ({ image }) => ({
+    image: image.name(),
+    size: "20GB",
+  })
+);
 
 // The infrastructure
 const infra = {
   providers: [provider],
-  resources: [mockResource1, mockResource2],
+  resources: [imageResource, volumeResource],
 };
 
 describe("GruCloud", function () {

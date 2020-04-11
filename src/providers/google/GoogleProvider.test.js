@@ -9,15 +9,23 @@ const config = {
   zone: "europe-west4-a",
 };
 
-const webResourceConfig = {
+const webResourceConfig = ({}) => ({
   os: "ubuntu",
   machineType: "f1-micro",
-};
+});
 
 describe("GoogleProvider", function () {
   const provider = GoogleProvider({ name: "google" }, config);
-  const computeResource = provider.engineByType("compute");
-  const webResource = provider.makeCompute("web-server", config);
+
+  const computeResource = provider.makeCompute(
+    { name: "web-server1" },
+    webResourceConfig
+  );
+
+  const webResource = provider.makeCompute(
+    { name: "web-server1" },
+    webResourceConfig
+  );
 
   const infra = {
     providers: [provider],

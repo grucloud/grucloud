@@ -1,11 +1,14 @@
 const ScalewayClient = require("../ScalewayClient");
-const type = "address";
+const type = "volume";
 
 module.exports = ({ name, provider }, config) => {
   const client = ScalewayClient({
     config: provider.config,
-    onResponse: (data) => ({ items: data.ips }),
-    url: `/ips`,
+    onResponse: ({ volumes }) => ({
+      total: volumes.length,
+      items: volumes,
+    }),
+    url: `/volumes`,
   });
 
   const plan = async (resource) => {

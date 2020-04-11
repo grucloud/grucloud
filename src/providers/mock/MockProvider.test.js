@@ -11,51 +11,68 @@ const createOptions = {
 };
 
 const provider = MockProvider({ name: "mockProvider" }, config);
-const mockResource = provider.makeMockResource("mock1", { initialState: [] });
 
-const gc = GruCloud({ providers: [provider], resources: [mockResource] });
+const imageResource = provider.makeImage({ name: "ubuntu" }, () => ({
+  imageName: "ubuntu-os-cloud-18.04",
+}));
+
+const volumeResource = provider.makeVolume(
+  { name: "disk", dependencies: { image: imageResource } },
+  ({ image }) => ({
+    image: image.config().imageName,
+    size: "20GB",
+  })
+);
 
 const createName = (name) => `${name}-${new Date().getTime()}`;
 
-describe("MockProvider", function () {
-  it("delete all, create, list, delete by name, delete all", async function () {
-    {
-      await mockResource.destroyAll();
-      const {
-        data: { items },
-      } = await mockResource.client.list();
-      assert.equal(items.length, 0);
-    }
+const testCrud = async (resource, createOptions) => {
+  const { client } = resource;
+  {
+    await client.destroyAll();
+    const {
+      data: { items },
+    } = await client.list();
+    assert.equal(items.length, 0);
+  }
 
-    {
-      await mockResource.client.create(createName("1"), createOptions);
-      const {
-        data: { items },
-      } = await mockResource.client.list();
-      assert.equal(items.length, 1);
-    }
-    {
-      await mockResource.client.create(createName("2"), createOptions);
-      const {
-        data: { items },
-      } = await mockResource.client.list();
-      assert.equal(items.length, 2);
-      assert(items[0].name);
-      await mockResource.client.destroy(items[0].name);
-    }
-    {
-      const {
-        data: { items },
-      } = await mockResource.client.list();
-      assert.equal(items.length, 1);
-    }
-    {
-      const destroyAll = await mockResource.destroyAll();
-      assert(destroyAll);
-      const {
-        data: { items },
-      } = await mockResource.client.list();
-      assert.equal(items.length, 0);
-    }
+  {
+    await client.create(createName("1"), createOptions);
+    const {
+      data: { items },
+    } = await client.list();
+    assert.equal(items.length, 1);
+  }
+  {
+    await client.create(createName("2"), createOptions);
+    const {
+      data: { items },
+    } = await client.list();
+    assert.equal(items.length, 2);
+    assert(items[0].name);
+    await client.destroy(items[0].name);
+  }
+  {
+    const {
+      data: { items },
+    } = await client.list();
+    assert.equal(items.length, 1);
+  }
+  {
+    const destroyAll = await client.destroyAll();
+    assert(destroyAll);
+    const {
+      data: { items },
+    } = await client.list();
+    assert.equal(items.length, 0);
+  }
+};
+describe("MockProvider", function () {
+  it("testCrud", async function () {
+    await testCrud(imageResource);
+  });
+  it("config", async function () {
+    const config = volumeResource.config();
+    assert(config);
   });
 });
