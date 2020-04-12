@@ -6,7 +6,16 @@ const apis = () => [
     name: "Ip",
     onResponse: ({ ips }) => ({ total: ips.length, items: ips }),
     url: `/ips`,
-    configTransform: (config, items) => {
+    preConfig: async ({ client }) => {
+      const result = await client.list();
+      const { items } = result.data;
+      if (!items) {
+        throw Error(`client.list() not formed correctly: ${result}`);
+      }
+      console.log("PRECONFIG ", items);
+      return items;
+    },
+    postConfig: ({ config, items }) => {
       assert(items);
       const ip = items.find((item) => item.address === config.address);
       if (ip) {
@@ -29,6 +38,15 @@ const apis = () => [
     onResponse: ({ images }) => ({ total: images.length, items: images }),
     url: `/images`,
     disableDestroy: true,
+    preConfig: async ({ client }) => {
+      const result = await client.list();
+      const { items } = result.data;
+      if (!items) {
+        throw Error(`client.list() not formed correctly: ${result}`);
+      }
+      console.log("Image PRECONFIG ", items);
+      return items;
+    },
   },
   {
     name: "Volume",
@@ -37,7 +55,7 @@ const apis = () => [
       items: volumes,
     }),
     url: `/volumes`,
-    configTransform: (config) => ({ ...config, id: "generateid" }),
+    postConfig: ({ config }) => ({ ...config, id: "generateid" }),
   },
   {
     name: "Server",
@@ -45,7 +63,7 @@ const apis = () => [
       return { total: servers.length, items: servers };
     },
     url: `servers`,
-    configTransform: (config) => ({ ...config, boot_type: "local" }),
+    postConfig: ({ config }) => ({ ...config, boot_type: "local" }),
   },
 ];
 

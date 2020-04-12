@@ -1,4 +1,6 @@
 const checkEnvironment = require("../Utils").checkEnvironment;
+const returnUndefined = (x) => undefined;
+const returnConfig = ({ config }) => config;
 
 const ResourceMaker = ({
   type,
@@ -6,7 +8,7 @@ const ResourceMaker = ({
   dependencies,
   client,
   userConfig,
-  apiConfig,
+  api,
   provider,
 }) => {
   return {
@@ -15,17 +17,14 @@ const ResourceMaker = ({
     name,
     client,
     config: async () => {
-      const result = await client.list();
-      const { items } = result.data;
-      if (!items) {
-        throw Error(`list() returns not formed correctly: ${result}`);
-      }
+      const preConfig = api.preConfig || returnUndefined;
+      const postConfig = api.postConfig || returnConfig;
+      const items = await preConfig({ client });
       const config = await userConfig({ dependencies, items });
-      return apiConfig(config, { items, dependencies });
+      return postConfig({ config, items, dependencies });
     },
   };
 };
-const identity = (x) => x;
 const createResourceMakers = ({ apis, config, provider, Client }) =>
   apis(config).reduce((acc, api) => {
     acc[`make${api.name}`] = (options, userConfig) => {
@@ -33,7 +32,7 @@ const createResourceMakers = ({ apis, config, provider, Client }) =>
         type: api.name,
         ...options,
         userConfig,
-        apiConfig: api.configTransform || identity,
+        api,
         provider,
         client: Client(api, config),
       });

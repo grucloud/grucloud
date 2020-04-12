@@ -11,10 +11,12 @@ describe("ScalewayProvider", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);
 
   const image = provider.makeImage({ name: "ubuntu" }, ({ items: images }) => {
+    assert(images);
     const image = images.find(
       ({ name, arch, default_bootscript }) =>
         name.includes("Ubuntu") && arch === "x86_64" && default_bootscript
     );
+    assert(image);
     return image;
   });
 

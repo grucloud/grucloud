@@ -2,15 +2,35 @@ const assert = require("assert");
 const MockClient = require("./MockClient");
 const CoreProvider = require("../CoreProvider");
 
+const identity = (x) => x;
+
 const apis = (config) => [
   {
     name: "Image",
     initState: [["1", { name: "Ubuntu", arch: "x86_64" }]],
+    preConfig: async ({ client }) => {
+      const result = await client.list();
+      const { items } = result.data;
+      if (!items) {
+        throw Error(`client.list() not formed correctly: ${result}`);
+      }
+      console.log("Image PRECONFIG ", items);
+      return items;
+    },
   },
   { name: "Volume" },
   {
     name: "Ip",
-    configTransform: (config, { items, dependencies }) => {
+    preConfig: async ({ client }) => {
+      const result = await client.list();
+      const { items } = result.data;
+      if (!items) {
+        throw Error(`client.list() not formed correctly: ${result}`);
+      }
+      console.log("PRECONFIG ", items);
+      return items;
+    },
+    postConfig: ({ items, config }) => {
       assert(items);
       const ip = items.find((item) => item.address === config.address);
       if (ip) {
@@ -31,7 +51,7 @@ const apis = (config) => [
   },
   {
     name: "Server",
-    configTransform: (config) => ({ ...config, boot_type: "local" }),
+    postConfig: ({ config }) => ({ ...config, boot_type: "local" }),
   },
 ];
 

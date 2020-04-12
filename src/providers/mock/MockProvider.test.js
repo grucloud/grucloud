@@ -3,7 +3,7 @@ const MockProvider = require("./MockProvider");
 
 const provider = MockProvider({ name: "mockProvider" }, {});
 
-const ip = provider.makeIp({ name: "myip" }, (dependencies, items) => {
+const ip = provider.makeIp({ name: "myip" }, ({}) => {
   const targetAddress = "51.15.246.48";
   return {
     address: targetAddress,
@@ -37,6 +37,7 @@ const server = provider.makeServer(
     public_ip: await ip.config(),
   })
 );
+
 const resources = [image, volume, server];
 const createName = (name) => `${name}-${new Date().getTime()}`;
 
