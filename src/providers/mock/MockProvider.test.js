@@ -15,6 +15,7 @@ const image = provider.makeImage({ name: "ubuntu" }, ({ items: images }) => {
   const image = images.find(
     (image) => image.name.includes("Ubuntu") && image.arch === "x86_64"
   );
+  assert(image);
   return image;
 });
 

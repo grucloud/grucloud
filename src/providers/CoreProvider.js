@@ -39,8 +39,8 @@ const ResourceMaker = ({
   };
 };
 
-const createResourceMakers = ({ apis, config, provider, Client }) =>
-  apis(config).reduce((acc, api) => {
+const createResourceMakers = ({ specs, config, provider, Client }) =>
+  specs.reduce((acc, api) => {
     acc[`make${api.name}`] = (options, userConfig) => {
       const resource = ResourceMaker({
         type: api.name,
@@ -48,7 +48,7 @@ const createResourceMakers = ({ apis, config, provider, Client }) =>
         userConfig,
         api: _.defaults(api, specDefault),
         provider,
-        client: Client(api, config),
+        client: Client({ options: api, config }),
       });
       provider.targetResourcesAdd(resource);
       return resource;
@@ -75,11 +75,12 @@ module.exports = CoreProvider = ({
       (resource) => resource.api.methods.del
     );
 
-  const clients = apis(config).map((api) => Client(api, config));
-  //TODO
-  const clientsCanDelete = apis(config)
-    .filter((api) => !api.methods || api.methods.del)
-    .map((api) => Client(api, config));
+  const specs = apis(config).map((spec) => _.defaults(spec, specDefault));
+
+  const clients = specs.map((api) => Client({ options: api, config }));
+  const clientsCanDelete = specs
+    .filter((api) => api.methods.del)
+    .map((api) => Client({ options: api, config }));
 
   // API
   const listLives = async () => {
@@ -188,6 +189,6 @@ module.exports = CoreProvider = ({
 
   return {
     ...provider,
-    ...createResourceMakers({ provider, config, Client, apis }),
+    ...createResourceMakers({ provider, config, Client, specs }),
   };
 };
