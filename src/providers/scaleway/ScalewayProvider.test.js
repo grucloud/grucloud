@@ -10,16 +10,13 @@ const config = {
 describe("ScalewayProvider", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);
 
-  const image = provider.makeImage(
-    { name: "ubuntu" },
-    (dependencies, images) => {
-      const image = images.find(
-        ({ name, arch, default_bootscript }) =>
-          name.includes("Ubuntu") && arch === "x86_64" && default_bootscript
-      );
-      return image;
-    }
-  );
+  const image = provider.makeImage({ name: "ubuntu" }, ({ items: images }) => {
+    const image = images.find(
+      ({ name, arch, default_bootscript }) =>
+        name.includes("Ubuntu") && arch === "x86_64" && default_bootscript
+    );
+    return image;
+  });
 
   const volume = provider.makeVolume({ name: "volume1" }, () => ({
     size: 20000000000,
@@ -30,7 +27,7 @@ describe("ScalewayProvider", function () {
       name: "web-server",
       dependencies: { volume, image },
     },
-    async ({ volume, image }) => ({
+    async ({ dependencies: { volume, image } }) => ({
       name: "web-server",
       commercial_type: "DEV1-S",
       image: await image.config(),

@@ -20,8 +20,8 @@ const ResourceMaker = ({
       if (!items) {
         throw Error(`list() returns not formed correctly: ${result}`);
       }
-      const config = await userConfig(dependencies, items);
-      return apiConfig(config, items);
+      const config = await userConfig({ dependencies, items });
+      return apiConfig(config, { items, dependencies });
     },
   };
 };

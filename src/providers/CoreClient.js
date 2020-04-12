@@ -15,7 +15,6 @@ module.exports = CoreClient = ({
     timeout: 30e3,
     withCredentials: true,
     headers: { ...onHeaders(), "Content-Type": "application/json" },
-
     transformRequest: [
       (data, headers) => {
         console.log(

@@ -10,7 +10,7 @@ const ip = provider.makeIp({ name: "myip" }, (dependencies, items) => {
   };
 });
 
-const image = provider.makeImage({ name: "ubuntu" }, (dependencies, images) => {
+const image = provider.makeImage({ name: "ubuntu" }, ({ items: images }) => {
   assert(images);
   const image = images.find(
     (image) => image.name.includes("Ubuntu") && image.arch === "x86_64"
@@ -27,7 +27,7 @@ const server = provider.makeServer(
     name: "web-server",
     dependencies: { volume, image, ip },
   },
-  async ({ volume, image, ip }) => ({
+  async ({ dependencies: { volume, image, ip } }) => ({
     name: "web-server",
     commercial_type: "DEV1-S",
     image: await image.config(),

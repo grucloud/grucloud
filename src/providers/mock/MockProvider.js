@@ -10,7 +10,7 @@ const apis = (config) => [
   { name: "Volume" },
   {
     name: "Ip",
-    configTransform: (config, items) => {
+    configTransform: (config, { items, dependencies }) => {
       assert(items);
       const ip = items.find((item) => item.address === config.address);
       if (ip) {
