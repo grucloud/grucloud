@@ -43,7 +43,7 @@ describe.skip("GoogleProvider", function () {
   it("plan", async function () {
     const gc = GruCloud(infra);
     const plan = await gc.plan();
-    console.log(JSON.stringify(plan, null, 4));
+    //console.log(JSON.stringify(plan, null, 4));
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 1);
   });

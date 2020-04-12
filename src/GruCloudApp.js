@@ -1,4 +1,5 @@
 require("dotenv").config();
+const logger = require("logger")({ prefix: "App" });
 
 const GruCloud = (infra) => {
   const doCommand = async (command, ...options) =>
@@ -30,7 +31,9 @@ const GruCloud = (infra) => {
    * @param {array} resources - The target resources
    */
   const planFindNewOrUpdate = async (resources = []) => {
-    console.log("resources", resources);
+    logger.debug(
+      `planFindNewOrUpdate: resources": ${JSON.stringify(resources, null, 4)}`
+    );
     const plans = (
       await Promise.all(
         resources

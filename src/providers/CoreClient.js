@@ -1,5 +1,5 @@
 const Axios = require("axios");
-
+const logger = require("logger")({ prefix: "CoreClient" });
 const noop = () => ({});
 const identity = (x) => x;
 
@@ -17,11 +17,8 @@ module.exports = CoreClient = ({
     headers: { ...onHeaders(), "Content-Type": "application/json" },
     transformRequest: [
       (data, headers) => {
-        console.log(
-          "axios tx ",
-          baseURL,
-          //headers,
-          JSON.stringify(data, null, 4)
+        logger.info(
+          `tx ${baseURL} ${data ? JSON.stringify(data, null, 4) : ""}`
         );
         return JSON.stringify(data);
       },
@@ -32,7 +29,7 @@ module.exports = CoreClient = ({
         try {
           return JSON.parse(data);
         } catch (error) {
-          console.error("axios rx could not parse data", data);
+          logger.error("rx could not parse data", data);
           return data;
         }
       },

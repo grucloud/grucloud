@@ -98,7 +98,7 @@ describe("MockProvider", function () {
   it("server config", async function () {
     const config = await server.config();
     assert(config);
-    console.log(config);
+    //console.log(config);
     assert(config.name);
     assert.equal(config.boot_type, "local");
     assert(config.image);

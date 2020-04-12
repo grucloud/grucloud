@@ -1,6 +1,6 @@
 const CoreClient = require("../CoreClient");
 const urljoin = require("url-join");
-const BASE_URL = "https://compute.googleapis.com/compute/v1/";
+const BASE_URL = "https://compute.googleπ.com/compute/v1/";
 
 module.exports = GoogleClient = ({ options }) =>
   CoreClient({

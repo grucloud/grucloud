@@ -1,4 +1,6 @@
 const _ = require("lodash");
+const logger = require("logger")({ prefix: "CoreProvider" });
+
 const checkEnvironment = require("../Utils").checkEnvironment;
 const returnUndefined = (x) => undefined;
 const returnConfig = ({ config }) => config;
@@ -65,6 +67,8 @@ module.exports = CoreProvider = ({
   hooks,
   config,
 }) => {
+  logger.debug(`CoreProvider name: ${name}, type ${type}, config: ${config}`);
+
   // Target Resources
   const targetResources = new Map();
   const targetResourcesAdd = (resource) =>
@@ -92,7 +96,7 @@ module.exports = CoreProvider = ({
         }))
       )
     ).filter((liveResources) => liveResources.data.items.length > 0);
-    console.log("listLives", lists);
+    logger.debug(`listLives ${JSON.stringify(lists, null, 4)}`);
     return lists;
   };
 
@@ -109,7 +113,7 @@ module.exports = CoreProvider = ({
         //TODO
         data,
       }));
-    console.log("listTargets", lists);
+    logger.debug(`listTargets ${JSON.stringify(lists, null, 4)}`);
     return lists;
   };
 
@@ -120,12 +124,19 @@ module.exports = CoreProvider = ({
         config: await resource.config(),
       }))
     );
-    //console.log("listConfig", lists);
+    logger.debug(`listConfig ${JSON.stringify(lists, null, 4)}`);
     return lists;
   };
 
   const destroy = async (resources, options = {}) => {
-    //console.log("destroy");
+    logger.debug(
+      `destroy resources: ${JSON.stringify(
+        resources,
+        null,
+        4
+      )}, options: ${JSON.stringify(options, null, 4)}`
+    );
+
     if (options.all) {
       await Promise.all(
         clientsCanDelete.map(async (client) => ({
@@ -144,11 +155,14 @@ module.exports = CoreProvider = ({
   };
 
   const planFindDestroy = async (resources = []) => {
+    logger.debug(
+      `planFindDestroy resources: ${JSON.stringify(resources, null, 4)}`
+    );
+
     const resourceNames = resources.map((resource) => resource.name);
     const plans = (
       await Promise.all(
         getDeletableTargets().map(async (resource) => {
-          console.log(resource);
           const { data } = await resource.client.list();
           const hotResources = data.items;
           const hotResourcesToDestroy = hotResources.filter(

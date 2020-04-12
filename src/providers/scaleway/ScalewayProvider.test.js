@@ -58,12 +58,12 @@ describe("ScalewayProvider", function () {
 
   it("image config", async function () {
     const result = await image.config();
-    console.log(JSON.stringify(result, null, 4));
+    //console.log(JSON.stringify(result, null, 4));
     assert(result.id);
   });
   it("volume config", async function () {
     const result = await volume.config();
-    console.log(JSON.stringify(result, null, 4));
+    //console.log(JSON.stringify(result, null, 4));
     assert(result.size);
   });
   it("server config", async function () {
@@ -76,7 +76,7 @@ describe("ScalewayProvider", function () {
   });
   it("list all config", async function () {
     const configs = await provider.listConfig();
-    console.log(JSON.stringify(configs, null, 4));
+    //console.log(JSON.stringify(configs, null, 4));
     assert(configs);
   });
 

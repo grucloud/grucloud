@@ -36,7 +36,7 @@ describe("GruCloud", function () {
       {
         const configs = await provider.listConfig();
         assert(configs);
-        console.log(configs);
+        //console.log(configs);
       }
       {
         const listTargets = await provider.listTargets();
@@ -48,7 +48,7 @@ describe("GruCloud", function () {
       }
 
       const plan = await gc.plan();
-      console.log(plan);
+      //console.log(plan);
       {
         //TODO
         assert.equal(plan.destroy.length, 0);
