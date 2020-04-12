@@ -9,32 +9,36 @@ const config = {
   zone: "europe-west4-a",
 };
 
-const webResourceConfig = ({}) => ({
-  os: "ubuntu",
-  machineType: "f1-micro",
-});
-
-describe("GoogleProvider", function () {
+describe.skip("GoogleProvider", function () {
   const provider = GoogleProvider({ name: "google" }, config);
 
-  const computeResource = provider.makeCompute(
-    { name: "web-server1" },
-    webResourceConfig
-  );
+  const volume = provider.makeVolume({ name: "volume1" }, () => ({
+    size: 20000000000,
+  }));
 
-  const webResource = provider.makeCompute(
-    { name: "web-server1" },
-    webResourceConfig
+  const server = provider.makeServer(
+    {
+      name: "web-server",
+      dependencies: { volume },
+    },
+    async ({ dependencies: { volume } }) => ({
+      name: "web-server",
+      commercial_type: "DEV1-S",
+      //image: await image.config(),
+      volumes: {
+        "0": await volume.config(),
+      },
+    })
   );
 
   const infra = {
     providers: [provider],
-    resources: [webResource],
+    resources: [volume, server],
   };
 
   it("engineByType", async function () {
-    //const computeResource = provider.engineByType("compute");
-    //assert(computeResource);
+    //const server = provider.engineByType("compute");
+    //assert(server);
   });
   it("plan", async function () {
     const gc = GruCloud(infra);
@@ -45,31 +49,31 @@ describe("GoogleProvider", function () {
   });
 
   it("list, ", async function () {
-    const response = await computeResource.client.list({});
+    const response = await server.client.list({});
     assert(response);
   });
 
   it("list, create, list, delete, list", async function () {
-    const listB4 = await computeResource.client.list();
+    const listB4 = await server.client.list();
 
     const name = `vm-test-${new Date().getTime()}`;
 
-    await computeResource.create(name, webResourceConfig);
+    await server.create(name, webResourceConfig);
 
-    const vm = await computeResource.client.get(name);
+    const vm = await server.client.get(name);
 
     //console.log("listAfterCreation", vm);
     const { metadata } = vm;
     assert(metadata.machineType.endsWith(webResourceConfig.machineType));
     assert.equal(metadata.status, "RUNNING");
 
-    await computeResource.client.destroy(name);
-    const listAfterDestroy = await computeResource.client.list();
+    await server.client.destroy(name);
+    const listAfterDestroy = await server.client.list();
     //console.log("listAfterDestroy", listAfterDestroy);
     assert.equal(listB4.length, listAfterDestroy.length);
   });
   it.skip("create", async function () {
     const name = `vm-test-${new Date().getTime()}`;
-    await computeResource.create(name, webResourceConfig);
+    await server.create(name, webResourceConfig);
   });
 });
