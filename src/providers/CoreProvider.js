@@ -17,23 +17,29 @@ const ResourceMaker = ({
     config: async () => {
       const result = await client.list();
       const { items } = result.data;
+      if (!items) {
+        throw Error(`list() returns not formed correctly: ${result}`);
+      }
       const config = await userConfig(dependencies, items);
-      return apiConfig(config);
+      return apiConfig(config, items);
     },
   };
 };
 const identity = (x) => x;
 const createResourceMakers = ({ apis, config, provider, Client }) =>
   apis(config).reduce((acc, api) => {
-    acc[`make${api.name}`] = (options, userConfig) =>
-      ResourceMaker({
+    acc[`make${api.name}`] = (options, userConfig) => {
+      const resource = ResourceMaker({
         type: api.name,
         ...options,
         userConfig,
         apiConfig: api.configTransform || identity,
         provider,
-        client: Client({ ...api, config }),
+        client: Client(api, config),
       });
+      provider.targetResourcesAdd(resource);
+      return resource;
+    };
     return acc;
   }, {});
 
@@ -52,7 +58,11 @@ module.exports = CoreProvider = ({
     targetResources.set(resource.name, resource);
   const getTargetResources = () => [...targetResources.values()];
 
-  const clients = apis(config).map((api) => Client({ ...api, config }));
+  const clients = apis(config).map((api) => Client(api, config));
+
+  const clientsCanDelete = apis(config)
+    .filter((api) => !api.disableDestroy)
+    .map((api) => Client(api, config));
 
   // API
   const listLives = async () => {
@@ -89,7 +99,7 @@ module.exports = CoreProvider = ({
     //console.log("destroy");
     if (options.all) {
       await Promise.all(
-        clients.map(async (client) => ({
+        clientsCanDelete.map(async (client) => ({
           client,
           data: await client.destroy(),
         }))

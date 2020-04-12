@@ -4,18 +4,31 @@ const ScalewayClient = require("./ScalewayClient");
 const apis = () => [
   {
     name: "Ip",
-    onResponse: (data) => ({ items: data.ips }),
+    onResponse: ({ ips }) => ({ total: ips.length, items: ips }),
     url: `/ips`,
+    configTransform: (config, items) => {
+      assert(items);
+      const ip = items.find((item) => item.address === config.address);
+      if (ip) {
+        return ip;
+      }
+      return { ...config };
+    },
   },
   {
     name: "Bootscript",
-    onResponse: (data) => ({ items: data.bootscripts }),
+    onResponse: ({ bootscripts }) => ({
+      total: bootscripts.length,
+      items: bootscripts,
+    }),
     url: `/bootscripts`,
+    disableDestroy: true,
   },
   {
     name: "Image",
-    onResponse: (data) => ({ items: data.images }),
+    onResponse: ({ images }) => ({ total: images.length, items: images }),
     url: `/images`,
+    disableDestroy: true,
   },
   {
     name: "Volume",
@@ -28,8 +41,8 @@ const apis = () => [
   },
   {
     name: "Server",
-    onResponse: (data) => {
-      return { items: data.servers };
+    onResponse: ({ servers }) => {
+      return { total: servers.length, items: servers };
     },
     url: `servers`,
     configTransform: (config) => ({ ...config, boot_type: "local" }),

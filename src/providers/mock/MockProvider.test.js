@@ -3,8 +3,14 @@ const MockProvider = require("./MockProvider");
 
 const provider = MockProvider({ name: "mockProvider" }, {});
 
+const ip = provider.makeIp({ name: "myip" }, (dependencies, items) => {
+  const targetAddress = "51.15.246.48";
+  return {
+    address: targetAddress,
+  };
+});
+
 const image = provider.makeImage({ name: "ubuntu" }, (dependencies, images) => {
-  console.log("images", images);
   assert(images);
   const image = images.find(
     (image) => image.name.includes("Ubuntu") && image.arch === "x86_64"
@@ -19,15 +25,16 @@ const volume = provider.makeVolume({ name: "volume1" }, () => ({
 const server = provider.makeServer(
   {
     name: "web-server",
-    dependencies: { volume, image },
+    dependencies: { volume, image, ip },
   },
-  async ({ volume, image }) => ({
+  async ({ volume, image, ip }) => ({
     name: "web-server",
     commercial_type: "DEV1-S",
     image: await image.config(),
     volumes: {
       "0": await volume.config(),
     },
+    public_ip: await ip.config(),
   })
 );
 const resources = [image, volume, server];

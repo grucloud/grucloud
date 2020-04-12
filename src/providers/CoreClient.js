@@ -4,13 +4,14 @@ const noop = () => ({});
 const identity = (x) => x;
 
 module.exports = CoreClient = ({
-  name,
+  options,
+  type,
   baseURL,
   onHeaders = noop,
   onResponse = identity,
 }) => {
   const axios = Axios.create({
-    baseURL: baseURL,
+    baseURL,
     timeout: 30e3,
     withCredentials: true,
     headers: { ...onHeaders(), "Content-Type": "application/json" },
@@ -28,7 +29,7 @@ module.exports = CoreClient = ({
     ],
     transformResponse: [
       (data) => {
-        console.log("axios rx ", baseURL, data);
+        //console.log("axios rx ", baseURL, data);
         try {
           return JSON.parse(data);
         } catch (error) {
@@ -41,8 +42,10 @@ module.exports = CoreClient = ({
   });
 
   return {
-    name,
+    options,
+    type,
     get: (name) => axios.request(`/${name}`, { method: "GET" }),
+    // use options.disableDestroy
     destroy: (name) => axios.request(`/${name}`, { method: "DELETE" }),
     list: () => axios.request("/", { method: "GET" }),
     create: (data) => axios.request("/", { method: "POST", data }),

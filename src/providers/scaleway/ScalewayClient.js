@@ -3,16 +3,11 @@ const urljoin = require("url-join");
 
 const BASE_URL = "https://api.scaleway.com/instance/v1/";
 
-module.exports = ScalewayClient = ({
-  name,
-  url,
-  config: { zone },
-  onResponse,
-}) =>
+module.exports = ScalewayClient = (options, providerConfig) =>
   CoreClient({
-    name,
     type: "scaleway",
-    onResponse,
+    options,
     onHeaders: () => ({ "X-Auth-Token": process.env.SCALEWAY_SECRET_KEY }),
-    baseURL: urljoin(BASE_URL, "zones", zone, url),
+    baseURL: urljoin(BASE_URL, "zones", providerConfig.zone, options.url),
+    onResponse: options.onResponse,
   });

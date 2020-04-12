@@ -56,7 +56,7 @@ describe("ScalewayProvider", function () {
   });
   it("server config", async function () {
     const result = await server.config();
-    console.log(JSON.stringify(result, null, 4));
+    //console.log(JSON.stringify(result, null, 4));
     assert(result.name);
     assert.equal(result.boot_type, "local");
     assert(result.image);
@@ -64,7 +64,7 @@ describe("ScalewayProvider", function () {
   });
   it("list lives", async function () {
     const result = await provider.listLives();
-    console.log(JSON.stringify(result, null, 4));
+    //console.log(JSON.stringify(result, null, 4));
     assert(result);
   });
   it("list targets", async function () {
@@ -74,7 +74,7 @@ describe("ScalewayProvider", function () {
   it("plan", async function () {
     const gc = GruCloud(infra);
     const plan = await gc.plan();
-    console.log(JSON.stringify(plan, null, 4));
+    //console.log(JSON.stringify(plan, null, 4));
     //assert.equal(plan.destroy.length, 0);
     //assert.equal(plan.newOrUpdate.length, 1);
   });
