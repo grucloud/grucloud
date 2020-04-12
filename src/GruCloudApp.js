@@ -11,7 +11,7 @@ const GruCloud = (infra) => {
   const providerByName = (name) =>
     infra.providers.find((provider) => provider.name() === name);
 
-  const resourceByName = (type) =>
+  const resourceByType = (type) =>
     infra.resources.find((resource) => resource.type === type);
 
   const getResourceEngine = ({ providerName, resourceType }) => {
@@ -19,6 +19,7 @@ const GruCloud = (infra) => {
     if (!provider) {
       throw Error(`Cannot find provider ${providerName}`);
     }
+    //TODO engineByType
     return provider.engineByType(resourceType);
   };
 
@@ -39,59 +40,72 @@ const GruCloud = (infra) => {
         resources
           .filter((resource) => resource.api.methods.create)
           .map(async (resource) => {
-            const plan = []; // = await engine.plan(resource);
+            //TODO
+            const plan = await resource.planFindNewOrUpdate({ resource });
             if (plan) {
               return {
                 //TODO
                 //provider: provider.name(),
-                resource: resource.type,
+                resource: {
+                  name: resource.name,
+                  type: resource.type,
+                  provider: resource.provider.name(),
+                },
                 plan,
               };
             }
           })
       )
     ).filter((x) => x);
+    logger.debug(
+      `planFindNewOrUpdate: plans": ${JSON.stringify(plans, null, 4)}`
+    );
     return plans;
   };
 
   const plan = async () => {
+    logger.debug(`plan `);
     const { resources } = infra;
     const [destroy, newOrUpdate] = await Promise.all([
       await planFindDestroy(resources),
       await planFindNewOrUpdate(resources),
     ]);
+    logger.debug(`plan destroy ${JSON.stringify(destroy, null, 4)}`);
+    logger.debug(`plan newOrUpdate ${JSON.stringify(newOrUpdate, null, 4)}`);
+
     return { destroy, newOrUpdate };
   };
 
   const deployPlan = async (plan, option = {}) => {
-    //console.log("deployPlan", JSON.stringify(plan, null, 4));
+    logger.debug(`plan ${JSON.stringify(plan, null, 4)}`);
     await upsertResources(plan.newOrUpdate);
     await destroyResources(plan.destroy);
   };
   const upsertResources = async (newOrUpdate) => {
-    //console.log("upsertResources", JSON.stringify(newOrUpdate, null, 4));
+    logger.debug(`upsertResources ${JSON.stringify(newOrUpdate, null, 4)}`);
     await Promise.all(
       newOrUpdate.map(async (planItem) => {
         //console.log("upsertResources planItem", planItem);
-        const engine = resourceByName(planItem.resource);
+        const engine = resourceByType(planItem.resource.type);
         await Promise.all(
           planItem.plan.map(async (resource) => {
             //console.log("create resource", resource.name, resource.config);
-            await engine.client.create(resource.name, resource.config);
+            await engine.create({
+              name: resource.name,
+              config: await engine.config(),
+            });
           })
         );
       })
     );
   };
   const destroyResources = async (planDestroy) => {
-    //console.log("destroyResources", JSON.stringify(planDestroy, null, 4));
+    //TODO
+    logger.debug(`destroyResources ${JSON.stringify(planDestroy, null, 4)}`);
     await Promise.all(
       planDestroy.map(async (planItem) => {
-        //console.log("destroyResources planItem", planItem);
         await Promise.all(
           planItem.data.map(async (resource) => {
-            //console.log("destroyResources resource", resource);
-            //find engineconst
             const engine = getResourceEngine({
               providerName: planItem.provider,
               resourceType: planItem.resource.type,

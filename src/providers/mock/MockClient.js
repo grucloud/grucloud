@@ -7,13 +7,12 @@ module.exports = MockClient = ({ options = {}, name }) => {
   //console.log("MockClient init ", name, [...resourceMap.values()]);
   const list = async () => {
     const result = { data: { items: [...resourceMap.values()] } };
-    logger.debug(`list ${JSON.stringify(result, null, 4)}`);
+    logger.debug(`list name: ${name}, ${JSON.stringify(result, null, 4)}`);
     return result;
   };
 
   const create = async (name, options) => {
     logger.debug(`create  ${name} ${JSON.stringify(options, null, 4)}`);
-
     const resource = { name, ...options };
     resourceMap.set(name, resource);
     return resource;

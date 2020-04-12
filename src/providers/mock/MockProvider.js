@@ -1,6 +1,7 @@
 const assert = require("assert");
 const MockClient = require("./MockClient");
 const CoreProvider = require("../CoreProvider");
+const logger = require("logger")({ prefix: "MockProvider" });
 
 const apis = (config) => [
   {
@@ -17,7 +18,15 @@ const apis = (config) => [
       return items;
     },
   },
-  { name: "Volume" },
+  {
+    name: "Volume",
+    planUpdate: async ({ resource, instance }) => {
+      logger.info(`planFindNewOrUpdate resource: ${resource}`);
+      logger.info(`planFindNewOrUpdate instance: ${instance}`);
+      throw Error("TODO");
+      //return [{ action: "UPDATE", resource }];
+    },
+  },
   {
     name: "Ip",
     preConfig: async ({ client }) => {

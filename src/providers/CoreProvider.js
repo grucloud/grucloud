@@ -17,14 +17,15 @@ const specDefault = {
 };
 
 const ResourceMaker = ({
-  type,
   name,
+  type,
   dependencies,
   client,
   userConfig,
   api,
   provider,
 }) => {
+  logger.debug(`ResourceMaker: name: ${name}, type: ${type}`);
   return {
     type,
     provider,
@@ -37,6 +38,20 @@ const ResourceMaker = ({
       const items = await preConfig({ client });
       const config = await userConfig({ dependencies, items });
       return postConfig({ config, items, dependencies });
+    },
+    planFindNewOrUpdate: async ({ resource }) => {
+      const instance = await client.get(name);
+      logger.info(`planFindNewOrUpdate ${instance}`);
+      if (instance) {
+        return api.planUpdate({ resource });
+      } else {
+        return [{ action: "CREATE" }];
+      }
+    },
+    get: async () => await client.get(name),
+    create: async ({ name, config }) => {
+      logger.info(`create ${name} ${JSON.stringify(config, null, 4)}`);
+      return await client.create(config);
     },
   };
 };
@@ -180,6 +195,7 @@ module.exports = CoreProvider = ({
         })
       )
     ).filter((x) => x);
+    logger.debug(`planFindDestroy: plans": ${JSON.stringify(plans, null, 4)}`);
     return plans;
   };
 
