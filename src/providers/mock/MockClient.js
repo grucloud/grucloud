@@ -3,9 +3,9 @@ const _ = require("lodash");
 module.exports = MockClient = ({ options = {}, name }) => {
   const { initState } = options;
   const resourceMap = new Map(initState);
-  console.log("MockClient init ", name, [...resourceMap.values()]);
+  //console.log("MockClient init ", name, [...resourceMap.values()]);
   const list = async () => {
-    console.log("MockClient list", name, [...resourceMap.values()]);
+    //console.log("MockClient list", name, [...resourceMap.values()]);
     return { data: { items: [...resourceMap.values()] } };
   };
 
