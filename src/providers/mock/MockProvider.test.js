@@ -38,7 +38,6 @@ const server = provider.makeServer(
   })
 );
 
-const resources = [image, volume, server];
 const createName = (name) => `${name}-${new Date().getTime()}`;
 
 const testCrud = async (resource, createOptions) => {
@@ -83,6 +82,10 @@ const testCrud = async (resource, createOptions) => {
   }
 };
 describe("MockProvider", function () {
+  it("ip config", async function () {
+    const config = await ip.config();
+    assert(config);
+  });
   it("image config", async function () {
     const config = await image.config();
     assert(config);
@@ -100,10 +103,9 @@ describe("MockProvider", function () {
     assert(config.image);
     assert(config.volumes);
   });
-  it("all config", async function () {
-    const configs = await Promise.all(
-      resources.map(async (resource) => await resource.config())
-    );
+
+  it("list config", async function () {
+    const configs = await provider.listConfig();
     assert(configs);
   });
   it("testCrud", async function () {

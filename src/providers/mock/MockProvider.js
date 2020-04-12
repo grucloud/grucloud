@@ -2,11 +2,10 @@ const assert = require("assert");
 const MockClient = require("./MockClient");
 const CoreProvider = require("../CoreProvider");
 
-const identity = (x) => x;
-
 const apis = (config) => [
   {
     name: "Image",
+    methods: { list: true },
     initState: [["1", { name: "Ubuntu", arch: "x86_64" }]],
     preConfig: async ({ client }) => {
       const result = await client.list();
@@ -14,7 +13,7 @@ const apis = (config) => [
       if (!items) {
         throw Error(`client.list() not formed correctly: ${result}`);
       }
-      console.log("Image PRECONFIG ", items);
+      //console.log("Image PRECONFIG ", items);
       return items;
     },
   },
@@ -27,7 +26,7 @@ const apis = (config) => [
       if (!items) {
         throw Error(`client.list() not formed correctly: ${result}`);
       }
-      console.log("PRECONFIG ", items);
+      //console.log("PRECONFIG ", items);
       return items;
     },
     postConfig: ({ items, config }) => {

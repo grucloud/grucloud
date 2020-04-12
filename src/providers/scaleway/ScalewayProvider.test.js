@@ -10,6 +10,13 @@ const config = {
 describe("ScalewayProvider", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);
 
+  const ip = provider.makeIp({ name: "myip" }, ({}) => {
+    const targetAddress = "51.15.246.48";
+    return {
+      address: targetAddress,
+    };
+  });
+
   const image = provider.makeImage({ name: "ubuntu" }, ({ items: images }) => {
     assert(images);
     const image = images.find(
@@ -41,8 +48,14 @@ describe("ScalewayProvider", function () {
 
   const infra = {
     providers: [provider],
-    resources: [image, volume, server],
+    resources: [image, volume, server, ip],
   };
+
+  it("ip config", async function () {
+    const config = await ip.config();
+    assert(config);
+  });
+
   it("image config", async function () {
     const result = await image.config();
     console.log(JSON.stringify(result, null, 4));
@@ -51,7 +64,7 @@ describe("ScalewayProvider", function () {
   it("volume config", async function () {
     const result = await volume.config();
     console.log(JSON.stringify(result, null, 4));
-    assert(result.id);
+    assert(result.size);
   });
   it("server config", async function () {
     const result = await server.config();
@@ -61,6 +74,12 @@ describe("ScalewayProvider", function () {
     assert(result.image);
     assert(result.volumes);
   });
+  it("list all config", async function () {
+    const configs = await provider.listConfig();
+    console.log(JSON.stringify(configs, null, 4));
+    assert(configs);
+  });
+
   it("list lives", async function () {
     const result = await provider.listLives();
     //console.log(JSON.stringify(result, null, 4));

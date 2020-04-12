@@ -1,6 +1,18 @@
+const _ = require("lodash");
 const checkEnvironment = require("../Utils").checkEnvironment;
 const returnUndefined = (x) => undefined;
 const returnConfig = ({ config }) => config;
+
+const specDefault = {
+  preConfig: returnUndefined,
+  postConfig: returnConfig,
+  methods: {
+    get: true,
+    list: true,
+    create: true,
+    del: true,
+  },
+};
 
 const ResourceMaker = ({
   type,
@@ -15,16 +27,18 @@ const ResourceMaker = ({
     type,
     provider,
     name,
+    api,
     client,
     config: async () => {
-      const preConfig = api.preConfig || returnUndefined;
-      const postConfig = api.postConfig || returnConfig;
+      const preConfig = api.preConfig;
+      const postConfig = api.postConfig;
       const items = await preConfig({ client });
       const config = await userConfig({ dependencies, items });
       return postConfig({ config, items, dependencies });
     },
   };
 };
+
 const createResourceMakers = ({ apis, config, provider, Client }) =>
   apis(config).reduce((acc, api) => {
     acc[`make${api.name}`] = (options, userConfig) => {
@@ -32,7 +46,7 @@ const createResourceMakers = ({ apis, config, provider, Client }) =>
         type: api.name,
         ...options,
         userConfig,
-        api,
+        api: _.defaults(api, specDefault),
         provider,
         client: Client(api, config),
       });
@@ -56,11 +70,15 @@ module.exports = CoreProvider = ({
   const targetResourcesAdd = (resource) =>
     targetResources.set(resource.name, resource);
   const getTargetResources = () => [...targetResources.values()];
+  const getDeletableTargets = () =>
+    [...targetResources.values()].filter(
+      (resource) => resource.api.methods.del
+    );
 
   const clients = apis(config).map((api) => Client(api, config));
-
+  //TODO
   const clientsCanDelete = apis(config)
-    .filter((api) => !api.disableDestroy)
+    .filter((api) => !api.methods || api.methods.del)
     .map((api) => Client(api, config));
 
   // API
@@ -94,6 +112,17 @@ module.exports = CoreProvider = ({
     return lists;
   };
 
+  const listConfig = async (resources) => {
+    const lists = await Promise.all(
+      getTargetResources().map(async (resource) => ({
+        resource,
+        config: await resource.config(),
+      }))
+    );
+    //console.log("listConfig", lists);
+    return lists;
+  };
+
   const destroy = async (resources, options = {}) => {
     //console.log("destroy");
     if (options.all) {
@@ -117,8 +146,9 @@ module.exports = CoreProvider = ({
     const resourceNames = resources.map((resource) => resource.name);
     const plans = (
       await Promise.all(
-        clients.map(async (client) => {
-          const { data } = await client.list();
+        getDeletableTargets().map(async (resource) => {
+          console.log(resource);
+          const { data } = await resource.client.list();
           const hotResources = data.items;
           const hotResourcesToDestroy = hotResources.filter(
             (hotResource) => !resourceNames.includes(hotResource.name)
@@ -127,8 +157,7 @@ module.exports = CoreProvider = ({
           if (hotResourcesToDestroy.length > 0) {
             return {
               provider: name,
-
-              resource: client.type,
+              resource: resource,
               data: hotResourcesToDestroy,
             };
           }
@@ -153,6 +182,7 @@ module.exports = CoreProvider = ({
     planFindDestroy,
     listLives,
     listTargets,
+    listConfig,
     targetResourcesAdd,
   };
 

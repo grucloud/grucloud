@@ -12,11 +12,11 @@ const apis = () => [
       if (!items) {
         throw Error(`client.list() not formed correctly: ${result}`);
       }
-      console.log("PRECONFIG ", items);
+      //console.log("PRECONFIG ", items);
       return items;
     },
     postConfig: ({ config, items }) => {
-      assert(items);
+      //assert(items);
       const ip = items.find((item) => item.address === config.address);
       if (ip) {
         return ip;
@@ -26,25 +26,25 @@ const apis = () => [
   },
   {
     name: "Bootscript",
+    methods: { list: true },
     onResponse: ({ bootscripts }) => ({
       total: bootscripts.length,
       items: bootscripts,
     }),
     url: `/bootscripts`,
-    disableDestroy: true,
   },
   {
     name: "Image",
+    methods: { list: true },
     onResponse: ({ images }) => ({ total: images.length, items: images }),
     url: `/images`,
-    disableDestroy: true,
     preConfig: async ({ client }) => {
       const result = await client.list();
       const { items } = result.data;
       if (!items) {
         throw Error(`client.list() not formed correctly: ${result}`);
       }
-      console.log("Image PRECONFIG ", items);
+      // console.log("Image PRECONFIG ", items);
       return items;
     },
   },
@@ -55,7 +55,7 @@ const apis = () => [
       items: volumes,
     }),
     url: `/volumes`,
-    postConfig: ({ config }) => ({ ...config, id: "generateid" }),
+    postConfig: ({ config }) => ({ ...config }),
   },
   {
     name: "Server",

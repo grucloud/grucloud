@@ -30,19 +30,22 @@ const GruCloud = (infra) => {
    * @param {array} resources - The target resources
    */
   const planFindNewOrUpdate = async (resources = []) => {
+    console.log("resources", resources);
     const plans = (
       await Promise.all(
-        resources.map(async (resource) => {
-          const plan = []; // = await engine.plan(resource);
-          if (plan) {
-            return {
-              //TODO
-              //provider: provider.name(),
-              resource: resource.type,
-              plan,
-            };
-          }
-        })
+        resources
+          .filter((resource) => resource.api.methods.create)
+          .map(async (resource) => {
+            const plan = []; // = await engine.plan(resource);
+            if (plan) {
+              return {
+                //TODO
+                //provider: provider.name(),
+                resource: resource.type,
+                plan,
+              };
+            }
+          })
       )
     ).filter((x) => x);
     return plans;

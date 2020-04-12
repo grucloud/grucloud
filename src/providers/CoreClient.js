@@ -4,7 +4,7 @@ const noop = () => ({});
 const identity = (x) => x;
 
 module.exports = CoreClient = ({
-  options,
+  options = {},
   type,
   baseURL,
   onHeaders = noop,
@@ -39,14 +39,20 @@ module.exports = CoreClient = ({
       onResponse,
     ],
   });
+  //console.log("client option ", options);
+  const { methods } = options;
+  const get = !methods || methods.get;
+  const create = !methods || methods.create;
+  const del = !methods || methods.del;
+  const list = !methods || methods.list;
 
+  //console.log("METHOD", get, create, list, del);
   return {
     options,
     type,
-    get: (name) => axios.request(`/${name}`, { method: "GET" }),
-    // use options.disableDestroy
-    destroy: (name) => axios.request(`/${name}`, { method: "DELETE" }),
-    list: () => axios.request("/", { method: "GET" }),
-    create: (data) => axios.request("/", { method: "POST", data }),
+    get: (name) => get && axios.request(`/${name}`, { method: "GET" }),
+    destroy: (name) => del && axios.request(`/${name}`, { method: "DELETE" }),
+    list: () => list && axios.request("/", { method: "GET" }),
+    create: (data) => create && axios.request("/", { method: "POST", data }),
   };
 };

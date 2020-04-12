@@ -5,22 +5,21 @@ const MockProvider = require("./providers/mock");
 // Create Providers
 const provider = MockProvider({ name: "mockProvider" }, {});
 
-const imageResource = provider.makeImage({ name: "ubuntu" }, () => ({
+const image = provider.makeImage({ name: "ubuntu" }, () => ({
   imageName: "ubuntu-os-cloud-18.04",
 }));
 
-const volumeResource = provider.makeVolume(
-  { name: "disk", dependencies: { imageResource } },
-  ({ image }) => ({
-    image: image.name(),
-    size: "20GB",
+const volume = provider.makeVolume(
+  { name: "disk", dependencies: { image } },
+  async ({}) => ({
+    size: 20000000000,
   })
 );
 
 // The infrastructure
 const infra = {
   providers: [provider],
-  resources: [imageResource, volumeResource],
+  resources: [image, volume],
 };
 
 describe("GruCloud", function () {
@@ -35,19 +34,25 @@ describe("GruCloud", function () {
     it("plan", async function () {
       const gc = GruCloud(infra);
       {
+        const configs = await provider.listConfig();
+        assert(configs);
+        console.log(configs);
+      }
+      {
         const listTargets = await provider.listTargets();
-        assert.equal(listTargets.length, 0);
+        assert.equal(listTargets[0].data.items.length, 1);
       }
       {
         const liveResources = await gc.listLives();
-        assert.equal(liveResources.length, 1);
+        assert.equal(liveResources.length, 2);
       }
 
       const plan = await gc.plan();
+      console.log(plan);
       {
         //TODO
         assert.equal(plan.destroy.length, 0);
-        assert.equal(plan.newOrUpdate.length, 2);
+        assert.equal(plan.newOrUpdate.length, 1);
       }
       await gc.deployPlan(plan);
       {
