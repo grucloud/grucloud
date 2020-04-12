@@ -1,25 +1,36 @@
 const assert = require("assert");
-const GruCloud = require("../../GruCloudApp");
 const MockProvider = require("./MockProvider");
 
-const config = {
-  compute: { machines: [] },
-};
+const provider = MockProvider({ name: "mockProvider" }, {});
 
-const provider = MockProvider({ name: "mockProvider" }, config);
+const image = provider.makeImage({ name: "ubuntu" }, (dependencies, images) => {
+  console.log("images", images);
+  assert(images);
+  const image = images.find(
+    (image) => image.name.includes("Ubuntu") && image.arch === "x86_64"
+  );
+  return image;
+});
 
-const imageResource = provider.makeImage({ name: "ubuntu" }, () => ({
-  imageName: "ubuntu-os-cloud-18.04",
+const volume = provider.makeVolume({ name: "volume1" }, () => ({
+  size: 20000000000,
 }));
 
-const volumeResource = provider.makeVolume(
-  { name: "disk", dependencies: { image: imageResource } },
-  ({ image }) => ({
-    image: image.config().imageName,
-    size: "20GB",
+const server = provider.makeServer(
+  {
+    name: "web-server",
+    dependencies: { volume, image },
+  },
+  async ({ volume, image }) => ({
+    name: "web-server",
+    commercial_type: "DEV1-S",
+    image: await image.config(),
+    volumes: {
+      "0": await volume.config(),
+    },
   })
 );
-
+const resources = [image, volume, server];
 const createName = (name) => `${name}-${new Date().getTime()}`;
 
 const testCrud = async (resource, createOptions) => {
@@ -64,11 +75,30 @@ const testCrud = async (resource, createOptions) => {
   }
 };
 describe("MockProvider", function () {
-  it("testCrud", async function () {
-    await testCrud(imageResource);
-  });
-  it("config", async function () {
-    const config = await volumeResource.config();
+  it("image config", async function () {
+    const config = await image.config();
     assert(config);
+  });
+  it("volume config", async function () {
+    const config = await volume.config();
+    assert(config);
+  });
+  it("server config", async function () {
+    const config = await server.config();
+    assert(config);
+    console.log(config);
+    assert(config.name);
+    assert.equal(config.boot_type, "local");
+    assert(config.image);
+    assert(config.volumes);
+  });
+  it("all config", async function () {
+    const configs = await Promise.all(
+      resources.map(async (resource) => await resource.config())
+    );
+    assert(configs);
+  });
+  it("testCrud", async function () {
+    await testCrud(image);
   });
 });

@@ -15,7 +15,8 @@ const ResourceMaker = ({
     name,
     client,
     config: async () => {
-      const { items } = (await client.list()).data;
+      const result = await client.list();
+      const { items } = result.data;
       const config = await userConfig(dependencies, items);
       return apiConfig(config);
     },

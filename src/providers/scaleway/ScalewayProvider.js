@@ -46,8 +46,9 @@ module.exports = ScalewayProvider = ({ name }, config) =>
     ],
     name,
     config,
-    Client: ScalewayClient,
     apis,
+    Client: ScalewayClient,
+
     hooks: {
       init: () => {
         if (!config.zone) {

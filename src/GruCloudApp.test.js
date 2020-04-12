@@ -2,17 +2,8 @@ const assert = require("assert");
 const GruCloud = require("./GruCloudApp");
 const MockProvider = require("./providers/mock");
 
-const config = {
-  /*initialState: [
-    ["web-server", { name: "web-server", machineType: "f1-micro" }],
-  ],*/
-  createOption: {
-    machineType: "f1-micro",
-  },
-};
-
 // Create Providers
-const provider = MockProvider({ name: "mockProvider" }, config);
+const provider = MockProvider({ name: "mockProvider" }, {});
 
 const imageResource = provider.makeImage({ name: "ubuntu" }, () => ({
   imageName: "ubuntu-os-cloud-18.04",
@@ -49,11 +40,12 @@ describe("GruCloud", function () {
       }
       {
         const liveResources = await gc.listLives();
-        assert.equal(liveResources.length, 0);
+        assert.equal(liveResources.length, 1);
       }
 
       const plan = await gc.plan();
       {
+        //TODO
         assert.equal(plan.destroy.length, 0);
         assert.equal(plan.newOrUpdate.length, 2);
       }

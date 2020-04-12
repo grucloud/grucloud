@@ -6,16 +6,6 @@ const GruCloud = require("../../GruCloudApp");
 const config = {
   zone: "fr-par-1",
 };
-//TODO
-const serverConfig = ({ volume }) => ({
-  os: "ubuntu",
-  machineType: "f1-micro",
-  volumes: [
-    {
-      name: volume.name(),
-    },
-  ],
-});
 
 describe("ScalewayProvider", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);

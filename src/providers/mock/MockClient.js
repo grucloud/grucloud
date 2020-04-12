@@ -1,9 +1,12 @@
 const _ = require("lodash");
 
-const resourceMap = new Map();
-
-module.exports = MockClient = () => {
-  const list = async () => ({ data: { items: [...resourceMap.values()] } });
+module.exports = MockClient = ({ name, initState }) => {
+  const resourceMap = new Map(initState);
+  //console.log("init ", name, [...resourceMap.values()]);
+  const list = async () => {
+    //console.log("list", name, [...resourceMap.values()]);
+    return { data: { items: [...resourceMap.values()] } };
+  };
 
   const create = async (name, options) => {
     const resource = { name, ...options };
@@ -31,5 +34,6 @@ module.exports = MockClient = () => {
     create,
     destroy,
     destroyAll,
+    reset: () => resourceMap.clear(),
   };
 };
