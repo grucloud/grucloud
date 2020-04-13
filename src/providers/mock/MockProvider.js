@@ -14,7 +14,7 @@ const apis = (config) => [
       if (!items) {
         throw Error(`client.list() not formed correctly: ${result}`);
       }
-      //console.log("Image PRECONFIG ", items);
+      logger.debug("preConfig image ", items);
       return items;
     },
   },

@@ -29,6 +29,7 @@
     "lodash": "^4.17.15",
     "shortid": "^2.2.15",
     "url-join": "^4.0.1",
+    "uuid": "^7.0.3",
     "winston": "^3.2.1"
   },
   "repository": {

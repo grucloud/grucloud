@@ -43,7 +43,7 @@ describe("GruCloud", function () {
       assert.equal(plan.destroy.length, 0);
       assert.equal(plan.newOrUpdate.length, 2);
     });
-    it.only("deploy plan", async function () {
+    it("deploy plan", async function () {
       const gc = GruCloud(infra);
       const plan = await gc.plan();
       await gc.deployPlan(plan);

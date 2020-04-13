@@ -32,6 +32,11 @@ const ResourceMaker = ({
     name,
     api,
     client,
+    serialized: () => ({
+      name,
+      type,
+      provider: provider.name(),
+    }),
     config: async () => {
       const preConfig = api.preConfig;
       const postConfig = api.postConfig;
@@ -42,20 +47,21 @@ const ResourceMaker = ({
     planFindNewOrUpdate: async ({ resource }) => {
       const instance = await client.get(name);
       logger.info(`planFindNewOrUpdate ${instance}`);
-      if (instance) {
-        return api.planUpdate({ resource });
-      } else {
-        return [{ action: "CREATE" }];
-      }
+      const plan = instance
+        ? api.planUpdate({ resource })
+        : [{ action: "CREATE", resource: resource.serialized() }];
+      logger.debug(`planFindNewOrUpdate ${JSON.stringify(plan, null, 4)}`);
+      return plan;
     },
     get: async () => await client.get(name),
     create: async ({ name, config }) => {
       logger.info(`create ${name} ${JSON.stringify(config, null, 4)}`);
       return await client.create(config);
     },
+    destroy: async (name) => await client.destroy(name),
   };
 };
-
+// TODO change api name in type
 const createResourceMakers = ({ specs, config, provider, Client }) =>
   specs.reduce((acc, api) => {
     acc[`make${api.name}`] = (options, userConfig) => {
@@ -100,7 +106,13 @@ module.exports = CoreProvider = ({
   const clientsCanDelete = specs
     .filter((api) => api.methods.del)
     .map((api) => Client({ options: api, config }));
-
+  const clientByType = (type) => {
+    const spec = specs.find((spec) => spec.name === type);
+    if (!spec) {
+      throw new Error(`type ${type} not found`);
+    }
+    return Client({ options: spec, config });
+  };
   // API
   const listLives = async () => {
     const lists = (
@@ -132,7 +144,7 @@ module.exports = CoreProvider = ({
     return lists;
   };
 
-  const listConfig = async (resources) => {
+  const listConfig = async () => {
     const lists = await Promise.all(
       getTargetResources().map(async (resource) => ({
         resource,
@@ -215,6 +227,7 @@ module.exports = CoreProvider = ({
     listTargets,
     listConfig,
     targetResourcesAdd,
+    clientByType,
   };
 
   return {

@@ -20,7 +20,7 @@ const GruCloud = (infra) => {
       throw Error(`Cannot find provider ${providerName}`);
     }
     //TODO engineByType
-    return provider.engineByType(resourceType);
+    return provider.clientByType(resourceType);
   };
 
   const planFindDestroy = async (resources) =>
@@ -40,17 +40,10 @@ const GruCloud = (infra) => {
         resources
           .filter((resource) => resource.api.methods.create)
           .map(async (resource) => {
-            //TODO
             const plan = await resource.planFindNewOrUpdate({ resource });
             if (plan) {
               return {
-                //TODO
-                //provider: provider.name(),
-                resource: {
-                  name: resource.name,
-                  type: resource.type,
-                  provider: resource.provider.name(),
-                },
+                resource: resource.serialized(),
                 plan,
               };
             }
@@ -106,11 +99,11 @@ const GruCloud = (infra) => {
       planDestroy.map(async (planItem) => {
         await Promise.all(
           planItem.data.map(async (resource) => {
-            const engine = getResourceEngine({
+            const client = getResourceEngine({
               providerName: planItem.provider,
               resourceType: planItem.resource.type,
             });
-            await engine.destroy(resource.name);
+            await client.destroy(resource.name);
           })
         );
       })
