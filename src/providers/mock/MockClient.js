@@ -2,8 +2,8 @@ const _ = require("lodash");
 const { v4: uuidv4 } = require("uuid");
 const logger = require("logger")({ prefix: "MockClient" });
 
-module.exports = MockClient = ({ options = {}, name }) => {
-  const { initState } = options;
+module.exports = MockClient = ({ options = {}, config }) => {
+  const { initState, name } = options;
   const resourceMap = new Map(initState);
   //console.log("MockClient init ", name, [...resourceMap.values()]);
   const list = async () => {
@@ -40,9 +40,7 @@ module.exports = MockClient = ({ options = {}, name }) => {
   };
 
   return {
-    options: {
-      methods: {},
-    },
+    options,
     get,
     list,
     create,

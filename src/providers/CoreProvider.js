@@ -2,12 +2,20 @@ const _ = require("lodash");
 const logger = require("logger")({ prefix: "CoreProvider" });
 
 const checkEnvironment = require("../Utils").checkEnvironment;
-const returnUndefined = (x) => undefined;
-const returnConfig = ({ config }) => config;
 
 const specDefault = {
-  preConfig: returnUndefined,
-  postConfig: returnConfig,
+  preConfig: (x) => undefined,
+  postConfig: ({ config }) => config,
+  preCreate: (name, options) => ({ name, ...options }),
+  getByName: ({ name, items = [] }) => {
+    logger.debug(
+      `getByName: ${name}, items: ${JSON.stringify(items, null, 4)}`
+    );
+
+    const item = items.find((item) => item.name === name);
+    return item;
+  },
+  toId: (item) => item.id,
   methods: {
     get: true,
     list: true,
@@ -26,6 +34,19 @@ const ResourceMaker = ({
   provider,
 }) => {
   logger.debug(`ResourceMaker: name: ${name}, type: ${type}`);
+
+  const getByName = async ({ name }) => {
+    logger.info(`getByName ${name}`);
+    const {
+      data: { items },
+    } = await client.list();
+    const instance = api.getByName({ name, items });
+    logger.info(
+      `getByName ${name}, result: ${JSON.stringify(instance, null, 4)}`
+    );
+    return instance;
+  };
+
   return {
     type,
     provider,
@@ -42,10 +63,12 @@ const ResourceMaker = ({
       const postConfig = api.postConfig;
       const items = await preConfig({ client });
       const config = await userConfig({ dependencies, items });
-      return postConfig({ config, items, dependencies });
+      const finalConfig = postConfig({ config, items, dependencies });
+      logger.info(`config ${api.name}: ${finalConfig}`);
+      return finalConfig;
     },
     planFindNewOrUpdate: async ({ resource }) => {
-      const instance = await client.get(name);
+      const instance = await resource.getByName({ name });
       logger.info(`planFindNewOrUpdate ${instance}`);
       const plan = instance
         ? api.planUpdate({ resource })
@@ -53,12 +76,29 @@ const ResourceMaker = ({
       logger.debug(`planFindNewOrUpdate ${JSON.stringify(plan, null, 4)}`);
       return plan;
     },
-    get: async () => await client.get(name),
-    create: async ({ name, config }) => {
-      logger.info(`create ${name} ${JSON.stringify(config, null, 4)}`);
-      return await client.create(config);
+    //get: async () => await client.get(name),
+    create: async ({ name, options }) => {
+      logger.info(
+        `create ${name}, type: ${type}, ${JSON.stringify(options, null, 4)}`
+      );
+      const createOptions = api.preCreate(name, options);
+      logger.info(
+        `create final ${name} ${JSON.stringify(createOptions, null, 4)}`
+      );
+      return await client.create(createOptions);
     },
-    destroy: async (name) => await client.destroy(name),
+    getByName,
+    destroy: async (name) => {
+      logger.info(`destroy type: ${type}, name: ${name}`);
+      const item = await getByName({ name });
+      logger.info(`destroy ${item}`);
+      //TODO function to tranform item to id
+      if (item) {
+        await client.destroy(api.toId(item));
+      } else {
+        throw new Error(`Cannot find ${name} to destroy`);
+      }
+    },
   };
 };
 // TODO change api name in type
@@ -118,7 +158,7 @@ module.exports = CoreProvider = ({
     const lists = (
       await Promise.all(
         clients.map(async (client) => ({
-          client,
+          type: client.options.name,
           data: (await client.list()).data,
         }))
       )
@@ -147,7 +187,7 @@ module.exports = CoreProvider = ({
   const listConfig = async () => {
     const lists = await Promise.all(
       getTargetResources().map(async (resource) => ({
-        resource,
+        resource: resource.serialized(),
         config: await resource.config(),
       }))
     );
@@ -182,9 +222,7 @@ module.exports = CoreProvider = ({
   };
 
   const planFindDestroy = async (resources = []) => {
-    logger.debug(
-      `planFindDestroy resources: ${JSON.stringify(resources, null, 4)}`
-    );
+    logger.debug(`planFindDestroy #resources: ${resources.length}`);
 
     const resourceNames = resources.map((resource) => resource.name);
     const plans = (
@@ -198,8 +236,7 @@ module.exports = CoreProvider = ({
 
           if (hotResourcesToDestroy.length > 0) {
             return {
-              provider: name,
-              resource: resource,
+              resource: resource.serialized(),
               data: hotResourcesToDestroy,
             };
           }
@@ -207,7 +244,7 @@ module.exports = CoreProvider = ({
         })
       )
     ).filter((x) => x);
-    logger.debug(`planFindDestroy: plans": ${JSON.stringify(plans, null, 4)}`);
+    logger.debug(`planFindDestroy: plans ${JSON.stringify(plans, null, 4)}`);
     return plans;
   };
 

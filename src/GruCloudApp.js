@@ -11,6 +11,7 @@ const GruCloud = (infra) => {
   const providerByName = (name) =>
     infra.providers.find((provider) => provider.name() === name);
 
+  //TODO
   const resourceByType = (type) =>
     infra.resources.find((resource) => resource.type === type);
 
@@ -32,9 +33,7 @@ const GruCloud = (infra) => {
    * @param {array} resources - The target resources
    */
   const planFindNewOrUpdate = async (resources = []) => {
-    logger.debug(
-      `planFindNewOrUpdate: resources": ${JSON.stringify(resources, null, 4)}`
-    );
+    logger.debug(`planFindNewOrUpdate: #resources ${resources.length}`);
     const plans = (
       await Promise.all(
         resources
@@ -78,14 +77,12 @@ const GruCloud = (infra) => {
     logger.debug(`upsertResources ${JSON.stringify(newOrUpdate, null, 4)}`);
     await Promise.all(
       newOrUpdate.map(async (planItem) => {
-        //console.log("upsertResources planItem", planItem);
         const engine = resourceByType(planItem.resource.type);
         await Promise.all(
-          planItem.plan.map(async (resource) => {
-            //console.log("create resource", resource.name, resource.config);
+          planItem.plan.map(async ({ resource }) => {
             await engine.create({
               name: resource.name,
-              config: await engine.config(),
+              options: await engine.config(),
             });
           })
         );

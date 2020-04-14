@@ -8,6 +8,8 @@ const apis = (config) => [
     name: "Image",
     methods: { list: true },
     initState: [["1", { name: "Ubuntu", arch: "x86_64" }]],
+    toId: (obj) => obj.uuid,
+
     preConfig: async ({ client }) => {
       const result = await client.list();
       const { items } = result.data;
@@ -20,6 +22,10 @@ const apis = (config) => [
   },
   {
     name: "Volume",
+    preCreate: (name, options) => ({
+      name,
+      ...options,
+    }),
     planUpdate: async ({ resource, instance }) => {
       logger.info(`planFindNewOrUpdate resource: ${resource}`);
       logger.info(`planFindNewOrUpdate instance: ${instance}`);
@@ -29,6 +35,18 @@ const apis = (config) => [
   },
   {
     name: "Ip",
+    getByName: ({ name, items = [] }) => {
+      logger.info(
+        `getByName: ${name}, items: ${JSON.stringify(items, null, 4)}`
+      );
+      const item = items.find((item) => item.tags.includes(name));
+      return item;
+    },
+    preCreate: (name, options) => ({
+      organization: config.organization,
+      tags: [name],
+      ...options,
+    }),
     preConfig: async ({ client }) => {
       const result = await client.list();
       const { items } = result.data;
@@ -52,7 +70,7 @@ const apis = (config) => [
         {
           id: "36e1766f-9d5b-426f-bb82-c8db324c3fd9",
           address: "51.15.246.48",
-          tags: [],
+          tags: ["myip"],
         },
       ],
     ],

@@ -1,14 +1,12 @@
 const assert = require("assert");
 const MockProvider = require("./MockProvider");
 
-const provider = MockProvider({ name: "mockProvider" }, {});
+const provider = MockProvider(
+  { name: "mockProvider" },
+  { organization: "myorg" }
+);
 
-const ip = provider.makeIp({ name: "myip" }, ({}) => {
-  const targetAddress = "51.15.246.48";
-  return {
-    address: targetAddress,
-  };
-});
+const ip = provider.makeIp({ name: "myip" }, ({}) => ({}));
 
 const image = provider.makeImage({ name: "ubuntu" }, ({ items: images }) => {
   assert(images);
@@ -41,7 +39,7 @@ const server = provider.makeServer(
 
 const createName = (name) => `${name}-${new Date().getTime()}`;
 
-const testCrud = async (resource, createOptions) => {
+const testCrud = async ({ resource, createOptions }) => {
   const { client } = resource;
   {
     await client.destroyAll();
@@ -52,20 +50,20 @@ const testCrud = async (resource, createOptions) => {
   }
 
   {
-    await client.create(createName("1"), createOptions);
+    await resource.create({ name: createName("1"), options: createOptions });
     const {
       data: { items },
     } = await client.list();
     assert.equal(items.length, 1);
   }
   {
-    await client.create(createName("2"), createOptions);
+    await resource.create({ name: createName("1"), options: createOptions });
     const {
       data: { items },
     } = await client.list();
     assert.equal(items.length, 2);
     assert(items[0].name);
-    await client.destroy(items[0].name);
+    await resource.destroy(items[0].name);
   }
   {
     const {
@@ -110,6 +108,6 @@ describe("MockProvider", function () {
     assert(configs);
   });
   it("testCrud", async function () {
-    await testCrud(image);
+    await testCrud({ resource: image });
   });
 });

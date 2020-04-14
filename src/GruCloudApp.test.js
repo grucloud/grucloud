@@ -48,7 +48,7 @@ describe("GruCloud", function () {
       const plan = await gc.plan();
       await gc.deployPlan(plan);
     });
-    it.only("plan is empty after deploy plan", async function () {
+    it("plan is empty after deploy plan", async function () {
       const gc = GruCloud(infra);
       await gc.deployPlan(await gc.plan());
       const plan = await gc.plan();
@@ -76,7 +76,7 @@ describe("GruCloud", function () {
       {
         //TODO
         assert.equal(plan.destroy.length, 0);
-        assert.equal(plan.newOrUpdate.length, 1);
+        assert.equal(plan.newOrUpdate.length, 2);
       }
       await gc.deployPlan(plan);
       {
@@ -92,21 +92,6 @@ describe("GruCloud", function () {
         assert.equal(plan.destroy.length, 0);
         assert.equal(plan.newOrUpdate.length, 0);
       }
-    });
-
-    it("NoResource", async function () {
-      const infraNoResource = {
-        providers: infra.providers,
-        resources: [],
-      };
-
-      const gruCloud = GruCloud(infraNoResource);
-      const plan = await gruCloud.plan();
-      assert.equal(plan.destroy.length, 1);
-
-      const destroyItem = plan.destroy[0];
-      assert.equal(destroyItem.data[0].name, mockResource1.name);
-      assert.equal(plan.newOrUpdate.length, 0);
     });
   });
 });

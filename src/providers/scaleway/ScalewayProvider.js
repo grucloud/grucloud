@@ -1,11 +1,16 @@
 const CoreProvider = require("../CoreProvider");
 const ScalewayClient = require("./ScalewayClient");
+const logger = require("logger")({ prefix: "App" });
 
 const apis = () => [
   {
     name: "Ip",
     onResponse: ({ ips }) => ({ total: ips.length, items: ips }),
     url: `/ips`,
+    create: (name, options) => ({
+      ...options,
+      tags: [name],
+    }),
     preConfig: async ({ client }) => {
       const result = await client.list();
       const { items } = result.data;
@@ -50,10 +55,14 @@ const apis = () => [
   },
   {
     name: "Volume",
-    onResponse: ({ volumes }) => ({
-      total: volumes.length,
-      items: volumes,
-    }),
+    onResponse: (result) => {
+      logger.debug(`Volume onResponse: ${JSON.stringify(result)}`);
+      const { volumes = [] } = result;
+      return {
+        total: volumes.length,
+        items: volumes,
+      };
+    },
     url: `/volumes`,
     postConfig: ({ config }) => ({ ...config }),
   },

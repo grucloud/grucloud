@@ -10,12 +10,7 @@ const config = {
 describe("ScalewayProvider", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);
 
-  const ip = provider.makeIp({ name: "myip" }, ({}) => {
-    const targetAddress = "51.15.246.48";
-    return {
-      address: targetAddress,
-    };
-  });
+  const ip = provider.makeIp({ name: "myip" }, ({}) => ({}));
 
   const image = provider.makeImage({ name: "ubuntu" }, ({ items: images }) => {
     assert(images);
@@ -48,6 +43,7 @@ describe("ScalewayProvider", function () {
 
   const infra = {
     providers: [provider],
+    //TODO no longer need resources here
     resources: [image, volume, server, ip],
   };
 

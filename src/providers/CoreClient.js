@@ -26,6 +26,7 @@ module.exports = CoreClient = ({
     transformResponse: [
       (data) => {
         //console.log("axios rx ", baseURL, data);
+        logger.debug(`rx ${data}`);
         try {
           return JSON.parse(data);
         } catch (error) {
@@ -38,7 +39,7 @@ module.exports = CoreClient = ({
   });
   //console.log("client option ", options);
   const { methods } = options;
-  const get = !methods || methods.get;
+  const canGet = !methods || methods.get;
   const create = !methods || methods.create;
   const del = !methods || methods.del;
   const list = !methods || methods.list;
@@ -47,7 +48,10 @@ module.exports = CoreClient = ({
   return {
     options,
     type,
-    get: (name) => get && axios.request(`/${name}`, { method: "GET" }),
+    get: (name) => {
+      logger.debug(`${type} get ${name}`);
+      if (canGet) return axios.request(`/${name}`, { method: "GET" });
+    },
     destroy: (name) => del && axios.request(`/${name}`, { method: "DELETE" }),
     list: () => list && axios.request("/", { method: "GET" }),
     create: (data) => create && axios.request("/", { method: "POST", data }),
