@@ -148,6 +148,7 @@ module.exports = CoreProvider = ({
   const clientsCanDelete = specs
     .filter((api) => api.methods.del)
     .map((api) => Client({ options: api, config }));
+
   const clientByType = (type) => {
     const spec = specs.find((spec) => spec.name === type);
     if (!spec) {

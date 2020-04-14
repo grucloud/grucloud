@@ -7,7 +7,7 @@ const checkEnvironment = (env = []) =>
     }
   });
 
-const compare = (target, live) => {
+const compare = (target = {}, live = {}) => {
   console.log("compare", { target, live });
   var targetKeys = Object.getOwnPropertyNames(target);
   var liveKeys = Object.getOwnPropertyNames(live);
@@ -24,6 +24,7 @@ const compare = (target, live) => {
         if (targetValue !== liveValue) {
           return {
             key: targetKey,
+            type: "DIFF",
             targetValue: target[targetKey],
             liveValue: live[targetKey],
           };
@@ -31,6 +32,7 @@ const compare = (target, live) => {
       } else {
         return {
           key: targetKey,
+          type: "NEW",
           targetValue: target[targetKey],
           liveValue: undefined,
         };

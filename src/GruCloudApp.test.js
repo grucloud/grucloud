@@ -48,7 +48,7 @@ describe("GruCloud", function () {
       const plan = await gc.plan();
       await gc.deployPlan(plan);
     });
-    it("plan is empty after deploy plan", async function () {
+    it.only("plan is empty after deploy plan", async function () {
       const gc = GruCloud(infra);
       await gc.deployPlan(await gc.plan());
       const plan = await gc.plan();

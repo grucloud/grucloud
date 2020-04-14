@@ -30,18 +30,20 @@ const apis = (config) => [
       name,
       ...options,
     }),
-    planUpdate: async ({ resource, instance }) => {
+    planUpdate: async ({ resource, live }) => {
       logger.info(
-        `planUpdate resource: ${toJSON(
-          resource.serialized()
-        )}, instance: ${toJSON(instance)}`
+        `planUpdate resource: ${toJSON(resource.serialized())}, live: ${toJSON(
+          live
+        )}`
       );
-      const config = await resource.config();
+      const target = await resource.config();
       logger.info(`planUpdate config: ${toJSON(config)}`);
-      //TODO compare target and live config
-      compare(config, instance);
-      throw Error("TODO");
-      //return [{ action: "UPDATE", resource }];
+      const diff = compare(config, live);
+      if (diff.length === 0) {
+        return [
+          { action: "UPDATE", resource: resource.serialized(), target, live },
+        ];
+      }
     },
   },
   {
