@@ -3,6 +3,10 @@ const MockClient = require("./MockClient");
 const CoreProvider = require("../CoreProvider");
 const logger = require("logger")({ prefix: "MockProvider" });
 
+const compare = require("../../Utils").compare;
+
+const toJSON = (x) => JSON.stringify(x, null, 4);
+
 const apis = (config) => [
   {
     name: "Image",
@@ -27,8 +31,15 @@ const apis = (config) => [
       ...options,
     }),
     planUpdate: async ({ resource, instance }) => {
-      logger.info(`planFindNewOrUpdate resource: ${resource}`);
-      logger.info(`planFindNewOrUpdate instance: ${instance}`);
+      logger.info(
+        `planUpdate resource: ${toJSON(
+          resource.serialized()
+        )}, instance: ${toJSON(instance)}`
+      );
+      const config = await resource.config();
+      logger.info(`planUpdate config: ${toJSON(config)}`);
+      //TODO compare target and live config
+      compare(config, instance);
       throw Error("TODO");
       //return [{ action: "UPDATE", resource }];
     },
@@ -36,9 +47,7 @@ const apis = (config) => [
   {
     name: "Ip",
     getByName: ({ name, items = [] }) => {
-      logger.info(
-        `getByName: ${name}, items: ${JSON.stringify(items, null, 4)}`
-      );
+      logger.info(`getByName: ${name}, items: ${toJSON(items)}`);
       const item = items.find((item) => item.tags.includes(name));
       return item;
     },
@@ -51,7 +60,7 @@ const apis = (config) => [
       const result = await client.list();
       const { items } = result.data;
       if (!items) {
-        throw Error(`client.list() not formed correctly: ${result}`);
+        throw Error(`client.list() not formed correctly: ${toJSON(result)}`);
       }
       //console.log("PRECONFIG ", items);
       return items;

@@ -64,14 +64,16 @@ const ResourceMaker = ({
       const items = await preConfig({ client });
       const config = await userConfig({ dependencies, items });
       const finalConfig = postConfig({ config, items, dependencies });
-      logger.info(`config ${api.name}: ${finalConfig}`);
+      logger.info(
+        `config ${api.name}: ${JSON.stringify(finalConfig, null, 4)}`
+      );
       return finalConfig;
     },
     planFindNewOrUpdate: async ({ resource }) => {
       const instance = await resource.getByName({ name });
       logger.info(`planFindNewOrUpdate ${instance}`);
       const plan = instance
-        ? api.planUpdate({ resource })
+        ? api.planUpdate({ instance, resource })
         : [{ action: "CREATE", resource: resource.serialized() }];
       logger.debug(`planFindNewOrUpdate ${JSON.stringify(plan, null, 4)}`);
       return plan;

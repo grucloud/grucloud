@@ -69,7 +69,7 @@ const GruCloud = (infra) => {
   };
 
   const deployPlan = async (plan, option = {}) => {
-    logger.debug(`plan ${JSON.stringify(plan, null, 4)}`);
+    logger.debug(`deployPlan ${JSON.stringify(plan, null, 4)}`);
     await upsertResources(plan.newOrUpdate);
     await destroyResources(plan.destroy);
   };
