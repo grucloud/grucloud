@@ -1,6 +1,6 @@
 const assert = require("assert");
-const MockProvider = require("./providers/mock");
-const MockCloud = require("./providers/mock/MockCloud");
+const MockProvider = require("..");
+const MockCloud = require("../MockCloud");
 
 const createStack = () => {
   const mockCloud = MockCloud();
