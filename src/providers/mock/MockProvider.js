@@ -32,7 +32,7 @@ const apis = (config) => [
     name: "Ip",
     getByName: ({ name, items = [] }) => {
       logger.info(`getByName: ${name}, items: ${toJSON(items)}`);
-      const item = items.find((item) => item.tags.includes(name));
+      const item = items.find((item) => item.tags && item.tags.includes(name));
       return item;
     },
     preCreate: (name, options) => ({

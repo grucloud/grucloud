@@ -192,7 +192,7 @@ module.exports = CoreProvider = ({
     const lists = (
       await Promise.all(
         getTargetResources().map(async (resource) => ({
-          resource: resource.serialized(),
+          ...resource.serialized(),
           data: await resource.getByName({ name: resource.name }),
         }))
       )

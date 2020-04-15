@@ -3,17 +3,16 @@ const { v4: uuidv4 } = require("uuid");
 const logger = require("logger")({ prefix: "MocCloud" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
-module.exports = MockCloud = () => {
-  const initStates = [
+module.exports = MockCloud = (initStates) => {
+  const defaultInitStates = [
     [
       "Ip",
       new Map([
         [
-          "36e1766f-9d5b-426f-bb82-c8db324c3fd9",
+          "51.15.246.48",
           {
-            id: "36e1766f-9d5b-426f-bb82-c8db324c3fd9",
             address: "51.15.246.48",
-            tags: ["myip"],
+            tags: ["myip1"],
           },
         ],
       ]),
@@ -23,7 +22,7 @@ module.exports = MockCloud = () => {
     ["Server", new Map()],
   ];
 
-  const resourceMap = new Map(initStates);
+  const resourceMap = new Map(initStates || defaultInitStates);
   const onGet = ({ type, name }) => {
     logger.info(`onGet ${toJSON({ type, name })}`);
     const resource = resourceMap.get(type);
@@ -52,7 +51,7 @@ module.exports = MockCloud = () => {
   const onList = async ({ type }) => {
     logger.info(`onList ${toJSON({ type })}`);
     const resource = resourceMap.get(type);
-    assert(resource);
+    assert(resource, `no ${type}`);
     const result = { data: { items: [...resource.values()] } };
     logger.debug(`list type: ${type}, result: ${toJSON(result)}`);
     return result;

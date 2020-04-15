@@ -5,7 +5,7 @@ const toJSON = (x) => JSON.stringify(x, null, 4);
 module.exports = MockClient = ({ options = {}, config }) => {
   //TODO change name to type
   const { name: type } = options;
-  logger.debug(`MockClient init ${type}, ${toJSON([config])}`);
+  logger.debug(`MockClient init ${type}, ${JSON.stringify(config)}`);
 
   const list = async () => {
     return config.onList({ type });
