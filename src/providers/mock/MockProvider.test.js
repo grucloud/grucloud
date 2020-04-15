@@ -1,9 +1,14 @@
 const assert = require("assert");
+
 const MockProvider = require("./MockProvider");
+const MockCloud = require("./MockCloud");
+
+const logger = require("logger")({ prefix: "MockProviderTest" });
+const toJSON = (x) => JSON.stringify(x, null, 4);
 
 const provider = MockProvider(
   { name: "mockProvider" },
-  { organization: "myorg" }
+  { organization: "myorg", ...MockCloud() }
 );
 
 const ip = provider.makeIp({ name: "myip" }, ({}) => ({}));
@@ -57,7 +62,7 @@ const testCrud = async ({ resource, createOptions }) => {
     assert.equal(items.length, 1);
   }
   {
-    await resource.create({ name: createName("1"), options: createOptions });
+    await resource.create({ name: createName("2"), options: createOptions });
     const {
       data: { items },
     } = await client.list();

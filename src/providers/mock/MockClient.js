@@ -1,53 +1,29 @@
 const _ = require("lodash");
-const { v4: uuidv4 } = require("uuid");
 const logger = require("logger")({ prefix: "MockClient" });
-
-const clientsMap = new Map();
+const toJSON = (x) => JSON.stringify(x, null, 4);
 
 module.exports = MockClient = ({ options = {}, config }) => {
-  const { initState, name } = options;
-  const resourceMap = new Map(initState);
-  logger.error(`MockClient init ", ${name}, ${[...resourceMap.values()]}`);
+  //TODO change name to type
+  const { name: type } = options;
+  logger.debug(`MockClient init ${type}, ${toJSON([config])}`);
   const list = async () => {
-    const result = { data: { items: [...resourceMap.values()] } };
-    logger.debug(`list type: ${name}, ${JSON.stringify(result, null, 4)}`);
-    return result;
+    return config.onList({ type });
   };
 
-  const create = async (options) => {
-    logger.debug(
-      `create type: ${name}, #items: ${resourceMap.size}, ${JSON.stringify(
-        options,
-        null,
-        4
-      )}`
-    );
-    const uuid = uuidv4();
-    const resource = { uuid, ...options };
-    resourceMap.set(uuid, resource);
-    return resource;
+  const create = async ({ name, payload }) => {
+    return config.onCreate({ type, name, payload });
   };
 
   const get = async (name, options) => {
-    const result = resourceMap.get(name);
-    logger.debug(
-      `get type: ${options.name}, #items: ${
-        resourceMap.size
-      }, ${name} = ${JSON.stringify(result, null, 4)}`
-    );
-    return result;
+    return config.onGet({ type, name, options });
   };
 
   const destroy = async (name) => {
-    logger.debug(`destroy type: ${name}, name: ${name} `);
-    resourceMap.delete(name);
+    return config.onDestroy({ type, name });
   };
 
   const destroyAll = async () => {
-    logger.debug(`destroyAll,  type: ${name}`);
-    const all = await list();
-    resourceMap.clear();
-    return all;
+    return config.onDestroy({ type });
   };
 
   return {
@@ -57,6 +33,5 @@ module.exports = MockClient = ({ options = {}, config }) => {
     create,
     destroy,
     destroyAll,
-    reset: () => resourceMap.clear(),
   };
 };

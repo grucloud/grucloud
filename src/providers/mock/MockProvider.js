@@ -11,7 +11,6 @@ const apis = (config) => [
   {
     name: "Image",
     methods: { list: true },
-    initState: [["1", { name: "Ubuntu", arch: "x86_64" }]],
     toId: (obj) => obj.uuid,
 
     preConfig: async ({ client }) => {
@@ -38,7 +37,7 @@ const apis = (config) => [
       );
       const target = await resource.config();
       logger.info(`planUpdate config: ${toJSON(config)}`);
-      const diff = compare(config, live);
+      const diff = compare(target, live);
       if (diff.length === 0) {
         return [
           { action: "UPDATE", resource: resource.serialized(), target, live },
@@ -75,16 +74,6 @@ const apis = (config) => [
       }
       return { ...config };
     },
-    initState: [
-      [
-        "36e1766f-9d5b-426f-bb82-c8db324c3fd9",
-        {
-          id: "36e1766f-9d5b-426f-bb82-c8db324c3fd9",
-          address: "51.15.246.48",
-          tags: ["myip"],
-        },
-      ],
-    ],
   },
   {
     name: "Server",

@@ -1,6 +1,8 @@
 const _ = require("lodash");
 const logger = require("logger")({ prefix: "CoreProvider" });
 
+const toJSON = (x) => JSON.stringify(x, null, 4);
+
 const checkEnvironment = require("../Utils").checkEnvironment;
 
 const specDefault = {
@@ -8,11 +10,9 @@ const specDefault = {
   postConfig: ({ config }) => config,
   preCreate: (name, options) => ({ name, ...options }),
   getByName: ({ name, items = [] }) => {
-    logger.debug(
-      `getByName: ${name}, items: ${JSON.stringify(items, null, 4)}`
-    );
-
+    logger.debug(`getByName: ${name}, items: ${toJSON(items)}`);
     const item = items.find((item) => item.name === name);
+    logger.debug(`getByName: ${name}, returns: ${toJSON(item)}`);
     return item;
   },
   toId: (item) => item.id,
@@ -35,12 +35,12 @@ const ResourceMaker = ({
 }) => {
   logger.debug(`ResourceMaker: name: ${name}, type: ${type}`);
 
-  const getByName = async ({ name }) => {
-    logger.info(`getByName ${name}`);
+  const getByName = async ({ name: resourceName }) => {
+    logger.info(`getByName ${resourceName}`);
     const {
       data: { items },
     } = await client.list();
-    const instance = api.getByName({ name, items });
+    const instance = api.getByName({ name: resourceName, items });
     logger.info(
       `getByName ${name}, result: ${JSON.stringify(instance, null, 4)}`
     );
@@ -83,11 +83,9 @@ const ResourceMaker = ({
       logger.info(
         `create ${name}, type: ${type}, ${JSON.stringify(options, null, 4)}`
       );
-      const createOptions = api.preCreate(name, options);
-      logger.info(
-        `create final ${name} ${JSON.stringify(createOptions, null, 4)}`
-      );
-      return await client.create(createOptions);
+      const payload = api.preCreate(name, options);
+      logger.info(`create final ${name} ${JSON.stringify(payload, null, 4)}`);
+      return await client.create({ name, payload });
     },
     getByName,
     destroy: async (name) => {
@@ -130,7 +128,9 @@ module.exports = CoreProvider = ({
   hooks,
   config,
 }) => {
-  logger.debug(`CoreProvider name: ${name}, type ${type}, config: ${config}`);
+  logger.debug(
+    `CoreProvider name: ${name}, type ${type}, config: ${toJSON(config)}`
+  );
 
   // Target Resources
   const targetResources = new Map();
@@ -173,16 +173,12 @@ module.exports = CoreProvider = ({
   const listTargets = async (resources) => {
     const lists = (
       await Promise.all(
-        getTargetResources().map(
-          async (resource) => (await resource.client.list()).data
-        )
+        getTargetResources().map(async (resource) => ({
+          resource: resource.serialized(),
+          data: await resource.getByName({ name: resource.name }),
+        }))
       )
-    )
-      .filter((liveResources) => liveResources.items.length > 0)
-      .map((data) => ({
-        //TODO
-        data,
-      }));
+    ).filter((x) => x.data);
     logger.debug(`listTargets ${JSON.stringify(lists, null, 4)}`);
     return lists;
   };

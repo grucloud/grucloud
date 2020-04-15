@@ -1,9 +1,10 @@
 const assert = require("assert");
 const GruCloud = require("./GruCloudApp");
 const MockProvider = require("./providers/mock");
+const MockCloud = require("./providers/mock/MockCloud");
 
 // Create Providers
-const provider = MockProvider({ name: "mockProvider" }, {});
+const provider = MockProvider({ name: "mockProvider" }, { ...MockCloud() });
 
 const image = provider.makeImage({ name: "ubuntu" }, () => ({
   imageName: "ubuntu-os-cloud-18.04",
@@ -51,6 +52,12 @@ describe("GruCloud", function () {
     it.only("plan is empty after deploy plan", async function () {
       const gc = GruCloud(infra);
       await gc.deployPlan(await gc.plan());
+
+      {
+        const listTargets = await provider.listTargets();
+        assert.equal(listTargets.length, 2);
+      }
+
       const plan = await gc.plan();
       assert.equal(plan.destroy.length, 0);
       assert.equal(plan.newOrUpdate.length, 0);
