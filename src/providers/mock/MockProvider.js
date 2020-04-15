@@ -3,8 +3,6 @@ const MockClient = require("./MockClient");
 const CoreProvider = require("../CoreProvider");
 const logger = require("logger")({ prefix: "MockProvider" });
 
-const compare = require("../../Utils").compare;
-
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
 const apis = (config) => [
@@ -29,21 +27,6 @@ const apis = (config) => [
       name,
       ...options,
     }),
-    planUpdate: async ({ resource, live }) => {
-      logger.info(
-        `planUpdate resource: ${toJSON(resource.serialized())}, live: ${toJSON(
-          live
-        )}`
-      );
-      const target = await resource.config();
-      logger.info(`planUpdate config: ${toJSON(config)}`);
-      const diff = compare(target, live);
-      if (diff.length === 0) {
-        return [
-          { action: "UPDATE", resource: resource.serialized(), target, live },
-        ];
-      }
-    },
   },
   {
     name: "Ip",

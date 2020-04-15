@@ -41,12 +41,6 @@ describe("ScalewayProvider", function () {
     })
   );
 
-  const infra = {
-    providers: [provider],
-    //TODO no longer need resources here
-    resources: [image, volume, server, ip],
-  };
-
   it("ip config", async function () {
     const config = await ip.config();
     assert(config);
@@ -86,8 +80,7 @@ describe("ScalewayProvider", function () {
     assert(result);
   });
   it("plan", async function () {
-    const gc = GruCloud(infra);
-    const plan = await gc.plan();
+    const plan = await provider.plan();
     //console.log(JSON.stringify(plan, null, 4));
     //assert.equal(plan.destroy.length, 0);
     //assert.equal(plan.newOrUpdate.length, 1);

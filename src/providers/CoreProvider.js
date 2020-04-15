@@ -1,5 +1,6 @@
 const _ = require("lodash");
 const logger = require("logger")({ prefix: "CoreProvider" });
+const compare = require("../Utils").compare;
 
 const toString = (x) => JSON.stringify(x, null, 4);
 
@@ -73,10 +74,25 @@ const ResourceMaker = ({
       const instance = await resource.getByName({ name });
       logger.info(`planFindNewOrUpdate ${instance}`);
       const plan = instance
-        ? api.planUpdate({ instance, resource })
+        ? resource.planUpdate({ instance, resource })
         : [{ action: "CREATE", resource: resource.serialized() }];
       logger.debug(`planFindNewOrUpdate ${JSON.stringify(plan, null, 4)}`);
       return plan;
+    },
+    planUpdate: async ({ resource, live }) => {
+      logger.info(
+        `planUpdate resource: ${toString(
+          resource.serialized()
+        )}, live: ${toString(live)}`
+      );
+      const target = await resource.config();
+      logger.info(`planUpdate config: ${toString(target)}`);
+      const diff = compare(target, live);
+      if (diff.length === 0) {
+        return [
+          { action: "UPDATE", resource: resource.serialized(), target, live },
+        ];
+      }
     },
     //get: async () => await client.get(name),
     create: async ({ name, options }) => {
@@ -132,12 +148,14 @@ module.exports = CoreProvider = ({
   logger.debug(
     `CoreProvider name: ${name}, type ${type}, config: ${toString(config)}`
   );
-
   // Target Resources
   const targetResources = new Map();
+
   const targetResourcesAdd = (resource) =>
     targetResources.set(resource.name, resource);
+
   const getTargetResources = () => [...targetResources.values()];
+
   const getDeletableTargets = () =>
     [...targetResources.values()].filter(
       (resource) => resource.api.methods.del
@@ -147,12 +165,9 @@ module.exports = CoreProvider = ({
   const specs = apis(config).map((spec) => _.defaults(spec, specDefault));
 
   const clients = specs.map((api) => Client({ options: api, config }));
-  //TODO
-  const clientsCanDelete = specs
-    .filter((api) => api.methods.del)
-    .map((api) => Client({ options: api, config }));
 
   const clientByType = (type) => {
+    //TODO change name in type
     const spec = specs.find((spec) => spec.name === type);
     if (!spec) {
       throw new Error(`type ${type} not found`);
@@ -203,7 +218,7 @@ module.exports = CoreProvider = ({
     await Promise.all(
       getTargetResources().map(async (resource) => ({
         resource,
-        data: await resource.destroy(resource.name),
+        data: await resource.destroy(),
       }))
     );
   };
@@ -211,6 +226,12 @@ module.exports = CoreProvider = ({
     newOrUpdate: await planFindNewOrUpdate(),
     destroy: await planFindDestroy(),
   });
+
+  const deployPlan = async (plan) => {
+    await upsertResources(plan.newOrUpdate);
+    await destroyResources(plan.destroy);
+  };
+
   /**
    * Find live resources to create or update based on the target resources
    */
@@ -265,7 +286,37 @@ module.exports = CoreProvider = ({
     logger.debug(`planFindDestroy: plans ${JSON.stringify(plans, null, 4)}`);
     return plans;
   };
-
+  const upsertResources = async (newOrUpdate = []) => {
+    logger.debug(`upsertResources ${JSON.stringify(newOrUpdate, null, 4)}`);
+    await Promise.all(
+      newOrUpdate.map(async (planItem) => {
+        const engine = resourceByName(planItem.resource.name);
+        if (!engine) {
+          throw Error(
+            `Cannot find resource ${JSON.stringify(planItem.resource, null, 4)}`
+          );
+        }
+        await Promise.all(
+          planItem.plan.map(async ({ resource }) => {
+            await engine.create({
+              name: resource.name,
+              options: await engine.config(),
+            });
+          })
+        );
+      })
+    );
+  };
+  const destroyResources = async (planDestroy) => {
+    //TODO
+    logger.debug(`destroyResources ${JSON.stringify(planDestroy, null, 4)}`);
+    await Promise.all(
+      planDestroy.map(async (planItem) => {
+        const resource = resourceByName(planItem.resource.name);
+        await resource.destroy();
+      })
+    );
+  };
   checkEnvironment(envs);
   if (hooks && hooks.init) {
     hooks.init();
@@ -278,6 +329,7 @@ module.exports = CoreProvider = ({
     hooks,
     destroy,
     plan,
+    deployPlan,
     listLives,
     listTargets,
     listConfig,

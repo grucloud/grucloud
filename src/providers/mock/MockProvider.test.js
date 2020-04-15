@@ -86,6 +86,17 @@ const testCrud = async ({ resource, createOptions }) => {
   }
 };
 describe("MockProvider", function () {
+  it("create ip", async function () {
+    const provider = MockProvider(
+      { name: "mockProvider" },
+      { organization: "myorg", ...MockCloud() }
+    );
+
+    const ip = provider.makeIp({ name: "myip" }, ({}) => ({}));
+    const plan = await provider.plan();
+    await provider.deployPlan(plan);
+    //await provider.list();
+  });
   it("ip config", async function () {
     const config = await ip.config();
     assert(config);

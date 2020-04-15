@@ -1,5 +1,4 @@
 const assert = require("assert");
-const GruCloud = require("./GruCloudApp");
 const MockProvider = require("./providers/mock");
 const MockCloud = require("./providers/mock/MockCloud");
 
@@ -31,36 +30,32 @@ describe("GruCloud", function () {
   describe("plan", function () {
     it("simple plan", async function () {
       const { provider } = createStack();
-      const gc = GruCloud({ providers: [provider] });
-      const [plan] = await gc.plan();
+      const plan = await provider.plan();
       console.log(`plan ${JSON.stringify(plan, null, 4)}`);
       assert.equal(plan.destroy.length, 0);
       assert.equal(plan.newOrUpdate.length, 2);
     });
     it("deploy plan", async function () {
       const { provider } = createStack();
-      const gc = GruCloud({ providers: [provider] });
-      const plan = await gc.plan();
-      await gc.deployPlan(plan);
-      await gc.destroy();
+      const plan = await provider.plan();
+      await provider.deployPlan(plan);
+      await provider.destroy();
     });
     it("plan is empty after deploy plan", async function () {
       const { provider } = createStack();
-      const gc = GruCloud({ providers: [provider] });
-      await gc.deployPlan(await gc.plan());
+      await provider.deployPlan(await provider.plan());
 
       {
         const listTargets = await provider.listTargets();
         assert.equal(listTargets.length, 2);
       }
 
-      const [plan] = await gc.plan();
+      const plan = await provider.plan();
       assert.equal(plan.destroy.length, 0);
       assert.equal(plan.newOrUpdate.length, 0);
     });
     it("plan", async function () {
       const { provider } = createStack();
-      const gc = GruCloud({ providers: [provider] });
       {
         const configs = await provider.listConfig();
         assert(configs);
@@ -71,18 +66,18 @@ describe("GruCloud", function () {
         assert.equal(listTargets.length, 0);
       }
       {
-        const liveResources = await gc.listLives();
+        const liveResources = await provider.listLives();
         assert.equal(liveResources.length, 2);
       }
 
-      const [plan] = await gc.plan();
+      const plan = await provider.plan();
       //console.log(plan);
       {
         //TODO
         assert.equal(plan.destroy.length, 0);
         assert.equal(plan.newOrUpdate.length, 2);
       }
-      await gc.deployPlan([plan]);
+      await provider.deployPlan(plan);
       {
         const listTargets = await provider.listTargets();
         assert.equal(listTargets.length, 2);
@@ -92,7 +87,7 @@ describe("GruCloud", function () {
         assert.equal(listLives.length, 3);
       }
       {
-        const [plan] = await gc.plan();
+        const plan = await provider.plan();
         assert.equal(plan.destroy.length, 0);
         assert.equal(plan.newOrUpdate.length, 0);
       }
