@@ -52,8 +52,16 @@ module.exports = CoreClient = ({
       logger.debug(`${type} get ${name}`);
       if (canGet) return axios.request(`/${name}`, { method: "GET" });
     },
-    destroy: (name) => del && axios.request(`/${name}`, { method: "DELETE" }),
+    destroy: (name) => {
+      logger.debug(
+        `${type} destroy type ${type}, name: ${name} canDestroy: ${del}`
+      );
+      if (del) return axios.request(`/${name}`, { method: "DELETE" });
+    },
     list: () => list && axios.request("/", { method: "GET" }),
-    create: (data) => create && axios.request("/", { method: "POST", data }),
+    create: (data) => {
+      logger.debug(`${type} create type ${type}, canCreate: ${create}`);
+      if (create) return axios.request("/", { method: "POST", data });
+    },
   };
 };

@@ -6,6 +6,7 @@ module.exports = MockClient = ({ options = {}, config }) => {
   //TODO change name to type
   const { name: type } = options;
   logger.debug(`MockClient init ${type}, ${toJSON([config])}`);
+
   const list = async () => {
     return config.onList({ type });
   };
@@ -23,7 +24,7 @@ module.exports = MockClient = ({ options = {}, config }) => {
   };
 
   const destroyAll = async () => {
-    return config.onDestroy({ type });
+    return config.onDestroyAll({ type });
   };
 
   return {

@@ -11,7 +11,7 @@ const apis = (config) => [
   {
     name: "Image",
     methods: { list: true },
-    toId: (obj) => obj.uuid,
+    toId: (obj) => obj.name,
 
     preConfig: async ({ client }) => {
       const result = await client.list();

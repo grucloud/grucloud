@@ -45,9 +45,10 @@ const server = provider.makeServer(
 const createName = (name) => `${name}-${new Date().getTime()}`;
 
 const testCrud = async ({ resource, createOptions }) => {
+  //TODO do not use client
   const { client } = resource;
   {
-    await client.destroyAll();
+    await resource.destroyAll();
     const {
       data: { items },
     } = await client.list();
@@ -77,8 +78,7 @@ const testCrud = async ({ resource, createOptions }) => {
     assert.equal(items.length, 1);
   }
   {
-    const destroyAll = await client.destroyAll();
-    assert(destroyAll);
+    await resource.destroyAll();
     const {
       data: { items },
     } = await client.list();
