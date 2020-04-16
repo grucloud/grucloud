@@ -8,7 +8,7 @@ Api Specification: https://developers.scaleway.com/static/scaleway.instance.v1.A
 
 - Create a Scaleway account
 - Generate an access and secret key
-- Find your organisation id
+- [Find your organisation id](https://www.scaleway.com/en/docs/retrieve-my-organization-id-throught-the-api/)
 
 ## Environment variable to set
 

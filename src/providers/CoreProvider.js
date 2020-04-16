@@ -9,7 +9,7 @@ const checkEnvironment = require("../Utils").checkEnvironment;
 const specDefault = {
   preConfig: (x) => undefined,
   postConfig: ({ config }) => config,
-  preCreate: (name, options) => ({ name, ...options }),
+  preCreate: ({ name, options }) => ({ name, ...options }),
   getByName: ({ name, items = [] }) => {
     logger.debug(`getByName: ${name}, items: ${toString(items)}`);
     const item = items.find((item) => item.name === name);
@@ -48,6 +48,21 @@ const ResourceMaker = ({
     return instance;
   };
 
+  const planUpdate = async ({ resource, live }) => {
+    logger.info(
+      `planUpdate resource: ${toString(
+        resource.serialized()
+      )}, live: ${toString(live)}`
+    );
+    const target = await resource.config();
+    logger.info(`planUpdate config: ${toString(target)}`);
+    const diff = compare(target, live);
+    if (diff.length === 0) {
+      return [
+        { action: "UPDATE", resource: resource.serialized(), target, live },
+      ];
+    }
+  };
   return {
     type,
     provider,
@@ -74,41 +89,24 @@ const ResourceMaker = ({
       const instance = await resource.getByName({ name });
       logger.info(`planFindNewOrUpdate ${instance}`);
       const plan = instance
-        ? resource.planUpdate({ instance, resource })
+        ? planUpdate({ instance, resource })
         : [{ action: "CREATE", resource: resource.serialized() }];
       logger.debug(`planFindNewOrUpdate ${JSON.stringify(plan, null, 4)}`);
       return plan;
     },
-    planUpdate: async ({ resource, live }) => {
-      logger.info(
-        `planUpdate resource: ${toString(
-          resource.serialized()
-        )}, live: ${toString(live)}`
-      );
-      const target = await resource.config();
-      logger.info(`planUpdate config: ${toString(target)}`);
-      const diff = compare(target, live);
-      if (diff.length === 0) {
-        return [
-          { action: "UPDATE", resource: resource.serialized(), target, live },
-        ];
-      }
-    },
+
     //get: async () => await client.get(name),
     create: async ({ name, options }) => {
-      logger.info(
-        `create ${name}, type: ${type}, ${JSON.stringify(options, null, 4)}`
-      );
-      const payload = api.preCreate(name, options);
-      logger.info(`create final ${name} ${JSON.stringify(payload, null, 4)}`);
-      return await client.create({ name, payload });
+      logger.info(`create ${name}, type: ${type}, ${toString(options)}`);
+      const payload = api.preCreate({ name, options });
+      logger.info(`create final ${name} ${toString(payload)}`);
+      return await client.create(payload);
     },
     getByName,
     destroy: async (name) => {
       logger.info(`destroy type: ${type}, name: ${name}`);
       const item = await getByName({ name });
       logger.info(`destroy type: ${type} item: ${toString(item)}`);
-      //TODO function to transform item to id
       if (item) {
         await client.destroy(api.toId(item));
       } else {

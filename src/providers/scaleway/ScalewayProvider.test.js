@@ -1,8 +1,6 @@
 const assert = require("assert");
 const ScalewayProvider = require("./ScalewayProvider");
 
-const GruCloud = require("../../GruCloudApp");
-
 const config = {
   zone: "fr-par-1",
 };
@@ -40,11 +38,6 @@ describe("ScalewayProvider", function () {
       },
     })
   );
-
-  it("ip config", async function () {
-    const config = await ip.config();
-    assert(config);
-  });
 
   it("image config", async function () {
     const result = await image.config();

@@ -2,14 +2,20 @@ const CoreProvider = require("../CoreProvider");
 const ScalewayClient = require("./ScalewayClient");
 const logger = require("logger")({ prefix: "App" });
 
-const apis = () => [
+const toString = (x) => JSON.stringify(x, null, 4);
+
+const apis = ({ organization }) => [
   {
     name: "Ip",
-    onResponse: ({ ips }) => ({ total: ips.length, items: ips }),
+    onResponse: (response) => {
+      logger.debug(`onResponse ${toString(response)}`);
+      return { total: ips.length, items: ips };
+    },
     url: `/ips`,
-    create: (name, options) => ({
+    preCreate: ({ name, options }) => ({
       ...options,
       tags: [name],
+      organization,
     }),
     preConfig: async ({ client }) => {
       const result = await client.list();

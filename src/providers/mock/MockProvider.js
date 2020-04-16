@@ -23,7 +23,7 @@ const apis = (config) => [
   },
   {
     name: "Volume",
-    preCreate: (name, options) => ({
+    preCreate: ({ name, options }) => ({
       name,
       ...options,
     }),
@@ -35,7 +35,7 @@ const apis = (config) => [
       const item = items.find((item) => item.tags && item.tags.includes(name));
       return item;
     },
-    preCreate: (name, options) => ({
+    preCreate: ({ name, options }) => ({
       organization: config.organization,
       tags: [name],
       ...options,
