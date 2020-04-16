@@ -1,17 +1,28 @@
 const CoreProvider = require("../CoreProvider");
 const ScalewayClient = require("./ScalewayClient");
-const logger = require("logger")({ prefix: "App" });
+const logger = require("logger")({ prefix: "ScalewayProvider" });
 
 const toString = (x) => JSON.stringify(x, null, 4);
 
 const apis = ({ organization }) => [
   {
     name: "Ip",
-    onResponse: (response) => {
-      logger.debug(`onResponse ${toString(response)}`);
-      return { total: ips.length, items: ips };
-    },
     url: `/ips`,
+    onResponseList: (data) => {
+      logger.debug(`onResponse ${toString(data)}`);
+      if (data && data.ips) {
+        return { total: data.ips.length, items: data.ips };
+      } else {
+        throw Error(`Cannot find ips`);
+      }
+    },
+    toId: (item) => {
+      if (item.address) {
+        return item.address;
+      } else {
+        throw Error(`Cannot find address`);
+      }
+    },
     preCreate: ({ name, options }) => ({
       ...options,
       tags: [name],
@@ -23,7 +34,7 @@ const apis = ({ organization }) => [
       if (!items) {
         throw Error(`client.list() not formed correctly: ${result}`);
       }
-      //console.log("PRECONFIG ", items);
+      logger.debug(`preConfig ${items}`);
       return items;
     },
     postConfig: ({ config, items }) => {
@@ -38,7 +49,7 @@ const apis = ({ organization }) => [
   {
     name: "Bootscript",
     methods: { list: true },
-    onResponse: ({ bootscripts }) => ({
+    onResponseList: ({ bootscripts }) => ({
       total: bootscripts.length,
       items: bootscripts,
     }),
@@ -47,7 +58,7 @@ const apis = ({ organization }) => [
   {
     name: "Image",
     methods: { list: true },
-    onResponse: ({ images }) => ({ total: images.length, items: images }),
+    onResponseList: ({ images }) => ({ total: images.length, items: images }),
     url: `/images`,
     preConfig: async ({ client }) => {
       const result = await client.list();
@@ -61,8 +72,8 @@ const apis = ({ organization }) => [
   },
   {
     name: "Volume",
-    onResponse: (result) => {
-      logger.debug(`Volume onResponse: ${JSON.stringify(result)}`);
+    onResponseList: (result) => {
+      logger.debug(`onResponseList Volume: ${JSON.stringify(result)}`);
       const { volumes = [] } = result;
       return {
         total: volumes.length,
@@ -74,7 +85,7 @@ const apis = ({ organization }) => [
   },
   {
     name: "Server",
-    onResponse: ({ servers }) => {
+    onResponseList: ({ servers }) => {
       return { total: servers.length, items: servers };
     },
     url: `servers`,

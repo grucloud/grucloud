@@ -100,10 +100,10 @@ const ResourceMaker = ({
       logger.info(`create ${name}, type: ${type}, ${toString(options)}`);
       const payload = api.preCreate({ name, options });
       logger.info(`create final ${name} ${toString(payload)}`);
-      return await client.create(payload);
+      return await client.create({ name, payload });
     },
     getByName,
-    destroy: async (name) => {
+    destroy: async () => {
       logger.info(`destroy type: ${type}, name: ${name}`);
       const item = await getByName({ name });
       logger.info(`destroy type: ${type} item: ${toString(item)}`);
@@ -153,6 +153,7 @@ module.exports = CoreProvider = ({
     targetResources.set(resource.name, resource);
 
   const getTargetResources = () => [...targetResources.values()];
+  const resourceNames = () => [...targetResources.keys()];
 
   const getDeletableTargets = () =>
     [...targetResources.values()].filter(
@@ -210,16 +211,6 @@ module.exports = CoreProvider = ({
     return lists;
   };
 
-  const destroy = async (options = {}) => {
-    logger.debug(`destroy options: ${JSON.stringify(options, null, 4)}`);
-
-    await Promise.all(
-      getTargetResources().map(async (resource) => ({
-        resource,
-        data: await resource.destroy(),
-      }))
-    );
-  };
   const plan = async () => ({
     newOrUpdate: await planFindNewOrUpdate(),
     destroy: await planFindDestroy(),
@@ -227,7 +218,7 @@ module.exports = CoreProvider = ({
 
   const deployPlan = async (plan) => {
     await upsertResources(plan.newOrUpdate);
-    await destroyResources(plan.destroy);
+    await destroyPlannedResources(plan.destroy);
   };
 
   /**
@@ -305,14 +296,39 @@ module.exports = CoreProvider = ({
       })
     );
   };
-  const destroyResources = async (planDestroy) => {
-    //TODO
-    logger.debug(`destroyResources ${JSON.stringify(planDestroy, null, 4)}`);
+  //TODO refactor
+  const destroyByName = async ({ name }) => {
+    logger.debug(`destroyByName: ${name}`);
+    //Change name in type
+    const resource = resourceByName(name);
+    if (resource) {
+      await resource.destroy();
+    } else {
+      throw new Error(
+        `Cannot find resource name ${name}, available ${resourceNames()}`
+      );
+    }
+  };
+
+  const destroyPlannedResources = async (planDestroy) => {
+    logger.debug(
+      `destroyPlannedResources ${JSON.stringify(planDestroy, null, 4)}`
+    );
     await Promise.all(
       planDestroy.map(async (planItem) => {
-        const resource = resourceByName(planItem.resource.name);
-        await resource.destroy();
+        await destroyByName({ name: planItem.resource.name });
       })
+    );
+  };
+
+  const destroyAll = async () => {
+    logger.debug(`destroyAll `);
+    //TODO Promise all settled
+    await Promise.all(
+      getTargetResources().map(async (resource) => ({
+        resource,
+        data: await resource.destroy(),
+      }))
     );
   };
   checkEnvironment(envs);
@@ -325,7 +341,8 @@ module.exports = CoreProvider = ({
     name: () => name,
     type: () => type || name,
     hooks,
-    destroy,
+    destroyAll,
+    destroyByName,
     plan,
     deployPlan,
     listLives,

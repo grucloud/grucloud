@@ -49,11 +49,10 @@ module.exports = MockCloud = (initStates) => {
     resource.clear();
   };
   const onList = async ({ type }) => {
-    logger.info(`onList ${toJSON({ type })}`);
     const resource = resourceMap.get(type);
     assert(resource, `no ${type}`);
     const result = { data: { items: [...resource.values()] } };
-    logger.debug(`list type: ${type}, result: ${toJSON(result)}`);
+    logger.debug(`onList type: ${type}, result: ${toJSON(result)}`);
     return result;
   };
   const onCreate = ({ type, name, payload }) => {

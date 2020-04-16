@@ -6,17 +6,21 @@ const config = {
   organization: process.env.SCALEWAY_ORGANISATION_ID,
 };
 
-describe("ScalewayIp", function () {
+describe.skip("ScalewayIp", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);
 
   const ip = provider.makeIp({ name: "myip" }, ({}) => ({}));
+
+  after(async () => {
+    await provider.destroyAll();
+  });
 
   it("ip config", async function () {
     const config = await ip.config();
     assert(config);
   });
 
-  it.only("plan", async function () {
+  it("plan", async function () {
     const plan = await provider.plan();
     await provider.deployPlan(plan);
 

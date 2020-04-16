@@ -26,7 +26,7 @@ const createStack = () => {
   return { provider, image, volume1, volume2, mockCloud };
 };
 
-describe("GruCloud", function () {
+describe("MockProvider e2e", function () {
   describe("plan", function () {
     it("simple plan", async function () {
       const { provider } = createStack();
@@ -39,7 +39,7 @@ describe("GruCloud", function () {
       const { provider } = createStack();
       const plan = await provider.plan();
       await provider.deployPlan(plan);
-      await provider.destroy();
+      await provider.destroyAll();
     });
     it("plan is empty after deploy plan", async function () {
       const { provider } = createStack();

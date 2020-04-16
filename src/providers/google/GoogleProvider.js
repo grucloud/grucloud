@@ -5,24 +5,24 @@ const apis = ({ project, region, zone }) => [
   {
     name: "Address",
     url: `/projects/${project}/regions/${region}/addresses/`,
-    onResponse: (data) => {
-      console.log("TODO", JSON.stringify(data, null, 4));
+    onResponseList: (data) => {
+      console.log("onResponseList TODO", JSON.stringify(data, null, 4));
       return { items: [] };
     },
   },
   {
     name: "Volume",
     url: `/projects/${project}/regions/${region}/volumes/`,
-    onResponse: (data) => {
-      console.log("TODO", JSON.stringify(data, null, 4));
+    onResponseList: (data) => {
+      console.log("onResponseList TODO", JSON.stringify(data, null, 4));
       return { items: [] };
     },
   },
   {
     name: "Server",
     url: `/projects/${project}/zones/${zone}/instances/`,
-    onResponse: (data) => {
-      console.log("TODO", JSON.stringify(data, null, 4));
+    onResponseList: (data) => {
+      console.log("onResponseList TODO", JSON.stringify(data, null, 4));
       return { items: [] };
     },
   },

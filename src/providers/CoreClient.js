@@ -1,5 +1,6 @@
 const Axios = require("axios");
 const logger = require("logger")({ prefix: "CoreClient" });
+const toString = (x) => JSON.stringify(x, null, 4);
 const noop = () => ({});
 const identity = (x) => x;
 
@@ -8,7 +9,10 @@ module.exports = CoreClient = ({
   type,
   baseURL,
   onHeaders = noop,
-  onResponse = identity,
+  onResponseGet = identity,
+  onResponseList = identity,
+  onResponseCreate = identity,
+  onResponseDelete = identity,
 }) => {
   const axios = Axios.create({
     baseURL,
@@ -26,7 +30,7 @@ module.exports = CoreClient = ({
     transformResponse: [
       (data) => {
         //console.log("axios rx ", baseURL, data);
-        logger.debug(`rx ${data} ${blabla}`);
+        //logger.debug(`rx ${data}`);
         try {
           return JSON.parse(data);
         } catch (error) {
@@ -34,34 +38,52 @@ module.exports = CoreClient = ({
           return data;
         }
       },
-      onResponse,
     ],
   });
-  //console.log("client option ", options);
   const { methods } = options;
   const canGet = !methods || methods.get;
-  const create = !methods || methods.create;
-  const del = !methods || methods.del;
-  const list = !methods || methods.list;
+  const canCreate = !methods || methods.create;
+  const canDelete = !methods || methods.del;
+  const canList = !methods || methods.list;
 
-  //console.log("METHOD", get, create, list, del);
   return {
     options,
     type,
-    get: (name) => {
-      logger.debug(`${type} get ${name}`);
-      if (canGet) return axios.request(`/${name}`, { method: "GET" });
+    get: async (name) => {
+      logger.debug(`get ${type}, name: ${name}, canGet: ${canGet}`);
+      if (canGet) {
+        const result = await axios.request(`/${name}`, { method: "GET" });
+        result.data = onResponseGet(result.data);
+        return result;
+      }
     },
-    destroy: (name) => {
+    destroy: async (name) => {
+      logger.debug(`destroyaa ${{ type, name, canDelete }}`);
+      if (canDelete) {
+        const result = await axios.request(`/${name}`, { method: "DELETE" });
+        result.data = onResponseDelete(result.data);
+        return result;
+      }
+    },
+    list: async () => {
+      logger.debug(`list type ${type}`);
+      if (canList) {
+        const result = await axios.request(`/`, { method: "GET" });
+        result.data = onResponseList(result.data);
+        return result;
+      }
+    },
+    create: async ({ payload }) => {
       logger.debug(
-        `${type} destroy type ${type}, name: ${name} canDestroy: ${del}`
+        `create type ${type}, canCreate: ${canCreate}, payload: ${toString(
+          payload
+        )}`
       );
-      if (del) return axios.request(`/${name}`, { method: "DELETE" });
-    },
-    list: () => list && axios.request("/", { method: "GET" }),
-    create: (data) => {
-      logger.debug(`${type} create type ${type}, canCreate: ${create}`);
-      if (create) return axios.request("/", { method: "POST", data });
+      if (canCreate) {
+        const result = await axios.request("/", { method: "POST", payload });
+        result.data = onResponseCreate(result.data);
+        return result;
+      }
     },
   };
 };
