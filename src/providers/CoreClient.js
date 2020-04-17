@@ -30,7 +30,7 @@ module.exports = CoreClient = ({
     transformResponse: [
       (data) => {
         //console.log("axios rx ", baseURL, data);
-        //logger.debug(`rx ${data}`);
+        logger.debug(`rx ${data}`);
         try {
           return JSON.parse(data);
         } catch (error) {
@@ -50,6 +50,7 @@ module.exports = CoreClient = ({
     options,
     type,
     get: async (name) => {
+      //TODO check for name
       logger.debug(`get ${type}, name: ${name}, canGet: ${canGet}`);
       if (canGet) {
         const result = await axios.request(`/${name}`, { method: "GET" });
@@ -57,10 +58,11 @@ module.exports = CoreClient = ({
         return result;
       }
     },
-    destroy: async (name) => {
-      logger.debug(`destroyaa ${{ type, name, canDelete }}`);
+    destroy: async (id) => {
+      //TODO check for id
+      logger.debug(`destroy ${toString({ type, id, canDelete })}`);
       if (canDelete) {
-        const result = await axios.request(`/${name}`, { method: "DELETE" });
+        const result = await axios.request(`/${id}`, { method: "DELETE" });
         result.data = onResponseDelete(result.data);
         return result;
       }
@@ -80,7 +82,10 @@ module.exports = CoreClient = ({
         )}`
       );
       if (canCreate) {
-        const result = await axios.request("/", { method: "POST", payload });
+        const result = await axios.request("/", {
+          method: "POST",
+          data: payload,
+        });
         result.data = onResponseCreate(result.data);
         return result;
       }

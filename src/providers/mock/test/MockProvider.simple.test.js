@@ -15,7 +15,6 @@ describe("MockProvider Simple", function () {
           "51.15.246.48",
           {
             address: "51.15.246.48",
-            tags: ["myip1"],
           },
         ],
         [
@@ -50,6 +49,8 @@ describe("MockProvider Simple", function () {
     }
 
     const plan = await provider.plan();
+    assert.equal(plan.destroy.length, 0);
+    assert.equal(plan.newOrUpdate.length, 1);
     await provider.deployPlan(plan);
 
     {

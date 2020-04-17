@@ -22,6 +22,13 @@ describe.skip("ScalewayIp", function () {
 
   it("plan", async function () {
     const plan = await provider.plan();
+    assert.equal(plan.destroy.length, 0);
+    assert.equal(plan.newOrUpdate.length, 0);
+  });
+  it("deploy plan", async function () {
+    const plan = await provider.plan();
+    assert.equal(plan.destroy.length, 0);
+    assert.equal(plan.newOrUpdate.length, 0);
     await provider.deployPlan(plan);
 
     {

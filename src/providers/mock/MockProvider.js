@@ -30,10 +30,27 @@ const apis = (config) => [
   },
   {
     name: "Ip",
+    findName: (item) => {
+      //prefix for creating and checking tags ?
+      return item && item.tags && item.tags[0];
+    },
     getByName: ({ name, items = [] }) => {
-      logger.info(`getByName: ${name}, items: ${toJSON(items)}`);
-      const item = items.find((item) => item.tags && item.tags.includes(name));
-      return item;
+      logger.debug(`getByName: ${name}, items: ${toString(items)}`);
+      const itemsWithName = items.filter(
+        (item) => item.tags && item.tags.find((tag) => tag.includes(name))
+      );
+      if (itemsWithName.length === 0) {
+        logger.debug(`getByName: ${name}, no result`);
+        return;
+      }
+      logger.debug(`getByName: ${name}, returns: ${toString(itemsWithName)}`);
+      if (itemsWithName.length > 1) {
+        logger.error(
+          `getByName: ${name}, multiple result: ${toString(itemsWithName)}`
+        );
+      }
+
+      return items[0];
     },
     preCreate: ({ name, options }) => ({
       organization: config.organization,

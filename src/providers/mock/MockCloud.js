@@ -12,7 +12,6 @@ module.exports = MockCloud = (initStates) => {
           "51.15.246.48",
           {
             address: "51.15.246.48",
-            tags: ["myip1"],
           },
         ],
       ]),
@@ -59,8 +58,7 @@ module.exports = MockCloud = (initStates) => {
     logger.info(`onCreate ${toJSON({ type, name, payload })}`);
     const resource = resourceMap.get(type);
     assert(resource);
-    const uuid = uuidv4();
-    const newPayload = { uuid, ...payload };
+    const newPayload = { id: uuidv4(), ...payload };
     //TODO check if already exist
     resource.set(name, newPayload);
   };

@@ -5,11 +5,22 @@ const compare = require("../Utils").compare;
 const toString = (x) => JSON.stringify(x, null, 4);
 
 const checkEnvironment = require("../Utils").checkEnvironment;
+//TODO move this
+const toTagName = (name, namePrefix) => `${namePrefix}${name}`;
+const fromTagName = (tag, namePrefix) => tag && tag.replace(namePrefix, "");
+const hasTag = (tag, namePrefix) => tag && tag.includes(namePrefix);
 
 const specDefault = {
   preConfig: (x) => undefined,
   postConfig: ({ config }) => config,
   preCreate: ({ name, options }) => ({ name, ...options }),
+  findName: (item) => {
+    if (item.name) {
+      return item.name;
+    } else {
+      throw Error(`cannot find name`);
+    }
+  },
   getByName: ({ name, items = [] }) => {
     logger.debug(`getByName: ${name}, items: ${toString(items)}`);
     const item = items.find((item) => item.name === name);
@@ -23,6 +34,7 @@ const specDefault = {
     create: true,
     del: true,
   },
+  namePrefix: "",
 };
 
 const ResourceMaker = ({
@@ -98,7 +110,10 @@ const ResourceMaker = ({
     //get: async () => await client.get(name),
     create: async ({ name, options }) => {
       logger.info(`create ${name}, type: ${type}, ${toString(options)}`);
-      const payload = api.preCreate({ name, options });
+      const payload = api.preCreate({
+        name: toTagName(name, api.namePrefix),
+        options,
+      });
       logger.info(`create final ${name} ${toString(payload)}`);
       return await client.create({ name, payload });
     },
@@ -108,9 +123,14 @@ const ResourceMaker = ({
       const item = await getByName({ name });
       logger.info(`destroy type: ${type} item: ${toString(item)}`);
       if (item) {
-        await client.destroy(api.toId(item));
+        const id = api.toId(item);
+        if (id) {
+          await client.destroy(id);
+        } else {
+          throw Error(`Cannot find id in ${toString(item)}`);
+        }
       } else {
-        logger.info(`Cannot find type: ${type} name: ${name} to destroy`);
+        logger.error(`Cannot find type: ${type}, name: ${name} to destroy`);
       }
     },
     destroyAll: async () => await client.destroyAll(),
@@ -135,7 +155,7 @@ const createResourceMakers = ({ specs, config, provider, Client }) =>
   }, {});
 
 module.exports = CoreProvider = ({
-  name,
+  name: providerName,
   type,
   envs = [],
   Client,
@@ -144,7 +164,9 @@ module.exports = CoreProvider = ({
   config,
 }) => {
   logger.debug(
-    `CoreProvider name: ${name}, type ${type}, config: ${toString(config)}`
+    `CoreProvider name: ${providerName}, type ${type}, config: ${toString(
+      config
+    )}`
   );
   // Target Resources
   const targetResources = new Map();
@@ -155,10 +177,6 @@ module.exports = CoreProvider = ({
   const getTargetResources = () => [...targetResources.values()];
   const resourceNames = () => [...targetResources.keys()];
 
-  const getDeletableTargets = () =>
-    [...targetResources.values()].filter(
-      (resource) => resource.api.methods.del
-    );
   const resourceByName = (name) => targetResources.get(name);
 
   const specs = apis(config).map((spec) => _.defaults(spec, specDefault));
@@ -251,25 +269,37 @@ module.exports = CoreProvider = ({
 
   const planFindDestroy = async () => {
     const resourceNames = getTargetResources().map((resource) => resource.name);
-    logger.debug(`planFindDestroy , ${resourceNames}`);
+    logger.debug(`planFindDestroy resourceNames: ${resourceNames}`);
 
     const plans = (
       await Promise.all(
-        getDeletableTargets().map(async (resource) => {
-          const { data } = await resource.client.list();
-          const hotResources = data.items;
-          const hotResourcesToDestroy = hotResources.filter(
-            (hotResource) => !resourceNames.includes(hotResource.name)
-          );
+        clients
+          .filter((client) => client.options.methods.del)
+          .map(async (client) => {
+            const { data } = await client.list();
 
-          if (hotResourcesToDestroy.length > 0) {
-            return {
-              resource: resource.serialized(),
-              data: hotResourcesToDestroy,
-            };
-          }
-          return;
-        })
+            logger.debug(`planFindDestroy type: ${client.type}`);
+
+            //TODO delete more than one ?
+            const hotResourcesToDestroy = data.items.filter((hotResource) => {
+              const name = client.options.findName(hotResource);
+              if (!name || !hasTag(name, client.options.namePrefix)) {
+                return;
+              }
+              // TODO change client.options in client.spec
+              return !resourceNames.includes(
+                fromTagName(name, client.options.namePrefix)
+              );
+            });
+            if (hotResourcesToDestroy.length > 0) {
+              return {
+                provider: providerName,
+                type: client.options.name,
+                data: hotResourcesToDestroy[0],
+              };
+            }
+            return;
+          })
       )
     ).filter((x) => x);
     logger.debug(`planFindDestroy: plans ${JSON.stringify(plans, null, 4)}`);
@@ -309,6 +339,16 @@ module.exports = CoreProvider = ({
       );
     }
   };
+  const destroyById = async ({ type, id }) => {
+    logger.debug(`destroyById: ${toString({ type, id })}`);
+    //Change name in type
+    const client = clientByType(type);
+    if (client) {
+      await client.destroy(id);
+    } else {
+      throw new Error(`Cannot find endpoint type ${type}}`);
+    }
+  };
 
   const destroyPlannedResources = async (planDestroy) => {
     logger.debug(
@@ -316,7 +356,10 @@ module.exports = CoreProvider = ({
     );
     await Promise.all(
       planDestroy.map(async (planItem) => {
-        await destroyByName({ name: planItem.resource.name });
+        await destroyById({
+          type: planItem.type,
+          id: planItem.data.id,
+        });
       })
     );
   };
@@ -338,8 +381,8 @@ module.exports = CoreProvider = ({
 
   const provider = {
     config,
-    name: () => name,
-    type: () => type || name,
+    name: () => providerName,
+    type: () => type || providerName,
     hooks,
     destroyAll,
     destroyByName,

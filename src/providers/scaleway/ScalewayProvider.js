@@ -8,6 +8,28 @@ const apis = ({ organization }) => [
   {
     name: "Ip",
     url: `/ips`,
+    findName: (item) => {
+      //prefix for creating and checking tags ?
+      return item && item.tags && item.tags[0];
+    },
+    getByName: ({ name, items = [] }) => {
+      logger.debug(`getByName: ${name}, items: ${toString(items)}`);
+      const itemsWithName = items.filter(
+        (item) => item.tags && item.tags.find((tag) => tag.includes(name))
+      );
+      if (itemsWithName.length === 0) {
+        logger.debug(`getByName: ${name}, no result`);
+        return;
+      }
+      logger.debug(`getByName: ${name}, returns: ${toString(itemsWithName)}`);
+      if (itemsWithName.length > 1) {
+        logger.error(
+          `getByName: ${name}, multiple result: ${toString(itemsWithName)}`
+        );
+      }
+
+      return items[0];
+    },
     onResponseList: (data) => {
       logger.debug(`onResponse ${toString(data)}`);
       if (data && data.ips) {
@@ -34,7 +56,7 @@ const apis = ({ organization }) => [
       if (!items) {
         throw Error(`client.list() not formed correctly: ${result}`);
       }
-      logger.debug(`preConfig ${items}`);
+      logger.debug(`preConfig ${toString(items)}`);
       return items;
     },
     postConfig: ({ config, items }) => {

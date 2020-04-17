@@ -15,3 +15,9 @@ Api Specification: https://developers.scaleway.com/static/scaleway.instance.v1.A
 - SCALEWAY_ORGANISATION_ID
 - SCALEWAY_ACCESS_KEY
 - SCALEWAY_SECRET_KEY
+
+## Mamual Request
+
+- Reserve an IP address
+
+  curl -d '{"tags": ["myip"],"organization": "xxxxxxxxx-xxxxx-xxxx-xxxxxxxxx"}' -X POST https://api.scaleway.com/instance/v1/zones/fr-par-1/ips -H "X-Auth-Token: xxxxxx-xxxxxxxxx-xxxxxxxxxx" -H "Content-Type: application/json"

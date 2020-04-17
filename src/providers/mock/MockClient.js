@@ -29,6 +29,7 @@ module.exports = MockClient = ({ options = {}, config }) => {
 
   return {
     options,
+    type: "mockClient",
     get,
     list,
     create,
