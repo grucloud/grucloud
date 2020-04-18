@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const CoreProvider = require("../CoreProvider");
 const ScalewayClient = require("./ScalewayClient");
 const logger = require("logger")({ prefix: "ScalewayProvider" });
@@ -104,7 +105,7 @@ const apis = ({ organization }) => [
       name,
       organization,
     }),
-    postConfig: ({ config }) => ({ ...config }), // TODO volume_type: "l_ssd",
+    postConfig: ({ config }) => _.defaults(config, { volume_type: "l_ssd" }),
   },
   {
     name: "Server",

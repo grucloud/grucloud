@@ -7,7 +7,6 @@ describe("ScalewayVolume", function () {
 
   const volume = provider.makeVolume({ name: "volume1" }, () => ({
     size: 10000000000,
-    volume_type: "l_ssd",
   }));
 
   after(async () => {
@@ -30,7 +29,7 @@ describe("ScalewayVolume", function () {
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 1);
     await provider.deployPlan(plan);
-
+    await provider.listLives();
     {
       const plan = await provider.plan();
       assert.equal(plan.destroy.length, 0);

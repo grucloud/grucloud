@@ -32,7 +32,7 @@ module.exports = CoreClient = ({
         //console.log("axios rx ", baseURL, data);
         logger.debug(`rx ${data}`);
         try {
-          return JSON.parse(data);
+          return data && JSON.parse(data);
         } catch (error) {
           logger.error("rx could not parse data", data);
           return data;
@@ -60,7 +60,9 @@ module.exports = CoreClient = ({
     },
     destroy: async (id) => {
       //TODO check for id
-      logger.debug(`destroy ${toString({ type, id, canDelete })}`);
+      logger.debug(
+        `destroy ${toString({ type: options.name, id, canDelete })}`
+      );
       if (canDelete) {
         const result = await axios.request(`/${id}`, { method: "DELETE" });
         result.data = onResponseDelete(result.data);
