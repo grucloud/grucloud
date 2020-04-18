@@ -187,7 +187,6 @@ const ResourceMaker = ({
         );
       }
     },
-    destroyAll: async () => await client.destroyAll(),
   };
 };
 // TODO change api name in type

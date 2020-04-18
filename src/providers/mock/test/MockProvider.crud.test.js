@@ -18,7 +18,7 @@ const testCrud = async ({ provider, resource, createOptions }) => {
   //TODO do not use client
   const { client } = resource;
   {
-    await resource.destroyAll();
+    await provider.destroyAll();
     const {
       data: { items },
     } = await client.list();
@@ -40,8 +40,7 @@ const testCrud = async ({ provider, resource, createOptions }) => {
     //assert.equal(items.length, 1);
   }
   {
-    //TODO destroyAll ?
-    await resource.destroyAll();
+    await provider.destroyAll();
     const {
       data: { items },
     } = await client.list();
