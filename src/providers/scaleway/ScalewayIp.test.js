@@ -7,6 +7,9 @@ describe("ScalewayIp", function () {
 
   const ip = provider.makeIp({ name: "myip" }, ({}) => ({}));
 
+  before(async () => {
+    await provider.destroyAll();
+  });
   after(async () => {
     await provider.destroyAll();
   });

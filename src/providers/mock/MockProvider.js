@@ -29,16 +29,6 @@ const apis = (config) => [
     name: "Image",
     methods: { list: true },
     toId: (obj) => obj.name,
-
-    preConfig: async ({ client }) => {
-      const result = await client.list();
-      const { items } = result.data;
-      if (!items) {
-        throw Error(`client.list() not formed correctly: ${result}`);
-      }
-      logger.debug("preConfig image ", items);
-      return items;
-    },
   },
   {
     name: "Volume",
@@ -50,21 +40,12 @@ const apis = (config) => [
       return item && item.tags && item.tags[0];
     },
     getByName,
-    preCreate: ({ name, options }) => ({
-      organization: config.organization,
+    configDefault: ({ name, options }) => ({
       tags: [name],
       ...options,
     }),
-    preConfig: async ({ client }) => {
-      const result = await client.list();
-      const { items } = result.data;
-      if (!items) {
-        throw Error(`client.list() not formed correctly: ${toJSON(result)}`);
-      }
-      //console.log("PRECONFIG ", items);
-      return items;
-    },
-    postConfig: ({ items, config }) => {
+    //TODO
+    configTODO: ({ items, config }) => {
       assert(items);
       const ip = items.find((item) => item.address === config.address);
       if (ip) {
@@ -75,12 +56,11 @@ const apis = (config) => [
   },
   {
     name: "Server",
-    postConfig: ({ config }) => ({ ...config, boot_type: "local" }),
     getByName,
-    preCreate: ({ name, options }) => ({
+    configDefault: ({ name, options }) => ({
       name,
-      organization: config.organization,
       tags: [name],
+      boot_type: "local",
       ...options,
     }),
   },

@@ -26,8 +26,12 @@ describe("MockProvider", function () {
   const { provider, ip, volume, server, image } = createStack({
     config: MockCloud(mockCloudInitStates),
   });
-  it("ip config", async function () {
+  it("ip config static ", async function () {
     const config = await ip.config();
+    assert(config);
+  });
+  it("ip config live ", async function () {
+    const config = await ip.config({ live: true });
     assert(config);
   });
   it("image config", async function () {
@@ -41,11 +45,10 @@ describe("MockProvider", function () {
   it("server config", async function () {
     const config = await server.config();
     assert(config);
-    //console.log(config);
     assert(config.name);
     assert.equal(config.boot_type, "local");
-    assert(config.image);
-    assert(config.volumes);
+    assert.equal(config.commercial_type, "DEV1-S");
+    assert(config.tags[0]);
   });
 
   it("list config", async function () {

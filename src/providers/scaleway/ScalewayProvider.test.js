@@ -1,4 +1,6 @@
 const assert = require("assert");
+const logger = require("logger")({ prefix: "CoreProvider" });
+
 const ScalewayProvider = require("./ScalewayProvider");
 
 const config = require("./config");
@@ -25,19 +27,22 @@ describe("ScalewayProvider", function () {
   const server = provider.makeServer(
     {
       name: "web-server",
-      dependencies: { volume, image },
+      dependencies: { volume, image, ip },
     },
-    async ({ dependencies: { volume, image } }) => ({
-      name: "web-server",
-      commercial_type: "DEV1-S",
-      image: await image.config(),
-      volumes: {
-        "0": await volume.config(),
-      },
-      //TODO
-      //public_ip: await ip.getLive().id,
-    })
+    async ({ dependencies: { volume, image, ip } }) => {
+      return {
+        name: "web-server",
+        commercial_type: "DEV1-S",
+      };
+    }
   );
+
+  before(async () => {
+    await provider.destroyAll();
+  });
+  after(async () => {
+    await provider.destroyAll();
+  });
 
   it("image config", async function () {
     const result = await image.config();
@@ -72,10 +77,22 @@ describe("ScalewayProvider", function () {
     const result = await provider.listTargets();
     assert(result);
   });
-  it("plan", async function () {
+  it.only("plan", async function () {
     const plan = await provider.plan();
     //console.log(JSON.stringify(plan, null, 4));
-    //assert.equal(plan.destroy.length, 0);
-    //assert.equal(plan.newOrUpdate.length, 1);
+    assert.equal(plan.destroy.length, 0);
+    assert.equal(plan.newOrUpdate.length, 3);
+
+    await provider.deployPlan(plan);
+
+    {
+      const live = await ip.getLive();
+      assert(live);
+    }
+    {
+      const plan = await provider.plan();
+      assert.equal(plan.destroy.length, 0);
+      assert.equal(plan.newOrUpdate.length, 0);
+    }
   });
 });

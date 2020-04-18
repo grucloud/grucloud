@@ -44,24 +44,16 @@ const apis = ({ organization }) => [
         throw Error(`Cannot find ips`);
       }
     },
-    preCreate: ({ name, options }) => ({
+    configDefault: ({ name, options }) => ({
       ...options,
       tags: [name],
       organization,
     }),
-    preConfig: async ({ client }) => {
-      const result = await client.list();
-      const { items } = result.data;
-      if (!items) {
-        throw Error(`client.list() not formed correctly: ${result}`);
-      }
-      logger.debug(`preConfig ${toString(items)}`);
-      return items;
-    },
     postConfig: ({ config, items }) => {
       //assert(items);
+      //TODO check that
       logger.debug(
-        `postConfig config: ${toString(config)}, items: ${toString(items)}`
+        `postConfig: ${toString(config)}, items: ${toString(items)}`
       );
       const ip = items.find((item) => item.address === config.address);
       if (ip) {
@@ -84,15 +76,6 @@ const apis = ({ organization }) => [
     methods: { list: true },
     onResponseList: ({ images }) => ({ total: images.length, items: images }),
     url: `/images`,
-    preConfig: async ({ client }) => {
-      const result = await client.list();
-      const { items } = result.data;
-      if (!items) {
-        throw Error(`client.list() not formed correctly: ${result}`);
-      }
-      // console.log("Image PRECONFIG ", items);
-      return items;
-    },
   },
   {
     name: "Volume",
@@ -105,12 +88,12 @@ const apis = ({ organization }) => [
         items: volumes,
       };
     },
-    preCreate: ({ name, options }) => ({
-      ...options,
+    configDefault: ({ name, options }) => ({
+      volume_type: "l_ssd",
       name,
       organization,
+      ...options,
     }),
-    postConfig: ({ config }) => _.defaults(config, { volume_type: "l_ssd" }),
   },
   {
     name: "Server",
@@ -119,14 +102,48 @@ const apis = ({ organization }) => [
     onResponseList: ({ servers }) => {
       return { total: servers.length, items: servers };
     },
-
-    postConfig: ({ config }) => ({ ...config, boot_type: "local" }),
-    preCreate: ({ name, options }) => ({
+    configDefault: ({ name, options }) => ({
+      boot_type: "local",
+      commercial_type: "DEV1-S",
       name,
-      organization: config.organization,
+      organization,
       tags: [name],
       ...options,
     }),
+    configStatic: async ({ config, dependencies: { image, ip, volume } }) => {
+      return {
+        image: await image.config(),
+        volumes: await volume.config(),
+        public_ip: await ip.config(),
+        ...config,
+      };
+    },
+    configLive: async ({ config, dependencies: { image, ip, volume } }) => {
+      //TODO called should called live
+      const volumeLive = await volume.getLive();
+      const ipLive = await ip.getLive();
+      const imageLive = await image.getLive();
+
+      logger.debug(
+        `Server configLive volume: ${toString(volumeLive)}, ip: ${toString(
+          ipLive
+        )}`
+      );
+      if (!volumeLive || !ipLive || !imageLive) {
+        throw Error(`configFromLive: cannot find live resources`);
+      }
+      return {
+        image: await imageLive.uuid,
+        volumes: {
+          "0": {
+            id: volumeLive.id,
+            name: volumeLive.name,
+          },
+        },
+        public_ip: ipLive.id,
+        ...config,
+      };
+    },
   },
 ];
 

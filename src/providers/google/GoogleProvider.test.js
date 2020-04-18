@@ -21,11 +21,6 @@ describe.skip("GoogleProvider", function () {
     },
     async ({ dependencies: { volume } }) => ({
       name: "web-server",
-      commercial_type: "DEV1-S",
-      //image: await image.config(),
-      volumes: {
-        "0": await volume.config(),
-      },
     })
   );
 });

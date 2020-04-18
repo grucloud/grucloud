@@ -36,11 +36,6 @@ const createStack = ({ config }) => {
     async ({ dependencies: { volume, image, ip } }) => ({
       name: "web-server",
       commercial_type: "DEV1-S",
-      image: await image.config(),
-      volumes: {
-        "0": await volume.config(),
-      },
-      public_ip: await ip.getLive().id,
     })
   );
   return { provider, ip, volume, server, image };

@@ -26,22 +26,13 @@ const testCrud = async ({ provider, resource, createOptions }) => {
   }
 
   {
-    await resource.create({ name: createName("1"), options: createOptions });
+    await resource.create({ options: createOptions });
     const {
       data: { items },
     } = await client.list();
     assert.equal(items.length, 1);
   }
-  {
-    await resource.create({ name: createName("2"), options: createOptions });
-    const {
-      data: { items },
-    } = await client.list();
-    assert.equal(items.length, 2);
-    assert(items[0].name);
-    //TODO
-    //await provider.destroyByName({ resource: items[0] });
-  }
+
   {
     const {
       data: { items },

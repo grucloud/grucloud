@@ -11,9 +11,10 @@ const fromTagName = (name, tag) => name && name.replace(tag, "");
 const hasTag = (name, tag) => name && name.includes(tag);
 
 const specDefault = {
-  preConfig: (x) => undefined,
   postConfig: ({ config }) => config,
-  preCreate: ({ name, options }) => ({ name, ...options }),
+  configStatic: ({ config }) => config,
+  configLive: ({ config }) => config,
+  configDefault: ({ name, options }) => ({ name, ...options }),
   findName: (item) => {
     if (item.name) {
       return item.name;
@@ -44,10 +45,10 @@ const ResourceMaker = ({
   type,
   dependencies,
   client,
-  userConfig,
+  fnUserConfig,
   api,
   provider,
-  config,
+  config: configProvider,
 }) => {
   logger.debug(`ResourceMaker: name: ${resourceName}, type: ${type}`);
 
@@ -56,7 +57,11 @@ const ResourceMaker = ({
     const {
       data: { items },
     } = await client.list();
-    const instance = api.getByName({ name: resourceName, items, config });
+    const instance = api.getByName({
+      name: resourceName,
+      items,
+      config: configProvider,
+    });
     logger.info(
       `getLive type: ${type}, ${resourceName}, result: ${toString(instance)}`
     );
@@ -83,6 +88,53 @@ const ResourceMaker = ({
       ];
     }
   };
+
+  const config = async ({ live } = {}) => {
+    logger.info(`config type: ${api.name}, name ${resourceName}`);
+    const result = await client.list();
+    //TODO result no data ?
+    const { items } = result.data;
+    if (!items) {
+      throw Error(`client.list() not formed correctly: ${result}`);
+    }
+
+    const userConfig = await fnUserConfig({ dependencies, items });
+
+    const configWithDefault = api.configDefault({
+      name: toTagName(resourceName, configProvider.tag),
+      options: userConfig,
+    });
+
+    logger.info(
+      `config type: ${
+        api.name
+      }, name ${resourceName}, with defaults: ${toString(configWithDefault)}`
+    );
+
+    let finalConfig;
+    if (live) {
+      // Fetch all live now
+      //
+      finalConfig = api.configLive({
+        config: configWithDefault,
+        items,
+        dependencies,
+      });
+    } else {
+      finalConfig = await api.configStatic({
+        config: configWithDefault,
+        items,
+        dependencies,
+      });
+    }
+
+    logger.info(
+      `config type: ${api.name}, name ${resourceName}, config: ${toString(
+        finalConfig
+      )}`
+    );
+    return finalConfig;
+  };
   return {
     type,
     provider,
@@ -94,38 +146,28 @@ const ResourceMaker = ({
       type,
       provider: provider.name(),
     }),
-    config: async () => {
-      logger.info(`config type: ${api.name}, name ${resourceName}`);
-      const preConfig = api.preConfig;
-      const postConfig = api.postConfig;
-      const items = await preConfig({ client });
-      const config = await userConfig({ dependencies, items });
-      const finalConfig = postConfig({ config, items, dependencies });
-      logger.info(
-        `config type: ${
-          api.name
-        }, name ${resourceName}, finalConfig: ${toString(finalConfig)}`
-      );
-      return finalConfig;
-    },
+    config,
     planUpsert: async ({ resource }) => {
       logger.info(`planUpsert resource: ${toString(resource.serialized())}`);
       const live = await resource.getLive();
       logger.info(`planUpsert live: ${toString(live)}`);
       const plan = live
         ? planUpdate({ live, resource })
-        : [{ action: "CREATE", resource: resource.serialized() }];
+        : [
+            {
+              action: "CREATE",
+              resource: resource.serialized(),
+              config: await resource.config(),
+            },
+          ];
       logger.debug(`planUpsert plan: ${JSON.stringify(plan, null, 4)}`);
       return plan;
     },
-    create: async ({ name, options }) => {
-      logger.info(`create ${name}, type: ${type}, ${toString(options)}`);
-      const payload = api.preCreate({
-        name: toTagName(name, config.tag),
-        options,
-      });
-      logger.info(`create final ${name} ${toString(payload)}`);
-      return await client.create({ name, payload });
+    create: async ({ payload }) => {
+      logger.info(
+        `create ${resourceName}, type: ${type}, ${toString(payload)}`
+      );
+      return await client.create({ name: resourceName, payload });
     },
     getLive,
     destroy: async () => {
@@ -151,11 +193,11 @@ const ResourceMaker = ({
 // TODO change api name in type
 const createResourceMakers = ({ specs, config, provider, Client }) =>
   specs.reduce((acc, api) => {
-    acc[`make${api.name}`] = (options, userConfig) => {
+    acc[`make${api.name}`] = (options, fnUserConfig) => {
       const resource = ResourceMaker({
         type: api.name,
         ...options,
-        userConfig,
+        fnUserConfig,
         api: _.defaults(api, specDefault),
         provider,
         client: Client({ options: api, config }),
@@ -258,10 +300,15 @@ module.exports = CoreProvider = ({
     logger.info(`*******************************************************`);
     return plan;
   };
-
   const deployPlan = async (plan) => {
+    logger.info(`*******************************************************`);
+    logger.info(`Deploy Plan ${toString(plan)}`);
+    logger.info(`*******************************************************`);
     await upsertResources(plan.newOrUpdate);
     await destroyPlannedResources(plan.destroy);
+    logger.info(`*******************************************************`);
+    logger.info(`Deploy Plan DONE ${toString(plan)}`);
+    logger.info(`*******************************************************`);
   };
 
   /**
@@ -274,16 +321,13 @@ module.exports = CoreProvider = ({
         getTargetResources()
           .filter((resource) => resource.api.methods.create)
           .map(async (resource) => {
-            const plan = await resource.planUpsert({ resource });
-            if (plan) {
-              return {
-                resource: resource.serialized(),
-                plan,
-              };
-            }
+            const actions = await resource.planUpsert({ resource });
+            return actions;
           })
       )
-    ).filter((x) => x);
+    )
+      .filter((x) => x)
+      .flat();
     logger.debug(`planUpsert: plans": ${JSON.stringify(plans, null, 4)}`);
     return plans;
   };
@@ -325,27 +369,18 @@ module.exports = CoreProvider = ({
     return plans;
   };
   const upsertResources = async (newOrUpdate = []) => {
-    logger.debug(`upsertResources ${JSON.stringify(newOrUpdate, null, 4)}`);
-    await Promise.all(
-      newOrUpdate.map(async (planItem) => {
-        const engine = resourceByName(planItem.resource.name);
-        if (!engine) {
-          throw Error(
-            `Cannot find resource ${JSON.stringify(planItem.resource, null, 4)}`
-          );
-        }
-        await Promise.all(
-          planItem.plan.map(async ({ resource }) => {
-            await engine.create({
-              name: resource.name,
-              options: await engine.config(),
-            });
-          })
-        );
-      })
-    );
+    logger.debug(`upsertResources ${toString(newOrUpdate)}`);
+    for (const action of newOrUpdate) {
+      const engine = resourceByName(action.resource.name);
+      if (!engine) {
+        throw Error(`Cannot find resource ${toString(action.resource.name)}`);
+      }
+      await engine.create({
+        payload: await engine.config({ live: true }),
+      });
+    }
   };
-  //TODO refactor
+  //TODO refactor, is it used?
   const destroyByName = async ({ name }) => {
     logger.debug(`destroyByName: ${name}`);
     //Change name in type
