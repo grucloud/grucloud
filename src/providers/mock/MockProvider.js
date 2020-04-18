@@ -5,6 +5,25 @@ const logger = require("logger")({ prefix: "MockProvider" });
 
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
+const getByName = ({ name, items = [] }) => {
+  logger.debug(`getByName: ${name}, items: ${toString(items)}`);
+  const itemsWithName = items.filter(
+    (item) => item.tags && item.tags.find((tag) => tag.includes(name))
+  );
+  if (itemsWithName.length === 0) {
+    logger.debug(`getByName: ${name}, no result`);
+    return;
+  }
+  logger.debug(`getByName: ${name}, returns: ${toString(itemsWithName)}`);
+  if (itemsWithName.length > 1) {
+    logger.error(
+      `getByName: ${name}, multiple result: ${toString(itemsWithName)}`
+    );
+  }
+
+  return itemsWithName[0];
+};
+
 const apis = (config) => [
   {
     name: "Image",
@@ -23,10 +42,6 @@ const apis = (config) => [
   },
   {
     name: "Volume",
-    preCreate: ({ name, options }) => ({
-      name,
-      ...options,
-    }),
   },
   {
     name: "Ip",
@@ -34,24 +49,7 @@ const apis = (config) => [
       //prefix for creating and checking tags ?
       return item && item.tags && item.tags[0];
     },
-    getByName: ({ name, items = [] }) => {
-      logger.debug(`getByName: ${name}, items: ${toString(items)}`);
-      const itemsWithName = items.filter(
-        (item) => item.tags && item.tags.find((tag) => tag.includes(name))
-      );
-      if (itemsWithName.length === 0) {
-        logger.debug(`getByName: ${name}, no result`);
-        return;
-      }
-      logger.debug(`getByName: ${name}, returns: ${toString(itemsWithName)}`);
-      if (itemsWithName.length > 1) {
-        logger.error(
-          `getByName: ${name}, multiple result: ${toString(itemsWithName)}`
-        );
-      }
-
-      return itemsWithName[0];
-    },
+    getByName,
     preCreate: ({ name, options }) => ({
       organization: config.organization,
       tags: [name],
@@ -78,6 +76,13 @@ const apis = (config) => [
   {
     name: "Server",
     postConfig: ({ config }) => ({ ...config, boot_type: "local" }),
+    getByName,
+    preCreate: ({ name, options }) => ({
+      name,
+      organization: config.organization,
+      tags: [name],
+      ...options,
+    }),
   },
 ];
 

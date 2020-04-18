@@ -29,8 +29,7 @@ module.exports = CoreClient = ({
     ],
     transformResponse: [
       (data) => {
-        //console.log("axios rx ", baseURL, data);
-        logger.debug(`rx ${data}`);
+        logger.debug(`rx baseURL: ${baseURL}, ${data}`);
         try {
           return data && JSON.parse(data);
         } catch (error) {

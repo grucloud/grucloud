@@ -6,6 +6,8 @@ const logger = require("logger")({ prefix: "ScalewayProvider" });
 const toString = (x) => JSON.stringify(x, null, 4);
 
 const findName = (item) => {
+  const name = item && item.tags && item.tags[0];
+  logger.debug(`findName: item: ${toString(item)}, name: ${name}`);
   //prefix for creating and checking tags ?
   return item && item.tags && item.tags[0];
 };
@@ -58,6 +60,9 @@ const apis = ({ organization }) => [
     },
     postConfig: ({ config, items }) => {
       //assert(items);
+      logger.debug(
+        `postConfig config: ${toString(config)}, items: ${toString(items)}`
+      );
       const ip = items.find((item) => item.address === config.address);
       if (ip) {
         return ip;
@@ -109,12 +114,19 @@ const apis = ({ organization }) => [
   },
   {
     name: "Server",
+    url: `servers`,
     findName,
     onResponseList: ({ servers }) => {
       return { total: servers.length, items: servers };
     },
-    url: `servers`,
+
     postConfig: ({ config }) => ({ ...config, boot_type: "local" }),
+    preCreate: ({ name, options }) => ({
+      name,
+      organization: config.organization,
+      tags: [name],
+      ...options,
+    }),
   },
 ];
 

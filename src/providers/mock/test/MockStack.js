@@ -1,11 +1,13 @@
 const assert = require("assert");
-
+const logger = require("logger")({ prefix: "MockCloud" });
 const MockProvider = require("../MockProvider");
-const MockCloud = require("../MockCloud");
+const toString = (x) => JSON.stringify(x, null, 4);
 
-const createStack = () => {
+const createStack = ({ config }) => {
+  logger.info(`createStack ${toString(config)}`);
   // Provider
-  const provider = MockProvider({ name: "mock" }, { ...MockCloud() });
+
+  const provider = MockProvider({ name: "mock" }, config);
 
   // Ip
   const ip = provider.makeIp({ name: "myip" }, ({}) => ({}));
@@ -16,7 +18,7 @@ const createStack = () => {
     const image = images.find(
       (image) => image.name.includes("Ubuntu") && image.arch === "x86_64"
     );
-    assert(image);
+    //assert(image);
     return image;
   });
 
@@ -38,7 +40,7 @@ const createStack = () => {
       volumes: {
         "0": await volume.config(),
       },
-      public_ip: await ip.config(),
+      public_ip: await ip.getLive().id,
     })
   );
   return { provider, ip, volume, server, image };

@@ -1,53 +1,66 @@
 const assert = require("assert");
-const MockProvider = require("..");
 const MockCloud = require("../MockCloud");
+const createStack = require("./MockStack");
+const logger = require("logger")({ prefix: "CoreProvider" });
 
-const createStack = () => {
-  const mockCloud = MockCloud();
-  const provider = MockProvider({ name: "mockProvider" }, { ...mockCloud });
+const toString = (x) => JSON.stringify(x, null, 4);
 
-  const image = provider.makeImage({ name: "ubuntu" }, () => ({
-    imageName: "ubuntu-os-cloud-18.04",
-  }));
-
-  const volume1 = provider.makeVolume(
-    { name: "disk1", dependencies: { image } },
-    async ({}) => ({
-      size: 20000000000,
-    })
-  );
-
-  const volume2 = provider.makeVolume(
-    { name: "disk2", dependencies: { image } },
-    async ({}) => ({
-      size: 30000000000,
-    })
-  );
-  return { provider, image, volume1, volume2, mockCloud };
-};
+const mockCloudInitStates = [
+  [
+    "Ip",
+    [
+      [
+        "51.15.246.48",
+        {
+          address: "51.15.246.48",
+        },
+      ],
+      [
+        "51.15.246.50",
+        {
+          address: "51.15.246.50",
+        },
+      ],
+    ],
+  ],
+  [
+    "Image",
+    [
+      ["1", { name: "Ubuntu", arch: "x86_64" }],
+      ["2", { name: "CentOS", arch: "x86_64" }],
+    ],
+  ],
+  ["Volume"],
+  ["Server"],
+];
 
 describe("MockProvider e2e", function () {
   describe("plan", function () {
     it("simple plan", async function () {
-      const { provider } = createStack();
+      const { provider } = createStack({
+        config: MockCloud(mockCloudInitStates),
+      });
       const plan = await provider.plan();
-      console.log(`plan ${JSON.stringify(plan, null, 4)}`);
       assert.equal(plan.destroy.length, 0);
-      assert.equal(plan.newOrUpdate.length, 2);
+      assert.equal(plan.newOrUpdate.length, 3);
     });
     it("deploy plan", async function () {
-      const { provider } = createStack();
+      const { provider } = createStack({
+        config: MockCloud(mockCloudInitStates),
+      });
       const plan = await provider.plan();
       await provider.deployPlan(plan);
       await provider.destroyAll();
     });
     it("plan is empty after deploy plan", async function () {
-      const { provider } = createStack();
+      const { provider } = createStack({
+        config: MockCloud(mockCloudInitStates),
+      });
       await provider.deployPlan(await provider.plan());
 
       {
         const listTargets = await provider.listTargets();
-        assert.equal(listTargets.length, 2);
+        assert.equal(listTargets.length, 3);
       }
 
       const plan = await provider.plan();
@@ -55,15 +68,18 @@ describe("MockProvider e2e", function () {
       assert.equal(plan.newOrUpdate.length, 0);
     });
     it("plan", async function () {
-      const { provider } = createStack();
-      {
-        const configs = await provider.listConfig();
-        assert(configs);
-        //console.log(configs);
-      }
+      const { provider } = createStack({
+        config: MockCloud(mockCloudInitStates),
+      });
+
       {
         const listTargets = await provider.listTargets();
         assert.equal(listTargets.length, 0);
+      }
+
+      {
+        const configs = await provider.listConfig();
+        assert(configs);
       }
       {
         const liveResources = await provider.listLives();
@@ -75,16 +91,16 @@ describe("MockProvider e2e", function () {
       {
         //TODO
         assert.equal(plan.destroy.length, 0);
-        assert.equal(plan.newOrUpdate.length, 2);
+        assert.equal(plan.newOrUpdate.length, 3);
       }
       await provider.deployPlan(plan);
       {
         const listTargets = await provider.listTargets();
-        assert.equal(listTargets.length, 2);
+        assert.equal(listTargets.length, 3);
       }
       {
         const listLives = await provider.listLives();
-        assert.equal(listLives.length, 3);
+        assert.equal(listLives.length, 4);
       }
       {
         const plan = await provider.plan();

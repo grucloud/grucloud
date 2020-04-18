@@ -1,7 +1,6 @@
 const assert = require("assert");
-
-const MockProvider = require("../MockProvider");
 const MockCloud = require("../MockCloud");
+const createStack = require("./MockStack");
 
 const logger = require("logger")({ prefix: "MockProviderTestSimple" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
@@ -10,7 +9,7 @@ describe("MockProvider Simple", function () {
   const initStates = [
     [
       "Ip",
-      new Map([
+      [
         [
           "51.15.246.48",
           {
@@ -23,17 +22,16 @@ describe("MockProvider Simple", function () {
             address: "51.15.246.50",
           },
         ],
-      ]),
+      ],
     ],
-    ["Image", new Map()],
-    ["Volume", new Map()],
-    ["Server", new Map()],
+    ["Image", []],
+    ["Volume", []],
+    ["Server", []],
   ];
+  const { provider, ip, volume, server, image } = createStack({
+    config: MockCloud(initStates),
+  });
 
-  const provider = MockProvider(
-    { name: "mockProvider" },
-    { ...MockCloud(initStates) }
-  );
   it("create ip", async function () {
     {
       const [liveIp] = await provider.listLives();
@@ -50,8 +48,14 @@ describe("MockProvider Simple", function () {
 
     const plan = await provider.plan();
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 1);
+    assert.equal(plan.newOrUpdate.length, 3);
     await provider.deployPlan(plan);
+
+    {
+      const liveIp = await ip.getLive();
+      assert(liveIp);
+      assert(liveIp.id);
+    }
 
     {
       const [target] = await provider.listTargets();
@@ -59,12 +63,11 @@ describe("MockProvider Simple", function () {
       const { name, type } = target;
       assert.equal(name, "myip");
       assert.equal(type, "Ip");
-      assert.equal(target.provider, "mockProvider");
+      assert.equal(target.provider, "mock");
     }
     {
-      const [liveIp] = await provider.listLives();
-      assert.equal(liveIp.type, "Ip");
-      assert.equal(liveIp.data.items.length, 3);
+      const lives = await provider.listLives();
+      assert.equal(lives.length, 3);
     }
   });
 });

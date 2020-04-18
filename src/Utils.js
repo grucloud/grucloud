@@ -1,4 +1,7 @@
 const _ = require("lodash");
+const logger = require("logger")({ prefix: "MocCloud" });
+const toString = (x) => JSON.stringify(x, null, 4);
+
 const checkEnvironment = (env = []) =>
   env.forEach((env) => {
     //console.log(env);
@@ -8,20 +11,16 @@ const checkEnvironment = (env = []) =>
   });
 
 const compare = (target = {}, live = {}) => {
-  console.log("compare", { target, live });
-  var targetKeys = Object.getOwnPropertyNames(target);
+  logger.info(`compare ${toString({ target, live })}`);
+
   var liveKeys = Object.getOwnPropertyNames(live);
-  console.log("compare", { targetKeys, liveKeys });
 
   const targetDiff = Object.getOwnPropertyNames(target)
     .map((targetKey) => {
       if (liveKeys.includes(targetKey)) {
-        //very bad, much buggy
-        //if object, recursive ?
         const targetValue = target[targetKey];
         const liveValue = live[targetKey];
-        console.log("compare ", { targetValue, liveValue });
-        if (targetValue !== liveValue) {
+        if (!_.isEqual(targetValue, liveValue)) {
           return {
             key: targetKey,
             type: "DIFF",
@@ -39,7 +38,8 @@ const compare = (target = {}, live = {}) => {
       }
     })
     .filter((x) => x);
-  console.log("compare ", { targetDiff });
+
+  logger.info(`compare ${toString({ targetDiff })}`);
   return targetDiff || [];
 };
 

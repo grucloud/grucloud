@@ -40,7 +40,7 @@ const specDefault = {
 };
 
 const ResourceMaker = ({
-  name,
+  name: resourceName,
   type,
   dependencies,
   client,
@@ -49,16 +49,16 @@ const ResourceMaker = ({
   provider,
   config,
 }) => {
-  logger.debug(`ResourceMaker: name: ${name}, type: ${type}`);
+  logger.debug(`ResourceMaker: name: ${resourceName}, type: ${type}`);
 
-  const getByName = async ({ name: resourceName }) => {
-    logger.info(`getByName ${resourceName}`);
+  const getLive = async () => {
+    logger.info(`getLive type: ${type}, name: ${resourceName}`);
     const {
       data: { items },
     } = await client.list();
     const instance = api.getByName({ name: resourceName, items, config });
     logger.info(
-      `getByName ${name}, result: ${JSON.stringify(instance, null, 4)}`
+      `getLive type: ${type}, ${resourceName}, result: ${toString(instance)}`
     );
     return instance;
   };
@@ -86,28 +86,31 @@ const ResourceMaker = ({
   return {
     type,
     provider,
-    name,
+    name: resourceName,
     api,
     client,
     serialized: () => ({
-      name,
+      name: resourceName,
       type,
       provider: provider.name(),
     }),
     config: async () => {
+      logger.info(`config type: ${api.name}, name ${resourceName}`);
       const preConfig = api.preConfig;
       const postConfig = api.postConfig;
       const items = await preConfig({ client });
       const config = await userConfig({ dependencies, items });
       const finalConfig = postConfig({ config, items, dependencies });
       logger.info(
-        `config ${api.name}: ${JSON.stringify(finalConfig, null, 4)}`
+        `config type: ${
+          api.name
+        }, name ${resourceName}, finalConfig: ${toString(finalConfig)}`
       );
       return finalConfig;
     },
     planUpsert: async ({ resource }) => {
       logger.info(`planUpsert resource: ${toString(resource.serialized())}`);
-      const live = await resource.getByName({ name });
+      const live = await resource.getLive();
       logger.info(`planUpsert live: ${toString(live)}`);
       const plan = live
         ? planUpdate({ live, resource })
@@ -115,8 +118,6 @@ const ResourceMaker = ({
       logger.debug(`planUpsert plan: ${JSON.stringify(plan, null, 4)}`);
       return plan;
     },
-
-    //get: async () => await client.get(name),
     create: async ({ name, options }) => {
       logger.info(`create ${name}, type: ${type}, ${toString(options)}`);
       const payload = api.preCreate({
@@ -126,20 +127,22 @@ const ResourceMaker = ({
       logger.info(`create final ${name} ${toString(payload)}`);
       return await client.create({ name, payload });
     },
-    getByName,
+    getLive,
     destroy: async () => {
-      logger.info(`destroy type: ${type}, name: ${name}`);
-      const item = await getByName({ name });
-      logger.info(`destroy type: ${type} item: ${toString(item)}`);
-      if (item) {
-        const id = api.toId(item);
+      logger.info(`destroy type: ${type}, name: ${resourceName}`);
+      const live = await getLive();
+      logger.info(`destroy type: ${type} item: ${toString(live)}`);
+      if (live) {
+        const id = api.toId(live);
         if (id) {
           await client.destroy(id);
         } else {
-          throw Error(`Cannot find id in ${toString(item)}`);
+          throw Error(`Cannot find id in ${toString(live)}`);
         }
       } else {
-        logger.error(`Cannot find type: ${type}, name: ${name} to destroy`);
+        logger.error(
+          `Cannot find type: ${type}, name: ${resourceName} to destroy`
+        );
       }
     },
     destroyAll: async () => await client.destroyAll(),
@@ -207,6 +210,7 @@ module.exports = CoreProvider = ({
     return Client({ options: spec, config });
   };
   // API
+  //  Flatter that
   const listLives = async () => {
     const lists = (
       await Promise.all(
@@ -225,7 +229,7 @@ module.exports = CoreProvider = ({
       await Promise.all(
         getTargetResources().map(async (resource) => ({
           ...resource.serialized(),
-          data: await resource.getByName({ name: resource.name }),
+          data: await resource.getLive(),
         }))
       )
     ).filter((x) => x.data);

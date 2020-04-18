@@ -34,6 +34,8 @@ describe("ScalewayProvider", function () {
       volumes: {
         "0": await volume.config(),
       },
+      //TODO
+      //public_ip: await ip.getLive().id,
     })
   );
 
