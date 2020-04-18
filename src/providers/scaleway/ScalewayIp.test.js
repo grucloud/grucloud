@@ -25,16 +25,17 @@ describe("ScalewayIp", function () {
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 1);
   });
-  it.skip("deploy plan", async function () {
+  it("deploy plan", async function () {
+    await provider.listLives();
     const plan = await provider.plan();
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 0);
+    assert.equal(plan.newOrUpdate.length, 1);
     await provider.deployPlan(plan);
 
     {
-      const emptyPlan = await provider.plan();
-      assert.equal(emptyPlan.destroy.length, 0);
-      assert.equal(emptyPlan.newOrUpdate.length, 0);
+      const plan = await provider.plan();
+      assert.equal(plan.destroy.length, 0);
+      assert.equal(plan.newOrUpdate.length, 0);
     }
     //console.log(JSON.stringify(plan, null, 4));
   });

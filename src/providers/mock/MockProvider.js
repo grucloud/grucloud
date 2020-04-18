@@ -50,7 +50,7 @@ const apis = (config) => [
         );
       }
 
-      return items[0];
+      return itemsWithName[0];
     },
     preCreate: ({ name, options }) => ({
       organization: config.organization,

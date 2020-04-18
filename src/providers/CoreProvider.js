@@ -71,6 +71,7 @@ const ResourceMaker = ({
     );
     const target = await resource.config();
     logger.info(`planUpdate config: ${toString(target)}`);
+    if (_.isEmpty(target)) return;
     const diff = compare(target, live);
     if (diff.length === 0) {
       return [
@@ -100,13 +101,14 @@ const ResourceMaker = ({
       );
       return finalConfig;
     },
-    planFindNewOrUpdate: async ({ resource }) => {
-      const instance = await resource.getByName({ name });
-      logger.info(`planFindNewOrUpdate ${instance}`);
-      const plan = instance
-        ? planUpdate({ instance, resource })
+    planUpsert: async ({ resource }) => {
+      logger.info(`planUpsert resource: ${toString(resource.serialized())}`);
+      const live = await resource.getByName({ name });
+      logger.info(`planUpsert live: ${toString(live)}`);
+      const plan = live
+        ? planUpdate({ live, resource })
         : [{ action: "CREATE", resource: resource.serialized() }];
-      logger.debug(`planFindNewOrUpdate ${JSON.stringify(plan, null, 4)}`);
+      logger.debug(`planUpsert ${JSON.stringify(plan, null, 4)}`);
       return plan;
     },
 
@@ -239,7 +241,7 @@ module.exports = CoreProvider = ({
   };
 
   const plan = async () => ({
-    newOrUpdate: await planFindNewOrUpdate(),
+    newOrUpdate: await planUpsert(),
     destroy: await planFindDestroy(),
   });
 
@@ -251,16 +253,14 @@ module.exports = CoreProvider = ({
   /**
    * Find live resources to create or update based on the target resources
    */
-  const planFindNewOrUpdate = async () => {
-    logger.debug(
-      `planFindNewOrUpdate: #resources ${getTargetResources().length}`
-    );
+  const planUpsert = async () => {
+    logger.debug(`planUpsert: #resources ${getTargetResources().length}`);
     const plans = (
       await Promise.all(
         getTargetResources()
           .filter((resource) => resource.api.methods.create)
           .map(async (resource) => {
-            const plan = await resource.planFindNewOrUpdate({ resource });
+            const plan = await resource.planUpsert({ resource });
             if (plan) {
               return {
                 resource: resource.serialized(),
@@ -270,9 +270,7 @@ module.exports = CoreProvider = ({
           })
       )
     ).filter((x) => x);
-    logger.debug(
-      `planFindNewOrUpdate: plans": ${JSON.stringify(plans, null, 4)}`
-    );
+    logger.debug(`planUpsert: plans": ${JSON.stringify(plans, null, 4)}`);
     return plans;
   };
 

@@ -16,6 +16,7 @@ const apis = ({ organization }) => [
     findName,
     getByName: ({ name, items = [] }) => {
       logger.debug(`getByName: ${name}, items: ${toString(items)}`);
+      //TODO check with tag
       const itemsWithName = items.filter(
         (item) => item.tags && item.tags.find((tag) => tag.includes(name))
       );
@@ -30,7 +31,7 @@ const apis = ({ organization }) => [
         );
       }
 
-      return items[0];
+      return itemsWithName[0];
     },
     onResponseList: (data) => {
       logger.debug(`onResponse ${toString(data)}`);
@@ -38,13 +39,6 @@ const apis = ({ organization }) => [
         return { total: data.ips.length, items: data.ips };
       } else {
         throw Error(`Cannot find ips`);
-      }
-    },
-    toId: (item) => {
-      if (item.address) {
-        return item.address;
-      } else {
-        throw Error(`Cannot find address`);
       }
     },
     preCreate: ({ name, options }) => ({
