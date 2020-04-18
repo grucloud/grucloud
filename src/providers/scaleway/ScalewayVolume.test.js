@@ -1,11 +1,6 @@
 const assert = require("assert");
 const ScalewayProvider = require("./ScalewayProvider");
-
-//TODO extract config to a file
-const config = {
-  zone: "fr-par-1",
-  organization: process.env.SCALEWAY_ORGANISATION_ID,
-};
+const config = require("./config");
 
 describe("ScalewayVolume", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);

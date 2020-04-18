@@ -1,10 +1,6 @@
 const assert = require("assert");
 const ScalewayProvider = require("./ScalewayProvider");
-
-const config = {
-  zone: "fr-par-1",
-  organization: process.env.SCALEWAY_ORGANISATION_ID,
-};
+const config = require("./config");
 
 describe("ScalewayIp", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);

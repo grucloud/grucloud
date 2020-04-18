@@ -1,9 +1,7 @@
 const assert = require("assert");
 const ScalewayProvider = require("./ScalewayProvider");
 
-const config = {
-  zone: "fr-par-1",
-};
+const config = require("./config");
 
 describe("ScalewayProvider", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);

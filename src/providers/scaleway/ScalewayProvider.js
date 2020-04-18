@@ -104,7 +104,7 @@ const apis = ({ organization }) => [
       name,
       organization,
     }),
-    postConfig: ({ config }) => ({ ...config }),
+    postConfig: ({ config }) => ({ ...config }), // TODO volume_type: "l_ssd",
   },
   {
     name: "Server",
