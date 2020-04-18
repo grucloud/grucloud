@@ -244,10 +244,16 @@ module.exports = CoreProvider = ({
     return lists;
   };
 
-  const plan = async () => ({
-    newOrUpdate: await planUpsert(),
-    destroy: await planFindDestroy(),
-  });
+  const plan = async () => {
+    const plan = {
+      newOrUpdate: await planUpsert(),
+      destroy: await planFindDestroy(),
+    };
+    logger.info(`*******************************************************`);
+    logger.info(`plan ${toString(plan)}`);
+    logger.info(`*******************************************************`);
+    return plan;
+  };
 
   const deployPlan = async (plan) => {
     await upsertResources(plan.newOrUpdate);

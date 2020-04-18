@@ -99,7 +99,11 @@ const apis = ({ organization }) => [
         items: volumes,
       };
     },
-
+    preCreate: ({ name, options }) => ({
+      ...options,
+      name,
+      organization,
+    }),
     postConfig: ({ config }) => ({ ...config }),
   },
   {
