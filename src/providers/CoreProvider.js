@@ -6,9 +6,9 @@ const toString = (x) => JSON.stringify(x, null, 4);
 
 const checkEnvironment = require("../Utils").checkEnvironment;
 //TODO move this
-const toTagName = (name, namePrefix) => `${namePrefix}${name}`;
-const fromTagName = (tag, namePrefix) => tag && tag.replace(namePrefix, "");
-const hasTag = (tag, namePrefix) => tag && tag.includes(namePrefix);
+const toTagName = (name, tag) => `${name}${tag}`;
+const fromTagName = (name, tag) => name && name.replace(tag, "");
+const hasTag = (name, tag) => name && name.includes(tag);
 
 const specDefault = {
   preConfig: (x) => undefined,
@@ -21,9 +21,11 @@ const specDefault = {
       throw Error(`cannot find name`);
     }
   },
-  getByName: ({ name, items = [] }) => {
+  getByName: ({ name, items = [], config }) => {
     logger.debug(`getByName: ${name}, items: ${toString(items)}`);
-    const item = items.find((item) => item.name === name);
+    const item = items.find(
+      (item) => item.name === toTagName(name, config.tag)
+    );
     logger.debug(`getByName: ${name}, returns: ${toString(item)}`);
     return item;
   },
@@ -45,6 +47,7 @@ const ResourceMaker = ({
   userConfig,
   api,
   provider,
+  config,
 }) => {
   logger.debug(`ResourceMaker: name: ${name}, type: ${type}`);
 
@@ -53,7 +56,7 @@ const ResourceMaker = ({
     const {
       data: { items },
     } = await client.list();
-    const instance = api.getByName({ name: resourceName, items });
+    const instance = api.getByName({ name: resourceName, items, config });
     logger.info(
       `getByName ${name}, result: ${JSON.stringify(instance, null, 4)}`
     );
@@ -111,7 +114,7 @@ const ResourceMaker = ({
     create: async ({ name, options }) => {
       logger.info(`create ${name}, type: ${type}, ${toString(options)}`);
       const payload = api.preCreate({
-        name: toTagName(name, api.namePrefix),
+        name: toTagName(name, config.tag),
         options,
       });
       logger.info(`create final ${name} ${toString(payload)}`);
@@ -147,12 +150,17 @@ const createResourceMakers = ({ specs, config, provider, Client }) =>
         api: _.defaults(api, specDefault),
         provider,
         client: Client({ options: api, config }),
+        config,
       });
       provider.targetResourcesAdd(resource);
       return resource;
     };
     return acc;
   }, {});
+
+const configProviderDefault = {
+  tag: "-gru",
+};
 
 module.exports = CoreProvider = ({
   name: providerName,
@@ -168,9 +176,10 @@ module.exports = CoreProvider = ({
       config
     )}`
   );
+  config = _.defaults(config, configProviderDefault);
+
   // Target Resources
   const targetResources = new Map();
-
   const targetResourcesAdd = (resource) =>
     targetResources.set(resource.name, resource);
 
@@ -283,13 +292,11 @@ module.exports = CoreProvider = ({
             //TODO delete more than one ?
             const hotResourcesToDestroy = data.items.filter((hotResource) => {
               const name = client.options.findName(hotResource);
-              if (!name || !hasTag(name, client.options.namePrefix)) {
+              if (!name || !hasTag(name, config.tag)) {
                 return;
               }
               // TODO change client.options in client.spec
-              return !resourceNames.includes(
-                fromTagName(name, client.options.namePrefix)
-              );
+              return !resourceNames.includes(fromTagName(name, config.tag));
             });
             if (hotResourcesToDestroy.length > 0) {
               return {

@@ -6,7 +6,7 @@ const config = {
   organization: process.env.SCALEWAY_ORGANISATION_ID,
 };
 
-describe.skip("ScalewayIp", function () {
+describe("ScalewayIp", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);
 
   const ip = provider.makeIp({ name: "myip" }, ({}) => ({}));
@@ -23,9 +23,9 @@ describe.skip("ScalewayIp", function () {
   it("plan", async function () {
     const plan = await provider.plan();
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 0);
+    assert.equal(plan.newOrUpdate.length, 1);
   });
-  it("deploy plan", async function () {
+  it.skip("deploy plan", async function () {
     const plan = await provider.plan();
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 0);

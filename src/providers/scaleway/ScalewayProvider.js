@@ -4,14 +4,16 @@ const logger = require("logger")({ prefix: "ScalewayProvider" });
 
 const toString = (x) => JSON.stringify(x, null, 4);
 
+const findName = (item) => {
+  //prefix for creating and checking tags ?
+  return item && item.tags && item.tags[0];
+};
+
 const apis = ({ organization }) => [
   {
     name: "Ip",
     url: `/ips`,
-    findName: (item) => {
-      //prefix for creating and checking tags ?
-      return item && item.tags && item.tags[0];
-    },
+    findName,
     getByName: ({ name, items = [] }) => {
       logger.debug(`getByName: ${name}, items: ${toString(items)}`);
       const itemsWithName = items.filter(
@@ -94,6 +96,7 @@ const apis = ({ organization }) => [
   },
   {
     name: "Volume",
+    url: `/volumes`,
     onResponseList: (result) => {
       logger.debug(`onResponseList Volume: ${JSON.stringify(result)}`);
       const { volumes = [] } = result;
@@ -102,11 +105,12 @@ const apis = ({ organization }) => [
         items: volumes,
       };
     },
-    url: `/volumes`,
+
     postConfig: ({ config }) => ({ ...config }),
   },
   {
     name: "Server",
+    findName,
     onResponseList: ({ servers }) => {
       return { total: servers.length, items: servers };
     },
