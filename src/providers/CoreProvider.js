@@ -70,10 +70,14 @@ const ResourceMaker = ({
       )}, live: ${toString(live)}`
     );
     const target = await resource.config();
-    logger.info(`planUpdate config: ${toString(target)}`);
-    if (_.isEmpty(target)) return;
+    logger.info(`planUpdate target: ${toString(target)}`);
+
+    if (_.isEmpty(target)) {
+      return;
+    }
     const diff = compare(target, live);
-    if (diff.length === 0) {
+    logger.info(`planUpdate diff ${toString(diff)}`);
+    if (diff.length > 0) {
       return [
         { action: "UPDATE", resource: resource.serialized(), target, live },
       ];
@@ -108,7 +112,7 @@ const ResourceMaker = ({
       const plan = live
         ? planUpdate({ live, resource })
         : [{ action: "CREATE", resource: resource.serialized() }];
-      logger.debug(`planUpsert ${JSON.stringify(plan, null, 4)}`);
+      logger.debug(`planUpsert plan: ${JSON.stringify(plan, null, 4)}`);
       return plan;
     },
 
