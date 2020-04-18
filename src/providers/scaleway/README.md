@@ -21,3 +21,7 @@ Api Specification: https://developers.scaleway.com/static/scaleway.instance.v1.A
 - Reserve an IP address
 
   curl -d '{"tags": ["myip"],"organization": "xxxxxxxxx-xxxxx-xxxx-xxxxxxxxx"}' -X POST https://api.scaleway.com/instance/v1/zones/fr-par-1/ips -H "X-Auth-Token: xxxxxx-xxxxxxxxx-xxxxxxxxxx" -H "Content-Type: application/json"
+
+- Create a server
+
+  curl -X POST https://api.scaleway.com/instance/v1/zones/fr-par-1/servers --data @createServer.json -H "X-Auth-Token:xxxxxxxxxxxxxx" -H "Content-Type:application/json"

@@ -19,20 +19,25 @@ describe("ScalewayProvider", function () {
     assert(image);
     return image;
   });
-
+  /*
   const volume = provider.makeVolume({ name: "volume1" }, () => ({
     size: 20000000000,
   }));
-
+*/
   const server = provider.makeServer(
     {
       name: "web-server",
-      dependencies: { volume, image, ip },
+      dependencies: { image, ip },
     },
-    async ({ dependencies: { volume, image, ip } }) => {
+    async ({ dependencies: { image, ip } }) => {
       return {
         name: "web-server",
         commercial_type: "DEV1-S",
+        volumes: {
+          "0": {
+            size: 20000000000,
+          },
+        },
       };
     }
   );
@@ -41,19 +46,9 @@ describe("ScalewayProvider", function () {
     await provider.destroyAll();
   });
   after(async () => {
-    await provider.destroyAll();
+    //await provider.destroyAll();
   });
 
-  it("image config", async function () {
-    const result = await image.config();
-    //console.log(JSON.stringify(result, null, 4));
-    assert(result.id);
-  });
-  it("volume config", async function () {
-    const result = await volume.config();
-    //console.log(JSON.stringify(result, null, 4));
-    assert(result.size);
-  });
   it("server config", async function () {
     const result = await server.config();
     //console.log(JSON.stringify(result, null, 4));
@@ -81,7 +76,7 @@ describe("ScalewayProvider", function () {
     const plan = await provider.plan();
     //console.log(JSON.stringify(plan, null, 4));
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 3);
+    assert.equal(plan.newOrUpdate.length, 2);
 
     await provider.deployPlan(plan);
 

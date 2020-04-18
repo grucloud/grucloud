@@ -307,7 +307,7 @@ module.exports = CoreProvider = ({
     await upsertResources(plan.newOrUpdate);
     await destroyPlannedResources(plan.destroy);
     logger.info(`*******************************************************`);
-    logger.info(`Deploy Plan DONE ${toString(plan)}`);
+    logger.info(`Deploy Plan DONE`);
     logger.info(`*******************************************************`);
   };
 

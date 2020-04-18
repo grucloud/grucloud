@@ -1,0 +1,15 @@
+{
+  "image": "3d6804e0-086e-4a06-8124-7240a657668d",
+  "volumes": {
+    "0": {
+      "id": "db03aea7-e376-432a-bed8-288c1cae2d1c",
+      "name": "volume1-gru"
+    }
+  },
+  "public_ip": "8c5f62ec-6faf-405a-8137-b0021ff37a78",
+  "boot_type": "local",
+  "commercial_type": "DEV1-S",
+  "name": "web-server",
+  "organization": "xxxxxxxx",
+  "tags": ["web-server-gru"]
+}

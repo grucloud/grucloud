@@ -103,43 +103,34 @@ const apis = ({ organization }) => [
       return { total: servers.length, items: servers };
     },
     configDefault: ({ name, options }) => ({
-      boot_type: "local",
-      commercial_type: "DEV1-S",
       name,
+      dynamic_ip_required: false,
+      commercial_type: "DEV1-S",
+      enable_ipv6: true,
+      boot_type: "local",
       organization,
       tags: [name],
       ...options,
     }),
     configStatic: async ({ config, dependencies: { image, ip, volume } }) => {
       return {
-        image: await image.config(),
-        volumes: await volume.config(),
+        image: await image.config().id,
         public_ip: await ip.config(),
         ...config,
       };
     },
-    configLive: async ({ config, dependencies: { image, ip, volume } }) => {
+    configLive: async ({ config, dependencies: { image, ip } }) => {
       //TODO called should called live
-      const volumeLive = await volume.getLive();
+      //const volumeConfig = await volume.getLive();
       const ipLive = await ip.getLive();
-      const imageLive = await image.getLive();
+      const imageConfig = await image.config();
 
-      logger.debug(
-        `Server configLive volume: ${toString(volumeLive)}, ip: ${toString(
-          ipLive
-        )}`
-      );
-      if (!volumeLive || !ipLive || !imageLive) {
+      logger.debug(`Server configLive ip: ${toString(ipLive)}`);
+      if (!ipLive) {
         throw Error(`configFromLive: cannot find live resources`);
       }
       return {
-        image: await imageLive.uuid,
-        volumes: {
-          "0": {
-            id: volumeLive.id,
-            name: volumeLive.name,
-          },
-        },
+        image: imageConfig.id,
         public_ip: ipLive.id,
         ...config,
       };
