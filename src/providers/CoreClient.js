@@ -51,10 +51,16 @@ module.exports = CoreClient = ({
     get: async (name) => {
       //TODO check for name
       logger.debug(`get ${type}, name: ${name}, canGet: ${canGet}`);
-      if (canGet) {
+      if (!canGet) return;
+      try {
         const result = await axios.request(`/${name}`, { method: "GET" });
         result.data = onResponseGet(result.data);
         return result;
+      } catch (error) {
+        logger.error(
+          ` get type ${type}, , name: ${name}, error ${error.response}`
+        );
+        throw Error(error);
       }
     },
     destroy: async (id) => {
@@ -62,18 +68,27 @@ module.exports = CoreClient = ({
       logger.debug(
         `destroy ${toString({ type: options.name, id, canDelete })}`
       );
-      if (canDelete) {
+      if (!canDelete) return;
+
+      try {
         const result = await axios.request(`/${id}`, { method: "DELETE" });
         result.data = onResponseDelete(result.data);
         return result;
+      } catch (error) {
+        logger.error(`delete type ${type}, error ${error.response}`);
+        throw Error(error);
       }
     },
     list: async () => {
       logger.debug(`list type ${type}`);
-      if (canList) {
+      if (!canList) return;
+      try {
         const result = await axios.request(`/`, { method: "GET" });
         result.data = onResponseList(result.data);
         return result;
+      } catch (error) {
+        logger.error(`list type ${type}, error ${error.response}`);
+        throw Error(error);
       }
     },
     create: async ({ payload }) => {
@@ -82,13 +97,17 @@ module.exports = CoreClient = ({
           payload
         )}`
       );
-      if (canCreate) {
+      if (!canCreate) return;
+      try {
         const result = await axios.request("/", {
           method: "POST",
           data: payload,
         });
         result.data = onResponseCreate(result.data);
         return result;
+      } catch (error) {
+        logger.error(`create type ${type}, error ${error.response}`);
+        throw Error(error);
       }
     },
   };
