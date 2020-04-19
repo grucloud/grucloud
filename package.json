@@ -1,8 +1,12 @@
 {
   "name": "@grucloud/core",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Infrastructure as Code",
+  "public": true,
   "main": "src/index.js",
+  "bin": {
+    "gc": "./src/cli.js"
+  },
   "scripts": {
     "start": "NODE_PATH=src nodemon -e ts,js,graphql node src/index.js",
     "test": "NODE_PATH=src mocha 'src/**/*.js'",
