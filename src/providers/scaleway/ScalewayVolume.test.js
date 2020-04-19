@@ -23,7 +23,7 @@ describe("ScalewayVolume", function () {
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 1);
   });
-  it("deploy plan", async function () {
+  it.skip("deploy plan", async function () {
     await provider.listLives();
     const plan = await provider.plan();
     assert.equal(plan.destroy.length, 0);

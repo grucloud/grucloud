@@ -72,7 +72,7 @@ describe("ScalewayProvider", function () {
     const result = await provider.listTargets();
     assert(result);
   });
-  it("plan", async function () {
+  it.skip("plan", async function () {
     const plan = await provider.plan();
     //console.log(JSON.stringify(plan, null, 4));
     assert.equal(plan.destroy.length, 0);
