@@ -61,7 +61,7 @@ const ResourceMaker = ({
   dependencies,
   client,
   fnUserConfig,
-  api,
+  spec,
   provider,
   config: configProvider,
 }) => {
@@ -72,7 +72,7 @@ const ResourceMaker = ({
     const {
       data: { items },
     } = await client.list();
-    const instance = api.getByName({
+    const instance = spec.getByName({
       name: resourceName,
       items,
       config: configProvider,
@@ -96,7 +96,7 @@ const ResourceMaker = ({
       return;
     }
     //const diff = compare(target, live);
-    const diff = api.compare({ target, live });
+    const diff = spec.compare({ target, live });
     logger.info(`planUpdate diff ${toString(diff)}`);
     if (diff.length > 0) {
       return [
@@ -106,7 +106,7 @@ const ResourceMaker = ({
   };
 
   const config = async ({ live } = {}) => {
-    logger.info(`config type: ${api.name}, name ${resourceName}`);
+    logger.info(`config type: ${spec.name}, name ${resourceName}`);
     const result = await client.list();
     //TODO result no data ?
     const { items } = result.data;
@@ -116,14 +116,14 @@ const ResourceMaker = ({
 
     const userConfig = await fnUserConfig({ dependencies, items });
 
-    const configWithDefault = api.configDefault({
+    const configWithDefault = spec.configDefault({
       name: toTagName(resourceName, configProvider.tag),
       options: userConfig,
     });
 
     logger.info(
       `config type: ${
-        api.name
+        spec.name
       }, name ${resourceName}, with defaults: ${toString(configWithDefault)}`
     );
 
@@ -131,13 +131,13 @@ const ResourceMaker = ({
     if (live) {
       // Fetch all live now
       //
-      finalConfig = api.configLive({
+      finalConfig = spec.configLive({
         config: configWithDefault,
         items,
         dependencies,
       });
     } else {
-      finalConfig = await api.configStatic({
+      finalConfig = await spec.configStatic({
         config: configWithDefault,
         items,
         dependencies,
@@ -145,7 +145,7 @@ const ResourceMaker = ({
     }
 
     logger.info(
-      `config type: ${api.name}, name ${resourceName}, config: ${toString(
+      `config type: ${spec.name}, name ${resourceName}, config: ${toString(
         finalConfig
       )}`
     );
@@ -155,7 +155,7 @@ const ResourceMaker = ({
     type,
     provider,
     name: resourceName,
-    api,
+    spec,
     client,
     serialized: () => ({
       name: resourceName,
@@ -212,7 +212,7 @@ const ResourceMaker = ({
       const live = await getLive();
       logger.info(`destroy type: ${type} item: ${toString(live)}`);
       if (live) {
-        const id = api.toId(live);
+        const id = spec.toId(live);
         if (id) {
           await client.destroy(id);
         } else {
@@ -226,17 +226,17 @@ const ResourceMaker = ({
     },
   };
 };
-// TODO change api name in type
+// TODO change spec name in type
 const createResourceMakers = ({ specs, config, provider, Client }) =>
-  specs.reduce((acc, api) => {
-    acc[`make${api.name}`] = (options, fnUserConfig) => {
+  specs.reduce((acc, spec) => {
+    acc[`make${spec.name}`] = (options, fnUserConfig) => {
       const resource = ResourceMaker({
-        type: api.name,
+        type: spec.name,
         ...options,
         fnUserConfig,
-        api: _.defaults(api, specDefault),
+        spec: _.defaults(spec, specDefault),
         provider,
-        client: Client({ options: api, config }),
+        client: Client({ options: spec, config }),
         config,
       });
       provider.targetResourcesAdd(resource);
@@ -254,7 +254,7 @@ module.exports = CoreProvider = ({
   type,
   envs = [],
   Client,
-  apis,
+  fnSpecs,
   hooks,
   config,
 }) => {
@@ -275,9 +275,9 @@ module.exports = CoreProvider = ({
 
   const resourceByName = (name) => targetResources.get(name);
 
-  const specs = apis(config).map((spec) => _.defaults(spec, specDefault));
+  const specs = fnSpecs(config).map((spec) => _.defaults(spec, specDefault));
 
-  const clients = specs.map((api) => Client({ options: api, config }));
+  const clients = specs.map((spec) => Client({ options: spec, config }));
 
   const clientByType = (type) => {
     //TODO change name in type
@@ -355,7 +355,7 @@ module.exports = CoreProvider = ({
     const plans = (
       await Promise.all(
         getTargetResources()
-          .filter((resource) => resource.api.methods.create)
+          .filter((resource) => resource.spec.methods.create)
           .map(async (resource) => {
             const actions = await resource.planUpsert({ resource });
             return actions;

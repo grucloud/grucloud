@@ -24,7 +24,7 @@ const getByName = ({ name, items = [] }) => {
   return itemsWithName[0];
 };
 
-const apis = (config) => [
+const fnSpecs = (config) => [
   {
     name: "Image",
     methods: { list: true },
@@ -71,7 +71,7 @@ module.exports = MockProvider = ({ name }, config) =>
     type: "mock",
     name,
     config,
-    apis,
+    fnSpecs,
     Client: MockClient,
     hooks: {
       init: () => {},

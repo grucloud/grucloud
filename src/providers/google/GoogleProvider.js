@@ -1,7 +1,7 @@
 const CoreProvider = require("../CoreProvider");
 const GoogleClient = require("./GoogleClient");
 
-const apis = ({ project, region, zone }) => [
+const fnSpecs = ({ project, region, zone }) => [
   {
     name: "Address",
     url: `/projects/${project}/regions/${region}/addresses/`,
@@ -34,7 +34,7 @@ module.exports = GoogleProvider = ({ name }, config) =>
     env: ["GOOGLE_SERVICE_ACCOUNT_KEY"],
     name,
     config,
-    apis,
+    fnSpecs,
     Client: GoogleClient,
     hooks: {
       init: () => {

@@ -34,7 +34,7 @@ const getByName = ({ name, items = [] }) => {
   return itemsWithName[0];
 };
 
-const apis = ({ organization }) => [
+const fnSpecs = ({ organization }) => [
   {
     name: "Ip",
     url: `/ips`,
@@ -164,7 +164,7 @@ module.exports = ScalewayProvider = ({ name }, config) =>
     ],
     name,
     config,
-    apis,
+    fnSpecs,
     Client: ScalewayClient,
 
     hooks: {
