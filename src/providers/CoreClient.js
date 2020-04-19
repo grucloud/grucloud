@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const Axios = require("axios");
 const logger = require("logger")({ prefix: "CoreClient" });
 const toString = (x) => JSON.stringify(x, null, 4);
@@ -49,9 +50,14 @@ module.exports = CoreClient = ({
     options,
     type,
     get: async (name) => {
-      //TODO check for name
       logger.debug(`get ${type}, name: ${name}, canGet: ${canGet}`);
+
+      if (_.isEmpty(name)) {
+        throw Error(`get ${type}: invalid name`);
+      }
+
       if (!canGet) return;
+
       try {
         const result = await axios.request(`/${name}`, { method: "GET" });
         result.data = onResponseGet(result.data);
@@ -64,10 +70,14 @@ module.exports = CoreClient = ({
       }
     },
     destroy: async (id) => {
-      //TODO check for id
       logger.debug(
         `destroy ${toString({ type: options.name, id, canDelete })}`
       );
+
+      if (_.isEmpty(id)) {
+        throw Error(`destroy ${type}: invalid id`);
+      }
+
       if (!canDelete) return;
 
       try {
@@ -81,7 +91,9 @@ module.exports = CoreClient = ({
     },
     list: async () => {
       logger.debug(`list type ${type}`);
+
       if (!canList) return;
+
       try {
         const result = await axios.request(`/`, { method: "GET" });
         result.data = onResponseList(result.data);
@@ -93,11 +105,11 @@ module.exports = CoreClient = ({
     },
     create: async ({ payload }) => {
       logger.debug(
-        `create type ${type}, canCreate: ${canCreate}, payload: ${toString(
-          payload
-        )}`
+        `create ${type}, canCreate: ${canCreate}, payload: ${toString(payload)}`
       );
+
       if (!canCreate) return;
+
       try {
         const result = await axios.request("/", {
           method: "POST",
