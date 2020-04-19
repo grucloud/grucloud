@@ -36,7 +36,7 @@ const getByName = ({ name, items = [] }) => {
 
 const fnSpecs = ({ organization }) => [
   {
-    name: "Ip",
+    type: "Ip",
     url: `/ips`,
     findName,
     getByName,
@@ -67,7 +67,7 @@ const fnSpecs = ({ organization }) => [
     },
   },
   {
-    name: "Bootscript",
+    type: "Bootscript",
     methods: { list: true },
     onResponseList: ({ bootscripts }) => ({
       total: bootscripts.length,
@@ -76,13 +76,13 @@ const fnSpecs = ({ organization }) => [
     url: `/bootscripts`,
   },
   {
-    name: "Image",
+    type: "Image",
     methods: { list: true },
     onResponseList: ({ images }) => ({ total: images.length, items: images }),
     url: `/images`,
   },
   {
-    name: "Volume",
+    type: "Volume",
     url: `/volumes`,
     onResponseList: (result) => {
       logger.debug(`onResponseList Volume: ${JSON.stringify(result)}`);
@@ -100,7 +100,7 @@ const fnSpecs = ({ organization }) => [
     }),
   },
   {
-    name: "Server",
+    type: "Server",
     url: `servers`,
     findName,
     getByName,

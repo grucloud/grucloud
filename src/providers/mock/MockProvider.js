@@ -26,15 +26,15 @@ const getByName = ({ name, items = [] }) => {
 
 const fnSpecs = (config) => [
   {
-    name: "Image",
+    type: "Image",
     methods: { list: true },
     toId: (obj) => obj.name,
   },
   {
-    name: "Volume",
+    type: "Volume",
   },
   {
-    name: "Ip",
+    type: "Ip",
     findName: (item) => {
       //prefix for creating and checking tags ?
       return item && item.tags && item.tags[0];
@@ -55,7 +55,7 @@ const fnSpecs = (config) => [
     },
   },
   {
-    name: "Server",
+    type: "Server",
     getByName,
     configDefault: ({ name, options }) => ({
       name,

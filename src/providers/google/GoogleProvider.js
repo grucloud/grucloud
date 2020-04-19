@@ -3,7 +3,7 @@ const GoogleClient = require("./GoogleClient");
 
 const fnSpecs = ({ project, region, zone }) => [
   {
-    name: "Address",
+    type: "Address",
     url: `/projects/${project}/regions/${region}/addresses/`,
     onResponseList: (data) => {
       console.log("onResponseList TODO", JSON.stringify(data, null, 4));
@@ -11,7 +11,7 @@ const fnSpecs = ({ project, region, zone }) => [
     },
   },
   {
-    name: "Volume",
+    type: "Volume",
     url: `/projects/${project}/regions/${region}/volumes/`,
     onResponseList: (data) => {
       console.log("onResponseList TODO", JSON.stringify(data, null, 4));
@@ -19,7 +19,7 @@ const fnSpecs = ({ project, region, zone }) => [
     },
   },
   {
-    name: "Server",
+    type: "Server",
     url: `/projects/${project}/zones/${zone}/instances/`,
     onResponseList: (data) => {
       console.log("onResponseList TODO", JSON.stringify(data, null, 4));

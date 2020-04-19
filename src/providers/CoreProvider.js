@@ -104,7 +104,7 @@ const ResourceMaker = ({
   };
 
   const config = async ({ live } = {}) => {
-    logger.info(`config type: ${spec.name}, name ${resourceName}`);
+    logger.info(`config type: ${spec.type}, name ${resourceName}`);
     const result = await client.list();
     //TODO result no data ?
     const { items } = result.data;
@@ -121,7 +121,7 @@ const ResourceMaker = ({
 
     logger.info(
       `config type: ${
-        spec.name
+        spec.type
       }, name ${resourceName}, with defaults: ${toString(configWithDefault)}`
     );
 
@@ -143,7 +143,7 @@ const ResourceMaker = ({
     }
 
     logger.info(
-      `config type: ${spec.name}, name ${resourceName}, config: ${toString(
+      `config type: ${spec.type}, name ${resourceName}, config: ${toString(
         finalConfig
       )}`
     );
@@ -227,14 +227,14 @@ const ResourceMaker = ({
 // TODO change spec name in type
 const createResourceMakers = ({ specs, config, provider, Client }) =>
   specs.reduce((acc, spec) => {
-    acc[`make${spec.name}`] = (options, fnUserConfig) => {
+    acc[`make${spec.type}`] = (options, fnUserConfig) => {
       const resource = ResourceMaker({
-        type: spec.name,
+        type: spec.type,
         ...options,
         fnUserConfig,
         spec: _.defaults(spec, fnSpecDefault({ config: provider.config })),
         provider,
-        client: Client({ options: spec, config }),
+        client: Client({ options: spec, config }), //TODO option is spec
         config,
       });
       provider.targetResourcesAdd(resource);
@@ -280,7 +280,7 @@ module.exports = CoreProvider = ({
 
   const clientByType = (type) => {
     //TODO change name in type
-    const spec = specs.find((spec) => spec.name === type);
+    const spec = specs.find((spec) => spec.type === type);
     if (!spec) {
       throw new Error(`type ${type} not found`);
     }
@@ -292,7 +292,7 @@ module.exports = CoreProvider = ({
     const lists = (
       await Promise.all(
         clients.map(async (client) => ({
-          type: client.options.name,
+          type: client.options.type,
           data: (await client.list()).data,
         }))
       )
@@ -398,7 +398,7 @@ module.exports = CoreProvider = ({
               })
               .map((live) => ({
                 provider: providerName,
-                type: client.options.name, // TODO change client.options in client.spec
+                type: client.options.type, // TODO change client.options in client.spec
                 data: live,
               }));
           })

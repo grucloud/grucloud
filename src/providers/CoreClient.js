@@ -71,7 +71,7 @@ module.exports = CoreClient = ({
     },
     destroy: async (id) => {
       logger.debug(
-        `destroy ${toString({ type: options.name, id, canDelete })}`
+        `destroy ${toString({ type: options.type, id, canDelete })}`
       );
 
       if (_.isEmpty(id)) {
