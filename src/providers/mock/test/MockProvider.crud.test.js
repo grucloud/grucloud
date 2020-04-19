@@ -22,17 +22,18 @@ const testCrud = async ({ provider, resource, createOptions }) => {
     const {
       data: { items },
     } = await client.list();
+    //Cannot destroy images
     assert.equal(items.length, 0);
   }
 
   {
-    await resource.create({ options: createOptions });
+    await resource.create({ payload: createOptions });
     const {
       data: { items },
     } = await client.list();
     assert.equal(items.length, 1);
   }
-
+  //TODO check double create
   {
     const {
       data: { items },
@@ -53,7 +54,8 @@ describe("MockProvider", function () {
     config: MockCloud(mockServerInitStates),
   });
 
-  it("testCrud", async function () {
-    await testCrud({ provider, resource: image });
+  it.skip("testCrud", async function () {
+    //TODO add createOptions
+    await testCrud({ provider, resource: ip });
   });
 });

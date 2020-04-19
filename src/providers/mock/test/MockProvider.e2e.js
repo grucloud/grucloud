@@ -36,37 +36,6 @@ const mockCloudInitStates = [
 
 describe("MockProvider e2e", function () {
   describe("plan", function () {
-    it("simple plan", async function () {
-      const { provider } = createStack({
-        config: MockCloud(mockCloudInitStates),
-      });
-      const plan = await provider.plan();
-      assert.equal(plan.destroy.length, 0);
-      assert.equal(plan.newOrUpdate.length, 3);
-    });
-    it("deploy plan", async function () {
-      const { provider } = createStack({
-        config: MockCloud(mockCloudInitStates),
-      });
-      const plan = await provider.plan();
-      await provider.deployPlan(plan);
-      await provider.destroyAll();
-    });
-    it("plan is empty after deploy plan", async function () {
-      const { provider } = createStack({
-        config: MockCloud(mockCloudInitStates),
-      });
-      await provider.deployPlan(await provider.plan());
-
-      {
-        const listTargets = await provider.listTargets();
-        assert.equal(listTargets.length, 3);
-      }
-
-      const plan = await provider.plan();
-      assert.equal(plan.destroy.length, 0);
-      assert.equal(plan.newOrUpdate.length, 0);
-    });
     it("plan", async function () {
       const { provider } = createStack({
         config: MockCloud(mockCloudInitStates),
@@ -87,9 +56,7 @@ describe("MockProvider e2e", function () {
       }
 
       const plan = await provider.plan();
-      //console.log(plan);
       {
-        //TODO
         assert.equal(plan.destroy.length, 0);
         assert.equal(plan.newOrUpdate.length, 3);
       }

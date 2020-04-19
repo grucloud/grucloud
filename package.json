@@ -23,6 +23,7 @@
   "dependencies": {
     "@koa/router": "^9.0.0",
     "axios": "^0.19.2",
+    "bluebird": "^3.7.2",
     "dotenv": "^8.2.0",
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",

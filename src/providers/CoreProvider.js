@@ -1,4 +1,5 @@
 const _ = require("lodash");
+const Promise = require("bluebird");
 const logger = require("logger")({ prefix: "CoreProvider" });
 const compare = require("../Utils").compare;
 
@@ -10,6 +11,7 @@ const toTagName = (name, tag) => `${name}${tag}`;
 const fromTagName = (name, tag) => name && name.replace(tag, "");
 const hasTag = (name, tag) => name && name.includes(tag);
 
+//TODO function with providerConfig as param ?
 const specDefault = {
   postConfig: ({ config }) => config,
   configStatic: ({ config }) => config,
@@ -167,7 +169,28 @@ const ResourceMaker = ({
       logger.info(
         `create ${resourceName}, type: ${type}, ${toString(payload)}`
       );
-      return await client.create({ name: resourceName, payload });
+      // Is the resource already created ?
+      {
+        const live = await getLive();
+        if (live) {
+          throw Error(
+            `Resource ${resourceName} of type: ${type} already exists`
+          );
+        }
+      }
+      // Create now
+      await client.create({ name: resourceName, payload });
+      // Is the resource created now ?
+      // TODO retry ?
+      await Promise.delay(1e3);
+      {
+        const live = await getLive();
+        if (!live) {
+          throw Error(
+            `Resource ${resourceName} of type: ${type} has been created but is not lived yet`
+          );
+        }
+      }
     },
     getLive,
     destroy: async () => {
@@ -331,9 +354,8 @@ module.exports = CoreProvider = ({
     return plans;
   };
 
-  const planFindDestroy = async () => {
-    const resourceNames = getTargetResources().map((resource) => resource.name);
-    logger.debug(`planFindDestroy resourceNames: ${resourceNames}`);
+  const planFindDestroy = async ({ all = false } = {}) => {
+    logger.debug(`planFindDestroy resourceNames: ${resourceNames()}`);
 
     const plans = (
       await Promise.all(
@@ -342,29 +364,37 @@ module.exports = CoreProvider = ({
           .map(async (client) => {
             const { data } = await client.list();
 
-            logger.debug(`planFindDestroy type: ${client.type}`);
+            logger.debug(
+              `planFindDestroy type: ${client.type}, items: ${toString(
+                data.items
+              )}`
+            );
 
-            //TODO delete more than one ?
-            const hotResourcesToDestroy = data.items.filter((hotResource) => {
-              const name = client.options.findName(hotResource);
-              if (!name || !hasTag(name, config.tag)) {
-                return;
-              }
-              // TODO change client.options in client.spec
-              return !resourceNames.includes(fromTagName(name, config.tag));
-            });
-            if (hotResourcesToDestroy.length > 0) {
-              return {
+            return data.items
+              .filter((hotResource) => {
+                const name = client.options.findName(hotResource);
+                logger.debug(`planFindDestroy name: ${name}`);
+
+                if (!name || !hasTag(name, config.tag)) {
+                  return;
+                }
+                return (
+                  all ||
+                  !resourceNames().includes(fromTagName(name, config.tag))
+                );
+              })
+              .map((live) => ({
                 provider: providerName,
-                type: client.options.name,
-                data: hotResourcesToDestroy[0],
-              };
-            }
-            return;
+                type: client.options.name, // TODO change client.options in client.spec
+                data: live,
+              }));
           })
       )
-    ).filter((x) => x);
-    logger.debug(`planFindDestroy: plans ${JSON.stringify(plans, null, 4)}`);
+    )
+      .flat()
+      .filter((x) => x);
+
+    logger.debug(`planFindDestroy: plans ${toString(plans)}`);
     return plans;
   };
   const upsertResources = async (newOrUpdate = []) => {
@@ -374,6 +404,7 @@ module.exports = CoreProvider = ({
       if (!engine) {
         throw Error(`Cannot find resource ${toString(action.resource.name)}`);
       }
+      //TODO check if already exists ?
       await engine.create({
         payload: await engine.config({ live: true }),
       });
@@ -395,6 +426,7 @@ module.exports = CoreProvider = ({
   const destroyById = async ({ type, id }) => {
     logger.debug(`destroyById: ${toString({ type, id })}`);
     //Change name in type
+
     const client = clientByType(type);
     if (client) {
       await client.destroy(id);
@@ -404,9 +436,7 @@ module.exports = CoreProvider = ({
   };
 
   const destroyPlannedResources = async (planDestroy) => {
-    logger.debug(
-      `destroyPlannedResources ${JSON.stringify(planDestroy, null, 4)}`
-    );
+    logger.debug(`destroyPlannedResources ${toString(planDestroy)}`);
     await Promise.all(
       planDestroy.map(async (planItem) => {
         await destroyById({
@@ -419,14 +449,10 @@ module.exports = CoreProvider = ({
 
   const destroyAll = async () => {
     logger.debug(`destroyAll `);
-    //TODO Promise all settled
-    await Promise.all(
-      getTargetResources().map(async (resource) => ({
-        resource,
-        data: await resource.destroy(),
-      }))
-    );
+    const planDestroy = await planFindDestroy({ all: true });
+    await destroyPlannedResources(planDestroy);
   };
+
   checkEnvironment(envs);
   if (hooks && hooks.init) {
     hooks.init();
@@ -447,6 +473,7 @@ module.exports = CoreProvider = ({
     targetResourcesAdd,
     clientByType,
     resourceByName,
+    targetResources,
   };
 
   return {

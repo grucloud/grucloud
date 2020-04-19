@@ -46,7 +46,7 @@ describe("ScalewayProvider", function () {
     await provider.destroyAll();
   });
   after(async () => {
-    //await provider.destroyAll();
+    await provider.destroyAll();
   });
 
   it("server config", async function () {
@@ -54,7 +54,7 @@ describe("ScalewayProvider", function () {
     //console.log(JSON.stringify(result, null, 4));
     assert(result.name);
     assert.equal(result.boot_type, "local");
-    assert(result.image);
+    //assert(result.image);
     assert(result.volumes);
   });
   it("list all config", async function () {
@@ -72,7 +72,7 @@ describe("ScalewayProvider", function () {
     const result = await provider.listTargets();
     assert(result);
   });
-  it.only("plan", async function () {
+  it("plan", async function () {
     const plan = await provider.plan();
     //console.log(JSON.stringify(plan, null, 4));
     assert.equal(plan.destroy.length, 0);

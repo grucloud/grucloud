@@ -21,7 +21,9 @@ describe("ScalewayImage", function () {
   after(async () => {
     await provider.destroyAll();
   });
-
+  it("targetResources size ", async function () {
+    assert.equal(provider.targetResources.size, 1);
+  });
   it("config static ", async function () {
     const config = await image.config();
     assert(config);

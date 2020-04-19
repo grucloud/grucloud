@@ -5,6 +5,7 @@ const logger = require("logger")({ prefix: "ScalewayProvider" });
 
 const toString = (x) => JSON.stringify(x, null, 4);
 
+// TODO double check
 const findName = (item) => {
   const name = item && item.tags && item.tags[0];
   logger.debug(`findName: item: ${toString(item)}, name: ${name}`);
@@ -12,30 +13,32 @@ const findName = (item) => {
   return item && item.tags && item.tags[0];
 };
 
+const getByName = ({ name, items = [] }) => {
+  logger.debug(`getByName: ${name}, items: ${toString(items)}`);
+  //TODO check with tag
+  const itemsWithName = items.filter(
+    (item) => item.tags && item.tags.find((tag) => tag.includes(name))
+  );
+  if (itemsWithName.length === 0) {
+    logger.debug(`getByName: ${name}, no result`);
+    return;
+  }
+  logger.debug(`getByName: ${name}, returns: ${toString(itemsWithName)}`);
+  if (itemsWithName.length > 1) {
+    logger.error(
+      `getByName: ${name}, multiple result: ${toString(itemsWithName)}`
+    );
+  }
+
+  return itemsWithName[0];
+};
+
 const apis = ({ organization }) => [
   {
     name: "Ip",
     url: `/ips`,
     findName,
-    getByName: ({ name, items = [] }) => {
-      logger.debug(`getByName: ${name}, items: ${toString(items)}`);
-      //TODO check with tag
-      const itemsWithName = items.filter(
-        (item) => item.tags && item.tags.find((tag) => tag.includes(name))
-      );
-      if (itemsWithName.length === 0) {
-        logger.debug(`getByName: ${name}, no result`);
-        return;
-      }
-      logger.debug(`getByName: ${name}, returns: ${toString(itemsWithName)}`);
-      if (itemsWithName.length > 1) {
-        logger.error(
-          `getByName: ${name}, multiple result: ${toString(itemsWithName)}`
-        );
-      }
-
-      return itemsWithName[0];
-    },
+    getByName,
     onResponseList: (data) => {
       logger.debug(`onResponse ${toString(data)}`);
       if (data && data.ips) {
@@ -99,6 +102,7 @@ const apis = ({ organization }) => [
     name: "Server",
     url: `servers`,
     findName,
+    getByName,
     onResponseList: ({ servers }) => {
       return { total: servers.length, items: servers };
     },
@@ -112,16 +116,17 @@ const apis = ({ organization }) => [
       tags: [name],
       ...options,
     }),
-    configStatic: async ({ config, dependencies: { image, ip, volume } }) => {
+    configStatic: async ({ config, dependencies: { image, ip } }) => {
+      const imageId = await image.config().id;
+      //logger.debug(`configStatic imageId: ${imageId}`);
+
       return {
-        image: await image.config().id,
+        image: imageId,
         public_ip: await ip.config(),
         ...config,
       };
     },
     configLive: async ({ config, dependencies: { image, ip } }) => {
-      //TODO called should called live
-      //const volumeConfig = await volume.getLive();
       const ipLive = await ip.getLive();
       const imageConfig = await image.config();
 
