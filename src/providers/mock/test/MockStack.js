@@ -1,10 +1,8 @@
 const assert = require("assert");
-const logger = require("logger")({ prefix: "MockCloud" });
 const MockProvider = require("../MockProvider");
 const toString = (x) => JSON.stringify(x, null, 4);
 
 const createStack = ({ config }) => {
-  logger.info(`createStack ${toString(config)}`);
   // Provider
 
   const provider = MockProvider({ name: "mock" }, config);

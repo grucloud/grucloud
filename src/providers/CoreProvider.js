@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const Promise = require("bluebird");
-const logger = require("logger")({ prefix: "CoreProvider" });
+const logger = require("../logger")({ prefix: "CoreProvider" });
 const compare = require("../Utils").compare;
 
 const toString = (x) => JSON.stringify(x, null, 4);

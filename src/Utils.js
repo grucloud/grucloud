@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const logger = require("logger")({ prefix: "MocCloud" });
+const logger = require("./logger")({ prefix: "MocCloud" });
 const toString = (x) => JSON.stringify(x, null, 4);
 
 const checkEnvironment = (env = []) =>

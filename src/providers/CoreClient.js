@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const Axios = require("axios");
-const logger = require("logger")({ prefix: "CoreClient" });
+const logger = require("../logger")({ prefix: "CoreClient" });
 const toString = (x) => JSON.stringify(x, null, 4);
 const noop = () => ({});
 const identity = (x) => x;

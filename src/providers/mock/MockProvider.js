@@ -37,6 +37,7 @@ const fnSpecs = (config) => [
     type: "Ip",
     findName: (item) => {
       //prefix for creating and checking tags ?
+      //TODO loop through tags
       return item && item.tags && item.tags[0];
     },
     getByName,

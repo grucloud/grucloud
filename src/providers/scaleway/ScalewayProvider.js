@@ -2,7 +2,7 @@ const _ = require("lodash");
 const compare = require("../../Utils").compare;
 const CoreProvider = require("../CoreProvider");
 const ScalewayClient = require("./ScalewayClient");
-const logger = require("logger")({ prefix: "ScalewayProvider" });
+const logger = require("../../logger")({ prefix: "ScalewayProvider" });
 
 const toString = (x) => JSON.stringify(x, null, 4);
 
