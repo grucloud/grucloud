@@ -1,5 +1,5 @@
 const assert = require("assert");
-const MockCloud = require("../MockCloud");
+const MockCloud = require("./MockCloud");
 const createStack = require("./MockStack");
 
 const logger = require("logger")({ prefix: "MockProviderTest" });

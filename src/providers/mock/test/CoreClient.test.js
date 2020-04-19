@@ -1,6 +1,6 @@
 const assert = require("assert");
-const CoreClient = require("./CoreClient");
-const MockServer = require("./mock/MockServer");
+const CoreClient = require("../../CoreClient");
+const MockServer = require("./MockServer");
 
 const port = 5645;
 const baseURL = `http://localhost:${port}/compute`;

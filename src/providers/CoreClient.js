@@ -64,7 +64,7 @@ module.exports = CoreClient = ({
         return result;
       } catch (error) {
         logger.error(
-          ` get type ${type}, , name: ${name}, error ${error.response}`
+          ` get type ${type}, name: ${name}, error ${toString(error.response)}`
         );
         throw Error(error);
       }
@@ -85,7 +85,7 @@ module.exports = CoreClient = ({
         result.data = onResponseDelete(result.data);
         return result;
       } catch (error) {
-        logger.error(`delete type ${type}, error ${error.response}`);
+        logger.error(`delete type ${type}, error ${toString(error.response)}`);
         throw Error(error);
       }
     },
@@ -99,7 +99,7 @@ module.exports = CoreClient = ({
         result.data = onResponseList(result.data);
         return result;
       } catch (error) {
-        logger.error(`list type ${type}, error ${error.response}`);
+        logger.error(`list type ${type}, error ${toString(error.response)}`);
         throw Error(error);
       }
     },
@@ -118,7 +118,7 @@ module.exports = CoreClient = ({
         result.data = onResponseCreate(result.data);
         return result;
       } catch (error) {
-        logger.error(`create type ${type}, error ${error.response}`);
+        logger.error(`create type ${type}, error ${toString(error.response)}`);
         throw Error(error);
       }
     },

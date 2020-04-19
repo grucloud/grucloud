@@ -1,6 +1,6 @@
 const assert = require("assert");
 const createStack = require("./MockStack");
-const MockCloud = require("../MockCloud");
+const MockCloud = require("./MockCloud");
 
 const logger = require("logger")({ prefix: "MockProviderTest" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
