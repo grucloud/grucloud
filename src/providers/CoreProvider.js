@@ -219,7 +219,7 @@ const createResourceMakers = ({ specs, config, provider, Client }) =>
         fnUserConfig,
         spec: _.defaults(spec, fnSpecDefault({ config: provider.config })),
         provider,
-        client: Client({ options: spec, config }), //TODO option is spec
+        client: Client({ spec, config }), //TODO option is spec
         config,
       });
       provider.targetResourcesAdd(resource);
@@ -261,7 +261,7 @@ module.exports = CoreProvider = ({
     _.defaults(spec, fnSpecDefault({ config }))
   );
 
-  const clients = specs.map((spec) => Client({ options: spec, config }));
+  const clients = specs.map((spec) => Client({ spec, config }));
 
   const clientByType = (type) => {
     //TODO change name in type
@@ -269,7 +269,7 @@ module.exports = CoreProvider = ({
     if (!spec) {
       throw new Error(`type ${type} not found`);
     }
-    return Client({ options: spec, config });
+    return Client({ spec, config });
   };
   // API
   //  Flatter that
@@ -277,7 +277,7 @@ module.exports = CoreProvider = ({
     const lists = (
       await Promise.all(
         clients.map(async (client) => ({
-          type: client.options.type,
+          type: client.spec.type,
           data: (await client.list()).data,
         }))
       )
@@ -358,7 +358,7 @@ module.exports = CoreProvider = ({
     const plans = (
       await Promise.all(
         clients
-          .filter((client) => client.options.methods.del)
+          .filter((client) => client.spec.methods.del)
           .map(async (client) => {
             const { data } = await client.list();
 
@@ -370,7 +370,7 @@ module.exports = CoreProvider = ({
 
             return data.items
               .filter((hotResource) => {
-                const name = client.options.findName(hotResource);
+                const name = client.spec.findName(hotResource);
                 logger.debug(`planFindDestroy name: ${name}`);
 
                 if (!name || !hasTag(name, config.tag)) {
@@ -383,7 +383,7 @@ module.exports = CoreProvider = ({
               })
               .map((live) => ({
                 provider: providerName,
-                type: client.options.type, // TODO change client.options in client.spec
+                type: client.spec.type, // TODO change client.spec in client.spec
                 data: live,
               }));
           })

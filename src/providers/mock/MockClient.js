@@ -2,8 +2,8 @@ const _ = require("lodash");
 const logger = require("logger")({ prefix: "MockClient" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
-module.exports = MockClient = ({ options = {}, config }) => {
-  const { type } = options;
+module.exports = MockClient = ({ spec, config }) => {
+  const { type } = spec;
   logger.debug(`MockClient init ${type}, ${JSON.stringify(config)}`);
 
   const list = async () => {
@@ -27,7 +27,7 @@ module.exports = MockClient = ({ options = {}, config }) => {
   };
 
   return {
-    options,
+    spec,
     type: "mockClient",
     get,
     list,

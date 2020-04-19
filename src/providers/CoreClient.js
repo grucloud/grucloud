@@ -6,7 +6,7 @@ const noop = () => ({});
 const identity = (x) => x;
 
 module.exports = CoreClient = ({
-  options = {},
+  spec = {},
   type,
   baseURL,
   onHeaders = noop,
@@ -40,14 +40,14 @@ module.exports = CoreClient = ({
       },
     ],
   });
-  const { methods } = options;
+  const { methods } = spec;
   const canGet = !methods || methods.get;
   const canCreate = !methods || methods.create;
   const canDelete = !methods || methods.del;
   const canList = !methods || methods.list;
 
   return {
-    options,
+    spec,
     type,
     get: async (name) => {
       logger.debug(`get ${type}, name: ${name}, canGet: ${canGet}`);
@@ -70,9 +70,7 @@ module.exports = CoreClient = ({
       }
     },
     destroy: async (id) => {
-      logger.debug(
-        `destroy ${toString({ type: options.type, id, canDelete })}`
-      );
+      logger.debug(`destroy ${toString({ type: spec.type, id, canDelete })}`);
 
       if (_.isEmpty(id)) {
         throw Error(`destroy ${type}: invalid id`);
