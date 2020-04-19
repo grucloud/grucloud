@@ -12,8 +12,7 @@ const toTagName = (name, tag) => `${name}${tag}`;
 const fromTagName = (name, tag) => name && name.replace(tag, "");
 const hasTag = (name, tag) => name && name.includes(tag);
 
-//TODO function with providerConfig as param ?
-const specDefault = {
+const fnSpecDefault = ({ config }) => ({
   compare: ({ target, live }) => {
     logger.debug(`compare default`);
     const diff = compare({
@@ -37,7 +36,7 @@ const specDefault = {
       throw Error(`cannot find name`);
     }
   },
-  getByName: ({ name, items = [], config }) => {
+  getByName: ({ name, items = [] }) => {
     logger.debug(`getByName: ${name}, items: ${toString(items)}`);
     const item = items.find(
       (item) => item.name === toTagName(name, config.tag)
@@ -53,7 +52,7 @@ const specDefault = {
     del: true,
   },
   namePrefix: "",
-};
+});
 
 const ResourceMaker = ({
   name: resourceName,
@@ -75,7 +74,6 @@ const ResourceMaker = ({
     const instance = spec.getByName({
       name: resourceName,
       items,
-      config: configProvider,
     });
     logger.info(
       `getLive type: ${type}, ${resourceName}, result: ${toString(instance)}`
@@ -234,7 +232,7 @@ const createResourceMakers = ({ specs, config, provider, Client }) =>
         type: spec.name,
         ...options,
         fnUserConfig,
-        spec: _.defaults(spec, specDefault),
+        spec: _.defaults(spec, fnSpecDefault({ config: provider.config })),
         provider,
         client: Client({ options: spec, config }),
         config,
@@ -258,13 +256,12 @@ module.exports = CoreProvider = ({
   hooks,
   config,
 }) => {
+  config = _.defaults(config, configProviderDefault);
   logger.debug(
     `CoreProvider name: ${providerName}, type ${type}, config: ${toString(
       config
     )}`
   );
-  config = _.defaults(config, configProviderDefault);
-
   // Target Resources
   const targetResources = new Map();
   const targetResourcesAdd = (resource) =>
@@ -275,7 +272,9 @@ module.exports = CoreProvider = ({
 
   const resourceByName = (name) => targetResources.get(name);
 
-  const specs = fnSpecs(config).map((spec) => _.defaults(spec, specDefault));
+  const specs = fnSpecs(config).map((spec) =>
+    _.defaults(spec, fnSpecDefault({ config }))
+  );
 
   const clients = specs.map((spec) => Client({ options: spec, config }));
 
