@@ -51,7 +51,6 @@ const fnSpecDefault = ({ config }) => ({
     create: true,
     del: true,
   },
-  namePrefix: "",
 });
 
 const ResourceMaker = ({
@@ -64,10 +63,10 @@ const ResourceMaker = ({
   provider,
   config: configProvider,
 }) => {
-  logger.debug(`ResourceMaker: name: ${resourceName}, type: ${type}`);
+  logger.debug(`ResourceMaker: ${type}/${resourceName}`);
 
   const getLive = async () => {
-    logger.info(`getLive type: ${type}, name: ${resourceName}`);
+    logger.info(`getLive ${resourceName}/${type}`);
     const {
       data: { items },
     } = await client.list();
@@ -75,9 +74,7 @@ const ResourceMaker = ({
       name: resourceName,
       items,
     });
-    logger.info(
-      `getLive type: ${type}, ${resourceName}, result: ${toString(instance)}`
-    );
+    logger.info(`getLive ${type}/${resourceName}, out: ${toString(instance)}`);
     return instance;
   };
 
@@ -93,7 +90,6 @@ const ResourceMaker = ({
     if (_.isEmpty(target)) {
       return;
     }
-    //const diff = compare(target, live);
     const diff = spec.compare({ target, live });
     logger.info(`planUpdate diff ${toString(diff)}`);
     if (diff.length > 0) {
@@ -104,13 +100,10 @@ const ResourceMaker = ({
   };
 
   const config = async ({ live } = {}) => {
-    logger.info(`config type: ${spec.type}, name ${resourceName}`);
-    const result = await client.list();
-    //TODO result no data ?
-    const { items } = result.data;
-    if (!items) {
-      throw Error(`client.list() not formed correctly: ${result}`);
-    }
+    logger.info(`config ${spec.type}/${resourceName}`);
+    const {
+      data: { items },
+    } = await client.list();
 
     const userConfig = await fnUserConfig({ dependencies, items });
 
@@ -120,9 +113,9 @@ const ResourceMaker = ({
     });
 
     logger.info(
-      `config type: ${
-        spec.type
-      }, name ${resourceName}, with defaults: ${toString(configWithDefault)}`
+      `config ${spec.type}/${resourceName}, with defaults: ${toString(
+        configWithDefault
+      )}`
     );
 
     let finalConfig;
@@ -143,9 +136,7 @@ const ResourceMaker = ({
     }
 
     logger.info(
-      `config type: ${spec.type}, name ${resourceName}, config: ${toString(
-        finalConfig
-      )}`
+      `config ${spec.type}/${resourceName}, config: ${toString(finalConfig)}`
     );
     return finalConfig;
   };
@@ -174,20 +165,16 @@ const ResourceMaker = ({
               config: await resource.config(),
             },
           ];
-      logger.debug(`planUpsert plan: ${JSON.stringify(plan, null, 4)}`);
+      logger.debug(`planUpsert plan: ${toString(plan)}`);
       return plan;
     },
     create: async ({ payload }) => {
-      logger.info(
-        `create ${resourceName}, type: ${type}, ${toString(payload)}`
-      );
+      logger.info(`create ${toString({ resourceName, type, payload })}`);
       // Is the resource already created ?
       {
         const live = await getLive();
         if (live) {
-          throw Error(
-            `Resource ${resourceName} of type: ${type} already exists`
-          );
+          throw Error(`Resource ${type}/${resourceName} already exists`);
         }
       }
       // Create now
@@ -199,14 +186,14 @@ const ResourceMaker = ({
         const live = await getLive();
         if (!live) {
           throw Error(
-            `Resource ${resourceName} of type: ${type} has been created but is not lived yet`
+            `Resource ${type}/${resourceName} has been created but is not lived yet`
           );
         }
       }
     },
     getLive,
     destroy: async () => {
-      logger.info(`destroy type: ${type}, name: ${resourceName}`);
+      logger.info(`destroy ${type}/${resourceName}`);
       const live = await getLive();
       logger.info(`destroy type: ${type} item: ${toString(live)}`);
       if (live) {
@@ -217,9 +204,7 @@ const ResourceMaker = ({
           throw Error(`Cannot find id in ${toString(live)}`);
         }
       } else {
-        logger.error(
-          `Cannot find type: ${type}, name: ${resourceName} to destroy`
-        );
+        logger.error(`Cannot find ${type}/${resourceName} to destroy`);
       }
     },
   };
@@ -297,11 +282,11 @@ module.exports = CoreProvider = ({
         }))
       )
     ).filter((liveResources) => liveResources.data.items.length > 0);
-    logger.debug(`listLives ${JSON.stringify(lists, null, 4)}`);
+    logger.debug(`listLives ${toString(lists)}`);
     return lists;
   };
 
-  const listTargets = async (resources) => {
+  const listTargets = async () => {
     const lists = (
       await Promise.all(
         getTargetResources().map(async (resource) => ({
@@ -310,7 +295,7 @@ module.exports = CoreProvider = ({
         }))
       )
     ).filter((x) => x.data);
-    logger.debug(`listTargets ${JSON.stringify(lists, null, 4)}`);
+    logger.debug(`listTargets ${toString(lists)}`);
     return lists;
   };
 
@@ -368,7 +353,7 @@ module.exports = CoreProvider = ({
   };
 
   const planFindDestroy = async ({ all = false } = {}) => {
-    logger.debug(`planFindDestroy resourceNames: ${resourceNames()}`);
+    logger.debug(`planFindDestroy resources: ${resourceNames()}`);
 
     const plans = (
       await Promise.all(
@@ -417,7 +402,6 @@ module.exports = CoreProvider = ({
       if (!engine) {
         throw Error(`Cannot find resource ${toString(action.resource.name)}`);
       }
-      //TODO check if already exists ?
       await engine.create({
         payload: await engine.config({ live: true }),
       });
@@ -426,26 +410,19 @@ module.exports = CoreProvider = ({
   //TODO refactor, is it used?
   const destroyByName = async ({ name }) => {
     logger.debug(`destroyByName: ${name}`);
-    //Change name in type
     const resource = resourceByName(name);
-    if (resource) {
-      await resource.destroy();
-    } else {
-      throw new Error(
-        `Cannot find resource name ${name}, available ${resourceNames()}`
-      );
+    if (!resource) {
+      throw new Error(`Cannot find resource name ${name}}`);
     }
+    await resource.destroy();
   };
   const destroyById = async ({ type, id }) => {
     logger.debug(`destroyById: ${toString({ type, id })}`);
-    //Change name in type
-
     const client = clientByType(type);
-    if (client) {
-      await client.destroy(id);
-    } else {
+    if (!client) {
       throw new Error(`Cannot find endpoint type ${type}}`);
     }
+    await client.destroy(id);
   };
 
   const destroyPlannedResources = async (planDestroy) => {
