@@ -1,5 +1,5 @@
 {
-  "name": "grucloud",
+  "name": "@grucloud/core",
   "version": "1.0.0",
   "description": "Infrastructure as Code",
   "main": "src/index.js",
@@ -24,6 +24,7 @@
     "@koa/router": "^9.0.0",
     "axios": "^0.19.2",
     "bluebird": "^3.7.2",
+    "commander": "^5.0.0",
     "dotenv": "^8.2.0",
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",

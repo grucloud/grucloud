@@ -1,5 +1,5 @@
 require("dotenv").config();
-const logger = require("logger")({ prefix: "App" });
+const logger = require("./logger")({ prefix: "App" });
 
 const GruCloud = (infra) => {
   //TODO refactor
