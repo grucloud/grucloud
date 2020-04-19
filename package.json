@@ -43,7 +43,8 @@
     ],
     "exclude": [
       "src/**/*.spec.js",
-      "src/**/test*.js"
+      "src/**/*test*.js",
+      "src/**/test/*.js"
     ],
     "extension": [
       ".js"
