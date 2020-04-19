@@ -1,4 +1,5 @@
 const _ = require("lodash");
+const compare = require("../../Utils").compare;
 const CoreProvider = require("../CoreProvider");
 const ScalewayClient = require("./ScalewayClient");
 const logger = require("logger")({ prefix: "ScalewayProvider" });
@@ -105,6 +106,16 @@ const apis = ({ organization }) => [
     getByName,
     onResponseList: ({ servers }) => {
       return { total: servers.length, items: servers };
+    },
+    compare: ({ target, live }) => {
+      logger.debug(`compare server`);
+      const diff = compare({
+        target,
+        targetKeys: ["commercial_type", "volumes.0.size"],
+        live,
+      });
+      logger.debug(`compare ${toString(diff)}`);
+      return diff;
     },
     configDefault: ({ name, options }) => ({
       name,

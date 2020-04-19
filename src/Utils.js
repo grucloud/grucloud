@@ -10,37 +10,43 @@ const checkEnvironment = (env = []) =>
     }
   });
 
-const compare = (target = {}, live = {}) => {
-  logger.info(`compare ${toString({ target, live })}`);
+const compare = ({ target = {}, targetKeys = [], live = {} }) => {
+  logger.info(`compare ${toString({ target, targetKeys, live })}`);
 
-  var liveKeys = Object.getOwnPropertyNames(live);
-
-  const targetDiff = Object.getOwnPropertyNames(target)
+  const targetDiff = targetKeys
     .map((targetKey) => {
-      if (liveKeys.includes(targetKey)) {
-        const targetValue = target[targetKey];
-        const liveValue = live[targetKey];
-        if (!_.isEqual(targetValue, liveValue)) {
-          return {
-            key: targetKey,
-            type: "DIFF",
-            targetValue: target[targetKey],
-            liveValue: live[targetKey],
-          };
-        }
-      } else {
+      const targetValue = _.get(target, targetKey);
+      const liveValue = _.get(live, targetKey);
+
+      logger.info(
+        `compare for targetKey: ${toString({
+          targetKey,
+          targetValue,
+          liveValue,
+        })}`
+      );
+      if (!liveValue) {
         return {
           key: targetKey,
           type: "NEW",
-          targetValue: target[targetKey],
+          targetValue,
           liveValue: undefined,
+        };
+      }
+
+      if (!_.isEqual(targetValue, liveValue)) {
+        return {
+          key: targetKey,
+          type: "DIFF",
+          targetValue,
+          liveValue,
         };
       }
     })
     .filter((x) => x);
 
   logger.info(`compare ${toString({ targetDiff })}`);
-  return targetDiff || [];
+  return targetDiff;
 };
 
 module.exports = {

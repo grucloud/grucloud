@@ -6,6 +6,7 @@ const compare = require("../Utils").compare;
 const toString = (x) => JSON.stringify(x, null, 4);
 
 const checkEnvironment = require("../Utils").checkEnvironment;
+
 //TODO move this
 const toTagName = (name, tag) => `${name}${tag}`;
 const fromTagName = (name, tag) => name && name.replace(tag, "");
@@ -13,6 +14,18 @@ const hasTag = (name, tag) => name && name.includes(tag);
 
 //TODO function with providerConfig as param ?
 const specDefault = {
+  compare: ({ target, live }) => {
+    logger.debug(`compare default`);
+    const diff = compare({
+      target,
+      targetKeys: Object.getOwnPropertyNames(target),
+      live,
+    });
+
+    logger.debug(`compare ${toString(diff)}`);
+    return diff;
+  },
+
   postConfig: ({ config }) => config,
   configStatic: ({ config }) => config,
   configLive: ({ config }) => config,
@@ -82,7 +95,8 @@ const ResourceMaker = ({
     if (_.isEmpty(target)) {
       return;
     }
-    const diff = compare(target, live);
+    //const diff = compare(target, live);
+    const diff = api.compare({ target, live });
     logger.info(`planUpdate diff ${toString(diff)}`);
     if (diff.length > 0) {
       return [
