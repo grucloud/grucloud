@@ -43,6 +43,7 @@ describe("compare", function () {
       volumes: {
         "0": {
           id: "9b0d0b50-0325-4b12-a26a-ea9ebaa60fad",
+          size: 20000000000,
           name:
             "snapshot-55b0b5c2-0bd2-4475-b2e1-1edd66661e0d-2020-01-17_14:17",
         },
