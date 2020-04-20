@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const emoji = require("node-emoji");
+const ora = require("ora");
 const { program } = require("commander");
 const pkg = require("../package.json");
 const path = require("path");
@@ -58,6 +59,20 @@ const planDisplay = (plan) => {
   plan.newOrUpdate && plan.newOrUpdate.map((item) => planDisplayItem(item));
 };
 
+const runAsyncCommand = async (command, text) => {
+  //console.log(`runAsyncCommand ${text}`);
+  const throbber = ora({
+    text: `${text}\n`,
+    spinner: {
+      frames: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
+      interval: 300,
+    },
+  }).start();
+  const result = await command();
+  throbber.stop();
+  return result;
+};
+
 const main = async ({ program, version, argv }) => {
   console.log(`GruCloud ${version}`);
 
@@ -71,7 +86,10 @@ const main = async ({ program, version, argv }) => {
     if (program.deploy) {
       console.log("deploy");
     } else {
-      const plan = await infra.providers[0].plan();
+      const plan = await runAsyncCommand(
+        () => infra.providers[0].plan(),
+        "Query Plan"
+      );
       planDisplay(plan);
     }
   } catch (error) {
