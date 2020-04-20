@@ -15,9 +15,6 @@ const logger = createLogger({
       level: "info",
       format: format.simple(),
     }),
-    new transports.Console({
-      format: format.simple(),
-    }),
   ],
 });
 

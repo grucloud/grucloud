@@ -1,30 +1,22 @@
 #!/usr/bin/env node
+const emoji = require("node-emoji");
 const { program } = require("commander");
-const GruCloud = require("./GruCloudApp");
 const pkg = require("../package.json");
 const path = require("path");
 const fs = require("fs");
 
 const setupProgram = ({ version }) => {
   program
-    .version(pkg.version)
+    .version(version)
     .option("-i, --infra <file>", "the infrastrucure file")
-    .option("-l, --list", "list live resources")
-    .option("-d, --debug", "output extra debugging");
+    .option("-l, --list", "list live resources");
 };
 
-setupProgram({ version: pkg.version });
-
-program.parse(process.argv);
-
-console.log(program.opts());
-
 const creatInfraFromFile = ({ filename, config }) => {
-  console.log("creatInfraFromFile", filename);
+  //console.log("creatInfraFromFile", filename);
   try {
     const InfraCode = require(filename);
     const infra = InfraCode({ config });
-    console.log("infra");
     return infra;
   } catch (err) {
     console.error(err);
@@ -44,25 +36,53 @@ const checkFileExist = ({ filename }) => {
 
 const createInfra = ({ program }) => {
   const filename = getInfraFilename({ program });
-  //TODO check file
   checkFileExist(filename);
   const config = {};
   return creatInfraFromFile({ filename, config });
 };
 
-const infra = createInfra({ program });
+const displayResource = (r) => `${r.provider}/${r.type}/${r.name}`;
 
-const main = async ({ program }) => {
-  if (program.list) {
-    console.log("list live resources");
-    const plan = await infra.provider.plan();
-    console.log("plan", plan);
+var actionsEmoticon = {
+  CREATE: emoji.get("sparkle"),
+  DELETE: "-",
+};
+const displayAction = (action) => actionsEmoticon[action];
+const planDisplayItem = (item) => {
+  console.log(
+    `${displayAction(item.action)}  ${displayResource(item.resource)}`
+  );
+};
+
+const planDisplay = (plan) => {
+  plan.newOrUpdate && plan.newOrUpdate.map((item) => planDisplayItem(item));
+};
+
+const main = async ({ program, version, argv }) => {
+  console.log(`GruCloud ${version}`);
+
+  setupProgram({ version });
+  program.parse(argv);
+
+  const infra = createInfra({ program });
+
+  //console.log(program.opts());
+  try {
+    if (program.deploy) {
+      console.log("deploy");
+    } else {
+      const plan = await infra.providers[0].plan();
+      planDisplay(plan);
+    }
+  } catch (error) {
+    console.error("error", error);
+    throw error;
   }
 };
 
-main({ program })
+main({ program, argv: process.argv, version: pkg.version })
   .then(() => {
-    console.log("Done");
+    //console.log("Done");
   })
   .catch((error) => {
     console.log("Error ", JSON.stringify(error, null, 4));
