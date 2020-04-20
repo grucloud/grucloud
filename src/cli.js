@@ -48,15 +48,29 @@ var actionsEmoticon = {
   CREATE: emoji.get("sparkle"),
   DELETE: "-",
 };
+// Plan
 const displayAction = (action) => actionsEmoticon[action];
 const planDisplayItem = (item) => {
   console.log(
     `${displayAction(item.action)}  ${displayResource(item.resource)}`
   );
 };
-
-const planDisplay = (plan) => {
+const planDisplay = async (provider) => {
+  const plan = await runAsyncCommand(() => provider.plan(), "Query Plan");
   plan.newOrUpdate && plan.newOrUpdate.map((item) => planDisplayItem(item));
+};
+// Live Resources
+const liveResourceDisplay = (live) => {
+  //console.log(JSON.stringify(live, null, 4));
+  console.log(`${live.type} - ${live.data.items.length} `);
+};
+const liveResourcesDisplay = async (provider) => {
+  const lives = await runAsyncCommand(
+    () => provider.listLives(),
+    "Live Resources"
+  );
+  console.log(`${lives.length} Type of Resources:`);
+  lives.map((live) => liveResourceDisplay(live));
 };
 
 const runAsyncCommand = async (command, text) => {
@@ -80,17 +94,13 @@ const main = async ({ program, version, argv }) => {
   program.parse(argv);
 
   const infra = createInfra({ program });
-
   //console.log(program.opts());
   try {
     if (program.deploy) {
       console.log("deploy");
     } else {
-      const plan = await runAsyncCommand(
-        () => infra.providers[0].plan(),
-        "Query Plan"
-      );
-      planDisplay(plan);
+      await planDisplay(infra.providers[0]);
+      await liveResourcesDisplay(infra.providers[0]);
     }
   } catch (error) {
     console.error("error", error);
