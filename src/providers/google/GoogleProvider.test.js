@@ -10,17 +10,18 @@ const config = {
 describe.skip("GoogleProvider", function () {
   const provider = GoogleProvider({ name: "google" }, config);
 
-  const volume = provider.makeVolume({ name: "volume1" }, () => ({
-    size: 20000000000,
-  }));
+  const volume = provider.makeVolume({
+    name: "volume1",
+    config: () => ({
+      size: 20000000000,
+    }),
+  });
 
-  const server = provider.makeServer(
-    {
+  const server = provider.makeServer({
+    name: "web-server",
+    dependencies: { volume },
+    config: async ({ dependencies: { volume } }) => ({
       name: "web-server",
-      dependencies: { volume },
-    },
-    async ({ dependencies: { volume } }) => ({
-      name: "web-server",
-    })
-  );
+    }),
+  });
 });

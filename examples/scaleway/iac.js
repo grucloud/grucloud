@@ -9,23 +9,23 @@ const createStack = ({ options }) => {
   // Create Scaleway provider
   const provider = ScalewayProvider({ name: "scaleway" }, config);
   // Allocate public Ip address
-  const ip = provider.makeIp({ name: "myip" }, ({}) => ({}));
+  const ip = provider.makeIp({ name: "ip-web-server" });
   // Choose an image
-  const image = provider.makeImage({ name: "ubuntu" }, ({ items: images }) => {
-    const image = images.find(
-      ({ name, arch, default_bootscript }) =>
-        name.includes("Ubuntu") && arch === "x86_64" && default_bootscript
-    );
-    console.log(`Using Image: ${image.name}`);
-    return image;
+  const image = provider.makeImage({
+    name: "ubuntu",
+    config: ({ items: images }) => {
+      const image = images.find(
+        ({ name, arch, default_bootscript }) =>
+          name.includes("Ubuntu") && arch === "x86_64" && default_bootscript
+      );
+      return image;
+    },
   });
   // Create a server
-  provider.makeServer(
-    {
-      name: "web-server",
-      dependencies: { image, ip },
-    },
-    async () => ({
+  provider.makeServer({
+    name: "web-server",
+    dependencies: { image, ip },
+    config: () => ({
       name: "web-server",
       commercial_type: "DEV1-S",
       volumes: {
@@ -33,8 +33,8 @@ const createStack = ({ options }) => {
           size: 20000000000,
         },
       },
-    })
-  );
+    }),
+  });
   return { providers: [provider] };
 };
 module.exports = createStack;

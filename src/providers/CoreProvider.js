@@ -210,17 +210,22 @@ const ResourceMaker = ({
     },
   };
 };
-// TODO change spec name in type
+
 const createResourceMakers = ({ specs, config, provider, Client }) =>
   specs.reduce((acc, spec) => {
-    acc[`make${spec.type}`] = (options, fnUserConfig) => {
+    acc[`make${spec.type}`] = ({
+      name,
+      dependencies,
+      config: fnUserConfig = () => ({}),
+    }) => {
       const resource = ResourceMaker({
         type: spec.type,
-        ...options,
+        name,
         fnUserConfig,
+        dependencies,
         spec: _.defaults(spec, fnSpecDefault({ config: provider.config })),
         provider,
-        client: Client({ spec, config }), //TODO option is spec
+        client: Client({ spec, config }),
         config,
       });
       provider.targetResourcesAdd(resource);

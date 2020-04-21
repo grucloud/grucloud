@@ -5,7 +5,7 @@ const config = require("./config");
 describe("ScalewayIp", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);
 
-  const ip = provider.makeIp({ name: "myip" }, ({}) => ({}));
+  const ip = provider.makeIp({ name: "myip" });
 
   before(async () => {
     await provider.destroyAll();

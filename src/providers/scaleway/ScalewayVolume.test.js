@@ -5,9 +5,12 @@ const config = require("./config");
 describe("ScalewayVolume", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);
 
-  const volume = provider.makeVolume({ name: "volume1" }, () => ({
-    size: 10000000000,
-  }));
+  const volume = provider.makeVolume({
+    name: "volume1",
+    config: () => ({
+      size: 10000000000,
+    }),
+  });
 
   after(async () => {
     await provider.destroyAll();

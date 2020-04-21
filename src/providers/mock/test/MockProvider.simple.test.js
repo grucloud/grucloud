@@ -39,7 +39,7 @@ describe("MockProvider Simple", function () {
       assert.equal(liveIp.data.items.length, 2);
     }
 
-    const ip = provider.makeIp({ name: "myip" }, ({}) => ({}));
+    const ip = provider.makeIp({ name: "myip" });
 
     {
       const [target] = await provider.listTargets();

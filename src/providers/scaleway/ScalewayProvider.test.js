@@ -8,39 +8,39 @@ const config = require("./config");
 describe("ScalewayProvider", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);
 
-  const ip = provider.makeIp({ name: "myip" }, ({}) => ({}));
+  const ip = provider.makeIp({ name: "myip" });
 
-  const image = provider.makeImage({ name: "ubuntu" }, ({ items: images }) => {
-    assert(images);
-    const image = images.find(
-      ({ name, arch, default_bootscript }) =>
-        name.includes("Ubuntu") && arch === "x86_64" && default_bootscript
-    );
-    assert(image);
-    return image;
+  const image = provider.makeImage({
+    name: "ubuntu",
+    config: ({ items: images }) => {
+      assert(images);
+      const image = images.find(
+        ({ name, arch, default_bootscript }) =>
+          name.includes("Ubuntu") && arch === "x86_64" && default_bootscript
+      );
+      assert(image);
+      return image;
+    },
   });
   /*
+  TODO 
   const volume = provider.makeVolume({ name: "volume1" }, () => ({
     size: 20000000000,
   }));
 */
-  const server = provider.makeServer(
-    {
+  const server = provider.makeServer({
+    name: "web-server",
+    dependencies: { image, ip },
+    config: () => ({
       name: "web-server",
-      dependencies: { image, ip },
-    },
-    async ({ dependencies: { image, ip } }) => {
-      return {
-        name: "web-server",
-        commercial_type: "DEV1-S",
-        volumes: {
-          "0": {
-            size: 20000000000,
-          },
+      commercial_type: "DEV1-S",
+      volumes: {
+        "0": {
+          size: 20000000000,
         },
-      };
-    }
-  );
+      },
+    }),
+  });
 
   before(async () => {
     await provider.destroyAll();
