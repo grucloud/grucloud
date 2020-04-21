@@ -19,19 +19,19 @@
   "author": "Frederic Heem",
   "license": "ISC",
   "devDependencies": {
+    "@koa/router": "*",
+    "koa": "^2.11.0",
+    "koa-body": "^4.1.1",
     "jscpd": "^3.1.0",
     "mocha": "^7.1.1",
     "nodemon": "^2.0.2",
     "nyc": "^15.0.1"
   },
   "dependencies": {
-    "@koa/router": "^9.0.0",
     "axios": "^0.19.2",
     "bluebird": "^3.7.2",
     "commander": "^5.0.0",
     "dotenv": "^8.2.0",
-    "koa": "^2.11.0",
-    "koa-body": "^4.1.1",
     "lodash": "^4.17.15",
     "node-emoji": "^1.10.0",
     "ora": "^4.0.3",
