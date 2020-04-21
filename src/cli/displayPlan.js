@@ -16,7 +16,7 @@ const planDisplayItem = (item) => {
   );
 };
 
-exports.planDisplay = async (provider) => {
+exports.displayPlan = async (provider) => {
   const plan = await runAsyncCommand(() => provider.plan(), "Query Plan");
   plan.newOrUpdate && plan.newOrUpdate.map((item) => planDisplayItem(item));
   //TODO display removed items

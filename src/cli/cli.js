@@ -3,8 +3,8 @@ const { program } = require("commander");
 const pkg = require("../../package.json");
 const path = require("path");
 const fs = require("fs");
-const { runAsyncCommand } = require("./cliUtils");
-const { planDisplay } = require("./displayPlan");
+const { displayPlan } = require("./displayPlan");
+const { displayLives } = require("./displayLives");
 
 const setupProgram = ({ version }) => {
   program
@@ -42,20 +42,6 @@ const createInfra = ({ program }) => {
   return creatInfraFromFile({ filename, config });
 };
 
-// Live Resources
-const liveResourceDisplay = (live) => {
-  //console.log(JSON.stringify(live, null, 4));
-  console.log(`${live.type} - ${live.data.items.length} `);
-};
-const liveResourcesDisplay = async (provider) => {
-  const lives = await runAsyncCommand(
-    () => provider.listLives(),
-    "Live Resources"
-  );
-  console.log(`${lives.length} Type of Resources:`);
-  lives.map((live) => liveResourceDisplay(live));
-};
-
 const main = async ({ program, version, argv }) => {
   console.log(`GruCloud ${version}`);
 
@@ -71,8 +57,8 @@ const main = async ({ program, version, argv }) => {
     if (program.deploy) {
       console.log("deploy");
     } else {
-      await planDisplay(infra.providers[0]);
-      await liveResourcesDisplay(infra.providers[0]);
+      await displayPlan(infra.providers[0]);
+      await displayLives(infra.providers[0]);
     }
   } catch (error) {
     console.error("error", error);
