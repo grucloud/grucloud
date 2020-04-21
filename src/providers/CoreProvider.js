@@ -1,3 +1,4 @@
+require("dotenv").config();
 const _ = require("lodash");
 const Promise = require("bluebird");
 const logger = require("../logger")({ prefix: "CoreProvider" });

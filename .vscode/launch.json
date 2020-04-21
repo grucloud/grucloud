@@ -21,7 +21,7 @@
         "--colors",
         "--config",
         "${workspaceRoot}/.mocharc.json",
-        "'src/**/*.js'"
+        "'src/**/*.test.js'"
       ],
       "cwd": "${workspaceRoot}/",
       "runtimeExecutable": null,

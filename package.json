@@ -9,8 +9,8 @@
   },
   "scripts": {
     "start": "NODE_PATH=src nodemon -e ts,js,graphql node src/index.js",
-    "test": "NODE_PATH=src mocha 'src/**/*.js'",
-    "test:ci": "NODE_PATH=src nyc mocha 'src/**/*.js'",
+    "test": "NODE_PATH=src mocha",
+    "test:ci": "NODE_PATH=src nyc mocha",
     "cpd": "jscpd -r console --format 'javascript,typescript' ./src"
   },
   "keywords": [
