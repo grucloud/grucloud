@@ -5,7 +5,7 @@
   "public": true,
   "main": "src/index.js",
   "bin": {
-    "gc": "./src/cli.js"
+    "gc": "./src/cli/cli.js"
   },
   "scripts": {
     "start": "NODE_PATH=src nodemon -e ts,js,graphql node src/index.js",

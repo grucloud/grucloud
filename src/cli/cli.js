@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-const emoji = require("node-emoji");
-const ora = require("ora");
 const { program } = require("commander");
-const pkg = require("../package.json");
+const pkg = require("../../package.json");
 const path = require("path");
 const fs = require("fs");
+const { runAsyncCommand } = require("./cliUtils");
+const { planDisplay } = require("./displayPlan");
 
 const setupProgram = ({ version }) => {
   program
@@ -42,23 +42,6 @@ const createInfra = ({ program }) => {
   return creatInfraFromFile({ filename, config });
 };
 
-const displayResource = (r) => `${r.provider}/${r.type}/${r.name}`;
-
-var actionsEmoticon = {
-  CREATE: emoji.get("sparkle"),
-  DELETE: "-",
-};
-// Plan
-const displayAction = (action) => actionsEmoticon[action];
-const planDisplayItem = (item) => {
-  console.log(
-    `${displayAction(item.action)}  ${displayResource(item.resource)}`
-  );
-};
-const planDisplay = async (provider) => {
-  const plan = await runAsyncCommand(() => provider.plan(), "Query Plan");
-  plan.newOrUpdate && plan.newOrUpdate.map((item) => planDisplayItem(item));
-};
 // Live Resources
 const liveResourceDisplay = (live) => {
   //console.log(JSON.stringify(live, null, 4));
@@ -73,20 +56,6 @@ const liveResourcesDisplay = async (provider) => {
   lives.map((live) => liveResourceDisplay(live));
 };
 
-const runAsyncCommand = async (command, text) => {
-  //console.log(`runAsyncCommand ${text}`);
-  const throbber = ora({
-    text: `${text}\n`,
-    spinner: {
-      frames: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
-      interval: 300,
-    },
-  }).start();
-  const result = await command();
-  throbber.stop();
-  return result;
-};
-
 const main = async ({ program, version, argv }) => {
   console.log(`GruCloud ${version}`);
 
@@ -95,6 +64,9 @@ const main = async ({ program, version, argv }) => {
 
   const infra = createInfra({ program });
   //console.log(program.opts());
+  if (!infra.providers) {
+    throw Error(`no providers provided`);
+  }
   try {
     if (program.deploy) {
       console.log("deploy");
