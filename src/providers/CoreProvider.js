@@ -182,7 +182,7 @@ const ResourceMaker = ({
       await client.create({ name: resourceName, payload });
       // Is the resource created now ?
       // TODO retry ?
-      await Promise.delay(1e3);
+      //await Promise.delay(1e3);
       {
         const live = await getLive();
         if (!live) {
