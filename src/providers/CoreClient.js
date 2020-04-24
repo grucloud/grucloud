@@ -62,9 +62,27 @@ module.exports = CoreClient = ({
       return result;
     } catch (error) {
       logger.error(
-        ` get ${type}/${name}, error ${toString(error)}` //TODO function to print axios error
+        ` get ${type}/${name}, error TODO}` //TODO function to print axios error
       );
       throw error;
+    }
+  };
+  const waitDestroyed = async ({ id, name }) => {
+    logger.info(`waitDestroyed ${toString({ type, name, id })}`);
+    try {
+      const { data } = await get(id);
+      // Not a good place, the resource still exist
+      const message = `waitDestroyed ${type}/${name}/${id} still there despite being deleted.`;
+      logger.error(message);
+      logger.error(toString(data));
+      throw Error({ message, data });
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        logger.info(`waitDestroyed ${toString({ type, id })} gone`);
+      } else {
+        logger.error(`waitDestroyed: ${toString({ id, type })}`);
+        throw error;
+      }
     }
   };
   return {
@@ -80,38 +98,19 @@ module.exports = CoreClient = ({
       if (_.isEmpty(id)) {
         throw Error(`destroy ${type}: invalid id`);
       }
-
+      //TODO too many try catch
       try {
         const result = await axios.request(`/${id}`, { method: "DELETE" });
         result.data = onResponseDelete(result.data);
-
-        try {
-          await get(id);
-          // Not a good place, the resource still exist
-          logger.error(
-            `resource ${spec.type}/${name}/${id} still there despite being deleted.`
-          );
-        } catch (error) {
-          // Good here
-          // Check error 404
-
-          if (error.response && error.response.status === 404) {
-            logger.info(
-              `destroy resource ${toString({
-                type: spec.type,
-                id,
-              })} gone, error: ${toString(error)}`
-            );
-          } else {
-            logger.error(`destroy: ${toString({ id, error })}`);
-            throw error;
-          }
-        }
+        logger.debug(
+          `destroy ${toString({ name, type, id })} should be destroyed`
+        );
+        await waitDestroyed({ id, name });
 
         return result;
       } catch (error) {
-        logger.error(`delete type ${type}, error ${toString(error)}`);
-        throw Error(error);
+        logger.error(`delete type ${type}, error TODO`);
+        throw error;
       }
     },
     list: async () => {
