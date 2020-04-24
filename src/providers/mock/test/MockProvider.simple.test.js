@@ -5,31 +5,39 @@ const createStack = require("./MockStack");
 const logger = require("logger")({ prefix: "MockProviderTestSimple" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
-describe("MockProvider Simple", function () {
-  const initStates = [
+const initStates = [
+  [
+    "Ip",
     [
-      "Ip",
       [
-        [
-          "51.15.246.48",
-          {
-            address: "51.15.246.48",
-          },
-        ],
-        [
-          "51.15.246.50",
-          {
-            address: "51.15.246.50",
-          },
-        ],
+        "51.15.246.48",
+        {
+          address: "51.15.246.48",
+        },
+      ],
+      [
+        "51.15.246.50",
+        {
+          address: "51.15.246.50",
+        },
       ],
     ],
-    ["Image", []],
-    ["Volume", []],
-    ["Server", []],
-  ];
+  ],
+  ["Image", []],
+  ["Volume", []],
+  ["Server", []],
+];
+
+describe("MockProvider Simple", function () {
   const { provider, ip, volume, server, image } = createStack({
     config: MockCloud(initStates),
+  });
+
+  before(async () => {
+    await provider.destroyAll();
+  });
+  after(async () => {
+    await provider.destroyAll();
   });
 
   it("create ip", async function () {

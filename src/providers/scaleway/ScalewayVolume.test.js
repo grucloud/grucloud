@@ -8,7 +8,7 @@ describe("ScalewayVolume", function () {
   const volume = provider.makeVolume({
     name: "volume1",
     config: () => ({
-      size: 10000000000,
+      size: 20000000000,
     }),
   });
 

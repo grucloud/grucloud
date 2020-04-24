@@ -2,41 +2,32 @@ const assert = require("assert");
 const GoogleProvider = require("./GoogleProvider");
 const config = require("./config");
 
-describe.skip("GoogleProvider", function () {
+describe.skip("GoogleAddress", function () {
   const provider = GoogleProvider({ name: "google" }, config);
-  const ip = provider.makeAddress({ name: "ip-webserver" });
-  /*
-  const volume = provider.makeVolume({
-    name: "volume1",
-    config: () => ({
-      size: 20000000000,
-    }),
-  });
-*/
-  const server = provider.makeInstance({
-    name: "web-server",
-    dependencies: {},
-    config: async ({ dependencies: {} }) => ({
-      machineType: "e2-micro",
-    }),
-  });
+  const address = provider.makeAddress({ name: "myip" });
 
   before(async () => {
     await provider.destroyAll();
   });
   after(async () => {
-    //await provider.destroyAll();
+    await provider.destroyAll();
   });
+
+  it("address config", async function () {
+    const config = await address.config();
+    assert(config);
+  });
+
   it("plan", async function () {
     const plan = await provider.plan();
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 2);
+    assert.equal(plan.newOrUpdate.length, 1);
   });
-  it.skip("deploy plan", async function () {
+  it("deploy plan", async function () {
     await provider.listLives();
     const plan = await provider.plan();
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 2);
+    assert.equal(plan.newOrUpdate.length, 1);
     await provider.deployPlan(plan);
 
     {
@@ -44,7 +35,7 @@ describe.skip("GoogleProvider", function () {
       assert.equal(plan.destroy.length, 0);
       assert.equal(plan.newOrUpdate.length, 0);
     }
-    const live = await server.getLive();
+    const live = await address.getLive();
     assert(live);
     assert(live.id);
   });

@@ -1,6 +1,8 @@
 const CoreClient = require("../CoreClient");
 const urljoin = require("url-join");
-const BASE_URL = "https://compute.googleπ.com/compute/v1/";
+const BASE_URL = "https://compute.googleapis.com/compute/v1/";
+
+//TODO dot not use process.env.GOOGLE_SERVICE_ACCOUNT_KEY here, pass it down
 
 module.exports = GoogleClient = ({ spec, config }) =>
   CoreClient({

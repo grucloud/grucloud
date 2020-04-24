@@ -5,7 +5,7 @@ const logger = require("logger")({ prefix: "MockCloud" });
 const toString = (x) => JSON.stringify(x, null, 4);
 
 module.exports = MockCloud = (initStates) => {
-  logger.info(`MockCloud ${toString(initStates)}`);
+  //logger.debug(`MockCloud ${toString(initStates)}`);
   const states = initStates.map((state) => [
     state[0],
     new Map(_.cloneDeep(state[1])),

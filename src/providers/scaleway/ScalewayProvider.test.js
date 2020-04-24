@@ -23,15 +23,17 @@ describe("ScalewayProvider", function () {
     },
   });
   /*
-  TODO 
-  const volume = provider.makeVolume({ name: "volume1" }, () => ({
-    size: 20000000000,
-  }));
+  const volume = provider.makeVolume({
+    name: "volume1",
+    config: () => ({
+      size: 20000000000,
+    }),
+  });
 */
   const server = provider.makeServer({
     name: "web-server",
     dependencies: { image, ip },
-    config: () => ({
+    config: async ({ dependencies: {} }) => ({
       name: "web-server",
       commercial_type: "DEV1-S",
       volumes: {

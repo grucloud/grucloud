@@ -134,17 +134,19 @@ const fnSpecs = ({ organization }) => [
       return {
         image: imageId,
         public_ip: await ip.config(),
+
         ...config,
       };
     },
     configLive: async ({ config, dependencies: { image, ip } }) => {
       const ipLive = await ip.getLive();
       const imageConfig = await image.config();
-
       logger.debug(`Server configLive ip: ${toString(ipLive)}`);
+
       if (!ipLive) {
-        throw Error(`configFromLive: cannot find live resources`);
+        throw Error(`configFromLive: cannot find ip resources`);
       }
+
       return {
         image: imageConfig.id,
         public_ip: ipLive.id,

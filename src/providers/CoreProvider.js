@@ -3,15 +3,9 @@ const _ = require("lodash");
 const Promise = require("bluebird");
 const logger = require("../logger")({ prefix: "CoreProvider" });
 const compare = require("../Utils").compare;
-
 const toString = (x) => JSON.stringify(x, null, 4);
-
 const checkEnvironment = require("../Utils").checkEnvironment;
-
-//TODO move this
-const toTagName = (name, tag) => `${name}${tag}`;
-const fromTagName = (name, tag) => name && name.replace(tag, "");
-const hasTag = (name, tag) => name && name.includes(tag);
+const { fromTagName, isOurMinion } = require("./TagName");
 
 const fnSpecDefault = ({ config }) => ({
   compare: ({ target, live }) => {
@@ -34,14 +28,12 @@ const fnSpecDefault = ({ config }) => ({
     if (item.name) {
       return item.name;
     } else {
-      throw Error(`cannot find name`);
+      throw Error(`cannot find name in ${toString(item)}`);
     }
   },
   getByName: ({ name, items = [] }) => {
     logger.debug(`getByName: ${name}, items: ${toString(items)}`);
-    const item = items.find(
-      (item) => item.name === toTagName(name, config.tag)
-    );
+    const item = items.find((item) => item.name === name);
     logger.debug(`getByName: ${name}, returns: ${toString(item)}`);
     return item;
   },
@@ -109,7 +101,7 @@ const ResourceMaker = ({
     const userConfig = await fnUserConfig({ dependencies, items });
 
     const configWithDefault = spec.configDefault({
-      name: toTagName(resourceName, configProvider.tag),
+      name: resourceName,
       options: userConfig,
     });
 
@@ -200,7 +192,7 @@ const ResourceMaker = ({
       if (live) {
         const id = spec.toId(live);
         if (id) {
-          await client.destroy(id);
+          await client.destroy({ id, name: resourceName });
         } else {
           throw Error(`Cannot find id in ${toString(live)}`);
         }
@@ -270,7 +262,6 @@ module.exports = CoreProvider = ({
   const clients = specs.map((spec) => Client({ spec, config }));
 
   const clientByType = (type) => {
-    //TODO change name in type
     const spec = specs.find((spec) => spec.type === type);
     if (!spec) {
       throw new Error(`type ${type} not found`);
@@ -359,7 +350,7 @@ module.exports = CoreProvider = ({
   };
 
   const planFindDestroy = async ({ all = false } = {}) => {
-    logger.debug(`planFindDestroy resources: ${resourceNames()}`);
+    logger.debug(`planFindDestroy BEGIN resources: ${resourceNames()}`);
 
     const plans = (
       await Promise.all(
@@ -376,17 +367,27 @@ module.exports = CoreProvider = ({
 
             return data.items
               .filter((hotResource) => {
-                const name = client.spec.findName(hotResource);
-                logger.debug(`planFindDestroy name: ${name}`);
-
-                if (!name || !hasTag(name, config.tag)) {
-                  return;
+                logger.debug(`planFindDestroy live: ${toString(hotResource)}`);
+                if (!isOurMinion(hotResource, config.tag)) {
+                  logger.info(
+                    `planFindDestroy: !minion ${toString(hotResource)}`
+                  );
+                  return false;
                 }
-                return (
-                  all ||
-                  !resourceNames().includes(fromTagName(name, config.tag))
-                );
+                const name = client.spec.findName(hotResource);
+                if (!name) {
+                  throw Error(`no name in resource: ${toString(hotResource)}`);
+                }
+                if (all) {
+                  logger.debug(`planFindDestroy ${client.type}/${name}, all`);
+                  return true;
+                }
+
+                logger.debug(`planFindDestroy ${client.type}/${name}`);
+
+                return !resourceNames().includes(fromTagName(name, config.tag));
               })
+
               .map((live) => ({
                 provider: providerName,
                 type: client.spec.type, // TODO change client.spec in client.spec
@@ -398,7 +399,7 @@ module.exports = CoreProvider = ({
       .flat()
       .filter((x) => x);
 
-    logger.debug(`planFindDestroy: plans ${toString(plans)}`);
+    logger.debug(`planFindDestroy END, plans ${toString(plans)}`);
     return plans;
   };
   const upsertResources = async (newOrUpdate = []) => {
@@ -422,13 +423,13 @@ module.exports = CoreProvider = ({
     }
     await resource.destroy();
   };
-  const destroyById = async ({ type, id }) => {
-    logger.debug(`destroyById: ${toString({ type, id })}`);
+  const destroyById = async ({ type, id, name }) => {
+    logger.debug(`destroyById: ${toString({ type, name, id })}`);
     const client = clientByType(type);
     if (!client) {
       throw new Error(`Cannot find endpoint type ${type}}`);
     }
-    await client.destroy(id);
+    await client.destroy({ id, name });
   };
 
   const destroyPlannedResources = async (planDestroy) => {
@@ -438,6 +439,7 @@ module.exports = CoreProvider = ({
         await destroyById({
           type: planItem.type,
           id: planItem.data.id,
+          name: planItem.data.name,
         });
       })
     );

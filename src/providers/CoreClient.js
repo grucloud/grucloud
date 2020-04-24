@@ -46,44 +46,71 @@ module.exports = CoreClient = ({
   const canDelete = !methods || methods.del;
   const canList = !methods || methods.list;
 
+  // TODO get by name or id ?
+  const get = async (name) => {
+    logger.debug(`get ${toString({ type, name, canGet })}`);
+
+    if (_.isEmpty(name)) {
+      throw Error(`get ${type}: invalid name`);
+    }
+
+    if (!canGet) return;
+
+    try {
+      const result = await axios.request(`/${name}`, { method: "GET" });
+      result.data = onResponseGet(result.data);
+      return result;
+    } catch (error) {
+      logger.error(
+        ` get ${type}/${name}, error ${toString(error)}` //TODO function to print axios error
+      );
+      throw error;
+    }
+  };
   return {
     spec,
     type,
-    get: async (name) => {
-      logger.debug(`get ${type}, name: ${name}, canGet: ${canGet}`);
-
-      if (_.isEmpty(name)) {
-        throw Error(`get ${type}: invalid name`);
-      }
-
-      if (!canGet) return;
-
-      try {
-        const result = await axios.request(`/${name}`, { method: "GET" });
-        result.data = onResponseGet(result.data);
-        return result;
-      } catch (error) {
-        logger.error(
-          ` get type ${type}, name: ${name}, error ${toString(error.response)}`
-        );
-        throw Error(error);
-      }
-    },
-    destroy: async (id) => {
-      logger.debug(`destroy ${toString({ type: spec.type, id, canDelete })}`);
+    get, // TODO change name to getById
+    destroy: async ({ id, name }) => {
+      logger.debug(
+        `destroy ${toString({ type: spec.type, name, id, canDelete })}`
+      );
+      if (!canDelete) return;
 
       if (_.isEmpty(id)) {
         throw Error(`destroy ${type}: invalid id`);
       }
 
-      if (!canDelete) return;
-
       try {
         const result = await axios.request(`/${id}`, { method: "DELETE" });
         result.data = onResponseDelete(result.data);
+
+        try {
+          await get(id);
+          // Not a good place, the resource still exist
+          logger.error(
+            `resource ${spec.type}/${name}/${id} still there despite being deleted.`
+          );
+        } catch (error) {
+          // Good here
+          // Check error 404
+
+          if (error.response && error.response.status === 404) {
+            logger.info(
+              `destroy resource ${toString({
+                type: spec.type,
+                id,
+              })} gone, error: ${toString(error)}`
+            );
+          } else {
+            logger.error(`destroy: ${toString({ id, error })}`);
+            throw error;
+          }
+        }
+
         return result;
       } catch (error) {
-        logger.error(`delete type ${type}, error ${toString(error.response)}`);
+        logger.error(`delete type ${type}, error ${toString(error)}`);
         throw Error(error);
       }
     },
@@ -97,7 +124,7 @@ module.exports = CoreClient = ({
         result.data = onResponseList(result.data);
         return result;
       } catch (error) {
-        logger.error(`list type ${type}, error ${toString(error.response)}`);
+        logger.error(`list type ${type}, error ${toString(error)}`);
         throw Error(error);
       }
     },
@@ -116,7 +143,7 @@ module.exports = CoreClient = ({
         result.data = onResponseCreate(result.data);
         return result;
       } catch (error) {
-        logger.error(`create type ${type}, error ${toString(error.response)}`);
+        logger.error(`create type ${type}, error ${toString(error)}`);
         throw Error(error);
       }
     },

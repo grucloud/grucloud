@@ -41,7 +41,7 @@ describe("CoreClient", function () {
       assert.equal(data.id, id);
     }
     {
-      const { data } = await coreClient.destroy(id);
+      const { data } = await coreClient.destroy({ id });
       assert(data);
       assert.equal(data.id, id);
     }
