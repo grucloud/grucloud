@@ -4,40 +4,11 @@ const logger = require("logger")({ prefix: "CoreProvider" });
 
 const toString = (x) => JSON.stringify(x, null, 4);
 
-const mockCloudInitStates = [
-  [
-    "Ip",
-    [
-      [
-        "51.15.246.48",
-        {
-          address: "51.15.246.48",
-        },
-      ],
-      [
-        "51.15.246.50",
-        {
-          address: "51.15.246.50",
-        },
-      ],
-    ],
-  ],
-  [
-    "Image",
-    [
-      ["1", { name: "Ubuntu", arch: "x86_64" }],
-      ["2", { name: "CentOS", arch: "x86_64" }],
-    ],
-  ],
-  ["Volume"],
-  ["Server"],
-];
-
 describe("MockProvider e2e", function () {
   describe("plan", function () {
     it("plan", async function () {
       const { providers } = createStack({
-        config: { mockCloudInitStates },
+        config: {},
       });
       const provider = providers[0];
       {

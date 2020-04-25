@@ -4,15 +4,8 @@ const _ = require("lodash");
 const MockClient = require("../MockClient");
 const { SpecDefault } = require("../../SpecDefault");
 
-const mockCloudInitStates = [
-  ["Ip", []],
-  ["Image", []],
-  ["Volume", []],
-  ["Server", []],
-];
-
 describe("MockClient", function () {
-  const config = { mockCloud: MockCloud(mockCloudInitStates) };
+  const config = { mockCloud: MockCloud() };
 
   const spec = _.defaults(
     {

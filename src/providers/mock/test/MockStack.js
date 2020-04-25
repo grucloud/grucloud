@@ -4,7 +4,7 @@ const toString = (x) => JSON.stringify(x, null, 4);
 
 const createStack = ({ config }) => {
   // Provider
-  assert(config);
+  //assert(config);
   const provider = MockProvider({ name: "mock" }, config);
 
   // Ip

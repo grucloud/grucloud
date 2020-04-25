@@ -4,27 +4,8 @@ const createStack = require("./MockStack");
 const logger = require("logger")({ prefix: "MockProviderTest" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
-const mockCloudInitStates = [
-  [
-    "Ip",
-    [
-      [
-        "51.15.246.48",
-        {
-          address: "51.15.246.48",
-        },
-      ],
-    ],
-  ],
-  ["Image", [["1", { name: "Ubuntu", arch: "x86_64" }]]],
-  ["Volume", []],
-  ["Server", []],
-];
-
 describe("MockProvider", function () {
-  const { providers, ip, volume, server, image } = createStack({
-    config: { mockCloudInitStates },
-  });
+  const { providers, ip, volume, server, image } = createStack({});
   const provider = providers[0];
 
   it("ip config static ", async function () {
