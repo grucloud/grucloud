@@ -1,9 +1,34 @@
 const _ = require("lodash");
+const Promise = require("bluebird");
 const Axios = require("axios");
 const logger = require("../logger")({ prefix: "CoreClient" });
 const toString = (x) => JSON.stringify(x, null, 4);
 const noop = () => ({});
 const identity = (x) => x;
+
+const retryExpectException = async (
+  { fn, isExpectedError, delay = 1e3 },
+  count = 10
+) => {
+  logger.debug(`retryExpectException count: ${count}, delay: ${delay}`);
+  if (count === 0) {
+    throw Error("timeout");
+  }
+  try {
+    await fn();
+    throw Error("No exception, Have to retry");
+  } catch (error) {
+    if (isExpectedError(error)) {
+      return true;
+    }
+    logger.debug(
+      `retryExpectException count: ${count}, waiting delay: ${delay}`
+    );
+
+    await Promise.delay(delay);
+    return retryExpectException({ fn, isExpectedError }, --count);
+  }
+};
 
 module.exports = CoreClient = ({
   spec = {},
@@ -67,23 +92,15 @@ module.exports = CoreClient = ({
       throw error;
     }
   };
+
   const waitDestroyed = async ({ id, name }) => {
     logger.info(`waitDestroyed ${toString({ type, name, id })}`);
-    try {
-      const { data } = await get(id);
-      // Not a good place, the resource still exist
-      const message = `waitDestroyed ${type}/${name}/${id} still there despite being deleted.`;
-      logger.error(message);
-      logger.error(toString(data));
-      throw Error({ message, data });
-    } catch (error) {
-      if (error.response && error.response.status === 404) {
-        logger.info(`waitDestroyed ${toString({ type, id })} gone`);
-      } else {
-        logger.error(`waitDestroyed: ${toString({ id, type })}`);
-        throw error;
-      }
-    }
+
+    await retryExpectException({
+      fn: () => get(id),
+      isExpectedError: (error) =>
+        error.response && error.response.status === 404,
+    });
   };
   return {
     spec,

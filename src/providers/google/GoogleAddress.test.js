@@ -2,7 +2,7 @@ const assert = require("assert");
 const GoogleProvider = require("./GoogleProvider");
 const config = require("./config");
 
-describe.skip("GoogleAddress", function () {
+describe("GoogleAddress", function () {
   const provider = GoogleProvider({ name: "google" }, config);
   const address = provider.makeAddress({ name: "myip" });
 
