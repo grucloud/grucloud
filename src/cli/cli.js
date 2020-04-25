@@ -1,54 +1,42 @@
 #!/usr/bin/env node
-const { program } = require("commander");
-const pkg = require("../../package.json");
 const path = require("path");
 const fs = require("fs");
 const { displayPlan } = require("./displayPlan");
 const { displayLives } = require("./displayLives");
 
-const setupProgram = ({ version }) => {
-  program
-    .version(version)
-    .option("-i, --infra <file>", "the infrastrucure file")
-    .option("-l, --list", "list live resources");
-};
-
 const creatInfraFromFile = ({ filename, config }) => {
-  //console.log("creatInfraFromFile", filename);
+  console.log("creatInfraFromFile", filename);
   try {
     const InfraCode = require(filename);
     const infra = InfraCode({ config });
     return infra;
   } catch (err) {
     console.error(err);
+    throw err;
   }
 };
 
-const getInfraFilename = ({ program }) =>
-  program.infra
-    ? path.join(process.cwd(), program.infra)
-    : path.join(process.cwd(), "iac.js");
+const getInfraFilename = ({ infra }) =>
+  infra ? path.join(process.cwd(), infra) : path.join(process.cwd(), "iac.js");
 
 const checkFileExist = ({ filename }) => {
-  if (fs.existsSync(filename)) {
+  if (!fs.existsSync(filename)) {
     throw Error(`Cannot open file ${filename}`);
   }
 };
 
-const createInfra = ({ program }) => {
-  const filename = getInfraFilename({ program });
-  checkFileExist(filename);
+const createInfra = ({ infra }) => {
+  const filename = getInfraFilename({ infra });
+  console.log(`Using ${filename}`);
+  checkFileExist({ filename });
   const config = {};
   return creatInfraFromFile({ filename, config });
 };
 
-const main = async ({ program, version, argv }) => {
-  console.log(`GruCloud ${version}`);
+exports.main = async ({ program }) => {
+  console.log(`GruCloud ${program._version}, ${program.args[0]}`);
 
-  setupProgram({ version });
-  program.parse(argv);
-
-  const infra = createInfra({ program });
+  const infra = createInfra({ infra: program.args[0] });
   //console.log(program.opts());
   if (!infra.providers) {
     throw Error(`no providers provided`);
@@ -65,11 +53,3 @@ const main = async ({ program, version, argv }) => {
     throw error;
   }
 };
-
-main({ program, argv: process.argv, version: pkg.version })
-  .then(() => {
-    //console.log("Done");
-  })
-  .catch((error) => {
-    console.log("Error ", JSON.stringify(error, null, 4));
-  });

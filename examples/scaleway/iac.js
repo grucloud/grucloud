@@ -3,6 +3,7 @@ const ScalewayProvider = require("@grucloud/core").ScalewayProvider;
 const config = {
   zone: "fr-par-1",
   organization: process.env.SCALEWAY_ORGANISATION_ID,
+  secretKey: process.env.SCALEWAY_SECRET_KEY,
 };
 
 const createStack = ({ options }) => {

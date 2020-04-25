@@ -4,11 +4,10 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
-      "program": "${workspaceFolder}/src/index.js",
-      "cwd": "${workspaceFolder}/server",
-      "runtimeArgs": [],
-      "outFiles": ["${workspaceFolder}/**/*.js"]
+      "name": "Launch Cli",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}",
+      "args": ["examples/scaleway/iac.js"]
     },
     {
       "name": "Debug test",

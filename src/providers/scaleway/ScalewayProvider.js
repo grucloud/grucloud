@@ -159,11 +159,6 @@ const fnSpecs = ({ organization }) => [
 module.exports = ScalewayProvider = ({ name }, config) =>
   CoreProvider({
     type: "scaleway",
-    envs: [
-      "SCALEWAY_ORGANISATION_ID",
-      "SCALEWAY_ACCESS_KEY",
-      "SCALEWAY_SECRET_KEY",
-    ],
     name,
     config,
     fnSpecs,

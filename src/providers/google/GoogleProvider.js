@@ -104,7 +104,6 @@ const fnSpecs = ({ project, region, zone, tag }) => [
 module.exports = GoogleProvider = ({ name }, config) =>
   CoreProvider({
     type: "google",
-    env: ["GOOGLE_SERVICE_ACCOUNT_KEY"],
     name,
     config,
     fnSpecs,

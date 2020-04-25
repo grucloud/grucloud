@@ -11,6 +11,6 @@ module.exports = ScalewayClient = ({ spec, config }) =>
     ...spec,
     axios: AxiosMaker({
       baseURL: urljoin(BASE_URL, "zones", config.zone, spec.url),
-      onHeaders: () => ({ "X-Auth-Token": process.env.SCALEWAY_SECRET_KEY }),
+      onHeaders: () => ({ "X-Auth-Token": config.secretKey }),
     }),
   });
