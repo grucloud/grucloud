@@ -11,24 +11,30 @@ module.exports = MockCloud = (initStates) => {
     new Map(_.cloneDeep(state[1])),
   ]);
   const resourceMap = new Map(states);
-  const onGet = ({ type, name }) => {
-    logger.info(`onGet ${toString({ type, name })}`);
+  const onGet = ({ type, id }) => {
+    logger.info(`onGet ${toString({ type, id })}`);
     const resource = resourceMap.get(type);
     if (resource) {
-      return resource.get(name);
+      if (!resource.has(id)) {
+        throw Error(`onGetCannot find ${toString({ type, id })}`);
+      }
+      const item = resource.get(id);
+      logger.info(`onGet ${toString({ item })}`);
+      return item;
     } else {
-      throw Error(`onGet cannot find ${toString({ type })}`);
+      throw Error(`onGet cannot find type ${toString({ type })}`);
     }
   };
-  const onDestroy = async ({ type, name }) => {
-    logger.info(`onDestroy ${toString({ type, name })}`);
+  const onDestroy = async ({ type, id }) => {
+    logger.info(`onDestroy ${toString({ type, id })}`);
     const resource = resourceMap.get(type);
     if (resource) {
-      if (!resource.has(name)) {
-        logger.error(`onDestroy cannot find ${toString({ type, name })}`);
+      if (!resource.has(id)) {
+        logger.error(`onDestroy cannot find ${toString({ type, id })}`);
         return;
       }
-      resource.delete(name);
+      resource.delete(id);
+      logger.info(`onDestroy #remaining ${resource.size}`);
     } else {
       throw Error(`onDestroy cannot find ${toString({ type })}`);
     }
@@ -42,23 +48,26 @@ module.exports = MockCloud = (initStates) => {
       throw Error(`onDestroyAll cannot find ${toString({ type })}`);
     }
   };
-  const onList = async ({ type }) => {
+  const onList = ({ type }) => {
     const resource = resourceMap.get(type);
     if (resource) {
-      const result = { data: { items: [...resource.values()] } };
+      const items = [...resource.values()];
+      const result = { total: items.length, items };
       logger.debug(`onList type: ${type}, result: ${toString(result)}`);
       return result;
     } else {
       throw Error(`onList cannot find ${toString({ type })}`);
     }
   };
-  const onCreate = ({ type, name, payload }) => {
-    logger.info(`onCreate ${toString({ type, name, payload })}`);
+  const onCreate = ({ type, payload }) => {
+    logger.info(`onCreate ${toString({ type, payload })}`);
     const resource = resourceMap.get(type);
     if (resource) {
-      const newPayload = { id: uuidv4(), ...payload };
+      const id = uuidv4();
+      const newPayload = { id, ...payload };
       //TODO check if already exist
-      resource.set(name, newPayload);
+      resource.set(id, newPayload);
+      return newPayload;
     } else {
       throw Error(`onDestroyAll cannot find ${toString({ type })}`);
     }

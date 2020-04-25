@@ -2,49 +2,10 @@ require("dotenv").config();
 const _ = require("lodash");
 const Promise = require("bluebird");
 const logger = require("../logger")({ prefix: "CoreProvider" });
-const compare = require("../Utils").compare;
 const toString = (x) => JSON.stringify(x, null, 4);
 const checkEnvironment = require("../Utils").checkEnvironment;
 const { fromTagName, isOurMinion } = require("./TagName");
-
-const fnSpecDefault = ({ config }) => ({
-  compare: ({ target, live }) => {
-    logger.debug(`compare default`);
-    const diff = compare({
-      target,
-      targetKeys: Object.getOwnPropertyNames(target),
-      live,
-    });
-
-    logger.debug(`compare ${toString(diff)}`);
-    return diff;
-  },
-
-  postConfig: ({ config }) => config,
-  configStatic: ({ config }) => config,
-  configLive: ({ config }) => config,
-  configDefault: ({ name, options }) => ({ name, ...options }),
-  findName: (item) => {
-    if (item.name) {
-      return item.name;
-    } else {
-      throw Error(`cannot find name in ${toString(item)}`);
-    }
-  },
-  getByName: ({ name, items = [] }) => {
-    logger.debug(`getByName: ${name}, items: ${toString(items)}`);
-    const item = items.find((item) => item.name === name);
-    logger.debug(`getByName: ${name}, returns: ${toString(item)}`);
-    return item;
-  },
-  toId: (item) => item.id,
-  methods: {
-    get: true,
-    list: true,
-    create: true,
-    del: true,
-  },
-});
+const { SpecDefault } = require("./SpecDefault");
 
 const ResourceMaker = ({
   name: resourceName,
@@ -60,15 +21,7 @@ const ResourceMaker = ({
 
   const getLive = async () => {
     logger.info(`getLive ${resourceName}/${type}`);
-    const {
-      data: { items },
-    } = await client.list();
-    const instance = spec.getByName({
-      name: resourceName,
-      items,
-    });
-    logger.info(`getLive ${type}/${resourceName}, out: ${toString(instance)}`);
-    return instance;
+    return await client.getByName({ name: resourceName });
   };
 
   const planUpdate = async ({ resource, live }) => {
@@ -172,17 +125,6 @@ const ResourceMaker = ({
       }
       // Create now
       await client.create({ name: resourceName, payload });
-      // Is the resource created now ?
-      // TODO retry ?
-      //await Promise.delay(1e3);
-      {
-        const live = await getLive();
-        if (!live) {
-          throw Error(
-            `Resource ${type}/${resourceName} has been created but is not lived yet`
-          );
-        }
-      }
     },
     getLive,
     destroy: async () => {
@@ -215,7 +157,7 @@ const createResourceMakers = ({ specs, config, provider, Client }) =>
         name,
         fnUserConfig,
         dependencies,
-        spec: _.defaults(spec, fnSpecDefault({ config: provider.config })),
+        spec: _.defaults(spec, SpecDefault({ config: provider.config })),
         provider,
         client: Client({ spec, config }),
         config,
@@ -256,7 +198,7 @@ module.exports = CoreProvider = ({
   const resourceByName = (name) => targetResources.get(name);
 
   const specs = fnSpecs(config).map((spec) =>
-    _.defaults(spec, fnSpecDefault({ config }))
+    _.defaults(spec, SpecDefault({ config }))
   );
 
   const clients = specs.map((spec) => Client({ spec, config }));

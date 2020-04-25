@@ -27,7 +27,7 @@ const createStack = ({ config }) => {
   const volume = provider.makeVolume({
     name: "volume1",
     config: () => ({
-      size: 20000000000,
+      size: 20_000_000_000,
     }),
   });
 

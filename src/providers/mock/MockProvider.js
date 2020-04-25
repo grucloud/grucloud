@@ -6,6 +6,9 @@ const logger = require("logger")({ prefix: "MockProvider" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
 const getByName = ({ name, items = [] }) => {
+  if (!name) {
+    throw Error(`getByName no name`);
+  }
   logger.debug(`getByName: ${name}, items: ${toString(items)}`);
   const itemsWithName = items.filter(
     (item) => item.tags && item.tags.find((tag) => tag.includes(name))
@@ -27,14 +30,17 @@ const getByName = ({ name, items = [] }) => {
 const fnSpecs = (config) => [
   {
     type: "Image",
+    url: "/image",
     methods: { list: true },
     toId: (obj) => obj.name,
   },
   {
     type: "Volume",
+    url: "/volume",
   },
   {
     type: "Ip",
+    url: "ip",
     findName: (item) => {
       //prefix for creating and checking tags ?
       //TODO loop through tags
@@ -57,6 +63,7 @@ const fnSpecs = (config) => [
   },
   {
     type: "Server",
+    url: "/server",
     getByName,
     configDefault: ({ name, options }) => ({
       name,

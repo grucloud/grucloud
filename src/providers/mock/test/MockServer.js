@@ -2,6 +2,8 @@ const Koa = require("koa");
 const Router = require("@koa/router");
 const shortid = require("shortid");
 const koaBody = require("koa-body");
+const logger = require("../../../logger")({ prefix: "MockServer" });
+const toString = (x) => JSON.stringify(x, null, 4);
 
 module.exports = MockServer = (config) => {
   const koa = new Koa();
@@ -21,6 +23,7 @@ module.exports = MockServer = (config) => {
           total: mapResouces.size,
           items: [...mapResouces.values()],
         };
+        logger.debug(`get ${path}, result: ${toString(context.body)}`);
         context.status = 200;
       })
       .get(path, `${path}:id`, (context) => {
@@ -60,10 +63,9 @@ module.exports = MockServer = (config) => {
         const { body } = request;
         const mapResources = mapRoutes.get(path);
         const id = shortid.generate();
-
-        mapResources.set(id, body);
+        mapResources.set(id, { id, ...body });
         //TODO hook to transform input into created object
-        context.body = { id, data: body };
+        context.body = { id, data: mapResources.get(id) };
         context.status = 200;
       });
   };
