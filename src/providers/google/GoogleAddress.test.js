@@ -1,6 +1,7 @@
 const assert = require("assert");
 const GoogleProvider = require("./GoogleProvider");
 const config = require("./config");
+const { testProviderLifeCycle } = require("../TestUtils");
 
 describe.skip("GoogleAddress", function () {
   const provider = GoogleProvider({ name: "google" }, config);
@@ -24,17 +25,7 @@ describe.skip("GoogleAddress", function () {
     assert.equal(plan.newOrUpdate.length, 1);
   });
   it("deploy plan", async function () {
-    await provider.listLives();
-    const plan = await provider.plan();
-    assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 1);
-    await provider.deployPlan(plan);
-
-    {
-      const plan = await provider.plan();
-      assert.equal(plan.destroy.length, 0);
-      assert.equal(plan.newOrUpdate.length, 0);
-    }
+    await testProviderLifeCycle({ provider });
     const live = await address.getLive();
     assert(live);
     assert(live.id);

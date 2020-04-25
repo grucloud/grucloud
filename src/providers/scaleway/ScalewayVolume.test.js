@@ -1,6 +1,7 @@
 const assert = require("assert");
 const ScalewayProvider = require("./ScalewayProvider");
 const config = require("./config");
+const { testProviderLifeCycle } = require("../TestUtils");
 
 describe("ScalewayVolume", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);
@@ -27,17 +28,6 @@ describe("ScalewayVolume", function () {
     assert.equal(plan.newOrUpdate.length, 1);
   });
   it.skip("deploy plan", async function () {
-    await provider.listLives();
-    const plan = await provider.plan();
-    assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 1);
-    await provider.deployPlan(plan);
-    await provider.listLives();
-    {
-      const plan = await provider.plan();
-      assert.equal(plan.destroy.length, 0);
-      assert.equal(plan.newOrUpdate.length, 0);
-    }
-    //console.log(JSON.stringify(plan, null, 4));
+    await testProviderLifeCycle({ provider });
   });
 });

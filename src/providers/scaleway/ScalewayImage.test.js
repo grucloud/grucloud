@@ -1,6 +1,7 @@
 const assert = require("assert");
 const ScalewayProvider = require("./ScalewayProvider");
 const config = require("./config");
+const { testProviderLifeCycle } = require("../TestUtils");
 
 describe("ScalewayImage", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);
@@ -50,16 +51,6 @@ describe("ScalewayImage", function () {
     assert.equal(plan.newOrUpdate.length, 0);
   });
   it("deploy plan", async function () {
-    await provider.listLives();
-    const plan = await provider.plan();
-    assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 0);
-    await provider.deployPlan(plan);
-
-    {
-      const plan = await provider.plan();
-      assert.equal(plan.destroy.length, 0);
-      assert.equal(plan.newOrUpdate.length, 0);
-    }
+    await testProviderLifeCycle({ provider });
   });
 });

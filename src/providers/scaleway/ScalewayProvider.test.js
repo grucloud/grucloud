@@ -1,5 +1,6 @@
 const assert = require("assert");
 const logger = require("logger")({ prefix: "CoreProvider" });
+const { testProviderLifeCycle } = require("../TestUtils");
 
 const ScalewayProvider = require("./ScalewayProvider");
 
@@ -22,14 +23,7 @@ describe("ScalewayProvider", function () {
       return image;
     },
   });
-  /*
-  const volume = provider.makeVolume({
-    name: "volume1",
-    config: () => ({
-      size: 20000000000,
-    }),
-  });
-*/
+
   const server = provider.makeServer({
     name: "web-server",
     dependencies: { image, ip },
@@ -75,21 +69,6 @@ describe("ScalewayProvider", function () {
     assert(result);
   });
   it.skip("plan", async function () {
-    const plan = await provider.plan();
-    //console.log(JSON.stringify(plan, null, 4));
-    assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 2);
-
-    await provider.deployPlan(plan);
-
-    {
-      const live = await ip.getLive();
-      assert(live);
-    }
-    {
-      const plan = await provider.plan();
-      assert.equal(plan.destroy.length, 0);
-      assert.equal(plan.newOrUpdate.length, 0);
-    }
+    await testProviderLifeCycle({ provider });
   });
 });

@@ -1,6 +1,7 @@
 const assert = require("assert");
 const ScalewayProvider = require("./ScalewayProvider");
 const config = require("./config");
+const { testProviderLifeCycle } = require("../TestUtils");
 
 describe("ScalewayIp", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);
@@ -19,23 +20,9 @@ describe("ScalewayIp", function () {
     assert(config);
   });
 
-  it("plan", async function () {
-    const plan = await provider.plan();
-    assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 1);
-  });
   it.skip("deploy plan", async function () {
-    await provider.listLives();
-    const plan = await provider.plan();
-    assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 1);
-    await provider.deployPlan(plan);
+    await testProviderLifeCycle({ provider });
 
-    {
-      const plan = await provider.plan();
-      assert.equal(plan.destroy.length, 0);
-      assert.equal(plan.newOrUpdate.length, 0);
-    }
     const live = await ip.getLive();
     assert(live);
     assert(live.id);
