@@ -2,10 +2,9 @@ const assert = require("assert");
 const _ = require("lodash");
 
 const MockClient = require("../MockClient");
-const MockCloud = require("./MockCloud");
 const { SpecDefault } = require("../../SpecDefault");
 
-const initStates = [
+const mockCloudInitStates = [
   ["Ip", []],
   ["Image", []],
   ["Volume", []],
@@ -13,7 +12,7 @@ const initStates = [
 ];
 
 describe("MockClient", function () {
-  const config = MockCloud(initStates);
+  const config = { mockCloud: MockCloud(mockCloudInitStates) };
 
   const spec = _.defaults(
     {

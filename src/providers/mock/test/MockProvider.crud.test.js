@@ -1,11 +1,10 @@
 const assert = require("assert");
 const createStack = require("./MockStack");
-const MockCloud = require("./MockCloud");
 
 const logger = require("logger")({ prefix: "MockProviderTest" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
-const mockServerInitStates = [
+const mockCloudInitStates = [
   ["Ip", []],
   ["Image", [["1", { name: "Ubuntu", arch: "x86_64" }]]],
   ["Volume", []],
@@ -48,9 +47,10 @@ const testCrud = async ({ provider, resource, createOptions }) => {
 };
 
 describe("MockProvider", function () {
-  const { provider, ip, volume, server, image } = createStack({
-    config: MockCloud(mockServerInitStates),
+  const { providers, ip, volume, server, image } = createStack({
+    config: { mockCloudInitStates },
   });
+  const provider = providers[0];
 
   it.skip("testCrud", async function () {
     //TODO add createOptions

@@ -1,5 +1,4 @@
 const assert = require("assert");
-const MockCloud = require("./MockCloud");
 const createStack = require("./MockStack");
 const logger = require("logger")({ prefix: "CoreProvider" });
 
@@ -37,10 +36,10 @@ const mockCloudInitStates = [
 describe("MockProvider e2e", function () {
   describe("plan", function () {
     it("plan", async function () {
-      const { provider } = createStack({
-        config: MockCloud(mockCloudInitStates),
+      const { providers } = createStack({
+        config: { mockCloudInitStates },
       });
-
+      const provider = providers[0];
       {
         const listTargets = await provider.listTargets();
         assert.equal(listTargets.length, 0);

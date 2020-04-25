@@ -4,7 +4,7 @@ const toString = (x) => JSON.stringify(x, null, 4);
 
 const createStack = ({ config }) => {
   // Provider
-
+  assert(config);
   const provider = MockProvider({ name: "mock" }, config);
 
   // Ip
@@ -40,7 +40,7 @@ const createStack = ({ config }) => {
       commercial_type: "DEV1-S",
     }),
   });
-  return { provider, ip, volume, server, image };
+  return { providers: [provider], ip, volume, server, image };
 };
 
 module.exports = createStack;

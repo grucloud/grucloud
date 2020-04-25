@@ -3,6 +3,8 @@ const path = require("path");
 const fs = require("fs");
 const { displayPlan } = require("./displayPlan");
 const { displayLives } = require("./displayLives");
+const { planDeploy } = require("./planDeploy");
+const { planDestroy } = require("./planDestroy");
 
 const creatInfraFromFile = ({ filename, config }) => {
   console.log("creatInfraFromFile", filename);
@@ -33,21 +35,45 @@ const createInfra = ({ infra }) => {
   return creatInfraFromFile({ filename, config });
 };
 
-exports.main = async ({ program }) => {
-  console.log(`GruCloud ${program._version}, ${program.args[0]}`);
-
-  const infra = createInfra({ infra: program.args[0] });
+exports.planQuery = async ({ program }) => {
+  console.log("plan query");
+  console.log(program.infra);
+  const infra = createInfra({ infra: program.infra });
   //console.log(program.opts());
   if (!infra.providers) {
     throw Error(`no providers provided`);
   }
   try {
-    if (program.deploy) {
-      console.log("deploy");
-    } else {
-      await displayPlan(infra.providers[0]);
-      await displayLives(infra.providers[0]);
-    }
+    await displayPlan(infra.providers[0]);
+    await displayLives(infra.providers[0]);
+  } catch (error) {
+    console.error("error", error);
+    throw error;
+  }
+};
+exports.planDeploy = async ({ program }) => {
+  console.log("plan deploy");
+  const infra = createInfra({ infra: program.infra });
+  if (!infra.providers) {
+    throw Error(`no providers provided`);
+  }
+  try {
+    await planDeploy(infra.providers[0]);
+  } catch (error) {
+    console.error("error", error);
+    throw error;
+  }
+};
+exports.planDestroy = async ({ program }) => {
+  console.log("plan destroy");
+  const infra = createInfra({ infra: program.infra });
+
+  if (!infra.providers) {
+    throw Error(`no providers provided`);
+  }
+
+  try {
+    await planDestroy(infra.providers[0]);
   } catch (error) {
     console.error("error", error);
     throw error;

@@ -4,10 +4,10 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Cli",
+      "name": "Cli plan Query",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}",
-      "args": ["examples/scaleway/iac.js"]
+      "args": ["--infra", "examples/scaleway/iac.js", "query"]
     },
     {
       "name": "Debug test",

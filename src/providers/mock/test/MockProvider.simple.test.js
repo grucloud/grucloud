@@ -1,11 +1,10 @@
 const assert = require("assert");
-const MockCloud = require("./MockCloud");
 const createStack = require("./MockStack");
 
 const logger = require("logger")({ prefix: "MockProviderTestSimple" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
-const initStates = [
+const mockCloudInitStates = [
   [
     "Ip",
     [
@@ -29,9 +28,10 @@ const initStates = [
 ];
 
 describe("MockProvider Simple", function () {
-  const { provider, ip, volume, server, image } = createStack({
-    config: MockCloud(initStates),
+  const { providers, ip, volume, server, image } = createStack({
+    config: { mockCloudInitStates },
   });
+  const provider = providers[0];
 
   before(async () => {
     await provider.destroyAll();

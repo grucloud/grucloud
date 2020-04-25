@@ -1,13 +1,20 @@
 #!/usr/bin/env node
 const pkg = require("../../package.json");
 const { createProgram } = require("./program");
-const { main } = require("./cli");
+const { planQuery, planDeploy, planDestroy } = require("./cli");
 
-const program = createProgram({ version: pkg.version, argv: process.argv });
+const program = createProgram({
+  version: pkg.version,
+  argv: process.argv,
+  commands: { planQuery, planDeploy, planDestroy },
+});
 
-main({ program })
+console.log(`GruCloud ${program._version}`);
+
+program
+  .parseAsync(process.argv)
   .then(() => {
-    //console.log("Done");
+    console.log("Done");
   })
   .catch((error) => {
     console.log("Error ", JSON.stringify(error, null, 4));

@@ -74,14 +74,17 @@ const fnSpecs = (config) => [
   },
 ];
 
-module.exports = MockProvider = ({ name }, config) =>
-  CoreProvider({
+module.exports = MockProvider = ({ name }, config) => {
+  const mockCloud = MockCloud(config.mockCloudInitStates);
+
+  return CoreProvider({
     type: "mock",
     name,
-    config,
+    config: { ...config, mockCloud },
     fnSpecs,
     Client: MockClient,
     hooks: {
       init: () => {},
     },
   });
+};

@@ -1,5 +1,4 @@
 const assert = require("assert");
-const MockCloud = require("./MockCloud");
 const createStack = require("./MockStack");
 
 const logger = require("logger")({ prefix: "MockProviderTest" });
@@ -23,9 +22,11 @@ const mockCloudInitStates = [
 ];
 
 describe("MockProvider", function () {
-  const { provider, ip, volume, server, image } = createStack({
-    config: MockCloud(mockCloudInitStates),
+  const { providers, ip, volume, server, image } = createStack({
+    config: { mockCloudInitStates },
   });
+  const provider = providers[0];
+
   it("ip config static ", async function () {
     const config = await ip.config();
     assert(config);
