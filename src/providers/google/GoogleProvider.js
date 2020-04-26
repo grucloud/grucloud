@@ -104,10 +104,11 @@ const fnSpecs = ({ project, region, zone, tag }) => [
 
 const configCheck = (config) => {
   assert(config, "Please provide a config");
-  const { project, region, zone } = config;
+  const { project, region, zone, serviceAccountKey } = config;
   assert(project, "project is missing");
   assert(region, "region is missing");
   assert(zone, "zone is missing");
+  assert(serviceAccountKey, "serviceAccountKey is missing");
 };
 
 module.exports = GoogleProvider = ({ name }, config) => {

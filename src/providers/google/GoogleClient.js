@@ -11,7 +11,7 @@ module.exports = GoogleClient = ({ spec, config }) =>
     spec,
     ...spec,
     axios: AxiosMaker({
-      baseURL: urljoin(BASE_URL, "zones", config.zone, spec.url),
+      baseURL: urljoin(BASE_URL, spec.url),
       onHeaders: () => ({
         Authorization: `Bearer ${config.serviceAccountKey}`,
       }),
