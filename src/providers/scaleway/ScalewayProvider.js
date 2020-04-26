@@ -1,3 +1,4 @@
+const assert = require("assert");
 const _ = require("lodash");
 const compare = require("../../Utils").compare;
 const CoreProvider = require("../CoreProvider");
@@ -146,19 +147,24 @@ const fnSpecs = ({ organization }) => [
   },
 ];
 
-module.exports = ScalewayProvider = ({ name }, config) =>
-  CoreProvider({
+const configCheck = (config) => {
+  assert(config, "Please provide a config");
+  const { zone, organization, secretKey } = config;
+  assert(zone, "zone is missing, e.g fr-par-1");
+  assert(organization, "organization is missing");
+  assert(secretKey, "secretKey is missing");
+};
+
+module.exports = ScalewayProvider = ({ name }, config) => {
+  configCheck(config);
+  return CoreProvider({
     type: "scaleway",
     name,
     config,
     fnSpecs,
     Client: ScalewayClient,
-
     hooks: {
-      init: () => {
-        if (!config.zone) {
-          throw new Error("zone is not set");
-        }
-      },
+      init: () => {},
     },
   });
+};

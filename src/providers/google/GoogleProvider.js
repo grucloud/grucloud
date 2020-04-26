@@ -1,3 +1,4 @@
+const assert = require("assert");
 const CoreProvider = require("../CoreProvider");
 const GoogleClient = require("./GoogleClient");
 const logger = require("../../logger")({ prefix: "GoogleProvider" });
@@ -101,22 +102,24 @@ const fnSpecs = ({ project, region, zone, tag }) => [
   },
 ];
 
-module.exports = GoogleProvider = ({ name }, config) =>
-  CoreProvider({
+const configCheck = (config) => {
+  assert(config, "Please provide a config");
+  const { project, region, zone } = config;
+  assert(project, "project is missing");
+  assert(region, "region is missing");
+  assert(zone, "zone is missing");
+};
+
+module.exports = GoogleProvider = ({ name }, config) => {
+  configCheck(config);
+  return CoreProvider({
     type: "google",
     name,
     config,
     fnSpecs,
     Client: GoogleClient,
     hooks: {
-      init: () => {
-        //project: "starhackit",
-        //region: "europe-west4",
-        //zone: "europe-west4-a",
-        // TODO
-        if (!config.project) {
-          throw new Error("project is not set");
-        }
-      },
+      init: () => {},
     },
   });
+};
