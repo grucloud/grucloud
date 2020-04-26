@@ -6,7 +6,7 @@ exports.fromTagName = (name, tag) => name && name.replace(tag, "");
 exports.hasTag = hasTag;
 
 exports.isOurMinion = (resource, ourTag) => {
-  logger.info(`isOurMinion ${toString({ ourTag, resource })}`);
+  logger.info(`isOurMinion ? ${toString({ ourTag, resource })}`);
   if (hasTag(resource.name, ourTag)) {
     return true;
   }
@@ -14,15 +14,15 @@ exports.isOurMinion = (resource, ourTag) => {
     return true;
   }
 
-  const { tags } = resource;
-  if (tags) {
-    if (Array.isArray(tags)) {
-      return tags.some((tag) => tag.includes(ourTag));
-    } else {
-      //TODO could an object
-      console.error("tags is not an array TODO");
-    }
+  const { tags, labels } = resource;
+  if (Array.isArray(tags?.items)) {
+    return tags?.items.some((tag) => tag.includes(ourTag));
+  }
+  if (Array.isArray(tags)) {
+    return tags.some((tag) => tag.includes(ourTag));
   }
   // TODO check labels ?
+  if (labels) {
+  }
   logger.info(`isOurMinion not our minion: ${toString({ ourTag, resource })}`);
 };

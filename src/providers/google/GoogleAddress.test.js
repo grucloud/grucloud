@@ -5,7 +5,7 @@ const { testProviderLifeCycle } = require("../../test/E2ETestUtils");
 
 describe.skip("GoogleAddress", function () {
   const provider = GoogleProvider({ name: "google" }, config);
-  const address = provider.makeAddress({ name: "myip" });
+  const address = provider.makeAddress({ name: "test" });
 
   before(async () => {
     await provider.destroyAll();
@@ -18,7 +18,10 @@ describe.skip("GoogleAddress", function () {
     const config = await address.config();
     assert(config);
   });
-
+  it("lives", async function () {
+    const lives = await provider.listLives();
+    console.log("lives ip", lives);
+  });
   it("plan", async function () {
     const plan = await provider.plan();
     assert.equal(plan.destroy.length, 0);
@@ -26,8 +29,5 @@ describe.skip("GoogleAddress", function () {
   });
   it("deploy plan", async function () {
     await testProviderLifeCycle({ provider });
-    const live = await address.getLive();
-    assert(live);
-    assert(live.id);
   });
 });

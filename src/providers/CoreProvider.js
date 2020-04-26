@@ -435,12 +435,10 @@ module.exports = CoreProvider = ({
   }
   const isPlanEmpty = (plan) => {
     if (plan.newOrUpdate.length > 0) {
-      throw Error(
-        `plan should be empty but contains resources to create or update`
-      );
+      return false;
     }
     if (plan.destroy.length > 0) {
-      throw Error(`plan should be empty but contains resources to delete`);
+      return false;
     }
     return true;
   };
