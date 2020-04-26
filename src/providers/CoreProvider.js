@@ -18,7 +18,7 @@ const ResourceMaker = ({
   config: configProvider,
 }) => {
   logger.debug(`ResourceMaker: ${type}/${resourceName}`);
-
+  let parent;
   const getLive = async () => {
     logger.info(`getLive ${resourceName}/${type}`);
     return await client.getByName({ name: resourceName });
@@ -86,78 +86,92 @@ const ResourceMaker = ({
     );
     return finalConfig;
   };
-  return {
+  const create = async ({ payload }) => {
+    logger.info(`create ${toString({ resourceName, type, payload })}`);
+    // Is the resource already created ?
+    {
+      const live = await getLive();
+      if (live) {
+        throw Error(`Resource ${type}/${resourceName} already exists`);
+      }
+    }
+    // Create now
+    await client.create({ name: resourceName, payload });
+    // use Return value and avoid calling getLive again ?
+    // Check if we tag correctly
+    {
+      const live = await getLive();
+      if (!live) {
+        throw Error(
+          `Resource ${type}/${resourceName} not there after being created`
+        );
+      }
+      if (!isOurMinion(live, configProvider.tag)) {
+        throw Error(`Resource ${type}/${resourceName} is not tagged correctly`);
+      }
+    }
+  };
+
+  const destroy = async () => {
+    logger.info(`destroy ${type}/${resourceName}`);
+    const live = await getLive();
+    logger.info(`destroy type: ${type} item: ${toString(live)}`);
+    if (live) {
+      const id = spec.toId(live);
+      if (id) {
+        await client.destroy({ id, name: resourceName });
+      } else {
+        throw Error(`Cannot find id in ${toString(live)}`);
+      }
+    } else {
+      logger.error(`Cannot find ${type}/${resourceName} to destroy`);
+    }
+  };
+  const planUpsert = async ({ resource }) => {
+    logger.info(`planUpsert resource: ${toString(resource.serialized())}`);
+    const live = await resource.getLive();
+    logger.info(`planUpsert live: ${toString(live)}`);
+    const plan = live
+      ? planUpdate({ live, resource })
+      : [
+          {
+            action: "CREATE",
+            resource: resource.serialized(),
+            config: await resource.config(),
+          },
+        ];
+    logger.debug(`planUpsert plan: ${toString(plan)}`);
+    return plan;
+  };
+
+  const serialized = () => ({
+    name: resourceName,
+    type,
+    provider: provider.name(),
+  });
+  const addParent = (parentToSet) => {
+    parent = parentToSet;
+  };
+  const resourceMaker = {
     type,
     provider,
     name: resourceName,
+    dependencies,
+    getParent: () => parent,
     spec,
     client,
-    serialized: () => ({
-      name: resourceName,
-      type,
-      provider: provider.name(),
-    }),
+    serialized,
     config,
-    planUpsert: async ({ resource }) => {
-      logger.info(`planUpsert resource: ${toString(resource.serialized())}`);
-      const live = await resource.getLive();
-      logger.info(`planUpsert live: ${toString(live)}`);
-      const plan = live
-        ? planUpdate({ live, resource })
-        : [
-            {
-              action: "CREATE",
-              resource: resource.serialized(),
-              config: await resource.config(),
-            },
-          ];
-      logger.debug(`planUpsert plan: ${toString(plan)}`);
-      return plan;
-    },
-    create: async ({ payload }) => {
-      logger.info(`create ${toString({ resourceName, type, payload })}`);
-      // Is the resource already created ?
-      {
-        const live = await getLive();
-        if (live) {
-          throw Error(`Resource ${type}/${resourceName} already exists`);
-        }
-      }
-      // Create now
-      await client.create({ name: resourceName, payload });
-      // use Return value and avoid calling getLive again ?
-      // Check if we tag correctly
-      {
-        const live = await getLive();
-        if (!live) {
-          throw Error(
-            `Resource ${type}/${resourceName} not there after being created`
-          );
-        }
-        if (!isOurMinion(live, configProvider.tag)) {
-          throw Error(
-            `Resource ${type}/${resourceName} is not tagged correctly`
-          );
-        }
-      }
-    },
+    create,
+    planUpsert,
     getLive,
-    destroy: async () => {
-      logger.info(`destroy ${type}/${resourceName}`);
-      const live = await getLive();
-      logger.info(`destroy type: ${type} item: ${toString(live)}`);
-      if (live) {
-        const id = spec.toId(live);
-        if (id) {
-          await client.destroy({ id, name: resourceName });
-        } else {
-          throw Error(`Cannot find id in ${toString(live)}`);
-        }
-      } else {
-        logger.error(`Cannot find ${type}/${resourceName} to destroy`);
-      }
-    },
+    destroy,
+    addParent,
   };
+  _.map(dependencies, (dependency) => {
+    dependency.addParent(resourceMaker);
+  });
+  return resourceMaker;
 };
 
 const createResourceMakers = ({ specs, config, provider, Client }) =>
@@ -431,6 +445,17 @@ module.exports = CoreProvider = ({
     return true;
   };
 
+  //TODO
+  const destroyResource = async (resource) => {
+    logger.debug(`destroyResource ${resource.serialized()}`);
+    await resource.destroy();
+    await Promise.all(
+      _.map(resource.dependencies, async (dep) => {
+        await destroyResource(dep);
+      })
+    );
+  };
+
   const provider = {
     config,
     name: () => providerName,
@@ -447,7 +472,7 @@ module.exports = CoreProvider = ({
     targetResourcesAdd,
     clientByType,
     resourceByName,
-    targetResources,
+    getTargetResources,
     isPlanEmpty,
   };
 

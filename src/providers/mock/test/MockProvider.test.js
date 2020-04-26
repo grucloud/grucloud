@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const assert = require("assert");
 const createStack = require("./MockStack");
 
@@ -36,5 +37,41 @@ describe("MockProvider", function () {
   it("list config", async function () {
     const configs = await provider.listConfig();
     assert(configs);
+  });
+
+  const displayResource = (resource, depth = 0) => {
+    console.log(
+      "  ".repeat(depth),
+      resource.serialized(),
+      resource.getParent()?.name
+    );
+    _.map(resource.dependencies, (dep) => {
+      displayResource(dep, depth + 1);
+    });
+  };
+  const destroyResource = async (resource) => {
+    console.log(resource.serialized());
+    await resource.destroy();
+    await Promise.all(
+      _.map(resource.dependencies, async (dep) => {
+        await destroyResource(dep);
+      })
+    );
+  };
+  it.skip("list resources", async function () {
+    const resources = await provider.getTargetResources();
+    assert(resources);
+    resources.map((resource) => {
+      displayResource(resource);
+    });
+  });
+  it.skip("find delete order", async function () {
+    const resources = await provider.getTargetResources();
+    assert(resources);
+    await Promise.all(
+      resources
+        .filter((resource) => !resource.getParent())
+        .map(async (resource) => await destroyResource(resource))
+    );
   });
 });
