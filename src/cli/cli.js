@@ -33,6 +33,7 @@ const createInfra = ({ infra }) => {
   console.log(`Using ${filename}`);
   checkFileExist({ filename });
   const config = {};
+  //TODO if providers exists
   return creatInfraFromFile({ filename, config });
 };
 

@@ -6,19 +6,11 @@ const logger = require("../../logger")({ prefix: "ScalewayProvider" });
 
 const toString = (x) => JSON.stringify(x, null, 4);
 
-// TODO double check
-const findName = (item) => {
-  const name = item && item.tags && item.tags[0];
-  logger.debug(`findName: item: ${toString(item)}, name: ${name}`);
-  //prefix for creating and checking tags ?
-  return item && item.tags && item.tags[0];
-};
-
 const getByName = ({ name, items = [] }) => {
   logger.debug(`getByName: ${name}, items: ${toString(items)}`);
   //TODO check with tag
-  const itemsWithName = items.filter(
-    (item) => item.tags && item.tags.find((tag) => tag.includes(name))
+  const itemsWithName = items.filter((item) =>
+    item?.tags.find((tag) => tag.includes(name))
   );
   if (itemsWithName.length === 0) {
     logger.debug(`getByName: ${name}, no result`);
@@ -38,7 +30,6 @@ const fnSpecs = ({ organization }) => [
   {
     type: "Ip",
     url: `/ips`,
-    findName,
     getByName,
     onResponseList: (data) => {
       logger.debug(`onResponse ${toString(data)}`);
@@ -102,7 +93,6 @@ const fnSpecs = ({ organization }) => [
   {
     type: "Server",
     url: `servers`,
-    findName,
     getByName,
     onResponseList: ({ servers }) => {
       return { total: servers.length, items: servers };
