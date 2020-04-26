@@ -1,4 +1,3 @@
-require("dotenv").config();
 const _ = require("lodash");
 const Promise = require("bluebird");
 const logger = require("../logger")({ prefix: "CoreProvider" });
@@ -125,6 +124,21 @@ const ResourceMaker = ({
       }
       // Create now
       await client.create({ name: resourceName, payload });
+      // use Return value and avoid calling getLive again ?
+      // Check if we tag correctly
+      {
+        const live = await getLive();
+        if (!live) {
+          throw Error(
+            `Resource ${type}/${resourceName} not there after being created`
+          );
+        }
+        if (!isOurMinion(live, configProvider.tag)) {
+          throw Error(
+            `Resource ${type}/${resourceName} is not tagged correctly`
+          );
+        }
+      }
     },
     getLive,
     destroy: async () => {
@@ -417,6 +431,7 @@ module.exports = CoreProvider = ({
     type: () => type || providerName,
     hooks,
     destroyAll,
+    planFindDestroy,
     destroyByName,
     plan,
     deployPlan,

@@ -15,7 +15,7 @@ const runProgram = async ({ filename, cmds = [] }) => {
   program.parseAsync(argv);
 };
 
-describe.only("cli", function () {
+describe("cli", function () {
   it("query plan", async function () {
     await runProgram({ filename, cmds: ["plan"] });
   });

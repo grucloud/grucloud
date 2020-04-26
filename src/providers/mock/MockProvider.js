@@ -1,6 +1,8 @@
 const assert = require("assert");
 const MockClient = require("./MockClient");
 const CoreProvider = require("../CoreProvider");
+const { toTagName } = require("../TagName");
+
 const logger = require("../../logger")({ prefix: "MockProvider" });
 
 const toJSON = (x) => JSON.stringify(x, null, 4);
@@ -27,52 +29,56 @@ const getByName = ({ name, items = [] }) => {
   return itemsWithName[0];
 };
 
-const fnSpecs = (config) => [
-  {
-    type: "Image",
-    url: "/image",
-    methods: { list: true },
-    toId: (obj) => obj.name,
-  },
-  {
-    type: "Volume",
-    url: "/volume",
-  },
-  {
-    type: "Ip",
-    url: "ip",
-    findName: (item) => {
-      //prefix for creating and checking tags ?
-      //TODO loop through tags
-      return item && item.tags && item.tags[0];
+const fnSpecs = (config) => {
+  const configDefault = ({ name, options }) => ({
+    name,
+    tags: [toTagName(name, config.tag)],
+    ...options,
+  });
+
+  return [
+    {
+      type: "Image",
+      url: "/image",
+      methods: { list: true },
+      toId: (obj) => obj.name,
     },
-    getByName,
-    configDefault: ({ name, options }) => ({
-      tags: [name],
-      ...options,
-    }),
-    //TODO
-    configTODO: ({ items, config }) => {
-      assert(items);
-      const ip = items.find((item) => item.address === config.address);
-      if (ip) {
-        return ip;
-      }
-      return { ...config };
+    {
+      type: "Volume",
+      url: "/volume",
+      configDefault,
     },
-  },
-  {
-    type: "Server",
-    url: "/server",
-    getByName,
-    configDefault: ({ name, options }) => ({
-      name,
-      tags: [name],
-      boot_type: "local",
-      ...options,
-    }),
-  },
-];
+    {
+      type: "Ip",
+      url: "ip",
+      findName: (item) => {
+        //prefix for creating and checking tags ?
+        //TODO loop through tags
+        return item?.tags[0];
+      },
+      getByName,
+      configDefault,
+      //TODO
+      configTODO: ({ items, config }) => {
+        assert(items);
+        const ip = items.find((item) => item.address === config.address);
+        if (ip) {
+          return ip;
+        }
+        return { ...config };
+      },
+    },
+    {
+      type: "Server",
+      url: "/server",
+      getByName,
+      configDefault: ({ name, options }) => ({
+        boot_type: "local",
+        ...configDefault({ name, options }),
+      }),
+    },
+  ];
+};
 
 module.exports = MockProvider = ({ name }, config = {}) => {
   const mockCloud = MockCloud(config.mockCloudInitStates);

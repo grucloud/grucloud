@@ -9,7 +9,14 @@ exports.runAsyncCommand = async (command, text) => {
       interval: 300,
     },
   }).start();
-  const result = await command();
-  throbber.stop();
-  return result;
+
+  try {
+    const result = await command();
+    return result;
+  } catch (error) {
+    throw error;
+  } finally {
+    // TODO check if it is called
+    throbber.stop();
+  }
 };

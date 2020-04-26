@@ -51,6 +51,6 @@ describe("ScalewayImage", function () {
     assert.equal(plan.newOrUpdate.length, 0);
   });
   it("deploy plan", async function () {
-    await testProviderLifeCycle({ provider });
+    //await testProviderLifeCycle({ provider });
   });
 });
