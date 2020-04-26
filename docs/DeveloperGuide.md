@@ -9,7 +9,7 @@ node -v
 v14.0.0
 ```
 
-Make sure git user name and email are configured properly:
+Make sure the git user name and email are configured properly:
 
 ```
 git config --global user.name
