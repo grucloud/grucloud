@@ -29,7 +29,7 @@ const mockCloudInitStatesDefault = [
       ["2", { name: "CentOS", arch: "x86_64" }],
     ],
   ],
-  ["Volume"],
+  ["Volume", [["1", { id: "1", name: "volume-gru" }]]],
   ["Server"],
 ];
 

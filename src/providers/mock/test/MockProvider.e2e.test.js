@@ -20,6 +20,7 @@ describe("MockProvider e2e", function () {
   it("destroy", async function () {
     {
       const plan = await provider.plan();
+      assert(plan.destroy);
       await provider.deployPlan(plan);
     }
     {
@@ -31,9 +32,8 @@ describe("MockProvider e2e", function () {
       assert(provider.isPlanEmpty(plan));
     }
     {
-      const plan = await provider.planFindDestroy({ all: true });
-      console.log(plan);
-      //TODO assert something
+      const planDestroyed = await provider.planFindDestroy({ all: true });
+      assert.equal(planDestroyed.length, 3);
     }
   });
   it("plan", async function () {
@@ -52,12 +52,12 @@ describe("MockProvider e2e", function () {
     }
     {
       const liveResources = await provider.listLives({ all: true });
-      assert.equal(liveResources.length, 2);
+      assert.equal(liveResources.length, 3);
     }
 
     const plan = await provider.plan();
     {
-      assert.equal(plan.destroy.length, 0);
+      assert.equal(plan.destroy.length, 1);
       assert.equal(plan.newOrUpdate.length, 3);
     }
     await provider.deployPlan(plan);

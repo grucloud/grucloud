@@ -1,3 +1,4 @@
+const assert = require("assert");
 const _ = require("lodash");
 const Promise = require("bluebird");
 const logger = require("../logger")({ prefix: "CoreProvider" });
@@ -218,6 +219,7 @@ module.exports = CoreProvider = ({
   const clients = specs.map((spec) => Client({ spec, config }));
 
   const clientByType = (type) => {
+    assert(type);
     const spec = specs.find((spec) => spec.type === type);
     if (!spec) {
       throw new Error(`type ${type} not found`);
@@ -347,8 +349,12 @@ module.exports = CoreProvider = ({
               })
 
               .map((live) => ({
-                provider: providerName,
-                type: client.spec.type, // TODO change client.spec in client.spec
+                resource: {
+                  provider: providerName,
+                  type: client.spec.type,
+                  name: client.spec.findName(live),
+                },
+                action: "DESTROY",
                 data: live,
               }));
           })
@@ -395,9 +401,9 @@ module.exports = CoreProvider = ({
     await Promise.all(
       planDestroy.map(async (planItem) => {
         await destroyById({
-          type: planItem.type,
+          type: planItem.resource.type,
           id: planItem.data.id,
-          name: planItem.data.name,
+          name: planItem.resource.name,
         });
       })
     );

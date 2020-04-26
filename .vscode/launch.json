@@ -7,7 +7,7 @@
       "name": "Cli plan Query",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}",
-      "args": ["--infra", "examples/scaleway/iac.js", "query"]
+      "args": ["--infra", "src/providers/mock/test/MockStack.js", "plan"]
     },
     {
       "name": "Debug test",

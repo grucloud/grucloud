@@ -3,7 +3,7 @@ const emoji = require("node-emoji");
 
 var actionsEmoticon = {
   CREATE: emoji.get("sparkle"),
-  DELETE: "-",
+  DESTROY: emoji.get("x"),
 };
 // Plan
 const displayAction = (action) => actionsEmoticon[action];
@@ -22,5 +22,7 @@ exports.displayLive = (live) => {
 
 exports.displayPlan = async (plan) => {
   plan.newOrUpdate && plan.newOrUpdate.map((item) => planDisplayItem(item));
+  plan.destroy && plan.destroy.map((item) => planDisplayItem(item));
+
   //TODO display removed items
 };

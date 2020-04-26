@@ -65,7 +65,7 @@ exports.displayStatus = async ({ program }) => {
       () => provider.listLives(),
       "All Resources"
     );
-    console.log(`Total Resources: ${lives.length} `);
+    console.log(`${lives.length} Resources Types`);
     lives.map((live) => displayLive(live));
   } catch (error) {
     console.error(error);
