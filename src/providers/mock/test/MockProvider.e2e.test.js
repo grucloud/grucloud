@@ -21,7 +21,7 @@ describe("MockProvider e2e", function () {
         assert(configs);
       }
       {
-        const liveResources = await provider.listLives();
+        const liveResources = await provider.listLives({ all: true });
         assert.equal(liveResources.length, 2);
       }
 
@@ -37,6 +37,10 @@ describe("MockProvider e2e", function () {
       }
       {
         const listLives = await provider.listLives();
+        assert.equal(listLives.length, 3);
+      }
+      {
+        const listLives = await provider.listLives({ all: true });
         assert.equal(listLives.length, 4);
       }
       {

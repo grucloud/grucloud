@@ -19,7 +19,7 @@ describe("MockProvider Simple", function () {
 
   it("create ip", async function () {
     {
-      const [liveIp] = await provider.listLives();
+      const [liveIp] = await provider.listLives({ all: true });
 
       assert.equal(liveIp.type, "Image");
       assert.equal(liveIp.data.items.length, 2);
@@ -53,7 +53,7 @@ describe("MockProvider Simple", function () {
     }
     {
       const lives = await provider.listLives();
-      assert.equal(lives.length, 4);
+      assert.equal(lives.length, 3);
     }
   });
 });

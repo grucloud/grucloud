@@ -212,13 +212,15 @@ module.exports = CoreProvider = ({
   };
   // API
   //  Flatter that
-  const listLives = async () => {
+  const listLives = async ({ all = false } = {}) => {
     const lists = (
       await Promise.all(
-        clients.map(async (client) => ({
-          type: client.spec.type,
-          data: (await client.list()).data,
-        }))
+        clients
+          .filter((client) => all || client.spec.methods.create)
+          .map(async (client) => ({
+            type: client.spec.type,
+            data: (await client.list()).data,
+          }))
       )
     ).filter((liveResources) => liveResources.data.items.length > 0);
     logger.debug(`listLives ${toString(lists)}`);
