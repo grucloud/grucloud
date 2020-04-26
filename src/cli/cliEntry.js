@@ -17,5 +17,5 @@ program
     //console.log("Done");
   })
   .catch((error) => {
-    console.log("Error ", JSON.stringify(error, null, 4));
+    //console.log("Error ", JSON.stringify(error, null, 4));
   });

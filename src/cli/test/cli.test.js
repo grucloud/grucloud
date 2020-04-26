@@ -15,15 +15,7 @@ const runProgram = async ({ asyncCmd = true, filename, cmds = [] }) => {
   asyncCmd ? await program.parseAsync(argv) : program.parse(argv);
 };
 
-describe("cli", function () {
-  it.skip("version", async function () {
-    await runProgram({ filename, cmds: ["--version"] });
-    console.log("DONE");
-  });
-
-  it.skip("query plan is the default command", async function () {
-    await runProgram({ filename, cmds: [""] });
-  });
+describe.only("cli", function () {
   it("query plan", async function () {
     await runProgram({ filename, cmds: ["plan"] });
   });

@@ -6,17 +6,17 @@ const liveResourceDisplay = (live) => {
   console.log(`${live.type} - ${live.data.items.length} `);
 };
 exports.displayStatus = async (provider) => {
-  const lives = await runAsyncCommand(
-    () => provider.listLives(),
-    "All Resources"
-  );
-  console.log(`Total Resources: ${lives.length} `);
-  lives.map((live) => liveResourceDisplay(live));
-
   const targets = await runAsyncCommand(
     () => provider.listTargets(),
     "Target Resources"
   );
   console.log(`Our Resources: ${targets.length}`);
   targets.map((item) => liveResourceDisplay(item));
+
+  const lives = await runAsyncCommand(
+    () => provider.listLives(),
+    "All Resources"
+  );
+  console.log(`Total Resources: ${lives.length} `);
+  lives.map((live) => liveResourceDisplay(live));
 };
