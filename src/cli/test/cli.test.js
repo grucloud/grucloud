@@ -25,12 +25,15 @@ describe("cli", function () {
     await runProgram({ filename, cmds: [""] });
   });
   it("query plan", async function () {
-    await runProgram({ filename, cmds: ["query"] });
+    await runProgram({ filename, cmds: ["plan"] });
   });
   it("deploy plan", async function () {
     await runProgram({ filename, cmds: ["deploy"] });
   });
   it("destroy plan", async function () {
     await runProgram({ filename, cmds: ["destroy"] });
+  });
+  it("display Status", async function () {
+    await runProgram({ filename, cmds: ["status"] });
   });
 });

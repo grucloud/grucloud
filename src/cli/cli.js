@@ -5,9 +5,10 @@ const { planQuery } = require("./planQuery");
 const { displayLives } = require("./displayLives");
 const { planDeploy } = require("./planDeploy");
 const { planDestroy } = require("./planDestroy");
+const { displayStatus } = require("./displayStatus");
 
 const creatInfraFromFile = ({ filename, config }) => {
-  console.log("creatInfraFromFile", filename);
+  //console.log("creatInfraFromFile", filename);
   try {
     const InfraCode = require(filename);
     const infra = InfraCode({ config });
@@ -75,6 +76,24 @@ exports.planDestroy = async ({ program }) => {
 
   try {
     await planDestroy(infra.providers[0]);
+  } catch (error) {
+    console.error("error", error);
+    throw error;
+  }
+};
+
+exports.displayStatus = async ({ program }) => {
+  console.log("Display Status");
+  const infra = createInfra({ infra: program.infra });
+
+  if (!infra.providers) {
+    throw Error(`no providers provided`);
+  }
+
+  const provider = infra.providers[0];
+
+  try {
+    await displayStatus(infra.providers[0]);
   } catch (error) {
     console.error("error", error);
     throw error;
