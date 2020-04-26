@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 const pkg = require("../../package.json");
 const { createProgram } = require("./program");
-const { planQuery, planDeploy, planDestroy, displayStatus } = require("./cli");
+const commands = require("./cliCommands");
 
 const program = createProgram({
   version: pkg.version,
   argv: process.argv,
-  commands: { planQuery, planDeploy, planDestroy, displayStatus },
+  commands,
 });
 
 console.log(`GruCloud ${program._version}`);

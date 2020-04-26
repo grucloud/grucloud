@@ -42,6 +42,7 @@ const setupMock = ({ axios, config, spec }) => {
     });
     return [200, data];
   });
+  //TODO delete all
 };
 
 module.exports = MockClient = ({ spec, config, authKey }) => {
@@ -59,40 +60,3 @@ module.exports = MockClient = ({ spec, config, authKey }) => {
     axios,
   });
 };
-/*
-
-module.exports = MockClient = ({ spec, config }) => {
-  const { type } = spec;
-  logger.debug(`MockClient init ${type}, ${JSON.stringify(config)}`);
-
-  const list = async () => {
-    return config.onList({ type });
-  };
-
-  const create = async ({ name, payload }) => {
-    return config.onCreate({ type, name, payload });
-  };
-
-  const get = async (name, options) => {
-    return config.onGet({ type, name, options });
-  };
-
-  const destroy = async (name) => {
-    return config.onDestroy({ type, name });
-  };
-
-  const destroyAll = async () => {
-    return config.onDestroyAll({ type });
-  };
-
-  return {
-    spec,
-    type: "mockClient",
-    get,
-    list,
-    create,
-    destroy,
-    destroyAll,
-  };
-};
-*/
