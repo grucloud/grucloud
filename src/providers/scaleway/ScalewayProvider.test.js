@@ -1,6 +1,6 @@
 const assert = require("assert");
 const logger = require("logger")({ prefix: "CoreProvider" });
-const { testProviderLifeCycle } = require("../TestUtils");
+const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
 const ScalewayProvider = require("./ScalewayProvider");
 

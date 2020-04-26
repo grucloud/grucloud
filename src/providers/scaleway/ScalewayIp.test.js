@@ -1,7 +1,7 @@
 const assert = require("assert");
 const ScalewayProvider = require("./ScalewayProvider");
 const config = require("./config");
-const { testProviderLifeCycle } = require("../TestUtils");
+const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
 describe("ScalewayIp", function () {
   const provider = ScalewayProvider({ name: "scaleway" }, config);

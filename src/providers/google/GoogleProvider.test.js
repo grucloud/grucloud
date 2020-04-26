@@ -1,7 +1,7 @@
 const assert = require("assert");
 const GoogleProvider = require("./GoogleProvider");
 const config = require("./config");
-const { testProviderLifeCycle } = require("../TestUtils");
+const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
 describe.skip("GoogleProvider", function () {
   const provider = GoogleProvider({ name: "google" }, config);
