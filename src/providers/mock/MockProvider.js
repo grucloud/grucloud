@@ -1,7 +1,7 @@
 const assert = require("assert");
 const MockClient = require("./MockClient");
 const CoreProvider = require("../CoreProvider");
-const logger = require("logger")({ prefix: "MockProvider" });
+const logger = require("../../logger")({ prefix: "MockProvider" });
 
 const toJSON = (x) => JSON.stringify(x, null, 4);
 

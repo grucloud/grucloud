@@ -6,7 +6,7 @@ const MockCloud = require("./MockCloud");
 const CoreClient = require("../CoreClient");
 const AxiosMaker = require("../AxiosMaker");
 const urljoin = require("url-join");
-const logger = require("logger")({ prefix: "MockClient" });
+const logger = require("../../logger")({ prefix: "MockClient" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
 const BASE_URL = "http://localhost:8089";

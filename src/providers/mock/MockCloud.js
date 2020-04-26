@@ -1,7 +1,7 @@
 const _ = require("lodash");
 const assert = require("assert");
 const { v4: uuidv4 } = require("uuid");
-const logger = require("logger")({ prefix: "MockCloud" });
+const logger = require("../../logger")({ prefix: "MockCloud" });
 const toString = (x) => JSON.stringify(x, null, 4);
 
 const mockCloudInitStatesDefault = [

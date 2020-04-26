@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const path = require("path");
 const fs = require("fs");
-const { displayPlan } = require("./displayPlan");
+const { planQuery } = require("./planQuery");
 const { displayLives } = require("./displayLives");
 const { planDeploy } = require("./planDeploy");
 const { planDestroy } = require("./planDestroy");
@@ -44,7 +44,7 @@ exports.planQuery = async ({ program }) => {
     throw Error(`no providers provided`);
   }
   try {
-    await displayPlan(infra.providers[0]);
+    await planQuery(infra.providers[0]);
     await displayLives(infra.providers[0]);
   } catch (error) {
     console.error("error", error);
@@ -57,8 +57,9 @@ exports.planDeploy = async ({ program }) => {
   if (!infra.providers) {
     throw Error(`no providers provided`);
   }
+  const provider = infra.providers[0];
   try {
-    await planDeploy(infra.providers[0]);
+    await planDeploy(provider);
   } catch (error) {
     console.error("error", error);
     throw error;

@@ -14,7 +14,7 @@ console.log(`GruCloud ${program._version}`);
 program
   .parseAsync(process.argv)
   .then(() => {
-    console.log("Done");
+    //console.log("Done");
   })
   .catch((error) => {
     console.log("Error ", JSON.stringify(error, null, 4));

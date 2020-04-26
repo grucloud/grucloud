@@ -1,6 +1,6 @@
+// Live Resources
 const emoji = require("node-emoji");
 
-const { runAsyncCommand } = require("./cliUtils");
 var actionsEmoticon = {
   CREATE: emoji.get("sparkle"),
   DELETE: "-",
@@ -16,8 +16,7 @@ const planDisplayItem = (item) => {
   );
 };
 
-exports.displayPlan = async (provider) => {
-  const plan = await runAsyncCommand(() => provider.plan(), "Query Plan");
+exports.displayPlan = async (plan) => {
   plan.newOrUpdate && plan.newOrUpdate.map((item) => planDisplayItem(item));
   //TODO display removed items
 };

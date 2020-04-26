@@ -397,6 +397,17 @@ module.exports = CoreProvider = ({
   if (hooks && hooks.init) {
     hooks.init();
   }
+  const isPlanEmpty = (plan) => {
+    if (plan.newOrUpdate.length > 0) {
+      throw Error(
+        `plan should be empty but contains resources to create or update`
+      );
+    }
+    if (plan.destroy.length > 0) {
+      throw Error(`plan should be empty but contains resources to delete`);
+    }
+    return true;
+  };
 
   const provider = {
     config,
@@ -414,6 +425,7 @@ module.exports = CoreProvider = ({
     clientByType,
     resourceByName,
     targetResources,
+    isPlanEmpty,
   };
 
   return {
