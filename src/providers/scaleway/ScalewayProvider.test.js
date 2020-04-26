@@ -32,7 +32,7 @@ describe("ScalewayProvider", function () {
       commercial_type: "DEV1-S",
       volumes: {
         "0": {
-          size: 20000000000,
+          size: 20_000_000_000,
         },
       },
     }),
