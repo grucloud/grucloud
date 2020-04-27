@@ -3,17 +3,10 @@ const GoogleProvider = require("./GoogleProvider");
 const config = require("./config");
 const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
-describe.skip("GoogleProvider", function () {
+describe("GoogleProvider", function () {
   const provider = GoogleProvider({ name: "google" }, config);
   const ip = provider.makeAddress({ name: "ip-webserver" });
-  /*
-  const volume = provider.makeVolume({
-    name: "volume1",
-    config: () => ({
-      size: 20000000000,
-    }),
-  });
-*/
+
   const server = provider.makeInstance({
     name: "web-server",
     dependencies: {},
@@ -26,7 +19,7 @@ describe.skip("GoogleProvider", function () {
     await provider.destroyAll();
   });
   after(async () => {
-    //await provider.destroyAll();
+    await provider.destroyAll();
   });
   it("plan", async function () {
     const plan = await provider.plan();
@@ -35,8 +28,5 @@ describe.skip("GoogleProvider", function () {
   });
   it.skip("deploy plan", async function () {
     await testProviderLifeCycle({ provider });
-    const live = await server.getLive();
-    assert(live);
-    assert(live.id);
   });
 });

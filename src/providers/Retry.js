@@ -2,8 +2,8 @@ const Promise = require("bluebird");
 const logger = require("../logger")({ prefix: "CoreClient" });
 
 const retryExpectException = async (
-  { fn, isExpectedError, delay = 1e3 },
-  count = 10
+  { fn, isExpectedError, delay = 2e3 },
+  count = 90
 ) => {
   logger.debug(`retryExpectException count: ${count}, delay: ${delay}`);
   if (count === 0) {
@@ -14,6 +14,7 @@ const retryExpectException = async (
     throw Error("No exception, Have to retry");
   } catch (error) {
     if (isExpectedError(error)) {
+      logger.debug(`retryExpectException isExpectedError`);
       return true;
     }
     logger.debug(
@@ -26,7 +27,7 @@ const retryExpectException = async (
 };
 exports.retryExpectException = retryExpectException;
 
-const retryExpectOk = async ({ fn, isOk, delay = 1e3 }, count = 10) => {
+const retryExpectOk = async ({ fn, isOk, delay = 1e3 }, count = 20) => {
   logger.debug(`retryExpectOk count: ${count}, delay: ${delay}`);
   if (count === 0) {
     throw Error("timeout");
@@ -36,6 +37,8 @@ const retryExpectOk = async ({ fn, isOk, delay = 1e3 }, count = 10) => {
     logger.debug(`retryExpectOk: result: ${toString(result)}`);
 
     if (isOk(result)) {
+      logger.debug(`retryExpectOk isOk`);
+
       return true;
     }
     logger.debug(`retryExpectOk: not ok`);
