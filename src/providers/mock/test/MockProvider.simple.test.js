@@ -1,12 +1,13 @@
 const assert = require("assert");
 const createStack = require("./MockStack");
+const config = require("./config");
 
 const logger = require("logger")({ prefix: "MockProviderTestSimple" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
 describe("MockProvider Simple", function () {
   const { providers, ip, volume, server, image } = createStack({
-    config: {},
+    config,
   });
   const provider = providers[0];
 

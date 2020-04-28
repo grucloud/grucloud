@@ -1,3 +1,82 @@
+POST https://www.googleapis.com/compute/v1/projects/starhackit/zones/us-central1-a/instances
+{
+  "kind": "compute#instance",
+  "name": "instance-1",
+  "zone": "projects/starhackit/zones/us-central1-a",
+  "machineType": "projects/starhackit/zones/us-central1-a/machineTypes/e2-micro",
+  "displayDevice": {
+    "enableDisplay": false
+  },
+  "metadata": {
+    "kind": "compute#metadata",
+    "items": []
+  },
+  "tags": {
+    "items": []
+  },
+  "disks": [
+    {
+      "kind": "compute#attachedDisk",
+      "type": "PERSISTENT",
+      "boot": true,
+      "mode": "READ_WRITE",
+      "autoDelete": true,
+      "deviceName": "instance-1",
+      "initializeParams": {
+        "sourceImage": "projects/debian-cloud/global/images/debian-9-stretch-v20200420",
+        "diskType": "projects/starhackit/zones/us-central1-a/diskTypes/pd-standard",
+        "diskSizeGb": "10"
+      },
+      "diskEncryptionKey": {}
+    }
+  ],
+  "canIpForward": false,
+  "networkInterfaces": [
+    {
+      "kind": "compute#networkInterface",
+      "subnetwork": "projects/starhackit/regions/us-central1/subnetworks/default",
+      "accessConfigs": [
+        {
+          "kind": "compute#accessConfig",
+          "name": "External NAT",
+          "type": "ONE_TO_ONE_NAT",
+          "natIP": "34.71.117.209",
+          "networkTier": "PREMIUM"
+        }
+      ],
+      "aliasIpRanges": []
+    }
+  ],
+  "description": "",
+  "labels": {
+    "gru": "true",
+    "": ""
+  },
+  "scheduling": {
+    "preemptible": false,
+    "onHostMaintenance": "MIGRATE",
+    "automaticRestart": true,
+    "nodeAffinities": []
+  },
+  "deletionProtection": false,
+  "reservationAffinity": {
+    "consumeReservationType": "ANY_RESERVATION"
+  },
+  "serviceAccounts": [
+    {
+      "email": "446608274745-compute@developer.gserviceaccount.com",
+      "scopes": [
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring.write",
+        "https://www.googleapis.com/auth/servicecontrol",
+        "https://www.googleapis.com/auth/service.management.readonly",
+        "https://www.googleapis.com/auth/trace.append"
+      ]
+    }
+  ]
+}
+
 {
   "kind": "compute#instance",
   "name": "instance-1",

@@ -1,5 +1,6 @@
 const assert = require("assert");
 const createStack = require("./MockStack");
+const config = require("./config");
 
 const logger = require("logger")({ prefix: "MockProviderTest" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
@@ -40,7 +41,7 @@ const testCrud = async ({ provider, resource, createOptions }) => {
 };
 
 describe("MockProvider", function () {
-  const { providers, ip, volume, server, image } = createStack({});
+  const { providers, ip, volume, server, image } = createStack({ config });
   const provider = providers[0];
 
   it.skip("testCrud", async function () {

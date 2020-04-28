@@ -8,21 +8,28 @@ exports.hasTag = hasTag;
 exports.isOurMinion = (resource, ourTag) => {
   logger.info(`isOurMinion ? ${toString({ ourTag, resource })}`);
   if (hasTag(resource.name, ourTag)) {
+    logger.info(`isOurMinion yes, same resource name`);
     return true;
   }
   if (hasTag(resource.description, ourTag)) {
+    logger.info(`isOurMinion yes, same description`);
     return true;
   }
 
   const { tags, labels } = resource;
   if (Array.isArray(tags?.items)) {
-    return tags?.items.some((tag) => tag.includes(ourTag));
+    if (tags?.items.some((tag) => tag.includes(ourTag))) {
+      return true;
+    }
   }
   if (Array.isArray(tags)) {
-    return tags.some((tag) => tag.includes(ourTag));
+    if (tags.some((tag) => tag.includes(ourTag))) {
+      return true;
+    }
   }
   // TODO check labels ?
   if (labels) {
   }
+
   logger.info(`isOurMinion not our minion: ${toString({ ourTag, resource })}`);
 };

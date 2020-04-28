@@ -1,6 +1,7 @@
 const assert = require("assert");
 const MockClient = require("./MockClient");
 const CoreProvider = require("../CoreProvider");
+const compare = require("../../Utils").compare;
 const { toTagName } = require("../TagName");
 
 const logger = require("../../logger")({ prefix: "MockProvider" });
@@ -28,7 +29,7 @@ const getByName = ({ name, items = [] }) => {
 
   return itemsWithName[0];
 };
-
+//TODO use deepMerge ?
 const fnSpecs = (config) => {
   const configDefault = ({ name, options }) => ({
     name,
@@ -76,6 +77,16 @@ const fnSpecs = (config) => {
         boot_type: "local",
         ...configDefault({ name, options }),
       }),
+      compare: ({ target, live }) => {
+        logger.debug(`compare server`);
+        const diff = compare({
+          target,
+          targetKeys: ["machineType"],
+          live,
+        });
+        logger.debug(`compare ${toString(diff)}`);
+        return diff;
+      },
     },
   ];
 };

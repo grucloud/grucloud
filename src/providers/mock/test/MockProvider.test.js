@@ -1,12 +1,13 @@
 const _ = require("lodash");
 const assert = require("assert");
 const createStack = require("./MockStack");
+const config = require("./config");
 
 const logger = require("logger")({ prefix: "MockProviderTest" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
 describe("MockProvider", function () {
-  const { providers, ip, volume, server, image } = createStack({});
+  const { providers, ip, volume, server, image } = createStack({ config });
   const provider = providers[0];
 
   it("ip config static ", async function () {
@@ -25,7 +26,8 @@ describe("MockProvider", function () {
     const config = await volume.config();
     assert(config);
   });
-  it("server config", async function () {
+
+  it.skip("server config", async function () {
     const config = await server.config();
     assert(config);
     assert(config.name);

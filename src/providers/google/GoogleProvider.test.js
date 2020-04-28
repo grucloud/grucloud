@@ -10,8 +10,17 @@ describe("GoogleProvider", function () {
   const server = provider.makeInstance({
     name: "web-server",
     dependencies: {},
-    config: async ({ dependencies: {} }) => ({
+    config: async ({ dependencies: { ip } }) => ({
       machineType: "e2-micro",
+      networkInterfaces: [
+        {
+          accessConfigs: [
+            {
+              natIP: await ip.configLive().address,
+            },
+          ],
+        },
+      ],
     }),
   });
 

@@ -51,7 +51,11 @@ const ResourceMaker = ({
       data: { items },
     } = await client.list();
 
-    const userConfig = await fnUserConfig({ dependencies, items });
+    const userConfig = await fnUserConfig({
+      dependencies,
+      items,
+      config: configProvider,
+    });
 
     const configWithDefault = spec.configDefault({
       name: resourceName,
@@ -137,7 +141,7 @@ const ResourceMaker = ({
           {
             action: "CREATE",
             resource: resource.serialized(),
-            config: await resource.config(),
+            // TODO configStatic ? config: await resource.config(),
           },
         ];
     logger.debug(`planUpsert plan: ${toString(plan)}`);
@@ -274,7 +278,7 @@ module.exports = CoreProvider = ({
     const lists = await Promise.all(
       getTargetResources().map(async (resource) => ({
         resource: resource.serialized(),
-        config: await resource.config(),
+        //config: await resource.config(),
       }))
     );
     logger.debug(`listConfig ${JSON.stringify(lists, null, 4)}`);
