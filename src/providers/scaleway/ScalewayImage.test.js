@@ -29,12 +29,10 @@ describe("ScalewayImage", function () {
     assert.equal(provider.getTargetResources().length, 1);
   });
   it("config static ", async function () {
-    const config = await image.config();
+    const config = image.configStatic();
     assert(config);
     //TODO check uuid
-    assert(config.id);
-    assert.equal(config.arch, "x86_64");
-    assert(config.name.includes("Ubuntu"));
+    assert(config.name.includes("ubuntu"));
   });
   it("config live ", async function () {
     const config = await image.config({ live: true });

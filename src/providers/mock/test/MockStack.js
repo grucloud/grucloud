@@ -1,9 +1,12 @@
 const assert = require("assert");
+const _ = require("lodash");
 const MockProvider = require("../MockProvider");
-const toString = (x) => JSON.stringify(x, null, 4);
+
+const configDefault = require("./config");
 
 const createStack = ({ config }) => {
   // Provider
+  config = _.defaults(config, configDefault);
   assert(config);
   const provider = MockProvider({ name: "mock" }, config);
 
@@ -35,6 +38,10 @@ const createStack = ({ config }) => {
   const server = provider.makeServer({
     name: "web-server",
     dependencies: { volume, image, ip },
+    options: {
+      diskSizeGb: "20",
+      machineType: "f1-micro",
+    },
     config: async ({
       dependencies: { volume, image, ip },
       config: { project, zone },
@@ -44,8 +51,6 @@ const createStack = ({ config }) => {
       assert(project, "project not set");
       assert(zone, "zone not set");
       return {
-        name: "web-server",
-        machineType: `projects/${project}/zones/${zone}/machineTypes/f1-micro`,
         disks: [
           {
             autoDelete: true,
@@ -53,7 +58,6 @@ const createStack = ({ config }) => {
               sourceImage:
                 "projects/debian-cloud/global/images/debian-9-stretch-v20200420",
               diskType: `projects/${project}/zones/${zone}/diskTypes/pd-standard`,
-              diskSizeGb: "10",
             },
           },
         ],

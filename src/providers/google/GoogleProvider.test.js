@@ -3,7 +3,7 @@ const GoogleProvider = require("./GoogleProvider");
 const config = require("./config");
 const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
-describe("GoogleProvider", function () {
+describe.skip("GoogleProvider", function () {
   const provider = GoogleProvider({ name: "google" }, config);
   const ip = provider.makeAddress({ name: "ip-webserver" });
 

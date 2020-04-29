@@ -8,27 +8,6 @@ const logger = require("../../logger")({ prefix: "MockProvider" });
 
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
-const getByName = ({ name, items = [] }) => {
-  if (!name) {
-    throw Error(`getByName no name`);
-  }
-  logger.debug(`getByName: ${name}, items: ${toString(items)}`);
-  const itemsWithName = items.filter(
-    (item) => item.tags && item.tags.find((tag) => tag.includes(name))
-  );
-  if (itemsWithName.length === 0) {
-    logger.debug(`getByName: ${name}, no result`);
-    return;
-  }
-  logger.debug(`getByName: ${name}, returns: ${toString(itemsWithName)}`);
-  if (itemsWithName.length > 1) {
-    logger.error(
-      `getByName: ${name}, multiple result: ${toString(itemsWithName)}`
-    );
-  }
-
-  return itemsWithName[0];
-};
 //TODO use deepMerge ?
 const fnSpecs = (config) => {
   const configDefault = ({ name, options }) => ({
@@ -57,7 +36,6 @@ const fnSpecs = (config) => {
         //TODO loop through tags
         return item?.tags[0];
       },
-      getByName,
       configDefault,
       //TODO
       configTODO: ({ items, config }) => {
@@ -72,10 +50,51 @@ const fnSpecs = (config) => {
     {
       type: "Server",
       url: "/server",
-      getByName,
+      optionsDefault: {
+        machineType: "f1-micro",
+        diskSizeGb: "10",
+        diskTypes: "pd-standard",
+      },
       configDefault: ({ name, options }) => ({
-        boot_type: "local",
-        ...configDefault({ name, options }),
+        kind: "compute#instance",
+        name,
+        zone: `projects/${config.project}/zones/${config.zone}`,
+        machineType: `projects/${config.project}/zones/${config.zone}/machineTypes/${options.machineType}`,
+        tags: {
+          items: [toTagName(name, config.tag)],
+        },
+        disks: [
+          {
+            kind: "compute#attachedDisk",
+            type: "PERSISTENT",
+            boot: true,
+            mode: "READ_WRITE",
+            autoDelete: true,
+            deviceName: toTagName(name, config.tag),
+            initializeParams: {
+              sourceImage:
+                "projects/debian-cloud/global/images/debian-9-stretch-v20200420",
+              diskType: `projects/${config.project}/zones/${config.zone}/diskTypes/${options.diskTypes}`,
+              diskSizeGb: options.diskSizeGb,
+            },
+            diskEncryptionKey: {},
+          },
+        ],
+        networkInterfaces: [
+          {
+            kind: "compute#networkInterface",
+            subnetwork: `projects/${config.project}/regions/${config.region}/subnetworks/default`,
+            accessConfigs: [
+              {
+                kind: "compute#accessConfig",
+                name: "External NAT",
+                type: "ONE_TO_ONE_NAT",
+                networkTier: "PREMIUM",
+              },
+            ],
+            aliasIpRanges: [],
+          },
+        ],
       }),
       compare: ({ target, live }) => {
         logger.debug(`compare server`);

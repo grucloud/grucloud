@@ -46,12 +46,12 @@ describe("ScalewayProvider", function () {
   });
 
   it("server config", async function () {
-    const result = await server.config();
+    const result = server.configStatic();
     //console.log(JSON.stringify(result, null, 4));
     assert(result.name);
     assert.equal(result.boot_type, "local");
     //assert(result.image);
-    assert(result.volumes);
+    //assert(result.volumes);
   });
   it("list all config", async function () {
     const configs = await provider.listConfig();

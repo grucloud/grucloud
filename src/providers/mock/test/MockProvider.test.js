@@ -10,6 +10,62 @@ describe("MockProvider", function () {
   const { providers, ip, volume, server, image } = createStack({ config });
   const provider = providers[0];
 
+  it("merge defaut ", async function () {
+    const input = {
+      name: "web-server",
+      disks: [
+        {
+          initializeParams: {
+            diskSizeGb: "20",
+          },
+        },
+      ],
+      networkInterfaces: [
+        {
+          accessConfigs: [
+            {
+              natIP: "192.168.1.1",
+            },
+          ],
+        },
+      ],
+    };
+    const defaultConfig = {
+      kind: "compute#instance",
+      disks: [
+        {
+          kind: "compute#attachedDisk",
+          type: "PERSISTENT",
+          boot: true,
+          mode: "READ_WRITE",
+          autoDelete: true,
+          initializeParams: {
+            sourceImage:
+              "projects/debian-cloud/global/images/debian-9-stretch-v20200420",
+            diskSizeGb: "10",
+          },
+          diskEncryptionKey: {},
+        },
+      ],
+      networkInterfaces: [
+        {
+          kind: "compute#networkInterface",
+          accessConfigs: [
+            {
+              kind: "compute#accessConfig",
+              name: "External NAT",
+              type: "ONE_TO_ONE_NAT",
+              networkTier: "PREMIUM",
+            },
+          ],
+          aliasIpRanges: [],
+        },
+      ],
+    };
+    const result = _.defaultsDeep(input, defaultConfig);
+    //console.log(JSON.stringify(result, null, 4));
+    //TODO assert
+  });
   it("ip config static ", async function () {
     const config = await ip.config();
     assert(config);
@@ -27,13 +83,21 @@ describe("MockProvider", function () {
     assert(config);
   });
 
-  it.skip("server config", async function () {
-    const config = await server.config();
+  it("server config", async function () {
+    const config = server.configStatic();
     assert(config);
-    assert(config.name);
-    assert.equal(config.boot_type, "local");
-    assert.equal(config.commercial_type, "DEV1-S");
-    assert(config.tags[0]);
+    //console.log(JSON.stringify(config, null, 4));
+    assert.equal(config.zone, "projects/starhackit/zones/us-central1-a");
+    assert.equal(
+      config.machineType,
+      "projects/starhackit/zones/us-central1-a/machineTypes/f1-micro"
+    );
+
+    assert.equal(config.disks[0].initializeParams.diskSizeGb, "20");
+    assert.equal(
+      config.disks[0].initializeParams.diskType,
+      "projects/starhackit/zones/us-central1-a/diskTypes/pd-standard"
+    );
   });
 
   it("list config", async function () {
@@ -52,7 +116,7 @@ describe("MockProvider", function () {
     });
   };
   const destroyResource = async (resource) => {
-    console.log(resource.serialized());
+    //console.log(resource.serialized());
     await resource.destroy();
     await Promise.all(
       _.map(resource.dependencies, async (dep) => {

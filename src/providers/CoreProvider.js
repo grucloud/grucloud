@@ -13,6 +13,7 @@ const ResourceMaker = ({
   dependencies,
   client,
   fnUserConfig,
+  userOptions, //TODO rename properties
   spec,
   provider,
   config: configProvider,
@@ -44,7 +45,16 @@ const ResourceMaker = ({
       ];
     }
   };
-
+  const configStatic = () => {
+    const result = spec.configDefault({
+      name: resourceName,
+      options: _.defaultsDeep(userOptions, spec.optionsDefault),
+    });
+    logger.info(
+      `configStatic ${spec.type}/${resourceName}: ${toString(result)}`
+    );
+    return result;
+  };
   const config = async ({ live } = {}) => {
     logger.info(`config ${spec.type}/${resourceName}`);
     const {
@@ -59,7 +69,7 @@ const ResourceMaker = ({
 
     const configWithDefault = spec.configDefault({
       name: resourceName,
-      options: userConfig,
+      options: _.defaultsDeep(userOptions, spec.optionsDefault),
     });
 
     logger.info(
@@ -166,6 +176,7 @@ const ResourceMaker = ({
     client,
     serialized,
     config,
+    configStatic,
     create,
     planUpsert,
     getLive,
@@ -183,12 +194,14 @@ const createResourceMakers = ({ specs, config, provider, Client }) =>
     acc[`make${spec.type}`] = ({
       name,
       dependencies,
+      options: userOptions = {},
       config: fnUserConfig = () => ({}),
     }) => {
       const resource = ResourceMaker({
         type: spec.type,
         name,
         fnUserConfig,
+        userOptions,
         dependencies,
         spec: _.defaults(spec, SpecDefault({ config: provider.config })),
         provider,
