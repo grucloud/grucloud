@@ -11,12 +11,14 @@ const mockCloudInitStatesDefault = [
       [
         "51.15.246.48",
         {
+          name: "ip1",
           address: "51.15.246.48",
         },
       ],
       [
         "51.15.246.50",
         {
+          name: "ip2",
           address: "51.15.246.50",
         },
       ],

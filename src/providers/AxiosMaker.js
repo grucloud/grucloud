@@ -1,6 +1,7 @@
 const _ = require("lodash");
 const Axios = require("axios");
 const logger = require("../logger")({ prefix: "AxiosMaker" });
+const toString = (x) => JSON.stringify(x, null, 4);
 
 module.exports = AxiosMaker = ({ baseURL, onHeaders = noop }) => {
   return Axios.create({
@@ -16,11 +17,11 @@ module.exports = AxiosMaker = ({ baseURL, onHeaders = noop }) => {
     ],
     transformResponse: [
       (data) => {
-        logger.debug(`rx baseURL: ${baseURL}, ${data}`);
+        logger.debug(`rx baseURL: ${baseURL}, ${toString(data)}`);
         try {
           return data && JSON.parse(data);
         } catch (error) {
-          logger.error("rx could not parse data", data);
+          logger.error(`rx could not parse data ${toString(data)}`);
           return data;
         }
       },

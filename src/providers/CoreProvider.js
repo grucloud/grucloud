@@ -61,44 +61,17 @@ const ResourceMaker = ({
       data: { items },
     } = await client.list();
 
-    const userConfig = await fnUserConfig({
+    const finalConfig = await fnUserConfig({
       dependencies,
       items,
       config: configProvider,
     });
 
-    const configWithDefault = spec.configDefault({
-      name: resourceName,
-      options: _.defaultsDeep(userOptions, spec.optionsDefault),
-    });
-
-    logger.info(
-      `config ${spec.type}/${resourceName}, with defaults: ${toString(
-        configWithDefault
-      )}`
-    );
-
-    let finalConfig;
-    if (live) {
-      // Fetch all live now
-      //
-      finalConfig = spec.configLive({
-        config: configWithDefault,
-        items,
-        dependencies,
-      });
-    } else {
-      finalConfig = await spec.configStatic({
-        config: configWithDefault,
-        items,
-        dependencies,
-      });
-    }
-
     logger.info(
       `config ${spec.type}/${resourceName}, config: ${toString(finalConfig)}`
     );
-    return finalConfig;
+
+    return _.defaultsDeep(finalConfig, configStatic());
   };
   const create = async ({ payload }) => {
     logger.info(`create ${toString({ resourceName, type, payload })}`);

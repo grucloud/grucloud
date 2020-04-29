@@ -31,21 +31,7 @@ const fnSpecs = (config) => {
     {
       type: "Ip",
       url: "ip",
-      findName: (item) => {
-        //prefix for creating and checking tags ?
-        //TODO loop through tags
-        return item?.tags[0];
-      },
       configDefault,
-      //TODO
-      configTODO: ({ items, config }) => {
-        assert(items);
-        const ip = items.find((item) => item.address === config.address);
-        if (ip) {
-          return ip;
-        }
-        return { ...config };
-      },
     },
     {
       type: "Server",
@@ -119,8 +105,5 @@ module.exports = MockProvider = ({ name }, config = {}) => {
     config: { ...config, mockCloud },
     fnSpecs,
     Client: MockClient,
-    hooks: {
-      init: () => {},
-    },
   });
 };
