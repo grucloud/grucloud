@@ -1,3 +1,8 @@
+---
+id: Google
+title: Google Cloud Platform
+---
+
 # Deployment on Google Cloud
 
 Make sure _gcloud_ is installed:
@@ -17,7 +22,7 @@ Go the [google cloud console](https://console.cloud.google.com/home/dashboard)
 
 - Enable the Google Engine API
 
-### Service Account
+## Service Account
 
 Create a [service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) and download the credential file.
 

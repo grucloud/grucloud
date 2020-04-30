@@ -1,8 +1,6 @@
-# Requirements
-
 ## Node
 
-Please make sure node version is at least 14:
+Please make sure node version is at least **14**:
 
 ```
 $ node -v

@@ -1,4 +1,7 @@
-# TL;DR
+---
+id: TLDR
+title: TL;DR
+---
 
 Let's create a simple infrastructure with a server running ubuntu attached to a 20GB disk, connected to a public ip address.
 
@@ -33,25 +36,3 @@ Time to destroy the resouces allocated:
     gc destroy
 
 Well done. Infrastrucure as code in a few commands.
-
-# Starting Point
-
-- [Requirements](docs/Requirements.md)
-
-# Cloud providers
-
-## Google Cloud Platform - GCP
-
-- [Quick Start](src/providers/google/README.md)
-
-## Scaleway
-
-- [Quick Start](src/providers/scaleway/README.md)
-
-# Contribute
-
-- [Developer Guide](docs/DeveloperGuide.md)
-
-```
-
-```

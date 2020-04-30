@@ -1,4 +1,7 @@
-# Developer's guide
+---
+id: DeveloperGuide
+title: Developer's guide
+---
 
 This describes how to contribute to this software.
 
