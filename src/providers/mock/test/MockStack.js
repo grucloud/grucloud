@@ -4,11 +4,11 @@ const MockProvider = require("../MockProvider");
 
 const configDefault = require("./config");
 
-const createStack = ({ config }) => {
+const createStack = async ({ config }) => {
   // Provider
   config = _.defaults(config, configDefault);
   assert(config);
-  const provider = MockProvider({ name: "mock" }, config);
+  const provider = await MockProvider({ name: "mock" }, config);
 
   // Ip
   const ip = provider.makeIp({ name: "myip" });

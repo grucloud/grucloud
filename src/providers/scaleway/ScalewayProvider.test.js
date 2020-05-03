@@ -6,8 +6,8 @@ const ScalewayProvider = require("./ScalewayProvider");
 
 const config = require("./config");
 
-describe("ScalewayProvider", function () {
-  const provider = ScalewayProvider({ name: "scaleway" }, config);
+describe("ScalewayProvider", async function () {
+  const provider = await ScalewayProvider({ name: "scaleway" }, config);
 
   const ip = provider.makeIp({ name: "myip" });
 

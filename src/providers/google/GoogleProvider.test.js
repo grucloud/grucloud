@@ -3,8 +3,8 @@ const GoogleProvider = require("./GoogleProvider");
 const config = require("./config");
 const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
-describe.skip("GoogleProvider", function () {
-  const provider = GoogleProvider({ name: "google" }, config);
+describe("GoogleProvider", async function () {
+  const provider = await GoogleProvider({ name: "google" }, config);
   const ip = provider.makeAddress({ name: "ip-webserver" });
 
   const server = provider.makeInstance({
@@ -30,7 +30,7 @@ describe.skip("GoogleProvider", function () {
   after(async () => {
     await provider.destroyAll();
   });
-  it("plan", async function () {
+  it.only("plan", async function () {
     const plan = await provider.plan();
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 2);

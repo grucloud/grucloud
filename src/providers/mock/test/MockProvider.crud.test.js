@@ -40,8 +40,10 @@ const testCrud = async ({ provider, resource, createOptions }) => {
   }
 };
 
-describe("MockProviderCrud", function () {
-  const { providers, ip, volume, server, image } = createStack({ config });
+describe("MockProviderCrud", async function () {
+  const { providers, ip, volume, server, image } = await createStack({
+    config,
+  });
   const provider = providers[0];
 
   it.skip("testCrud", async function () {

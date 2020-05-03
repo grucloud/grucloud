@@ -5,8 +5,8 @@ const config = require("./config");
 const logger = require("logger")({ prefix: "MockProviderTestSimple" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
-describe("MockProvider Simple", function () {
-  const { providers, ip, volume, server, image } = createStack({
+describe("MockProvider Simple", async function () {
+  const { providers, ip, volume, server, image } = await createStack({
     config,
   });
   const provider = providers[0];

@@ -3,13 +3,13 @@ const ScalewayProvider = require("./ScalewayProvider");
 const config = require("./config");
 const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
-describe("ScalewayVolume", function () {
-  const provider = ScalewayProvider({ name: "scaleway" }, config);
+describe("ScalewayVolume", async function () {
+  const provider = await ScalewayProvider({ name: "scaleway" }, config);
 
   const volume = provider.makeVolume({
     name: "volume1",
     config: () => ({
-      size: 20000000000,
+      size: 20_000_000_000,
     }),
   });
 

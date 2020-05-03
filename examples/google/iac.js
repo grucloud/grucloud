@@ -4,7 +4,7 @@ const config = {
   project: "starhackit",
   region: "us-central1",
   zone: "us-central1-a",
-  serviceAccountKey: process.env.GOOGLE_SERVICE_ACCOUNT_KEY,
+  applicationCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS,
 };
 
 const createStack = ({ options }) => {

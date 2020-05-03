@@ -155,7 +155,7 @@ const configCheck = (config) => {
   assert(secretKey, "secretKey is missing");
 };
 
-module.exports = ScalewayProvider = ({ name }, config) => {
+module.exports = ScalewayProvider = async ({ name }, config) => {
   configCheck(config);
   return CoreProvider({
     type: "scaleway",
@@ -163,8 +163,5 @@ module.exports = ScalewayProvider = ({ name }, config) => {
     config,
     fnSpecs,
     Client: ScalewayClient,
-    hooks: {
-      init: () => {},
-    },
   });
 };

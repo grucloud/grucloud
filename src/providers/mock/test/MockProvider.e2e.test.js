@@ -4,8 +4,8 @@ const logger = require("logger")({ prefix: "CoreProvider" });
 const config = require("./config");
 const toString = (x) => JSON.stringify(x, null, 4);
 
-describe("MockProvider e2e", function () {
-  const { providers } = createStack({
+describe("MockProvider e2e", async function () {
+  const { providers } = await createStack({
     config,
   });
   const provider = providers[0];
@@ -37,7 +37,7 @@ describe("MockProvider e2e", function () {
     }
   });
   it("plan", async function () {
-    const { providers } = createStack({ config });
+    const { providers } = await createStack({ config });
     const provider = providers[0];
     {
       const listTargets = await provider.listTargets();

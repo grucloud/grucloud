@@ -6,8 +6,10 @@ const config = require("./config");
 const logger = require("logger")({ prefix: "MockProviderTest" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
-describe("MockProvider", function () {
-  const { providers, ip, volume, server, image } = createStack({ config });
+describe("MockProvider", async function () {
+  const { providers, ip, volume, server, image } = await createStack({
+    config,
+  });
   const provider = providers[0];
 
   it("merge defaut ", async function () {

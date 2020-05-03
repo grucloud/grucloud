@@ -3,8 +3,8 @@ const ScalewayProvider = require("./ScalewayProvider");
 const config = require("./config");
 const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
-describe("ScalewayImage", function () {
-  const provider = ScalewayProvider({ name: "scaleway" }, config);
+describe("ScalewayImage", async function () {
+  const provider = await ScalewayProvider({ name: "scaleway" }, config);
 
   const image = provider.makeImage({
     name: "ubuntu",

@@ -3,8 +3,8 @@ const ScalewayProvider = require("./ScalewayProvider");
 const config = require("./config");
 const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
-describe("ScalewayIp", function () {
-  const provider = ScalewayProvider({ name: "scaleway" }, config);
+describe("ScalewayIp", async function () {
+  const provider = await ScalewayProvider({ name: "scaleway" }, config);
 
   const ip = provider.makeIp({ name: "myip" });
 

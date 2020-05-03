@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { JWT } = require("google-auth-library");
 const CoreProvider = require("../CoreProvider");
 const GoogleClient = require("./GoogleClient");
 const logger = require("../../logger")({ prefix: "GoogleProvider" });
@@ -104,23 +105,45 @@ const fnSpecs = ({ project, region, zone, tag }) => [
 
 const configCheck = (config) => {
   assert(config, "Please provide a config");
-  const { project, region, zone, serviceAccountKey } = config;
+  const { project, region, zone, applicationCredentials } = config;
   assert(project, "project is missing");
   assert(region, "region is missing");
   assert(zone, "zone is missing");
-  assert(serviceAccountKey, "serviceAccountKey is missing");
+  assert(applicationCredentials, "GOOGLE_APPLICATION_CREDENTIALS is missing");
 };
 
-module.exports = GoogleProvider = ({ name }, config) => {
+const authorize = async () => {
+  const GOOGLE_APPLICATION_CREDENTIALS =
+    process.env.GOOGLE_APPLICATION_CREDENTIALS;
+  assert(GOOGLE_APPLICATION_CREDENTIALS);
+
+  const keys = require(GOOGLE_APPLICATION_CREDENTIALS);
+
+  const client = new JWT({
+    email: keys.client_email,
+    key: keys.private_key,
+    scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+  });
+
+  const accessToken = await new Promise((resolve, reject) => {
+    client.authorize((err, response) => {
+      if (response.access_token) {
+        resolve(response.access_token);
+      }
+      reject(err);
+    });
+  });
+  return accessToken;
+};
+
+module.exports = GoogleProvider = async ({ name }, config) => {
   configCheck(config);
+  const accessToken = await authorize();
   return CoreProvider({
     type: "google",
     name,
-    config,
+    config: { ...config, accessToken },
     fnSpecs,
     Client: GoogleClient,
-    hooks: {
-      init: () => {},
-    },
   });
 };

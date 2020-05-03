@@ -5,7 +5,7 @@ const { displayPlan, displayLive } = require("./displayUtils");
 //Query Plan
 const planQuery = async ({ program }) => {
   try {
-    const infra = createInfra({ infra: program.infra });
+    const infra = await createInfra({ infra: program.infra });
     const provider = infra.providers[0];
     const plan = await runAsyncCommand(() => provider.plan(), "Query Plan");
     displayPlan(plan);
@@ -19,7 +19,7 @@ exports.planQuery = planQuery;
 //Deploy plan
 exports.planDeploy = async ({ program }) => {
   try {
-    const infra = createInfra({ infra: program.infra });
+    const infra = await createInfra({ infra: program.infra });
     const provider = infra.providers[0];
     {
       const plan = await runAsyncCommand(() => provider.plan(), "Query Plan");
@@ -40,7 +40,7 @@ exports.planDeploy = async ({ program }) => {
 // Destroy plan
 exports.planDestroy = async ({ program }) => {
   try {
-    const infra = createInfra({ infra: program.infra });
+    const infra = await createInfra({ infra: program.infra });
     const provider = infra.providers[0];
     await runAsyncCommand(() => provider.destroyAll(), "Destroy Resources");
   } catch (error) {
@@ -52,7 +52,7 @@ exports.planDestroy = async ({ program }) => {
 //Display Status
 exports.displayStatus = async ({ program }) => {
   try {
-    const infra = createInfra({ infra: program.infra });
+    const infra = await createInfra({ infra: program.infra });
     const provider = infra.providers[0];
     const targets = await runAsyncCommand(
       () => provider.listTargets(),

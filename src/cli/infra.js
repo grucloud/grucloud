@@ -1,11 +1,11 @@
 const path = require("path");
 const fs = require("fs");
 
-const creatInfraFromFile = ({ filename, config }) => {
+const creatInfraFromFile = async ({ filename, config }) => {
   //console.log("creatInfraFromFile", filename);
   try {
     const InfraCode = require(filename);
-    const infra = InfraCode({ config });
+    const infra = await InfraCode({ config });
     if (!infra.providers) {
       throw Error(`no providers provided`);
     }
