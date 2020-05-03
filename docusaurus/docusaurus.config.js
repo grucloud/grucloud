@@ -15,7 +15,7 @@ module.exports = {
       },
       links: [
         {
-          to: "docs/Requirements",
+          to: "docs/TLDR",
           activeBasePath: "docs",
           label: "Docs",
           position: "left",
@@ -84,7 +84,7 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve("./sidebars.js"),
-          editUrl: "https://github.com/fredericheem/grucloud",
+          /*editUrl: "https://github.com/fredericheem/grucloud",*/
         },
         /*blog: {
           showReadingTime: true,

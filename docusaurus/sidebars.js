@@ -1,6 +1,13 @@
 module.exports = {
   someSidebar: {
-    Main: ["TLDR", "Requirements", "DeveloperGuide"],
-    "Google Cloud": ["Google"],
+    TLDR: ["TLDR"],
+    "Getting Started": ["Requirements"],
+    Google: [
+      "Requirements",
+      "google/GoogleGettingStarted",
+      "google/GoogleMisc",
+    ],
+    AWS: ["Requirements", "aws/Aws"],
+    "User Guide": ["DeveloperGuide"],
   },
 };
