@@ -1,9 +1,8 @@
 module.exports = {
   someSidebar: {
-    TLDR: ["TLDR"],
-    "Getting Started": ["Requirements"],
+    Introduction: ["TLDR"],
     Google: [
-      "Requirements",
+      "google/GoogleRequirements",
       "google/GoogleGettingStarted",
       "google/GoogleMisc",
     ],

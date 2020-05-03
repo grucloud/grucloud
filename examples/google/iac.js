@@ -1,11 +1,6 @@
-require("dotenv").config();
 const GoogleProvider = require("@grucloud/core").GoogleProvider;
-const config = {
-  project: "starhackit",
-  region: "us-central1",
-  zone: "us-central1-a",
-  applicationCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS,
-};
+
+const config = require("./config");
 
 const createStack = ({ options }) => {
   // Create GCP provider
