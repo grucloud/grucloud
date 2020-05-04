@@ -6,7 +6,7 @@ module.exports = {
       "google/GoogleGettingStarted",
       "google/GoogleMisc",
     ],
-    AWS: ["Requirements", "aws/Aws"],
+    AWS: ["Requirements", "aws/AmazonGettingStarted", "aws/AwsMisc"],
     "User Guide": ["DeveloperGuide"],
   },
 };
