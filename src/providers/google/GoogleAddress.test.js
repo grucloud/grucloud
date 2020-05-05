@@ -3,7 +3,7 @@ const GoogleProvider = require("./GoogleProvider");
 const config = require("./config");
 const { testProviderLifeCycle } = require("../../test/E2ETestUtils");
 
-describe("GoogleAddress", async function () {
+describe.skip("GoogleAddress", async function () {
   const provider = await GoogleProvider({ name: "google" }, config);
   const address = provider.makeAddress({ name: "test" });
 
@@ -20,7 +20,7 @@ describe("GoogleAddress", async function () {
   });
   it("lives", async function () {
     const lives = await provider.listLives();
-    console.log("lives ip", lives);
+    //console.log("lives ip", lives);
   });
   it("plan", async function () {
     const plan = await provider.plan();
