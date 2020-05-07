@@ -1,45 +1,44 @@
 const assert = require("assert");
 const logger = require("logger")({ prefix: "CoreProvider" });
 const { testProviderLifeCycle } = require("test/E2ETestUtils");
-
 const ScalewayProvider = require("./ScalewayProvider");
-
 const config = require("./config");
 
 describe("ScalewayProvider", async function () {
-  const provider = await ScalewayProvider({ name: "scaleway" }, config);
-
-  const ip = provider.makeIp({ name: "myip" });
-
-  const image = provider.makeImage({
-    name: "ubuntu",
-    config: ({ items: images }) => {
-      assert(images);
-      const image = images.find(
-        ({ name, arch, default_bootscript }) =>
-          name.includes("Ubuntu") && arch === "x86_64" && default_bootscript
-      );
-      assert(image);
-      return image;
-    },
-  });
-
-  const server = provider.makeServer({
-    name: "web-server",
-    dependencies: { image, ip },
-    config: async ({ dependencies: {} }) => ({
-      name: "web-server",
-      commercial_type: "DEV1-S",
-      volumes: {
-        "0": {
-          size: 20_000_000_000,
-        },
-      },
-    }),
-  });
+  let provider;
+  let ip;
+  let image;
+  let server;
 
   before(async () => {
+    provider = await ScalewayProvider({ name: "scaleway" }, config);
     await provider.destroyAll();
+    ip = provider.makeIp({ name: "myip" });
+    image = provider.makeImage({
+      name: "ubuntu",
+      config: ({ items: images }) => {
+        assert(images);
+        const image = images.find(
+          ({ name, arch, default_bootscript }) =>
+            name.includes("Ubuntu") && arch === "x86_64" && default_bootscript
+        );
+        assert(image);
+        return image;
+      },
+    });
+    server = provider.makeServer({
+      name: "web-server",
+      dependencies: { image, ip },
+      config: async ({ dependencies: {} }) => ({
+        name: "web-server",
+        commercial_type: "DEV1-S",
+        volumes: {
+          "0": {
+            size: 20_000_000_000,
+          },
+        },
+      }),
+    });
   });
   after(async () => {
     await provider.destroyAll();

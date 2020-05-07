@@ -1,4 +1,4 @@
-var AWS = require("aws-sdk");
+/*var AWS = require("aws-sdk");
 const _ = require("lodash");
 const assert = require("assert");
 const logger = require("logger")({ prefix: "AwsEc2" });
@@ -12,7 +12,7 @@ AWS.config.update({ region: "eu-west-2" });
 
 var ec2 = new AWS.EC2();
 
-describe.only("AwsEc2", async function () {
+describe.skip("AwsEc2", async function () {
   it("describeInstances", async function () {
     const data = await ec2.describeInstances().promise();
     console.log(toJSON(data));
@@ -69,5 +69,13 @@ describe.only("AwsEc2", async function () {
       const data = await ec2.describeInstances().promise();
       console.log(toJSON(data));
     }
+    {
+      await ec2
+        .terminateInstances({
+          InstanceIds: [data.ReservationId],
+        })
+        .promise();
+    }
   });
 });
+*/

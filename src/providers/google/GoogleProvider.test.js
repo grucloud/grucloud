@@ -4,28 +4,29 @@ const config = require("./config");
 const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
 describe("GoogleProvider", async function () {
-  const provider = await GoogleProvider({ name: "google" }, config);
-  const ip = provider.makeAddress({ name: "ip-webserver" });
-
-  const server = provider.makeInstance({
-    name: "web-server",
-    dependencies: {},
-    config: async ({ dependencies: { ip } }) => ({
-      machineType: "e2-micro",
-      networkInterfaces: [
-        {
-          accessConfigs: [
-            {
-              natIP: await ip.configLive().address,
-            },
-          ],
-        },
-      ],
-    }),
-  });
-
+  let provider;
+  let ip;
   before(async () => {
+    provider = await GoogleProvider({ name: "google" }, config);
     await provider.destroyAll();
+    ip = provider.makeAddress({ name: "ip-webserver" });
+
+    provider.makeInstance({
+      name: "web-server",
+      dependencies: {},
+      config: async ({ dependencies: { ip } }) => ({
+        machineType: "e2-micro",
+        networkInterfaces: [
+          {
+            accessConfigs: [
+              {
+                natIP: await ip.configLive().address,
+              },
+            ],
+          },
+        ],
+      }),
+    });
   });
   after(async () => {
     await provider.destroyAll();

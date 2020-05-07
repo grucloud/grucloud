@@ -41,13 +41,14 @@ const testCrud = async ({ provider, resource, createOptions }) => {
 };
 
 describe("MockProviderCrud", async function () {
-  const { providers, ip, volume, server, image } = await createStack({
-    config,
+  let stack;
+  before(async () => {
+    stack = await createStack({
+      config,
+    });
   });
-  const provider = providers[0];
-
   it.skip("testCrud", async function () {
     //TODO add createOptions
-    await testCrud({ provider, resource: ip });
+    await testCrud({ provider: stack.providers[0], resource: stack.ip });
   });
 });

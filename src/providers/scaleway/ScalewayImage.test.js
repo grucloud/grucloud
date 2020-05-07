@@ -4,24 +4,26 @@ const config = require("./config");
 const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
 describe("ScalewayImage", async function () {
-  const provider = await ScalewayProvider({ name: "scaleway" }, config);
-
-  const image = provider.makeImage({
-    name: "ubuntu",
-    config: ({ items: images }) => {
-      assert(images);
-      const image = images.find(
-        ({ name, arch, default_bootscript }) =>
-          name.includes("Ubuntu") && arch === "x86_64" && default_bootscript
-      );
-      assert(image);
-      return image;
-    },
-  });
+  let provider;
+  let image;
 
   before(async () => {
+    provider = await ScalewayProvider({ name: "scaleway" }, config);
     await provider.destroyAll();
+    image = provider.makeImage({
+      name: "ubuntu",
+      config: ({ items: images }) => {
+        assert(images);
+        const image = images.find(
+          ({ name, arch, default_bootscript }) =>
+            name.includes("Ubuntu") && arch === "x86_64" && default_bootscript
+        );
+        assert(image);
+        return image;
+      },
+    });
   });
+
   after(async () => {
     await provider.destroyAll();
   });

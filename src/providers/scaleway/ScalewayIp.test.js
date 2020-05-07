@@ -4,12 +4,13 @@ const config = require("./config");
 const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
 describe("ScalewayIp", async function () {
-  const provider = await ScalewayProvider({ name: "scaleway" }, config);
-
-  const ip = provider.makeIp({ name: "myip" });
+  let provider;
+  let ip;
 
   before(async () => {
+    provider = await ScalewayProvider({ name: "scaleway" }, config);
     await provider.destroyAll();
+    ip = provider.makeIp({ name: "myip" });
   });
   after(async () => {
     await provider.destroyAll();
