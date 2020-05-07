@@ -1,6 +1,6 @@
 const assert = require("assert");
-const ScalewayProvider = require("./ScalewayProvider");
-const config = require("./config");
+const ScalewayProvider = require("../ScalewayProvider");
+const config = require("../config");
 const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
 describe("ScalewayImage", async function () {

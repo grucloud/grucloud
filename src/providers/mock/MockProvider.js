@@ -18,22 +18,26 @@ const fnSpecs = (config) => {
 
   return [
     {
+      Client: MockClient,
       type: "Image",
       url: "/image",
       methods: { list: true },
       toId: (obj) => obj.name,
     },
     {
+      Client: MockClient,
       type: "Volume",
       url: "/volume",
       configDefault,
     },
     {
+      Client: MockClient,
       type: "Ip",
       url: "ip",
       configDefault,
     },
     {
+      Client: MockClient,
       type: "Server",
       url: "/server",
       optionsDefault: {

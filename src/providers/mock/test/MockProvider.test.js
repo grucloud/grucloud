@@ -7,10 +7,12 @@ const logger = require("logger")({ prefix: "MockProviderTest" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
 describe("MockProvider", async function () {
-  const { providers, ip, volume, server, image } = await createStack({
-    config,
+  let stack;
+  before(async () => {
+    stack = await createStack({
+      config,
+    });
   });
-  const provider = providers[0];
 
   it("merge defaut ", async function () {
     const input = {
@@ -69,24 +71,24 @@ describe("MockProvider", async function () {
     //TODO assert
   });
   it("ip config static ", async function () {
-    const config = await ip.config();
+    const config = await stack.ip.config();
     assert(config);
   });
   it("ip config live ", async function () {
-    const config = await ip.config({ live: true });
+    const config = await stack.ip.config({ live: true });
     assert(config);
   });
   it("image config", async function () {
-    const config = await image.config();
+    const config = await stack.image.config();
     assert(config);
   });
   it("volume config", async function () {
-    const config = await volume.config();
+    const config = await stack.volume.config();
     assert(config);
   });
 
   it("server config", async function () {
-    const config = server.configStatic();
+    const config = stack.server.configStatic();
     assert(config);
     //console.log(JSON.stringify(config, null, 4));
     assert.equal(config.zone, "projects/starhackit/zones/us-central1-a");
@@ -103,7 +105,7 @@ describe("MockProvider", async function () {
   });
 
   it("list config", async function () {
-    const configs = await provider.listConfig();
+    const configs = await stack.providers[0].listConfig();
     assert(configs);
   });
 
@@ -127,14 +129,14 @@ describe("MockProvider", async function () {
     );
   };
   it.skip("list resources", async function () {
-    const resources = await provider.getTargetResources();
+    const resources = await stack.providers[0].getTargetResources();
     assert(resources);
     resources.map((resource) => {
       displayResource(resource);
     });
   });
   it.skip("find delete order", async function () {
-    const resources = await provider.getTargetResources();
+    const resources = await stack.providers[0].getTargetResources();
     assert(resources);
     await Promise.all(
       resources

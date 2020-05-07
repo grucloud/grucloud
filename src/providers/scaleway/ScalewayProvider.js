@@ -29,6 +29,7 @@ const getByName = ({ name, items = [] }) => {
 
 const fnSpecs = ({ organization }) => [
   {
+    Client: ScalewayClient,
     type: "Ip",
     url: `/ips`,
     getByName,
@@ -59,6 +60,7 @@ const fnSpecs = ({ organization }) => [
     },
   },
   {
+    Client: ScalewayClient,
     type: "Bootscript",
     methods: { list: true },
     onResponseList: ({ bootscripts }) => ({
@@ -68,12 +70,14 @@ const fnSpecs = ({ organization }) => [
     url: `/bootscripts`,
   },
   {
+    Client: ScalewayClient,
     type: "Image",
     methods: { list: true },
     onResponseList: ({ images }) => ({ total: images.length, items: images }),
     url: `/images`,
   },
   {
+    Client: ScalewayClient,
     type: "Volume",
     url: `/volumes`,
     onResponseList: (result) => {
@@ -92,6 +96,7 @@ const fnSpecs = ({ organization }) => [
     }),
   },
   {
+    Client: ScalewayClient,
     type: "Server",
     url: `servers`,
     getByName,
@@ -162,6 +167,5 @@ module.exports = ScalewayProvider = async ({ name }, config) => {
     name,
     config,
     fnSpecs,
-    Client: ScalewayClient,
   });
 };

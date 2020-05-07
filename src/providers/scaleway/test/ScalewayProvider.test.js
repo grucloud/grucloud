@@ -1,8 +1,8 @@
 const assert = require("assert");
 const logger = require("logger")({ prefix: "CoreProvider" });
 const { testProviderLifeCycle } = require("test/E2ETestUtils");
-const ScalewayProvider = require("./ScalewayProvider");
-const config = require("./config");
+const ScalewayProvider = require("../ScalewayProvider");
+const config = require("../config");
 
 describe("ScalewayProvider", async function () {
   let provider;

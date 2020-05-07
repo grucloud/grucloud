@@ -11,14 +11,14 @@ const ResourceMaker = ({
   name: resourceName,
   type,
   dependencies,
-  client,
   fnUserConfig,
   userOptions, //TODO rename properties
   spec,
   provider,
-  config: configProvider,
+  config: configProvider, //TODO access configProvider from provider ?
 }) => {
   logger.debug(`ResourceMaker: ${type}/${resourceName}`);
+  const client = spec.Client({ spec, config: configProvider });
   let parent;
   const getLive = async () => {
     logger.info(`getLive ${resourceName}/${type}`);
@@ -178,7 +178,6 @@ const createResourceMakers = ({ specs, config, provider, Client }) =>
         dependencies,
         spec: _.defaults(spec, SpecDefault({ config: provider.config })),
         provider,
-        client: Client({ spec, config }),
         config,
       });
       provider.targetResourcesAdd(resource);
@@ -220,7 +219,7 @@ module.exports = CoreProvider = ({
     _.defaults(spec, SpecDefault({ config }))
   );
 
-  const clients = specs.map((spec) => Client({ spec, config }));
+  const clients = specs.map((spec) => spec.Client({ spec, config }));
 
   const clientByType = (type) => {
     assert(type);

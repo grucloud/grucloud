@@ -13,6 +13,7 @@ const onResponseList = (data) => {
 
 const fnSpecs = ({ project, region, zone, tag }) => [
   {
+    Client: GoogleClient,
     type: "Address",
     url: `/projects/${project}/regions/${region}/addresses/`,
     onResponseList,
@@ -43,6 +44,7 @@ const fnSpecs = ({ project, region, zone, tag }) => [
     },
   },*/
   {
+    Client: GoogleClient,
     type: "Instance",
     url: `/projects/${project}/zones/${zone}/instances/`,
     onResponseList,
