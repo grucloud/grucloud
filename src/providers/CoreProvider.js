@@ -194,7 +194,6 @@ module.exports = CoreProvider = ({
   name: providerName,
   type,
   envs = [],
-  Client,
   fnSpecs,
   hooks,
   config,
@@ -227,7 +226,7 @@ module.exports = CoreProvider = ({
     if (!spec) {
       throw new Error(`type ${type} not found`);
     }
-    return Client({ spec, config });
+    return spec.Client({ spec, config });
   };
   // API
   //  Flatter that
@@ -321,7 +320,7 @@ module.exports = CoreProvider = ({
           .filter((client) => client.spec.methods.del)
           .map(async (client) => {
             const { data } = await client.list();
-
+            assert(data);
             logger.debug(
               `planFindDestroy type: ${client.type}, items: ${toString(
                 data.items
@@ -465,6 +464,6 @@ module.exports = CoreProvider = ({
 
   return {
     ...provider,
-    ...createResourceMakers({ provider, config, Client, specs }),
+    ...createResourceMakers({ provider, config, specs }),
   };
 };

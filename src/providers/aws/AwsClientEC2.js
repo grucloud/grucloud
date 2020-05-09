@@ -4,40 +4,45 @@ const assert = require("assert");
 const logger = require("logger")({ prefix: "AwsClientEC2" });
 const toString = (x) => JSON.stringify(x, null, 4);
 
-module.exports = AwsClientEc2 = ({ config }) => {
+module.exports = AwsClientEc2 = ({ spec, config }) => {
+  assert(spec);
+  assert(config);
+  assert(config.region, "missing region");
+
   logger.info(`${toString(config)}`);
 
   AWS.config.apiVersions = {
     ec2: "2016-11-15",
   };
 
-  // TODO region from config
-  AWS.config.update({ region: "eu-west-2" });
+  AWS.config.update({ region: config.region });
 
   var ec2 = new AWS.EC2();
 
   const getById = async ({ id }) => {
     logger.debug(`getById ${toString({ id })}`);
-    const all = list();
+    const {
+      data: { items },
+    } = list();
     // TODO check that
 
-    const instance = all.find((item) => item.Instances[0].InstanceId === id);
+    const instance = items.find((item) => item.Instances[0].InstanceId === id);
     logger.debug(`getById result ${toString({ instance })}`);
     return instance;
   };
 
   const getByName = async ({ name }) => {
     logger.info(`getByName ${name}`);
-    const all = await list();
+    const {
+      data: { items },
+    } = await list();
 
     const findTagName = (tags = []) =>
       tags.find((tag) => tag.Key === "name" && tag.Value === name);
 
-    const instance = all.Reservations.find((item) =>
-      findTagName(item.Instances[0].Tags)
-    );
+    const instance = items.find((item) => findTagName(item.Instances[0].Tags));
     logger.debug(`getByName result ${toString({ instance })}`);
-    return instance.Instances[0];
+    return instance?.Instances[0];
   };
 
   const create = async ({ name, payload }) => {
@@ -80,7 +85,12 @@ module.exports = AwsClientEc2 = ({ config }) => {
     logger.debug(`list`);
     const data = await ec2.describeInstances().promise();
     console.log(toString(data));
-    return data;
+    return {
+      data: {
+        total: data.Reservations.length,
+        items: data.Reservations,
+      },
+    };
   };
 
   const destroy = async ({ id, name }) => {
@@ -97,6 +107,7 @@ module.exports = AwsClientEc2 = ({ config }) => {
   };
 
   return {
+    spec,
     ec2,
     getById,
     getByName,

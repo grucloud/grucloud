@@ -146,6 +146,5 @@ module.exports = GoogleProvider = async ({ name }, config) => {
     name,
     config: { ...config, accessToken },
     fnSpecs,
-    Client: GoogleClient,
   });
 };

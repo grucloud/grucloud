@@ -110,6 +110,5 @@ module.exports = MockProvider = async ({ name }, config = {}) => {
     name,
     config: { ...config, mockCloud },
     fnSpecs,
-    Client: MockClient,
   });
 };

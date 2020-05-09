@@ -9,7 +9,7 @@ const AwsClientEc2 = require("./AwsClientEC2");
 const fnSpecs = ({ project, region, zone, tag }) => [
   {
     type: "Instance",
-    client: AwsClientEc2,
+    Client: AwsClientEc2,
     configDefault: ({ name, options }) => ({
       ...options,
     }),
@@ -39,6 +39,6 @@ module.exports = AwsProvider = async ({ name }, config) => {
     name,
     config,
     fnSpecs,
-    Client: AwsClient,
+    //Client: AwsClient,
   });
 };

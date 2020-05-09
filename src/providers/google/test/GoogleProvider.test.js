@@ -1,6 +1,6 @@
 const assert = require("assert");
-const GoogleProvider = require("./GoogleProvider");
-const config = require("./config");
+const GoogleProvider = require("../GoogleProvider");
+const config = require("../config");
 const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
 describe("GoogleProvider", async function () {
