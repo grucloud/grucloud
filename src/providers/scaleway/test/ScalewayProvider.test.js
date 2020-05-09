@@ -11,7 +11,7 @@ describe("ScalewayProvider", async function () {
   let server;
 
   before(async () => {
-    provider = await ScalewayProvider({ name: "scaleway" }, config);
+    provider = await ScalewayProvider({ name: "scaleway", config });
     await provider.destroyAll();
     ip = provider.makeIp({ name: "myip" });
     image = provider.makeImage({

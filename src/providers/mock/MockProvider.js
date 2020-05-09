@@ -100,7 +100,7 @@ const fnSpecs = (config) => {
   ];
 };
 
-module.exports = MockProvider = async ({ name }, config = {}) => {
+module.exports = MockProvider = async ({ name, config }) => {
   assert(name);
   assert(config);
   const mockCloud = MockCloud(config.mockCloudInitStates);

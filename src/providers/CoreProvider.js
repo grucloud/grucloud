@@ -164,7 +164,7 @@ const ResourceMaker = ({
   return resourceMaker;
 };
 
-const createResourceMakers = ({ specs, config, provider, Client }) =>
+const createResourceMakers = ({ specs, config, provider }) =>
   specs.reduce((acc, spec) => {
     acc[`make${spec.type}`] = ({
       name,

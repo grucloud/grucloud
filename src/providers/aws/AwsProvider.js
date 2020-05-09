@@ -32,7 +32,7 @@ const configCheck = (config) => {
   assert(region, "region is missing");
 };
 
-module.exports = AwsProvider = async ({ name }, config) => {
+module.exports = AwsProvider = async ({ name, config }) => {
   configCheck(config);
   return CoreProvider({
     type: "aws",

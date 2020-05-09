@@ -4,7 +4,7 @@ const config = require("./config");
 const { testProviderLifeCycle } = require("../../test/E2ETestUtils");
 
 describe.skip("GoogleAddress", async function () {
-  const provider = await GoogleProvider({ name: "google" }, config);
+  const provider = await GoogleProvider({ name: "google", config });
   const address = provider.makeAddress({ name: "test" });
 
   before(async () => {

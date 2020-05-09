@@ -8,7 +8,7 @@ describe("ScalewayIp", async function () {
   let ip;
 
   before(async () => {
-    provider = await ScalewayProvider({ name: "scaleway" }, config);
+    provider = await ScalewayProvider({ name: "scaleway", config });
     await provider.destroyAll();
     ip = provider.makeIp({ name: "myip" });
   });

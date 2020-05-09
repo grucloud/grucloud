@@ -8,7 +8,7 @@ const createStack = async ({ config }) => {
   // Provider
   config = _.defaults(config, configDefault);
   assert(config);
-  const provider = await MockProvider({ name: "mock" }, config);
+  const provider = await MockProvider({ name: "mock", config });
 
   // Ip
   const ip = provider.makeIp({ name: "myip" });

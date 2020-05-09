@@ -7,7 +7,7 @@ describe("GoogleProvider", async function () {
   let provider;
   let ip;
   before(async () => {
-    provider = await GoogleProvider({ name: "google" }, config);
+    provider = await GoogleProvider({ name: "google", config });
     await provider.destroyAll();
     ip = provider.makeAddress({ name: "ip-webserver" });
 

@@ -8,7 +8,7 @@ describe("ScalewayImage", async function () {
   let image;
 
   before(async () => {
-    provider = await ScalewayProvider({ name: "scaleway" }, config);
+    provider = await ScalewayProvider({ name: "scaleway", config });
     await provider.destroyAll();
     image = provider.makeImage({
       name: "ubuntu",

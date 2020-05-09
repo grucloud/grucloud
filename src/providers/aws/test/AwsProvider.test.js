@@ -8,7 +8,7 @@ describe("AwsProvider", async function () {
   let server;
 
   before(async () => {
-    provider = await AwsProvider({ name: "aws" }, config);
+    provider = await AwsProvider({ name: "aws", config });
     await provider.destroyAll();
     server = provider.makeInstance({
       name: "web-server",

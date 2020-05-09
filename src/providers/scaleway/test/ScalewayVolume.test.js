@@ -8,7 +8,7 @@ describe("ScalewayVolume", async function () {
   let volume;
 
   before(async () => {
-    provider = await ScalewayProvider({ name: "scaleway" }, config);
+    provider = await ScalewayProvider({ name: "scaleway", config });
     volume = provider.makeVolume({
       name: "volume1",
       config: () => ({

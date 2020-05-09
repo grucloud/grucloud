@@ -8,7 +8,7 @@ const config = {
 
 const createStack = ({ options }) => {
   // Create Scaleway provider
-  const provider = ScalewayProvider({ name: "scaleway" }, config);
+  const provider = ScalewayProvider({ name: "scaleway", config });
   // Allocate public Ip address
   const ip = provider.makeIp({ name: "ip-web-server" });
   // Choose an image
@@ -26,6 +26,7 @@ const createStack = ({ options }) => {
   provider.makeServer({
     name: "web-server",
     dependencies: { image, ip },
+    // TODO use properties
     config: () => ({
       name: "web-server",
       commercial_type: "DEV1-S",

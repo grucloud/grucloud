@@ -138,7 +138,7 @@ const authorize = async () => {
   return accessToken;
 };
 
-module.exports = GoogleProvider = async ({ name }, config) => {
+module.exports = GoogleProvider = async ({ name, config }) => {
   configCheck(config);
   const accessToken = await authorize();
   return CoreProvider({
