@@ -46,38 +46,11 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
   };
 
   const create = async ({ name, payload }) => {
-    logger.debug(`create ${name}, payload: ${toString(payload)}`);
-
-    const params = {
-      BlockDeviceMappings: [
-        {
-          DeviceName: "/dev/sdh",
-          Ebs: {
-            VolumeSize: 100,
-          },
-        },
-      ],
-      ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
-      InstanceType: "t2.micro",
-      KeyName: "gc",
-      MaxCount: 1,
-      MinCount: 1,
-      //SecurityGroupIds: ["sg-1a2b3c4d"],
-      //SubnetId: "subnet-6e7f829e",
-      TagSpecifications: [
-        {
-          ResourceType: "instance",
-          Tags: [
-            {
-              Key: "name",
-              Value: name,
-            },
-          ],
-        },
-      ],
-    };
+    assert(name);
+    assert(payload);
+    logger.debug(`create ${toString({ name, payload })}`);
     const data = await ec2.runInstances(params).promise();
-    console.log(`${toString(data)}`);
+    console.log(`create result ${toString(data)}`);
     return data.Instances[0];
   };
 
