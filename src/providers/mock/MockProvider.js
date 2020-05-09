@@ -10,10 +10,10 @@ const toJSON = (x) => JSON.stringify(x, null, 4);
 
 //TODO use deepMerge ?
 const fnSpecs = (config) => {
-  const configDefault = ({ name, options }) => ({
+  const configDefault = ({ name, properties }) => ({
     name,
     tags: [toTagName(name, config.tag)],
-    ...options,
+    ...properties,
   });
 
   return [
@@ -40,16 +40,16 @@ const fnSpecs = (config) => {
       Client: MockClient,
       type: "Server",
       url: "/server",
-      optionsDefault: {
+      propertiesDefault: {
         machineType: "f1-micro",
         diskSizeGb: "10",
         diskTypes: "pd-standard",
       },
-      configDefault: ({ name, options }) => ({
+      configDefault: ({ name, properties }) => ({
         kind: "compute#instance",
         name,
         zone: `projects/${config.project}/zones/${config.zone}`,
-        machineType: `projects/${config.project}/zones/${config.zone}/machineTypes/${options.machineType}`,
+        machineType: `projects/${config.project}/zones/${config.zone}/machineTypes/${properties.machineType}`,
         tags: {
           items: [toTagName(name, config.tag)],
         },
@@ -64,8 +64,8 @@ const fnSpecs = (config) => {
             initializeParams: {
               sourceImage:
                 "projects/debian-cloud/global/images/debian-9-stretch-v20200420",
-              diskType: `projects/${config.project}/zones/${config.zone}/diskTypes/${options.diskTypes}`,
-              diskSizeGb: options.diskSizeGb,
+              diskType: `projects/${config.project}/zones/${config.zone}/diskTypes/${properties.diskTypes}`,
+              diskSizeGb: properties.diskSizeGb,
             },
             diskEncryptionKey: {},
           },

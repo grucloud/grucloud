@@ -3,7 +3,7 @@ const AwsProvider = require("../AwsProvider");
 const config = require("../config");
 const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
-describe.only("AwsProvider", async function () {
+describe("AwsProvider", async function () {
   let provider;
   let server;
 

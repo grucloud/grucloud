@@ -10,7 +10,7 @@ const fnSpecs = ({ project, region, zone, tag }) => [
   {
     type: "Instance",
     Client: AwsClientEc2,
-    configDefault: ({ name, options }) => ({
+    propertiesDefault: ({ name, options }) => ({
       ...options,
     }),
     compare: ({ target, live }) => {

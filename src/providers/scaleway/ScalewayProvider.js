@@ -41,8 +41,8 @@ const fnSpecs = ({ organization }) => [
         throw Error(`Cannot find ips`);
       }
     },
-    configDefault: ({ name, options }) => ({
-      ...options,
+    configDefault: ({ name, properties }) => ({
+      ...properties,
       tags: [name],
       organization,
     }),
@@ -113,15 +113,19 @@ const fnSpecs = ({ organization }) => [
       logger.debug(`compare ${toString(diff)}`);
       return diff;
     },
-    configDefault: ({ name, options }) => ({
-      name,
+    configDefault: ({ name, properties }) => ({ name, ...properties }),
+    propertiesDefault: {
       dynamic_ip_required: false,
       commercial_type: "DEV1-S",
       enable_ipv6: true,
       boot_type: "local",
+    },
+    configDefault: ({ name, properties }) => ({
+      name,
+
       organization,
       tags: [name],
-      ...options,
+      ...properties,
     }),
     configStatic: async ({ config, dependencies: { image, ip } }) => {
       const imageId = await image.config().id;

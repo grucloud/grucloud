@@ -32,7 +32,7 @@ exports.SpecDefault = () => ({
   postConfig: ({ config }) => config,
   configStatic: ({ config }) => config,
   configLive: ({ config }) => config,
-  configDefault: ({ name, options }) => ({ name, ...options }),
+  configDefault: ({ name, properties }) => ({ name, ...properties }),
 
   methods: {
     get: true,

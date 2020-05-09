@@ -17,8 +17,8 @@ const fnSpecs = ({ project, region, zone, tag }) => [
     type: "Address",
     url: `/projects/${project}/regions/${region}/addresses/`,
     onResponseList,
-    configDefault: ({ name, options }) => ({
-      ...options,
+    propertiesDefault: ({ name, properties }) => ({
+      ...properties,
       name,
       description: toTagName(name, tag),
     }),
@@ -48,7 +48,7 @@ const fnSpecs = ({ project, region, zone, tag }) => [
     type: "Instance",
     url: `/projects/${project}/zones/${zone}/instances/`,
     onResponseList,
-    configDefault: ({ name, options }) => ({
+    propertiesDefault: ({ name, options }) => ({
       ...options,
       kind: "compute#instance",
       name,

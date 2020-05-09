@@ -38,7 +38,7 @@ const createStack = async ({ config }) => {
   const server = provider.makeServer({
     name: "web-server",
     dependencies: { volume, image, ip },
-    options: {
+    properties: {
       diskSizeGb: "20",
       machineType: "f1-micro",
     },
