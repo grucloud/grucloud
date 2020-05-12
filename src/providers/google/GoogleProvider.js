@@ -48,14 +48,17 @@ const fnSpecs = ({ project, region, zone, tag }) => [
     type: "Instance",
     url: `/projects/${project}/zones/${zone}/instances/`,
     onResponseList,
-    propertiesDefault: ({ name, options }) => ({
-      ...options,
+    propertiesDefault: {
+      machineType: "f1-micro",
+      diskSizeGb: "10",
+      diskTypes: "pd-standard",
+      sourceImage: "debian-9-stretch-v20200420",
+    },
+    configDefault: ({ name, properties }) => ({
       kind: "compute#instance",
       name,
       zone: `projects/${project}/zones/${zone}`,
-      machineType: `projects/${project}/zones/${zone}/machineTypes/${
-        options.machineType || `f1-micro`
-      }`,
+      machineType: `projects/${project}/zones/${zone}/machineTypes/${properties.machineType}`,
       tags: {
         items: [toTagName(name, tag)],
       },
@@ -68,10 +71,9 @@ const fnSpecs = ({ project, region, zone, tag }) => [
           autoDelete: true,
           deviceName: toTagName(name, tag),
           initializeParams: {
-            sourceImage:
-              "projects/debian-cloud/global/images/debian-9-stretch-v20200420",
+            sourceImage: `projects/debian-cloud/global/images/${properties.sourceImage}`,
             diskType: `projects/${project}/zones/${zone}/diskTypes/pd-standard`,
-            diskSizeGb: "10",
+            diskSizeGb: properties.diskSizeGb,
           },
           diskEncryptionKey: {},
         },

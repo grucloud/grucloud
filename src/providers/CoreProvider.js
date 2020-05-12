@@ -11,7 +11,7 @@ const ResourceMaker = ({
   name: resourceName,
   type,
   dependencies,
-  fnUserConfig,
+  transformConfig,
   properties,
   spec,
   provider,
@@ -57,23 +57,27 @@ const ResourceMaker = ({
     );
     return result;
   };
-  const config = async ({ live } = {}) => {
+  const config = async () => {
     logger.info(`config ${spec.type}/${resourceName}`);
     const {
       data: { items },
     } = await client.list();
+    logger.info(`config ${spec.type}/${resourceName}`);
+    const configLive = await spec.configLive({ dependencies });
+    logger.info(`configLive ${toString(configLive)}`);
+    const config = _.defaultsDeep(configLive, configStatic());
+    const finalConfig = transformConfig
+      ? await transformConfig({
+          dependencies,
+          items,
+          config,
+          configProvider: configProvider,
+        })
+      : config;
 
-    const finalConfig = await fnUserConfig({
-      dependencies,
-      items,
-      config: configProvider,
-    });
-
-    logger.info(
-      `config ${spec.type}/${resourceName}, config: ${toString(finalConfig)}`
-    );
-
-    return _.defaultsDeep(finalConfig, configStatic());
+    logger.info(`final config: ${toString(finalConfig)}`);
+    assert(!_.isEmpty(finalConfig));
+    return finalConfig;
   };
   const create = async ({ payload }) => {
     logger.info(`create ${toString({ resourceName, type, payload })}`);
@@ -170,12 +174,12 @@ const createResourceMakers = ({ specs, config, provider }) =>
       name,
       dependencies,
       properties,
-      config: fnUserConfig = () => ({}),
+      transformConfig,
     }) => {
       const resource = ResourceMaker({
         type: spec.type,
         name,
-        fnUserConfig,
+        transformConfig,
         properties,
         dependencies,
         spec: _.defaults(spec, SpecDefault({ config: provider.config })),
@@ -377,8 +381,10 @@ module.exports = CoreProvider = ({
       if (!engine) {
         throw Error(`Cannot find resource ${toString(action.resource.name)}`);
       }
+      const payload = await engine.config();
+
       await engine.create({
-        payload: await engine.config({ live: true }),
+        payload,
       });
     }
   };

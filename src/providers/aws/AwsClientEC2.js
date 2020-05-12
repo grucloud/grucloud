@@ -50,14 +50,14 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
     assert(payload);
     logger.debug(`create ${toString({ name, payload })}`);
     const data = await ec2.runInstances(params).promise();
-    console.log(`create result ${toString(data)}`);
+    logger.debug(`create result ${toString(data)}`);
     return data.Instances[0];
   };
 
   const list = async () => {
     logger.debug(`list`);
     const data = await ec2.describeInstances().promise();
-    console.log(toString(data));
+    logger.debug(`list ${toString(data)}`);
     return {
       data: {
         total: data.Reservations.length,

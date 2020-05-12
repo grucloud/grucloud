@@ -5,17 +5,18 @@ const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
 describe("GoogleProvider", async function () {
   let provider;
+  let server;
   let ip;
   before(async () => {
     provider = await GoogleProvider({ name: "google", config });
     await provider.destroyAll();
     ip = provider.makeAddress({ name: "ip-webserver" });
 
-    provider.makeInstance({
+    server = provider.makeInstance({
       name: "web-server",
       dependencies: {},
+
       config: async ({ dependencies: { ip } }) => ({
-        machineType: "e2-micro",
         networkInterfaces: [
           {
             accessConfigs: [
@@ -31,11 +32,19 @@ describe("GoogleProvider", async function () {
   after(async () => {
     await provider.destroyAll();
   });
-  it("plan", async function () {
-    const plan = await provider.plan();
-    assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 2);
-  });
+  it("config static", async function () {
+    const config = server.configStatic();
+    assert.equal(
+      config.machineType,
+      "projects/starhackit/zones/us-central1-a/machineTypes/f1-micro"
+    );
+    assert.equal(config.name, "web-server");
+  }),
+    it("plan", async function () {
+      const plan = await provider.plan();
+      assert.equal(plan.destroy.length, 0);
+      assert.equal(plan.newOrUpdate.length, 2);
+    });
   it.skip("deploy plan", async function () {
     await testProviderLifeCycle({ provider });
   });

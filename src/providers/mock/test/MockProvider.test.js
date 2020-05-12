@@ -8,10 +8,12 @@ const toJSON = (x) => JSON.stringify(x, null, 4);
 
 describe("MockProvider", async function () {
   let stack;
+  let provider;
   before(async () => {
     stack = await createStack({
       config,
     });
+    provider = stack.providers[0];
   });
 
   it("merge defaut ", async function () {
@@ -82,9 +84,15 @@ describe("MockProvider", async function () {
     const config = await stack.image.config();
     assert(config);
   });
+  it("volume config static", async function () {
+    const config = stack.volume.configStatic();
+    assert.equal(config.name, "volume1");
+    assert.equal(config.size, 20_000_000_000);
+  });
   it("volume config", async function () {
     const config = await stack.volume.config();
-    assert(config);
+    assert.equal(config.name, "volume1");
+    assert.equal(config.size, 20_000_000_000);
   });
 
   it("server config", async function () {
@@ -105,7 +113,7 @@ describe("MockProvider", async function () {
   });
 
   it("list config", async function () {
-    const configs = await stack.providers[0].listConfig();
+    const configs = await provider.listConfig();
     assert(configs);
   });
 
@@ -129,14 +137,14 @@ describe("MockProvider", async function () {
     );
   };
   it.skip("list resources", async function () {
-    const resources = await stack.providers[0].getTargetResources();
+    const resources = await provider.getTargetResources();
     assert(resources);
     resources.map((resource) => {
       displayResource(resource);
     });
   });
   it.skip("find delete order", async function () {
-    const resources = await stack.providers[0].getTargetResources();
+    const resources = await provider.getTargetResources();
     assert(resources);
     await Promise.all(
       resources

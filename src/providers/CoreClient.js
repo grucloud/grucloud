@@ -1,4 +1,5 @@
 const _ = require("lodash");
+const assert = require("assert");
 const logger = require("../logger")({ prefix: "CoreClient" });
 const toString = (x) => JSON.stringify(x, null, 4);
 const noop = () => ({});
@@ -44,12 +45,11 @@ module.exports = CoreClient = ({
 
   const getByName = async ({ name }) => {
     logger.info(`getByName ${type}/${name}`);
-    if (!name) {
-      throw Error(`getByName no name`);
-    }
+    assert(name);
     const {
       data: { items },
     } = await list();
+    assert(items);
     const instance = spec.getByName({ name, items });
     logger.info(`getByName ${type}/${name}, out: ${toString(instance)}`);
     return instance;

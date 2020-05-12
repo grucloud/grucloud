@@ -17,7 +17,7 @@ describe("MockProvider e2e", async function () {
     //await provider.destroyAll();
   });
 
-  it("destroy", async function () {
+  it("plan destroy", async function () {
     {
       const plan = await provider.plan();
       assert(plan.destroy);

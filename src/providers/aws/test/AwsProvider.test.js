@@ -12,14 +12,19 @@ describe("AwsProvider", async function () {
     await provider.destroyAll();
     server = provider.makeInstance({
       name: "web-server",
+      properties: {},
       dependencies: {},
-      config: async ({}) => ({
-        machineType: "e2-micro",
-      }),
     });
   });
   after(async () => {
     await provider.destroyAll();
+  });
+  it("config static", async function () {
+    const config = server.configStatic();
+    assert.equal(config.ImageId, "ami-0917237b4e71c5759");
+    assert.equal(config.InstanceType, "t2.micro");
+    assert.equal(config.MaxCount, 1);
+    assert.equal(config.MinCount, 1);
   });
   it("plan", async function () {
     const plan = await provider.plan();

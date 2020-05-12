@@ -86,6 +86,17 @@ const fnSpecs = (config) => {
           },
         ],
       }),
+      configLive: async ({ dependencies: { ip } }) => ({
+        networkInterfaces: [
+          {
+            accessConfigs: [
+              {
+                natIP: await ip.config().address,
+              },
+            ],
+          },
+        ],
+      }),
       compare: ({ target, live }) => {
         logger.debug(`compare server`);
         const diff = compare({

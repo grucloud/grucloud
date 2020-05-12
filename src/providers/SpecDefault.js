@@ -1,4 +1,5 @@
 const _ = require("lodash");
+const assert = require("assert");
 const logger = require("../logger")({ prefix: "SpecDefault" });
 const compare = require("../Utils").compare;
 
@@ -11,9 +12,13 @@ exports.SpecDefault = () => ({
       throw Error(`cannot find name in ${toString(item)}`);
     }
   },
-  getByName: ({ name, items = [] }) => {
+  getByName: ({ name, items }) => {
+    assert(name);
+    assert(items);
     logger.debug(`getByName: ${name}, items: ${toString(items)}`);
-    const item = items.find((item) => item.name === name);
+    logger.debug(`getByName #items ${items.length}`);
+
+    const item = items.find((item) => item.name.includes(name));
     logger.debug(`getByName: ${name}, returns: ${toString(item)}`);
     return item;
   },
@@ -30,8 +35,8 @@ exports.SpecDefault = () => ({
   },
 
   postConfig: ({ config }) => config,
-  configStatic: ({ config }) => config,
-  configLive: ({ config }) => config,
+  configStatic: () => ({}),
+  configLive: async () => ({}),
   configDefault: ({ name, properties }) => ({ name, ...properties }),
 
   methods: {
