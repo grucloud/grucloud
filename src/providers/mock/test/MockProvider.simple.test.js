@@ -6,14 +6,16 @@ const logger = require("logger")({ prefix: "MockProviderTestSimple" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
 describe("MockProvider Simple", async function () {
-  const { providers, ip, volume, server, image } = await createStack({
-    config,
-  });
-  const provider = providers[0];
-
+  let stack;
+  let provider;
   before(async () => {
+    stack = await createStack({
+      config,
+    });
+    provider = stack.providers[0];
     await provider.destroyAll();
   });
+
   after(async () => {
     await provider.destroyAll();
   });

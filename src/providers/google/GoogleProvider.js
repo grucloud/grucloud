@@ -3,8 +3,10 @@ const { JWT } = require("google-auth-library");
 const CoreProvider = require("../CoreProvider");
 const GoogleClient = require("./GoogleClient");
 const logger = require("../../logger")({ prefix: "GoogleProvider" });
-const { toTagName } = require("../TagName");
+//TODO create dedicated isOurMinion
+const { toTagName, isOurMinion } = require("../TagName");
 const compare = require("../../Utils").compare;
+const toString = (x) => JSON.stringify(x, null, 4);
 
 const onResponseList = (data) => {
   const { items = [] } = data;
@@ -34,6 +36,7 @@ const fnSpecs = ({ project, region, zone, tag }) => [
       }
       return { ...config };
     },
+    isOurMinion,
   },
   /*{
     type: "Volume",
@@ -104,6 +107,7 @@ const fnSpecs = ({ project, region, zone, tag }) => [
       logger.debug(`compare ${toString(diff)}`);
       return diff;
     },
+    isOurMinion,
   },
 ];
 

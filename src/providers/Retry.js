@@ -1,10 +1,13 @@
 const Promise = require("bluebird");
+const assert = require("assert");
 const logger = require("../logger")({ prefix: "CoreClient" });
+const toString = (x) => JSON.stringify(x, null, 4);
 
 const retryExpectException = async (
   { fn, isExpectedError, delay = 2e3 },
   count = 90
 ) => {
+  assert(fn);
   logger.debug(`retryExpectException count: ${count}, delay: ${delay}`);
   if (count === 0) {
     throw Error("timeout");
@@ -29,6 +32,7 @@ exports.retryExpectException = retryExpectException;
 
 const retryExpectOk = async ({ fn, isOk, delay = 1e3 }, count = 20) => {
   logger.debug(`retryExpectOk count: ${count}, delay: ${delay}`);
+  assert(fn);
   if (count === 0) {
     throw Error("timeout");
   }
@@ -38,12 +42,13 @@ const retryExpectOk = async ({ fn, isOk, delay = 1e3 }, count = 20) => {
 
     if (isOk(result)) {
       logger.debug(`retryExpectOk isOk`);
-
       return true;
     }
     logger.debug(`retryExpectOk: not ok`);
   } catch (error) {
-    logger.debug(`retryExpectOk: ${toString(error.response)}`);
+    logger.debug(
+      `retryExpectOk: ${toString(error.response ? error.response : error)}`
+    );
   }
   await Promise.delay(delay);
   return retryExpectOk({ fn, isOk, delay }, --count);

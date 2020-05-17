@@ -4,6 +4,7 @@ const compare = require("../../Utils").compare;
 const CoreProvider = require("../CoreProvider");
 const ScalewayClient = require("./ScalewayClient");
 const logger = require("../../logger")({ prefix: "ScalewayProvider" });
+const { isOurMinion } = require("../TagName");
 
 const toString = (x) => JSON.stringify(x, null, 4);
 
@@ -58,6 +59,7 @@ const fnSpecs = ({ organization }) => [
       }
       return { ...config };
     },
+    isOurMinion,
   },
   {
     Client: ScalewayClient,
@@ -94,6 +96,7 @@ const fnSpecs = ({ organization }) => [
       organization,
       ...options,
     }),
+    isOurMinion,
   },
   {
     Client: ScalewayClient,
@@ -153,6 +156,7 @@ const fnSpecs = ({ organization }) => [
         ...config,
       };
     },
+    isOurMinion,
   },
 ];
 

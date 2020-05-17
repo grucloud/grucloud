@@ -25,13 +25,18 @@ describe("AwsProvider", async function () {
     assert.equal(config.InstanceType, "t2.micro");
     assert.equal(config.MaxCount, 1);
     assert.equal(config.MinCount, 1);
+    // TODO tags
+  });
+  it("config", async function () {
+    const config = await server.config();
+    assert.equal(config.ImageId, "ami-0917237b4e71c5759");
   });
   it("plan", async function () {
     const plan = await provider.plan();
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 1);
   });
-  it.skip("deploy plan", async function () {
+  it("deploy plan", async function () {
     await testProviderLifeCycle({ provider });
   });
 });

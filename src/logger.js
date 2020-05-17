@@ -14,7 +14,11 @@ const transportFiles = [
   },
 ];
 
-transportFiles.forEach((item) => fs.unlinkSync(item.filename));
+transportFiles.forEach((item) => {
+  try {
+    fs.unlinkSync(item.filename);
+  } catch (error) {}
+});
 
 const logger = createLogger({
   level: "debug",

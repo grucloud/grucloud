@@ -1,15 +1,33 @@
 const assert = require("assert");
 const CoreProvider = require("../CoreProvider");
-const AwsClient = require("./AwsClient");
 const logger = require("../../logger")({ prefix: "AwsProvider" });
 const compare = require("../../Utils").compare;
+const { isOurMinion } = require("./AwsTags");
+const toString = (x) => JSON.stringify(x, null, 4);
 
-const AwsClientEc2 = require("./AwsClientEC2");
+const toId = (item) => {
+  assert(item);
+  const id = item.Instances[0].InstanceId;
+  assert(id);
+  return id;
+};
+
+const findName = (item) => {
+  assert(item);
+  const tag = item.Instances[0].Tags.find((tag) => tag.Key === "name");
+  if (tag?.Value) {
+    return tag.Value;
+  } else {
+    throw Error(`cannot find name in ${toString(item)}`);
+  }
+};
 
 const fnSpecs = ({ tag }) => [
   {
     type: "Instance",
     Client: AwsClientEc2,
+    findName,
+    toId,
     propertiesDefault: {
       VolumeSize: 100,
       InstanceType: "t2.micro",
@@ -28,7 +46,7 @@ const fnSpecs = ({ tag }) => [
       ],
       ImageId: properties.ImageId, // Ubuntu 20.04
       InstanceType: properties.InstanceType,
-      //KeyName: "gc",
+      //KeyName: "gc", //TODO key pair
       MaxCount: properties.MaxCount,
       MinCount: properties.MinCount,
       //SecurityGroupIds: ["sg-1a2b3c4d"],
@@ -43,7 +61,7 @@ const fnSpecs = ({ tag }) => [
             },
             {
               Key: tag,
-              Value: true,
+              Value: "true",
             },
           ],
         },
@@ -53,12 +71,13 @@ const fnSpecs = ({ tag }) => [
       logger.debug(`compare server`);
       const diff = compare({
         target,
-        targetKeys: [], //TODO
-        live,
+        targetKeys: ["InstanceType"], //TODO
+        live: live.Instances[0],
       });
       logger.debug(`compare ${toString(diff)}`);
       return diff;
     },
+    isOurMinion,
   },
 ];
 
@@ -75,6 +94,5 @@ module.exports = AwsProvider = async ({ name, config }) => {
     name,
     config,
     fnSpecs,
-    //Client: AwsClient,
   });
 };

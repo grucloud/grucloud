@@ -4,7 +4,7 @@ const logger = require("../logger")({ prefix: "CoreClient" });
 const toString = (x) => JSON.stringify(x, null, 4);
 const noop = () => ({});
 const identity = (x) => x;
-const { retryExpectException, retryExpectOk } = require("./Retry");
+const { retryExpectException } = require("./Retry");
 
 module.exports = CoreClient = ({
   spec,
@@ -55,6 +55,13 @@ module.exports = CoreClient = ({
     return instance;
   };
 
+  const isUp = async ({ name }) => {
+    logger.info(`isUp ${type}/${name}`);
+    assert(name, "isUp missing name");
+    const instance = await getByName({ name });
+    return spec.isUp({ instance });
+  };
+
   const create = async ({ name, payload }) => {
     logger.debug(`create ${type}/${name}, payload: ${toString(payload)}`);
 
@@ -67,12 +74,6 @@ module.exports = CoreClient = ({
       });
       result.data = onResponseCreate(result.data);
       logger.debug(`create result: ${toString(result.data)}`);
-
-      await retryExpectOk({
-        fn: () => getByName({ name }),
-        isOk: (result) => result,
-      });
-
       return result;
     } catch (error) {
       logger.error(`create type ${type}, error ${toString(error)}`);
@@ -109,6 +110,8 @@ module.exports = CoreClient = ({
       logger.debug(
         `destroy ${toString({ name, type, id })} should be destroyed`
       );
+
+      //TODO use isDown in CoreProvider
       await retryExpectException({
         fn: () => getById({ id }),
         isExpectedError: (error) =>
@@ -126,6 +129,7 @@ module.exports = CoreClient = ({
     type,
     getById,
     getByName,
+    isUp,
     create,
     destroy,
     list,

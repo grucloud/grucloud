@@ -53,13 +53,5 @@ describe.skip("AwsClientEc2", async function () {
       ],
     };
     await clientEc2.create({ name, payload });
-    {
-      const instance = await clientEc2.getByName({ name });
-      assert(instance);
-
-      await clientEc2.destroy({ id: instance.InstanceId });
-
-      // TODO check it is deleted
-    }
   });
 });

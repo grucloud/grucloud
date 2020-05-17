@@ -3,6 +3,7 @@ const _ = require("lodash");
 const assert = require("assert");
 const logger = require("logger")({ prefix: "AwsClientEC2" });
 const toString = (x) => JSON.stringify(x, null, 4);
+const instancesStateIgnore = ["terminated", "shutting-down"];
 
 module.exports = AwsClientEc2 = ({ spec, config }) => {
   assert(spec);
@@ -24,8 +25,6 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
     const {
       data: { items },
     } = list();
-    // TODO check that
-
     const instance = items.find((item) => item.Instances[0].InstanceId === id);
     logger.debug(`getById result ${toString({ instance })}`);
     return instance;
@@ -39,17 +38,25 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
 
     const findTagName = (tags = []) =>
       tags.find((tag) => tag.Key === "name" && tag.Value === name);
-
-    const instance = items.find((item) => findTagName(item.Instances[0].Tags));
+    const instance = items.find(
+      (item) =>
+        findTagName(item.Instances[0].Tags) &&
+        !instancesStateIgnore.includes(item.Instances[0].State.Name)
+    );
     logger.debug(`getByName result ${toString({ instance })}`);
-    return instance?.Instances[0];
+    return instance;
   };
-
+  const isUp = async ({ name }) => {
+    logger.debug(`isUp ${name}`);
+    assert(name);
+    const instance = await getByName({ name });
+    return instance.Instances[0].State.Name === "running";
+  };
   const create = async ({ name, payload }) => {
     assert(name);
     assert(payload);
     logger.debug(`create ${toString({ name, payload })}`);
-    const data = await ec2.runInstances(params).promise();
+    const data = await ec2.runInstances(payload).promise();
     logger.debug(`create result ${toString(data)}`);
     return data.Instances[0];
   };
@@ -58,10 +65,17 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
     logger.debug(`list`);
     const data = await ec2.describeInstances().promise();
     logger.debug(`list ${toString(data)}`);
+    const items = data.Reservations.filter(
+      (reservation) =>
+        !["terminated", "shutting-down"].includes(
+          reservation.Instances[0].State.Name
+        )
+    );
+    logger.debug(`list filtered: ${toString(items)}`);
     return {
       data: {
-        total: data.Reservations.length,
-        items: data.Reservations,
+        total: items.length,
+        items,
       },
     };
   };
@@ -80,8 +94,10 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
   };
 
   return {
+    type: "Instance",
     spec,
     ec2,
+    isUp,
     getById,
     getByName,
     create,

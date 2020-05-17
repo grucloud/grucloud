@@ -2,7 +2,7 @@ const assert = require("assert");
 const MockClient = require("./MockClient");
 const CoreProvider = require("../CoreProvider");
 const compare = require("../../Utils").compare;
-const { toTagName } = require("../TagName");
+const { toTagName, isOurMinion } = require("../TagName");
 
 const logger = require("../../logger")({ prefix: "MockProvider" });
 
@@ -29,12 +29,14 @@ const fnSpecs = (config) => {
       type: "Volume",
       url: "/volume",
       configDefault,
+      isOurMinion,
     },
     {
       Client: MockClient,
       type: "Ip",
       url: "ip",
       configDefault,
+      isOurMinion,
     },
     {
       Client: MockClient,
@@ -107,6 +109,7 @@ const fnSpecs = (config) => {
         logger.debug(`compare ${toString(diff)}`);
         return diff;
       },
+      isOurMinion,
     },
   ];
 };

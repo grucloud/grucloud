@@ -5,13 +5,13 @@ const config = require("./config");
 const toString = (x) => JSON.stringify(x, null, 4);
 
 describe("MockProvider e2e", async function () {
-  const { providers } = await createStack({
-    config,
-  });
-  const provider = providers[0];
-
+  let stack;
+  let provider;
   before(async () => {
-    //await provider.destroyAll();
+    stack = await createStack({
+      config,
+    });
+    provider = stack.providers[0];
   });
   after(async () => {
     //await provider.destroyAll();

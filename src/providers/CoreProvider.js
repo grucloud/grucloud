@@ -4,8 +4,9 @@ const Promise = require("bluebird");
 const logger = require("../logger")({ prefix: "CoreProvider" });
 const toString = (x) => JSON.stringify(x, null, 4);
 const checkEnvironment = require("../Utils").checkEnvironment;
-const { fromTagName, isOurMinion } = require("./TagName");
+const { fromTagName } = require("./TagName");
 const { SpecDefault } = require("./SpecDefault");
+const { retryExpectOk } = require("./Retry");
 
 const ResourceMaker = ({
   name: resourceName,
@@ -15,12 +16,11 @@ const ResourceMaker = ({
   properties,
   spec,
   provider,
-  config: configProvider, //TODO access configProvider from provider ?
 }) => {
   logger.debug(
     `ResourceMaker: ${toString({ type, resourceName, properties })}`
   );
-  const client = spec.Client({ spec, config: configProvider });
+  const client = spec.Client({ spec, config: provider.config });
   let parent;
   const getLive = async () => {
     logger.info(`getLive ${resourceName}/${type}`);
@@ -71,7 +71,7 @@ const ResourceMaker = ({
           dependencies,
           items,
           config,
-          configProvider: configProvider,
+          configProvider: provider.config,
         })
       : config;
 
@@ -82,14 +82,17 @@ const ResourceMaker = ({
   const create = async ({ payload }) => {
     logger.info(`create ${toString({ resourceName, type, payload })}`);
     // Is the resource already created ?
-    {
-      const live = await getLive();
-      if (live) {
-        throw Error(`Resource ${type}/${resourceName} already exists`);
-      }
+    const live = await getLive();
+    if (live) {
+      throw Error(`Resource ${type}/${resourceName} already exists`);
     }
     // Create now
     await client.create({ name: resourceName, payload });
+
+    await retryExpectOk({
+      fn: () => client.isUp({ name: resourceName }),
+      isOk: (result) => result,
+    });
     // use Return value and avoid calling getLive again ?
     // Check if we tag correctly
     {
@@ -99,7 +102,7 @@ const ResourceMaker = ({
           `Resource ${type}/${resourceName} not there after being created`
         );
       }
-      if (!isOurMinion(live, configProvider.tag)) {
+      if (!spec.isOurMinion({ resource: live, tag: provider.config.tag })) {
         throw Error(`Resource ${type}/${resourceName} is not tagged correctly`);
       }
     }
@@ -336,7 +339,13 @@ module.exports = CoreProvider = ({
             return data.items
               .filter((hotResource) => {
                 logger.debug(`planFindDestroy live: ${toString(hotResource)}`);
-                if (!isOurMinion(hotResource, config.tag)) {
+
+                if (
+                  !client.spec.isOurMinion({
+                    resource: hotResource,
+                    tag: config.tag,
+                  })
+                ) {
                   logger.info(
                     `planFindDestroy: !minion ${toString(hotResource)}`
                   );
@@ -397,12 +406,13 @@ module.exports = CoreProvider = ({
     }
     await resource.destroy();
   };
-  const destroyById = async ({ type, id, name }) => {
-    logger.debug(`destroyById: ${toString({ type, name, id })}`);
+  const destroyById = async ({ type, data, name }) => {
+    logger.debug(`destroyById: ${toString({ type, name })}`);
     const client = clientByType(type);
     if (!client) {
       throw new Error(`Cannot find endpoint type ${type}}`);
     }
+    const id = client.spec.toId(data);
     await client.destroy({ id, name });
   };
 
@@ -412,7 +422,7 @@ module.exports = CoreProvider = ({
       planDestroy.map(async (planItem) => {
         await destroyById({
           type: planItem.resource.type,
-          id: planItem.data.id,
+          data: planItem.data,
           name: planItem.resource.name,
         });
       })
