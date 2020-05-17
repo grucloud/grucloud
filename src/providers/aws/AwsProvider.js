@@ -1,5 +1,6 @@
 const assert = require("assert");
 const CoreProvider = require("../CoreProvider");
+const AwsClientEc2 = require("./AwsClientEc2");
 const logger = require("../../logger")({ prefix: "AwsProvider" });
 const compare = require("../../Utils").compare;
 const { isOurMinion } = require("./AwsTags");
@@ -92,6 +93,7 @@ module.exports = AwsProvider = async ({ name, config }) => {
   return CoreProvider({
     type: "aws",
     name,
+    envs: ["AWSAccessKeyId", "AWSSecretKey"],
     config,
     fnSpecs,
   });

@@ -1,7 +1,7 @@
 var AWS = require("aws-sdk");
 const _ = require("lodash");
 const assert = require("assert");
-const logger = require("logger")({ prefix: "AwsClientEC2" });
+const logger = require("../../logger")({ prefix: "AwsClientEC2" });
 const toString = (x) => JSON.stringify(x, null, 4);
 const instancesStateIgnore = ["terminated", "shutting-down"];
 

@@ -12,9 +12,6 @@ const createStack = async ({ options }) => {
     name: "web-server",
     dependencies: {},
     // TODO use properties
-    config: async ({ dependencies: {} }) => ({
-      machineType: "e2-micro",
-    }),
   });
 
   return { providers: [provider] };

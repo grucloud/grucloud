@@ -13,7 +13,6 @@ exports.createProgram = ({
   const program = new Command();
   program.version(version);
   program.allowUnknownOption(); // For testing
-  program.option("-l, --list", "list live resources");
   program.option("-i, --infra <file>", "infrastructure iac.js file");
 
   program
