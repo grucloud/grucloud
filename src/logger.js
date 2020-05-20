@@ -6,12 +6,12 @@ const transportFiles = [
     filename: "grucloud-debug.log",
     level: "debug",
     format: format.simple(),
-  },
+  } /*,
   {
     filename: "grucloud-info.log",
     level: "info",
     format: format.simple(),
-  },
+  },*/,
 ];
 
 transportFiles.forEach((item) => {
