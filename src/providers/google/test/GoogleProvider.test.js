@@ -11,22 +11,9 @@ describe("GoogleProvider", async function () {
     provider = await GoogleProvider({ name: "google", config });
     await provider.destroyAll();
     ip = provider.makeAddress({ name: "ip-webserver" });
-
     server = provider.makeInstance({
       name: "web-server",
       dependencies: {},
-
-      config: async ({ dependencies: { ip } }) => ({
-        networkInterfaces: [
-          {
-            accessConfigs: [
-              {
-                natIP: await ip.configLive().address,
-              },
-            ],
-          },
-        ],
-      }),
     });
   });
   after(async () => {
@@ -39,13 +26,13 @@ describe("GoogleProvider", async function () {
       "projects/starhackit/zones/us-central1-a/machineTypes/f1-micro"
     );
     assert.equal(config.name, "web-server");
-  }),
-    it("plan", async function () {
-      const plan = await provider.plan();
-      assert.equal(plan.destroy.length, 0);
-      assert.equal(plan.newOrUpdate.length, 2);
-    });
-  it.skip("deploy plan", async function () {
+  });
+  it("plan", async function () {
+    const plan = await provider.plan();
+    assert.equal(plan.destroy.length, 0);
+    assert.equal(plan.newOrUpdate.length, 2);
+  });
+  it("deploy plan", async function () {
     await testProviderLifeCycle({ provider });
   });
 });

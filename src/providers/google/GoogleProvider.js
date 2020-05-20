@@ -3,8 +3,7 @@ const { JWT } = require("google-auth-library");
 const CoreProvider = require("../CoreProvider");
 const GoogleClient = require("./GoogleClient");
 const logger = require("../../logger")({ prefix: "GoogleProvider" });
-//TODO create dedicated isOurMinion
-const { toTagName, isOurMinion } = require("../TagName");
+const { toTagName, isOurMinion } = require("./GoogleTag");
 const compare = require("../../Utils").compare;
 const toString = (x) => JSON.stringify(x, null, 4);
 
