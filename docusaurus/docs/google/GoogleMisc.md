@@ -11,6 +11,7 @@ title: Miscellaneous
     gcloud config configurations list
     gcloud compute instances list
     gcloud compute images list
+    gcloud compute addresses list
 
 ## gurl
 
