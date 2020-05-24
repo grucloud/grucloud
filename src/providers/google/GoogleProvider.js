@@ -18,11 +18,12 @@ const fnSpecs = ({ project, region, zone, tag }) => [
     type: "Address",
     url: `/projects/${project}/regions/${region}/addresses/`,
     onResponseList,
-    propertiesDefault: ({ name, properties }) => ({
+    configDefault: ({ name, properties }) => ({
       ...properties,
       name,
       description: toTagName(name, tag),
     }),
+    //TODO
     postConfig: ({ config, items }) => {
       //assert(items);
       //TODO check that

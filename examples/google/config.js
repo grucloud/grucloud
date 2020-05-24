@@ -2,8 +2,8 @@ require("dotenv").config();
 
 const config = {
   project: "starhackit",
-  region: "us-central1",
-  zone: "us-central1-a",
+  region: "europe-west4",
+  zone: "europe-west4-a",
   applicationCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS,
 };
 

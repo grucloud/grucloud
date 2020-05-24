@@ -19,7 +19,8 @@ describe("GoogleProvider", async function () {
   after(async () => {
     await provider.destroyAll();
   });
-  it("config static", async function () {
+
+  it("server config static", async function () {
     const config = server.configStatic();
     assert.equal(
       config.machineType,
