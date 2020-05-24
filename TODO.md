@@ -1,9 +1,12 @@
-- Check project name, region and zone
+## Common:
 
 - Human friendly resource name
+- Destroy depends on dependencies, build a graph
 
-- destroy depends on dependencies, build a graph
+## TODO Aws:
 
-- wait for aws instance to be in the running state
+- KeyPair
 
-WANìRING when gloud config is difference from our config, i.e region
+## TODO Goggle
+
+- WARNING when gloud config is difference from our config, i.e region

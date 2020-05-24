@@ -8,19 +8,15 @@ const instancesStateIgnore = ["terminated", "shutting-down"];
 module.exports = AwsClientEc2 = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  assert(config.region, "missing region");
-
-  logger.info(`${toString(config)}`);
 
   AWS.config.apiVersions = {
     ec2: "2016-11-15",
   };
 
-  AWS.config.update({ region: config.region });
-
-  var ec2 = new AWS.EC2();
+  const ec2 = new AWS.EC2();
 
   const getById = async ({ id }) => {
+    assert(id);
     logger.debug(`getById ${toString({ id })}`);
     const {
       data: { items },
@@ -31,6 +27,7 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
   };
 
   const getByName = async ({ name }) => {
+    assert(name);
     logger.info(`getByName ${name}`);
     const {
       data: { items },

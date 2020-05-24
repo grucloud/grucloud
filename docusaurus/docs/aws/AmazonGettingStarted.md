@@ -47,6 +47,18 @@ const config = {
 };
 ```
 
+## Key Pair
+
+Let's create an ssh key pair to access the server.
+
+Some key pairs may already have been created, here is how to list all existing key pairs:
+
+```bash
+aws ec2 describe-key-pairs
+```
+
+If you need to create a new key pair, go to the [AWS documentation for ec2 key pair](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html)
+
 ## Status
 
 Query the status of the current resources on the given cloud account:
@@ -72,6 +84,18 @@ Find out which resources are going to be allocated:
 Happy with the expected plan ? Deploy it now:
 
     gc deploy
+
+Make sure the instance is created by listing all instances:
+
+```bash
+aws ec2 describe-instances
+```
+
+Filtering by the instance name is also possible:
+
+```bash
+aws ec2 describe-instances --filters "Name=tag:name,Values=web-server"
+```
 
 ## Destroy
 

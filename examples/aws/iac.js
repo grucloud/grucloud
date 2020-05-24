@@ -9,9 +9,12 @@ const createStack = async ({ options }) => {
   //TODO
   // const ip = provider.makeAddress({ name: "ip-webserver" });
   // Allocate a server
+  const keyPair = provider.makeKeyPair({
+    name: "kp",
+  });
   const server = provider.makeInstance({
     name: "web-server",
-    dependencies: {},
+    dependencies: { keyPair },
     propertiesDefault: {
       VolumeSize: 50,
       InstanceType: "t2.micro",

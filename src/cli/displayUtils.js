@@ -16,8 +16,9 @@ const planDisplayItem = (item) => {
 
 // Live Resources
 exports.displayLive = (live) => {
-  //console.log(JSON.stringify(live, null, 4));
-  console.log(`${live.type} - ${live.data.items.length} `);
+  console.log(JSON.stringify(live, null, 4));
+  //TODO display per resource
+  console.log(`${live.type} - ${live.data.items?.length} `);
 };
 
 exports.displayPlan = async (plan) => {

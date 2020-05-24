@@ -51,6 +51,7 @@ const ResourceMaker = ({
     const result = spec.configDefault({
       name: resourceName,
       properties: _.defaultsDeep(properties, spec.propertiesDefault),
+      dependencies,
     });
     logger.info(
       `configStatic ${spec.type}/${resourceName}: ${toString(result)}`

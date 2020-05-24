@@ -1,6 +1,9 @@
+const AWS = require("aws-sdk");
 const assert = require("assert");
 const CoreProvider = require("../CoreProvider");
 const AwsClientEc2 = require("./AwsClientEc2");
+const AwsClientKeyPair = require("./AwsClientKeyPair");
+
 const logger = require("../../logger")({ prefix: "AwsProvider" });
 const compare = require("../../Utils").compare;
 const { isOurMinion } = require("./AwsTags");
@@ -25,6 +28,11 @@ const findName = (item) => {
 
 const fnSpecs = ({ tag }) => [
   {
+    type: "KeyPair",
+    Client: AwsClientKeyPair,
+    methods: { list: true },
+  },
+  {
     type: "Instance",
     Client: AwsClientEc2,
     findName,
@@ -36,38 +44,43 @@ const fnSpecs = ({ tag }) => [
       MinCount: 1,
       ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
     },
-    configDefault: ({ name, properties }) => ({
-      BlockDeviceMappings: [
-        {
-          DeviceName: "/dev/sdh",
-          Ebs: {
-            VolumeSize: properties.VolumeSize,
-          },
-        },
-      ],
-      ImageId: properties.ImageId, // Ubuntu 20.04
-      InstanceType: properties.InstanceType,
-      //KeyName: "gc", //TODO key pair
-      MaxCount: properties.MaxCount,
-      MinCount: properties.MinCount,
-      //SecurityGroupIds: ["sg-1a2b3c4d"],
-      //SubnetId: "subnet-6e7f829e",
-      TagSpecifications: [
-        {
-          ResourceType: "instance",
-          Tags: [
+    configDefault: ({ name, properties, dependencies }) => {
+      const { keyPair } = dependencies;
+      return {
+        ...{
+          BlockDeviceMappings: [
             {
-              Key: "name",
-              Value: name,
+              DeviceName: "/dev/sdh",
+              Ebs: {
+                VolumeSize: properties.VolumeSize,
+              },
             },
+          ],
+          ImageId: properties.ImageId, // Ubuntu 20.04
+          InstanceType: properties.InstanceType,
+          MaxCount: properties.MaxCount,
+          MinCount: properties.MinCount,
+          //SecurityGroupIds: ["sg-1a2b3c4d"],
+          //SubnetId: "subnet-6e7f829e",
+          TagSpecifications: [
             {
-              Key: tag,
-              Value: "true",
+              ResourceType: "instance",
+              Tags: [
+                {
+                  Key: "name",
+                  Value: name,
+                },
+                {
+                  Key: tag,
+                  Value: "true",
+                },
+              ],
             },
           ],
         },
-      ],
-    }),
+        [keyPair && "KeyName"]: keyPair.name,
+      };
+    },
     compare: ({ target, live }) => {
       logger.debug(`compare server`);
       const diff = compare({
@@ -90,6 +103,9 @@ const configCheck = (config) => {
 
 module.exports = AwsProvider = async ({ name, config }) => {
   configCheck(config);
+
+  AWS.config.update({ region: config.region });
+
   return CoreProvider({
     type: "aws",
     name,
