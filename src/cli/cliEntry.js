@@ -9,7 +9,7 @@ const program = createProgram({
   commands,
 });
 
-console.log(`GruCloud ${program._version}`);
+//console.log(`GruCloud ${program._version}`);
 
 program
   .parseAsync(process.argv)

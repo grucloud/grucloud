@@ -6,9 +6,9 @@ const config = {
   secretKey: process.env.SCALEWAY_SECRET_KEY,
 };
 
-const createStack = ({ options }) => {
+const createStack = async ({ options }) => {
   // Create Scaleway provider
-  const provider = ScalewayProvider({ name: "scaleway", config });
+  const provider = await ScalewayProvider({ name: "scaleway", config });
   // Allocate public Ip address
   const ip = provider.makeIp({ name: "ip-web-server" });
   // Choose an image
@@ -27,7 +27,7 @@ const createStack = ({ options }) => {
     name: "web-server",
     dependencies: { image, ip },
     // TODO use properties
-    config: () => ({
+    properties: {
       name: "web-server",
       commercial_type: "DEV1-S",
       volumes: {
@@ -35,7 +35,7 @@ const createStack = ({ options }) => {
           size: 20_000_000_000,
         },
       },
-    }),
+    },
   });
   return { providers: [provider] };
 };

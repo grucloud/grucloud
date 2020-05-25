@@ -29,7 +29,7 @@ const checkFileExist = ({ filename }) => {
 
 exports.createInfra = ({ infra, config = {} }) => {
   const filename = getInfraFilename({ infra });
-  console.log(`Using ${filename}`);
+  //console.log(`Using ${filename}`);
   checkFileExist({ filename });
   return creatInfraFromFile({ filename, config });
 };

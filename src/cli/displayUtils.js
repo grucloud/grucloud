@@ -1,29 +1,37 @@
 // Live Resources
 const emoji = require("node-emoji");
-
+const Table = require("cli-table3");
+const YAML = require("json-to-pretty-yaml");
 var actionsEmoticon = {
   CREATE: emoji.get("sparkle"),
   DESTROY: emoji.get("x"),
 };
 // Plan
-const displayAction = (action) => actionsEmoticon[action];
-const displayResource = (r) => `${r.provider}/${r.type}/${r.name}`;
-const planDisplayItem = (item) => {
-  console.log(
-    `${displayAction(item.action)}  ${displayResource(item.resource)}`
-  );
-};
+const displayAction = (item) => actionsEmoticon[item.action];
+const displayResource = (item) => YAML.stringify(item.config);
 
-// Live Resources
-exports.displayLive = (live) => {
-  console.log(JSON.stringify(live, null, 4));
-  //TODO display per resource
-  console.log(`${live.type} - ${live.data.items?.length} `);
+const displayItem = (table, item) => {
+  table.push([
+    item.resource.name,
+    item.action,
+    item.resource.type,
+    item.resource.provider,
+    displayResource(item),
+  ]);
 };
-
 exports.displayPlan = async (plan) => {
-  plan.newOrUpdate && plan.newOrUpdate.map((item) => planDisplayItem(item));
-  plan.destroy && plan.destroy.map((item) => planDisplayItem(item));
+  const table = new Table({
+    head: ["Name", "Action", "Type", "Provider", "Config"],
+    columns: {
+      4: {
+        width: 20,
+        wrapWord: true,
+      },
+    },
+  });
 
-  //TODO display removed items
+  plan.newOrUpdate &&
+    plan.newOrUpdate.forEach((item) => displayItem(table, item));
+  plan.destroy && plan.destroy.forEach((item) => displayItem(table, item));
+  console.log(table.toString());
 };

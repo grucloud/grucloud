@@ -134,6 +134,7 @@ const ResourceMaker = ({
           {
             action: "CREATE",
             resource: resource.serialized(),
+            config: await resource.config(),
             // TODO configStatic ? config: await resource.config(),
           },
         ];
@@ -146,6 +147,7 @@ const ResourceMaker = ({
     type,
     provider: provider.name(),
   });
+
   const addParent = (parentToSet) => {
     parent = parentToSet;
   };
