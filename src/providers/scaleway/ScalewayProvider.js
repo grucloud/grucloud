@@ -140,7 +140,7 @@ const fnSpecs = ({ organization }) => [
         ...config,
       };
     },
-    transformConfig: async ({ config, dependencies: { image, ip } }) => {
+    configLive: async ({ config, dependencies: { image, ip } }) => {
       const ipLive = await ip.getLive();
       const imageConfig = await image.config();
       logger.debug(`Server configLive ip: ${toString(ipLive)}`);

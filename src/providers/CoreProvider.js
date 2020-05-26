@@ -283,6 +283,7 @@ module.exports = CoreProvider = ({
 
   const plan = async () => {
     const plan = {
+      providerName,
       newOrUpdate: await planUpsert(),
       destroy: await planFindDestroy(),
     };

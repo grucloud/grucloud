@@ -10,6 +10,14 @@
       "args": ["--infra", "src/providers/mock/test/MockStack.js", "plan"]
     },
     {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Status",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/multi/",
+      "args": ["--infra", "iac.js", "status"]
+    },
+    {
       "name": "Debug test",
       "type": "node",
       "request": "launch",

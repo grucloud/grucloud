@@ -6,9 +6,15 @@ const { displayPlan, displayLive } = require("./displayUtils");
 const planQuery = async ({ program }) => {
   try {
     const infra = await createInfra({ infra: program.infra });
-    const provider = infra.providers[0];
-    const plan = await runAsyncCommand(() => provider.plan(), "Query Plan");
-    displayPlan(plan);
+    await Promise.all(
+      infra.providers.map(async (provider) => {
+        const plan = await runAsyncCommand(
+          () => provider.plan(),
+          `Query Plan for ${provider.name()}`
+        );
+        displayPlan(plan);
+      })
+    );
   } catch (error) {
     console.error("error", error);
     throw error;
@@ -53,20 +59,15 @@ exports.planDestroy = async ({ program }) => {
 exports.displayStatus = async ({ program }) => {
   try {
     const infra = await createInfra({ infra: program.infra });
-    const provider = infra.providers[0];
-    const targets = await runAsyncCommand(
-      () => provider.listTargets(),
-      "Target Resources"
+    await Promise.all(
+      infra.providers.map(async (provider) => {
+        const targets = await runAsyncCommand(
+          () => provider.listTargets(),
+          `Target Resources ${provider.name()}`
+        );
+        displayLive({ providerName: provider.name(), targets });
+      })
     );
-    console.log(`Our Resources: ${targets.length}`);
-    targets.map((item) => displayLive(item));
-
-    const lives = await runAsyncCommand(
-      () => provider.listLives(),
-      "All Resources"
-    );
-    console.log(`${lives.length} Resources Types`);
-    lives.map((live) => displayLive(live));
   } catch (error) {
     console.error(error);
     throw error;
