@@ -86,9 +86,9 @@ const createStack = ({ options }) => {
   const server = provider.makeInstance({
     name: "web-server",
     dependencies: {},
-    config: async ({ dependencies: {} }) => ({
+    properties: {
       machineType: "e2-micro",
-    }),
+    },
   });
 
   return { providers: [provider] };

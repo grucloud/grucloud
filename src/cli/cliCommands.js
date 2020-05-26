@@ -1,12 +1,11 @@
+const _ = require("lodash");
 const { runAsyncCommand } = require("./cliUtils");
-const { createInfra } = require("./infra");
 const { displayPlan, displayLive } = require("./displayUtils");
 
 //Query Plan
-const planQuery = async ({ program }) => {
+const planQuery = async ({ infra }) => {
   try {
-    const infra = await createInfra({ infra: program.infra });
-    await Promise.all(
+    const plans = await Promise.all(
       infra.providers.map(async (provider) => {
         const plan = await runAsyncCommand(
           () => provider.plan(),
@@ -15,6 +14,7 @@ const planQuery = async ({ program }) => {
         displayPlan(plan);
       })
     );
+    return plans;
   } catch (error) {
     console.error("error", error);
     throw error;
@@ -23,20 +23,34 @@ const planQuery = async ({ program }) => {
 exports.planQuery = planQuery;
 
 //Deploy plan
-exports.planDeploy = async ({ program }) => {
+exports.planDeploy = async ({ infra }) => {
   try {
-    const infra = await createInfra({ infra: program.infra });
-    const provider = infra.providers[0];
-    {
-      const plan = await runAsyncCommand(() => provider.plan(), "Query Plan");
-      await runAsyncCommand(() => provider.deployPlan(plan), "Deploy Plan");
-    }
-    {
-      const plan = await runAsyncCommand(() => provider.plan(), "Check Plan");
-      if (!provider.isPlanEmpty(plan)) {
-        throw Error(`plan is not empty after deploy`);
-      }
-    }
+    const plans = await planQuery({ infra });
+    //What if plans is empty ?
+    await Promise.all(
+      infra.providers.map(async (provider) => {
+        const plan = await runAsyncCommand(
+          () => provider.plan(),
+          `Query Plan for ${provider.name()}`
+        );
+
+        await runAsyncCommand(
+          () => provider.deployPlan(plan),
+          `Deploy Plan for ${provider.name()}`
+        );
+        {
+          const plan = await runAsyncCommand(
+            () => provider.plan(),
+            `Check Plan for ${provider.name()}`
+          );
+          if (!provider.isPlanEmpty(plan)) {
+            throw Error(
+              `plan for ${provider.name()} is not empty after deploy`
+            );
+          }
+        }
+      })
+    );
   } catch (error) {
     console.error("error", error);
     throw error;
@@ -44,11 +58,30 @@ exports.planDeploy = async ({ program }) => {
 };
 
 // Destroy plan
-exports.planDestroy = async ({ program }) => {
+exports.planDestroy = async ({ infra }) => {
   try {
-    const infra = await createInfra({ infra: program.infra });
-    const provider = infra.providers[0];
-    await runAsyncCommand(() => provider.destroyAll(), "Destroy Resources");
+    await Promise.all(
+      infra.providers.map(async (provider) => {
+        await runAsyncCommand(
+          () => provider.destroyAll(),
+          `Destroy Resources ${provider.name()}`
+        );
+        const targets = await runAsyncCommand(
+          () => provider.listTargets(),
+          `Status for ${provider.name()}`
+        );
+        if (!_.isEmpty(targets)) {
+          const message = `Resources still there after being destroyed: ${JSON.stringify(
+            targets,
+            null,
+            4
+          )}`;
+          console.error(message);
+          throw Error(message);
+        }
+      })
+      //TODO Check status is empty
+    );
   } catch (error) {
     console.error("error", error);
     throw error;
@@ -56,18 +89,19 @@ exports.planDestroy = async ({ program }) => {
 };
 
 //Display Status
-exports.displayStatus = async ({ program }) => {
+exports.displayStatus = async ({ infra }) => {
   try {
-    const infra = await createInfra({ infra: program.infra });
-    await Promise.all(
+    const targets = await Promise.all(
       infra.providers.map(async (provider) => {
         const targets = await runAsyncCommand(
           () => provider.listTargets(),
-          `Target Resources ${provider.name()}`
+          `Status for ${provider.name()}`
         );
         displayLive({ providerName: provider.name(), targets });
+        return targets;
       })
     );
+    return targets;
   } catch (error) {
     console.error(error);
     throw error;

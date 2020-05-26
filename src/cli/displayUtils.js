@@ -1,7 +1,7 @@
 //const emoji = require("node-emoji");
 const Table = require("cli-table3");
 const colors = require("colors/safe");
-const YAML = require("json-to-pretty-yaml");
+const YAML = require("./json2yaml");
 
 /*
 const actionsEmoticon = {

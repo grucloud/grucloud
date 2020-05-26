@@ -293,6 +293,7 @@ module.exports = CoreProvider = ({
     return plan;
   };
   const deployPlan = async (plan) => {
+    assert(plan);
     logger.info(`*******************************************************`);
     logger.info(`Deploy Plan ${toString(plan)}`);
     logger.info(`*******************************************************`);

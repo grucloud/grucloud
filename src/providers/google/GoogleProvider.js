@@ -23,10 +23,9 @@ const fnSpecs = ({ project, region, zone, tag }) => [
       name,
       description: toTagName(name, tag),
     }),
-    //TODO
-    postConfig: ({ config, items }) => {
-      //assert(items);
-      //TODO check that
+    transformConfig: ({ config, items }) => {
+      assert(config);
+      assert(items);
       logger.debug(
         `postConfig: ${toString(config)}, items: ${toString(items)}`
       );
