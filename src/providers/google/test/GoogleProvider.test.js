@@ -33,7 +33,7 @@ describe("GoogleProvider", async function () {
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 2);
   });
-  it("deploy plan", async function () {
+  it.skip("deploy plan", async function () {
     await testProviderLifeCycle({ provider });
   });
 });

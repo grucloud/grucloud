@@ -3,10 +3,8 @@ const MockClient = require("./MockClient");
 const CoreProvider = require("../CoreProvider");
 const compare = require("../../Utils").compare;
 const { toTagName, isOurMinion } = require("../TagName");
-
 const logger = require("../../logger")({ prefix: "MockProvider" });
-
-const toJSON = (x) => JSON.stringify(x, null, 4);
+//const toJSON = (x) => JSON.stringify(x, null, 4);
 
 //TODO use deepMerge ?
 const fnSpecs = (config) => {
@@ -18,30 +16,48 @@ const fnSpecs = (config) => {
 
   return [
     {
-      Client: MockClient,
+      Client: ({ spec }) =>
+        MockClient({
+          spec,
+          url: `/image`,
+          config,
+        }),
+
       type: "Image",
-      url: "/image",
       methods: { list: true },
       toId: (obj) => obj.name,
     },
     {
-      Client: MockClient,
+      Client: ({ spec }) =>
+        MockClient({
+          spec,
+          url: `/volume`,
+          config,
+        }),
+
       type: "Volume",
-      url: "/volume",
       configDefault,
       isOurMinion,
     },
     {
-      Client: MockClient,
+      Client: ({ spec }) =>
+        MockClient({
+          spec,
+          url: `/ip`,
+          config,
+        }),
       type: "Ip",
-      url: "ip",
       configDefault,
       isOurMinion,
     },
     {
-      Client: MockClient,
+      Client: ({ spec }) =>
+        MockClient({
+          spec,
+          url: `/server`,
+          config,
+        }),
       type: "Server",
-      url: "/server",
       propertiesDefault: {
         machineType: "f1-micro",
         diskSizeGb: "10",

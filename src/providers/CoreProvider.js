@@ -20,7 +20,7 @@ const ResourceMaker = ({
   logger.debug(
     `ResourceMaker: ${toString({ type, resourceName, properties })}`
   );
-  const client = spec.Client({ spec, config: provider.config });
+  const client = spec.Client({ spec });
   let parent;
   const getLive = async () => {
     logger.info(`getLive ${resourceName}/${type}`);
@@ -176,6 +176,7 @@ const ResourceMaker = ({
 
 const createResourceMakers = ({ specs, config, provider }) =>
   specs.reduce((acc, spec) => {
+    assert(spec.type);
     acc[`make${spec.type}`] = ({
       name,
       dependencies,
@@ -230,7 +231,7 @@ module.exports = CoreProvider = ({
     _.defaults(spec, SpecDefault({ config }))
   );
 
-  const clients = specs.map((spec) => spec.Client({ spec, config }));
+  const clients = specs.map((spec) => spec.Client({ spec }));
 
   const clientByType = (type) => {
     assert(type);
@@ -238,7 +239,7 @@ module.exports = CoreProvider = ({
     if (!spec) {
       throw new Error(`type ${type} not found`);
     }
-    return spec.Client({ spec, config });
+    return spec.Client({ spec });
   };
   // API
   //  Flatter that
@@ -248,7 +249,7 @@ module.exports = CoreProvider = ({
         clients
           .filter((client) => all || client.spec.methods.create)
           .map(async (client) => ({
-            type: client.spec.type,
+            type: client.type,
             data: (await client.list()).data,
           }))
       )

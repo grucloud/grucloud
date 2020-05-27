@@ -28,136 +28,164 @@ const getByName = ({ name, items = [] }) => {
   return itemsWithName[0];
 };
 
-const fnSpecs = ({ organization }) => [
-  {
-    Client: ScalewayClient,
-    type: "Ip",
-    url: `/ips`,
-    getByName,
-    onResponseList: (data) => {
-      logger.debug(`onResponse ${toString(data)}`);
-      if (data && data.ips) {
-        return { total: data.ips.length, items: data.ips };
-      } else {
-        throw Error(`Cannot find ips`);
-      }
+const fnSpecs = (config) => {
+  const { organization } = config;
+  return [
+    {
+      Client: ({ spec }) =>
+        ScalewayClient({
+          spec,
+          url: `/ips`,
+          onResponseList: (data) => {
+            logger.debug(`onResponse ${toString(data)}`);
+            if (data && data.ips) {
+              return { total: data.ips.length, items: data.ips };
+            } else {
+              throw Error(`Cannot find ips`);
+            }
+          },
+          config,
+        }),
+      type: "Ip",
+      getByName,
+      configDefault: ({ name, properties }) => ({
+        ...properties,
+        tags: [name],
+        organization,
+      }),
+      postConfig: ({ config, items }) => {
+        //assert(items);
+        //TODO check that
+        logger.debug(
+          `postConfig: ${toString(config)}, items: ${toString(items)}`
+        );
+        const ip = items.find((item) => item.address === config.address);
+        if (ip) {
+          return ip;
+        }
+        return { ...config };
+      },
+      isOurMinion,
     },
-    configDefault: ({ name, properties }) => ({
-      ...properties,
-      tags: [name],
-      organization,
-    }),
-    postConfig: ({ config, items }) => {
-      //assert(items);
-      //TODO check that
-      logger.debug(
-        `postConfig: ${toString(config)}, items: ${toString(items)}`
-      );
-      const ip = items.find((item) => item.address === config.address);
-      if (ip) {
-        return ip;
-      }
-      return { ...config };
+    {
+      Client: ({ spec }) =>
+        ScalewayClient({
+          spec,
+          url: `/bootscripts`,
+          onResponseList: ({ bootscripts }) => ({
+            total: bootscripts.length,
+            items: bootscripts,
+          }),
+          config,
+        }),
+      type: "Bootscript",
+      methods: { list: true },
     },
-    isOurMinion,
-  },
-  {
-    Client: ScalewayClient,
-    type: "Bootscript",
-    methods: { list: true },
-    onResponseList: ({ bootscripts }) => ({
-      total: bootscripts.length,
-      items: bootscripts,
-    }),
-    url: `/bootscripts`,
-  },
-  {
-    Client: ScalewayClient,
-    type: "Image",
-    methods: { list: true },
-    onResponseList: ({ images }) => ({ total: images.length, items: images }),
-    url: `/images`,
-  },
-  {
-    Client: ScalewayClient,
-    type: "Volume",
-    url: `/volumes`,
-    onResponseList: (result) => {
-      logger.debug(`onResponseList Volume: ${JSON.stringify(result)}`);
-      const { volumes = [] } = result;
-      return {
-        total: volumes.length,
-        items: volumes,
-      };
-    },
-    configDefault: ({ name, options }) => ({
-      volume_type: "l_ssd",
-      name,
-      organization,
-      ...options,
-    }),
-    isOurMinion,
-  },
-  {
-    Client: ScalewayClient,
-    type: "Server",
-    url: `servers`,
-    getByName,
-    onResponseList: ({ servers }) => {
-      return { total: servers.length, items: servers };
-    },
-    compare: ({ target, live }) => {
-      logger.debug(`compare server`);
-      const diff = compare({
-        target,
-        targetKeys: ["commercial_type", "volumes.0.size"],
-        live,
-      });
-      logger.debug(`compare ${toString(diff)}`);
-      return diff;
-    },
-    configDefault: ({ name, properties }) => ({ name, ...properties }),
-    propertiesDefault: {
-      dynamic_ip_required: false,
-      commercial_type: "DEV1-S",
-      enable_ipv6: true,
-      boot_type: "local",
-    },
-    configDefault: ({ name, properties }) => ({
-      name,
-      organization,
-      tags: [name],
-      ...properties,
-    }),
-    configStatic: async ({ config, dependencies: { image, ip } }) => {
-      const imageId = await image.config().id;
-      //logger.debug(`configStatic imageId: ${imageId}`);
+    {
+      Client: ({ spec }) =>
+        ScalewayClient({
+          spec,
+          url: `/images`,
+          onResponseList: ({ images }) => ({
+            total: images.length,
+            items: images,
+          }),
 
-      return {
-        image: imageId,
-        public_ip: await ip.config(),
-
-        ...config,
-      };
+          config,
+        }),
+      type: "Image",
+      methods: { list: true },
     },
-    configLive: async ({ config, dependencies: { image, ip } }) => {
-      const ipLive = await ip.getLive();
-      const imageConfig = await image.config();
-      logger.debug(`Server configLive ip: ${toString(ipLive)}`);
+    {
+      Client: ({ spec }) =>
+        ScalewayClient({
+          spec,
+          url: `/volumes`,
+          onResponseList: (result) => {
+            logger.debug(`onResponseList Volume: ${JSON.stringify(result)}`);
+            const { volumes = [] } = result;
+            return {
+              total: volumes.length,
+              items: volumes,
+            };
+          },
 
-      if (!ipLive) {
-        throw Error(`configFromLive: cannot find ip resources`);
-      }
-
-      return {
-        image: imageConfig.id,
-        public_ip: ipLive.id,
-        ...config,
-      };
+          config,
+        }),
+      type: "Volume",
+      configDefault: ({ name, options }) => ({
+        volume_type: "l_ssd",
+        name,
+        organization,
+        ...options,
+      }),
+      isOurMinion,
     },
-    isOurMinion,
-  },
-];
+    {
+      Client: ({ spec }) =>
+        ScalewayClient({
+          spec,
+          url: `/servers`,
+          onResponseList: ({ servers }) => {
+            return { total: servers.length, items: servers };
+          },
+          config,
+        }),
+      type: "Server",
+      getByName,
+      compare: ({ target, live }) => {
+        logger.debug(`compare server`);
+        const diff = compare({
+          target,
+          targetKeys: ["commercial_type", "volumes.0.size"],
+          live,
+        });
+        logger.debug(`compare ${toString(diff)}`);
+        return diff;
+      },
+      configDefault: ({ name, properties }) => ({ name, ...properties }),
+      propertiesDefault: {
+        dynamic_ip_required: false,
+        commercial_type: "DEV1-S",
+        enable_ipv6: true,
+        boot_type: "local",
+      },
+      configDefault: ({ name, properties }) => ({
+        name,
+        organization,
+        tags: [name],
+        ...properties,
+      }),
+      configStatic: async ({ config, dependencies: { image, ip } }) => {
+        const imageId = await image.config().id;
+        //logger.debug(`configStatic imageId: ${imageId}`);
+
+        return {
+          image: imageId,
+          public_ip: await ip.config(),
+
+          ...config,
+        };
+      },
+      configLive: async ({ config, dependencies: { image, ip } }) => {
+        const ipLive = await ip.getLive();
+        const imageConfig = await image.config();
+        logger.debug(`Server configLive ip: ${toString(ipLive)}`);
+
+        if (!ipLive) {
+          throw Error(`configFromLive: cannot find ip resources`);
+        }
+
+        return {
+          image: imageConfig.id,
+          public_ip: ipLive.id,
+          ...config,
+        };
+      },
+      isOurMinion,
+    },
+  ];
+};
 
 const configCheck = (config) => {
   assert(config, "Please provide a config");

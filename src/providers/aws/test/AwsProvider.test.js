@@ -46,6 +46,10 @@ describe("AwsProvider", async function () {
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 1);
   });
+  it("listLives all", async function () {
+    const lives = await provider.listLives({ all: true });
+    assert(lives);
+  });
   it("deploy plan", async function () {
     await testProviderLifeCycle({ provider });
   });

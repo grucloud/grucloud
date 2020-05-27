@@ -67,7 +67,7 @@ exports.planDestroy = async ({ infra }) => {
           `Destroy Resources ${provider.name()}`
         );
         const targets = await runAsyncCommand(
-          () => provider.listTargets(),
+          () => provider.listLives(),
           `Status for ${provider.name()}`
         );
         if (!_.isEmpty(targets)) {

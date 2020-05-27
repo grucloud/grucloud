@@ -6,11 +6,10 @@ const { SpecDefault } = require("../../SpecDefault");
 
 describe("MockClient", function () {
   const config = { mockCloud: MockCloud() };
-
+  const url = `/server`;
   const spec = _.defaults(
     {
       type: "Server",
-      url: `/server`,
     },
     SpecDefault({})
   );
@@ -20,13 +19,13 @@ describe("MockClient", function () {
     assert(r.test("/123"));
   });
   it("list", async function () {
-    const mockClient = MockClient({ spec, config });
+    const mockClient = MockClient({ spec, url, config });
 
     const { data } = await mockClient.list();
     assert.equal(data.total, 0);
   });
   it("get by id", async function () {
-    const mockClient = MockClient({ spec, config });
+    const mockClient = MockClient({ spec, url, config });
     try {
       await mockClient.getById({ id: "asdfg" });
     } catch (error) {
@@ -34,7 +33,7 @@ describe("MockClient", function () {
     }
   });
   it("create", async function () {
-    const mockClient = MockClient({ spec, config });
+    const mockClient = MockClient({ spec, url, config });
 
     const {
       data: { id },

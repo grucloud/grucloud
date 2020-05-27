@@ -42,41 +42,6 @@ const createStack = async ({ config }) => {
       diskSizeGb: "20",
       machineType: "f1-micro",
     },
-    transformConfig: async ({
-      dependencies: { volume, image, ip },
-      configProvider: { project, zone },
-      config,
-    }) => {
-      const ipLive = await ip.getLive();
-      assert(ipLive, "cannot retrieve address");
-      assert(project, "project not set");
-      assert(zone, "zone not set");
-      assert(config, "config not set");
-      return _.defaultsDeep(
-        {
-          disks: [
-            {
-              autoDelete: true,
-              initializeParams: {
-                sourceImage:
-                  "projects/debian-cloud/global/images/debian-9-stretch-v20200420",
-                diskType: `projects/${project}/zones/${zone}/diskTypes/pd-standard`,
-              },
-            },
-          ],
-          networkInterfaces: [
-            {
-              accessConfigs: [
-                {
-                  natIP: await ip.getLive().address,
-                },
-              ],
-            },
-          ],
-        },
-        config
-      );
-    },
   });
   return { providers: [provider], ip, volume, server, image };
 };

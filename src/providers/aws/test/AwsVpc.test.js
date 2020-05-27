@@ -2,25 +2,26 @@ const assert = require("assert");
 const config = require("../config");
 const AwsProvider = require("../AwsProvider");
 
-describe("AwsClientKeyPair", async function () {
+describe("AwsVpc", async function () {
   let provider;
-  let keyPair;
+  let vpc;
 
   before(async () => {
     provider = await AwsProvider({ name: "aws", config });
     await provider.destroyAll();
-    keyPair = provider.makeKeyPair({
-      name: "kp",
+    vpc = provider.makeVpc({
+      name: "vpc",
     });
   });
   after(async () => {
     await provider.destroyAll();
   });
-  it("keyPair name", async function () {
-    assert.equal(keyPair.name, "kp");
+  it("vpc name", async function () {
+    assert.equal(vpc.name, "vpc");
   });
-  it("keyPair getLive", async function () {
-    const live = await keyPair.getLive();
-    assert.equal(live.KeyName, keyPair.name);
+  it("vpc targets", async function () {
+    const live = await vpc.getLive();
+    //assert(live);
+    //assert.equal(live.KeyName, vpc.name);
   });
 });

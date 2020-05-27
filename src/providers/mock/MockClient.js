@@ -45,9 +45,11 @@ const setupMock = ({ axios, config, spec }) => {
   //TODO delete all
 };
 
-module.exports = MockClient = ({ spec, config, authKey }) => {
+module.exports = MockClient = ({ spec, url, config, authKey }) => {
+  assert(spec);
+  assert(url);
   const axios = AxiosMaker({
-    baseURL: urljoin(BASE_URL, spec.url),
+    baseURL: urljoin(BASE_URL, url),
     onHeaders: () => ({ "X-Auth-Token": authKey }),
   });
 

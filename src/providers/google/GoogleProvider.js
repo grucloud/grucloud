@@ -7,108 +7,104 @@ const { toTagName, isOurMinion } = require("./GoogleTag");
 const compare = require("../../Utils").compare;
 const toString = (x) => JSON.stringify(x, null, 4);
 
-const onResponseList = (data) => {
-  const { items = [] } = data;
-  return { total: items.length, items };
-};
-
-const fnSpecs = ({ project, region, zone, tag }) => [
-  {
-    Client: GoogleClient,
-    type: "Address",
-    url: `/projects/${project}/regions/${region}/addresses/`,
-    onResponseList,
-    configDefault: ({ name, properties }) => ({
-      ...properties,
-      name,
-      description: toTagName(name, tag),
-    }),
-    transformConfig: ({ config, items }) => {
-      assert(config);
-      assert(items);
-      logger.debug(
-        `postConfig: ${toString(config)}, items: ${toString(items)}`
-      );
-      const ip = items.find((item) => item.address === config.address);
-      if (ip) {
-        return ip;
-      }
-      return { ...config };
-    },
-    isOurMinion,
-  },
-  /*{
-    type: "Volume",
-    url: `/projects/${project}/regions/${region}/volumes/`,
-    onResponseList: (data) => {
-      console.log("onResponseList TODO", JSON.stringify(data, null, 4));
-      return { items: [] };
-    },
-  },*/
-  {
-    Client: GoogleClient,
-    type: "Instance",
-    url: `/projects/${project}/zones/${zone}/instances/`,
-    onResponseList,
-    propertiesDefault: {
-      machineType: "f1-micro",
-      diskSizeGb: "10",
-      diskTypes: "pd-standard",
-      sourceImage: "debian-9-stretch-v20200420",
-    },
-    configDefault: ({ name, properties }) => ({
-      kind: "compute#instance",
-      name,
-      zone: `projects/${project}/zones/${zone}`,
-      machineType: `projects/${project}/zones/${zone}/machineTypes/${properties.machineType}`,
-      tags: {
-        items: [toTagName(name, tag)],
+const fnSpecs = (config) => {
+  const { project, region, zone, tag } = config;
+  return [
+    {
+      type: "Address",
+      Client: ({ spec }) =>
+        GoogleClient({
+          spec,
+          url: `/projects/${project}/regions/${region}/addresses/`,
+          config,
+        }),
+      configDefault: ({ name, properties }) => ({
+        ...properties,
+        name,
+        description: toTagName(name, tag),
+      }),
+      transformConfig: ({ config, items }) => {
+        assert(config);
+        assert(items);
+        logger.debug(
+          `postConfig: ${toString(config)}, items: ${toString(items)}`
+        );
+        const ip = items.find((item) => item.address === config.address);
+        if (ip) {
+          return ip;
+        }
+        return { ...config };
       },
-      disks: [
-        {
-          kind: "compute#attachedDisk",
-          type: "PERSISTENT",
-          boot: true,
-          mode: "READ_WRITE",
-          autoDelete: true,
-          deviceName: toTagName(name, tag),
-          initializeParams: {
-            sourceImage: `projects/debian-cloud/global/images/${properties.sourceImage}`,
-            diskType: `projects/${project}/zones/${zone}/diskTypes/pd-standard`,
-            diskSizeGb: properties.diskSizeGb,
-          },
-          diskEncryptionKey: {},
-        },
-      ],
-      networkInterfaces: [
-        {
-          kind: "compute#networkInterface",
-          subnetwork: `projects/${project}/regions/${region}/subnetworks/default`,
-          accessConfigs: [
-            {
-              kind: "compute#accessConfig",
-              name: "External NAT",
-              type: "ONE_TO_ONE_NAT",
-              networkTier: "PREMIUM",
-            },
-          ],
-          aliasIpRanges: [],
-        },
-      ],
-    }),
-    compare: ({ target, live }) => {
-      logger.debug(`compare server`);
-      const diff = compare({
-        target,
-        targetKeys: [], //TODO
-        live,
-      });
-      logger.debug(`compare ${toString(diff)}`);
-      return diff;
+      isOurMinion,
     },
-    isOurMinion,
-  },
-];
+    {
+      type: "Instance",
+      Client: ({ spec }) =>
+        GoogleClient({
+          spec,
+          url: `/projects/${project}/zones/${zone}/instances/`,
+          config,
+        }),
+      propertiesDefault: {
+        machineType: "f1-micro",
+        diskSizeGb: "10",
+        diskTypes: "pd-standard",
+        sourceImage: "debian-9-stretch-v20200420",
+      },
+      configDefault: ({ name, properties }) => ({
+        kind: "compute#instance",
+        name,
+        zone: `projects/${project}/zones/${zone}`,
+        machineType: `projects/${project}/zones/${zone}/machineTypes/${properties.machineType}`,
+        tags: {
+          items: [toTagName(name, tag)],
+        },
+        disks: [
+          {
+            kind: "compute#attachedDisk",
+            type: "PERSISTENT",
+            boot: true,
+            mode: "READ_WRITE",
+            autoDelete: true,
+            deviceName: toTagName(name, tag),
+            initializeParams: {
+              sourceImage: `projects/debian-cloud/global/images/${properties.sourceImage}`,
+              diskType: `projects/${project}/zones/${zone}/diskTypes/pd-standard`,
+              diskSizeGb: properties.diskSizeGb,
+            },
+            diskEncryptionKey: {},
+          },
+        ],
+        networkInterfaces: [
+          {
+            kind: "compute#networkInterface",
+            subnetwork: `projects/${project}/regions/${region}/subnetworks/default`,
+            accessConfigs: [
+              {
+                kind: "compute#accessConfig",
+                name: "External NAT",
+                type: "ONE_TO_ONE_NAT",
+                networkTier: "PREMIUM",
+              },
+            ],
+            aliasIpRanges: [],
+          },
+        ],
+      }),
+      compare: ({ target, live }) => {
+        logger.debug(`compare server`);
+        const diff = compare({
+          target,
+          targetKeys: [], //TODO
+          live,
+        });
+        logger.debug(`compare ${toString(diff)}`);
+        return diff;
+      },
+      isOurMinion,
+    },
+  ];
+};
 
 const configCheck = (config) => {
   assert(config, "Please provide a config");

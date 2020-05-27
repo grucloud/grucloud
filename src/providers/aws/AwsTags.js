@@ -5,6 +5,15 @@ const toString = (x) => JSON.stringify(x, null, 4);
 exports.isOurMinion = ({ resource, tag: ourTag }) => {
   logger.info(`isOurMinion ? ${toString({ ourTag, resource })}`);
   assert(resource);
+  assert(resource.Tags);
+  const hasTag = !!resource.Tags.find((tag) => tag.Key === ourTag);
+  logger.info(`isOurMinion: ${hasTag}`);
+  return hasTag;
+};
+
+exports.isOurMinionEc2 = ({ resource, tag: ourTag }) => {
+  logger.info(`isOurMinion ? ${toString({ ourTag, resource })}`);
+  assert(resource);
   assert(resource.Instances);
   const hasTag = resource.Instances.some((instance) =>
     instance.Tags.find((tag) => tag.Key === ourTag)

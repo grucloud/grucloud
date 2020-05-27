@@ -2,7 +2,6 @@ const _ = require("lodash");
 const assert = require("assert");
 const logger = require("../logger")({ prefix: "CoreClient" });
 const toString = (x) => JSON.stringify(x, null, 4);
-const noop = () => ({});
 const identity = (x) => x;
 const { retryExpectException } = require("./Retry");
 
@@ -10,12 +9,14 @@ module.exports = CoreClient = ({
   spec,
   type,
   axios,
+  methods,
   onResponseGet = identity,
   onResponseList = identity,
   onResponseCreate = identity,
   onResponseDelete = identity,
 }) => {
-  const { methods } = spec;
+  assert(spec);
+  assert(type);
   const canGet = !methods || methods.get;
   const canCreate = !methods || methods.create;
   const canDelete = !methods || methods.del;
@@ -23,6 +24,7 @@ module.exports = CoreClient = ({
 
   const getById = async ({ id }) => {
     logger.debug(`get ${toString({ type, id, canGet })}`);
+    assert(id);
 
     if (_.isEmpty(id)) {
       throw Error(`get ${type}: invalid id`);
@@ -64,7 +66,8 @@ module.exports = CoreClient = ({
 
   const create = async ({ name, payload }) => {
     logger.debug(`create ${type}/${name}, payload: ${toString(payload)}`);
-
+    assert(name);
+    assert(payload);
     if (!canCreate) return;
 
     try {
@@ -127,6 +130,7 @@ module.exports = CoreClient = ({
   return {
     spec,
     type,
+    methods,
     getById,
     getByName,
     isUp,
