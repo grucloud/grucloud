@@ -5,11 +5,13 @@ const AwsClientEc2 = require("./AwsClientEc2");
 const AwsClientKeyPair = require("./AwsClientKeyPair");
 const AwsVpc = require("./AwsVpc");
 
+const AwsSecurityGroup = require("./AwsSecurityGroup");
 const logger = require("../../logger")({ prefix: "AwsProvider" });
 const compare = require("../../Utils").compare;
 const { isOurMinionEc2, isOurMinion } = require("./AwsTags");
 const toString = (x) => JSON.stringify(x, null, 4);
 
+// TODO toId in Client
 const toId = (item) => {
   assert(item);
   const id = item.Instances[0].InstanceId;
@@ -39,6 +41,11 @@ const fnSpecs = (config) => {
     {
       type: "Vpc",
       Client: ({ spec }) => AwsVpc({ spec, config }),
+      isOurMinion,
+    },
+    {
+      type: "SecurityGroup",
+      Client: ({ spec }) => AwsSecurityGroup({ spec, config }),
       isOurMinion,
     },
     {
