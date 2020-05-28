@@ -48,7 +48,20 @@ describe("MockProvider e2e", async function () {
       const liveResources = await provider.listLives({ all: true });
       assert.equal(liveResources.length, 3);
     }
-
+    {
+      const liveResources = await provider.listLives({});
+      assert.equal(liveResources.length, 2);
+    }
+    {
+      const liveResources = await provider.listLives({ our: true });
+      assert.equal(liveResources.length, 1);
+    }
+    {
+      const liveResources = await provider.listLives({
+        types: ["Server", "Ip"],
+      });
+      assert.equal(liveResources.length, 1);
+    }
     const plan = await provider.plan();
     {
       assert.equal(plan.destroy.length, 1);

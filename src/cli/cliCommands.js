@@ -107,3 +107,22 @@ exports.displayStatus = async ({ infra }) => {
     throw error;
   }
 };
+//List all
+exports.list = async ({ infra, options }) => {
+  try {
+    const targets = await Promise.all(
+      infra.providers.map(async (provider) => {
+        const targets = await runAsyncCommand(
+          () => provider.listLives(options),
+          `List for ${provider.name()}`
+        );
+        displayLive({ providerName: provider.name(), targets });
+        return targets;
+      })
+    );
+    return targets;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};

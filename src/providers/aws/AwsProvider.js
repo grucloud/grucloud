@@ -8,7 +8,7 @@ const AwsVpc = require("./AwsVpc");
 const AwsSecurityGroup = require("./AwsSecurityGroup");
 const logger = require("../../logger")({ prefix: "AwsProvider" });
 const compare = require("../../Utils").compare;
-const { isOurMinionEc2, isOurMinion } = require("./AwsTags");
+const AwsTags = require("./AwsTags");
 const toString = (x) => JSON.stringify(x, null, 4);
 
 // TODO toId in Client
@@ -31,6 +31,9 @@ const findName = (item) => {
 
 const fnSpecs = (config) => {
   const { tag } = config;
+
+  const isOurMinion = ({ resource }) => AwsTags.isOurMinion({ resource, tag });
+
   return [
     {
       type: "KeyPair",
@@ -50,7 +53,11 @@ const fnSpecs = (config) => {
     },
     {
       type: "Instance",
-      Client: ({ spec }) => AwsClientEc2({ spec, config }),
+      Client: ({ spec }) =>
+        AwsClientEc2({
+          spec,
+          config,
+        }),
       findName,
       toId,
       propertiesDefault: {
@@ -107,7 +114,7 @@ const fnSpecs = (config) => {
         logger.debug(`compare ${toString(diff)}`);
         return diff;
       },
-      isOurMinion: isOurMinionEc2,
+      isOurMinion: ({ resource }) => AwsTags.isOurMinionEc2({ resource, tag }),
     },
   ];
 };

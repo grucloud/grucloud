@@ -1,4 +1,5 @@
 //const emoji = require("node-emoji");
+const assert = require("assert");
 const Table = require("cli-table3");
 const colors = require("colors/safe");
 const YAML = require("./json2yaml");
@@ -15,6 +16,7 @@ const displayResource = (item) =>
   item.config != null ? YAML.stringify(item.config) : undefined;
 
 const displayItem = (table, item) => {
+  assert(item.resource.name);
   table.push([
     item.resource.name,
     item.action,
@@ -37,12 +39,14 @@ exports.displayPlan = async (plan) => {
 };
 
 const displayLiveItem = (table, item) => {
-  table.push([item.name, item.type, YAML.stringify(item.data)]);
+  assert(item.type);
+  table.push([item.type, YAML.stringify(item.items)]);
 };
+
 exports.displayLive = async ({ providerName, targets }) => {
   const table = new Table({ style: { head: [], border: [] } });
-  table.push([{ colSpan: 3, content: colors.yellow(providerName) }]);
-  table.push(["Name", "Type", "Data"].map((item) => colors.red(item)));
+  table.push([{ colSpan: 2, content: colors.yellow(providerName) }]);
+  table.push(["Type", "Data"].map((item) => colors.red(item)));
 
   targets.forEach((item) => displayLiveItem(table, item));
   console.log(table.toString());

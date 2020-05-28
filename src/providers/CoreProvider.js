@@ -103,7 +103,7 @@ const ResourceMaker = ({
           `Resource ${type}/${resourceName} not there after being created`
         );
       }
-      if (!spec.isOurMinion({ resource: live, tag: provider.config.tag })) {
+      if (!client.spec.isOurMinion({ resource: live })) {
         throw Error(`Resource ${type}/${resourceName} is not tagged correctly`);
       }
     }
@@ -243,17 +243,35 @@ module.exports = CoreProvider = ({
   };
   // API
   //  Flatter that
-  const listLives = async ({ all = false } = {}) => {
+  const listLives = async ({ all = false, our = false, types = [] } = {}) => {
+    logger.debug(`listLives ${toString({ all, our, types })}`);
+
     const lists = (
       await Promise.all(
         clients
           .filter((client) => all || client.spec.methods.create)
-          .map(async (client) => ({
-            type: client.type,
-            data: (await client.list()).data,
-          }))
+          .filter((client) => {
+            if (!_.isEmpty(types)) {
+              return types.includes(client.spec.type);
+            } else {
+              return true;
+            }
+          })
+
+          .map(async (client) => {
+            logger.debug(`listLives ${toString(client.spec.type)}`);
+            const { data } = await client.list();
+            logger.debug(`listLives data ${toString(data)}`);
+
+            return {
+              type: client.spec.type,
+              items: data.items.filter((item) =>
+                our ? client.spec.isOurMinion({ resource: item }) : true
+              ),
+            };
+          })
       )
-    ).filter((liveResources) => liveResources.data.items.length > 0);
+    ).filter((liveResources) => liveResources.items.length > 0);
     logger.debug(`listLives ${toString(lists)}`);
     return lists;
   };
@@ -334,12 +352,13 @@ module.exports = CoreProvider = ({
         clients
           .filter((client) => client.spec.methods.del)
           .map(async (client) => {
+            const { spec } = client;
+            const { type } = spec;
             const { data } = await client.list();
             assert(data);
+
             logger.debug(
-              `planFindDestroy type: ${client.type}, items: ${toString(
-                data.items
-              )}`
+              `planFindDestroy type: ${type}, items: ${toString(data.items)}`
             );
 
             return data.items
@@ -347,9 +366,8 @@ module.exports = CoreProvider = ({
                 logger.debug(`planFindDestroy live: ${toString(hotResource)}`);
 
                 if (
-                  !client.spec.isOurMinion({
+                  !spec.isOurMinion({
                     resource: hotResource,
-                    tag: config.tag,
                   })
                 ) {
                   logger.info(
@@ -357,16 +375,16 @@ module.exports = CoreProvider = ({
                   );
                   return false;
                 }
-                const name = client.spec.findName(hotResource);
+                const name = spec.findName(hotResource);
                 if (!name) {
                   throw Error(`no name in resource: ${toString(hotResource)}`);
                 }
                 if (all) {
-                  logger.debug(`planFindDestroy ${client.type}/${name}, all`);
+                  logger.debug(`planFindDestroy ${type}/${name}, all`);
                   return true;
                 }
 
-                logger.debug(`planFindDestroy ${client.type}/${name}`);
+                logger.debug(`planFindDestroy ${type}/${name}`);
 
                 return !resourceNames().includes(fromTagName(name, config.tag));
               })
@@ -374,8 +392,8 @@ module.exports = CoreProvider = ({
               .map((live) => ({
                 resource: {
                   provider: providerName,
-                  type: client.spec.type,
-                  name: client.spec.findName(live),
+                  type,
+                  name: spec.findName(live),
                 },
                 action: "DESTROY",
                 data: live,

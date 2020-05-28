@@ -4,7 +4,8 @@ const compare = require("../../Utils").compare;
 const CoreProvider = require("../CoreProvider");
 const ScalewayClient = require("./ScalewayClient");
 const logger = require("../../logger")({ prefix: "ScalewayProvider" });
-const { isOurMinion } = require("../TagName");
+
+const TagName = require("../TagName");
 
 const toString = (x) => JSON.stringify(x, null, 4);
 
@@ -30,6 +31,9 @@ const getByName = ({ name, items = [] }) => {
 
 const fnSpecs = (config) => {
   const { organization } = config;
+
+  const isOurMinion = ({ resource }) =>
+    TagName.isOurMinion({ resource, tag: config.tag });
   return [
     {
       Client: ({ spec }) =>
@@ -90,7 +94,6 @@ const fnSpecs = (config) => {
             total: images.length,
             items: images,
           }),
-
           config,
         }),
       type: "Image",
@@ -109,7 +112,6 @@ const fnSpecs = (config) => {
               items: volumes,
             };
           },
-
           config,
         }),
       type: "Volume",

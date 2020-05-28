@@ -2,7 +2,8 @@ const assert = require("assert");
 const MockClient = require("./MockClient");
 const CoreProvider = require("../CoreProvider");
 const compare = require("../../Utils").compare;
-const { toTagName, isOurMinion } = require("../TagName");
+const TagName = require("../TagName");
+const { toTagName } = require("../TagName");
 const logger = require("../../logger")({ prefix: "MockProvider" });
 //const toJSON = (x) => JSON.stringify(x, null, 4);
 
@@ -13,6 +14,9 @@ const fnSpecs = (config) => {
     tags: [toTagName(name, config.tag)],
     ...properties,
   });
+
+  const isOurMinion = ({ resource }) =>
+    TagName.isOurMinion({ resource, tag: config.tag });
 
   return [
     {

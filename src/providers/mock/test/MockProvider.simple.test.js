@@ -25,7 +25,7 @@ describe("MockProvider Simple", async function () {
       const [liveIp] = await provider.listLives({ all: true });
 
       assert.equal(liveIp.type, "Image");
-      assert.equal(liveIp.data.items.length, 2);
+      assert.equal(liveIp.items.length, 2);
     }
 
     const ip = provider.makeIp({ name: "myip" });

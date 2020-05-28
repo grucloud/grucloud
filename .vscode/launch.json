@@ -4,10 +4,31 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli plan Query",
+      "name": "Cli Query",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}",
       "args": ["--infra", "src/providers/mock/test/MockStack.js", "plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "--infra",
+        "src/providers/mock/test/MockStack.js",
+        "list",
+        "--all"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Scaleway List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}",
+      "args": ["--infra", "examples/scaleway/iac.js", "list", "--all"]
     },
     {
       "type": "node",

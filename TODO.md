@@ -1,11 +1,12 @@
 ## Common:
 
-- Human friendly resource name
+- list subcommands: filter by type, isOur and writable
+
+- Display all resources
+
 - Destroy depends on dependencies, build a graph
 
 ## TODO Aws:
-
-- KeyPair
 
 ## TODO Goggle
 

@@ -3,12 +3,16 @@ const { JWT } = require("google-auth-library");
 const CoreProvider = require("../CoreProvider");
 const GoogleClient = require("./GoogleClient");
 const logger = require("../../logger")({ prefix: "GoogleProvider" });
-const { toTagName, isOurMinion } = require("./GoogleTag");
+const GoogleTag = require("./GoogleTag");
+const { toTagName } = require("./GoogleTag");
 const compare = require("../../Utils").compare;
 const toString = (x) => JSON.stringify(x, null, 4);
 
 const fnSpecs = (config) => {
   const { project, region, zone, tag } = config;
+  const isOurMinion = ({ resource }) =>
+    GoogleTag.isOurMinion({ resource, tag });
+
   return [
     {
       type: "Address",

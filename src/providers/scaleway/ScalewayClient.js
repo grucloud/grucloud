@@ -14,7 +14,6 @@ module.exports = ScalewayClient = ({ spec, url, onResponseList, config }) => {
   const core = CoreClient({
     type: "scaleway",
     spec,
-    ...spec,
     onResponseList,
     axios: AxiosMaker({
       baseURL: urljoin(BASE_URL, "zones", config.zone, url),

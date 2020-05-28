@@ -19,7 +19,6 @@ module.exports = GoogleClient = ({ url, spec, config }) => {
     type: "google",
     spec,
     onResponseList,
-    methods: spec.methods,
     axios: AxiosMaker({
       baseURL: urljoin(BASE_URL, url),
       onHeaders: () => ({

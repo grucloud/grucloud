@@ -1,6 +1,7 @@
 const { Command } = require("commander");
-const noop = () => ({});
 const { createInfra } = require("./infra");
+const noop = () => ({});
+const collect = (value, previous = []) => previous.concat([value]);
 
 exports.createProgram = ({
   version,
@@ -8,7 +9,8 @@ exports.createProgram = ({
     planQuery = noop,
     planDeploy = noop,
     planDestroy = noop,
-    displayStatus = noop,
+    displayStatus = noop, // DisplayOur
+    list = noop,
   },
 }) => {
   const program = new Command();
@@ -48,6 +50,28 @@ exports.createProgram = ({
         displayStatus({ infra });
       })
       .description("Status");
+
+    program
+      .command("list")
+      .option("-a, --all", "List also read only resources")
+      .option(
+        "-t, --type <type>",
+        "Filter by type, multiple values allowed",
+        collect
+      )
+      .option("-o, --our", "List only our managed resources")
+      .action(async (subOptions) => {
+        const infra = await createInfra({ infra: program.infra });
+        list({
+          infra,
+          options: {
+            all: subOptions.all,
+            types: subOptions.type,
+            our: subOptions.our,
+          },
+        });
+      })
+      .description("list ");
   } catch (error) {
     console.log(error);
     process.exit(-1);

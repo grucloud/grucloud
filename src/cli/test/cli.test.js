@@ -28,4 +28,13 @@ describe("cli", function () {
   it("display Status", async function () {
     await runProgram({ filename, cmds: ["status"] });
   });
+  it("list all", async function () {
+    await runProgram({ filename, cmds: ["list", "--all"] });
+  });
+  it("list our", async function () {
+    await runProgram({ filename, cmds: ["list", "--our"] });
+  });
+  it("list by type", async function () {
+    await runProgram({ filename, cmds: ["list", "--type", "Server", "Ip"] });
+  });
 });
