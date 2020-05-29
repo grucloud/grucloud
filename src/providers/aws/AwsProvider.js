@@ -11,24 +11,6 @@ const compare = require("../../Utils").compare;
 const AwsTags = require("./AwsTags");
 const toString = (x) => JSON.stringify(x, null, 4);
 
-// TODO toId in Client
-const toId = (item) => {
-  assert(item);
-  const id = item.Instances[0].InstanceId;
-  assert(id);
-  return id;
-};
-
-const findName = (item) => {
-  assert(item);
-  const tag = item.Instances[0].Tags.find((tag) => tag.Key === "name");
-  if (tag?.Value) {
-    return tag.Value;
-  } else {
-    throw Error(`cannot find name in ${toString(item)}`);
-  }
-};
-
 const fnSpecs = (config) => {
   const { tag } = config;
 
@@ -50,6 +32,16 @@ const fnSpecs = (config) => {
       type: "SecurityGroup",
       Client: ({ spec }) => AwsSecurityGroup({ spec, config }),
       isOurMinion,
+      compare: ({ target, live }) => {
+        logger.debug(`compare SecurityGroup`);
+        const diff = compare({
+          target,
+          targetKeys: ["IpPermissions"], //TODO
+          live: live,
+        });
+        logger.debug(`compare ${toString(diff)}`);
+        return diff;
+      },
     },
     {
       type: "Instance",
@@ -58,8 +50,6 @@ const fnSpecs = (config) => {
           spec,
           config,
         }),
-      findName,
-      toId,
       propertiesDefault: {
         VolumeSize: 100,
         InstanceType: "t2.micro",
@@ -67,43 +57,7 @@ const fnSpecs = (config) => {
         MinCount: 1,
         ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
       },
-      configDefault: ({ name, properties, dependencies }) => {
-        const { keyPair } = dependencies;
-        return {
-          ...{
-            BlockDeviceMappings: [
-              {
-                DeviceName: "/dev/sdh",
-                Ebs: {
-                  VolumeSize: properties.VolumeSize,
-                },
-              },
-            ],
-            ImageId: properties.ImageId, // Ubuntu 20.04
-            InstanceType: properties.InstanceType,
-            MaxCount: properties.MaxCount,
-            MinCount: properties.MinCount,
-            //SecurityGroupIds: ["sg-1a2b3c4d"],
-            //SubnetId: "subnet-6e7f829e",
-            TagSpecifications: [
-              {
-                ResourceType: "instance",
-                Tags: [
-                  {
-                    Key: "name",
-                    Value: name,
-                  },
-                  {
-                    Key: tag,
-                    Value: "true",
-                  },
-                ],
-              },
-            ],
-          },
-          [keyPair && "KeyName"]: keyPair.name,
-        };
-      },
+
       compare: ({ target, live }) => {
         logger.debug(`compare server`);
         const diff = compare({

@@ -9,7 +9,32 @@ const checkEnvironment = (env = []) =>
       throw new Error(`Please set the environment variable ${env}`);
     }
   });
+const compareObject = ({ target = {}, live = {} }) => {
+  console.log(target, live);
 
+  const diff = _.map(target, (targetValue, targetKey) => {
+    console.log(
+      "key:",
+      targetKey,
+      ",target value:",
+      targetValue,
+      ",live value",
+      live[targetKey]
+    );
+    if (_.isObject(targetValue)) {
+      return compareObject({ target: targetValue, live: live[targetKey] });
+    }
+    if (targetValue !== live[targetKey]) {
+      console.log("key diff ", targetKey);
+      return {
+        key: targetKey,
+        targetValue: targetValue,
+        liveValue: live[targetKey],
+      };
+    }
+  }).filter((x) => x);
+  return diff.length > 0 ? diff : undefined;
+};
 const compare = ({ target = {}, targetKeys = [], live = {} }) => {
   logger.info(`compare ${toString({ target, targetKeys, live })}`);
 
@@ -52,4 +77,5 @@ const compare = ({ target = {}, targetKeys = [], live = {} }) => {
 module.exports = {
   compare,
   checkEnvironment,
+  compareObject,
 };

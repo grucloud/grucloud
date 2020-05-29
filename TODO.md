@@ -1,5 +1,6 @@
 ## Common:
 
+- managedBy tag
 - list subcommands: filter by type, isOur and writable
 
 - Display all resources

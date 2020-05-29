@@ -45,7 +45,13 @@ const setupMock = ({ axios, config, spec }) => {
   //TODO delete all
 };
 
-module.exports = MockClient = ({ spec, url, config, authKey }) => {
+module.exports = MockClient = ({
+  spec,
+  url,
+  config,
+  authKey,
+  configDefault,
+}) => {
   assert(spec);
   assert(url);
   const axios = AxiosMaker({
@@ -60,5 +66,6 @@ module.exports = MockClient = ({ spec, url, config, authKey }) => {
     spec,
     ...spec,
     axios,
+    configDefault,
   });
 };

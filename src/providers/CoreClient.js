@@ -10,6 +10,14 @@ module.exports = CoreClient = ({
   type,
   axios,
   methods,
+  configDefault = ({ name, properties }) => ({
+    name,
+    ...properties,
+  }),
+  toName = (item) => {
+    assert(item.name);
+    return item.name;
+  },
   onResponseGet = identity,
   onResponseList = identity,
   onResponseCreate = identity,
@@ -21,6 +29,8 @@ module.exports = CoreClient = ({
   const canCreate = !methods || methods.create;
   const canDelete = !methods || methods.del;
   const canList = !methods || methods.list;
+
+  const toId = (item) => item.id;
 
   const getById = async ({ id }) => {
     logger.debug(`get ${toString({ type, id, canGet })}`);
@@ -52,16 +62,27 @@ module.exports = CoreClient = ({
       data: { items },
     } = await list();
     assert(items);
-    const instance = spec.getByName({ name, items });
+    const instance = items.find((item) => toName(item).includes(name));
     logger.info(`getByName ${type}/${name}, out: ${toString(instance)}`);
     return instance;
+  };
+
+  const findName = (item) => {
+    assert(item);
+    logger.debug(`findName: ${toString(item)}`);
+
+    if (item.name) {
+      return item.name;
+    } else {
+      throw Error(`cannot find name in ${toString(item)}`);
+    }
   };
 
   const isUp = async ({ name }) => {
     logger.info(`isUp ${type}/${name}`);
     assert(name, "isUp missing name");
     const instance = await getByName({ name });
-    return spec.isUp({ instance });
+    return !!instance;
   };
 
   const create = async ({ name, payload }) => {
@@ -126,16 +147,20 @@ module.exports = CoreClient = ({
       throw error;
     }
   };
+  //const configDefault = ({ name, properties }) => ({ name, ...properties });
 
   return {
     spec,
     type,
     methods,
+    toId,
     getById,
     getByName,
+    findName,
     isUp,
     create,
     destroy,
     list,
+    configDefault,
   };
 };

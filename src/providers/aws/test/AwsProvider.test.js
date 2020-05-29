@@ -7,27 +7,43 @@ describe("AwsProvider", async function () {
   let provider;
   let server;
   let keyPair;
-
+  let sg;
+  const keyPairName = "kp";
+  const serverName = "web-server";
   before(async () => {
     provider = await AwsProvider({ name: "aws", config });
     await provider.destroyAll();
     keyPair = provider.makeKeyPair({
-      name: "kp",
+      name: keyPairName,
+    }); /*
+    sg = provider.makeSecurityGroup({
+      name: "securityGroup",
+      properties: {
+        ingress: [
+          {
+            protocol: "tcp",
+            fromPort: 22,
+            toPort: 22,
+            cidrBlocks: ["0.0.0.0/0"],
+          },
+        ],
+      },
     });
+    */
     server = provider.makeInstance({
-      name: "web-server",
+      name: serverName,
       properties: {},
-      dependencies: { keyPair },
+      dependencies: { keyPair /*, securityGroups: [sg]*/ },
     });
   });
   after(async () => {
     await provider.destroyAll();
   });
   it("keyPair name", async function () {
-    assert.equal(keyPair.name, "kp");
+    assert.equal(keyPair.name, keyPairName);
   });
   it("config static server", async function () {
-    assert.equal(server.name, "web-server");
+    assert.equal(server.name, serverName);
 
     const config = server.configStatic();
     assert.equal(config.ImageId, "ami-0917237b4e71c5759");

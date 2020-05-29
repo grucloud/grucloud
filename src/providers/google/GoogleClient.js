@@ -9,7 +9,13 @@ const onResponseList = (data) => {
   return { total: items.length, items };
 };
 
-module.exports = GoogleClient = ({ url, spec, config }) => {
+module.exports = GoogleClient = ({
+  url,
+  spec,
+  config,
+  configDefault,
+  toName,
+}) => {
   assert(url);
   assert(spec);
   assert(spec.type);
@@ -19,6 +25,8 @@ module.exports = GoogleClient = ({ url, spec, config }) => {
     type: "google",
     spec,
     onResponseList,
+    configDefault,
+    toName,
     axios: AxiosMaker({
       baseURL: urljoin(BASE_URL, url),
       onHeaders: () => ({
@@ -31,9 +39,12 @@ module.exports = GoogleClient = ({ url, spec, config }) => {
     spec,
     getById: core.getById,
     getByName: core.getByName,
+    findName: core.findName,
     isUp: core.isUp,
     create: core.create,
     destroy: core.destroy,
     list: core.list,
+    configDefault: core.configDefault,
+    toName: core.toName,
   };
 };

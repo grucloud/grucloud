@@ -34,12 +34,14 @@ const fnSpecs = (config) => {
 
   const isOurMinion = ({ resource }) =>
     TagName.isOurMinion({ resource, tag: config.tag });
+
   return [
     {
       Client: ({ spec }) =>
         ScalewayClient({
           spec,
           url: `/ips`,
+          config,
           onResponseList: (data) => {
             logger.debug(`onResponse ${toString(data)}`);
             if (data && data.ips) {
@@ -48,15 +50,14 @@ const fnSpecs = (config) => {
               throw Error(`Cannot find ips`);
             }
           },
-          config,
+          configDefault: ({ name, properties }) => ({
+            ...properties,
+            tags: [name],
+            organization,
+          }),
+          toName: (item) => item.address,
         }),
       type: "Ip",
-      getByName,
-      configDefault: ({ name, properties }) => ({
-        ...properties,
-        tags: [name],
-        organization,
-      }),
       postConfig: ({ config, items }) => {
         //assert(items);
         //TODO check that
@@ -76,11 +77,11 @@ const fnSpecs = (config) => {
         ScalewayClient({
           spec,
           url: `/bootscripts`,
+          config,
           onResponseList: ({ bootscripts }) => ({
             total: bootscripts.length,
             items: bootscripts,
           }),
-          config,
         }),
       type: "Bootscript",
       methods: { list: true },
@@ -104,6 +105,7 @@ const fnSpecs = (config) => {
         ScalewayClient({
           spec,
           url: `/volumes`,
+          config,
           onResponseList: (result) => {
             logger.debug(`onResponseList Volume: ${JSON.stringify(result)}`);
             const { volumes = [] } = result;
@@ -112,15 +114,15 @@ const fnSpecs = (config) => {
               items: volumes,
             };
           },
-          config,
+          configDefault: ({ name, options }) => ({
+            volume_type: "l_ssd",
+            name,
+            organization,
+            ...options,
+          }),
         }),
       type: "Volume",
-      configDefault: ({ name, options }) => ({
-        volume_type: "l_ssd",
-        name,
-        organization,
-        ...options,
-      }),
+
       isOurMinion,
     },
     {
@@ -128,13 +130,12 @@ const fnSpecs = (config) => {
         ScalewayClient({
           spec,
           url: `/servers`,
+          config,
           onResponseList: ({ servers }) => {
             return { total: servers.length, items: servers };
           },
-          config,
         }),
       type: "Server",
-      getByName,
       compare: ({ target, live }) => {
         logger.debug(`compare server`);
         const diff = compare({
@@ -145,7 +146,6 @@ const fnSpecs = (config) => {
         logger.debug(`compare ${toString(diff)}`);
         return diff;
       },
-      configDefault: ({ name, properties }) => ({ name, ...properties }),
       propertiesDefault: {
         dynamic_ip_required: false,
         commercial_type: "DEV1-S",

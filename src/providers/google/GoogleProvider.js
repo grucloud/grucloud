@@ -21,12 +21,13 @@ const fnSpecs = (config) => {
           spec,
           url: `/projects/${project}/regions/${region}/addresses/`,
           config,
+          configDefault: ({ name, properties }) => ({
+            ...properties,
+            name,
+            description: toTagName(name, tag),
+          }),
         }),
-      configDefault: ({ name, properties }) => ({
-        ...properties,
-        name,
-        description: toTagName(name, tag),
-      }),
+
       transformConfig: ({ config, items }) => {
         assert(config);
         assert(items);
@@ -48,6 +49,46 @@ const fnSpecs = (config) => {
           spec,
           url: `/projects/${project}/zones/${zone}/instances/`,
           config,
+          configDefault: ({ name, properties }) => ({
+            kind: "compute#instance",
+            name,
+            zone: `projects/${project}/zones/${zone}`,
+            machineType: `projects/${project}/zones/${zone}/machineTypes/${properties.machineType}`,
+            tags: {
+              items: [toTagName(name, tag)],
+            },
+            disks: [
+              {
+                kind: "compute#attachedDisk",
+                type: "PERSISTENT",
+                boot: true,
+                mode: "READ_WRITE",
+                autoDelete: true,
+                deviceName: toTagName(name, tag),
+                initializeParams: {
+                  sourceImage: `projects/debian-cloud/global/images/${properties.sourceImage}`,
+                  diskType: `projects/${project}/zones/${zone}/diskTypes/pd-standard`,
+                  diskSizeGb: properties.diskSizeGb,
+                },
+                diskEncryptionKey: {},
+              },
+            ],
+            networkInterfaces: [
+              {
+                kind: "compute#networkInterface",
+                subnetwork: `projects/${project}/regions/${region}/subnetworks/default`,
+                accessConfigs: [
+                  {
+                    kind: "compute#accessConfig",
+                    name: "External NAT",
+                    type: "ONE_TO_ONE_NAT",
+                    networkTier: "PREMIUM",
+                  },
+                ],
+                aliasIpRanges: [],
+              },
+            ],
+          }),
         }),
       propertiesDefault: {
         machineType: "f1-micro",
@@ -55,46 +96,7 @@ const fnSpecs = (config) => {
         diskTypes: "pd-standard",
         sourceImage: "debian-9-stretch-v20200420",
       },
-      configDefault: ({ name, properties }) => ({
-        kind: "compute#instance",
-        name,
-        zone: `projects/${project}/zones/${zone}`,
-        machineType: `projects/${project}/zones/${zone}/machineTypes/${properties.machineType}`,
-        tags: {
-          items: [toTagName(name, tag)],
-        },
-        disks: [
-          {
-            kind: "compute#attachedDisk",
-            type: "PERSISTENT",
-            boot: true,
-            mode: "READ_WRITE",
-            autoDelete: true,
-            deviceName: toTagName(name, tag),
-            initializeParams: {
-              sourceImage: `projects/debian-cloud/global/images/${properties.sourceImage}`,
-              diskType: `projects/${project}/zones/${zone}/diskTypes/pd-standard`,
-              diskSizeGb: properties.diskSizeGb,
-            },
-            diskEncryptionKey: {},
-          },
-        ],
-        networkInterfaces: [
-          {
-            kind: "compute#networkInterface",
-            subnetwork: `projects/${project}/regions/${region}/subnetworks/default`,
-            accessConfigs: [
-              {
-                kind: "compute#accessConfig",
-                name: "External NAT",
-                type: "ONE_TO_ONE_NAT",
-                networkTier: "PREMIUM",
-              },
-            ],
-            aliasIpRanges: [],
-          },
-        ],
-      }),
+
       compare: ({ target, live }) => {
         logger.debug(`compare server`);
         const diff = compare({

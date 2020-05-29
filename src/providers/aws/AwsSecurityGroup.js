@@ -3,11 +3,19 @@ const _ = require("lodash");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsSecurityGroup" });
 const toString = (x) => JSON.stringify(x, null, 4);
-
+const { toTagName } = require("./AwsTags");
 module.exports = AwsSecurityGroup = ({ spec, config }) => {
   assert(spec);
   assert(config);
+  const { tag } = config;
   const ec2 = new AWS.EC2();
+
+  const toId = (item) => {
+    assert(item);
+    const id = item.GroupId;
+    assert(id);
+    return id;
+  };
 
   const getById = async ({ id }) => {
     assert(id);
@@ -15,33 +23,43 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     const {
       data: { items },
     } = list();
-    //TODO
-    /*
-    const instance = items.find((item) => item.Instances[0].InstanceId === id);
+    const instance = items.find((item) => item.GroupId === id);
     logger.debug(`getById result ${toString({ instance })}`);
-    */
     return instance;
   };
 
   const getByName = async ({ name }) => {
     logger.info(`getByName ${name}`);
+    assert(name);
     const {
       data: { items },
     } = await list();
-    //TODO
-    const instance = items.find((item) => item.KeyName === name);
+    const instance = items.find((item) => item.GroupName === name);
     logger.debug(`getByName result ${toString({ instance })}`);
 
     return instance;
   };
 
+  const findName = (item) => {
+    assert(item);
+    const { GroupName } = item;
+    if (GroupName) {
+      return GroupName;
+    } else {
+      throw Error(`cannot find name in ${toString(item)}`);
+    }
+  };
+  const isUp = async ({ name }) => {
+    logger.info(`isUp ${name}`);
+    return !!(await getByName({ name }));
+  };
   const list = async () => {
     logger.debug(`list`);
     const ec2params = {};
     const securityGroups = await new Promise((resolve, reject) => {
       ec2.describeSecurityGroups(ec2params, (error, response) => {
         if (error) {
-          return reject(err.message);
+          return reject(error.message);
         } else {
           logger.debug(`list ${toString(response)}`);
           resolve(response.SecurityGroups);
@@ -58,11 +76,62 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     };
   };
 
+  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
+  const create = async ({ name, payload }) => {
+    assert(name);
+    assert(payload);
+    const params = {
+      Description: toTagName(name, tag),
+      GroupName: name,
+      //TODO
+      //TODO Tags
+      //VpcId: 'STRING_VALUE'
+    };
+
+    logger.debug(`createSecurityGroup ${toString({ name, params, payload })}`);
+
+    const { GroupId } = await ec2.createSecurityGroup(params).promise();
+    logger.debug(`create GroupId ${toString(GroupId)}`);
+
+    //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
+    const ingressParam = {
+      GroupId,
+      ...payload,
+    };
+    logger.debug(`ingressParam ${toString(ingressParam)}`);
+    try {
+      await ec2.authorizeSecurityGroupIngress(ingressParam).promise();
+    } catch (error) {
+      logger.error(`authorizeSecurityGroupIngress error ${toString(error)}`);
+      throw Error;
+    }
+    logger.debug(`authorizeSecurityGroupIngress`);
+
+    return { GroupId };
+  };
+
+  const destroy = async ({ id, name }) => {
+    logger.debug(`destroy ${toString({ name, id })}`);
+    if (_.isEmpty(id)) {
+      throw Error(`destroy invalid id`);
+    }
+    await ec2.deleteSecurityGroup({ GroupId: id }).promise();
+    logger.debug(`destroyed ${toString({ name, id })}`);
+  };
+
+  const configDefault = ({ properties }) => properties;
+
   return {
     type: "SecurityGroup",
     spec,
+    toId,
     getById,
     getByName,
+    findName,
+    isUp,
     list,
+    create,
+    destroy,
+    configDefault,
   };
 };

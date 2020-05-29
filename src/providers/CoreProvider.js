@@ -48,7 +48,7 @@ const ResourceMaker = ({
     }
   };
   const configStatic = () => {
-    const result = spec.configDefault({
+    const result = client.configDefault({
       name: resourceName,
       properties: _.defaultsDeep(properties, spec.propertiesDefault),
       dependencies,
@@ -89,7 +89,7 @@ const ResourceMaker = ({
     }
     // Create now
     await client.create({ name: resourceName, payload });
-
+    assert(client.isUp);
     await retryExpectOk({
       fn: () => client.isUp({ name: resourceName }),
       isOk: (result) => result,
@@ -114,7 +114,7 @@ const ResourceMaker = ({
     const live = await getLive();
     logger.info(`destroy type: ${type} item: ${toString(live)}`);
     if (live) {
-      const id = spec.toId(live);
+      const id = client.toId(live);
       if (id) {
         await client.destroy({ id, name: resourceName });
       } else {
@@ -169,7 +169,11 @@ const ResourceMaker = ({
     addParent,
   };
   _.map(dependencies, (dependency) => {
-    dependency.addParent(resourceMaker);
+    if (Array.isArray(dependency)) {
+      dependency.forEach((item) => item.addParent(resourceMaker));
+    } else {
+      dependency.addParent(resourceMaker);
+    }
   });
   return resourceMaker;
 };
@@ -375,7 +379,7 @@ module.exports = CoreProvider = ({
                   );
                   return false;
                 }
-                const name = spec.findName(hotResource);
+                const name = client.findName(hotResource);
                 if (!name) {
                   throw Error(`no name in resource: ${toString(hotResource)}`);
                 }
@@ -393,7 +397,7 @@ module.exports = CoreProvider = ({
                 resource: {
                   provider: providerName,
                   type,
-                  name: spec.findName(live),
+                  name: client.findName(live),
                 },
                 action: "DESTROY",
                 data: live,
@@ -436,7 +440,7 @@ module.exports = CoreProvider = ({
     if (!client) {
       throw new Error(`Cannot find endpoint type ${type}}`);
     }
-    const id = client.spec.toId(data);
+    const id = client.toId(data);
     await client.destroy({ id, name });
   };
 

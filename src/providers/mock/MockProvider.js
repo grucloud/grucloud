@@ -25,11 +25,11 @@ const fnSpecs = (config) => {
           spec,
           url: `/image`,
           config,
+          configDefault,
         }),
 
       type: "Image",
       methods: { list: true },
-      toId: (obj) => obj.name,
     },
     {
       Client: ({ spec }) =>
@@ -37,10 +37,10 @@ const fnSpecs = (config) => {
           spec,
           url: `/volume`,
           config,
+          configDefault,
         }),
 
       type: "Volume",
-      configDefault,
       isOurMinion,
     },
     {
@@ -49,9 +49,9 @@ const fnSpecs = (config) => {
           spec,
           url: `/ip`,
           config,
+          configDefault,
         }),
       type: "Ip",
-      configDefault,
       isOurMinion,
     },
     {
@@ -60,6 +60,47 @@ const fnSpecs = (config) => {
           spec,
           url: `/server`,
           config,
+          configDefault: ({ name, properties }) => ({
+            kind: "compute#instance",
+            name,
+            zone: `projects/${config.project}/zones/${config.zone}`,
+            machineType: `projects/${config.project}/zones/${config.zone}/machineTypes/${properties.machineType}`,
+            tags: {
+              items: [toTagName(name, config.tag)],
+            },
+            disks: [
+              {
+                kind: "compute#attachedDisk",
+                type: "PERSISTENT",
+                boot: true,
+                mode: "READ_WRITE",
+                autoDelete: true,
+                deviceName: toTagName(name, config.tag),
+                initializeParams: {
+                  sourceImage:
+                    "projects/debian-cloud/global/images/debian-9-stretch-v20200420",
+                  diskType: `projects/${config.project}/zones/${config.zone}/diskTypes/${properties.diskTypes}`,
+                  diskSizeGb: properties.diskSizeGb,
+                },
+                diskEncryptionKey: {},
+              },
+            ],
+            networkInterfaces: [
+              {
+                kind: "compute#networkInterface",
+                subnetwork: `projects/${config.project}/regions/${config.region}/subnetworks/default`,
+                accessConfigs: [
+                  {
+                    kind: "compute#accessConfig",
+                    name: "External NAT",
+                    type: "ONE_TO_ONE_NAT",
+                    networkTier: "PREMIUM",
+                  },
+                ],
+                aliasIpRanges: [],
+              },
+            ],
+          }),
         }),
       type: "Server",
       propertiesDefault: {
@@ -67,47 +108,7 @@ const fnSpecs = (config) => {
         diskSizeGb: "10",
         diskTypes: "pd-standard",
       },
-      configDefault: ({ name, properties }) => ({
-        kind: "compute#instance",
-        name,
-        zone: `projects/${config.project}/zones/${config.zone}`,
-        machineType: `projects/${config.project}/zones/${config.zone}/machineTypes/${properties.machineType}`,
-        tags: {
-          items: [toTagName(name, config.tag)],
-        },
-        disks: [
-          {
-            kind: "compute#attachedDisk",
-            type: "PERSISTENT",
-            boot: true,
-            mode: "READ_WRITE",
-            autoDelete: true,
-            deviceName: toTagName(name, config.tag),
-            initializeParams: {
-              sourceImage:
-                "projects/debian-cloud/global/images/debian-9-stretch-v20200420",
-              diskType: `projects/${config.project}/zones/${config.zone}/diskTypes/${properties.diskTypes}`,
-              diskSizeGb: properties.diskSizeGb,
-            },
-            diskEncryptionKey: {},
-          },
-        ],
-        networkInterfaces: [
-          {
-            kind: "compute#networkInterface",
-            subnetwork: `projects/${config.project}/regions/${config.region}/subnetworks/default`,
-            accessConfigs: [
-              {
-                kind: "compute#accessConfig",
-                name: "External NAT",
-                type: "ONE_TO_ONE_NAT",
-                networkTier: "PREMIUM",
-              },
-            ],
-            aliasIpRanges: [],
-          },
-        ],
-      }),
+
       configLive: async ({ dependencies: { ip } }) => ({
         networkInterfaces: [
           {

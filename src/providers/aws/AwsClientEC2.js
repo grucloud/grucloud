@@ -8,12 +8,21 @@ const instancesStateIgnore = ["terminated", "shutting-down"];
 module.exports = AwsClientEc2 = ({ spec, config }) => {
   assert(spec);
   assert(config);
+  const { tag } = config;
+  assert(tag);
 
   AWS.config.apiVersions = {
     ec2: "2016-11-15",
   };
 
   const ec2 = new AWS.EC2();
+
+  const toId = (item) => {
+    assert(item);
+    const id = item.Instances[0].InstanceId;
+    assert(id);
+    return id;
+  };
 
   const getById = async ({ id }) => {
     assert(id);
@@ -42,6 +51,17 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
     );
     logger.debug(`getByName result ${toString({ instance })}`);
     return instance;
+  };
+
+  const findName = (item) => {
+    assert(item);
+    assert(item.Instances);
+    const tag = item.Instances[0].Tags.find((tag) => tag.Key === "name");
+    if (tag?.Value) {
+      return tag.Value;
+    } else {
+      throw Error(`cannot find name in ${toString(item)}`);
+    }
   };
   const isUp = async ({ name }) => {
     logger.debug(`isUp ${name}`);
@@ -90,15 +110,60 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
       .promise();
   };
 
+  const configDefault = ({ name, properties, dependencies }) => {
+    const { keyPair, securityGroups = [] } = dependencies;
+    return {
+      //TODO maybe not need ...
+      ...{
+        BlockDeviceMappings: [
+          {
+            DeviceName: "/dev/sdh",
+            Ebs: {
+              VolumeSize: properties.VolumeSize,
+            },
+          },
+        ],
+        ImageId: properties.ImageId, // Ubuntu 20.04
+        InstanceType: properties.InstanceType,
+        MaxCount: properties.MaxCount,
+        MinCount: properties.MinCount,
+
+        //SecurityGroupIds: ["sg-1a2b3c4d"],
+        //TODO subnet
+        //SubnetId: "subnet-6e7f829e",
+        TagSpecifications: [
+          {
+            ResourceType: "instance",
+            Tags: [
+              {
+                Key: "name",
+                Value: name,
+              },
+              {
+                Key: tag,
+                Value: "true",
+              },
+            ],
+          },
+        ],
+      },
+      [keyPair && "KeyName"]: keyPair.name,
+      //[securityGroups && "SecurityGroupIds"]: securityGroups.map((sg) => sg.id),
+    };
+  };
+
   return {
     type: "Instance",
     spec,
     ec2,
     isUp,
+    toId,
     getById,
     getByName,
+    findName,
     create,
     destroy,
     list,
+    configDefault,
   };
 };
