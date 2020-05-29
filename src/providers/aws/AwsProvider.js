@@ -32,16 +32,6 @@ const fnSpecs = (config) => {
       type: "SecurityGroup",
       Client: ({ spec }) => AwsSecurityGroup({ spec, config }),
       isOurMinion,
-      compare: ({ target, live }) => {
-        logger.debug(`compare SecurityGroup`);
-        const diff = compare({
-          target,
-          targetKeys: ["IpPermissions"], //TODO
-          live: live,
-        });
-        logger.debug(`compare ${toString(diff)}`);
-        return diff;
-      },
     },
     {
       type: "Instance",

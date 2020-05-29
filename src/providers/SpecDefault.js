@@ -16,7 +16,7 @@ const compare = ({ target, live }) => {
 };
 
 exports.SpecDefault = () => ({
-  compare,
+  compare: compareObject,
   postConfig: ({ config }) => config,
   configStatic: () => ({}),
   configLive: async () => ({}),

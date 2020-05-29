@@ -3,7 +3,7 @@ const config = require("../config");
 const AwsProvider = require("../AwsProvider");
 const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
-describe.skip("AwsSecurityGroup", async function () {
+describe("AwsSecurityGroup", async function () {
   let provider;
   let sg;
 
