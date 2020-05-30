@@ -3,7 +3,7 @@ const AwsProvider = require("../AwsProvider");
 const config = require("../config");
 const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
-describe("AwsProvider", async function () {
+describe.only("AwsProvider", async function () {
   let provider;
   let server;
   let keyPair;
@@ -15,37 +15,47 @@ describe("AwsProvider", async function () {
     await provider.destroyAll();
     keyPair = provider.makeKeyPair({
       name: keyPairName,
-    }); /*
+    });
     sg = provider.makeSecurityGroup({
       name: "securityGroup",
       properties: {
-        ingress: [
+        IpPermissions: [
           {
-            protocol: "tcp",
-            fromPort: 22,
-            toPort: 22,
-            cidrBlocks: ["0.0.0.0/0"],
+            FromPort: 22,
+            IpProtocol: "tcp",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+            ToPort: 22,
           },
         ],
       },
     });
-    */
+
     server = provider.makeInstance({
       name: serverName,
       properties: {},
-      dependencies: { keyPair /*, securityGroups: [sg]*/ },
+      dependencies: { keyPair, securityGroups: { sg } },
     });
   });
   after(async () => {
-    await provider.destroyAll();
+    //TODO
+    // await provider.destroyAll();
   });
   it("keyPair name", async function () {
     assert.equal(keyPair.name, keyPairName);
   });
-  it("config static server", async function () {
+  it("server resolveConfig", async function () {
     assert.equal(server.name, serverName);
 
-    const config = server.configStatic();
+    const config = await server.resolveConfig();
     assert.equal(config.ImageId, "ami-0917237b4e71c5759");
     assert.equal(config.InstanceType, "t2.micro");
     assert.equal(config.MaxCount, 1);
@@ -54,19 +64,19 @@ describe("AwsProvider", async function () {
     // TODO tags
   });
   it("config", async function () {
-    const config = await server.config();
+    const config = await server.resolveConfig();
     assert.equal(config.ImageId, "ami-0917237b4e71c5759");
   });
   it("plan", async function () {
     const plan = await provider.plan();
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 1);
+    assert.equal(plan.newOrUpdate.length, 2);
   });
   it("listLives all", async function () {
     const lives = await provider.listLives({ all: true });
     assert(lives);
   });
-  it("deploy plan", async function () {
+  it.only("deploy plan", async function () {
     await testProviderLifeCycle({ provider });
   });
 });

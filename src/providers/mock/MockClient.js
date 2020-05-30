@@ -54,6 +54,31 @@ module.exports = MockClient = ({
 }) => {
   assert(spec);
   assert(url);
+  const { type } = spec;
+
+  const getByName = async ({ name }) => {
+    logger.info(`getByName ${type}/${name}`);
+    assert(name);
+    const {
+      data: { items },
+    } = await core.list();
+    assert(items);
+    const instance = items.find((item) => core.toName(item).includes(name));
+    logger.info(`getByName ${type}/${name}, out: ${toString(instance)}`);
+    return instance;
+  };
+
+  const findName = (item) => {
+    assert(item);
+    logger.debug(`findName: ${toString(item)}`);
+
+    if (item.name) {
+      return item.name;
+    } else {
+      throw Error(`cannot find name in ${toString(item)}`);
+    }
+  };
+
   const axios = AxiosMaker({
     baseURL: urljoin(BASE_URL, url),
     onHeaders: () => ({ "X-Auth-Token": authKey }),
@@ -61,11 +86,14 @@ module.exports = MockClient = ({
 
   setupMock({ axios, spec, config });
 
-  return CoreClient({
+  const core = CoreClient({
     type: "mock",
     spec,
     ...spec,
     axios,
     configDefault,
+    getByName,
+    findName,
   });
+  return core;
 };

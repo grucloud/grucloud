@@ -22,8 +22,10 @@ describe("ScalewayVolume", async function () {
   });
 
   it("volume config", async function () {
-    const config = await volume.config();
-    assert(config);
+    const config = await volume.resolveConfig();
+    assert(config.organization);
+    assert(config.volume_type);
+    assert(config.name);
   });
 
   it("plan", async function () {

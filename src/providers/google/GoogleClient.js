@@ -3,6 +3,8 @@ const urljoin = require("url-join");
 const CoreClient = require("../CoreClient");
 const AxiosMaker = require("../AxiosMaker");
 const BASE_URL = "https://compute.googleapis.com/compute/v1/";
+const logger = require("../../logger")({ prefix: "GoogleClient" });
+const toString = (x) => JSON.stringify(x, null, 4);
 
 const onResponseList = (data) => {
   const { items = [] } = data;
@@ -20,6 +22,29 @@ module.exports = GoogleClient = ({
   assert(spec);
   assert(spec.type);
   assert(config);
+  const { type } = spec;
+  const findName = (item) => {
+    assert(item);
+    logger.debug(`findName: ${toString(item)}`);
+
+    if (item.name) {
+      return item.name;
+    } else {
+      throw Error(`cannot find name in ${toString(item)}`);
+    }
+  };
+
+  const getByName = async ({ name }) => {
+    logger.info(`getByName ${type}/${name}`);
+    assert(name);
+    const {
+      data: { items },
+    } = await core.list();
+    assert(items);
+    const instance = items.find((item) => core.toName(item).includes(name));
+    logger.info(`getByName ${type}/${name}, out: ${toString(instance)}`);
+    return instance;
+  };
 
   const core = CoreClient({
     type: "google",
@@ -27,6 +52,8 @@ module.exports = GoogleClient = ({
     onResponseList,
     configDefault,
     toName,
+    getByName,
+    findName,
     axios: AxiosMaker({
       baseURL: urljoin(BASE_URL, url),
       onHeaders: () => ({

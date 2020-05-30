@@ -118,9 +118,8 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     await ec2.deleteSecurityGroup({ GroupId: id }).promise();
     logger.debug(`destroyed ${toString({ name, id })}`);
   };
-
-  const configDefault = ({ properties }) => properties;
-
+  //TODO
+  const configDefault = async ({ properties }) => properties;
   return {
     type: "SecurityGroup",
     spec,

@@ -10,21 +10,24 @@ const { retryExpectOk } = require("./Retry");
 
 const ResourceMaker = ({
   name: resourceName,
-  type,
   dependencies,
   transformConfig,
   properties,
   spec,
   provider,
 }) => {
+  const { type } = spec;
   logger.debug(
     `ResourceMaker: ${toString({ type, resourceName, properties })}`
   );
+
   const client = spec.Client({ spec });
   let parent;
   const getLive = async () => {
     logger.info(`getLive ${resourceName}/${type}`);
-    return await client.getByName({ name: resourceName });
+    const live = await client.getByName({ name: resourceName });
+    logger.debug(`getLive result: ${toString({ resourceName, type, live })}`);
+    return live;
   };
 
   const planUpdate = async ({ resource, live }) => {
@@ -33,7 +36,7 @@ const ResourceMaker = ({
         resource.serialized()
       )}, live: ${toString(live)}`
     );
-    const target = await resource.config();
+    const target = await resource.resolveConfig();
     logger.info(`planUpdate target: ${toString(target)}`);
 
     if (_.isEmpty(target)) {
@@ -47,29 +50,40 @@ const ResourceMaker = ({
       ];
     }
   };
-  const configStatic = () => {
-    const result = client.configDefault({
-      name: resourceName,
-      properties: _.defaultsDeep(properties, spec.propertiesDefault),
-      dependencies,
-    });
-    logger.info(
-      `configStatic ${spec.type}/${resourceName}: ${toString(result)}`
+
+  const resolveDependenciesLive = async (dependencies) => {
+    const dependenciesLive = await Promise.props(
+      _.mapValues(dependencies, async (dependency) => {
+        if (!dependency.getLive) {
+          return resolveDependenciesLive(dependency);
+        }
+        const live = await dependency.getLive();
+        //TODO use constant
+        return live || "<<resolve later>>";
+      })
     );
-    return result;
+    logger.info(`resolveDependenciesLive: ${toString({ dependenciesLive })}`);
+    return dependenciesLive;
   };
-  const config = async () => {
-    logger.info(`config ${spec.type}/${resourceName}`);
+
+  const resolveConfig = async () => {
+    logger.info(`config ${type}/${resourceName}`);
     const {
       data: { items },
     } = await client.list();
-    logger.info(`config ${spec.type}/${resourceName}`);
-    const configLive = await spec.configLive({ dependencies });
-    logger.info(`configLive ${toString(configLive)}`);
-    const config = _.defaultsDeep(configLive, configStatic());
+    logger.info(`config ${toString({ type, resourceName, items })}`);
+
+    const dependenciesLive = await resolveDependenciesLive(dependencies);
+
+    const config = await client.configDefault({
+      name: resourceName,
+      properties: _.defaultsDeep(properties, spec.propertiesDefault),
+      dependenciesLive,
+    });
+    logger.info(`configDefault: ${toString(config)}`);
     const finalConfig = transformConfig
       ? await transformConfig({
-          dependencies,
+          dependenciesLive,
           items,
           config,
           configProvider: provider.config,
@@ -134,8 +148,7 @@ const ResourceMaker = ({
           {
             action: "CREATE",
             resource: resource.serialized(),
-            config: await resource.config(),
-            // TODO configStatic ? config: await resource.config(),
+            config: await resource.resolveConfig(),
           },
         ];
     logger.debug(`planUpsert plan: ${toString(plan)}`);
@@ -160,8 +173,7 @@ const ResourceMaker = ({
     spec,
     client,
     serialized,
-    config,
-    configStatic,
+    resolveConfig,
     create,
     planUpsert,
     getLive,
@@ -169,8 +181,8 @@ const ResourceMaker = ({
     addParent,
   };
   _.map(dependencies, (dependency) => {
-    if (Array.isArray(dependency)) {
-      dependency.forEach((item) => item.addParent(resourceMaker));
+    if (!dependency.addParent) {
+      _.forEach(dependency, (item) => item.addParent(resourceMaker));
     } else {
       dependency.addParent(resourceMaker);
     }
@@ -188,7 +200,6 @@ const createResourceMakers = ({ specs, config, provider }) =>
       transformConfig,
     }) => {
       const resource = ResourceMaker({
-        type: spec.type,
         name,
         transformConfig,
         properties,
@@ -204,7 +215,7 @@ const createResourceMakers = ({ specs, config, provider }) =>
   }, {});
 
 const configProviderDefault = {
-  tag: "-gru",
+  tag: "managedByGru",
 };
 
 module.exports = CoreProvider = ({
@@ -418,7 +429,7 @@ module.exports = CoreProvider = ({
       if (!engine) {
         throw Error(`Cannot find resource ${toString(action.resource.name)}`);
       }
-      const payload = await engine.config();
+      const payload = await engine.resolveConfig();
 
       await engine.create({
         payload,

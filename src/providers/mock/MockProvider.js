@@ -1,4 +1,5 @@
 const assert = require("assert");
+const _ = require("lodash");
 const MockClient = require("./MockClient");
 const CoreProvider = require("../CoreProvider");
 const compare = require("../../Utils").compare;
@@ -9,7 +10,7 @@ const logger = require("../../logger")({ prefix: "MockProvider" });
 
 //TODO use deepMerge ?
 const fnSpecs = (config) => {
-  const configDefault = ({ name, properties }) => ({
+  const configDefault = async ({ name, properties }) => ({
     name,
     tags: [toTagName(name, config.tag)],
     ...properties,
@@ -25,7 +26,6 @@ const fnSpecs = (config) => {
           spec,
           url: `/image`,
           config,
-          configDefault,
         }),
 
       type: "Image",
@@ -60,7 +60,11 @@ const fnSpecs = (config) => {
           spec,
           url: `/server`,
           config,
-          configDefault: ({ name, properties }) => ({
+          configDefault: async ({
+            name,
+            properties,
+            dependenciesLive: { ip },
+          }) => ({
             kind: "compute#instance",
             name,
             zone: `projects/${config.project}/zones/${config.zone}`,
@@ -91,6 +95,7 @@ const fnSpecs = (config) => {
                 subnetwork: `projects/${config.project}/regions/${config.region}/subnetworks/default`,
                 accessConfigs: [
                   {
+                    natIP: _.get(ip, "address", "<<later>>"),
                     kind: "compute#accessConfig",
                     name: "External NAT",
                     type: "ONE_TO_ONE_NAT",
@@ -109,17 +114,6 @@ const fnSpecs = (config) => {
         diskTypes: "pd-standard",
       },
 
-      configLive: async ({ dependencies: { ip } }) => ({
-        networkInterfaces: [
-          {
-            accessConfigs: [
-              {
-                natIP: await ip.config().address,
-              },
-            ],
-          },
-        ],
-      }),
       compare: ({ target, live }) => {
         logger.debug(`compare server`);
         const diff = compare({

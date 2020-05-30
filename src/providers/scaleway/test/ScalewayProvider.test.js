@@ -29,7 +29,7 @@ describe("ScalewayProvider", async function () {
     server = provider.makeServer({
       name: "web-server",
       dependencies: { image, ip },
-      config: async ({ dependencies: {} }) => ({
+      properties: {
         name: "web-server",
         commercial_type: "DEV1-S",
         volumes: {
@@ -37,21 +37,13 @@ describe("ScalewayProvider", async function () {
             size: 20_000_000_000,
           },
         },
-      }),
+      },
     });
   });
   after(async () => {
     await provider.destroyAll();
   });
 
-  it("server config", async function () {
-    const result = server.configStatic();
-    //console.log(JSON.stringify(result, null, 4));
-    assert(result.name);
-    assert.equal(result.boot_type, "local");
-    //assert(result.image);
-    //assert(result.volumes);
-  });
   it("list all config", async function () {
     const configs = await provider.listConfig();
     //console.log(JSON.stringify(configs, null, 4));

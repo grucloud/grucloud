@@ -109,11 +109,11 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
       })
       .promise();
   };
+  const configDefault = async ({ name, properties, dependenciesLive }) => {
+    const { keyPair, securityGroups = {} } = dependenciesLive;
+    logger.debug(`configDefault ${toString({ dependenciesLive })}`);
 
-  const configDefault = ({ name, properties, dependencies }) => {
-    const { keyPair, securityGroups = [] } = dependencies;
     return {
-      //TODO maybe not need ...
       ...{
         BlockDeviceMappings: [
           {
@@ -127,8 +127,6 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
         InstanceType: properties.InstanceType,
         MaxCount: properties.MaxCount,
         MinCount: properties.MinCount,
-
-        //SecurityGroupIds: ["sg-1a2b3c4d"],
         //TODO subnet
         //SubnetId: "subnet-6e7f829e",
         TagSpecifications: [
@@ -147,8 +145,11 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
           },
         ],
       },
-      [keyPair && "KeyName"]: keyPair.name,
-      //[securityGroups && "SecurityGroupIds"]: securityGroups.map((sg) => sg.id),
+      [keyPair && "KeyName"]: keyPair.KeyName,
+      [!_.isEmpty(securityGroups) && "SecurityGroupIds"]: _.map(
+        securityGroups,
+        (sg) => _.get(sg, "GroupId", "<<NA>>")
+      ),
     };
   };
 

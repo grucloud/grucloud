@@ -72,32 +72,29 @@ describe("MockProvider", async function () {
     //console.log(JSON.stringify(result, null, 4));
     //TODO assert
   });
-  it("ip config static ", async function () {
-    const config = await stack.ip.config();
-    assert(config);
-  });
   it("ip config live ", async function () {
-    const config = await stack.ip.config({ live: true });
+    const config = await stack.ip.resolveConfig();
     assert(config);
   });
   it("image config", async function () {
-    const config = await stack.image.config();
+    const config = await stack.image.resolveConfig();
     assert(config);
   });
-  it("volume config static", async function () {
-    const config = stack.volume.configStatic();
-    assert.equal(config.name, "volume1");
-    assert.equal(config.size, 20_000_000_000);
-  });
+
   it("volume config", async function () {
-    const config = await stack.volume.config();
+    const config = await stack.volume.resolveConfig();
     assert.equal(config.name, "volume1");
     assert.equal(config.size, 20_000_000_000);
   });
 
   it("server config", async function () {
-    const config = stack.server.configStatic();
+    const config = await stack.server.resolveConfig();
     assert(config);
+    assert(config.networkInterfaces[0]);
+    assert(config.networkInterfaces[0].accessConfigs);
+    assert(config.networkInterfaces[0].accessConfigs[0].name);
+    assert(config.networkInterfaces[0].accessConfigs[0].natIP);
+
     //console.log(JSON.stringify(config, null, 4));
     assert.equal(config.zone, "projects/starhackit/zones/us-central1-a");
     assert.equal(

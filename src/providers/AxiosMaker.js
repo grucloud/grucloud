@@ -12,6 +12,8 @@ module.exports = AxiosMaker = ({ baseURL, onHeaders = noop }) => {
     transformRequest: [
       (data, headers) => {
         logger.info(`tx ${baseURL} ${data ? toString(data) : ""}`);
+        //logger.info(`tx ${toString({ headers })}`);
+
         return JSON.stringify(data);
       },
     ],

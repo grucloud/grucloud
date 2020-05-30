@@ -20,8 +20,8 @@ describe("GoogleProvider", async function () {
     await provider.destroyAll();
   });
 
-  it("server config static", async function () {
-    const config = server.configStatic();
+  it("server resolveConfig ", async function () {
+    const config = await server.resolveConfig();
     assert.equal(
       config.machineType,
       "projects/starhackit/zones/us-central1-a/machineTypes/f1-micro"

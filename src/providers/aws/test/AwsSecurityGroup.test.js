@@ -40,6 +40,10 @@ describe("AwsSecurityGroup", async function () {
   it("sg name", async function () {
     assert.equal(sg.name, "sg");
   });
+  it("sg resolveConfig", async function () {
+    const config = await sg.resolveConfig();
+    assert.equal(config.IpPermissions[0].FromPort, 22);
+  });
   it("sg targets", async function () {
     const live = await sg.getLive();
     //assert(live);

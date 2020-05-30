@@ -9,11 +9,13 @@ module.exports = CoreClient = ({
   spec,
   type,
   axios,
-  methods,
-  configDefault = ({ name, properties }) => ({
+  methods, //TODO use defaults
+  configDefault = async ({ name, properties }) => ({
     name,
     ...properties,
   }),
+  getByName,
+  findName,
   toName = (item) => {
     assert(item.name);
     return item.name;
@@ -50,31 +52,8 @@ module.exports = CoreClient = ({
       return result;
     } catch (error) {
       //TODO function to print axios error
-      logger.error(`get ${type}/${id}, error ${error.response}`);
+      logger.error(`get ${type}/${id}, error ${toString(error.response)}`);
       throw error;
-    }
-  };
-
-  const getByName = async ({ name }) => {
-    logger.info(`getByName ${type}/${name}`);
-    assert(name);
-    const {
-      data: { items },
-    } = await list();
-    assert(items);
-    const instance = items.find((item) => toName(item).includes(name));
-    logger.info(`getByName ${type}/${name}, out: ${toString(instance)}`);
-    return instance;
-  };
-
-  const findName = (item) => {
-    assert(item);
-    logger.debug(`findName: ${toString(item)}`);
-
-    if (item.name) {
-      return item.name;
-    } else {
-      throw Error(`cannot find name in ${toString(item)}`);
     }
   };
 
@@ -147,7 +126,6 @@ module.exports = CoreClient = ({
       throw error;
     }
   };
-  //const configDefault = ({ name, properties }) => ({ name, ...properties });
 
   return {
     spec,
@@ -157,6 +135,7 @@ module.exports = CoreClient = ({
     getById,
     getByName,
     findName,
+    toName,
     isUp,
     create,
     destroy,

@@ -9,26 +9,6 @@ const TagName = require("../TagName");
 
 const toString = (x) => JSON.stringify(x, null, 4);
 
-const getByName = ({ name, items = [] }) => {
-  logger.debug(`getByName: ${name}, items: ${toString(items)}`);
-  //TODO check with tag
-  const itemsWithName = items.filter((item) =>
-    item?.tags.find((tag) => tag.includes(name))
-  );
-  if (itemsWithName.length === 0) {
-    logger.debug(`getByName: ${name}, no result`);
-    return;
-  }
-  logger.debug(`getByName: ${name}, returns: ${toString(itemsWithName)}`);
-  if (itemsWithName.length > 1) {
-    logger.error(
-      `getByName: ${name}, multiple result: ${toString(itemsWithName)}`
-    );
-  }
-
-  return itemsWithName[0];
-};
-
 const fnSpecs = (config) => {
   const { organization } = config;
 
@@ -50,10 +30,10 @@ const fnSpecs = (config) => {
               throw Error(`Cannot find ips`);
             }
           },
-          configDefault: ({ name, properties }) => ({
-            ...properties,
-            tags: [name],
+          configDefault: async ({ name, properties }) => ({
+            tags: [`name:${name}`, config.tag],
             organization,
+            ...properties,
           }),
           toName: (item) => item.address,
         }),
@@ -134,6 +114,20 @@ const fnSpecs = (config) => {
           onResponseList: ({ servers }) => {
             return { total: servers.length, items: servers };
           },
+          configDefault: async ({
+            name,
+            properties,
+            dependenciesLive: { image, ip },
+          }) => {
+            return {
+              name,
+              organization,
+              tags: [name, config.tag],
+              image: _.get(image, "id", "<<NA>>"),
+              public_ip: _.get(ip, "id", "<<NA>>"),
+              ...properties,
+            };
+          },
         }),
       type: "Server",
       compare: ({ target, live }) => {
@@ -151,38 +145,6 @@ const fnSpecs = (config) => {
         commercial_type: "DEV1-S",
         enable_ipv6: true,
         boot_type: "local",
-      },
-      configDefault: ({ name, properties }) => ({
-        name,
-        organization,
-        tags: [name],
-        ...properties,
-      }),
-      configStatic: async ({ config, dependencies: { image, ip } }) => {
-        const imageId = await image.config().id;
-        //logger.debug(`configStatic imageId: ${imageId}`);
-
-        return {
-          image: imageId,
-          public_ip: await ip.config(),
-
-          ...config,
-        };
-      },
-      configLive: async ({ config, dependencies: { image, ip } }) => {
-        const ipLive = await ip.getLive();
-        const imageConfig = await image.config();
-        logger.debug(`Server configLive ip: ${toString(ipLive)}`);
-
-        if (!ipLive) {
-          throw Error(`configFromLive: cannot find ip resources`);
-        }
-
-        return {
-          image: imageConfig.id,
-          public_ip: ipLive.id,
-          ...config,
-        };
       },
       isOurMinion,
     },

@@ -1,6 +1,6 @@
 const assert = require("assert");
 const GoogleProvider = require("../GoogleProvider");
-const config = require("../config");
+const configProvider = require("../config");
 const { testProviderLifeCycle } = require("../../../test/E2ETestUtils");
 
 describe("GoogleAddress", async function () {
@@ -8,23 +8,19 @@ describe("GoogleAddress", async function () {
   let provider;
   let address;
   before(async () => {
-    provider = await GoogleProvider({ name: "google", config });
+    provider = await GoogleProvider({ name: "google", config: configProvider });
     address = provider.makeAddress({ name: addressName });
     await provider.destroyAll();
   });
   after(async () => {
     await provider.destroyAll();
   });
-  it("ip config static", async function () {
-    const config = address.configStatic();
-    assert.equal(config.name, addressName);
-    assert.equal(config.description, `${addressName}-gru`);
-  });
   it("address config", async function () {
-    const config = await address.config();
+    const config = await address.resolveConfig();
     assert(config);
     assert.equal(config.name, addressName);
-    assert.equal(config.description, `${addressName}-gru`);
+    //TODO use label instead
+    assert.equal(config.description, `${addressName}${provider.config.tag}`);
   });
   it("lives", async function () {
     const lives = await provider.listLives();
