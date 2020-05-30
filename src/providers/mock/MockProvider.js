@@ -58,8 +58,20 @@ const fnSpecs = (config) => {
       Client: ({ spec }) =>
         MockClient({
           spec,
+          url: `/security_group`,
+          config,
+          configDefault,
+        }),
+      type: "SecurityGroup",
+      isOurMinion,
+    },
+    {
+      Client: ({ spec }) =>
+        MockClient({
+          spec,
           url: `/server`,
           config,
+          dependsOn: ["SecurityGroup"],
           configDefault: async ({
             name,
             properties,

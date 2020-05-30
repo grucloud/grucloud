@@ -7,6 +7,7 @@ const checkEnvironment = require("../Utils").checkEnvironment;
 const { fromTagName } = require("./TagName");
 const { SpecDefault } = require("./SpecDefault");
 const { retryExpectOk } = require("./Retry");
+const { PlanReorder } = require("./PlanReorder");
 
 const ResourceMaker = ({
   name: resourceName,
@@ -327,15 +328,20 @@ module.exports = CoreProvider = ({
     return plan;
   };
   const deployPlan = async (plan) => {
-    assert(plan);
-    logger.info(`*******************************************************`);
-    logger.info(`Deploy Plan ${toString(plan)}`);
-    logger.info(`*******************************************************`);
-    await upsertResources(plan.newOrUpdate);
-    await destroyPlannedResources(plan.destroy);
-    logger.info(`*******************************************************`);
-    logger.info(`Deploy Plan DONE`);
-    logger.info(`*******************************************************`);
+    try {
+      assert(plan);
+      logger.info(`*******************************************************`);
+      logger.info(`Deploy Plan ${toString(plan)}`);
+      logger.info(`*******************************************************`);
+      await upsertResources(plan.newOrUpdate);
+      await destroyPlannedResources(plan.destroy);
+      logger.info(`*******************************************************`);
+      logger.info(`Deploy Plan DONE`);
+      logger.info(`*******************************************************`);
+    } catch (error) {
+      logger.error(`deployPlan ${toString(error)}`);
+      throw error;
+    }
   };
 
   /**
@@ -420,7 +426,9 @@ module.exports = CoreProvider = ({
       .filter((x) => x);
 
     logger.debug(`planFindDestroy END, plans ${toString(plans)}`);
-    return plans;
+    const planOrdered = _.flatten(PlanReorder({ plans, specs })).reverse();
+    logger.debug(`planFindDestroy END, ordered plans ${toString(planOrdered)}`);
+    return planOrdered;
   };
   const upsertResources = async (newOrUpdate = []) => {
     logger.debug(`upsertResources ${toString(newOrUpdate)}`);
@@ -457,21 +465,28 @@ module.exports = CoreProvider = ({
 
   const destroyPlannedResources = async (planDestroy) => {
     logger.debug(`destroyPlannedResources ${toString(planDestroy)}`);
-    await Promise.all(
-      planDestroy.map(async (planItem) => {
-        await destroyById({
-          type: planItem.resource.type,
-          data: planItem.data,
-          name: planItem.resource.name,
-        });
-      })
-    );
+    const promises = planDestroy.map(async (planItem) => {
+      await destroyById({
+        type: planItem.resource.type,
+        data: planItem.data,
+        name: planItem.resource.name,
+      });
+    });
+    await Promise.each(promises, (fileName, index, arrayLength) => {
+      logger.debug(`destroyPlannedResources ${toString({ index })}`);
+    });
+    logger.debug(`destroyPlannedResources DONE${toString(planDestroy)}`);
   };
 
   const destroyAll = async () => {
     logger.debug(`destroyAll `);
-    const planDestroy = await planFindDestroy({ all: true });
-    await destroyPlannedResources(planDestroy);
+    try {
+      const planDestroy = await planFindDestroy({ all: true });
+      await destroyPlannedResources(planDestroy);
+    } catch (error) {
+      logger.error(`destroyAll ${toString(error)}`);
+      throw error;
+    }
   };
 
   checkEnvironment(envs);

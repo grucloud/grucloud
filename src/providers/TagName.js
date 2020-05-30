@@ -19,6 +19,7 @@ exports.isOurMinion = ({ resource, tag: ourTag }) => {
   const { tags, labels } = resource;
   if (Array.isArray(tags?.items)) {
     if (tags?.items.some((tag) => tag.includes(ourTag))) {
+      logger.info(`isOurMinion yes, tags?.items`);
       return true;
     }
   }

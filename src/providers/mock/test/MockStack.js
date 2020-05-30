@@ -33,11 +33,17 @@ const createStack = async ({ config }) => {
       size: 20_000_000_000,
     },
   });
-
+  // SecurityGroup
+  const sg = provider.makeSecurityGroup({
+    name: "sg",
+    properties: {
+      //TODO
+    },
+  });
   //Server
   const server = provider.makeServer({
     name: "web-server",
-    dependencies: { volume, image: { image }, ip },
+    dependencies: { volume, sg: { sg }, ip },
     properties: {
       diskSizeGb: "20",
       machineType: "f1-micro",

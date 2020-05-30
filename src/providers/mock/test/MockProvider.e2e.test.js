@@ -25,7 +25,7 @@ describe("MockProvider e2e", async function () {
     }
     {
       const listTargets = await provider.listTargets();
-      assert.equal(listTargets.length, 3);
+      assert.equal(listTargets.length, 4);
     }
     {
       const plan = await provider.plan();
@@ -33,7 +33,7 @@ describe("MockProvider e2e", async function () {
     }
     {
       const planDestroyed = await provider.planFindDestroy({ all: true });
-      assert.equal(planDestroyed.length, 3);
+      assert.equal(planDestroyed.length, 4);
     }
   });
   it("plan", async function () {
@@ -65,7 +65,7 @@ describe("MockProvider e2e", async function () {
     const plan = await provider.plan();
     {
       assert.equal(plan.destroy.length, 1);
-      assert.equal(plan.newOrUpdate.length, 3);
+      assert.equal(plan.newOrUpdate.length, 4);
     }
     await provider.deployPlan(plan);
     {
@@ -75,20 +75,40 @@ describe("MockProvider e2e", async function () {
     }
     {
       const listTargets = await provider.listTargets();
-      assert.equal(listTargets.length, 3);
+      assert.equal(listTargets.length, 4);
     }
     {
       const listLives = await provider.listLives();
-      assert.equal(listLives.length, 3);
+      assert.equal(listLives.length, 4);
     }
     {
       const listLives = await provider.listLives({ all: true });
-      assert.equal(listLives.length, 4);
+      assert.equal(listLives.length, 5);
     }
 
     {
       const configs = await provider.listConfig();
       assert(configs);
+    }
+    {
+      const planDestroy = await provider.planFindDestroy({ all: true });
+      const indexServer = planDestroy.findIndex(
+        (item) => item.resource.type === "Server"
+      );
+      assert(indexServer >= 0);
+      const indexSecurityGroup = planDestroy.findIndex(
+        (item) => item.resource.type === "SecurityGroup"
+      );
+      assert(indexSecurityGroup > 0);
+      assert(indexServer < indexSecurityGroup);
+      assert.equal(planDestroy.length, 4);
+      // Server must be before SecurityGroup
+    }
+    await provider.destroyAll();
+
+    {
+      const listTargets = await provider.listTargets();
+      assert.equal(listTargets.length, 0);
     }
   });
 });

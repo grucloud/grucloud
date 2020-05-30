@@ -32,6 +32,7 @@ const mockCloudInitStatesDefault = [
     ],
   ],
   ["Volume", [["1", { id: "1", name: "volume-managedByGru" }]]],
+  ["SecurityGroup"],
   ["Server"],
 ];
 

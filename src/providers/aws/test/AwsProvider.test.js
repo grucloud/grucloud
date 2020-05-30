@@ -3,7 +3,7 @@ const AwsProvider = require("../AwsProvider");
 const config = require("../config");
 const { testProviderLifeCycle } = require("test/E2ETestUtils");
 
-describe.only("AwsProvider", async function () {
+describe("AwsProvider", async function () {
   let provider;
   let server;
   let keyPair;
@@ -76,7 +76,7 @@ describe.only("AwsProvider", async function () {
     const lives = await provider.listLives({ all: true });
     assert(lives);
   });
-  it.only("deploy plan", async function () {
+  it("deploy plan", async function () {
     await testProviderLifeCycle({ provider });
   });
 });
