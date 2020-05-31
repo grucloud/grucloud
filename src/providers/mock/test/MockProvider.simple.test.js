@@ -56,7 +56,7 @@ describe("MockProvider Simple", async function () {
     }
     {
       const lives = await provider.listLives();
-      assert.equal(lives.length, 3);
+      assert.equal(lives.length, 4);
     }
   });
 });

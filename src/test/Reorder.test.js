@@ -37,7 +37,7 @@ const specs = [
 ];
 
 describe("Reoder", function () {
-  it("specUsedBy", function () {
+  /*it("specUsedBy", function () {
     assert(
       _.isEqual(specUsedBy(specs), [
         { type: "Vpc", usedBy: ["SecurityGroup"] },
@@ -45,7 +45,7 @@ describe("Reoder", function () {
         { type: "Server", dependsOn: "SecurityGroup", usedBy: [] },
       ])
     );
-  });
+  });*/
   it("ok", function () {
     const ordered = PlanReorder({ plans, specs });
     console.log(JSON.stringify(_.flatten(ordered), null, 4));
