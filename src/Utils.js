@@ -13,19 +13,10 @@ const compareObject = ({ target = {}, live = {} }) => {
   //console.log(target, live);
 
   const diff = _.map(target, (targetValue, targetKey) => {
-    console.log(
-      "key:",
-      targetKey,
-      ",target value:",
-      targetValue,
-      ",live value",
-      live[targetKey]
-    );
     if (_.isObject(targetValue)) {
       return compareObject({ target: targetValue, live: live[targetKey] });
     }
     if (targetValue !== live[targetKey]) {
-      console.log("key diff ", targetKey);
       return {
         key: targetKey,
         targetValue: targetValue,
@@ -36,14 +27,14 @@ const compareObject = ({ target = {}, live = {} }) => {
   return diff.length > 0 ? diff : undefined;
 };
 const compare = ({ target = {}, targetKeys = [], live = {} }) => {
-  logger.info(`compare ${toString({ target, targetKeys, live })}`);
+  logger.debug(`compare ${toString({ target, targetKeys, live })}`);
 
   const targetDiff = targetKeys
     .map((targetKey) => {
       const targetValue = _.get(target, targetKey);
       const liveValue = _.get(live, targetKey);
 
-      logger.info(
+      logger.debug(
         `compare for targetKey: ${toString({
           targetKey,
           targetValue,
