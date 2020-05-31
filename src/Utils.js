@@ -10,7 +10,7 @@ const checkEnvironment = (env = []) =>
     }
   });
 const compareObject = ({ target = {}, live = {} }) => {
-  console.log(target, live);
+  //console.log(target, live);
 
   const diff = _.map(target, (targetValue, targetKey) => {
     console.log(

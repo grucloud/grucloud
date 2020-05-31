@@ -48,6 +48,6 @@ describe("Reoder", function () {
   });*/
   it("ok", function () {
     const ordered = PlanReorder({ plans, specs });
-    console.log(JSON.stringify(_.flatten(ordered), null, 4));
+    //console.log(JSON.stringify(_.flatten(ordered), null, 4));
   });
 });

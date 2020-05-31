@@ -43,7 +43,7 @@ describe("compare", function () {
       target,
       live,
     });
-    console.log(JSON.stringify(diff, null, 4));
+    //console.log(JSON.stringify(diff, null, 4));
   });
   it("compare ok", async function () {
     assert.equal(
