@@ -38,9 +38,9 @@ const fnSpecs = (config) => {
           toName: (item) => item.address,
         }),
       type: "Ip",
-      postConfig: ({ config, items }) => {
-        //assert(items);
-        //TODO check that
+      /* TODO test that
+      transformConfig: ({ config, items }) => {
+        
         logger.debug(
           `postConfig: ${toString(config)}, items: ${toString(items)}`
         );
@@ -49,7 +49,7 @@ const fnSpecs = (config) => {
           return ip;
         }
         return { ...config };
-      },
+      },*/
       isOurMinion,
     },
     {
