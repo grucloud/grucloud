@@ -1,7 +1,7 @@
 const AWS = require("aws-sdk");
 const assert = require("assert");
 const CoreProvider = require("../CoreProvider");
-const AwsClientEc2 = require("./AwsClientEc2");
+const AwsClientEC2 = require("./AwsClientEC2");
 const AwsClientKeyPair = require("./AwsClientKeyPair");
 const AwsVpc = require("./AwsVpc");
 
@@ -36,10 +36,11 @@ const fnSpecs = (config) => {
     {
       type: "Instance",
       Client: ({ spec }) =>
-        AwsClientEc2({
+        AwsClientEC2({
           spec,
           config,
         }),
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property
       propertiesDefault: {
         VolumeSize: 100,
         InstanceType: "t2.micro",

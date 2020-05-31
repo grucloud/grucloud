@@ -4,8 +4,9 @@ const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsClientEC2" });
 const toString = (x) => JSON.stringify(x, null, 4);
 const StateTerminated = ["terminated"];
+const KeyName = "Name";
 
-module.exports = AwsClientEc2 = ({ spec, config }) => {
+module.exports = AwsClientEC2 = ({ spec, config }) => {
   assert(spec);
   assert(config);
   const { tag } = config;
@@ -44,7 +45,7 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
     } = await list();
 
     const findTagName = (tags = []) =>
-      tags.find((tag) => tag.Key === "name" && tag.Value === name);
+      tags.find((tag) => tag.Key === KeyName && tag.Value === name);
     const instance = items.find(
       (item) =>
         findTagName(item.Instances[0].Tags) &&
@@ -57,7 +58,7 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
   const findName = (item) => {
     assert(item);
     assert(item.Instances);
-    const tag = item.Instances[0].Tags.find((tag) => tag.Key === "name");
+    const tag = item.Instances[0].Tags.find((tag) => tag.Key === KeyName);
     if (tag?.Value) {
       return tag.Value;
     } else {
@@ -160,7 +161,7 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
             ResourceType: "instance",
             Tags: [
               {
-                Key: "name",
+                Key: KeyName,
                 Value: name,
               },
               {

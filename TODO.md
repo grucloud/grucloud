@@ -6,9 +6,9 @@
 
 ## TODO Aws:
 
-- ec2 name
 - gc destroy tries to destroy the default VPC
 - subnet
+- "Description": "securityGroupmanagedByGru",
 
 ## TODO Goggle
 
