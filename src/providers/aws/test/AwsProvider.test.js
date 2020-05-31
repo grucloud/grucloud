@@ -12,7 +12,8 @@ describe("AwsProvider", async function () {
   const serverName = "web-server";
   before(async () => {
     provider = await AwsProvider({ name: "aws", config });
-    await provider.destroyAll();
+    const { success } = await provider.destroyAll();
+    assert(success);
     keyPair = provider.makeKeyPair({
       name: keyPairName,
     });
@@ -47,7 +48,7 @@ describe("AwsProvider", async function () {
   });
   after(async () => {
     //TODO
-    // await provider.destroyAll();
+    await provider.destroyAll();
   });
   it("keyPair name", async function () {
     assert.equal(keyPair.name, keyPairName);

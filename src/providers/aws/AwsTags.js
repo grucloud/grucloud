@@ -5,16 +5,16 @@ const toString = (x) => JSON.stringify(x, null, 4);
 exports.toTagName = (name, tag) => `${name}${tag}`;
 
 exports.isOurMinion = ({ resource, tag: ourTag }) => {
-  logger.info(`isOurMinion ? ${toString({ ourTag, resource })}`);
   assert(resource);
   assert(resource.Tags);
+  let minion = false;
   if (resource.Tags.find((tag) => tag.Key === ourTag)) {
-    return true;
+    minion = true;
+  } else if (resource.Description?.includes(ourTag)) {
+    minion = true;
   }
-  if (resource.Description?.includes(ourTag)) {
-    return true;
-  }
-  return false;
+  logger.info(`isOurMinion ${minion} ${toString({ ourTag, resource })}`);
+  return minion;
 };
 
 exports.isOurMinionEc2 = ({ resource, tag: ourTag }) => {

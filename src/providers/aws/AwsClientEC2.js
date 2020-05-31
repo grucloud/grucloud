@@ -3,7 +3,7 @@ const _ = require("lodash");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsClientEC2" });
 const toString = (x) => JSON.stringify(x, null, 4);
-const instancesStateIgnore = ["terminated", "shutting-down"];
+const instancesStateTerminating = ["terminated", "shutting-down"];
 
 module.exports = AwsClientEc2 = ({ spec, config }) => {
   assert(spec);
@@ -47,7 +47,7 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
     const instance = items.find(
       (item) =>
         findTagName(item.Instances[0].Tags) &&
-        !instancesStateIgnore.includes(item.Instances[0].State.Name)
+        !instancesStateTerminating.includes(item.Instances[0].State.Name)
     );
     logger.debug(`getByName result ${toString({ instance })}`);
     return instance;
@@ -63,12 +63,39 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
       throw Error(`cannot find name in ${toString(item)}`);
     }
   };
+
+  const getStateName = (instance) => {
+    const state = instance.Instances[0].State.Name;
+    logger.debug(`stateName ${state}`);
+    return state;
+  };
+
   const isUp = async ({ name }) => {
     logger.debug(`isUp ${name}`);
     assert(name);
+    let up = false;
     const instance = await getByName({ name });
-    return instance.Instances[0].State.Name === "running";
+    if (instance) {
+      up = ["running"].includes(getStateName(instance));
+    }
+    logger.info(`isUp ${name} ${up ? "UP" : "NOT UP"}`);
+    return up;
   };
+
+  const isDown = async ({ name }) => {
+    logger.debug(`isDown ${name}`);
+    assert(name);
+    let down = false;
+    const instance = await getByName({ name });
+    if (!instance) {
+      down = true;
+    } else {
+      down = ["terminated"].includes(getStateName(instance));
+    }
+    logger.info(`isDown ${name} ${down ? "DOWN" : "NOT DOWN"}`);
+    return down;
+  };
+
   const create = async ({ name, payload }) => {
     assert(name);
     assert(payload);
@@ -98,7 +125,7 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
   };
 
   const destroy = async ({ id, name }) => {
-    logger.debug(`destroy ${toString({ name, id })}`);
+    logger.debug(`destroy ec2 ${toString({ name, id })}`);
     if (_.isEmpty(id)) {
       throw Error(`destroy invalid id`);
     }
@@ -158,6 +185,7 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
     spec,
     ec2,
     isUp,
+    isDown,
     toId,
     getById,
     getByName,

@@ -21,6 +21,7 @@ module.exports = ScalewayClient = ({
   assert(config);
   assert(config.secretKey);
   const { type } = spec;
+
   const findName = (item) => {
     assert(item);
     logger.debug(`findName: ${toString(item)}`);
@@ -67,11 +68,13 @@ module.exports = ScalewayClient = ({
 
   return {
     spec,
+    // TODO spread core ?
     toId: core.toId,
     getById: core.getById,
     getByName,
     findName,
     isUp: core.isUp,
+    isDown: core.isDown,
     create: core.create,
     destroy: core.destroy,
     list: core.list,

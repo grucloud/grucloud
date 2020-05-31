@@ -63,6 +63,12 @@ module.exports = CoreClient = ({
     const instance = await getByName({ name });
     return !!instance;
   };
+  const isDown = async ({ name }) => {
+    logger.info(`isDown ${type}/${name}`);
+    assert(name, "isDown missing name");
+    const instance = await getByName({ name });
+    return !instance;
+  };
 
   const create = async ({ name, payload }) => {
     logger.debug(`create ${type}/${name}, payload: ${toString(payload)}`);
@@ -137,6 +143,7 @@ module.exports = CoreClient = ({
     findName,
     toName,
     isUp,
+    isDown,
     create,
     destroy,
     list,

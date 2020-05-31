@@ -1,13 +1,13 @@
 ## Common:
 
+- add destroy option: by type, all, default is our
 - managedBy tag
-- list subcommands: filter by type, isOur and writable
 
-- Display all resources
-
-- Destroy depends on dependencies, build a graph
+* Destroy depends on dependencies, build a graph
 
 ## TODO Aws:
+
+- gc destroy tries to destroy the default VPC
 
 ## TODO Goggle
 

@@ -29,7 +29,7 @@ const retryExpectException = async (
   }
 };
 exports.retryExpectException = retryExpectException;
-
+//TODO revist, throw on error ? add isExceptionOk ?
 const retryExpectOk = async ({ fn, isOk, delay = 2e3 }, count = 30) => {
   logger.debug(`retryExpectOk count: ${count}, delay: ${delay}`);
   assert(fn);

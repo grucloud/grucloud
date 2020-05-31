@@ -25,29 +25,36 @@ exports.planQuery = planQuery;
 //Deploy plan
 exports.planDeploy = async ({ infra }) => {
   try {
-    const plans = await planQuery({ infra });
+    await planQuery({ infra });
     //What if plans is empty ?
+    //TODO Promise.all settled ?
     await Promise.all(
       infra.providers.map(async (provider) => {
-        const plan = await runAsyncCommand(
-          () => provider.plan(),
-          `Query Plan for ${provider.name()}`
-        );
-
-        await runAsyncCommand(
-          () => provider.deployPlan(plan),
-          `Deploy Plan for ${provider.name()}`
-        );
-        {
+        try {
           const plan = await runAsyncCommand(
             () => provider.plan(),
-            `Check Plan for ${provider.name()}`
+            `Query Plan for ${provider.name()}`
           );
-          if (!provider.isPlanEmpty(plan)) {
-            throw Error(
-              `plan for ${provider.name()} is not empty after deploy`
+
+          await runAsyncCommand(
+            () => provider.deployPlan(plan),
+            `Deploy Plan for ${provider.name()}`
+          );
+          {
+            const plan = await runAsyncCommand(
+              () => provider.plan(),
+              `Check Plan for ${provider.name()}`
             );
+            if (!provider.isPlanEmpty(plan)) {
+              throw Error(
+                `plan for ${provider.name()} is not empty after deploy`
+              );
+            }
           }
+        } catch (error) {
+          console.error("error", error);
+
+          return { error };
         }
       })
     );
@@ -59,9 +66,10 @@ exports.planDeploy = async ({ infra }) => {
 
 // Destroy plan
 exports.planDestroy = async ({ infra }) => {
-  try {
-    await Promise.all(
-      infra.providers.map(async (provider) => {
+  //TODO Promise all settled
+  const results = await Promise.all(
+    infra.providers.map(async (provider) => {
+      try {
         await runAsyncCommand(
           () => provider.destroyAll(),
           `Destroy Resources ${provider.name()}`
@@ -79,13 +87,15 @@ exports.planDestroy = async ({ infra }) => {
           console.error(message);
           throw Error(message);
         }
-      })
-      //TODO Check status is empty
-    );
-  } catch (error) {
-    console.error("error", error);
-    throw error;
-  }
+      } catch (error) {
+        console.error("error", error);
+        return { error };
+      }
+    })
+    //TODO Check status is empty
+  );
+  console.log("results", results);
+  //return results.some((result) => result);
 };
 
 //Display Status

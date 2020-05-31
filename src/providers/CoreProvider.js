@@ -9,6 +9,28 @@ const { SpecDefault } = require("./SpecDefault");
 const { retryExpectOk } = require("./Retry");
 const { PlanReorder } = require("./PlanReorder");
 
+const destroyByClient = async ({ client, name, data }) => {
+  assert(client);
+  assert(name);
+  assert(data);
+  logger.info(`destroyClient: ${toString({ type: client.spec.type, name })}`);
+  logger.debug(`destroyClient: ${toString({ data })}`);
+  const id = client.toId(data);
+  assert(id);
+
+  try {
+    await client.destroy({ id, name });
+  } catch (error) {
+    logger.error(`destroyClient: ${toString({ error })}`);
+    throw error;
+  }
+
+  await retryExpectOk({
+    fn: () => client.isDown({ id, name }),
+    isOk: (result) => result,
+  });
+};
+
 const ResourceMaker = ({
   name: resourceName,
   dependencies,
@@ -38,7 +60,7 @@ const ResourceMaker = ({
       )}, live: ${toString(live)}`
     );
     const target = await resource.resolveConfig();
-    logger.info(`planUpdate target: ${toString(target)}`);
+    logger.debug(`planUpdate target: ${toString(target)}`);
 
     if (_.isEmpty(target)) {
       return;
@@ -63,7 +85,7 @@ const ResourceMaker = ({
         return live || "<<resolve later>>";
       })
     );
-    logger.info(`resolveDependenciesLive: ${toString({ dependenciesLive })}`);
+    logger.debug(`resolveDependenciesLive: ${toString({ dependenciesLive })}`);
     return dependenciesLive;
   };
 
@@ -72,7 +94,7 @@ const ResourceMaker = ({
     const {
       data: { items },
     } = await client.list();
-    logger.info(`config ${toString({ type, resourceName, items })}`);
+    //logger.debug(`config ${toString({ type, resourceName, items })}`);
 
     const dependenciesLive = await resolveDependenciesLive(dependencies);
 
@@ -81,7 +103,7 @@ const ResourceMaker = ({
       properties: _.defaultsDeep(properties, spec.propertiesDefault),
       dependenciesLive,
     });
-    logger.info(`configDefault: ${toString(config)}`);
+    //logger.info(`configDefault: ${toString(config)}`);
     const finalConfig = transformConfig
       ? await transformConfig({
           dependenciesLive,
@@ -127,22 +149,18 @@ const ResourceMaker = ({
   const destroy = async () => {
     logger.info(`destroy ${type}/${resourceName}`);
     const live = await getLive();
-    logger.info(`destroy type: ${type} item: ${toString(live)}`);
-    if (live) {
-      const id = client.toId(live);
-      if (id) {
-        await client.destroy({ id, name: resourceName });
-      } else {
-        throw Error(`Cannot find id in ${toString(live)}`);
-      }
-    } else {
+    logger.debug(`destroy type: ${type} item: ${toString(live)}`);
+    if (!live) {
       logger.error(`Cannot find ${type}/${resourceName} to destroy`);
+      return;
     }
+    await destroyByClient({ client, name: resourceName, live });
   };
+
   const planUpsert = async ({ resource }) => {
     logger.info(`planUpsert resource: ${toString(resource.serialized())}`);
     const live = await resource.getLive();
-    logger.info(`planUpsert live: ${toString(live)}`);
+    logger.debug(`planUpsert live: ${toString(live)}`);
     const plan = live
       ? planUpdate({ live, resource })
       : [
@@ -334,7 +352,7 @@ module.exports = CoreProvider = ({
       logger.info(`Deploy Plan ${toString(plan)}`);
       logger.info(`*******************************************************`);
       await upsertResources(plan.newOrUpdate);
-      await destroyPlannedResources(plan.destroy);
+      await destroyPlan(plan.destroy);
       logger.info(`*******************************************************`);
       logger.info(`Deploy Plan DONE`);
       logger.info(`*******************************************************`);
@@ -378,22 +396,15 @@ module.exports = CoreProvider = ({
             const { data } = await client.list();
             assert(data);
 
-            logger.debug(
-              `planFindDestroy type: ${type}, items: ${toString(data.items)}`
-            );
-
             return data.items
               .filter((hotResource) => {
-                logger.debug(`planFindDestroy live: ${toString(hotResource)}`);
+                //logger.debug(`planFindDestroy live: ${toString(hotResource)}`);
 
                 if (
                   !spec.isOurMinion({
                     resource: hotResource,
                   })
                 ) {
-                  logger.info(
-                    `planFindDestroy: !minion ${toString(hotResource)}`
-                  );
                   return false;
                 }
                 const name = client.findName(hotResource);
@@ -425,9 +436,9 @@ module.exports = CoreProvider = ({
       .flat()
       .filter((x) => x);
 
-    logger.debug(`planFindDestroy END, plans ${toString(plans)}`);
+    //logger.debug(`planFindDestroy END, plans ${toString(plans)}`);
     const planOrdered = _.flatten(PlanReorder({ plans, specs })).reverse();
-    logger.debug(`planFindDestroy END, ordered plans ${toString(planOrdered)}`);
+    logger.info(`planFindDestroy END, ordered plans ${toString(planOrdered)}`);
     return planOrdered;
   };
   const upsertResources = async (newOrUpdate = []) => {
@@ -444,7 +455,7 @@ module.exports = CoreProvider = ({
       });
     }
   };
-  //TODO refactor, is it used?
+  //TODO refactor, is it used, yes by the cli
   const destroyByName = async ({ name }) => {
     logger.debug(`destroyByName: ${name}`);
     const resource = resourceByName(name);
@@ -453,36 +464,43 @@ module.exports = CoreProvider = ({
     }
     await resource.destroy();
   };
+
   const destroyById = async ({ type, data, name }) => {
     logger.debug(`destroyById: ${toString({ type, name })}`);
     const client = clientByType(type);
     if (!client) {
       throw new Error(`Cannot find endpoint type ${type}}`);
     }
-    const id = client.toId(data);
-    await client.destroy({ id, name });
+    await destroyByClient({ client, name, data });
   };
 
-  const destroyPlannedResources = async (planDestroy) => {
-    logger.debug(`destroyPlannedResources ${toString(planDestroy)}`);
+  const destroyPlan = async (planDestroy) => {
+    logger.info(`destroyPlan ${toString(planDestroy)}`);
     const promises = planDestroy.map(async (planItem) => {
-      await destroyById({
+      return destroyById({
+        name: planItem.resource.name,
         type: planItem.resource.type,
         data: planItem.data,
-        name: planItem.resource.name,
+      }).catch((error) => {
+        logger.error(`destroyPlan error: ${toString(error)}`);
+        return { error };
       });
     });
-    await Promise.each(promises, (fileName, index, arrayLength) => {
-      logger.debug(`destroyPlannedResources ${toString({ index })}`);
+
+    const results = await Promise.each(promises, (result, index) => {
+      logger.debug(`destroyPlan ${toString({ index, result })}`);
     });
-    logger.debug(`destroyPlannedResources DONE${toString(planDestroy)}`);
+    const success = results.every((result) => result === undefined);
+    logger.info(`destroyPlan ${toString({ success, results })}`);
+    return { success, results };
   };
 
   const destroyAll = async () => {
     logger.debug(`destroyAll `);
+    //TODO try catch ?
     try {
       const planDestroy = await planFindDestroy({ all: true });
-      await destroyPlannedResources(planDestroy);
+      return await destroyPlan(planDestroy);
     } catch (error) {
       logger.error(`destroyAll ${toString(error)}`);
       throw error;
@@ -501,17 +519,6 @@ module.exports = CoreProvider = ({
       return false;
     }
     return true;
-  };
-
-  //TODO
-  const destroyResource = async (resource) => {
-    logger.debug(`destroyResource ${resource.serialized()}`);
-    await resource.destroy();
-    await Promise.all(
-      _.map(resource.dependencies, async (dep) => {
-        await destroyResource(dep);
-      })
-    );
   };
 
   const provider = {

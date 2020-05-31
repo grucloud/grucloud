@@ -1,6 +1,8 @@
 var AWS = require("aws-sdk");
 const _ = require("lodash");
 const assert = require("assert");
+const { retryExpectOk } = require("../Retry");
+
 const logger = require("../../logger")({ prefix: "AwsSecurityGroup" });
 const toString = (x) => JSON.stringify(x, null, 4);
 const { toTagName } = require("./AwsTags");
@@ -49,9 +51,19 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
       throw Error(`cannot find name in ${toString(item)}`);
     }
   };
+  //TODO add in common
   const isUp = async ({ name }) => {
     logger.info(`isUp ${name}`);
-    return !!(await getByName({ name }));
+    const up = !!(await getByName({ name }));
+    logger.info(`isUp ${name} ${up ? "UP" : "NOT UP"}`);
+    return up;
+  };
+  //TODO add in common
+  const isDown = async ({ name }) => {
+    logger.info(`isDown ${name}`);
+    const down = !(await getByName({ name }));
+    logger.info(`isDown ${name} ${down ? "DOWN" : "NOT DOWN"}`);
+    return down;
   };
   const list = async () => {
     logger.debug(`list`);
@@ -111,12 +123,37 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   };
 
   const destroy = async ({ id, name }) => {
-    logger.debug(`destroy ${toString({ name, id })}`);
     if (_.isEmpty(id)) {
       throw Error(`destroy invalid id`);
     }
-    await ec2.deleteSecurityGroup({ GroupId: id }).promise();
-    logger.debug(`destroyed ${toString({ name, id })}`);
+    //TODO improve it ?
+    try {
+      await retryExpectOk(
+        {
+          fn: async () => {
+            try {
+              await ec2.deleteSecurityGroup({ GroupId: id }).promise();
+            } catch (error) {
+              logger.debug(`destroy sg error ${toString({ error })}`);
+              if (error.code === "InvalidGroup.NotFound") {
+                return true;
+              } else {
+                throw error;
+              }
+            }
+            return true;
+          },
+
+          isOk: (result) => result,
+          delay: 5e3,
+        },
+        100
+      );
+      logger.debug(`destroy sg DONE ${toString({ name, id })}`);
+    } catch (error) {
+      logger.error(`destroy sg error ${toString({ error })}`);
+      return { error };
+    }
   };
   //TODO
   const configDefault = async ({ properties }) => properties;
@@ -128,6 +165,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     getByName,
     findName,
     isUp,
+    isDown,
     list,
     create,
     destroy,

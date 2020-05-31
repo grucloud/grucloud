@@ -37,7 +37,7 @@ describe("MockProvider Simple", async function () {
 
     const plan = await provider.plan();
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 3);
+    assert.equal(plan.newOrUpdate.length, 4);
     await provider.deployPlan(plan);
 
     {
