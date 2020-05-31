@@ -2,6 +2,7 @@ var AWS = require("aws-sdk");
 const _ = require("lodash");
 const assert = require("assert");
 const { retryExpectOk } = require("../Retry");
+const { getByNameCore, findNameCore } = require("../Common");
 
 const logger = require("../../logger")({ prefix: "AwsSecurityGroup" });
 const toString = (x) => JSON.stringify(x, null, 4);
@@ -12,13 +13,17 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const { managedByDescription } = config;
   const ec2 = new AWS.EC2();
 
+  const findName = (item) => findNameCore({ item, field: "GroupName" });
+  const getByName = ({ name }) => getByNameCore({ name, list, findName });
+
   //rename in findId
-  const toId = (item) => {
+  const findId = (item) => {
     assert(item);
     const id = item.GroupId;
     assert(id);
     return id;
   };
+
   //TODO in common
   const getById = async ({ id }) => {
     assert(id);
@@ -26,32 +31,11 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     const {
       data: { items },
     } = list();
-    const instance = items.find((item) => toId(item) === id);
+    const instance = items.find((item) => findId(item) === id);
     logger.debug(`getById result ${toString({ instance })}`);
     return instance;
   };
 
-  const getByName = async ({ name }) => {
-    logger.info(`getByName ${name}`);
-    assert(name);
-    const {
-      data: { items },
-    } = await list();
-    const instance = items.find((item) => item.GroupName === name);
-    logger.debug(`getByName result ${toString({ instance })}`);
-
-    return instance;
-  };
-
-  const findName = (item) => {
-    assert(item);
-    const { GroupName } = item;
-    if (GroupName) {
-      return GroupName;
-    } else {
-      throw Error(`cannot find name in ${toString(item)}`);
-    }
-  };
   //TODO add in common
   const isUp = async ({ name }) => {
     logger.info(`isUp ${name}`);
@@ -130,7 +114,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   return {
     type: "SecurityGroup",
     spec,
-    toId,
+    findId,
     getById,
     getByName,
     findName,

@@ -3,14 +3,17 @@ const _ = require("lodash");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsVpc" });
 const toString = (x) => JSON.stringify(x, null, 4);
+const { getByNameCore, findNameCore } = require("../Common");
 
 module.exports = AwsVpc = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  logger.info(`${toString(config)}`);
-
   const ec2 = new AWS.EC2();
+
+  //TODO check name
+  const findName = (item) => findNameCore({ item, field: "Vpc" });
+  const getByName = ({ name }) => getByNameCore({ name, list, findName });
 
   const getById = async ({ id }) => {
     assert(id);
@@ -26,22 +29,10 @@ module.exports = AwsVpc = ({ spec, config }) => {
     return instance;
   };
 
-  const getByName = async ({ name }) => {
-    logger.info(`getByName ${name}`);
-    const {
-      data: { items },
-    } = await list();
-    //TODO
-    const instance = items.find((item) => item.KeyName === name);
-    logger.debug(`getByName result ${toString({ instance })}`);
-
-    return instance;
-  };
-
   const list = async () => {
     logger.debug(`list`);
     const { Vpcs } = await ec2.describeVpcs().promise();
-    logger.debug(`list ${toString(Vpcs)}`);
+    logger.info(`list ${toString(Vpcs)}`);
 
     return {
       data: {

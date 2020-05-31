@@ -2,6 +2,7 @@ const AWS = require("aws-sdk");
 const _ = require("lodash");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsClientEC2" });
+const { getByNameCore } = require("../Common");
 const toString = (x) => JSON.stringify(x, null, 4);
 const StateTerminated = ["terminated"];
 const KeyName = "Name";
@@ -18,7 +19,21 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
 
   const ec2 = new AWS.EC2();
 
-  const toId = (item) => {
+  const findName = (item) => {
+    assert(item);
+    assert(item.Instances);
+    const tag = item.Instances[0].Tags.find((tag) => tag.Key === KeyName);
+    if (tag?.Value) {
+      logger.debug(`findName ${toString({ name: tag.Value, item })}`);
+      return tag.Value;
+    } else {
+      throw Error(`cannot find name in ${toString(item)}`);
+    }
+  };
+
+  const getByName = ({ name }) => getByNameCore({ name, list, findName });
+
+  const findId = (item) => {
     assert(item);
     const id = item.Instances[0].InstanceId;
     assert(id);
@@ -31,38 +46,9 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     const {
       data: { items },
     } = list();
-    const instance = items.find((item) => toId(item) === id);
+    const instance = items.find((item) => findId(item) === id);
     logger.debug(`getById result ${toString({ instance })}`);
     return instance;
-  };
-
-  const getByName = async ({ name }) => {
-    assert(name);
-    logger.info(`getByName ${name}`);
-    const {
-      data: { items },
-    } = await list();
-
-    const findTagName = (tags = []) =>
-      tags.find((tag) => tag.Key === KeyName && tag.Value === name);
-    const instance = items.find(
-      (item) =>
-        findTagName(item.Instances[0].Tags) &&
-        !StateTerminated.includes(item.Instances[0].State.Name)
-    );
-    logger.debug(`getByName result ${toString({ instance })}`);
-    return instance;
-  };
-
-  const findName = (item) => {
-    assert(item);
-    assert(item.Instances);
-    const tag = item.Instances[0].Tags.find((tag) => tag.Key === KeyName);
-    if (tag?.Value) {
-      return tag.Value;
-    } else {
-      throw Error(`cannot find name in ${toString(item)}`);
-    }
   };
 
   const getStateName = (instance) => {
@@ -185,7 +171,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     ec2,
     isUp,
     isDown,
-    toId,
+    findId,
     getById,
     getByName,
     findName,

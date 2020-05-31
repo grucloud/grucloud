@@ -16,43 +16,18 @@ module.exports = GoogleClient = ({
   spec,
   config,
   configDefault,
-  toName,
+  findName,
 }) => {
   assert(url);
   assert(spec);
   assert(spec.type);
   assert(config);
-  const { type } = spec;
-  const findName = (item) => {
-    assert(item);
-    logger.debug(`findName: ${toString(item)}`);
-
-    if (item.name) {
-      return item.name;
-    } else {
-      throw Error(`cannot find name in ${toString(item)}`);
-    }
-  };
-
-  const getByName = async ({ name }) => {
-    logger.info(`getByName ${type}/${name}`);
-    assert(name);
-    const {
-      data: { items },
-    } = await core.list();
-    assert(items);
-    const instance = items.find((item) => core.toName(item).includes(name));
-    logger.info(`getByName ${type}/${name}, out: ${toString(instance)}`);
-    return instance;
-  };
 
   const core = CoreClient({
     type: "google",
     spec,
     onResponseList,
     configDefault,
-    toName,
-    getByName,
     findName,
     axios: AxiosMaker({
       baseURL: urljoin(BASE_URL, url),

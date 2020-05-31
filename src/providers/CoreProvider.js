@@ -22,7 +22,7 @@ const destroyByClient = async ({ client, name, data }) => {
   assert(data);
   logger.info(`destroyClient: ${toString({ type: client.spec.type, name })}`);
   logger.debug(`destroyClient: ${toString({ data })}`);
-  const id = client.toId(data);
+  const id = client.findId(data);
   assert(id);
 
   try {

@@ -13,7 +13,6 @@ module.exports = ScalewayClient = ({
   onResponseList,
   config,
   configDefault,
-  toName,
 }) => {
   assert(url);
   assert(spec);
@@ -31,35 +30,19 @@ module.exports = ScalewayClient = ({
     const tagName = item.tags.find((tag) => tag.includes("name:"));
     if (tagName) {
       const name = tagName.replace("name:", "");
-      logger.debug(`findName: is ${name}`);
+      logger.debug(`findName: is ${name} `);
       return name;
     } else {
-      throw Error(`cannot find name in ${toString(item)}`);
+      logger.debug(`findName: cannot find name in ${toString(item)}`);
     }
-  };
-  //TODO same getByName for everyone now ?
-  const getByName = async ({ name }) => {
-    logger.debug(`getByName: ${name}`);
-    assert(name);
-    const {
-      data: { items },
-    } = await core.list();
-    assert(items);
-
-    logger.debug(`getByName: ${name}, items: ${toString(items)}`);
-    //TODO check with tag
-    const instance = items.find((item) => core.toName(item).includes(name));
-    logger.info(`getByName ${type}/${name}, out: ${toString(instance)}`);
   };
 
   const core = CoreClient({
     type: "scaleway",
     spec,
     onResponseList,
-    toName,
-    configDefault,
-    getByName,
     findName,
+    configDefault,
     axios: AxiosMaker({
       baseURL: urljoin(BASE_URL, "zones", config.zone, url),
       onHeaders: () => ({ "X-Auth-Token": config.secretKey }),

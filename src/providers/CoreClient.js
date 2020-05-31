@@ -4,7 +4,7 @@ const logger = require("../logger")({ prefix: "CoreClient" });
 const toString = (x) => JSON.stringify(x, null, 4);
 const identity = (x) => x;
 const { retryExpectException } = require("./Retry");
-
+const { getByNameCore, findNameCore } = require("./Common");
 module.exports = CoreClient = ({
   spec,
   type,
@@ -14,12 +14,7 @@ module.exports = CoreClient = ({
     name,
     ...properties,
   }),
-  getByName,
-  findName,
-  toName = (item) => {
-    assert(item.name);
-    return item.name;
-  },
+  findName = (item) => findNameCore({ item, field: "name" }),
   onResponseGet = identity,
   onResponseList = identity,
   onResponseCreate = identity,
@@ -32,7 +27,10 @@ module.exports = CoreClient = ({
   const canDelete = !methods || methods.del;
   const canList = !methods || methods.list;
 
-  const toId = (item) => item.id;
+  //Same as findName
+  const findId = (item) => item.id;
+
+  const getByName = ({ name }) => getByNameCore({ name, list, findName });
 
   const getById = async ({ id }) => {
     logger.debug(`get ${toString({ type, id, canGet })}`);
@@ -137,11 +135,11 @@ module.exports = CoreClient = ({
     spec,
     type,
     methods,
-    toId,
+    findId,
     getById,
     getByName,
     findName,
-    toName,
+    findName,
     isUp,
     isDown,
     create,

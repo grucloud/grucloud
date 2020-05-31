@@ -35,7 +35,7 @@ const fnSpecs = (config) => {
             organization,
             ...properties,
           }),
-          toName: (item) => item.address,
+          findName: (item) => item.address,
         }),
       type: "Ip",
       /* TODO test that
