@@ -124,37 +124,13 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   };
 
   const destroy = async ({ id, name }) => {
+    logger.debug(`destroy sg ${toString({ name, id })}`);
+
     if (_.isEmpty(id)) {
       throw Error(`destroy invalid id`);
     }
-    //TODO improve it ?
-    try {
-      await retryExpectOk(
-        {
-          fn: async () => {
-            try {
-              await ec2.deleteSecurityGroup({ GroupId: id }).promise();
-            } catch (error) {
-              logger.debug(`destroy sg error ${toString({ error })}`);
-              if (error.code === "InvalidGroup.NotFound") {
-                return true;
-              } else {
-                throw error;
-              }
-            }
-            return true;
-          },
 
-          isOk: (result) => result,
-          delay: 5e3,
-        },
-        100
-      );
-      logger.debug(`destroy sg DONE ${toString({ name, id })}`);
-    } catch (error) {
-      logger.error(`destroy sg error ${toString({ error })}`);
-      return { error };
-    }
+    await ec2.deleteSecurityGroup({ GroupId: id }).promise();
   };
   //TODO
   const configDefault = async ({ properties }) => properties;

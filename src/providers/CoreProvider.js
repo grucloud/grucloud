@@ -26,6 +26,7 @@ const destroyByClient = async ({ client, name, data }) => {
   }
 
   await retryExpectOk({
+    name: `destroy ${name}`,
     fn: () => client.isDown({ id, name }),
     isOk: (result) => result,
   });
@@ -128,6 +129,7 @@ const ResourceMaker = ({
     await client.create({ name: resourceName, payload });
     assert(client.isUp);
     await retryExpectOk({
+      name: `create ${resourceName}`,
       fn: () => client.isUp({ name: resourceName }),
       isOk: (result) => result,
     });
@@ -476,22 +478,27 @@ module.exports = CoreProvider = ({
 
   const destroyPlan = async (planDestroy) => {
     logger.info(`destroyPlan ${toString(planDestroy)}`);
-    const promises = planDestroy.map(async (planItem) => {
-      return destroyById({
-        name: planItem.resource.name,
-        type: planItem.resource.type,
-        data: planItem.data,
-      }).catch((error) => {
-        logger.error(`destroyPlan error: ${toString(error)}`);
-        return { error };
-      });
-    });
 
-    const results = await Promise.each(promises, (result, index) => {
-      logger.debug(`destroyPlan ${toString({ index, result })}`);
-    });
-    const success = results.every((result) => result === undefined);
-    logger.info(`destroyPlan ${toString({ success, results })}`);
+    const results = await planDestroy.reduce(async (previousPromise, item) => {
+      const collection = await previousPromise;
+      //logger.info(`destroyPlan collection ${toString(collection)}`);
+
+      try {
+        await destroyById({
+          name: item.resource.name,
+          type: item.resource.type,
+          data: item.data,
+        });
+        collection.push({ item });
+      } catch (error) {
+        logger.error(`destroyPlan error ${toString(error)}`);
+        collection.push({ item, error });
+      }
+      return collection;
+    }, Promise.resolve([]));
+
+    const success = results.every((result) => !result.error);
+    logger.info(`destroyPlan DONE ${toString({ success, results })}`);
     return { success, results };
   };
 

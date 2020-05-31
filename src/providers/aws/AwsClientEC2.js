@@ -1,9 +1,9 @@
-var AWS = require("aws-sdk");
+const AWS = require("aws-sdk");
 const _ = require("lodash");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsClientEC2" });
 const toString = (x) => JSON.stringify(x, null, 4);
-const instancesStateTerminating = ["terminated", "shutting-down"];
+const StateTerminated = ["terminated"];
 
 module.exports = AwsClientEc2 = ({ spec, config }) => {
   assert(spec);
@@ -48,7 +48,7 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
     const instance = items.find(
       (item) =>
         findTagName(item.Instances[0].Tags) &&
-        !instancesStateTerminating.includes(item.Instances[0].State.Name)
+        !StateTerminated.includes(item.Instances[0].State.Name)
     );
     logger.debug(`getByName result ${toString({ instance })}`);
     return instance;
@@ -84,16 +84,16 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
   };
 
   const isDown = async ({ name }) => {
-    logger.debug(`isDown ${name}`);
+    logger.debug(`isDown ec2 ${name}`);
     assert(name);
     let down = false;
     const instance = await getByName({ name });
     if (!instance) {
       down = true;
     } else {
-      down = ["terminated"].includes(getStateName(instance));
+      down = StateTerminated.includes(getStateName(instance));
     }
-    logger.info(`isDown ${name} ${down ? "DOWN" : "NOT DOWN"}`);
+    logger.info(`isDown ec2 ${name} ${down ? "DOWN" : "NOT DOWN"}`);
     return down;
   };
 
@@ -112,9 +112,7 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
     logger.debug(`list ${toString(data)}`);
     const items = data.Reservations.filter(
       (reservation) =>
-        !["terminated", "shutting-down"].includes(
-          reservation.Instances[0].State.Name
-        )
+        !StateTerminated.includes(reservation.Instances[0].State.Name)
     );
     logger.debug(`list filtered: ${toString(items)}`);
     return {

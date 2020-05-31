@@ -2,12 +2,13 @@
 
 - add destroy option: by type, all, default is our
 - managedBy tag
-
-* Destroy depends on dependencies, build a graph
+- compare or compareObject
 
 ## TODO Aws:
 
+- ec2 name
 - gc destroy tries to destroy the default VPC
+- subnet
 
 ## TODO Goggle
 

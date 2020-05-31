@@ -30,28 +30,30 @@ const retryExpectException = async (
 };
 exports.retryExpectException = retryExpectException;
 //TODO revist, throw on error ? add isExceptionOk ?
-const retryExpectOk = async ({ fn, isOk, delay = 2e3 }, count = 30) => {
-  logger.debug(`retryExpectOk count: ${count}, delay: ${delay}`);
+const retryExpectOk = async ({ name, fn, isOk, delay = 4e3 }, count = 30) => {
+  logger.debug(`retryExpectOk ${name},  count: ${count}, delay: ${delay}`);
   assert(fn);
   if (count === 0) {
-    throw Error("timeout");
+    throw Error(`retryExpectOk timeout for ${name}`);
   }
   try {
     const result = await fn();
-    logger.debug(`retryExpectOk: result: ${toString(result)}`);
+    logger.debug(`retryExpectOk ${name} result: ${toString(result)}`);
 
     if (isOk(result)) {
-      logger.debug(`retryExpectOk isOk`);
+      logger.debug(`retryExpectOk ${name} isOk`);
       return true;
     }
-    logger.debug(`retryExpectOk: not ok`);
+    logger.debug(`retryExpectOk: ${name} not ok`);
   } catch (error) {
     logger.debug(
-      `retryExpectOk: ${toString(error.response ? error.response : error)}`
+      `retryExpectOk ${name}: ${toString(
+        error.response ? error.response : error
+      )}`
     );
   }
   await Promise.delay(delay);
-  return retryExpectOk({ fn, isOk, delay }, --count);
+  return retryExpectOk({ name, fn, isOk, delay }, --count);
 };
 
 exports.retryExpectOk = retryExpectOk;

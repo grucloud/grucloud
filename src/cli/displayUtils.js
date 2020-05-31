@@ -40,7 +40,7 @@ exports.displayPlan = async (plan) => {
 
 const displayLiveItem = (table, item) => {
   assert(item.type);
-  table.push([item.type, YAML.stringify(item.data)]);
+  table.push([item.type, YAML.stringify(item.items)]);
 };
 
 exports.displayLive = async ({ providerName, targets }) => {
