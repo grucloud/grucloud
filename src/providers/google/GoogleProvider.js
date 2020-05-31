@@ -32,7 +32,7 @@ const fnSpecs = (config) => {
         assert(config);
         assert(items);
         logger.debug(
-          `postConfig: ${toString(config)}, items: ${toString(items)}`
+          `transformConfig: ${toString(config)}, items: ${toString(items)}`
         );
         const ip = items.find((item) => item.address === config.address);
         if (ip) {
