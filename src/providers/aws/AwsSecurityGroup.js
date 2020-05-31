@@ -5,11 +5,11 @@ const { retryExpectOk } = require("../Retry");
 
 const logger = require("../../logger")({ prefix: "AwsSecurityGroup" });
 const toString = (x) => JSON.stringify(x, null, 4);
-const { toTagName } = require("./AwsTags");
+
 module.exports = AwsSecurityGroup = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  const { tag } = config;
+  const { managedByDescription } = config;
   const ec2 = new AWS.EC2();
 
   //rename in findId
@@ -19,7 +19,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     assert(id);
     return id;
   };
-
+  //TODO in common
   const getById = async ({ id }) => {
     assert(id);
     logger.debug(`getById ${toString({ id })}`);
@@ -93,32 +93,25 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const create = async ({ name, payload }) => {
     assert(name);
     assert(payload);
-    const params = {
-      Description: toTagName(name, tag),
+    //assert(payload.create, "Missing create field");
+    const createParams = {
+      Description: managedByDescription,
       GroupName: name,
-      //TODO
-      //TODO Tags
-      //VpcId: 'STRING_VALUE'
+      ...payload.create,
     };
 
-    logger.debug(`createSecurityGroup ${toString({ name, params, payload })}`);
-
-    const { GroupId } = await ec2.createSecurityGroup(params).promise();
+    logger.debug(`create sg ${toString({ name, createParams, payload })}`);
+    const { GroupId } = await ec2.createSecurityGroup(createParams).promise();
     logger.debug(`create GroupId ${toString(GroupId)}`);
 
+    //TODO empty ingress ?
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
     const ingressParam = {
       GroupId,
-      ...payload,
+      ...payload.ingress,
     };
-    logger.debug(`ingressParam ${toString(ingressParam)}`);
-    try {
-      await ec2.authorizeSecurityGroupIngress(ingressParam).promise();
-    } catch (error) {
-      logger.error(`authorizeSecurityGroupIngress error ${toString(error)}`);
-      throw Error;
-    }
-    logger.debug(`authorizeSecurityGroupIngress`);
+    await ec2.authorizeSecurityGroupIngress(ingressParam).promise();
+    logger.debug(`create sg DONE`);
 
     return { GroupId };
   };
@@ -127,7 +120,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     logger.debug(`destroy sg ${toString({ name, id })}`);
 
     if (_.isEmpty(id)) {
-      throw Error(`destroy invalid id`);
+      throw Error(`destroy sg invalid id`);
     }
 
     await ec2.deleteSecurityGroup({ GroupId: id }).promise();

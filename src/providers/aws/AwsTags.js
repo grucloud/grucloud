@@ -2,29 +2,45 @@ const logger = require("../../logger")({ prefix: "AwsTags" });
 const assert = require("assert");
 const toString = (x) => JSON.stringify(x, null, 4);
 
-exports.toTagName = (name, tag) => `${name}${tag}`;
-
-exports.isOurMinion = ({ resource, tag: ourTag }) => {
+exports.isOurMinion = ({ resource, config }) => {
+  const { managedByKey, managedByValue, managedByDescription } = config;
   assert(resource);
   assert(resource.Tags);
+
   let minion = false;
-  if (resource.Tags.find((tag) => tag.Key === ourTag)) {
+  if (
+    resource.Tags.find(
+      (tag) => tag.Key === managedByKey && tag.Value === managedByValue
+    )
+  ) {
     minion = true;
-  } else if (resource.Description?.includes(ourTag)) {
+  } else if (resource.Description?.includes(managedByDescription)) {
     minion = true;
   }
-  logger.info(`isOurMinion ${minion} ${toString({ ourTag, resource })}`);
+  logger.debug(
+    `isOurMinion ${toString({
+      minion,
+      resource,
+    })}`
+  );
   return minion;
 };
 
-exports.isOurMinionEc2 = ({ resource, tag: ourTag }) => {
-  logger.info(`isOurMinion ? ${toString({ ourTag, resource })}`);
+exports.isOurMinionEc2 = ({ resource, config }) => {
+  const { managedByKey, managedByValue } = config;
   assert(resource);
   assert(resource.Instances);
-  const hasTag = resource.Instances.some((instance) =>
-    instance.Tags.find((tag) => tag.Key === ourTag)
+  const isMinion = resource.Instances.some((instance) =>
+    instance.Tags.find(
+      (tag) => tag.Key === managedByKey && tag.Value === managedByValue
+    )
   );
 
-  logger.info(`isOurMinion: ${hasTag}`);
-  return hasTag;
+  logger.debug(
+    `isOurMinion ec2: ${toString({
+      isMinion,
+      resource,
+    })}`
+  );
+  return isMinion;
 };

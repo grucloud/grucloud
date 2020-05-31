@@ -13,23 +13,25 @@ describe("AwsSecurityGroup", async function () {
     sg = provider.makeSecurityGroup({
       name: "sg",
       properties: {
-        IpPermissions: [
-          {
-            FromPort: 22,
-            IpProtocol: "tcp",
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-            Ipv6Ranges: [
-              {
-                CidrIpv6: "::/0",
-              },
-            ],
-            ToPort: 22,
-          },
-        ],
+        ingress: {
+          IpPermissions: [
+            {
+              FromPort: 22,
+              IpProtocol: "tcp",
+              IpRanges: [
+                {
+                  CidrIp: "0.0.0.0/0",
+                },
+              ],
+              Ipv6Ranges: [
+                {
+                  CidrIpv6: "::/0",
+                },
+              ],
+              ToPort: 22,
+            },
+          ],
+        },
       },
     });
     await provider.destroyAll();
@@ -42,7 +44,7 @@ describe("AwsSecurityGroup", async function () {
   });
   it("sg resolveConfig", async function () {
     const config = await sg.resolveConfig();
-    assert.equal(config.IpPermissions[0].FromPort, 22);
+    assert.equal(config.ingress.IpPermissions[0].FromPort, 22);
   });
   it("sg targets", async function () {
     const live = await sg.getLive();

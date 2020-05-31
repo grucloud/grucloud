@@ -20,23 +20,31 @@ describe("AwsProvider", async function () {
     sg = provider.makeSecurityGroup({
       name: "securityGroup",
       properties: {
-        IpPermissions: [
-          {
-            FromPort: 22,
-            IpProtocol: "tcp",
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-            Ipv6Ranges: [
-              {
-                CidrIpv6: "::/0",
-              },
-            ],
-            ToPort: 22,
-          },
-        ],
+        //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
+        create: {
+          //VpcId: "",
+          //Description: "Security Group Description"
+        },
+        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
+        ingress: {
+          IpPermissions: [
+            {
+              FromPort: 22,
+              IpProtocol: "tcp",
+              IpRanges: [
+                {
+                  CidrIp: "0.0.0.0/0",
+                },
+              ],
+              Ipv6Ranges: [
+                {
+                  CidrIpv6: "::/0",
+                },
+              ],
+              ToPort: 22,
+            },
+          ],
+        },
       },
     });
 

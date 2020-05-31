@@ -1,7 +1,11 @@
 const assert = require("assert");
 const { isOurMinionEc2, isOurMinion } = require("../AwsTags");
 
-const tag = "-gru";
+const config = {
+  managedByKey: "ManagedBy",
+  managedByValue: "GruCloud",
+  managedByDescription: "Managed By GruCloud",
+};
 
 describe("isOurMinionEc2", function () {
   const resource = {
@@ -10,22 +14,27 @@ describe("isOurMinionEc2", function () {
       {
         Tags: [
           {
-            Key: "name",
+            Key: "Name",
             Value: "web-server",
           },
           {
-            Key: "-gru",
-            Value: "true",
+            Key: "ManagedBy",
+            Value: "GruCloud",
           },
         ],
       },
     ],
   };
   it("is our", function () {
-    assert(isOurMinionEc2({ resource, tag }));
+    assert(isOurMinionEc2({ resource, config }));
   });
   it("not our", function () {
-    assert(!isOurMinionEc2({ resource, tag: "NotMyTag" }));
+    assert(
+      !isOurMinionEc2({
+        resource,
+        config: { managedByKey: "ddd", managedByValue: "other" },
+      })
+    );
   });
 });
 
@@ -33,19 +42,21 @@ describe("isOurMinion", function () {
   const resource = {
     Tags: [
       {
-        Key: "name",
+        Key: "ìName",
         Value: "web-server",
       },
       {
-        Key: "-gru",
-        Value: "true",
+        Key: "ManagedBy",
+        Value: "GruCloud",
       },
     ],
   };
   it("is our", function () {
-    assert(isOurMinion({ resource, tag }));
+    assert(isOurMinion({ resource, config }));
   });
   it("not our", function () {
-    assert(!isOurMinion({ resource, tag: "NotMyTag" }));
+    assert(
+      !isOurMinion({ resource, config: { ...config, managedByValue: "other" } })
+    );
   });
 });

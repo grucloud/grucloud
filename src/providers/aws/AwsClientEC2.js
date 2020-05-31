@@ -9,8 +9,7 @@ const KeyName = "Name";
 module.exports = AwsClientEC2 = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  const { tag } = config;
-  assert(tag);
+  const { managedByKey, managedByValue } = config;
 
   //TODO move to provider
   AWS.config.apiVersions = {
@@ -165,8 +164,8 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
                 Value: name,
               },
               {
-                Key: tag,
-                Value: "true",
+                Key: managedByKey,
+                Value: managedByValue,
               },
             ],
           },

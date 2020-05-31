@@ -9,6 +9,13 @@ const { SpecDefault } = require("./SpecDefault");
 const { retryExpectOk } = require("./Retry");
 const { PlanReorder } = require("./PlanReorder");
 
+const configProviderDefault = {
+  tag: "ManagedByGru",
+  managedByKey: "ManagedBy",
+  managedByValue: "GruCloud",
+  managedByDescription: "Managed By GruCloud",
+};
+
 const destroyByClient = async ({ client, name, data }) => {
   assert(client);
   assert(name);
@@ -234,10 +241,6 @@ const createResourceMakers = ({ specs, config, provider }) =>
     };
     return acc;
   }, {});
-
-const configProviderDefault = {
-  tag: "managedByGru",
-};
 
 module.exports = CoreProvider = ({
   name: providerName,

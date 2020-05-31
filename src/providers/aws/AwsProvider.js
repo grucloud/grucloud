@@ -1,5 +1,6 @@
 const AWS = require("aws-sdk");
 const assert = require("assert");
+const _ = require("lodash");
 const CoreProvider = require("../CoreProvider");
 const AwsClientEC2 = require("./AwsClientEC2");
 const AwsClientKeyPair = require("./AwsClientKeyPair");
@@ -11,10 +12,11 @@ const compare = require("../../Utils").compare;
 const AwsTags = require("./AwsTags");
 const toString = (x) => JSON.stringify(x, null, 4);
 
-const fnSpecs = (config) => {
-  const { tag } = config;
+const configProviderDefault = {};
 
-  const isOurMinion = ({ resource }) => AwsTags.isOurMinion({ resource, tag });
+const fnSpecs = (config) => {
+  const isOurMinion = ({ resource }) =>
+    AwsTags.isOurMinion({ resource, config });
 
   return [
     {
@@ -59,7 +61,8 @@ const fnSpecs = (config) => {
         logger.debug(`compare ${toString(diff)}`);
         return diff;
       },
-      isOurMinion: ({ resource }) => AwsTags.isOurMinionEc2({ resource, tag }),
+      isOurMinion: ({ resource }) =>
+        AwsTags.isOurMinionEc2({ resource, config }),
     },
   ];
 };
@@ -80,7 +83,7 @@ module.exports = AwsProvider = async ({ name, config }) => {
     type: "aws",
     name,
     envs: ["AWSAccessKeyId", "AWSSecretKey"],
-    config,
+    config: _.defaults(config, configProviderDefault),
     fnSpecs,
   });
 };

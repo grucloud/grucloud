@@ -6,9 +6,9 @@
 
 ## TODO Aws:
 
+- handle error when retry times out
 - gc destroy tries to destroy the default VPC
 - subnet
-- "Description": "securityGroupmanagedByGru",
 
 ## TODO Goggle
 
