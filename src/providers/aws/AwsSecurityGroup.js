@@ -16,24 +16,11 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const findName = (item) => findNameCore({ item, field: "GroupName" });
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
 
-  //rename in findId
   const findId = (item) => {
     assert(item);
     const id = item.GroupId;
     assert(id);
     return id;
-  };
-
-  //TODO in common
-  const getById = async ({ id }) => {
-    assert(id);
-    logger.debug(`getById ${toString({ id })}`);
-    const {
-      data: { items },
-    } = list();
-    const instance = items.find((item) => findId(item) === id);
-    logger.debug(`getById result ${toString({ instance })}`);
-    return instance;
   };
 
   //TODO add in common
@@ -115,7 +102,6 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     type: "SecurityGroup",
     spec,
     findId,
-    getById,
     getByName,
     findName,
     isUp,

@@ -16,20 +16,6 @@ module.exports = AwsClientKeyPair = ({ spec, config }) => {
   const findName = (item) => findNameCore({ item, field: "KeyName" });
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
 
-  const getById = async ({ id }) => {
-    assert(id);
-    logger.debug(`getById ${toString({ id })}`);
-    const {
-      data: { items },
-    } = list();
-    //TODO
-    /*
-    const instance = items.find((item) => item.Instances[0].InstanceId === id);
-    logger.debug(`getById result ${toString({ instance })}`);
-    */
-    return instance;
-  };
-
   const list = async () => {
     logger.debug(`list`);
     const { KeyPairs } = await ec2.describeKeyPairs().promise();
@@ -46,7 +32,6 @@ module.exports = AwsClientKeyPair = ({ spec, config }) => {
   return {
     type: "KeyPair",
     spec,
-    getById,
     findName,
     getByName,
     list,

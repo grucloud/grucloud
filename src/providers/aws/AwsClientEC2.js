@@ -40,17 +40,6 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     return id;
   };
 
-  const getById = async ({ id }) => {
-    assert(id);
-    logger.debug(`getById ${toString({ id })}`);
-    const {
-      data: { items },
-    } = list();
-    const instance = items.find((item) => findId(item) === id);
-    logger.debug(`getById result ${toString({ instance })}`);
-    return instance;
-  };
-
   const getStateName = (instance) => {
     const state = instance.Instances[0].State.Name;
     logger.debug(`stateName ${state}`);
@@ -172,7 +161,6 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     isUp,
     isDown,
     findId,
-    getById,
     getByName,
     findName,
     create,

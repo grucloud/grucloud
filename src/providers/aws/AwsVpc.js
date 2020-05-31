@@ -15,20 +15,6 @@ module.exports = AwsVpc = ({ spec, config }) => {
   const findName = (item) => findNameCore({ item, field: "Vpc" });
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
 
-  const getById = async ({ id }) => {
-    assert(id);
-    logger.debug(`getById ${toString({ id })}`);
-    const {
-      data: { items },
-    } = list();
-    //TODO
-    /*
-    const instance = items.find((item) => item.Instances[0].InstanceId === id);
-    logger.debug(`getById result ${toString({ instance })}`);
-    */
-    return instance;
-  };
-
   const list = async () => {
     logger.debug(`list`);
     const { Vpcs } = await ec2.describeVpcs().promise();
@@ -45,7 +31,6 @@ module.exports = AwsVpc = ({ spec, config }) => {
   return {
     type: "Vpc",
     spec,
-    getById,
     getByName,
     list,
   };
