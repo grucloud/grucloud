@@ -11,6 +11,7 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
   const { tag } = config;
   assert(tag);
 
+  //TODO move to provider
   AWS.config.apiVersions = {
     ec2: "2016-11-15",
   };
@@ -30,7 +31,7 @@ module.exports = AwsClientEc2 = ({ spec, config }) => {
     const {
       data: { items },
     } = list();
-    const instance = items.find((item) => item.Instances[0].InstanceId === id);
+    const instance = items.find((item) => toId(item) === id);
     logger.debug(`getById result ${toString({ instance })}`);
     return instance;
   };

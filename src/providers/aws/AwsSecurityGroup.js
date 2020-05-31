@@ -12,6 +12,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const { tag } = config;
   const ec2 = new AWS.EC2();
 
+  //rename in findId
   const toId = (item) => {
     assert(item);
     const id = item.GroupId;
@@ -25,7 +26,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     const {
       data: { items },
     } = list();
-    const instance = items.find((item) => item.GroupId === id);
+    const instance = items.find((item) => toId(item) === id);
     logger.debug(`getById result ${toString({ instance })}`);
     return instance;
   };
@@ -105,7 +106,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     const { GroupId } = await ec2.createSecurityGroup(params).promise();
     logger.debug(`create GroupId ${toString(GroupId)}`);
 
-    //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
     const ingressParam = {
       GroupId,
       ...payload,
