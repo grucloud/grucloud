@@ -66,19 +66,5 @@ module.exports = ScalewayClient = ({
     }),
   });
 
-  return {
-    spec,
-    // TODO spread core ?
-    toId: core.toId,
-    getById: core.getById,
-    getByName,
-    findName,
-    isUp: core.isUp,
-    isDown: core.isDown,
-    create: core.create,
-    destroy: core.destroy,
-    list: core.list,
-    configDefault: core.configDefault,
-    toName: core.toName,
-  };
+  return core;
 };

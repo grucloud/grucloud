@@ -62,18 +62,5 @@ module.exports = GoogleClient = ({
     }),
   });
 
-  return {
-    spec,
-    // TODO spread core ?
-    getById: core.getById,
-    getByName: core.getByName,
-    findName: core.findName,
-    isUp: core.isUp,
-    isDown: core.isDown,
-    create: core.create,
-    destroy: core.destroy,
-    list: core.list,
-    configDefault: core.configDefault,
-    toName: core.toName,
-  };
+  return core;
 };
