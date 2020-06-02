@@ -5,20 +5,16 @@ const logger = require("../../logger")({ prefix: "AwsClientEC2" });
 const { getByNameCore } = require("../Common");
 const toString = (x) => JSON.stringify(x, null, 4);
 const StateTerminated = ["terminated"];
-const KeyName = "Name";
+const { KeyName, findNameInTags } = require("./AwsCommon");
 
 module.exports = AwsClientEC2 = ({ spec, config }) => {
   assert(spec);
   assert(config);
   const { managedByKey, managedByValue } = config;
 
-  //TODO move to provider
-  AWS.config.apiVersions = {
-    ec2: "2016-11-15",
-  };
-
   const ec2 = new AWS.EC2();
-
+  //TODO
+  //const findName = (item) => findNameInTags(item.Instances[0]);
   const findName = (item) => {
     assert(item);
     assert(item.Instances);
@@ -30,7 +26,6 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
       throw Error(`cannot find name in ${toString(item)}`);
     }
   };
-
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
 
   const findId = (item) => {
@@ -75,7 +70,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
   const create = async ({ name, payload }) => {
     assert(name);
     assert(payload);
-    logger.debug(`create ${toString({ name, payload })}`);
+    logger.debug(`create ec2 ${toString({ name, payload })}`);
     const data = await ec2.runInstances(payload).promise();
     logger.debug(`create result ${toString(data)}`);
     return data.Instances[0];
@@ -109,11 +104,12 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
         InstanceIds: [id],
       })
       .promise();
+
+    logger.debug(`destroy ec2 in progress, ${toString({ name, id })}`);
   };
   const configDefault = async ({ name, properties, dependenciesLive }) => {
-    const { keyPair, securityGroups = {} } = dependenciesLive;
     logger.debug(`configDefault ${toString({ dependenciesLive })}`);
-
+    const { keyPair, securityGroups = {} } = dependenciesLive;
     return {
       ...{
         BlockDeviceMappings: [

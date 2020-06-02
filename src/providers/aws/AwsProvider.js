@@ -1,3 +1,4 @@
+require("dotenv").config();
 const AWS = require("aws-sdk");
 const assert = require("assert");
 const _ = require("lodash");
@@ -12,7 +13,9 @@ const compare = require("../../Utils").compare;
 const AwsTags = require("./AwsTags");
 const toString = (x) => JSON.stringify(x, null, 4);
 
-const configProviderDefault = {};
+const configProviderDefault = {
+  accountId: process.env.AccountId,
+};
 
 const fnSpecs = (config) => {
   const isOurMinion = ({ resource }) =>
@@ -32,11 +35,13 @@ const fnSpecs = (config) => {
     },
     {
       type: "SecurityGroup",
+      dependsOn: ["Vpc"],
       Client: ({ spec }) => AwsSecurityGroup({ spec, config }),
       isOurMinion,
     },
     {
       type: "Instance",
+      dependsOn: ["SecurityGroup"],
       Client: ({ spec }) =>
         AwsClientEC2({
           spec,
@@ -78,11 +83,15 @@ module.exports = AwsProvider = async ({ name, config }) => {
   configCheck(config);
 
   AWS.config.update({ region: config.region });
+  AWS.config.apiVersions = {
+    ec2: "2016-11-15",
+    resourcegroupstaggingapi: "2017-01-26",
+  };
 
   return CoreProvider({
     type: "aws",
     name,
-    envs: ["AWSAccessKeyId", "AWSSecretKey"],
+    envs: ["AWSAccessKeyId", "AWSSecretKey", "AccountId"],
     config: _.defaults(config, configProviderDefault),
     fnSpecs,
   });

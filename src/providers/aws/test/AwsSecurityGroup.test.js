@@ -48,8 +48,12 @@ describe("AwsSecurityGroup", async function () {
   });
   it("sg targets", async function () {
     const live = await sg.getLive();
-    //assert(live);
-    //assert.equal(live.KeyName, vpc.name);
+  });
+  it("sg listLives", async function () {
+    const [sgs] = await provider.listLives({ types: ["SecurityGroup"] });
+    assert(sgs);
+    const sgDefault = sgs.items.find((sg) => sg.GroupName === "default");
+    assert(sgDefault);
   });
   it("deploy plan", async function () {
     await testProviderLifeCycle({ provider });

@@ -2,9 +2,15 @@ var AWS = require("aws-sdk");
 const _ = require("lodash");
 const assert = require("assert");
 const { retryExpectOk } = require("../Retry");
-const { getByNameCore, findNameCore } = require("../Common");
-
+const {
+  getByNameCore,
+  findNameCore,
+  isUpCore,
+  isDownCore,
+} = require("../Common");
 const logger = require("../../logger")({ prefix: "AwsSecurityGroup" });
+const { tagResource } = require("./AwsTagResource");
+
 const toString = (x) => JSON.stringify(x, null, 4);
 
 module.exports = AwsSecurityGroup = ({ spec, config }) => {
@@ -15,6 +21,8 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
 
   const findName = (item) => findNameCore({ item, field: "GroupName" });
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
+  const isUp = ({ name }) => isUpCore({ name, getByName });
+  const isDown = ({ name }) => isDownCore({ name, getByName });
 
   const findId = (item) => {
     assert(item);
@@ -23,20 +31,6 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     return id;
   };
 
-  //TODO add in common
-  const isUp = async ({ name }) => {
-    logger.info(`isUp ${name}`);
-    const up = !!(await getByName({ name }));
-    logger.info(`isUp ${name} ${up ? "UP" : "NOT UP"}`);
-    return up;
-  };
-  //TODO add in common
-  const isDown = async ({ name }) => {
-    logger.info(`isDown ${name}`);
-    const down = !(await getByName({ name }));
-    logger.info(`isDown ${name} ${down ? "DOWN" : "NOT DOWN"}`);
-    return down;
-  };
   const list = async () => {
     logger.debug(`list`);
     const ec2params = {};
@@ -65,6 +59,8 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     assert(name);
     assert(payload);
     //assert(payload.create, "Missing create field");
+
+    //TODO add tags
     const createParams = {
       Description: managedByDescription,
       GroupName: name,
@@ -75,13 +71,23 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     const { GroupId } = await ec2.createSecurityGroup(createParams).promise();
     logger.debug(`create GroupId ${toString(GroupId)}`);
 
+    await tagResource({
+      config,
+      name,
+      resourceType: "security-group",
+      resourceId: GroupId,
+    });
+
     //TODO empty ingress ?
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
     const ingressParam = {
       GroupId,
       ...payload.ingress,
     };
+    logger.debug(`create ingressParam ${toString({ ingressParam })}`);
+
     await ec2.authorizeSecurityGroupIngress(ingressParam).promise();
+
     logger.debug(`create sg DONE`);
 
     return { GroupId };
@@ -96,8 +102,17 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
 
     await ec2.deleteSecurityGroup({ GroupId: id }).promise();
   };
-  //TODO
-  const configDefault = async ({ properties }) => properties;
+  const configDefault = async ({ name, properties, dependenciesLive }) => {
+    logger.debug(`configDefault ${toString({ dependenciesLive })}`);
+    const { vpc } = dependenciesLive;
+    const config = _.merge({
+      create: { [vpc && "VpcId"]: _.get(vpc, "VpcId", "<<NA>>") },
+      properties,
+    });
+    logger.debug(`configDefault ${name} result: ${toString(config)}`);
+    return config;
+  };
+
   return {
     type: "SecurityGroup",
     spec,

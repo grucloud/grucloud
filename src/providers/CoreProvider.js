@@ -20,6 +20,8 @@ const destroyByClient = async ({ client, name, data }) => {
   assert(client);
   assert(name);
   assert(data);
+  assert(client.findId);
+  assert(client.destroy);
   logger.info(`destroyClient: ${toString({ type: client.spec.type, name })}`);
   logger.debug(`destroyClient: ${toString({ data })}`);
   const id = client.findId(data);
@@ -105,6 +107,8 @@ const ResourceMaker = ({
     //logger.debug(`config ${toString({ type, resourceName, items })}`);
 
     const dependenciesLive = await resolveDependenciesLive(dependencies);
+
+    assert(client.configDefault);
 
     const config = await client.configDefault({
       name: resourceName,
@@ -413,6 +417,7 @@ module.exports = CoreProvider = ({
                   return false;
                 }
                 const name = client.findName(hotResource);
+                //TODO do not throw
                 if (!name) {
                   throw Error(`no name in resource: ${toString(hotResource)}`);
                 }
@@ -441,7 +446,7 @@ module.exports = CoreProvider = ({
       .flat()
       .filter((x) => x);
 
-    //logger.debug(`planFindDestroy END, plans ${toString(plans)}`);
+    logger.debug(`planFindDestroy END, unorders plans ${toString(plans)}`);
     const planOrdered = _.flatten(PlanReorder({ plans, specs })).reverse();
     logger.info(`planFindDestroy END, ordered plans ${toString(planOrdered)}`);
     return planOrdered;
@@ -494,6 +499,8 @@ module.exports = CoreProvider = ({
         });
         collection.push({ item });
       } catch (error) {
+        console.log(error);
+        //TODO error are not stringify correctly
         logger.error(`destroyPlan error ${toString(error)}`);
         collection.push({ item, error });
       }

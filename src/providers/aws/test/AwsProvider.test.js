@@ -7,9 +7,12 @@ describe("AwsProvider", async function () {
   let provider;
   let server;
   let keyPair;
+  let vpc;
   let sg;
+
   const keyPairName = "kp";
   const serverName = "web-server";
+
   before(async () => {
     provider = await AwsProvider({ name: "aws", config });
     const { success } = await provider.destroyAll();
@@ -17,13 +20,19 @@ describe("AwsProvider", async function () {
     keyPair = provider.makeKeyPair({
       name: keyPairName,
     });
+    vpc = provider.makeVpc({
+      name: "vpc",
+      properties: {
+        CidrBlock: "10.0.0.1/16",
+      },
+    });
     sg = provider.makeSecurityGroup({
       name: "securityGroup",
+      dependencies: { vpc },
       properties: {
         //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
         create: {
-          //VpcId: "",
-          //Description: "Security Group Description"
+          Description: "Security Group Description",
         },
         // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
         ingress: {
@@ -55,11 +64,7 @@ describe("AwsProvider", async function () {
     });
   });
   after(async () => {
-    //TODO
-    await provider.destroyAll();
-  });
-  it("keyPair name", async function () {
-    assert.equal(keyPair.name, keyPairName);
+    //await provider.destroyAll();
   });
   it("server resolveConfig", async function () {
     assert.equal(server.name, serverName);
@@ -79,7 +84,7 @@ describe("AwsProvider", async function () {
   it("plan", async function () {
     const plan = await provider.plan();
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 2);
+    assert.equal(plan.newOrUpdate.length, 3);
   });
   it("listLives all", async function () {
     const lives = await provider.listLives({ all: true });

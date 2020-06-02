@@ -12,6 +12,13 @@ const createStack = async ({ options }) => {
   const keyPair = provider.makeKeyPair({
     name: "kp",
   });
+  const vpc = provider.makeVpc({
+    name: "vpc",
+    properties: {
+      CidrBlock: "10.1.1.1/16",
+    },
+  });
+  /*
   const server = provider.makeInstance({
     name: "web-server",
     dependencies: { keyPair },
@@ -23,7 +30,7 @@ const createStack = async ({ options }) => {
       ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
     },
   });
-
+*/
   return { providers: [provider] };
 };
 

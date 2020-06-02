@@ -25,6 +25,38 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Cli Aws Status",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}",
+      "args": ["--infra", "examples/aws/iac.js", "status"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Aws List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}",
+      "args": ["--infra", "examples/aws/iac.js", "list", "--all"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Aws Deploy",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}",
+      "args": ["--infra", "examples/aws/iac.js", "deploy"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Aws Destroy",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}",
+      "args": ["--infra", "examples/aws/iac.js", "destroy"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Cli Scaleway List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}",

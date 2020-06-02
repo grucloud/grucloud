@@ -3,7 +3,7 @@ const assert = require("assert");
 const toString = (x) => JSON.stringify(x, null, 4);
 
 exports.isOurMinion = ({ resource, config }) => {
-  const { managedByKey, managedByValue, managedByDescription } = config;
+  const { managedByKey, managedByValue } = config;
   assert(resource);
   assert(resource.Tags);
 
@@ -14,9 +14,8 @@ exports.isOurMinion = ({ resource, config }) => {
     )
   ) {
     minion = true;
-  } else if (resource.Description?.includes(managedByDescription)) {
-    minion = true;
   }
+
   logger.debug(
     `isOurMinion ${toString({
       minion,

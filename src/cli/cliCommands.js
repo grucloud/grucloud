@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const { runAsyncCommand } = require("./cliUtils");
-const { displayPlan, displayLive } = require("./displayUtils");
+const { displayPlan, displayLive, displayStatus } = require("./displayUtils");
 
 //Query Plan
 const planQuery = async ({ infra }) => {
@@ -107,7 +107,7 @@ exports.displayStatus = async ({ infra }) => {
           () => provider.listTargets(),
           `Status for ${provider.name()}`
         );
-        displayLive({ providerName: provider.name(), targets });
+        displayStatus({ providerName: provider.name(), targets });
         return targets;
       })
     );

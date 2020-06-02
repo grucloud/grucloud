@@ -38,17 +38,56 @@ exports.displayPlan = async (plan) => {
   console.log("\n");
 };
 
-const displayLiveItem = (table, item) => {
-  assert(item.type);
-  table.push([item.type, YAML.stringify(item.items)]);
+const displayLiveItem = ({ table, resource }) => {
+  assert(resource);
+  //assert(resource.name);
+  //assert(resource.data);
+  //TODO
+  table.push([`${resource.name}`, YAML.stringify(resource)]);
+};
+
+const displayTablePerType = ({ providerName, resources }) => {
+  assert(resources.type);
+  assert(resources.items);
+  const table = new Table({ style: { head: [], border: [] } });
+  table.push([
+    {
+      colSpan: 2,
+      content: colors.yellow(
+        `${resources.items.length} ${resources.type} from ${providerName}`
+      ),
+    },
+  ]);
+  table.push(["Name", "Data"].map((item) => colors.red(item)));
+
+  resources.items.forEach((resource) => displayLiveItem({ table, resource }));
+
+  console.log(table.toString());
+  console.log("\n");
 };
 
 exports.displayLive = async ({ providerName, targets }) => {
+  assert(providerName);
+  assert(targets);
+  targets.forEach((resources) =>
+    displayTablePerType({ providerName, resources })
+  );
+  console.log("displayLive");
+};
+
+// Status
+const displayStatusItem = (table, item) => {
+  assert(item.type);
+  table.push([item.type, YAML.stringify(item.data)]);
+};
+exports.displayStatus = async ({ providerName, targets }) => {
   const table = new Table({ style: { head: [], border: [] } });
-  table.push([{ colSpan: 2, content: colors.yellow(providerName) }]);
+  table.push([
+    { colSpan: 2, content: colors.yellow(`Statuses for ${providerName}`) },
+  ]);
   table.push(["Type", "Data"].map((item) => colors.red(item)));
 
-  targets.forEach((item) => displayLiveItem(table, item));
+  targets.forEach((item) => displayStatusItem(table, item));
   console.log(table.toString());
   console.log("\n");
 };

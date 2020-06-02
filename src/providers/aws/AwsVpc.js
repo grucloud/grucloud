@@ -1,9 +1,11 @@
-var AWS = require("aws-sdk");
+const AWS = require("aws-sdk");
 const _ = require("lodash");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsVpc" });
 const toString = (x) => JSON.stringify(x, null, 4);
-const { getByNameCore, findNameCore } = require("../Common");
+const { getByNameCore, isUpCore, isDownCore } = require("../Common");
+const { findNameInTags } = require("./AwsCommon");
+const { tagResource } = require("./AwsTagResource");
 
 module.exports = AwsVpc = ({ spec, config }) => {
   assert(spec);
@@ -11,9 +13,46 @@ module.exports = AwsVpc = ({ spec, config }) => {
 
   const ec2 = new AWS.EC2();
 
-  //TODO check name
-  const findName = (item) => findNameCore({ item, field: "Vpc" });
+  const findName = findNameInTags;
+  const findId = (item) => {
+    assert(item);
+    const id = item.VpcId;
+    assert(id);
+    return id;
+  };
+
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
+  const isUp = ({ name }) => isUpCore({ name, getByName });
+  const isDown = ({ name }) => isDownCore({ name, getByName });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpc-property
+  const create = async ({ name, payload }) => {
+    assert(name);
+    assert(payload);
+    logger.debug(`create vpc ${toString({ name, payload })}`);
+    const {
+      Vpc: { VpcId },
+    } = await ec2.createVpc(payload).promise();
+    logger.info(`create vpc ${VpcId}`);
+
+    await tagResource({
+      config,
+      name,
+      resourceType: "vpc",
+      resourceId: VpcId,
+    });
+    return { VpcId };
+  };
+  const destroy = async ({ id, name }) => {
+    logger.debug(`destroy vpc ${toString({ name, id })}`);
+
+    if (_.isEmpty(id)) {
+      throw Error(`destroy vpc invalid id`);
+    }
+
+    await ec2.deleteVpc({ VpcId: id }).promise();
+    logger.debug(`destroy vpc IN PROGRESS, ${toString({ name, id })}`);
+  };
 
   const list = async () => {
     logger.debug(`list`);
@@ -27,11 +66,19 @@ module.exports = AwsVpc = ({ spec, config }) => {
       },
     };
   };
+  const configDefault = async ({ properties }) => properties;
 
   return {
     type: "Vpc",
     spec,
+    findId,
     getByName,
+    findName,
     list,
+    create,
+    destroy,
+    configDefault,
+    isUp,
+    isDown,
   };
 };
