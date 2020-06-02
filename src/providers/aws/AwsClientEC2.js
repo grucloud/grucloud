@@ -26,7 +26,6 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
       throw Error(`cannot find name in ${toString(item)}`);
     }
   };
-  const getByName = ({ name }) => getByNameCore({ name, list, findName });
 
   const findId = (item) => {
     assert(item);
@@ -34,6 +33,8 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     assert(id);
     return id;
   };
+  const getByName = ({ name }) => getByNameCore({ name, list, findName });
+  const getById = ({ id }) => getByIdCore({ id, list, findId });
 
   const getStateName = (instance) => {
     const state = instance.Instances[0].State.Name;
@@ -158,6 +159,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     isDown,
     findId,
     getByName,
+    getById,
     findName,
     create,
     destroy,

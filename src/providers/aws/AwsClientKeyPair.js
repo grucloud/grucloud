@@ -3,7 +3,7 @@ const _ = require("lodash");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsClientKeyPair" });
 const toString = (x) => JSON.stringify(x, null, 4);
-const { getByNameCore, findNameCore } = require("../Common");
+const { getByNameCore, getById, findField } = require("../Common");
 
 module.exports = AwsClientKeyPair = ({ spec, config }) => {
   assert(spec);
@@ -13,8 +13,11 @@ module.exports = AwsClientKeyPair = ({ spec, config }) => {
 
   const ec2 = new AWS.EC2();
 
-  const findName = (item) => findNameCore({ item, field: "KeyName" });
+  const findName = (item) => findField({ item, field: "KeyName" });
+  const findId = (item) => findField({ item, field: "KeyPairId" });
+
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
+  const getById = ({ id }) => getByIdCore({ id, list, findId });
 
   const list = async () => {
     logger.debug(`list`);
@@ -33,7 +36,9 @@ module.exports = AwsClientKeyPair = ({ spec, config }) => {
     type: "KeyPair",
     spec,
     findName,
+    findId,
     getByName,
+    getById,
     list,
   };
 };

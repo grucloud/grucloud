@@ -46,6 +46,11 @@ const retryExpectOk = async ({ name, fn, isOk, delay = 4e3 }, count = 60) => {
     }
     logger.debug(`retryExpectOk: ${name} not ok`);
   } catch (error) {
+    if (error.stack) {
+      logger.error(error.stack);
+      //TODO give up
+      throw error;
+    }
     logger.debug(
       `retryExpectOk ${name},  error: ${toString(
         error.response ? error.response : error

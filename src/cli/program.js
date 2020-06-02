@@ -37,9 +37,28 @@ exports.createProgram = ({
 
     program
       .command("destroy")
-      .action(async () => {
+      .option(
+        "-t, --type <type>",
+        "Filter by type, multiple values allowed",
+        collect
+      )
+      .option(
+        "-a, --all",
+        "destroy all resources including the ones not managed by us"
+      )
+      .option("-n, --name <name>", "destroy by name")
+      .option("-i, --id <id>", "destroy by id")
+      .action(async (subOptions) => {
         const infra = await createInfra({ infra: program.infra });
-        planDestroy({ infra });
+        planDestroy({
+          infra,
+          options: {
+            all: subOptions.all,
+            types: subOptions.type,
+            name: subOptions.name,
+            id: subOptions.id,
+          },
+        });
       })
       .description("Destroy the resources");
 
@@ -53,13 +72,17 @@ exports.createProgram = ({
 
     program
       .command("list")
-      .option("-a, --all", "List also read only resources")
+      .option("-a, --all", "List also read-only resources")
       .option(
         "-t, --type <type>",
         "Filter by type, multiple values allowed",
         collect
       )
       .option("-o, --our", "List only our managed resources")
+      .option(
+        "-d, --canBeDeleted",
+        "display resources which can be deleted, a.k.a non default resources"
+      )
       .action(async (subOptions) => {
         const infra = await createInfra({ infra: program.infra });
         list({
@@ -68,6 +91,7 @@ exports.createProgram = ({
             all: subOptions.all,
             types: subOptions.type,
             our: subOptions.our,
+            canBeDeleted: subOptions.canBeDeleted,
           },
         });
       })

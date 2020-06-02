@@ -4,7 +4,7 @@ const logger = require("../logger")({ prefix: "CoreClient" });
 const toString = (x) => JSON.stringify(x, null, 4);
 const identity = (x) => x;
 const { retryExpectException } = require("./Retry");
-const { getByNameCore, findNameCore } = require("./Common");
+const { getByNameCore, findField } = require("./Common");
 module.exports = CoreClient = ({
   spec,
   type,
@@ -14,7 +14,7 @@ module.exports = CoreClient = ({
     name,
     ...properties,
   }),
-  findName = (item) => findNameCore({ item, field: "name" }),
+  findName = (item) => findField({ item, field: "name" }),
   onResponseGet = identity,
   onResponseList = identity,
   onResponseCreate = identity,

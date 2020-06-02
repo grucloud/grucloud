@@ -4,7 +4,8 @@ const assert = require("assert");
 const { retryExpectOk } = require("../Retry");
 const {
   getByNameCore,
-  findNameCore,
+  getByIdCore,
+  findField,
   isUpCore,
   isDownCore,
 } = require("../Common");
@@ -19,16 +20,23 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const { managedByDescription } = config;
   const ec2 = new AWS.EC2();
 
-  const findName = (item) => findNameCore({ item, field: "GroupName" });
-  const getByName = ({ name }) => getByNameCore({ name, list, findName });
-  const isUp = ({ name }) => isUpCore({ name, getByName });
-  const isDown = ({ name }) => isDownCore({ name, getByName });
-
+  const findName = (item) => findField({ item, field: "GroupName" });
   const findId = (item) => {
     assert(item);
     const id = item.GroupId;
     assert(id);
     return id;
+  };
+
+  const getByName = ({ name }) => getByNameCore({ name, list, findName });
+  const getById = ({ id }) => getByIdCore({ id, list, findId });
+
+  const isUp = ({ name }) => isUpCore({ name, getByName });
+  const isDown = ({ id, name }) => isDownCore({ id, name, getById });
+
+  const cannotBeDeleted = (item) => {
+    assert(item.GroupName);
+    return item.GroupName === "default";
   };
 
   const list = async () => {
@@ -118,7 +126,9 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     spec,
     findId,
     getByName,
+    getById,
     findName,
+    cannotBeDeleted,
     isUp,
     isDown,
     list,

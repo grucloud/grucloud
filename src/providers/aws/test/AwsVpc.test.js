@@ -34,11 +34,11 @@ describe("AwsVpc", async function () {
   it("vpc listLives", async function () {
     const [vpcs] = await provider.listLives({ types: ["Vpc"] });
     assert(vpcs);
-    const vpcDefault = vpcs.items.find((vpc) => vpc.IsDefault);
+    const vpcDefault = vpcs.resources.find((vpc) => vpc.data.IsDefault);
     assert(vpcDefault);
   });
 
-  it.only("deploy plan", async function () {
+  it("deploy plan", async function () {
     await testProviderLifeCycle({ provider });
   });
 });

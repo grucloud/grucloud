@@ -65,17 +65,18 @@ exports.planDeploy = async ({ infra }) => {
 };
 
 // Destroy plan
-exports.planDestroy = async ({ infra }) => {
+exports.planDestroy = async ({ infra, options }) => {
   //TODO Promise all settled
   const results = await Promise.all(
     infra.providers.map(async (provider) => {
       try {
+        // Use  planFindDestroy and deployPlan
         await runAsyncCommand(
-          () => provider.destroyAll(),
+          () => provider.destroyAll(options),
           `Destroy Resources ${provider.name()}`
         );
         const targets = await runAsyncCommand(
-          () => provider.listLives(),
+          () => provider.listLives({ canBeDeleted: true }),
           `Status for ${provider.name()}`
         );
         if (!_.isEmpty(targets)) {
@@ -88,7 +89,7 @@ exports.planDestroy = async ({ infra }) => {
           throw Error(message);
         }
       } catch (error) {
-        console.error("error", error);
+        //console.error("error", error);
         return { error };
       }
     })

@@ -16,9 +16,14 @@ const configProviderDefault = {
   managedByDescription: "Managed By GruCloud",
 };
 
+const PlanDirection = {
+  UP: 1,
+  DOWN: -1,
+};
+
 const destroyByClient = async ({ client, name, data }) => {
   assert(client);
-  assert(name);
+  //assert(name);
   assert(data);
   assert(client.findId);
   assert(client.destroy);
@@ -26,7 +31,10 @@ const destroyByClient = async ({ client, name, data }) => {
   logger.debug(`destroyClient: ${toString({ data })}`);
   const id = client.findId(data);
   assert(id);
-
+  if (client?.cannotBeDeleted(data)) {
+    logger.debug(`destroyClient: default resource, cannot de deleted`);
+    return;
+  }
   try {
     await client.destroy({ id, name });
   } catch (error) {
@@ -286,35 +294,47 @@ module.exports = CoreProvider = ({
   };
   // API
   //  Flatter that
-  const listLives = async ({ all = false, our = false, types = [] } = {}) => {
+
+  const listLives = async ({
+    all = false,
+    our = false,
+    types = [],
+    canBeDeleted = false,
+  } = {}) => {
     logger.debug(`listLives ${toString({ all, our, types })}`);
 
+    //TODO do not use Promise.all
     const lists = (
       await Promise.all(
         clients
           .filter((client) => all || client.spec.methods.create)
-          .filter((client) => {
-            if (!_.isEmpty(types)) {
-              return types.includes(client.spec.type);
-            } else {
-              return true;
-            }
-          })
-
+          .filter((client) =>
+            !_.isEmpty(types) ? types.includes(client.spec.type) : true
+          )
           .map(async (client) => {
             logger.debug(`listLives ${toString(client.spec.type)}`);
             const { data } = await client.list();
-            logger.debug(`listLives data ${toString(data)}`);
+            //logger.debug(`listLives data ${toString(data)}`);
 
             return {
               type: client.spec.type,
-              items: data.items.filter((item) =>
-                our ? client.spec.isOurMinion({ resource: item }) : true
-              ),
+              resources: data.items
+                .map((item) => ({
+                  name: client.findName(item),
+                  id: client.findId(item),
+                  managedByUs: client.spec.isOurMinion({ resource: item }),
+                  data: item,
+                }))
+                .filter((item) => (our ? item.managedByUs : true))
+                .filter((item) =>
+                  canBeDeleted && client.cannotBeDeleted
+                    ? !client.cannotBeDeleted(item.data)
+                    : true
+                ),
             };
           })
       )
-    ).filter((liveResources) => liveResources.items.length > 0);
+    ).filter((liveResources) => liveResources.resources.length > 0);
     logger.debug(`listLives ${toString(lists)}`);
     return lists;
   };
@@ -347,7 +367,7 @@ module.exports = CoreProvider = ({
     const plan = {
       providerName,
       newOrUpdate: await planUpsert(),
-      destroy: await planFindDestroy(),
+      destroy: await planFindDestroy({}, PlanDirection.UP),
     };
     logger.info(`*******************************************************`);
     logger.info(`plan ${toString(plan)}`);
@@ -357,14 +377,10 @@ module.exports = CoreProvider = ({
   const deployPlan = async (plan) => {
     try {
       assert(plan);
-      logger.info(`*******************************************************`);
       logger.info(`Deploy Plan ${toString(plan)}`);
-      logger.info(`*******************************************************`);
       await upsertResources(plan.newOrUpdate);
-      await destroyPlan(plan.destroy);
-      logger.info(`*******************************************************`);
+      await destroyPlan(plan.destroy, PlanDirection.UP);
       logger.info(`Deploy Plan DONE`);
-      logger.info(`*******************************************************`);
     } catch (error) {
       logger.error(`deployPlan ${toString(error)}`);
       throw error;
@@ -392,9 +408,77 @@ module.exports = CoreProvider = ({
     return plans;
   };
 
-  const planFindDestroy = async ({ all = false } = {}) => {
-    logger.debug(`planFindDestroy BEGIN resources: ${resourceNames()}`);
+  const filterDestroyResources = ({
+    client,
+    resource,
+    options: {
+      all = false,
+      name: nameToDelete,
+      id: idToDelete,
+      types = [],
+    } = {},
+    direction,
+  }) => {
+    const { spec } = client;
+    const { type } = spec;
+    const name = client.findName(resource);
+    const id = client.findId(resource);
+    assert(direction);
+    logger.debug(`filterDestroyResources ${toString({ name, id, resource })}`);
 
+    // Cannot delete default resource
+    if (client?.cannotBeDeleted(resource)) {
+      logger.debug(
+        `planFindDestroy ${type}/${name}, default resource cannot be deleted`
+      );
+      return false;
+    }
+    // Delete all
+    if (all) {
+      logger.debug(`planFindDestroy ${type}/${name}, delete all`);
+      return true;
+    }
+    if (!spec.isOurMinion({ resource })) {
+      logger.debug(`planFindDestroy ${type}/${name}, not our minion`);
+      return false;
+    }
+    // Delete by type
+    if (types.includes(type)) {
+      logger.debug(`planFindDestroy ${type}/${name}, delete by type`);
+      return true;
+    }
+    // Delete by id
+    if (id === idToDelete) {
+      logger.debug(`planFindDestroy ${type}/${name}, delete by id`);
+      return true;
+    }
+    // Delete by name
+    if (name === nameToDelete) {
+      logger.debug(`planFindDestroy ${type}/${name}, delete by name`);
+      return true;
+    }
+
+    const isNameInOurPlan = resourceNames().includes(
+      fromTagName(name, config.tag)
+    );
+    if (direction == PlanDirection.UP) {
+      if (!isNameInOurPlan) {
+        logger.debug(
+          `planFindDestroy ${type}/${name} is not ${resourceNames()} and plan UP`
+        );
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      logger.debug(`planFindDestroy ${type}/${name} going down`);
+      return true;
+    }
+  };
+
+  const planFindDestroy = async (options, direction) => {
+    logger.debug(`planFindDestroy BEGIN ${toString({ options, direction })}`);
+    assert(direction);
     const plans = (
       await Promise.all(
         clients
@@ -403,34 +487,11 @@ module.exports = CoreProvider = ({
             const { spec } = client;
             const { type } = spec;
             const { data } = await client.list();
-            assert(data);
 
             return data.items
-              .filter((hotResource) => {
-                //logger.debug(`planFindDestroy live: ${toString(hotResource)}`);
-
-                if (
-                  !spec.isOurMinion({
-                    resource: hotResource,
-                  })
-                ) {
-                  return false;
-                }
-                const name = client.findName(hotResource);
-                //TODO do not throw
-                if (!name) {
-                  throw Error(`no name in resource: ${toString(hotResource)}`);
-                }
-                if (all) {
-                  logger.debug(`planFindDestroy ${type}/${name}, all`);
-                  return true;
-                }
-
-                logger.debug(`planFindDestroy ${type}/${name}`);
-
-                return !resourceNames().includes(fromTagName(name, config.tag));
-              })
-
+              .filter((resource) =>
+                filterDestroyResources({ client, resource, options, direction })
+              )
               .map((live) => ({
                 resource: {
                   provider: providerName,
@@ -512,11 +573,11 @@ module.exports = CoreProvider = ({
     return { success, results };
   };
 
-  const destroyAll = async () => {
-    logger.debug(`destroyAll `);
+  const destroyAll = async (options) => {
+    logger.debug(`destroyAll ${toString({ options })}`);
     //TODO try catch ?
     try {
-      const planDestroy = await planFindDestroy({ all: true });
+      const planDestroy = await planFindDestroy(options, PlanDirection.DOWN);
       return await destroyPlan(planDestroy);
     } catch (error) {
       logger.error(`destroyAll ${toString(error)}`);

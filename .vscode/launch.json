@@ -25,6 +25,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Cli Aws Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["--infra", "examples/aws/iac.js", "plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Cli Aws Status",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}",
@@ -44,6 +53,7 @@
       "name": "Cli Aws Deploy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart",
       "args": ["--infra", "examples/aws/iac.js", "deploy"]
     },
     {
@@ -52,7 +62,17 @@
       "name": "Cli Aws Destroy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart",
       "args": ["--infra", "examples/aws/iac.js", "destroy"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Aws Destroy All",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["--infra", "examples/aws/iac.js", "destroy", "--all"]
     },
     {
       "type": "node",

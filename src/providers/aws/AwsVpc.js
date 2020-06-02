@@ -3,7 +3,12 @@ const _ = require("lodash");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsVpc" });
 const toString = (x) => JSON.stringify(x, null, 4);
-const { getByNameCore, isUpCore, isDownCore } = require("../Common");
+const {
+  getByNameCore,
+  getByIdCore,
+  isUpCore,
+  isDownCore,
+} = require("../Common");
 const { findNameInTags } = require("./AwsCommon");
 const { tagResource } = require("./AwsTagResource");
 
@@ -22,8 +27,15 @@ module.exports = AwsVpc = ({ spec, config }) => {
   };
 
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
+  const getById = ({ id }) => getByIdCore({ id, list, findId });
+
   const isUp = ({ name }) => isUpCore({ name, getByName });
-  const isDown = ({ name }) => isDownCore({ name, getByName });
+  const isDown = ({ id, name }) => isDownCore({ id, name, getById });
+
+  const cannotBeDeleted = (item) => {
+    assert(item.hasOwnProperty("IsDefault"));
+    return item.IsDefault;
+  };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpc-property
   const create = async ({ name, payload }) => {
@@ -73,7 +85,9 @@ module.exports = AwsVpc = ({ spec, config }) => {
     spec,
     findId,
     getByName,
+    getById,
     findName,
+    cannotBeDeleted,
     list,
     create,
     destroy,

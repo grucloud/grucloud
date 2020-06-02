@@ -9,7 +9,7 @@ const urljoin = require("url-join");
 const logger = require("../../logger")({ prefix: "MockClient" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 const toString = (x) => JSON.stringify(x, null, 4);
-const { findNameCore } = require("../Common");
+const { findField } = require("../Common");
 
 const BASE_URL = "http://localhost:8089";
 
@@ -57,7 +57,7 @@ module.exports = MockClient = ({
   assert(spec);
   assert(url);
 
-  const findName = (item) => findNameCore({ item, field: "name" });
+  const findName = (item) => findField({ item, field: "name" });
 
   const axios = AxiosMaker({
     baseURL: urljoin(BASE_URL, url),

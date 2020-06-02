@@ -52,7 +52,7 @@ describe("AwsSecurityGroup", async function () {
   it("sg listLives", async function () {
     const [sgs] = await provider.listLives({ types: ["SecurityGroup"] });
     assert(sgs);
-    const sgDefault = sgs.items.find((sg) => sg.GroupName === "default");
+    const sgDefault = sgs.resources.find((sg) => sg.name === "default");
     assert(sgDefault);
   });
   it("deploy plan", async function () {
