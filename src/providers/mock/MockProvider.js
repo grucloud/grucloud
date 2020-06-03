@@ -30,6 +30,7 @@ const fnSpecs = (config) => {
 
       type: "Image",
       methods: { list: true },
+      isOurMinion,
     },
     {
       Client: ({ spec }) =>
