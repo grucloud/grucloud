@@ -32,8 +32,8 @@ describe("MockProvider e2e", async function () {
       assert(provider.isPlanEmpty(plan));
     }
     {
-      const planDestroyed = await provider.planFindDestroy({ all: true });
-      assert.equal(planDestroyed.length, 4);
+      const planDestroyed = await provider.planFindDestroy({ all: true }, 1);
+      assert.equal(planDestroyed.length, 6);
     }
   });
   it("plan", async function () {
@@ -91,7 +91,7 @@ describe("MockProvider e2e", async function () {
       assert(configs);
     }
     {
-      const planDestroy = await provider.planFindDestroy({ all: true });
+      const planDestroy = await provider.planFindDestroy({ all: true }, -1);
       const indexServer = planDestroy.findIndex(
         (item) => item.resource.type === "Server"
       );
@@ -101,7 +101,7 @@ describe("MockProvider e2e", async function () {
       );
       assert(indexSecurityGroup > 0);
       assert(indexServer < indexSecurityGroup);
-      assert.equal(planDestroy.length, 4);
+      assert.equal(planDestroy.length, 6);
       // Server must be before SecurityGroup
     }
     await provider.destroyAll();

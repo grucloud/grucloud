@@ -55,7 +55,7 @@ describe("AwsSecurityGroup", async function () {
     const sgDefault = sgs.resources.find((sg) => sg.name === "default");
     assert(sgDefault);
   });
-  it("deploy plan", async function () {
+  it("sg deploy plan", async function () {
     await testProviderLifeCycle({ provider });
   });
 });
