@@ -66,9 +66,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const create = async ({ name, payload }) => {
     assert(name);
     assert(payload);
-    //assert(payload.create, "Missing create field");
 
-    //TODO add tags
     const createParams = {
       Description: managedByDescription,
       GroupName: name,
@@ -112,9 +110,10 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   };
   const configDefault = async ({ name, properties, dependenciesLive }) => {
     logger.debug(`configDefault ${toString({ dependenciesLive })}`);
+    // Need vpc name here in parameter
     const { vpc } = dependenciesLive;
     const config = _.merge({
-      create: { [vpc && "VpcId"]: _.get(vpc, "VpcId", "<<NA>>") },
+      create: { ...(vpc && { VpcId: _.get(vpc, "VpcId", "<<NA>>") }) },
       ...properties,
     });
     logger.debug(`configDefault ${name} result: ${toString(config)}`);

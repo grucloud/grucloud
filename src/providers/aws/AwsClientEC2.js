@@ -143,11 +143,12 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
           },
         ],
       },
-      [keyPair && "KeyName"]: keyPair.KeyName,
-      [!_.isEmpty(securityGroups) && "SecurityGroupIds"]: _.map(
-        securityGroups,
-        (sg) => _.get(sg, "GroupId", "<<NA>>")
-      ),
+      ...(keyPair && { KeyName: keyPair.KeyName }),
+      ...(!_.isEmpty(securityGroups) && {
+        SecurityGroupIds: _.map(securityGroups, (sg) =>
+          _.get(sg, "GroupId", "<<NA>>")
+        ),
+      }),
     };
   };
 

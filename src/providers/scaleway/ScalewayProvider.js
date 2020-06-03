@@ -124,7 +124,7 @@ const fnSpecs = (config) => {
               organization,
               tags: [name, config.tag],
               image: _.get(image, "id", "<<NA>>"),
-              public_ip: _.get(ip, "id", "<<NA>>"),
+              ...(ip && { public_ip: _.get(ip, "id", "<<NA>>") }),
               ...properties,
             };
           },
