@@ -18,19 +18,47 @@ const createStack = async ({ options }) => {
       CidrBlock: "10.1.1.1/16",
     },
   });
-  /*
+  const sg = provider.makeSecurityGroup({
+    name: "securityGroup",
+    dependencies: { vpc },
+    properties: {
+      //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
+      create: {
+        Description: "Security Group Description",
+      },
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
+      ingress: {
+        IpPermissions: [
+          {
+            FromPort: 22,
+            IpProtocol: "tcp",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+            ToPort: 22,
+          },
+        ],
+      },
+    },
+  });
+
   const server = provider.makeInstance({
     name: "web-server",
-    dependencies: { keyPair },
+    dependencies: { keyPair, securityGroups: { sg } },
     propertiesDefault: {
       VolumeSize: 50,
       InstanceType: "t2.micro",
-      MaxCount: 1,
-      MinCount: 1,
       ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
     },
   });
-*/
+
   return { providers: [provider] };
 };
 
