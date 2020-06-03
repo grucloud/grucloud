@@ -48,6 +48,7 @@
       "name": "Cli Aws Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}",
+
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["--infra", "examples/aws/iac.js", "plan"]
     },
@@ -57,6 +58,7 @@
       "name": "Cli Aws Status",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart",
       "args": ["--infra", "examples/aws/iac.js", "status"]
     },
     {
@@ -65,6 +67,7 @@
       "name": "Cli Aws List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart",
       "args": ["--infra", "examples/aws/iac.js", "list", "--all"]
     },
     {
@@ -88,6 +91,51 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Cli Google Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["--infra", "examples/google/iac.js", "plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Google Status",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["--infra", "examples/google/iac.js", "status"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Google List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["--infra", "examples/google/iac.js", "list", "--all"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Google Deploy",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["--infra", "examples/google/iac.js", "deploy"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Google Destroy",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["--infra", "examples/google/iac.js", "destroy"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Cli Aws Destroy All",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}",
@@ -100,6 +148,7 @@
       "name": "Cli Scaleway List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart",
       "args": ["--infra", "examples/scaleway/iac.js", "list", "--all"]
     },
     {
