@@ -115,7 +115,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     const { vpc } = dependenciesLive;
     const config = _.merge({
       create: { [vpc && "VpcId"]: _.get(vpc, "VpcId", "<<NA>>") },
-      properties,
+      ...properties,
     });
     logger.debug(`configDefault ${name} result: ${toString(config)}`);
     return config;
