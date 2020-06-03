@@ -31,7 +31,7 @@ const destroyByClient = async ({ client, name, data }) => {
   logger.debug(`destroyClient: ${toString({ data })}`);
   const id = client.findId(data);
   assert(id);
-  if (client?.cannotBeDeleted(data)) {
+  if (client.cannotBeDeleted(data)) {
     logger.debug(`destroyClient: default resource, cannot de deleted`);
     return;
   }
@@ -427,7 +427,7 @@ module.exports = CoreProvider = ({
     logger.debug(`filterDestroyResources ${toString({ name, id, resource })}`);
 
     // Cannot delete default resource
-    if (client?.cannotBeDeleted(resource)) {
+    if (client.cannotBeDeleted(resource)) {
       logger.debug(
         `planFindDestroy ${type}/${name}, default resource cannot be deleted`
       );

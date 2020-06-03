@@ -140,6 +140,7 @@ module.exports = CoreClient = ({
     getByName,
     findName,
     findName,
+    cannotBeDeleted: () => false,
     isUp,
     isDown,
     create,

@@ -160,6 +160,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     findId,
     getByName,
     getById,
+    cannotBeDeleted: () => false,
     findName,
     create,
     destroy,
