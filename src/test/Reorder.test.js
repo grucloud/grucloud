@@ -30,9 +30,9 @@ const plans = [
 ];
 
 const specs = [
-  { type: "Vpc" },
-  { type: "SecurityGroup", dependsOn: "Vpc" },
   { type: "Server", dependsOn: "SecurityGroup" },
+  { type: "SecurityGroup", dependsOn: "Vpc" },
+  { type: "Vpc" },
   { type: "Image" },
 ];
 
@@ -47,7 +47,14 @@ describe("Reoder", function () {
     );
   });*/
   it("ok", function () {
-    const ordered = PlanReorder({ plans, specs });
-    //console.log(JSON.stringify(_.flatten(ordered), null, 4));
+    const ordered = _.flatten(PlanReorder({ plans, specs }));
+    console.log(JSON.stringify(ordered, null, 4));
+    const expected = ["Vpc", "SecurityGroup", "Server", "Image"];
+    assert(
+      _.isEqual(
+        expected,
+        ordered.map((item) => item.resource.type)
+      )
+    );
   });
 });
