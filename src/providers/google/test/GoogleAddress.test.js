@@ -19,8 +19,7 @@ describe("GoogleAddress", async function () {
     const config = await address.resolveConfig();
     assert(config);
     assert.equal(config.name, addressName);
-    //TODO use label instead
-    assert.equal(config.description, `${addressName}${provider.config.tag}`);
+    assert.equal(config.description, provider.config.managedByDescription);
   });
   it("lives", async function () {
     const lives = await provider.listLives();
@@ -31,7 +30,7 @@ describe("GoogleAddress", async function () {
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 1);
   });
-  it.skip("deploy plan", async function () {
+  it("deploy plan", async function () {
     await testProviderLifeCycle({ provider });
   });
 });

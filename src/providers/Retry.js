@@ -3,6 +3,7 @@ const assert = require("assert");
 const logger = require("../logger")({ prefix: "CoreClient" });
 const toString = (x) => JSON.stringify(x, null, 4);
 
+//TODO add name
 const retryExpectException = async (
   { fn, isExpectedError, delay = 2e3 },
   count = 90

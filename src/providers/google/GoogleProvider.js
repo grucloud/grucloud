@@ -1,4 +1,5 @@
 const assert = require("assert");
+const _ = require("lodash");
 const { JWT } = require("google-auth-library");
 const CoreProvider = require("../CoreProvider");
 const GoogleClient = require("./GoogleClient");
@@ -9,10 +10,29 @@ const compare = require("../../Utils").compare;
 const toString = (x) => JSON.stringify(x, null, 4);
 
 const fnSpecs = (config) => {
-  const { project, region, zone, tag } = config;
-  const isOurMinion = ({ resource }) =>
-    GoogleTag.isOurMinion({ resource, tag });
+  const {
+    project,
+    region,
+    zone,
+    tag,
+    managedByKey,
+    managedByValue,
+    managedByDescription,
+  } = config;
 
+  const isOurMinion = ({ resource }) =>
+    GoogleTag.isOurMinion({ resource, config });
+  //TODO when created, only the first label is present as an object and not an array ?
+  const buildLabel = (name) => [
+    {
+      key: managedByKey,
+      value: managedByValue,
+    },
+    {
+      key: "name",
+      value: name,
+    },
+  ];
   return [
     {
       type: "Address",
@@ -22,9 +42,9 @@ const fnSpecs = (config) => {
           url: `/projects/${project}/regions/${region}/addresses/`,
           config,
           configDefault: ({ name, properties }) => ({
-            ...properties,
             name,
-            description: toTagName(name, tag),
+            description: managedByDescription,
+            ...properties,
           }),
         }),
 
@@ -54,9 +74,7 @@ const fnSpecs = (config) => {
             name,
             zone: `projects/${project}/zones/${zone}`,
             machineType: `projects/${project}/zones/${zone}/machineTypes/${properties.machineType}`,
-            tags: {
-              items: [toTagName(name, tag)],
-            },
+            labels: buildLabel(name),
             disks: [
               {
                 kind: "compute#attachedDisk",
@@ -148,10 +166,20 @@ const authorize = async () => {
 module.exports = GoogleProvider = async ({ name, config }) => {
   configCheck(config);
   const accessToken = await authorize();
+
+  const configProviderDefault = {
+    //rename manageByTag ?
+    tag: "-managed-by-gru",
+    managedByKey: "managed-by",
+    managedByValue: "grucloud",
+    managedByDescription: "Managed By GruCloud",
+    accessToken,
+  };
+
   return CoreProvider({
     type: "google",
     name,
-    config: { ...config, accessToken },
+    config: _.defaults(config, configProviderDefault),
     fnSpecs,
   });
 };

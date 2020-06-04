@@ -19,11 +19,13 @@ module.exports = AxiosMaker = ({ baseURL, onHeaders = noop }) => {
     ],
     transformResponse: [
       (data) => {
-        logger.debug(`rx baseURL: ${baseURL}, ${toString(data)}`);
+        logger.debug(`rx baseURL: ${baseURL}`);
         try {
-          return data && JSON.parse(data);
+          const parsedData = data && JSON.parse(data);
+          logger.debug(`rx baseURL: ${baseURL}, ${toString(parsedData)}`);
+          return parsedData;
         } catch (error) {
-          logger.error(`rx could not parse data ${toString(data)}`);
+          logger.info(`rx json data ${toString(data)}`);
           return data;
         }
       },

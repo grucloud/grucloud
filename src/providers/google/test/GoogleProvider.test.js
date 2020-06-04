@@ -9,7 +9,8 @@ describe("GoogleProvider", async function () {
   let ip;
   before(async () => {
     provider = await GoogleProvider({ name: "google", config });
-    await provider.destroyAll();
+    const { success } = await provider.destroyAll();
+    assert(success);
     ip = provider.makeAddress({ name: "ip-webserver" });
     server = provider.makeInstance({
       name: "web-server",
@@ -17,14 +18,16 @@ describe("GoogleProvider", async function () {
     });
   });
   after(async () => {
-    await provider.destroyAll();
+    const { success } = await provider.destroyAll();
+    assert(success);
   });
 
   it("server resolveConfig ", async function () {
     const config = await server.resolveConfig();
+    //TODO use provider.confg.project  etc ...
     assert.equal(
       config.machineType,
-      "projects/starhackit/zones/us-central1-a/machineTypes/f1-micro"
+      "projects/starhackit/zones/europe-west4-a/machineTypes/f1-micro"
     );
     assert.equal(config.name, "web-server");
   });
@@ -33,7 +36,7 @@ describe("GoogleProvider", async function () {
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 2);
   });
-  it.skip("deploy plan", async function () {
+  it("deploy plan", async function () {
     await testProviderLifeCycle({ provider });
   });
 });

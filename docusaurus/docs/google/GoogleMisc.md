@@ -12,6 +12,7 @@ title: Miscellaneous
     gcloud compute instances list
     gcloud compute images list
     gcloud compute addresses list
+    gcloud compute addresses delete ip-webserver  --region us-central1
 
 ## gurl
 

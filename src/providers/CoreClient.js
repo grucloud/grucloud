@@ -45,12 +45,14 @@ module.exports = CoreClient = ({
     try {
       const result = await axios.request(`/${id}`, { method: "GET" });
       result.data = onResponseGet(result.data);
-      logger.debug(`get ${toString({ result })}`);
+      logger.debug(`get ${toString(result.data)}`);
 
       return result;
     } catch (error) {
       //TODO function to print axios error
-      logger.error(`get ${type}/${id}, error ${toString(error.response)}`);
+      logger.error(
+        `get ${type}/${id}, error ${toString(error.response?.data)}`
+      );
       throw error;
     }
   };
@@ -121,8 +123,16 @@ module.exports = CoreClient = ({
       //TODO use isDown in CoreProvider
       await retryExpectException({
         fn: () => getById({ id }),
-        isExpectedError: (error) =>
-          error.response && error.response.status === 404,
+        isExpectedError: (error) => {
+          //error.stack && logger.error(error.stack);
+          logger.debug(
+            `isExpectedError ${toString({
+              status: error.response?.status,
+              response: error.response?.data,
+            })}`
+          );
+          return error.response && error.response.status === 404;
+        },
       });
       return result;
     } catch (error) {

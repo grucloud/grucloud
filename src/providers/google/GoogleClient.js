@@ -11,13 +11,7 @@ const onResponseList = (data) => {
   return { total: items.length, items };
 };
 
-module.exports = GoogleClient = ({
-  url,
-  spec,
-  config,
-  configDefault,
-  findName,
-}) => {
+module.exports = GoogleClient = ({ url, spec, config, configDefault }) => {
   assert(url);
   assert(spec);
   assert(spec.type);
@@ -28,7 +22,6 @@ module.exports = GoogleClient = ({
     spec,
     onResponseList,
     configDefault,
-    findName,
     axios: AxiosMaker({
       baseURL: urljoin(BASE_URL, url),
       onHeaders: () => ({

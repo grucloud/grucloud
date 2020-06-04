@@ -23,22 +23,21 @@ const PlanDirection = {
 
 const destroyByClient = async ({ client, name, data }) => {
   assert(client);
-  //assert(name);
   assert(data);
   assert(client.findId);
   assert(client.destroy);
-  logger.info(`destroyClient: ${toString({ type: client.spec.type, name })}`);
-  logger.debug(`destroyClient: ${toString({ data })}`);
+  logger.info(`destroyByClient: ${toString({ type: client.spec.type, name })}`);
+  logger.debug(`destroyByClient: ${toString({ data })}`);
   const id = client.findId(data);
   assert(id);
   if (client.cannotBeDeleted(data)) {
-    logger.debug(`destroyClient: default resource, cannot de deleted`);
+    logger.debug(`destroyByClient: default resource, cannot de deleted`);
     return;
   }
   try {
     await client.destroy({ id, name });
   } catch (error) {
-    logger.error(`destroyClient: ${toString({ error })}`);
+    logger.error(`destroyByClient: ${toString({ error })}`);
     throw error;
   }
 
@@ -560,7 +559,8 @@ module.exports = CoreProvider = ({
         });
         collection.push({ item });
       } catch (error) {
-        console.log(error);
+        //TODO use log.errror
+        console.log(error.stack);
         //TODO error are not stringify correctly
         logger.error(`destroyPlan error ${toString(error)}`);
         collection.push({ item, error });

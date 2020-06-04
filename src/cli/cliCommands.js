@@ -70,15 +70,16 @@ exports.planDestroy = async ({ infra, options }) => {
   const results = await Promise.all(
     infra.providers.map(async (provider) => {
       try {
-        // Use  planFindDestroy and deployPlan
+        // TODO Use  planFindDestroy and deployPlan
         await runAsyncCommand(
           () => provider.destroyAll(options),
           `Destroy Resources ${provider.name()}`
         );
         const targets = await runAsyncCommand(
-          () => provider.listLives({ canBeDeleted: true }),
+          () => provider.listLives({ canBeDeleted: true, our: !options.all }),
           `Status for ${provider.name()}`
         );
+        // TODO display the nuumber od resources deleted
         if (!_.isEmpty(targets)) {
           const message = `Resources still there after being destroyed: ${JSON.stringify(
             targets,
