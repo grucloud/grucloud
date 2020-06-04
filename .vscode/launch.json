@@ -136,7 +136,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws Destroy All",
+      "name": "Cli Google Destroy All",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}",
       "internalConsoleOptions": "openOnSessionStart",

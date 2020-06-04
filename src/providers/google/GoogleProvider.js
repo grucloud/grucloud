@@ -22,17 +22,12 @@ const fnSpecs = (config) => {
 
   const isOurMinion = ({ resource }) =>
     GoogleTag.isOurMinion({ resource, config });
-  //TODO when created, only the first label is present as an object and not an array ?
-  const buildLabel = (name) => [
-    {
-      key: managedByKey,
-      value: managedByValue,
-    },
-    {
-      key: "name",
-      value: name,
-    },
-  ];
+
+  //TODO set environment from config
+  const buildLabel = (name) => ({
+    [managedByKey]: managedByValue,
+    environment: "development",
+  });
   return [
     {
       type: "Address",
