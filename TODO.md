@@ -1,7 +1,15 @@
+## Bugs
+
 ## Common:
 
+- when deploying, display the config with the resolved ids etc ...
+- set environment: prod , dev etc...
 - replace "<<NA>>" with the resource name if the id is not available
 - compare or compareObject
+
+## Cli
+
+- return negative value in case of error
 - gc list -o should return a message when empty
 
 ## TODO Aws:
@@ -12,10 +20,9 @@
 
 ## TODO Goggle
 
-- is config.tag still being used ?
+- instance: add service account
+- is config.tag still being used ? yes but in instance device name, rename tag to something else
 - create new project such as grucloud-e2e
-- when an instance is created, only the first label is present as an object and not an array ?
-
 - WARNING when gloud config is difference from our config, i.e region
 
 ## TODO Mock

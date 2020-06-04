@@ -51,6 +51,13 @@ exports.planDeploy = async ({ infra }) => {
               );
             }
           }
+          {
+            const targets = await runAsyncCommand(
+              () => provider.listLives({ out: true }),
+              `List for provider ${provider.name()}`
+            );
+            displayLive({ providerName: provider.name(), targets });
+          }
         } catch (error) {
           console.error("error", error);
 
@@ -79,15 +86,13 @@ exports.planDestroy = async ({ infra, options }) => {
           () => provider.listLives({ canBeDeleted: true, our: !options.all }),
           `Status for ${provider.name()}`
         );
-        // TODO display the nuumber od resources deleted
-        if (!_.isEmpty(targets)) {
-          const message = `Resources still there after being destroyed: ${JSON.stringify(
-            targets,
-            null,
-            4
-          )}`;
-          console.error(message);
-          throw Error(message);
+        // TODO display the number od resources deleted
+        {
+          const targets = await runAsyncCommand(
+            () => provider.listLives({ out: true }),
+            `Remaining resources for provider ${provider.name()}`
+          );
+          displayLive({ providerName: provider.name(), targets });
         }
       } catch (error) {
         //console.error("error", error);

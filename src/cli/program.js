@@ -14,29 +14,32 @@ exports.createProgram = ({
   },
 }) => {
   const program = new Command();
-  program.version(version);
+  program.storeOptionsAsProperties(false);
+  program.passCommandToAction(false);
   program.allowUnknownOption(); // For testing
+  program.version(version);
   program.option("-i, --infra <file>", "infrastructure iac.js file");
 
   try {
     program
       .command("plan")
+      .description("Query the plan")
       .action(async () => {
-        const infra = await createInfra({ infra: program.infra });
+        const infra = await createInfra({ infra: program.opts().infra });
         planQuery({ infra });
-      })
-      .description("Query the plan");
+      });
 
     program
       .command("deploy")
+      .description("Deploy the resources")
       .action(async () => {
-        const infra = await createInfra({ infra: program.infra });
+        const infra = await createInfra({ infra: program.opts().infra });
         planDeploy({ infra });
-      })
-      .description("Deploy the resources");
+      });
 
     program
       .command("destroy")
+      .description("Destroy the resources")
       .option(
         "-t, --type <type>",
         "Filter by type, multiple values allowed",
@@ -46,10 +49,10 @@ exports.createProgram = ({
         "-a, --all",
         "destroy all resources including the ones not managed by us"
       )
-      .option("-n, --name <name>", "destroy by name")
-      .option("-i, --id <id>", "destroy by id")
+      .option("-n, --name <value>", "destroy by name")
+      .option("--id <value>", "destroy by id")
       .action(async (subOptions) => {
-        const infra = await createInfra({ infra: program.infra });
+        const infra = await createInfra({ infra: program.opts().infra });
         planDestroy({
           infra,
           options: {
@@ -59,22 +62,22 @@ exports.createProgram = ({
             id: subOptions.id,
           },
         });
-      })
-      .description("Destroy the resources");
+      });
 
     program
       .command("status")
       .action(async () => {
-        const infra = await createInfra({ infra: program.infra });
+        const infra = await createInfra({ infra: program.opts().infra });
         displayStatus({ infra });
       })
       .description("Status");
 
     program
       .command("list")
+      .description("List the resources")
       .option("-a, --all", "List also read-only resources")
       .option(
-        "-t, --type <type>",
+        "-t, --type <value>",
         "Filter by type, multiple values allowed",
         collect
       )
@@ -84,7 +87,7 @@ exports.createProgram = ({
         "display resources which can be deleted, a.k.a non default resources"
       )
       .action(async (subOptions) => {
-        const infra = await createInfra({ infra: program.infra });
+        const infra = await createInfra({ infra: program.opts().infra });
         list({
           infra,
           options: {
@@ -94,8 +97,7 @@ exports.createProgram = ({
             canBeDeleted: subOptions.canBeDeleted,
           },
         });
-      })
-      .description("list ");
+      });
   } catch (error) {
     console.log(error);
     process.exit(-1);

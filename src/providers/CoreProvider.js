@@ -412,8 +412,8 @@ module.exports = CoreProvider = ({
     resource,
     options: {
       all = false,
-      name: nameToDelete,
-      id: idToDelete,
+      name: nameToDelete = "",
+      id: idToDelete = "",
       types = [],
     } = {},
     direction,
@@ -441,20 +441,20 @@ module.exports = CoreProvider = ({
       logger.debug(`planFindDestroy ${type}/${name}, not our minion`);
       return false;
     }
+
     // Delete by type
-    if (types.includes(type)) {
-      logger.debug(`planFindDestroy ${type}/${name}, delete by type`);
-      return true;
+    if (!_.isEmpty(types)) {
+      return types.includes(type);
     }
+
     // Delete by id
-    if (id === idToDelete) {
-      logger.debug(`planFindDestroy ${type}/${name}, delete by id`);
-      return true;
+    if (!_.isEmpty(idToDelete)) {
+      return id === idToDelete;
     }
+
     // Delete by name
-    if (name === nameToDelete) {
-      logger.debug(`planFindDestroy ${type}/${name}, delete by name`);
-      return true;
+    if (!_.isEmpty(nameToDelete)) {
+      return name === nameToDelete;
     }
 
     const isNameInOurPlan = resourceNames().includes(

@@ -45,6 +45,21 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Cli Mock Destroy By Name",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": [
+        "--infra",
+        "src/providers/mock/test/MockStack.js",
+        "destroy",
+        "--name",
+        "pippo"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Cli Aws Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}",
