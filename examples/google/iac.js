@@ -10,7 +10,7 @@ const createStack = async ({ options }) => {
   // Allocate a server
   const server = provider.makeInstance({
     name: "web-server",
-    dependencies: {},
+    dependencies: { ip },
     // TODO use properties
   });
 
