@@ -5,29 +5,16 @@ const CoreProvider = require("../CoreProvider");
 const GoogleClient = require("./GoogleClient");
 const logger = require("../../logger")({ prefix: "GoogleProvider" });
 const GoogleTag = require("./GoogleTag");
-const { toTagName } = require("./GoogleTag");
 const compare = require("../../Utils").compare;
 const toString = (x) => JSON.stringify(x, null, 4);
+const GoogleInstance = require("./GoogleInstance");
 
 const fnSpecs = (config) => {
-  const {
-    project,
-    region,
-    zone,
-    tag,
-    managedByKey,
-    managedByValue,
-    managedByDescription,
-  } = config;
+  const { project, region, managedByDescription } = config;
 
   const isOurMinion = ({ resource }) =>
     GoogleTag.isOurMinion({ resource, config });
 
-  //TODO set environment from config
-  const buildLabel = (name) => ({
-    [managedByKey]: managedByValue,
-    environment: "development",
-  });
   return [
     {
       type: "Address",
@@ -59,62 +46,11 @@ const fnSpecs = (config) => {
     },
     {
       type: "Instance",
+      dependsOn: ["Address"],
       Client: ({ spec }) =>
-        GoogleClient({
+        GoogleInstance({
           spec,
-          url: `/projects/${project}/zones/${zone}/instances/`,
           config,
-          configDefault: ({ name, properties, dependenciesLive }) => {
-            logger.debug(
-              `configDefault ${toString({ properties, dependenciesLive })}`
-            );
-            const { ip } = dependenciesLive;
-            const config = {
-              kind: "compute#instance",
-              name,
-              zone: `projects/${project}/zones/${zone}`,
-              machineType: `projects/${project}/zones/${zone}/machineTypes/${properties.machineType}`,
-              labels: buildLabel(name),
-              metadata: _.merge(properties.metadata, {
-                kind: "compute#metadata",
-              }),
-              //serviceAccounts: properties.serviceAccounts,
-              disks: [
-                {
-                  kind: "compute#attachedDisk",
-                  type: "PERSISTENT",
-                  boot: true,
-                  mode: "READ_WRITE",
-                  autoDelete: true,
-                  deviceName: toTagName(name, tag),
-                  initializeParams: {
-                    sourceImage: `projects/debian-cloud/global/images/${properties.sourceImage}`,
-                    diskType: `projects/${project}/zones/${zone}/diskTypes/pd-standard`,
-                    diskSizeGb: properties.diskSizeGb,
-                  },
-                  diskEncryptionKey: {},
-                },
-              ],
-              networkInterfaces: [
-                {
-                  kind: "compute#networkInterface",
-                  subnetwork: `projects/${project}/regions/${region}/subnetworks/default`,
-                  accessConfigs: [
-                    {
-                      ...(ip && { natIP: _.get(ip, "address", "<<NA>>") }),
-                      kind: "compute#accessConfig",
-                      name: "External NAT",
-                      type: "ONE_TO_ONE_NAT",
-                      networkTier: "PREMIUM",
-                    },
-                  ],
-                  aliasIpRanges: [],
-                },
-              ],
-            };
-            logger.debug(`configDefault ${name} result: ${toString(config)}`);
-            return config;
-          },
         }),
       propertiesDefault: {
         machineType: "f1-micro",
@@ -122,7 +58,6 @@ const fnSpecs = (config) => {
         diskTypes: "pd-standard",
         sourceImage: "debian-9-stretch-v20200420",
       },
-
       compare: ({ target, live }) => {
         logger.debug(`compare server`);
         const diff = compare({

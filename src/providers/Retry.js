@@ -5,7 +5,7 @@ const toString = (x) => JSON.stringify(x, null, 4);
 
 //TODO add name
 const retryExpectException = async (
-  { fn, isExpectedError, delay = 2e3 },
+  { fn, isExpectedError, delay = 4e3 },
   count = 90
 ) => {
   assert(fn);
