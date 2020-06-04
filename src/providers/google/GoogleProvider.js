@@ -75,6 +75,10 @@ const fnSpecs = (config) => {
               zone: `projects/${project}/zones/${zone}`,
               machineType: `projects/${project}/zones/${zone}/machineTypes/${properties.machineType}`,
               labels: buildLabel(name),
+              metadata: _.merge(properties.metadata, {
+                kind: "compute#metadata",
+              }),
+              //serviceAccounts: properties.serviceAccounts,
               disks: [
                 {
                   kind: "compute#attachedDisk",
