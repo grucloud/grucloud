@@ -62,10 +62,22 @@ Active the service account:
     gcloud auth list
     gcloud config set account accountname@yourproject.iam.gserviceaccount.com
 
+## SSH keys
+
+```sh
+gcloud compute os-login ssh-keys list
+```
+
 Upload your ssh keys:
 
 ```sh
 gcloud compute os-login ssh-keys add --key-file .ssh/id_rsa.pub
+```
+
+Describe a key
+
+```sh
+gcloud compute os-login ssh-keys describe --key=ad1811081881c04dad627f96b5d20ddd41fd44e31e76fc259c3e2534f75a190b
 ```
 
 ## Status

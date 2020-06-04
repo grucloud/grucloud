@@ -38,7 +38,7 @@ describe("GoogleProvider", async function () {
   });
   it("deploy plan", async function () {
     await testProviderLifeCycle({ provider });
-    // check ip address from instance is the one form address
+    // TODO check ip address from instance is the one form address
     // check status == "RUNNING"
   });
 });
