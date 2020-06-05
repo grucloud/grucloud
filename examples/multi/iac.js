@@ -1,9 +1,7 @@
 const GoogleProvider = require("@grucloud/core").GoogleProvider;
 const AwsProvider = require("@grucloud/core").AwsProvider;
 
-const config = require("./config");
-
-const createStackGoogle = async ({ options }) => {
+const createStackGoogle = async ({ config }) => {
   const provider = await GoogleProvider({
     name: "google",
     config: config.google,
@@ -16,7 +14,7 @@ const createStackGoogle = async ({ options }) => {
   return provider;
 };
 
-const createStackAws = async ({ options }) => {
+const createStackAws = async ({ config }) => {
   const provider = await AwsProvider({ name: "aws", config: config.aws });
   const keyPair = provider.makeKeyPair({
     name: "kp",
@@ -35,11 +33,11 @@ const createStackAws = async ({ options }) => {
   return provider;
 };
 
-const createStack = async ({ options }) => {
+const createStack = async ({ config }) => {
   return {
     providers: [
-      await createStackGoogle({ options }),
-      await createStackAws({ options }),
+      await createStackGoogle({ config }),
+      await createStackAws({ config }),
     ],
   };
 };

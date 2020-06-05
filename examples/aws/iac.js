@@ -1,8 +1,6 @@
 const AwsProvider = require("@grucloud/core").AwsProvider;
 
-const config = require("./config");
-
-const createStack = async ({ options }) => {
+const createStack = async ({ config }) => {
   // Create a AWS provider
   const provider = await AwsProvider({ name: "aws", config });
   // Allocate public Ip address

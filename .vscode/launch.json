@@ -62,35 +62,34 @@
       "request": "launch",
       "name": "Cli Aws Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}",
-
+      "cwd": "${workspaceFolder}/examples/aws/",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["--infra", "examples/aws/iac.js", "plan"]
+      "args": ["plan"]
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Cli Aws Status",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/examples/aws/",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["--infra", "examples/aws/iac.js", "status"]
+      "args": ["status"]
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Cli Aws List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/examples/aws/",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["--infra", "examples/aws/iac.js", "list", "--all"]
+      "args": ["list", "--all"]
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Cli Aws Deploy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/examples/aws/",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["--infra", "examples/aws/iac.js", "deploy"]
     },
@@ -99,34 +98,34 @@
       "request": "launch",
       "name": "Cli Aws Destroy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/examples/aws/",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["--infra", "examples/aws/iac.js", "destroy"]
+      "args": ["destroy"]
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Cli Google Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/examples/google/",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["--infra", "examples/google/iac.js", "plan"]
+      "args": ["plan"]
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Cli Google Status",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/examples/google/",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["--infra", "examples/google/iac.js", "status"]
+      "args": ["status"]
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Cli Google List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/examples/google/",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["--infra", "examples/google/iac.js", "list", "--all"]
     },
@@ -135,7 +134,7 @@
       "request": "launch",
       "name": "Cli Google Deploy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/examples/google/",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["--infra", "examples/google/iac.js", "deploy"]
     },
@@ -144,35 +143,17 @@
       "request": "launch",
       "name": "Cli Google Destroy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/examples/google/",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["--infra", "examples/google/iac.js", "destroy"]
     },
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Google Destroy All",
-      "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["--infra", "examples/aws/iac.js", "destroy", "--all"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Cli Scaleway List",
-      "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["--infra", "examples/scaleway/iac.js", "list", "--all"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Cli Status",
+      "name": "Cli Multi Status",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/multi/",
-      "args": ["--infra", "iac.js", "status"]
+      "args": ["status"]
     },
     {
       "name": "Debug test",

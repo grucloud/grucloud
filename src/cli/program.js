@@ -18,14 +18,20 @@ exports.createProgram = ({
   program.passCommandToAction(false);
   program.allowUnknownOption(); // For testing
   program.version(version);
-  program.option("-i, --infra <file>", "infrastructure iac.js file");
+  program.option("-i, --infra <file>", "infrastructure default is iac.js");
+  program.option("-c, --config <file>", "config file, default is config.js");
+
+  const infraOptions = (program) => ({
+    infraFileName: program.opts().infra,
+    configFileName: program.opts().config,
+  });
 
   try {
     program
       .command("plan")
       .description("Query the plan")
       .action(async () => {
-        const infra = await createInfra({ infra: program.opts().infra });
+        const infra = await createInfra(infraOptions(program));
         planQuery({ infra });
       });
 
@@ -33,7 +39,7 @@ exports.createProgram = ({
       .command("deploy")
       .description("Deploy the resources")
       .action(async () => {
-        const infra = await createInfra({ infra: program.opts().infra });
+        const infra = await createInfra(infraOptions(program));
         planDeploy({ infra });
       });
 
@@ -52,7 +58,7 @@ exports.createProgram = ({
       .option("-n, --name <value>", "destroy by name")
       .option("--id <value>", "destroy by id")
       .action(async (subOptions) => {
-        const infra = await createInfra({ infra: program.opts().infra });
+        const infra = await createInfra(infraOptions(program));
         planDestroy({
           infra,
           options: {
@@ -67,7 +73,7 @@ exports.createProgram = ({
     program
       .command("status")
       .action(async () => {
-        const infra = await createInfra({ infra: program.opts().infra });
+        const infra = await createInfra(infraOptions(program));
         displayStatus({ infra });
       })
       .description("Status");
@@ -87,7 +93,7 @@ exports.createProgram = ({
         "display resources which can be deleted, a.k.a non default resources"
       )
       .action(async (subOptions) => {
-        const infra = await createInfra({ infra: program.opts().infra });
+        const infra = await createInfra(infraOptions(program));
         list({
           infra,
           options: {

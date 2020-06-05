@@ -1,8 +1,6 @@
 const GoogleProvider = require("@grucloud/core").GoogleProvider;
 
-const config = require("./config");
-
-const createStack = async ({ options }) => {
+const createStack = async ({ config }) => {
   // Create GCP provider
   const provider = await GoogleProvider({ name: "google", config });
   // Allocate public Ip address
