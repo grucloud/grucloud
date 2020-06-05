@@ -24,6 +24,8 @@
 - is config.tag still being used ? yes but in instance device name, rename tag to something else
 - create new project such as grucloud-e2e
 - WARNING when gloud config is difference from our config, i.e region
+- document ssh key in meta data
+- add service account
 
 ## TODO Mock
 

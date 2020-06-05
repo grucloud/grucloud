@@ -3,7 +3,15 @@ id: GoogleGettingStarted
 title: Getting Started
 ---
 
-Let's create a simple infrastructure with a server running ubuntu attached to a 20GB disk, connected to a public ip address.
+Let's create a simple infrastructure with a server running ubuntu, connected to a public ip address, accessible through SSH.
+
+First of all, make sure all the gcp prerequisites has been met: [GoogleRequirements](./GoogleRequirements.md)
+
+```
+gcloud info
+```
+
+To go further, you'll need a **service account**, **project**, **region** and **zone**
 
 ## Getting the code
 
@@ -27,15 +35,21 @@ cd grucloud/examples/google
 npm install
 ```
 
-## Config
+### .env
 
-Go the [google cloud console](https://console.cloud.google.com/home/dashboard)
+Edit the _.env_ file and set the _GOOGLE_APPLICATION_CREDENTIALS_ environment variable which points the the service account credential.
 
-- Create a new project and retrieve the project id
+```bash
+GOOGLE_APPLICATION_CREDENTIALS="/Users/mario/Downloads/superduperproject-605f4eb1b929.json"
+```
 
-- Enable the Google Engine API
+### Config
 
-Edit **config.js** and set the project id, region and zone:
+Find out the default region, zone and project:
+
+gcloud config list
+
+Edit **config.js** and set the **project id**, **region** and **zone**:
 
 ```js
 const config = {
@@ -44,40 +58,6 @@ const config = {
   zone: "us-central1-a",
   applicationCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS,
 };
-```
-
-## Service Account
-
-Create a [service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) and download the credential file.
-
-Createthe file _.env_ and set the _GOOGLE_APPLICATION_CREDENTIALS_ environment variable.
-
-```bash
-GOOGLE_APPLICATION_CREDENTIALS="/Users/mario/Downloads/superduperproject-605f4eb1b929.json"
-```
-
-Active the service account:
-
-    gcloud auth activate-service-account --key-file=/replace/with/your/credential1118fd0337b2.json
-    gcloud auth list
-    gcloud config set account accountname@yourproject.iam.gserviceaccount.com
-
-## SSH keys
-
-```sh
-gcloud compute os-login ssh-keys list
-```
-
-Upload your ssh keys:
-
-```sh
-gcloud compute os-login ssh-keys add --key-file .ssh/id_rsa.pub
-```
-
-Describe a key
-
-```sh
-gcloud compute os-login ssh-keys describe --key=ad1811081881c04dad627f96b5d20ddd41fd44e31e76fc259c3e2534f75a190b
 ```
 
 ## Status
@@ -103,7 +83,7 @@ const createStack = ({ options }) => {
   // Allocate a server
   const server = provider.makeInstance({
     name: "web-server",
-    dependencies: {},
+    dependencies: { ip },
     properties: {
       machineType: "e2-micro",
     },
@@ -126,6 +106,18 @@ Find out which resources are going to be allocated:
 Happy with the expected plan ? Deploy it now:
 
     gc deploy
+
+```
+gcloud compute ssh web-server
+```
+
+## List
+
+List the available resources with:
+
+```
+gc list
+```
 
 ## Destroy
 
