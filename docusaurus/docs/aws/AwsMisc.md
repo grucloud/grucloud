@@ -3,6 +3,15 @@ id: AwsMisc
 title: Miscellaneous
 ---
 
+## Commands
+
+```
+aws configure
+aws ec2 describe-instances
+aws ec2 describe-instances --filters "Name=tag:name,Values=web-server"
+
+```
+
 ## Useful Links
 
 - https://docs.aws.amazon.com/

@@ -8,7 +8,6 @@ const { toTagName } = require("../TagName");
 const logger = require("../../logger")({ prefix: "MockProvider" });
 //const toJSON = (x) => JSON.stringify(x, null, 4);
 
-//TODO use deepMerge ?
 const fnSpecs = (config) => {
   const configDefault = async ({ name, properties }) => ({
     name,

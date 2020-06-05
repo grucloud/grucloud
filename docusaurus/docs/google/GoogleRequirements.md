@@ -3,18 +3,9 @@ id: GoogleRequirements
 title: Requirements
 ---
 
-## Node
-
-Please make sure **node** version is at least **14**:
-
-```
-$ node -v
-v14.0.0
-```
-
 ## Gcloud
 
-Make sure **gcloud** is installed:
+Ensure **gcloud** is installed:
 
 ```
 $ gcloud -v
@@ -58,7 +49,7 @@ Make sure these API are enable for your newly created project:
 - [Service Usage API](https://console.cloud.google.com/apis/library/serviceusage.googleapis.com)
 - [Cloud Resource Manager](https://console.developers.google.com/apis/library/cloudresourcemanager.googleapis.com)
 
-Get the list fo all API [here](https://console.cloud.google.com/apis/library)
+Get the list of all API [here](https://console.cloud.google.com/apis/library)
 
 ## Service Account
 
