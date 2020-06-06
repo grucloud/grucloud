@@ -2,6 +2,7 @@
 
 ## Common:
 
+- test examples
 - set environment: prod , dev etc...
 - replace "<<NA>>" with the resource name if the id is not available
 - compare or compareObject
