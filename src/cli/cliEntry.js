@@ -11,11 +11,13 @@ const program = createProgram({
 
 //console.log(`GruCloud ${program._version}`);
 
-program
-  .parseAsync(process.argv)
-  .then(() => {
-    //console.log("Done");
-  })
-  .catch((error) => {
-    //console.log("Error ", JSON.stringify(error, null, 4));
-  });
+program.parseAsync(process.argv).catch((error) => {
+  const { code } = error;
+  if (code === 422) {
+    console.log(error.message);
+    process.exit(22);
+  } else {
+    console.log(error);
+    process.exit(-1);
+  }
+});

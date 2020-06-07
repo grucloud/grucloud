@@ -12,7 +12,7 @@ const runProgram = async ({ filename, cmds = [] }) => {
     version: "1.2",
     commands,
   });
-  program.parseAsync(argv);
+  return program.parseAsync(argv);
 };
 
 describe("cli", function () {
@@ -36,5 +36,13 @@ describe("cli", function () {
   });
   it("list by type", async function () {
     await runProgram({ filename, cmds: ["list", "--type", "Server", "Ip"] });
+  });
+  it.only("--config notexisting.js", async function () {
+    runProgram({
+      filename,
+      cmds: ["--config", "notexisting.js", "list"],
+    }).catch((error) => {
+      assert.equal(error.code, 422);
+    });
   });
 });

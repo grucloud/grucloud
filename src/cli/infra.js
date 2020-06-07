@@ -11,6 +11,7 @@ const creatInfraFromFile = async ({ infraFileName, config }) => {
     }
     return infra;
   } catch (err) {
+    //TODO
     console.error(err);
     throw err;
   }
@@ -23,9 +24,8 @@ const resolveFilename = ({ fileName, defaultName }) =>
 
 const checkFileExist = ({ filename }) => {
   if (!fs.existsSync(filename)) {
-    const msg = `Cannot open file ${filename}`;
-    console.error(msg);
-    throw Error(msg);
+    const message = `Cannot open file ${filename}`;
+    throw { code: 422, message };
   }
 };
 
