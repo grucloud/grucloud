@@ -1,5 +1,6 @@
 const { Command } = require("commander");
-const { pipe, andThen, flatten, isEmpty } = require("ramda");
+const { flatten, isEmpty, ifElse, identity, tap } = require("ramda");
+const { pipe } = require("rubico");
 const { createInfra } = require("./infra");
 const noop = () => ({});
 const collect = (value, previous = []) => previous.concat([value]);
@@ -93,16 +94,21 @@ exports.createProgram = ({
       "display resources which can be deleted, a.k.a non default resources"
     )
     .action(async (subOptions) => {
-      const displayEmptyResults = (results) => {
-        if (pipe(flatten, isEmpty)(results)) {
-          console.log("No live resources to list");
-        }
-      };
-      pipe(
+      const displayResults = ifElse(
+        pipe([flatten, isEmpty]),
+        () => console.log("No live resources to list"),
+        (result) =>
+          console.log(
+            `${flatten(result).length} live resource(s) in ${
+              result.length
+            } provider(s)`
+          )
+      );
+      await pipe([
         infraOptions,
         createInfra,
-        andThen((infra) =>
-          list({
+        async (infra) =>
+          await list({
             infra,
             options: {
               all: subOptions.all,
@@ -110,10 +116,9 @@ exports.createProgram = ({
               our: subOptions.our,
               canBeDeleted: subOptions.canBeDeleted,
             },
-          })
-        ),
-        andThen(displayEmptyResults)
-      )(program);
+          }),
+        displayResults,
+      ])(program);
     });
 
   return program;

@@ -2,6 +2,7 @@
 
 ## Common:
 
+- remove status use list --our instead
 - set environment: prod , dev etc...
 - replace "<<NA>>" with the resource name if the id is not available
 - compare or compareObject

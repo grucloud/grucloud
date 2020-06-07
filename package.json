@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/core",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "description": "Infrastructure as Code",
   "public": true,
   "main": "src/index.js",
@@ -43,6 +43,7 @@
     "ramda": "^0.27.0",
     "remedial": "^1.0.8",
     "remove-trailing-spaces": "^1.0.7",
+    "rubico": "^1.1.8",
     "shelljs": "^0.8.4",
     "shortid": "^2.2.15",
     "url-join": "^4.0.1",
