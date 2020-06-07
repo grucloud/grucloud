@@ -127,7 +127,7 @@
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/google/",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["--infra", "examples/google/iac.js", "list", "--all"]
+      "args": ["list", "--all"]
     },
     {
       "type": "node",
@@ -136,7 +136,7 @@
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/google/",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["--infra", "examples/google/iac.js", "deploy"]
+      "args": ["deploy"]
     },
     {
       "type": "node",
@@ -145,7 +145,7 @@
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/google/",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["--infra", "examples/google/iac.js", "destroy"]
+      "args": ["destroy"]
     },
     {
       "type": "node",
@@ -154,6 +154,14 @@
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/multi/",
       "args": ["status"]
+    },
+    {
+      "name": "Debug examples",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceRoot}/test/testExamples",
+      "internalConsoleOptions": "openOnSessionStart",
+      "cwd": "${workspaceRoot}/test"
     },
     {
       "name": "Debug test",
