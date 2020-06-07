@@ -6,6 +6,7 @@ const { getByNameCore } = require("../Common");
 const toString = (x) => JSON.stringify(x, null, 4);
 const StateTerminated = ["terminated"];
 const { KeyName, findNameInTags } = require("./AwsCommon");
+const { NotAvailable } = require("../ProviderCommon");
 
 module.exports = AwsClientEC2 = ({ spec, config }) => {
   assert(spec);
@@ -146,7 +147,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
       ...(keyPair && { KeyName: keyPair.KeyName }),
       ...(!_.isEmpty(securityGroups) && {
         SecurityGroupIds: _.map(securityGroups, (sg) =>
-          _.get(sg, "GroupId", "<<NA>>")
+          _.get(sg, "GroupId", NotAvailable)
         ),
       }),
     };

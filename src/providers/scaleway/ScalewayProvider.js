@@ -123,8 +123,8 @@ const fnSpecs = (config) => {
               name,
               organization,
               tags: [name, config.tag],
-              image: _.get(image, "id", "<<NA>>"),
-              ...(ip && { public_ip: _.get(ip, "id", "<<NA>>") }),
+              image: _.get(image, "id", NotAvailable),
+              ...(ip && { public_ip: _.get(ip, "id", NotAvailable) }),
               ...properties,
             };
           },

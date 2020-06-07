@@ -2,6 +2,8 @@ var AWS = require("aws-sdk");
 const _ = require("lodash");
 const assert = require("assert");
 const { retryExpectOk } = require("../Retry");
+const { NotAvailable } = require("../ProviderCommon");
+
 const {
   getByNameCore,
   getByIdCore,
@@ -113,7 +115,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     // Need vpc name here in parameter
     const { vpc } = dependenciesLive;
     const config = _.merge({
-      create: { ...(vpc && { VpcId: _.get(vpc, "VpcId", "<<NA>>") }) },
+      create: { ...(vpc && { VpcId: _.get(vpc, "VpcId", NotAvailable) }) },
       ...properties,
     });
     logger.debug(`configDefault ${name} result: ${toString(config)}`);

@@ -7,6 +7,7 @@ const TagName = require("../TagName");
 const { toTagName } = require("../TagName");
 const logger = require("../../logger")({ prefix: "MockProvider" });
 //const toJSON = (x) => JSON.stringify(x, null, 4);
+const { NotAvailable } = require("../ProviderCommon");
 
 const fnSpecs = (config) => {
   const configDefault = async ({ name, properties }) => ({
@@ -107,7 +108,7 @@ const fnSpecs = (config) => {
                 subnetwork: `projects/${config.project}/regions/${config.region}/subnetworks/default`,
                 accessConfigs: [
                   {
-                    natIP: _.get(ip, "address", "<<later>>"),
+                    natIP: _.get(ip, "address", NotAvailable),
                     kind: "compute#accessConfig",
                     name: "External NAT",
                     type: "ONE_TO_ONE_NAT",

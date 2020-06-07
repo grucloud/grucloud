@@ -30,10 +30,7 @@ const destroyByClient = async ({ client, name, data }) => {
   logger.debug(`destroyByClient: ${toString({ data })}`);
   const id = client.findId(data);
   assert(id);
-  if (client.cannotBeDeleted(data)) {
-    logger.debug(`destroyByClient: default resource, cannot de deleted`);
-    return;
-  }
+
   try {
     await client.destroy({ id, name });
   } catch (error) {
@@ -166,17 +163,6 @@ const ResourceMaker = ({
     }
   };
 
-  const destroy = async () => {
-    logger.info(`destroy ${type}/${resourceName}`);
-    const live = await getLive();
-    logger.debug(`destroy type: ${type} item: ${toString(live)}`);
-    if (!live) {
-      logger.error(`Cannot find ${type}/${resourceName} to destroy`);
-      return;
-    }
-    await destroyByClient({ client, name: resourceName, live });
-  };
-
   const planUpsert = async ({ resource }) => {
     logger.info(`planUpsert resource: ${toString(resource.serialized())}`);
     const live = await resource.getLive();
@@ -216,7 +202,6 @@ const ResourceMaker = ({
     create,
     planUpsert,
     getLive,
-    destroy,
     addParent,
   };
   _.map(dependencies, (dependency) => {
@@ -326,9 +311,7 @@ module.exports = CoreProvider = ({
                   }))
                   .filter((item) => (our ? item.managedByUs : true))
                   .filter((item) =>
-                    canBeDeleted && client.cannotBeDeleted
-                      ? !client.cannotBeDeleted(item.data)
-                      : true
+                    canBeDeleted ? !client.cannotBeDeleted(item.data) : true
                   ),
               };
             } catch (error) {
@@ -596,9 +579,6 @@ module.exports = CoreProvider = ({
   };
 
   checkEnvironment(envs);
-  if (hooks && hooks.init) {
-    hooks.init();
-  }
   const isPlanEmpty = (plan) => {
     if (plan.newOrUpdate.length > 0) {
       return false;
@@ -613,7 +593,6 @@ module.exports = CoreProvider = ({
     config,
     name: () => providerName,
     type: () => type || providerName,
-    hooks,
     destroyAll,
     planFindDestroy,
     destroyByName,

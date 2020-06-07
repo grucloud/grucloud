@@ -2,9 +2,7 @@
 
 ## Common:
 
-- remove status use list --our instead
 - set environment: prod , dev etc...
-- replace "<<NA>>" with the resource name if the id is not available
 - compare or compareObject
 
 ## Cli
@@ -14,7 +12,6 @@
 - config file with options
 - gc list by name
 - return negative value in case of error
-- gc list -o should return a message when empty
 
 ## TODO Aws:
 

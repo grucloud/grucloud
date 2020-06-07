@@ -3,6 +3,7 @@ const assert = require("assert");
 const logger = require("../../logger")({ prefix: "GoogleInstance" });
 const toString = (x) => JSON.stringify(x, null, 4);
 const { toTagName } = require("./GoogleTag");
+const { NotAvailable } = require("../ProviderCommon");
 
 module.exports = GoogleInstance = ({ spec, config }) => {
   assert(spec);
@@ -69,7 +70,7 @@ module.exports = GoogleInstance = ({ spec, config }) => {
           subnetwork: `projects/${project}/regions/${region}/subnetworks/default`,
           accessConfigs: [
             {
-              ...(ip && { natIP: _.get(ip, "address", "<<NA>>") }),
+              ...(ip && { natIP: _.get(ip, "address", NotAvailable) }),
               kind: "compute#accessConfig",
               name: "External NAT",
               type: "ONE_TO_ONE_NAT",

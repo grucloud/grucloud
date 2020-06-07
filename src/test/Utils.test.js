@@ -1,7 +1,7 @@
 const assert = require("assert");
 const _ = require("lodash");
 const { checkEnvironment, compare, compareObject } = require("../Utils");
-const utils = require("utils");
+
 describe("checkEnvironment", function () {
   it("checkEnvironment empty", async function () {
     checkEnvironment([]);
