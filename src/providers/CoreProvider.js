@@ -598,6 +598,7 @@ module.exports = CoreProvider = ({
     destroyByName,
     plan,
     deployPlan,
+    destroyPlan,
     listLives,
     listTargets,
     listConfig,

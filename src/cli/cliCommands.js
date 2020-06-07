@@ -1,6 +1,9 @@
 const _ = require("lodash");
 const { runAsyncCommand } = require("./cliUtils");
 const { displayPlan, displayLive } = require("./displayUtils");
+const prompts = require("prompts");
+const { map, pipe } = require("rubico");
+const { flatten, tap, isEmpty, ifElse, pluck } = require("ramda");
 
 //Query Plan
 const planQuery = async ({ infra }) => {
@@ -74,35 +77,36 @@ exports.planDeploy = async ({ infra }) => {
 // Destroy plan
 exports.planDestroy = async ({ infra, options }) => {
   //TODO Promise all settled
-  const results = await Promise.all(
-    infra.providers.map(async (provider) => {
-      try {
-        // TODO Use  planFindDestroy and deployPlan
-        await runAsyncCommand(
-          () => provider.destroyAll(options),
-          `Destroy Resources ${provider.name()}`
-        );
-        const targets = await runAsyncCommand(
-          () => provider.listLives({ canBeDeleted: true, our: !options.all }),
-          `Live resources for ${provider.name()}`
-        );
-        // TODO display the number od resources deleted
-        {
-          const targets = await runAsyncCommand(
-            () => provider.listLives({ out: true }),
-            `Remaining resources for provider ${provider.name()}`
-          );
-          displayLive({ providerName: provider.name(), targets });
-        }
-      } catch (error) {
-        //console.error("error", error);
-        return { error };
-      }
-    })
-    //TODO Check status is empty
-  );
-  console.log("results", results);
-  //return results.some((result) => result);
+
+  //const planCount = ({ plans }) => flatten(plans).length;
+  const hasEmptyPlan = (obj) => pipe([pluck("plan"), flatten, isEmpty])(obj);
+  const processHasNoPlan = () => {
+    console.log("no resources to destroy");
+  };
+
+  const displayResourcesDestroyed = (plans) =>
+    pipe([
+      flatten,
+      (plans) => console.log(`${plans.length} Resource(s) destroyed`),
+    ])(plans);
+
+  const processPlansDestroy = (obj) =>
+    pipe([
+      async (result) =>
+        map(async ({ provider, plan }) => await provider.destroyPlan(plan))(
+          result
+        ),
+      displayResourcesDestroyed,
+    ])(obj);
+
+  await pipe([
+    async (providers) =>
+      await map(async (provider) => ({
+        provider,
+        plan: await provider.planFindDestroy(options, -1),
+      }))(providers),
+    ifElse(hasEmptyPlan, processHasNoPlan, processPlansDestroy),
+  ])(infra.providers);
 };
 
 //List all

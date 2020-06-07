@@ -8,6 +8,8 @@
 
 ## Cli
 
+- prompt user to create
+- prompt user to destroy
 - save result to json
 - config file with options
 - gc list by name
