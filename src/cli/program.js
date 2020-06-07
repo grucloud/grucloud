@@ -21,6 +21,7 @@ exports.createProgram = ({ version, commands }) => {
   program
     .command("plan")
     .description("Query the plan")
+    .alias("p")
     .action(async () => {
       await pipe([
         (program) => program.opts(),
@@ -45,6 +46,7 @@ exports.createProgram = ({ version, commands }) => {
   program
     .command("destroy")
     .description("Destroy the resources")
+    .alias("d")
     .option(
       "-t, --type <type>",
       "Filter by type, multiple values allowed",
@@ -59,11 +61,8 @@ exports.createProgram = ({ version, commands }) => {
     .action(async (subOptions) => {
       await pipe([
         (program) => program.opts(),
-        tap(console.log),
         infraOptions,
-        tap(console.log),
         createInfra,
-        tap(console.log),
         async (infra) =>
           await commands.planDestroy({
             infra,
@@ -80,6 +79,7 @@ exports.createProgram = ({ version, commands }) => {
   program
     .command("list")
     .description("List the resources")
+    .alias("l")
     .option("-a, --all", "List also read-only resources")
     .option(
       "-t, --type <value>",

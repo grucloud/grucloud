@@ -4,11 +4,11 @@
 
 - set environment: prod , dev etc...
 - compare or compareObject
+- CPD
 
 ## Cli
 
 - save result to json
-- add command alias
 - config file with options
 - gc list by name
 - return negative value in case of error
