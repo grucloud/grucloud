@@ -1,52 +1,46 @@
 const assert = require("assert");
 const _ = require("lodash");
-const { createProgram } = require("../program");
 
-const commands = require("../cliCommands");
+const { main } = require("../cliMain");
 
 const filename = "src/providers/mock/test/MockStack.js";
 const configFile = "src/providers/mock/test/config.js";
 
-const runProgram = async ({ filename, cmds = [] }) => {
+const runProgram = async ({ cmds = [] }) => {
   const argv = [
-    "node",
-    "cliEntry.js",
+    "xx",
+    "xx",
     "--infra",
     filename,
     "--config",
     configFile,
     ...cmds,
   ];
-  const program = createProgram({
-    version: "1.2",
-    commands,
-  });
-  return program.parseAsync(argv);
+  await main({ argv });
 };
 
 describe("cli", function () {
   it("query plan", async function () {
-    await runProgram({ filename, cmds: ["plan"] });
+    await runProgram({ cmds: ["plan"] });
   });
   it("deploy plan", async function () {
-    await runProgram({ filename, cmds: ["deploy"] });
+    await runProgram({ cmds: ["deploy"] });
   });
   it("destroy plan", async function () {
-    await runProgram({ filename, cmds: ["destroy"] });
+    await runProgram({ cmds: ["destroy"] });
   });
   it("list all", async function () {
-    await runProgram({ filename, cmds: ["list", "--all"] });
+    await runProgram({ cmds: ["list", "--all"] });
   });
   it("list our", async function () {
-    await runProgram({ filename, cmds: ["list", "--our"] });
+    await runProgram({ cmds: ["list", "--our"] });
   });
   it("list by type", async function () {
-    await runProgram({ filename, cmds: ["list", "--type", "Server", "Ip"] });
+    await runProgram({ cmds: ["list", "--type", "Server", "Ip"] });
   });
-  it("--config notexisting.js", async function () {
-    runProgram({
-      filename,
-      cmds: ["--config", "notexisting.js", "list"],
+  it.skip("--config notexisting.js", async function () {
+    main({
+      argv: ["xx", "xx", "--config", "notexisting.js", "list"],
     }).catch((error) => {
       assert.equal(error.code, 422);
     });

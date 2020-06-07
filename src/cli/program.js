@@ -2,18 +2,9 @@ const { Command } = require("commander");
 const { flatten, isEmpty, ifElse, identity, tap } = require("ramda");
 const { pipe } = require("rubico");
 const { createInfra } = require("./infra");
-const noop = () => ({});
 const collect = (value, previous = []) => previous.concat([value]);
 
-exports.createProgram = ({
-  version,
-  commands: {
-    planQuery = noop,
-    planDeploy = noop,
-    planDestroy = noop,
-    list = noop,
-  },
-}) => {
+exports.createProgram = ({ version, commands }) => {
   const program = new Command();
   program.storeOptionsAsProperties(false);
   program.passCommandToAction(false);
@@ -22,25 +13,33 @@ exports.createProgram = ({
   program.option("-i, --infra <file>", "infrastructure default is iac.js");
   program.option("-c, --config <file>", "config file, default is config.js");
 
-  const infraOptions = (program) => ({
-    infraFileName: program.opts().infra,
-    configFileName: program.opts().config,
+  const infraOptions = (options) => ({
+    infraFileName: options.infra,
+    configFileName: options.config,
   });
 
   program
     .command("plan")
     .description("Query the plan")
     .action(async () => {
-      const infra = await createInfra(infraOptions(program));
-      await planQuery({ infra });
+      await pipe([
+        (program) => program.opts(),
+        infraOptions,
+        createInfra,
+        async (infra) => await commands.planQuery({ infra }),
+      ])(program);
     });
 
   program
     .command("deploy")
     .description("Deploy the resources")
     .action(async () => {
-      const infra = await createInfra(infraOptions(program));
-      await planDeploy({ infra });
+      await pipe([
+        (program) => program.opts(),
+        infraOptions,
+        createInfra,
+        async (infra) => await commands.planDeploy({ infra }),
+      ])(program);
     });
 
   program
@@ -58,16 +57,24 @@ exports.createProgram = ({
     .option("-n, --name <value>", "destroy by name")
     .option("--id <value>", "destroy by id")
     .action(async (subOptions) => {
-      const infra = await createInfra(infraOptions(program));
-      await planDestroy({
-        infra,
-        options: {
-          all: subOptions.all,
-          types: subOptions.type,
-          name: subOptions.name,
-          id: subOptions.id,
-        },
-      });
+      await pipe([
+        (program) => program.opts(),
+        tap(console.log),
+        infraOptions,
+        tap(console.log),
+        createInfra,
+        tap(console.log),
+        async (infra) =>
+          await commands.planDestroy({
+            infra,
+            options: {
+              all: subOptions.all,
+              types: subOptions.type,
+              name: subOptions.name,
+              id: subOptions.id,
+            },
+          }),
+      ])(program);
     });
 
   program
@@ -96,10 +103,11 @@ exports.createProgram = ({
           )
       );
       await pipe([
+        (program) => program.opts(),
         infraOptions,
         createInfra,
         async (infra) =>
-          await list({
+          await commands.list({
             infra,
             options: {
               all: subOptions.all,
