@@ -1,4 +1,5 @@
 const { Command } = require("commander");
+const { pipe, andThen, flatten, isEmpty } = require("ramda");
 const { createInfra } = require("./infra");
 const noop = () => ({});
 const collect = (value, previous = []) => previous.concat([value]);
@@ -31,7 +32,7 @@ exports.createProgram = ({
     .description("Query the plan")
     .action(async () => {
       const infra = await createInfra(infraOptions(program));
-      planQuery({ infra });
+      await planQuery({ infra });
     });
 
   program
@@ -39,7 +40,7 @@ exports.createProgram = ({
     .description("Deploy the resources")
     .action(async () => {
       const infra = await createInfra(infraOptions(program));
-      planDeploy({ infra });
+      await planDeploy({ infra });
     });
 
   program
@@ -58,7 +59,7 @@ exports.createProgram = ({
     .option("--id <value>", "destroy by id")
     .action(async (subOptions) => {
       const infra = await createInfra(infraOptions(program));
-      planDestroy({
+      await planDestroy({
         infra,
         options: {
           all: subOptions.all,
@@ -92,16 +93,27 @@ exports.createProgram = ({
       "display resources which can be deleted, a.k.a non default resources"
     )
     .action(async (subOptions) => {
-      const infra = await createInfra(infraOptions(program));
-      list({
-        infra,
-        options: {
-          all: subOptions.all,
-          types: subOptions.type,
-          our: subOptions.our,
-          canBeDeleted: subOptions.canBeDeleted,
-        },
-      });
+      const displayEmptyResults = (results) => {
+        if (pipe(flatten, isEmpty)(results)) {
+          console.log("No live resources to list");
+        }
+      };
+      pipe(
+        infraOptions,
+        createInfra,
+        andThen((infra) =>
+          list({
+            infra,
+            options: {
+              all: subOptions.all,
+              types: subOptions.type,
+              our: subOptions.our,
+              canBeDeleted: subOptions.canBeDeleted,
+            },
+          })
+        ),
+        andThen(displayEmptyResults)
+      )(program);
     });
 
   return program;

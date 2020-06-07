@@ -2,13 +2,14 @@
 
 ## Common:
 
-- test examples
 - set environment: prod , dev etc...
 - replace "<<NA>>" with the resource name if the id is not available
 - compare or compareObject
 
 ## Cli
 
+- save result to json
+- add command alias
 - config file with options
 - gc list by name
 - return negative value in case of error
