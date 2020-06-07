@@ -311,26 +311,36 @@ module.exports = CoreProvider = ({
             !_.isEmpty(types) ? types.includes(client.spec.type) : true
           )
           .map(async (client) => {
-            logger.debug(`listLives ${toString(client.spec.type)}`);
-            const { data } = await client.list();
-            //logger.debug(`listLives data ${toString(data)}`);
+            try {
+              logger.debug(`listLives ${client.spec.type}`);
+              const { data } = await client.list();
 
-            return {
-              type: client.spec.type,
-              resources: data.items
-                .map((item) => ({
-                  name: client.findName(item),
-                  id: client.findId(item),
-                  managedByUs: client.spec.isOurMinion({ resource: item }),
-                  data: item,
-                }))
-                .filter((item) => (our ? item.managedByUs : true))
-                .filter((item) =>
-                  canBeDeleted && client.cannotBeDeleted
-                    ? !client.cannotBeDeleted(item.data)
-                    : true
-                ),
-            };
+              return {
+                type: client.spec.type,
+                resources: data.items
+                  .map((item) => ({
+                    name: client.findName(item),
+                    id: client.findId(item),
+                    managedByUs: client.spec.isOurMinion({ resource: item }),
+                    data: item,
+                  }))
+                  .filter((item) => (our ? item.managedByUs : true))
+                  .filter((item) =>
+                    canBeDeleted && client.cannotBeDeleted
+                      ? !client.cannotBeDeleted(item.data)
+                      : true
+                  ),
+              };
+            } catch (error) {
+              logger.error(
+                `listLives error: ${toString({
+                  type: client.spec.type,
+                  error,
+                })}`
+              );
+
+              return { error };
+            }
           })
       )
     ).filter((liveResources) => liveResources.resources.length > 0);
