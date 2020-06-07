@@ -5,9 +5,18 @@ const { createProgram } = require("../program");
 const commands = require("../cliCommands");
 
 const filename = "src/providers/mock/test/MockStack.js";
+const configFile = "src/providers/mock/test/config.js";
 
 const runProgram = async ({ filename, cmds = [] }) => {
-  const argv = ["node", "cliEntry.js", "--infra", filename, ...cmds];
+  const argv = [
+    "node",
+    "cliEntry.js",
+    "--infra",
+    filename,
+    "--config",
+    configFile,
+    ...cmds,
+  ];
   const program = createProgram({
     version: "1.2",
     commands,
@@ -25,9 +34,6 @@ describe("cli", function () {
   it("destroy plan", async function () {
     await runProgram({ filename, cmds: ["destroy"] });
   });
-  it("display Status", async function () {
-    await runProgram({ filename, cmds: ["status"] });
-  });
   it("list all", async function () {
     await runProgram({ filename, cmds: ["list", "--all"] });
   });
@@ -37,7 +43,7 @@ describe("cli", function () {
   it("list by type", async function () {
     await runProgram({ filename, cmds: ["list", "--type", "Server", "Ip"] });
   });
-  it.only("--config notexisting.js", async function () {
+  it("--config notexisting.js", async function () {
     runProgram({
       filename,
       cmds: ["--config", "notexisting.js", "list"],

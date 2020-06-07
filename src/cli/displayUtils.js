@@ -81,20 +81,3 @@ exports.displayLive = async ({ providerName, targets }) => {
     displayTablePerType({ providerName, resourcesByType })
   );
 };
-
-// Status
-const displayStatusItem = (table, item) => {
-  assert(item.type);
-  table.push([item.type, YAML.stringify(item.data)]);
-};
-exports.displayStatus = async ({ providerName, targets }) => {
-  const table = new Table({ style: { head: [], border: [] } });
-  table.push([
-    { colSpan: 2, content: colors.yellow(`Statuses for ${providerName}`) },
-  ]);
-  table.push(["Type", "Data"].map((item) => colors.red(item)));
-
-  targets.forEach((item) => displayStatusItem(table, item));
-  console.log(table.toString());
-  console.log("\n");
-};

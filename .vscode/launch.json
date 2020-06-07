@@ -69,15 +69,6 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws Status",
-      "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/aws/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["status"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
       "name": "Cli Aws List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/",
@@ -114,15 +105,6 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Google Status",
-      "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/google/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["status"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
       "name": "Cli Google List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/google/",
@@ -146,14 +128,6 @@
       "cwd": "${workspaceFolder}/examples/google/",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["destroy"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Cli Multi Status",
-      "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/multi/",
-      "args": ["status"]
     },
     {
       "name": "Debug examples",

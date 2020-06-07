@@ -11,7 +11,6 @@ exports.createProgram = ({
     planQuery = noop,
     planDeploy = noop,
     planDestroy = noop,
-    displayStatus = noop, // DisplayOur
     list = noop,
   },
 }) => {
@@ -70,14 +69,6 @@ exports.createProgram = ({
         },
       });
     });
-
-  program
-    .command("status")
-    .action(async () => {
-      const infra = await createInfra(infraOptions(program));
-      displayStatus({ infra });
-    })
-    .description("Status");
 
   program
     .command("list")

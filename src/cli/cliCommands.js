@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const { runAsyncCommand } = require("./cliUtils");
-const { displayPlan, displayLive, displayStatus } = require("./displayUtils");
+const { displayPlan, displayLive } = require("./displayUtils");
 
 //Query Plan
 const planQuery = async ({ infra }) => {
@@ -84,7 +84,7 @@ exports.planDestroy = async ({ infra, options }) => {
         );
         const targets = await runAsyncCommand(
           () => provider.listLives({ canBeDeleted: true, our: !options.all }),
-          `Status for ${provider.name()}`
+          `Live resources for ${provider.name()}`
         );
         // TODO display the number od resources deleted
         {
@@ -105,25 +105,6 @@ exports.planDestroy = async ({ infra, options }) => {
   //return results.some((result) => result);
 };
 
-//Display Status
-exports.displayStatus = async ({ infra }) => {
-  try {
-    const targets = await Promise.all(
-      infra.providers.map(async (provider) => {
-        const targets = await runAsyncCommand(
-          () => provider.listTargets(),
-          `Status for ${provider.name()}`
-        );
-        displayStatus({ providerName: provider.name(), targets });
-        return targets;
-      })
-    );
-    return targets;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
 //List all
 exports.list = async ({ infra, options }) => {
   try {

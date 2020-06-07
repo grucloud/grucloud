@@ -60,14 +60,6 @@ const config = {
 };
 ```
 
-## Status
-
-Query the status of the current resources on the given cloud account:
-
-```bash
-gc status
-```
-
 Now it is time to edit the infrastructure **iac.js** file that describes the architecture:
 
 ```js
