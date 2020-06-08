@@ -21,14 +21,14 @@ const PlanDirection = {
   DOWN: -1,
 };
 
-const destroyByClient = async ({ client, name, data }) => {
+const destroyByClient = async ({ client, name, config }) => {
   assert(client);
-  assert(data);
+  assert(config);
   assert(client.findId);
   assert(client.destroy);
   logger.info(`destroyByClient: ${toString({ type: client.spec.type, name })}`);
-  logger.debug(`destroyByClient: ${toString({ data })}`);
-  const id = client.findId(data);
+  logger.debug(`destroyByClient: ${toString({ config })}`);
+  const id = client.findId(config);
   assert(id);
 
   try {
@@ -491,7 +491,7 @@ module.exports = CoreProvider = ({
                   name: client.findName(live),
                 },
                 action: "DESTROY",
-                data: live,
+                config: live,
               }));
           })
       )
@@ -528,13 +528,13 @@ module.exports = CoreProvider = ({
     await resource.destroy();
   };
 
-  const destroyById = async ({ type, data, name }) => {
+  const destroyById = async ({ type, config, name }) => {
     logger.debug(`destroyById: ${toString({ type, name })}`);
     const client = clientByType(type);
     if (!client) {
       throw new Error(`Cannot find endpoint type ${type}}`);
     }
-    await destroyByClient({ client, name, data });
+    await destroyByClient({ client, name, config });
   };
 
   const destroyPlan = async (planDestroy) => {
@@ -548,7 +548,7 @@ module.exports = CoreProvider = ({
         await destroyById({
           name: item.resource.name,
           type: item.resource.type,
-          data: item.data,
+          config: item.config,
         });
         collection.push({ item });
       } catch (error) {

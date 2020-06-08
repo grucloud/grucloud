@@ -8,8 +8,7 @@
 
 ## Cli
 
-- prompt user to create
-- prompt user to destroy
+- add option to default to yes when deploying and destroying
 - save result to json
 - config file with options
 - gc list by name

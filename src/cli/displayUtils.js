@@ -1,16 +1,10 @@
-//const emoji = require("node-emoji");
 const assert = require("assert");
 const Table = require("cli-table3");
 const colors = require("colors/safe");
 const YAML = require("./json2yaml");
+const { isEmpty } = require("ramda");
 
-/*
-const actionsEmoticon = {
-  CREATE: emoji.get("sparkle"),
-  DESTROY: emoji.get("x"),
-};
-const displayAction = (item) => actionsEmoticon[item.action];
-*/
+const hasPlan = (plan) => !isEmpty(plan.newOrUpdate) || !isEmpty(plan.destroy);
 
 const displayResource = (item) =>
   item.config != null ? YAML.stringify(item.config) : undefined;
@@ -26,6 +20,9 @@ const displayItem = (table, item) => {
 };
 
 exports.displayPlan = async (plan) => {
+  if (!hasPlan(plan)) {
+    return plan;
+  }
   const table = new Table({ style: { head: [], border: [] } });
   table.push([{ colSpan: 4, content: colors.yellow(plan.providerName) }]);
   table.push(
@@ -36,6 +33,7 @@ exports.displayPlan = async (plan) => {
   plan.destroy?.forEach((item) => displayItem(table, item));
   console.log(table.toString());
   console.log("\n");
+  return plan;
 };
 
 const displayLiveItem = ({ table, resource }) => {
