@@ -138,6 +138,15 @@
       "args": ["destroy"]
     },
     {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Multi Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/multi/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["plan"]
+    },
+    {
       "name": "Debug examples",
       "type": "node",
       "request": "launch",

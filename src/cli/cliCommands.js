@@ -2,26 +2,21 @@ const _ = require("lodash");
 const { runAsyncCommand } = require("./cliUtils");
 const { displayPlan, displayLive } = require("./displayUtils");
 const prompts = require("prompts");
-const { map, pipe } = require("rubico");
-const { flatten, tap, isEmpty, ifElse, pluck } = require("ramda");
+const { map, pipe, switchCase } = require("rubico");
+const { flatten, tap, isEmpty, pluck, ifElse } = require("ramda");
 
 //Query Plan
 const planQuery = async ({ infra }) => {
-  try {
-    const plans = await Promise.all(
-      infra.providers.map(async (provider) => {
-        const plan = await runAsyncCommand(
+  await map(async (provider) => {
+    await pipe([
+      () =>
+        runAsyncCommand(
           () => provider.plan(),
           `Query Plan for ${provider.name()}`
-        );
-        displayPlan(plan);
-      })
-    );
-    return plans;
-  } catch (error) {
-    console.error("error", error);
-    throw error;
-  }
+        ),
+      displayPlan,
+    ])();
+  })(infra.providers);
 };
 exports.planQuery = planQuery;
 
@@ -76,28 +71,41 @@ exports.planDeploy = async ({ infra }) => {
 
 // Destroy plan
 exports.planDestroy = async ({ infra, options }) => {
-  //TODO Promise all settled
+  const hasEmptyPlan = pipe([pluck("plan"), flatten, isEmpty]);
 
-  //const planCount = ({ plans }) => flatten(plans).length;
-  const hasEmptyPlan = (obj) => pipe([pluck("plan"), flatten, isEmpty])(obj);
   const processHasNoPlan = () => {
     console.log("no resources to destroy");
   };
 
-  const displayResourcesDestroyed = (plans) =>
-    pipe([
-      flatten,
-      (plans) => console.log(`${plans.length} Resource(s) destroyed`),
-    ])(plans);
+  const displayResourcesDestroyed = pipe([
+    flatten,
+    (plans) => console.log(`${plans.length} Resource(s) destroyed`),
+  ]);
 
-  const processPlansDestroy = (obj) =>
-    pipe([
-      async (result) =>
-        map(async ({ provider, plan }) => await provider.destroyPlan(plan))(
-          result
-        ),
-      displayResourcesDestroyed,
-    ])(obj);
+  const promptConfirmDestroy = async () => {
+    const { confirmDestroy } = await prompts({
+      type: "confirm",
+      name: "confirmDestroy",
+      message: "Are you sure to destroy the resources ?",
+    });
+    return confirmDestroy;
+  };
+
+  const doPlansDestroy = pipe([
+    async (result) =>
+      map(async ({ provider, plan }) => await provider.destroyPlan(plan))(
+        result
+      ),
+    displayResourcesDestroyed,
+  ]);
+
+  const processHasPlan = switchCase([
+    promptConfirmDestroy,
+    doPlansDestroy,
+    () => {
+      console.log("Aborted");
+    },
+  ]);
 
   await pipe([
     async (providers) =>
@@ -105,7 +113,7 @@ exports.planDestroy = async ({ infra, options }) => {
         provider,
         plan: await provider.planFindDestroy(options, -1),
       }))(providers),
-    ifElse(hasEmptyPlan, processHasNoPlan, processPlansDestroy),
+    ifElse(hasEmptyPlan, processHasNoPlan, processHasPlan),
   ])(infra.providers);
 };
 
