@@ -140,11 +140,20 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Multi Plan",
+      "name": "Cli Multi Query Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/multi/",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Multi List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/multi/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["list"]
     },
     {
       "name": "Debug examples",

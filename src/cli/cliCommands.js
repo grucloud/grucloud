@@ -6,8 +6,8 @@ const { map, pipe, switchCase } = require("rubico");
 const { flatten, tap, isEmpty, pluck, ifElse } = require("ramda");
 
 //Query Plan
-const planQuery = async ({ infra }) => {
-  await map(async (provider) => {
+const planQuery = async ({ infra }) =>
+  map(async (provider) => {
     await pipe([
       () =>
         runAsyncCommand(
@@ -17,7 +17,7 @@ const planQuery = async ({ infra }) => {
       displayPlan,
     ])();
   })(infra.providers);
-};
+
 exports.planQuery = planQuery;
 
 //Deploy plan
@@ -118,21 +118,17 @@ exports.planDestroy = async ({ infra, options }) => {
 };
 
 //List all
-exports.list = async ({ infra, options }) => {
-  try {
-    const targets = await Promise.all(
-      infra.providers.map(async (provider) => {
-        const targets = await runAsyncCommand(
+exports.list = async ({ infra, options }) =>
+  map(async (provider) => {
+    await pipe([
+      () =>
+        runAsyncCommand(
           () => provider.listLives(options),
           `List for ${provider.name()}`
-        );
+        ),
+      (targets) => {
         displayLive({ providerName: provider.name(), targets });
         return targets;
-      })
-    );
-    return targets;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
+      },
+    ])();
+  })(infra.providers);
