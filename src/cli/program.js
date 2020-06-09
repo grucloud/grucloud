@@ -88,8 +88,9 @@ exports.createProgram = ({ version, commands }) => {
     .description("List the resources")
     .alias("l")
     .option("-a, --all", "List also read-only resources")
+    .option("-n, --name <value>", "Filter by name")
     .option(
-      "-t, --type <value>",
+      "-t, --types <value>",
       "Filter by type, multiple values allowed",
       collect
     )
@@ -98,7 +99,7 @@ exports.createProgram = ({ version, commands }) => {
       "-d, --canBeDeleted",
       "display resources which can be deleted, a.k.a non default resources"
     )
-    .action(async (subOptions) => {
+    .action(async (options) => {
       const displayResults = ifElse(
         pipe([flatten, isEmpty]),
         () => console.log("No live resources to list"),
@@ -116,12 +117,7 @@ exports.createProgram = ({ version, commands }) => {
         async (infra) =>
           await commands.list({
             infra,
-            options: {
-              all: subOptions.all,
-              types: subOptions.type,
-              our: subOptions.our,
-              canBeDeleted: subOptions.canBeDeleted,
-            },
+            options,
           }),
         displayResults,
       ])(program);

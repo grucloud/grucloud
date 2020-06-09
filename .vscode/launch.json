@@ -61,6 +61,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Cli Aws List By Name",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["list", "--name", "vpc"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Cli Aws Deploy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/",

@@ -2,7 +2,7 @@ const _ = require("lodash");
 const { runAsyncCommand } = require("./cliUtils");
 const { displayPlan, displayLive } = require("./displayUtils");
 const prompts = require("prompts");
-const { map, pipe, switchCase, any, reduce } = require("rubico");
+const { map, pipe, switchCase, reduce } = require("rubico");
 const { flatten, tap, isEmpty, pluck, ifElse } = require("ramda");
 
 const countResources = reduce(

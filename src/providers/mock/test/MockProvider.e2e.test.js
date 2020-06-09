@@ -2,6 +2,8 @@ const assert = require("assert");
 const createStack = require("./MockStack");
 const logger = require("logger")({ prefix: "CoreProvider" });
 const config = require("./config");
+const { testProviderLifeCycle, testPlanDestroy } = require("test/E2ETestUtils");
+
 const toString = (x) => JSON.stringify(x, null, 4);
 
 describe("MockProvider e2e", async function () {
@@ -35,6 +37,10 @@ describe("MockProvider e2e", async function () {
       const planDestroyed = await provider.planFindDestroy({ all: true }, 1);
       assert.equal(planDestroyed.length, 6);
     }
+  });
+  it("LifeCycle", async function () {
+    await testProviderLifeCycle({ provider });
+    await testPlanDestroy({ provider });
   });
   it("plan", async function () {
     const { providers } = await createStack({ config });
