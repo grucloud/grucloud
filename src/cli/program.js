@@ -100,16 +100,6 @@ exports.createProgram = ({ version, commands }) => {
       "display resources which can be deleted, a.k.a non default resources"
     )
     .action(async (options) => {
-      const displayResults = ifElse(
-        pipe([flatten, isEmpty]),
-        () => console.log("No live resources to list"),
-        (result) =>
-          console.log(
-            `${flatten(result).length} live resource(s) in ${
-              result.length
-            } provider(s)`
-          )
-      );
       await pipe([
         (program) => program.opts(),
         infraOptions,
@@ -119,7 +109,6 @@ exports.createProgram = ({ version, commands }) => {
             infra,
             options,
           }),
-        displayResults,
       ])(program);
     });
 

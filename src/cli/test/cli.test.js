@@ -36,7 +36,7 @@ describe("cli", function () {
     await runProgram({ cmds: ["list", "--our"] });
   });
   it("list by type", async function () {
-    await runProgram({ cmds: ["list", "--type", "Server", "Ip"] });
+    await runProgram({ cmds: ["list", "--types", "Server", "Ip"] });
   });
   it.skip("--config notexisting.js", async function () {
     main({

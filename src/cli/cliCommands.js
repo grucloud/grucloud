@@ -2,10 +2,10 @@ const _ = require("lodash");
 const { runAsyncCommand } = require("./cliUtils");
 const { displayPlan, displayLive } = require("./displayUtils");
 const prompts = require("prompts");
-const { map, pipe, switchCase, reduce } = require("rubico");
-const { flatten, tap, isEmpty, pluck, ifElse } = require("ramda");
+const { map, pipe, switchCase, reduce, tap } = require("rubico");
+const { flatten, isEmpty, pluck, ifElse } = require("ramda");
 
-const countResources = reduce(
+const countDeployResources = reduce(
   (acc, value) => {
     return {
       create: acc.create + value.plan.newOrUpdate.length,
@@ -34,7 +34,7 @@ exports.planQuery = planQuery;
 //Deploy plan
 exports.planDeploy = async ({ infra, options }) => {
   const hasPlans = pipe([
-    countResources,
+    countDeployResources,
     ({ create, destroy }) => create > 0 || destroy > 0,
   ]);
 
@@ -48,7 +48,7 @@ exports.planDeploy = async ({ infra, options }) => {
 
   const promptConfirmDeploy = async (allPlans) => {
     return await pipe([
-      countResources,
+      countDeployResources,
       async ({ create, destroy }) =>
         await prompts({
           type: "confirm",
@@ -63,7 +63,7 @@ exports.planDeploy = async ({ infra, options }) => {
   };
 
   const displayResourcesDeployed = pipe([
-    countResources,
+    countDeployResources,
     ({ create, destroy }) =>
       console.log(
         `${create} deployed${
@@ -108,9 +108,7 @@ exports.planDestroy = async ({ infra, options }) => {
     console.log("No resources to destroy");
   };
 
-  const countDestroyed = reduce((acc, value) => {
-    return acc + value.plan.length;
-  }, 0);
+  const countDestroyed = reduce((acc, value) => acc + value.plan.length, 0);
 
   const displayResourcesDestroyed = pipe([
     countDestroyed,
@@ -132,14 +130,13 @@ exports.planDestroy = async ({ infra, options }) => {
   };
 
   const doPlanDestroy = pipe([
-    //tap((x) => console.log("doPlanDeploy", x)),
-    async ({ provider, plan }) => {
-      await runAsyncCommand(
-        () => provider.destroyPlan(plan),
-        `Destroying ${plan.length} resource(s) on provider ${provider.name()}`
-      );
-      return { provider, plan };
-    },
+    tap(
+      async ({ provider, plan }) =>
+        await runAsyncCommand(
+          () => provider.destroyPlan(plan),
+          `Destroying ${plan.length} resource(s) on provider ${provider.name()}`
+        )
+    ),
   ]);
 
   const doPlansDestroy = pipe([map(doPlanDestroy), displayResourcesDestroyed]);
@@ -159,14 +156,13 @@ exports.planDestroy = async ({ infra, options }) => {
       provider,
       plan: await pipe([
         async () => await provider.planFindDestroy(options, -1),
-        (plan) => {
+        tap((plan) =>
           displayPlan({
             providerName: provider.name(),
             newOrUpdate: [],
             destroy: plan,
-          });
-          return plan;
-        },
+          })
+        ),
       ])(),
     };
   };
@@ -178,19 +174,36 @@ exports.planDestroy = async ({ infra, options }) => {
   ])(infra.providers);
 };
 
+const countListResources = reduce(
+  (acc, value) => ({
+    providers: acc.providers + 1,
+    resources: acc.resources + value.resources.length,
+  }),
+  { providers: 0, resources: 0 }
+);
+
+const displayNoList = () => console.log("No live resources to list");
+const displayListResults = ifElse(({ providers, resources }) =>
+  console.log(`${resources} resource(s) in ${providers} provider(s)`)
+);
+
 //List all
-exports.list = async ({ infra, options }) => {
-  return await map(async (provider) => {
-    return await pipe([
-      () =>
-        runAsyncCommand(
-          () => provider.listLives(options),
-          `List for ${provider.name()}`
+exports.list = async ({ infra, options }) =>
+  await map(
+    async (provider) =>
+      await pipe([
+        () =>
+          runAsyncCommand(
+            () => provider.listLives(options),
+            `List for ${provider.name()}`
+          ),
+        tap((targets) =>
+          displayLive({ providerName: provider.name(), targets })
         ),
-      (targets) => {
-        displayLive({ providerName: provider.name(), targets });
-        return targets;
-      },
-    ])();
-  })(infra.providers);
-};
+        switchCase([
+          isEmpty,
+          displayNoList,
+          pipe([countListResources, displayListResults]),
+        ]),
+      ])()
+  )(infra.providers);

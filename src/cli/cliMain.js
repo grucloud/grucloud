@@ -18,7 +18,9 @@ exports.main = ({ argv }) => {
       console.log(error.message);
       process.exit(22);
     } else {
+      console.log(error.stack);
       console.log(error);
+
       process.exit(-1);
     }
   });

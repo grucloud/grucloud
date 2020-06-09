@@ -39,7 +39,7 @@ const testPlanDestroy = async ({ provider }) => {
   assert(isEmpty(lives));
 };
 
-exports.testPlanDestroy;
+exports.testPlanDestroy = testPlanDestroy;
 
 exports.testProviderLifeCycle = async ({ provider }) => {
   await provider.listLives();
