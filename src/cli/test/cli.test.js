@@ -24,10 +24,10 @@ describe("cli", function () {
     await runProgram({ cmds: ["plan"] });
   });
   it("deploy plan", async function () {
-    await runProgram({ cmds: ["deploy"] });
+    await runProgram({ cmds: ["deploy", "--force"] });
   });
   it("destroy plan", async function () {
-    await runProgram({ cmds: ["destroy"] });
+    await runProgram({ cmds: ["destroy", "--force"] });
   });
   it("list all", async function () {
     await runProgram({ cmds: ["list", "--all"] });

@@ -32,7 +32,7 @@ const planQuery = async ({ infra }) =>
 exports.planQuery = planQuery;
 
 //Deploy plan
-exports.planDeploy = async ({ infra }) => {
+exports.planDeploy = async ({ infra, options }) => {
   const hasPlans = pipe([
     countResources,
     ({ create, destroy }) => create > 0 || destroy > 0,
@@ -86,6 +86,8 @@ exports.planDeploy = async ({ infra }) => {
   const doPlansDeploy = pipe([map(doPlanDeploy), displayResourcesDeployed]);
 
   const processDeployPlans = switchCase([
+    () => options.force,
+    doPlansDeploy,
     promptConfirmDeploy,
     doPlansDeploy,
     abortDeploy,
@@ -143,6 +145,8 @@ exports.planDestroy = async ({ infra, options }) => {
   const doPlansDestroy = pipe([map(doPlanDestroy), displayResourcesDestroyed]);
 
   const processDestroyPlans = switchCase([
+    () => options.force,
+    doPlansDestroy,
     promptConfirmDestroy,
     doPlansDestroy,
     () => {

@@ -13,9 +13,9 @@ exports.createProgram = ({ version, commands }) => {
   program.option("-i, --infra <file>", "infrastructure default is iac.js");
   program.option("-c, --config <file>", "config file, default is config.js");
 
-  const infraOptions = (options) => ({
-    infraFileName: options.infra,
-    configFileName: options.config,
+  const infraOptions = ({ infra, config }) => ({
+    infraFileName: infra,
+    configFileName: config,
   });
 
   program
@@ -34,12 +34,17 @@ exports.createProgram = ({ version, commands }) => {
   program
     .command("deploy")
     .description("Deploy the resources")
-    .action(async () => {
+    .option("-f, --force", "force deploy, will not prompt user")
+    .action(async (options) => {
       await pipe([
         (program) => program.opts(),
         infraOptions,
         createInfra,
-        async (infra) => await commands.planDeploy({ infra }),
+        async (infra) =>
+          await commands.planDeploy({
+            infra,
+            options,
+          }),
       ])(program);
     });
 
@@ -47,6 +52,7 @@ exports.createProgram = ({ version, commands }) => {
     .command("destroy")
     .description("Destroy the resources")
     .alias("d")
+    .option("-f, --force", "force destroy, will not prompt user")
     .option(
       "-t, --type <type>",
       "Filter by type, multiple values allowed",
@@ -54,11 +60,11 @@ exports.createProgram = ({ version, commands }) => {
     )
     .option(
       "-a, --all",
-      "destroy all resources including the ones not managed by us"
+      "destroy all resources including those not managed by us"
     )
     .option("-n, --name <value>", "destroy by name")
     .option("--id <value>", "destroy by id")
-    .action(async (subOptions) => {
+    .action(async (options) => {
       await pipe([
         (program) => program.opts(),
         infraOptions,
@@ -67,10 +73,11 @@ exports.createProgram = ({ version, commands }) => {
           await commands.planDestroy({
             infra,
             options: {
-              all: subOptions.all,
-              types: subOptions.type,
-              name: subOptions.name,
-              id: subOptions.id,
+              all: options.all,
+              types: options.type,
+              name: options.name,
+              id: options.id,
+              force: options.force,
             },
           }),
       ])(program);
