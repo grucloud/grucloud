@@ -284,6 +284,7 @@ module.exports = CoreProvider = ({
     our = false,
     types = [],
     name,
+    id,
     canBeDeleted = false,
   } = {}) => {
     logger.debug(`listLives ${toString({ all, our, types })}`);
@@ -312,6 +313,7 @@ module.exports = CoreProvider = ({
                   }))
                   .filter((item) => (our ? item.managedByUs : true))
                   .filter((item) => (name ? item.name === name : true))
+                  .filter((item) => (id ? item.id === id : true))
                   .filter((item) =>
                     canBeDeleted ? !client.cannotBeDeleted(item.data) : true
                   ),

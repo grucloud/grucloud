@@ -38,7 +38,7 @@ describe("MockProvider e2e", async function () {
       assert.equal(planDestroyed.length, 6);
     }
   });
-  it("LifeCycle", async function () {
+  it.only("LifeCycle", async function () {
     await testProviderLifeCycle({ provider });
     await testPlanDestroy({ provider });
   });

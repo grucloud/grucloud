@@ -74,7 +74,7 @@ exports.createProgram = ({ version, commands }) => {
             infra,
             options: {
               all: options.all,
-              types: options.type,
+              types: options.type, //TODO use types
               name: options.name,
               id: options.id,
               force: options.force,
@@ -88,7 +88,8 @@ exports.createProgram = ({ version, commands }) => {
     .description("List the resources")
     .alias("l")
     .option("-a, --all", "List also read-only resources")
-    .option("-n, --name <value>", "Filter by name")
+    .option("-n, --name <value>", "List by name")
+    .option("--id <value>", "List by id")
     .option(
       "-t, --types <value>",
       "Filter by type, multiple values allowed",

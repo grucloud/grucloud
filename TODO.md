@@ -11,7 +11,7 @@
 
 ## Cli
 
-- list by id
+- destroy by types, not type
 - save result to json
 - config file with options
 - return negative value in case of error

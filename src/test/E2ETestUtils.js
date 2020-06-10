@@ -5,6 +5,12 @@ const testList = async ({ provider }) => {
   const livesAll = await provider.listLives();
   assert(!isEmpty(livesAll));
 
+  await testListByName({ provider, livesAll });
+  await testListById({ provider, livesAll });
+  await testListByType({ provider, livesAll });
+};
+
+const testListByName = async ({ provider, livesAll }) => {
   //Filter By Name
   const { name } = livesAll[0].resources[0];
   assert(name);
@@ -13,7 +19,20 @@ const testList = async ({ provider }) => {
   });
   assert.equal(liveByName.length, 1);
   assert.equal(liveByName[0].resources[0].name, name);
+};
 
+const testListById = async ({ provider, livesAll }) => {
+  //Filter By Id
+  const { id } = livesAll[0].resources[0];
+  assert(id);
+  const live = await provider.listLives({
+    id,
+  });
+  assert.equal(live.length, 1);
+  assert.equal(live[0].resources[0].id, id);
+};
+
+const testListByType = async ({ provider, livesAll }) => {
   //Filter By Type
   const { type } = livesAll[0];
   const liveByType = await provider.listLives({
