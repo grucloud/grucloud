@@ -72,12 +72,12 @@ const testDestroyByType = async ({ provider, livesAll }) => {
 };
 
 const testPlanDestroy = async ({ provider }) => {
-  const livesAll = await provider.listLives();
+  const livesAll = await provider.listLives({ our: true });
   assert(!isEmpty(livesAll));
 
-  testDestroyByName({ provider, livesAll });
-  testDestroyById({ provider, livesAll });
-  testDestroyByType({ provider, livesAll });
+  await testDestroyByName({ provider, livesAll });
+  await testDestroyById({ provider, livesAll });
+  await testDestroyByType({ provider, livesAll });
 
   {
     const { success } = await provider.destroyAll();

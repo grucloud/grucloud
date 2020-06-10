@@ -1,7 +1,7 @@
 const assert = require("assert");
 const _ = require("lodash");
 const { isEmpty, flatten, reverse } = require("ramda");
-const { pipe, tap, map, filter } = require("rubico");
+const { pipe, tap, map, filter, all, tryCatch } = require("rubico");
 const Promise = require("bluebird");
 const logger = require("../logger")({ prefix: "CoreProvider" });
 const tos = (x) => JSON.stringify(x, null, 4);
@@ -539,32 +539,33 @@ module.exports = CoreProvider = ({
   };
 
   const destroyPlan = async (planDestroy) => {
-    logger.info(`destroyPlan ${tos(planDestroy)}`);
-
-    const results = await planDestroy.reduce(async (previousPromise, item) => {
-      const collection = await previousPromise;
-      //logger.info(`destroyPlan collection ${tos(collection)}`);
-
-      try {
-        await destroyById({
-          name: item.resource.name,
-          type: item.resource.type,
-          config: item.config,
-        });
-        collection.push({ item });
-      } catch (error) {
-        //TODO use log.errror
-        console.log(error.stack);
-        //TODO error are not stringify correctly
-        logger.error(`destroyPlan error ${tos(error)}`);
-        collection.push({ item, error });
-      }
-      return collection;
-    }, Promise.resolve([]));
-
-    const success = results.every((result) => !result.error);
-    logger.info(`destroyPlan DONE ${tos({ success, results })}`);
-    return { success, results };
+    return await pipe([
+      tap((x) => logger.info(`destroyPlan ${tos(planDestroy)}`)),
+      map.series(
+        async (item) =>
+          await tryCatch(
+            async () => {
+              await destroyById({
+                name: item.resource.name,
+                type: item.resource.type,
+                config: item.config,
+              });
+              return { item };
+            },
+            (error, item) => {
+              logger.error(`destroyPlan error message: ${error.message}`);
+              logger.error(`destroyPlan stack:  ${error.stack}`);
+              logger.error(`destroyPlan error:${error.toString()}`);
+              return { item, error };
+            }
+          )(item)
+      ),
+      (results) => ({
+        results,
+        success: all((result) => !result.error)(results),
+      }),
+      tap((x) => logger.info(`destroyPlan results: ${tos(x)}`)),
+    ])(planDestroy);
   };
 
   const destroyAll = async (options) => {

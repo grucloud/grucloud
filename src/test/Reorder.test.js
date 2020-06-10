@@ -48,7 +48,7 @@ describe("Reoder", function () {
   });*/
   it("ok", function () {
     const ordered = _.flatten(PlanReorder({ plans, specs }));
-    console.log(JSON.stringify(ordered, null, 4));
+    //console.log(JSON.stringify(ordered, null, 4));
     const expected = ["Vpc", "SecurityGroup", "Server", "Image"];
     assert(
       _.isEqual(
