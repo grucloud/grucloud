@@ -519,15 +519,6 @@ module.exports = CoreProvider = ({
       });
     }
   };
-  //TODO refactor, is it used, yes by the cli
-  const destroyByName = async ({ name }) => {
-    logger.debug(`destroyByName: ${name}`);
-    const resource = resourceByName(name);
-    if (!resource) {
-      throw new Error(`Cannot find resource name ${name}}`);
-    }
-    await resource.destroy();
-  };
 
   const destroyById = async ({ type, config, name }) => {
     logger.debug(`destroyById: ${tos({ type, name })}`);
@@ -597,7 +588,7 @@ module.exports = CoreProvider = ({
     type: () => type || providerName,
     destroyAll,
     planFindDestroy,
-    destroyByName,
+    //destroyByName,
     plan,
     deployPlan,
     destroyPlan,

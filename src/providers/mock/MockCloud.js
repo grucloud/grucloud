@@ -72,6 +72,7 @@ module.exports = MockCloud = (initStates = []) => {
       throw Error(`onDestroy cannot find ${toString({ type })}`);
     }
   };
+  /*
   const onDestroyAll = async ({ type }) => {
     logger.info(`onDestroyAll ${toString({ type })}`);
     const resource = resourceMap.get(type);
@@ -80,7 +81,7 @@ module.exports = MockCloud = (initStates = []) => {
     } else {
       throw Error(`onDestroyAll cannot find ${toString({ type })}`);
     }
-  };
+  };*/
   const onList = ({ type }) => {
     const resource = resourceMap.get(type);
     if (resource) {
@@ -105,17 +106,18 @@ module.exports = MockCloud = (initStates = []) => {
       throw Error(`onDestroyAll cannot find ${toString({ type })}`);
     }
   };
-
+  /*
   const reset = () => {
     states.forEach((state) => resourceMap.set(state[0], state[1]));
   };
+  */
 
   return {
     onGet,
     onCreate,
     onDestroy,
-    onDestroyAll,
+    //onDestroyAll,
     onList,
-    reset,
+    //reset,
   };
 };
