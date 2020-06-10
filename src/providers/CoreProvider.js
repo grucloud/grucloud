@@ -1,8 +1,10 @@
 const assert = require("assert");
 const _ = require("lodash");
+const { isEmpty } = require("ramda");
+const { pipe, tap, map, filter } = require("rubico");
 const Promise = require("bluebird");
 const logger = require("../logger")({ prefix: "CoreProvider" });
-const toString = (x) => JSON.stringify(x, null, 4);
+const tos = (x) => JSON.stringify(x, null, 4);
 const checkEnvironment = require("../Utils").checkEnvironment;
 const { fromTagName } = require("./TagName");
 const { SpecDefault } = require("./SpecDefault");
@@ -26,15 +28,15 @@ const destroyByClient = async ({ client, name, config }) => {
   assert(config);
   assert(client.findId);
   assert(client.destroy);
-  logger.info(`destroyByClient: ${toString({ type: client.spec.type, name })}`);
-  logger.debug(`destroyByClient: ${toString({ config })}`);
+  logger.info(`destroyByClient: ${tos({ type: client.spec.type, name })}`);
+  logger.debug(`destroyByClient: ${tos({ config })}`);
   const id = client.findId(config);
   assert(id);
 
   try {
     await client.destroy({ id, name });
   } catch (error) {
-    logger.error(`destroyByClient: ${toString({ error })}`);
+    logger.error(`destroyByClient: ${tos({ error })}`);
     throw error;
   }
 
@@ -54,33 +56,29 @@ const ResourceMaker = ({
   provider,
 }) => {
   const { type } = spec;
-  logger.debug(
-    `ResourceMaker: ${toString({ type, resourceName, properties })}`
-  );
+  logger.debug(`ResourceMaker: ${tos({ type, resourceName, properties })}`);
 
   const client = spec.Client({ spec });
   let parent;
   const getLive = async () => {
     logger.info(`getLive ${resourceName}/${type}`);
     const live = await client.getByName({ name: resourceName });
-    logger.debug(`getLive result: ${toString({ resourceName, type, live })}`);
+    logger.debug(`getLive result: ${tos({ resourceName, type, live })}`);
     return live;
   };
 
   const planUpdate = async ({ resource, live }) => {
     logger.info(
-      `planUpdate resource: ${toString(
-        resource.serialized()
-      )}, live: ${toString(live)}`
+      `planUpdate resource: ${tos(resource.serialized())}, live: ${tos(live)}`
     );
     const target = await resource.resolveConfig();
-    logger.debug(`planUpdate target: ${toString(target)}`);
+    logger.debug(`planUpdate target: ${tos(target)}`);
 
     if (_.isEmpty(target)) {
       return;
     }
     const diff = spec.compare({ target, live });
-    logger.info(`planUpdate diff ${toString(diff)}`);
+    logger.info(`planUpdate diff ${tos(diff)}`);
     if (diff.length > 0) {
       return [
         { action: "UPDATE", resource: resource.serialized(), target, live },
@@ -99,7 +97,7 @@ const ResourceMaker = ({
         return live || "<<resolve later>>";
       })
     );
-    logger.debug(`resolveDependenciesLive: ${toString({ dependenciesLive })}`);
+    logger.debug(`resolveDependenciesLive: ${tos({ dependenciesLive })}`);
     return dependenciesLive;
   };
 
@@ -108,7 +106,7 @@ const ResourceMaker = ({
     const {
       data: { items },
     } = await client.list();
-    //logger.debug(`config ${toString({ type, resourceName, items })}`);
+    //logger.debug(`config ${tos({ type, resourceName, items })}`);
 
     const dependenciesLive = await resolveDependenciesLive(dependencies);
 
@@ -119,7 +117,7 @@ const ResourceMaker = ({
       properties: _.defaultsDeep(properties, spec.propertiesDefault),
       dependenciesLive,
     });
-    //logger.info(`configDefault: ${toString(config)}`);
+    //logger.info(`configDefault: ${tos(config)}`);
     const finalConfig = transformConfig
       ? await transformConfig({
           dependenciesLive,
@@ -129,12 +127,12 @@ const ResourceMaker = ({
         })
       : config;
 
-    logger.info(`final config: ${toString(finalConfig)}`);
+    logger.info(`final config: ${tos(finalConfig)}`);
     assert(!_.isEmpty(finalConfig));
     return finalConfig;
   };
   const create = async ({ payload }) => {
-    logger.info(`create ${toString({ resourceName, type, payload })}`);
+    logger.info(`create ${tos({ resourceName, type, payload })}`);
     // Is the resource already created ?
     const live = await getLive();
     if (live) {
@@ -164,9 +162,9 @@ const ResourceMaker = ({
   };
 
   const planUpsert = async ({ resource }) => {
-    logger.info(`planUpsert resource: ${toString(resource.serialized())}`);
+    logger.info(`planUpsert resource: ${tos(resource.serialized())}`);
     const live = await resource.getLive();
-    logger.debug(`planUpsert live: ${toString(live)}`);
+    logger.debug(`planUpsert live: ${tos(live)}`);
     const plan = live
       ? planUpdate({ live, resource })
       : [
@@ -176,7 +174,7 @@ const ResourceMaker = ({
             config: await resource.resolveConfig(),
           },
         ];
-    logger.debug(`planUpsert plan: ${toString(plan)}`);
+    logger.debug(`planUpsert plan: ${tos(plan)}`);
     return plan;
   };
 
@@ -248,9 +246,7 @@ module.exports = CoreProvider = ({
 }) => {
   config = _.defaults(config, configProviderDefault);
   logger.debug(
-    `CoreProvider name: ${providerName}, type ${type}, config: ${toString(
-      config
-    )}`
+    `CoreProvider name: ${providerName}, type ${type}, config: ${tos(config)}`
   );
   // Target Resources
   const targetResources = new Map();
@@ -276,8 +272,38 @@ module.exports = CoreProvider = ({
     }
     return spec.Client({ spec });
   };
-  // API
-  //  Flatter that
+
+  const filterClient = async ({ client, our, name, id, canBeDeleted }) => {
+    try {
+      logger.debug(`listLives type: ${client.spec.type}`);
+      const { data } = await client.list();
+      return {
+        type: client.spec.type,
+        resources: data.items
+          .map((item) => ({
+            name: client.findName(item),
+            id: client.findId(item),
+            managedByUs: client.spec.isOurMinion({ resource: item }),
+            data: item,
+          }))
+          .filter((item) => (our ? item.managedByUs : true))
+          .filter((item) => (name ? item.name === name : true))
+          .filter((item) => (id ? item.id === id : true))
+          .filter((item) =>
+            canBeDeleted ? !client.cannotBeDeleted(item.data) : true
+          ),
+      };
+    } catch (error) {
+      logger.error(
+        `listLives error: ${tos({
+          type: client.spec.type,
+          error,
+        })}`
+      );
+
+      return { type: client.spec.type, resources: [], error };
+    }
+  };
 
   const listLives = async ({
     all = false,
@@ -287,52 +313,22 @@ module.exports = CoreProvider = ({
     id,
     canBeDeleted = false,
   } = {}) => {
-    logger.debug(`listLives ${toString({ all, our, types })}`);
-
-    //TODO do not use Promise.all
-    const lists = (
-      await Promise.all(
-        clients
-          .filter((client) => all || client.spec.methods.create)
-          .filter((client) =>
-            !_.isEmpty(types) ? types.includes(client.spec.type) : true
-          )
-          .map(async (client) => {
-            try {
-              logger.debug(`listLives ${client.spec.type}`);
-              const { data } = await client.list();
-
-              return {
-                type: client.spec.type,
-                resources: data.items
-                  .map((item) => ({
-                    name: client.findName(item),
-                    id: client.findId(item),
-                    managedByUs: client.spec.isOurMinion({ resource: item }),
-                    data: item,
-                  }))
-                  .filter((item) => (our ? item.managedByUs : true))
-                  .filter((item) => (name ? item.name === name : true))
-                  .filter((item) => (id ? item.id === id : true))
-                  .filter((item) =>
-                    canBeDeleted ? !client.cannotBeDeleted(item.data) : true
-                  ),
-              };
-            } catch (error) {
-              logger.error(
-                `listLives error: ${toString({
-                  type: client.spec.type,
-                  error,
-                })}`
-              );
-
-              return { error };
-            }
-          })
-      )
-    ).filter((liveResources) => liveResources.resources.length > 0);
-    logger.debug(`listLives ${toString(lists)}`);
-    return lists;
+    return await pipe([
+      tap(() =>
+        logger.debug(`listLives filters: ${tos({ all, our, types, name, id })}`)
+      ),
+      filter((client) => all || client.spec.methods.create),
+      filter((client) =>
+        !_.isEmpty(types) ? types.includes(client.spec.type) : true
+      ),
+      map(
+        async (client) =>
+          await filterClient({ client, our, name, id, canBeDeleted })
+      ),
+      tap((list) => logger.debug(`listLives ${tos(list)}`)),
+      filter((live) => !isEmpty(live.resources)),
+      tap((list) => logger.debug(`listLives filter ${tos(list)}`)),
+    ])(clients);
   };
 
   const listTargets = async () => {
@@ -344,7 +340,7 @@ module.exports = CoreProvider = ({
         }))
       )
     ).filter((x) => x.data);
-    logger.debug(`listTargets ${toString(lists)}`);
+    logger.debug(`listTargets ${tos(lists)}`);
     return lists;
   };
 
@@ -366,19 +362,19 @@ module.exports = CoreProvider = ({
       destroy: await planFindDestroy({}, PlanDirection.UP),
     };
     logger.info(`*******************************************************`);
-    logger.info(`plan ${toString(plan)}`);
+    logger.info(`plan ${tos(plan)}`);
     logger.info(`*******************************************************`);
     return plan;
   };
   const deployPlan = async (plan) => {
     try {
       assert(plan);
-      logger.info(`Deploy Plan ${toString(plan)}`);
+      logger.info(`Deploy Plan ${tos(plan)}`);
       await upsertResources(plan.newOrUpdate);
       await destroyPlan(plan.destroy, PlanDirection.UP);
       logger.info(`Deploy Plan DONE`);
     } catch (error) {
-      logger.error(`deployPlan ${toString(error)}`);
+      logger.error(`deployPlan ${tos(error)}`);
       throw error;
     }
   };
@@ -420,7 +416,7 @@ module.exports = CoreProvider = ({
     const name = client.findName(resource);
     const id = client.findId(resource);
     assert(direction);
-    logger.debug(`filterDestroyResources ${toString({ name, id, resource })}`);
+    logger.debug(`filterDestroyResources ${tos({ name, id, resource })}`);
 
     // Cannot delete default resource
     if (client.cannotBeDeleted(resource)) {
@@ -473,7 +469,7 @@ module.exports = CoreProvider = ({
   };
 
   const planFindDestroy = async (options, direction) => {
-    logger.debug(`planFindDestroy BEGIN ${toString({ options, direction })}`);
+    logger.debug(`planFindDestroy BEGIN ${tos({ options, direction })}`);
     assert(direction);
     const plans = (
       await Promise.all(
@@ -503,17 +499,17 @@ module.exports = CoreProvider = ({
       .flat()
       .filter((x) => x);
 
-    logger.debug(`planFindDestroy END, unorders plans ${toString(plans)}`);
+    logger.debug(`planFindDestroy END, unorders plans ${tos(plans)}`);
     const planOrdered = _.flatten(PlanReorder({ plans, specs })).reverse();
-    logger.info(`planFindDestroy END, ordered plans ${toString(planOrdered)}`);
+    logger.info(`planFindDestroy END, ordered plans ${tos(planOrdered)}`);
     return planOrdered;
   };
   const upsertResources = async (newOrUpdate = []) => {
-    logger.debug(`upsertResources ${toString(newOrUpdate)}`);
+    logger.debug(`upsertResources ${tos(newOrUpdate)}`);
     for (const action of newOrUpdate) {
       const engine = resourceByName(action.resource.name);
       if (!engine) {
-        throw Error(`Cannot find resource ${toString(action.resource.name)}`);
+        throw Error(`Cannot find resource ${tos(action.resource.name)}`);
       }
       const payload = await engine.resolveConfig();
 
@@ -533,7 +529,7 @@ module.exports = CoreProvider = ({
   };
 
   const destroyById = async ({ type, config, name }) => {
-    logger.debug(`destroyById: ${toString({ type, name })}`);
+    logger.debug(`destroyById: ${tos({ type, name })}`);
     const client = clientByType(type);
     if (!client) {
       throw new Error(`Cannot find endpoint type ${type}}`);
@@ -542,11 +538,11 @@ module.exports = CoreProvider = ({
   };
 
   const destroyPlan = async (planDestroy) => {
-    logger.info(`destroyPlan ${toString(planDestroy)}`);
+    logger.info(`destroyPlan ${tos(planDestroy)}`);
 
     const results = await planDestroy.reduce(async (previousPromise, item) => {
       const collection = await previousPromise;
-      //logger.info(`destroyPlan collection ${toString(collection)}`);
+      //logger.info(`destroyPlan collection ${tos(collection)}`);
 
       try {
         await destroyById({
@@ -559,25 +555,25 @@ module.exports = CoreProvider = ({
         //TODO use log.errror
         console.log(error.stack);
         //TODO error are not stringify correctly
-        logger.error(`destroyPlan error ${toString(error)}`);
+        logger.error(`destroyPlan error ${tos(error)}`);
         collection.push({ item, error });
       }
       return collection;
     }, Promise.resolve([]));
 
     const success = results.every((result) => !result.error);
-    logger.info(`destroyPlan DONE ${toString({ success, results })}`);
+    logger.info(`destroyPlan DONE ${tos({ success, results })}`);
     return { success, results };
   };
 
   const destroyAll = async (options) => {
-    logger.debug(`destroyAll ${toString({ options })}`);
+    logger.debug(`destroyAll ${tos({ options })}`);
     //TODO try catch ?
     try {
       const planDestroy = await planFindDestroy(options, PlanDirection.DOWN);
       return await destroyPlan(planDestroy);
     } catch (error) {
-      logger.error(`destroyAll ${toString(error)}`);
+      logger.error(`destroyAll ${tos(error)}`);
       throw error;
     }
   };
