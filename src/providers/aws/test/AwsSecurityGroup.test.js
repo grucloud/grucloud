@@ -1,7 +1,7 @@
 const assert = require("assert");
 const config = require("../config");
 const AwsProvider = require("../AwsProvider");
-const { testProviderLifeCycle } = require("test/E2ETestUtils");
+const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
 describe("AwsSecurityGroup", async function () {
   let provider;
@@ -56,6 +56,7 @@ describe("AwsSecurityGroup", async function () {
     assert(sgDefault);
   });
   it("sg deploy plan", async function () {
-    await testProviderLifeCycle({ provider });
+    await testPlanDeploy({ provider });
+    await testPlanDestroy({ provider });
   });
 });

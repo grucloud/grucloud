@@ -2,9 +2,8 @@
 
 ## Common:
 
-- remove ramda ifElse, use switchCase from rubico
 - use tap when possible
-- split testProviderLifeCycle, do not destroy inside,
+- split testPlanDeploy, do not destroy inside,
 - set environment: prod , dev etc...
 - compare or compareObject
 - CPD

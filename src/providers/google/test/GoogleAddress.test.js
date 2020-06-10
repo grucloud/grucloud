@@ -1,7 +1,10 @@
 const assert = require("assert");
 const GoogleProvider = require("../GoogleProvider");
 const configProvider = require("../config");
-const { testProviderLifeCycle } = require("../../../test/E2ETestUtils");
+const {
+  testPlanDeploy,
+  testPlanDestroy,
+} = require("../../../test/E2ETestUtils");
 
 describe("GoogleAddress", async function () {
   const addressName = "myaddress-test";
@@ -31,6 +34,7 @@ describe("GoogleAddress", async function () {
     assert.equal(plan.newOrUpdate.length, 1);
   });
   it("deploy plan", async function () {
-    await testProviderLifeCycle({ provider });
+    await testPlanDeploy({ provider });
+    await testPlanDestroy({ provider });
   });
 });

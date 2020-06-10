@@ -1,7 +1,7 @@
 const assert = require("assert");
 const ScalewayProvider = require("../ScalewayProvider");
 const config = require("../config");
-const { testProviderLifeCycle } = require("test/E2ETestUtils");
+const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
 describe("ScalewayVolume", async function () {
   let provider;
@@ -34,6 +34,7 @@ describe("ScalewayVolume", async function () {
     assert.equal(plan.newOrUpdate.length, 1);
   });
   it.skip("deploy plan", async function () {
-    await testProviderLifeCycle({ provider });
+    await testPlanDeploy({ provider });
+    await testPlanDestroy({ provider });
   });
 });

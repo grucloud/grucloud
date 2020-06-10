@@ -2,7 +2,7 @@ const assert = require("assert");
 const createStack = require("./MockStack");
 const logger = require("logger")({ prefix: "CoreProvider" });
 const config = require("./config");
-const { testProviderLifeCycle, testPlanDestroy } = require("test/E2ETestUtils");
+const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
 const toString = (x) => JSON.stringify(x, null, 4);
 
@@ -39,7 +39,7 @@ describe("MockProvider e2e", async function () {
     }
   });
   it("LifeCycle", async function () {
-    await testProviderLifeCycle({ provider });
+    await testPlanDeploy({ provider });
     await testPlanDestroy({ provider });
   });
   it("plan", async function () {

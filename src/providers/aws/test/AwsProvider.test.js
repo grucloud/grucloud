@@ -1,7 +1,7 @@
 const assert = require("assert");
 const AwsProvider = require("../AwsProvider");
 const config = require("../config");
-const { testProviderLifeCycle, testPlanDestroy } = require("test/E2ETestUtils");
+const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
 describe("AwsProvider", async function () {
   let provider;
@@ -91,7 +91,8 @@ describe("AwsProvider", async function () {
     assert(lives);
   });
   it("deploy plan", async function () {
-    await testProviderLifeCycle({ provider });
+    await testPlanDeploy({ provider });
+
     await testPlanDestroy({ provider });
   });
 });

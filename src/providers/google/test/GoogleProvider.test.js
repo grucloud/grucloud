@@ -1,7 +1,7 @@
 const assert = require("assert");
 const GoogleProvider = require("../GoogleProvider");
 const config = require("../config");
-const { testProviderLifeCycle } = require("test/E2ETestUtils");
+const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
 describe("GoogleProvider", async function () {
   let provider;
@@ -37,7 +37,8 @@ describe("GoogleProvider", async function () {
     assert.equal(plan.newOrUpdate.length, 2);
   });
   it("deploy plan", async function () {
-    await testProviderLifeCycle({ provider });
+    await testPlanDeploy({ provider });
+    await testPlanDestroy({ provider });
     // TODO check ip address from instance is the one from address
     // check status == "RUNNING"
   });

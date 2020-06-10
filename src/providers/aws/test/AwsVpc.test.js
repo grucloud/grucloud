@@ -1,7 +1,7 @@
 const assert = require("assert");
 const config = require("../config");
 const AwsProvider = require("../AwsProvider");
-const { testProviderLifeCycle } = require("test/E2ETestUtils");
+const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
 describe("AwsVpc", async function () {
   let provider;
@@ -39,6 +39,7 @@ describe("AwsVpc", async function () {
   });
 
   it("deploy plan", async function () {
-    await testProviderLifeCycle({ provider });
+    await testPlanDeploy({ provider });
+    await testPlanDestroy({ provider });
   });
 });

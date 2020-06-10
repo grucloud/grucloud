@@ -1,6 +1,6 @@
 const assert = require("assert");
 const logger = require("logger")({ prefix: "CoreProvider" });
-const { testProviderLifeCycle } = require("test/E2ETestUtils");
+const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const ScalewayProvider = require("../ScalewayProvider");
 const config = require("../config");
 
@@ -60,6 +60,7 @@ describe("ScalewayProvider", async function () {
     assert(result);
   });
   it.skip("plan", async function () {
-    await testProviderLifeCycle({ provider });
+    await testPlanDeploy({ provider });
+    await testPlanDestroy({ provider });
   });
 });

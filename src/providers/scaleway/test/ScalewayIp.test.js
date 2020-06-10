@@ -1,7 +1,7 @@
 const assert = require("assert");
 const ScalewayProvider = require("../ScalewayProvider");
 const configProvider = require("../config");
-const { testProviderLifeCycle } = require("test/E2ETestUtils");
+const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
 describe("ScalewayIp", async function () {
   let provider;
@@ -27,10 +27,12 @@ describe("ScalewayIp", async function () {
   });
 
   it.skip("deploy plan", async function () {
-    await testProviderLifeCycle({ provider });
+    await testPlanDeploy({ provider });
 
     const live = await ip.getLive();
     assert(live);
     assert(live.id);
+
+    await testPlanDestroy({ provider });
   });
 });

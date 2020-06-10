@@ -170,7 +170,7 @@ exports.planDestroy = async ({ infra, options }) => {
   await pipe([
     async (providers) => await map(findDestroy)(providers),
     //tap((x) => console.log(JSON.stringify(x, null, 4))),
-    switchCase(hasEmptyPlan, processHasNoPlan, processDestroyPlans),
+    switchCase([hasEmptyPlan, processHasNoPlan, processDestroyPlans]),
   ])(infra.providers);
 };
 

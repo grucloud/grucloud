@@ -96,7 +96,7 @@ const testPlanDestroy = async ({ provider }) => {
 
 exports.testPlanDestroy = testPlanDestroy;
 
-exports.testProviderLifeCycle = async ({ provider }) => {
+exports.testPlanDeploy = async ({ provider }) => {
   await provider.listLives();
   await provider.listTargets();
 
