@@ -1,6 +1,6 @@
 const assert = require("assert");
 const _ = require("lodash");
-const { isEmpty } = require("ramda");
+const { isEmpty, flatten, reverse } = require("ramda");
 const { pipe, tap, map, filter } = require("rubico");
 const Promise = require("bluebird");
 const logger = require("../logger")({ prefix: "CoreProvider" });
@@ -471,41 +471,39 @@ module.exports = CoreProvider = ({
   };
 
   const planFindDestroy = async (options, direction = PlanDirection.DOWN) => {
-    logger.debug(`planFindDestroy BEGIN ${tos({ options, direction })}`);
-    assert(direction);
-    const plans = (
-      await Promise.all(
-        clients
-          .filter((client) => client.spec.methods.del)
-          .map(async (client) => {
-            const { spec } = client;
-            const { type } = spec;
-            const { data } = await client.list();
-
-            return data.items
+    return await pipe([
+      tap((x) =>
+        logger.debug(`planFindDestroy ${tos({ options, direction })}`)
+      ),
+      filter((client) => client.spec.methods.del),
+      map(async (client) =>
+        pipe([
+          async () => await client.list(),
+          ({ data }) =>
+            data.items
               .filter((resource) =>
                 filterDestroyResources({ client, resource, options, direction })
               )
               .map((live) => ({
                 resource: {
                   provider: providerName,
-                  type,
+                  type: client.spec.type,
                   name: client.findName(live),
                   id: client.findId(live),
                 },
                 action: "DESTROY",
                 config: live,
-              }));
-          })
-      )
-    )
-      .flat()
-      .filter((x) => x);
-
-    logger.debug(`planFindDestroy END, unorders plans ${tos(plans)}`);
-    const planOrdered = _.flatten(PlanReorder({ plans, specs })).reverse();
-    logger.info(`planFindDestroy END, ordered plans ${tos(planOrdered)}`);
-    return planOrdered;
+              })),
+        ])()
+      ),
+      flatten,
+      filter((x) => x),
+      tap((x) => logger.debug(`planFindDestroy unordered ${tos(x)})}`)),
+      (plans) => PlanReorder({ plans, specs }),
+      flatten,
+      reverse,
+      tap((x) => logger.debug(`planFindDestroy ordered ${tos(x)})}`)),
+    ])(clients);
   };
   const upsertResources = async (newOrUpdate = []) => {
     logger.debug(`upsertResources ${tos(newOrUpdate)}`);
