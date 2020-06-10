@@ -170,7 +170,7 @@ exports.planDestroy = async ({ infra, options }) => {
   await pipe([
     async (providers) => await map(findDestroy)(providers),
     //tap((x) => console.log(JSON.stringify(x, null, 4))),
-    ifElse(hasEmptyPlan, processHasNoPlan, processDestroyPlans),
+    switchCase(hasEmptyPlan, processHasNoPlan, processDestroyPlans),
   ])(infra.providers);
 };
 
@@ -183,9 +183,9 @@ const countListResources = reduce(
 );
 
 const displayNoList = () => console.log("No live resources to list");
-const displayListResults = ifElse(({ providers, resources }) =>
-  console.log(`${resources} resource(s) in ${providers} provider(s)`)
-);
+const displayListResults = ({ providers, resources }) => {
+  console.log(`${resources} resource(s) in ${providers} provider(s)`);
+};
 
 //List all
 exports.list = async ({ infra, options }) =>
