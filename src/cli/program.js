@@ -54,7 +54,7 @@ exports.createProgram = ({ version, commands }) => {
     .alias("d")
     .option("-f, --force", "force destroy, will not prompt user")
     .option(
-      "-t, --type <type>",
+      "-t, --types <type>",
       "Filter by type, multiple values allowed",
       collect
     )
@@ -72,13 +72,7 @@ exports.createProgram = ({ version, commands }) => {
         async (infra) =>
           await commands.planDestroy({
             infra,
-            options: {
-              all: options.all,
-              types: options.type, //TODO use types
-              name: options.name,
-              id: options.id,
-              force: options.force,
-            },
+            options,
           }),
       ])(program);
     });

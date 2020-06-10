@@ -416,7 +416,9 @@ module.exports = CoreProvider = ({
     const name = client.findName(resource);
     const id = client.findId(resource);
     assert(direction);
-    logger.debug(`filterDestroyResources ${tos({ name, id, resource })}`);
+    logger.debug(
+      `filterDestroyResources ${tos({ name, types, id, resource })}`
+    );
 
     // Cannot delete default resource
     if (client.cannotBeDeleted(resource)) {
@@ -468,7 +470,7 @@ module.exports = CoreProvider = ({
     }
   };
 
-  const planFindDestroy = async (options, direction) => {
+  const planFindDestroy = async (options, direction = PlanDirection.DOWN) => {
     logger.debug(`planFindDestroy BEGIN ${tos({ options, direction })}`);
     assert(direction);
     const plans = (
@@ -489,6 +491,7 @@ module.exports = CoreProvider = ({
                   provider: providerName,
                   type,
                   name: client.findName(live),
+                  id: client.findId(live),
                 },
                 action: "DESTROY",
                 config: live,

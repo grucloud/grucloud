@@ -155,7 +155,7 @@ exports.planDestroy = async ({ infra, options }) => {
     return {
       provider,
       plan: await pipe([
-        async () => await provider.planFindDestroy(options, -1),
+        async () => await provider.planFindDestroy(options),
         tap((plan) =>
           displayPlan({
             providerName: provider.name(),
