@@ -14,6 +14,8 @@ const {
 } = require("rubico");
 const { isEmpty, pluck, flatten } = require("ramda");
 
+const plansHasSuccess = all(({ results }) => results.success);
+
 const formatResource = ({ provider, type, name }) =>
   `${provider}/${type}/${name}`;
 
@@ -74,7 +76,7 @@ exports.planDeploy = async ({ infra, options }) => {
     ])(allPlans);
   };
 
-  const displayResourcesDeployed = pipe([
+  const displayDeploySuccess = pipe([
     countDeployResources,
     ({ create, destroy }) =>
       console.log(
@@ -84,19 +86,37 @@ exports.planDeploy = async ({ infra, options }) => {
       ),
   ]);
 
-  //TODO use assign
   const doPlanDeploy = pipe([
-    //tap((x) => console.log("doPlanDeploy", x)),
-    async ({ provider, plan }) => {
-      await runAsyncCommand(
-        () => provider.deployPlan(plan),
-        `Deploy Plan for ${provider.name()}`
-      );
-      return { provider, plan };
-    },
+    //tap((x) => console.log("doPlanDeploy begin ", x)),
+    assign({
+      results: async ({ provider, plan }) =>
+        await runAsyncCommand(
+          () => provider.deployPlan(plan),
+          `Deploying resources on provider ${provider.name()}`
+        ),
+    }),
+    //tap((x) => console.log("doPlanDeploy end", x)),
   ]);
 
-  const doPlansDeploy = pipe([map(doPlanDeploy), displayResourcesDeployed]);
+  const displayDeployError = ({ item, error }) => {
+    console.log(`Cannot deploy resource ${formatResource(item.resource)}`);
+    console.error(error.message);
+  };
+
+  const displayDeployErrors = pipe([
+    //tap((x) => console.log("displayDeployErrors", x)),
+    filter(({ results: { success } }) => !success),
+    flatten,
+    pluck("results"),
+    pluck("results"),
+    flatten,
+    map(tap(displayDeployError)),
+  ]);
+
+  const doPlansDeploy = pipe([
+    map(doPlanDeploy),
+    switchCase([plansHasSuccess, displayDeploySuccess, displayDeployErrors]),
+  ]);
 
   const processDeployPlans = switchCase([
     () => options.force,
@@ -109,7 +129,6 @@ exports.planDeploy = async ({ infra, options }) => {
   await pipe([
     planQuery,
     switchCase([hasPlans, processDeployPlans, processNoPlan]),
-    //tap((x) => console.log("switchCase", x)),
   ])({ infra });
 };
 
@@ -152,9 +171,7 @@ exports.planDestroy = async ({ infra, options }) => {
     }),
   ]);
 
-  const plansDestroyHasSuccess = all(({ results }) => results.succss);
-
-  const displayError = ({ item, error }) => {
+  const displayDestroyError = ({ item, error }) => {
     console.log(`Cannot destroy resource ${formatResource(item.resource)}`);
     console.error(error.message);
   };
@@ -165,16 +182,12 @@ exports.planDestroy = async ({ infra, options }) => {
     pluck("results"),
     pluck("results"),
     flatten,
-    map(tap(displayError)),
+    map(tap(displayDestroyError)),
   ]);
 
   const doPlansDestroy = pipe([
     map(doPlanDestroy),
-    switchCase([
-      plansDestroyHasSuccess,
-      displayDestroySuccess,
-      displayDestroyErrors,
-    ]),
+    switchCase([plansHasSuccess, displayDestroySuccess, displayDestroyErrors]),
   ]);
 
   const processDestroyPlans = switchCase([

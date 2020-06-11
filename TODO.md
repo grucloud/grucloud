@@ -4,17 +4,13 @@
 
 - replace <<NA>> with id or name
 - replace \_.merge
-- handle deploy error
-- use tap when possible
-- split testPlanDeploy, do not destroy inside,
 - set environment: prod , dev etc...
 - compare or compareObject
 - CPD
 
 ## Cli
 
-"7 resource(s) in 4 provider(s)" is wrongs, should be 1 provider with 4 types
-
+- "7 resource(s) in 4 provider(s)" is wrongs, should be 1 provider with 4 types
 - save result to json
 - config file with options
 - return negative value in case of error

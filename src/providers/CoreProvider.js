@@ -370,9 +370,12 @@ module.exports = CoreProvider = ({
     try {
       assert(plan);
       logger.info(`Deploy Plan ${tos(plan)}`);
-      await upsertResources(plan.newOrUpdate);
-      await destroyPlan(plan.destroy, PlanDirection.UP);
-      logger.info(`Deploy Plan DONE`);
+      const resultCreate = await upsertResources(plan.newOrUpdate);
+      const resultDestroy = await destroyPlan(plan.destroy, PlanDirection.UP);
+      return {
+        results: [...resultCreate.results, ...resultDestroy.results],
+        success: resultCreate.success && resultDestroy.success,
+      };
     } catch (error) {
       logger.error(`deployPlan ${tos(error)}`);
       throw error;
@@ -505,19 +508,37 @@ module.exports = CoreProvider = ({
       tap((x) => logger.debug(`planFindDestroy ordered ${tos(x)})}`)),
     ])(clients);
   };
-  const upsertResources = async (newOrUpdate = []) => {
-    logger.debug(`upsertResources ${tos(newOrUpdate)}`);
-    for (const action of newOrUpdate) {
-      const engine = resourceByName(action.resource.name);
-      if (!engine) {
-        throw Error(`Cannot find resource ${tos(action.resource.name)}`);
-      }
-      const payload = await engine.resolveConfig();
 
-      await engine.create({
-        payload,
-      });
-    }
+  const upsertResources = async (planDeploy = []) => {
+    return await pipe([
+      tap((x) => logger.info(`upsertResources ${tos(x)}`)),
+      map.series(
+        async (item) =>
+          await tryCatch(
+            async (item) => {
+              const engine = resourceByName(item.resource.name);
+              if (!engine) {
+                throw Error(`Cannot find resource ${tos(item.resource.name)}`);
+              }
+              const payload = await engine.resolveConfig();
+              await engine.create({
+                payload,
+              });
+              return { item };
+            },
+            (error, item) => {
+              logger.error(`upsertResources error:${error.toString()}`);
+              return { item, error };
+            }
+          )(item)
+      ),
+      tap((x) => logger.info(`desployPlan x: ${tos(x)}`)),
+      (results) => ({
+        results,
+        success: all((result) => !result.error)(results),
+      }),
+      tap((x) => logger.info(`desployPlan results: ${tos(x)}`)),
+    ])(planDeploy);
   };
 
   const destroyById = async ({ type, config, name }) => {
@@ -531,7 +552,7 @@ module.exports = CoreProvider = ({
 
   const destroyPlan = async (planDestroy) => {
     return await pipe([
-      tap((x) => logger.info(`destroyPlan ${tos(planDestroy)}`)),
+      tap((x) => logger.info(`destroyPlan ${tos(x)}`)),
       map.series(
         async (item) =>
           await tryCatch(
@@ -544,8 +565,8 @@ module.exports = CoreProvider = ({
               return { item };
             },
             (error, item) => {
-              logger.error(`destroyPlan error message: ${error.message}`);
-              logger.error(`destroyPlan stack:  ${error.stack}`);
+              //logger.error(`destroyPlan error message: ${error.message}`);
+              //logger.error(`destroyPlan stack:  ${error.stack}`);
               logger.error(`destroyPlan error:${error.toString()}`);
               return { item, error };
             }

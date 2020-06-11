@@ -23,7 +23,9 @@ describe("MockProvider e2e", async function () {
     {
       const plan = await provider.plan();
       assert(plan.destroy);
-      await provider.deployPlan(plan);
+      const { results, success } = await provider.deployPlan(plan);
+      assert(results);
+      assert(success);
     }
     {
       const listTargets = await provider.listTargets();
