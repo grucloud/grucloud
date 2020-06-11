@@ -1,5 +1,6 @@
 var AWS = require("aws-sdk");
 const _ = require("lodash");
+const { mergeDeepLeft } = require("ramda");
 const assert = require("assert");
 const { retryExpectOk } = require("../Retry");
 const { NotAvailable } = require("../ProviderCommon");
@@ -111,14 +112,18 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     await ec2.deleteSecurityGroup({ GroupId: id }).promise();
   };
   const configDefault = async ({ name, properties, dependenciesLive }) => {
-    logger.debug(`configDefault ${toString({ dependenciesLive })}`);
-    // Need vpc name here in parameter
+    logger.debug(
+      `configDefault sg ${toString({ name, properties, dependenciesLive })}`
+    );
+    // TODO Need vpc name here in parameter
     const { vpc } = dependenciesLive;
-    const config = _.merge({
-      create: { ...(vpc && { VpcId: _.get(vpc, "VpcId", NotAvailable) }) },
-      ...properties,
-    });
-    logger.debug(`configDefault ${name} result: ${toString(config)}`);
+    const config = mergeDeepLeft(
+      {
+        create: { ...(vpc && { VpcId: _.get(vpc, "VpcId", NotAvailable) }) },
+      },
+      properties
+    );
+    logger.debug(`configDefault sg ${name} result: ${toString(config)}`);
     return config;
   };
 

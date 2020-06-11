@@ -6,7 +6,7 @@ const CoreProvider = require("../CoreProvider");
 const AwsClientEC2 = require("./AwsClientEC2");
 const AwsClientKeyPair = require("./AwsClientKeyPair");
 const AwsVpc = require("./AwsVpc");
-
+const AwsSubnet = require("./AwsSubnet");
 const AwsSecurityGroup = require("./AwsSecurityGroup");
 const logger = require("../../logger")({ prefix: "AwsProvider" });
 const compare = require("../../Utils").compare;
@@ -31,6 +31,12 @@ const fnSpecs = (config) => {
     {
       type: "Vpc",
       Client: ({ spec }) => AwsVpc({ spec, config }),
+      isOurMinion,
+    },
+    {
+      type: "Subnet",
+      dependsOn: ["Vpc"],
+      Client: ({ spec }) => AwsSubnet({ spec, config }),
       isOurMinion,
     },
     {

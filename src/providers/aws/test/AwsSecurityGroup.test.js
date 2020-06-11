@@ -5,14 +5,24 @@ const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
 describe("AwsSecurityGroup", async function () {
   let provider;
+  let vpc;
   let sg;
 
   before(async () => {
     provider = await AwsProvider({ name: "aws", config });
-
+    vpc = provider.makeVpc({
+      name: "vpc",
+      properties: {
+        CidrBlock: "10.1.0.1/16",
+      },
+    });
     sg = provider.makeSecurityGroup({
       name: "sg",
+      dependencies: { vpc },
       properties: {
+        create: {
+          Description: "Security Group Description",
+        },
         ingress: {
           IpPermissions: [
             {
@@ -57,6 +67,11 @@ describe("AwsSecurityGroup", async function () {
   });
   it("sg deploy plan", async function () {
     await testPlanDeploy({ provider });
+
+    const sgLive = await sg.getLive();
+    const vpcLive = await vpc.getLive();
+    assert.equal(sgLive.VpcId, vpcLive.VpcId);
+
     await testPlanDestroy({ provider });
   });
 });

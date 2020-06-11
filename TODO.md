@@ -2,6 +2,9 @@
 
 ## Common:
 
+- replace <<NA>> with id or name
+- replace \_.merge
+- handle deploy error
 - use tap when possible
 - split testPlanDeploy, do not destroy inside,
 - set environment: prod , dev etc...
@@ -10,12 +13,17 @@
 
 ## Cli
 
+"7 resource(s) in 4 provider(s)" is wrongs, should be 1 provider with 4 types
+
 - save result to json
 - config file with options
 - return negative value in case of error
 
 ## TODO Aws:
 
+AssociatePublicIpAddress, do we need the subnet and sg in interface ?
+
+- vpc and subnet: when up state is "available"
 - handle error when retry times out
 - subnet
 

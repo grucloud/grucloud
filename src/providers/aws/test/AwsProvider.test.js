@@ -8,6 +8,7 @@ describe("AwsProvider", async function () {
   let server;
   let keyPair;
   let vpc;
+  let subnet;
   let sg;
 
   const keyPairName = "kp";
@@ -23,7 +24,14 @@ describe("AwsProvider", async function () {
     vpc = provider.makeVpc({
       name: "vpc",
       properties: {
-        CidrBlock: "10.0.0.1/16",
+        CidrBlock: "10.1.0.1/16",
+      },
+    });
+    subnet = provider.makeSubnet({
+      name: "subnet",
+      dependencies: { vpc },
+      properties: {
+        CidrBlock: "10.1.0.1/24",
       },
     });
     sg = provider.makeSecurityGroup({
@@ -60,7 +68,7 @@ describe("AwsProvider", async function () {
     server = provider.makeInstance({
       name: serverName,
       properties: {},
-      dependencies: { keyPair, securityGroups: { sg } },
+      dependencies: { keyPair, subnet, securityGroups: { sg } },
     });
   });
   after(async () => {
@@ -84,7 +92,7 @@ describe("AwsProvider", async function () {
   it("plan", async function () {
     const plan = await provider.plan();
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 3);
+    assert.equal(plan.newOrUpdate.length, 4);
   });
   it("listLives all", async function () {
     const lives = await provider.listLives({ all: true });
@@ -92,6 +100,22 @@ describe("AwsProvider", async function () {
   });
   it("deploy plan", async function () {
     await testPlanDeploy({ provider });
+
+    const serverLive = await server.getLive();
+    const serverInstance = serverLive.Instances[0];
+
+    const sgLive = await sg.getLive();
+
+    const subnetLive = await subnet.getLive();
+
+    const vpcLive = await vpc.getLive();
+
+    assert.equal(serverInstance.VpcId, vpcLive.VpcId);
+    assert.equal(serverInstance.SecurityGroups[0].GroupId, sgLive.GroupId);
+
+    assert.equal(subnetLive.VpcId, vpcLive.VpcId);
+
+    assert.equal(sgLive.VpcId, vpcLive.VpcId);
 
     await testPlanDestroy({ provider });
   });

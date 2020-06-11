@@ -69,6 +69,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     return down;
   };
 
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property
   const create = async ({ name, payload }) => {
     assert(name);
     assert(payload);
@@ -111,7 +112,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
   };
   const configDefault = async ({ name, properties, dependenciesLive }) => {
     logger.debug(`configDefault ${toString({ dependenciesLive })}`);
-    const { keyPair, securityGroups = {} } = dependenciesLive;
+    const { keyPair, subnet, securityGroups = {} } = dependenciesLive;
     return {
       ...{
         BlockDeviceMappings: [
@@ -126,8 +127,20 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
         InstanceType: properties.InstanceType,
         MaxCount: properties.MaxCount,
         MinCount: properties.MinCount,
-        //TODO subnet
-        //SubnetId: "subnet-6e7f829e",
+        NetworkInterfaces: [
+          {
+            AssociatePublicIpAddress: true,
+            DeviceIndex: 0,
+            ...(!_.isEmpty(securityGroups) && {
+              Groups: _.map(securityGroups, (sg) =>
+                _.get(sg, "GroupId", NotAvailable)
+              ),
+            }),
+            ...(subnet && {
+              SubnetId: _.get(subnet, "SubnetId", NotAvailable),
+            }),
+          },
+        ],
         TagSpecifications: [
           {
             ResourceType: "instance",
@@ -145,11 +158,12 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
         ],
       },
       ...(keyPair && { KeyName: keyPair.KeyName }),
-      ...(!_.isEmpty(securityGroups) && {
+      //...(subnet && { SubnetId: _.get(subnet, "SubnetId", NotAvailable) }),
+      /*...(!_.isEmpty(securityGroups) && {
         SecurityGroupIds: _.map(securityGroups, (sg) =>
           _.get(sg, "GroupId", NotAvailable)
         ),
-      }),
+      }),*/
     };
   };
 

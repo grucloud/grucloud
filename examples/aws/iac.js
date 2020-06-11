@@ -13,12 +13,19 @@ const createStack = async ({ config }) => {
   const vpc = provider.makeVpc({
     name: "vpc",
     properties: {
-      CidrBlock: "10.1.1.1/16",
+      CidrBlock: "10.1.0.0/16",
+    },
+  });
+  const subnet = provider.makeSubnet({
+    name: "subnet",
+    dependencies: { vpc },
+    properties: {
+      CidrBlock: "10.1.0.1/24",
     },
   });
   const sg = provider.makeSecurityGroup({
     name: "securityGroup",
-    dependencies: { vpc },
+    dependencies: { vpc, subnet },
     properties: {
       //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
       create: {
@@ -49,7 +56,7 @@ const createStack = async ({ config }) => {
 
   const server = provider.makeInstance({
     name: "web-server",
-    dependencies: { keyPair, securityGroups: { sg } },
+    dependencies: { keyPair, subnet, securityGroups: { sg } },
     propertiesDefault: {
       VolumeSize: 50,
       InstanceType: "t2.micro",

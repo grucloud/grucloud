@@ -10,7 +10,7 @@ const displayResource = (item) =>
   item.config != null ? YAML.stringify(item.config) : undefined;
 
 const displayItem = (table, item) => {
-  assert(item.resource.name);
+  //assert(item.resource.name);
   table.push([
     item.resource.name,
     item.action,
