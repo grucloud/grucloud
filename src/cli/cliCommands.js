@@ -2,8 +2,20 @@ const _ = require("lodash");
 const { runAsyncCommand } = require("./cliUtils");
 const { displayPlan, displayLive } = require("./displayUtils");
 const prompts = require("prompts");
-const { map, pipe, switchCase, reduce, tap } = require("rubico");
-const { flatten, isEmpty, pluck, ifElse } = require("ramda");
+const {
+  map,
+  pipe,
+  switchCase,
+  reduce,
+  tap,
+  assign,
+  all,
+  filter,
+} = require("rubico");
+const { isEmpty, pluck, flatten } = require("ramda");
+
+const formatResource = ({ provider, type, name }) =>
+  `${provider}/${type}/${name}`;
 
 const countDeployResources = reduce(
   (acc, value) => {
@@ -72,6 +84,7 @@ exports.planDeploy = async ({ infra, options }) => {
       ),
   ]);
 
+  //TODO use assign
   const doPlanDeploy = pipe([
     //tap((x) => console.log("doPlanDeploy", x)),
     async ({ provider, plan }) => {
@@ -110,7 +123,7 @@ exports.planDestroy = async ({ infra, options }) => {
 
   const countDestroyed = reduce((acc, value) => acc + value.plan.length, 0);
 
-  const displayResourcesDestroyed = pipe([
+  const displayDestroySuccess = pipe([
     countDestroyed,
     (length) => console.log(`${length} Resource(s) destroyed`),
   ]);
@@ -130,16 +143,39 @@ exports.planDestroy = async ({ infra, options }) => {
   };
 
   const doPlanDestroy = pipe([
-    tap(
-      async ({ provider, plan }) =>
+    assign({
+      results: async ({ provider, plan }) =>
         await runAsyncCommand(
           () => provider.destroyPlan(plan),
           `Destroying ${plan.length} resource(s) on provider ${provider.name()}`
-        )
-    ),
+        ),
+    }),
   ]);
 
-  const doPlansDestroy = pipe([map(doPlanDestroy), displayResourcesDestroyed]);
+  const plansDestroyHasSuccess = all(({ results }) => results.succss);
+
+  const displayError = ({ item, error }) => {
+    console.log(`Cannot destroy resource ${formatResource(item.resource)}`);
+    console.error(error.message);
+  };
+
+  const displayDestroyErrors = pipe([
+    filter(({ results: { success } }) => !success),
+    flatten,
+    pluck("results"),
+    pluck("results"),
+    flatten,
+    map(tap(displayError)),
+  ]);
+
+  const doPlansDestroy = pipe([
+    map(doPlanDestroy),
+    switchCase([
+      plansDestroyHasSuccess,
+      displayDestroySuccess,
+      displayDestroyErrors,
+    ]),
+  ]);
 
   const processDestroyPlans = switchCase([
     () => options.force,
