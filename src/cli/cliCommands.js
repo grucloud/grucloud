@@ -161,6 +161,9 @@ exports.planDeploy = async ({
 
   const doPlansDeploy = pipe([
     map(doPlanDeploy),
+    tap((result) =>
+      saveToJson({ command: "deploy", commandOptions, programOptions, result })
+    ),
     switchCase([plansHasSuccess, displayDeploySuccess, displayDeployErrors]),
   ]);
 
@@ -242,6 +245,9 @@ exports.planDestroy = async ({
 
   const doPlansDestroy = pipe([
     map(doPlanDestroy),
+    tap((result) =>
+      saveToJson({ command: "destroy", commandOptions, programOptions, result })
+    ),
     switchCase([plansHasSuccess, displayDestroySuccess, displayDestroyErrors]),
   ]);
 

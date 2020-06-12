@@ -9,7 +9,6 @@
 
 ## Cli
 
-- save result to json
 - config file with options
 
 ## TODO Aws:

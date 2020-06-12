@@ -524,7 +524,7 @@ module.exports = CoreProvider = ({
               await engine.create({
                 payload,
               });
-              return { item };
+              return { item: payload };
             },
             (error, item) => {
               logger.error(`upsertResources error:${error.toString()}`);
