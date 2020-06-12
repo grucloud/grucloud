@@ -22,15 +22,21 @@ const formatResource = ({ provider, type, name }) =>
 const countDeployResources = reduce(
   (acc, value) => {
     return {
+      providers: acc.providers + 1,
       create: acc.create + value.plan.newOrUpdate.length,
       destroy: acc.destroy + value.plan.destroy.length,
     };
   },
-  { create: 0, destroy: 0 }
+  { providers: 0, create: 0, destroy: 0 }
 );
 
-//Query Plan
+const hasPlans = pipe([
+  countDeployResources,
+  ({ create, destroy }) => create > 0 || destroy > 0,
+]);
 
+//Query Plan
+//TODO use assign
 const doPlanQuery = async (providers) =>
   await map(async (provider) => ({
     provider,
@@ -44,22 +50,31 @@ const doPlanQuery = async (providers) =>
     ])(),
   }))(providers);
 
+const displayQueryNoPlan = () =>
+  console.log("Nothing to deploy, everything is up to date");
+
+const displayQueryPlanSummary = ({ providers, create, destroy }) =>
+  console.log(
+    `${create} resource(s)  to deploy${
+      destroy > 0 ? ` and ${destroy} resource(s) to destroy` : ""
+    } in ${providers} provider(s)`
+  );
+
 const planQuery = async ({ infra }) =>
   pipe([
     doPlanQuery,
-    //
     //tap(console.log),
+    switchCase([
+      hasPlans,
+      pipe([countDeployResources, displayQueryPlanSummary]),
+      displayQueryNoPlan,
+    ]),
   ])(infra.providers);
 
 exports.planQuery = planQuery;
 
 //Deploy plan
 exports.planDeploy = async ({ infra, options }) => {
-  const hasPlans = pipe([
-    countDeployResources,
-    ({ create, destroy }) => create > 0 || destroy > 0,
-  ]);
-
   const processNoPlan = () => {
     console.log("Nothing to deploy");
   };
@@ -135,9 +150,9 @@ exports.planDeploy = async ({ infra, options }) => {
   ]);
 
   await pipe([
-    planQuery,
+    doPlanQuery,
     switchCase([hasPlans, processDeployPlans, processNoPlan]),
-  ])({ infra });
+  ])(infra.providers);
 };
 
 // Destroy plan

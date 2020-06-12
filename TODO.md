@@ -10,8 +10,7 @@
 
 ## Cli
 
-- gc plan when empty
-- gc plan list resources/types/provider
+- use pluralize lib
 - save result to json
 - config file with options
 - return negative value in case of error
