@@ -1,4 +1,5 @@
 const _ = require("lodash");
+const plu = require("pluralize");
 const { runAsyncCommand } = require("./cliUtils");
 const { displayPlan, displayLive } = require("./displayUtils");
 const prompts = require("prompts");
@@ -55,9 +56,9 @@ const displayQueryNoPlan = () =>
 
 const displayQueryPlanSummary = ({ providers, create, destroy }) =>
   console.log(
-    `${create} resource(s)  to deploy${
-      destroy > 0 ? ` and ${destroy} resource(s) to destroy` : ""
-    } in ${providers} provider(s)`
+    `${plu("resource", create, true)} to deploy${
+      destroy > 0 ? ` and ${plu("resource", destroy, true)} to destroy` : ""
+    } on ${plu("provider", providers, true)}`
   );
 
 const planQuery = async ({ infra }) =>
@@ -90,9 +91,9 @@ exports.planDeploy = async ({ infra, options }) => {
         await prompts({
           type: "confirm",
           name: "confirmDeploy",
-          message: `Are you sure to deploy ${create}${
-            destroy > 0 ? ` and destroy ${destroy}` : ""
-          } resource(s) ?`,
+          message: `Are you sure to deploy ${plu("resource", create, true)}${
+            destroy > 0 ? ` and destroy ${plu("resource", destroy, true)}` : ""
+          } ?`,
           initial: false,
         }),
       ({ confirmDeploy }) => confirmDeploy,
@@ -103,9 +104,9 @@ exports.planDeploy = async ({ infra, options }) => {
     countDeployResources,
     ({ create, destroy }) =>
       console.log(
-        `${create} deployed${
-          destroy > 0 ? ` and ${destroy} destroyed` : ""
-        } resource(s)`
+        `${plu("resource", create, true)} deployed${
+          destroy > 0 ? ` and ${plu("resource", destroy, true)} destroyed` : ""
+        }`
       ),
   ]);
 
@@ -167,7 +168,7 @@ exports.planDestroy = async ({ infra, options }) => {
 
   const displayDestroySuccess = pipe([
     countDestroyed,
-    (length) => console.log(`${length} Resource(s) destroyed`),
+    (length) => console.log(`${plu("resource", length, true)} destroyed`),
   ]);
 
   const promptConfirmDestroy = async (plans) => {
@@ -177,7 +178,11 @@ exports.planDestroy = async ({ infra, options }) => {
         await prompts({
           type: "confirm",
           name: "confirmDestroy",
-          message: `Are you sure to destroy these ${length} resources ?`,
+          message: `Are you sure to destroy these ${plu(
+            "resource",
+            length,
+            true
+          )} ?`,
           initial: false,
         }),
       ({ confirmDestroy }) => confirmDestroy,
@@ -189,14 +194,19 @@ exports.planDestroy = async ({ infra, options }) => {
       results: async ({ provider, plan }) =>
         await runAsyncCommand(
           () => provider.destroyPlan(plan),
-          `Destroying ${plan.length} resource(s) on provider ${provider.name()}`
+          `Destroying ${plu(
+            "resource",
+            plan.length,
+            true
+          )} on provider ${provider.name()}`
         ),
     }),
   ]);
 
   const displayDestroyError = ({ item, error }) => {
     console.log(`Cannot destroy resource ${formatResource(item.resource)}`);
-    console.error(error.message);
+    // TODO why error is sometimes undefined ?
+    console.error(error?.message);
   };
 
   const displayDestroyErrors = pipe([
@@ -261,18 +271,15 @@ const countResources = reduce(
 const displayNoList = () => console.log("No live resources to list");
 const displayListResults = ({ providers, types, resources }) => {
   console.log(
-    `${resources} resource(s), ${types} type(s), ${providers} provider(s)`
+    `${plu("resource", resources, true)}, ${plu("type", types, true)}, ${plu(
+      "provider",
+      providers,
+      true
+    )}`
   );
 };
 
-const isEmptyList = () =>
-  pipe([
-    //tap(console.log),
-    flatten,
-    //tap(console.log),
-    isEmpty,
-    tap(console.log),
-  ]);
+const isEmptyList = pipe([flatten, isEmpty]);
 
 //List all
 exports.list = async ({ infra, options }) =>
@@ -291,10 +298,10 @@ exports.list = async ({ infra, options }) =>
             ),
           ])()
       )(providers),
-    tap(console.log),
+    //tap(console.log),
     switchCase([
       isEmptyList,
       displayNoList,
-      pipe([tap(console.log), countResources, displayListResults]),
+      pipe([countResources, displayListResults]),
     ]),
   ])(infra.providers);

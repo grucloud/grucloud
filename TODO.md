@@ -10,12 +10,15 @@
 
 ## Cli
 
-- use pluralize lib
+- add "Are you sure to destroy these 3 resources" in red
+- add version and date in the log
 - save result to json
 - config file with options
 - return negative value in case of error
 
 ## TODO Aws:
+
+error: upsertResources error:Error: Resource SecurityGroup/securityGroup is not tagged correctly
 
 AssociatePublicIpAddress, do we need the subnet and sg in interface ?
 
