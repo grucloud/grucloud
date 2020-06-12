@@ -3,7 +3,6 @@
 ## Common:
 
 - replace <<NA>> with id or name
-- replace \_.merge
 - set environment: prod , dev etc...
 - compare or compareObject
 - CPD

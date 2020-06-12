@@ -1,6 +1,5 @@
 var AWS = require("aws-sdk");
 const _ = require("lodash");
-const { mergeDeepLeft } = require("ramda");
 const assert = require("assert");
 const { retryExpectOk } = require("../Retry");
 const { NotAvailable } = require("../ProviderCommon");
@@ -117,7 +116,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     );
     // TODO Need vpc name here in parameter
     const { vpc } = dependenciesLive;
-    const config = mergeDeepLeft(
+    const config = _.defaultsDeep(
       {
         create: { ...(vpc && { VpcId: _.get(vpc, "VpcId", NotAvailable) }) },
       },

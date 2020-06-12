@@ -1,4 +1,6 @@
 const _ = require("lodash");
+const { mergeDeepLeft } = require("ramda");
+
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "GoogleInstance" });
 const toString = (x) => JSON.stringify(x, null, 4);
@@ -43,9 +45,12 @@ module.exports = GoogleInstance = ({ spec, config }) => {
       zone: `projects/${project}/zones/${zone}`,
       machineType: `projects/${project}/zones/${zone}/machineTypes/${properties.machineType}`,
       labels: buildLabel(name),
-      metadata: _.merge(properties.metadata, {
-        kind: "compute#metadata",
-      }),
+      metadata: _.defaultsDeep(
+        {
+          kind: "compute#metadata",
+        },
+        properties.metadata
+      ),
       //TODO
       //serviceAccounts: properties.serviceAccounts,
       disks: [
