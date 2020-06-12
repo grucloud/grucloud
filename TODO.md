@@ -10,7 +10,8 @@
 
 ## Cli
 
-- "7 resource(s) in 4 provider(s)" is wrongs, should be 1 provider with 4 types
+- gc plan when empty
+- gc plan list resources/types/provider
 - save result to json
 - config file with options
 - return negative value in case of error

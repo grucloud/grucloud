@@ -30,8 +30,9 @@ const countDeployResources = reduce(
 );
 
 //Query Plan
-const planQuery = async ({ infra }) =>
-  map(async (provider) => ({
+
+const doPlanQuery = async (providers) =>
+  await map(async (provider) => ({
     provider,
     plan: await pipe([
       () =>
@@ -41,7 +42,14 @@ const planQuery = async ({ infra }) =>
         ),
       displayPlan,
     ])(),
-  }))(infra.providers);
+  }))(providers);
+
+const planQuery = async ({ infra }) =>
+  pipe([
+    doPlanQuery,
+    //
+    //tap(console.log),
+  ])(infra.providers);
 
 exports.planQuery = planQuery;
 
@@ -223,36 +231,55 @@ exports.planDestroy = async ({ infra, options }) => {
   ])(infra.providers);
 };
 
-const countListResources = reduce(
+const countResources = reduce(
   (acc, value) => ({
     providers: acc.providers + 1,
-    resources: acc.resources + value.resources.length,
+    types: reduce((acc) => acc + 1, acc.types)(value),
+    resources: reduce(
+      (acc, value) => acc + value.resources.length,
+      acc.resources
+    )(value),
   }),
-  { providers: 0, resources: 0 }
+  { providers: 0, types: 0, resources: 0 }
 );
 
 const displayNoList = () => console.log("No live resources to list");
-const displayListResults = ({ providers, resources }) => {
-  console.log(`${resources} resource(s) in ${providers} provider(s)`);
+const displayListResults = ({ providers, types, resources }) => {
+  console.log(
+    `${resources} resource(s), ${types} type(s), ${providers} provider(s)`
+  );
 };
+
+const isEmptyList = () =>
+  pipe([
+    //tap(console.log),
+    flatten,
+    //tap(console.log),
+    isEmpty,
+    tap(console.log),
+  ]);
 
 //List all
 exports.list = async ({ infra, options }) =>
-  await map(
-    async (provider) =>
-      await pipe([
-        () =>
-          runAsyncCommand(
-            () => provider.listLives(options),
-            `List for ${provider.name()}`
-          ),
-        tap((targets) =>
-          displayLive({ providerName: provider.name(), targets })
-        ),
-        switchCase([
-          isEmpty,
-          displayNoList,
-          pipe([countListResources, displayListResults]),
-        ]),
-      ])()
-  )(infra.providers);
+  await pipe([
+    async (providers) =>
+      await map(
+        async (provider) =>
+          await pipe([
+            () =>
+              runAsyncCommand(
+                () => provider.listLives(options),
+                `List for ${provider.name()}`
+              ),
+            tap((targets) =>
+              displayLive({ providerName: provider.name(), targets })
+            ),
+          ])()
+      )(providers),
+    tap(console.log),
+    switchCase([
+      isEmptyList,
+      displayNoList,
+      pipe([tap(console.log), countResources, displayListResults]),
+    ]),
+  ])(infra.providers);
