@@ -2,6 +2,7 @@
 const pkg = require("../../package.json");
 const { createProgram } = require("./program");
 const commands = require("./cliCommands");
+const logger = require("../logger")({ prefix: "AwsClientEC2" });
 
 exports.main = ({ argv }) => {
   const program = createProgram({
@@ -10,7 +11,10 @@ exports.main = ({ argv }) => {
     commands,
   });
 
-  //console.log(`GruCloud ${program._version}`);
+  logger.info(`GruCloud ${pkg.version}`);
+  logger.info(new Date().toUTCString());
+
+  logger.info(`argv: ${argv}`);
 
   return program.parseAsync(argv).catch((error) => {
     const { code } = error;
