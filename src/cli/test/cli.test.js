@@ -8,8 +8,8 @@ const configFile = "src/providers/mock/test/config.js";
 
 const runProgram = async ({ cmds = [] }) => {
   const argv = [
-    "xx",
-    "xx",
+    "node",
+    "gc",
     "--infra",
     filename,
     "--config",
@@ -44,5 +44,10 @@ describe("cli", function () {
     }).catch((error) => {
       assert.equal(error.code, 422);
     });
+  });
+});
+describe("save to json", function () {
+  it("query plan", async function () {
+    await runProgram({ cmds: ["plan", "--json", "gc.result.json"] });
   });
 });

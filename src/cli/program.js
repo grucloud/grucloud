@@ -11,16 +11,11 @@ exports.createProgram = ({ version, commands }) => {
   program.version(version);
   program.option("-i, --infra <file>", "infrastructure default is iac.js");
   program.option("-c, --config <file>", "config file, default is config.js");
-  program.option("-j, --json [file]", "json output");
+  program.option("-j, --json <file>", "write result to a file in json format");
 
   const infraOptions = ({ infra, config }) => ({
     infraFileName: infra,
     configFileName: config,
-  });
-
-  const commandParams = ({ infra, commandOptions, programOptions }) => ({
-    infra,
-    options: { ...commandOptions, ...programOptions },
   });
 
   program
@@ -33,13 +28,7 @@ exports.createProgram = ({ version, commands }) => {
         infraOptions,
         createInfra,
         async (infra) =>
-          await commands.planQuery(
-            commandParams({
-              infra,
-              commandOptions,
-              programOptions,
-            })
-          ),
+          await commands.planQuery({ infra, commandOptions, programOptions }),
       ])(programOptions);
     });
 
@@ -53,13 +42,7 @@ exports.createProgram = ({ version, commands }) => {
         infraOptions,
         createInfra,
         async (infra) =>
-          await commands.planDeploy(
-            commandParams({
-              infra,
-              commandOptions,
-              programOptions,
-            })
-          ),
+          await commands.planDeploy({ infra, commandOptions, programOptions }),
       ])(programOptions);
     });
 
@@ -85,13 +68,7 @@ exports.createProgram = ({ version, commands }) => {
         infraOptions,
         createInfra,
         async (infra) =>
-          await commands.planDestroy(
-            commandParams({
-              infra,
-              commandOptions,
-              programOptions,
-            })
-          ),
+          await commands.planDestroy({ infra, commandOptions, programOptions }),
       ])(programOptions);
     });
 
@@ -118,13 +95,7 @@ exports.createProgram = ({ version, commands }) => {
         infraOptions,
         createInfra,
         async (infra) =>
-          await commands.list(
-            commandParams({
-              infra,
-              commandOptions,
-              programOptions,
-            })
-          ),
+          await commands.list({ infra, commandOptions, programOptions }),
       ])(programOptions);
     });
 

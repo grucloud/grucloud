@@ -4,6 +4,7 @@ const { runAsyncCommand } = require("./cliUtils");
 const { displayPlan, displayLive } = require("./displayUtils");
 const prompts = require("prompts");
 const colors = require("colors/safe");
+const fs = require("fs");
 
 const {
   map,
@@ -38,9 +39,18 @@ const hasPlans = pipe([
   ({ create, destroy }) => create > 0 || destroy > 0,
 ]);
 
+const saveToJson = ({ command, commandOptions, programOptions, result }) => {
+  if (!programOptions.json) {
+    return;
+  }
+  fs.writeFileSync(
+    programOptions.json,
+    JSON.stringify({ command, commandOptions, programOptions, result }, null, 4)
+  );
+};
 //Query Plan
 
-const doPlanQuery = async ({ providers }) =>
+const doPlanQuery = async ({ providers, programOptions }) =>
   await map(async (provider) => ({
     provider,
     plan: await pipe([
@@ -63,20 +73,31 @@ const displayQueryPlanSummary = ({ providers, create, destroy }) =>
     } on ${plu("provider", providers, true)}`
   );
 
-const planQuery = async ({ infra: { providers } }) =>
+const planQuery = async ({
+  infra: { providers },
+  commandOptions,
+  programOptions,
+}) =>
   pipe([
     doPlanQuery,
+    tap((result) =>
+      saveToJson({ command: "plan", commandOptions, programOptions, result })
+    ),
     switchCase([
       hasPlans,
       pipe([countDeployResources, displayQueryPlanSummary]),
       displayQueryNoPlan,
     ]),
-  ])({ providers });
+  ])({ providers, programOptions });
 
 exports.planQuery = planQuery;
 
 //Deploy plan
-exports.planDeploy = async ({ infra: { providers }, options }) => {
+exports.planDeploy = async ({
+  infra: { providers },
+  commandOptions,
+  programOptions,
+}) => {
   const processNoPlan = () => {
     console.log("Nothing to deploy");
   };
@@ -112,8 +133,6 @@ exports.planDeploy = async ({ infra: { providers }, options }) => {
   ]);
 
   const doPlanDeploy = pipe([
-    tap(console.log),
-
     //tap((x) => console.log("doPlanDeploy begin ", x)),
     assign({
       results: async ({ provider, plan }) =>
@@ -146,7 +165,7 @@ exports.planDeploy = async ({ infra: { providers }, options }) => {
   ]);
 
   const processDeployPlans = switchCase([
-    () => options.force,
+    () => commandOptions.force,
     doPlansDeploy,
     promptConfirmDeploy,
     doPlansDeploy,
@@ -160,7 +179,11 @@ exports.planDeploy = async ({ infra: { providers }, options }) => {
 };
 
 // Destroy plan
-exports.planDestroy = async ({ infra: { providers }, options }) => {
+exports.planDestroy = async ({
+  infra: { providers },
+  commandOptions,
+  programOptions,
+}) => {
   const hasEmptyPlan = pipe([pluck("plan"), flatten, isEmpty]);
 
   const processHasNoPlan = () => {
@@ -225,7 +248,7 @@ exports.planDestroy = async ({ infra: { providers }, options }) => {
   ]);
 
   const processDestroyPlans = switchCase([
-    () => options.force,
+    () => commandOptions.force,
     doPlansDestroy,
     promptConfirmDestroy,
     doPlansDestroy,
@@ -238,7 +261,7 @@ exports.planDestroy = async ({ infra: { providers }, options }) => {
     return {
       provider,
       plan: await pipe([
-        async () => await provider.planFindDestroy(options),
+        async () => await provider.planFindDestroy(commandOptions),
         tap((plan) =>
           displayPlan({
             providerName: provider.name(),
@@ -283,7 +306,7 @@ const displayListResults = ({ providers, types, resources }) => {
 const isEmptyList = pipe([flatten, isEmpty]);
 
 //List all
-exports.list = async ({ infra, options }) =>
+exports.list = async ({ infra, commandOptions, programOptions }) =>
   await pipe([
     async (providers) =>
       await map(
@@ -291,7 +314,7 @@ exports.list = async ({ infra, options }) =>
           await pipe([
             () =>
               runAsyncCommand(
-                () => provider.listLives(options),
+                () => provider.listLives(commandOptions),
                 `List for ${provider.name()}`
               ),
             tap((targets) =>
@@ -299,7 +322,9 @@ exports.list = async ({ infra, options }) =>
             ),
           ])()
       )(providers),
-    //tap(console.log),
+    tap((result) =>
+      saveToJson({ command: "list", commandOptions, programOptions, result })
+    ),
     switchCase([
       isEmptyList,
       displayNoList,
