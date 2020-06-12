@@ -165,9 +165,7 @@ exports.planDeploy = async ({
   ]);
 
   const processDeployPlans = switchCase([
-    () => commandOptions.force,
-    doPlansDeploy,
-    promptConfirmDeploy,
+    (allplans) => commandOptions.force || promptConfirmDeploy(allplans),
     doPlansDeploy,
     abortDeploy,
   ]);
@@ -248,9 +246,7 @@ exports.planDestroy = async ({
   ]);
 
   const processDestroyPlans = switchCase([
-    () => commandOptions.force,
-    doPlansDestroy,
-    promptConfirmDestroy,
+    (plans) => commandOptions.force || promptConfirmDestroy(plans),
     doPlansDestroy,
     () => {
       console.log("Aborted");
