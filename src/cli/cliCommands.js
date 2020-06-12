@@ -39,8 +39,8 @@ const hasPlans = pipe([
 ]);
 
 //Query Plan
-//TODO use assign
-const doPlanQuery = async (providers) =>
+
+const doPlanQuery = async ({ providers }) =>
   await map(async (provider) => ({
     provider,
     plan: await pipe([
@@ -63,21 +63,20 @@ const displayQueryPlanSummary = ({ providers, create, destroy }) =>
     } on ${plu("provider", providers, true)}`
   );
 
-const planQuery = async ({ infra }) =>
+const planQuery = async ({ infra: { providers } }) =>
   pipe([
     doPlanQuery,
-    //tap(console.log),
     switchCase([
       hasPlans,
       pipe([countDeployResources, displayQueryPlanSummary]),
       displayQueryNoPlan,
     ]),
-  ])(infra.providers);
+  ])({ providers });
 
 exports.planQuery = planQuery;
 
 //Deploy plan
-exports.planDeploy = async ({ infra, options }) => {
+exports.planDeploy = async ({ infra: { providers }, options }) => {
   const processNoPlan = () => {
     console.log("Nothing to deploy");
   };
@@ -113,6 +112,8 @@ exports.planDeploy = async ({ infra, options }) => {
   ]);
 
   const doPlanDeploy = pipe([
+    tap(console.log),
+
     //tap((x) => console.log("doPlanDeploy begin ", x)),
     assign({
       results: async ({ provider, plan }) =>
@@ -155,11 +156,11 @@ exports.planDeploy = async ({ infra, options }) => {
   await pipe([
     doPlanQuery,
     switchCase([hasPlans, processDeployPlans, processNoPlan]),
-  ])(infra.providers);
+  ])({ providers });
 };
 
 // Destroy plan
-exports.planDestroy = async ({ infra, options }) => {
+exports.planDestroy = async ({ infra: { providers }, options }) => {
   const hasEmptyPlan = pipe([pluck("plan"), flatten, isEmpty]);
 
   const processHasNoPlan = () => {
@@ -250,10 +251,10 @@ exports.planDestroy = async ({ infra, options }) => {
   };
 
   await pipe([
-    async (providers) => await map(findDestroy)(providers),
+    async ({ providers }) => await map(findDestroy)(providers),
     //tap((x) => console.log(JSON.stringify(x, null, 4))),
     switchCase([hasEmptyPlan, processHasNoPlan, processDestroyPlans]),
-  ])(infra.providers);
+  ])({ providers });
 };
 
 const countResources = reduce(
