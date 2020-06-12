@@ -1,5 +1,4 @@
 const { Command } = require("commander");
-const { flatten, isEmpty, ifElse, identity, tap } = require("ramda");
 const { pipe } = require("rubico");
 const { createInfra } = require("./infra");
 const collect = (value, previous = []) => previous.concat([value]);
@@ -12,40 +11,56 @@ exports.createProgram = ({ version, commands }) => {
   program.version(version);
   program.option("-i, --infra <file>", "infrastructure default is iac.js");
   program.option("-c, --config <file>", "config file, default is config.js");
+  program.option("-j, --json [file]", "json output");
 
   const infraOptions = ({ infra, config }) => ({
     infraFileName: infra,
     configFileName: config,
   });
 
+  const commandParams = ({ infra, commandOptions, programOptions }) => ({
+    infra,
+    options: { ...commandOptions, ...programOptions },
+  });
+
   program
     .command("plan")
     .description("Query the plan")
     .alias("p")
-    .action(async () => {
+    .action(async (commandOptions) => {
+      const programOptions = program.opts();
       await pipe([
-        (program) => program.opts(),
         infraOptions,
         createInfra,
-        async (infra) => await commands.planQuery({ infra }),
-      ])(program);
+        async (infra) =>
+          await commands.planQuery(
+            commandParams({
+              infra,
+              commandOptions,
+              programOptions,
+            })
+          ),
+      ])(programOptions);
     });
 
   program
     .command("deploy")
     .description("Deploy the resources")
     .option("-f, --force", "force deploy, will not prompt user")
-    .action(async (options) => {
+    .action(async (commandOptions) => {
+      const programOptions = program.opts();
       await pipe([
-        (program) => program.opts(),
         infraOptions,
         createInfra,
         async (infra) =>
-          await commands.planDeploy({
-            infra,
-            options,
-          }),
-      ])(program);
+          await commands.planDeploy(
+            commandParams({
+              infra,
+              commandOptions,
+              programOptions,
+            })
+          ),
+      ])(programOptions);
     });
 
   program
@@ -64,17 +79,20 @@ exports.createProgram = ({ version, commands }) => {
     )
     .option("-n, --name <value>", "destroy by name")
     .option("--id <value>", "destroy by id")
-    .action(async (options) => {
+    .action(async (commandOptions) => {
+      const programOptions = program.opts();
       await pipe([
-        (program) => program.opts(),
         infraOptions,
         createInfra,
         async (infra) =>
-          await commands.planDestroy({
-            infra,
-            options,
-          }),
-      ])(program);
+          await commands.planDestroy(
+            commandParams({
+              infra,
+              commandOptions,
+              programOptions,
+            })
+          ),
+      ])(programOptions);
     });
 
   program
@@ -94,17 +112,20 @@ exports.createProgram = ({ version, commands }) => {
       "-d, --canBeDeleted",
       "display resources which can be deleted, a.k.a non default resources"
     )
-    .action(async (options) => {
+    .action(async (commandOptions) => {
+      const programOptions = program.opts();
       await pipe([
-        (program) => program.opts(),
         infraOptions,
         createInfra,
         async (infra) =>
-          await commands.list({
-            infra,
-            options,
-          }),
-      ])(program);
+          await commands.list(
+            commandParams({
+              infra,
+              commandOptions,
+              programOptions,
+            })
+          ),
+      ])(programOptions);
     });
 
   return program;
