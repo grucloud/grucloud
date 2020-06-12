@@ -3,6 +3,8 @@ const plu = require("pluralize");
 const { runAsyncCommand } = require("./cliUtils");
 const { displayPlan, displayLive } = require("./displayUtils");
 const prompts = require("prompts");
+const colors = require("colors/safe");
+
 const {
   map,
   pipe,
@@ -178,11 +180,9 @@ exports.planDestroy = async ({ infra, options }) => {
         await prompts({
           type: "confirm",
           name: "confirmDestroy",
-          message: `Are you sure to destroy these ${plu(
-            "resource",
-            length,
-            true
-          )} ?`,
+          message: colors.red(
+            `Are you sure to destroy these ${plu("resource", length, true)} ?`
+          ),
           initial: false,
         }),
       ({ confirmDestroy }) => confirmDestroy,

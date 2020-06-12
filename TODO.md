@@ -10,7 +10,6 @@
 
 ## Cli
 
-- add "Are you sure to destroy these 3 resources" in red
 - save result to json
 - config file with options
 
