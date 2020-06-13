@@ -11,16 +11,21 @@ describe("GoogleAddress", async function () {
   const addressName = "myaddress-test";
   let provider;
   let address;
-  before(async () => {
-    provider = await GoogleProvider({
-      name: "google",
-      config: ConfigLoader({ baseDir: __dirname }),
-    });
-    address = provider.makeAddress({ name: addressName });
-    await provider.destroyAll();
+  before(async function () {
+    try {
+      provider = await GoogleProvider({
+        name: "google",
+        config: ConfigLoader({ baseDir: __dirname }),
+      });
+      address = provider.makeAddress({ name: addressName });
+      await provider.destroyAll();
+    } catch (error) {
+      assert(error.code, 422);
+      this.skip();
+    }
   });
   after(async () => {
-    await provider.destroyAll();
+    await provider?.destroyAll();
   });
   it("address config", async function () {
     const config = await address.resolveConfig();

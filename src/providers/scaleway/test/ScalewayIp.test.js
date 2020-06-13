@@ -6,16 +6,21 @@ const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 describe("ScalewayIp", async function () {
   let provider;
   let ip;
-  before(async () => {
-    provider = await ScalewayProvider({
-      name: "scaleway",
-      config: ConfigLoader({ baseDir: __dirname }),
-    });
-    await provider.destroyAll();
-    ip = provider.makeIp({ name: "myip" });
+  before(async function () {
+    try {
+      provider = await ScalewayProvider({
+        name: "scaleway",
+        config: ConfigLoader({ baseDir: __dirname }),
+      });
+      await provider.destroyAll();
+      ip = provider.makeIp({ name: "myip" });
+    } catch (error) {
+      assert(error.code, 422);
+      this.skip();
+    }
   });
   after(async () => {
-    await provider.destroyAll();
+    await provider?.destroyAll();
   });
 
   it("ip config", async function () {

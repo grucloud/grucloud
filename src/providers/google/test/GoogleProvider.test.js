@@ -9,22 +9,26 @@ describe("GoogleProvider", async function () {
   let server;
   let ip;
   const ipName = "ip-webserver";
-  before(async () => {
-    provider = await GoogleProvider({
-      name: "google",
-      config: ConfigLoader({ baseDir: __dirname }),
-    });
-    const { success } = await provider.destroyAll();
-    assert(success);
-    ip = provider.makeAddress({ name: ipName });
-    server = provider.makeInstance({
-      name: "web-server",
-      dependencies: { ip },
-    });
+  before(async function () {
+    try {
+      provider = await GoogleProvider({
+        name: "google",
+        config: ConfigLoader({ baseDir: __dirname }),
+      });
+      const { success } = await provider.destroyAll();
+      assert(success);
+      ip = provider.makeAddress({ name: ipName });
+      server = provider.makeInstance({
+        name: "web-server",
+        dependencies: { ip },
+      });
+    } catch (error) {
+      assert(error.code, 422);
+      this.skip();
+    }
   });
   after(async () => {
-    const { success } = await provider.destroyAll();
-    assert(success);
+    await provider?.destroyAll();
   });
 
   it("server resolveConfig ", async function () {

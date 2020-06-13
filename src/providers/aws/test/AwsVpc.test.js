@@ -7,26 +7,31 @@ describe("AwsVpc", async function () {
   let provider;
   let vpc;
 
-  before(async () => {
-    provider = await AwsProvider({
-      name: "aws",
-      config: ConfigLoader({ baseDir: __dirname }),
-    });
-    const { success } = await provider.destroyAll();
-    assert(success);
+  before(async function () {
+    try {
+      provider = await AwsProvider({
+        name: "aws",
+        config: ConfigLoader({ baseDir: __dirname }),
+      });
+      const { success } = await provider.destroyAll();
+      assert(success);
 
-    const lives = await provider.listLives({ our: true });
-    assert.equal(lives.length, 0);
+      const lives = await provider.listLives({ our: true });
+      assert.equal(lives.length, 0);
 
-    vpc = provider.makeVpc({
-      name: "vpc",
-      properties: {
-        CidrBlock: "10.1.1.1/16",
-      },
-    });
+      vpc = provider.makeVpc({
+        name: "vpc",
+        properties: {
+          CidrBlock: "10.1.1.1/16",
+        },
+      });
+    } catch (error) {
+      assert(error.code, 422);
+      this.skip();
+    }
   });
   after(async () => {
-    //await provider.destroyAll();
+    await provider.destroyAll();
   });
   it("vpc name", async function () {
     assert.equal(vpc.name, "vpc");

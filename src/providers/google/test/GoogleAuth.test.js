@@ -3,9 +3,18 @@ const { JWT } = require("google-auth-library");
 const { ConfigLoader } = require("ConfigLoader");
 
 describe("GoogleAuth", function () {
-  it("auth", async function () {
-    const { applicationCredentials } = ConfigLoader({ baseDir: __dirname });
+  let config;
+  before(async function () {
+    try {
+      config = ConfigLoader({ baseDir: __dirname });
+    } catch (error) {
+      assert(error.code, 422);
+      this.skip();
+    }
+  });
 
+  it("auth", async function () {
+    const { applicationCredentials } = config;
     assert(applicationCredentials);
 
     const keys = require(applicationCredentials);

@@ -7,18 +7,23 @@ describe("AwsClientKeyPair", async function () {
   let provider;
   let keyPair;
 
-  before(async () => {
-    provider = await AwsProvider({
-      name: "aws",
-      config: ConfigLoader({ baseDir: __dirname }),
-    });
-    await provider.destroyAll();
-    keyPair = provider.makeKeyPair({
-      name: "kp",
-    });
+  before(async function () {
+    try {
+      provider = await AwsProvider({
+        name: "aws",
+        config: ConfigLoader({ baseDir: __dirname }),
+      });
+      await provider.destroyAll();
+      keyPair = provider.makeKeyPair({
+        name: "kp",
+      });
+    } catch (error) {
+      assert(error.code, 422);
+      this.skip();
+    }
   });
   after(async () => {
-    await provider.destroyAll();
+    await provider?.destroyAll();
   });
   it("keyPair name", async function () {
     assert.equal(keyPair.name, "kp");

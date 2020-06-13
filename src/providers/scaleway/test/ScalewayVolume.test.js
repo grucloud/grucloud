@@ -7,21 +7,26 @@ describe("ScalewayVolume", async function () {
   let provider;
   let volume;
 
-  before(async () => {
-    provider = await ScalewayProvider({
-      name: "scaleway",
-      config: ConfigLoader({ baseDir: __dirname }),
-    });
-    volume = provider.makeVolume({
-      name: "volume1",
-      config: () => ({
-        size: 20_000_000_000,
-      }),
-    });
+  before(async function () {
+    try {
+      provider = await ScalewayProvider({
+        name: "scaleway",
+        config: ConfigLoader({ baseDir: __dirname }),
+      });
+      volume = provider.makeVolume({
+        name: "volume1",
+        config: () => ({
+          size: 20_000_000_000,
+        }),
+      });
+    } catch (error) {
+      assert(error.code, 422);
+      this.skip();
+    }
   });
 
   after(async () => {
-    await provider.destroyAll();
+    await provider?.destroyAll();
   });
 
   it("volume config", async function () {

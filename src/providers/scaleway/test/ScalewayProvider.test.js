@@ -10,41 +10,46 @@ describe("ScalewayProvider", async function () {
   let image;
   let server;
 
-  before(async () => {
-    provider = await ScalewayProvider({
-      name: "scaleway",
-      config: ConfigLoader({ baseDir: __dirname }),
-    });
-    await provider.destroyAll();
-    ip = provider.makeIp({ name: "myip" });
-    image = provider.makeImage({
-      name: "ubuntu",
-      config: ({ items: images }) => {
-        assert(images);
-        const image = images.find(
-          ({ name, arch, default_bootscript }) =>
-            name.includes("Ubuntu") && arch === "x86_64" && default_bootscript
-        );
-        assert(image);
-        return image;
-      },
-    });
-    server = provider.makeServer({
-      name: "web-server",
-      dependencies: { image, ip },
-      properties: {
+  before(async function () {
+    try {
+      provider = await ScalewayProvider({
+        name: "scaleway",
+        config: ConfigLoader({ baseDir: __dirname }),
+      });
+      await provider.destroyAll();
+      ip = provider.makeIp({ name: "myip" });
+      image = provider.makeImage({
+        name: "ubuntu",
+        config: ({ items: images }) => {
+          assert(images);
+          const image = images.find(
+            ({ name, arch, default_bootscript }) =>
+              name.includes("Ubuntu") && arch === "x86_64" && default_bootscript
+          );
+          assert(image);
+          return image;
+        },
+      });
+      server = provider.makeServer({
         name: "web-server",
-        commercial_type: "DEV1-S",
-        volumes: {
-          "0": {
-            size: 20_000_000_000,
+        dependencies: { image, ip },
+        properties: {
+          name: "web-server",
+          commercial_type: "DEV1-S",
+          volumes: {
+            "0": {
+              size: 20_000_000_000,
+            },
           },
         },
-      },
-    });
+      });
+    } catch (error) {
+      assert(error.code, 422);
+      this.skip();
+    }
   });
   after(async () => {
-    await provider.destroyAll();
+    await provider?.destroyAll();
   });
 
   it("list all config", async function () {
