@@ -75,6 +75,7 @@ const fnSpecs = (config) => {
 
 module.exports = AwsProvider = async ({ name, config }) => {
   assert(name);
+  assert(config);
 
   AWS.config.update({ region: config.region });
   AWS.config.apiVersions = {

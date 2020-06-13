@@ -11,7 +11,9 @@ const { getField } = require("../ProviderCommon");
 module.exports = AwsClientEC2 = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  const { managedByKey, managedByValue } = config;
+
+  const { managedByKey, managedByValue, stageTagKey, stage } = config;
+  assert(stage);
 
   const ec2 = new AWS.EC2();
   //TODO
@@ -150,6 +152,10 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
               {
                 Key: managedByKey,
                 Value: managedByValue,
+              },
+              {
+                Key: stageTagKey,
+                Value: stage,
               },
             ],
           },

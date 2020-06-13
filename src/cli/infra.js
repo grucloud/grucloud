@@ -2,11 +2,11 @@ const path = require("path");
 const fs = require("fs");
 const { ConfigLoader } = require("../ConfigLoader");
 
-const creatInfraFromFile = async ({ infraFileName, config }) => {
+const creatInfraFromFile = async ({ infraFileName, config, stage }) => {
   //console.log("creatInfraFromFile", infraFileName, config);
   try {
     const InfraCode = require(infraFileName);
-    const infra = await InfraCode({ config });
+    const infra = await InfraCode({ config: { ...config, stage } });
     if (!infra.providers) {
       throw Error(`no providers provided`);
     }
@@ -54,5 +54,6 @@ exports.createInfra = ({ infraFileName, configFileName, stage = "dev" }) => {
   return creatInfraFromFile({
     infraFileName: infraFileNameFull,
     config,
+    stage,
   });
 };

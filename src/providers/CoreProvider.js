@@ -16,6 +16,8 @@ const configProviderDefault = {
   managedByKey: "ManagedBy",
   managedByValue: "GruCloud",
   managedByDescription: "Managed By GruCloud",
+  stageTagKey: "stage",
+  stage: "dev",
 };
 
 const PlanDirection = {
@@ -240,7 +242,6 @@ module.exports = CoreProvider = ({
   type,
   mandatoryConfigKeys = [],
   fnSpecs,
-  hooks,
   config,
 }) => {
   config = _.defaults(config, configProviderDefault);

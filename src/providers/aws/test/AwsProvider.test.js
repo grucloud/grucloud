@@ -3,6 +3,7 @@ const AwsProvider = require("../AwsProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { notAvailable } = require("../../ProviderCommon");
+const { CheckTags } = require("./AwsTagCheck");
 
 describe("AwsProvider", async function () {
   let provider;
@@ -127,17 +128,20 @@ describe("AwsProvider", async function () {
     const serverLive = await server.getLive();
     const serverInstance = serverLive.Instances[0];
 
+    CheckTags({
+      config: provider.config,
+      tags: serverInstance.Tags,
+      name: server.name,
+    });
+
+    //Check dependencies
     const sgLive = await sg.getLive();
-
     const subnetLive = await subnet.getLive();
-
     const vpcLive = await vpc.getLive();
 
     assert.equal(serverInstance.VpcId, vpcLive.VpcId);
     assert.equal(serverInstance.SecurityGroups[0].GroupId, sgLive.GroupId);
-
     assert.equal(subnetLive.VpcId, vpcLive.VpcId);
-
     assert.equal(sgLive.VpcId, vpcLive.VpcId);
 
     await testPlanDestroy({ provider });

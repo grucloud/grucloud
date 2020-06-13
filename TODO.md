@@ -2,9 +2,10 @@
 
 ## Common:
 
+- skip test if config credential are missing
+- warn if dev.json is not present
 - set environment: prod , dev etc...
-  set stage in provider config
-  //TODO assert(labels["environment"], provider.config.stage);
+- add tag for environment
 
 * compare or compareObject
 

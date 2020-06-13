@@ -2,7 +2,7 @@ const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
 const AwsProvider = require("../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
-
+const { CheckTags } = require("./AwsTagCheck");
 describe("AwsVpc", async function () {
   let provider;
   let vpc;
@@ -43,6 +43,10 @@ describe("AwsVpc", async function () {
 
   it("deploy plan", async function () {
     await testPlanDeploy({ provider });
+    const vpcLive = await vpc.getLive();
+
+    CheckTags({ config: provider.config, tags: vpcLive.Tags, name: vpc.name });
+
     await testPlanDestroy({ provider });
   });
 });

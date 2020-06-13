@@ -51,10 +51,9 @@ describe("GoogleProvider", async function () {
     const serverLive = await server.getLive();
     const { status, labels } = serverLive;
     assert(status, "RUNNING");
-    const { managedByKey, managedByValue } = provider.config;
+    const { managedByKey, managedByValue, stageTagKey } = provider.config;
     assert(labels[managedByKey], managedByValue);
-    //TODO assert(labels["environment"], provider.config.stage);
-    assert(labels["environment"], "development");
+    assert(labels[stageTagKey], provider.config.stage);
 
     const ipLive = await ip.getLive();
     assert.equal(

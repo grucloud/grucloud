@@ -8,7 +8,17 @@ const { getField } = require("../ProviderCommon");
 module.exports = GoogleInstance = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  const { project, region, zone, managedByKey, tag, managedByValue } = config;
+  assert(config.stage);
+  const {
+    project,
+    region,
+    zone,
+    managedByKey,
+    tag,
+    managedByValue,
+    stageTagKey,
+    stage,
+  } = config;
 
   const getStateName = (instance) => {
     const state = instance.status;
@@ -28,10 +38,9 @@ module.exports = GoogleInstance = ({ spec, config }) => {
     return up;
   };
 
-  //TODO set environment from config
-  const buildLabel = (name) => ({
+  const buildLabel = () => ({
     [managedByKey]: managedByValue,
-    environment: "development",
+    [stageTagKey]: stage,
   });
 
   const configDefault = ({ name, properties, dependenciesLive }) => {
@@ -42,7 +51,7 @@ module.exports = GoogleInstance = ({ spec, config }) => {
       name,
       zone: `projects/${project}/zones/${zone}`,
       machineType: `projects/${project}/zones/${zone}/machineTypes/${properties.machineType}`,
-      labels: buildLabel(name),
+      labels: buildLabel(),
       metadata: _.defaultsDeep(
         {
           kind: "compute#metadata",
