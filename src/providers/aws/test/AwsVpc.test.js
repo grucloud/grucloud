@@ -31,7 +31,7 @@ describe("AwsVpc", async function () {
     }
   });
   after(async () => {
-    await provider.destroyAll();
+    await provider?.destroyAll();
   });
   it("vpc name", async function () {
     assert.equal(vpc.name, "vpc");
