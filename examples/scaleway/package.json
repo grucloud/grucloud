@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "*",
-    "dotenv": "^8.2.0"
+    "@grucloud/core": "*"
   }
 }

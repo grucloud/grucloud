@@ -33,12 +33,14 @@ npm install
 
 ## .env file
 
-Edit the _.env_ file and set the correct values:
+Edit the _config/dev.json_ file and set the correct values:
 
-```
-AccountId=12345678980
-AWSAccessKeyId=XXXXXXXXXXXXXXXXX
-AWSSecretKey=XXXXXXXXXXXXXXXXXXXXXXXX
+```json
+{
+  accountId=12345678980
+  AWSAccessKeyId=XXXXXXXXXXXXXXXXX
+  AWSSecretKey=XXXXXXXXXXXXXXXXXXXXXXXX
+}
 ```
 
 ## config file

@@ -1,0 +1,10 @@
+{
+  "google": {
+    "project": "starhackit",
+    "region": "europe-west4",
+    "zone": "europe-west4-a"
+  },
+  "aws": {
+    "region": "eu-west-2"
+  }
+}

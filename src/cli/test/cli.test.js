@@ -4,7 +4,7 @@ const _ = require("lodash");
 const { main } = require("../cliMain");
 
 const filename = "src/providers/mock/test/MockStack.js";
-const configFile = "src/providers/mock/test/config.js";
+const configFile = "src/providers/mock/test/config/default.json";
 
 const runProgram = async ({ cmds = [] }) => {
   const argv = [

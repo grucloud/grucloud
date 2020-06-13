@@ -1,16 +1,15 @@
 const assert = require("assert");
 const ScalewayProvider = require("../ScalewayProvider");
-const configProvider = require("../config");
+const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
 describe("ScalewayIp", async function () {
   let provider;
   let ip;
-
   before(async () => {
     provider = await ScalewayProvider({
       name: "scaleway",
-      config: configProvider,
+      config: ConfigLoader({ baseDir: __dirname }),
     });
     await provider.destroyAll();
     ip = provider.makeIp({ name: "myip" });
@@ -23,7 +22,7 @@ describe("ScalewayIp", async function () {
     const config = await ip.resolveConfig();
     assert(config.organization);
     assert(config.tags);
-    assert(config.tags.find((tag) => tag === configProvider.tag));
+    assert(config.tags.find((tag) => tag === provider.config.tag));
   });
 
   it.skip("deploy plan", async function () {

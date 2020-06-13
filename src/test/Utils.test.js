@@ -1,16 +1,17 @@
 const assert = require("assert");
 const _ = require("lodash");
-const { checkEnvironment, compare, compareObject } = require("../Utils");
+const { compare, compareObject } = require("../Utils");
+const { checkConfig } = require("../Utils");
 
-describe("checkEnvironment", function () {
-  it("checkEnvironment empty", async function () {
-    checkEnvironment([]);
+describe("checkConfig", function () {
+  it("checkConfig empty", async function () {
+    checkConfig({}, []);
   });
-  it("checkEnvironment throw", async function () {
-    assert.throws(
-      () => checkEnvironment(["ENV_IDONOTEXSIT"]),
-      Error("Please set the environment variable ENV_IDONOTEXSIT")
-    );
+  it("checkConfig ok", async function () {
+    checkConfig({ mykey: "aa" }, ["mykey"]);
+  });
+  it("checkConfig throw", async function () {
+    assert.throws(() => checkConfig({}, ["iDoNotExist"]), Error);
   });
 });
 

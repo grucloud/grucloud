@@ -1,6 +1,7 @@
 const assert = require("assert");
 const GoogleProvider = require("../GoogleProvider");
-const configProvider = require("../config");
+const { ConfigLoader } = require("ConfigLoader");
+
 const {
   testPlanDeploy,
   testPlanDestroy,
@@ -11,7 +12,10 @@ describe("GoogleAddress", async function () {
   let provider;
   let address;
   before(async () => {
-    provider = await GoogleProvider({ name: "google", config: configProvider });
+    provider = await GoogleProvider({
+      name: "google",
+      config: ConfigLoader({ baseDir: __dirname }),
+    });
     address = provider.makeAddress({ name: addressName });
     await provider.destroyAll();
   });

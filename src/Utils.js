@@ -1,19 +1,25 @@
-const _ = require("lodash");
+const assert = require("assert");
+const { isEmpty, isEqual, isObject, get, map } = require("lodash");
 const logger = require("./logger")({ prefix: "MocCloud" });
 const toString = (x) => JSON.stringify(x, null, 4);
 
-const checkEnvironment = (env = []) =>
-  env.forEach((env) => {
-    //console.log(env);
-    if (!process.env[env]) {
-      throw new Error(`Please set the environment variable ${env}`);
-    }
-  });
+exports.checkConfig = (config, mandatoryConfigKeys = []) => {
+  const missingKeys = mandatoryConfigKeys.filter((key) => !config[key]);
+  const { CONFIG_ENV = "dev" } = process.env;
+
+  if (!isEmpty(missingKeys)) {
+    throw Error(
+      `${missingKeys.join(
+        ","
+      )} are missing from the config files "config/default.json" or "config/${CONFIG_ENV}.json" `
+    );
+  }
+};
 const compareObject = ({ target = {}, live = {} }) => {
   //console.log(target, live);
 
-  const diff = _.map(target, (targetValue, targetKey) => {
-    if (_.isObject(targetValue)) {
+  const diff = map(target, (targetValue, targetKey) => {
+    if (isObject(targetValue)) {
       return compareObject({ target: targetValue, live: live[targetKey] });
     }
     if (targetValue !== live[targetKey]) {
@@ -26,13 +32,15 @@ const compareObject = ({ target = {}, live = {} }) => {
   }).filter((x) => x);
   return diff.length > 0 ? diff : undefined;
 };
-const compare = ({ target = {}, targetKeys = [], live = {} }) => {
+exports.compareObject = compareObject;
+
+exports.compare = ({ target = {}, targetKeys = [], live = {} }) => {
   logger.debug(`compare ${toString({ target, targetKeys, live })}`);
 
   const targetDiff = targetKeys
     .map((targetKey) => {
-      const targetValue = _.get(target, targetKey);
-      const liveValue = _.get(live, targetKey);
+      const targetValue = get(target, targetKey);
+      const liveValue = get(live, targetKey);
 
       logger.debug(
         `compare for targetKey: ${toString({
@@ -50,7 +58,7 @@ const compare = ({ target = {}, targetKeys = [], live = {} }) => {
         };
       }
 
-      if (!_.isEqual(targetValue, liveValue)) {
+      if (!isEqual(targetValue, liveValue)) {
         return {
           key: targetKey,
           type: "DIFF",
@@ -63,10 +71,4 @@ const compare = ({ target = {}, targetKeys = [], live = {} }) => {
 
   logger.info(`compare ${toString({ targetDiff })}`);
   return targetDiff;
-};
-
-module.exports = {
-  compare,
-  checkEnvironment,
-  compareObject,
 };

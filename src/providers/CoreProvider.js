@@ -5,7 +5,7 @@ const { pipe, tap, map, filter, all, tryCatch } = require("rubico");
 const Promise = require("bluebird");
 const logger = require("../logger")({ prefix: "CoreProvider" });
 const tos = (x) => JSON.stringify(x, null, 4);
-const checkEnvironment = require("../Utils").checkEnvironment;
+const { checkConfig } = require("../Utils");
 const { fromTagName } = require("./TagName");
 const { SpecDefault } = require("./SpecDefault");
 const { retryExpectOk } = require("./Retry");
@@ -96,7 +96,7 @@ const ResourceMaker = ({
       //TODO use constant
       return { resource: dependency, live: live || "<<resolve later>>" };
     }),
-    tap((x) => logger.debug(`resolveDependenciesLive: ${tos({ x })}`)),
+    tap((x) => logger.debug(`resolveDependenciesLive: ${tos(x)}`)),
   ]);
 
   const resolveConfig = async () => {
@@ -238,7 +238,7 @@ const createResourceMakers = ({ specs, config, provider }) =>
 module.exports = CoreProvider = ({
   name: providerName,
   type,
-  envs = [],
+  mandatoryConfigKeys = [],
   fnSpecs,
   hooks,
   config,
@@ -355,14 +355,13 @@ module.exports = CoreProvider = ({
   };
 
   const plan = async () => {
+    logger.debug(`planQuery begins`);
     const plan = {
       providerName,
       newOrUpdate: await planUpsert(),
       destroy: await planFindDestroy({}, PlanDirection.UP),
     };
-    logger.info(`*******************************************************`);
-    logger.info(`plan ${tos(plan)}`);
-    logger.info(`*******************************************************`);
+    logger.info(`planQuery results: ${tos(plan)}`);
     return plan;
   };
   const deployPlan = async (plan) => {
@@ -591,7 +590,6 @@ module.exports = CoreProvider = ({
     }
   };
 
-  checkEnvironment(envs);
   const isPlanEmpty = (plan) => {
     if (plan.newOrUpdate.length > 0) {
       return false;
@@ -601,6 +599,8 @@ module.exports = CoreProvider = ({
     }
     return true;
   };
+
+  checkConfig(config, mandatoryConfigKeys);
 
   const provider = {
     config,

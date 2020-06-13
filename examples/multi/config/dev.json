@@ -1,0 +1,10 @@
+{
+  "google": {
+    "applicationCredentials": ""
+  },
+  "aws": {
+    "accountId": "",
+    "AWSAccessKeyId": "",
+    "AWSSecretKey": ""
+  }
+}

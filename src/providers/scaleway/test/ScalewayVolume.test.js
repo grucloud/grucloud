@@ -1,6 +1,6 @@
 const assert = require("assert");
 const ScalewayProvider = require("../ScalewayProvider");
-const config = require("../config");
+const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
 describe("ScalewayVolume", async function () {
@@ -8,7 +8,10 @@ describe("ScalewayVolume", async function () {
   let volume;
 
   before(async () => {
-    provider = await ScalewayProvider({ name: "scaleway", config });
+    provider = await ScalewayProvider({
+      name: "scaleway",
+      config: ConfigLoader({ baseDir: __dirname }),
+    });
     volume = provider.makeVolume({
       name: "volume1",
       config: () => ({

@@ -1,7 +1,6 @@
 const assert = require("assert");
 const createStack = require("./MockStack");
-const config = require("./config");
-
+const { ConfigLoader } = require("ConfigLoader");
 const logger = require("logger")({ prefix: "MockProviderTestSimple" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
@@ -10,7 +9,7 @@ describe("MockProvider Simple", async function () {
   let provider;
   before(async () => {
     stack = await createStack({
-      config,
+      config: ConfigLoader({ baseDir: __dirname }),
     });
     provider = stack.providers[0];
     await provider.destroyAll();

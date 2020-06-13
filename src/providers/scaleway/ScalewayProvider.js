@@ -151,19 +151,11 @@ const fnSpecs = (config) => {
   ];
 };
 
-const configCheck = (config) => {
-  assert(config, "Please provide a config");
-  const { zone, organization, secretKey } = config;
-  assert(zone, "zone is missing, e.g fr-par-1");
-  assert(organization, "organization is missing");
-  assert(secretKey, "secretKey is missing");
-};
-
 module.exports = ScalewayProvider = async ({ name, config }) => {
-  configCheck(config);
   return CoreProvider({
     type: "scaleway",
     name,
+    mandatoryConfigKeys: ["zone", "organization", "secretKey"],
     config,
     fnSpecs,
   });

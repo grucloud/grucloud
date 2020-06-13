@@ -1,13 +1,14 @@
 const assert = require("assert");
 const { JWT } = require("google-auth-library");
+const { ConfigLoader } = require("ConfigLoader");
 
 describe("GoogleAuth", function () {
   it("auth", async function () {
-    const GOOGLE_APPLICATION_CREDENTIALS =
-      process.env.GOOGLE_APPLICATION_CREDENTIALS;
-    assert(GOOGLE_APPLICATION_CREDENTIALS);
+    const { applicationCredentials } = ConfigLoader({ baseDir: __dirname });
 
-    const keys = require(GOOGLE_APPLICATION_CREDENTIALS);
+    assert(applicationCredentials);
+
+    const keys = require(applicationCredentials);
 
     const client = new JWT({
       email: keys.client_email,

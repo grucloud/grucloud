@@ -1,6 +1,6 @@
 const assert = require("assert");
 const GoogleProvider = require("../GoogleProvider");
-const config = require("../config");
+const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { notAvailable } = require("../../ProviderCommon");
 
@@ -10,7 +10,10 @@ describe("GoogleProvider", async function () {
   let ip;
   const ipName = "ip-webserver";
   before(async () => {
-    provider = await GoogleProvider({ name: "google", config });
+    provider = await GoogleProvider({
+      name: "google",
+      config: ConfigLoader({ baseDir: __dirname }),
+    });
     const { success } = await provider.destroyAll();
     assert(success);
     ip = provider.makeAddress({ name: ipName });
@@ -44,8 +47,21 @@ describe("GoogleProvider", async function () {
   });
   it("deploy plan", async function () {
     await testPlanDeploy({ provider });
+
+    const serverLive = await server.getLive();
+    const { status, labels } = serverLive;
+    assert(status, "RUNNING");
+    const { managedByKey, managedByValue } = provider.config;
+    assert(labels[managedByKey], managedByValue);
+    //TODO assert(labels["environment"], provider.config.stage);
+    assert(labels["environment"], "development");
+
+    const ipLive = await ip.getLive();
+    assert.equal(
+      serverLive.networkInterfaces[0].accessConfigs[0].natIP,
+      ipLive.address
+    );
+
     await testPlanDestroy({ provider });
-    // TODO check ip address from instance is the one from address
-    // check status == "RUNNING"
   });
 });

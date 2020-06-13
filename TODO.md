@@ -3,7 +3,10 @@
 ## Common:
 
 - set environment: prod , dev etc...
-- compare or compareObject
+  set stage in provider config
+  //TODO assert(labels["environment"], provider.config.stage);
+
+* compare or compareObject
 
 ## Cli
 
@@ -13,6 +16,9 @@
 
 error: upsertResources error:Error: Resource SecurityGroup/securityGroup is not tagged correctly
 
+when deploying only ec2 without sg, subnet and vpc:
+"No subnets found for the default VPC 'vpc-bbbafcd3'. Please specify a subnet.",
+
 AssociatePublicIpAddress, do we need the subnet and sg in interface ?
 
 - vpc and subnet: when up state is "available"
@@ -20,8 +26,6 @@ AssociatePublicIpAddress, do we need the subnet and sg in interface ?
 - subnet
 
 ## TODO Goggle
-
-then check ip address from instance is the one from address and check status == "RUNNING"
 
 - instance: add service account
 - is config.tag still being used ? yes but in instance device name, rename tag to something else

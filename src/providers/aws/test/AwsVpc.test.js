@@ -1,5 +1,5 @@
 const assert = require("assert");
-const config = require("../config");
+const { ConfigLoader } = require("ConfigLoader");
 const AwsProvider = require("../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
@@ -8,7 +8,10 @@ describe("AwsVpc", async function () {
   let vpc;
 
   before(async () => {
-    provider = await AwsProvider({ name: "aws", config });
+    provider = await AwsProvider({
+      name: "aws",
+      config: ConfigLoader({ baseDir: __dirname }),
+    });
     const { success } = await provider.destroyAll();
     assert(success);
 

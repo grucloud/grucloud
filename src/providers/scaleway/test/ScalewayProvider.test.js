@@ -2,7 +2,7 @@ const assert = require("assert");
 const logger = require("logger")({ prefix: "CoreProvider" });
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const ScalewayProvider = require("../ScalewayProvider");
-const config = require("../config");
+const { ConfigLoader } = require("ConfigLoader");
 
 describe("ScalewayProvider", async function () {
   let provider;
@@ -11,7 +11,10 @@ describe("ScalewayProvider", async function () {
   let server;
 
   before(async () => {
-    provider = await ScalewayProvider({ name: "scaleway", config });
+    provider = await ScalewayProvider({
+      name: "scaleway",
+      config: ConfigLoader({ baseDir: __dirname }),
+    });
     await provider.destroyAll();
     ip = provider.makeIp({ name: "myip" });
     image = provider.makeImage({

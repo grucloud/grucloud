@@ -1,7 +1,7 @@
 const assert = require("assert");
 const createStack = require("./MockStack");
 const logger = require("logger")({ prefix: "CoreProvider" });
-const config = require("./config");
+const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
 const toString = (x) => JSON.stringify(x, null, 4);
@@ -11,7 +11,7 @@ describe("MockProvider e2e", async function () {
   let provider;
   before(async () => {
     stack = await createStack({
-      config,
+      config: ConfigLoader({ baseDir: __dirname }),
     });
     provider = stack.providers[0];
   });
@@ -45,7 +45,9 @@ describe("MockProvider e2e", async function () {
     await testPlanDestroy({ provider });
   });
   it("plan", async function () {
-    const { providers } = await createStack({ config });
+    const { providers } = await createStack({
+      config: ConfigLoader({ baseDir: __dirname }),
+    });
     const provider = providers[0];
     {
       const listTargets = await provider.listTargets();

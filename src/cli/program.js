@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { Command } = require("commander");
 const { pipe } = require("rubico");
 const { createInfra } = require("./infra");
@@ -13,9 +14,10 @@ exports.createProgram = ({ version, commands }) => {
   program.option("-c, --config <file>", "config file, default is config.js");
   program.option("-j, --json <file>", "write result to a file in json format");
 
-  const infraOptions = ({ infra, config }) => ({
+  const infraOptions = ({ infra, config, stage }) => ({
     infraFileName: infra,
     configFileName: config,
+    stage: stage || process.env.STAGE || "dev",
   });
 
   program

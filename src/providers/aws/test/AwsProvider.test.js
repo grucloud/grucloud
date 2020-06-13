@@ -1,6 +1,6 @@
 const assert = require("assert");
 const AwsProvider = require("../AwsProvider");
-const config = require("../config");
+const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { notAvailable } = require("../../ProviderCommon");
 
@@ -18,7 +18,10 @@ describe("AwsProvider", async function () {
   const serverName = "web-server";
 
   before(async () => {
-    provider = await AwsProvider({ name: "aws", config });
+    provider = await AwsProvider({
+      name: "aws",
+      config: ConfigLoader({ baseDir: __dirname }),
+    });
     const { success } = await provider.destroyAll();
     assert(success);
     keyPair = provider.makeKeyPair({

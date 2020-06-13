@@ -73,21 +73,10 @@ const fnSpecs = (config) => {
   ];
 };
 
-const configCheck = (config) => {
-  assert(config, "Please provide a config");
-  const { project, region, zone, applicationCredentials } = config;
-  assert(project, "project is missing");
-  assert(region, "region is missing");
-  assert(zone, "zone is missing");
-  assert(applicationCredentials, "GOOGLE_APPLICATION_CREDENTIALS is missing");
-};
-
-const authorize = async () => {
-  const GOOGLE_APPLICATION_CREDENTIALS =
-    process.env.GOOGLE_APPLICATION_CREDENTIALS;
-  assert(GOOGLE_APPLICATION_CREDENTIALS);
-
-  const keys = require(GOOGLE_APPLICATION_CREDENTIALS);
+const authorize = async ({ applicationCredentials }) => {
+  assert(applicationCredentials);
+  //TODO check if file exists
+  const keys = require(applicationCredentials);
 
   const client = new JWT({
     email: keys.client_email,
@@ -107,8 +96,8 @@ const authorize = async () => {
 };
 
 module.exports = GoogleProvider = async ({ name, config }) => {
-  configCheck(config);
-  const accessToken = await authorize();
+  const { applicationCredentials } = config;
+  const accessToken = await authorize({ applicationCredentials });
 
   const configProviderDefault = {
     //rename manageByTag ?
@@ -119,10 +108,18 @@ module.exports = GoogleProvider = async ({ name, config }) => {
     accessToken,
   };
 
-  return CoreProvider({
+  const core = CoreProvider({
     type: "google",
     name,
+    mandatoryConfigKeys: [
+      "project",
+      "region",
+      "zone",
+      "applicationCredentials",
+    ],
     config: _.defaults(config, configProviderDefault),
     fnSpecs,
   });
+
+  return core;
 };

@@ -1,6 +1,6 @@
 const assert = require("assert");
 const ScalewayProvider = require("../ScalewayProvider");
-const config = require("../config");
+const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
 describe("ScalewayImage", async function () {
@@ -8,7 +8,10 @@ describe("ScalewayImage", async function () {
   let image;
 
   before(async () => {
-    provider = await ScalewayProvider({ name: "scaleway", config });
+    provider = await ScalewayProvider({
+      name: "scaleway",
+      config: ConfigLoader({ baseDir: __dirname }),
+    });
     await provider.destroyAll();
     image = provider.makeImage({
       name: "ubuntu",

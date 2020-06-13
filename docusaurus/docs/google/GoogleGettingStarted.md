@@ -35,12 +35,14 @@ cd grucloud/examples/google
 npm install
 ```
 
-### .env
+### Environment
 
-Edit the _.env_ file and set the _GOOGLE_APPLICATION_CREDENTIALS_ environment variable which points the the service account credential.
+Edit the _config/dev.json_ file and set the _GOOGLE_APPLICATION_CREDENTIALS_ environment variable which points the the service account credential.
 
-```bash
-GOOGLE_APPLICATION_CREDENTIALS="/Users/mario/Downloads/superduperproject-605f4eb1b929.json"
+```json
+{
+  "applicationCredentials": "/Users/mario/yourproject-605f4eb1b929.json"
+}
 ```
 
 ### Config

@@ -1,4 +1,3 @@
-require("dotenv").config();
 const AWS = require("aws-sdk");
 const assert = require("assert");
 const _ = require("lodash");
@@ -12,10 +11,6 @@ const logger = require("../../logger")({ prefix: "AwsProvider" });
 const compare = require("../../Utils").compare;
 const AwsTags = require("./AwsTags");
 const toString = (x) => JSON.stringify(x, null, 4);
-
-const configProviderDefault = {
-  accountId: process.env.AccountId,
-};
 
 const fnSpecs = (config) => {
   const isOurMinion = ({ resource }) =>
@@ -78,15 +73,8 @@ const fnSpecs = (config) => {
   ];
 };
 
-const configCheck = (config) => {
-  assert(config, "Please provide a config");
-  const { region } = config;
-  assert(region, "region is missing");
-};
-
 module.exports = AwsProvider = async ({ name, config }) => {
   assert(name);
-  configCheck(config);
 
   AWS.config.update({ region: config.region });
   AWS.config.apiVersions = {
@@ -97,8 +85,8 @@ module.exports = AwsProvider = async ({ name, config }) => {
   return CoreProvider({
     type: "aws",
     name,
-    envs: ["AWSAccessKeyId", "AWSSecretKey", "AccountId"],
-    config: _.defaults(config, configProviderDefault),
+    mandatoryConfigKeys: ["AWSAccessKeyId", "AWSSecretKey", "accountId"],
+    config,
     fnSpecs,
   });
 };

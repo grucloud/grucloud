@@ -15,6 +15,7 @@ const {
   assign,
   all,
   filter,
+  not,
 } = require("rubico");
 const { isEmpty, pluck, flatten } = require("ramda");
 
@@ -282,17 +283,20 @@ exports.planDestroy = async ({
   ])({ providers });
 };
 
-const countResources = reduce(
-  (acc, value) => ({
-    providers: acc.providers + 1,
-    types: reduce((acc) => acc + 1, acc.types)(value),
-    resources: reduce(
-      (acc, value) => acc + value.resources.length,
-      acc.resources
-    )(value),
-  }),
-  { providers: 0, types: 0, resources: 0 }
-);
+const countResources = pipe([
+  filter(not(isEmpty)),
+  reduce(
+    (acc, value) => ({
+      providers: acc.providers + 1,
+      types: reduce((acc) => acc + 1, acc.types)(value),
+      resources: reduce(
+        (acc, value) => acc + value.resources.length,
+        acc.resources
+      )(value),
+    }),
+    { providers: 0, types: 0, resources: 0 }
+  ),
+]);
 
 const displayNoList = () => console.log("No live resources to list");
 const displayListResults = ({ providers, types, resources }) => {
@@ -327,6 +331,7 @@ exports.list = async ({ infra, commandOptions, programOptions }) =>
     tap((result) =>
       saveToJson({ command: "list", commandOptions, programOptions, result })
     ),
+
     switchCase([
       isEmptyList,
       displayNoList,

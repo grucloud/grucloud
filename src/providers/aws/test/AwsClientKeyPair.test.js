@@ -1,5 +1,6 @@
 const assert = require("assert");
-const config = require("../config");
+const { ConfigLoader } = require("ConfigLoader");
+
 const AwsProvider = require("../AwsProvider");
 //TODO renane in AwsKeyPair
 describe("AwsClientKeyPair", async function () {
@@ -7,7 +8,10 @@ describe("AwsClientKeyPair", async function () {
   let keyPair;
 
   before(async () => {
-    provider = await AwsProvider({ name: "aws", config });
+    provider = await AwsProvider({
+      name: "aws",
+      config: ConfigLoader({ baseDir: __dirname }),
+    });
     await provider.destroyAll();
     keyPair = provider.makeKeyPair({
       name: "kp",
