@@ -2,7 +2,7 @@ const AWS = require("aws-sdk");
 const _ = require("lodash");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsSubnet" });
-const { NotAvailable } = require("../ProviderCommon");
+const { getField } = require("../ProviderCommon");
 const toString = (x) => JSON.stringify(x, null, 4);
 const {
   getByNameCore,
@@ -82,7 +82,7 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     // Need vpc name here in parameter
     const { vpc } = dependenciesLive;
     const config = {
-      ...(vpc && { VpcId: _.get(vpc, "VpcId", NotAvailable) }),
+      ...(vpc && { VpcId: getField(vpc, "VpcId") }),
       ...properties,
     };
     logger.debug(`configDefault ${name} result: ${toString(config)}`);

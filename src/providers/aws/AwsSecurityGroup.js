@@ -2,7 +2,7 @@ var AWS = require("aws-sdk");
 const _ = require("lodash");
 const assert = require("assert");
 const { retryExpectOk } = require("../Retry");
-const { NotAvailable } = require("../ProviderCommon");
+const { getField } = require("../ProviderCommon");
 
 const {
   getByNameCore,
@@ -118,7 +118,9 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     const { vpc } = dependenciesLive;
     const config = _.defaultsDeep(
       {
-        create: { ...(vpc && { VpcId: _.get(vpc, "VpcId", NotAvailable) }) },
+        create: {
+          ...(vpc && { VpcId: getField(vpc, "VpcId") }),
+        },
       },
       properties
     );

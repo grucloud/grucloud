@@ -33,6 +33,7 @@ const destroyByClient = async ({ client, name, config }) => {
   const id = client.findId(config);
   assert(id);
 
+  //TODO do we need try catch here ?
   try {
     await client.destroy({ id, name });
   } catch (error) {
@@ -49,7 +50,7 @@ const destroyByClient = async ({ client, name, config }) => {
 
 const ResourceMaker = ({
   name: resourceName,
-  dependencies,
+  dependencies = {},
   transformConfig,
   properties,
   spec,
@@ -86,20 +87,17 @@ const ResourceMaker = ({
     }
   };
 
-  const resolveDependenciesLive = async (dependencies) => {
-    const dependenciesLive = await Promise.props(
-      _.mapValues(dependencies, async (dependency) => {
-        if (!dependency.getLive) {
-          return resolveDependenciesLive(dependency);
-        }
-        const live = await dependency.getLive();
-        //TODO use constant
-        return live || "<<resolve later>>";
-      })
-    );
-    logger.debug(`resolveDependenciesLive: ${tos({ dependenciesLive })}`);
-    return dependenciesLive;
-  };
+  const resolveDependenciesLive = pipe([
+    map(async (dependency) => {
+      if (!dependency.getLive) {
+        return resolveDependenciesLive(dependency);
+      }
+      const live = await dependency.getLive();
+      //TODO use constant
+      return { resource: dependency, live: live || "<<resolve later>>" };
+    }),
+    tap((x) => logger.debug(`resolveDependenciesLive: ${tos({ x })}`)),
+  ]);
 
   const resolveConfig = async () => {
     logger.info(`config ${type}/${resourceName}`);
@@ -201,6 +199,7 @@ const ResourceMaker = ({
     planUpsert,
     getLive,
     addParent,
+    resolveDependencies: () => resolveDependenciesLive(dependencies),
   };
   _.map(dependencies, (dependency) => {
     if (!dependency.addParent) {

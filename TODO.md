@@ -2,10 +2,8 @@
 
 ## Common:
 
-- replace <<NA>> with id or name
 - set environment: prod , dev etc...
 - compare or compareObject
-- CPD
 
 ## Cli
 

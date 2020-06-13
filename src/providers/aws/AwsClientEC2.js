@@ -6,7 +6,7 @@ const { getByNameCore } = require("../Common");
 const toString = (x) => JSON.stringify(x, null, 4);
 const StateTerminated = ["terminated"];
 const { KeyName, findNameInTags } = require("./AwsCommon");
-const { NotAvailable } = require("../ProviderCommon");
+const { getField } = require("../ProviderCommon");
 
 module.exports = AwsClientEC2 = ({ spec, config }) => {
   assert(spec);
@@ -132,12 +132,10 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
             AssociatePublicIpAddress: true,
             DeviceIndex: 0,
             ...(!_.isEmpty(securityGroups) && {
-              Groups: _.map(securityGroups, (sg) =>
-                _.get(sg, "GroupId", NotAvailable)
-              ),
+              Groups: _.map(securityGroups, (sg) => getField(sg, "GroupId")),
             }),
             ...(subnet && {
-              SubnetId: _.get(subnet, "SubnetId", NotAvailable),
+              SubnetId: getField(subnet, "SubnetId"),
             }),
           },
         ],
@@ -157,13 +155,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
           },
         ],
       },
-      ...(keyPair && { KeyName: keyPair.KeyName }),
-      //...(subnet && { SubnetId: _.get(subnet, "SubnetId", NotAvailable) }),
-      /*...(!_.isEmpty(securityGroups) && {
-        SecurityGroupIds: _.map(securityGroups, (sg) =>
-          _.get(sg, "GroupId", NotAvailable)
-        ),
-      }),*/
+      ...(keyPair && { KeyName: keyPair.resource.name }),
     };
   };
 

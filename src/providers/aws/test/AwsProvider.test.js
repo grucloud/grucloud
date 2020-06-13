@@ -2,6 +2,7 @@ const assert = require("assert");
 const AwsProvider = require("../AwsProvider");
 const config = require("../config");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
+const { notAvailable } = require("../../ProviderCommon");
 
 describe("AwsProvider", async function () {
   let provider;
@@ -12,6 +13,8 @@ describe("AwsProvider", async function () {
   let sg;
 
   const keyPairName = "kp";
+  const subnetName = "subnet";
+  const securityGroupName = "securityGroup";
   const serverName = "web-server";
 
   before(async () => {
@@ -28,14 +31,14 @@ describe("AwsProvider", async function () {
       },
     });
     subnet = provider.makeSubnet({
-      name: "subnet",
+      name: subnetName,
       dependencies: { vpc },
       properties: {
         CidrBlock: "10.1.0.1/24",
       },
     });
     sg = provider.makeSecurityGroup({
-      name: "securityGroup",
+      name: securityGroupName,
       dependencies: { vpc },
       properties: {
         //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
@@ -83,7 +86,24 @@ describe("AwsProvider", async function () {
     assert.equal(config.MaxCount, 1);
     assert.equal(config.MinCount, 1);
     assert.equal(config.KeyName, keyPair.name);
+    assert.equal(
+      config.NetworkInterfaces[0].SubnetId,
+      notAvailable(subnetName)
+    );
+    assert.equal(
+      config.NetworkInterfaces[0].Groups[0],
+      notAvailable(securityGroupName)
+    );
     // TODO tags
+  });
+  it("server resolveDependencies", async function () {
+    const dependencies = await server.resolveDependencies();
+    assert(dependencies.subnet);
+    assert.equal(dependencies.subnet.resource.name, subnetName);
+    assert(dependencies.subnet.live);
+
+    assert(dependencies.securityGroups.sg);
+    assert(dependencies.keyPair);
   });
   it("config", async function () {
     const config = await server.resolveConfig();

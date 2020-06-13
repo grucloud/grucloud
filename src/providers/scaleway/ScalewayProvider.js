@@ -4,8 +4,8 @@ const compare = require("../../Utils").compare;
 const CoreProvider = require("../CoreProvider");
 const ScalewayClient = require("./ScalewayClient");
 const logger = require("../../logger")({ prefix: "ScalewayProvider" });
-
 const TagName = require("../TagName");
+const { getField } = require("../ProviderCommon");
 
 const toString = (x) => JSON.stringify(x, null, 4);
 
@@ -123,8 +123,8 @@ const fnSpecs = (config) => {
               name,
               organization,
               tags: [name, config.tag],
-              image: _.get(image, "id", NotAvailable),
-              ...(ip && { public_ip: _.get(ip, "id", NotAvailable) }),
+              image: getField(image, "id"),
+              ...(ip && { public_ip: getField(ip, "id") }),
               ...properties,
             };
           },
