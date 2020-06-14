@@ -69,13 +69,6 @@ module.exports = CoreClient = ({
   const isUpById = isUpByIdCore({ getById });
   const isDownById = isDownByIdCore({ getById });
 
-  const isUpByName = async ({ name }) => {
-    logger.info(`isUpByName ${type}/${name}`);
-    assert(name, "isUpByName missing name");
-    const instance = await getByName({ name });
-    return !!instance;
-  };
-
   const create = async ({ name, payload }) => {
     logger.debug(`create ${type}/${name}, payload: ${toString(payload)}`);
     assert(name);
@@ -155,7 +148,6 @@ module.exports = CoreClient = ({
     cannotBeDeleted: () => false,
     isUpById,
     isDownById,
-    isUpByName,
     create,
     destroy,
     list,

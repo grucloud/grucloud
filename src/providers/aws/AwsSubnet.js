@@ -7,7 +7,6 @@ const toString = (x) => JSON.stringify(x, null, 4);
 const {
   getByNameCore,
   getByIdCore,
-  isUpByNameCore,
   isUpByIdCore,
   isDownByIdCore,
 } = require("../Common");
@@ -34,8 +33,6 @@ module.exports = AwsSubnet = ({ spec, config }) => {
 
   const isUpById = isUpByIdCore({ getById });
   const isDownById = isDownByIdCore({ getById });
-
-  const isUpByName = ({ name }) => isUpByNameCore({ name, getByName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSubnet-property
   const create = async ({ name, payload }) => {
@@ -97,7 +94,6 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     findId,
     isUpById,
     isDownById,
-    isUpByName,
     getByName,
     getById,
     findName,

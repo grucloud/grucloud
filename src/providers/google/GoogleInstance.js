@@ -21,19 +21,6 @@ module.exports = GoogleInstance = ({ spec, config }) => {
     stage,
   } = config;
 
-  //TODO delete all isUpByName
-  const isUpByName = async ({ name }) => {
-    logger.debug(`isUpByName ${name}`);
-    assert(name);
-    let up = false;
-    const instance = await client.getByName({ name });
-    if (instance) {
-      up = ["RUNNING"].includes(getStateName(instance));
-    }
-    logger.info(`isUpByName ${name} ${up ? "UP" : "NOT UP"}`);
-    return up;
-  };
-
   const buildLabel = () => ({
     [managedByKey]: managedByValue,
     [stageTagKey]: stage,
@@ -115,6 +102,5 @@ module.exports = GoogleInstance = ({ spec, config }) => {
   return {
     ...client,
     isUpById,
-    isUpByName,
   };
 };

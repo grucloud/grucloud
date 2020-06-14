@@ -2,15 +2,6 @@ const assert = require("assert");
 const logger = require("../logger")({ prefix: "Common" });
 const toString = (x) => JSON.stringify(x, null, 4);
 
-exports.isUpByNameCore = async ({ name, getByName }) => {
-  logger.info(`isUpByName name:${name}`);
-  assert(name);
-  assert(getByName);
-  const up = !!(await getByName({ name }));
-  logger.info(`isUpByName ${name} ${up ? "IS UP" : "NOT UP"}`);
-  return up;
-};
-
 exports.findField = ({ item, field }) => {
   assert(item);
   assert(field);

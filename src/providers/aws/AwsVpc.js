@@ -7,12 +7,7 @@ const logger = require("../../logger")({ prefix: "AwsVpc" });
 const tos = (x) => JSON.stringify(x, null, 4);
 const { retryExpectOk } = require("../Retry");
 const { getByIdCore } = require("./AwsCommon");
-const {
-  getByNameCore,
-  isUpByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-} = require("../Common");
+const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../Common");
 const { findNameInTags } = require("./AwsCommon");
 const { tagResource } = require("./AwsTagResource");
 
@@ -44,7 +39,6 @@ module.exports = AwsVpc = ({ spec, config }) => {
   };
 
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
-  const isUpByName = ({ name }) => isUpByNameCore({ name, getByName });
 
   const getById = getByIdCore({ fieldIds: "VpcIds", list });
 
@@ -105,7 +99,6 @@ module.exports = AwsVpc = ({ spec, config }) => {
     findId,
     isUpById,
     isDownById,
-    isUpByName,
     getByName,
     getById,
     findName,

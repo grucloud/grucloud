@@ -2,6 +2,8 @@
 
 ## Common:
 
+TagName.js move to scaleway
+
 await client.create({ name: resourceName, payload }); should return {id}
 
 - compare or compareObject

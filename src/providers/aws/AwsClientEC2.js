@@ -73,18 +73,6 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     getById,
   });
 
-  const isUpByName = async ({ name }) => {
-    logger.debug(`isUpByName ${name}`);
-    assert(name);
-    let up = false;
-    const instance = await getByName({ name });
-    if (instance) {
-      up = ["running"].includes(getStateName(instance));
-    }
-    logger.info(`isUpByName ${name} ${up ? "UP" : "NOT UP"}`);
-    return up;
-  };
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property
   const create = async ({ name, payload }) => {
     assert(name);
@@ -184,7 +172,6 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     ec2,
     isUpById,
     isDownById,
-    isUpByName,
     findId,
     getByName,
     getById,
