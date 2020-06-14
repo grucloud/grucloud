@@ -98,7 +98,7 @@ module.exports = CoreClient = ({
         isOk: (result) => result,
       });
       const resource = await getById({ id });
-      logger.error(`created ${type}/${name}, result: ${toString(resource)}`);
+      logger.debug(`created ${type}/${name}, result: ${toString(resource)}`);
       return onResponseGet(resource.data);
     } catch (error) {
       logger.error(`create ${type}/${name}, error ${toString(error)}`);

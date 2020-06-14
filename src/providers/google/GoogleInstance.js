@@ -4,6 +4,7 @@ const logger = require("../../logger")({ prefix: "GoogleInstance" });
 const toString = (x) => JSON.stringify(x, null, 4);
 const { toTagName } = require("./GoogleTag");
 const { getField } = require("../ProviderCommon");
+const { isUpByIdCore } = require("../Common");
 
 module.exports = GoogleInstance = ({ spec, config }) => {
   assert(spec);
@@ -20,12 +21,7 @@ module.exports = GoogleInstance = ({ spec, config }) => {
     stage,
   } = config;
 
-  const getStateName = (instance) => {
-    const state = instance.status;
-    logger.debug(`stateName ${state}`);
-    return state;
-  };
-
+  //TODO delete all isUpByName
   const isUpByName = async ({ name }) => {
     logger.debug(`isUpByName ${name}`);
     assert(name);
@@ -104,8 +100,21 @@ module.exports = GoogleInstance = ({ spec, config }) => {
     configDefault,
   });
 
+  const getStateName = (instance) => {
+    const state = instance.status;
+    logger.debug(`stateName ${state}`);
+    return state;
+  };
+
+  const isUpById = isUpByIdCore({
+    states: ["RUNNING"],
+    getStateName,
+    getById: client.getById,
+  });
+
   return {
     ...client,
+    isUpById,
     isUpByName,
   };
 };
