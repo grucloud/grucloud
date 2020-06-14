@@ -143,14 +143,6 @@ const ResourceMaker = ({
     const instance = await client.create({ name: resourceName, payload });
     //logger.info(`created:  ${tos({ instance })}`);
 
-    assert(client.isUpByName);
-    //TODO use id and not name
-    await retryExpectOk({
-      name: `create ${resourceName}`,
-      fn: () => client.isUpByName({ name: resourceName }),
-      isOk: (result) => result,
-    });
-    // use Return value and avoid calling getLive again ?
     // Check if we tag correctly
     {
       const live = await getLive();

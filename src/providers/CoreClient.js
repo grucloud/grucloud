@@ -3,7 +3,7 @@ const assert = require("assert");
 const logger = require("../logger")({ prefix: "CoreClient" });
 const toString = (x) => JSON.stringify(x, null, 4);
 const identity = (x) => x;
-const { retryExpectException } = require("./Retry");
+const { retryExpectOk } = require("./Retry");
 const {
   getByNameCore,
   findField,
@@ -20,6 +20,8 @@ module.exports = CoreClient = ({
     ...properties,
   }),
   findName = (item) => findField({ item, field: "name" }),
+  findId = (item) => item.id,
+  findTargetId = (item) => item.id,
   onResponseGet = identity,
   onResponseList = identity,
   onResponseCreate = identity,
@@ -31,9 +33,6 @@ module.exports = CoreClient = ({
   const canCreate = !methods || methods.create;
   const canDelete = !methods || methods.del;
   const canList = !methods || methods.list;
-
-  //Same as findName
-  const findId = (item) => item.id;
 
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
 
@@ -88,11 +87,21 @@ module.exports = CoreClient = ({
         method: "POST",
         data: payload,
       });
-      result.data = onResponseCreate(result.data);
-      logger.debug(`create result: ${toString(result.data)}`);
-      return result;
+      const data = onResponseCreate(result.data);
+      logger.debug(`create result: ${toString(data)}`);
+
+      const id = findTargetId(data);
+      assert(id, "no target id from result");
+      await retryExpectOk({
+        name: `create ${name}`,
+        fn: () => isUpById({ id }),
+        isOk: (result) => result,
+      });
+      const resource = await getById({ id });
+      logger.error(`created ${type}/${name}, result: ${toString(resource)}`);
+      return onResponseGet(resource.data);
     } catch (error) {
-      logger.error(`create type ${type}, error ${toString(error)}`);
+      logger.error(`create ${type}/${name}, error ${toString(error)}`);
       throw error;
     }
   };

@@ -16,12 +16,14 @@ module.exports = GoogleClient = ({ url, spec, config, configDefault }) => {
   assert(spec);
   assert(spec.type);
   assert(config);
+  const findTargetId = (item) => item.targetId;
 
   const core = CoreClient({
     type: "google",
     spec,
     onResponseList,
     configDefault,
+    findTargetId,
     axios: AxiosMaker({
       baseURL: urljoin(BASE_URL, url),
       onHeaders: () => ({

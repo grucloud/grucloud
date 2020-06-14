@@ -43,7 +43,7 @@ const retryExpectOk = async ({ name, fn, isOk, delay = 4e3 }, count = 60) => {
 
     if (isOk(result)) {
       logger.debug(`retryExpectOk ${name} isOk`);
-      return true;
+      return result;
     }
     logger.debug(`retryExpectOk: ${name} not ok`);
   } catch (error) {
