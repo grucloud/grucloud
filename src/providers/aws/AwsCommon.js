@@ -33,14 +33,17 @@ exports.getByIdCore = ({ fieldIds, list }) =>
     }
   );
 
-exports.isUpByIdCore = ({ states, getById }) => async ({ id }) => {
+exports.isUpByIdCore = ({ states, getStateName, getById }) => async ({
+  id,
+}) => {
   logger.debug(`isUpById ${id}`);
   assert(id);
   let up = false;
   const instance = await getById({ id });
   if (instance) {
     if (states) {
-      up = states.includes(instance.State);
+      assert(getStateName);
+      up = states.includes(getStateName(instance));
     } else {
       up = true;
     }

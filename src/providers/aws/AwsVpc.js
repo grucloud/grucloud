@@ -41,7 +41,12 @@ module.exports = AwsVpc = ({ spec, config }) => {
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
   const isUp = ({ name }) => isUpCore({ name, getByName });
   const getById = getByIdCore({ fieldIds: "VpcIds", list });
-  const isUpById = isUpByIdCore({ states: ["available"], getById });
+  const getStateName = (instance) => instance.State;
+  const isUpById = isUpByIdCore({
+    states: ["available"],
+    getStateName,
+    getById,
+  });
   const isDown = ({ id, name }) => isDownCore({ id, name, getById });
 
   const cannotBeDeleted = (item) => {

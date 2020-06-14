@@ -3,9 +3,10 @@ const _ = require("lodash");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsClientEC2" });
 const { getByNameCore } = require("../Common");
+
 const toString = (x) => JSON.stringify(x, null, 4);
 const StateTerminated = ["terminated"];
-const { KeyName, findNameInTags } = require("./AwsCommon");
+const { KeyName, getByIdCore, isUpByIdCore } = require("./AwsCommon");
 const { getField } = require("../ProviderCommon");
 
 module.exports = AwsClientEC2 = ({ spec, config }) => {
@@ -36,14 +37,34 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     assert(id);
     return id;
   };
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
+  const list = async () => {
+    logger.debug(`list`);
+    const data = await ec2.describeInstances().promise();
+    logger.debug(`list ${toString(data)}`);
+    const items = data.Reservations.filter(
+      (reservation) =>
+        !StateTerminated.includes(reservation.Instances[0].State.Name)
+    );
+    logger.debug(`list filtered: ${toString(items)}`);
+    return {
+      data: {
+        total: items.length,
+        items,
+      },
+    };
+  };
+
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
-  const getById = ({ id }) => getByIdCore({ id, list, findId });
+  const getById = getByIdCore({ fieldIds: "InstanceIds", list });
 
   const getStateName = (instance) => {
     const state = instance.Instances[0].State.Name;
     logger.debug(`stateName ${state}`);
     return state;
   };
+  const isUpById = isUpByIdCore({ states: ["running"], getStateName, getById });
 
   const isUp = async ({ name }) => {
     logger.debug(`isUp ${name}`);
@@ -78,24 +99,15 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     logger.debug(`create ec2 ${toString({ name, payload })}`);
     const data = await ec2.runInstances(payload).promise();
     logger.debug(`create result ${toString(data)}`);
-    return data.Instances[0];
-  };
+    const instance = data.Instances[0];
+    const { InstanceId } = instance;
+    await retryExpectOk({
+      name: `isUpById: ${name} id: ${InstanceId}`,
+      fn: () => isUpById({ id: InstanceId }),
+      isOk: (result) => result,
+    });
 
-  const list = async () => {
-    logger.debug(`list`);
-    const data = await ec2.describeInstances().promise();
-    logger.debug(`list ${toString(data)}`);
-    const items = data.Reservations.filter(
-      (reservation) =>
-        !StateTerminated.includes(reservation.Instances[0].State.Name)
-    );
-    logger.debug(`list filtered: ${toString(items)}`);
-    return {
-      data: {
-        total: items.length,
-        items,
-      },
-    };
+    return instance;
   };
 
   const destroy = async ({ id, name }) => {
