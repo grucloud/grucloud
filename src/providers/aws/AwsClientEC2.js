@@ -85,20 +85,6 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     return up;
   };
 
-  const isDownByName = async ({ name }) => {
-    logger.debug(`isDownByName ec2 ${name}`);
-    assert(name);
-    let down = false;
-    const instance = await getByName({ name });
-    if (!instance) {
-      down = true;
-    } else {
-      down = StateTerminated.includes(getStateName(instance));
-    }
-    logger.info(`isDownByName ec2 ${name} ${down ? "DOWN" : "NOT DOWN"}`);
-    return down;
-  };
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property
   const create = async ({ name, payload }) => {
     assert(name);
@@ -196,8 +182,9 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     type: "Instance",
     spec,
     ec2,
+    isUpById,
+    isDownById,
     isUpByName,
-    isDownByName,
     findId,
     getByName,
     getById,

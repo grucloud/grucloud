@@ -4,7 +4,12 @@ const logger = require("../logger")({ prefix: "CoreClient" });
 const toString = (x) => JSON.stringify(x, null, 4);
 const identity = (x) => x;
 const { retryExpectException } = require("./Retry");
-const { getByNameCore, findField } = require("./Common");
+const {
+  getByNameCore,
+  findField,
+  isUpByIdCore,
+  isDownByIdCore,
+} = require("./Common");
 module.exports = CoreClient = ({
   spec,
   type,
@@ -50,24 +55,26 @@ module.exports = CoreClient = ({
       return result;
     } catch (error) {
       //TODO function to print axios error
+      const status = error.response?.status;
       logger.error(
-        `get ${type}/${id}, error ${toString(error.response?.data)}`
+        `get ${type}/${id}, status ${status}, error ${toString(
+          error.response?.data
+        )}`
       );
-      throw error;
+      if (status != 404) {
+        throw error;
+      }
     }
   };
+
+  const isUpById = isUpByIdCore({ getById });
+  const isDownById = isDownByIdCore({ getById });
 
   const isUpByName = async ({ name }) => {
     logger.info(`isUpByName ${type}/${name}`);
     assert(name, "isUpByName missing name");
     const instance = await getByName({ name });
     return !!instance;
-  };
-  const isDownByName = async ({ name }) => {
-    logger.info(`isDownByName ${type}/${name}`);
-    assert(name, "isDownByName missing name");
-    const instance = await getByName({ name });
-    return !instance;
   };
 
   const create = async ({ name, payload }) => {
@@ -120,20 +127,6 @@ module.exports = CoreClient = ({
         `destroy ${toString({ name, type, id })} should be destroyed`
       );
 
-      //TODO use isDownByName in CoreProvider
-      await retryExpectException({
-        fn: () => getById({ id }),
-        isExpectedError: (error) => {
-          //error.stack && logger.error(error.stack);
-          logger.debug(
-            `isExpectedError ${toString({
-              status: error.response?.status,
-              response: error.response?.data,
-            })}`
-          );
-          return error.response && error.response.status === 404;
-        },
-      });
       return result;
     } catch (error) {
       logger.error(`delete type ${type}, error TODO`);
@@ -151,8 +144,9 @@ module.exports = CoreClient = ({
     findName,
     findName,
     cannotBeDeleted: () => false,
+    isUpById,
+    isDownById,
     isUpByName,
-    isDownByName,
     create,
     destroy,
     list,

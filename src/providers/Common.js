@@ -11,15 +11,6 @@ exports.isUpByNameCore = async ({ name, getByName }) => {
   return up;
 };
 
-exports.isDownByNameCore = async ({ id, name, getById }) => {
-  logger.info(`isDownByName name: ${name} id: ${id}`);
-  assert(id);
-  assert(getById);
-  const down = !(await getById({ id }));
-  logger.info(`isDownByName ${name} ${down ? "IS DOWN" : "NOT DOWN"}`);
-  return down;
-};
-
 exports.findField = ({ item, field }) => {
   assert(item);
   assert(field);
@@ -67,6 +58,7 @@ exports.isUpByIdCore = ({ states, getStateName, getById }) => async ({
 }) => {
   logger.debug(`isUpById ${id}`);
   assert(id);
+  assert(getById);
   let up = false;
   const instance = await getById({ id });
   if (instance) {
@@ -86,6 +78,7 @@ exports.isDownByIdCore = ({ states, getStateName, getById }) => async ({
 }) => {
   logger.debug(`isDownById ${id}`);
   assert(id);
+  assert(getById);
   let down = false;
   const instance = await getById({ id });
   if (instance) {

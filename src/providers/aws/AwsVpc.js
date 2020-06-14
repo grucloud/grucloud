@@ -10,7 +10,6 @@ const { getByIdCore } = require("./AwsCommon");
 const {
   getByNameCore,
   isUpByNameCore,
-  isDownByNameCore,
   isUpByIdCore,
   isDownByIdCore,
 } = require("../Common");
@@ -46,15 +45,17 @@ module.exports = AwsVpc = ({ spec, config }) => {
 
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
   const isUpByName = ({ name }) => isUpByNameCore({ name, getByName });
+
   const getById = getByIdCore({ fieldIds: "VpcIds", list });
+
   const getStateName = (instance) => instance.State;
+
   const isUpById = isUpByIdCore({
     states: ["available"],
     getStateName,
     getById,
   });
-  const isDownByName = ({ id, name }) =>
-    isDownByNameCore({ id, name, getById });
+  const isDownById = isDownByIdCore({ getById });
 
   const cannotBeDeleted = (item) => {
     assert(item.hasOwnProperty("IsDefault"));
@@ -102,6 +103,9 @@ module.exports = AwsVpc = ({ spec, config }) => {
     type: "Vpc",
     spec,
     findId,
+    isUpById,
+    isDownById,
+    isUpByName,
     getByName,
     getById,
     findName,
@@ -110,7 +114,5 @@ module.exports = AwsVpc = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
-    isUpByName,
-    isDownByName,
   };
 };

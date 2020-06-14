@@ -8,7 +8,8 @@ const {
   getByNameCore,
   getByIdCore,
   isUpByNameCore,
-  isDownByNameCore,
+  isUpByIdCore,
+  isDownByIdCore,
 } = require("../Common");
 const { findNameInTags } = require("./AwsCommon");
 const { tagResource } = require("./AwsTagResource");
@@ -31,9 +32,10 @@ module.exports = AwsSubnet = ({ spec, config }) => {
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
   const getById = ({ id }) => getByIdCore({ id, list, findId });
 
+  const isUpById = isUpByIdCore({ getById });
+  const isDownById = isDownByIdCore({ getById });
+
   const isUpByName = ({ name }) => isUpByNameCore({ name, getByName });
-  const isDownByName = ({ id, name }) =>
-    isDownByNameCore({ id, name, getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSubnet-property
   const create = async ({ name, payload }) => {
@@ -93,6 +95,9 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     type: "Subnet",
     spec,
     findId,
+    isUpById,
+    isDownById,
+    isUpByName,
     getByName,
     getById,
     findName,
@@ -101,7 +106,5 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
-    isUpByName,
-    isDownByName,
   };
 };

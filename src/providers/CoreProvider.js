@@ -30,6 +30,8 @@ const destroyByClient = async ({ client, name, config }) => {
   assert(config);
   assert(client.findId);
   assert(client.destroy);
+  assert(client.isDownById);
+
   logger.info(`destroyByClient: ${tos({ type: client.spec.type, name })}`);
   logger.debug(`destroyByClient: ${tos({ config })}`);
   const id = client.findId(config);
@@ -42,10 +44,9 @@ const destroyByClient = async ({ client, name, config }) => {
     logger.error(`destroyByClient: ${tos({ error })}`);
     throw error;
   }
-
   await retryExpectOk({
     name: `destroy ${name}`,
-    fn: () => client.isDownByName({ id, name }),
+    fn: () => client.isDownById({ id, name }),
     isOk: (result) => result,
   });
 };
@@ -140,7 +141,7 @@ const ResourceMaker = ({
     }
     // Create now
     const instance = await client.create({ name: resourceName, payload });
-    logger.info(`created:  ${tos({ instance })}`);
+    //logger.info(`created:  ${tos({ instance })}`);
 
     assert(client.isUpByName);
     //TODO use id and not name
@@ -530,6 +531,8 @@ module.exports = CoreProvider = ({
             },
             (error, item) => {
               logger.error(`upsertResources error:${error.toString()}`);
+              logger.error(`upsertResources stack:${error.stack}`);
+
               return { item, error };
             }
           )(item)
