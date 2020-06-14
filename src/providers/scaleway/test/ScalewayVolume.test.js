@@ -37,11 +37,11 @@ describe("ScalewayVolume", async function () {
   });
 
   it("plan", async function () {
-    const plan = await provider.plan();
+    const plan = await provider.planQuery();
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 1);
   });
-  it.skip("deploy plan", async function () {
+  it.skip("apply and destroy", async function () {
     await testPlanDeploy({ provider });
     await testPlanDestroy({ provider });
   });

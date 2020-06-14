@@ -34,10 +34,10 @@ describe("MockProvider Simple", async function () {
       assert(!target);
     }
 
-    const plan = await provider.plan();
+    const plan = await provider.planQuery();
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 4);
-    await provider.deployPlan(plan);
+    await provider.planApply(plan);
 
     {
       const liveIp = await ip.getLive();

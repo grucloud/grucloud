@@ -2,8 +2,6 @@
 
 ## Common:
 
-rename deploy with apply
-
 await client.create({ name: resourceName, payload }); should return {id}
 
 - compare or compareObject

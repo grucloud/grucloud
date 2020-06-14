@@ -23,8 +23,8 @@ describe("cli", function () {
   it("query plan", async function () {
     await runProgram({ cmds: ["plan"] });
   });
-  it("deploy plan", async function () {
-    await runProgram({ cmds: ["deploy", "--force"] });
+  it("apply plan", async function () {
+    await runProgram({ cmds: ["apply", "--force"] });
   });
   it("destroy plan", async function () {
     await runProgram({ cmds: ["destroy", "--force"] });

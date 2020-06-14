@@ -49,15 +49,15 @@ const saveToJson = ({ command, commandOptions, programOptions, result }) => {
     JSON.stringify({ command, commandOptions, programOptions, result }, null, 4)
   );
 };
-//Query Plan
 
+// Plan Query
 const doPlanQuery = async ({ providers, programOptions }) =>
   await map(async (provider) => ({
     provider,
     plan: await pipe([
       () =>
         runAsyncCommand(
-          () => provider.plan(),
+          () => provider.planQuery(),
           `Query Plan for ${provider.name()}`
         ),
       displayPlan,
@@ -93,8 +93,8 @@ const planQuery = async ({
 
 exports.planQuery = planQuery;
 
-//Deploy plan
-exports.planDeploy = async ({
+// Plan Apply
+exports.planApply = async ({
   infra: { providers },
   commandOptions,
   programOptions,
@@ -138,7 +138,7 @@ exports.planDeploy = async ({
     assign({
       results: async ({ provider, plan }) =>
         await runAsyncCommand(
-          () => provider.deployPlan(plan),
+          () => provider.planApply(plan),
           `Deploying resources on provider ${provider.name()}`
         ),
     }),
@@ -163,7 +163,7 @@ exports.planDeploy = async ({
   const doPlansDeploy = pipe([
     map(doPlanDeploy),
     tap((result) =>
-      saveToJson({ command: "deploy", commandOptions, programOptions, result })
+      saveToJson({ command: "apply", commandOptions, programOptions, result })
     ),
     switchCase([plansHasSuccess, displayDeploySuccess, displayDeployErrors]),
   ]);
@@ -180,7 +180,7 @@ exports.planDeploy = async ({
   ])({ providers });
 };
 
-// Destroy plan
+// Plan Destroy
 exports.planDestroy = async ({
   infra: { providers },
   commandOptions,
@@ -219,7 +219,7 @@ exports.planDestroy = async ({
     assign({
       results: async ({ provider, plan }) =>
         await runAsyncCommand(
-          () => provider.destroyPlan(plan),
+          () => provider.planDestroy(plan),
           `Destroying ${plu(
             "resource",
             plan.length,

@@ -46,7 +46,7 @@ describe("AwsVpc", async function () {
     assert(vpcDefault);
   });
 
-  it("deploy plan", async function () {
+  it("apply and destroy", async function () {
     await testPlanDeploy({ provider });
     const vpcLive = await vpc.getLive();
 

@@ -99,7 +99,7 @@ Find out which resources are going to be allocated:
 
 Happy with the expected plan ? Deploy it now:
 
-    gc deploy
+    gc apply
 
 ```
 gcloud compute ssh web-server

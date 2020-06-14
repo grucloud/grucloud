@@ -321,9 +321,8 @@ module.exports = CoreProvider = ({
         async (client) =>
           await filterClient({ client, our, name, id, canBeDeleted })
       ),
-      tap((list) => logger.debug(`listLives ${tos(list)}`)),
       filter((live) => !isEmpty(live.resources)),
-      tap((list) => logger.debug(`listLives filter ${tos(list)}`)),
+      tap((list) => logger.debug(`listLives results: ${tos(list)}`)),
     ])(clients);
   };
 
@@ -351,7 +350,7 @@ module.exports = CoreProvider = ({
     return lists;
   };
 
-  const plan = async () => {
+  const planQuery = async () => {
     logger.debug(`planQuery begins`);
     const plan = {
       providerName,
@@ -361,18 +360,18 @@ module.exports = CoreProvider = ({
     logger.info(`planQuery results: ${tos(plan)}`);
     return plan;
   };
-  const deployPlan = async (plan) => {
+  const planApply = async (plan) => {
     try {
       assert(plan);
-      logger.info(`Deploy Plan ${tos(plan)}`);
+      logger.info(`Apply Plan ${tos(plan)}`);
       const resultCreate = await upsertResources(plan.newOrUpdate);
-      const resultDestroy = await destroyPlan(plan.destroy, PlanDirection.UP);
+      const resultDestroy = await planDestroy(plan.destroy, PlanDirection.UP);
       return {
         results: [...resultCreate.results, ...resultDestroy.results],
         success: resultCreate.success && resultDestroy.success,
       };
     } catch (error) {
-      logger.error(`deployPlan ${tos(error)}`);
+      logger.error(`planApply ${tos(error)}`);
       throw error;
     }
   };
@@ -547,9 +546,9 @@ module.exports = CoreProvider = ({
     await destroyByClient({ client, name, config });
   };
 
-  const destroyPlan = async (planDestroy) => {
+  const planDestroy = async (planDestroy) => {
     return await pipe([
-      tap((x) => logger.info(`destroyPlan ${tos(x)}`)),
+      tap((x) => logger.info(`planDestroy ${tos(x)}`)),
       map.series(
         async (item) =>
           await tryCatch(
@@ -562,9 +561,9 @@ module.exports = CoreProvider = ({
               return { item };
             },
             (error, item) => {
-              //logger.error(`destroyPlan error message: ${error.message}`);
-              //logger.error(`destroyPlan stack:  ${error.stack}`);
-              logger.error(`destroyPlan error:${error.toString()}`);
+              //logger.error(`planDestroy error message: ${error.message}`);
+              //logger.error(`planDestroy stack:  ${error.stack}`);
+              logger.error(`planDestroy error:${error.toString()}`);
               return { item, error };
             }
           )(item)
@@ -573,22 +572,24 @@ module.exports = CoreProvider = ({
         results,
         success: all((result) => !result.error)(results),
       }),
-      tap((x) => logger.info(`destroyPlan results: ${tos(x)}`)),
+      tap((x) => logger.info(`planDestroy results: ${tos(x)}`)),
     ])(planDestroy);
   };
 
-  const destroyAll = async (options) => {
-    logger.debug(`destroyAll ${tos({ options })}`);
-    //TODO try catch ?
-    try {
-      const planDestroy = await planFindDestroy(options, PlanDirection.DOWN);
-      return await destroyPlan(planDestroy);
-    } catch (error) {
-      logger.error(`destroyAll ${tos(error)}`);
+  const destroyAll = tryCatch(
+    async (options) =>
+      await pipe([
+        tap((options) => logger.debug(`destroyAll ${tos({ options })}`)),
+        async () => planFindDestroy(options, PlanDirection.DOWN),
+        async (plan) => await planDestroy(plan),
+      ])(options),
+    (error) => {
+      logger.error(`destroyAll error: ${error.message}`);
+      logger.error(`destroyAll stack: ${error.stack}`);
       throw error;
     }
-  };
-
+  );
+  //TODO use isEmpty
   const isPlanEmpty = (plan) => {
     if (plan.newOrUpdate.length > 0) {
       return false;
@@ -607,10 +608,9 @@ module.exports = CoreProvider = ({
     type: () => type || providerName,
     destroyAll,
     planFindDestroy,
-    //destroyByName,
-    plan,
-    deployPlan,
-    destroyPlan,
+    planQuery,
+    planApply,
+    planDestroy,
     listLives,
     listTargets,
     listConfig,

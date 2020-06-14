@@ -23,12 +23,12 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Mock Deploy",
+      "name": "Cli Mock Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/src/providers/mock/test/",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["--infra", "MockStack.js", "--force", "deploy"]
+      "args": ["--infra", "MockStack.js", "--force", "apply"]
     },
     {
       "type": "node",
@@ -70,12 +70,12 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws Deploy",
+      "name": "Cli Aws Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["--infra", "examples/aws/iac.js", "deploy"]
+      "args": ["--infra", "examples/aws/iac.js", "apply"]
     },
     {
       "type": "node",
@@ -108,12 +108,12 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Google Deploy",
+      "name": "Cli Google Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/google/",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["deploy"]
+      "args": ["apply"]
     },
     {
       "type": "node",

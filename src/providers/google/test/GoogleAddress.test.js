@@ -38,11 +38,11 @@ describe("GoogleAddress", async function () {
     //console.log("lives ip", lives);
   });
   it("plan", async function () {
-    const plan = await provider.plan();
+    const plan = await provider.planQuery();
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 1);
   });
-  it("deploy plan", async function () {
+  it("apply and destroy", async function () {
     await testPlanDeploy({ provider });
     await testPlanDestroy({ provider });
   });

@@ -119,7 +119,7 @@ describe("AwsProvider", async function () {
     assert.equal(config.ImageId, "ami-0917237b4e71c5759");
   });
   it("plan", async function () {
-    const plan = await provider.plan();
+    const plan = await provider.planQuery();
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 4);
   });
@@ -127,7 +127,7 @@ describe("AwsProvider", async function () {
     const lives = await provider.listLives({ all: true });
     assert(lives);
   });
-  it("deploy plan", async function () {
+  it("apply plan", async function () {
     await testPlanDeploy({ provider });
 
     const serverLive = await server.getLive();

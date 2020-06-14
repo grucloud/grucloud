@@ -7,7 +7,7 @@ const programName = "gc";
 
 const cmds = [
   { cmd: "list" },
-  { cmd: "deploy --force" },
+  { cmd: "apply --force" },
   { cmd: "list -o" },
   { cmd: "destroy --force" },
   { cmd: "list" },

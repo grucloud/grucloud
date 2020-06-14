@@ -29,7 +29,7 @@ Find out which resources are going to be allocated:
 
 Happy with the expected plan ? Deploy it now:
 
-    gc deploy
+    gc apply
 
 Time to destroy the resouces allocated:
 

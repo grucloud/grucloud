@@ -35,8 +35,9 @@ exports.createProgram = ({ version, commands }) => {
     });
 
   program
-    .command("deploy")
-    .description("Deploy the resources")
+    .command("apply")
+    .description("Apply the plan, a.k.a deploy the resources")
+    .alias("a")
     .option("-f, --force", "force deploy, will not prompt user")
     .action(async (commandOptions) => {
       const programOptions = program.opts();
@@ -44,7 +45,7 @@ exports.createProgram = ({ version, commands }) => {
         infraOptions,
         createInfra,
         async (infra) =>
-          await commands.planDeploy({ infra, commandOptions, programOptions }),
+          await commands.planApply({ infra, commandOptions, programOptions }),
       ])(programOptions);
     });
 

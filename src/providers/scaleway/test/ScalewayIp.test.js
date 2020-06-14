@@ -30,7 +30,7 @@ describe("ScalewayIp", async function () {
     assert(config.tags.find((tag) => tag === provider.config.tag));
   });
 
-  it.skip("deploy plan", async function () {
+  it.skip("apply and destroy", async function () {
     await testPlanDeploy({ provider });
 
     const live = await ip.getLive();
