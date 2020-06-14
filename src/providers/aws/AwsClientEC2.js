@@ -3,10 +3,16 @@ const _ = require("lodash");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsClientEC2" });
 const { getByNameCore } = require("../Common");
+const { retryExpectOk } = require("../Retry");
 
 const toString = (x) => JSON.stringify(x, null, 4);
 const StateTerminated = ["terminated"];
-const { KeyName, getByIdCore, isUpByIdCore } = require("./AwsCommon");
+const {
+  KeyName,
+  getByIdCore,
+  isUpByIdCore,
+  isDownByIdCore,
+} = require("./AwsCommon");
 const { getField } = require("../ProviderCommon");
 
 module.exports = AwsClientEC2 = ({ spec, config }) => {
@@ -64,7 +70,13 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     logger.debug(`stateName ${state}`);
     return state;
   };
+
   const isUpById = isUpByIdCore({ states: ["running"], getStateName, getById });
+  const isDownById = isDownByIdCore({
+    states: StateTerminated,
+    getStateName,
+    getById,
+  });
 
   const isUp = async ({ name }) => {
     logger.debug(`isUp ${name}`);
@@ -123,6 +135,14 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
       .promise();
 
     logger.debug(`destroy ec2 in progress, ${toString({ name, id })}`);
+
+    await retryExpectOk({
+      name: `isDownById: ${name} id: ${id}`,
+      fn: () => isDownById({ id }),
+      isOk: (result) => result,
+    });
+
+    logger.debug(`destroy ec2 done, ${toString({ name, id })}`);
   };
   const configDefault = async ({ name, properties, dependenciesLive }) => {
     logger.debug(`configDefault ${toString({ dependenciesLive })}`);

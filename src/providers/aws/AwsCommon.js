@@ -51,3 +51,22 @@ exports.isUpByIdCore = ({ states, getStateName, getById }) => async ({
   logger.info(`isUpById ${id} ${up ? "UP" : "NOT UP"}`);
   return up;
 };
+
+exports.isDownByIdCore = ({ states, getStateName, getById }) => async ({
+  id,
+}) => {
+  logger.debug(`isDownById ${id}`);
+  assert(id);
+  let down = false;
+  const instance = await getById({ id });
+  if (instance) {
+    if (states) {
+      assert(getStateName);
+      down = states.includes(getStateName(instance));
+    }
+  } else {
+    down = true;
+  }
+  logger.info(`isDownById ${down} ${down ? "DOWN" : "NOT DOWN"}`);
+  return down;
+};
