@@ -20,6 +20,7 @@ await client.create({ name: resourceName, payload }); should return {id}
 
 ## TODO Goggle
 
+- rename in gcp
 - instance: add service account
 - is config.tag still being used ? yes but in instance device name, rename tag to something else
 - create new project such as grucloud-e2e
