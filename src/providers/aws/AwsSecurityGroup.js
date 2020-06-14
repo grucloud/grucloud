@@ -59,8 +59,9 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
   const getById = getByIdCore({ fieldIds: "GroupIds", list });
   const isUpById = isUpByIdCore({ getById });
-  const isUp = ({ name }) => isUpByNameCore({ name, getByName });
-  const isDown = ({ id, name }) => isDownByNameCore({ id, name, getById });
+  const isUpByName = ({ name }) => isUpByNameCore({ name, getByName });
+  const isDownByName = ({ id, name }) =>
+    isDownByNameCore({ id, name, getById });
 
   const cannotBeDeleted = (item) => {
     assert(item.GroupName);
@@ -145,8 +146,8 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     getById,
     findName,
     cannotBeDeleted,
-    isUp,
-    isDown,
+    isUpByName,
+    isDownByName,
     list,
     create,
     destroy,

@@ -45,7 +45,7 @@ const destroyByClient = async ({ client, name, config }) => {
 
   await retryExpectOk({
     name: `destroy ${name}`,
-    fn: () => client.isDown({ id, name }),
+    fn: () => client.isDownByName({ id, name }),
     isOk: (result) => result,
   });
 };
@@ -139,12 +139,14 @@ const ResourceMaker = ({
       throw Error(`Resource ${type}/${resourceName} already exists`);
     }
     // Create now
-    await client.create({ name: resourceName, payload });
-    assert(client.isUp);
+    const instance = await client.create({ name: resourceName, payload });
+    logger.info(`created:  ${tos({ instance })}`);
+
+    assert(client.isUpByName);
     //TODO use id and not name
     await retryExpectOk({
       name: `create ${resourceName}`,
-      fn: () => client.isUp({ name: resourceName }),
+      fn: () => client.isUpByName({ name: resourceName }),
       isOk: (result) => result,
     });
     // use Return value and avoid calling getLive again ?

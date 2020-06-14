@@ -31,9 +31,9 @@ module.exports = AwsSubnet = ({ spec, config }) => {
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
   const getById = ({ id }) => getByIdCore({ id, list, findId });
 
-  //TODO check state
-  const isUp = ({ name }) => isUpByNameCore({ name, getByName });
-  const isDown = ({ id, name }) => isDownByNameCore({ id, name, getById });
+  const isUpByName = ({ name }) => isUpByNameCore({ name, getByName });
+  const isDownByName = ({ id, name }) =>
+    isDownByNameCore({ id, name, getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSubnet-property
   const create = async ({ name, payload }) => {
@@ -101,7 +101,7 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
-    isUp,
-    isDown,
+    isUpByName,
+    isDownByName,
   };
 };

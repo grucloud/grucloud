@@ -26,15 +26,15 @@ module.exports = GoogleInstance = ({ spec, config }) => {
     return state;
   };
 
-  const isUp = async ({ name }) => {
-    logger.debug(`isUp ${name}`);
+  const isUpByName = async ({ name }) => {
+    logger.debug(`isUpByName ${name}`);
     assert(name);
     let up = false;
     const instance = await client.getByName({ name });
     if (instance) {
       up = ["RUNNING"].includes(getStateName(instance));
     }
-    logger.info(`isUp ${name} ${up ? "UP" : "NOT UP"}`);
+    logger.info(`isUpByName ${name} ${up ? "UP" : "NOT UP"}`);
     return up;
   };
 
@@ -106,6 +106,6 @@ module.exports = GoogleInstance = ({ spec, config }) => {
 
   return {
     ...client,
-    isUp,
+    isUpByName,
   };
 };

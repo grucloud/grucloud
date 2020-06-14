@@ -73,20 +73,20 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     getById,
   });
 
-  const isUp = async ({ name }) => {
-    logger.debug(`isUp ${name}`);
+  const isUpByName = async ({ name }) => {
+    logger.debug(`isUpByName ${name}`);
     assert(name);
     let up = false;
     const instance = await getByName({ name });
     if (instance) {
       up = ["running"].includes(getStateName(instance));
     }
-    logger.info(`isUp ${name} ${up ? "UP" : "NOT UP"}`);
+    logger.info(`isUpByName ${name} ${up ? "UP" : "NOT UP"}`);
     return up;
   };
 
-  const isDown = async ({ name }) => {
-    logger.debug(`isDown ec2 ${name}`);
+  const isDownByName = async ({ name }) => {
+    logger.debug(`isDownByName ec2 ${name}`);
     assert(name);
     let down = false;
     const instance = await getByName({ name });
@@ -95,7 +95,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     } else {
       down = StateTerminated.includes(getStateName(instance));
     }
-    logger.info(`isDown ec2 ${name} ${down ? "DOWN" : "NOT DOWN"}`);
+    logger.info(`isDownByName ec2 ${name} ${down ? "DOWN" : "NOT DOWN"}`);
     return down;
   };
 
@@ -196,8 +196,8 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     type: "Instance",
     spec,
     ec2,
-    isUp,
-    isDown,
+    isUpByName,
+    isDownByName,
     findId,
     getByName,
     getById,

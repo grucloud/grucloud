@@ -57,15 +57,15 @@ module.exports = CoreClient = ({
     }
   };
 
-  const isUp = async ({ name }) => {
-    logger.info(`isUp ${type}/${name}`);
-    assert(name, "isUp missing name");
+  const isUpByName = async ({ name }) => {
+    logger.info(`isUpByName ${type}/${name}`);
+    assert(name, "isUpByName missing name");
     const instance = await getByName({ name });
     return !!instance;
   };
-  const isDown = async ({ name }) => {
-    logger.info(`isDown ${type}/${name}`);
-    assert(name, "isDown missing name");
+  const isDownByName = async ({ name }) => {
+    logger.info(`isDownByName ${type}/${name}`);
+    assert(name, "isDownByName missing name");
     const instance = await getByName({ name });
     return !instance;
   };
@@ -120,7 +120,7 @@ module.exports = CoreClient = ({
         `destroy ${toString({ name, type, id })} should be destroyed`
       );
 
-      //TODO use isDown in CoreProvider
+      //TODO use isDownByName in CoreProvider
       await retryExpectException({
         fn: () => getById({ id }),
         isExpectedError: (error) => {
@@ -151,8 +151,8 @@ module.exports = CoreClient = ({
     findName,
     findName,
     cannotBeDeleted: () => false,
-    isUp,
-    isDown,
+    isUpByName,
+    isDownByName,
     create,
     destroy,
     list,

@@ -2,6 +2,8 @@
 
 ## Common:
 
+await client.create({ name: resourceName, payload }); should return {id}
+
 after create, is up by id, not name
 check if resources is tags correctly
 
