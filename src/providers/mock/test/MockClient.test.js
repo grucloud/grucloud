@@ -35,9 +35,7 @@ describe("MockClient", function () {
   it("create", async function () {
     const mockClient = MockClient({ spec, url, config });
 
-    const {
-      data: { id },
-    } = await mockClient.create({
+    const { id } = await mockClient.create({
       name: "ciccio",
       payload: { name: "ciccio" },
     });

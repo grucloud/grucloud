@@ -2,13 +2,11 @@
 
 ## Common:
 
+rename deploy with apply
+
 await client.create({ name: resourceName, payload }); should return {id}
 
-check if resources is tags correctly
-
-- warn if dev.json is not present
-
-* compare or compareObject
+- compare or compareObject
 
 ## Cli
 

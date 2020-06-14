@@ -9,7 +9,7 @@ title: Miscellaneous
 aws configure
 aws ec2 describe-instances
 aws ec2 describe-instances --filters "Name=tag:name,Values=web-server"
-
+aws ec2 describe-tags
 ```
 
 ## Useful Links
