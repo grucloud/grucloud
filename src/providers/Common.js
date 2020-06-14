@@ -2,21 +2,21 @@ const assert = require("assert");
 const logger = require("../logger")({ prefix: "Common" });
 const toString = (x) => JSON.stringify(x, null, 4);
 
-exports.isUpCore = async ({ name, getByName }) => {
-  logger.info(`isUp name:${name}`);
+exports.isUpByNameCore = async ({ name, getByName }) => {
+  logger.info(`isUpByName name:${name}`);
   assert(name);
   assert(getByName);
   const up = !!(await getByName({ name }));
-  logger.info(`isUp ${name} ${up ? "IS UP" : "NOT UP"}`);
+  logger.info(`isUpByName ${name} ${up ? "IS UP" : "NOT UP"}`);
   return up;
 };
 
-exports.isDownCore = async ({ id, name, getById }) => {
-  logger.info(`isDown name: ${name} id: ${id}`);
+exports.isDownByNameCore = async ({ id, name, getById }) => {
+  logger.info(`isDownByName name: ${name} id: ${id}`);
   assert(id);
   assert(getById);
   const down = !(await getById({ id }));
-  logger.info(`isDown ${name} ${down ? "IS DOWN" : "NOT DOWN"}`);
+  logger.info(`isDownByName ${name} ${down ? "IS DOWN" : "NOT DOWN"}`);
   return down;
 };
 
@@ -60,4 +60,42 @@ exports.getByIdCore = async ({ id, findId, list }) => {
   logger.debug(`getById ${id}: ${toString({ instance })}`);
 
   return instance;
+};
+
+exports.isUpByIdCore = ({ states, getStateName, getById }) => async ({
+  id,
+}) => {
+  logger.debug(`isUpById ${id}`);
+  assert(id);
+  let up = false;
+  const instance = await getById({ id });
+  if (instance) {
+    if (states) {
+      assert(getStateName);
+      up = states.includes(getStateName(instance));
+    } else {
+      up = true;
+    }
+  }
+  logger.info(`isUpById ${id} ${up ? "UP" : "NOT UP"}`);
+  return up;
+};
+
+exports.isDownByIdCore = ({ states, getStateName, getById }) => async ({
+  id,
+}) => {
+  logger.debug(`isDownById ${id}`);
+  assert(id);
+  let down = false;
+  const instance = await getById({ id });
+  if (instance) {
+    if (states) {
+      assert(getStateName);
+      down = states.includes(getStateName(instance));
+    }
+  } else {
+    down = true;
+  }
+  logger.info(`isDownById ${down} ${down ? "DOWN" : "NOT DOWN"}`);
+  return down;
 };

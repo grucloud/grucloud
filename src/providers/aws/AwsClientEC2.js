@@ -2,17 +2,12 @@ const AWS = require("aws-sdk");
 const _ = require("lodash");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsClientEC2" });
-const { getByNameCore } = require("../Common");
+const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../Common");
 const { retryExpectOk } = require("../Retry");
 
 const toString = (x) => JSON.stringify(x, null, 4);
 const StateTerminated = ["terminated"];
-const {
-  KeyName,
-  getByIdCore,
-  isUpByIdCore,
-  isDownByIdCore,
-} = require("./AwsCommon");
+const { KeyName, getByIdCore } = require("./AwsCommon");
 const { getField } = require("../ProviderCommon");
 
 module.exports = AwsClientEC2 = ({ spec, config }) => {

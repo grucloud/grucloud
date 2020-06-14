@@ -1,12 +1,19 @@
 var AWS = require("aws-sdk");
 const _ = require("lodash");
 const assert = require("assert");
-const { getByIdCore, isUpByIdCore } = require("./AwsCommon");
+const { getByIdCore } = require("./AwsCommon");
 
 const { retryExpectOk } = require("../Retry");
 const { getField } = require("../ProviderCommon");
 
-const { getByNameCore, findField, isUpCore, isDownCore } = require("../Common");
+const {
+  getByNameCore,
+  findField,
+  isUpByNameCore,
+  isDownByNameCore,
+  isUpByIdCore,
+  isDownByIdCore,
+} = require("../Common");
 const logger = require("../../logger")({ prefix: "AwsSecurityGroup" });
 const { tagResource } = require("./AwsTagResource");
 
@@ -52,8 +59,8 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
   const getById = getByIdCore({ fieldIds: "GroupIds", list });
   const isUpById = isUpByIdCore({ getById });
-  const isUp = ({ name }) => isUpCore({ name, getByName });
-  const isDown = ({ id, name }) => isDownCore({ id, name, getById });
+  const isUp = ({ name }) => isUpByNameCore({ name, getByName });
+  const isDown = ({ id, name }) => isDownByNameCore({ id, name, getById });
 
   const cannotBeDeleted = (item) => {
     assert(item.GroupName);

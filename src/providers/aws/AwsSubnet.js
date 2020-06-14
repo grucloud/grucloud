@@ -7,8 +7,8 @@ const toString = (x) => JSON.stringify(x, null, 4);
 const {
   getByNameCore,
   getByIdCore,
-  isUpCore,
-  isDownCore,
+  isUpByNameCore,
+  isDownByNameCore,
 } = require("../Common");
 const { findNameInTags } = require("./AwsCommon");
 const { tagResource } = require("./AwsTagResource");
@@ -32,8 +32,8 @@ module.exports = AwsSubnet = ({ spec, config }) => {
   const getById = ({ id }) => getByIdCore({ id, list, findId });
 
   //TODO check state
-  const isUp = ({ name }) => isUpCore({ name, getByName });
-  const isDown = ({ id, name }) => isDownCore({ id, name, getById });
+  const isUp = ({ name }) => isUpByNameCore({ name, getByName });
+  const isDown = ({ id, name }) => isDownByNameCore({ id, name, getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSubnet-property
   const create = async ({ name, payload }) => {

@@ -6,8 +6,14 @@ const { head, tap, props } = require("ramda");
 const logger = require("../../logger")({ prefix: "AwsVpc" });
 const tos = (x) => JSON.stringify(x, null, 4);
 const { retryExpectOk } = require("../Retry");
-const { getByIdCore, isUpByIdCore } = require("./AwsCommon");
-const { getByNameCore, isUpCore, isDownCore } = require("../Common");
+const { getByIdCore } = require("./AwsCommon");
+const {
+  getByNameCore,
+  isUpByNameCore,
+  isDownByNameCore,
+  isUpByIdCore,
+  isDownByIdCore,
+} = require("../Common");
 const { findNameInTags } = require("./AwsCommon");
 const { tagResource } = require("./AwsTagResource");
 
@@ -39,7 +45,7 @@ module.exports = AwsVpc = ({ spec, config }) => {
   };
 
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
-  const isUp = ({ name }) => isUpCore({ name, getByName });
+  const isUp = ({ name }) => isUpByNameCore({ name, getByName });
   const getById = getByIdCore({ fieldIds: "VpcIds", list });
   const getStateName = (instance) => instance.State;
   const isUpById = isUpByIdCore({
@@ -47,7 +53,7 @@ module.exports = AwsVpc = ({ spec, config }) => {
     getStateName,
     getById,
   });
-  const isDown = ({ id, name }) => isDownCore({ id, name, getById });
+  const isDown = ({ id, name }) => isDownByNameCore({ id, name, getById });
 
   const cannotBeDeleted = (item) => {
     assert(item.hasOwnProperty("IsDefault"));
