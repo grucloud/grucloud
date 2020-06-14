@@ -30,4 +30,7 @@ exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
     },
   };
   await tagApi.tagResources(params).promise();
+  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ResourceGroupsTaggingAPI.html#getResources-property
+
+  //Check
 };

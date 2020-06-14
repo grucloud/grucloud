@@ -1,6 +1,8 @@
 const assert = require("assert");
+const { pipe, tryCatch } = require("rubico");
+const { head, tap } = require("ramda");
 const logger = require("../../logger")({ prefix: "AwsCommon" });
-const toString = (x) => JSON.stringify(x, null, 4);
+const tos = (x) => JSON.stringify(x, null, 4);
 
 const KeyName = "Name";
 exports.KeyName = KeyName;
@@ -10,9 +12,35 @@ exports.findNameInTags = (item) => {
   assert(item.Tags);
   const tag = item.Tags.find((tag) => tag.Key === KeyName);
   if (tag?.Value) {
-    logger.debug(`findNameInTags ${toString({ name: tag.Value, item })}`);
+    logger.debug(`findNameInTags ${tos({ name: tag.Value, item })}`);
     return tag.Value;
   } else {
-    logger.error(`findNameInTags: cannot find name ${toString({ item })}`);
+    logger.error(`findNameInTags: cannot find name ${tos({ item })}`);
   }
+};
+
+exports.getByIdCore = ({ fieldIds, list }) =>
+  tryCatch(
+    pipe([
+      tap(({ id }) => logger.debug(`getById ${fieldIds} ${id}`)),
+      async ({ id }) => await list({ [fieldIds]: [id] }),
+      ({ data: { items } }) => items,
+      head,
+      tap((item) => logger.debug(`getById  ${fieldIds} result: ${tos(item)}`)),
+    ]),
+    (error) => {
+      logger.debug(`getById  ${fieldIds} no result: ${error.message}`);
+    }
+  );
+
+exports.isUpByIdCore = ({ states, getById }) => async ({ id }) => {
+  logger.debug(`isUpById ${id}`);
+  assert(id);
+  let up = false;
+  const instance = await getById({ id });
+  if (instance) {
+    up = states.includes(instance.State);
+  }
+  logger.info(`isUpById ${id} ${up ? "UP" : "NOT UP"}`);
+  return up;
 };

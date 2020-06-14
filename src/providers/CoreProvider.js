@@ -141,6 +141,7 @@ const ResourceMaker = ({
     // Create now
     await client.create({ name: resourceName, payload });
     assert(client.isUp);
+    //TODO use id and not name
     await retryExpectOk({
       name: `create ${resourceName}`,
       fn: () => client.isUp({ name: resourceName }),

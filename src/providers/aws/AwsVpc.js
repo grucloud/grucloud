@@ -1,14 +1,13 @@
 const AWS = require("aws-sdk");
 const _ = require("lodash");
 const assert = require("assert");
+const { pipe, tryCatch } = require("rubico");
+const { head, tap, props } = require("ramda");
 const logger = require("../../logger")({ prefix: "AwsVpc" });
-const toString = (x) => JSON.stringify(x, null, 4);
-const {
-  getByNameCore,
-  getByIdCore,
-  isUpCore,
-  isDownCore,
-} = require("../Common");
+const tos = (x) => JSON.stringify(x, null, 4);
+const { retryExpectOk } = require("../Retry");
+const { getByIdCore, isUpByIdCore } = require("./AwsCommon");
+const { getByNameCore, isUpCore, isDownCore } = require("../Common");
 const { findNameInTags } = require("./AwsCommon");
 const { tagResource } = require("./AwsTagResource");
 
@@ -26,10 +25,23 @@ module.exports = AwsVpc = ({ spec, config }) => {
     return id;
   };
 
-  const getByName = ({ name }) => getByNameCore({ name, list, findName });
-  const getById = ({ id }) => getByIdCore({ id, list, findId });
+  const list = async (params = {}) => {
+    logger.debug(`list`);
+    const { Vpcs } = await ec2.describeVpcs(params).promise();
+    logger.info(`list ${tos(Vpcs)}`);
 
+    return {
+      data: {
+        total: Vpcs.length,
+        items: Vpcs,
+      },
+    };
+  };
+
+  const getByName = ({ name }) => getByNameCore({ name, list, findName });
   const isUp = ({ name }) => isUpCore({ name, getByName });
+  const getById = getByIdCore({ fieldIds: "VpcIds", list });
+  const isUpById = isUpByIdCore({ states: ["available"], getById });
   const isDown = ({ id, name }) => isDownCore({ id, name, getById });
 
   const cannotBeDeleted = (item) => {
@@ -41,11 +53,17 @@ module.exports = AwsVpc = ({ spec, config }) => {
   const create = async ({ name, payload }) => {
     assert(name);
     assert(payload);
-    logger.debug(`create vpc ${toString({ name, payload })}`);
+    logger.debug(`create vpc ${tos({ name, payload })}`);
     const {
       Vpc: { VpcId },
     } = await ec2.createVpc(payload).promise();
     logger.info(`create vpc ${VpcId}`);
+
+    await retryExpectOk({
+      name: `isUpById: ${name} id: ${VpcId}`,
+      fn: () => isUpById({ id: VpcId }),
+      isOk: (result) => result,
+    });
 
     await tagResource({
       config,
@@ -56,28 +74,16 @@ module.exports = AwsVpc = ({ spec, config }) => {
     return { VpcId };
   };
   const destroy = async ({ id, name }) => {
-    logger.debug(`destroy vpc ${toString({ name, id })}`);
+    logger.debug(`destroy vpc ${tos({ name, id })}`);
 
     if (_.isEmpty(id)) {
       throw Error(`destroy vpc invalid id`);
     }
 
     await ec2.deleteVpc({ VpcId: id }).promise();
-    logger.debug(`destroy vpc IN PROGRESS, ${toString({ name, id })}`);
+    logger.debug(`destroy vpc IN PROGRESS, ${tos({ name, id })}`);
   };
 
-  const list = async () => {
-    logger.debug(`list`);
-    const { Vpcs } = await ec2.describeVpcs().promise();
-    logger.info(`list ${toString(Vpcs)}`);
-
-    return {
-      data: {
-        total: Vpcs.length,
-        items: Vpcs,
-      },
-    };
-  };
   const configDefault = async ({ properties }) => properties;
 
   return {

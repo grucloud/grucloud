@@ -2,13 +2,13 @@
 
 ## Common:
 
+after create, is up by id, not name
+
 - warn if dev.json is not present
 
 * compare or compareObject
 
 ## Cli
-
-- config file with options
 
 ## TODO Aws:
 
