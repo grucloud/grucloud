@@ -1,16 +1,12 @@
 var AWS = require("aws-sdk");
 const _ = require("lodash");
 const assert = require("assert");
+const { getByIdCore, isUpByIdCore } = require("./AwsCommon");
+
 const { retryExpectOk } = require("../Retry");
 const { getField } = require("../ProviderCommon");
 
-const {
-  getByNameCore,
-  getByIdCore,
-  findField,
-  isUpCore,
-  isDownCore,
-} = require("../Common");
+const { getByNameCore, findField, isUpCore, isDownCore } = require("../Common");
 const logger = require("../../logger")({ prefix: "AwsSecurityGroup" });
 const { tagResource } = require("./AwsTagResource");
 
@@ -30,22 +26,11 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     return id;
   };
 
-  const getByName = ({ name }) => getByNameCore({ name, list, findName });
-  const getById = ({ id }) => getByIdCore({ id, list, findId });
-
-  const isUp = ({ name }) => isUpCore({ name, getByName });
-  const isDown = ({ id, name }) => isDownCore({ id, name, getById });
-
-  const cannotBeDeleted = (item) => {
-    assert(item.GroupName);
-    return item.GroupName === "default";
-  };
-
-  const list = async () => {
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroups-property
+  const list = async (params = {}) => {
     logger.debug(`list`);
-    const ec2params = {};
     const securityGroups = await new Promise((resolve, reject) => {
-      ec2.describeSecurityGroups(ec2params, (error, response) => {
+      ec2.describeSecurityGroups(params, (error, response) => {
         if (error) {
           return reject(error.message);
         } else {
@@ -64,7 +49,18 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     };
   };
 
-  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
+  const getByName = ({ name }) => getByNameCore({ name, list, findName });
+  const getById = getByIdCore({ fieldIds: "GroupIds", list });
+  const isUpById = isUpByIdCore({ getById });
+  const isUp = ({ name }) => isUpCore({ name, getByName });
+  const isDown = ({ id, name }) => isDownCore({ id, name, getById });
+
+  const cannotBeDeleted = (item) => {
+    assert(item.GroupName);
+    return item.GroupName === "default";
+  };
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
   const create = async ({ name, payload }) => {
     assert(name);
     assert(payload);
@@ -78,6 +74,12 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     logger.debug(`create sg ${toString({ name, createParams, payload })}`);
     const { GroupId } = await ec2.createSecurityGroup(createParams).promise();
     logger.debug(`create GroupId ${toString(GroupId)}`);
+
+    await retryExpectOk({
+      name: `isUpById: ${name} id: ${GroupId}`,
+      fn: () => isUpById({ id: GroupId }),
+      isOk: (result) => result,
+    });
 
     await tagResource({
       config,

@@ -39,7 +39,11 @@ exports.isUpByIdCore = ({ states, getById }) => async ({ id }) => {
   let up = false;
   const instance = await getById({ id });
   if (instance) {
-    up = states.includes(instance.State);
+    if (states) {
+      up = states.includes(instance.State);
+    } else {
+      up = true;
+    }
   }
   logger.info(`isUpById ${id} ${up ? "UP" : "NOT UP"}`);
   return up;

@@ -3,6 +3,7 @@
 ## Common:
 
 after create, is up by id, not name
+check if resources is tags correctly
 
 - warn if dev.json is not present
 
@@ -12,16 +13,11 @@ after create, is up by id, not name
 
 ## TODO Aws:
 
-error: upsertResources error:Error: Resource SecurityGroup/securityGroup is not tagged correctly
-
-when deploying only ec2 without sg, subnet and vpc:
-"No subnets found for the default VPC 'vpc-bbbafcd3'. Please specify a subnet.",
-
-AssociatePublicIpAddress, do we need the subnet and sg in interface ?
-
-- vpc and subnet: when up state is "available"
+- error: upsertResources error:Error: Resource SecurityGroup/securityGroup is not tagged correctly
+- when deploying only ec2 without sg, subnet and vpc:
+  "No subnets found for the default VPC 'vpc-bbbafcd3'. Please specify a subnet.",
+- AssociatePublicIpAddress, do we need the subnet and sg in interface ?
 - handle error when retry times out
-- subnet
 
 ## TODO Goggle
 
