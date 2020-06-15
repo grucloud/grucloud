@@ -1,6 +1,6 @@
 ---
-id: AmazonRequirements
-title: AWS Requirements
+id: AwsRequirements
+title: Requirements
 ---
 
 Ensure that you have the AWS necessary tools, accounts, keys, etc...

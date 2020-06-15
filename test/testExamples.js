@@ -7,13 +7,21 @@ const programName = "gc";
 
 const cmds = [
   { cmd: "list" },
+  { cmd: "destroy --force" },
+  { cmd: "list" },
+  { cmd: "destroy --force" },
   { cmd: "apply --force" },
   { cmd: "list -o" },
+  { cmd: "apply --force" },
   { cmd: "destroy --force" },
   { cmd: "list" },
 ];
 
 const specs = [
+  {
+    path: "azure",
+    cmds,
+  },
   {
     path: "multi",
     cmds,
@@ -39,11 +47,11 @@ const processExample = (spec) => {
   const result = spec.cmds.map(({ cmd }) => {
     const runCommand = `${programName} ${cmd}`;
     console.log(
-      `*****************************************************************************************`
+      `\n*****************************************************************************************`
     );
-    console.log(`run '${runCommand}' in ${spec.path}`);
+    console.log(`***    run '${runCommand}' in ${spec.path}`);
     console.log(
-      `*****************************************************************************************`
+      `*****************************************************************************************\n`
     );
     const { stdout, stderr, code } = shell.exec(runCommand);
     return {

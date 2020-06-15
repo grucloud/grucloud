@@ -15,6 +15,9 @@ module.exports = CoreClient = ({
   type,
   axios,
   methods, //TODO use defaults
+  path = () => "/",
+  queryParameters = () => "",
+  verbCreate = "POST",
   configDefault = async ({ name, properties }) => ({
     name,
     ...properties,
@@ -47,7 +50,10 @@ module.exports = CoreClient = ({
     if (!canGet) return;
 
     try {
-      const result = await axios.request(`/${id}`, { method: "GET" });
+      const url = `/${id}${queryParameters()}`;
+      const result = await axios.request(url, {
+        method: "GET",
+      });
       result.data = onResponseGet(result.data);
       logger.debug(`get ${toString(result.data)}`);
 
@@ -76,8 +82,9 @@ module.exports = CoreClient = ({
     if (!canCreate) return;
 
     try {
-      const result = await axios.request("/", {
-        method: "POST",
+      const url = `${path({ name })}${queryParameters()}`;
+      const result = await axios.request(url, {
+        method: verbCreate,
         data: payload,
       });
       const data = onResponseCreate(result.data);
@@ -91,7 +98,7 @@ module.exports = CoreClient = ({
         isOk: (result) => result,
       });
       const resource = await getById({ id });
-      logger.debug(`created ${type}/${name}, result: ${toString(resource)}`);
+      logger.debug(`created ${type}/${name}`);
       return onResponseGet(resource.data);
     } catch (error) {
       logger.error(`create ${type}/${name}, error ${toString(error)}`);
@@ -105,11 +112,18 @@ module.exports = CoreClient = ({
     if (!canList) return;
 
     try {
-      const result = await axios.request(`/`, { method: "GET" });
+      const url = `/${queryParameters()}`;
+      const result = await axios.request(url, {
+        method: "GET",
+      });
       result.data = onResponseList(result.data);
       return result;
     } catch (error) {
-      logger.error(`list type ${type}, error ${toString(error)}`);
+      logger.error(`list type ${type}, error ${toString(error.response)}`);
+      logger.error(
+        `list type ${type}, config ${toString(error.response.config)}`
+      );
+
       throw error;
     }
   };
@@ -123,7 +137,10 @@ module.exports = CoreClient = ({
     }
 
     try {
-      const result = await axios.request(`/${id}`, { method: "DELETE" });
+      const url = `/${id}${queryParameters()}`;
+      const result = await axios.request(url, {
+        method: "DELETE",
+      });
       result.data = onResponseDelete(result.data);
       logger.debug(
         `destroy ${toString({ name, type, id })} should be destroyed`

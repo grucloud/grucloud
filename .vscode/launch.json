@@ -43,6 +43,44 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Cli Azure Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/azure/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Azure List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/azure/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["list", "--all"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Azure Apply",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/azure/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["apply"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Azure Destroy",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/azure/",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["destroy"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Cli Aws Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/",
@@ -61,21 +99,12 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws List By Name",
-      "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/aws/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["list", "--name", "vpc"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
       "name": "Cli Aws Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["--infra", "examples/aws/iac.js", "apply"]
+      "args": ["apply"]
     },
     {
       "type": "node",

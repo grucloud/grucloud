@@ -586,6 +586,8 @@ module.exports = CoreProvider = ({
     (error) => {
       logger.error(`destroyAll error: ${error.message}`);
       logger.error(`destroyAll stack: ${error.stack}`);
+      logger.error(`destroyAll error: ${error.response}`);
+
       throw error;
     }
   );

@@ -145,8 +145,9 @@ exports.planApply = async ({
     //tap((x) => console.log("doPlanDeploy end", x)),
   ]);
 
-  const displayDeployError = ({ item, error }) => {
+  const displayDeployError = ({ item, error = {} }) => {
     console.log(`Cannot deploy resource ${formatResource(item.resource)}`);
+    //TODO why error is undefined
     console.error(error.message);
   };
 

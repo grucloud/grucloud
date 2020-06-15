@@ -1,3 +1,8 @@
+---
+id: Requirements
+title: Common Requirements
+---
+
 ## Node
 
 Please make sure node version is at least **14**:

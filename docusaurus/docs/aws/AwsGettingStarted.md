@@ -1,5 +1,5 @@
 ---
-id: AmazonGettingStarted
+id: AwsGettingStarted
 title: Getting Started
 ---
 
@@ -31,7 +31,12 @@ cd grucloud/examples/aws
 npm install
 ```
 
-## .env file
+## Environment file
+
+```sh
+cp config/dev.example.json config/dev.json
+
+```
 
 Edit the _config/dev.json_ file and set the correct values:
 

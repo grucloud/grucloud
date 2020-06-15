@@ -13,7 +13,8 @@ git clone git@github.com:FredericHeem/grucloud.git && cd grucloud/examples/scale
 
 Edit the environment file and set the relevant account and keys
 
-    vi .env
+    cp config/dev.example.json config/dev.json
+    vi config/dev.json
 
 Query the status of the current resources on the given cloud account:
 
