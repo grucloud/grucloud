@@ -23,8 +23,6 @@ const fnSpecs = (config) => {
     [managedByKey]: managedByValue,
     [stageTagKey]: stage,
   });
-  // TODO Inside queryParameters AzClient ?
-  const queryParameters = () => "?api-version=2019-10-01";
   return [
     {
       // https://docs.microsoft.com/en-us/rest/api/resources/resourcegroups
@@ -34,13 +32,35 @@ const fnSpecs = (config) => {
           spec,
           url: `subscriptions/${subscriptionId}/resourcegroups/`,
           path: ({ name }) => `/${name}`,
-          queryParameters,
+          queryParameters: () => "?api-version=2019-10-01",
           config,
-
-          configDefault: ({ name, properties }) => ({
+          configDefault: ({ properties }) => ({
             location,
             tags: buildTags(config),
-            ...properties,
+            properties,
+          }),
+        }),
+      isOurMinion,
+    },
+    {
+      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtualnetworks
+      type: "VirtualNetwork",
+      Client: ({ spec }) =>
+        AzClient({
+          spec,
+          dependsOn: ["ResourceGroup"],
+          url: `subscriptions/${subscriptionId}`,
+          path: ({ dependencies: { resourceGroup }, name }) => {
+            assert(resourceGroup, "missing resourceGroup dependency");
+            return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/virtualNetworks/${name}`;
+          },
+          pathList: () => "/providers/Microsoft.Network/virtualNetworks",
+          queryParameters: () => "?api-version=2020-05-01",
+          config,
+          configDefault: ({ properties }) => ({
+            location,
+            tags: buildTags(config),
+            properties,
           }),
         }),
       isOurMinion,

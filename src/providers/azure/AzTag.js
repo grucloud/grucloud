@@ -19,7 +19,6 @@ exports.isOurMinion = ({ resource, config }) => {
     key === managedByKey && value === managedByValue;
 
   if (_.find(tags, (value, key) => isGruLabel(key, value))) {
-    logger.info(`isOurMinion yes, from single label`);
     isMinion = true;
   }
 

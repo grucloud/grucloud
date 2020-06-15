@@ -1,13 +1,14 @@
 const path = require("path");
 const fs = require("fs");
 const shell = require("shelljs");
-
+const { pipe, tap, map, any, switchCase, filter } = require("rubico");
+const { flatten } = require("ramda");
 const examplesPath = "../examples";
 const programName = "gc";
 
 const cmds = [
   { cmd: "list" },
-  { cmd: "destroy --force" },
+  { cmd: "destroy --force -a" },
   { cmd: "list" },
   { cmd: "destroy --force" },
   { cmd: "apply --force" },
@@ -19,13 +20,15 @@ const cmds = [
 
 const specs = [
   {
-    path: "azure",
-    cmds,
-  },
-  {
     path: "multi",
     cmds,
   },
+  /*
+  {
+    path: "azure",
+    cmds,
+  },
+  
   {
     path: "aws",
     cmds,
@@ -33,7 +36,7 @@ const specs = [
   {
     path: "google",
     cmds,
-  },
+  },*/
 ];
 
 const processExample = (spec) => {
@@ -55,6 +58,7 @@ const processExample = (spec) => {
     );
     const { stdout, stderr, code } = shell.exec(runCommand);
     return {
+      path: spec.path,
       cmd,
       stdout,
       stderr,
@@ -65,5 +69,28 @@ const processExample = (spec) => {
   return result;
 };
 
-const results = specs.map((spec) => processExample(spec));
-//console.log(results);
+const hasError = pipe([flatten, any((result) => result.code != 0)]);
+
+const doError = pipe([
+  tap(() => {
+    console.error("Error occured:");
+  }),
+  filter((result) => result.code != 0),
+  tap((results) => {
+    console.error(JSON.stringify(results, null, 4));
+  }),
+  tap(() => {
+    process.exit(-1);
+  }),
+]);
+
+const doSuccess = () => {
+  console.log("Success !");
+  process.exit(0);
+};
+
+pipe([
+  map((spec) => processExample(spec)),
+  //
+  switchCase([hasError, doError, doSuccess]),
+])(specs);

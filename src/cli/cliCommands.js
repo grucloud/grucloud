@@ -21,7 +21,7 @@ const { isEmpty, pluck, flatten } = require("ramda");
 
 const plansHasSuccess = all(({ results }) => results.success);
 
-const formatResource = ({ provider, type, name }) =>
+const formatResource = ({ provider, type, name } = {}) =>
   `${provider}/${type}/${name}`;
 
 const countDeployResources = reduce(
@@ -48,6 +48,18 @@ const saveToJson = ({ command, commandOptions, programOptions, result }) => {
     programOptions.json,
     JSON.stringify({ command, commandOptions, programOptions, result }, null, 4)
   );
+};
+
+const displayError = (error) => {
+  if (!error) {
+    // TODO why error is sometimes undefined ?
+    console.error("error because the error is not defined!");
+  }
+  console.error(error.message);
+  if (error.response) {
+    console.error(JSON.stringify(error.response?.data, null, 4));
+    console.error(JSON.stringify(error.response?.config, null, 4));
+  }
 };
 
 // Plan Query
@@ -147,8 +159,7 @@ exports.planApply = async ({
 
   const displayDeployError = ({ item, error = {} }) => {
     console.log(`Cannot deploy resource ${formatResource(item.resource)}`);
-    //TODO why error is undefined
-    console.error(error.message);
+    displayError(error);
   };
 
   const displayDeployErrors = pipe([
@@ -158,6 +169,7 @@ exports.planApply = async ({
     pluck("results"),
     pluck("results"),
     flatten,
+    //tap((x) => console.log("displayDeployErrors", x)),
     map(tap(displayDeployError)),
   ]);
 
@@ -232,16 +244,17 @@ exports.planDestroy = async ({
 
   const displayDestroyError = ({ item, error }) => {
     console.log(`Cannot destroy resource ${formatResource(item.resource)}`);
-    // TODO why error is sometimes undefined ?
-    console.error(error?.message);
+    displayError(error);
   };
 
   const displayDestroyErrors = pipe([
+    tap((x) => console.log("displayDestroyErrors begin ", x)),
     filter(({ results: { success } }) => !success),
     flatten,
     pluck("results"),
     pluck("results"),
     flatten,
+    tap((x) => console.log("displayDestroyErrors begin ", x)),
     map(tap(displayDestroyError)),
   ]);
 

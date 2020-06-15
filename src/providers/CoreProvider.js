@@ -10,6 +10,7 @@ const { fromTagName } = require("./TagName");
 const { SpecDefault } = require("./SpecDefault");
 const { retryExpectOk } = require("./Retry");
 const { PlanReorder } = require("./PlanReorder");
+const { logError } = require("./Common");
 
 const configProviderDefault = {
   tag: "ManagedByGru",
@@ -23,32 +24,6 @@ const configProviderDefault = {
 const PlanDirection = {
   UP: 1,
   DOWN: -1,
-};
-
-const destroyByClient = async ({ client, name, config }) => {
-  assert(client);
-  assert(config);
-  assert(client.findId);
-  assert(client.destroy);
-  assert(client.isDownById);
-
-  logger.info(`destroyByClient: ${tos({ type: client.spec.type, name })}`);
-  logger.debug(`destroyByClient: ${tos({ config })}`);
-  const id = client.findId(config);
-  assert(id);
-
-  //TODO do we need try catch here ?
-  try {
-    await client.destroy({ id, name });
-  } catch (error) {
-    logger.error(`destroyByClient: ${tos({ error })}`);
-    throw error;
-  }
-  await retryExpectOk({
-    name: `destroy ${name}`,
-    fn: () => client.isDownById({ id, name }),
-    isOk: (result) => result,
-  });
 };
 
 const ResourceMaker = ({
@@ -140,7 +115,11 @@ const ResourceMaker = ({
       throw Error(`Resource ${type}/${resourceName} already exists`);
     }
     // Create now
-    const instance = await client.create({ name: resourceName, payload });
+    const instance = await client.create({
+      name: resourceName,
+      payload,
+      dependencies,
+    });
     //logger.info(`created:  ${tos({ instance })}`);
 
     // Check if we tag correctly
@@ -156,7 +135,18 @@ const ResourceMaker = ({
       }
     }
   };
-
+  const destroy = async ({ name, config }) => {
+    logger.info(`destroy ${tos({ resourceName, type, config })}`);
+    assert(config);
+    const id = client.findId(config);
+    assert(id);
+    await client.destroy({ id, name: resourceName, dependencies });
+    await retryExpectOk({
+      name: `destroy ${name}`,
+      fn: () => client.isDownById({ id, name: resourceName }),
+      isOk: (result) => result,
+    });
+  };
   const planUpsert = async ({ resource }) => {
     logger.info(`planUpsert resource: ${tos(resource.serialized())}`);
     const live = await resource.getLive();
@@ -194,6 +184,7 @@ const ResourceMaker = ({
     serialized,
     resolveConfig,
     create,
+    destroy,
     planUpsert,
     getLive,
     addParent,
@@ -521,9 +512,7 @@ module.exports = CoreProvider = ({
               return { item: payload };
             },
             (error, item) => {
-              logger.error(`upsertResources error:${error.toString()}`);
-              logger.error(`upsertResources stack:${error.stack}`);
-
+              logError("upsertResources", error);
               return { item, error };
             }
           )(item)
@@ -537,13 +526,13 @@ module.exports = CoreProvider = ({
     ])(planDeploy);
   };
 
-  const destroyById = async ({ type, config, name }) => {
-    logger.debug(`destroyById: ${tos({ type, name })}`);
-    const client = clientByType(type);
-    if (!client) {
-      throw new Error(`Cannot find endpoint type ${type}}`);
+  const destroyResource = async ({ type, config, name }) => {
+    logger.debug(`destroyResource: ${tos({ type, name })}`);
+    const resource = resourceByName(name);
+    if (!resource) {
+      throw Error(`Cannot find resource ${tos(item.resource.name)}`);
     }
-    await destroyByClient({ client, name, config });
+    await resource.destroy({ config });
   };
 
   const planDestroy = async (planDestroy) => {
@@ -553,7 +542,7 @@ module.exports = CoreProvider = ({
         async (item) =>
           await tryCatch(
             async () => {
-              await destroyById({
+              await destroyResource({
                 name: item.resource.name,
                 type: item.resource.type,
                 config: item.config,
@@ -561,9 +550,7 @@ module.exports = CoreProvider = ({
               return { item };
             },
             (error, item) => {
-              //logger.error(`planDestroy error message: ${error.message}`);
-              //logger.error(`planDestroy stack:  ${error.stack}`);
-              logger.error(`planDestroy error:${error.toString()}`);
+              logError("planDestroy", error);
               return { item, error };
             }
           )(item)
@@ -584,10 +571,7 @@ module.exports = CoreProvider = ({
         async (plan) => await planDestroy(plan),
       ])(options),
     (error) => {
-      logger.error(`destroyAll error: ${error.message}`);
-      logger.error(`destroyAll stack: ${error.stack}`);
-      logger.error(`destroyAll error: ${error.response}`);
-
+      logError("destroyAll", error);
       throw error;
     }
   );

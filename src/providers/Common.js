@@ -83,3 +83,12 @@ exports.isDownByIdCore = ({ states, getStateName, getById }) => async ({
   logger.info(`isDownById ${down} ${down ? "DOWN" : "NOT DOWN"}`);
   return down;
 };
+
+exports.logError = (prefix, error) => {
+  logger.error(`${prefix} error:${error.toString()}`);
+  if (error.response) {
+    logger.error(`${prefix} ${toString(error.response?.data)}`);
+    logger.error(`${prefix} ${toString(error.response?.config)}`);
+  }
+  logger.error(`${prefix} stack:${error.stack}`);
+};

@@ -9,6 +9,7 @@ const {
   findField,
   isUpByIdCore,
   isDownByIdCore,
+  logError,
 } = require("./Common");
 module.exports = CoreClient = ({
   spec,
@@ -16,6 +17,7 @@ module.exports = CoreClient = ({
   axios,
   methods, //TODO use defaults
   path = () => "/",
+  pathList,
   queryParameters = () => "",
   verbCreate = "POST",
   configDefault = async ({ name, properties }) => ({
@@ -59,13 +61,8 @@ module.exports = CoreClient = ({
 
       return result;
     } catch (error) {
-      //TODO function to print axios error
+      logError("getById", error);
       const status = error.response?.status;
-      logger.error(
-        `get ${type}/${id}, status ${status}, error ${toString(
-          error.response?.data
-        )}`
-      );
       if (status != 404) {
         throw error;
       }
@@ -75,14 +72,14 @@ module.exports = CoreClient = ({
   const isUpById = isUpByIdCore({ getById });
   const isDownById = isDownByIdCore({ getById });
 
-  const create = async ({ name, payload }) => {
+  const create = async ({ name, payload, dependencies }) => {
     logger.debug(`create ${type}/${name}, payload: ${toString(payload)}`);
     assert(name);
     assert(payload);
     if (!canCreate) return;
 
     try {
-      const url = `${path({ name })}${queryParameters()}`;
+      const url = `${path({ name, dependencies })}${queryParameters()}`;
       const result = await axios.request(url, {
         method: verbCreate,
         data: payload,
@@ -101,7 +98,7 @@ module.exports = CoreClient = ({
       logger.debug(`created ${type}/${name}`);
       return onResponseGet(resource.data);
     } catch (error) {
-      logger.error(`create ${type}/${name}, error ${toString(error)}`);
+      logError(`create ${type}/${name}`, error);
       throw error;
     }
   };
@@ -112,23 +109,19 @@ module.exports = CoreClient = ({
     if (!canList) return;
 
     try {
-      const url = `/${queryParameters()}`;
+      const url = `${pathList ? pathList() : "/"}${queryParameters()}`;
       const result = await axios.request(url, {
         method: "GET",
       });
       result.data = onResponseList(result.data);
       return result;
     } catch (error) {
-      logger.error(`list type ${type}, error ${toString(error.response)}`);
-      logger.error(
-        `list type ${type}, config ${toString(error.response.config)}`
-      );
-
+      logError(`list ${type}/${name}`, error);
       throw error;
     }
   };
 
-  const destroy = async ({ id, name }) => {
+  const destroy = async ({ id, name, dependencies }) => {
     logger.debug(`destroy ${toString({ type, name, id, canDelete })}`);
     if (!canDelete) return;
 
@@ -137,7 +130,7 @@ module.exports = CoreClient = ({
     }
 
     try {
-      const url = `/${id}${queryParameters()}`;
+      const url = `${path({ name, dependencies })}${queryParameters()}`;
       const result = await axios.request(url, {
         method: "DELETE",
       });
@@ -148,7 +141,7 @@ module.exports = CoreClient = ({
 
       return result;
     } catch (error) {
-      logger.error(`delete type ${type}, error TODO`);
+      logError(`delete ${type}/${name}`, error);
       throw error;
     }
   };

@@ -14,9 +14,10 @@
 
 ## TODO Aws:
 
-- error: upsertResources error:Error: Resource SecurityGroup/securityGroup is not tagged correctly
 - when deploying only ec2 without sg, subnet and vpc:
   "No subnets found for the default VPC 'vpc-bbbafcd3'. Please specify a subnet.",
+
+- error: upsertResources error:Error: Resource SecurityGroup/securityGroup is not tagged correctly
 - AssociatePublicIpAddress, do we need the subnet and sg in interface ?
 - handle error when retry times out
 

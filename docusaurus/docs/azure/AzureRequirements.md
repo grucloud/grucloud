@@ -48,3 +48,11 @@ az ad sp create-for-rbac -n "sp1"
 ```
 
 Save somewhere the **appId** and the **password**
+
+### Register the Microsoft.Network
+
+```
+az provider register --namespace Microsoft.Network
+```
+
+See https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-register-resource-provider
