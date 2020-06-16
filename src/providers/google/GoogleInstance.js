@@ -80,27 +80,27 @@ module.exports = GoogleInstance = ({ spec, config }) => {
     return config;
   };
 
-  const client = GoogleClient({
-    spec,
-    url: `/projects/${project}/zones/${zone}/instances/`,
-    config,
-    configDefault,
-  });
-
   const getStateName = (instance) => {
-    const state = instance.status;
+    const state = instance.data.status;
+    assert(state);
     logger.debug(`stateName ${state}`);
     return state;
   };
 
-  const isUpById = isUpByIdCore({
-    states: ["RUNNING"],
-    getStateName,
-    getById: client.getById,
+  const isUpByIdFactory = (getById) =>
+    isUpByIdCore({
+      states: ["RUNNING"],
+      getStateName,
+      getById,
+    });
+
+  const client = GoogleClient({
+    spec,
+    url: `/projects/${project}/zones/${zone}/instances/`,
+    config,
+    isUpByIdFactory,
+    configDefault,
   });
 
-  return {
-    ...client,
-    isUpById,
-  };
+  return client;
 };

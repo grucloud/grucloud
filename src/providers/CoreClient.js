@@ -23,6 +23,7 @@ module.exports = CoreClient = ({
   pathSuffixList,
   queryParameters = () => "",
   verbCreate = "POST",
+  isUpByIdFactory,
   configDefault = async ({ name, properties }) => ({
     name,
     ...properties,
@@ -74,7 +75,11 @@ module.exports = CoreClient = ({
     }
   };
 
-  const isUpById = isUpByIdCore({ getById });
+  //TODO same for down
+  const isUpById = isUpByIdFactory
+    ? isUpByIdFactory(getById)
+    : isUpByIdCore({ getById });
+
   const isDownById = isDownByIdCore({ getById });
 
   const create = async ({ name, payload, dependencies }) => {

@@ -11,7 +11,13 @@ const onResponseList = (data) => {
   return { total: items.length, items };
 };
 
-module.exports = GoogleClient = ({ url, spec, config, configDefault }) => {
+module.exports = GoogleClient = ({
+  url,
+  spec,
+  config,
+  configDefault,
+  isUpByIdFactory,
+}) => {
   assert(url);
   assert(spec);
   assert(spec.type);
@@ -21,6 +27,7 @@ module.exports = GoogleClient = ({ url, spec, config, configDefault }) => {
   const core = CoreClient({
     type: "google",
     spec,
+    isUpByIdFactory,
     onResponseList,
     configDefault,
     findTargetId,
