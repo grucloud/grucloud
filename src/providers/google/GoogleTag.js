@@ -4,9 +4,9 @@ const logger = require("../../logger")({ prefix: "GoogleTag" });
 const toString = (x) => JSON.stringify(x, null, 4);
 const hasTag = (name = "", tag) => name && name.includes(tag);
 
-exports.toTagName = (name, tag) => `${name}${tag}`;
-exports.fromTagName = (name, tag) => name && name.replace(tag, "");
 exports.hasTag = hasTag;
+
+exports.toTagName = (name, tag) => `${name}${tag}`;
 
 exports.isOurMinion = ({ resource, config }) => {
   logger.info(`isOurMinion ? ${toString({ config, resource })}`);

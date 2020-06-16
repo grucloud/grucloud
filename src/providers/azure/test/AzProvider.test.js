@@ -7,32 +7,34 @@ const {
   testPlanDestroy,
 } = require("../../../test/E2ETestUtils");
 
-describe.skip("AzProvider", async function () {
+describe("AzProvider", async function () {
   const rgName = "dev-resource-group";
   const vnName = "virtualNetwork";
+  let config;
   let provider;
   let resourceGroup;
   let virtualNetwork;
   before(async function () {
     try {
-      provider = await AzureProvider({
-        name: "azure",
-        config: ConfigLoader({ baseDir: __dirname }),
-      });
-      resourceGroup = provider.makeResourceGroup({ name: rgName });
-      virtualNetwork = provider.makeVirtualNetwork({
-        name: vnName,
-        dependencies: { resourceGroup },
-        // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtualnetworks/createorupdate#request-body
-        properties: {
-          addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
-        },
-      });
-      await provider.destroyAll();
+      config = ConfigLoader({ baseDir: __dirname });
     } catch (error) {
-      assert(error.code, 422);
       this.skip();
     }
+    provider = await AzureProvider({
+      name: "azure",
+      config,
+    });
+    resourceGroup = provider.makeResourceGroup({ name: rgName });
+    virtualNetwork = provider.makeVirtualNetwork({
+      name: vnName,
+      dependencies: { resourceGroup },
+      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtualnetworks/createorupdate#request-body
+      properties: {
+        addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
+      },
+    });
+    const { success } = await provider.destroyAll();
+    assert(success, "destroyAll ko");
   });
   after(async () => {
     await provider?.destroyAll();

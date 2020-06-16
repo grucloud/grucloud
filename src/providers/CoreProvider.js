@@ -29,27 +29,23 @@ const PlanDirection = {
 const destroyByClient = async ({ client, name, config }) => {
   assert(client);
   assert(config);
-  assert(client.findId);
-  assert(client.destroy);
-  assert(client.isDownById);
 
-  logger.info(`destroyByClient: ${tos({ type: client.spec.type, name })}`);
-  logger.debug(`destroyByClient: ${tos({ config })}`);
+  logger.info(
+    `destroyByClient: ${tos({ type: client.spec.type, name, config })}`
+  );
+
   const id = client.findId(config);
   assert(id);
-
-  //TODO do we need try catch here ?
-  try {
-    await client.destroy({ id, name });
-  } catch (error) {
-    logger.error(`destroyByClient: ${tos({ error })}`);
-    throw error;
-  }
+  await client.destroy({ id, name });
   await retryExpectOk({
     name: `destroy ${name}`,
     fn: () => client.isDownById({ id, name }),
     isOk: (result) => result,
   });
+  logger.debug(
+    `destroyByClient: DONE ${tos({ type: client.spec.type, name })}`
+  );
+  //TODO Double check with getByName
 };
 
 const ResourceMaker = ({
@@ -161,18 +157,7 @@ const ResourceMaker = ({
       }
     }
   };
-  const destroy = async ({ name, config }) => {
-    logger.info(`destroy ${tos({ resourceName, type, config })}`);
-    assert(config);
-    const id = client.findId(config);
-    assert(id);
-    await client.destroy({ id, name: resourceName, dependencies });
-    await retryExpectOk({
-      name: `destroy ${name}`,
-      fn: () => client.isDownById({ id, name: resourceName }),
-      isOk: (result) => result,
-    });
-  };
+
   const planUpsert = async ({ resource }) => {
     logger.info(`planUpsert resource: ${tos(resource.serialized())}`);
     const live = await resource.getLive();
@@ -210,7 +195,6 @@ const ResourceMaker = ({
     serialized,
     resolveConfig,
     create,
-    destroy,
     planUpsert,
     getLive,
     addParent,
@@ -550,15 +534,6 @@ module.exports = CoreProvider = ({
       }),
       tap((x) => logger.info(`upsertResources results: ${tos(x)}`)),
     ])(planDeploy);
-  };
-
-  const destroyResource = async ({ type, config, name }) => {
-    logger.debug(`destroyResource: ${tos({ type, name })}`);
-    const resource = resourceByName(name);
-    if (!resource) {
-      throw Error(`Cannot find resource ${tos(name)}`);
-    }
-    await resource.destroy({ config });
   };
 
   const destroyById = async ({ type, config, name }) => {

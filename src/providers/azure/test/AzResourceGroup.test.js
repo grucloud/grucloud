@@ -7,22 +7,25 @@ const {
   testPlanDestroy,
 } = require("../../../test/E2ETestUtils");
 
-describe.skip("AzResourceGroup", async function () {
+describe("AzResourceGroup", async function () {
+  let config;
   const rgName = "dev-resource-group";
   let provider;
   let rg;
   before(async function () {
     try {
-      provider = await AzureProvider({
-        name: "azure",
-        config: ConfigLoader({ baseDir: __dirname }),
-      });
-      rg = provider.makeResourceGroup({ name: rgName });
-      await provider.destroyAll();
+      config = ConfigLoader({ baseDir: __dirname });
     } catch (error) {
-      assert(error.code, 422);
       this.skip();
     }
+    provider = await AzureProvider({
+      name: "azure",
+      config,
+    });
+    rg = provider.makeResourceGroup({ name: rgName });
+
+    const { success } = await provider.destroyAll();
+    assert(success, "destroyAll ko");
   });
   after(async () => {
     await provider?.destroyAll();

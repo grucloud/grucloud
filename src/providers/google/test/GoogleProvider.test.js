@@ -15,11 +15,10 @@ describe("GoogleProvider", async function () {
       config = ConfigLoader({ baseDir: __dirname });
     } catch (error) {
       this.skip();
-      return;
     }
     provider = await GoogleProvider({
       name: "google",
-      config: ConfigLoader({ baseDir: __dirname }),
+      config,
     });
     const { success } = await provider.destroyAll();
     assert(success);

@@ -55,7 +55,7 @@ module.exports = CoreClient = ({
     if (!canGet) return;
 
     try {
-      const path = npath.join(pathBase, `/${id}`, queryParameters());
+      const path = npath.join(`/${id}`, queryParameters());
       logger.debug(`getById path: ${path}`);
 
       const result = await axios.request(path, {
@@ -139,7 +139,7 @@ module.exports = CoreClient = ({
     }
   };
 
-  const destroy = async ({ id, name, dependencies }) => {
+  const destroy = async ({ id, name }) => {
     logger.debug(`destroy ${toString({ type, name, id, canDelete })}`);
     if (!canDelete) return;
 
@@ -148,12 +148,7 @@ module.exports = CoreClient = ({
     }
 
     try {
-      const path = npath.join(
-        pathBase,
-        pathSuffix({ name, dependencies }),
-        `/${id}`,
-        queryParameters()
-      );
+      const path = npath.join(`/${id}`, queryParameters());
       logger.debug(`destroy url: ${path}`);
 
       const result = await axios.request(path, {

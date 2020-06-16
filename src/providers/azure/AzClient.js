@@ -36,8 +36,6 @@ module.exports = AzClient = ({
     pathSuffixList,
     queryParameters,
     verbCreate: "PUT",
-    findTargetId: (item) => item.name,
-    findId: (item) => item.name,
     axios: AxiosMaker({
       baseURL: BASE_URL,
       onHeaders: () => ({
