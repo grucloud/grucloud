@@ -7,7 +7,7 @@ const {
   testPlanDestroy,
 } = require("../../../test/E2ETestUtils");
 
-describe("AzResourceGroup", async function () {
+describe.skip("AzResourceGroup", async function () {
   const rgName = "dev-resource-group";
   let provider;
   let rg;

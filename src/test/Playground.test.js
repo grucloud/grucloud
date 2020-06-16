@@ -1,6 +1,7 @@
 const assert = require("assert");
 const { head, tap, props } = require("ramda");
 const { pipe } = require("rubico");
+const urljoin = require("url-join");
 
 const list = {
   data: {
@@ -22,5 +23,9 @@ describe("Playground", function () {
       tap(console.log),
     ])(list);
     assert(result);
+  });
+  it.skip("urljoin", async function () {
+    const result = urljoin("", "/test");
+    assert.equal(result, "/test");
   });
 });

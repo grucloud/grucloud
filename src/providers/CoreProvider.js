@@ -26,6 +26,32 @@ const PlanDirection = {
   DOWN: -1,
 };
 
+const destroyByClient = async ({ client, name, config }) => {
+  assert(client);
+  assert(config);
+  assert(client.findId);
+  assert(client.destroy);
+  assert(client.isDownById);
+
+  logger.info(`destroyByClient: ${tos({ type: client.spec.type, name })}`);
+  logger.debug(`destroyByClient: ${tos({ config })}`);
+  const id = client.findId(config);
+  assert(id);
+
+  //TODO do we need try catch here ?
+  try {
+    await client.destroy({ id, name });
+  } catch (error) {
+    logger.error(`destroyByClient: ${tos({ error })}`);
+    throw error;
+  }
+  await retryExpectOk({
+    name: `destroy ${name}`,
+    fn: () => client.isDownById({ id, name }),
+    isOk: (result) => result,
+  });
+};
+
 const ResourceMaker = ({
   name: resourceName,
   dependencies = {},
@@ -517,12 +543,12 @@ module.exports = CoreProvider = ({
             }
           )(item)
       ),
-      tap((x) => logger.info(`desployPlan x: ${tos(x)}`)),
+      tap((x) => logger.info(`upsertResources  ${tos(x)}`)),
       (results) => ({
         results,
         success: all((result) => !result.error)(results),
       }),
-      tap((x) => logger.info(`desployPlan results: ${tos(x)}`)),
+      tap((x) => logger.info(`upsertResources results: ${tos(x)}`)),
     ])(planDeploy);
   };
 
@@ -530,9 +556,18 @@ module.exports = CoreProvider = ({
     logger.debug(`destroyResource: ${tos({ type, name })}`);
     const resource = resourceByName(name);
     if (!resource) {
-      throw Error(`Cannot find resource ${tos(item.resource.name)}`);
+      throw Error(`Cannot find resource ${tos(name)}`);
     }
     await resource.destroy({ config });
+  };
+
+  const destroyById = async ({ type, config, name }) => {
+    logger.debug(`destroyById: ${tos({ type, name })}`);
+    const client = clientByType(type);
+    if (!client) {
+      throw new Error(`Cannot find endpoint type ${type}}`);
+    }
+    await destroyByClient({ client, name, config });
   };
 
   const planDestroy = async (planDestroy) => {
@@ -542,7 +577,7 @@ module.exports = CoreProvider = ({
         async (item) =>
           await tryCatch(
             async () => {
-              await destroyResource({
+              await destroyById({
                 name: item.resource.name,
                 type: item.resource.type,
                 config: item.config,

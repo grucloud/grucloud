@@ -1,5 +1,4 @@
 const assert = require("assert");
-const urljoin = require("url-join");
 const CoreClient = require("../CoreClient");
 const AxiosMaker = require("../AxiosMaker");
 const logger = require("../../logger")({ prefix: "AzClient" });
@@ -13,15 +12,15 @@ const onResponseList = ({ value }) => ({
 });
 
 module.exports = AzClient = ({
-  url,
   spec,
-  path,
-  pathList,
+  pathBase,
+  pathSuffix,
+  pathSuffixList,
   queryParameters,
   config,
   configDefault,
 }) => {
-  assert(url);
+  assert(pathBase);
   assert(spec);
   assert(spec.type);
   assert(config);
@@ -32,14 +31,15 @@ module.exports = AzClient = ({
     spec,
     onResponseList,
     configDefault,
-    path,
-    pathList,
+    pathBase,
+    pathSuffix,
+    pathSuffixList,
     queryParameters,
     verbCreate: "PUT",
     findTargetId: (item) => item.name,
     findId: (item) => item.name,
     axios: AxiosMaker({
-      baseURL: urljoin(BASE_URL, url),
+      baseURL: BASE_URL,
       onHeaders: () => ({
         Authorization: `Bearer ${config.bearerToken}`,
       }),

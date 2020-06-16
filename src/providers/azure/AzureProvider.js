@@ -30,8 +30,8 @@ const fnSpecs = (config) => {
       Client: ({ spec }) =>
         AzClient({
           spec,
-          url: `subscriptions/${subscriptionId}/resourcegroups/`,
-          path: ({ name }) => `/${name}`,
+          pathBase: `/subscriptions/${subscriptionId}/resourcegroups`,
+          pathSuffix: ({ name }) => `/${name}`,
           queryParameters: () => "?api-version=2019-10-01",
           config,
           configDefault: ({ properties }) => ({
@@ -49,12 +49,12 @@ const fnSpecs = (config) => {
         AzClient({
           spec,
           dependsOn: ["ResourceGroup"],
-          url: `subscriptions/${subscriptionId}`,
-          path: ({ dependencies: { resourceGroup }, name }) => {
+          pathBase: `/subscriptions/${subscriptionId}`,
+          pathSuffix: ({ dependencies: { resourceGroup }, name }) => {
             assert(resourceGroup, "missing resourceGroup dependency");
             return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/virtualNetworks/${name}`;
           },
-          pathList: () => "/providers/Microsoft.Network/virtualNetworks",
+          pathSuffixList: () => `/providers/Microsoft.Network/virtualNetworks`,
           queryParameters: () => "?api-version=2020-05-01",
           config,
           configDefault: ({ properties }) => ({

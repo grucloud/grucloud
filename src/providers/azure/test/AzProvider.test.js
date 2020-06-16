@@ -7,7 +7,7 @@ const {
   testPlanDestroy,
 } = require("../../../test/E2ETestUtils");
 
-describe("AzResourceGroup", async function () {
+describe.skip("AzProvider", async function () {
   const rgName = "dev-resource-group";
   const vnName = "virtualNetwork";
   let provider;
@@ -42,7 +42,7 @@ describe("AzResourceGroup", async function () {
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 2);
   });
-  it.only("apply and destroy", async function () {
+  it("apply and destroy", async function () {
     await testPlanDeploy({ provider });
     //TODO check address_space
     await testPlanDestroy({ provider });

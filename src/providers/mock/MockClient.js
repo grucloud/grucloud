@@ -8,7 +8,7 @@ const AxiosMaker = require("../AxiosMaker");
 const urljoin = require("url-join");
 const logger = require("../../logger")({ prefix: "MockClient" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
-const toString = (x) => JSON.stringify(x, null, 4);
+const tos = (x) => JSON.stringify(x, null, 4);
 const { findField } = require("../Common");
 
 const BASE_URL = "http://localhost:8089";
@@ -19,18 +19,28 @@ const setupMock = ({ axios, config, spec }) => {
   assert(mockCloud);
   const mock = new MockAdapter(axios);
   mock.onGet(/^\/.+/).reply((config) => {
+    const id = config.url.replace("/", "");
     try {
-      const data = mockCloud.onGet({ type, id: config.url.replace("/", "") });
+      logger.debug(`mock onGet id: ${id}`);
+      const data = mockCloud.onGet({ type, id });
       return [200, data];
     } catch (error) {
+      logger.debug(`mock onGet id: ${id} not found`);
       return [404];
     }
   });
   mock.onGet("").reply((config) => {
+    logger.debug(`mock onGet list`);
     const data = mockCloud.onList({ type });
     return [200, data];
   });
+  mock.onGet().reply((config) => {
+    logger.error(`mock onGet all`);
+    return [500];
+  });
   mock.onPost("").reply((config) => {
+    logger.debug(`mock onPost: ${tos(config.data)}`);
+
     const data = mockCloud.onCreate({
       type,
       payload: JSON.parse(config.data),

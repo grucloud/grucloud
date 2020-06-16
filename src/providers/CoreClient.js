@@ -1,4 +1,6 @@
 const _ = require("lodash");
+const urljoin = require("url-join");
+const npath = require("path");
 const assert = require("assert");
 const logger = require("../logger")({ prefix: "CoreClient" });
 const toString = (x) => JSON.stringify(x, null, 4);
@@ -16,8 +18,9 @@ module.exports = CoreClient = ({
   type,
   axios,
   methods, //TODO use defaults
-  path = () => "/",
-  pathList,
+  pathBase = "/",
+  pathSuffix = () => "/",
+  pathSuffixList,
   queryParameters = () => "",
   verbCreate = "POST",
   configDefault = async ({ name, properties }) => ({
@@ -42,28 +45,30 @@ module.exports = CoreClient = ({
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
 
   const getById = async ({ id }) => {
-    logger.debug(`get ${toString({ type, id, canGet })}`);
+    logger.debug(`getById ${toString({ type, id, canGet })}`);
     assert(id);
 
     if (_.isEmpty(id)) {
-      throw Error(`get ${type}: invalid id`);
+      throw Error(`getById ${type}: invalid id`);
     }
 
     if (!canGet) return;
 
     try {
-      const url = `/${id}${queryParameters()}`;
-      const result = await axios.request(url, {
+      const path = npath.join(pathBase, `/${id}`, queryParameters());
+      logger.debug(`getById path: ${path}`);
+
+      const result = await axios.request(path, {
         method: "GET",
       });
       result.data = onResponseGet(result.data);
       logger.debug(`get ${toString(result.data)}`);
-
       return result;
     } catch (error) {
-      logError("getById", error);
       const status = error.response?.status;
+      logger.debug(`getById status: ${status}`);
       if (status != 404) {
+        logError("getById", error);
         throw error;
       }
     }
@@ -79,8 +84,14 @@ module.exports = CoreClient = ({
     if (!canCreate) return;
 
     try {
-      const url = `${path({ name, dependencies })}${queryParameters()}`;
-      const result = await axios.request(url, {
+      const path = urljoin(
+        pathBase,
+        pathSuffix({ name, dependencies }),
+        queryParameters()
+      );
+      logger.debug(`create url: ${path}`);
+
+      const result = await axios.request(path, {
         method: verbCreate,
         data: payload,
       });
@@ -88,6 +99,8 @@ module.exports = CoreClient = ({
       logger.debug(`create result: ${toString(data)}`);
 
       const id = findTargetId(data);
+      logger.debug(`create findTargetId: ${id}`);
+
       assert(id, "no target id from result");
       await retryExpectOk({
         name: `create ${name}`,
@@ -109,14 +122,19 @@ module.exports = CoreClient = ({
     if (!canList) return;
 
     try {
-      const url = `${pathList ? pathList() : "/"}${queryParameters()}`;
-      const result = await axios.request(url, {
+      const path = urljoin(
+        pathBase,
+        pathSuffixList ? pathSuffixList() : "",
+        queryParameters()
+      );
+      logger.debug(`list url: ${path}`);
+      const result = await axios.request(path, {
         method: "GET",
       });
       result.data = onResponseList(result.data);
       return result;
     } catch (error) {
-      logError(`list ${type}/${name}`, error);
+      logError(`list ${type}`, error);
       throw error;
     }
   };
@@ -130,8 +148,15 @@ module.exports = CoreClient = ({
     }
 
     try {
-      const url = `${path({ name, dependencies })}${queryParameters()}`;
-      const result = await axios.request(url, {
+      const path = npath.join(
+        pathBase,
+        pathSuffix({ name, dependencies }),
+        `/${id}`,
+        queryParameters()
+      );
+      logger.debug(`destroy url: ${path}`);
+
+      const result = await axios.request(path, {
         method: "DELETE",
       });
       result.data = onResponseDelete(result.data);

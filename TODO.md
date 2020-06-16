@@ -2,6 +2,7 @@
 
 ## Common:
 
+- refactor skiping test
 - add command duration
 - print axios error
 - TagName.js move to scaleway

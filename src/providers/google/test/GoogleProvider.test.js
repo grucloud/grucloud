@@ -5,27 +5,29 @@ const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { notAvailable } = require("../../ProviderCommon");
 
 describe("GoogleProvider", async function () {
+  let config;
   let provider;
   let server;
   let ip;
   const ipName = "ip-webserver";
   before(async function () {
     try {
-      provider = await GoogleProvider({
-        name: "google",
-        config: ConfigLoader({ baseDir: __dirname }),
-      });
-      const { success } = await provider.destroyAll();
-      assert(success);
-      ip = provider.makeAddress({ name: ipName });
-      server = provider.makeInstance({
-        name: "web-server",
-        dependencies: { ip },
-      });
+      config = ConfigLoader({ baseDir: __dirname });
     } catch (error) {
-      assert(error.code, 422);
       this.skip();
+      return;
     }
+    provider = await GoogleProvider({
+      name: "google",
+      config: ConfigLoader({ baseDir: __dirname }),
+    });
+    const { success } = await provider.destroyAll();
+    assert(success);
+    ip = provider.makeAddress({ name: ipName });
+    server = provider.makeInstance({
+      name: "web-server",
+      dependencies: { ip },
+    });
   });
   after(async () => {
     await provider?.destroyAll();
