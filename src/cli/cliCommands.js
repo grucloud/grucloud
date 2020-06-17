@@ -1,10 +1,14 @@
-const _ = require("lodash");
+const { pick } = require("lodash");
 const plu = require("pluralize");
+const logger = require("../logger")({ prefix: "AzProvider" });
 const { runAsyncCommand } = require("./cliUtils");
 const { displayPlan, displayLive } = require("./displayUtils");
 const prompts = require("prompts");
 const colors = require("colors/safe");
 const fs = require("fs");
+const YAML = require("./json2yaml");
+
+const tos = (x) => JSON.stringify(x, null, 4);
 
 const {
   map,
@@ -57,8 +61,15 @@ const displayError = (error) => {
   }
   console.error(error.message);
   if (error.response) {
-    console.error(JSON.stringify(error.response?.data, null, 4));
-    console.error(JSON.stringify(error.response?.config, null, 4));
+    const { response } = error;
+    errorToDisplay = {
+      Iutput: response.data,
+      Input: {
+        config: pick(response.config, ["url", "method", "baseURL"]),
+        data: JSON.parse(response.config.data),
+      },
+    };
+    console.error(YAML.stringify(errorToDisplay));
   }
 };
 
@@ -158,18 +169,19 @@ exports.planApply = async ({
   ]);
 
   const displayDeployError = ({ item, error = {} }) => {
+    logger.error(`displayDeployError ${tos({ item, error })}`);
     console.log(`Cannot deploy resource ${formatResource(item.resource)}`);
     displayError(error);
   };
 
   const displayDeployErrors = pipe([
-    //tap((x) => console.log("displayDeployErrors", x)),
+    tap((x) => logger.error(`displayDeployErrors begins ${tos(x)}`)),
     filter(({ results: { success } }) => !success),
     flatten,
     pluck("results"),
     pluck("results"),
     flatten,
-    //tap((x) => console.log("displayDeployErrors", x)),
+    filter(({ error }) => error),
     map(tap(displayDeployError)),
   ]);
 
