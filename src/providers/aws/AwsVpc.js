@@ -31,10 +31,8 @@ module.exports = AwsVpc = ({ spec, config }) => {
     logger.info(`list ${tos(Vpcs)}`);
 
     return {
-      data: {
-        total: Vpcs.length,
-        items: Vpcs,
-      },
+      total: Vpcs.length,
+      items: Vpcs,
     };
   };
 

@@ -4,10 +4,9 @@ const CoreClient = require("../CoreClient");
 const AxiosMaker = require("../AxiosMaker");
 const BASE_URL = "https://compute.googleapis.com/compute/v1/";
 const logger = require("../../logger")({ prefix: "GoogleClient" });
-const toString = (x) => JSON.stringify(x, null, 4);
+//const toString = (x) => JSON.stringify(x, null, 4);
 
-const onResponseList = (data) => {
-  const { items = [] } = data;
+const onResponseList = ({ items = [] }) => {
   return { total: items.length, items };
 };
 

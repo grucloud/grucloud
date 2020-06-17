@@ -81,10 +81,10 @@ module.exports = GoogleInstance = ({ spec, config }) => {
   };
 
   const getStateName = (instance) => {
-    const state = instance.data.status;
-    assert(state);
-    logger.debug(`stateName ${state}`);
-    return state;
+    const { status } = instance;
+    assert(status);
+    logger.debug(`stateName ${status}`);
+    return status;
   };
 
   const isUpByIdFactory = (getById) =>

@@ -9,32 +9,24 @@ const testCrud = async ({ provider, resource, createOptions }) => {
   const { client } = resource;
   {
     await provider.destroyAll();
-    const {
-      data: { items },
-    } = await client.list();
+    const { items } = await client.list();
     //Cannot destroy images
     assert.equal(items.length, 0);
   }
 
   {
     await resource.create({ payload: createOptions });
-    const {
-      data: { items },
-    } = await client.list();
+    const { items } = await client.list();
     assert.equal(items.length, 1);
   }
   //TODO check double create
   {
-    const {
-      data: { items },
-    } = await client.list();
+    const { items } = await client.list();
     //assert.equal(items.length, 1);
   }
   {
     await provider.destroyAll();
-    const {
-      data: { items },
-    } = await client.list();
+    const { items } = await client.list();
     assert.equal(items.length, 0);
   }
 };

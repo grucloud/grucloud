@@ -25,10 +25,8 @@ module.exports = AwsClientKeyPair = ({ spec, config }) => {
     logger.debug(`list ${toString(KeyPairs)}`);
 
     return {
-      data: {
-        total: KeyPairs.length,
-        items: KeyPairs,
-      },
+      total: KeyPairs.length,
+      items: KeyPairs,
     };
   };
 

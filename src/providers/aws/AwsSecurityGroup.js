@@ -47,10 +47,8 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     logger.debug(`list ${toString(securityGroups)}`);
 
     return {
-      data: {
-        total: securityGroups.length,
-        items: securityGroups,
-      },
+      total: securityGroups.length,
+      items: securityGroups,
     };
   };
 

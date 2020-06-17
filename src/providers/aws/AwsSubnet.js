@@ -69,10 +69,8 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     logger.info(`list ${toString(Subnets)}`);
 
     return {
-      data: {
-        total: Subnets.length,
-        items: Subnets,
-      },
+      total: Subnets.length,
+      items: Subnets,
     };
   };
 

@@ -25,7 +25,7 @@ exports.isOurMinion = ({ resource, config }) => {
     logger.info(`isOurMinion yes, from single label`);
     isMinion = true;
   } else {
-    logger.error(`isOurMinion no labels or description`);
+    logger.info(`isOurMinion no labels or description`);
   }
 
   logger.info(

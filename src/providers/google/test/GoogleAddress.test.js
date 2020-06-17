@@ -9,20 +9,21 @@ const {
 
 describe("GoogleAddress", async function () {
   const addressName = "myaddress-test";
+  let config;
   let provider;
   let address;
   before(async function () {
     try {
-      provider = await GoogleProvider({
-        name: "google",
-        config: ConfigLoader({ baseDir: __dirname }),
-      });
-      address = provider.makeAddress({ name: addressName });
-      await provider.destroyAll();
+      config = ConfigLoader({ baseDir: __dirname });
     } catch (error) {
-      assert(error.code, 422);
       this.skip();
     }
+    provider = await GoogleProvider({
+      name: "google",
+      config,
+    });
+    address = provider.makeAddress({ name: addressName });
+    await provider.destroyAll();
   });
   after(async () => {
     await provider?.destroyAll();

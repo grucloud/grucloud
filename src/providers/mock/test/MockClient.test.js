@@ -21,8 +21,8 @@ describe("MockClient", function () {
   it("list", async function () {
     const mockClient = MockClient({ spec, url, config });
 
-    const { data } = await mockClient.list();
-    assert.equal(data.total, 0);
+    const { total } = await mockClient.list();
+    assert.equal(total, 0);
   });
   it("get by id", async function () {
     const mockClient = MockClient({ spec, url, config });
@@ -41,13 +41,13 @@ describe("MockClient", function () {
     });
 
     {
-      const { data } = await mockClient.list();
-      assert.equal(data.total, 1);
-      assert.equal(data.items.length, 1);
+      const { total, items } = await mockClient.list();
+      assert.equal(total, 1);
+      assert.equal(items.length, 1);
     }
     {
-      const { data } = await mockClient.getById({ id });
-      assert(data);
+      const data = await mockClient.getById({ id });
+      assert(data.id);
       assert.equal(data.id, id);
     }
     {

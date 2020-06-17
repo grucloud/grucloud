@@ -2,7 +2,7 @@ const assert = require("assert");
 const CoreClient = require("../CoreClient");
 const AxiosMaker = require("../AxiosMaker");
 const logger = require("../../logger")({ prefix: "AzClient" });
-const toString = (x) => JSON.stringify(x, null, 4);
+//const toString = (x) => JSON.stringify(x, null, 4);
 
 const BASE_URL = "https://management.azure.com";
 

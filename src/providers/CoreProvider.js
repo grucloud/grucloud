@@ -101,9 +101,7 @@ const ResourceMaker = ({
 
   const resolveConfig = async () => {
     logger.info(`config ${type}/${resourceName}`);
-    const {
-      data: { items },
-    } = await client.list();
+    const { items } = await client.list();
     //logger.debug(`config ${tos({ type, resourceName, items })}`);
 
     const dependenciesLive = await resolveDependenciesLive(dependencies);
@@ -273,10 +271,10 @@ module.exports = CoreProvider = ({
   const filterClient = async ({ client, our, name, id, canBeDeleted }) => {
     try {
       logger.debug(`listLives type: ${client.spec.type}`);
-      const { data } = await client.list();
+      const { items } = await client.list();
       return {
         type: client.spec.type,
-        resources: data.items
+        resources: items
           .map((item) => ({
             name: client.findName(item),
             id: client.findId(item),
@@ -477,8 +475,8 @@ module.exports = CoreProvider = ({
       map(async (client) =>
         pipe([
           async () => await client.list(),
-          ({ data }) =>
-            data.items
+          ({ items }) =>
+            items
               .filter((resource) =>
                 filterDestroyResources({ client, resource, options, direction })
               )

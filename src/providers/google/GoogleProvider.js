@@ -29,19 +29,6 @@ const fnSpecs = (config) => {
             ...properties,
           }),
         }),
-
-      transformConfig: ({ config, items }) => {
-        assert(config);
-        assert(items);
-        logger.debug(
-          `transformConfig: ${toString(config)}, items: ${toString(items)}`
-        );
-        const ip = items.find((item) => item.address === config.address);
-        if (ip) {
-          return ip;
-        }
-        return { ...config };
-      },
       isOurMinion,
     },
     {

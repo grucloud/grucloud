@@ -6,7 +6,7 @@ const logger = require("../../logger")({ prefix: "AzProvider" });
 const AzTag = require("./AzTag");
 const { AzAuthorize } = require("./AzAuthorize");
 const compare = require("../../Utils").compare;
-const toString = (x) => JSON.stringify(x, null, 4);
+//const toString = (x) => JSON.stringify(x, null, 4);
 
 const fnSpecs = (config) => {
   const {

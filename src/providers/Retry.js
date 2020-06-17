@@ -3,33 +3,6 @@ const assert = require("assert");
 const logger = require("../logger")({ prefix: "CoreClient" });
 const toString = (x) => JSON.stringify(x, null, 4);
 
-//TODO add name
-const retryExpectException = async (
-  { fn, isExpectedError, delay = 4e3 },
-  count = 90
-) => {
-  assert(fn);
-  logger.debug(`retryExpectException count: ${count}, delay: ${delay}`);
-  if (count === 0) {
-    throw Error("timeout");
-  }
-  try {
-    await fn();
-    throw Error("No exception, Have to retry");
-  } catch (error) {
-    if (isExpectedError(error)) {
-      logger.debug(`retryExpectException isExpectedError`);
-      return true;
-    }
-    logger.debug(
-      `retryExpectException count: ${count}, waiting delay: ${delay}`
-    );
-
-    await Promise.delay(delay);
-    return retryExpectException({ fn, isExpectedError, delay }, --count);
-  }
-};
-exports.retryExpectException = retryExpectException;
 //TODO revist, throw on error ? add isExceptionOk ?
 const retryExpectOk = async ({ name, fn, isOk, delay = 4e3 }, count = 60) => {
   logger.debug(`retryExpectOk ${name},  count: ${count}, delay: ${delay}`);
@@ -63,3 +36,34 @@ const retryExpectOk = async ({ name, fn, isOk, delay = 4e3 }, count = 60) => {
 };
 
 exports.retryExpectOk = retryExpectOk;
+
+//TODO add name
+/*
+const retryExpectException = async (
+  { fn, isExpectedError, delay = 4e3 },
+  count = 90
+) => {
+  assert(fn);
+  logger.debug(`retryExpectException count: ${count}, delay: ${delay}`);
+  if (count === 0) {
+    throw Error("timeout");
+  }
+  try {
+    await fn();
+    throw Error("No exception, Have to retry");
+  } catch (error) {
+    if (isExpectedError(error)) {
+      logger.debug(`retryExpectException isExpectedError`);
+      return true;
+    }
+    logger.debug(
+      `retryExpectException count: ${count}, waiting delay: ${delay}`
+    );
+
+    await Promise.delay(delay);
+    return retryExpectException({ fn, isExpectedError, delay }, --count);
+  }
+};
+
+exports.retryExpectException = retryExpectException;
+*/

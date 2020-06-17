@@ -21,9 +21,7 @@ exports.getByNameCore = async ({ name, findName, list }) => {
   assert(findName);
   assert(list);
 
-  const {
-    data: { items },
-  } = await list();
+  const { items } = await list();
   const instance = items.find((item) => findName(item) === name);
   logger.debug(`getByName ${name}: ${toString({ instance })}`);
 
@@ -35,9 +33,7 @@ exports.getByIdCore = async ({ id, findId, list }) => {
   assert(findId);
   assert(list);
 
-  const {
-    data: { items },
-  } = await list();
+  const { items } = await list();
   const instance = items.find((item) => findId(item) === id);
   logger.debug(`getById ${id}: ${toString({ instance })}`);
 

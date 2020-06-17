@@ -62,9 +62,9 @@ module.exports = CoreClient = ({
       const result = await axios.request(path, {
         method: "GET",
       });
-      result.data = onResponseGet(result.data);
-      logger.debug(`get ${toString(result.data)}`);
-      return result;
+      const data = onResponseGet(result.data);
+      logger.debug(`get ${toString(data)}`);
+      return data;
     } catch (error) {
       const status = error.response?.status;
       logger.debug(`getById status: ${status}`);
@@ -114,7 +114,7 @@ module.exports = CoreClient = ({
       });
       const resource = await getById({ id });
       logger.debug(`created ${type}/${name}`);
-      return onResponseGet(resource.data);
+      return onResponseGet(resource);
     } catch (error) {
       logError(`create ${type}/${name}`, error);
       throw error;
@@ -136,8 +136,8 @@ module.exports = CoreClient = ({
       const result = await axios.request(path, {
         method: "GET",
       });
-      result.data = onResponseList(result.data);
-      return result;
+      const data = onResponseList(result.data);
+      return data;
     } catch (error) {
       logError(`list ${type}`, error);
       throw error;
@@ -159,12 +159,12 @@ module.exports = CoreClient = ({
       const result = await axios.request(path, {
         method: "DELETE",
       });
-      result.data = onResponseDelete(result.data);
+      const data = onResponseDelete(result.data);
       logger.debug(
         `destroy ${toString({ name, type, id })} should be destroyed`
       );
 
-      return result;
+      return data;
     } catch (error) {
       logError(`delete ${type}/${name}`, error);
       throw error;

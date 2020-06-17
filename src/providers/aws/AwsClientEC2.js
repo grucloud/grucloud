@@ -50,10 +50,8 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     );
     logger.debug(`list filtered: ${toString(items)}`);
     return {
-      data: {
-        total: items.length,
-        items,
-      },
+      total: items.length,
+      items,
     };
   };
 

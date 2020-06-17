@@ -248,13 +248,13 @@ exports.planDestroy = async ({
   };
 
   const displayDestroyErrors = pipe([
-    tap((x) => console.log("displayDestroyErrors begin ", x)),
+    //tap((x) => console.log("displayDestroyErrors begin ", x)),
     filter(({ results: { success } }) => !success),
     flatten,
     pluck("results"),
     pluck("results"),
     flatten,
-    tap((x) => console.log("displayDestroyErrors begin ", x)),
+    //tap((x) => console.log("displayDestroyErrors begin ", x)),
     map(tap(displayDestroyError)),
   ]);
 
