@@ -6,7 +6,7 @@ const logger = require("../../logger")({ prefix: "AzClient" });
 
 const BASE_URL = "https://management.azure.com";
 
-const onResponseList = ({ value }) => ({
+const onResponseList = ({ value = [] }) => ({
   total: value.length,
   items: value,
 });
