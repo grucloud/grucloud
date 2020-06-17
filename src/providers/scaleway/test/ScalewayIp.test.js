@@ -4,20 +4,22 @@ const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
 describe("ScalewayIp", async function () {
+  let config;
+
   let provider;
   let ip;
   before(async function () {
     try {
-      provider = await ScalewayProvider({
-        name: "scaleway",
-        config: ConfigLoader({ baseDir: __dirname }),
-      });
-      await provider.destroyAll();
-      ip = provider.makeIp({ name: "myip" });
+      config = ConfigLoader({ baseDir: __dirname });
     } catch (error) {
-      assert(error.code, 422);
       this.skip();
     }
+    provider = await ScalewayProvider({
+      name: "scaleway",
+      config: ConfigLoader({ baseDir: __dirname }),
+    });
+    await provider.destroyAll();
+    ip = provider.makeIp({ name: "myip" });
   });
   after(async () => {
     await provider?.destroyAll();

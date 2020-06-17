@@ -4,25 +4,26 @@ const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
 describe("ScalewayVolume", async function () {
+  let config;
   let provider;
   let volume;
 
   before(async function () {
     try {
-      provider = await ScalewayProvider({
-        name: "scaleway",
-        config: ConfigLoader({ baseDir: __dirname }),
-      });
-      volume = provider.makeVolume({
-        name: "volume1",
-        config: () => ({
-          size: 20_000_000_000,
-        }),
-      });
+      config = ConfigLoader({ baseDir: __dirname });
     } catch (error) {
-      assert(error.code, 422);
       this.skip();
     }
+    provider = await ScalewayProvider({
+      name: "scaleway",
+      config: ConfigLoader({ baseDir: __dirname }),
+    });
+    volume = provider.makeVolume({
+      name: "volume1",
+      config: () => ({
+        size: 20_000_000_000,
+      }),
+    });
   });
 
   after(async () => {

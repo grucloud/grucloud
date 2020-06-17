@@ -6,6 +6,7 @@ const { notAvailable } = require("../../ProviderCommon");
 const { CheckTags } = require("./AwsTagCheck");
 
 describe("AwsProvider", async function () {
+  let config;
   let provider;
   let server;
   let keyPair;
@@ -20,68 +21,68 @@ describe("AwsProvider", async function () {
 
   before(async function () {
     try {
-      provider = await AwsProvider({
-        name: "aws",
-        config: ConfigLoader({ baseDir: __dirname }),
-      });
-      const { success } = await provider.destroyAll();
-      assert(success);
-      keyPair = provider.makeKeyPair({
-        name: keyPairName,
-      });
-      vpc = provider.makeVpc({
-        name: "vpc",
-        properties: {
-          CidrBlock: "10.1.0.1/16",
-        },
-      });
-      subnet = provider.makeSubnet({
-        name: subnetName,
-        dependencies: { vpc },
-        properties: {
-          CidrBlock: "10.1.0.1/24",
-        },
-      });
-      sg = provider.makeSecurityGroup({
-        name: securityGroupName,
-        dependencies: { vpc },
-        properties: {
-          //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
-          create: {
-            Description: "Security Group Description",
-          },
-          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
-          ingress: {
-            IpPermissions: [
-              {
-                FromPort: 22,
-                IpProtocol: "tcp",
-                IpRanges: [
-                  {
-                    CidrIp: "0.0.0.0/0",
-                  },
-                ],
-                Ipv6Ranges: [
-                  {
-                    CidrIpv6: "::/0",
-                  },
-                ],
-                ToPort: 22,
-              },
-            ],
-          },
-        },
-      });
-
-      server = provider.makeInstance({
-        name: serverName,
-        properties: {},
-        dependencies: { keyPair, subnet, securityGroups: { sg } },
-      });
+      config = ConfigLoader({ baseDir: __dirname });
     } catch (error) {
-      assert(error.code, 422);
       this.skip();
     }
+    provider = await AwsProvider({
+      name: "aws",
+      config,
+    });
+    const { success } = await provider.destroyAll();
+    assert(success);
+    keyPair = provider.makeKeyPair({
+      name: keyPairName,
+    });
+    vpc = provider.makeVpc({
+      name: "vpc",
+      properties: {
+        CidrBlock: "10.1.0.1/16",
+      },
+    });
+    subnet = provider.makeSubnet({
+      name: subnetName,
+      dependencies: { vpc },
+      properties: {
+        CidrBlock: "10.1.0.1/24",
+      },
+    });
+    sg = provider.makeSecurityGroup({
+      name: securityGroupName,
+      dependencies: { vpc },
+      properties: {
+        //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
+        create: {
+          Description: "Security Group Description",
+        },
+        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
+        ingress: {
+          IpPermissions: [
+            {
+              FromPort: 22,
+              IpProtocol: "tcp",
+              IpRanges: [
+                {
+                  CidrIp: "0.0.0.0/0",
+                },
+              ],
+              Ipv6Ranges: [
+                {
+                  CidrIpv6: "::/0",
+                },
+              ],
+              ToPort: 22,
+            },
+          ],
+        },
+      },
+    });
+
+    server = provider.makeInstance({
+      name: serverName,
+      properties: {},
+      dependencies: { keyPair, subnet, securityGroups: { sg } },
+    });
   });
   after(async () => {
     await provider?.destroyAll();

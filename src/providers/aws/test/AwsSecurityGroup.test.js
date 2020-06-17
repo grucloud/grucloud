@@ -5,55 +5,56 @@ const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { CheckTags } = require("./AwsTagCheck");
 
 describe("AwsSecurityGroup", async function () {
+  let config;
   let provider;
   let vpc;
   let sg;
 
   before(async function () {
     try {
-      provider = await AwsProvider({
-        name: "aws",
-        config: ConfigLoader({ baseDir: __dirname }),
-      });
-      vpc = provider.makeVpc({
-        name: "vpc",
-        properties: {
-          CidrBlock: "10.1.0.1/16",
-        },
-      });
-      sg = provider.makeSecurityGroup({
-        name: "sg",
-        dependencies: { vpc },
-        properties: {
-          create: {
-            Description: "Security Group Description",
-          },
-          ingress: {
-            IpPermissions: [
-              {
-                FromPort: 22,
-                IpProtocol: "tcp",
-                IpRanges: [
-                  {
-                    CidrIp: "0.0.0.0/0",
-                  },
-                ],
-                Ipv6Ranges: [
-                  {
-                    CidrIpv6: "::/0",
-                  },
-                ],
-                ToPort: 22,
-              },
-            ],
-          },
-        },
-      });
-      await provider.destroyAll();
+      config = ConfigLoader({ baseDir: __dirname });
     } catch (error) {
-      assert(error.code, 422);
       this.skip();
     }
+    provider = await AwsProvider({
+      name: "aws",
+      config: ConfigLoader({ baseDir: __dirname }),
+    });
+    vpc = provider.makeVpc({
+      name: "vpc",
+      properties: {
+        CidrBlock: "10.1.0.1/16",
+      },
+    });
+    sg = provider.makeSecurityGroup({
+      name: "sg",
+      dependencies: { vpc },
+      properties: {
+        create: {
+          Description: "Security Group Description",
+        },
+        ingress: {
+          IpPermissions: [
+            {
+              FromPort: 22,
+              IpProtocol: "tcp",
+              IpRanges: [
+                {
+                  CidrIp: "0.0.0.0/0",
+                },
+              ],
+              Ipv6Ranges: [
+                {
+                  CidrIpv6: "::/0",
+                },
+              ],
+              ToPort: 22,
+            },
+          ],
+        },
+      },
+    });
+    await provider.destroyAll();
   });
   after(async () => {
     await provider?.destroyAll();

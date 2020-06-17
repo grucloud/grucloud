@@ -5,6 +5,8 @@ const ScalewayProvider = require("../ScalewayProvider");
 const { ConfigLoader } = require("ConfigLoader");
 
 describe("ScalewayProvider", async function () {
+  let config;
+
   let provider;
   let ip;
   let image;
@@ -12,41 +14,41 @@ describe("ScalewayProvider", async function () {
 
   before(async function () {
     try {
-      provider = await ScalewayProvider({
-        name: "scaleway",
-        config: ConfigLoader({ baseDir: __dirname }),
-      });
-      await provider.destroyAll();
-      ip = provider.makeIp({ name: "myip" });
-      image = provider.makeImage({
-        name: "ubuntu",
-        config: ({ items: images }) => {
-          assert(images);
-          const image = images.find(
-            ({ name, arch, default_bootscript }) =>
-              name.includes("Ubuntu") && arch === "x86_64" && default_bootscript
-          );
-          assert(image);
-          return image;
-        },
-      });
-      server = provider.makeServer({
-        name: "web-server",
-        dependencies: { image, ip },
-        properties: {
-          name: "web-server",
-          commercial_type: "DEV1-S",
-          volumes: {
-            "0": {
-              size: 20_000_000_000,
-            },
-          },
-        },
-      });
+      config = ConfigLoader({ baseDir: __dirname });
     } catch (error) {
-      assert(error.code, 422);
       this.skip();
     }
+    provider = await ScalewayProvider({
+      name: "scaleway",
+      config: ConfigLoader({ baseDir: __dirname }),
+    });
+    await provider.destroyAll();
+    ip = provider.makeIp({ name: "myip" });
+    image = provider.makeImage({
+      name: "ubuntu",
+      config: ({ items: images }) => {
+        assert(images);
+        const image = images.find(
+          ({ name, arch, default_bootscript }) =>
+            name.includes("Ubuntu") && arch === "x86_64" && default_bootscript
+        );
+        assert(image);
+        return image;
+      },
+    });
+    server = provider.makeServer({
+      name: "web-server",
+      dependencies: { image, ip },
+      properties: {
+        name: "web-server",
+        commercial_type: "DEV1-S",
+        volumes: {
+          "0": {
+            size: 20_000_000_000,
+          },
+        },
+      },
+    });
   });
   after(async () => {
     await provider?.destroyAll();
