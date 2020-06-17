@@ -28,7 +28,7 @@
       "cwd": "${workspaceFolder}/src/providers/mock/test/",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["--infra", "MockStack.js", "--force", "apply"]
+      "args": ["--infra", "MockStack.js", "apply", "-f"]
     },
     {
       "type": "node",
@@ -66,7 +66,7 @@
       "cwd": "${workspaceFolder}/examples/azure/",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["apply"]
+      "args": ["apply", "-f"]
     },
     {
       "type": "node",
@@ -104,7 +104,7 @@
       "cwd": "${workspaceFolder}/examples/aws/",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["apply"]
+      "args": ["apply", "-f"]
     },
     {
       "type": "node",
@@ -142,7 +142,7 @@
       "cwd": "${workspaceFolder}/examples/google/",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["apply"]
+      "args": ["apply", "-f"]
     },
     {
       "type": "node",
