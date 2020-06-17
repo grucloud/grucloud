@@ -4,7 +4,7 @@ const logger = require("../../logger")({ prefix: "AzTag" });
 const toString = (x) => JSON.stringify(x, null, 4);
 
 exports.isOurMinion = ({ resource, config }) => {
-  logger.info(`isOurMinion ? ${toString({ config, resource })}`);
+  //logger.info(`isOurMinion ? ${toString({ config, resource })}`);
   const { managedByKey, managedByValue } = config;
   assert(managedByKey);
   const { tags = {} } = resource;
