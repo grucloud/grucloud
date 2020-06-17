@@ -12,6 +12,20 @@
 ## Cli
 
 - fix displayDeployError
+- properties:
+  tags
+  {
+  properties: {}
+
+}
+
+## Azure
+
+- Subnet
+- Network security group
+- network_interface
+- public ip
+- virtual_machine
 
 ## TODO Aws:
 
