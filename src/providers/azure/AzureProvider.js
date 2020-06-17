@@ -39,21 +39,18 @@ const fnSpecs = (config) => {
           pathSuffix: () => "",
           queryParameters: () => "?api-version=2019-10-01",
           config,
-          configDefault: ({ properties }) => ({
-            location,
-            tags: buildTags(config),
-            properties,
-          }),
+          configDefault: ({ properties }) =>
+            _.defaultsDeep(properties, {
+              location,
+              tags: buildTags(config),
+            }),
         }),
       isOurMinion,
     },
     {
       // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtualnetworks
-      // GET     https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}?api-version=2020-05-01
-      // PUT     https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}?api-version=2020-05-01
-      // DELETE  https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}?api-version=2020-05-01
-      // LIST    https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks?api-version=2020-05-01
-      // LISTALL https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2020-05-01
+      // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}?api-version=2020-05-01
+      // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2020-05-01
 
       type: "VirtualNetwork",
       Client: ({ spec }) =>
@@ -68,11 +65,37 @@ const fnSpecs = (config) => {
           pathSuffixList: () => `/providers/Microsoft.Network/virtualNetworks`,
           queryParameters: () => "?api-version=2020-05-01",
           config,
-          configDefault: ({ properties }) => ({
-            location,
-            tags: buildTags(config),
-            properties,
-          }),
+          configDefault: ({ properties }) =>
+            _.defaultsDeep(properties, {
+              location,
+              tags: buildTags(config),
+            }),
+        }),
+      isOurMinion,
+    },
+    {
+      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networksecuritygroups
+      // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups/{networkSecurityGroupName}?api-version=2020-05-01
+      // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2020-05-01
+      type: "SecurityGroup",
+      Client: ({ spec }) =>
+        AzClient({
+          spec,
+          dependsOn: ["ResourceGroup"],
+          pathBase: `/subscriptions/${subscriptionId}`,
+          pathSuffix: ({ dependencies: { resourceGroup } }) => {
+            assert(resourceGroup, "missing resourceGroup dependency");
+            return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/networkSecurityGroups`;
+          },
+          pathSuffixList: () =>
+            `/providers/Microsoft.Network/networkSecurityGroups`,
+          queryParameters: () => "?api-version=2020-05-01",
+          config,
+          configDefault: ({ properties }) =>
+            _.defaultsDeep(properties, {
+              location,
+              tags: buildTags(config),
+            }),
         }),
       isOurMinion,
     },

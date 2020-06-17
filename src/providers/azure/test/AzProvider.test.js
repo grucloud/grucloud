@@ -15,6 +15,7 @@ describe("AzProvider", async function () {
   let provider;
   let resourceGroup;
   let virtualNetwork;
+  let securityGroup;
 
   before(async function () {
     try {
@@ -31,13 +32,38 @@ describe("AzProvider", async function () {
       name: vnName,
       dependencies: { resourceGroup },
       properties: {
-        addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
-        subnets: [
-          {
-            name: `${subnetName}-${stage}`,
-            properties: { addressPrefix: "10.0.0.0/24" },
-          },
-        ],
+        properties: {
+          addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
+          subnets: [
+            {
+              name: subnetName,
+              properties: { addressPrefix: "10.0.0.0/24" },
+            },
+          ],
+        },
+      },
+    });
+    securityGroup = provider.makeSecurityGroup({
+      name: `security-group`,
+      dependencies: { resourceGroup },
+      properties: {
+        properties: {
+          securityRules: [
+            {
+              name: "SSH",
+              properties: {
+                access: "Allow",
+                direction: "Inbound",
+                protocol: "Tcp",
+                destinationPortRange: "22",
+                destinationAddressPrefix: "*",
+                sourcePortRange: "*",
+                sourceAddressPrefix: "*",
+                priority: 1000,
+              },
+            },
+          ],
+        },
       },
     });
     const { success } = await provider.destroyAll();
@@ -49,7 +75,7 @@ describe("AzProvider", async function () {
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 2);
+    assert.equal(plan.newOrUpdate.length, 3);
   });
   it("apply and destroy", async function () {
     await testPlanDeploy({ provider });

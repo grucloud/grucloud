@@ -2,6 +2,7 @@
 
 ## Common:
 
+- add azure in multi example
 - provide CRUD url to CoreClient
 - add command duration
 - TagName.js move to scaleway
@@ -12,21 +13,11 @@
 ## Cli
 
 - text wrap in table
-- fix displayDeployError
 
 ## Azure
 
-- properties:
-  tags
-  {
-  properties: {}
-
-}
-
-- Subnet
-- Network security group
-- network_interface
-- public ip
+- network_interface: https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networkinterfaces
+- public ip: https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networkinterfaces
 - virtual_machine
 
 ## TODO Aws:

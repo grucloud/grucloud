@@ -23,12 +23,12 @@ const specs = [
     path: "multi",
     cmds,
   },
-  /*
+
   {
     path: "azure",
     cmds,
   },
-  
+
   {
     path: "aws",
     cmds,
@@ -36,7 +36,7 @@ const specs = [
   {
     path: "google",
     cmds,
-  },*/
+  },
 ];
 
 const processExample = (spec) => {
