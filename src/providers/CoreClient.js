@@ -19,7 +19,7 @@ module.exports = CoreClient = ({
   axios,
   methods, //TODO use defaults
   pathBase = "/",
-  pathSuffix = () => "/",
+  pathSuffix,
   pathSuffixList,
   queryParameters = () => "",
   verbCreate = "POST",
@@ -89,9 +89,9 @@ module.exports = CoreClient = ({
     if (!canCreate) return;
 
     try {
-      const path = urljoin(
+      const path = npath.join(
         pathBase,
-        pathSuffix({ name, dependencies }),
+        pathSuffix ? `${pathSuffix({ dependencies })}/${name}` : "",
         queryParameters()
       );
       logger.debug(`create url: ${path}`);

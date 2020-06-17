@@ -35,13 +35,12 @@ exports.displayPlan = async (plan) => {
   console.log("\n");
   return plan;
 };
-
 const displayLiveItem = ({ table, resource }) => {
   assert(resource);
   assert(resource.data);
   table.push([
     resource.name,
-    resource.id,
+    //resource.id,
     YAML.stringify(resource.data),
     resource.managedByUs ? colors.green("Yes") : colors.red("NO"),
   ]);
@@ -53,18 +52,21 @@ const displayTablePerType = ({
 }) => {
   assert(type);
   assert(resources);
-  const table = new Table({ style: { head: [], border: [] } });
+  //console.log("Terminal columns: " + process.stdout.columns)
+  //TODO
+  const table = new Table({
+    colWidths: [undefined, 140, undefined],
+    style: { head: [], border: [] },
+  });
   table.push([
     {
-      colSpan: 4,
+      colSpan: 3,
       content: colors.yellow(
         `${resources.length} ${type} from ${providerName}`
       ),
     },
   ]);
-  table.push(
-    ["Name", "Id", "Data", "Managed by Us"].map((item) => colors.red(item))
-  );
+  table.push(["Name", "Data", "Managed by Us"].map((item) => colors.red(item)));
 
   resources.forEach((resource) => displayLiveItem({ table, resource }));
 

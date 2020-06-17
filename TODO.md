@@ -2,7 +2,7 @@
 
 ## Common:
 
-- refactor skiping test
+- provide CRUD url to CoreClient
 - add command duration
 - TagName.js move to scaleway
 - await client.create({ name: resourceName, payload }); should return {id}
@@ -11,15 +11,17 @@
 
 ## Cli
 
+- text wrap in table
 - fix displayDeployError
+
+## Azure
+
 - properties:
   tags
   {
   properties: {}
 
 }
-
-## Azure
 
 - Subnet
 - Network security group

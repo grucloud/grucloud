@@ -8,12 +8,14 @@ const {
 } = require("../../../test/E2ETestUtils");
 
 describe("AzProvider", async function () {
-  const rgName = "dev-resource-group";
+  const rgName = "resource-group";
   const vnName = "virtualNetwork";
+  const subnetName = "subnet";
   let config;
   let provider;
   let resourceGroup;
   let virtualNetwork;
+
   before(async function () {
     try {
       config = ConfigLoader({ baseDir: __dirname });
@@ -28,9 +30,14 @@ describe("AzProvider", async function () {
     virtualNetwork = provider.makeVirtualNetwork({
       name: vnName,
       dependencies: { resourceGroup },
-      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtualnetworks/createorupdate#request-body
       properties: {
         addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
+        subnets: [
+          {
+            name: `${subnetName}-${stage}`,
+            properties: { addressPrefix: "10.0.0.0/24" },
+          },
+        ],
       },
     });
     const { success } = await provider.destroyAll();

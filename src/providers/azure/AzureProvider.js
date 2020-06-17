@@ -26,12 +26,17 @@ const fnSpecs = (config) => {
   return [
     {
       // https://docs.microsoft.com/en-us/rest/api/resources/resourcegroups
+      // GET    https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}?api-version=2019-10-01
+      // PUT    https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}?api-version=2019-10-01
+      // DELETE https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}?api-version=2019-10-01
+      // LIST   https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups?api-version=2019-10-01
+
       type: "ResourceGroup",
       Client: ({ spec }) =>
         AzClient({
           spec,
           pathBase: `/subscriptions/${subscriptionId}/resourcegroups`,
-          pathSuffix: ({ name }) => `/${name}`,
+          pathSuffix: () => "",
           queryParameters: () => "?api-version=2019-10-01",
           config,
           configDefault: ({ properties }) => ({
@@ -44,15 +49,21 @@ const fnSpecs = (config) => {
     },
     {
       // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtualnetworks
+      // GET     https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}?api-version=2020-05-01
+      // PUT     https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}?api-version=2020-05-01
+      // DELETE  https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}?api-version=2020-05-01
+      // LIST    https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks?api-version=2020-05-01
+      // LISTALL https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2020-05-01
+
       type: "VirtualNetwork",
       Client: ({ spec }) =>
         AzClient({
           spec,
           dependsOn: ["ResourceGroup"],
           pathBase: `/subscriptions/${subscriptionId}`,
-          pathSuffix: ({ dependencies: { resourceGroup }, name }) => {
+          pathSuffix: ({ dependencies: { resourceGroup } }) => {
             assert(resourceGroup, "missing resourceGroup dependency");
-            return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/virtualNetworks/${name}`;
+            return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/virtualNetworks`;
           },
           pathSuffixList: () => `/providers/Microsoft.Network/virtualNetworks`,
           queryParameters: () => "?api-version=2020-05-01",
