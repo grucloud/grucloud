@@ -23,7 +23,10 @@ exports.displayPlan = async (plan) => {
   if (!hasPlan(plan)) {
     return plan;
   }
-  const table = new Table({ style: { head: [], border: [] } });
+  const table = new Table({
+    colWidths: [undefined, undefined, undefined, 120],
+    style: { head: [], border: [] },
+  });
   table.push([{ colSpan: 4, content: colors.yellow(plan.providerName) }]);
   table.push(
     ["Name", "Action", "Type", "Config"].map((item) => colors.red(item))
@@ -55,7 +58,7 @@ const displayTablePerType = ({
   //console.log("Terminal columns: " + process.stdout.columns)
   //TODO
   const table = new Table({
-    colWidths: [undefined, 140, undefined],
+    colWidths: [undefined, 120, undefined],
     style: { head: [], border: [] },
   });
   table.push([

@@ -1,4 +1,4 @@
-const { defaultsDeep } = require("lodash");
+const { defaultsDeep } = require("lodash/fp");
 const path = require("path");
 const fs = require("fs");
 
@@ -21,7 +21,7 @@ exports.ConfigLoader = ({ baseDir = process.cwd(), stage = "dev" }) => {
   checkFileExist(stageConfigFile);
   const stageConfig = require(stageConfigFile);
 
-  const merged = defaultsDeep(stageConfig, defaultConfig);
+  const merged = defaultsDeep(defaultConfig, stageConfig);
   //console.log(merged);
   return merged;
 };

@@ -1,4 +1,4 @@
-const _ = require("lodash");
+const { defaultsDeep } = require("lodash/fp");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "GoogleInstance" });
 const toString = (x) => JSON.stringify(x, null, 4);
@@ -35,7 +35,7 @@ module.exports = GoogleInstance = ({ spec, config }) => {
       zone: `projects/${project}/zones/${zone}`,
       machineType: `projects/${project}/zones/${zone}/machineTypes/${properties.machineType}`,
       labels: buildLabel(),
-      metadata: _.defaultsDeep(
+      metadata: defaultsDeep(
         {
           kind: "compute#metadata",
         },

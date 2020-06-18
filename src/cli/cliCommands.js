@@ -58,6 +58,7 @@ const displayError = (error) => {
   if (!error) {
     // TODO why error is sometimes undefined ?
     console.error("error because the error is not defined!");
+    return;
   }
   console.error(error.message);
   if (error.response) {

@@ -1,5 +1,6 @@
 const assert = require("assert");
 const _ = require("lodash");
+const { defaultsDeep } = require("lodash/fp");
 const { isEmpty, flatten, reverse } = require("ramda");
 const { pipe, tap, map, filter, all, tryCatch } = require("rubico");
 const Promise = require("bluebird");
@@ -89,18 +90,20 @@ const ResourceMaker = ({
 
   const resolveDependenciesLive = pipe([
     map(async (dependency) => {
+      if (_.isString(dependency)) {
+        return dependency;
+      }
       if (!dependency.getLive) {
         return resolveDependenciesLive(dependency);
       }
       const live = await dependency.getLive();
-      //TODO use constant
-      return { resource: dependency, live: live || "<<resolve later>>" };
+      return { resource: dependency, live };
     }),
     tap((x) => logger.debug(`resolveDependenciesLive: ${tos(x)}`)),
   ]);
 
   const resolveConfig = async () => {
-    logger.info(`config ${type}/${resourceName}`);
+    logger.info(`resolveConfig ${type}/${resourceName}`);
     const { items } = await client.list();
     //logger.debug(`config ${tos({ type, resourceName, items })}`);
 
@@ -110,10 +113,10 @@ const ResourceMaker = ({
 
     const config = await client.configDefault({
       name: resourceName,
-      properties: _.defaultsDeep(properties, spec.propertiesDefault),
+      properties: defaultsDeep(spec.propertiesDefault, properties),
       dependenciesLive,
     });
-    //logger.info(`configDefault: ${tos(config)}`);
+    logger.debug(`resolveConfig: configDefault: ${tos(config)}`);
     const finalConfig = transformConfig
       ? await transformConfig({
           dependenciesLive,
@@ -123,7 +126,7 @@ const ResourceMaker = ({
         })
       : config;
 
-    logger.info(`final config: ${tos(finalConfig)}`);
+    logger.info(`resolveConfig: final: ${tos(finalConfig)}`);
     assert(!_.isEmpty(finalConfig));
     return finalConfig;
   };
@@ -199,8 +202,15 @@ const ResourceMaker = ({
     resolveDependencies: () => resolveDependenciesLive(dependencies),
   };
   _.map(dependencies, (dependency) => {
+    if (_.isString(dependency)) {
+      return;
+    }
     if (!dependency.addParent) {
-      _.forEach(dependency, (item) => item.addParent(resourceMaker));
+      _.forEach(dependency, (item) => {
+        if (item.addParent) {
+          item.addParent(resourceMaker);
+        }
+      });
     } else {
       dependency.addParent(resourceMaker);
     }

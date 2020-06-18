@@ -26,6 +26,10 @@ describe("GoogleProvider", async function () {
     server = provider.makeInstance({
       name: "web-server",
       dependencies: { ip },
+      properties: {
+        diskSizeGb: "20",
+        machineType: "f1-micro",
+      },
     });
   });
   after(async () => {
@@ -34,11 +38,12 @@ describe("GoogleProvider", async function () {
 
   it("server resolveConfig ", async function () {
     const config = await server.resolveConfig();
-    //TODO use provider.confg.project  etc ...
+    //TODO use provider.config.project  etc ...
     assert.equal(
       config.machineType,
       "projects/starhackit/zones/europe-west4-a/machineTypes/f1-micro"
     );
+    assert.equal(config.disks[0].initializeParams.diskSizeGb, "20");
     assert.equal(config.name, "web-server");
     assert.equal(
       config.networkInterfaces[0].accessConfigs[0].natIP,

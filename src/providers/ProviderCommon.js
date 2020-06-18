@@ -1,6 +1,6 @@
 const _ = require("lodash");
 
-const notAvailable = (name) => `<< ${name} not available yet >>`;
+const notAvailable = (name) => `<< id of ${name} not available yet >>`;
 exports.notAvailable = notAvailable;
 
 exports.getField = ({ resource, live }, field) =>

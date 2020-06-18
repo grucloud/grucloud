@@ -66,6 +66,28 @@ describe("AzProvider", async function () {
         },
       },
     });
+    const networkInterface = provider.makeNetworkInterface({
+      name: `network-interface`,
+      dependencies: {
+        resourceGroup,
+        virtualNetwork,
+        securityGroup,
+        subnet: subnetName,
+        //TODO publicIp
+      },
+      properties: {
+        properties: {
+          ipConfigurations: [
+            {
+              name: "ipconfig",
+              properties: {
+                privateIPAllocationMethod: "Dynamic",
+              },
+            },
+          ],
+        },
+      },
+    });
     const { success } = await provider.destroyAll();
     assert(success, "destroyAll ko");
   });
@@ -75,7 +97,7 @@ describe("AzProvider", async function () {
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 3);
+    assert.equal(plan.newOrUpdate.length, 4);
   });
   it("apply and destroy", async function () {
     await testPlanDeploy({ provider });

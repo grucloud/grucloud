@@ -1,8 +1,7 @@
 var AWS = require("aws-sdk");
-const _ = require("lodash");
+const { defaultsDeep } = require("lodash/fp");
 const assert = require("assert");
 const { getByIdCore } = require("./AwsCommon");
-
 const { retryExpectOk } = require("../Retry");
 const { getField } = require("../ProviderCommon");
 
@@ -108,11 +107,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
 
   const destroy = async ({ id, name }) => {
     logger.debug(`destroy sg ${toString({ name, id })}`);
-
-    if (_.isEmpty(id)) {
-      throw Error(`destroy sg invalid id`);
-    }
-
+    assert(id);
     await ec2.deleteSecurityGroup({ GroupId: id }).promise();
   };
   const configDefault = async ({ name, properties, dependenciesLive }) => {
@@ -121,14 +116,11 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     );
     // TODO Need vpc name here in parameter
     const { vpc } = dependenciesLive;
-    const config = _.defaultsDeep(
-      {
-        create: {
-          ...(vpc && { VpcId: getField(vpc, "VpcId") }),
-        },
+    const config = defaultsDeep(properties, {
+      create: {
+        ...(vpc && { VpcId: getField(vpc, "VpcId") }),
       },
-      properties
-    );
+    });
     logger.debug(`configDefault sg ${name} result: ${toString(config)}`);
     return config;
   };

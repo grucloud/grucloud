@@ -1,12 +1,14 @@
 const assert = require("assert");
-const _ = require("lodash");
+const { defaultsDeep } = require("lodash/fp");
 const CoreProvider = require("../CoreProvider");
 const AzClient = require("./AzClient");
 const logger = require("../../logger")({ prefix: "AzProvider" });
 const AzTag = require("./AzTag");
+const { getField, notAvailable } = require("../ProviderCommon");
 const { AzAuthorize } = require("./AzAuthorize");
-const compare = require("../../Utils").compare;
-//const toString = (x) => JSON.stringify(x, null, 4);
+const { isUpByIdCore } = require("../Common");
+//const compare = require("../../Utils").compare;
+const tos = (x) => JSON.stringify(x, null, 4);
 
 const fnSpecs = (config) => {
   const {
@@ -18,11 +20,27 @@ const fnSpecs = (config) => {
     stage,
   } = config;
 
+  const getStateName = (instance) => {
+    const { provisioningState } = instance.properties;
+    assert(provisioningState);
+    logger.debug(`stateName ${provisioningState}`);
+    return provisioningState;
+  };
+
+  const isUpByIdFactory = (getById) =>
+    isUpByIdCore({
+      states: ["Succeeded"],
+      getStateName,
+      getById,
+    });
+
   const isOurMinion = ({ resource }) => AzTag.isOurMinion({ resource, config });
+
   const buildTags = () => ({
     [managedByKey]: managedByValue,
     [stageTagKey]: stage,
   });
+
   return [
     {
       // https://docs.microsoft.com/en-us/rest/api/resources/resourcegroups
@@ -38,12 +56,16 @@ const fnSpecs = (config) => {
           pathBase: `/subscriptions/${subscriptionId}/resourcegroups`,
           pathSuffix: () => "",
           queryParameters: () => "?api-version=2019-10-01",
+          isUpByIdFactory,
           config,
           configDefault: ({ properties }) =>
-            _.defaultsDeep(properties, {
-              location,
-              tags: buildTags(config),
-            }),
+            defaultsDeep(
+              {
+                location,
+                tags: buildTags(config),
+              },
+              properties
+            ),
         }),
       isOurMinion,
     },
@@ -64,12 +86,16 @@ const fnSpecs = (config) => {
           },
           pathSuffixList: () => `/providers/Microsoft.Network/virtualNetworks`,
           queryParameters: () => "?api-version=2020-05-01",
+          isUpByIdFactory,
           config,
           configDefault: ({ properties }) =>
-            _.defaultsDeep(properties, {
-              location,
-              tags: buildTags(config),
-            }),
+            defaultsDeep(
+              {
+                location,
+                tags: buildTags(config),
+              },
+              properties
+            ),
         }),
       isOurMinion,
     },
@@ -90,15 +116,109 @@ const fnSpecs = (config) => {
           pathSuffixList: () =>
             `/providers/Microsoft.Network/networkSecurityGroups`,
           queryParameters: () => "?api-version=2020-05-01",
+          isUpByIdFactory,
           config,
           configDefault: ({ properties }) =>
-            _.defaultsDeep(properties, {
-              location,
-              tags: buildTags(config),
-            }),
+            defaultsDeep(
+              {
+                location,
+                tags: buildTags(config),
+              },
+              properties
+            ),
         }),
       isOurMinion,
     },
+    {
+      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networksecuritygroups
+      // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkInterfaces/{networkInterfaceName}?api-version=2020-05-01
+      // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2020-05-01
+
+      type: "NetworkInterface",
+      Client: ({ spec }) =>
+        AzClient({
+          spec,
+          dependsOn: ["ResourceGroup", "VirtualNetwork", "SecurityGroup"],
+          pathBase: `/subscriptions/${subscriptionId}`,
+          pathSuffix: ({ dependencies: { resourceGroup } }) => {
+            assert(resourceGroup, "missing resourceGroup dependency");
+            return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/networkInterfaces`;
+          },
+          pathSuffixList: () =>
+            `/providers/Microsoft.Network/networkInterfaces`,
+          queryParameters: () => "?api-version=2020-05-01",
+          config,
+          configDefault: async ({ properties, dependenciesLive }) => {
+            const {
+              securityGroup,
+              virtualNetwork,
+              subnet,
+              publicIp,
+            } = dependenciesLive;
+            //TODO securityGroup not needed ?
+            assert(securityGroup, "dependencies is missing securityGroup");
+            assert(virtualNetwork, "dependencies is missing virtualNetwork");
+            assert(subnet, "dependencies is missing subnet");
+            logger.debug(
+              `NetworkInterface configDefault ${tos({
+                properties,
+                subnet,
+                virtualNetwork,
+              })}`
+            );
+
+            const findSubnetId = (subnetName, vnetLive) => {
+              if (!vnetLive) {
+                logger.debug(`findSubnetId no id yet`);
+                return notAvailable(subnetName);
+              }
+              assert(
+                vnetLive.properties.subnets,
+                "virtual network is missing subnets"
+              );
+              const subnet = vnetLive.properties.subnets.find(
+                (item) => item.name === subnetName
+              );
+              if (!subnet) {
+                const message = `cannot find subnet ${subnetName} in the virtual network subnet: ${tos(
+                  { subnet: vnetLive.properties.subnet }
+                )}`;
+                logger.error(msg);
+                throw { code: 422, message };
+              }
+              logger.debug(
+                `findSubnetId ${tos({ subnetName, id: subnet.id })}`
+              );
+
+              return subnet.id;
+            };
+            return defaultsDeep(
+              {
+                location,
+                tags: buildTags(config),
+                properties: {
+                  networkSecurityGroup: { id: getField(securityGroup, "id") },
+                  ipConfigurations: [
+                    {
+                      properties: {
+                        subnet: {
+                          id: findSubnetId(subnet, virtualNetwork.live),
+                        },
+                        ...(publicIp && {
+                          publicIPAddress: getField(publicIp, "id"),
+                        }),
+                      },
+                    },
+                  ],
+                },
+              },
+              properties
+            );
+          },
+        }),
+      isOurMinion,
+    },
+    // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networkinterfaces
   ];
 };
 
@@ -119,7 +239,7 @@ module.exports = AzureProvider = async ({ name, config }) => {
       "password",
       "location",
     ],
-    config: _.defaults(config, configProviderDefault),
+    config: defaultsDeep(configProviderDefault, config),
     fnSpecs,
   });
 

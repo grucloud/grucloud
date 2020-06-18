@@ -110,7 +110,7 @@ describe("AwsProvider", async function () {
     const dependencies = await server.resolveDependencies();
     assert(dependencies.subnet);
     assert.equal(dependencies.subnet.resource.name, subnetName);
-    assert(dependencies.subnet.live);
+    assert(!dependencies.subnet.live);
 
     assert(dependencies.securityGroups.sg);
     assert(dependencies.keyPair);

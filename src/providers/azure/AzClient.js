@@ -17,6 +17,7 @@ module.exports = AzClient = ({
   pathSuffix,
   pathSuffixList,
   queryParameters,
+  isUpByIdFactory,
   config,
   configDefault,
 }) => {
@@ -36,6 +37,7 @@ module.exports = AzClient = ({
     pathSuffixList,
     queryParameters,
     verbCreate: "PUT",
+    isUpByIdFactory,
     axios: AxiosMaker({
       baseURL: BASE_URL,
       onHeaders: () => ({
