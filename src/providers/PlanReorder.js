@@ -27,7 +27,7 @@ const findUsedBy = ({ plan, specs, mapPlans }) => {
 const specUsedBy = (specs) =>
   specs.map((spec) => {
     const usedBy = specs
-      .filter(({ dependsOn }) => dependsOn === spec.type)
+      .filter(({ dependsOn = [] }) => dependsOn.includes(spec.type))
       .map((spec) => spec.type)
       .filter((x) => x);
     return { ...spec, usedBy };

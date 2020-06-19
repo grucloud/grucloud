@@ -185,7 +185,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["test", "--", "--inspect-brk=9229"],
+      "runtimeArgs": ["run", "test:mocha", "--", "--inspect-brk=9229"],
       "internalConsoleOptions": "openOnSessionStart",
       "cwd": "${workspaceRoot}/",
       "port": 9229

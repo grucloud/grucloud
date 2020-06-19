@@ -2,11 +2,10 @@
 
 ## Common:
 
-- make ine function for displayDeployErrors and displayDestroyErrors
+- make one function for displayDeployErrors and displayDestroyErrors
 
 - displayresources being created and destroyed
 - hide password from logs and plan
-- test --version, alias version
 - rename dependenciesLive in dependenciesLive in configDefault
 - add azure in multi example
 - provide CRUD url to CoreClient

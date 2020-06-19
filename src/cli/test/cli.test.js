@@ -1,6 +1,7 @@
 const assert = require("assert");
 const _ = require("lodash");
-
+const path = require("path");
+const shell = require("shelljs");
 const { main } = require("../cliMain");
 
 const filename = "src/providers/mock/test/MockStack.js";
@@ -44,6 +45,17 @@ describe("cli", function () {
     }).catch((error) => {
       assert.equal(error.code, 422);
     });
+  });
+  it("version", function () {
+    const program = path.join(__dirname, "../cliEntry.js");
+    const command = `${program} --version`;
+    shell.cd("test"); // Avoid deleting the main log file
+    const { stdout, code } = shell.exec(command);
+    shell.cd("..");
+    const version = stdout.replace(/(\r\n|\n|\r)/gm, "");
+    const re = /^\d+\.\d+\.\d+$/;
+    assert.equal(code, 0);
+    assert(re.test(version));
   });
 });
 describe("save to json", function () {

@@ -67,9 +67,9 @@ describe("AzProvider", async function () {
       },
     });
     const publicIpAddress = provider.makePublicIpAddress({
-      name: `ip-${stage}`,
+      name: `ip`,
       dependencies: {
-        resourceGroup: rg,
+        resourceGroup,
       },
       properties: {
         properties: {
@@ -108,7 +108,7 @@ describe("AzProvider", async function () {
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 4);
+    assert.equal(plan.newOrUpdate.length, 5);
   });
   it("apply and destroy", async function () {
     await testPlanDeploy({ provider });

@@ -505,9 +505,23 @@ module.exports = CoreProvider = ({
       flatten,
       filter((x) => x),
       tap((x) => logger.debug(`planFindDestroy unordered ${tos(x)})}`)),
+      tap((x) =>
+        logger.debug(
+          `planFindDestroy unordered list: ${tos(
+            x.map((x) => x.resource.type).join(",")
+          )})}`
+        )
+      ),
       (plans) => PlanReorder({ plans, specs }),
       flatten,
       reverse,
+      tap((x) =>
+        logger.debug(
+          `planFindDestroy order list: ${tos(
+            x.map((x) => x.resource.type).join(",")
+          )})}`
+        )
+      ),
       tap((x) => logger.debug(`planFindDestroy ordered ${tos(x)})}`)),
     ])(clients);
   };

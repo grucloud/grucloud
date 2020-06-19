@@ -84,9 +84,9 @@ exports.logError = (prefix, error) => {
   logger.error(`${prefix} error:${error.toString()}`);
   if (error.response) {
     if (error.response.data) {
-      logger.error(`${prefix} ${toString(error.response.data)}`);
+      logger.error(`${prefix} data: ${toString(error.response.data)}`);
     }
-    logger.error(`${prefix} ${toString(error.response.config)}`);
+    logger.error(`${prefix} config: ${toString(error.response.config)}`);
   }
   logger.error(`${prefix} stack:${error.stack}`);
 };

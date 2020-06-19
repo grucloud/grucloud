@@ -130,6 +130,36 @@ const fnSpecs = (config) => {
       isOurMinion,
     },
     {
+      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/publicipaddresses
+      // GET, PUT, DELETE, LIST https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/publicIPAddresses/{publicIpAddressName}?api-version=2020-05-01
+      // LISTALL                https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/publicIPAddresses?api-version=2020-05-01
+
+      type: "PublicIpAddress",
+      Client: ({ spec }) =>
+        AzClient({
+          spec,
+          dependsOn: ["ResourceGroup"],
+          pathBase: `/subscriptions/${subscriptionId}`,
+          pathSuffix: ({ dependencies: { resourceGroup } }) => {
+            assert(resourceGroup, "missing resourceGroup dependency");
+            return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/publicIPAddresses`;
+          },
+          pathSuffixList: () =>
+            `/providers/Microsoft.Network/publicIPAddresses`,
+          queryParameters: () => "?api-version=2020-05-01",
+          isUpByIdFactory,
+          config,
+          configDefault: ({ properties, dependenciesLive }) => {
+            return defaultsDeep(properties, {
+              location,
+              tags: buildTags(config),
+              properties: {},
+            });
+          },
+        }),
+      isOurMinion,
+    },
+    {
       // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networkinterfaces
       // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkInterfaces/{networkInterfaceName}?api-version=2020-05-01
       // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2020-05-01
@@ -225,36 +255,7 @@ const fnSpecs = (config) => {
         }),
       isOurMinion,
     },
-    {
-      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/publicipaddresses
-      // GET, PUT, DELETE, LIST https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/publicIPAddresses/{publicIpAddressName}?api-version=2020-05-01
-      // LISTALL                https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/publicIPAddresses?api-version=2020-05-01
 
-      type: "PublicIpAddress",
-      Client: ({ spec }) =>
-        AzClient({
-          spec,
-          dependsOn: ["ResourceGroup"],
-          pathBase: `/subscriptions/${subscriptionId}`,
-          pathSuffix: ({ dependencies: { resourceGroup } }) => {
-            assert(resourceGroup, "missing resourceGroup dependency");
-            return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/publicIPAddresses`;
-          },
-          pathSuffixList: () =>
-            `/providers/Microsoft.Network/publicIPAddresses`,
-          queryParameters: () => "?api-version=2020-05-01",
-          isUpByIdFactory,
-          config,
-          configDefault: ({ properties, dependenciesLive }) => {
-            return defaultsDeep(properties, {
-              location,
-              tags: buildTags(config),
-              properties: {},
-            });
-          },
-        }),
-      isOurMinion,
-    },
     {
       // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines
       // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}?api-version=2019-12-01

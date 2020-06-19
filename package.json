@@ -12,7 +12,8 @@
     "test:az": "NODE_PATH=src mocha src/providers/azure/test/**.test.js",
     "test:gcp": "NODE_PATH=src mocha src/providers/google/test/**.test.js",
     "test:aws": "NODE_PATH=src mocha src/providers/aws/test/**.test.js",
-    "test": "NODE_PATH=src nyc mocha",
+    "test:mocha": "NODE_PATH=src mocha 'src/**/*.test.js'",
+    "test": "NODE_PATH=src nyc mocha 'src/**/*.test.js'",
     "test:example": "node test/testExamples.js",
     "cpd": "jscpd -r console --format 'javascript,typescript' --ignore '**/*.test.*' ./src"
   },
