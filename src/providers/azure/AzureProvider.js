@@ -137,7 +137,12 @@ const fnSpecs = (config) => {
       Client: ({ spec }) =>
         AzClient({
           spec,
-          dependsOn: ["ResourceGroup", "VirtualNetwork", "SecurityGroup"],
+          dependsOn: [
+            "ResourceGroup",
+            "VirtualNetwork",
+            "SecurityGroup",
+            "PublicIpAddress",
+          ],
           pathBase: `/subscriptions/${subscriptionId}`,
           pathSuffix: ({ dependencies: { resourceGroup } }) => {
             assert(resourceGroup, "missing resourceGroup dependency");
@@ -152,12 +157,13 @@ const fnSpecs = (config) => {
               securityGroup,
               virtualNetwork,
               subnet,
-              publicIp,
+              publicIpAddress,
             } = dependenciesLive;
             //TODO securityGroup not needed ?
             assert(securityGroup, "dependencies is missing securityGroup");
             assert(virtualNetwork, "dependencies is missing virtualNetwork");
             assert(subnet, "dependencies is missing subnet");
+            assert(publicIpAddress, "dependencies is missing publicIpAddress");
             logger.debug(
               `NetworkInterface configDefault ${tos({
                 properties,
@@ -203,8 +209,10 @@ const fnSpecs = (config) => {
                         subnet: {
                           id: findSubnetId(subnet, virtualNetwork.live),
                         },
-                        ...(publicIp && {
-                          publicIPAddress: getField(publicIp, "id"),
+                        ...(publicIpAddress && {
+                          publicIPAddress: {
+                            id: getField(publicIpAddress, "id"),
+                          },
                         }),
                       },
                     },
@@ -213,6 +221,36 @@ const fnSpecs = (config) => {
               },
               properties
             );
+          },
+        }),
+      isOurMinion,
+    },
+    {
+      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/publicipaddresses
+      // GET, PUT, DELETE, LIST https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/publicIPAddresses/{publicIpAddressName}?api-version=2020-05-01
+      // LISTALL                https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/publicIPAddresses?api-version=2020-05-01
+
+      type: "PublicIpAddress",
+      Client: ({ spec }) =>
+        AzClient({
+          spec,
+          dependsOn: ["ResourceGroup"],
+          pathBase: `/subscriptions/${subscriptionId}`,
+          pathSuffix: ({ dependencies: { resourceGroup } }) => {
+            assert(resourceGroup, "missing resourceGroup dependency");
+            return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Network/publicIPAddresses`;
+          },
+          pathSuffixList: () =>
+            `/providers/Microsoft.Network/publicIPAddresses`,
+          queryParameters: () => "?api-version=2020-05-01",
+          isUpByIdFactory,
+          config,
+          configDefault: ({ properties, dependenciesLive }) => {
+            return defaultsDeep(properties, {
+              location,
+              tags: buildTags(config),
+              properties: {},
+            });
           },
         }),
       isOurMinion,

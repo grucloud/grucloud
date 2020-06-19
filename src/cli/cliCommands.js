@@ -54,6 +54,13 @@ const saveToJson = ({ command, commandOptions, programOptions, result }) => {
   );
 };
 
+const safeJsonParse = (json) => {
+  try {
+    return JSON.parse(json);
+  } catch (error) {
+    return json;
+  }
+};
 const displayError = (error) => {
   if (!error) {
     // TODO why error is sometimes undefined ?
@@ -63,11 +70,12 @@ const displayError = (error) => {
   console.error(error.message);
   if (error.response) {
     const { response } = error;
+
     errorToDisplay = {
       Output: response.data,
       Input: {
         config: pick(response.config, ["url", "method", "baseURL"]),
-        data: JSON.parse(response.config.data),
+        data: safeJsonParse(response.config.data),
       },
     };
     console.error(YAML.stringify(errorToDisplay));
@@ -174,7 +182,7 @@ exports.planApply = async ({
     console.log(`Cannot deploy resource ${formatResource(item.resource)}`);
     displayError(error);
   };
-
+  //TODO make ine function for displayDeployErrors and displayDestroyErrors
   const displayDeployErrors = pipe([
     tap((x) => logger.error(`displayDeployErrors begins ${tos(x)}`)),
     filter(({ results: { success } }) => !success),
@@ -259,15 +267,16 @@ exports.planDestroy = async ({
     console.log(`Cannot destroy resource ${formatResource(item.resource)}`);
     displayError(error);
   };
-
+  // TODO common function with displayDeployErrors
   const displayDestroyErrors = pipe([
-    //tap((x) => console.log("displayDestroyErrors begin ", x)),
+    tap((x) => logger.error(`displayDestroyErrors ${tos(x)}`)),
     filter(({ results: { success } }) => !success),
     flatten,
     pluck("results"),
     pluck("results"),
     flatten,
-    //tap((x) => console.log("displayDestroyErrors begin ", x)),
+    filter(({ error }) => error),
+    tap((x) => logger.error(`displayDestroyErrors filtered ${tos(x)}`)),
     map(tap(displayDestroyError)),
   ]);
 

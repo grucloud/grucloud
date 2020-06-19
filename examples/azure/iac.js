@@ -51,6 +51,19 @@ const createStack = async ({ config }) => {
       },
     },
   });
+
+  // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/publicipaddresses/createorupdate#request-body
+  const publicIpAddress = provider.makePublicIpAddress({
+    name: `ip-${stage}`,
+    dependencies: {
+      resourceGroup: rg,
+    },
+    properties: {
+      properties: {
+        publicIPAllocationMethod: "Dynamic",
+      },
+    },
+  });
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networkinterfaces/createorupdate#request-body
   const networkInterface = provider.makeNetworkInterface({
     name: `network-interface-${stage}`,
@@ -59,7 +72,7 @@ const createStack = async ({ config }) => {
       virtualNetwork: vnet,
       securityGroup: sg,
       subnet: `subnet-${stage}`,
-      //publicIp
+      publicIpAddress,
     },
     properties: {
       properties: {
@@ -74,6 +87,7 @@ const createStack = async ({ config }) => {
       },
     },
   });
+
   const vm = provider.makeVirtualMachine({
     name: `vm-${stage}`,
     dependencies: {

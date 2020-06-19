@@ -66,6 +66,17 @@ describe("AzProvider", async function () {
         },
       },
     });
+    const publicIpAddress = provider.makePublicIpAddress({
+      name: `ip-${stage}`,
+      dependencies: {
+        resourceGroup: rg,
+      },
+      properties: {
+        properties: {
+          publicIPAllocationMethod: "Dynamic",
+        },
+      },
+    });
     const networkInterface = provider.makeNetworkInterface({
       name: `network-interface`,
       dependencies: {
@@ -73,7 +84,7 @@ describe("AzProvider", async function () {
         virtualNetwork,
         securityGroup,
         subnet: subnetName,
-        //TODO publicIp
+        publicIpAddress,
       },
       properties: {
         properties: {
