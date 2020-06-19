@@ -20,7 +20,9 @@ const {
   all,
   filter,
   not,
+  tryCatch,
 } = require("rubico");
+
 const { isEmpty, pluck, flatten } = require("ramda");
 
 const plansHasSuccess = all(({ results }) => results.success);
@@ -61,7 +63,8 @@ const safeJsonParse = (json) => {
     return json;
   }
 };
-const displayError = (error) => {
+const displayError = (name, error) => {
+  console.error(name);
   if (!error) {
     // TODO why error is sometimes undefined ?
     console.error("error because the error is not defined!");
@@ -111,17 +114,23 @@ const planQuery = async ({
   commandOptions,
   programOptions,
 }) =>
-  pipe([
-    doPlanQuery,
-    tap((result) =>
-      saveToJson({ command: "plan", commandOptions, programOptions, result })
-    ),
-    switchCase([
-      hasPlans,
-      pipe([countDeployResources, displayQueryPlanSummary]),
-      displayQueryNoPlan,
+  tryCatch(
+    pipe([
+      doPlanQuery,
+      tap((result) =>
+        saveToJson({ command: "plan", commandOptions, programOptions, result })
+      ),
+      switchCase([
+        hasPlans,
+        pipe([countDeployResources, displayQueryPlanSummary]),
+        displayQueryNoPlan,
+      ]),
     ]),
-  ])({ providers, programOptions });
+    (error) => {
+      displayError("PlanQuery", error);
+      throw { code: 422, error };
+    }
+  )({ providers, programOptions });
 
 exports.planQuery = planQuery;
 
@@ -180,7 +189,7 @@ exports.planApply = async ({
   const displayDeployError = ({ item, error = {} }) => {
     logger.error(`displayDeployError ${tos({ item, error })}`);
     console.log(`Cannot deploy resource ${formatResource(item.resource)}`);
-    displayError(error);
+    displayError("Plan Apply", error);
   };
   //TODO make ine function for displayDeployErrors and displayDestroyErrors
   const displayDeployErrors = pipe([
@@ -208,10 +217,16 @@ exports.planApply = async ({
     abortDeploy,
   ]);
 
-  await pipe([
-    doPlanQuery,
-    switchCase([hasPlans, processDeployPlans, processNoPlan]),
-  ])({ providers });
+  return tryCatch(
+    pipe([
+      doPlanQuery,
+      switchCase([hasPlans, processDeployPlans, processNoPlan]),
+    ]),
+    (error) => {
+      displayError("Plan Apply", error);
+      throw { code: 422, error };
+    }
+  )({ providers });
 };
 
 // Plan Destroy
@@ -265,7 +280,7 @@ exports.planDestroy = async ({
 
   const displayDestroyError = ({ item, error }) => {
     console.log(`Cannot destroy resource ${formatResource(item.resource)}`);
-    displayError(error);
+    displayError("Plan Destroy", error);
   };
   // TODO common function with displayDeployErrors
   const displayDestroyErrors = pipe([
@@ -312,11 +327,17 @@ exports.planDestroy = async ({
     };
   };
 
-  await pipe([
-    async ({ providers }) => await map(findDestroy)(providers),
-    //tap((x) => console.log(JSON.stringify(x, null, 4))),
-    switchCase([hasEmptyPlan, processHasNoPlan, processDestroyPlans]),
-  ])({ providers });
+  return tryCatch(
+    pipe([
+      async ({ providers }) => await map(findDestroy)(providers),
+      //tap((x) => console.log(JSON.stringify(x, null, 4))),
+      switchCase([hasEmptyPlan, processHasNoPlan, processDestroyPlans]),
+    ]),
+    (error) => {
+      displayError("Plan Destroy", error);
+      throw { code: 422, error };
+    }
+  )({ providers });
 };
 
 const countResources = pipe([
@@ -349,28 +370,34 @@ const isEmptyList = pipe([flatten, isEmpty]);
 
 //List all
 exports.list = async ({ infra, commandOptions, programOptions }) =>
-  await pipe([
-    async (providers) =>
-      await map(
-        async (provider) =>
-          await pipe([
-            () =>
-              runAsyncCommand(
-                () => provider.listLives(commandOptions),
-                `List for ${provider.name()}`
+  tryCatch(
+    await pipe([
+      async (providers) =>
+        await map(
+          async (provider) =>
+            await pipe([
+              () =>
+                runAsyncCommand(
+                  () => provider.listLives(commandOptions),
+                  `List for ${provider.name()}`
+                ),
+              tap((targets) =>
+                displayLive({ providerName: provider.name(), targets })
               ),
-            tap((targets) =>
-              displayLive({ providerName: provider.name(), targets })
-            ),
-          ])()
-      )(providers),
-    tap((result) =>
-      saveToJson({ command: "list", commandOptions, programOptions, result })
-    ),
+            ])()
+        )(providers),
+      tap((result) =>
+        saveToJson({ command: "list", commandOptions, programOptions, result })
+      ),
 
-    switchCase([
-      isEmptyList,
-      displayNoList,
-      pipe([countResources, displayListResults]),
+      switchCase([
+        isEmptyList,
+        displayNoList,
+        pipe([countResources, displayListResults]),
+      ]),
     ]),
-  ])(infra.providers);
+    (error) => {
+      displayError("Plan List", error);
+      throw { code: 422, error };
+    }
+  )(infra.providers);

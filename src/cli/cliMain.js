@@ -22,7 +22,7 @@ exports.main = ({ argv }) => {
   return program.parseAsync(argv).catch((error) => {
     const { code } = error;
     if (code === 422) {
-      console.log(error.message);
+      //console.log(error.message);
       process.exit(22);
     } else {
       console.log(error.stack);
