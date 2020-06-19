@@ -1,7 +1,7 @@
 const { AzureProvider } = require("@grucloud/core");
 
 const createStack = async ({ config }) => {
-  const { stage } = config;
+  const { stage, machine } = config;
   // Create an Azure provider
   const provider = await AzureProvider({ name: "azure", config });
   const rg = provider.makeResourceGroup({
@@ -71,6 +71,34 @@ const createStack = async ({ config }) => {
             },
           },
         ],
+      },
+    },
+  });
+  const vm = provider.makeVirtualMachine({
+    name: `vm-${stage}`,
+    dependencies: {
+      resourceGroup: rg,
+      networkInterface: networkInterface,
+    },
+    properties: {
+      properties: {
+        hardwareProfile: {
+          vmSize: "Standard_A1_v2",
+        },
+        storageProfile: {
+          imageReference: {
+            // az vm image list
+            offer: "UbuntuServer",
+            publisher: "Canonical",
+            sku: "18.04-LTS",
+            version: "latest",
+          },
+        },
+        osProfile: {
+          adminUsername: machine.adminUsername,
+          computerName: "myVM",
+          adminPassword: machine.adminPassword,
+        },
       },
     },
   });

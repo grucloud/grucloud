@@ -49,10 +49,12 @@ az ad sp create-for-rbac -n "sp1"
 
 Save somewhere the **appId** and the **password**
 
-### Register the Microsoft.Network
+### Register the Microsoft.Network and Microsoft.Compute namespaces
 
 ```
 az provider register --namespace Microsoft.Network
+az provider register --namespace Microsoft.Compute
+
 ```
 
 See https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-register-resource-provider

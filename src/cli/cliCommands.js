@@ -64,7 +64,7 @@ const displayError = (error) => {
   if (error.response) {
     const { response } = error;
     errorToDisplay = {
-      Iutput: response.data,
+      Output: response.data,
       Input: {
         config: pick(response.config, ["url", "method", "baseURL"]),
         data: JSON.parse(response.config.data),

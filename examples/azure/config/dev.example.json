@@ -2,5 +2,9 @@
   "tenantId": "",
   "subscriptionId": "",
   "appId": "",
-  "password": ""
+  "password": "",
+  "machine": {
+    "adminUsername": "",
+    "adminPassword": ""
+  }
 }

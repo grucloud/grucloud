@@ -130,10 +130,9 @@ const fnSpecs = (config) => {
       isOurMinion,
     },
     {
-      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networksecuritygroups
+      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networkinterfaces
       // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkInterfaces/{networkInterfaceName}?api-version=2020-05-01
       // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2020-05-01
-
       type: "NetworkInterface",
       Client: ({ spec }) =>
         AzClient({
@@ -218,7 +217,48 @@ const fnSpecs = (config) => {
         }),
       isOurMinion,
     },
-    // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networkinterfaces
+    {
+      // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines
+      // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}?api-version=2019-12-01
+      // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-12-01
+
+      type: "VirtualMachine",
+      Client: ({ spec }) =>
+        AzClient({
+          spec,
+          dependsOn: ["ResourceGroup", "NetworkInterface"],
+          pathBase: `/subscriptions/${subscriptionId}`,
+          pathSuffix: ({ dependencies: { resourceGroup } }) => {
+            assert(resourceGroup, "missing resourceGroup dependency");
+            return `/resourceGroups/${resourceGroup.name}/providers/Microsoft.Compute/virtualMachines`;
+          },
+          pathSuffixList: () => `/providers/Microsoft.Compute/virtualMachines`,
+          queryParameters: () => "?api-version=2019-12-01",
+          isUpByIdFactory,
+          config,
+          configDefault: ({ properties, dependenciesLive }) => {
+            const { networkInterface } = dependenciesLive;
+            assert(
+              networkInterface,
+              "networkInterfaces is missing VirtualMachine"
+            );
+            return defaultsDeep(properties, {
+              location,
+              tags: buildTags(config),
+              properties: {
+                networkProfile: {
+                  networkInterfaces: [
+                    {
+                      id: getField(networkInterface, "id"),
+                    },
+                  ],
+                },
+              },
+            });
+          },
+        }),
+      isOurMinion,
+    },
   ];
 };
 

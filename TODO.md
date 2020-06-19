@@ -22,10 +22,10 @@ debug: destroy url: /subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resource
 info: tx https://management.azure.com
 error: delete azure/security-group-dev error:Error: timeout of 30000ms exceeded
 error: delete azure/security-group-dev stack:Error: timeout of 30000ms exceeded
+
 at createError (/Users/fredericheem/grucloud/node_modules/axios/lib/core/createError.js:16:15)
 
 - public ip: https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networkinterfaces
-- virtual_machine
 
 ## TODO Aws:
 
@@ -38,7 +38,6 @@ at createError (/Users/fredericheem/grucloud/node_modules/axios/lib/core/createE
 
 ## TODO Goggle
 
-- check defaultsDeep
 - rename in gcp
 - instance: add service account
 - is config.tag still being used ? yes but in instance device name, rename tag to something else

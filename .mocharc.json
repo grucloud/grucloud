@@ -1,6 +1,5 @@
 {
   "watch-files": ["src/**/*.js"],
-  "spec": ["src/**/*.test.js"],
   "extension": ["js"],
   "reporter": "spec",
   "timeout": 200000,

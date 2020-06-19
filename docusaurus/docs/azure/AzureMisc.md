@@ -6,6 +6,7 @@ title: Miscellaneous
 ## Useful commands
 
 - az account list-locations -o table
+- az vm image list
 
 ## Useful Links
 
