@@ -1,14 +1,10 @@
-const assert = require("assert");
-const _ = require("lodash");
-const MockProvider = require("../MockProvider");
-const MockCloud = require("../MockCloud");
+const { MockProvider } = require("@grucloud/core");
 
 const createStack = async ({ config }) => {
-  // Provider
-  const mockCloud = MockCloud(config.mockCloudInitStates);
+  const { stage, machine } = config;
   const provider = await MockProvider({
     name: "mock",
-    config: { ...config, mockCloud },
+    config,
   });
 
   // Ip

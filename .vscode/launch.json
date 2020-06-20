@@ -4,7 +4,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Mock Query",
+      "name": "Mock Query",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/src/providers/mock/test/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -14,7 +14,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Mock List",
+      "name": "Mock List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/src/providers/mock/test/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -23,7 +23,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Mock Apply",
+      "name": "Mock Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/src/providers/mock/test/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -33,12 +33,57 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Mock Destroy",
+      "name": "Mock Destroy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/src/providers/mock/test/",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["--infra", "MockStack.js", "destroy"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Mock Query",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/mock/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["query"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Mock Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/mock/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Mock Apply",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/mock/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["apply"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Mock Destroy",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/mock/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["destroy"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Mock List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/mock/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["list"]
     },
     {
       "type": "node",

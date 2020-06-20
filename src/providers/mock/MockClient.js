@@ -13,7 +13,7 @@ const { findField } = require("../Common");
 
 const BASE_URL = "http://localhost:8089";
 
-const setupMock = ({ axios, config, spec }) => {
+const setupAxiosMock = ({ axios, config, spec }) => {
   const { type } = spec;
   const { mockCloud } = config;
   assert(mockCloud);
@@ -57,24 +57,17 @@ const setupMock = ({ axios, config, spec }) => {
   //TODO delete all
 };
 
-module.exports = MockClient = ({
-  spec,
-  url,
-  config,
-  authKey,
-  configDefault,
-}) => {
+module.exports = MockClient = ({ spec, url, config, configDefault }) => {
   assert(spec);
   assert(url);
-
   const findName = (item) => findField({ item, field: "name" });
 
   const axios = AxiosMaker({
     baseURL: urljoin(BASE_URL, url),
-    onHeaders: () => ({ "X-Auth-Token": authKey }),
+    onHeaders: () => ({}),
   });
 
-  setupMock({ axios, spec, config });
+  config.mockCloud && setupAxiosMock({ axios, spec, config });
 
   const core = CoreClient({
     type: "mock",

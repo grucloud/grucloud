@@ -8,14 +8,30 @@ const toString = (x) => JSON.stringify(x, null, 4);
 module.exports = MockServer = (config) => {
   const koa = new Koa();
   const { routes } = config;
-  const port = config.port || 3765;
+  const port = config.port || 8089;
   let httpHandle;
   koa.use(koaBody());
+
+  koa.use(async (ctx, next) => {
+    const start = new Date();
+    console.log(`${ctx.method} ${ctx.url} begins`);
+    logger.debug(`${ctx.method} ${ctx.url} begins`);
+    logger.debug(`${JSON.stringify(ctx.header, 4, null)}`);
+    await next();
+    const ms = new Date() - start;
+    logger.debug(
+      `${ctx.method} ${ctx.url} ends in ${ms}ms, code: ${ctx.status}`
+    );
+    console.log(
+      `${ctx.method} ${ctx.url} ends in ${ms}ms, code: ${ctx.status}`
+    );
+  });
 
   const mapRoutes = new Map();
   routes.map((route) => mapRoutes.set(route, new Map()));
 
   const createRouter = ({ path }) => {
+    console.log("createRouter", path);
     return new Router()
       .get(`${path}`, (context) => {
         const mapResouces = mapRoutes.get(path);
@@ -26,7 +42,7 @@ module.exports = MockServer = (config) => {
         logger.debug(`get ${path}, result: ${toString(context.body)}`);
         context.status = 200;
       })
-      .get(path, `${path}:id`, (context) => {
+      .get(path, `${path}/:id`, (context) => {
         const {
           params: { id },
         } = context;
@@ -41,7 +57,7 @@ module.exports = MockServer = (config) => {
           context.status = 404;
         }
       })
-      .del(path, `${path}:id`, (context, next) => {
+      .del(path, `${path}/:id`, (context, next) => {
         const {
           params: { id },
         } = context;

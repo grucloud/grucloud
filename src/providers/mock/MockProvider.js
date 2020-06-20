@@ -145,12 +145,10 @@ const fnSpecs = (config) => {
 module.exports = MockProvider = async ({ name, config }) => {
   assert(name);
   assert(config);
-  const mockCloud = MockCloud(config.mockCloudInitStates);
-
   return CoreProvider({
     type: "mock",
     name,
-    config: { ...config, mockCloud },
+    config,
     fnSpecs,
   });
 };

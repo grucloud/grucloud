@@ -306,7 +306,7 @@ module.exports = CoreProvider = ({
         })}`
       );
 
-      return { type: client.spec.type, resources: [], error };
+      throw error;
     }
   };
 
