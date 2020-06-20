@@ -59,8 +59,11 @@ module.exports = AwsSubnet = ({ spec, config }) => {
       throw Error(`destroy subnet invalid id`);
     }
 
-    await ec2.deleteSubnet({ SubnetId: id }).promise();
-    logger.debug(`destroy subnet IN PROGRESS, ${toString({ name, id })}`);
+    const result = await ec2.deleteSubnet({ SubnetId: id }).promise();
+    logger.debug(
+      `destroy subnet IN PROGRESS, ${toString({ name, id, result })}`
+    );
+    return result;
   };
 
   const list = async () => {

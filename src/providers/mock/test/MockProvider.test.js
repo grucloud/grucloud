@@ -36,7 +36,6 @@ describe("MockProvider", async function () {
     assert(config);
     assert(config.networkInterfaces[0]);
     assert(config.networkInterfaces[0].accessConfigs);
-    assert(config.networkInterfaces[0].accessConfigs[0].name);
     assert(config.networkInterfaces[0].accessConfigs[0].natIP);
 
     //console.log(JSON.stringify(config, null, 4));

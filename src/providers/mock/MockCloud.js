@@ -1,4 +1,4 @@
-const _ = require("lodash");
+const { map, defaults, cloneDeep } = require("lodash/fp");
 const assert = require("assert");
 const { v4: uuidv4 } = require("uuid");
 const logger = require("../../logger")({ prefix: "MockCloud" });
@@ -38,12 +38,13 @@ const mockCloudInitStatesDefault = [
 
 module.exports = MockCloud = (initStates = []) => {
   logger.debug(`MockCloud ${toString(initStates)}`);
-  initStates = _.defaults(initStates, mockCloudInitStatesDefault);
-  const states = initStates.map((state) => [
-    state[0],
-    new Map(_.cloneDeep(state[1])),
-  ]);
+  initStates = defaults(mockCloudInitStatesDefault, initStates);
+  const states = map((state) => [state[0], new Map(cloneDeep(state[1]))])(
+    initStates
+  );
   const resourceMap = new Map(states);
+  const resourceNameMap = new Map();
+
   const onGet = ({ type, id }) => {
     logger.info(`onGet ${toString({ type, id })}`);
     const resource = resourceMap.get(type);
@@ -60,28 +61,26 @@ module.exports = MockCloud = (initStates = []) => {
   };
   const onDestroy = async ({ type, id }) => {
     logger.info(`onDestroy ${toString({ type, id })}`);
+
     const resource = resourceMap.get(type);
     if (resource) {
       if (!resource.has(id)) {
         logger.error(`onDestroy cannot find ${toString({ type, id })}`);
         return;
       }
+      // TODO they should have a name
+      const { name } = resource.get(id);
+      if (name) {
+        resourceNameMap.delete(name);
+      }
+      assert(name);
       resource.delete(id);
       logger.info(`onDestroy #remaining ${resource.size}`);
     } else {
       throw Error(`onDestroy cannot find ${toString({ type })}`);
     }
   };
-  /*
-  const onDestroyAll = async ({ type }) => {
-    logger.info(`onDestroyAll ${toString({ type })}`);
-    const resource = resourceMap.get(type);
-    if (resource) {
-      resource.clear();
-    } else {
-      throw Error(`onDestroyAll cannot find ${toString({ type })}`);
-    }
-  };*/
+
   const onList = ({ type }) => {
     const resource = resourceMap.get(type);
     if (resource) {
@@ -96,21 +95,24 @@ module.exports = MockCloud = (initStates = []) => {
   const onCreate = ({ type, payload }) => {
     logger.info(`onCreate ${toString({ type, payload })}`);
     const resource = resourceMap.get(type);
+    const { name } = payload;
+    assert(name);
+
     if (resource) {
       const id = uuidv4();
       const newPayload = { id, ...payload };
-      //TODO check if already exist
+      if (resourceNameMap.has(name)) {
+        throw Error(`${name} already created`);
+      } else {
+        resourceNameMap.set(name, newPayload);
+      }
+
       resource.set(id, newPayload);
       return newPayload;
     } else {
       throw Error(`onDestroyAll cannot find ${toString({ type })}`);
     }
   };
-  /*
-  const reset = () => {
-    states.forEach((state) => resourceMap.set(state[0], state[1]));
-  };
-  */
 
   return {
     onGet,

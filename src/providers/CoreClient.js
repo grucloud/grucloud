@@ -161,7 +161,7 @@ module.exports = CoreClient = ({
       });
       const data = onResponseDelete(result.data);
       logger.debug(
-        `destroy ${toString({ name, type, id })} should be destroyed`
+        `destroy ${toString({ name, type, id, data })} should be destroyed`
       );
 
       return data;

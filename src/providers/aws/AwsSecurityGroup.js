@@ -108,7 +108,9 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const destroy = async ({ id, name }) => {
     logger.debug(`destroy sg ${toString({ name, id })}`);
     assert(id);
-    await ec2.deleteSecurityGroup({ GroupId: id }).promise();
+    const result = await ec2.deleteSecurityGroup({ GroupId: id }).promise();
+    logger.debug(`destroy sg IN PROGRESS, ${toString({ name, id, result })}`);
+    return result;
   };
   const configDefault = async ({ name, properties, dependenciesLive }) => {
     logger.debug(

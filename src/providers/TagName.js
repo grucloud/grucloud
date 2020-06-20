@@ -6,7 +6,7 @@ exports.fromTagName = (name, tag) => name && name.replace(tag, "");
 exports.hasTag = hasTag;
 
 exports.isOurMinion = ({ resource, tag: ourTag }) => {
-  logger.info(`isOurMinion ? ${toString({ ourTag, resource })}`);
+  //logger.info(`isOurMinion ? ${toString({ ourTag, resource })}`);
   if (hasTag(resource.name, ourTag)) {
     logger.info(`isOurMinion yes, same resource name`);
     return true;

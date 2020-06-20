@@ -40,12 +40,16 @@ const setupAxiosMock = ({ axios, config, spec }) => {
   });
   mock.onPost("").reply((config) => {
     logger.debug(`mock onPost: ${tos(config.data)}`);
-
-    const data = mockCloud.onCreate({
-      type,
-      payload: JSON.parse(config.data),
-    });
-    return [200, data];
+    try {
+      const data = mockCloud.onCreate({
+        type,
+        payload: JSON.parse(config.data),
+      });
+      return [200, data];
+    } catch (error) {
+      logger.error(`mock onPost: ${tos(error)}`);
+      return [500];
+    }
   });
   mock.onDelete(/^\/.+/).reply((config) => {
     const data = mockCloud.onDestroy({

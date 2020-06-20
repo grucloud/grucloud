@@ -3,7 +3,6 @@
 ## Common:
 
 - make one function for displayDeployErrors and displayDestroyErrors
-
 - displayresources being created and destroyed
 - hide password from logs and plan
 - rename dependenciesLive in dependenciesLive in configDefault
@@ -14,6 +13,10 @@
 - await client.create({ name: resourceName, payload }); should return {id}
 - compare or compareObject
 - https://cloudcraft.co/
+
+for reference Error:
+"state": "ERROR",
+"error": {}
 
 ## Cli
 
@@ -50,5 +53,3 @@ at createError (/Users/fredericheem/grucloud/node_modules/axios/lib/core/createE
 - add service account
 
 ## TODO Mock
-
-Add mock example

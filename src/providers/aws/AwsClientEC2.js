@@ -95,7 +95,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
       throw Error(`destroy invalid id`);
     }
 
-    await ec2
+    const result = await ec2
       .terminateInstances({
         InstanceIds: [id],
       })
@@ -109,7 +109,8 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
       isOk: (result) => result,
     });
 
-    logger.debug(`destroy ec2 done, ${toString({ name, id })}`);
+    logger.debug(`destroy ec2 done, ${toString({ name, id, result })}`);
+    return result;
   };
   const configDefault = async ({ name, properties, dependenciesLive }) => {
     logger.debug(`configDefault ${toString({ dependenciesLive })}`);

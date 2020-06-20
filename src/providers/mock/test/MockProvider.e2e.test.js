@@ -21,6 +21,11 @@ describe("MockProvider e2e", async function () {
 
   it("plan destroy", async function () {
     {
+      const liveResources = await provider.listLives({ all: true });
+      assert.equal(liveResources.length, 3);
+    }
+
+    {
       const plan = await provider.planQuery();
       assert(plan.destroy);
       const { results, success } = await provider.planApply(plan);
@@ -40,6 +45,51 @@ describe("MockProvider e2e", async function () {
       assert.equal(planDestroyed.length, 6);
     }
   });
+  it("simple plan", async function () {
+    {
+      {
+        const { success } = await provider.destroyAll();
+        assert(success);
+      }
+      {
+        const liveResources = await provider.listLives({ our: true });
+        assert.equal(liveResources.length, 0);
+      }
+
+      const plan = await provider.planQuery();
+      assert(plan.destroy);
+      const { results, success } = await provider.planApply(plan);
+      assert(success);
+      assert(results);
+      results
+        .filter(({ item: { action } }) => action === "CREATE")
+        .forEach(({ item, input, output }) => {
+          assert(input);
+          assert(output);
+        });
+      results
+        .filter(({ item: { action } }) => action !== "CREATE")
+        .forEach(({ item, input, output }) => {
+          assert(!input);
+          assert(!output);
+        });
+
+      assert.equal(
+        results.length,
+        plan.newOrUpdate.length + plan.destroy.length
+      );
+
+      {
+        const lives = await provider.listLives({ our: true });
+        assert.equal(lives.length, plan.newOrUpdate.length);
+      }
+      {
+        const { success } = await provider.destroyAll();
+        assert(success);
+      }
+    }
+  });
+
   it("LifeCycle", async function () {
     await testPlanDeploy({ provider });
     await testPlanDestroy({ provider });

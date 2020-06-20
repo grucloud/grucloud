@@ -42,7 +42,7 @@ const fnSpecs = (config) => {
     },
     {
       type: "Instance",
-      dependsOn: ["SecurityGroup"],
+      dependsOn: ["SecurityGroup", "Subnet"],
       Client: ({ spec }) =>
         AwsClientEC2({
           spec,

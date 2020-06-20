@@ -44,7 +44,7 @@ describe("AzResourceGroup", async function () {
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 1);
   });
-  it("apply and destroy", async function () {
+  it("az apply and destroy", async function () {
     await testPlanDeploy({ provider });
     await testPlanDestroy({ provider });
   });

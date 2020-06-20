@@ -85,8 +85,9 @@ module.exports = AwsVpc = ({ spec, config }) => {
       throw Error(`destroy vpc invalid id`);
     }
 
-    await ec2.deleteVpc({ VpcId: id }).promise();
-    logger.debug(`destroy vpc IN PROGRESS, ${tos({ name, id })}`);
+    const result = await ec2.deleteVpc({ VpcId: id }).promise();
+    logger.debug(`destroy vpc IN PROGRESS, ${tos({ name, id, result })}`);
+    return result;
   };
 
   const configDefault = async ({ properties }) => properties;

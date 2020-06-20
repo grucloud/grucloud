@@ -10,8 +10,8 @@ const { checkConfig } = require("../Utils");
 const { fromTagName } = require("./TagName");
 const { SpecDefault } = require("./SpecDefault");
 const { retryExpectOk } = require("./Retry");
-const { PlanReorder } = require("./PlanReorder");
 const { logError } = require("./Common");
+const { Planner } = require("./Planner");
 
 const configProviderDefault = {
   tag: "ManagedByGru",
@@ -37,16 +37,18 @@ const destroyByClient = async ({ client, name, config }) => {
 
   const id = client.findId(config);
   assert(id);
-  await client.destroy({ id, name });
+  const result = await client.destroy({ id, name });
   await retryExpectOk({
     name: `destroy ${name}`,
     fn: () => client.isDownById({ id, name }),
     isOk: (result) => result,
   });
+
   logger.debug(
-    `destroyByClient: DONE ${tos({ type: client.spec.type, name })}`
+    `destroyByClient: DONE ${tos({ type: client.spec.type, name, result })}`
   );
   //TODO Double check with getByName
+  return result;
 };
 
 const ResourceMaker = ({
@@ -157,6 +159,7 @@ const ResourceMaker = ({
         throw Error(`Resource ${type}/${resourceName} is not tagged correctly`);
       }
     }
+    return instance;
   };
 
   const planUpsert = async ({ resource }) => {
@@ -366,18 +369,23 @@ module.exports = CoreProvider = ({
       newOrUpdate: await planUpsert(),
       destroy: await planFindDestroy({}, PlanDirection.UP),
     };
-    logger.info(`planQuery results: ${tos(plan)}`);
+    logger.info(
+      `planQuery results: #create ${plan.newOrUpdate.length}  ${tos(plan)}`
+    );
     return plan;
   };
   const planApply = async (plan) => {
     try {
       assert(plan);
       logger.info(`Apply Plan ${tos(plan)}`);
-      const resultCreate = await upsertResources(plan.newOrUpdate);
       const resultDestroy = await planDestroy(plan.destroy, PlanDirection.UP);
+
+      const resultCreate = await upsertResources(plan.newOrUpdate);
+
+      const success = resultCreate.success && resultDestroy.success;
       return {
         results: [...resultCreate.results, ...resultDestroy.results],
-        success: resultCreate.success && resultDestroy.success,
+        success,
       };
     } catch (error) {
       logger.error(`planApply ${tos(error)}`);
@@ -402,7 +410,7 @@ module.exports = CoreProvider = ({
     )
       .filter((x) => x)
       .flat();
-    logger.debug(`planUpsert: plans": ${JSON.stringify(plans, null, 4)}`);
+    logger.debug(`planUpsert: plans: ${JSON.stringify(plans, null, 4)}`);
     return plans;
   };
 
@@ -504,58 +512,47 @@ module.exports = CoreProvider = ({
       ),
       flatten,
       filter((x) => x),
-      tap((x) => logger.debug(`planFindDestroy unordered ${tos(x)})}`)),
-      tap((x) =>
-        logger.debug(
-          `planFindDestroy unordered list: ${tos(
-            x.map((x) => x.resource.type).join(",")
-          )})}`
-        )
-      ),
-      (plans) => PlanReorder({ plans, specs }),
       flatten,
       reverse,
       tap((x) =>
         logger.debug(
-          `planFindDestroy order list: ${tos(
-            x.map((x) => x.resource.type).join(",")
-          )})}`
+          `planFindDestroy #resources ${x.length}: ${tos(
+            x.map((x) => x.resource.name).join(",")
+          )}`
         )
       ),
-      tap((x) => logger.debug(`planFindDestroy ordered ${tos(x)})}`)),
+      tap((x) => logger.debug(`planFindDestroy  ${tos(x)}`)),
     ])(clients);
   };
 
   const upsertResources = async (planDeploy = []) => {
-    return await pipe([
-      tap((x) => logger.info(`upsertResources ${tos(x)}`)),
-      map.series(
-        async (item) =>
-          await tryCatch(
-            async (item) => {
-              const engine = resourceByName(item.resource.name);
-              if (!engine) {
-                throw Error(`Cannot find resource ${tos(item.resource.name)}`);
-              }
-              const payload = await engine.resolveConfig();
-              await engine.create({
-                payload,
-              });
-              return { item: payload };
-            },
-            (error, item) => {
-              logError("upsertResources", error);
-              return { item, error };
-            }
-          )(item)
-      ),
-      tap((x) => logger.info(`upsertResources  ${tos(x)}`)),
-      (results) => ({
-        results,
-        success: all((result) => !result.error)(results),
-      }),
-      tap((x) => logger.info(`upsertResources results: ${tos(x)}`)),
-    ])(planDeploy);
+    const executor = async ({ item }) => {
+      const engine = resourceByName(item.resource.name);
+      if (!engine) {
+        throw Error(`Cannot find resource ${tos(item.resource.name)}`);
+      }
+      const input = await engine.resolveConfig();
+      const output = await engine.create({
+        payload: input,
+      });
+      return { input, output };
+    };
+    const onStateChange = ({ item, previousState, nextState }) => {
+      logger.debug(
+        `planCreate onStateChange: ${tos({
+          resource: item.resource,
+          previousState,
+          nextState,
+        })}`
+      );
+    };
+    const planner = Planner({
+      plans: planDeploy,
+      specs,
+      executor,
+      onStateChange,
+    });
+    return await planner.run();
   };
 
   const destroyById = async ({ type, config, name }) => {
@@ -564,35 +561,35 @@ module.exports = CoreProvider = ({
     if (!client) {
       throw new Error(`Cannot find endpoint type ${type}}`);
     }
-    await destroyByClient({ client, name, config });
+    return await destroyByClient({ client, name, config });
   };
 
   const planDestroy = async (planDestroy) => {
-    return await pipe([
-      tap((x) => logger.info(`planDestroy ${tos(x)}`)),
-      map.series(
-        async (item) =>
-          await tryCatch(
-            async () => {
-              await destroyById({
-                name: item.resource.name,
-                type: item.resource.type,
-                config: item.config,
-              });
-              return { item };
-            },
-            (error, item) => {
-              logError("planDestroy", error);
-              return { item, error };
-            }
-          )(item)
-      ),
-      (results) => ({
-        results,
-        success: all((result) => !result.error)(results),
-      }),
-      tap((x) => logger.info(`planDestroy results: ${tos(x)}`)),
-    ])(planDestroy);
+    const executor = async ({ item }) => {
+      return await destroyById({
+        name: item.resource.name,
+        type: item.resource.type,
+        config: item.config,
+      });
+    };
+
+    const onStateChange = ({ item, previousState, nextState }) => {
+      logger.debug(
+        `planDestroy: onStateChange: ${tos({
+          resource: item.resource,
+          previousState,
+          nextState,
+        })}`
+      );
+    };
+    const planner = Planner({
+      plans: planDestroy,
+      specs,
+      executor,
+      down: true,
+      onStateChange,
+    });
+    return await planner.run();
   };
 
   const destroyAll = tryCatch(

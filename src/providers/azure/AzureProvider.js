@@ -75,10 +75,10 @@ const fnSpecs = (config) => {
       // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2020-05-01
 
       type: "VirtualNetwork",
+      dependsOn: ["ResourceGroup"],
       Client: ({ spec }) =>
         AzClient({
           spec,
-          dependsOn: ["ResourceGroup"],
           pathBase: `/subscriptions/${subscriptionId}`,
           pathSuffix: ({ dependencies: { resourceGroup } }) => {
             assert(resourceGroup, "missing resourceGroup dependency");
@@ -104,10 +104,11 @@ const fnSpecs = (config) => {
       // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups/{networkSecurityGroupName}?api-version=2020-05-01
       // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2020-05-01
       type: "SecurityGroup",
+      dependsOn: ["ResourceGroup"],
       Client: ({ spec }) =>
         AzClient({
           spec,
-          dependsOn: ["ResourceGroup"],
+
           pathBase: `/subscriptions/${subscriptionId}`,
           pathSuffix: ({ dependencies: { resourceGroup } }) => {
             assert(resourceGroup, "missing resourceGroup dependency");
@@ -135,10 +136,11 @@ const fnSpecs = (config) => {
       // LISTALL                https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/publicIPAddresses?api-version=2020-05-01
 
       type: "PublicIpAddress",
+      dependsOn: ["ResourceGroup"],
+
       Client: ({ spec }) =>
         AzClient({
           spec,
-          dependsOn: ["ResourceGroup"],
           pathBase: `/subscriptions/${subscriptionId}`,
           pathSuffix: ({ dependencies: { resourceGroup } }) => {
             assert(resourceGroup, "missing resourceGroup dependency");
@@ -164,15 +166,16 @@ const fnSpecs = (config) => {
       // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkInterfaces/{networkInterfaceName}?api-version=2020-05-01
       // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2020-05-01
       type: "NetworkInterface",
+      dependsOn: [
+        "ResourceGroup",
+        "VirtualNetwork",
+        "SecurityGroup",
+        "PublicIpAddress",
+      ],
       Client: ({ spec }) =>
         AzClient({
           spec,
-          dependsOn: [
-            "ResourceGroup",
-            "VirtualNetwork",
-            "SecurityGroup",
-            "PublicIpAddress",
-          ],
+
           pathBase: `/subscriptions/${subscriptionId}`,
           pathSuffix: ({ dependencies: { resourceGroup } }) => {
             assert(resourceGroup, "missing resourceGroup dependency");
@@ -262,10 +265,10 @@ const fnSpecs = (config) => {
       // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-12-01
 
       type: "VirtualMachine",
+      dependsOn: ["ResourceGroup", "NetworkInterface"],
       Client: ({ spec }) =>
         AzClient({
           spec,
-          dependsOn: ["ResourceGroup", "NetworkInterface"],
           pathBase: `/subscriptions/${subscriptionId}`,
           pathSuffix: ({ dependencies: { resourceGroup } }) => {
             assert(resourceGroup, "missing resourceGroup dependency");

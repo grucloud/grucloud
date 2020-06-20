@@ -67,18 +67,17 @@ const fnSpecs = (config) => {
       isOurMinion,
     },
     {
+      dependsOn: ["SecurityGroup", "Ip"],
       Client: ({ spec }) =>
         MockClient({
           spec,
           url: `/server`,
           config,
-          dependsOn: ["SecurityGroup"],
           configDefault: async ({
             name,
             properties,
             dependenciesLive: { ip },
           }) => ({
-            kind: "compute#instance",
             name,
             zone: `projects/${config.project}/zones/${config.zone}`,
             machineType: `projects/${config.project}/zones/${config.zone}/machineTypes/${properties.machineType}`,
@@ -87,11 +86,6 @@ const fnSpecs = (config) => {
             },
             disks: [
               {
-                kind: "compute#attachedDisk",
-                type: "PERSISTENT",
-                boot: true,
-                mode: "READ_WRITE",
-                autoDelete: true,
                 deviceName: toTagName(name, config.tag),
                 initializeParams: {
                   sourceImage:
@@ -99,23 +93,16 @@ const fnSpecs = (config) => {
                   diskType: `projects/${config.project}/zones/${config.zone}/diskTypes/${properties.diskTypes}`,
                   diskSizeGb: properties.diskSizeGb,
                 },
-                diskEncryptionKey: {},
               },
             ],
             networkInterfaces: [
               {
-                kind: "compute#networkInterface",
                 subnetwork: `projects/${config.project}/regions/${config.region}/subnetworks/default`,
                 accessConfigs: [
                   {
                     natIP: getField(ip, "address"),
-                    kind: "compute#accessConfig",
-                    name: "External NAT",
-                    type: "ONE_TO_ONE_NAT",
-                    networkTier: "PREMIUM",
                   },
                 ],
-                aliasIpRanges: [],
               },
             ],
           }),
