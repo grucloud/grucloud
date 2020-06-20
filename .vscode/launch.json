@@ -4,6 +4,16 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Mock Server",
+      "program": "${workspaceFolder}/src/mockServer/MockServerRun",
+      "cwd": "${workspaceFolder}/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": []
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Mock Query",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/src/providers/mock/test/",

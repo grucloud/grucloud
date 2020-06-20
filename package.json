@@ -8,13 +8,13 @@
     "gc": "./src/cli/cliEntry.js"
   },
   "scripts": {
-    "start": "NODE_PATH=src nodemon -e ts,js,graphql node src/index.js",
     "test:az": "NODE_PATH=src mocha src/providers/azure/test/**.test.js",
     "test:gcp": "NODE_PATH=src mocha src/providers/google/test/**.test.js",
     "test:aws": "NODE_PATH=src mocha src/providers/aws/test/**.test.js",
     "test:mocha": "NODE_PATH=src mocha 'src/**/*.test.js'",
     "test": "NODE_PATH=src nyc mocha 'src/**/*.test.js'",
     "test:example": "node test/testExamples.js",
+    "start:mock": "nodemon node src/mockServer/MockServerRun.js",
     "cpd": "jscpd -r console --format 'javascript,typescript' --ignore '**/*.test.*' ./src"
   },
   "keywords": [
@@ -24,11 +24,11 @@
   "license": "ISC",
   "devDependencies": {
     "@koa/router": "*",
+    "jscpd": "^3.1.0",
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",
-    "jscpd": "^3.1.0",
     "mocha": "^7.1.1",
-    "nodemon": "^2.0.2",
+    "nodemon": "^2.0.4",
     "nyc": "^15.0.1"
   },
   "dependencies": {

@@ -1,4 +1,4 @@
-const MockServer = require("./MockServer");
+const { MockServer } = require("../MockServer");
 const port = 5645;
 
 describe("MockServer", function () {
