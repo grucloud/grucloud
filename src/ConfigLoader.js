@@ -1,6 +1,7 @@
 const { defaultsDeep } = require("lodash/fp");
 const path = require("path");
 const fs = require("fs");
+const logger = require("./logger")({ prefix: "ConfigLoader" });
 
 const checkFileExist = (fileName) => {
   if (!fs.existsSync(fileName)) {
@@ -11,6 +12,7 @@ const checkFileExist = (fileName) => {
 
 exports.ConfigLoader = ({ baseDir = process.cwd(), stage = "dev" }) => {
   //console.log(`ConfigLoader ${baseDir} ${stage}`);
+  logger.info(`${(baseDir, stage)}`);
   const configDir = path.join(baseDir, "config");
 
   const defaultConfigFile = path.join(configDir, "default.json");

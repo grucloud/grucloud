@@ -5,7 +5,7 @@ const { createProgram } = require("./program");
 const commands = require("./cliCommands");
 const logger = require("../logger")({ prefix: "AwsClientEC2" });
 
-exports.main = ({ argv }) => {
+exports.main = ({ argv, onExit }) => {
   const program = createProgram({
     version: pkg.version,
     argv,
@@ -22,13 +22,12 @@ exports.main = ({ argv }) => {
   return program.parseAsync(argv).catch((error) => {
     const { code } = error;
     if (code === 422) {
-      //console.log(error.message);
-      process.exit(22);
+      logger.error(error.message);
+      onExit({ code: 422, error });
     } else {
       console.log(error.stack);
       console.log(error);
-
-      process.exit(-1);
+      onExit({ code: -1 });
     }
   });
 };

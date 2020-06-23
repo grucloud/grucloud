@@ -26,6 +26,7 @@ const resolveFilename = ({ fileName, defaultName }) =>
 const checkFileExist = ({ fileName }) => {
   if (!fs.existsSync(fileName)) {
     const message = `Cannot open file ${fileName}`;
+    console.log(message);
     throw { code: 422, message };
   }
 };
@@ -36,7 +37,7 @@ const requireConfig = ({ fileName, stage }) => {
   }
   checkFileExist({ fileName });
 
-  const configFileNameFull = path.join(process.cwd(), fileName);
+  const configFileNameFull = path.resolve(process.cwd(), fileName);
   checkFileExist({ fileName: configFileNameFull });
   const config = require(configFileNameFull);
   return config;

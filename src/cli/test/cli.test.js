@@ -2,12 +2,28 @@ const assert = require("assert");
 const _ = require("lodash");
 const path = require("path");
 const shell = require("shelljs");
+const { map } = require("rubico");
 const { main } = require("../cliMain");
+const { MockServer } = require("../../mockServer/MockServer");
 
 const filename = "src/providers/mock/test/MockStack.js";
-const configFile = "src/providers/mock/test/config/default.json";
+const configFileDefault = "src/providers/mock/test/config/default.json";
+const configFile404 = path.join(__dirname, "./config/config.404.js");
+const configFile500 = path.join(__dirname, "./config/config.500.js");
 
-const runProgram = async ({ cmds = [] }) => {
+const configFileNetworkError = path.join(
+  __dirname,
+  "./config/config.networkError.js"
+);
+
+const commands = ["plan", "apply -f", "destroy -f", "list"];
+
+const onExitOk = () => assert(false);
+const runProgram = async ({
+  cmds = [],
+  configFile = configFileDefault,
+  onExit = onExitOk,
+}) => {
   const argv = [
     "node",
     "gc",
@@ -17,7 +33,8 @@ const runProgram = async ({ cmds = [] }) => {
     configFile,
     ...cmds,
   ];
-  await main({ argv });
+
+  await main({ argv, onExit });
 };
 
 describe("cli", function () {
@@ -39,11 +56,10 @@ describe("cli", function () {
   it("list by type", async function () {
     await runProgram({ cmds: ["list", "--types", "Server", "Ip"] });
   });
-  it.skip("--config notexisting.js", async function () {
-    main({
+  it("--config notexisting.js", async function () {
+    await main({
       argv: ["xx", "xx", "--config", "notexisting.js", "list"],
-    }).catch((error) => {
-      assert.equal(error.code, 422);
+      onExit: ({ code }) => assert.equal(code, 422),
     });
   });
   it("version", function () {
@@ -57,9 +73,58 @@ describe("cli", function () {
     assert.equal(code, 0);
     assert(re.test(version));
   });
-});
-describe("save to json", function () {
   it("query plan", async function () {
     await runProgram({ cmds: ["plan", "--json", "gc.result.json"] });
+  });
+});
+
+describe("cli error", function () {
+  const routes = ["/ip/", "/server/", "/volume", "/security_group"];
+  const mockServer = MockServer({ routes });
+
+  before(async function () {
+    await mockServer.start();
+  });
+
+  after(async function () {
+    await mockServer.stop();
+  });
+
+  it("cli 404", async function () {
+    await map.series((command) =>
+      runProgram({
+        cmds: command.split(" "),
+        configFile: configFile404,
+        onExit: ({ code, error: { error } }) => {
+          assert.equal(code, 422);
+          assert.equal(error.response.status, 404);
+        },
+      })
+    )(commands);
+  });
+  it("cli 500", async function () {
+    await map.series(
+      async (command) =>
+        await runProgram({
+          cmds: command.split(" "),
+          configFile: configFile500,
+          onExit: ({ code, error: { error } }) => {
+            assert.equal(code, 422);
+            assert.equal(error.response.status, 500);
+          },
+        })
+    )(commands);
+  });
+  it("cli network error", async function () {
+    await map.series((command) =>
+      runProgram({
+        cmds: command.split(" "),
+        configFile: configFileNetworkError,
+        onExit: ({ code, error: { error } }) => {
+          assert.equal(code, 422);
+          assert.equal(error.message, "Network Error");
+        },
+      })
+    )(commands);
   });
 });

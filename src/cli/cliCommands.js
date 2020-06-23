@@ -1,6 +1,6 @@
 const { pick } = require("lodash");
 const plu = require("pluralize");
-const logger = require("../logger")({ prefix: "AzProvider" });
+const logger = require("../logger")({ prefix: "CliCommands" });
 const { runAsyncCommand } = require("./cliUtils");
 const { displayPlan, displayLive } = require("./displayUtils");
 const prompts = require("prompts");
@@ -25,6 +25,7 @@ const {
 
 const { isEmpty, pluck, flatten } = require("ramda");
 
+// Common
 const plansHasSuccess = all(({ results }) => results.success);
 
 const formatResource = ({ provider, type, name } = {}) =>
@@ -63,28 +64,33 @@ const safeJsonParse = (json) => {
     return json;
   }
 };
+
 const displayError = (name, error) => {
-  console.error(name);
   if (!error) {
+    console.error(name);
     // TODO why error is sometimes undefined ?
     console.error("error because the error is not defined!");
     return;
   }
-  console.error(error.message);
-  if (error.response) {
-    const { response } = error;
-
-    errorToDisplay = {
-      Output: response.data,
-      Input: {
-        config: pick(response.config, ["url", "method", "baseURL"]),
-        data: safeJsonParse(response.config.data),
-      },
-    };
-    console.error(YAML.stringify(errorToDisplay));
-  }
+  const errorToDisplay = {
+    Command: name,
+    Message: error.message,
+    Output: error.response?.data,
+    Input: {
+      config: pick(error.config, ["url", "method", "baseURL"]),
+      data: safeJsonParse(error.config.data),
+    },
+  };
+  console.error(YAML.stringify(errorToDisplay));
 };
-
+const displayErrorsCommon = pipe([
+  filter(({ results: { success } }) => !success),
+  flatten,
+  pluck("results"),
+  pluck("results"),
+  flatten,
+  filter(({ error }) => error),
+]);
 // Plan Query
 const doPlanQuery = async ({ providers, programOptions }) =>
   await map(async (provider) => ({
@@ -194,12 +200,7 @@ exports.planApply = async ({
   //TODO make ine function for displayDeployErrors and displayDestroyErrors
   const displayDeployErrors = pipe([
     tap((x) => logger.error(`displayDeployErrors begins ${tos(x)}`)),
-    filter(({ results: { success } }) => !success),
-    flatten,
-    pluck("results"),
-    pluck("results"),
-    flatten,
-    filter(({ error }) => error),
+    displayErrorsCommon,
     map(tap(displayDeployError)),
   ]);
 
@@ -282,15 +283,11 @@ exports.planDestroy = async ({
     console.log(`Cannot destroy resource ${formatResource(item.resource)}`);
     displayError("Plan Destroy", error);
   };
+
   // TODO common function with displayDeployErrors
   const displayDestroyErrors = pipe([
     tap((x) => logger.error(`displayDestroyErrors ${tos(x)}`)),
-    filter(({ results: { success } }) => !success),
-    flatten,
-    pluck("results"),
-    pluck("results"),
-    flatten,
-    filter(({ error }) => error),
+    displayErrorsCommon,
     tap((x) => logger.error(`displayDestroyErrors filtered ${tos(x)}`)),
     map(tap(displayDestroyError)),
   ]);

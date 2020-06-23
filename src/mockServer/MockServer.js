@@ -87,6 +87,7 @@ exports.MockServer = (config) => {
   const start = async () =>
     new Promise((resolve) => {
       httpHandle = koa.listen(port, () => {
+        logger.info(`start on port ${port}`);
         resolve();
       });
     });
