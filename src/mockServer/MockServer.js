@@ -5,10 +5,13 @@ const koaBody = require("koa-body");
 const logger = require("./logger")({ prefix: "MockServer" });
 const toString = (x) => JSON.stringify(x, null, 4);
 
+const portDefault = 8089;
+exports.portDefault = portDefault;
+
 exports.MockServer = (config) => {
   const koa = new Koa();
   const { routes } = config;
-  const port = config.port || 8089;
+  const port = config.port || portDefault;
   let httpHandle;
   koa.use(koaBody());
 
