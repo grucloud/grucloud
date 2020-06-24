@@ -2,7 +2,6 @@
 
 ## Common:
 
-- make one function for displayDeployErrors and displayDestroyErrors
 - displayresources being created and destroyed
 - hide password from logs and plan
 - rename dependenciesLive in dependenciesLive in configDefault
@@ -10,7 +9,6 @@
 - provide CRUD url to CoreClient
 - add command duration
 - TagName.js move to scaleway
-- await client.create({ name: resourceName, payload }); should return {id}
 - compare or compareObject
 - https://cloudcraft.co/
 

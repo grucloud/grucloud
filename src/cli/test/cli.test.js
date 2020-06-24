@@ -1,4 +1,5 @@
 const assert = require("assert");
+const Axios = require("axios");
 const _ = require("lodash");
 const path = require("path");
 const shell = require("shelljs");
@@ -80,10 +81,14 @@ describe("cli", function () {
 
 describe("cli error", function () {
   const routes = ["/ip/", "/server/", "/volume", "/security_group"];
-  const mockServer = MockServer({ routes });
+  const port = 8089;
+
+  const mockServer = MockServer({ port, routes });
 
   before(async function () {
     await mockServer.start();
+    const axios = Axios.create({ baseURL: `http://localhost:${port}` });
+    await axios.post("/ip/", {});
   });
 
   after(async function () {

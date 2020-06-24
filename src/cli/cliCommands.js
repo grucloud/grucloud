@@ -1,4 +1,5 @@
 const { pick } = require("lodash");
+const assert = require("assert");
 const plu = require("pluralize");
 const logger = require("../logger")({ prefix: "CliCommands" });
 const { runAsyncCommand } = require("./cliUtils");
@@ -66,12 +67,8 @@ const safeJsonParse = (json) => {
 };
 
 const displayError = (name, error) => {
-  if (!error) {
-    console.error(name);
-    // TODO why error is sometimes undefined ?
-    console.error("error because the error is not defined!");
-    return;
-  }
+  assert(error);
+
   const errorToDisplay = {
     Command: name,
     Message: error.message,
@@ -83,6 +80,7 @@ const displayError = (name, error) => {
   };
   console.error(YAML.stringify(errorToDisplay));
 };
+
 const displayErrorsCommon = pipe([
   filter(({ results: { success } }) => !success),
   flatten,
@@ -197,7 +195,7 @@ exports.planApply = async ({
     console.log(`Cannot deploy resource ${formatResource(item.resource)}`);
     displayError("Plan Apply", error);
   };
-  //TODO make ine function for displayDeployErrors and displayDestroyErrors
+
   const displayDeployErrors = pipe([
     tap((x) => logger.error(`displayDeployErrors begins ${tos(x)}`)),
     displayErrorsCommon,
