@@ -2,6 +2,9 @@
 
 ## Common:
 
+multi example: Command: "Plan Apply"
+Message: "all resources has dependsOn"
+
 - displayresources being created and destroyed
 - hide password from logs and plan
 - rename dependenciesLive in dependenciesLive in configDefault
@@ -33,6 +36,7 @@ at createError (/Users/fredericheem/grucloud/node_modules/axios/lib/core/createE
 
 ## TODO Aws:
 
+- zone in config ?
 - when deploying only ec2 without sg, subnet and vpc:
   "No subnets found for the default VPC 'vpc-bbbafcd3'. Please specify a subnet.",
 

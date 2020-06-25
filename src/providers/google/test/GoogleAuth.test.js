@@ -14,7 +14,7 @@ describe("GoogleAuth", function () {
   });
 
   it("auth", async function () {
-    const { applicationCredentials } = config;
+    const applicationCredentials = process.env.GOOGLE_APPLICATION_CREDENTIALS;
     assert(applicationCredentials);
 
     const keys = require(applicationCredentials);

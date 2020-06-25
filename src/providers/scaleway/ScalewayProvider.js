@@ -155,7 +155,8 @@ module.exports = ScalewayProvider = async ({ name, config }) => {
   return CoreProvider({
     type: "scaleway",
     name,
-    mandatoryConfigKeys: ["zone", "organization", "secretKey"],
+    mandatoryEnvs: ["SCW_ORGANISATION", "SCW_SECRET_KEY"],
+    mandatoryConfigKeys: ["zone"],
     config,
     fnSpecs,
   });

@@ -5,6 +5,7 @@ const { AzAuthorize } = require("../AzAuthorize");
 
 describe("AzAuth", function () {
   let config;
+
   before(async function () {
     try {
       config = ConfigLoader({ baseDir: __dirname });
@@ -16,7 +17,12 @@ describe("AzAuth", function () {
 
   it("ok", async function () {
     try {
-      const { bearerToken } = await AzAuthorize(config);
+      const { TENANT_ID, APP_ID, PASSWORD } = process.env;
+      const { bearerToken } = await AzAuthorize({
+        tenantId: TENANT_ID,
+        appId: APP_ID,
+        password: PASSWORD,
+      });
       assert(bearerToken);
     } catch (error) {
       //console.log(error.response);

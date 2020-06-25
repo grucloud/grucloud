@@ -37,28 +37,27 @@ npm install
 
 ### Environment
 
-Edit the _config/dev.json_ file and set the _GOOGLE_APPLICATION_CREDENTIALS_ environment variable which points the the service account credential.
+Edit the **config/default.env** file and set the **GOOGLE_APPLICATION_CREDENTIALS** environment variable which points the the service account credential.
 
-```json
-{
-  "applicationCredentials": "/Users/mario/yourproject-605f4eb1b929.json"
-}
+```sh
+GOOGLE_APPLICATION_CREDENTIALS="/Users/mario/yourproject-605f4eb1b929.json"
 ```
 
 ### Config
 
 Find out the default region, zone and project:
 
+```
 gcloud config list
+```
 
-Edit **config.js** and set the **project id**, **region** and **zone**:
+Edit **config/default.js** and set the **project id**, **region** and **zone**:
 
 ```js
-const config = {
-  project: "SuperDuperProject",
-  region: "us-central1",
-  zone: "us-central1-a",
-  applicationCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+module.exports = {
+  project: "yourprojectname",
+  region: "europe-west4",
+  zone: "europe-west4-a",
 };
 ```
 
@@ -99,9 +98,13 @@ Find out which resources are going to be allocated:
 
 Happy with the expected plan ? Deploy it now:
 
-    gc apply
-
+```sh
+gc apply
 ```
+
+Verify the newly created server is accessible:
+
+```sh
 gcloud compute ssh web-server
 ```
 
@@ -109,7 +112,7 @@ gcloud compute ssh web-server
 
 List the available resources with:
 
-```
+```sh
 gc list
 ```
 
@@ -117,4 +120,6 @@ gc list
 
 Time to destroy the resouces allocated:
 
-    gc destroy
+```sh
+gc destroy
+```

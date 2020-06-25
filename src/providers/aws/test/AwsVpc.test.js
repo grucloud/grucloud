@@ -51,7 +51,11 @@ describe("AwsVpc", async function () {
     await testPlanDeploy({ provider });
     const vpcLive = await vpc.getLive();
 
-    CheckTags({ config: provider.config, tags: vpcLive.Tags, name: vpc.name });
+    CheckTags({
+      config: provider.config(),
+      tags: vpcLive.Tags,
+      name: vpc.name,
+    });
 
     await testPlanDestroy({ provider });
   });

@@ -8,7 +8,7 @@ const { main } = require("../cliMain");
 const { MockServer } = require("../../mockServer/MockServer");
 
 const filename = "src/providers/mock/test/MockStack.js";
-const configFileDefault = "src/providers/mock/test/config/default.json";
+const configFileDefault = "src/providers/mock/test/config/default.js";
 const configFile404 = path.join(__dirname, "./config/config.404.js");
 const configFile500 = path.join(__dirname, "./config/config.500.js");
 
@@ -74,7 +74,7 @@ describe("cli", function () {
     assert.equal(code, 0);
     assert(re.test(version));
   });
-  it("query plan", async function () {
+  it("save to json", async function () {
     await runProgram({ cmds: ["plan", "--json", "gc.result.json"] });
   });
 });

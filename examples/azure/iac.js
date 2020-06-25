@@ -1,3 +1,4 @@
+const assert = require("assert");
 const { AzureProvider } = require("@grucloud/core");
 
 const createStack = async ({ config }) => {
@@ -88,6 +89,10 @@ const createStack = async ({ config }) => {
     },
   });
 
+  const { MACHINE_ADMIN_USERNAME, MACHINE_ADMIN_PASSWORD } = process.env;
+  assert(MACHINE_ADMIN_USERNAME);
+  assert(MACHINE_ADMIN_PASSWORD);
+
   const vm = provider.makeVirtualMachine({
     name: `vm-${stage}`,
     dependencies: {
@@ -109,9 +114,9 @@ const createStack = async ({ config }) => {
           },
         },
         osProfile: {
-          adminUsername: machine.adminUsername,
+          adminUsername: MACHINE_ADMIN_USERNAME,
           computerName: "myVM",
-          adminPassword: machine.adminPassword,
+          adminPassword: MACHINE_ADMIN_PASSWORD,
         },
       },
     },

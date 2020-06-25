@@ -68,14 +68,14 @@ const safeJsonParse = (json) => {
 
 const displayError = (name, error) => {
   assert(error);
-
+  //TODO handle non axios error better
   const errorToDisplay = {
     Command: name,
     Message: error.message,
     Output: error.response?.data,
     Input: {
-      config: pick(error.config, ["url", "method", "baseURL"]),
-      data: safeJsonParse(error.config.data),
+      config: pick(error?.config, ["url", "method", "baseURL"]),
+      data: safeJsonParse(error?.config?.data),
     },
   };
   console.error(YAML.stringify(errorToDisplay));
@@ -97,7 +97,7 @@ const doPlanQuery = async ({ providers, programOptions }) =>
       () =>
         runAsyncCommand(
           () => provider.planQuery(),
-          `Query Plan for ${provider.name()}`
+          `Query Plan for ${provider.name}`
         ),
       displayPlan,
     ])(),
@@ -184,7 +184,7 @@ exports.planApply = async ({
       results: async ({ provider, plan }) =>
         await runAsyncCommand(
           () => provider.planApply(plan),
-          `Deploying resources on provider ${provider.name()}`
+          `Deploying resources on provider ${provider.name}`
         ),
     }),
     //tap((x) => console.log("doPlanDeploy end", x)),
@@ -268,11 +268,9 @@ exports.planDestroy = async ({
       results: async ({ provider, plan }) =>
         await runAsyncCommand(
           () => provider.planDestroy(plan),
-          `Destroying ${plu(
-            "resource",
-            plan.length,
-            true
-          )} on provider ${provider.name()}`
+          `Destroying ${plu("resource", plan.length, true)} on provider ${
+            provider.name
+          }`
         ),
     }),
   ]);
@@ -313,7 +311,7 @@ exports.planDestroy = async ({
         async () => await provider.planFindDestroy(commandOptions),
         tap((plan) =>
           displayPlan({
-            providerName: provider.name(),
+            providerName: provider.name,
             newOrUpdate: [],
             destroy: plan,
           })
@@ -374,10 +372,10 @@ exports.list = async ({ infra, commandOptions, programOptions }) =>
               () =>
                 runAsyncCommand(
                   () => provider.listLives(commandOptions),
-                  `List for ${provider.name()}`
+                  `List for ${provider.name}`
                 ),
               tap((targets) =>
-                displayLive({ providerName: provider.name(), targets })
+                displayLive({ providerName: provider.name, targets })
               ),
             ])()
         )(providers),

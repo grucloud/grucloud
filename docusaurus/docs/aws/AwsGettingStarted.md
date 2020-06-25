@@ -34,28 +34,27 @@ npm install
 ## Environment file
 
 ```sh
-cp config/dev.example.json config/dev.json
+cp config/default.env.example config/default.env
 
 ```
 
-Edit the _config/dev.json_ file and set the correct values:
+Edit **config/default.env** and set the correct values:
 
-```json
-{
-  accountId=12345678980
-  AWSAccessKeyId=XXXXXXXXXXXXXXXXX
-  AWSSecretKey=XXXXXXXXXXXXXXXXXXXXXXXX
-}
+```sh
+accountId=
+AWSAccessKeyId=
+AWSSecretKey=
 ```
 
 ## config file
 
-Edit **config.js** and set the project id, region and zone:
+Edit **config/default.js** and set the project id, region and zone:
 
 ```js
-const config = {
-  region: "us-central1",
+module.exports = {
+  region: "eu-west-2",
   zone: "us-central1-a",
+  stages: ["dev", "prod", "demo"],
 };
 ```
 

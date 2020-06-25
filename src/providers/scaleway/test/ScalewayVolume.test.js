@@ -32,7 +32,6 @@ describe("ScalewayVolume", async function () {
 
   it("volume config", async function () {
     const config = await volume.resolveConfig();
-    assert(config.organization);
     assert(config.volume_type);
     assert(config.name);
   });

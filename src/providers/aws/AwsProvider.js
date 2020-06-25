@@ -86,7 +86,7 @@ module.exports = AwsProvider = async ({ name, config }) => {
   return CoreProvider({
     type: "aws",
     name,
-    mandatoryConfigKeys: ["AWSAccessKeyId", "AWSSecretKey", "accountId"],
+    mandatoryEnvs: ["AWSAccessKeyId", "AWSSecretKey", "accountId"],
     config,
     fnSpecs,
   });

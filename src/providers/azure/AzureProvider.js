@@ -7,18 +7,13 @@ const AzTag = require("./AzTag");
 const { getField, notAvailable } = require("../ProviderCommon");
 const { AzAuthorize } = require("./AzAuthorize");
 const { isUpByIdCore } = require("../Common");
+const { checkEnv } = require("../../Utils");
 //const compare = require("../../Utils").compare;
 const tos = (x) => JSON.stringify(x, null, 4);
 
 const fnSpecs = (config) => {
-  const {
-    location,
-    subscriptionId,
-    managedByKey,
-    managedByValue,
-    stageTagKey,
-    stage,
-  } = config;
+  const { location, managedByKey, managedByValue, stageTagKey, stage } = config;
+  const subscriptionId = process.env.SUBSCRIPTION_ID;
 
   const getStateName = (instance) => {
     const { provisioningState } = instance.properties;
@@ -305,7 +300,15 @@ const fnSpecs = (config) => {
 };
 
 module.exports = AzureProvider = async ({ name, config }) => {
-  const { bearerToken } = await AzAuthorize(config);
+  const mandatoryEnvs = ["TENANT_ID", "SUBSCRIPTION_ID", "APP_ID", "PASSWORD"];
+  checkEnv(mandatoryEnvs);
+
+  const { TENANT_ID, APP_ID, PASSWORD } = process.env;
+  const { bearerToken } = await AzAuthorize({
+    tenantId: TENANT_ID,
+    appId: APP_ID,
+    password: PASSWORD,
+  });
 
   const configProviderDefault = {
     bearerToken,
@@ -314,13 +317,7 @@ module.exports = AzureProvider = async ({ name, config }) => {
   const core = CoreProvider({
     type: "azure",
     name,
-    mandatoryConfigKeys: [
-      "tenantId",
-      "subscriptionId",
-      "appId",
-      "password",
-      "location",
-    ],
+    mandatoryConfigKeys: ["location"],
     config: defaultsDeep(configProviderDefault, config),
     fnSpecs,
   });

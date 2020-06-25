@@ -33,7 +33,7 @@ describe("AzResourceGroup", async function () {
   it("config", async function () {
     const config = await rg.resolveConfig();
     assert(config);
-    assert.equal(config.location, provider.config.location);
+    assert.equal(config.location, provider.config().location);
   });
   it("lives", async function () {
     const lives = await provider.listLives();

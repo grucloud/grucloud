@@ -16,7 +16,7 @@ exports.findNameInTags = (item) => {
     logger.debug(`findNameInTags ${tos({ name: tag.Value, item })}`);
     return tag.Value;
   } else {
-    logger.error(`findNameInTags: cannot find name ${tos({ item })}`);
+    logger.debug(`findNameInTags: cannot find name ${tos({ item })}`);
   }
 };
 

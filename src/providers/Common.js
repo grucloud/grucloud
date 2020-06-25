@@ -10,7 +10,7 @@ exports.findField = ({ item, field }) => {
   if (item[field]) {
     return item[field];
   } else {
-    logger.error(`findName: cannot find name in ${toString(item)}`);
+    logger.debug(`findName: cannot find name in ${toString(item)}`);
     // throw Error(`cannot find name in ${toString(item)}`);
   }
 };

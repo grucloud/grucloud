@@ -135,7 +135,7 @@ describe("AwsProvider", async function () {
     const serverInstance = serverLive.Instances[0];
 
     CheckTags({
-      config: provider.config,
+      config: provider.config(),
       tags: serverInstance.Tags,
       name: server.name,
     });

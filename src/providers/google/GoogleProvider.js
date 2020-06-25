@@ -8,6 +8,7 @@ const GoogleTag = require("./GoogleTag");
 const compare = require("../../Utils").compare;
 const toString = (x) => JSON.stringify(x, null, 4);
 const GoogleInstance = require("./GoogleInstance");
+const { checkEnv } = require("../../Utils");
 
 const fnSpecs = (config) => {
   const { project, region, managedByDescription } = config;
@@ -63,6 +64,7 @@ const fnSpecs = (config) => {
 const authorize = async ({ applicationCredentials }) => {
   assert(applicationCredentials);
   //TODO check if file exists
+
   const keys = require(applicationCredentials);
 
   const client = new JWT({
@@ -83,8 +85,11 @@ const authorize = async ({ applicationCredentials }) => {
 };
 
 module.exports = GoogleProvider = async ({ name, config }) => {
-  const { applicationCredentials } = config;
-  const accessToken = await authorize({ applicationCredentials });
+  checkEnv(["GOOGLE_APPLICATION_CREDENTIALS"]);
+
+  const accessToken = await authorize({
+    applicationCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+  });
 
   const configProviderDefault = {
     //rename manageByTag ?
@@ -98,12 +103,8 @@ module.exports = GoogleProvider = async ({ name, config }) => {
   const core = CoreProvider({
     type: "google",
     name,
-    mandatoryConfigKeys: [
-      "project",
-      "region",
-      "zone",
-      "applicationCredentials",
-    ],
+    mandatoryEnvs: ["GOOGLE_APPLICATION_CREDENTIALS"],
+    mandatoryConfigKeys: ["project", "region", "zone"],
     config: _.defaults(config, configProviderDefault),
     fnSpecs,
   });

@@ -18,8 +18,7 @@ module.exports = ScalewayClient = ({
   assert(spec);
   assert(spec.type);
   assert(config);
-  assert(config.secretKey);
-  const { type } = spec;
+  assert(process.env.SCW_SECRET_KEY);
 
   const findName = (item) => {
     assert(item);
@@ -45,7 +44,7 @@ module.exports = ScalewayClient = ({
     configDefault,
     axios: AxiosMaker({
       baseURL: urljoin(BASE_URL, "zones", config.zone, url),
-      onHeaders: () => ({ "X-Auth-Token": config.secretKey }),
+      onHeaders: () => ({ "X-Auth-Token": process.env.SCW_SECRET_KEY }),
     }),
   });
 

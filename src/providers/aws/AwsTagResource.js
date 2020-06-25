@@ -6,17 +6,12 @@ const toString = (x) => JSON.stringify(x, null, 4);
 const logger = require("../../logger")({ prefix: "AwsTagResource" });
 
 exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
-  const {
-    managedByKey,
-    managedByValue,
-    region,
-    accountId,
-    stageTagKey,
-    stage,
-  } = config;
+  const { managedByKey, managedByValue, region, stageTagKey, stage } = config;
   assert(region);
-  assert(accountId);
   assert(stage);
+
+  const { accountId } = process.env;
+  assert(accountId);
 
   AWS.config.update({ region });
   const tagApi = new AWS.ResourceGroupsTaggingAPI();

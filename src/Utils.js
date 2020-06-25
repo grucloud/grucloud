@@ -3,6 +3,19 @@ const { isEmpty, isEqual, isObject, get, map } = require("lodash");
 const logger = require("./logger")({ prefix: "MocCloud" });
 const toString = (x) => JSON.stringify(x, null, 4);
 
+exports.checkEnv = (mandatoryEnv = []) => {
+  const missingEnv = mandatoryEnv.filter((env) => !process.env[env]);
+  const { CONFIG_ENV = "dev" } = process.env;
+
+  if (!isEmpty(missingEnv)) {
+    throw Error(
+      `${missingEnv.join(
+        ","
+      )} are missing from the environment files "config/default.env" or "config/${CONFIG_ENV}.env" `
+    );
+  }
+};
+
 exports.checkConfig = (config, mandatoryConfigKeys = []) => {
   const missingKeys = mandatoryConfigKeys.filter((key) => !config[key]);
   const { CONFIG_ENV = "dev" } = process.env;
@@ -11,7 +24,7 @@ exports.checkConfig = (config, mandatoryConfigKeys = []) => {
     throw Error(
       `${missingKeys.join(
         ","
-      )} are missing from the config files "config/default.json" or "config/${CONFIG_ENV}.json" `
+      )} are missing from the config files "config/default.js" or "config/${CONFIG_ENV}.js" `
     );
   }
 };

@@ -5,9 +5,9 @@ const qs = require("querystring");
 const AZ_AUTHORIZATION_URL = "https://login.microsoftonline.com/";
 
 exports.AzAuthorize = async ({ tenantId, appId, password }) => {
-  assert(tenantId);
-  assert(appId);
-  assert(password);
+  assert(tenantId, "missing tenantId");
+  assert(appId, "missing appId");
+  assert(password, "missing password");
 
   const axios = Axios.create({
     baseURL: AZ_AUTHORIZATION_URL,

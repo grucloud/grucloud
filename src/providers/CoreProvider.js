@@ -6,7 +6,7 @@ const { pipe, tap, map, filter, all, tryCatch } = require("rubico");
 const Promise = require("bluebird");
 const logger = require("../logger")({ prefix: "CoreProvider" });
 const tos = (x) => JSON.stringify(x, null, 4);
-const { checkConfig } = require("../Utils");
+const { checkConfig, checkEnv } = require("../Utils");
 const { fromTagName } = require("./TagName");
 const { SpecDefault } = require("./SpecDefault");
 const { retryExpectOk } = require("./Retry");
@@ -124,7 +124,7 @@ const ResourceMaker = ({
           dependenciesLive,
           items,
           config,
-          configProvider: provider.config,
+          configProvider: provider.config(),
         })
       : config;
 
@@ -182,7 +182,7 @@ const ResourceMaker = ({
   const serialized = () => ({
     name: resourceName,
     type,
-    provider: provider.name(),
+    provider: provider.name,
   });
 
   const addParent = (parentToSet) => {
@@ -235,7 +235,7 @@ const createResourceMakers = ({ specs, config, provider }) =>
         transformConfig,
         properties,
         dependencies,
-        spec: _.defaults(spec, SpecDefault({ config: provider.config })),
+        spec: _.defaults(spec, SpecDefault({ config: provider.config() })),
         provider,
         config,
       });
@@ -245,13 +245,14 @@ const createResourceMakers = ({ specs, config, provider }) =>
     return acc;
   }, {});
 
-module.exports = CoreProvider = ({
+function CoreProvider({
   name: providerName,
   type,
+  mandatoryEnvs = [],
   mandatoryConfigKeys = [],
   fnSpecs,
   config,
-}) => {
+}) {
   config = _.defaults(config, configProviderDefault);
   logger.debug(
     `CoreProvider name: ${providerName}, type ${type}, config: ${tos(config)}`
@@ -615,12 +616,15 @@ module.exports = CoreProvider = ({
     return true;
   };
 
+  checkEnv(mandatoryEnvs);
   checkConfig(config, mandatoryConfigKeys);
 
+  const toType = () => type || providerName;
+
   const provider = {
-    config,
-    name: () => providerName,
-    type: () => type || providerName,
+    config: () => config,
+    name: providerName,
+    type: toType,
     destroyAll,
     planFindDestroy,
     planQuery,
@@ -634,10 +638,14 @@ module.exports = CoreProvider = ({
     resourceByName,
     getTargetResources,
     isPlanEmpty,
+    toString: () => `provider: ${type}, stage: ${config.stage}`,
   };
-
-  return {
+  const enhanceProvider = {
     ...provider,
     ...createResourceMakers({ provider, config, specs }),
   };
-};
+
+  return enhanceProvider;
+}
+
+module.exports = CoreProvider;

@@ -38,7 +38,7 @@ describe("GoogleProvider", async function () {
 
   it("server resolveConfig ", async function () {
     const config = await server.resolveConfig();
-    //TODO use provider.config.project  etc ...
+    //TODO use provider.config().project  etc ...
     assert.equal(
       config.machineType,
       "projects/starhackit/zones/europe-west4-a/machineTypes/f1-micro"
@@ -55,15 +55,15 @@ describe("GoogleProvider", async function () {
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 2);
   });
-  it("apply and destroy", async function () {
+  it("gcp apply and destroy", async function () {
     await testPlanDeploy({ provider });
 
     const serverLive = await server.getLive();
     const { status, labels } = serverLive;
     assert(status, "RUNNING");
-    const { managedByKey, managedByValue, stageTagKey } = provider.config;
+    const { managedByKey, managedByValue, stageTagKey } = provider.config();
     assert(labels[managedByKey], managedByValue);
-    assert(labels[stageTagKey], provider.config.stage);
+    assert(labels[stageTagKey], provider.config().stage);
 
     const ipLive = await ip.getLive();
     assert.equal(

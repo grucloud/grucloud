@@ -32,7 +32,7 @@ describe("GoogleAddress", async function () {
     const config = await address.resolveConfig();
     assert(config);
     assert.equal(config.name, addressName);
-    assert.equal(config.description, provider.config.managedByDescription);
+    assert.equal(config.description, provider.config().managedByDescription);
   });
   it("lives", async function () {
     const lives = await provider.listLives();
