@@ -212,12 +212,13 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Multi Query Plan",
+      "name": "Cli Multi Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/multi/",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["plan"]
     },
+
     {
       "type": "node",
       "request": "launch",
@@ -226,6 +227,15 @@
       "cwd": "${workspaceFolder}/examples/multi/",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["list"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Multi Apply",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/multi/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["apply", "-f"]
     },
     {
       "name": "Debug examples",
