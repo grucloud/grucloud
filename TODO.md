@@ -2,8 +2,9 @@
 
 ## Common:
 
-multi example: Command: "Plan Apply"
-Message: "all resources has dependsOn"
+planner: check if the dependsOn is in the plan or not
+
+change port for mock server and mock server under test
 
 - displayresources being created and destroyed
 - hide password from logs and plan
@@ -36,10 +37,7 @@ at createError (/Users/fredericheem/grucloud/node_modules/axios/lib/core/createE
 
 ## TODO Aws:
 
-- zone in config ?
-- when deploying only ec2 without sg, subnet and vpc:
-  "No subnets found for the default VPC 'vpc-bbbafcd3'. Please specify a subnet.",
-
+- zone in config ? check if zone belongs to region
 - error: upsertResources error:Error: Resource SecurityGroup/securityGroup is not tagged correctly
 - AssociatePublicIpAddress, do we need the subnet and sg in interface ?
 - handle error when retry times out

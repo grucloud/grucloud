@@ -115,6 +115,17 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
   const configDefault = async ({ name, properties, dependenciesLive }) => {
     logger.debug(`configDefault ${toString({ dependenciesLive })}`);
     const { keyPair, subnet, securityGroups = {} } = dependenciesLive;
+
+    const buildNetworkInterfaces = () => [
+      {
+        AssociatePublicIpAddress: true,
+        DeviceIndex: 0,
+        ...(!_.isEmpty(securityGroups) && {
+          Groups: _.map(securityGroups, (sg) => getField(sg, "GroupId")),
+        }),
+        SubnetId: getField(subnet, "SubnetId"),
+      },
+    ];
     return {
       ...{
         BlockDeviceMappings: [
@@ -129,18 +140,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
         InstanceType: properties.InstanceType,
         MaxCount: properties.MaxCount,
         MinCount: properties.MinCount,
-        NetworkInterfaces: [
-          {
-            AssociatePublicIpAddress: true,
-            DeviceIndex: 0,
-            ...(!_.isEmpty(securityGroups) && {
-              Groups: _.map(securityGroups, (sg) => getField(sg, "GroupId")),
-            }),
-            ...(subnet && {
-              SubnetId: getField(subnet, "SubnetId"),
-            }),
-          },
-        ],
+        ...(subnet && { NetworkInterfaces: buildNetworkInterfaces() }),
         TagSpecifications: [
           {
             ResourceType: "instance",

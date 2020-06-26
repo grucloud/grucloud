@@ -89,6 +89,11 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     return config;
   };
 
+  const cannotBeDeleted = (item) => {
+    logger.debug(`cannotBeDeleted: DefaultForAz: ${item.DefaultForAz}`);
+    return item.DefaultForAz;
+  };
+
   return {
     type: "Subnet",
     spec,
@@ -98,7 +103,7 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     getByName,
     getById,
     findName,
-    cannotBeDeleted: () => false,
+    cannotBeDeleted,
     list,
     create,
     destroy,

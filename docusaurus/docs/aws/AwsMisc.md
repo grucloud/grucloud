@@ -7,9 +7,13 @@ title: Miscellaneous
 
 ```
 aws configure
+aws ec2 describe-regions
+aws ec2 describe-availability-zones --region eu-west-2
+aws ec2 create-default-subnet --availability-zone eu-west-2a
 aws ec2 describe-instances
 aws ec2 describe-instances --filters "Name=tag:name,Values=web-server"
 aws ec2 describe-tags
+aws ec2 describe-account-attributes
 ```
 
 ## Useful Links
