@@ -68,17 +68,23 @@ const safeJsonParse = (json) => {
 
 const displayError = (name, error) => {
   assert(error);
-  //TODO handle non axios error better
-  const errorToDisplay = {
-    Command: name,
-    Message: error.message,
-    Output: error.response?.data,
-    Input: {
-      config: pick(error?.config, ["url", "method", "baseURL"]),
-      data: safeJsonParse(error?.config?.data),
-    },
-  };
-  console.error(YAML.stringify(errorToDisplay));
+  if (error.isAxiosError) {
+    const errorToDisplay = {
+      Command: name,
+      Message: error.message,
+      Output: error.response?.data,
+      Input: {
+        config: pick(error.config, ["url", "method", "baseURL"]),
+        data: safeJsonParse(error.config.data),
+      },
+    };
+    console.error(YAML.stringify(errorToDisplay));
+  } else {
+    console.error("Command:", name);
+    console.error("Code:   ", error.code);
+    console.error("Name:   ", error.name);
+    console.error(error.stack);
+  }
 };
 
 const displayErrorsCommon = pipe([
