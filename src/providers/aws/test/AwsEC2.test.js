@@ -5,7 +5,7 @@ const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { notAvailable } = require("../../ProviderCommon");
 const { CheckTags } = require("./AwsTagCheck");
 
-describe.only("AwsEC2", async function () {
+describe("AwsEC2", async function () {
   let config;
   let provider;
   let server;
@@ -66,7 +66,7 @@ describe.only("AwsEC2", async function () {
     const lives = await provider.listLives({ all: true });
     assert(lives);
   });
-  it("aws apply plan", async function () {
+  it("ec2 apply plan", async function () {
     await testPlanDeploy({ provider });
 
     const serverLive = await server.getLive();

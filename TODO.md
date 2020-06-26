@@ -2,8 +2,6 @@
 
 ## Common:
 
-planner: check if the dependsOn is in the plan or not
-
 change port for mock server and mock server under test
 
 - displayresources being created and destroyed

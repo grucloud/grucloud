@@ -156,14 +156,24 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
       logger.debug(`Planner run: empty plan `);
       return { success: true, results: [] };
     }
+
+    const resourceTypes = plans.map((plan) => plan.resource.type);
+    logger.debug(`Planner resourceTypes ${resourceTypes}`);
+
+    const isDependsOnInPlan = (dependsOn = []) =>
+      dependsOn.find((dependOn) => resourceTypes.includes(dependOn));
+
     await pipe([
       tap((x) => {
         logger.debug(`Planner run #resource ${x.length}`);
       }),
-      filter(({ dependsOn }) => isEmpty(dependsOn)),
+      filter(({ dependsOn }) => !isDependsOnInPlan(dependsOn)),
       tap((x) => {
         logger.debug(`Planner run: start ${x.length} resource(s) in parallel`);
-        assert(x.length > 0, "all resources has dependsOn");
+        assert(
+          x.length > 0,
+          `all resources has dependsOn, plan: ${tos(plans)}`
+        );
       }),
       map(
         pipe([
