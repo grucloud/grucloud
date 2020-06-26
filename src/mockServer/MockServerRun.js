@@ -2,7 +2,7 @@ const { MockServer } = require("./MockServer");
 const logger = require("./logger")({ prefix: "MockServer" });
 
 const routes = ["/volume", "/ip", "/security_group", "/server"];
-const port = 8089;
+const port = 7089;
 const mockServer = MockServer({ port, routes });
 mockServer
   .start()

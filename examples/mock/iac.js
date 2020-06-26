@@ -3,7 +3,7 @@ const assert = require("assert");
 const urljoin = require("url-join");
 const { MockProvider } = require("@grucloud/core");
 
-const BASE_URL = "http://localhost:8089";
+const BASE_URL = "http://localhost:7089";
 
 const createAxios = ({ url }) => {
   assert(url);

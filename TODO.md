@@ -2,8 +2,6 @@
 
 ## Common:
 
-change port for mock server and mock server under test
-
 - displayresources being created and destroyed
 - hide password from logs and plan
 - rename dependenciesLive in dependenciesLive in configDefault
