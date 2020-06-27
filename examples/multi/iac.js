@@ -1,43 +1,23 @@
-const GoogleProvider = require("@grucloud/core").GoogleProvider;
-const AwsProvider = require("@grucloud/core").AwsProvider;
-
-const createStackGoogle = async ({ config }) => {
-  const provider = await GoogleProvider({
-    name: "google",
-    config,
-  });
-  provider.makeAddress({ name: "ip-webserver" });
-  provider.makeInstance({
-    name: "web-server",
-  });
-
-  return provider;
-};
-
-const createStackAws = async ({ config }) => {
-  const provider = await AwsProvider({ name: "aws", config });
-  const keyPair = provider.makeKeyPair({
-    name: "kp",
-  });
-  provider.makeInstance({
-    name: "web-server",
-    dependencies: { keyPair },
-    propertiesDefault: {
-      VolumeSize: 50,
-      InstanceType: "t2.micro",
-      MaxCount: 1,
-      MinCount: 1,
-      ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
-    },
-  });
-  return provider;
-};
+const AwsStack = require("../aws/iac");
+const AzureStack = require("../azure/iac");
+const GoogleStack = require("../google/iac");
 
 const createStack = async ({ config }) => {
+  const awsStack = await AwsStack({
+    config: { ...config.aws, stage: config.stage },
+  });
+  const azureStack = await AzureStack({
+    config: { ...config.azure, stage: config.stage },
+  });
+  const googleStack = await GoogleStack({
+    config: { ...config.google, stage: config.stage },
+  });
+
   return {
     providers: [
-      await createStackGoogle({ config: config.google }),
-      await createStackAws({ config: config.aws }),
+      ...awsStack.providers,
+      ...azureStack.providers,
+      ...googleStack.providers,
     ],
   };
 };

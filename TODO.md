@@ -3,7 +3,6 @@
 ## Common:
 
 - displayresources being created and destroyed
-- add azure in multi example
 - provide CRUD url to CoreClient
 - add command duration
 - TagName.js move to scaleway

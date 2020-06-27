@@ -2,7 +2,8 @@ const assert = require("assert");
 const { AzureProvider } = require("@grucloud/core");
 
 const createStack = async ({ config }) => {
-  const { stage, machine } = config;
+  const { stage } = config;
+  assert(stage);
   // Create an Azure provider
   const provider = await AzureProvider({ name: "azure", config });
   const rg = provider.makeResourceGroup({
