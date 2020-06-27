@@ -145,7 +145,7 @@ const fnSpecs = (config) => {
           queryParameters: () => "?api-version=2020-05-01",
           isUpByIdFactory,
           config,
-          configDefault: ({ properties, dependenciesLive }) => {
+          configDefault: ({ properties, dependencies }) => {
             return defaultsDeep(properties, {
               location,
               tags: buildTags(config),
@@ -179,13 +179,13 @@ const fnSpecs = (config) => {
             `/providers/Microsoft.Network/networkInterfaces`,
           queryParameters: () => "?api-version=2020-05-01",
           config,
-          configDefault: async ({ properties, dependenciesLive }) => {
+          configDefault: async ({ properties, dependencies }) => {
             const {
               securityGroup,
               virtualNetwork,
               subnet,
               publicIpAddress,
-            } = dependenciesLive;
+            } = dependencies;
             //TODO securityGroup not needed ?
             assert(securityGroup, "dependencies is missing securityGroup");
             assert(virtualNetwork, "dependencies is missing virtualNetwork");
@@ -272,8 +272,8 @@ const fnSpecs = (config) => {
           queryParameters: () => "?api-version=2019-12-01",
           isUpByIdFactory,
           config,
-          configDefault: ({ properties, dependenciesLive }) => {
-            const { networkInterface } = dependenciesLive;
+          configDefault: ({ properties, dependencies }) => {
+            const { networkInterface } = dependencies;
             assert(
               networkInterface,
               "networkInterfaces is missing VirtualMachine"

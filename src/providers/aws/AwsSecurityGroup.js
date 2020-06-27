@@ -111,12 +111,10 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     logger.debug(`destroy sg IN PROGRESS, ${tos({ name, id, result })}`);
     return result;
   };
-  const configDefault = async ({ name, properties, dependenciesLive }) => {
-    logger.debug(
-      `configDefault sg ${tos({ name, properties, dependenciesLive })}`
-    );
+  const configDefault = async ({ name, properties, dependencies }) => {
+    logger.debug(`configDefault sg ${tos({ name, properties, dependencies })}`);
     // TODO Need vpc name here in parameter
-    const { vpc } = dependenciesLive;
+    const { vpc } = dependencies;
     const config = defaultsDeep(properties, {
       create: {
         ...(vpc && { VpcId: getField(vpc, "VpcId") }),

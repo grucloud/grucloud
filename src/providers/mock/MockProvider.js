@@ -79,7 +79,7 @@ const fnSpecs = (config) => {
           configDefault: async ({
             name,
             properties,
-            dependenciesLive: { ip },
+            dependencies: { ip },
           }) => ({
             name,
             zone: `projects/${config.project}/zones/${config.zone}`,

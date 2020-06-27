@@ -26,9 +26,9 @@ module.exports = GoogleInstance = ({ spec, config }) => {
     [stageTagKey]: stage,
   });
 
-  const configDefault = ({ name, properties, dependenciesLive }) => {
-    logger.debug(`configDefault ${tos({ properties, dependenciesLive })}`);
-    const { ip } = dependenciesLive;
+  const configDefault = ({ name, properties, dependencies }) => {
+    logger.debug(`configDefault ${tos({ properties, dependencies })}`);
+    const { ip } = dependencies;
     const config = {
       kind: "compute#instance",
       name,

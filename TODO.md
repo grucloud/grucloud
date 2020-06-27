@@ -3,8 +3,6 @@
 ## Common:
 
 - displayresources being created and destroyed
-- hide password from logs and plan
-- rename dependenciesLive in dependenciesLive in configDefault
 - add azure in multi example
 - provide CRUD url to CoreClient
 - add command duration

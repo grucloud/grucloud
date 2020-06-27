@@ -116,7 +116,7 @@ const fnSpecs = (config) => {
           configDefault: async ({
             name,
             properties,
-            dependenciesLive: { image, ip },
+            dependencies: { image, ip },
           }) => {
             return {
               name,

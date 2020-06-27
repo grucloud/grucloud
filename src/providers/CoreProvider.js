@@ -90,18 +90,18 @@ const ResourceMaker = ({
     }
   };
 
-  const resolveDependenciesLive = pipe([
+  const resolveDependencies = pipe([
     map(async (dependency) => {
       if (_.isString(dependency)) {
         return dependency;
       }
       if (!dependency.getLive) {
-        return resolveDependenciesLive(dependency);
+        return resolveDependencies(dependency);
       }
       const live = await dependency.getLive();
       return { resource: dependency, live };
     }),
-    tap((x) => logger.debug(`resolveDependenciesLive: ${tos(x)}`)),
+    tap((x) => logger.debug(`resolveDependencies: ${tos(x)}`)),
   ]);
 
   const resolveConfig = async () => {
@@ -109,19 +109,19 @@ const ResourceMaker = ({
     const { items } = await client.list();
     //logger.debug(`config ${tos({ type, resourceName, items })}`);
 
-    const dependenciesLive = await resolveDependenciesLive(dependencies);
+    const resolvedDependencies = await resolveDependencies(dependencies);
 
     assert(client.configDefault);
 
     const config = await client.configDefault({
       name: resourceName,
       properties: defaultsDeep(spec.propertiesDefault, properties),
-      dependenciesLive,
+      dependencies: resolvedDependencies,
     });
     logger.debug(`resolveConfig: configDefault: ${tos(config)}`);
     const finalConfig = transformConfig
       ? await transformConfig({
-          dependenciesLive,
+          dependencies: resolvedDependencies,
           items,
           config,
           configProvider: provider.config(),
@@ -202,7 +202,7 @@ const ResourceMaker = ({
     planUpsert,
     getLive,
     addParent,
-    resolveDependencies: () => resolveDependenciesLive(dependencies),
+    resolveDependencies: () => resolveDependencies(dependencies),
   };
   _.map(dependencies, (dependency) => {
     if (_.isString(dependency)) {

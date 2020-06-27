@@ -112,9 +112,9 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     logger.debug(`destroy ec2 done, ${tos({ name, id, result })}`);
     return result;
   };
-  const configDefault = async ({ name, properties, dependenciesLive }) => {
-    logger.debug(`configDefault ${tos({ dependenciesLive })}`);
-    const { keyPair, subnet, securityGroups = {} } = dependenciesLive;
+  const configDefault = async ({ name, properties, dependencies }) => {
+    logger.debug(`configDefault ${tos({ dependencies })}`);
+    const { keyPair, subnet, securityGroups = {} } = dependencies;
 
     const buildNetworkInterfaces = () => [
       {

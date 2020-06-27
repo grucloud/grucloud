@@ -75,10 +75,10 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     };
   };
 
-  const configDefault = async ({ name, properties, dependenciesLive }) => {
-    logger.debug(`configDefault ${tos({ dependenciesLive })}`);
+  const configDefault = async ({ name, properties, dependencies }) => {
+    logger.debug(`configDefault ${tos({ dependencies })}`);
     // Need vpc name here in parameter
-    const { vpc } = dependenciesLive;
+    const { vpc } = dependencies;
     const config = {
       ...(vpc && { VpcId: getField(vpc, "VpcId") }),
       ...properties,

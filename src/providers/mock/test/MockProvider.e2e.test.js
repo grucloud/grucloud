@@ -5,6 +5,7 @@ const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
 const { tos } = require("../../../tos");
+
 describe("MockProvider e2e", async function () {
   let stack;
   let provider;
