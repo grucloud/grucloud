@@ -81,8 +81,9 @@ const displayError = (name, error) => {
   } else {
     console.error("Command:", name);
     console.error("Code:   ", error.code);
-    console.error("Name:   ", error.name);
-    console.error(error.stack);
+    error.message && console.error("Message:   ", error.message);
+    error.name && console.error("Name:   ", error.name);
+    error.stack && console.error(error.stack);
   }
 };
 

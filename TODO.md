@@ -4,7 +4,6 @@
 
 - displayresources being created and destroyed
 - provide CRUD url to CoreClient
-- add command duration
 - TagName.js move to scaleway
 - compare or compareObject
 - https://cloudcraft.co/

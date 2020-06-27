@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 require("dotenv").config();
+const Duration = require("duration");
 const pkg = require("../../package.json");
 const { createProgram } = require("./program");
 const commands = require("./cliCommands");
 const logger = require("../logger")({ prefix: "AwsClientEC2" });
 
-exports.main = ({ argv, onExit }) => {
+const executableName = "gc";
+
+exports.main = async ({ argv, onExit }) => {
   const program = createProgram({
     version: pkg.version,
     argv,
@@ -18,8 +21,16 @@ exports.main = ({ argv, onExit }) => {
   logger.info(`argv: ${argv}`);
   const { stage } = process.env;
   logger.info(`stage: ${stage}`);
-
-  return program.parseAsync(argv).catch((error) => {
+  try {
+    const startDate = new Date();
+    const commmand = await program.parseAsync(argv);
+    const duration = new Duration(startDate, new Date());
+    console.log(
+      `Command "${executableName} ${commmand.args.join(
+        " "
+      )}" executed in ${duration.toString(1, 1)}`
+    );
+  } catch (error) {
     const { code } = error;
     if (code === 422) {
       logger.error(error.message);
@@ -29,5 +40,5 @@ exports.main = ({ argv, onExit }) => {
       console.log(error);
       onExit({ code: -1 });
     }
-  });
+  }
 };

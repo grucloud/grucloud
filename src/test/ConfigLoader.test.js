@@ -14,6 +14,5 @@ describe("ConfigLoader", async function () {
     assert(isEqual(r4, ["K4", "V4"]));
     assert(!r5);
     assert(!r6);
-    console.log(result);
   });
 });
