@@ -1,7 +1,7 @@
 const { defaultsDeep } = require("lodash/fp");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "GoogleInstance" });
-const toString = (x) => JSON.stringify(x, null, 4);
+const { tos } = require("../../tos");
 const { toTagName } = require("./GoogleTag");
 const { getField } = require("../ProviderCommon");
 const { isUpByIdCore } = require("../Common");
@@ -27,7 +27,7 @@ module.exports = GoogleInstance = ({ spec, config }) => {
   });
 
   const configDefault = ({ name, properties, dependenciesLive }) => {
-    logger.debug(`configDefault ${toString({ properties, dependenciesLive })}`);
+    logger.debug(`configDefault ${tos({ properties, dependenciesLive })}`);
     const { ip } = dependenciesLive;
     const config = {
       kind: "compute#instance",
@@ -76,7 +76,7 @@ module.exports = GoogleInstance = ({ spec, config }) => {
         },
       ],
     };
-    logger.debug(`configDefault ${name} result: ${toString(config)}`);
+    logger.debug(`configDefault ${name} result: ${tos(config)}`);
     return config;
   };
 

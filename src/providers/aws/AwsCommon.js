@@ -2,7 +2,7 @@ const assert = require("assert");
 const { pipe, tryCatch } = require("rubico");
 const { head, tap } = require("ramda");
 const logger = require("../../logger")({ prefix: "AwsCommon" });
-const tos = (x) => JSON.stringify(x, null, 4);
+const { tos } = require("../../tos");
 const { logError } = require("../Common");
 
 const KeyName = "Name";

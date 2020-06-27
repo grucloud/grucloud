@@ -1,8 +1,7 @@
 const _ = require("lodash");
 const Axios = require("axios");
 const logger = require("../logger")({ prefix: "AxiosMaker" });
-const toString = (x) => JSON.stringify(x, null, 4);
-
+const { tos } = require("../tos");
 module.exports = AxiosMaker = ({ baseURL, onHeaders = noop }) => {
   return Axios.create({
     baseURL,
@@ -11,8 +10,8 @@ module.exports = AxiosMaker = ({ baseURL, onHeaders = noop }) => {
     headers: { ...onHeaders(), "Content-Type": "application/json" },
     transformRequest: [
       (data, headers) => {
-        logger.info(`tx ${baseURL} ${data ? toString(data) : ""}`);
-        //logger.info(`tx ${toString({ headers })}`);
+        logger.info(`tx ${baseURL} ${data ? tos(data) : ""}`);
+        //logger.info(`tx ${tos({ headers })}`);
 
         return JSON.stringify(data);
       },
@@ -22,10 +21,10 @@ module.exports = AxiosMaker = ({ baseURL, onHeaders = noop }) => {
         logger.debug(`rx baseURL: ${baseURL}`);
         try {
           const parsedData = data && JSON.parse(data);
-          logger.debug(`rx baseURL: ${baseURL}, ${toString(parsedData)}`);
+          logger.debug(`rx baseURL: ${baseURL}, ${tos(parsedData)}`);
           return parsedData;
         } catch (error) {
-          logger.info(`rx json data ${toString(data)}`);
+          logger.info(`rx json data ${tos(data)}`);
           return data;
         }
       },

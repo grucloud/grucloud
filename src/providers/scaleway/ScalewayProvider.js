@@ -7,8 +7,7 @@ const logger = require("../../logger")({ prefix: "ScalewayProvider" });
 const TagName = require("../TagName");
 const { getField } = require("../ProviderCommon");
 
-const toString = (x) => JSON.stringify(x, null, 4);
-
+const { tos } = require("../../tos");
 const fnSpecs = (config) => {
   const { organization } = config;
 
@@ -23,7 +22,7 @@ const fnSpecs = (config) => {
           url: `/ips`,
           config,
           onResponseList: (data) => {
-            logger.debug(`onResponse ${toString(data)}`);
+            logger.debug(`onResponse ${tos(data)}`);
             if (data && data.ips) {
               return { total: data.ips.length, items: data.ips };
             } else {
@@ -42,7 +41,7 @@ const fnSpecs = (config) => {
       transformConfig: ({ config, items }) => {
         
         logger.debug(
-          `postConfig: ${toString(config)}, items: ${toString(items)}`
+          `postConfig: ${tos(config)}, items: ${tos(items)}`
         );
         const ip = items.find((item) => item.address === config.address);
         if (ip) {
@@ -137,7 +136,7 @@ const fnSpecs = (config) => {
           targetKeys: ["commercial_type", "volumes.0.size"],
           live,
         });
-        logger.debug(`compare ${toString(diff)}`);
+        logger.debug(`compare ${tos(diff)}`);
         return diff;
       },
       propertiesDefault: {

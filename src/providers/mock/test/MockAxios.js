@@ -5,7 +5,7 @@ const logger = require("../../../logger")({ prefix: "MockAxios" });
 
 const AxiosMaker = require("../../AxiosMaker");
 
-const tos = (x) => JSON.stringify(x, null, 4);
+const { tos } = require("../../../tos");
 const BASE_URL = "http://localhost:8089";
 
 exports.createAxiosMock = ({ config, url, spec }) => {

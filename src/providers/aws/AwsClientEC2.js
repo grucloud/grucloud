@@ -5,7 +5,7 @@ const logger = require("../../logger")({ prefix: "AwsClientEC2" });
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../Common");
 const { retryExpectOk } = require("../Retry");
 
-const toString = (x) => JSON.stringify(x, null, 4);
+const { tos } = require("../../tos");
 const StateTerminated = ["terminated"];
 const { KeyName, getByIdCore } = require("./AwsCommon");
 const { getField } = require("../ProviderCommon");
@@ -25,10 +25,10 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     assert(item.Instances);
     const tag = item.Instances[0].Tags.find((tag) => tag.Key === KeyName);
     if (tag?.Value) {
-      logger.debug(`findName ${toString({ name: tag.Value, item })}`);
+      logger.debug(`findName ${tos({ name: tag.Value, item })}`);
       return tag.Value;
     } else {
-      throw Error(`cannot find name in ${toString(item)}`);
+      throw Error(`cannot find name in ${tos(item)}`);
     }
   };
 
@@ -43,12 +43,12 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
   const list = async () => {
     logger.debug(`list`);
     const data = await ec2.describeInstances().promise();
-    logger.debug(`list ${toString(data)}`);
+    logger.debug(`list ${tos(data)}`);
     const items = data.Reservations.filter(
       (reservation) =>
         !StateTerminated.includes(reservation.Instances[0].State.Name)
     );
-    logger.debug(`list filtered: ${toString(items)}`);
+    logger.debug(`list filtered: ${tos(items)}`);
     return {
       total: items.length,
       items,
@@ -75,9 +75,9 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
   const create = async ({ name, payload }) => {
     assert(name);
     assert(payload);
-    logger.debug(`create ec2 ${toString({ name, payload })}`);
+    logger.debug(`create ec2 ${tos({ name, payload })}`);
     const data = await ec2.runInstances(payload).promise();
-    logger.debug(`create result ${toString(data)}`);
+    logger.debug(`create result ${tos(data)}`);
     const instance = data.Instances[0];
     const { InstanceId } = instance;
     await retryExpectOk({
@@ -90,7 +90,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
   };
 
   const destroy = async ({ id, name }) => {
-    logger.debug(`destroy ec2 ${toString({ name, id })}`);
+    logger.debug(`destroy ec2 ${tos({ name, id })}`);
     if (_.isEmpty(id)) {
       throw Error(`destroy invalid id`);
     }
@@ -101,7 +101,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
       })
       .promise();
 
-    logger.debug(`destroy ec2 in progress, ${toString({ name, id })}`);
+    logger.debug(`destroy ec2 in progress, ${tos({ name, id })}`);
 
     await retryExpectOk({
       name: `isDownById: ${name} id: ${id}`,
@@ -109,11 +109,11 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
       isOk: (result) => result,
     });
 
-    logger.debug(`destroy ec2 done, ${toString({ name, id, result })}`);
+    logger.debug(`destroy ec2 done, ${tos({ name, id, result })}`);
     return result;
   };
   const configDefault = async ({ name, properties, dependenciesLive }) => {
-    logger.debug(`configDefault ${toString({ dependenciesLive })}`);
+    logger.debug(`configDefault ${tos({ dependenciesLive })}`);
     const { keyPair, subnet, securityGroups = {} } = dependenciesLive;
 
     const buildNetworkInterfaces = () => [

@@ -2,6 +2,38 @@ const assert = require("assert");
 const _ = require("lodash");
 const { compare, compareObject } = require("../Utils");
 const { checkConfig } = require("../Utils");
+const { replacerCredentials, hiddenCredentials } = require("../tos");
+const YAML = require("../cli/json2yaml");
+
+const properties = {
+  storageProfile: {
+    imageReference: {
+      offer: "UbuntuServer",
+      publisher: "Canonical",
+    },
+  },
+};
+
+const propertiesToYaml = `storageProfile:
+  imageReference:
+    offer: "UbuntuServer"
+    publisher: "Canonical"
+`;
+
+describe("replacerCredentials", function () {
+  it("replacerCredentials ok", async function () {
+    assert.equal(
+      replacerCredentials("adminPassword", "password"),
+      hiddenCredentials
+    );
+  });
+  it("YAML.stringify password", async function () {
+    YAML.stringify({ properties: { adminPassword: "aaaaaaaa" } });
+  });
+  it("YAML.stringify object", async function () {
+    assert.equal(YAML.stringify(properties), propertiesToYaml);
+  });
+});
 
 describe("checkConfig", function () {
   it("checkConfig empty", async function () {

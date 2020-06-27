@@ -14,8 +14,7 @@ const {
 const logger = require("../../logger")({ prefix: "AwsSecurityGroup" });
 const { tagResource } = require("./AwsTagResource");
 
-const toString = (x) => JSON.stringify(x, null, 4);
-
+const { tos } = require("../../tos");
 module.exports = AwsSecurityGroup = ({ spec, config }) => {
   assert(spec);
   assert(config);
@@ -38,12 +37,12 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
         if (error) {
           return reject(error.message);
         } else {
-          logger.debug(`list ${toString(response)}`);
+          logger.debug(`list ${tos(response)}`);
           resolve(response.SecurityGroups);
         }
       });
     });
-    logger.debug(`list ${toString(securityGroups)}`);
+    logger.debug(`list ${tos(securityGroups)}`);
 
     return {
       total: securityGroups.length,
@@ -73,9 +72,9 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
       ...payload.create,
     };
 
-    logger.debug(`create sg ${toString({ name, createParams, payload })}`);
+    logger.debug(`create sg ${tos({ name, createParams, payload })}`);
     const { GroupId } = await ec2.createSecurityGroup(createParams).promise();
-    logger.debug(`create GroupId ${toString(GroupId)}`);
+    logger.debug(`create GroupId ${tos(GroupId)}`);
 
     await retryExpectOk({
       name: `isUpById: ${name} id: ${GroupId}`,
@@ -96,7 +95,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
       GroupId,
       ...payload.ingress,
     };
-    logger.debug(`create ingressParam ${toString({ ingressParam })}`);
+    logger.debug(`create ingressParam ${tos({ ingressParam })}`);
 
     await ec2.authorizeSecurityGroupIngress(ingressParam).promise();
 
@@ -106,15 +105,15 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   };
 
   const destroy = async ({ id, name }) => {
-    logger.debug(`destroy sg ${toString({ name, id })}`);
+    logger.debug(`destroy sg ${tos({ name, id })}`);
     assert(id);
     const result = await ec2.deleteSecurityGroup({ GroupId: id }).promise();
-    logger.debug(`destroy sg IN PROGRESS, ${toString({ name, id, result })}`);
+    logger.debug(`destroy sg IN PROGRESS, ${tos({ name, id, result })}`);
     return result;
   };
   const configDefault = async ({ name, properties, dependenciesLive }) => {
     logger.debug(
-      `configDefault sg ${toString({ name, properties, dependenciesLive })}`
+      `configDefault sg ${tos({ name, properties, dependenciesLive })}`
     );
     // TODO Need vpc name here in parameter
     const { vpc } = dependenciesLive;
@@ -123,7 +122,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
         ...(vpc && { VpcId: getField(vpc, "VpcId") }),
       },
     });
-    logger.debug(`configDefault sg ${name} result: ${toString(config)}`);
+    logger.debug(`configDefault sg ${name} result: ${tos(config)}`);
     return config;
   };
 

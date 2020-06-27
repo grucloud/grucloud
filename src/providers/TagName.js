@@ -1,12 +1,12 @@
 const logger = require("../logger")({ prefix: "CoreClient" });
-const toString = (x) => JSON.stringify(x, null, 4);
+const { tos } = require("../tos");
 const hasTag = (name = "", tag) => name && name.includes(tag);
 exports.toTagName = (name, tag) => `${name}${tag}`;
 exports.fromTagName = (name, tag) => name && name.replace(tag, "");
 exports.hasTag = hasTag;
 
 exports.isOurMinion = ({ resource, tag: ourTag }) => {
-  //logger.info(`isOurMinion ? ${toString({ ourTag, resource })}`);
+  //logger.info(`isOurMinion ? ${tos({ ourTag, resource })}`);
   if (hasTag(resource.name, ourTag)) {
     logger.info(`isOurMinion yes, same resource name`);
     return true;
@@ -32,5 +32,5 @@ exports.isOurMinion = ({ resource, tag: ourTag }) => {
   if (labels) {
   }
 
-  logger.info(`isOurMinion not our minion: ${toString({ ourTag, resource })}`);
+  logger.info(`isOurMinion not our minion: ${tos({ ourTag, resource })}`);
 };

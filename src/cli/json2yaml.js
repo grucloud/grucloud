@@ -1,6 +1,6 @@
 var typeOf = require("remedial").typeOf;
 var trimWhitespace = require("remove-trailing-spaces");
-
+const { replacerCredentials } = require("../tos");
 function stringify(data) {
   var handlers,
     indentLevel = "";
@@ -24,10 +24,11 @@ function stringify(data) {
     date: function (x) {
       return x.toJSON();
     },
-    string: function (x) {
+    string: function (x, name) {
       // to avoid the string "true" being confused with the
       // the literal `true`, we always wrap strings in quotes
-      return JSON.stringify(x);
+      const value = typeof name === "string" ? replacerCredentials(name, x) : x;
+      return JSON.stringify(value);
     },
     array: function (x) {
       var output = "";
@@ -85,7 +86,8 @@ function stringify(data) {
           output += "\n" + indentLevel;
         }
 
-        output += k + ": " + handler(val);
+        output +=
+          k + ": " + handler(val, typeof val === "string" ? k : undefined);
       });
       indentLevel = indentLevel.replace(/  /, "");
 

@@ -1,7 +1,7 @@
 const assert = require("assert");
 const _ = require("lodash");
 const logger = require("../../logger")({ prefix: "GoogleTag" });
-const toString = (x) => JSON.stringify(x, null, 4);
+const { tos } = require("../../tos");
 const hasTag = (name = "", tag) => name && name.includes(tag);
 
 exports.hasTag = hasTag;
@@ -9,7 +9,7 @@ exports.hasTag = hasTag;
 exports.toTagName = (name, tag) => `${name}${tag}`;
 
 exports.isOurMinion = ({ resource, config }) => {
-  logger.info(`isOurMinion ? ${toString({ config, resource })}`);
+  logger.info(`isOurMinion ? ${tos({ config, resource })}`);
   const { managedByKey, managedByValue, managedByDescription } = config;
   assert(managedByKey);
   const { labels = {}, description } = resource;
@@ -29,7 +29,7 @@ exports.isOurMinion = ({ resource, config }) => {
   }
 
   logger.info(
-    `isOurMinion isMinion: ${isMinion}, ${toString({ config, resource })}`
+    `isOurMinion isMinion: ${isMinion}, ${tos({ config, resource })}`
   );
   return isMinion;
 };

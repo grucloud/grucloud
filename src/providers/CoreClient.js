@@ -3,7 +3,7 @@ const urljoin = require("url-join");
 const npath = require("path");
 const assert = require("assert");
 const logger = require("../logger")({ prefix: "CoreClient" });
-const toString = (x) => JSON.stringify(x, null, 4);
+const { tos } = require("../tos");
 const identity = (x) => x;
 const { retryExpectOk } = require("./Retry");
 const {
@@ -46,7 +46,7 @@ module.exports = CoreClient = ({
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
 
   const getById = async ({ id }) => {
-    logger.debug(`getById ${toString({ type, id, canGet })}`);
+    logger.debug(`getById ${tos({ type, id, canGet })}`);
     assert(id);
 
     if (_.isEmpty(id)) {
@@ -63,7 +63,7 @@ module.exports = CoreClient = ({
         method: "GET",
       });
       const data = onResponseGet(result.data);
-      logger.debug(`get ${toString(data)}`);
+      logger.debug(`get ${tos(data)}`);
       return data;
     } catch (error) {
       const status = error.response?.status;
@@ -83,7 +83,7 @@ module.exports = CoreClient = ({
   const isDownById = isDownByIdCore({ getById });
 
   const create = async ({ name, payload, dependencies }) => {
-    logger.debug(`create ${type}/${name}, payload: ${toString(payload)}`);
+    logger.debug(`create ${type}/${name}, payload: ${tos(payload)}`);
     assert(name);
     assert(payload);
     if (!canCreate) return;
@@ -101,7 +101,7 @@ module.exports = CoreClient = ({
         data: payload,
       });
       const data = onResponseCreate(result.data);
-      logger.debug(`create result: ${toString(data)}`);
+      logger.debug(`create result: ${tos(data)}`);
 
       const id = findTargetId(data);
       logger.debug(`create findTargetId: ${id}`);
@@ -145,7 +145,7 @@ module.exports = CoreClient = ({
   };
 
   const destroy = async ({ id, name }) => {
-    logger.debug(`destroy ${toString({ type, name, id, canDelete })}`);
+    logger.debug(`destroy ${tos({ type, name, id, canDelete })}`);
     if (!canDelete) return;
 
     if (_.isEmpty(id)) {
@@ -161,7 +161,7 @@ module.exports = CoreClient = ({
       });
       const data = onResponseDelete(result.data);
       logger.debug(
-        `destroy ${toString({ name, type, id, data })} should be destroyed`
+        `destroy ${tos({ name, type, id, data })} should be destroyed`
       );
 
       return data;

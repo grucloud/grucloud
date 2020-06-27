@@ -2,7 +2,7 @@ const { isEmpty } = require("ramda");
 const AWS = require("aws-sdk");
 const assert = require("assert");
 const { KeyName } = require("./AwsCommon");
-const toString = (x) => JSON.stringify(x, null, 4);
+const { tos } = require("../../tos");
 const logger = require("../../logger")({ prefix: "AwsTagResource" });
 
 exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
@@ -45,7 +45,7 @@ exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
   const { ResourceTagMappingList } = await tagApi
     .getResources(getParams)
     .promise();
-  logger.debug(`getResource for ${arnId}: ${toString(ResourceTagMappingList)}`);
+  logger.debug(`getResource for ${arnId}: ${tos(ResourceTagMappingList)}`);
   if (isEmpty(ResourceTagMappingList)) {
     throw { code: 422, message: "resource not tagged" };
   }

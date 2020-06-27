@@ -10,8 +10,7 @@ const AwsSecurityGroup = require("./AwsSecurityGroup");
 const logger = require("../../logger")({ prefix: "AwsProvider" });
 const compare = require("../../Utils").compare;
 const AwsTags = require("./AwsTags");
-const toString = (x) => JSON.stringify(x, null, 4);
-
+const { tos } = require("../../tos");
 const fnSpecs = (config) => {
   const isOurMinion = ({ resource }) =>
     AwsTags.isOurMinion({ resource, config });
@@ -64,7 +63,7 @@ const fnSpecs = (config) => {
           targetKeys: ["InstanceType"], //TODO
           live: live.Instances[0],
         });
-        logger.debug(`compare ${toString(diff)}`);
+        logger.debug(`compare ${tos(diff)}`);
         return diff;
       },
       isOurMinion: ({ resource }) =>

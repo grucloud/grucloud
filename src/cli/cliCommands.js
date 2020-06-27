@@ -9,8 +9,7 @@ const colors = require("colors/safe");
 const fs = require("fs");
 const YAML = require("./json2yaml");
 
-const tos = (x) => JSON.stringify(x, null, 4);
-
+const { tos } = require("../tos");
 const {
   map,
   pipe,

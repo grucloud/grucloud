@@ -2,8 +2,7 @@ const assert = require("assert");
 const CoreClient = require("../CoreClient");
 const AxiosMaker = require("../AxiosMaker");
 const logger = require("../../logger")({ prefix: "AzClient" });
-//const toString = (x) => JSON.stringify(x, null, 4);
-
+//const {tos} = require("../../tos")
 const BASE_URL = "https://management.azure.com";
 
 const onResponseList = ({ value = [] }) => ({

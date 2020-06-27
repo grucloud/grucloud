@@ -4,7 +4,7 @@ const assert = require("assert");
 const { pipe, tryCatch } = require("rubico");
 const { head, tap, props } = require("ramda");
 const logger = require("../../logger")({ prefix: "AwsVpc" });
-const tos = (x) => JSON.stringify(x, null, 4);
+const { tos } = require("../../tos");
 const { retryExpectOk } = require("../Retry");
 const { getByIdCore } = require("./AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../Common");

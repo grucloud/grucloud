@@ -3,8 +3,7 @@ const CoreClient = require("../CoreClient");
 const urljoin = require("url-join");
 const AxiosMaker = require("../AxiosMaker");
 const logger = require("../../logger")({ prefix: "ScalewayClient" });
-const toString = (x) => JSON.stringify(x, null, 4);
-
+const { tos } = require("../../tos");
 const BASE_URL = "https://api.scaleway.com/instance/v1/";
 
 module.exports = ScalewayClient = ({
@@ -22,7 +21,7 @@ module.exports = ScalewayClient = ({
 
   const findName = (item) => {
     assert(item);
-    logger.debug(`findName: ${toString(item)}`);
+    logger.debug(`findName: ${tos(item)}`);
     if (item.name) {
       return item.name;
     }
@@ -32,7 +31,7 @@ module.exports = ScalewayClient = ({
       logger.debug(`findName: is ${name} `);
       return name;
     } else {
-      logger.debug(`findName: cannot find name in ${toString(item)}`);
+      logger.debug(`findName: cannot find name in ${tos(item)}`);
     }
   };
 

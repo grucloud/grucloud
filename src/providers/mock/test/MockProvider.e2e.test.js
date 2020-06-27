@@ -4,8 +4,7 @@ const logger = require("logger")({ prefix: "CoreProvider" });
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
-const tos = (x) => JSON.stringify(x, null, 4);
-
+const { tos } = require("../../../tos");
 describe("MockProvider e2e", async function () {
   let stack;
   let provider;

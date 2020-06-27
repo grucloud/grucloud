@@ -1,17 +1,16 @@
 const assert = require("assert");
 const logger = require("../logger")({ prefix: "Common" });
-const toString = (x) => JSON.stringify(x, null, 4);
-
+const { tos } = require("../tos");
 exports.findField = ({ item, field }) => {
   assert(item);
   assert(field);
-  logger.debug(`findName: ${toString(item)}`);
+  logger.debug(`findName: ${tos(item)}`);
 
   if (item[field]) {
     return item[field];
   } else {
-    logger.debug(`findName: cannot find name in ${toString(item)}`);
-    // throw Error(`cannot find name in ${toString(item)}`);
+    logger.debug(`findName: cannot find name in ${tos(item)}`);
+    // throw Error(`cannot find name in ${tos(item)}`);
   }
 };
 
@@ -23,7 +22,7 @@ exports.getByNameCore = async ({ name, findName, list }) => {
 
   const { items } = await list();
   const instance = items.find((item) => findName(item) === name);
-  logger.debug(`getByName ${name}: ${toString({ instance })}`);
+  logger.debug(`getByName ${name}: ${tos({ instance })}`);
 
   return instance;
 };
@@ -35,7 +34,7 @@ exports.getByIdCore = async ({ id, findId, list }) => {
 
   const { items } = await list();
   const instance = items.find((item) => findId(item) === id);
-  logger.debug(`getById ${id}: ${toString({ instance })}`);
+  logger.debug(`getById ${id}: ${tos({ instance })}`);
 
   return instance;
 };
@@ -84,9 +83,9 @@ exports.logError = (prefix, error) => {
   logger.error(`${prefix} error:${error.toString()}`);
   if (error.response) {
     if (error.response.data) {
-      logger.error(`${prefix} data: ${toString(error.response.data)}`);
+      logger.error(`${prefix} data: ${tos(error.response.data)}`);
     }
-    logger.error(`${prefix} config: ${toString(error.response.config)}`);
+    logger.error(`${prefix} config: ${tos(error.response.config)}`);
   }
   logger.error(`${prefix} stack:${error.stack}`);
 };

@@ -1,6 +1,6 @@
 const assert = require("assert");
 const logger = require("../logger")({ prefix: "CoreClient" });
-const tos = (x) => JSON.stringify(x, null, 4);
+const { tos } = require("../tos");
 const { isEmpty, isArray, isFunction } = require("lodash/fp");
 const { filter, map, pipe, tap, any, switchCase } = require("rubico");
 const { logError } = require("./Common");

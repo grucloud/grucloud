@@ -5,7 +5,7 @@ const { isEmpty, flatten, reverse } = require("ramda");
 const { pipe, tap, map, filter, all, tryCatch } = require("rubico");
 const Promise = require("bluebird");
 const logger = require("../logger")({ prefix: "CoreProvider" });
-const tos = (x) => JSON.stringify(x, null, 4);
+const { tos } = require("../tos");
 const { checkConfig, checkEnv } = require("../Utils");
 const { fromTagName } = require("./TagName");
 const { SpecDefault } = require("./SpecDefault");
@@ -638,7 +638,7 @@ function CoreProvider({
     resourceByName,
     getTargetResources,
     isPlanEmpty,
-    toString: () => `provider: ${type}, stage: ${config.stage}`,
+    tos: () => `provider: ${type}, stage: ${config.stage}`,
   };
   const enhanceProvider = {
     ...provider,

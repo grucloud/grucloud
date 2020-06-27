@@ -2,14 +2,14 @@ var AWS = require("aws-sdk");
 const _ = require("lodash");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsClientKeyPair" });
-const toString = (x) => JSON.stringify(x, null, 4);
+const { tos } = require("../../tos");
 const { getByNameCore, getById, findField } = require("../Common");
 
 module.exports = AwsClientKeyPair = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  logger.info(`${toString(config)}`);
+  logger.info(`${tos(config)}`);
 
   const ec2 = new AWS.EC2();
 
@@ -22,7 +22,7 @@ module.exports = AwsClientKeyPair = ({ spec, config }) => {
   const list = async () => {
     logger.debug(`list`);
     const { KeyPairs } = await ec2.describeKeyPairs().promise();
-    logger.debug(`list ${toString(KeyPairs)}`);
+    logger.debug(`list ${tos(KeyPairs)}`);
 
     return {
       total: KeyPairs.length,

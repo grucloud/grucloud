@@ -1,8 +1,7 @@
 const assert = require("assert");
 const { isEmpty, isEqual, isObject, get, map } = require("lodash");
 const logger = require("./logger")({ prefix: "MocCloud" });
-const toString = (x) => JSON.stringify(x, null, 4);
-
+const { tos } = require("./tos");
 exports.checkEnv = (mandatoryEnv = []) => {
   const missingEnv = mandatoryEnv.filter((env) => !process.env[env]);
   const { CONFIG_ENV = "dev" } = process.env;
@@ -48,7 +47,7 @@ const compareObject = ({ target = {}, live = {} }) => {
 exports.compareObject = compareObject;
 
 exports.compare = ({ target = {}, targetKeys = [], live = {} }) => {
-  logger.debug(`compare ${toString({ target, targetKeys, live })}`);
+  logger.debug(`compare ${tos({ target, targetKeys, live })}`);
 
   const targetDiff = targetKeys
     .map((targetKey) => {
@@ -56,7 +55,7 @@ exports.compare = ({ target = {}, targetKeys = [], live = {} }) => {
       const liveValue = get(live, targetKey);
 
       logger.debug(
-        `compare for targetKey: ${toString({
+        `compare for targetKey: ${tos({
           targetKey,
           targetValue,
           liveValue,
@@ -82,6 +81,6 @@ exports.compare = ({ target = {}, targetKeys = [], live = {} }) => {
     })
     .filter((x) => x);
 
-  logger.info(`compare ${toString({ targetDiff })}`);
+  logger.info(`compare ${tos({ targetDiff })}`);
   return targetDiff;
 };

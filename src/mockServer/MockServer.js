@@ -3,8 +3,7 @@ const Router = require("@koa/router");
 const shortid = require("shortid");
 const koaBody = require("koa-body");
 const logger = require("./logger")({ prefix: "MockServer" });
-const toString = (x) => JSON.stringify(x, null, 4);
-
+const { tos } = require("../tos");
 const portDefault = 8089;
 exports.portDefault = portDefault;
 
@@ -38,7 +37,7 @@ exports.MockServer = (config) => {
           total: mapResouces.size,
           items: [...mapResouces.values()],
         };
-        logger.debug(`get ${path}, result: ${toString(context.body)}`);
+        logger.debug(`get ${path}, result: ${tos(context.body)}`);
         context.status = 200;
       })
       .get(path, `${path}/:id`, (context) => {

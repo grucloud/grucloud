@@ -6,7 +6,7 @@ const compare = require("../../Utils").compare;
 const TagName = require("../TagName");
 const { toTagName } = require("../TagName");
 const logger = require("../../logger")({ prefix: "MockProvider" });
-//const tos = (x) => JSON.stringify(x, null, 4);
+const { tos } = require("../../tos");
 const { getField } = require("../ProviderCommon");
 
 const fnSpecs = (config) => {
@@ -124,7 +124,7 @@ const fnSpecs = (config) => {
           targetKeys: ["machineType"],
           live,
         });
-        logger.debug(`compare ${toString(diff)}`);
+        logger.debug(`compare ${tos(diff)}`);
         return diff;
       },
       isOurMinion,

@@ -1,8 +1,7 @@
 const Promise = require("bluebird");
 const assert = require("assert");
 const logger = require("../logger")({ prefix: "CoreClient" });
-const toString = (x) => JSON.stringify(x, null, 4);
-
+const { tos } = require("../tos");
 //TODO revist, throw on error ? add isExceptionOk ?
 const retryExpectOk = async ({ name, fn, isOk, delay = 4e3 }, count = 60) => {
   logger.debug(`retryExpectOk ${name},  count: ${count}, delay: ${delay}`);
@@ -12,7 +11,7 @@ const retryExpectOk = async ({ name, fn, isOk, delay = 4e3 }, count = 60) => {
   }
   try {
     const result = await fn();
-    logger.debug(`retryExpectOk ${name} result: ${toString(result)}`);
+    logger.debug(`retryExpectOk ${name} result: ${tos(result)}`);
 
     if (isOk(result)) {
       logger.debug(`retryExpectOk ${name} isOk`);
@@ -26,7 +25,7 @@ const retryExpectOk = async ({ name, fn, isOk, delay = 4e3 }, count = 60) => {
       throw error;
     }
     logger.debug(
-      `retryExpectOk ${name},  error: ${toString(
+      `retryExpectOk ${name},  error: ${tos(
         error.response ? error.response : error
       )}`
     );

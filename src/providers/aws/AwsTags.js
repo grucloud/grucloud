@@ -1,7 +1,6 @@
 const logger = require("../../logger")({ prefix: "AwsTags" });
 const assert = require("assert");
-const toString = (x) => JSON.stringify(x, null, 4);
-
+const { tos } = require("../../tos");
 exports.isOurMinion = ({ resource, config }) => {
   const { managedByKey, managedByValue } = config;
   assert(resource);
@@ -17,7 +16,7 @@ exports.isOurMinion = ({ resource, config }) => {
   }
 
   logger.debug(
-    `isOurMinion ${toString({
+    `isOurMinion ${tos({
       minion,
       resource,
     })}`
@@ -36,7 +35,7 @@ exports.isOurMinionEc2 = ({ resource, config }) => {
   );
 
   logger.debug(
-    `isOurMinion ec2: ${toString({
+    `isOurMinion ec2: ${tos({
       isMinion,
       resource,
     })}`

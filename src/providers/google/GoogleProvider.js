@@ -6,7 +6,7 @@ const GoogleClient = require("./GoogleClient");
 const logger = require("../../logger")({ prefix: "GoogleProvider" });
 const GoogleTag = require("./GoogleTag");
 const compare = require("../../Utils").compare;
-const toString = (x) => JSON.stringify(x, null, 4);
+const { tos } = require("../../tos");
 const GoogleInstance = require("./GoogleInstance");
 const { checkEnv } = require("../../Utils");
 
@@ -53,7 +53,7 @@ const fnSpecs = (config) => {
           targetKeys: [], //TODO
           live,
         });
-        logger.debug(`compare ${toString(diff)}`);
+        logger.debug(`compare ${tos(diff)}`);
         return diff;
       },
       isOurMinion,

@@ -3,7 +3,7 @@ const _ = require("lodash");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsSubnet" });
 const { getField } = require("../ProviderCommon");
-const toString = (x) => JSON.stringify(x, null, 4);
+const { tos } = require("../../tos");
 const {
   getByNameCore,
   getByIdCore,
@@ -38,7 +38,7 @@ module.exports = AwsSubnet = ({ spec, config }) => {
   const create = async ({ name, payload }) => {
     assert(name);
     assert(payload);
-    logger.debug(`create subnet ${toString({ name, payload })}`);
+    logger.debug(`create subnet ${tos({ name, payload })}`);
     const {
       Subnet: { SubnetId },
     } = await ec2.createSubnet(payload).promise();
@@ -53,23 +53,21 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     return { SubnetId };
   };
   const destroy = async ({ id, name }) => {
-    logger.debug(`destroy subnet ${toString({ name, id })}`);
+    logger.debug(`destroy subnet ${tos({ name, id })}`);
 
     if (_.isEmpty(id)) {
       throw Error(`destroy subnet invalid id`);
     }
 
     const result = await ec2.deleteSubnet({ SubnetId: id }).promise();
-    logger.debug(
-      `destroy subnet IN PROGRESS, ${toString({ name, id, result })}`
-    );
+    logger.debug(`destroy subnet IN PROGRESS, ${tos({ name, id, result })}`);
     return result;
   };
 
   const list = async () => {
     logger.debug(`list`);
     const { Subnets } = await ec2.describeSubnets().promise();
-    logger.info(`list ${toString(Subnets)}`);
+    logger.info(`list ${tos(Subnets)}`);
 
     return {
       total: Subnets.length,
@@ -78,14 +76,14 @@ module.exports = AwsSubnet = ({ spec, config }) => {
   };
 
   const configDefault = async ({ name, properties, dependenciesLive }) => {
-    logger.debug(`configDefault ${toString({ dependenciesLive })}`);
+    logger.debug(`configDefault ${tos({ dependenciesLive })}`);
     // Need vpc name here in parameter
     const { vpc } = dependenciesLive;
     const config = {
       ...(vpc && { VpcId: getField(vpc, "VpcId") }),
       ...properties,
     };
-    logger.debug(`configDefault ${name} result: ${toString(config)}`);
+    logger.debug(`configDefault ${name} result: ${tos(config)}`);
     return config;
   };
 

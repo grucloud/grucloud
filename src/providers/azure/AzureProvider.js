@@ -9,8 +9,7 @@ const { AzAuthorize } = require("./AzAuthorize");
 const { isUpByIdCore } = require("../Common");
 const { checkEnv } = require("../../Utils");
 //const compare = require("../../Utils").compare;
-const tos = (x) => JSON.stringify(x, null, 4);
-
+const { tos } = require("../../tos");
 const fnSpecs = (config) => {
   const { location, managedByKey, managedByValue, stageTagKey, stage } = config;
   const subscriptionId = process.env.SUBSCRIPTION_ID;

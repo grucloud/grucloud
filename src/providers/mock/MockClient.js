@@ -2,7 +2,7 @@ const _ = require("lodash");
 const assert = require("assert");
 const CoreClient = require("../CoreClient");
 const logger = require("../../logger")({ prefix: "MockClient" });
-const tos = (x) => JSON.stringify(x, null, 4);
+const { tos } = require("../../tos");
 const { findField } = require("../Common");
 
 module.exports = MockClient = ({ spec, url, config, configDefault }) => {
