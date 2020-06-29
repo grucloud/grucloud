@@ -4,7 +4,7 @@ const compare = require("../../Utils").compare;
 const CoreProvider = require("../CoreProvider");
 const ScalewayClient = require("./ScalewayClient");
 const logger = require("../../logger")({ prefix: "ScalewayProvider" });
-const TagName = require("../TagName");
+const ScalewayTag = require("./ScalewayTag");
 const { getField } = require("../ProviderCommon");
 
 const { tos } = require("../../tos");
@@ -12,7 +12,7 @@ const fnSpecs = (config) => {
   const { organization } = config;
 
   const isOurMinion = ({ resource }) =>
-    TagName.isOurMinion({ resource, tag: config.tag });
+    ScalewayTag.isOurMinion({ resource, tag: config.tag });
 
   return [
     {

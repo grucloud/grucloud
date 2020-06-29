@@ -3,8 +3,9 @@ const _ = require("lodash");
 const MockClient = require("./MockClient");
 const CoreProvider = require("../CoreProvider");
 const compare = require("../../Utils").compare;
-const TagName = require("../TagName");
+const MockTag = require("./MockTag");
 const { toTagName } = require("../TagName");
+
 const logger = require("../../logger")({ prefix: "MockProvider" });
 const { tos } = require("../../tos");
 const { getField } = require("../ProviderCommon");
@@ -20,7 +21,7 @@ const fnSpecs = (config) => {
   });
 
   const isOurMinion = ({ resource }) =>
-    TagName.isOurMinion({ resource, tag: config.tag });
+    MockTag.isOurMinion({ resource, tag: config.tag });
 
   return [
     {

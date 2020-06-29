@@ -47,7 +47,7 @@ describe("GoogleProvider", async function () {
     assert.equal(config.name, "web-server");
     assert.equal(
       config.networkInterfaces[0].accessConfigs[0].natIP,
-      notAvailable(ipName)
+      notAvailable(ipName, "address")
     );
   });
   it("plan", async function () {

@@ -1,10 +1,12 @@
 ## Bugs
 
+- add isUp for ip address
+
 ## Common:
 
+- Planner: Convert axios error in plain json
 - displayresources being created and destroyed
 - provide CRUD url to CoreClient
-- TagName.js move to scaleway
 - compare or compareObject
 - https://cloudcraft.co/
 

@@ -98,11 +98,11 @@ describe("AwsProvider", async function () {
     assert.equal(config.KeyName, keyPair.name);
     assert.equal(
       config.NetworkInterfaces[0].SubnetId,
-      notAvailable(subnetName)
+      notAvailable(subnetName, "SubnetId")
     );
     assert.equal(
       config.NetworkInterfaces[0].Groups[0],
-      notAvailable(securityGroupName)
+      notAvailable(securityGroupName, "GroupId")
     );
     // TODO tags
   });

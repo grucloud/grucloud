@@ -202,7 +202,7 @@ const fnSpecs = (config) => {
             const findSubnetId = (subnetName, vnetLive) => {
               if (!vnetLive) {
                 logger.debug(`findSubnetId no id yet`);
-                return notAvailable(subnetName);
+                return notAvailable(subnetName, "id");
               }
               assert(
                 vnetLive.properties.subnets,
