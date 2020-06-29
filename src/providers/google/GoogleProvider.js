@@ -2,17 +2,16 @@ const assert = require("assert");
 const _ = require("lodash");
 const { JWT } = require("google-auth-library");
 const CoreProvider = require("../CoreProvider");
-const GoogleClient = require("./GoogleClient");
 const logger = require("../../logger")({ prefix: "GoogleProvider" });
 const GoogleTag = require("./GoogleTag");
 const compare = require("../../Utils").compare;
 const { tos } = require("../../tos");
 const GoogleInstance = require("./GoogleInstance");
+const GcpAddress = require("./GcpAddress");
+
 const { checkEnv } = require("../../Utils");
 
 const fnSpecs = (config) => {
-  const { project, region, managedByDescription } = config;
-
   const isOurMinion = ({ resource }) =>
     GoogleTag.isOurMinion({ resource, config });
 
@@ -20,15 +19,9 @@ const fnSpecs = (config) => {
     {
       type: "Address",
       Client: ({ spec }) =>
-        GoogleClient({
+        GcpAddress({
           spec,
-          url: `/projects/${project}/regions/${region}/addresses/`,
           config,
-          configDefault: ({ name, properties }) => ({
-            name,
-            description: managedByDescription,
-            ...properties,
-          }),
         }),
       isOurMinion,
     },
