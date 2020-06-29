@@ -1,12 +1,15 @@
 ## Bugs
 
 - add isUp for ip address
+- accessToken in logs
+- "disablePasswordAuthentication": "******\*\*\*\*******"
 
 ## Common:
 
 - Planner: Convert axios error in plain json
 - displayresources being created and destroyed
 - provide CRUD url to CoreClient
+- reduce log size
 - compare or compareObject
 - https://cloudcraft.co/
 

@@ -99,6 +99,39 @@ describe("AzProvider", async function () {
         },
       },
     });
+
+    const { MACHINE_ADMIN_USERNAME, MACHINE_ADMIN_PASSWORD } = process.env;
+    assert(MACHINE_ADMIN_USERNAME);
+    assert(MACHINE_ADMIN_PASSWORD);
+
+    const vm = provider.makeVirtualMachine({
+      name: `vm`,
+      dependencies: {
+        resourceGroup,
+        networkInterface,
+      },
+      properties: {
+        properties: {
+          hardwareProfile: {
+            vmSize: "Standard_A1_v2",
+          },
+          storageProfile: {
+            imageReference: {
+              // az vm image list
+              offer: "UbuntuServer",
+              publisher: "Canonical",
+              sku: "18.04-LTS",
+              version: "latest",
+            },
+          },
+          osProfile: {
+            adminUsername: MACHINE_ADMIN_USERNAME,
+            computerName: "myVM",
+            adminPassword: MACHINE_ADMIN_PASSWORD,
+          },
+        },
+      },
+    });
     const { success } = await provider.destroyAll();
     assert(success, "destroyAll ko");
   });
@@ -108,7 +141,7 @@ describe("AzProvider", async function () {
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 5);
+    assert.equal(plan.newOrUpdate.length, 6);
   });
   it("apply and destroy", async function () {
     await testPlanDeploy({ provider });
