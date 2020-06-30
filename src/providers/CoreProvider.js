@@ -73,7 +73,7 @@ const ResourceMaker = ({
 
   const planUpdate = async ({ resource, live }) => {
     logger.info(
-      `planUpdate resource: ${tos(resource.serialized())}, live: ${tos(live)}`
+      `planUpdate resource: ${tos(resource.toJSON())}, live: ${tos(live)}`
     );
     const target = await resource.resolveConfig();
     logger.debug(`planUpdate target: ${tos(target)}`);
@@ -84,9 +84,7 @@ const ResourceMaker = ({
     const diff = spec.compare({ target, live });
     logger.info(`planUpdate diff ${tos(diff)}`);
     if (diff.length > 0) {
-      return [
-        { action: "UPDATE", resource: resource.serialized(), target, live },
-      ];
+      return [{ action: "UPDATE", resource: resource.toJSON(), target, live }];
     }
   };
 
@@ -163,7 +161,7 @@ const ResourceMaker = ({
   };
 
   const planUpsert = async ({ resource }) => {
-    logger.info(`planUpsert resource: ${tos(resource.serialized())}`);
+    logger.info(`planUpsert resource: ${tos(resource.toJSON())}`);
     const live = await resource.getLive();
     logger.debug(`planUpsert live: ${tos(live)}`);
     const plan = live
@@ -171,7 +169,7 @@ const ResourceMaker = ({
       : [
           {
             action: "CREATE",
-            resource: resource.serialized(),
+            resource: resource.toJSON(),
             config: await resource.resolveConfig(),
           },
         ];
@@ -179,7 +177,7 @@ const ResourceMaker = ({
     return plan;
   };
 
-  const serialized = () => ({
+  const toJSON = () => ({
     name: resourceName,
     type,
     provider: provider.name,
@@ -196,7 +194,7 @@ const ResourceMaker = ({
     getParent: () => parent,
     spec,
     client,
-    serialized,
+    toJSON,
     resolveConfig,
     create,
     planUpsert,
@@ -343,7 +341,7 @@ function CoreProvider({
     const lists = (
       await Promise.all(
         getTargetResources().map(async (resource) => ({
-          ...resource.serialized(),
+          ...resource.toJSON(),
           data: await resource.getLive(),
         }))
       )
@@ -355,7 +353,7 @@ function CoreProvider({
   const listConfig = async () => {
     const lists = await Promise.all(
       getTargetResources().map(async (resource) => ({
-        resource: resource.serialized(),
+        resource: resource.toJSON(),
         //config: await resource.config(),
       }))
     );

@@ -60,7 +60,7 @@ describe("MockProvider", async function () {
   const displayResource = (resource, depth = 0) => {
     console.log(
       "  ".repeat(depth),
-      resource.serialized(),
+      resource.toJSON(),
       resource.getParent()?.name
     );
     _.map(resource.dependencies, (dep) => {
@@ -68,7 +68,6 @@ describe("MockProvider", async function () {
     });
   };
   const destroyResource = async (resource) => {
-    //console.log(resource.serialized());
     await resource.destroy();
     await Promise.all(
       _.map(resource.dependencies, async (dep) => {
