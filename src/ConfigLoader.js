@@ -37,7 +37,7 @@ const envFromFile = ({ envFile }) => {
     ]),
     //tap(console.log),
     map(([key, value]) => {
-      logger.debug(`envFromFile: ${key} = ${value}`);
+      logger.debug(`envFromFile: key: ${key}`);
       process.env[key] = value;
       return [key, value];
     }),

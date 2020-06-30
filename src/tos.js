@@ -1,9 +1,26 @@
 const hiddenCredentials = "****************";
 
+const exlusionList = {
+  // aws
+  accountId: hiddenCredentials,
+  AWSAccessKeyId: hiddenCredentials,
+  AWSSecretKey: hiddenCredentials,
+  // gcp
+  accessToken: hiddenCredentials,
+  // az
+  tenantId: hiddenCredentials,
+  subscriptionId: hiddenCredentials,
+  appId: hiddenCredentials,
+  password: hiddenCredentials,
+  adminPassword: hiddenCredentials,
+};
+
+const exlusionListKeys = Object.keys(exlusionList);
+
 const replacerCredentials = (name, value) => {
   //console.log(name, " = ", value);
-  if (name.match(/password/gi)) {
-    return hiddenCredentials;
+  if (exlusionListKeys.includes(name)) {
+    return exlusionList[name];
   } else {
     return value;
   }

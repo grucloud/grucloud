@@ -1,11 +1,8 @@
-const { defaultsDeep } = require("lodash/fp");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "GcpInstance" });
 const { tos } = require("../../tos");
 const GoogleClient = require("./GoogleClient");
 
-const { toTagName } = require("./GoogleTag");
-const { getField } = require("../ProviderCommon");
 const { isUpByIdCore } = require("../Common");
 
 // https://cloud.google.com/compute/docs/reference/rest/v1/addresses
@@ -14,15 +11,7 @@ module.exports = GcpAddress = ({ spec, config }) => {
   assert(spec);
   assert(config);
   assert(config.stage);
-  const {
-    project,
-    region,
-    zone,
-    tag,
-    managedByDescription,
-    stageTagKey,
-    stage,
-  } = config;
+  const { project, region, managedByDescription } = config;
 
   const configDefault = ({ name, properties }) => ({
     name,

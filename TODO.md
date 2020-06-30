@@ -1,9 +1,5 @@
 ## Bugs
 
-- add isUp for ip address
-- accessToken in logs
-- "disablePasswordAuthentication": "******\*\*\*\*******"
-
 ## Common:
 
 - Planner: Convert axios error in plain json

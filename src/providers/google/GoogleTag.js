@@ -9,7 +9,7 @@ exports.hasTag = hasTag;
 exports.toTagName = (name, tag) => `${name}${tag}`;
 
 exports.isOurMinion = ({ resource, config }) => {
-  logger.info(`isOurMinion ? ${tos({ config, resource })}`);
+  //logger.info(`isOurMinion ? ${tos({ config, resource })}`);
   const { managedByKey, managedByValue, managedByDescription } = config;
   assert(managedByKey);
   const { labels = {}, description } = resource;

@@ -1,16 +1,17 @@
 const assert = require("assert");
 const logger = require("../logger")({ prefix: "Common" });
 const { tos } = require("../tos");
+
 exports.findField = ({ item, field }) => {
   assert(item);
   assert(field);
-  logger.debug(`findName: ${tos(item)}`);
-
-  if (item[field]) {
-    return item[field];
+  //logger.debug(`findName: ${tos(item)}`);
+  const name = item[field];
+  if (name) {
+    logger.debug(`findName: ${name}`);
+    return name;
   } else {
     logger.debug(`findName: cannot find name in ${tos(item)}`);
-    // throw Error(`cannot find name in ${tos(item)}`);
   }
 };
 

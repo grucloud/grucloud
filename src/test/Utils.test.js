@@ -30,6 +30,15 @@ describe("replacerCredentials", function () {
   it("YAML.stringify password", async function () {
     YAML.stringify({ properties: { adminPassword: "aaaaaaaa" } });
   });
+  it("replacerCredentials accessToken", async function () {
+    assert.equal(replacerCredentials("accessToken", "aaaa"), hiddenCredentials);
+  });
+  it("replacerCredentials disablePasswordAuthentication", async function () {
+    assert.equal(
+      replacerCredentials("disablePasswordAuthentication", true),
+      true
+    );
+  });
   it("YAML.stringify object", async function () {
     assert.equal(YAML.stringify(properties), propertiesToYaml);
   });
