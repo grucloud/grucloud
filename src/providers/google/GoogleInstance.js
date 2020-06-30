@@ -3,7 +3,7 @@ const assert = require("assert");
 const logger = require("../../logger")({ prefix: "GoogleInstance" });
 const { tos } = require("../../tos");
 const GoogleClient = require("./GoogleClient");
-const { toTagName } = require("./GoogleTag");
+const { toTagName } = require("../TagName");
 const { getField } = require("../ProviderCommon");
 const { isUpByIdCore } = require("../Common");
 

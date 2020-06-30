@@ -5,7 +5,6 @@
 - displayresources being created and destroyed
 - reduce log size
 - compare or compareObject
-- https://cloudcraft.co/
 
 for reference Error:
 "state": "ERROR",
@@ -16,15 +15,6 @@ for reference Error:
 - text wrap in table
 
 ## Azure
-
-debug: destroy url: /subscriptions/8e0e234e-8384-438d-a652-105826b63bc9/resourceGroups/resource-group-dev/providers/Microsoft.Network/networkSecurityGroups/security-group-dev/?api-version=2020-05-01
-info: tx https://management.azure.com
-error: delete azure/security-group-dev error:Error: timeout of 30000ms exceeded
-error: delete azure/security-group-dev stack:Error: timeout of 30000ms exceeded
-
-at createError (/Users/fredericheem/grucloud/node_modules/axios/lib/core/createError.js:16:15)
-
-- public ip: https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networkinterfaces
 
 ## TODO Aws:
 
@@ -44,3 +34,7 @@ at createError (/Users/fredericheem/grucloud/node_modules/axios/lib/core/createE
 - add service account
 
 ## TODO Mock
+
+## Nice to have
+
+- https://cloudcraft.co/
