@@ -100,7 +100,7 @@ module.exports = CoreClient = ({
     if (!canCreate) return;
 
     try {
-      const path = pathCreate();
+      const path = pathCreate({ dependencies, name });
       logger.debug(`create url: ${path}`);
 
       const result = await axios.request(path, {

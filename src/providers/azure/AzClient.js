@@ -27,18 +27,20 @@ module.exports = AzClient = ({
   assert(config);
   assert(config.bearerToken);
 
-  const pathGet = path.join(`/${id}`, queryParameters());
-  const pathCreate = path.join(
-    pathBase,
-    pathSuffix ? `${pathSuffix({ dependencies })}/${name}` : "",
-    queryParameters()
-  );
-  const pathDelete = path.join(`/${id}`, queryParameters());
-  const pathList = path.join(
-    pathBase,
-    pathSuffixList ? pathSuffixList() : "",
-    queryParameters()
-  );
+  const pathGet = (id) => path.join(`/${id}`, queryParameters());
+  const pathCreate = ({ dependencies, name }) =>
+    path.join(
+      pathBase,
+      pathSuffix ? `${pathSuffix({ dependencies })}/${name}` : "",
+      queryParameters()
+    );
+  const pathDelete = (id) => path.join(`/${id}`, queryParameters());
+  const pathList = () =>
+    path.join(
+      pathBase,
+      pathSuffixList ? pathSuffixList() : "",
+      queryParameters()
+    );
 
   const core = CoreClient({
     type: "azure",
