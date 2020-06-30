@@ -13,6 +13,16 @@ const {
   isDownByIdCore,
   logError,
 } = require("./Common");
+
+const errorToJSON = (error) => ({
+  isAxiosError: true,
+  message: error.message,
+  name: error.name,
+  config: error.config,
+  code: error.code,
+  response: error.response,
+});
+
 module.exports = CoreClient = ({
   spec,
   type,
@@ -70,7 +80,7 @@ module.exports = CoreClient = ({
       logger.debug(`getById status: ${status}`);
       if (status != 404) {
         logError("getById", error);
-        throw error;
+        throw errorToJSON(error);
       }
     }
   };
@@ -117,7 +127,7 @@ module.exports = CoreClient = ({
       return onResponseGet(resource);
     } catch (error) {
       logError(`create ${type}/${name}`, error);
-      throw error;
+      throw errorToJSON(error);
     }
   };
 
@@ -140,7 +150,7 @@ module.exports = CoreClient = ({
       return data;
     } catch (error) {
       logError(`list ${type}`, error);
-      throw error;
+      throw errorToJSON(error);
     }
   };
 
@@ -167,7 +177,7 @@ module.exports = CoreClient = ({
       return data;
     } catch (error) {
       logError(`delete ${type}/${name}`, error);
-      throw error;
+      throw errorToJSON(error);
     }
   };
 

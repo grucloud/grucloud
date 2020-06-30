@@ -50,15 +50,7 @@
       "console": "integratedTerminal",
       "args": ["--infra", "MockStack.js", "destroy"]
     },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Cli Mock Query",
-      "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/mock/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["query"]
-    },
+
     {
       "type": "node",
       "request": "launch",

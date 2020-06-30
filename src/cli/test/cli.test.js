@@ -107,7 +107,7 @@ describe("cli error", function () {
       })
     )(commands);
   });
-  it.only("cli 500", async function () {
+  it("cli 500", async function () {
     await map.series(
       async (command) =>
         await runProgram({

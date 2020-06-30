@@ -98,7 +98,6 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
       });
       entry.state = STATES.DONE;
     } catch (error) {
-      // TODO Convert axios error in plain json
       entry.error = error;
       logError("runItem", error);
       onStateChange({
