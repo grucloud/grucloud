@@ -1,4 +1,5 @@
 const assert = require("assert");
+const path = require("path");
 const CoreClient = require("../CoreClient");
 const AxiosMaker = require("../AxiosMaker");
 const logger = require("../../logger")({ prefix: "AzClient" });
@@ -26,15 +27,28 @@ module.exports = AzClient = ({
   assert(config);
   assert(config.bearerToken);
 
+  const pathGet = path.join(`/${id}`, queryParameters());
+  const pathCreate = path.join(
+    pathBase,
+    pathSuffix ? `${pathSuffix({ dependencies })}/${name}` : "",
+    queryParameters()
+  );
+  const pathDelete = path.join(`/${id}`, queryParameters());
+  const pathList = path.join(
+    pathBase,
+    pathSuffixList ? pathSuffixList() : "",
+    queryParameters()
+  );
+
   const core = CoreClient({
     type: "azure",
     spec,
     onResponseList,
     configDefault,
-    pathBase,
-    pathSuffix,
-    pathSuffixList,
-    queryParameters,
+    pathGet,
+    pathCreate,
+    pathDelete,
+    pathList,
     verbCreate: "PUT",
     isUpByIdFactory,
     axios: AxiosMaker({

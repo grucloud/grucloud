@@ -28,10 +28,10 @@ module.exports = CoreClient = ({
   type,
   axios,
   methods, //TODO use defaults
-  pathBase = "/",
-  pathSuffix,
-  pathSuffixList,
-  queryParameters = () => "",
+  pathGet = (id) => `/${id}`,
+  pathCreate = () => `/`,
+  pathDelete = (id) => `/${id}`,
+  pathList = () => `/`,
   verbCreate = "POST",
   isUpByIdFactory,
   configDefault = async ({ name, properties }) => ({
@@ -48,6 +48,7 @@ module.exports = CoreClient = ({
 }) => {
   assert(spec);
   assert(type);
+
   const canGet = !methods || methods.get;
   const canCreate = !methods || methods.create;
   const canDelete = !methods || methods.del;
@@ -66,7 +67,7 @@ module.exports = CoreClient = ({
     if (!canGet) return;
 
     try {
-      const path = npath.join(`/${id}`, queryParameters());
+      const path = pathGet(id);
       logger.debug(`getById path: ${path}`);
 
       const result = await axios.request(path, {
@@ -99,11 +100,7 @@ module.exports = CoreClient = ({
     if (!canCreate) return;
 
     try {
-      const path = npath.join(
-        pathBase,
-        pathSuffix ? `${pathSuffix({ dependencies })}/${name}` : "",
-        queryParameters()
-      );
+      const path = pathCreate();
       logger.debug(`create url: ${path}`);
 
       const result = await axios.request(path, {
@@ -137,11 +134,7 @@ module.exports = CoreClient = ({
     if (!canList) return;
 
     try {
-      const path = urljoin(
-        pathBase,
-        pathSuffixList ? pathSuffixList() : "",
-        queryParameters()
-      );
+      const path = pathList();
       logger.debug(`list url: ${path}`);
       const result = await axios.request(path, {
         method: "GET",
@@ -163,7 +156,7 @@ module.exports = CoreClient = ({
     }
 
     try {
-      const path = npath.join(`/${id}`, queryParameters());
+      const path = pathDelete(id);
       logger.debug(`destroy url: ${path}`);
 
       const result = await axios.request(path, {

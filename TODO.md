@@ -2,9 +2,7 @@
 
 ## Common:
 
-- Planner: Convert axios error in plain json
 - displayresources being created and destroyed
-- provide CRUD url to CoreClient
 - reduce log size
 - compare or compareObject
 - https://cloudcraft.co/
