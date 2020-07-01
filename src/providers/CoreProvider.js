@@ -13,6 +13,7 @@ const { retryExpectOk } = require("./Retry");
 const { logError } = require("./Common");
 const { Planner } = require("./Planner");
 
+const noop = ({}) => {};
 const configProviderDefault = {
   tag: "ManagedByGru",
   managedByKey: "ManagedBy",
@@ -281,35 +282,24 @@ function CoreProvider({
   };
 
   const filterClient = async ({ client, our, name, id, canBeDeleted }) => {
-    try {
-      logger.debug(`listLives type: ${client.spec.type}`);
-      const { items } = await client.list();
-      return {
-        type: client.spec.type,
-        resources: items
-          .map((item) => ({
-            name: client.findName(item),
-            id: client.findId(item),
-            managedByUs: client.spec.isOurMinion({ resource: item }),
-            data: item,
-          }))
-          .filter((item) => (our ? item.managedByUs : true))
-          .filter((item) => (name ? item.name === name : true))
-          .filter((item) => (id ? item.id === id : true))
-          .filter((item) =>
-            canBeDeleted ? !client.cannotBeDeleted(item.data) : true
-          ),
-      };
-    } catch (error) {
-      logger.error(
-        `listLives error: ${tos({
-          type: client.spec.type,
-          error,
-        })}`
-      );
-
-      throw error;
-    }
+    logger.debug(`listLives type: ${client.spec.type}`);
+    const { items } = await client.list();
+    return {
+      type: client.spec.type,
+      resources: items
+        .map((item) => ({
+          name: client.findName(item),
+          id: client.findId(item),
+          managedByUs: client.spec.isOurMinion({ resource: item }),
+          data: item,
+        }))
+        .filter((item) => (our ? item.managedByUs : true))
+        .filter((item) => (name ? item.name === name : true))
+        .filter((item) => (id ? item.id === id : true))
+        .filter((item) =>
+          canBeDeleted ? !client.cannotBeDeleted(item.data) : true
+        ),
+    };
   };
 
   const listLives = async ({
@@ -361,11 +351,11 @@ function CoreProvider({
     return lists;
   };
 
-  const planQuery = async () => {
+  const planQuery = async ({ onStateChange = noop } = {}) => {
     logger.debug(`planQuery begins`);
     const plan = {
       providerName,
-      newOrUpdate: await planUpsert(),
+      newOrUpdate: await planUpsert({ onStateChange }),
       destroy: await planFindDestroy({}, PlanDirection.UP),
     };
     logger.info(
@@ -373,44 +363,53 @@ function CoreProvider({
     );
     return plan;
   };
-  const planApply = async (plan) => {
-    try {
-      assert(plan);
-      logger.info(`Apply Plan ${tos(plan)}`);
-      const resultDestroy = await planDestroy(plan.destroy, PlanDirection.UP);
+  const planApply = async ({ plan, onStateChange = noop }) => {
+    assert(plan);
+    logger.info(`Apply Plan ${tos(plan)}`);
+    const resultDestroy = await planDestroy({
+      plans: plan.destroy,
+      onStateChange,
+      direction: PlanDirection.UP,
+    });
+    const resultCreate = await upsertResources({
+      plans: plan.newOrUpdate,
+      onStateChange,
+    });
 
-      const resultCreate = await upsertResources(plan.newOrUpdate);
-
-      const success = resultCreate.success && resultDestroy.success;
-      return {
-        results: [...resultCreate.results, ...resultDestroy.results],
-        success,
-      };
-    } catch (error) {
-      logger.error(`planApply ${tos(error)}`);
-      throw error;
-    }
+    const success = resultCreate.success && resultDestroy.success;
+    return {
+      results: [...resultCreate.results, ...resultDestroy.results],
+      success,
+    };
   };
 
   /**
    * Find live resources to create or update based on the target resources
    */
-  const planUpsert = async () => {
+  const planUpsert = async ({ onStateChange = noop }) => {
     logger.debug(`planUpsert: #resources ${getTargetResources().length}`);
-    const plans = (
-      await Promise.all(
-        getTargetResources()
-          .filter((resource) => resource.spec.methods.create)
-          .map(async (resource) => {
-            const actions = await resource.planUpsert({ resource });
-            return actions;
-          })
-      )
-    )
-      .filter((x) => x)
-      .flat();
-    logger.debug(`planUpsert: plans: ${JSON.stringify(plans, null, 4)}`);
-    return plans;
+    return pipe([
+      filter((resource) => resource.spec.methods.create),
+      map(async (resource) => {
+        onStateChange({
+          resource,
+          previousState: "INIT",
+          nextState: "RUNNING",
+        });
+        const actions = await resource.planUpsert({ resource });
+        onStateChange({
+          resource,
+          previousState: "RUNNING",
+          nextState: "DONE",
+        });
+        return actions;
+      }),
+      filter((x) => x),
+      flatten,
+      tap((plans) =>
+        logger.debug(`planUpsert: plans: ${JSON.stringify(plans, null, 4)}`)
+      ),
+    ])(getTargetResources());
   };
 
   const filterDestroyResources = ({
@@ -524,7 +523,7 @@ function CoreProvider({
     ])(clients);
   };
 
-  const upsertResources = async (planDeploy = []) => {
+  const upsertResources = async ({ plans = [], onStateChange = noop }) => {
     const executor = async ({ item }) => {
       const engine = resourceByName(item.resource.name);
       if (!engine) {
@@ -536,17 +535,9 @@ function CoreProvider({
       });
       return { input, output };
     };
-    const onStateChange = ({ item, previousState, nextState }) => {
-      logger.debug(
-        `planCreate onStateChange: ${tos({
-          resource: item.resource,
-          previousState,
-          nextState,
-        })}`
-      );
-    };
+
     const planner = Planner({
-      plans: planDeploy,
+      plans,
       specs,
       executor,
       onStateChange,
@@ -563,7 +554,8 @@ function CoreProvider({
     return await destroyByClient({ client, name, config });
   };
 
-  const planDestroy = async (planDestroy) => {
+  const planDestroy = async ({ plans, onStateChange = noop }) => {
+    assert(plans);
     const executor = async ({ item }) => {
       return await destroyById({
         name: item.resource.name,
@@ -572,17 +564,8 @@ function CoreProvider({
       });
     };
 
-    const onStateChange = ({ item, previousState, nextState }) => {
-      logger.debug(
-        `planDestroy: onStateChange: ${tos({
-          resource: item.resource,
-          previousState,
-          nextState,
-        })}`
-      );
-    };
     const planner = Planner({
-      plans: planDestroy,
+      plans,
       specs,
       executor,
       down: true,
@@ -596,7 +579,7 @@ function CoreProvider({
       await pipe([
         tap((options) => logger.debug(`destroyAll ${tos({ options })}`)),
         async () => planFindDestroy(options, PlanDirection.DOWN),
-        async (plan) => await planDestroy(plan),
+        async (plans) => await planDestroy({ plans }),
       ])(options),
     (error) => {
       logError("destroyAll", error);

@@ -1,10 +1,14 @@
 const Koa = require("koa");
 const Router = require("@koa/router");
 const shortid = require("shortid");
+const chance = require("chance")();
+const Promise = require("bluebird");
 const koaBody = require("koa-body");
 const logger = require("./logger")({ prefix: "MockServer" });
 const { tos } = require("../tos");
+
 const portDefault = 8089;
+
 exports.portDefault = portDefault;
 
 exports.MockServer = (config) => {
@@ -20,9 +24,17 @@ exports.MockServer = (config) => {
     //logger.debug(`${JSON.stringify(ctx.header, 4, null)}`);
     await next();
     const ms = new Date() - start;
+
     logger.debug(
       `${ctx.method} ${ctx.url} ends in ${ms}ms, code: ${ctx.status}`
     );
+  });
+
+  koa.use(async (ctx, next) => {
+    await next();
+    const delay = chance.integer(config.delay);
+    logger.debug(`${ctx.method} ${ctx.url} delay ${delay}`);
+    await Promise.delay(delay);
   });
 
   const mapRoutes = new Map();

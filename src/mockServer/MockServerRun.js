@@ -1,13 +1,12 @@
 const { MockServer } = require("./MockServer");
 const logger = require("./logger")({ prefix: "MockServer" });
+const config = require("./config")();
 
-const routes = ["/volume", "/ip", "/security_group", "/server"];
-const port = 7089;
-const mockServer = MockServer({ port, routes });
+const mockServer = MockServer(config);
 mockServer
   .start()
   .then(() => {
-    logger.info(`Mock server started on port ${port}`);
+    logger.info(`Mock server started on port ${config.port}`);
   })
   .catch((error) => {
     console.log(error);

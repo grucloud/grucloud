@@ -95,6 +95,7 @@ const displayErrorsCommon = pipe([
   flatten,
   filter(({ error }) => error),
 ]);
+
 // Plan Query
 const doPlanQuery = async ({ providers, programOptions }) =>
   await map(async (provider) => ({
@@ -102,7 +103,7 @@ const doPlanQuery = async ({ providers, programOptions }) =>
     plan: await pipe([
       () =>
         runAsyncCommand(
-          () => provider.planQuery(),
+          ({ onStateChange }) => provider.planQuery({ onStateChange }),
           `Query Plan for ${provider.name}`
         ),
       displayPlan,
@@ -189,7 +190,7 @@ exports.planApply = async ({
     assign({
       results: async ({ provider, plan }) =>
         await runAsyncCommand(
-          () => provider.planApply(plan),
+          ({ onStateChange }) => provider.planApply({ plan, onStateChange }),
           `Deploying resources on provider ${provider.name}`
         ),
     }),
@@ -240,13 +241,13 @@ exports.planDestroy = async ({
   commandOptions,
   programOptions,
 }) => {
-  const hasEmptyPlan = pipe([pluck("plan"), flatten, isEmpty]);
+  const hasEmptyPlan = pipe([pluck("plans"), flatten, isEmpty]);
 
   const processHasNoPlan = () => {
     console.log("No resources to destroy");
   };
 
-  const countDestroyed = reduce((acc, value) => acc + value.plan.length, 0);
+  const countDestroyed = reduce((acc, value) => acc + value.plans.length, 0);
 
   const displayDestroySuccess = pipe([
     countDestroyed,
@@ -271,10 +272,10 @@ exports.planDestroy = async ({
 
   const doPlanDestroy = pipe([
     assign({
-      results: async ({ provider, plan }) =>
+      results: async ({ provider, plans }) =>
         await runAsyncCommand(
-          () => provider.planDestroy(plan),
-          `Destroying ${plu("resource", plan.length, true)} on provider ${
+          ({ onStateChange }) => provider.planDestroy({ plans, onStateChange }),
+          `Destroying ${plu("resource", plans.length, true)} on provider ${
             provider.name
           }`
         ),
@@ -313,7 +314,7 @@ exports.planDestroy = async ({
   const findDestroy = async (provider) => {
     return {
       provider,
-      plan: await pipe([
+      plans: await pipe([
         async () => await provider.planFindDestroy(commandOptions),
         tap((plan) =>
           displayPlan({

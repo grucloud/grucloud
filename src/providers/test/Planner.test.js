@@ -17,12 +17,13 @@ describe("Planner", function () {
     .returns(Promise.resolve({ input: {}, output: { success: true } }));
 
   const onStateChange = (stateChanges) => ({
-    item,
+    resource,
     previousState,
     nextState,
   }) => {
+    assert(resource);
     if (nextState === "RUNNING") {
-      stateChanges.push(item.resource.type);
+      stateChanges.push(resource.type);
     }
   };
   it("az create ok", async function () {

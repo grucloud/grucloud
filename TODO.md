@@ -2,7 +2,7 @@
 
 ## Common:
 
-- displayresources being created and destroyed
+- default.js should be a function
 - reduce log size
 - compare or compareObject
 

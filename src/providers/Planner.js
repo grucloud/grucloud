@@ -75,7 +75,7 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
         return;
       }
       onStateChange({
-        item: entry.item,
+        resource: entry.item.resource,
         previousState: entry.state,
         nextState: STATES.RUNNING,
       });
@@ -92,7 +92,7 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
       }
       assert(entry.state !== STATES.ERROR, "entry.state !== STATES.ERROR");
       onStateChange({
-        item: entry.item,
+        resource: entry.item.resource,
         previousState: entry.state,
         nextState: STATES.DONE,
       });
@@ -101,7 +101,7 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
       entry.error = error;
       logError("runItem", error);
       onStateChange({
-        item: entry.item,
+        resource: entry.item.resource,
         previousState: entry.state,
         nextState: STATES.ERROR,
         error,

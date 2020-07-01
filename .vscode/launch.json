@@ -67,7 +67,7 @@
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["apply"]
+      "args": ["apply", "-f"]
     },
     {
       "type": "node",
@@ -76,7 +76,7 @@
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["destroy"]
+      "args": ["destroy", "-f"]
     },
     {
       "type": "node",
