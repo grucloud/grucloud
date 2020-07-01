@@ -10,7 +10,12 @@ exports.runAsyncCommand = async (command, text) => {
   console.log(`${text}`);
   const spinnies = new Spinnies({ spinner });
 
-  const resourceToKey = (resource) => `${resource.name}`;
+  const resourceToKey = (resource) => {
+    //assert(resource.name);
+    assert(resource.type);
+    assert(resource.provider);
+    return `${resource.provider}::${resource.type}::${resource.name}`;
+  };
 
   const onStateChange = ({ resource, previousState, nextState }) => {
     logger.debug(
@@ -28,11 +33,17 @@ exports.runAsyncCommand = async (command, text) => {
         break;
       }
       case "DONE": {
-        const keys = resourceToKey(resource);
-        spinnies.succeed(keys);
+        const key = resourceToKey(resource);
+        spinnies.succeed(key);
+        break;
+      }
+      case "ERROR": {
+        const key = resourceToKey(resource);
+        spinnies.fail(key);
         break;
       }
       default:
+        assert(false, `unknown state ${nextState}`);
         break;
     }
   };
@@ -41,6 +52,7 @@ exports.runAsyncCommand = async (command, text) => {
     const result = await command({ onStateChange });
     return result;
   } catch (error) {
+    spinnies.stopAll();
     throw error;
   }
 };

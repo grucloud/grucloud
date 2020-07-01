@@ -185,18 +185,6 @@ exports.planApply = async ({
       ),
   ]);
 
-  const doPlanDeploy = pipe([
-    //tap((x) => console.log("doPlanDeploy begin ", x)),
-    assign({
-      results: async ({ provider, plan }) =>
-        await runAsyncCommand(
-          ({ onStateChange }) => provider.planApply({ plan, onStateChange }),
-          `Deploying resources on provider ${provider.name}`
-        ),
-    }),
-    //tap((x) => console.log("doPlanDeploy end", x)),
-  ]);
-
   const displayDeployError = ({ item, error = {} }) => {
     logger.error(`displayDeployError ${tos({ item, error })}`);
     console.log(`Cannot deploy resource ${formatResource(item.resource)}`);
@@ -278,24 +266,11 @@ exports.planDestroy = async ({
     ])(plans);
   };
 
-  const doPlanDestroy = pipe([
-    assign({
-      results: async ({ provider, plans }) =>
-        await runAsyncCommand(
-          ({ onStateChange }) => provider.planDestroy({ plans, onStateChange }),
-          `Destroying ${plu("resource", plans.length, true)} on provider ${
-            provider.name
-          }`
-        ),
-    }),
-  ]);
-
   const displayDestroyError = ({ item, error }) => {
     console.log(`Cannot destroy resource ${formatResource(item.resource)}`);
     displayError("Plan Destroy", error);
   };
 
-  // TODO common function with displayDeployErrors
   const displayDestroyErrors = pipe([
     tap((x) => logger.error(`displayDestroyErrors ${tos(x)}`)),
     displayErrorsCommon,
@@ -304,7 +279,16 @@ exports.planDestroy = async ({
   ]);
 
   const doPlansDestroy = pipe([
-    map(doPlanDestroy),
+    async (providers) =>
+      await runAsyncCommand(({ onStateChange }) => {
+        return map(({ provider, plans }) => {
+          return assign({
+            results: async ({ provider, plans }) =>
+              provider.planDestroy({ plans, onStateChange }),
+          })({ provider, plans });
+        })(providers);
+      }, `Destroying resources`),
+
     tap((result) =>
       saveToJson({ command: "destroy", commandOptions, programOptions, result })
     ),

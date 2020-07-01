@@ -82,8 +82,8 @@ describe("cli", function () {
 describe("cli error", function () {
   const routes = ["/ip/", "/server/", "/volume", "/security_group"];
   const port = 8089;
-
-  const mockServer = MockServer({ port, routes });
+  const delay = { min: 1, max: 1 };
+  const mockServer = MockServer({ port, routes, delay });
 
   before(async function () {
     await mockServer.start();

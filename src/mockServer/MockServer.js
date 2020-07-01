@@ -32,9 +32,11 @@ exports.MockServer = (config) => {
 
   koa.use(async (ctx, next) => {
     await next();
-    const delay = chance.integer(config.delay);
-    logger.debug(`${ctx.method} ${ctx.url} delay ${delay}`);
-    await Promise.delay(delay);
+    if (config.delay) {
+      const delay = chance.integer(config.delay);
+      logger.debug(`${ctx.method} ${ctx.url} delay ${delay}`);
+      await Promise.delay(delay);
+    }
   });
 
   const mapRoutes = new Map();

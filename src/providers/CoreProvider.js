@@ -392,13 +392,13 @@ function CoreProvider({
       filter((resource) => resource.spec.methods.create),
       map(async (resource) => {
         onStateChange({
-          resource,
+          resource: resource.toJSON(),
           previousState: "INIT",
           nextState: "RUNNING",
         });
         const actions = await resource.planUpsert({ resource });
         onStateChange({
-          resource,
+          resource: resource.toJSON(),
           previousState: "RUNNING",
           nextState: "DONE",
         });
