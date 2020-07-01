@@ -210,7 +210,15 @@ exports.planApply = async ({
   ]);
 
   const doPlansDeploy = pipe([
-    map(doPlanDeploy),
+    async (providers) =>
+      await runAsyncCommand(({ onStateChange }) => {
+        return map(({ provider, plan }) => {
+          return assign({
+            results: async ({ provider, plan }) =>
+              provider.planApply({ plan, onStateChange }),
+          })({ provider, plan });
+        })(providers);
+      }, `Deploying resources`),
     tap((result) =>
       saveToJson({ command: "apply", commandOptions, programOptions, result })
     ),
