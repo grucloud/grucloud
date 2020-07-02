@@ -32,11 +32,12 @@ exports.main = async ({ argv, onExit }) => {
     );
   } catch (error) {
     const { code } = error;
-    if (code === 422) {
+    if ([400, 422].includes(code)) {
       logger.error(error.message);
-      onExit({ code: 422, error });
+      console.error(`Error: ${error.message}`);
+      onExit({ code, error });
     } else {
-      console.log(error.stack);
+      error.stack && console.log(error.stack);
       console.log(error);
       onExit({ code: -1 });
     }

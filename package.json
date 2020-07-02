@@ -73,7 +73,10 @@
     "exclude": [
       "src/**/*.spec.js",
       "src/**/*test*.js",
-      "src/**/test/*.js"
+      "src/**/test/*.js",
+      "src/cli/test/config/*.js",
+      "src/mockServer/MockServerRun.js",
+      "src/mockServer/config.js"
     ],
     "extension": [
       ".js"
