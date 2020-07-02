@@ -3,7 +3,7 @@ const Axios = require("axios");
 const _ = require("lodash");
 const path = require("path");
 const shell = require("shelljs");
-const { map } = require("rubico");
+const { map, any } = require("rubico");
 const { main } = require("../cliMain");
 const { MockServer } = require("../../mockServer/MockServer");
 
@@ -17,7 +17,7 @@ const configFileNetworkError = path.join(
   "./config/config.networkError.js"
 );
 
-const commands = ["plan", "apply -f", "destroy -f", "list"];
+const commands = ["plan", "apply -f", "destroy -f -a", "list"];
 
 const onExitOk = () => assert(false);
 const runProgram = async ({
@@ -35,7 +35,7 @@ const runProgram = async ({
     ...cmds,
   ];
 
-  await main({ argv, onExit });
+  return await main({ argv, onExit });
 };
 
 describe("cli", function () {
@@ -80,7 +80,7 @@ describe("cli", function () {
 });
 
 describe("cli error", function () {
-  const routes = ["/ip/", "/server/", "/volume", "/security_group"];
+  const routes = ["/ip", "/server", "/volume", "/security_group"];
   const port = 8089;
   const delay = { min: 1, max: 1 };
   const mockServer = MockServer({ port, routes, delay });
@@ -88,7 +88,9 @@ describe("cli error", function () {
   before(async function () {
     await mockServer.start();
     const axios = Axios.create({ baseURL: `http://localhost:${port}` });
-    await axios.post("/ip/", {});
+    await axios.post("/ip", {});
+    const list = await axios.get("/ip");
+    console.log(list);
   });
 
   after(async function () {
@@ -96,7 +98,7 @@ describe("cli error", function () {
   });
 
   it("cli 404", async function () {
-    await map.series((command) =>
+    const results = await map.series((command) =>
       runProgram({
         cmds: command.split(" "),
         configFile: configFile404,
@@ -106,22 +108,26 @@ describe("cli error", function () {
         },
       })
     )(commands);
+    assert.deepEqual(results, [-1, -1, -1, -1]);
   });
   it("cli 500", async function () {
-    await map.series(
+    const results = await map.series(
       async (command) =>
         await runProgram({
           cmds: command.split(" "),
           configFile: configFile500,
           onExit: ({ code, error: { error } }) => {
             assert.equal(code, 422);
-            assert.equal(error.response.status, 500);
+            error.forEach((error) =>
+              assert.equal(error.error.response.status, 500)
+            );
           },
         })
     )(commands);
+    assert.deepEqual(results, [0, -1, -1, 0]);
   });
   it("cli network error", async function () {
-    await map.series((command) =>
+    const results = await map.series((command) =>
       runProgram({
         cmds: command.split(" "),
         configFile: configFileNetworkError,
@@ -131,5 +137,6 @@ describe("cli error", function () {
         },
       })
     )(commands);
+    assert.deepEqual(results, [-1, -1, -1, -1]);
   });
 });

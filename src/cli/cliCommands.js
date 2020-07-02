@@ -67,10 +67,14 @@ const safeJsonParse = (json) => {
 
 const displayError = (name, error) => {
   assert(error);
+  if (Array.isArray(error)) {
+    return;
+  }
   if (error.isAxiosError) {
     const errorToDisplay = {
       Command: name,
       Message: error.message,
+      Status: error.response?.status,
       Output: error.response?.data,
       Input: {
         config: pick(error.config, ["url", "method", "baseURL"]),
@@ -195,6 +199,9 @@ exports.planApply = async ({
     tap((x) => logger.error(`displayDeployErrors begins ${tos(x)}`)),
     displayErrorsCommon,
     map(tap(displayDeployError)),
+    (errors) => {
+      throw errors;
+    },
   ]);
 
   const doPlansDeploy = pipe([
@@ -276,6 +283,9 @@ exports.planDestroy = async ({
     displayErrorsCommon,
     tap((x) => logger.error(`displayDestroyErrors filtered ${tos(x)}`)),
     map(tap(displayDestroyError)),
+    (errors) => {
+      throw errors;
+    },
   ]);
 
   const doPlansDestroy = pipe([

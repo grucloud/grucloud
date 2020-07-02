@@ -20,7 +20,10 @@ const errorToJSON = (error) => ({
   name: error.name,
   config: error.config,
   code: error.code,
-  response: error.response,
+  response: {
+    status: error.response?.status,
+    data: error.response?.data,
+  },
 });
 
 module.exports = CoreClient = ({

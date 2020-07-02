@@ -75,6 +75,8 @@ exports.MockServer = (config) => {
         } = context;
         const mapResources = mapRoutes.get(path);
         const data = mapResources.get(id);
+        logger.debug(`delete path: ${path}, id: ${id}`);
+
         mapResources.delete(id);
         if (data) {
           context.body = {

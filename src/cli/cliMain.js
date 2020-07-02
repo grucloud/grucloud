@@ -30,6 +30,7 @@ exports.main = async ({ argv, onExit }) => {
         " "
       )}" executed in ${duration.toString(1, 1)}`
     );
+    return 0;
   } catch (error) {
     const { code } = error;
     if ([400, 422].includes(code)) {
@@ -41,5 +42,7 @@ exports.main = async ({ argv, onExit }) => {
       console.log(error);
       onExit({ code: -1 });
     }
+    //TODO return code if defined or -1
+    return -1;
   }
 };

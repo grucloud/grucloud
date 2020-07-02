@@ -8,9 +8,9 @@ const createAxios = ({ url }) => {
   const axios = Axios.create({ baseURL: urljoin(BASE_URL, url) });
   const mock = new MockAdapter(axios, { onNoMatch: "passthrough" });
   mock.onPost("").reply(500);
-
+  mock.onDelete(/.*/).reply(500);
   return axios;
 };
-module.exports = () => ({
+module.exports = {
   createAxios,
-});
+};

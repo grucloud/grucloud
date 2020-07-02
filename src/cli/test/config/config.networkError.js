@@ -7,6 +7,6 @@ const createAxios = () => {
   mock.onGet("").networkError();
   return axios;
 };
-module.exports = () => ({
+module.exports = {
   createAxios,
-});
+};
