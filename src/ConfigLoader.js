@@ -85,7 +85,7 @@ const envLoader = ({ configDir, stage }) => {
 const configFromDefault = ({ configDir }) => {
   const defaultConfigFile = path.join(configDir, "default.js");
   checkFileExist(defaultConfigFile);
-  return require(defaultConfigFile);
+  return require(defaultConfigFile)();
 };
 
 const configFromStage = ({ configDir, stage }) => {
@@ -93,7 +93,7 @@ const configFromStage = ({ configDir, stage }) => {
   if (!fs.existsSync(stageConfigFile)) {
     return;
   }
-  return require(stageConfigFile);
+  return require(stageConfigFile)();
 };
 
 exports.ConfigLoader = ({ baseDir = process.cwd(), stage = "dev" }) => {

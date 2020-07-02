@@ -54,11 +54,11 @@ gcloud config list
 Edit **config/default.js** and set the **project id**, **region** and **zone**:
 
 ```js
-module.exports = {
+module.exports = () => ({
   project: "yourprojectname",
   region: "europe-west4",
   zone: "europe-west4-a",
-};
+});
 ```
 
 Now it is time to edit the infrastructure **iac.js** file that describes the architecture:

@@ -35,7 +35,6 @@ npm install
 
 ```sh
 cp config/default.env.example config/default.env
-
 ```
 
 Edit **config/default.env** and set the correct values:
@@ -51,11 +50,23 @@ AWSSecretKey=
 Edit **config/default.js** and set the project id, region and zone:
 
 ```js
-module.exports = {
+module.exports = () => ({
   region: "eu-west-2",
   zone: "us-central1-a",
   stages: ["dev", "prod", "demo"],
-};
+});
+```
+
+To find out the list of regions:
+
+```
+aws ec2 describe-regions
+```
+
+Choose a region close to your location, at this point select a zone name in the given region:
+
+```
+aws ec2 describe-availability-zones --region eu-west-2
 ```
 
 ## iac.js

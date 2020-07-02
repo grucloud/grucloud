@@ -2,8 +2,6 @@
 
 ## Common:
 
-- default.js should be a function
-- reduce log size
 - compare or compareObject
 
 for reference Error:

@@ -1,4 +1,4 @@
-module.exports = {
+module.exports = () => ({
   google: {
     project: "starhackit",
     region: "europe-west4",
@@ -13,4 +13,4 @@ module.exports = {
   scaleway: {
     zone: "fr-par-1",
   },
-};
+});

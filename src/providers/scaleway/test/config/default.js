@@ -1,3 +1,3 @@
-module.exports = {
+module.exports = () => ({
   zone: "fr-par-1",
-};
+});
