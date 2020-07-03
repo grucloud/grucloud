@@ -2,17 +2,42 @@ module.exports = {
   someSidebar: {
     Introduction: ["TLDR"],
     Requirements: ["Requirements"],
-    Google: [
-      "google/GoogleRequirements",
-      "google/GoogleGettingStarted",
-      "google/GoogleMisc",
+    "User Guide": ["DeveloperGuide"],
+    "Amazon Web Service": [
+      "aws/AwsRequirements",
+      "aws/AwsGettingStarted",
+      {
+        Resources: [
+          "aws/resources/KeyPair",
+          "aws/resources/Vpc",
+          "aws/resources/Subnet",
+          "aws/resources/SecurityGroup",
+          "aws/resources/Ec2",
+        ],
+      },
+      "aws/AwsMisc",
     ],
-    AWS: ["aws/AwsRequirements", "aws/AwsGettingStarted", "aws/AwsMisc"],
-    Azure: [
+    "Microsoft Azure": [
       "azure/AzureRequirements",
       "azure/AzureGettingStarted",
+      {
+        Resources: [
+          "azure/resources/ResourceGroup",
+          "azure/resources/Subnet",
+          "azure/resources/SecurityGroup",
+          "azure/resources/NetworkInterface",
+          "azure/resources/VirtualMachine",
+        ],
+      },
       "azure/AzureMisc",
     ],
-    "User Guide": ["DeveloperGuide"],
+    "Google Cloud Platform": [
+      "google/GoogleRequirements",
+      "google/GoogleGettingStarted",
+      {
+        Resources: ["google/resources/Address", "google/resources/Instances"],
+      },
+      "google/GoogleMisc",
+    ],
   },
 };

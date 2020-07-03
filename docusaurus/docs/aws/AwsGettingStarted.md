@@ -9,9 +9,12 @@ Let's create a simple infrastructure with
 - connected to a public ip address.
 - accessible through SSH
 
+Ensure possession of the **AWSAccessKeyId**, **AWSSecretKey**, **accountId** and **SSH keys**.
+Visit the [Aws Requirements](./AwsRequirements.md) to retrieve these informations.
+
 ## Getting the code
 
-Install the grucloud command line utility: **gc**
+Install the _grucloud_ command line utility: **gc**
 
 ```bash
 npm i -g @grucloud/core
@@ -52,8 +55,7 @@ Edit **config/default.js** and set the project id, region and zone:
 ```js
 module.exports = () => ({
   region: "eu-west-2",
-  zone: "us-central1-a",
-  stages: ["dev", "prod", "demo"],
+  zone: "eu-west-2a",
 });
 ```
 
