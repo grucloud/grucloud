@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import { css, jsx } from "@emotion/core";
 import React from "react";
 import classnames from "classnames";
 import Layout from "@theme/Layout";
@@ -73,16 +75,28 @@ function Home() {
       title={`${siteConfig.title}`}
       description="Description will go into a meta tag in <head />"
     >
-      <header className={classnames("hero hero--primary", styles.heroBanner)}>
-        <div className="container">
-          <h1 className="hero__title">{siteConfig.title}</h1>
-          <p className="hero__subtitle">{siteConfig.tagline}</p>
-          <h2>Get Started</h2>
-          <div className={styles.buttons}>
-            <LinkLogo Logo={AwsLogo} url="docs/azure/AzureGettingStarted" />
-            <LinkLogo Logo={GcpLogo} url="docs/google/GoogleGettingStarted" />
-            <LinkLogo Logo={AzureLogo} url="docs/azure/AzureGettingStarted" />
-          </div>
+      <header
+        css={css`
+          text-align: center;
+        `}
+      >
+        <h1 className="hero__title">{siteConfig.title}</h1>
+        <p className="hero__subtitle">{siteConfig.tagline}</p>
+        <h2>Get Started</h2>
+        <div
+          css={css`
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            > a {
+              margin: 0.5rem 0 0.5rem 0;
+              width: 400px;
+            }
+          `}
+        >
+          <LinkLogo Logo={AwsLogo} url="docs/aws/AwsGettingStarted" />
+          <LinkLogo Logo={GcpLogo} url="docs/google/GoogleGettingStarted" />
+          <LinkLogo Logo={AzureLogo} url="docs/azure/AzureGettingStarted" />
         </div>
       </header>
       <main>
