@@ -2,6 +2,9 @@
 
 ## Common:
 
+- terraform workspace new staging
+- terraform workspace select (staging/production)
+
 - prevent creating the same instance
 - compare or compareObject
 
@@ -15,6 +18,8 @@ for reference Error:
 
 ## Azure
 
+- doc
+
 ## TODO Aws:
 
 - error: upsertResources error:Error: Resource SecurityGroup/securityGroup is not tagged correctly
@@ -23,14 +28,25 @@ for reference Error:
 
 ## TODO Goggle
 
+- validate config: check project and region
+
 - https://cloud.google.com/community/tutorials/getting-started-on-gcp-with-terraform
+- https://medium.com/faun/creating-reusable-infrastructure-with-terraform-on-gcp-e17745ac4ff2
+
 - metadata = {
   ssh-keys = "INSERT_USERNAME:\${file("~/.ssh/id_rsa.pub")}"
   }
   }
+- google_service_account
+- google_project_iam_member
+- google_compute_router
+- google_compute_router_nat
 - google_compute_firewall
 - google_compute_network
 - google_compute_subnetwork
+- google_compute_network_peering
+- google_project
+
 - ssh `terraform output ip`
 - rename in gcp
 - instance: add service account

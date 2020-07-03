@@ -1,7 +1,7 @@
 {
   "name": "grucloud-doc",
-  "version": "1.0.0",
-  "private": false,
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
     "start": "docusaurus start",
     "build": "docusaurus build",
@@ -9,9 +9,9 @@
     "deploy": "docusaurus deploy"
   },
   "dependencies": {
-    "@docusaurus/core": "^2.0.0-alpha.54",
-    "@docusaurus/preset-classic": "^2.0.0-alpha.54",
-    "classnames": "^2.2.6",
+    "@docusaurus/core": "^2.0.0-alpha.58",
+    "@docusaurus/preset-classic": "^2.0.0-alpha.58",
+    "clsx": "^1.1.1",
     "react": "^16.8.4",
     "react-dom": "^16.8.4"
   },
