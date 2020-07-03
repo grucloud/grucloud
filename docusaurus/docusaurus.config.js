@@ -3,7 +3,7 @@ module.exports = {
   tagline: "Infrastructure as Code",
   url: "https://grucloud.com",
   baseUrl: "/",
-  favicon: "img/favicon.ico",
+  favicon: "img/cloud.svg",
   organizationName: "fredericheem", // Usually your GitHub org/user name.
   projectName: "grucloud", // Usually your repo name.
   themeConfig: {
@@ -11,7 +11,7 @@ module.exports = {
       title: "GruCloud",
       logo: {
         alt: "GruCloud Logo",
-        src: "img/logo.svg",
+        src: "img/cloud.svg",
       },
       links: [
         {
