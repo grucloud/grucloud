@@ -30,7 +30,7 @@ describe("AwsEC2", async function () {
       name: keyPairName,
     });
 
-    server = provider.makeInstance({
+    server = provider.makeEC2({
       name: serverName,
       properties: {},
       dependencies: { keyPair },

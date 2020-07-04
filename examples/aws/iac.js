@@ -1,4 +1,4 @@
-const AwsProvider = require("@grucloud/core").AwsProvider;
+const { AwsProvider } = require("@grucloud/core");
 
 const createStack = async ({ config }) => {
   // Create a AWS provider
@@ -54,7 +54,7 @@ const createStack = async ({ config }) => {
     },
   });
 
-  const server = provider.makeInstance({
+  const server = provider.makeEC2({
     name: "web-server",
     dependencies: { keyPair, subnet, securityGroups: { sg } },
     propertiesDefault: {

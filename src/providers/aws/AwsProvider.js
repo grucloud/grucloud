@@ -43,7 +43,7 @@ const fnSpecs = (config) => {
       isOurMinion,
     },
     {
-      type: "Instance",
+      type: "EC2",
       dependsOn: ["SecurityGroup", "Subnet"],
       Client: ({ spec }) =>
         AwsClientEC2({

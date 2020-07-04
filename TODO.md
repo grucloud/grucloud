@@ -2,6 +2,8 @@
 
 ## Common:
 
+- add multiple example for each provider
+
 - terraform workspace new staging
 - terraform workspace select (staging/production)
 

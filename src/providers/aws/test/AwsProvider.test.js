@@ -78,7 +78,7 @@ describe("AwsProvider", async function () {
       },
     });
 
-    server = provider.makeInstance({
+    server = provider.makeEC2({
       name: serverName,
       properties: {},
       dependencies: { keyPair, subnet, securityGroups: { sg } },
