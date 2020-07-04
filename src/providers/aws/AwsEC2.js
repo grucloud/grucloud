@@ -1,5 +1,7 @@
 const AWS = require("aws-sdk");
 const _ = require("lodash");
+const { defaultsDeep } = require("lodash/fp");
+
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsClientEC2" });
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../Common");
@@ -115,7 +117,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
   const configDefault = async ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ dependencies })}`);
     const { keyPair, subnet, securityGroups = {} } = dependencies;
-
+    const { VolumeSize, ...otherProperties } = properties;
     const buildNetworkInterfaces = () => [
       {
         AssociatePublicIpAddress: true,
@@ -126,48 +128,46 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
         SubnetId: getField(subnet, "SubnetId"),
       },
     ];
-    // TODO use defaultDeep
-    return {
-      ...{
-        BlockDeviceMappings: [
-          {
-            DeviceName: "/dev/sdh",
-            Ebs: {
-              VolumeSize: properties.VolumeSize,
+    return defaultsDeep(
+      {
+        ...{
+          BlockDeviceMappings: [
+            {
+              DeviceName: "/dev/sdh",
+              Ebs: {
+                VolumeSize: properties.VolumeSize,
+              },
             },
-          },
-        ],
-        ImageId: properties.ImageId, // Ubuntu 20.04
-        InstanceType: properties.InstanceType,
-        MaxCount: properties.MaxCount,
-        MinCount: properties.MinCount,
-        ...(subnet && { NetworkInterfaces: buildNetworkInterfaces() }),
-        TagSpecifications: [
-          {
-            ResourceType: "instance",
-            Tags: [
-              {
-                Key: KeyName,
-                Value: name,
-              },
-              {
-                Key: managedByKey,
-                Value: managedByValue,
-              },
-              {
-                Key: stageTagKey,
-                Value: stage,
-              },
-            ],
-          },
-        ],
+          ],
+          ...(subnet && { NetworkInterfaces: buildNetworkInterfaces() }),
+          TagSpecifications: [
+            {
+              ResourceType: "instance",
+              Tags: [
+                {
+                  Key: KeyName,
+                  Value: name,
+                },
+                {
+                  Key: managedByKey,
+                  Value: managedByValue,
+                },
+                {
+                  Key: stageTagKey,
+                  Value: stage,
+                },
+              ],
+            },
+          ],
+        },
+        ...(keyPair && { KeyName: keyPair.resource.name }),
       },
-      ...(keyPair && { KeyName: keyPair.resource.name }),
-    };
+      otherProperties
+    );
   };
 
   return {
-    type: "Instance",
+    type: "EC2",
     spec,
     ec2,
     isUpById,
