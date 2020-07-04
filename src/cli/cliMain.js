@@ -39,6 +39,7 @@ exports.main = async ({ argv, onExit }) => {
       onExit({ code, error });
     } else {
       error.stack && console.log(error.stack);
+      console.log("Error:");
       console.log(error);
       onExit({ code: -1 });
     }

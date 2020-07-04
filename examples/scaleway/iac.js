@@ -9,9 +9,9 @@ const createStack = async ({}) => {
   // Create Scaleway provider
   const provider = await ScalewayProvider({ name: "scaleway", config });
   // Allocate public Ip address
-  const ip = provider.makeIp({ name: "ip-web-server" });
+  const ip = await provider.makeIp({ name: "ip-web-server" });
   // Choose an image
-  const image = provider.useImage({
+  const image = await provider.useImage({
     name: "ubuntu",
     config: ({ items: images }) => {
       const image = images.find(
@@ -22,7 +22,7 @@ const createStack = async ({}) => {
     },
   });
   // Create a server
-  provider.makeServer({
+  await provider.makeServer({
     name: "web-server",
     dependencies: { image, ip },
     // TODO use properties

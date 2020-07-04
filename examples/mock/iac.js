@@ -23,10 +23,10 @@ const createStack = async ({ config }) => {
   });
 
   // Ip
-  const ip = provider.makeIp({ name: "myip" });
+  const ip = await provider.makeIp({ name: "myip" });
 
   // Boot images
-  const image = provider.useImage({
+  const image = await provider.useImage({
     name: "ubuntu",
     transformConfig: ({ items: images }) => {
       assert(images);
@@ -39,21 +39,21 @@ const createStack = async ({ config }) => {
   });
 
   //TODO Volumes
-  const volume = provider.makeVolume({
+  const volume = await provider.makeVolume({
     name: "volume1",
     properties: {
       size: 20_000_000_000,
     },
   });
   // SecurityGroup
-  const sg = provider.makeSecurityGroup({
+  const sg = await provider.makeSecurityGroup({
     name: "sg",
     properties: {
       //TODO
     },
   });
   //Server
-  const server = provider.makeServer({
+  const server = await provider.makeServer({
     name: "web-server",
     dependencies: { volume, sg: { sg }, ip },
     properties: {

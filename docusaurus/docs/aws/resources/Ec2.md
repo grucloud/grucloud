@@ -5,7 +5,7 @@ title: EC2
 Provides an EC2 instance resource, a.k.a virtual machine.
 
 ```js
-const server = provider.makeEC2({
+const server = await provider.makeEC2({
   name: "myserver",
   properties: {
     VolumeSize: 50,

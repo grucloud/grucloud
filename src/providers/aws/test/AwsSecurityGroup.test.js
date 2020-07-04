@@ -20,13 +20,13 @@ describe("AwsSecurityGroup", async function () {
       name: "aws",
       config: ConfigLoader({ baseDir: __dirname }),
     });
-    vpc = provider.makeVpc({
+    vpc = await provider.makeVpc({
       name: "vpc",
       properties: {
         CidrBlock: "10.1.0.1/16",
       },
     });
-    sg = provider.makeSecurityGroup({
+    sg = await provider.makeSecurityGroup({
       name: "sg",
       dependencies: { vpc },
       properties: {

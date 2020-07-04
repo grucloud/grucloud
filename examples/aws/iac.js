@@ -5,25 +5,25 @@ const createStack = async ({ config }) => {
   const provider = await AwsProvider({ name: "aws", config });
   // Allocate public Ip address
   //TODO
-  // const ip = provider.makeAddress({ name: "ip-webserver" });
+  // const ip = await provider.makeAddress({ name: "ip-webserver" });
   // Allocate a server
-  const keyPair = provider.useKeyPair({
+  const keyPair = await provider.useKeyPair({
     name: "kp",
   });
-  const vpc = provider.makeVpc({
+  const vpc = await provider.makeVpc({
     name: "vpc",
     properties: {
       CidrBlock: "10.1.0.0/16",
     },
   });
-  const subnet = provider.makeSubnet({
+  const subnet = await provider.makeSubnet({
     name: "subnet",
     dependencies: { vpc },
     properties: {
       CidrBlock: "10.1.0.1/24",
     },
   });
-  const sg = provider.makeSecurityGroup({
+  const sg = await provider.makeSecurityGroup({
     name: "securityGroup",
     dependencies: { vpc, subnet },
     properties: {
@@ -54,7 +54,7 @@ const createStack = async ({ config }) => {
     },
   });
 
-  const server = provider.makeEC2({
+  const server = await provider.makeEC2({
     name: "web-server",
     dependencies: { keyPair, subnet, securityGroups: { sg } },
     propertiesDefault: {

@@ -18,7 +18,7 @@ describe("ScalewayVolume", async function () {
       name: "scaleway",
       config: ConfigLoader({ baseDir: __dirname }),
     });
-    volume = provider.makeVolume({
+    volume = await provider.makeVolume({
       name: "volume1",
       config: () => ({
         size: 20_000_000_000,

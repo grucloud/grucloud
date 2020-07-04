@@ -4,9 +4,9 @@ const createStack = async ({ config }) => {
   // Create GCP provider
   const provider = await GoogleProvider({ name: "google", config });
   // Allocate public Ip address
-  const ip = provider.makeAddress({ name: "ip-webserver" });
+  const ip = await provider.makeAddress({ name: "ip-webserver" });
   // Allocate a server
-  const server = provider.makeInstance({
+  const server = await provider.makeInstance({
     name: "web-server",
     dependencies: { ip },
     properties: {

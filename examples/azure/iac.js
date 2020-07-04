@@ -6,12 +6,12 @@ const createStack = async ({ config }) => {
   assert(stage);
   // Create an Azure provider
   const provider = await AzureProvider({ name: "azure", config });
-  const rg = provider.makeResourceGroup({
+  const rg = await provider.makeResourceGroup({
     name: `resource-group-${stage}`,
   });
 
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtualnetworks/createorupdate#request-body
-  const vnet = provider.makeVirtualNetwork({
+  const vnet = await provider.makeVirtualNetwork({
     name: `virtual-network-${stage}`,
     dependencies: { resourceGroup: rg },
     properties: {
@@ -30,7 +30,7 @@ const createStack = async ({ config }) => {
   });
 
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networksecuritygroups/createorupdate#request-body
-  const sg = provider.makeSecurityGroup({
+  const sg = await provider.makeSecurityGroup({
     name: `security-group-${stage}`,
     dependencies: { resourceGroup: rg },
     properties: {
@@ -55,7 +55,7 @@ const createStack = async ({ config }) => {
   });
 
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/publicipaddresses/createorupdate#request-body
-  const publicIpAddress = provider.makePublicIpAddress({
+  const publicIpAddress = await provider.makePublicIpAddress({
     name: `ip-${stage}`,
     dependencies: {
       resourceGroup: rg,
@@ -67,7 +67,7 @@ const createStack = async ({ config }) => {
     },
   });
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networkinterfaces/createorupdate#request-body
-  const networkInterface = provider.makeNetworkInterface({
+  const networkInterface = await provider.makeNetworkInterface({
     name: `network-interface-${stage}`,
     dependencies: {
       resourceGroup: rg,
@@ -94,7 +94,7 @@ const createStack = async ({ config }) => {
   assert(MACHINE_ADMIN_USERNAME);
   assert(MACHINE_ADMIN_PASSWORD);
 
-  const vm = provider.makeVirtualMachine({
+  const vm = await provider.makeVirtualMachine({
     name: `vm-${stage}`,
     dependencies: {
       resourceGroup: rg,

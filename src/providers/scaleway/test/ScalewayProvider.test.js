@@ -23,8 +23,8 @@ describe("ScalewayProvider", async function () {
       config: ConfigLoader({ baseDir: __dirname }),
     });
     await provider.destroyAll();
-    ip = provider.makeIp({ name: "myip" });
-    image = provider.useImage({
+    ip = await provider.makeIp({ name: "myip" });
+    image = await provider.useImage({
       name: "ubuntu",
       config: ({ items: images }) => {
         assert(images);
@@ -36,7 +36,7 @@ describe("ScalewayProvider", async function () {
         return image;
       },
     });
-    server = provider.makeServer({
+    server = await provider.makeServer({
       name: "web-server",
       dependencies: { image, ip },
       properties: {

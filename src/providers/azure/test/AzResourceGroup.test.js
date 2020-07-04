@@ -22,7 +22,7 @@ describe("AzResourceGroup", async function () {
       name: "azure",
       config,
     });
-    rg = provider.makeResourceGroup({ name: rgName });
+    rg = await provider.makeResourceGroup({ name: rgName });
 
     const { success } = await provider.destroyAll();
     assert(success, "destroyAll ko");

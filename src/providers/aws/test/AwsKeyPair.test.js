@@ -1,9 +1,8 @@
 const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
-
 const AwsProvider = require("../AwsProvider");
-//TODO renane in AwsKeyPair
-describe("AwsClientKeyPair", async function () {
+
+describe("AwsKeyPair", async function () {
   let config;
   let provider;
   let keyPair;
@@ -19,7 +18,7 @@ describe("AwsClientKeyPair", async function () {
       config,
     });
     await provider.destroyAll();
-    keyPair = provider.useKeyPair({
+    keyPair = await provider.useKeyPair({
       name: "kp",
     });
   });
@@ -32,5 +31,17 @@ describe("AwsClientKeyPair", async function () {
   it("keyPair getLive", async function () {
     const live = await keyPair.getLive();
     assert.equal(live.KeyName, keyPair.name);
+  });
+
+  it("keyPair name not found on server", async function () {
+    try {
+      await provider.useKeyPair({
+        name: "idonotexist",
+      });
+      assert(false);
+    } catch (error) {
+      assert.equal(error.code, 400);
+      assert(error.message);
+    }
   });
 });

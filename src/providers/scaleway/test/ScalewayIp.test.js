@@ -19,7 +19,7 @@ describe("ScalewayIp", async function () {
       config: ConfigLoader({ baseDir: __dirname }),
     });
     await provider.destroyAll();
-    ip = provider.makeIp({ name: "myip" });
+    ip = await provider.makeIp({ name: "myip" });
   });
   after(async () => {
     await provider?.destroyAll();

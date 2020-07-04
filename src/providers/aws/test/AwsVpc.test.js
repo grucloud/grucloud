@@ -24,7 +24,7 @@ describe("AwsVpc", async function () {
     const lives = await provider.listLives({ our: true });
     assert.equal(lives.length, 0);
 
-    vpc = provider.makeVpc({
+    vpc = await provider.makeVpc({
       name: "vpc",
       properties: {
         CidrBlock: "10.1.1.1/16",

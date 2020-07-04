@@ -26,11 +26,11 @@ describe("AwsEC2", async function () {
     });
     const { success } = await provider.destroyAll();
     assert(success);
-    keyPair = provider.useKeyPair({
+    keyPair = await provider.useKeyPair({
       name: keyPairName,
     });
 
-    server = provider.makeEC2({
+    server = await provider.makeEC2({
       name: serverName,
       properties: {},
       dependencies: { keyPair },

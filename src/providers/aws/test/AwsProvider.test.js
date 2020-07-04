@@ -31,23 +31,23 @@ describe("AwsProvider", async function () {
     });
     const { success } = await provider.destroyAll();
     assert(success);
-    keyPair = provider.useKeyPair({
+    keyPair = await provider.useKeyPair({
       name: keyPairName,
     });
-    vpc = provider.makeVpc({
+    vpc = await provider.makeVpc({
       name: "vpc",
       properties: {
         CidrBlock: "10.1.0.1/16",
       },
     });
-    subnet = provider.makeSubnet({
+    subnet = await provider.makeSubnet({
       name: subnetName,
       dependencies: { vpc },
       properties: {
         CidrBlock: "10.1.0.1/24",
       },
     });
-    sg = provider.makeSecurityGroup({
+    sg = await provider.makeSecurityGroup({
       name: securityGroupName,
       dependencies: { vpc },
       properties: {
@@ -78,7 +78,7 @@ describe("AwsProvider", async function () {
       },
     });
 
-    server = provider.makeEC2({
+    server = await provider.makeEC2({
       name: serverName,
       properties: {},
       dependencies: { keyPair, subnet, securityGroups: { sg } },

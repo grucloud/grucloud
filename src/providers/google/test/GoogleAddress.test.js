@@ -22,7 +22,7 @@ describe("GoogleAddress", async function () {
       name: "google",
       config,
     });
-    address = provider.makeAddress({ name: addressName });
+    address = await provider.makeAddress({ name: addressName });
     await provider.destroyAll();
   });
   after(async () => {

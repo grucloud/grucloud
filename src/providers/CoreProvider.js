@@ -225,7 +225,7 @@ const factoryName = (spec) => `${spec.listOnly ? "use" : "make"}${spec.type}`;
 const createResourceMakers = ({ specs, config, provider }) =>
   specs.reduce((acc, spec) => {
     assert(spec.type);
-    acc[factoryName(spec)] = ({
+    acc[factoryName(spec)] = async ({
       name,
       dependencies,
       properties,
@@ -241,6 +241,11 @@ const createResourceMakers = ({ specs, config, provider }) =>
         config,
       });
       provider.targetResourcesAdd(resource);
+
+      if (resource.client.validate) {
+        await resource.client.validate({ name });
+      }
+
       return resource;
     };
     return acc;
