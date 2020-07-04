@@ -1,9 +1,9 @@
 var AWS = require("aws-sdk");
 const _ = require("lodash");
 const assert = require("assert");
-const logger = require("../../logger")({ prefix: "AwsClientKeyPair" });
+const logger = require("../../logger")({ prefix: "AwsKeyPair" });
 const { tos } = require("../../tos");
-const { getByNameCore, getById, findField } = require("../Common");
+const { getByNameCore, findField } = require("../Common");
 
 module.exports = AwsClientKeyPair = ({ spec, config }) => {
   assert(spec);

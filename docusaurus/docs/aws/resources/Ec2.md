@@ -1,5 +1,5 @@
 ---
-title: Ec2
+title: EC2
 ---
 
 Provides an EC2 instance resource, a.k.a virtual machine.
@@ -21,6 +21,8 @@ const server = provider.makeEC2({
 - [simple example](https://github.com/FredericHeem/grucloud/blob/master/examples/aws/iac.js#L57)
 
 ### Properties
+
+- [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property)
 
 ### Dependencies
 

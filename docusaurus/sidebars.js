@@ -12,7 +12,7 @@ module.exports = {
           "aws/resources/Vpc",
           "aws/resources/Subnet",
           "aws/resources/SecurityGroup",
-          "aws/resources/Ec2",
+          "aws/resources/EC2",
         ],
       },
       "aws/AwsMisc",

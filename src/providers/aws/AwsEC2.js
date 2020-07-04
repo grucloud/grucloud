@@ -126,6 +126,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
         SubnetId: getField(subnet, "SubnetId"),
       },
     ];
+    // TODO use defaultDeep
     return {
       ...{
         BlockDeviceMappings: [

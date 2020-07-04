@@ -2,6 +2,8 @@
 
 ## Common:
 
+makeKeyPair or useKeyPair ?
+
 - add multiple example for each provider
 
 - terraform workspace new staging
@@ -23,6 +25,12 @@ for reference Error:
 - doc
 
 ## TODO Aws:
+
+- keypair: check if exists
+- ec2: configDefaults use defaultDeep
+- add example to add Monitoring: {
+  Enabled: true || false /_ required _/
+  }, as a properties
 
 - error: upsertResources error:Error: Resource SecurityGroup/securityGroup is not tagged correctly
 - AssociatePublicIpAddress, do we need the subnet and sg in interface ?
