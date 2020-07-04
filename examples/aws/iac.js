@@ -7,7 +7,7 @@ const createStack = async ({ config }) => {
   //TODO
   // const ip = provider.makeAddress({ name: "ip-webserver" });
   // Allocate a server
-  const keyPair = provider.makeKeyPair({
+  const keyPair = provider.useKeyPair({
     name: "kp",
   });
   const vpc = provider.makeVpc({

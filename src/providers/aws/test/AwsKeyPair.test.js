@@ -19,7 +19,7 @@ describe("AwsClientKeyPair", async function () {
       config,
     });
     await provider.destroyAll();
-    keyPair = provider.makeKeyPair({
+    keyPair = provider.useKeyPair({
       name: "kp",
     });
   });

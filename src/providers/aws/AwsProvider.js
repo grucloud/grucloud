@@ -22,7 +22,7 @@ const fnSpecs = (config) => {
     {
       type: "KeyPair",
       Client: ({ spec }) => AwsClientKeyPair({ spec, config }),
-      methods: { list: true },
+      listOnly: true,
       isOurMinion,
     },
     {

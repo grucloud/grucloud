@@ -33,7 +33,7 @@ const fnSpecs = (config) => {
         }),
 
       type: "Image",
-      methods: { list: true },
+      listOnly: true,
       isOurMinion,
     },
     {

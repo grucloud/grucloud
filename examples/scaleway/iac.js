@@ -11,7 +11,7 @@ const createStack = async ({}) => {
   // Allocate public Ip address
   const ip = provider.makeIp({ name: "ip-web-server" });
   // Choose an image
-  const image = provider.makeImage({
+  const image = provider.useImage({
     name: "ubuntu",
     config: ({ items: images }) => {
       const image = images.find(

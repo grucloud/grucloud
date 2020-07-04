@@ -5,11 +5,5 @@ const { compare } = require("../Utils");
 
 exports.SpecDefault = () => ({
   compare,
-  //TODO move that to client ?
-  methods: {
-    get: true,
-    list: true,
-    create: true,
-    del: true,
-  },
+  listOnly: false,
 });

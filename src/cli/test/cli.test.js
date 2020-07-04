@@ -80,7 +80,7 @@ describe("cli", function () {
 });
 
 describe("cli error", function () {
-  const routes = ["/ip", "/server", "/volume", "/security_group"];
+  const routes = ["/ip", "/server", "/volume", "/security_group", "/image"];
   const port = 8089;
   const delay = { min: 1, max: 1 };
   const mockServer = MockServer({ port, routes, delay });

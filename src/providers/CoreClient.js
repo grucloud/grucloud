@@ -30,7 +30,6 @@ module.exports = CoreClient = ({
   spec,
   type,
   axios,
-  methods, //TODO use defaults
   pathGet = (id) => `/${id}`,
   pathCreate = () => `/`,
   pathDelete = (id) => `/${id}`,
@@ -52,22 +51,17 @@ module.exports = CoreClient = ({
   assert(spec);
   assert(type);
 
-  const canGet = !methods || methods.get;
-  const canCreate = !methods || methods.create;
-  const canDelete = !methods || methods.del;
-  const canList = !methods || methods.list;
-
   const getByName = ({ name }) => getByNameCore({ name, list, findName });
 
   const getById = async ({ id }) => {
-    logger.debug(`getById ${tos({ type, id, canGet })}`);
+    logger.debug(`getById ${tos({ type, id })}`);
     assert(id);
 
     if (_.isEmpty(id)) {
       throw Error(`getById ${type}: invalid id`);
     }
 
-    if (!canGet) return;
+    if (spec.listOnly) return;
 
     try {
       const path = pathGet(id);
@@ -100,7 +94,7 @@ module.exports = CoreClient = ({
     logger.debug(`create ${type}/${name}, payload: ${tos(payload)}`);
     assert(name);
     assert(payload);
-    if (!canCreate) return;
+    if (spec.listOnly) return;
 
     try {
       const path = pathCreate({ dependencies, name });
@@ -134,8 +128,6 @@ module.exports = CoreClient = ({
   const list = async () => {
     logger.debug(`list type ${type}`);
 
-    if (!canList) return;
-
     try {
       const path = pathList();
       logger.debug(`list url: ${path}`);
@@ -151,8 +143,8 @@ module.exports = CoreClient = ({
   };
 
   const destroy = async ({ id, name }) => {
-    logger.debug(`destroy ${tos({ type, name, id, canDelete })}`);
-    if (!canDelete) return;
+    logger.debug(`destroy ${tos({ type, name, id })}`);
+    if (spec.listOnly) return;
 
     if (_.isEmpty(id)) {
       throw Error(`destroy ${type}: invalid id`);
@@ -180,7 +172,6 @@ module.exports = CoreClient = ({
   return {
     spec,
     type,
-    methods,
     findId,
     getById,
     getByName,

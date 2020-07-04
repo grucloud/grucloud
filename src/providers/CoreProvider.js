@@ -220,10 +220,12 @@ const ResourceMaker = ({
   return resourceMaker;
 };
 
+const factoryName = (spec) => `${spec.listOnly ? "use" : "make"}${spec.type}`;
+
 const createResourceMakers = ({ specs, config, provider }) =>
   specs.reduce((acc, spec) => {
     assert(spec.type);
-    acc[`make${spec.type}`] = ({
+    acc[factoryName(spec)] = ({
       name,
       dependencies,
       properties,
@@ -314,7 +316,7 @@ function CoreProvider({
       tap(() =>
         logger.debug(`listLives filters: ${tos({ all, our, types, name, id })}`)
       ),
-      filter((client) => all || client.spec.methods.create),
+      filter((client) => all || !client.spec.listOnly),
       filter((client) =>
         !_.isEmpty(types) ? types.includes(client.spec.type) : true
       ),
@@ -389,7 +391,7 @@ function CoreProvider({
   const planUpsert = async ({ onStateChange = noop }) => {
     logger.debug(`planUpsert: #resources ${getTargetResources().length}`);
     return pipe([
-      filter((resource) => resource.spec.methods.create),
+      filter((resource) => !resource.spec.listOnly),
       map(async (resource) => {
         onStateChange({
           resource: resource.toJSON(),
@@ -487,7 +489,7 @@ function CoreProvider({
       tap((x) =>
         logger.debug(`planFindDestroy ${tos({ options, direction })}`)
       ),
-      filter((client) => client.spec.methods.del),
+      filter((client) => !client.spec.listOnly),
       map(async (client) =>
         pipe([
           async () => await client.list(),

@@ -24,7 +24,7 @@ describe("ScalewayProvider", async function () {
     });
     await provider.destroyAll();
     ip = provider.makeIp({ name: "myip" });
-    image = provider.makeImage({
+    image = provider.useImage({
       name: "ubuntu",
       config: ({ items: images }) => {
         assert(images);

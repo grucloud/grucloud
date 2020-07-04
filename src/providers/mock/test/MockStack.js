@@ -20,7 +20,7 @@ const createStack = async ({ config }) => {
   const ip = provider.makeIp({ name: "myip" });
 
   // Boot images
-  const image = provider.makeImage({
+  const image = provider.useImage({
     name: "ubuntu",
     transformConfig: ({ items: images }) => {
       assert(images);

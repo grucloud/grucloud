@@ -31,7 +31,7 @@ describe("AwsProvider", async function () {
     });
     const { success } = await provider.destroyAll();
     assert(success);
-    keyPair = provider.makeKeyPair({
+    keyPair = provider.useKeyPair({
       name: keyPairName,
     });
     vpc = provider.makeVpc({

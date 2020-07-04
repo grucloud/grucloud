@@ -23,7 +23,7 @@ describe("ScalewayImage", async function () {
     await provider.destroyAll();
     //TODO assert
 
-    image = provider.makeImage({
+    image = provider.useImage({
       name: "ubuntu",
       config: ({ items: images }) => {
         assert(images);
