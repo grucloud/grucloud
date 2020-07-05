@@ -22,7 +22,7 @@ Install the grucloud command line utility: **gc**
 npm i -g @grucloud/core
 ```
 
-Clone one of the azure examples:
+Clone the code and go to one of the azure examples:
 
 ```bash
 git clone git@github.com:FredericHeem/grucloud.git

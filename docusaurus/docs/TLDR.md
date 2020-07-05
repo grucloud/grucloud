@@ -3,22 +3,34 @@ id: TLDR
 title: TL;DR
 ---
 
-Let's create a simple infrastructure with a server running ubuntu attached to a 20GB disk, connected to a public ip address.
+Let's create a fake infrastructure with the mock provider.
 
-Clone one of the example and install the dependencies and _gc_, the grucloud command line utility:
+First of all, install the command line utility **gc**
+
+```bash
+npm i -g @grucloud/core
+```
+
+Clone the source code and install the dependencies
 
 ```
-git clone git@github.com:FredericHeem/grucloud.git && cd grucloud/examples/scaleway && npm install
+git clone git@github.com:FredericHeem/grucloud.git
+cd grucloud
+npm install
 ```
 
-Edit the environment file and set the relevant account and keys
+Start the mock cloud service provider
 
-    cp config/dev.example.json config/dev.json
-    vi config/dev.json
+```
+npm run start:mock
+```
 
-Query the status of the current resources on the given cloud account:
+Open another console, go the mock example directory and install the dependencies:
 
-    gc status
+```
+cd examples/mock
+npm install
+```
 
 Now it is time to edit the infrastructure file that describes the architecture:
 
@@ -26,14 +38,20 @@ Now it is time to edit the infrastructure file that describes the architecture:
 
 Find out which resources are going to be allocated:
 
-    gc plan
+```sh
+gc plan
+```
 
 Happy with the expected plan ? Deploy it now:
 
-    gc apply
+```sh
+gc apply
+```
 
 Time to destroy the resouces allocated:
 
-    gc destroy
+```sh
+gc destroy
+```
 
 Well done. Infrastrucure as code in a few commands.

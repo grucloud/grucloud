@@ -1,6 +1,13 @@
 module.exports = {
   someSidebar: {
     Introduction: ["TLDR"],
+    "Command Line Interface": [
+      "cli/gc",
+      "cli/PlanQuery",
+      "cli/PlanApply",
+      "cli/List",
+      "cli/PlanDestroy",
+    ],
     Requirements: ["Requirements"],
     "User Guide": ["DeveloperGuide"],
     "Amazon Web Service": [
