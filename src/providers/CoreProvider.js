@@ -265,8 +265,15 @@ function CoreProvider({
   );
   // Target Resources
   const targetResources = new Map();
-  const targetResourcesAdd = (resource) =>
+  const targetResourcesAdd = (resource) => {
+    if (targetResources.has(resource.name)) {
+      throw {
+        code: 400,
+        message: `resource name '${resource.name}' already exists`,
+      };
+    }
     targetResources.set(resource.name, resource);
+  };
 
   const getTargetResources = () => [...targetResources.values()];
   const resourceNames = () => [...targetResources.keys()];

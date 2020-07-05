@@ -2,10 +2,10 @@
 
 ## Common:
 
+- terraform output
 - properties as a function ?
 - add multiple example for each provider
 
-* prevent creating the same instance
 * compare or compareObject
 
 for reference Error:
