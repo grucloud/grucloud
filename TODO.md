@@ -2,13 +2,11 @@
 
 ## Common:
 
+- properties as a function ?
 - add multiple example for each provider
 
-- terraform workspace new staging
-- terraform workspace select (staging/production)
-
-- prevent creating the same instance
-- compare or compareObject
+* prevent creating the same instance
+* compare or compareObject
 
 for reference Error:
 "state": "ERROR",
@@ -20,18 +18,20 @@ for reference Error:
 
 ## Azure
 
+- check resource group name
+- check machine type: https://docs.microsoft.com/en-us/rest/api/compute/availabilitysets/listavailablesizes#virtualmachinesize
+
 - doc
 
 ## TODO Aws:
 
-- keypair: check if exists
-
-- error: upsertResources error:Error: Resource SecurityGroup/securityGroup is not tagged correctly
 - AssociatePublicIpAddress, do we need the subnet and sg in interface ?
 - handle error when retry times out
 
 ## TODO Goggle
 
+- Instance => VmInstance
+- diskTypes => diskType
 - validate config: check project and region
 
 - https://cloud.google.com/community/tutorials/getting-started-on-gcp-with-terraform
@@ -64,4 +64,6 @@ for reference Error:
 
 ## Nice to have
 
+- terraform workspace new staging
+- terraform workspace select (staging/production)
 - https://cloudcraft.co/

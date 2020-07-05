@@ -29,7 +29,5 @@ Then use it to retrieve resources:
 
 ## Useful Links
 
-- https://github.com/googleapis/nodejs-compute
 - https://cloud.google.com/compute/docs/reference/rest/v1/addresses
 - https://cloud.google.com/run/docs/authenticating/developers
-- https://googleapis.dev/nodejs/compute/latest/Address.html

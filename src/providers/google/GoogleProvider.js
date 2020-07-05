@@ -37,7 +37,8 @@ const fnSpecs = (config) => {
         machineType: "f1-micro",
         diskSizeGb: "10",
         diskTypes: "pd-standard",
-        sourceImage: "debian-9-stretch-v20200420",
+        sourceImage:
+          "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
       },
       compare: ({ target, live }) => {
         logger.debug(`compare server`);

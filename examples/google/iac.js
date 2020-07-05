@@ -10,6 +10,10 @@ const createStack = async ({ config }) => {
     name: "web-server",
     dependencies: { ip },
     properties: {
+      diskSizeGb: "20",
+      machineType: "f1-micro",
+      sourceImage:
+        "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
       metadata: {
         items: [
           {

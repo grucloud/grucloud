@@ -6,6 +6,8 @@ const createStack = async ({ config }) => {
   assert(stage);
   // Create an Azure provider
   const provider = await AzureProvider({ name: "azure", config });
+
+  // https://docs.microsoft.com/en-us/rest/api/apimanagement/2019-12-01/apimanagementservice/createorupdate
   const rg = await provider.makeResourceGroup({
     name: `resource-group-${stage}`,
   });
@@ -94,6 +96,7 @@ const createStack = async ({ config }) => {
   assert(MACHINE_ADMIN_USERNAME);
   assert(MACHINE_ADMIN_PASSWORD);
 
+  // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/createorupdate
   const vm = await provider.makeVirtualMachine({
     name: `vm-${stage}`,
     dependencies: {

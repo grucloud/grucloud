@@ -37,7 +37,11 @@ npm install
 
 ### Environment
 
-Edit the **config/default.env** file and set the **GOOGLE_APPLICATION_CREDENTIALS** environment variable which points the the service account credential.
+```sh
+cp config/default.env.example config/default.env
+```
+
+Edit **config/default.env** and set the correct values:
 
 ```sh
 GOOGLE_APPLICATION_CREDENTIALS="/Users/mario/yourproject-605f4eb1b929.json"

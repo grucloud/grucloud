@@ -23,8 +23,9 @@ module.exports = {
       {
         Resources: [
           "azure/resources/ResourceGroup",
-          "azure/resources/Subnet",
+          "azure/resources/VirtualNetwork",
           "azure/resources/SecurityGroup",
+          "azure/resources/PublicIpAddress",
           "azure/resources/NetworkInterface",
           "azure/resources/VirtualMachine",
         ],
@@ -35,7 +36,7 @@ module.exports = {
       "google/GoogleRequirements",
       "google/GoogleGettingStarted",
       {
-        Resources: ["google/resources/Address", "google/resources/Instances"],
+        Resources: ["google/resources/Address", "google/resources/VmInstance"],
       },
       "google/GoogleMisc",
     ],

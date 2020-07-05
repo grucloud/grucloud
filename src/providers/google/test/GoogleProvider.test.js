@@ -29,6 +29,8 @@ describe("GoogleProvider", async function () {
       properties: {
         diskSizeGb: "20",
         machineType: "f1-micro",
+        sourceImage:
+          "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
       },
     });
   });

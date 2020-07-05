@@ -29,3 +29,18 @@ const server = await provider.makeEC2({
 - [SecurityGroup](./SecurityGroup)
 - [Subnet](./Subnet)
 - [KeyPair](./KeyPair)
+
+### AWS CLI
+
+List the instances:
+
+```
+aws ec2 describe-instances
+```
+
+Filter by name:
+
+```
+aws ec2 describe-instances --filters "Name=tag:name,Values=web-server"
+
+```
