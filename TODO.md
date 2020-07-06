@@ -2,6 +2,7 @@
 
 ## Common:
 
+- list command: option to list only for a given provider
 - terraform output
 - properties as a function ?
 - add multiple example for each provider

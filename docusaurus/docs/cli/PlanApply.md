@@ -3,6 +3,8 @@ id: PlanApply
 title: Plan Apply
 ---
 
+The **apply** commands effectively deploys the resources. It first finds out which resources has to be deployed by running the **plan** command. The user is prompted to confirm the plan.
+
 ```
 gc apply
 ```
@@ -62,4 +64,36 @@ Deploying resources
 ✓ mock::Server::web-server
 4 resources deployed
 Command "gc a" executed in 8s
+```
+
+## Command options
+
+```
+gc help apply
+```
+
+```
+Usage: gc apply|a [options]
+
+Apply the plan, a.k.a deploy the resources
+
+Options:
+  -f, --force  force deploy, will not prompt user
+  -h, --help   display help for command
+```
+
+### alias
+
+The command alias is _a_
+
+```
+gc a
+```
+
+### force
+
+The **force** option to not prompt the user to apply the plan
+
+```
+gc apply --force
 ```
