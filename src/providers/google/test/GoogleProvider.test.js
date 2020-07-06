@@ -20,8 +20,10 @@ describe("GoogleProvider", async function () {
       name: "google",
       config,
     });
+
     const { success } = await provider.destroyAll();
     assert(success);
+
     ip = await provider.makeAddress({ name: ipName });
     server = await provider.makeInstance({
       name: "web-server",

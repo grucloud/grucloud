@@ -20,8 +20,8 @@ describe("ScalewayImage", async function () {
       config: ConfigLoader({ baseDir: __dirname }),
     });
 
-    await provider.destroyAll();
-    //TODO assert
+    const { success } = await provider.destroyAll();
+    assert(success);
 
     image = await provider.useImage({
       name: "ubuntu",

@@ -16,7 +16,8 @@ describe("MockProvider e2e", async function () {
     provider = stack.providers[0];
   });
   after(async () => {
-    //await provider.destroyAll();
+    const { success } = await provider.destroyAll();
+    assert(success);
   });
 
   it("plan destroy", async function () {
@@ -58,27 +59,28 @@ describe("MockProvider e2e", async function () {
 
       const plan = await provider.planQuery();
       assert(plan.destroy);
-      const { results, success } = await provider.planApply({ plan });
-      assert(success);
-      assert(results);
-      results
-        .filter(({ item: { action } }) => action === "CREATE")
-        .forEach(({ item, input, output }) => {
-          assert(input);
-          assert(output);
-        });
-      results
-        .filter(({ item: { action } }) => action !== "CREATE")
-        .forEach(({ item, input, output }) => {
-          assert(!input);
-          assert(!output);
-        });
+      {
+        const { results, success } = await provider.planApply({ plan });
+        assert(success);
+        assert(results);
+        results
+          .filter(({ item: { action } }) => action === "CREATE")
+          .forEach(({ item, input, output }) => {
+            assert(input);
+            assert(output);
+          });
+        results
+          .filter(({ item: { action } }) => action !== "CREATE")
+          .forEach(({ item, input, output }) => {
+            assert(!input);
+            assert(!output);
+          });
 
-      assert.equal(
-        results.length,
-        plan.newOrUpdate.length + plan.destroy.length
-      );
-
+        assert.equal(
+          results.length,
+          plan.newOrUpdate.length + plan.destroy.length
+        );
+      }
       {
         const lives = await provider.listLives({ our: true });
         assert.equal(lives.length, plan.newOrUpdate.length);
@@ -127,8 +129,10 @@ describe("MockProvider e2e", async function () {
       assert.equal(plan.destroy.length, 1);
       assert.equal(plan.newOrUpdate.length, 4);
     }
-    const { success } = await provider.planApply({ plan });
-    assert(success);
+    {
+      const { success } = await provider.planApply({ plan });
+      assert(success);
+    }
     {
       const plan = await provider.planQuery();
       assert.equal(plan.destroy.length, 0);
@@ -165,7 +169,9 @@ describe("MockProvider e2e", async function () {
       assert.equal(planDestroy.length, 6);
       // Server must be before SecurityGroup
     }
-    await provider.destroyAll();
+
+    const { success } = await provider.destroyAll();
+    assert(success);
 
     {
       const listTargets = await provider.listTargets();

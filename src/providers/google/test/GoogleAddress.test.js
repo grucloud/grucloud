@@ -23,7 +23,9 @@ describe("GoogleAddress", async function () {
       config,
     });
     address = await provider.makeAddress({ name: addressName });
-    await provider.destroyAll();
+
+    const { success } = await provider.destroyAll();
+    assert(success);
   });
   after(async () => {
     await provider?.destroyAll();

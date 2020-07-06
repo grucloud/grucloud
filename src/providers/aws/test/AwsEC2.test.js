@@ -24,8 +24,10 @@ describe("AwsEC2", async function () {
       name: "aws",
       config,
     });
+
     const { success } = await provider.destroyAll();
     assert(success);
+
     keyPair = await provider.useKeyPair({
       name: keyPairName,
     });

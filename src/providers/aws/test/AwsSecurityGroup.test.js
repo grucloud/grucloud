@@ -54,7 +54,9 @@ describe("AwsSecurityGroup", async function () {
         },
       }),
     });
-    await provider.destroyAll();
+
+    const { success } = await provider.destroyAll();
+    assert(success);
   });
   after(async () => {
     await provider?.destroyAll();

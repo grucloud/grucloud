@@ -17,7 +17,10 @@ describe("AwsKeyPair", async function () {
       name: "aws",
       config,
     });
-    await provider.destroyAll();
+
+    const { success } = await provider.destroyAll();
+    assert(success);
+
     keyPair = await provider.useKeyPair({
       name: "kp",
     });
