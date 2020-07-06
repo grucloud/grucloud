@@ -25,8 +25,7 @@ const createStack = async ({}) => {
   await provider.makeServer({
     name: "web-server",
     dependencies: { image, ip },
-    // TODO use properties
-    properties: {
+    properties: () => ({
       name: "web-server",
       commercial_type: "DEV1-S",
       volumes: {
@@ -34,7 +33,7 @@ const createStack = async ({}) => {
           size: 20_000_000_000,
         },
       },
-    },
+    }),
   });
   return { providers: [provider] };
 };

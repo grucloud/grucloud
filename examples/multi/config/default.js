@@ -6,6 +6,7 @@ module.exports = () => ({
   },
   aws: {
     region: "eu-west-2",
+    zone: "eu-west-2a",
   },
   azure: {
     location: "uksouth",

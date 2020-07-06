@@ -32,7 +32,7 @@ describe("AwsEC2", async function () {
 
     server = await provider.makeEC2({
       name: serverName,
-      properties: {},
+      properties: () => ({}),
       dependencies: { keyPair },
     });
   });

@@ -9,7 +9,7 @@ Provides a Virtual Machine instance:
 const server = await provider.makeInstance({
   name: "web-server",
   dependencies: { ip },
-  properties: {
+  properties: () => ({
     diskSizeGb: "20",
     machineType: "f1-micro",
     sourceImage:
@@ -22,7 +22,7 @@ const server = await provider.makeInstance({
         },
       ],
     },
-  },
+  }),
 });
 ```
 

@@ -9,7 +9,7 @@ Provides a virtual network.
 const virtualNetwork = await provider.makeVirtualNetwork({
   name: `virtual-network`,
   dependencies: { resourceGroup },
-  properties: {
+  properties: () => ({
     properties: {
       addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
       subnets: [
@@ -21,7 +21,7 @@ const virtualNetwork = await provider.makeVirtualNetwork({
         },
       ],
     },
-  },
+  }),
 });
 ```
 

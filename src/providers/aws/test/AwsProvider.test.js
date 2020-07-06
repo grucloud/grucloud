@@ -36,21 +36,21 @@ describe("AwsProvider", async function () {
     });
     vpc = await provider.makeVpc({
       name: "vpc",
-      properties: {
+      properties: () => ({
         CidrBlock: "10.1.0.1/16",
-      },
+      }),
     });
     subnet = await provider.makeSubnet({
       name: subnetName,
       dependencies: { vpc },
-      properties: {
+      properties: () => ({
         CidrBlock: "10.1.0.1/24",
-      },
+      }),
     });
     sg = await provider.makeSecurityGroup({
       name: securityGroupName,
       dependencies: { vpc },
-      properties: {
+      properties: () => ({
         //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
         create: {
           Description: "Security Group Description",
@@ -75,12 +75,12 @@ describe("AwsProvider", async function () {
             },
           ],
         },
-      },
+      }),
     });
 
     server = await provider.makeEC2({
       name: serverName,
-      properties: {},
+      properties: () => ({}),
       dependencies: { keyPair, subnet, securityGroups: { sg } },
     });
   });

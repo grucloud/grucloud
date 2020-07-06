@@ -8,9 +8,9 @@ Provides a subnet:
 const subnet = await provider.makeSubnet({
   name: "subnet",
   dependencies: { vpc },
-  properties: {
+  properties: () => ({
     CidrBlock: "10.1.0.1/24",
-  },
+  }),
 });
 ```
 

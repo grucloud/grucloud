@@ -10,7 +10,7 @@ exports.checkEnv = (mandatoryEnv = []) => {
     throw Error(
       `${missingEnv.join(
         ","
-      )} are missing from the environment files "config/default.env" or "config/${CONFIG_ENV}.env" `
+      )} is missing from the environment files "config/default.env" or "config/${CONFIG_ENV}.env" `
     );
   }
 };
@@ -23,7 +23,7 @@ exports.checkConfig = (config, mandatoryConfigKeys = []) => {
     throw Error(
       `${missingKeys.join(
         ","
-      )} are missing from the config files "config/default.js" or "config/${CONFIG_ENV}.js" `
+      )} is missing from the config files "config/default.js" or "config/${CONFIG_ENV}.js" `
     );
   }
 };

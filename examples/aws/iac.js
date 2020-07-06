@@ -12,21 +12,21 @@ const createStack = async ({ config }) => {
   });
   const vpc = await provider.makeVpc({
     name: "vpc",
-    properties: {
+    properties: () => ({
       CidrBlock: "10.1.0.0/16",
-    },
+    }),
   });
   const subnet = await provider.makeSubnet({
     name: "subnet",
     dependencies: { vpc },
-    properties: {
+    properties: () => ({
       CidrBlock: "10.1.0.1/24",
-    },
+    }),
   });
   const sg = await provider.makeSecurityGroup({
     name: "securityGroup",
     dependencies: { vpc, subnet },
-    properties: {
+    properties: () => ({
       //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
       create: {
         Description: "Security Group Description",
@@ -51,17 +51,17 @@ const createStack = async ({ config }) => {
           },
         ],
       },
-    },
+    }),
   });
 
   const server = await provider.makeEC2({
     name: "web-server",
     dependencies: { keyPair, subnet, securityGroups: { sg } },
-    propertiesDefault: {
+    properties: () => ({
       VolumeSize: 50,
       InstanceType: "t2.micro",
       ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
-    },
+    }),
   });
 
   return { providers: [provider] };

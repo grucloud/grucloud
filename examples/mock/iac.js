@@ -41,25 +41,25 @@ const createStack = async ({ config }) => {
   //TODO Volumes
   const volume = await provider.makeVolume({
     name: "volume1",
-    properties: {
+    properties: () => ({
       size: 20_000_000_000,
-    },
+    }),
   });
   // SecurityGroup
   const sg = await provider.makeSecurityGroup({
     name: "sg",
-    properties: {
+    properties: () => ({
       //TODO
-    },
+    }),
   });
   //Server
   const server = await provider.makeServer({
     name: "web-server",
     dependencies: { volume, sg: { sg }, ip },
-    properties: {
+    properties: () => ({
       diskSizeGb: "20",
       machineType: "f1-micro",
-    },
+    }),
   });
   return { providers: [provider], ip, volume, server, image };
 };

@@ -278,19 +278,22 @@ const fnSpecs = (config) => {
               networkInterface,
               "networkInterfaces is missing VirtualMachine"
             );
-            return defaultsDeep(properties, {
-              location,
-              tags: buildTags(config),
-              properties: {
-                networkProfile: {
-                  networkInterfaces: [
-                    {
-                      id: getField(networkInterface, "id"),
-                    },
-                  ],
+            return defaultsDeep(
+              {
+                location,
+                tags: buildTags(config),
+                properties: {
+                  networkProfile: {
+                    networkInterfaces: [
+                      {
+                        id: getField(networkInterface, "id"),
+                      },
+                    ],
+                  },
                 },
               },
-            });
+              properties
+            );
           },
         }),
       isOurMinion,

@@ -11,11 +11,11 @@ const publicIpAddress = await provider.makePublicIpAddress({
   dependencies: {
     resourceGroup,
   },
-  properties: {
+  properties: () => ({
     properties: {
       publicIPAllocationMethod: "Dynamic",
     },
-  },
+  }),
 });
 ```
 

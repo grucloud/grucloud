@@ -39,7 +39,7 @@ describe("ScalewayProvider", async function () {
     server = await provider.makeServer({
       name: "web-server",
       dependencies: { image, ip },
-      properties: {
+      properties: () => ({
         name: "web-server",
         commercial_type: "DEV1-S",
         volumes: {
@@ -47,7 +47,7 @@ describe("ScalewayProvider", async function () {
             size: 20_000_000_000,
           },
         },
-      },
+      }),
     });
   });
   after(async () => {

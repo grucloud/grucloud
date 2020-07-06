@@ -8,7 +8,7 @@ Create a security group, used to restrict network access to the EC2 instances.
 const sg = await provider.makeSecurityGroup({
   name: "securityGroup",
   dependencies: { vpc, subnet },
-  properties: {
+  properties: () => ({
     create: {
       Description: "Security Group Description",
     },
@@ -31,7 +31,7 @@ const sg = await provider.makeSecurityGroup({
         },
       ],
     },
-  },
+  }),
 });
 ```
 

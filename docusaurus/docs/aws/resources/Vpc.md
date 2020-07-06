@@ -7,9 +7,9 @@ Provide a Virtual Private Cloud:
 ```js
 const vpc = provider.makeVpc({
   name: "vpc",
-  properties: {
+  properties: () => ({
     CidrBlock: "10.1.0.0/16",
-  },
+  }),
 });
 ```
 

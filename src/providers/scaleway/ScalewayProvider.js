@@ -93,11 +93,11 @@ const fnSpecs = (config) => {
               items: volumes,
             };
           },
-          configDefault: ({ name, options }) => ({
+          configDefault: async ({ name, properties }) => ({
             volume_type: "l_ssd",
             name,
             organization,
-            ...options,
+            ...properties,
           }),
         }),
       type: "Volume",
@@ -118,6 +118,7 @@ const fnSpecs = (config) => {
             properties,
             dependencies: { image, ip },
           }) => {
+            //TODO defaultsDeep
             return {
               name,
               organization,

@@ -112,7 +112,13 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     return result;
   };
   const configDefault = async ({ name, properties, dependencies }) => {
-    logger.debug(`configDefault sg ${tos({ name, properties, dependencies })}`);
+    logger.debug(
+      `configDefault sg ${tos({
+        name,
+        properties,
+        dependencies,
+      })}`
+    );
     // TODO Need vpc name here in parameter
     const { vpc } = dependencies;
     const config = defaultsDeep(properties, {

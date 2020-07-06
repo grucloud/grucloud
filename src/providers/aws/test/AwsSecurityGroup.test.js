@@ -22,14 +22,14 @@ describe("AwsSecurityGroup", async function () {
     });
     vpc = await provider.makeVpc({
       name: "vpc",
-      properties: {
+      properties: () => ({
         CidrBlock: "10.1.0.1/16",
-      },
+      }),
     });
     sg = await provider.makeSecurityGroup({
       name: "sg",
       dependencies: { vpc },
-      properties: {
+      properties: () => ({
         create: {
           Description: "Security Group Description",
         },
@@ -52,7 +52,7 @@ describe("AwsSecurityGroup", async function () {
             },
           ],
         },
-      },
+      }),
     });
     await provider.destroyAll();
   });

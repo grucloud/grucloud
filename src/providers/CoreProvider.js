@@ -56,12 +56,14 @@ const ResourceMaker = ({
   name: resourceName,
   dependencies = {},
   transformConfig,
-  properties,
+  properties = () => ({}),
   spec,
   provider,
 }) => {
   const { type } = spec;
-  logger.debug(`ResourceMaker: ${tos({ type, resourceName, properties })}`);
+  logger.debug(
+    `ResourceMaker: ${tos({ type, resourceName, properties: properties() })}`
+  );
 
   const client = spec.Client({ spec });
   let parent;
@@ -114,7 +116,7 @@ const ResourceMaker = ({
 
     const config = await client.configDefault({
       name: resourceName,
-      properties: defaultsDeep(spec.propertiesDefault, properties),
+      properties: defaultsDeep(spec.propertiesDefault, properties()),
       dependencies: resolvedDependencies,
     });
     logger.debug(`resolveConfig: configDefault: ${tos(config)}`);

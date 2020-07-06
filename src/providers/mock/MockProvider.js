@@ -77,39 +77,39 @@ const fnSpecs = (config) => {
           spec,
           url: `/server`,
           config,
-          configDefault: async ({
-            name,
-            properties,
-            dependencies: { ip },
-          }) => ({
-            name,
-            zone: `projects/${config.project}/zones/${config.zone}`,
-            machineType: `projects/${config.project}/zones/${config.zone}/machineTypes/${properties.machineType}`,
-            tags: {
-              items: [toTagName(name, config.tag)],
-            },
-            disks: [
-              {
-                deviceName: toTagName(name, config.tag),
-                initializeParams: {
-                  sourceImage:
-                    "projects/debian-cloud/global/images/debian-9-stretch-v20200420",
-                  diskType: `projects/${config.project}/zones/${config.zone}/diskTypes/${properties.diskTypes}`,
-                  diskSizeGb: properties.diskSizeGb,
-                },
+          configDefault: async ({ name, properties, dependencies: { ip } }) => {
+            const { machineType, diskTypes, diskSizeGb } = properties;
+            //TODO defaultsDeep
+            return {
+              name,
+              zone: `projects/${config.project}/zones/${config.zone}`,
+              machineType: `projects/${config.project}/zones/${config.zone}/machineTypes/${machineType}`,
+              tags: {
+                items: [toTagName(name, config.tag)],
               },
-            ],
-            networkInterfaces: [
-              {
-                subnetwork: `projects/${config.project}/regions/${config.region}/subnetworks/default`,
-                accessConfigs: [
-                  {
-                    natIP: getField(ip, "address"),
+              disks: [
+                {
+                  deviceName: toTagName(name, config.tag),
+                  initializeParams: {
+                    sourceImage:
+                      "projects/debian-cloud/global/images/debian-9-stretch-v20200420",
+                    diskType: `projects/${config.project}/zones/${config.zone}/diskTypes/${diskTypes}`,
+                    diskSizeGb,
                   },
-                ],
-              },
-            ],
-          }),
+                },
+              ],
+              networkInterfaces: [
+                {
+                  subnetwork: `projects/${config.project}/regions/${config.region}/subnetworks/default`,
+                  accessConfigs: [
+                    {
+                      natIP: getField(ip, "address"),
+                    },
+                  ],
+                },
+              ],
+            };
+          },
         }),
       type: "Server",
       propertiesDefault: {

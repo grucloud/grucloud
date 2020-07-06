@@ -14,7 +14,7 @@ const vm = await provider.makeVirtualMachine({
     resourceGroup,
     networkInterface,
   },
-  properties: {
+  properties: () => ({
     properties: {
       hardwareProfile: {
         vmSize: "Standard_A1_v2",
@@ -33,7 +33,7 @@ const vm = await provider.makeVirtualMachine({
         adminPassword: MACHINE_ADMIN_PASSWORD,
       },
     },
-  },
+  }),
 });
 ```
 

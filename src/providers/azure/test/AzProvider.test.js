@@ -31,7 +31,7 @@ describe("AzProvider", async function () {
     virtualNetwork = await provider.makeVirtualNetwork({
       name: vnName,
       dependencies: { resourceGroup },
-      properties: {
+      properties: () => ({
         properties: {
           addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
           subnets: [
@@ -41,12 +41,12 @@ describe("AzProvider", async function () {
             },
           ],
         },
-      },
+      }),
     });
     securityGroup = await provider.makeSecurityGroup({
       name: `security-group`,
       dependencies: { resourceGroup },
-      properties: {
+      properties: () => ({
         properties: {
           securityRules: [
             {
@@ -64,18 +64,18 @@ describe("AzProvider", async function () {
             },
           ],
         },
-      },
+      }),
     });
     const publicIpAddress = await provider.makePublicIpAddress({
       name: `ip`,
       dependencies: {
         resourceGroup,
       },
-      properties: {
+      properties: () => ({
         properties: {
           publicIPAllocationMethod: "Dynamic",
         },
-      },
+      }),
     });
     const networkInterface = await provider.makeNetworkInterface({
       name: `network-interface`,
@@ -86,7 +86,7 @@ describe("AzProvider", async function () {
         subnet: subnetName,
         publicIpAddress,
       },
-      properties: {
+      properties: () => ({
         properties: {
           ipConfigurations: [
             {
@@ -97,7 +97,7 @@ describe("AzProvider", async function () {
             },
           ],
         },
-      },
+      }),
     });
 
     const { MACHINE_ADMIN_USERNAME, MACHINE_ADMIN_PASSWORD } = process.env;
@@ -110,7 +110,7 @@ describe("AzProvider", async function () {
         resourceGroup,
         networkInterface,
       },
-      properties: {
+      properties: () => ({
         properties: {
           hardwareProfile: {
             vmSize: "Standard_A1_v2",
@@ -130,7 +130,7 @@ describe("AzProvider", async function () {
             adminPassword: MACHINE_ADMIN_PASSWORD,
           },
         },
-      },
+      }),
     });
     const { success } = await provider.destroyAll();
     assert(success, "destroyAll ko");

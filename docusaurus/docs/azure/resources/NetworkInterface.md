@@ -15,7 +15,7 @@ const networkInterface = await provider.makeNetworkInterface({
     subnet: `subnet`,
     publicIpAddress,
   },
-  properties: {
+  properties: () => ({
     properties: {
       ipConfigurations: [
         {
@@ -26,7 +26,7 @@ const networkInterface = await provider.makeNetworkInterface({
         },
       ],
     },
-  },
+  }),
 });
 ```
 

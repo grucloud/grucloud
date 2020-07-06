@@ -9,7 +9,7 @@ Provides a Security Group:
 const sg = provider.makeSecurityGroup({
   name: `security-group`,
   dependencies: { resourceGroup },
-  properties: {
+  properties: () => ({
     properties: {
       securityRules: [
         {
@@ -27,7 +27,7 @@ const sg = provider.makeSecurityGroup({
         },
       ],
     },
-  },
+  }),
 });
 ```
 

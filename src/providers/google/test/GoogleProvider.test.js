@@ -26,12 +26,12 @@ describe("GoogleProvider", async function () {
     server = await provider.makeInstance({
       name: "web-server",
       dependencies: { ip },
-      properties: {
+      properties: () => ({
         diskSizeGb: "20",
         machineType: "f1-micro",
         sourceImage:
           "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
-      },
+      }),
     });
   });
   after(async () => {

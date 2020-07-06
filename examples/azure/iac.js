@@ -16,7 +16,7 @@ const createStack = async ({ config }) => {
   const vnet = await provider.makeVirtualNetwork({
     name: `virtual-network-${stage}`,
     dependencies: { resourceGroup: rg },
-    properties: {
+    properties: () => ({
       properties: {
         addressSpace: { addressPrefixes: ["10.0.0.0/16"] },
         subnets: [
@@ -28,14 +28,14 @@ const createStack = async ({ config }) => {
           },
         ],
       },
-    },
+    }),
   });
 
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networksecuritygroups/createorupdate#request-body
   const sg = await provider.makeSecurityGroup({
     name: `security-group-${stage}`,
     dependencies: { resourceGroup: rg },
-    properties: {
+    properties: () => ({
       properties: {
         securityRules: [
           {
@@ -53,7 +53,7 @@ const createStack = async ({ config }) => {
           },
         ],
       },
-    },
+    }),
   });
 
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/publicipaddresses/createorupdate#request-body
@@ -62,11 +62,11 @@ const createStack = async ({ config }) => {
     dependencies: {
       resourceGroup: rg,
     },
-    properties: {
+    properties: () => ({
       properties: {
         publicIPAllocationMethod: "Dynamic",
       },
-    },
+    }),
   });
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networkinterfaces/createorupdate#request-body
   const networkInterface = await provider.makeNetworkInterface({
@@ -78,7 +78,7 @@ const createStack = async ({ config }) => {
       subnet: `subnet-${stage}`,
       publicIpAddress,
     },
-    properties: {
+    properties: () => ({
       properties: {
         ipConfigurations: [
           {
@@ -89,7 +89,7 @@ const createStack = async ({ config }) => {
           },
         ],
       },
-    },
+    }),
   });
 
   const { MACHINE_ADMIN_USERNAME, MACHINE_ADMIN_PASSWORD } = process.env;
@@ -103,7 +103,7 @@ const createStack = async ({ config }) => {
       resourceGroup: rg,
       networkInterface: networkInterface,
     },
-    properties: {
+    properties: () => ({
       properties: {
         hardwareProfile: {
           vmSize: "Standard_A1_v2",
@@ -123,7 +123,7 @@ const createStack = async ({ config }) => {
           adminPassword: MACHINE_ADMIN_PASSWORD,
         },
       },
-    },
+    }),
   });
   return { providers: [provider] };
 };

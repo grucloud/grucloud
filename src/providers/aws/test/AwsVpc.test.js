@@ -26,9 +26,9 @@ describe("AwsVpc", async function () {
 
     vpc = await provider.makeVpc({
       name: "vpc",
-      properties: {
+      properties: () => ({
         CidrBlock: "10.1.1.1/16",
-      },
+      }),
     });
   });
   after(async () => {
