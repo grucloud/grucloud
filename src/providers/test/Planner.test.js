@@ -11,6 +11,22 @@ const {
 } = require("./PlannerFixtures");
 const { Planner } = require("../Planner");
 
+const checkOk = (success, results) => {
+  assert(results[0].item);
+  //assert(results[0].input);
+  //assert(results[0].output);
+  assert(!results[0].error);
+  assert(success);
+};
+
+const checkError = (success, results) => {
+  assert(results[0].item);
+  assert(!results[0].input);
+  assert(!results[0].output);
+  assert(results[0].error.error);
+  assert(!success);
+};
+
 describe("Planner", function () {
   const executorOk = sinon
     .stub()
@@ -49,11 +65,7 @@ describe("Planner", function () {
       stateChanges.join(",")
     );
 
-    assert(results[0].item);
-    assert(results[0].input);
-    assert(results[0].output);
-    assert(!results[0].error);
-    assert(success);
+    checkOk(success, results);
   });
   it("az create ok partial", async function () {
     const stateChanges = [];
@@ -64,13 +76,8 @@ describe("Planner", function () {
       onStateChange: onStateChange(stateChanges),
     });
     const { success, results } = await planner.run();
-    assert(results);
     assert.equal(results.length, 2);
-    assert(results[0].item);
-    assert(results[0].input);
-    assert(results[0].output);
-    assert(!results[0].error);
-    assert(success);
+    checkOk(success, results);
   });
   it("az destroy ok", async function () {
     const stateChanges = [];
@@ -82,7 +89,7 @@ describe("Planner", function () {
       onStateChange: onStateChange(stateChanges),
     });
     const { success, results } = await planner.run();
-    assert(success);
+    checkOk(success, results);
     assert.equal(
       [
         "NetworkInterface",
@@ -92,8 +99,6 @@ describe("Planner", function () {
       ].join(","),
       stateChanges.join(",")
     );
-    assert(results[0].item);
-    assert(!results[0].error);
   });
   it("az create reject partial", async function () {
     const stateChanges = [];
@@ -105,11 +110,7 @@ describe("Planner", function () {
     });
     const { success, results } = await planner.run();
     assert.equal(results.length, 2);
-    assert(results[0].item);
-    assert(!results[0].input);
-    assert(!results[0].output);
-    assert(results[0].error.error);
-    assert(!success);
+    checkError(success, results);
   });
 
   it("aws destroy ok partial", async function () {
@@ -124,9 +125,6 @@ describe("Planner", function () {
     const { success, results } = await planner.run();
     assert.equal(results.length, 2);
     assert.equal(["Subnet", "Vpc"].join(","), stateChanges.join(","));
-    // TODO commom function checkOkResult and checkErrorResult
-    assert(results[0].item);
-    assert(!results[0].error);
-    assert(success);
+    checkOk(success, results);
   });
 });
