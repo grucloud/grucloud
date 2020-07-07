@@ -628,15 +628,11 @@ function CoreProvider({
       throw error;
     }
   );
-  //TODO use isEmpty
   const isPlanEmpty = (plan) => {
-    if (plan.newOrUpdate.length > 0) {
-      return false;
+    if (isEmpty(plan.newOrUpdate) && isEmpty(plan.destroy)) {
+      return true;
     }
-    if (plan.destroy.length > 0) {
-      return false;
-    }
-    return true;
+    return false;
   };
 
   checkEnv(mandatoryEnvs);

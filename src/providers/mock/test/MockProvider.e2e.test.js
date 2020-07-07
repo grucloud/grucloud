@@ -51,7 +51,6 @@ describe("MockProvider e2e", async function () {
       const plan = await provider.planQuery();
       assert(plan.destroy);
       const { results, success } = await provider.planApply({ plan });
-      assert(results.length > 0);
       assert(success);
     }
     {
