@@ -42,7 +42,21 @@ const createStack = async ({ config }) => {
   const sg = await provider.makeSecurityGroup({
     name: "sg",
     properties: () => ({
-      //TODO
+      securityRules: [
+        {
+          name: "SSH",
+          properties: {
+            access: "Allow",
+            direction: "Inbound",
+            protocol: "Tcp",
+            destinationPortRange: "22",
+            destinationAddressPrefix: "*",
+            sourcePortRange: "*",
+            sourceAddressPrefix: "*",
+            priority: 1000,
+          },
+        },
+      ],
     }),
   });
   //Server
