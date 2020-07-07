@@ -9,7 +9,7 @@ const MockCloud = require("../MockCloud");
 describe("MockClient", function () {
   const BASE_URL = "http://localhost:8089";
   const url = `/server`;
-
+  let mockClient;
   const config = { mockCloud: MockCloud(), createAxios: createAxiosMock };
 
   const spec = _.defaults(
@@ -23,23 +23,18 @@ describe("MockClient", function () {
     assert(!r.test("http://ggg/"));
     assert(r.test("/123"));
   });
-  //TODO create mockClient in before()
-  it("list", async function () {
-    const mockClient = MockClient({
+  before(async function () {
+    mockClient = MockClient({
       spec,
       url,
       config,
     });
-
+  });
+  it("list", async function () {
     const { total } = await mockClient.list();
     assert.equal(total, 0);
   });
   it("get by id", async function () {
-    const mockClient = MockClient({
-      spec,
-      url,
-      config,
-    });
     try {
       await mockClient.getById({ id: "asdfg" });
     } catch (error) {
@@ -47,12 +42,6 @@ describe("MockClient", function () {
     }
   });
   it("create", async function () {
-    const mockClient = MockClient({
-      spec,
-      url,
-      config,
-    });
-
     const { id } = await mockClient.create({
       name: "ciccio",
       payload: { name: "ciccio" },
