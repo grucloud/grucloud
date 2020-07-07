@@ -32,7 +32,6 @@ const createStack = async ({ config }) => {
     },
   });
 
-  //TODO Volumes
   const volume = await provider.makeVolume({
     name: "volume1",
     properties: () => ({

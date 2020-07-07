@@ -1,5 +1,7 @@
 const assert = require("assert");
 const _ = require("lodash");
+const { defaultsDeep } = require("lodash/fp");
+
 const compare = require("../../Utils").compare;
 const CoreProvider = require("../CoreProvider");
 const ScalewayClient = require("./ScalewayClient");
@@ -29,26 +31,17 @@ const fnSpecs = (config) => {
               throw Error(`Cannot find ips`);
             }
           },
-          configDefault: async ({ name, properties }) => ({
-            tags: [`name:${name}`, config.tag],
-            organization,
-            ...properties,
-          }),
+          configDefault: async ({ name, properties }) =>
+            defaultsDeep(
+              {
+                tags: [`name:${name}`, config.tag],
+                organization,
+              },
+              properties
+            ),
           findName: (item) => item.address,
         }),
       type: "Ip",
-      /* TODO test that
-      transformConfig: ({ config, items }) => {
-        
-        logger.debug(
-          `postConfig: ${tos(config)}, items: ${tos(items)}`
-        );
-        const ip = items.find((item) => item.address === config.address);
-        if (ip) {
-          return ip;
-        }
-        return { ...config };
-      },*/
       isOurMinion,
     },
     {
@@ -93,12 +86,15 @@ const fnSpecs = (config) => {
               items: volumes,
             };
           },
-          configDefault: async ({ name, properties }) => ({
-            volume_type: "l_ssd",
-            name,
-            organization,
-            ...properties,
-          }),
+          configDefault: async ({ name, properties }) =>
+            defaultsDeep(
+              {
+                volume_type: "l_ssd",
+                name,
+                organization,
+              },
+              properties
+            ),
         }),
       type: "Volume",
 
@@ -118,15 +114,16 @@ const fnSpecs = (config) => {
             properties,
             dependencies: { image, ip },
           }) => {
-            //TODO defaultsDeep
-            return {
-              name,
-              organization,
-              tags: [name, config.tag],
-              image: getField(image, "id"),
-              ...(ip && { public_ip: getField(ip, "id") }),
-              ...properties,
-            };
+            return defaultsDeep(
+              {
+                name,
+                organization,
+                tags: [name, config.tag],
+                image: getField(image, "id"),
+                ...(ip && { public_ip: getField(ip, "id") }),
+              },
+              properties
+            );
           },
         }),
       type: "Server",

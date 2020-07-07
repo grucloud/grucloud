@@ -26,6 +26,5 @@ exports.isOurMinion = ({ resource, tag: ourTag }) => {
     }
   }
 
-  // TODO check labels ?
   logger.info(`isOurMinion not our minion: ${tos({ ourTag, resource })}`);
 };

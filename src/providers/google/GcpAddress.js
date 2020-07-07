@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { defaultsDeep } = require("lodash/fp");
 const logger = require("../../logger")({ prefix: "GcpInstance" });
 const { tos } = require("../../tos");
 const GoogleClient = require("./GoogleClient");
@@ -13,11 +14,14 @@ module.exports = GcpAddress = ({ spec, config }) => {
   assert(config.stage);
   const { project, region, managedByDescription } = config;
 
-  const configDefault = ({ name, properties }) => ({
-    name,
-    description: managedByDescription,
-    ...properties,
-  });
+  const configDefault = ({ name, properties }) =>
+    defaultsDeep(
+      {
+        name,
+        description: managedByDescription,
+      },
+      properties
+    );
 
   const getStateName = (instance) => {
     const { status } = instance;

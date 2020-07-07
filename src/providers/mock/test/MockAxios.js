@@ -61,6 +61,5 @@ exports.createAxiosMock = ({ config, url, spec }) => {
     });
     return [200, data];
   });
-  //TODO delete all
   return axios;
 };

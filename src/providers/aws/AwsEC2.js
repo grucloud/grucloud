@@ -130,36 +130,34 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     ];
     return defaultsDeep(
       {
-        ...{
-          BlockDeviceMappings: [
-            {
-              DeviceName: "/dev/sdh",
-              Ebs: {
-                VolumeSize: properties.VolumeSize,
+        BlockDeviceMappings: [
+          {
+            DeviceName: "/dev/sdh",
+            Ebs: {
+              VolumeSize: properties.VolumeSize,
+            },
+          },
+        ],
+        ...(subnet && { NetworkInterfaces: buildNetworkInterfaces() }),
+        TagSpecifications: [
+          {
+            ResourceType: "instance",
+            Tags: [
+              {
+                Key: KeyName,
+                Value: name,
               },
-            },
-          ],
-          ...(subnet && { NetworkInterfaces: buildNetworkInterfaces() }),
-          TagSpecifications: [
-            {
-              ResourceType: "instance",
-              Tags: [
-                {
-                  Key: KeyName,
-                  Value: name,
-                },
-                {
-                  Key: managedByKey,
-                  Value: managedByValue,
-                },
-                {
-                  Key: stageTagKey,
-                  Value: stage,
-                },
-              ],
-            },
-          ],
-        },
+              {
+                Key: managedByKey,
+                Value: managedByValue,
+              },
+              {
+                Key: stageTagKey,
+                Value: stage,
+              },
+            ],
+          },
+        ],
         ...(keyPair && { KeyName: keyPair.resource.name }),
       },
       otherProperties
