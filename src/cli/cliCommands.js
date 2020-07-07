@@ -265,7 +265,7 @@ exports.planDestroy = async ({
           type: "confirm",
           name: "confirmDestroy",
           message: colors.red(
-            `Are you sure to destroy these ${plu("resource", length, true)} ?`
+            `Are you sure to destroy ${plu("resource", length, true)} ?`
           ),
           initial: false,
         }),

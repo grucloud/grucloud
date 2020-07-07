@@ -93,13 +93,14 @@ Usage: gc list|l [options]
 List the resources
 
 Options:
-  -a, --all            List also read-only resources
-  -n, --name <value>   List by name
-  --id <value>         List by id
-  -t, --types <value>  Filter by type, multiple values allowed
-  -o, --our            List only our managed resources
-  -d, --canBeDeleted   display resources which can be deleted, a.k.a non default resources
-  -h, --help           display help for command
+  -a, --all               List also read-only resources
+  -n, --name <value>      List by name
+  --id <value>            List by id
+  -t, --types <value>     Filter by type, multiple values allowed
+  -o, --our               List only our managed resources
+  -d, --canBeDeleted      display resources which can be deleted, a.k.a non default resources
+  -p, --provider <value>  Filter by provider
+  -h, --help              display help for command
 ```
 
 ### all
@@ -154,4 +155,12 @@ The **canBeDeleted** option only lists resources that can be deleted by this app
 
 ```
 gc list --canBeDeleted
+```
+
+### provider
+
+The **provider** option only lists resources for a given provider
+
+```
+gc list --provider=aws
 ```

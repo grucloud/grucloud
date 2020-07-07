@@ -3,7 +3,8 @@ const assert = require("assert");
 const logger = require("../logger")({ prefix: "SpecDefault" });
 const { compare } = require("../Utils");
 
-exports.SpecDefault = () => ({
+exports.SpecDefault = ({ providerName }) => ({
   compare,
+  providerName,
   listOnly: false,
 });

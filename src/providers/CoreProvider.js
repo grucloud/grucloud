@@ -205,6 +205,7 @@ const ResourceMaker = ({
     addParent,
     resolveDependencies: () => resolveDependencies(dependencies),
   };
+  //TODO rubico map ?
   _.map(dependencies, (dependency) => {
     if (_.isString(dependency)) {
       return;
@@ -283,7 +284,7 @@ function CoreProvider({
   const resourceByName = (name) => targetResources.get(name);
 
   const specs = fnSpecs(config).map((spec) =>
-    _.defaults(spec, SpecDefault({ config }))
+    _.defaults(spec, SpecDefault({ config, providerName }))
   );
 
   const clients = specs.map((spec) => spec.Client({ spec }));
@@ -297,7 +298,14 @@ function CoreProvider({
     return spec.Client({ spec });
   };
 
-  const filterClient = async ({ client, our, name, id, canBeDeleted }) => {
+  const filterClient = async ({
+    client,
+    our,
+    name,
+    id,
+    canBeDeleted,
+    providerName,
+  }) => {
     logger.debug(`listLives type: ${client.spec.type}`);
     const { items } = await client.list();
     return {
@@ -307,11 +315,15 @@ function CoreProvider({
           name: client.findName(item),
           id: client.findId(item),
           managedByUs: client.spec.isOurMinion({ resource: item }),
+          providerName: client.spec.providerName,
           data: item,
         }))
         .filter((item) => (our ? item.managedByUs : true))
         .filter((item) => (name ? item.name === name : true))
         .filter((item) => (id ? item.id === id : true))
+        .filter((item) =>
+          providerName ? item.providerName === providerName : true
+        )
         .filter((item) =>
           canBeDeleted ? !client.cannotBeDeleted(item.data) : true
         ),
@@ -324,6 +336,7 @@ function CoreProvider({
     types = [],
     name,
     id,
+    provider: providerName,
     canBeDeleted = false,
   } = {}) => {
     return await pipe([
@@ -336,7 +349,14 @@ function CoreProvider({
       ),
       map(
         async (client) =>
-          await filterClient({ client, our, name, id, canBeDeleted })
+          await filterClient({
+            client,
+            our,
+            name,
+            id,
+            canBeDeleted,
+            providerName,
+          })
       ),
       filter((live) => !isEmpty(live.resources)),
       tap((list) => logger.debug(`listLives results: ${tos(list)}`)),
@@ -436,6 +456,7 @@ function CoreProvider({
       name: nameToDelete = "",
       id: idToDelete = "",
       types = [],
+      provider: providerName = "",
     } = {},
     direction,
   }) => {
@@ -454,6 +475,11 @@ function CoreProvider({
         `planFindDestroy ${type}/${name}, default resource cannot be deleted`
       );
       return false;
+    }
+    if (!_.isEmpty(providerName)) {
+      if (providerName !== spec.providerName) {
+        return false;
+      }
     }
     // Delete all
     if (all) {

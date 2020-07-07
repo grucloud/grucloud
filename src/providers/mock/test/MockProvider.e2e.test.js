@@ -46,6 +46,27 @@ describe("MockProvider e2e", async function () {
       assert.equal(planDestroyed.length, 6);
     }
   });
+  it("plan destroy by provider", async function () {
+    {
+      const plan = await provider.planQuery();
+      assert(plan.destroy);
+      const { results, success } = await provider.planApply({ plan });
+      assert(results.length > 0);
+      assert(success);
+    }
+    {
+      const planDestroyed = await provider.planFindDestroy({
+        provider: "idonotexist",
+      });
+      assert.equal(planDestroyed.length, 0);
+    }
+    {
+      const planDestroyed = await provider.planFindDestroy({
+        provider: "mock",
+      });
+      assert(planDestroyed.length > 0);
+    }
+  });
   it("simple plan", async function () {
     {
       {
@@ -84,6 +105,14 @@ describe("MockProvider e2e", async function () {
       {
         const lives = await provider.listLives({ our: true });
         assert.equal(lives.length, plan.newOrUpdate.length);
+      }
+      {
+        const lives = await provider.listLives({ provider: "mock" });
+        assert(lives.length > 0);
+      }
+      {
+        const lives = await provider.listLives({ provider: "idonotexist" });
+        assert(lives.length === 0);
       }
       {
         const { success } = await provider.destroyAll();

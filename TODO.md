@@ -2,8 +2,6 @@
 
 ## Common:
 
-- propertiesDefault for scaleway
-- list command: option to list only for a given provider
 - terraform output
 - add multiple example for each provider
 

@@ -65,6 +65,7 @@ exports.createProgram = ({ version, commands }) => {
     )
     .option("-n, --name <value>", "destroy by name")
     .option("--id <value>", "destroy by id")
+    .option("-p, --provider <value>", "Filter by provider name")
     .action(async (commandOptions) => {
       const programOptions = program.opts();
       await pipe([
@@ -92,6 +93,8 @@ exports.createProgram = ({ version, commands }) => {
       "-d, --canBeDeleted",
       "display resources which can be deleted, a.k.a non default resources"
     )
+    .option("-p, --provider <value>", "Filter by provider")
+
     .action(async (commandOptions) => {
       const programOptions = program.opts();
       await pipe([

@@ -55,7 +55,7 @@ gc destroy
 └────────────┴─────────┴───────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
 
-✔ Are you sure to destroy these 4 resources ? … yes
+✔ Are you sure to destroy 4 resources ? … yes
 Destroying resources
 ✓ mock::Server::web-server
 ✓ mock::Volume::volume1
@@ -77,12 +77,13 @@ Usage: gc destroy|d [options]
 Destroy the resources
 
 Options:
-  -f, --force         force destroy, will not prompt user
-  -t, --types <type>  Filter by type, multiple values allowed
-  -a, --all           destroy all resources including those not managed by us
-  -n, --name <value>  destroy by name
-  --id <value>        destroy by id
-  -h, --help          display help for command
+  -f, --force             force destroy, will not prompt user
+  -t, --types <type>      Filter by type, multiple values allowed
+  -a, --all               destroy all resources including those not managed by us
+  -n, --name <value>      destroy by name
+  --id <value>            destroy by id
+  -p, --provider <value>  Filter by provider name
+  -h, --help              display help for command
 ```
 
 ### alias
@@ -126,7 +127,7 @@ gc destroy --types Server --types Volume
 
 ### name
 
-The **name** options allows to destroy a specific resource given its name:
+The **name** option allows to destroy a specific resource given its name:
 
 ```
 gc destroy --name web-server
@@ -134,8 +135,16 @@ gc destroy --name web-server
 
 ### id
 
-The **id** options allows to destroy a specific resource given its id:
+The **id** option allows to destroy a specific resource given its id:
 
 ```
 gc destroy --name ewBMe9BLC
+```
+
+### provider
+
+The **provider** option allows to destroy resources of a given provider.
+
+```
+gc destroy --provider mock
 ```
