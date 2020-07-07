@@ -1,4 +1,5 @@
 const assert = require("assert");
+const fs = require("fs");
 const _ = require("lodash");
 const { JWT } = require("google-auth-library");
 const CoreProvider = require("../CoreProvider");
@@ -57,8 +58,10 @@ const fnSpecs = (config) => {
 
 const authorize = async ({ applicationCredentials }) => {
   assert(applicationCredentials);
-  //TODO check if file exists
-
+  if (!fs.existsSync(applicationCredentials)) {
+    const message = `Cannot open application credentials file ${applicationCredentials}`;
+    throw { code: 422, message };
+  }
   const keys = require(applicationCredentials);
 
   const client = new JWT({
