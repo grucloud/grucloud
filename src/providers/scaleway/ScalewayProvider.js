@@ -89,7 +89,6 @@ const fnSpecs = (config) => {
           configDefault: async ({ name, properties }) =>
             defaultsDeep(
               {
-                volume_type: "l_ssd",
                 name,
                 organization,
               },
@@ -97,7 +96,7 @@ const fnSpecs = (config) => {
             ),
         }),
       type: "Volume",
-
+      propertiesDefault: { volume_type: "l_ssd" },
       isOurMinion,
     },
     {
