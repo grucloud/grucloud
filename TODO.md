@@ -24,7 +24,6 @@ for reference Error:
 
 ## TODO Aws:
 
-- AssociatePublicIpAddress, do we need the subnet and sg in interface ?
 - handle error when retry times out
 
 ## TODO Goggle

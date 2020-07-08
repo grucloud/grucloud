@@ -1,5 +1,4 @@
 var AWS = require("aws-sdk");
-const _ = require("lodash");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsKeyPair" });
 const { tos } = require("../../tos");
@@ -19,9 +18,9 @@ module.exports = AwsClientKeyPair = ({ spec, config }) => {
   const getById = ({ id }) => getByIdCore({ id, list, findId });
 
   const list = async () => {
-    logger.debug(`list`);
+    logger.debug(`list keypair `);
     const { KeyPairs } = await ec2.describeKeyPairs().promise();
-    logger.debug(`list ${tos(KeyPairs)}`);
+    logger.debug(`list keypair: ${tos(KeyPairs)}`);
 
     return {
       total: KeyPairs.length,

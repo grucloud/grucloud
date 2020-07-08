@@ -1,7 +1,5 @@
 const AWS = require("aws-sdk");
-const _ = require("lodash");
-const { defaultsDeep } = require("lodash/fp");
-
+const { defaultsDeep, isEmpty } = require("lodash/fp");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsClientEC2" });
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../Common");
@@ -93,8 +91,8 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
 
   const destroy = async ({ id, name }) => {
     logger.debug(`destroy ec2 ${tos({ name, id })}`);
-    if (_.isEmpty(id)) {
-      throw Error(`destroy invalid id`);
+    if (isEmpty(id)) {
+      throw Error(`destroy invalid ec2 id`);
     }
 
     const result = await ec2

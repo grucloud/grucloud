@@ -49,11 +49,20 @@ exports.azPlansDestroy = () => addAction(azPlans, "DESTROY");
 
 exports.awsSpecs = [
   { type: "Vpc" },
+  { type: "InternetGateway", dependsOn: ["Vpc"] },
   { type: "Subnet", dependsOn: ["Vpc"] },
+  {
+    type: "RouteTables",
+    dependsOn: ["Vpc", "Subnet", "InternetGateway"],
+  },
   { type: "SecurityGroup", dependsOn: ["Vpc"] },
   {
     type: "Instance",
     dependsOn: ["Subnet", "SecurityGroup"],
+  },
+  {
+    type: "ElasticIpAddress",
+    dependsOn: ["InternetGateway", "EC2"],
   },
 ];
 
@@ -70,6 +79,14 @@ const awsPlans = [
     resource: {
       name: "subnet",
       type: "Subnet",
+      provider: "aws",
+    },
+    config: {},
+  },
+  {
+    resource: {
+      name: "rt",
+      type: "RouteTables",
       provider: "aws",
     },
     config: {},

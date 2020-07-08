@@ -1,5 +1,5 @@
 const AWS = require("aws-sdk");
-const _ = require("lodash");
+const { isEmpty } = require("lodash/fp");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsSubnet" });
 const { getField } = require("../ProviderCommon");
@@ -55,7 +55,7 @@ module.exports = AwsSubnet = ({ spec, config }) => {
   const destroy = async ({ id, name }) => {
     logger.debug(`destroy subnet ${tos({ name, id })}`);
 
-    if (_.isEmpty(id)) {
+    if (isEmpty(id)) {
       throw Error(`destroy subnet invalid id`);
     }
 
@@ -65,9 +65,9 @@ module.exports = AwsSubnet = ({ spec, config }) => {
   };
 
   const list = async () => {
-    logger.debug(`list`);
+    logger.debug(`list subnet`);
     const { Subnets } = await ec2.describeSubnets().promise();
-    logger.info(`list ${tos(Subnets)}`);
+    logger.info(`list subnet ${tos(Subnets)}`);
 
     return {
       total: Subnets.length,

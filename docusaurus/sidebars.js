@@ -17,9 +17,12 @@ module.exports = {
         Resources: [
           "aws/resources/KeyPair",
           "aws/resources/Vpc",
+          "aws/resources/InternetGateway",
+          "aws/resources/RouteTables",
           "aws/resources/Subnet",
           "aws/resources/SecurityGroup",
           "aws/resources/EC2",
+          "aws/resources/ElasticIpAddress",
         ],
       },
       "aws/AwsMisc",

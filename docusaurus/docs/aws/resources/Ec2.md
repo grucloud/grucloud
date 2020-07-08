@@ -29,6 +29,7 @@ const server = await provider.makeEC2({
 - [SecurityGroup](./SecurityGroup)
 - [Subnet](./Subnet)
 - [KeyPair](./KeyPair)
+- [ElasticIpAddress](./ElasticIpAddress)
 
 ### AWS CLI
 

@@ -80,7 +80,8 @@ const testPlanDestroy = async ({ provider }) => {
   await testDestroyByType({ provider, livesAll });
 
   {
-    const { success } = await provider.destroyAll();
+    const { success, results } = await provider.destroyAll();
+    assert(results);
     assert(success);
   }
   {
@@ -107,7 +108,8 @@ exports.testPlanDeploy = async ({ provider }) => {
 
   const plan = await provider.planQuery();
   assert(!provider.isPlanEmpty(plan));
-  const { success } = await provider.planApply({ plan });
+  const { success, results } = await provider.planApply({ plan });
+  assert(results);
   assert(success);
   await provider.listLives({ our: true });
 

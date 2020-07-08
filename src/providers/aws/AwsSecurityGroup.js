@@ -31,7 +31,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroups-property
   const list = async (params = {}) => {
-    logger.debug(`list`);
+    logger.debug(`list sg`);
     const securityGroups = await new Promise((resolve, reject) => {
       ec2.describeSecurityGroups(params, (error, response) => {
         if (error) {
@@ -42,7 +42,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
         }
       });
     });
-    logger.debug(`list ${tos(securityGroups)}`);
+    logger.debug(`list sg ${tos(securityGroups)}`);
 
     return {
       total: securityGroups.length,

@@ -1,6 +1,5 @@
 const _ = require("lodash");
-const urljoin = require("url-join");
-const npath = require("path");
+const { isEmpty } = require("lodash/fp");
 const assert = require("assert");
 const logger = require("../logger")({ prefix: "CoreClient" });
 const { tos } = require("../tos");
@@ -57,7 +56,7 @@ module.exports = CoreClient = ({
     logger.debug(`getById ${tos({ type, id })}`);
     assert(id);
 
-    if (_.isEmpty(id)) {
+    if (isEmpty(id)) {
       throw Error(`getById ${type}: invalid id`);
     }
 
@@ -146,7 +145,7 @@ module.exports = CoreClient = ({
     logger.debug(`destroy ${tos({ type, name, id })}`);
     if (spec.listOnly) return;
 
-    if (_.isEmpty(id)) {
+    if (isEmpty(id)) {
       throw Error(`destroy ${type}: invalid id`);
     }
 

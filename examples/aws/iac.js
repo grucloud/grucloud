@@ -16,6 +16,11 @@ const createStack = async ({ config }) => {
       CidrBlock: "10.1.0.0/16",
     }),
   });
+  const ig = await provider.makeInternetGateway({
+    name: "ig",
+    dependencies: { vpc },
+  });
+
   const subnet = await provider.makeSubnet({
     name: "subnet",
     dependencies: { vpc },
@@ -23,6 +28,12 @@ const createStack = async ({ config }) => {
       CidrBlock: "10.1.0.1/24",
     }),
   });
+  const rt = await provider.makeRouteTables({
+    name: "rt",
+    dependencies: { vpc, subnet },
+    properties: () => ({}),
+  });
+
   const sg = await provider.makeSecurityGroup({
     name: "securityGroup",
     dependencies: { vpc, subnet },
@@ -62,6 +73,12 @@ const createStack = async ({ config }) => {
       InstanceType: "t2.micro",
       ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
     }),
+  });
+
+  const eip = await provider.makeElasticIpAddress({
+    name: "myip",
+    dependencies: { ec2: server },
+    properties: () => ({}),
   });
 
   return { providers: [provider] };

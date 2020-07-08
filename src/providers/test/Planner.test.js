@@ -113,18 +113,55 @@ describe("Planner", function () {
     checkError(success, results);
   });
 
-  it("aws destroy ok partial", async function () {
+  it("aws destroy ok full", async function () {
     const stateChanges = [];
     const planner = Planner({
-      plans: awsPlansDestroy().slice(0, 2),
+      plans: awsPlansDestroy(),
       specs: awsSpecs,
       executor: executorOk,
       down: true,
       onStateChange: onStateChange(stateChanges),
     });
     const { success, results } = await planner.run();
-    assert.equal(results.length, 2);
-    assert.equal(["Subnet", "Vpc"].join(","), stateChanges.join(","));
+    assert.equal(results.length, 5);
+    assert.equal(
+      ["RouteTables", "Instance", "Subnet", "SecurityGroup", "Vpc"].join(","),
+      stateChanges.join(",")
+    );
+    checkOk(success, results);
+  });
+
+  it("aws deploy ok partial", async function () {
+    const stateChanges = [];
+    const planner = Planner({
+      plans: awsPlansCreate().slice(0, 3),
+      specs: awsSpecs,
+      executor: executorOk,
+      onStateChange: onStateChange(stateChanges),
+    });
+    const { success, results } = await planner.run();
+    assert.equal(results.length, 3);
+    assert.equal(
+      ["Vpc", "Subnet", "RouteTables"].join(","),
+      stateChanges.join(",")
+    );
+    checkOk(success, results);
+  });
+  it("aws destroy ok partial", async function () {
+    const stateChanges = [];
+    const planner = Planner({
+      plans: awsPlansDestroy().slice(0, 3),
+      specs: awsSpecs,
+      executor: executorOk,
+      down: true,
+      onStateChange: onStateChange(stateChanges),
+    });
+    const { success, results } = await planner.run();
+    assert.equal(results.length, 3);
+    assert.equal(
+      ["RouteTables", "Subnet", "Vpc"].join(","),
+      stateChanges.join(",")
+    );
     checkOk(success, results);
   });
 });

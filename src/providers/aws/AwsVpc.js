@@ -1,8 +1,7 @@
 const AWS = require("aws-sdk");
-const _ = require("lodash");
+const { isEmpty } = require("lodash/fp");
 const assert = require("assert");
-const { pipe, tryCatch } = require("rubico");
-const { head, tap, props } = require("ramda");
+const { map } = require("rubico");
 const logger = require("../../logger")({ prefix: "AwsVpc" });
 const { tos } = require("../../tos");
 const { retryExpectOk } = require("../Retry");
@@ -26,7 +25,7 @@ module.exports = AwsVpc = ({ spec, config }) => {
   };
 
   const list = async (params = {}) => {
-    logger.debug(`list`);
+    logger.debug(`list vpc ${tos(params)}`);
     const { Vpcs } = await ec2.describeVpcs(params).promise();
     logger.info(`list ${tos(Vpcs)}`);
 
@@ -76,14 +75,68 @@ module.exports = AwsVpc = ({ spec, config }) => {
       resourceType: "vpc",
       resourceId: VpcId,
     });
+
     return { VpcId };
   };
   const destroy = async ({ id, name }) => {
     logger.debug(`destroy vpc ${tos({ name, id })}`);
 
-    if (_.isEmpty(id)) {
+    if (isEmpty(id)) {
       throw Error(`destroy vpc invalid id`);
     }
+
+    //Remove SecurityGroup
+    const { SecurityGroups } = await ec2
+      .describeSecurityGroups({
+        Filters: [
+          {
+            Name: "vpc-id",
+            Values: [id],
+          },
+        ],
+      })
+      .promise();
+
+    /*
+    TODO  only for non default
+    await map(async (securityGroup) => {
+      logger.debug(`destroy vpc , deleting sg ${tos({ securityGroup })}`);
+      await ec2
+        .deleteSecurityGroup({ GroupId: securityGroup.GroupId })
+        .promise();
+    })(SecurityGroups);
+*/
+    //Remove Routing Tables
+    const { RouteTables } = await ec2
+      .describeRouteTables({
+        Filters: [
+          {
+            Name: "vpc-id",
+            Values: [id],
+          },
+        ],
+      })
+      .promise();
+
+    await map(async (routeTable) => {
+      await map(async (association) => {
+        if (!association.Main) {
+          logger.debug(
+            `destroy vpc , disassociateRouteTable ${tos({ association })}`
+          );
+          await ec2
+            .disassociateRouteTable({
+              AssociationId: association.RouteTableAssociationId,
+            })
+            .promise();
+
+          await ec2
+            .deleteRouteTable({ RouteTableId: association.RouteTableId })
+            .promise();
+        }
+      })(routeTable.Associations);
+      logger.debug(`destroy vpc , deleting rt ${tos({ routeTable })}`);
+    })(RouteTables);
 
     const result = await ec2.deleteVpc({ VpcId: id }).promise();
     logger.debug(`destroy vpc IN PROGRESS, ${tos({ name, id, result })}`);

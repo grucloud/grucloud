@@ -8,12 +8,14 @@ const { CheckTags } = require("./AwsTagCheck");
 describe("AwsProvider", async function () {
   let config;
   let provider;
+  let ig;
+  let rt;
   let server;
   let keyPair;
   let vpc;
   let subnet;
   let sg;
-
+  let eip;
   const keyPairName = "kp";
   const subnetName = "subnet";
   const securityGroupName = "securityGroup";
@@ -29,16 +31,22 @@ describe("AwsProvider", async function () {
       name: "aws",
       config,
     });
-    const { success } = await provider.destroyAll();
+    const { success, results } = await provider.destroyAll();
+    assert(results);
     assert(success);
     keyPair = await provider.useKeyPair({
       name: keyPairName,
     });
+
     vpc = await provider.makeVpc({
       name: "vpc",
       properties: () => ({
         CidrBlock: "10.1.0.1/16",
       }),
+    });
+    ig = await provider.makeInternetGateway({
+      name: "ig",
+      dependencies: { vpc },
     });
     subnet = await provider.makeSubnet({
       name: subnetName,
@@ -46,6 +54,11 @@ describe("AwsProvider", async function () {
       properties: () => ({
         CidrBlock: "10.1.0.1/24",
       }),
+    });
+    rt = await provider.makeRouteTables({
+      name: "rt",
+      dependencies: { vpc, subnet },
+      properties: () => ({}),
     });
     sg = await provider.makeSecurityGroup({
       name: securityGroupName,
@@ -83,9 +96,15 @@ describe("AwsProvider", async function () {
       properties: () => ({}),
       dependencies: { keyPair, subnet, securityGroups: { sg } },
     });
+
+    eip = await provider.makeElasticIpAddress({
+      name: "myip",
+      dependencies: { ec2: server },
+      properties: () => ({}),
+    });
   });
   after(async () => {
-    await provider?.destroyAll();
+    //await provider?.destroyAll();
   });
   it("server resolveConfig", async function () {
     assert.equal(server.name, serverName);
@@ -104,7 +123,6 @@ describe("AwsProvider", async function () {
       config.NetworkInterfaces[0].Groups[0],
       notAvailable(securityGroupName, "GroupId")
     );
-    // TODO tags
   });
   it("server resolveDependencies", async function () {
     const dependencies = await server.resolveDependencies();
@@ -122,7 +140,7 @@ describe("AwsProvider", async function () {
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 4);
+    assert.equal(plan.newOrUpdate.length, 6);
   });
   it("listLives all", async function () {
     const lives = await provider.listLives({ all: true });
@@ -142,10 +160,23 @@ describe("AwsProvider", async function () {
 
     //Check dependencies
     const sgLive = await sg.getLive();
+    const igLive = await ig.getLive();
+    const rtLive = await rt.getLive();
     const subnetLive = await subnet.getLive();
     const vpcLive = await vpc.getLive();
+    const eipLive = await eip.getLive();
+
+    // TODO
+    assert.equal(igLive.VpcId, vpcLive.VpcId);
+
+    // TODO
+    assert.equal(rtLive.VpcId, vpcLive.VpcId);
+    // TODO
+    assert.equal(rtLive.SubnetId, subnetLive.SubnetId);
 
     assert.equal(serverInstance.VpcId, vpcLive.VpcId);
+    assert.equal(serverInstance.PublicIpAddress, eipLive.PublicIp);
+
     assert.equal(serverInstance.SecurityGroups[0].GroupId, sgLive.GroupId);
     assert.equal(subnetLive.VpcId, vpcLive.VpcId);
     assert.equal(sgLive.VpcId, vpcLive.VpcId);

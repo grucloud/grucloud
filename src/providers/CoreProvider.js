@@ -104,7 +104,6 @@ const ResourceMaker = ({
     }),
     tap((x) => logger.debug(`resolveDependencies: ${tos(x)}`)),
   ]);
-
   const resolveConfig = async () => {
     logger.info(`resolveConfig ${type}/${resourceName}`);
     const { items } = await client.list();
@@ -130,7 +129,7 @@ const ResourceMaker = ({
       : config;
 
     logger.info(`resolveConfig: final: ${tos(finalConfig)}`);
-    assert(!_.isEmpty(finalConfig));
+    //assert(!_.isEmpty(finalConfig));
     return finalConfig;
   };
   const create = async ({ payload }) => {

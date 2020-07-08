@@ -1,18 +1,23 @@
 const AWS = require("aws-sdk");
 const assert = require("assert");
 const _ = require("lodash");
+const { map } = require("rubico");
 
 const logger = require("../../logger")({ prefix: "AwsProvider" });
 const { checkConfig, compare } = require("../../Utils");
 const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
-const { map } = require("rubico");
+
+const AwsTags = require("./AwsTags");
+
 const AwsClientEC2 = require("./AwsEC2");
 const AwsClientKeyPair = require("./AwsKeyPair");
 const AwsVpc = require("./AwsVpc");
+const AwsInternetGateway = require("./AwsInternetGateway");
+const AwsRouteTables = require("./AwsRouteTables");
 const AwsSubnet = require("./AwsSubnet");
 const AwsSecurityGroup = require("./AwsSecurityGroup");
-const AwsTags = require("./AwsTags");
+const AwsElasticIpAddress = require("./AwsElasticIpAddress");
 
 const fnSpecs = (config) => {
   const isOurMinion = ({ resource }) =>
@@ -31,14 +36,26 @@ const fnSpecs = (config) => {
       isOurMinion,
     },
     {
+      type: "InternetGateway",
+      dependsOn: ["Vpc"],
+      Client: ({ spec }) => AwsInternetGateway({ spec, config }),
+      isOurMinion,
+    },
+    {
       type: "Subnet",
       dependsOn: ["Vpc"],
       Client: ({ spec }) => AwsSubnet({ spec, config }),
       isOurMinion,
     },
     {
+      type: "RouteTables",
+      dependsOn: ["Vpc", "Subnet", "InternetGateway"],
+      Client: ({ spec }) => AwsRouteTables({ spec, config }),
+      isOurMinion,
+    },
+    {
       type: "SecurityGroup",
-      dependsOn: ["Vpc"],
+      dependsOn: ["Vpc", "InternetGateway"],
       Client: ({ spec }) => AwsSecurityGroup({ spec, config }),
       isOurMinion,
     },
@@ -71,6 +88,12 @@ const fnSpecs = (config) => {
       },
       isOurMinion: ({ resource }) =>
         AwsTags.isOurMinionEc2({ resource, config }),
+    },
+    {
+      type: "ElasticIpAddress",
+      dependsOn: ["InternetGateway", "EC2"],
+      Client: ({ spec }) => AwsElasticIpAddress({ spec, config }),
+      isOurMinion,
     },
   ];
 };

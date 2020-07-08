@@ -24,7 +24,12 @@ const DependencyTree = ({ plans, specs, down }) => {
     }))(specs);
     return result;
   } else {
-    return specs;
+    return map((spec) => ({
+      type: spec.type,
+      dependsOn: spec.dependsOn?.filter((dependOn) =>
+        plans.find((plan) => plan.resource.type === dependOn)
+      ),
+    }))(specs);
   }
 };
 
