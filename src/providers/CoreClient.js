@@ -46,6 +46,7 @@ module.exports = CoreClient = ({
   onResponseList = identity,
   onResponseCreate = identity,
   onResponseDelete = identity,
+  cannotBeDeleted = () => false,
 }) => {
   assert(spec);
   assert(type);
@@ -176,7 +177,7 @@ module.exports = CoreClient = ({
     getByName,
     findName,
     findName,
-    cannotBeDeleted: () => false,
+    cannotBeDeleted,
     isUpById,
     isDownById,
     create,

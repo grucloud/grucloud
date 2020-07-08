@@ -20,7 +20,7 @@ exports.isOurMinion = ({ resource, config }) => {
     () => _.find(labels, (value, key) => isGruLabel(key, value)),
     () => true,
     () => false,
-  ]);
+  ])();
 
   logger.info(`isOurMinion isMinion: ${isMinion}, ${tos({ resource })}`);
   return isMinion;

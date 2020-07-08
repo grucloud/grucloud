@@ -7,6 +7,7 @@ const logger = require("../../logger")({ prefix: "GoogleProvider" });
 const GoogleTag = require("./GoogleTag");
 const compare = require("../../Utils").compare;
 const { tos } = require("../../tos");
+const GcpVpc = require("./GcpVpc");
 const GoogleVmInstance = require("./GoogleVmInstance");
 const GcpAddress = require("./GcpAddress");
 
@@ -18,6 +19,15 @@ const fnSpecs = (config) => {
 
   return [
     {
+      type: "Vpc",
+      Client: ({ spec }) =>
+        GcpVpc({
+          spec,
+          config,
+        }),
+      isOurMinion,
+    },
+    {
       type: "Address",
       Client: ({ spec }) =>
         GcpAddress({
@@ -28,7 +38,7 @@ const fnSpecs = (config) => {
     },
     {
       type: "VmInstance",
-      dependsOn: ["Address"],
+      dependsOn: ["Address", "Vpc"],
       Client: ({ spec }) =>
         GoogleVmInstance({
           spec,

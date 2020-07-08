@@ -46,7 +46,11 @@ module.exports = {
       "google/GoogleRequirements",
       "google/GoogleGettingStarted",
       {
-        Resources: ["google/resources/Address", "google/resources/VmInstance"],
+        Resources: [
+          "google/resources/Vpc",
+          "google/resources/Address",
+          "google/resources/VmInstance",
+        ],
       },
       "google/GoogleMisc",
     ],

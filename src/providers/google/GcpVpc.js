@@ -6,13 +6,12 @@ const GoogleClient = require("./GoogleClient");
 
 const { isUpByIdCore } = require("../Common");
 
-// https://cloud.google.com/compute/docs/reference/rest/v1/addresses
-
-module.exports = GcpAddress = ({ spec, config }) => {
+// https://cloud.google.com/compute/docs/reference/rest/v1/networks
+module.exports = GcpVpc = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  assert(config.stage);
-  const { project, region, managedByDescription } = config;
+
+  const { project, managedByDescription } = config;
 
   const configDefault = ({ name, properties }) =>
     defaultsDeep(
@@ -23,25 +22,21 @@ module.exports = GcpAddress = ({ spec, config }) => {
       properties
     );
 
-  const getStateName = (instance) => {
-    const { status } = instance;
-    assert(status);
-    logger.debug(`stateName ${status}`);
-    return status;
-  };
-
   const isUpByIdFactory = (getById) =>
     isUpByIdCore({
-      states: ["RESERVED"],
-      getStateName,
       getById,
     });
 
+  const cannotBeDeleted = (item) => {
+    return item.name === "default";
+  };
+
   return GoogleClient({
     spec,
-    url: `/projects/${project}/regions/${region}/addresses/`,
+    url: `/projects/${project}/global/networks`,
     config,
     isUpByIdFactory,
     configDefault,
+    cannotBeDeleted,
   });
 };

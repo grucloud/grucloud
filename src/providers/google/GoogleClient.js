@@ -15,6 +15,7 @@ module.exports = GoogleClient = ({
   config,
   configDefault,
   isUpByIdFactory,
+  cannotBeDeleted,
 }) => {
   assert(url);
   assert(spec);
@@ -29,6 +30,7 @@ module.exports = GoogleClient = ({
     onResponseList,
     configDefault,
     findTargetId,
+    cannotBeDeleted,
     axios: AxiosMaker({
       baseURL: urljoin(BASE_URL, url),
       onHeaders: () => ({
