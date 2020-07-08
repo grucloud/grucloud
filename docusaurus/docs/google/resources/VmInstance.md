@@ -6,7 +6,7 @@ title: VM Instance
 Provides a Virtual Machine instance:
 
 ```js
-const server = await provider.makeInstance({
+const server = await provider.makeVmInstance({
   name: "web-server",
   dependencies: { ip },
   properties: () => ({

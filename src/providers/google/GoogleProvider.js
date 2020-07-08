@@ -7,7 +7,7 @@ const logger = require("../../logger")({ prefix: "GoogleProvider" });
 const GoogleTag = require("./GoogleTag");
 const compare = require("../../Utils").compare;
 const { tos } = require("../../tos");
-const GoogleInstance = require("./GoogleInstance");
+const GoogleVmInstance = require("./GoogleVmInstance");
 const GcpAddress = require("./GcpAddress");
 
 const { checkEnv } = require("../../Utils");
@@ -27,10 +27,10 @@ const fnSpecs = (config) => {
       isOurMinion,
     },
     {
-      type: "Instance",
+      type: "VmInstance",
       dependsOn: ["Address"],
       Client: ({ spec }) =>
-        GoogleInstance({
+        GoogleVmInstance({
           spec,
           config,
         }),

@@ -28,7 +28,6 @@ for reference Error:
 
 ## TODO Goggle
 
-- Instance => VmInstance
 - diskTypes => diskType
 - validate config: check project and region
 

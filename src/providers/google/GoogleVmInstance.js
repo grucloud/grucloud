@@ -1,13 +1,13 @@
 const { defaultsDeep } = require("lodash/fp");
 const assert = require("assert");
-const logger = require("../../logger")({ prefix: "GoogleInstance" });
+const logger = require("../../logger")({ prefix: "GoogleVmInstance" });
 const { tos } = require("../../tos");
 const GoogleClient = require("./GoogleClient");
 const { toTagName } = require("../TagName");
 const { getField } = require("../ProviderCommon");
 const { isUpByIdCore } = require("../Common");
 
-module.exports = GoogleInstance = ({ spec, config }) => {
+module.exports = GoogleVmInstance = ({ spec, config }) => {
   assert(spec);
   assert(config);
   assert(config.stage);

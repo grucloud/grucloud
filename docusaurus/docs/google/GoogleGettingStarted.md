@@ -78,7 +78,7 @@ const createStack = async ({ options }) => {
   // Allocate public Ip address
   const ip = await provider.makeAddress({ name: "ip-webserver" });
   // Allocate a server
-  const server = await provider.makeInstance({
+  const server = await provider.makeVmInstance({
     name: "web-server",
     dependencies: { ip },
     properties: () => ({
@@ -96,7 +96,9 @@ module.exports = createStack;
 
 Find out which resources are going to be allocated:
 
-    gc plan
+```sh
+gc plan
+```
 
 ## Deploy
 

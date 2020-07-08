@@ -25,7 +25,7 @@ describe("GoogleProvider", async function () {
     assert(success);
 
     ip = await provider.makeAddress({ name: ipName });
-    server = await provider.makeInstance({
+    server = await provider.makeVmInstance({
       name: "web-server",
       dependencies: { ip },
       properties: () => ({
