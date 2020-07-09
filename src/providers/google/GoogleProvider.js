@@ -7,10 +7,12 @@ const logger = require("../../logger")({ prefix: "GoogleProvider" });
 const GoogleTag = require("./GoogleTag");
 const compare = require("../../Utils").compare;
 const { tos } = require("../../tos");
-const GcpProject = require("./GcpProject");
-const GcpVpc = require("./GcpVpc");
-const GoogleVmInstance = require("./GoogleVmInstance");
-const GcpAddress = require("./GcpAddress");
+
+const GcpProject = require("./resources/GcpProject");
+const GcpVpc = require("./resources/GcpVpc");
+const GcpSubNetwork = require("./resources/GcpSubNetwork");
+const GoogleVmInstance = require("./resources/GoogleVmInstance");
+const GcpAddress = require("./resources/GcpAddress");
 
 const { checkEnv } = require("../../Utils");
 
@@ -19,7 +21,7 @@ const fnSpecs = (config) => {
     GoogleTag.isOurMinion({ resource, config });
 
   return [
-    {
+    /*{
       type: "Project",
       Client: ({ spec }) =>
         GcpProject({
@@ -27,13 +29,22 @@ const fnSpecs = (config) => {
           config,
         }),
       isOurMinion,
-    },
+    },*/
     {
       type: "Vpc",
-      dependsOn: ["Project"],
-
+      //dependsOn: ["Project"],
       Client: ({ spec }) =>
         GcpVpc({
+          spec,
+          config,
+        }),
+      isOurMinion,
+    },
+    {
+      type: "SubNetwork",
+      dependsOn: ["Vpc"],
+      Client: ({ spec }) =>
+        GcpSubNetwork({
           spec,
           config,
         }),
@@ -50,7 +61,7 @@ const fnSpecs = (config) => {
     },
     {
       type: "VmInstance",
-      dependsOn: ["Project", "Address", "Vpc"],
+      dependsOn: [/*"Project", */ "Address", "Vpc"],
       Client: ({ spec }) =>
         GoogleVmInstance({
           spec,

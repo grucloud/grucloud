@@ -7,22 +7,38 @@ const {
   testPlanDestroy,
 } = require("../../../test/E2ETestUtils");
 
-describe.skip("GcpProject", async function () {
-  const projectName = "project-test";
+describe("GcpSubNetwork", async function () {
+  const networkName = "network-test";
+  const subNetworkName = "subnetwork-test";
   let config;
   let provider;
-  let project;
+  let network;
+  let subNetwork;
   before(async function () {
     try {
       config = ConfigLoader({ baseDir: __dirname });
     } catch (error) {
       this.skip();
     }
+
     provider = await GoogleProvider({
       name: "google",
       config,
     });
-    project = await provider.makeProject({ name: projectName });
+
+    network = await provider.makeVpc({
+      name: networkName,
+      properties: () => ({ autoCreateSubnetworks: false }),
+    });
+
+    subNetwork = await provider.makeSubNetwork({
+      name: subNetworkName,
+
+      dependencies: { network },
+      properties: () => ({
+        ipCidrRange: "10.164.0.0/20",
+      }),
+    });
 
     const { success } = await provider.destroyAll();
     assert(success);
@@ -30,14 +46,11 @@ describe.skip("GcpProject", async function () {
   after(async () => {
     await provider?.destroyAll();
   });
-  it("project config", async function () {
-    const config = await project.resolveConfig();
+  it("subNetwork config", async function () {
+    const config = await subNetwork.resolveConfig();
     assert(config);
-    assert.equal(config.name, projectName);
-    assert.equal(
-      config.labels[provider.config().stageTagKey],
-      provider.config().stage
-    );
+    assert.equal(config.name, subNetworkName);
+    assert.equal(config.description, provider.config().managedByDescription);
   });
   it("lives", async function () {
     await provider.listLives();
@@ -45,10 +58,12 @@ describe.skip("GcpProject", async function () {
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 1);
+    assert.equal(plan.newOrUpdate.length, 2);
   });
-  it("project apply and destroy", async function () {
+  it("subNetwork apply and destroy", async function () {
     await testPlanDeploy({ provider });
+
+    //
     await testPlanDestroy({ provider });
   });
 });

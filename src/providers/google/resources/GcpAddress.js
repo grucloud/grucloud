@@ -1,10 +1,10 @@
 const assert = require("assert");
 const { defaultsDeep } = require("lodash/fp");
-const logger = require("../../logger")({ prefix: "GcpInstance" });
-const { tos } = require("../../tos");
-const GoogleClient = require("./GoogleClient");
+const logger = require("../../../logger")({ prefix: "GcpInstance" });
+const { tos } = require("../../../tos");
+const GoogleClient = require("../GoogleClient");
 
-const { isUpByIdCore } = require("../Common");
+const { isUpByIdCore } = require("../../Common");
 
 // https://cloud.google.com/compute/docs/reference/rest/v1/addresses
 module.exports = GcpAddress = ({ spec, config }) => {

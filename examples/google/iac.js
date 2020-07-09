@@ -5,15 +5,19 @@ const createStack = async ({ config }) => {
   const { stage } = config;
   const provider = await GoogleProvider({ name: "google", config });
 
-  const project = await provider.makeProject({
-    name: `myproject-${stage}`,
-    properties: () => ({}),
+  // Vpc network
+  const network = await provider.makeVpc({
+    name: "vpc",
+    properties: () => ({ autoCreateSubnetworks: false }),
   });
 
-  // Vpc network
-  const vpc = await provider.makeVpc({
-    name: "vpc",
-    properties: () => ({ autoCreateSubnetworks: true }),
+  // Subnetwork
+  subNetwork = await provider.makeSubNetwork({
+    name: "subnetwork",
+    dependencies: { network },
+    properties: () => ({
+      ipCidrRange: "10.164.0.0/20",
+    }),
   });
 
   // Allocate public Ip address
