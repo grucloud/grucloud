@@ -2,7 +2,13 @@ const GoogleProvider = require("@grucloud/core").GoogleProvider;
 
 const createStack = async ({ config }) => {
   // Create GCP provider
+  const { stage } = config;
   const provider = await GoogleProvider({ name: "google", config });
+
+  const project = await provider.makeProject({
+    name: `myproject-${stage}`,
+    properties: () => ({}),
+  });
 
   // Vpc network
   const vpc = await provider.makeVpc({

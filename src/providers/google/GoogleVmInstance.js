@@ -107,13 +107,11 @@ module.exports = GoogleVmInstance = ({ spec, config }) => {
       getById,
     });
 
-  const client = GoogleClient({
+  return GoogleClient({
     spec,
     url: `/projects/${project}/zones/${zone}/instances/`,
     config,
     isUpByIdFactory,
     configDefault,
   });
-
-  return client;
 };

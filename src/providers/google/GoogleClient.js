@@ -2,14 +2,17 @@ const assert = require("assert");
 const urljoin = require("url-join");
 const CoreClient = require("../CoreClient");
 const AxiosMaker = require("../AxiosMaker");
-const BASE_URL = "https://compute.googleapis.com/compute/v1/";
 const logger = require("../../logger")({ prefix: "GoogleClient" });
 //const {tos} = require("../../tos")
+
+const BASE_URL = "https://compute.googleapis.com/compute/v1/";
+
 const onResponseList = ({ items = [] }) => {
   return { total: items.length, items };
 };
 
 module.exports = GoogleClient = ({
+  baseURL = BASE_URL,
   url,
   spec,
   config,
@@ -32,7 +35,7 @@ module.exports = GoogleClient = ({
     findTargetId,
     cannotBeDeleted,
     axios: AxiosMaker({
-      baseURL: urljoin(BASE_URL, url),
+      baseURL: urljoin(baseURL, url),
       onHeaders: () => ({
         Authorization: `Bearer ${config.accessToken}`,
       }),

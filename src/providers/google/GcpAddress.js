@@ -7,7 +7,6 @@ const GoogleClient = require("./GoogleClient");
 const { isUpByIdCore } = require("../Common");
 
 // https://cloud.google.com/compute/docs/reference/rest/v1/addresses
-
 module.exports = GcpAddress = ({ spec, config }) => {
   assert(spec);
   assert(config);
