@@ -9,11 +9,12 @@ const { tos } = require("../tos");
 const { checkConfig, checkEnv } = require("../Utils");
 const { fromTagName } = require("./TagName");
 const { SpecDefault } = require("./SpecDefault");
-const { retryExpectOk } = require("./Retry");
+const { retryExpectOk, retryCall } = require("./Retry");
 const { logError } = require("./Common");
 const { Planner } = require("./Planner");
 
 const noop = ({}) => {};
+
 const configProviderDefault = {
   tag: "ManagedByGru",
   managedByKey: "ManagedBy",
@@ -21,6 +22,8 @@ const configProviderDefault = {
   managedByDescription: "Managed By GruCloud",
   stageTagKey: "stage",
   stage: "dev",
+  retryCount: 30,
+  retryDelay: 2e3,
 };
 
 const PlanDirection = {
@@ -139,12 +142,21 @@ const ResourceMaker = ({
     if (live) {
       throw Error(`Resource ${type}/${resourceName} already exists`);
     }
+
     // Create now
-    const instance = await client.create({
-      name: resourceName,
-      payload,
-      dependencies,
+    const instance = await retryCall({
+      name: `create ${resourceName}`,
+      fn: () =>
+        client.create({
+          name: resourceName,
+          payload,
+          dependencies,
+        }),
+      shouldRetry: client.shouldRetryOnError,
+      retryCount: provider.config().retryCount,
+      retryDelay: provider.config().retryDelay,
     });
+
     //logger.info(`created:  ${tos({ instance })}`);
 
     // Check if we tag correctly
@@ -209,6 +221,9 @@ const ResourceMaker = ({
     if (_.isString(dependency)) {
       return;
     }
+    if (!dependency) {
+      throw { code: 422, message: "missing dependency" };
+    }
     if (!dependency.addParent) {
       _.forEach(dependency, (item) => {
         if (item.addParent) {
@@ -261,7 +276,7 @@ function CoreProvider({
   fnSpecs,
   config,
 }) {
-  config = _.defaults(config, configProviderDefault);
+  config = defaultsDeep(configProviderDefault, config);
   logger.debug(
     `CoreProvider name: ${providerName}, type ${type}, config: ${tos(config)}`
   );

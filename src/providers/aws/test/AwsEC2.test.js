@@ -41,7 +41,7 @@ describe("AwsEC2", async function () {
   after(async () => {
     //await provider?.destroyAll();
   });
-  it("server resolveConfig", async function () {
+  it("ec2 server resolveConfig", async function () {
     assert.equal(server.name, serverName);
 
     const config = await server.resolveConfig();

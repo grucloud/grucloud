@@ -90,7 +90,6 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
     await retryExpectOk({
       name: `isUpById: ${name} id: ${InternetGatewayId}`,
       fn: () => isUpById({ id: InternetGatewayId }),
-      isOk: (result) => result,
     });
 
     return { id: InternetGatewayId };

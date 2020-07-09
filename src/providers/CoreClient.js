@@ -1,6 +1,9 @@
 const _ = require("lodash");
 const { isEmpty } = require("lodash/fp");
 const assert = require("assert");
+const { of } = require("rxjs");
+const { retryWhen, take, switchMap } = require("rxjs/operators");
+
 const logger = require("../logger")({ prefix: "CoreClient" });
 const { tos } = require("../tos");
 const identity = (x) => x;
@@ -47,6 +50,7 @@ module.exports = CoreClient = ({
   onResponseCreate = identity,
   onResponseDelete = identity,
   cannotBeDeleted = () => false,
+  shouldRetryOnError = () => false,
 }) => {
   assert(spec);
   assert(type);
@@ -178,6 +182,7 @@ module.exports = CoreClient = ({
     findName,
     findName,
     cannotBeDeleted,
+    shouldRetryOnError,
     isUpById,
     isDownById,
     create,

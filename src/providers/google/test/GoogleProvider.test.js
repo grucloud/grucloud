@@ -7,6 +7,9 @@ const { notAvailable } = require("../../ProviderCommon");
 describe("GoogleProvider", async function () {
   let config;
   let provider;
+  let network;
+  let subNetwork;
+  let firewall;
   let server;
   let ip;
   const ipName = "ip-webserver";
@@ -24,6 +27,30 @@ describe("GoogleProvider", async function () {
     const { success } = await provider.destroyAll();
     assert(success);
 
+    network = await provider.makeVpc({
+      name: "network-dev",
+      properties: () => ({ autoCreateSubnetworks: false }),
+    });
+
+    subNetwork = await provider.makeSubNetwork({
+      name: "subnet-dev",
+      dependencies: { network },
+      properties: () => ({
+        ipCidrRange: "10.164.0.0/20",
+      }),
+    });
+    firewall = await provider.makeFirewall({
+      name: "firewall-dev",
+      dependencies: { network },
+      properties: () => ({
+        allowed: [
+          {
+            IPProtocol: "TCP",
+            ports: [80, 433],
+          },
+        ],
+      }),
+    });
     ip = await provider.makeAddress({ name: ipName });
     server = await provider.makeVmInstance({
       name: "web-server",
@@ -40,7 +67,7 @@ describe("GoogleProvider", async function () {
     await provider?.destroyAll();
   });
 
-  it("server resolveConfig ", async function () {
+  it("gcp server resolveConfig ", async function () {
     const config = await server.resolveConfig();
     const { project, zone } = provider.config();
     assert.equal(
@@ -57,7 +84,7 @@ describe("GoogleProvider", async function () {
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 2);
+    assert.equal(plan.newOrUpdate.length, 5);
   });
   it("gcp apply and destroy", async function () {
     await testPlanDeploy({ provider });

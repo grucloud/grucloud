@@ -12,11 +12,24 @@ const createStack = async ({ config }) => {
   });
 
   // Subnetwork
-  subNetwork = await provider.makeSubNetwork({
+  const subNetwork = await provider.makeSubNetwork({
     name: "subnetwork",
     dependencies: { network },
     properties: () => ({
       ipCidrRange: "10.164.0.0/20",
+    }),
+  });
+
+  const firewall = await provider.makeFirewall({
+    name: "firewall-dev",
+    dependencies: { network },
+    properties: () => ({
+      allowed: [
+        {
+          IPProtocol: "TCP",
+          ports: [80, 433],
+        },
+      ],
     }),
   });
 

@@ -91,22 +91,21 @@ describe("AwsProvider", async function () {
       }),
     });
 
+    eip = await provider.makeElasticIpAddress({
+      name: "myip",
+      properties: () => ({}),
+    });
+
     server = await provider.makeEC2({
       name: serverName,
       properties: () => ({}),
-      dependencies: { keyPair, subnet, securityGroups: { sg } },
-    });
-
-    eip = await provider.makeElasticIpAddress({
-      name: "myip",
-      dependencies: { ec2: server },
-      properties: () => ({}),
+      dependencies: { keyPair, subnet, securityGroups: { sg }, eip },
     });
   });
   after(async () => {
     //await provider?.destroyAll();
   });
-  it("server resolveConfig", async function () {
+  it("aws server resolveConfig", async function () {
     assert.equal(server.name, serverName);
 
     const config = await server.resolveConfig();
@@ -140,7 +139,7 @@ describe("AwsProvider", async function () {
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 6);
+    assert.equal(plan.newOrUpdate.length, 7);
   });
   it("listLives all", async function () {
     const lives = await provider.listLives({ all: true });
@@ -166,13 +165,9 @@ describe("AwsProvider", async function () {
     const vpcLive = await vpc.getLive();
     const eipLive = await eip.getLive();
 
-    // TODO
-    assert.equal(igLive.VpcId, vpcLive.VpcId);
-
-    // TODO
+    assert.equal(igLive.Attachments[0].VpcId, vpcLive.VpcId);
     assert.equal(rtLive.VpcId, vpcLive.VpcId);
-    // TODO
-    assert.equal(rtLive.SubnetId, subnetLive.SubnetId);
+    assert.equal(rtLive.Associations[0].SubnetId, subnetLive.SubnetId);
 
     assert.equal(serverInstance.VpcId, vpcLive.VpcId);
     assert.equal(serverInstance.PublicIpAddress, eipLive.PublicIp);

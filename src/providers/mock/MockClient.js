@@ -13,6 +13,22 @@ module.exports = MockClient = ({ spec, url, config, configDefault }) => {
   const { createAxios } = config;
   assert(createAxios);
 
+  const shouldRetryOnError = (error) => {
+    logger.debug("shouldRetryOnError");
+    const { response } = error;
+    if (!response) return false;
+    if (
+      response.status === 400 &&
+      response.data?.error?.errors?.find(
+        (error) => error.reason === "resourceNotReady"
+      )
+    ) {
+      logger.info("shouldRetryOnError retrying");
+      return true;
+    }
+    return false;
+  };
+
   const findName = (item) => findField({ item, field: "name" });
   const core = CoreClient({
     type: "mock",
@@ -22,6 +38,7 @@ module.exports = MockClient = ({ spec, url, config, configDefault }) => {
     config,
     configDefault,
     findName,
+    shouldRetryOnError,
   });
   return core;
 };

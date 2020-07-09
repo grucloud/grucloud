@@ -7,14 +7,13 @@ const {
   testPlanDestroy,
 } = require("../../../test/E2ETestUtils");
 
-describe("GcpSubNetwork", async function () {
-  const networkName = "network-test";
-  const subNetworkName = "subnetwork-test";
+describe("GcpFirewall", async function () {
+  const firewallName = "firewall-web-test";
 
   let config;
   let provider;
   let network;
-  let subNetwork;
+  let firewall;
 
   before(async function () {
     try {
@@ -29,15 +28,20 @@ describe("GcpSubNetwork", async function () {
     });
 
     network = await provider.makeVpc({
-      name: networkName,
-      properties: () => ({ autoCreateSubnetworks: false }),
+      name: "network",
+      properties: () => ({ autoCreateSubnetworks: true }),
     });
 
-    subNetwork = await provider.makeSubNetwork({
-      name: subNetworkName,
+    firewall = await provider.makeFirewall({
+      name: firewallName,
       dependencies: { network },
       properties: () => ({
-        ipCidrRange: "10.164.0.0/20",
+        allowed: [
+          {
+            IPProtocol: "TCP",
+            ports: [80, 433],
+          },
+        ],
       }),
     });
 
@@ -47,10 +51,10 @@ describe("GcpSubNetwork", async function () {
   after(async () => {
     await provider?.destroyAll();
   });
-  it("subNetwork config", async function () {
-    const config = await subNetwork.resolveConfig();
+  it("firewall config", async function () {
+    const config = await firewall.resolveConfig();
     assert(config);
-    assert.equal(config.name, subNetworkName);
+    assert.equal(config.name, firewallName);
     assert.equal(config.description, provider.config().managedByDescription);
   });
   it("lives", async function () {
@@ -61,13 +65,13 @@ describe("GcpSubNetwork", async function () {
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 2);
   });
-  it("subNetwork apply and destroy", async function () {
+  it("firewall apply and destroy", async function () {
     await testPlanDeploy({ provider });
 
     const networkLive = await network.getLive();
-    const subnetworkLive = await subNetwork.getLive();
-    assert(subnetworkLive.gatewayAddress);
-    assert.equal(subnetworkLive.network, networkLive.selfLink);
+    const firewallLive = await firewall.getLive();
+    assert(firewallLive.allowed);
+    assert.equal(firewallLive.network, networkLive.selfLink);
 
     await testPlanDestroy({ provider });
   });

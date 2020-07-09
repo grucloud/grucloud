@@ -30,12 +30,6 @@ exports.getByIdCore = ({ fieldIds, list }) =>
       tap((item) => logger.debug(`getById  ${fieldIds} result: ${tos(item)}`)),
     ]),
     (error) => {
-      const status = error.response?.status;
-      if (status != 404) {
-        //TODO
-        logError(`getById  ${fieldIds}`, error);
-        //throw error;
-      }
       logger.debug(`getById  ${fieldIds} no result: ${error.message}`);
     }
   );

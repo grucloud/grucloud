@@ -1,5 +1,5 @@
 const AWS = require("aws-sdk");
-const { defaultsDeep, isEmpty } = require("lodash/fp");
+const { defaultsDeep, isEmpty, map } = require("lodash/fp");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsClientEC2" });
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../Common");
@@ -72,7 +72,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property
-  const create = async ({ name, payload }) => {
+  const create = async ({ name, payload, dependencies }) => {
     assert(name);
     assert(payload);
     logger.debug(`create ec2 ${tos({ name, payload })}`);
@@ -83,8 +83,20 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     await retryExpectOk({
       name: `isUpById: ${name} id: ${InstanceId}`,
       fn: () => isUpById({ id: InstanceId }),
-      isOk: (result) => result,
     });
+    const { eip } = dependencies;
+    if (eip) {
+      const eipLive = await eip.getLive();
+      logger.debug(`create ec2, associating eip ${tos({ eipLive })}`);
+      const { AllocationId } = eipLive;
+      assert(AllocationId);
+      const paramsAssociate = {
+        AllocationId,
+        InstanceId,
+      };
+      await ec2.associateAddress(paramsAssociate).promise();
+      logger.debug(`create ec2, eip associated`);
+    }
 
     return instance;
   };
@@ -101,12 +113,29 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
       })
       .promise();
 
+    const { Addresses } = await ec2
+      .describeAddresses({
+        Filters: [
+          {
+            Name: "instance-id",
+            Values: [id],
+          },
+        ],
+      })
+      .promise();
+
+    const address = Addresses[0];
+    if (address) {
+      await ec2.disassociateAddress({
+        AssociationId: address.AssociationId,
+      });
+    }
+
     logger.debug(`destroy ec2 in progress, ${tos({ name, id })}`);
 
     await retryExpectOk({
       name: `isDownById: ${name} id: ${id}`,
       fn: () => isDownById({ id }),
-      isOk: (result) => result,
     });
 
     logger.debug(`destroy ec2 done, ${tos({ name, id, result })}`);
@@ -120,8 +149,8 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
       {
         AssociatePublicIpAddress: true,
         DeviceIndex: 0,
-        ...(!_.isEmpty(securityGroups) && {
-          Groups: _.map(securityGroups, (sg) => getField(sg, "GroupId")),
+        ...(!isEmpty(securityGroups) && {
+          Groups: map((sg) => getField(sg, "GroupId"))(securityGroups),
         }),
         SubnetId: getField(subnet, "SubnetId"),
       },

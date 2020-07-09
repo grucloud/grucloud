@@ -8,9 +8,11 @@ const GoogleTag = require("./GoogleTag");
 const compare = require("../../Utils").compare;
 const { tos } = require("../../tos");
 
-const GcpProject = require("./resources/GcpProject");
+//const GcpProject = require("./resources/GcpProject");
 const GcpVpc = require("./resources/GcpVpc");
 const GcpSubNetwork = require("./resources/GcpSubNetwork");
+const GcpFirewall = require("./resources/GcpFirewall");
+
 const GoogleVmInstance = require("./resources/GoogleVmInstance");
 const GcpAddress = require("./resources/GcpAddress");
 
@@ -45,6 +47,16 @@ const fnSpecs = (config) => {
       dependsOn: ["Vpc"],
       Client: ({ spec }) =>
         GcpSubNetwork({
+          spec,
+          config,
+        }),
+      isOurMinion,
+    },
+    {
+      type: "Firewall",
+      dependsOn: ["Vpc"],
+      Client: ({ spec }) =>
+        GcpFirewall({
           spec,
           config,
         }),

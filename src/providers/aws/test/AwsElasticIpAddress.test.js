@@ -27,15 +27,14 @@ describe("AwsElasticIpAddress", async function () {
     const lives = await provider.listLives({ our: true });
     assert.equal(lives.length, 0);
 
-    server = await provider.makeEC2({
-      name: "ec2",
+    eip = await provider.makeElasticIpAddress({
+      name: resourceName,
       properties: () => ({}),
     });
 
-    eip = await provider.makeElasticIpAddress({
-      name: resourceName,
-      dependencies: { ec2: server },
-
+    server = await provider.makeEC2({
+      name: "ec2",
+      dependencies: { eip },
       properties: () => ({}),
     });
   });

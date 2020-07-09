@@ -26,7 +26,23 @@ module.exports = GoogleClient = ({
   assert(config);
   const findTargetId = (item) => item.targetId;
 
-  const core = CoreClient({
+  const shouldRetryOnError = (error) => {
+    logger.debug("shouldRetryOnError");
+    const { response } = error;
+    if (!response) return false;
+    if (
+      response.status === 400 &&
+      response.data?.error?.errors?.find(
+        (error) => error.reason === "resourceNotReady"
+      )
+    ) {
+      logger.info("shouldRetryOnError retrying");
+      return true;
+    }
+    return false;
+  };
+
+  return CoreClient({
     type: "google",
     spec,
     isUpByIdFactory,
@@ -34,6 +50,7 @@ module.exports = GoogleClient = ({
     configDefault,
     findTargetId,
     cannotBeDeleted,
+    shouldRetryOnError,
     axios: AxiosMaker({
       baseURL: urljoin(baseURL, url),
       onHeaders: () => ({
@@ -41,6 +58,4 @@ module.exports = GoogleClient = ({
       }),
     }),
   });
-
-  return core;
 };

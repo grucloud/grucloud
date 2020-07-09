@@ -79,7 +79,6 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     await retryExpectOk({
       name: `isUpById: ${name} id: ${GroupId}`,
       fn: () => isUpById({ id: GroupId }),
-      isOk: (result) => result,
     });
 
     await tagResource({

@@ -60,8 +60,14 @@ const fnSpecs = (config) => {
       isOurMinion,
     },
     {
+      type: "ElasticIpAddress",
+      dependsOn: ["InternetGateway", "RouteTables"],
+      Client: ({ spec }) => AwsElasticIpAddress({ spec, config }),
+      isOurMinion,
+    },
+    {
       type: "EC2",
-      dependsOn: ["SecurityGroup", "Subnet"],
+      dependsOn: ["SecurityGroup", "Subnet", "ElasticIpAddress"],
       Client: ({ spec }) =>
         AwsClientEC2({
           spec,
@@ -88,12 +94,6 @@ const fnSpecs = (config) => {
       },
       isOurMinion: ({ resource }) =>
         AwsTags.isOurMinionEc2({ resource, config }),
-    },
-    {
-      type: "ElasticIpAddress",
-      dependsOn: ["InternetGateway", "EC2"],
-      Client: ({ spec }) => AwsElasticIpAddress({ spec, config }),
-      isOurMinion,
     },
   ];
 };

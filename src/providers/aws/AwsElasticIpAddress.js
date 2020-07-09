@@ -51,7 +51,6 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
     await retryExpectOk({
       name: `isUpById: ${name} id: ${AllocationId}`,
       fn: () => isUpById({ id: AllocationId }),
-      isOk: (result) => result,
     });
 
     await tagResource({
@@ -84,6 +83,14 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
 
     if (isEmpty(id)) {
       throw Error(`destroy elastic ip address invalid id`);
+    }
+    const eipLive = await getById({ id });
+    if (eipLive.AssociationId) {
+      logger.debug(`destroy eip disassociateAddress ${tos({ eipLive })}`);
+
+      await ec2.disassociateAddress({
+        AssociationId: eipLive.AssociationId,
+      });
     }
 
     const result = await ec2.releaseAddress({ AllocationId: id }).promise();

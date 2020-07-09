@@ -17,7 +17,7 @@ const testListByName = async ({ provider, livesAll }) => {
   const liveByName = await provider.listLives({
     name,
   });
-  assert.equal(liveByName.length, 1);
+  assert(liveByName.length >= 1);
   assert.equal(liveByName[0].resources[0].name, name);
 };
 

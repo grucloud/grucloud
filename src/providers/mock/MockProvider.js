@@ -145,10 +145,16 @@ const fnSpecs = (config) => {
 module.exports = MockProvider = async ({ name, config }) => {
   assert(name);
   assert(config);
+
+  const configDefault = {
+    retryCount: 2,
+    retryDelay: 500,
+  };
+
   return CoreProvider({
     type: "mock",
     name,
-    config,
+    config: defaultsDeep(configDefault, config),
     fnSpecs,
   });
 };

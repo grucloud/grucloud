@@ -24,10 +24,9 @@ for reference Error:
 
 ## TODO Aws:
 
-- handle error when retry times out
-
 ## TODO Goggle
 
+- vpc => network
 - diskTypes => diskType
 - validate config: check project and region
 
@@ -42,9 +41,6 @@ for reference Error:
 - google_project_iam_member
 - google_compute_router
 - google_compute_router_nat
-- google_compute_firewall
-- google_compute_network
-- google_compute_subnetwork
 - google_compute_network_peering
 - google_project
 

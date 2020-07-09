@@ -47,7 +47,9 @@ module.exports = {
       "google/GoogleGettingStarted",
       {
         Resources: [
-          "google/resources/Vpc",
+          "google/resources/Network",
+          "google/resources/SubNetwork",
+          "google/resources/Firewall",
           "google/resources/Address",
           "google/resources/VmInstance",
         ],

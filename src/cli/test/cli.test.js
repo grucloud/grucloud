@@ -17,6 +17,12 @@ const configFileNetworkError = path.join(
   "./config/config.networkError.js"
 );
 
+const configFile400Retry = path.join(__dirname, "./config/config.400.retry.js");
+const configFile400RetryOnce = path.join(
+  __dirname,
+  "./config/config.400.retry.once.js"
+);
+
 const commands = ["plan", "apply -f", "destroy -f -a", "list"];
 
 const onExitOk = () => assert(false);
@@ -138,5 +144,26 @@ describe("cli error", function () {
       })
     )(commands);
     assert.deepEqual(results, [-1, -1, -1, -1]);
+  });
+
+  it("cli 400 retry", async function () {
+    const result = await runProgram({
+      cmds: ["apply", "-f"],
+      configFile: configFile400Retry,
+      onExit: ({ code }) => {
+        assert.equal(code, 422);
+      },
+    });
+    assert.equal(result, -1);
+  });
+  it("cli 400 retry once", async function () {
+    const result = await runProgram({
+      cmds: ["apply", "-f"],
+      configFile: configFile400RetryOnce,
+      onExit: ({ code }) => {
+        assert.equal(code, 0);
+      },
+    });
+    assert.equal(result, 0);
   });
 });

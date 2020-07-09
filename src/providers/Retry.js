@@ -1,68 +1,69 @@
 const Promise = require("bluebird");
 const assert = require("assert");
+const { of, throwError } = require("rxjs");
+const {
+  retryWhen,
+  take,
+  mergeMap,
+  flatMap,
+  concat,
+  tap,
+  delay,
+} = require("rxjs/operators");
 const logger = require("../logger")({ prefix: "CoreClient" });
 const { tos } = require("../tos");
-//TODO revist, throw on error ? add isExceptionOk ?
-const retryExpectOk = async ({ name, fn, isOk, delay = 4e3 }, count = 60) => {
-  logger.debug(`retryExpectOk ${name},  count: ${count}, delay: ${delay}`);
-  assert(fn);
-  if (count === 0) {
-    throw Error(`retryExpectOk timeout for ${name}`);
-  }
-  try {
-    const result = await fn();
-    logger.debug(`retryExpectOk ${name} result: ${tos(result)}`);
 
-    if (isOk(result)) {
-      logger.debug(`retryExpectOk ${name} isOk`);
-      return result;
-    }
-    logger.debug(`retryExpectOk: ${name} not ok`);
-  } catch (error) {
-    if (error.stack) {
-      logger.error(error.stack);
-      //TODO give up
-      throw error;
-    }
-    logger.debug(
-      `retryExpectOk ${name},  error: ${tos(
-        error.response ? error.response : error
-      )}`
-    );
-  }
-  await Promise.delay(delay);
-  return retryExpectOk({ name, fn, isOk, delay }, --count);
+const retryCall = async ({
+  name = "",
+  fn,
+  retryCount = 30,
+  retryDelay = 2e3,
+  shouldRetry = () => false,
+}) => {
+  logger.debug(
+    `retryCall ${name}, retryCount: ${retryCount}, retryDelay: ${retryDelay} `
+  );
+  return of({})
+    .pipe(
+      mergeMap(async () => await fn()),
+      retryWhen((errors) => {
+        return errors.pipe(
+          flatMap((error) => {
+            logger.debug(error);
+            if (shouldRetry(error)) {
+              logger.debug(`retry ${name}`);
+              return of({}).pipe(delay(retryDelay));
+            }
+            throw error;
+          }),
+          take(retryCount),
+          concat(throwError(`Request failed after ${retryCount} retries.`))
+        );
+      })
+    )
+    .toPromise();
+};
+exports.retryCall = retryCall;
+
+const retryExpectOk = async ({
+  name,
+  fn,
+  retryDelay = 10e3,
+  retryCount = 30,
+}) => {
+  logger.debug(`retryExpectOk ${name}`);
+  return retryCall({
+    name,
+    fn: async () => {
+      const result = await fn();
+      if (!result) {
+        throw Error("Retry");
+      }
+    },
+    retryCount,
+    retryDelay,
+    shouldRetry: () => true,
+  });
 };
 
 exports.retryExpectOk = retryExpectOk;
-
-//TODO add name
-/*
-const retryExpectException = async (
-  { fn, isExpectedError, delay = 4e3 },
-  count = 90
-) => {
-  assert(fn);
-  logger.debug(`retryExpectException count: ${count}, delay: ${delay}`);
-  if (count === 0) {
-    throw Error("timeout");
-  }
-  try {
-    await fn();
-    throw Error("No exception, Have to retry");
-  } catch (error) {
-    if (isExpectedError(error)) {
-      logger.debug(`retryExpectException isExpectedError`);
-      return true;
-    }
-    logger.debug(
-      `retryExpectException count: ${count}, waiting delay: ${delay}`
-    );
-
-    await Promise.delay(delay);
-    return retryExpectException({ fn, isExpectedError, delay }, --count);
-  }
-};
-
-exports.retryExpectException = retryExpectException;
-*/

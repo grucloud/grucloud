@@ -35,7 +35,7 @@ exports.main = async ({ argv, onExit }) => {
     const { code } = error;
     if ([400, 422].includes(code)) {
       logger.error(error.message);
-      console.error(`Error: ${error.message}`);
+      error.message && console.error(`Error: ${error.message}`);
       onExit({ code, error });
     } else {
       error.stack && console.log(error.stack);
