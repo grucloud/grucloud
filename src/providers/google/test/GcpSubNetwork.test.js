@@ -28,7 +28,7 @@ describe("GcpSubNetwork", async function () {
       config,
     });
 
-    network = await provider.makeVpc({
+    network = await provider.makeNetwork({
       name: networkName,
       properties: () => ({ autoCreateSubnetworks: false }),
     });

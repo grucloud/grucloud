@@ -32,7 +32,7 @@ module.exports = GoogleVmInstance = ({ spec, config }) => {
     const { ip } = dependencies;
     const {
       machineType,
-      diskTypes,
+      diskType,
       sourceImage,
       diskSizeGb,
       metadata,
@@ -64,7 +64,7 @@ module.exports = GoogleVmInstance = ({ spec, config }) => {
             deviceName: toTagName(name, tag),
             initializeParams: {
               sourceImage,
-              diskType: `projects/${project}/zones/${zone}/diskTypes/${diskTypes}`,
+              diskType: `projects/${project}/zones/${zone}/diskTypes/${diskType}`,
               diskSizeGb,
             },
             diskEncryptionKey: {},

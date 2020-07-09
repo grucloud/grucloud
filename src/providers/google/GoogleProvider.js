@@ -9,7 +9,7 @@ const compare = require("../../Utils").compare;
 const { tos } = require("../../tos");
 
 //const GcpProject = require("./resources/GcpProject");
-const GcpVpc = require("./resources/GcpVpc");
+const GcpNetwork = require("./resources/GcpNetwork");
 const GcpSubNetwork = require("./resources/GcpSubNetwork");
 const GcpFirewall = require("./resources/GcpFirewall");
 
@@ -33,10 +33,10 @@ const fnSpecs = (config) => {
       isOurMinion,
     },*/
     {
-      type: "Vpc",
+      type: "Network",
       //dependsOn: ["Project"],
       Client: ({ spec }) =>
-        GcpVpc({
+        GcpNetwork({
           spec,
           config,
         }),
@@ -44,7 +44,7 @@ const fnSpecs = (config) => {
     },
     {
       type: "SubNetwork",
-      dependsOn: ["Vpc"],
+      dependsOn: ["Network"],
       Client: ({ spec }) =>
         GcpSubNetwork({
           spec,
@@ -54,7 +54,7 @@ const fnSpecs = (config) => {
     },
     {
       type: "Firewall",
-      dependsOn: ["Vpc"],
+      dependsOn: ["Network"],
       Client: ({ spec }) =>
         GcpFirewall({
           spec,
@@ -73,7 +73,7 @@ const fnSpecs = (config) => {
     },
     {
       type: "VmInstance",
-      dependsOn: [/*"Project", */ "Address", "Vpc"],
+      dependsOn: [/*"Project", */ "Address", "Network"],
       Client: ({ spec }) =>
         GoogleVmInstance({
           spec,
@@ -82,7 +82,7 @@ const fnSpecs = (config) => {
       propertiesDefault: {
         machineType: "f1-micro",
         diskSizeGb: "10",
-        diskTypes: "pd-standard",
+        diskType: "pd-standard",
         sourceImage:
           "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
       },

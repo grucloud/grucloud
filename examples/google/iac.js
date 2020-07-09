@@ -6,7 +6,7 @@ const createStack = async ({ config }) => {
   const provider = await GoogleProvider({ name: "google", config });
 
   // Vpc network
-  const network = await provider.makeVpc({
+  const network = await provider.makeNetwork({
     name: "vpc",
     properties: () => ({ autoCreateSubnetworks: false }),
   });

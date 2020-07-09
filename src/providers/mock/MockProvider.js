@@ -82,7 +82,7 @@ const fnSpecs = (config) => {
           configDefault: async ({ name, properties, dependencies: { ip } }) => {
             const {
               machineType,
-              diskTypes,
+              diskType,
               diskSizeGb,
               ...otherProperties
             } = properties;
@@ -100,7 +100,7 @@ const fnSpecs = (config) => {
                     initializeParams: {
                       sourceImage:
                         "projects/debian-cloud/global/images/debian-9-stretch-v20200420",
-                      diskType: `projects/${config.project}/zones/${config.zone}/diskTypes/${diskTypes}`,
+                      diskType: `projects/${config.project}/zones/${config.zone}/diskTypes/${diskType}`,
                       diskSizeGb,
                     },
                   },
@@ -124,7 +124,7 @@ const fnSpecs = (config) => {
       propertiesDefault: {
         machineType: "f1-micro",
         diskSizeGb: "10",
-        diskTypes: "pd-standard",
+        diskType: "pd-standard",
       },
 
       compare: ({ target, live }) => {

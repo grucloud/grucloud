@@ -8,10 +8,10 @@ const {
 } = require("../../../test/E2ETestUtils");
 
 describe("GcpVpc", async function () {
-  const vpcName = "vpc-test";
+  const networkName = "network-test";
   let config;
   let provider;
-  let vpc;
+  let network;
   before(async function () {
     try {
       config = ConfigLoader({ baseDir: __dirname });
@@ -22,7 +22,7 @@ describe("GcpVpc", async function () {
       name: "google",
       config,
     });
-    vpc = await provider.makeVpc({ name: vpcName });
+    network = await provider.makeNetwork({ name: networkName });
 
     const { success } = await provider.destroyAll();
     assert(success);
@@ -30,10 +30,10 @@ describe("GcpVpc", async function () {
   after(async () => {
     await provider?.destroyAll();
   });
-  it("vpc config", async function () {
-    const config = await vpc.resolveConfig();
+  it("network config", async function () {
+    const config = await network.resolveConfig();
     assert(config);
-    assert.equal(config.name, vpcName);
+    assert.equal(config.name, networkName);
     assert.equal(config.description, provider.config().managedByDescription);
   });
   it("lives", async function () {
@@ -44,7 +44,7 @@ describe("GcpVpc", async function () {
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 1);
   });
-  it("vpc apply and destroy", async function () {
+  it("network apply and destroy", async function () {
     await testPlanDeploy({ provider });
     await testPlanDestroy({ provider });
   });

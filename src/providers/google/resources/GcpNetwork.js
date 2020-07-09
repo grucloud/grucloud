@@ -7,7 +7,7 @@ const GoogleClient = require("../GoogleClient");
 const { isUpByIdCore } = require("../../Common");
 
 // https://cloud.google.com/compute/docs/reference/rest/v1/networks
-module.exports = GcpVpc = ({ spec, config }) => {
+module.exports = GcpNetwork = ({ spec, config }) => {
   assert(spec);
   assert(config);
 

@@ -1,12 +1,12 @@
 ---
-id: Vpc
-title: Vpc
+id: Network
+title: Network
 ---
 
 Manages a [Virtual Private Clould Network](https://cloud.google.com/vpc/docs/vpc)
 
 ```js
-const vpc = await provider.makeVpc({ name: "vpc" });
+const network = await provider.makeNetwork({ name: "network" });
 ```
 
 ### Examples

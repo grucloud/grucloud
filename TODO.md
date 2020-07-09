@@ -26,8 +26,6 @@ for reference Error:
 
 ## TODO Goggle
 
-- vpc => network
-- diskTypes => diskType
 - validate config: check project and region
 
 - https://cloud.google.com/community/tutorials/getting-started-on-gcp-with-terraform

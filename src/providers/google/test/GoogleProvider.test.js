@@ -27,7 +27,7 @@ describe("GoogleProvider", async function () {
     const { success } = await provider.destroyAll();
     assert(success);
 
-    network = await provider.makeVpc({
+    network = await provider.makeNetwork({
       name: "network-dev",
       properties: () => ({ autoCreateSubnetworks: false }),
     });

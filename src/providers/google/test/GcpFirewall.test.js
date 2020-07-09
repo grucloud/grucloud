@@ -27,7 +27,7 @@ describe("GcpFirewall", async function () {
       config,
     });
 
-    network = await provider.makeVpc({
+    network = await provider.makeNetwork({
       name: "network",
       properties: () => ({ autoCreateSubnetworks: true }),
     });
