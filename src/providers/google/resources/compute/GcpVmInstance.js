@@ -1,11 +1,12 @@
 const { defaultsDeep } = require("lodash/fp");
 const assert = require("assert");
-const logger = require("../../../logger")({ prefix: "GoogleVmInstance" });
-const { tos } = require("../../../tos");
-const GoogleClient = require("../GoogleClient");
-const { toTagName } = require("../../TagName");
-const { getField } = require("../../ProviderCommon");
-const { isUpByIdCore } = require("../../Common");
+const logger = require("../../../../logger")({ prefix: "GoogleVmInstance" });
+const { tos } = require("../../../../tos");
+const GoogleClient = require("../../GoogleClient");
+const { toTagName } = require("../../../TagName");
+const { getField } = require("../../../ProviderCommon");
+const { isUpByIdCore } = require("../../../Common");
+const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
 
 module.exports = GoogleVmInstance = ({ spec, config }) => {
   assert(spec);
@@ -109,6 +110,7 @@ module.exports = GoogleVmInstance = ({ spec, config }) => {
 
   return GoogleClient({
     spec,
+    baseURL: GCP_COMPUTE_BASE_URL,
     url: `/projects/${project}/zones/${zone}/instances/`,
     config,
     isUpByIdFactory,

@@ -1,23 +1,24 @@
 const assert = require("assert");
 const { defaultsDeep } = require("lodash/fp");
-const { getField } = require("../../ProviderCommon");
-const GoogleClient = require("../GoogleClient");
-const { isUpByIdCore } = require("../../Common");
+const { getField } = require("../../../ProviderCommon");
+const GoogleClient = require("../../GoogleClient");
+const { isUpByIdCore } = require("../../../Common");
+const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
 
-const logger = require("../../../logger")({ prefix: "GcpInstance" });
-const { tos } = require("../../../tos");
+const logger = require("../../../../logger")({ prefix: "GcpInstance" });
+const { tos } = require("../../../../tos");
 
-// https://cloud.google.com/compute/docs/reference/rest/v1/firewalls
-module.exports = GcpFirewall = ({ spec, config }) => {
+// https://cloud.google.com/compute/docs/reference/rest/v1/subnetworks
+module.exports = GcpSubNetwork = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const { project, managedByDescription } = config;
+  const { project, region, managedByDescription } = config;
 
   const configDefault = ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ properties, dependencies })}`);
     const { network } = dependencies;
-    assert(network, `Firewall '${name}' is missing the 'network' dependency`);
+    assert(network, `SubNetwork '${name}' is missing the 'network' dependency`);
 
     const config = defaultsDeep(
       {
@@ -39,7 +40,8 @@ module.exports = GcpFirewall = ({ spec, config }) => {
 
   return GoogleClient({
     spec,
-    url: `/projects/${project}/global/firewalls`,
+    baseURL: GCP_COMPUTE_BASE_URL,
+    url: `/projects/${project}/regions/${region}/subnetworks`,
     config,
     isUpByIdFactory,
     configDefault,

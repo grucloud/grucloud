@@ -5,26 +5,28 @@ const AxiosMaker = require("../AxiosMaker");
 const logger = require("../../logger")({ prefix: "GoogleClient" });
 //const {tos} = require("../../tos")
 
-const BASE_URL = "https://compute.googleapis.com/compute/v1/";
-
-const onResponseList = ({ items = [] }) => {
+const onResponseListDefault = ({ items = [] }) => {
   return { total: items.length, items };
 };
 
 module.exports = GoogleClient = ({
-  baseURL = BASE_URL,
+  baseURL,
   url,
   spec,
   config,
+  findName,
+  findId,
+  findTargetId = (item) => item.targetId,
   configDefault,
   isUpByIdFactory,
+  onResponseList = onResponseListDefault,
   cannotBeDeleted,
 }) => {
+  assert(baseURL);
   assert(url);
   assert(spec);
   assert(spec.type);
   assert(config);
-  const findTargetId = (item) => item.targetId;
 
   const shouldRetryOnError = (error) => {
     logger.debug("shouldRetryOnError");
@@ -45,6 +47,9 @@ module.exports = GoogleClient = ({
   return CoreClient({
     type: "google",
     spec,
+    findName,
+    findId,
+    findTargetId,
     isUpByIdFactory,
     onResponseList,
     configDefault,

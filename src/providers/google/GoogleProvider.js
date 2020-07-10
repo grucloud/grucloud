@@ -8,13 +8,14 @@ const GoogleTag = require("./GoogleTag");
 const compare = require("../../Utils").compare;
 const { tos } = require("../../tos");
 
-//const GcpProject = require("./resources/GcpProject");
-const GcpNetwork = require("./resources/GcpNetwork");
-const GcpSubNetwork = require("./resources/GcpSubNetwork");
-const GcpFirewall = require("./resources/GcpFirewall");
+const GcpServiceAccount = require("./resources/iam/GcpServiceAccount");
 
-const GoogleVmInstance = require("./resources/GoogleVmInstance");
-const GcpAddress = require("./resources/GcpAddress");
+//const GcpProject = require("./resources/resourcemanager/GcpProject");
+const GcpNetwork = require("./resources/compute/GcpNetwork");
+const GcpSubNetwork = require("./resources/compute/GcpSubNetwork");
+const GcpFirewall = require("./resources/compute/GcpFirewall");
+const GoogleVmInstance = require("./resources/compute/GcpVmInstance");
+const GcpAddress = require("./resources/compute/GcpAddress");
 
 const { checkEnv } = require("../../Utils");
 
@@ -32,6 +33,15 @@ const fnSpecs = (config) => {
         }),
       isOurMinion,
     },*/
+    {
+      type: "ServiceAccount",
+      Client: ({ spec }) =>
+        GcpServiceAccount({
+          spec,
+          config,
+        }),
+      isOurMinion,
+    },
     {
       type: "Network",
       //dependsOn: ["Project"],
@@ -73,7 +83,7 @@ const fnSpecs = (config) => {
     },
     {
       type: "VmInstance",
-      dependsOn: [/*"Project", */ "Address", "Network"],
+      dependsOn: [/*"Project", */ "ServiceAccount", "Address", "Network"],
       Client: ({ spec }) =>
         GoogleVmInstance({
           spec,
@@ -108,6 +118,7 @@ const authorize = async ({ applicationCredentials }) => {
     throw { code: 422, message };
   }
   const keys = require(applicationCredentials);
+  logger.debug(`authorize with email: ${keys.client_email}`);
 
   const client = new JWT({
     email: keys.client_email,
@@ -117,6 +128,9 @@ const authorize = async ({ applicationCredentials }) => {
 
   const accessToken = await new Promise((resolve, reject) => {
     client.authorize((err, response) => {
+      if (err) {
+        return reject(err);
+      }
       if (response.access_token) {
         resolve(response.access_token);
       }
