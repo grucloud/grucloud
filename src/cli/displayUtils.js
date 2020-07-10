@@ -9,6 +9,9 @@ const hasPlan = (plan) => !isEmpty(plan.newOrUpdate) || !isEmpty(plan.destroy);
 const displayResource = (item) =>
   item.config != null ? YAML.stringify(item.config) : undefined;
 
+const displayManagedByUs = (resource) =>
+  resource.managedByUs ? colors.green("Yes") : colors.red("NO");
+
 const displayItem = (table, item) => {
   //assert(item.resource.name);
   table.push([
@@ -49,16 +52,43 @@ const displayLiveItem = ({ table, resource }) => {
   ]);
 };
 
+const tablePerTypeDefinitions = [
+  {
+    type: "ServiceAccount",
+    colWidths: [undefined, 120, undefined],
+    columns: ["Email", "Data", "Our"],
+    fields: [
+      (resource) => resource.data.email,
+      (resource) => YAML.stringify(resource.data),
+      (resource) => displayManagedByUs(resource),
+    ],
+  },
+];
+
+const tablePerTypeDefault = {
+  columns: ["Name", "Data", "Our"],
+  colWidths: [undefined, 120, undefined],
+  fields: [
+    (resource) => resource.name,
+    (resource) => YAML.stringify(resource.data),
+    (resource) => displayManagedByUs(resource),
+  ],
+};
+
 const displayTablePerType = ({
   providerName,
   resourcesByType: { type, resources },
 }) => {
   assert(type);
   assert(resources);
+  const tableDefinitions =
+    tablePerTypeDefinitions.find((def) => def.type === type) ||
+    tablePerTypeDefault;
+
   //console.log("Terminal columns: " + process.stdout.columns)
   //TODO
   const table = new Table({
-    colWidths: [undefined, 120, undefined],
+    colWidths: tableDefinitions.colWidths,
     style: { head: [], border: [] },
   });
   table.push([
@@ -69,9 +99,11 @@ const displayTablePerType = ({
       ),
     },
   ]);
-  table.push(["Name", "Data", "Managed by Us"].map((item) => colors.red(item)));
+  table.push(tableDefinitions.columns.map((item) => colors.red(item)));
 
-  resources.forEach((resource) => displayLiveItem({ table, resource }));
+  resources.forEach((resource) =>
+    displayLiveItem({ table, resource, tableDefinitions })
+  );
 
   console.log(table.toString());
   console.log("\n");
