@@ -43,17 +43,18 @@ gcloud projects list
 
 ## Enable Google API
 
-Make sure these API are enable for your newly created project:
+Ensure these API are enabled for your newly created project:
 
 - [Google Engine API](https://console.cloud.google.com/apis/library/compute.googleapis.com)
 - [Service Usage API](https://console.cloud.google.com/apis/library/serviceusage.googleapis.com)
 - [Cloud Resource Manager](https://console.developers.google.com/apis/library/cloudresourcemanager.googleapis.com)
+- [IAM](https://console.developers.google.com/apis/library/iam.googleapis.com)
 
 Get the list of all API [here](https://console.cloud.google.com/apis/library)
 
 ## Service Account
 
-Create a [service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) and download the credential file.
+Create a [service account](https://console.cloud.google.com/iam-admin/serviceaccounts) and download the credential file.
 
 Active the service account:
 

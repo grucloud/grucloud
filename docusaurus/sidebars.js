@@ -52,6 +52,7 @@ module.exports = {
           "google/resources/Firewall",
           "google/resources/Address",
           "google/resources/VmInstance",
+          "google/resources/ServiceAccount",
         ],
       },
       "google/GoogleMisc",

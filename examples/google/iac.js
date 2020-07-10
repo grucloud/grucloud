@@ -5,6 +5,15 @@ const createStack = async ({ config }) => {
   const { stage } = config;
   const provider = await GoogleProvider({ name: "google", config });
 
+  const serviceAccount = await provider.makeServiceAccount({
+    name: "sa-dev",
+    properties: () => ({
+      serviceAccount: {
+        displayName: "SA dev",
+      },
+    }),
+  });
+
   // Vpc network
   const network = await provider.makeNetwork({
     name: "vpc",
