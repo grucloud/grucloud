@@ -26,7 +26,7 @@ describe("AwsEC2", async function () {
     });
 
     const { success } = await provider.destroyAll();
-    assert(success);
+    assert(success, "destroyAll failed");
 
     keyPair = await provider.useKeyPair({
       name: keyPairName,
@@ -87,6 +87,6 @@ describe("AwsEC2", async function () {
     assert.equal(subnetLive.VpcId, vpcLive.VpcId);
     assert.equal(sgLive.VpcId, vpcLive.VpcId);
 */
-    await testPlanDestroy({ provider });
+    await testPlanDestroy({ provider, full: false });
   });
 });
