@@ -40,12 +40,11 @@ const destroyByClient = async ({ client, name, config }) => {
   );
 
   const id = client.findId(config);
-  assert(id);
+  assert(id, "destroyByClient missing id");
   const result = await client.destroy({ id, name });
   await retryExpectOk({
     name: `destroy ${name}`,
     fn: () => client.isDownById({ id, name }),
-    isOk: (result) => result,
   });
 
   logger.debug(
@@ -109,7 +108,7 @@ const ResourceMaker = ({
   ]);
   const resolveConfig = async () => {
     logger.info(`resolveConfig ${type}/${resourceName}`);
-    const { items } = await client.list();
+    const { items } = await client.getList();
     //logger.debug(`config ${tos({ type, resourceName, items })}`);
 
     const resolvedDependencies = await resolveDependencies(dependencies);
@@ -138,8 +137,7 @@ const ResourceMaker = ({
   const create = async ({ payload }) => {
     logger.info(`create ${tos({ resourceName, type, payload })}`);
     // Is the resource already created ?
-    const live = await getLive();
-    if (live) {
+    if (await getLive()) {
       throw Error(`Resource ${type}/${resourceName} already exists`);
     }
 
@@ -159,18 +157,26 @@ const ResourceMaker = ({
 
     //logger.info(`created:  ${tos({ instance })}`);
 
-    // Check if we tag correctly
-    {
-      const live = await getLive();
-      if (!live) {
-        throw Error(
-          `Resource ${type}/${resourceName} not there after being created`
-        );
-      }
-      if (!client.spec.isOurMinion({ resource: live })) {
-        throw Error(`Resource ${type}/${resourceName} is not tagged correctly`);
-      }
+    const live = await retryCall({
+      name: `create ${resourceName}`,
+      fn: async () => {
+        const live = await getLive();
+        if (!live) {
+          throw Error(
+            `Resource ${type}/${resourceName} not there after being created`
+          );
+        }
+        return live;
+      },
+      shouldRetry: () => true,
+      retryCount: provider.config().retryCount,
+      retryDelay: provider.config().retryDelay,
+    });
+
+    if (!client.spec.isOurMinion({ resource: live })) {
+      throw Error(`Resource ${type}/${resourceName} is not tagged correctly`);
     }
+
     return instance;
   };
 
@@ -321,7 +327,9 @@ function CoreProvider({
     providerName,
   }) => {
     logger.debug(`listLives type: ${client.spec.type}`);
-    const { items } = await client.list();
+    const { items } = await client.getList();
+    //logger.debug(`listLives resources: ${tos(items)}`);
+
     return {
       type: client.spec.type,
       resources: items
@@ -372,6 +380,7 @@ function CoreProvider({
             providerName,
           })
       ),
+      //tap((list) => logger.debug(`listLives before empty: ${tos(list)}`)),
       filter((live) => !isEmpty(live.resources)),
       tap((list) => logger.debug(`listLives results: ${tos(list)}`)),
     ])(clients);
@@ -546,7 +555,7 @@ function CoreProvider({
       filter((client) => !client.spec.listOnly),
       map(async (client) =>
         pipe([
-          async () => await client.list(),
+          async () => await client.getList(),
           ({ items }) =>
             items
               .filter((resource) =>

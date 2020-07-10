@@ -14,10 +14,10 @@ module.exports = AwsClientKeyPair = ({ spec, config }) => {
   const findName = (item) => findField({ item, field: "KeyName" });
   const findId = (item) => findField({ item, field: "KeyPairId" });
 
-  const getByName = ({ name }) => getByNameCore({ name, list, findName });
-  const getById = ({ id }) => getByIdCore({ id, list, findId });
+  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getById = ({ id }) => getByIdCore({ id, getList, findId });
 
-  const list = async () => {
+  const getList = async () => {
     logger.debug(`list keypair `);
     const { KeyPairs } = await ec2.describeKeyPairs().promise();
     logger.debug(`list keypair: ${tos(KeyPairs)}`);
@@ -50,7 +50,7 @@ module.exports = AwsClientKeyPair = ({ spec, config }) => {
     findId,
     getByName,
     getById,
-    list,
+    getList,
     validate,
   };
 };

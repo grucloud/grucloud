@@ -27,7 +27,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeRouteTables-property
-  const list = async (params) => {
+  const getList = async (params) => {
     logger.debug(`list rt ${tos(params)}`);
     const { RouteTables } = await ec2.describeRouteTables(params).promise();
     logger.info(`list rt ${tos(RouteTables)}`);
@@ -38,8 +38,8 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     };
   };
 
-  const getByName = ({ name }) => getByNameCore({ name, list, findName });
-  const getById = getByIdCore({ fieldIds: "RouteTableIds", list });
+  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getById = getByIdCore({ fieldIds: "RouteTableIds", getList });
 
   const isUpById = isUpByIdCore({
     getById,
@@ -75,7 +75,9 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     const { subnet } = dependencies;
     assert(subnet, "RouteTables is missing the dependency 'subnet'");
     const subnetLive = await subnet.getLive();
-    assert(subnetLive.SubnetId);
+    assert(subnetLive, "subnetLive");
+
+    assert(subnetLive.SubnetId, "SubnetId");
     const paramsAttach = {
       RouteTableId,
       SubnetId: subnetLive.SubnetId,
@@ -138,7 +140,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     getById,
     findName,
     cannotBeDeleted: () => false,
-    list,
+    getList,
     create,
     destroy,
     configDefault,

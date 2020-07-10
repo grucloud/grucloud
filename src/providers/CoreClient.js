@@ -55,7 +55,7 @@ module.exports = CoreClient = ({
   assert(spec);
   assert(type);
 
-  const getByName = ({ name }) => getByNameCore({ name, list, findName });
+  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
 
   const getById = async ({ id }) => {
     logger.debug(`getById ${tos({ type, id })}`);
@@ -87,12 +87,31 @@ module.exports = CoreClient = ({
     }
   };
 
+  const getList = async () => {
+    logger.debug(`getList type ${type}`);
+
+    try {
+      const path = pathList();
+      logger.debug(`getList url: ${path}`);
+      const result = await axios.request(path, {
+        method: "GET",
+      });
+      //logger.debug(`getList type ${type}: ${tos(result.data)}`);
+
+      const data = onResponseList(result.data);
+      return data;
+    } catch (error) {
+      logError(`getList ${type}`, error);
+      throw errorToJSON(error);
+    }
+  };
+
   //TODO same for down
   const isUpById = isUpByIdFactory
     ? isUpByIdFactory(getById)
     : isUpByIdCore({ getById });
 
-  const isDownById = isDownByIdCore({ getById });
+  const isDownById = isDownByIdCore({ getById, getList, findId });
 
   const create = async ({ name, payload, dependencies }) => {
     logger.debug(`create ${type}/${name}, payload: ${tos(payload)}`);
@@ -118,30 +137,12 @@ module.exports = CoreClient = ({
       await retryExpectOk({
         name: `create ${name}`,
         fn: () => isUpById({ id }),
-        isOk: (result) => result,
       });
       const resource = await getById({ id });
       logger.debug(`created ${type}/${name}`);
       return onResponseGet(resource);
     } catch (error) {
       logError(`create ${type}/${name}`, error);
-      throw errorToJSON(error);
-    }
-  };
-
-  const list = async () => {
-    logger.debug(`list type ${type}`);
-
-    try {
-      const path = pathList();
-      logger.debug(`list url: ${path}`);
-      const result = await axios.request(path, {
-        method: "GET",
-      });
-      const data = onResponseList(result.data);
-      return data;
-    } catch (error) {
-      logError(`list ${type}`, error);
       throw errorToJSON(error);
     }
   };
@@ -180,14 +181,13 @@ module.exports = CoreClient = ({
     getById,
     getByName,
     findName,
-    findName,
     cannotBeDeleted,
     shouldRetryOnError,
     isUpById,
     isDownById,
     create,
     destroy,
-    list,
+    getList,
     configDefault,
   };
 };

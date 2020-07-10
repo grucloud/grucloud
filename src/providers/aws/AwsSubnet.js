@@ -28,8 +28,8 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     return id;
   };
 
-  const getByName = ({ name }) => getByNameCore({ name, list, findName });
-  const getById = ({ id }) => getByIdCore({ id, list, findId });
+  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getById = ({ id }) => getByIdCore({ id, getList, findId });
 
   const isUpById = isUpByIdCore({ getById });
   const isDownById = isDownByIdCore({ getById });
@@ -64,10 +64,10 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     return result;
   };
 
-  const list = async () => {
-    logger.debug(`list subnet`);
+  const getList = async () => {
+    logger.debug(`getList subnet`);
     const { Subnets } = await ec2.describeSubnets().promise();
-    logger.info(`list subnet ${tos(Subnets)}`);
+    logger.info(`getList subnet ${tos(Subnets)}`);
 
     return {
       total: Subnets.length,
@@ -102,7 +102,7 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     getById,
     findName,
     cannotBeDeleted,
-    list,
+    getList,
     create,
     destroy,
     configDefault,

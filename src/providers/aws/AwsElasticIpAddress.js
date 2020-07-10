@@ -23,10 +23,10 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
     return id;
   };
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeAddresses-property
-  const list = async (params = {}) => {
-    logger.debug(`list ${tos(params)}`);
+  const getList = async (params = {}) => {
+    logger.debug(`getList ${tos(params)}`);
     const { Addresses } = await ec2.describeAddresses(params).promise();
-    logger.info(`list ${tos(Addresses)}`);
+    logger.info(`getList ${tos(Addresses)}`);
 
     return {
       total: Addresses.length,
@@ -34,8 +34,8 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
     };
   };
 
-  const getByName = ({ name }) => getByNameCore({ name, list, findName });
-  const getById = getByIdCore({ fieldIds: "AllocationIds", list });
+  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getById = getByIdCore({ fieldIds: "AllocationIds", getList });
   const isUpById = isUpByIdCore({ getById });
   const isDownById = isDownByIdCore({ getById });
 
@@ -63,16 +63,17 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
     const ec2Instance = dependencies.ec2;
     if (ec2Instance) {
       const ec2InstanceLive = await ec2Instance.getLive();
-
-      const { InstanceId } = ec2InstanceLive.Instances[0];
-      assert(InstanceId);
-      const paramsAssociate = {
-        AllocationId,
-        InstanceId,
-      };
-      logger.debug(`create eip, associating ec2${tos({ ec2InstanceLive })}`);
-      await ec2.associateAddress(paramsAssociate).promise();
-      logger.debug(`create eip, ec2 associated`);
+      if (ec2InstanceLive) {
+        const { InstanceId } = ec2InstanceLive.Instances[0];
+        assert(InstanceId);
+        const paramsAssociate = {
+          AllocationId,
+          InstanceId,
+        };
+        logger.debug(`create eip, associating ec2${tos({ ec2InstanceLive })}`);
+        await ec2.associateAddress(paramsAssociate).promise();
+        logger.debug(`create eip, ec2 associated`);
+      }
     }
 
     return { id: AllocationId };
@@ -111,7 +112,7 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
     getById,
     findName,
     cannotBeDeleted: () => false,
-    list,
+    getList,
     create,
     destroy,
     configDefault,

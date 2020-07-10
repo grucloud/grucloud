@@ -27,7 +27,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInternetGateways-property
-  const list = async (params) => {
+  const getList = async (params) => {
     logger.debug(`list ig ${tos(params)}`);
     const { InternetGateways } = await ec2
       .describeInternetGateways(params)
@@ -40,8 +40,8 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
     };
   };
 
-  const getByName = ({ name }) => getByNameCore({ name, list, findName });
-  const getById = getByIdCore({ fieldIds: "InternetGatewayIds", list });
+  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getById = getByIdCore({ fieldIds: "InternetGatewayIds", getList });
 
   const getStateName = (instance) => {
     const state = instance.Attachments[0]?.State;
@@ -131,7 +131,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
     getById,
     findName,
     cannotBeDeleted: () => false,
-    list,
+    getList,
     create,
     destroy,
     configDefault,

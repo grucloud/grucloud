@@ -3,49 +3,51 @@ const logger = require("../logger")({ prefix: "Common" });
 const { tos } = require("../tos");
 
 exports.findField = ({ item, field }) => {
-  assert(item);
-  assert(field);
+  assert(item, "findField item");
+  assert(field, "findField field");
   //logger.debug(`findName: ${tos(item)}`);
   const name = item[field];
   if (name) {
-    logger.debug(`findName: ${name}`);
+    logger.debug(`findField: ${name}`);
     return name;
   } else {
-    logger.debug(`findName: cannot find name in ${tos(item)}`);
+    logger.debug(`findFields: cannot find name in ${tos(item)}`);
   }
 };
 
-exports.getByNameCore = async ({ name, findName, list }) => {
+exports.getByNameCore = async ({ name, findName, getList }) => {
   logger.info(`getByName ${name}`);
-  assert(name);
-  assert(findName);
-  assert(list);
+  assert(name, "name");
+  assert(findName, "findName");
+  assert(getList, "getList");
 
-  const { items } = await list();
+  const { items } = await getList();
   const instance = items.find((item) => findName(item) === name);
   logger.debug(`getByName ${name}: ${tos({ instance })}`);
 
   return instance;
 };
-exports.getByIdCore = async ({ id, findId, list }) => {
+const getByIdCore = async ({ id, findId, getList }) => {
   logger.info(`getById ${id}`);
-  assert(id);
-  assert(findId);
-  assert(list);
+  assert(id, "getByIdCore id");
+  assert(findId, "getByIdCore findId");
+  assert(getList, "getByIdCore getList");
 
-  const { items } = await list();
+  const { items } = await getList();
   const instance = items.find((item) => findId(item) === id);
   logger.debug(`getById ${id}: ${tos({ instance })}`);
 
   return instance;
 };
 
+exports.getByIdCore = getByIdCore;
+
 exports.isUpByIdCore = ({ states, getStateName, getById }) => async ({
   id,
 }) => {
   logger.debug(`isUpById ${id}`);
-  assert(id);
-  assert(getById);
+  assert(id, "isUpByIdCore id");
+  assert(getById, "isUpByIdCore getById");
   let up = false;
   const instance = await getById({ id });
   if (instance) {
@@ -60,22 +62,30 @@ exports.isUpByIdCore = ({ states, getStateName, getById }) => async ({
   return up;
 };
 
-exports.isDownByIdCore = ({ states, getStateName, getById }) => async ({
-  id,
-}) => {
+exports.isDownByIdCore = ({
+  states,
+  getStateName,
+  getById,
+  getList,
+  findId,
+}) => async ({ id }) => {
   logger.debug(`isDownById ${id}`);
-  assert(id);
-  assert(getById);
+  assert(id, "isDownByIdCore id");
+  assert(getById, "isDownByIdCore getById");
+
   let down = false;
-  const instance = await getById({ id });
+
+  const theGet = getList ? getByIdCore : getById;
+  const instance = await theGet({ id, getList, findId });
   if (instance) {
     if (states) {
-      assert(getStateName);
+      assert(getStateName, "getStateName");
       down = states.includes(getStateName(instance));
     }
   } else {
     down = true;
   }
+
   logger.info(`isDownById ${down} ${down ? "DOWN" : "NOT DOWN"}`);
   return down;
 };

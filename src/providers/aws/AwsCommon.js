@@ -20,11 +20,11 @@ exports.findNameInTags = (item) => {
   }
 };
 
-exports.getByIdCore = ({ fieldIds, list }) =>
+exports.getByIdCore = ({ fieldIds, getList }) =>
   tryCatch(
     pipe([
       tap(({ id }) => logger.debug(`getById ${fieldIds} ${id}`)),
-      async ({ id }) => await list({ [fieldIds]: [id] }),
+      async ({ id }) => await getList({ [fieldIds]: [id] }),
       ({ items }) => items,
       head,
       tap((item) => logger.debug(`getById  ${fieldIds} result: ${tos(item)}`)),

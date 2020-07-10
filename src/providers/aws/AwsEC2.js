@@ -40,23 +40,23 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
-  const list = async () => {
-    logger.debug(`list`);
+  const getList = async () => {
+    logger.debug(`getList`);
     const data = await ec2.describeInstances().promise();
-    logger.debug(`list ${tos(data)}`);
+    logger.debug(`getList ${tos(data)}`);
     const items = data.Reservations.filter(
       (reservation) =>
         !StateTerminated.includes(reservation.Instances[0].State.Name)
     );
-    logger.debug(`list filtered: ${tos(items)}`);
+    logger.debug(`getList filtered: ${tos(items)}`);
     return {
       total: items.length,
       items,
     };
   };
 
-  const getByName = ({ name }) => getByNameCore({ name, list, findName });
-  const getById = getByIdCore({ fieldIds: "InstanceIds", list });
+  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getById = getByIdCore({ fieldIds: "InstanceIds", getList });
 
   const getStateName = (instance) => {
     const state = instance.Instances[0].State.Name;
@@ -204,7 +204,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     findName,
     create,
     destroy,
-    list,
+    getList,
     configDefault,
   };
 };
