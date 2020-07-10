@@ -17,7 +17,7 @@ exports.runAsyncCommand = async (command, text) => {
     return `${resource.provider}::${resource.type}::${resource.name}`;
   };
 
-  const onStateChange = ({ resource, previousState, nextState }) => {
+  const onStateChange = ({ resource, previousState, nextState, error }) => {
     logger.debug(
       `onStateChange: ${tos({
         resource,
@@ -39,7 +39,7 @@ exports.runAsyncCommand = async (command, text) => {
       }
       case "ERROR": {
         const key = resourceToKey(resource);
-        spinnies.fail(key);
+        spinnies.fail(key, { text: `${key}: ${error.message}` });
         break;
       }
       default:
