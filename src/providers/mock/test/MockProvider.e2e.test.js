@@ -121,8 +121,8 @@ describe("MockProvider e2e", async function () {
   });
 
   it("LifeCycle", async function () {
-    await testPlanDeploy({ provider });
-    await testPlanDestroy({ provider });
+    await testPlanDeploy({ provider, full: true });
+    await testPlanDestroy({ provider, full: true });
   });
   it("plan", async function () {
     const { providers } = await createStack({

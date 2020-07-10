@@ -87,7 +87,7 @@ describe("GoogleProvider", async function () {
     assert.equal(plan.newOrUpdate.length, 5);
   });
   it("gcp apply and destroy", async function () {
-    await testPlanDeploy({ provider });
+    await testPlanDeploy({ provider, full: true });
 
     const serverLive = await server.getLive();
     const { status, labels } = serverLive;
@@ -102,6 +102,6 @@ describe("GoogleProvider", async function () {
       ipLive.address
     );
 
-    await testPlanDestroy({ provider });
+    await testPlanDestroy({ provider, full: true });
   });
 });

@@ -144,8 +144,8 @@ describe("AzProvider", async function () {
     assert.equal(plan.newOrUpdate.length, 6);
   });
   it("apply and destroy", async function () {
-    await testPlanDeploy({ provider });
+    await testPlanDeploy({ provider, full: true });
     //TODO check address_space
-    await testPlanDestroy({ provider });
+    await testPlanDestroy({ provider, full: true });
   });
 });

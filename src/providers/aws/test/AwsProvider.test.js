@@ -146,7 +146,7 @@ describe("AwsProvider", async function () {
     assert(lives);
   });
   it("aws apply plan", async function () {
-    await testPlanDeploy({ provider });
+    await testPlanDeploy({ provider, full: true });
 
     const serverLive = await server.getLive();
     const serverInstance = serverLive.Instances[0];
@@ -176,6 +176,6 @@ describe("AwsProvider", async function () {
     assert.equal(subnetLive.VpcId, vpcLive.VpcId);
     assert.equal(sgLive.VpcId, vpcLive.VpcId);
 
-    await testPlanDestroy({ provider });
+    await testPlanDestroy({ provider, full: true });
   });
 });

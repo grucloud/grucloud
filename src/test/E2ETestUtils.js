@@ -12,7 +12,9 @@ const testList = async ({ provider }) => {
 
 const testListByName = async ({ provider, livesAll }) => {
   //Filter By Name
-  const { name } = livesAll[0].resources[0];
+  const { name } = livesAll[0].resources.filter(
+    (resources) => resources.name
+  )[0];
   assert(name);
   const liveByName = await provider.listLives({
     name,
@@ -71,18 +73,19 @@ const testDestroyByType = async ({ provider, livesAll }) => {
   assert.equal(plan[0].resource.type, type);
 };
 
-const testPlanDestroy = async ({ provider }) => {
-  const livesAll = await provider.listLives({ our: true });
-  assert(!isEmpty(livesAll));
+const testPlanDestroy = async ({ provider, full = false }) => {
+  if (full) {
+    const livesAll = await provider.listLives({ our: true });
+    assert(!isEmpty(livesAll));
 
-  await testDestroyByName({ provider, livesAll });
-  await testDestroyById({ provider, livesAll });
-  await testDestroyByType({ provider, livesAll });
-
+    await testDestroyByName({ provider, livesAll });
+    await testDestroyById({ provider, livesAll });
+    await testDestroyByType({ provider, livesAll });
+  }
   {
     const { success, results } = await provider.destroyAll();
     assert(results);
-    assert(success);
+    assert(success, "testPlanDestroy destroyAll failed");
   }
   {
     const plan = await provider.planQuery();
@@ -97,30 +100,27 @@ const testPlanDestroy = async ({ provider }) => {
 
 exports.testPlanDestroy = testPlanDestroy;
 
-exports.testPlanDeploy = async ({ provider }) => {
-  await provider.listLives();
-  await provider.listTargets();
-
+exports.testPlanDeploy = async ({ provider, full = false }) => {
   {
     const { success } = await provider.destroyAll();
-    assert(success);
+    assert(success, "testPlanDeploy destroyAll failed");
   }
-
-  const plan = await provider.planQuery();
-  assert(!provider.isPlanEmpty(plan));
-  const { success, results } = await provider.planApply({ plan });
-  assert(results);
-  assert(success);
-  await provider.listLives({ our: true });
-
+  {
+    const plan = await provider.planQuery();
+    assert(!provider.isPlanEmpty(plan));
+    const { success, results } = await provider.planApply({ plan });
+    assert(results);
+    assert(success, "planApply failed");
+  }
   {
     const plan = await provider.planQuery();
     assert(provider.isPlanEmpty(plan));
   }
-
-  await testList({ provider });
-  {
-    const targets = await provider.listTargets();
-    // must be our minion
+  if (full) {
+    await testList({ provider });
+    {
+      const targets = await provider.listTargets();
+      // must be our minion
+    }
   }
 };

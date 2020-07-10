@@ -86,6 +86,6 @@ describe("AwsSecurityGroup", async function () {
 
     CheckTags({ config: provider.config(), tags: sgLive.Tags, name: sg.name });
 
-    await testPlanDestroy({ provider });
+    await testPlanDestroy({ provider, full: false });
   });
 });

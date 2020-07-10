@@ -77,6 +77,6 @@ describe("AwsRouteTables", async function () {
     //assert.equal(resource.Attachments[0].VpcId, vpcLive.VpcId);
     //assert(resource.RouteTablesId);
     //assert(resource.PublicIp);
-    await testPlanDestroy({ provider });
+    await testPlanDestroy({ provider, full: false });
   });
 });
