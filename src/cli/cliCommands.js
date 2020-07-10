@@ -78,7 +78,7 @@ const displayError = (name, error) => {
       Output: error.response?.data,
       Input: {
         config: pick(error.config, ["url", "method", "baseURL"]),
-        data: safeJsonParse(error.config.data),
+        data: safeJsonParse(error.config?.data),
       },
     };
     console.error(YAML.stringify(errorToDisplay));
