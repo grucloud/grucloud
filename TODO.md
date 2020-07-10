@@ -2,6 +2,11 @@
 
 ## Common:
 
+planner error when multiple name are undefined
+
+- retryall for all api
+- not an error : error: axios error Error: Request failed with status code 404
+
 - terraform output
 - add multiple example for each provider
 
@@ -17,6 +22,10 @@ for reference Error:
 
 ## Azure
 
+AzProvider
+plan:
+timeout of 30000ms exceeded
+
 - check resource group name
 - check machine type: https://docs.microsoft.com/en-us/rest/api/compute/availabilitysets/listavailablesizes#virtualmachinesize
 
@@ -24,8 +33,13 @@ for reference Error:
 
 ## TODO Aws:
 
+- test deleting vpc with non tagged sg, subnet and rt
+- s3
+- cloudtrail
+
 ## TODO Goggle
 
+- vm instance: network interface from vpc network
 - validate config: check project and region
 
 - https://cloud.google.com/community/tutorials/getting-started-on-gcp-with-terraform

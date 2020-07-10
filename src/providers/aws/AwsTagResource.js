@@ -4,6 +4,7 @@ const assert = require("assert");
 const { KeyName } = require("./AwsCommon");
 const { tos } = require("../../tos");
 const logger = require("../../logger")({ prefix: "AwsTagResource" });
+const { retryCall } = require("../Retry");
 
 exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
   const { managedByKey, managedByValue, region, stageTagKey, stage } = config;
@@ -31,22 +32,33 @@ exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
       fqn,
     },
   };
-  await tagApi.tagResources(params).promise();
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ResourceGroupsTaggingAPI.html#getResources-property
-  const getParams = {
-    TagFilters: [
-      {
-        Key: "id",
-        Values: [resourceId],
-      },
-    ],
-  };
 
-  const { ResourceTagMappingList } = await tagApi
-    .getResources(getParams)
-    .promise();
-  logger.debug(`getResource for ${arnId}: ${tos(ResourceTagMappingList)}`);
-  if (isEmpty(ResourceTagMappingList)) {
-    throw { code: 422, message: "resource not tagged" };
-  }
+  await retryCall({
+    name: `tag ${arnId}`,
+    fn: async () => {
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ResourceGroupsTaggingAPI.html#getResources-property
+      await tagApi.tagResources(params).promise();
+      const getParams = {
+        TagFilters: [
+          {
+            Key: "id",
+            Values: [resourceId],
+          },
+        ],
+      };
+
+      const { ResourceTagMappingList } = await tagApi
+        .getResources(getParams)
+        .promise();
+
+      logger.debug(`getResource for ${arnId}: ${tos(ResourceTagMappingList)}`);
+      if (isEmpty(ResourceTagMappingList[0].Tags)) {
+        logger.error(`getResource ${arnId} not tagged`);
+        throw { code: 422, message: "resource not tagged" };
+      }
+    },
+    shouldRetry: () => true,
+    retryCount: 5,
+    retryDelay: config.retryDelay,
+  });
 };
