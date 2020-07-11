@@ -55,7 +55,7 @@ describe("cli", function () {
   it("query plan", async function () {
     await runProgram({ cmds: ["plan"] });
   });
-  it("apply plan", async function () {
+  it("cli apply plan", async function () {
     await runProgram({ cmds: ["apply", "--force"] });
   });
   it("destroy plan", async function () {

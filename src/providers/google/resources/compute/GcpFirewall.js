@@ -32,7 +32,6 @@ module.exports = GcpFirewall = ({ spec, config }) => {
 
     return config;
   };
-  const isUpByIdFactory = (getById) => isUpByIdCore({ getById });
 
   const cannotBeDeleted = (item) => {
     return item.name === "default";
@@ -43,7 +42,6 @@ module.exports = GcpFirewall = ({ spec, config }) => {
     baseURL: GCP_COMPUTE_BASE_URL,
     url: `/projects/${project}/global/firewalls`,
     config,
-    isUpByIdFactory,
     configDefault,
     cannotBeDeleted,
   });

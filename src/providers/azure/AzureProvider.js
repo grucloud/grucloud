@@ -21,7 +21,7 @@ const fnSpecs = (config) => {
     return provisioningState;
   };
 
-  const isUpByIdFactory = (getById) =>
+  const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
       states: ["Succeeded"],
       getStateName,

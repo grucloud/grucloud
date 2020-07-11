@@ -21,7 +21,7 @@ const sa = await provider.makeServiceAccount({
 
 ### Properties
 
-- [all properties](https://cloud.google.com/compute/docs/reference/rest/v1/addresses/insert#request-body)
+- [all properties](https://cloud.google.com/iam/docs/reference/rest/v1/projects.serviceAccounts/create)
 
 ### Used By
 

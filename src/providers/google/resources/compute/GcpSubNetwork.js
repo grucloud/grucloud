@@ -29,10 +29,8 @@ module.exports = GcpSubNetwork = ({ spec, config }) => {
       properties
     );
     logger.debug(`configDefault ${tos({ config })}`);
-
     return config;
   };
-  const isUpByIdFactory = (getById) => isUpByIdCore({ getById });
 
   const cannotBeDeleted = (item) => {
     return item.name === "default";
@@ -43,7 +41,6 @@ module.exports = GcpSubNetwork = ({ spec, config }) => {
     baseURL: GCP_COMPUTE_BASE_URL,
     url: `/projects/${project}/regions/${region}/subnetworks`,
     config,
-    isUpByIdFactory,
     configDefault,
     cannotBeDeleted,
   });

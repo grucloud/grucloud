@@ -23,11 +23,6 @@ module.exports = GcpNetwork = ({ spec, config }) => {
       properties
     );
 
-  const isUpByIdFactory = (getById) =>
-    isUpByIdCore({
-      getById,
-    });
-
   const cannotBeDeleted = (item) => {
     return item.name === "default";
   };
@@ -37,7 +32,6 @@ module.exports = GcpNetwork = ({ spec, config }) => {
     baseURL: GCP_COMPUTE_BASE_URL,
     url: `/projects/${project}/global/networks`,
     config,
-    isUpByIdFactory,
     configDefault,
     cannotBeDeleted,
   });

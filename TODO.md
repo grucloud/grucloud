@@ -1,8 +1,12 @@
 ## Bugs
 
+- planner error when multiple name are undefined
+- sa "accountId": "**\*\***\*\*\*\***\*\***"
+
 ## Common:
 
-planner error when multiple name are undefined
+- isUpById should return the resource
+- default for isUpByIdFactory
 
 - terraform output
 - add multiple example for each provider

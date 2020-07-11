@@ -6,6 +6,7 @@ const GoogleClient = require("../../GoogleClient");
 
 const { isUpByIdCore } = require("../../../Common");
 
+// https://cloud.google.com/iam/docs/reference/rest/v1/projects.serviceAccounts
 // https://cloud.google.com/iam/docs/creating-managing-service-accounts#creating
 
 module.exports = GcpServiceAccount = ({ spec, config }) => {
@@ -25,7 +26,7 @@ module.exports = GcpServiceAccount = ({ spec, config }) => {
       properties
     );
 
-  const isUpByIdFactory = (getById) => isUpByIdCore({ getById });
+  const isUpByIdFactory = ({ getById }) => isUpByIdCore({ getById });
   const findName = (item) => {
     const name = item.email.split("@")[0];
     return name;

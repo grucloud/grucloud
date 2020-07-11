@@ -29,5 +29,6 @@ Then use it to retrieve resources:
 
 ## Useful Links
 
-- https://cloud.google.com/compute/docs/reference/rest/v1/addresses
+- https://cloud.google.com/iam/docs/reference/rest
+- https://cloud.google.com/compute/docs/reference/rest/v1/
 - https://cloud.google.com/run/docs/authenticating/developers

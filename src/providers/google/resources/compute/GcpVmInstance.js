@@ -101,7 +101,7 @@ module.exports = GoogleVmInstance = ({ spec, config }) => {
     return status;
   };
 
-  const isUpByIdFactory = (getById) =>
+  const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
       states: ["RUNNING"],
       getStateName,

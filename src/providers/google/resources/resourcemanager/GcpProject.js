@@ -28,14 +28,11 @@ module.exports = GcpProject = ({ spec, config }) => {
       properties
     );
 
-  const isUpByIdFactory = (getById) => isUpByIdCore({ getById });
-
   return GoogleClient({
     spec,
     baseURL: `https://cloudresourcemanager.googleapis.com/v1`,
     url: `/projects`,
     config,
-    isUpByIdFactory,
     configDefault,
   });
 };

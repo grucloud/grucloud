@@ -36,7 +36,7 @@ module.exports = CoreClient = ({
   pathDelete = (id) => `/${id}`,
   pathList = () => `/`,
   verbCreate = "POST",
-  isUpByIdFactory,
+  isUpByIdFactory = ({ getById }) => isUpByIdCore({ getById }),
   configDefault = async ({ name, properties }) => ({
     name,
     ...properties,
@@ -72,7 +72,7 @@ module.exports = CoreClient = ({
       logger.debug(`getById path: ${path}`);
 
       const result = await retryCallOnTimeout({
-        name: `getById type ${type}, path: ${path}`,
+        name: `getById type ${spec.type}, path: ${path}`,
         fn: async () =>
           await axios.request(path, {
             method: "GET",
@@ -93,14 +93,10 @@ module.exports = CoreClient = ({
   };
 
   const getList = async () => {
-    logger.debug(`getList type: ${type}`);
-
     try {
       const path = pathList();
-      logger.debug(`getList url: ${path}`);
-
       const result = await retryCallOnTimeout({
-        name: `getList type: ${type}, path ${path}`,
+        name: `getList type: ${spec.type}, path ${path}`,
         fn: async () =>
           await axios.request(path, {
             method: "GET",
@@ -119,9 +115,7 @@ module.exports = CoreClient = ({
   };
 
   //TODO same for down
-  const isUpById = isUpByIdFactory
-    ? isUpByIdFactory(getById)
-    : isUpByIdCore({ getById });
+  const isUpById = isUpByIdFactory({ getById, getList, findId });
 
   const isDownById = isDownByIdCore({ getById, getList, findId });
 
@@ -133,10 +127,10 @@ module.exports = CoreClient = ({
 
     try {
       const path = pathCreate({ dependencies, name });
-      logger.debug(`create url: ${path}`);
+      logger.debug(`create ${spec.type}/${name}`);
 
       const result = await retryCallOnTimeout({
-        name: `create type: ${type}, path: ${path}`,
+        name: `create ${spec.type}/${name}`,
         fn: async () =>
           await axios.request(path, {
             method: verbCreate,
@@ -153,9 +147,10 @@ module.exports = CoreClient = ({
 
       assert(id, "no target id from result");
       await retryExpectOk({
-        name: `create ${name}`,
+        name: `create ${spec.type}/${name}`,
         fn: () => isUpById({ id }),
       });
+      //TODO isUpById shoould return the resource
       const resource = await getById({ id });
       logger.debug(`created ${type}/${name}`);
       return onResponseGet(resource);
@@ -177,7 +172,7 @@ module.exports = CoreClient = ({
       const path = pathDelete(id);
       logger.debug(`destroy url: ${path}`);
       const result = await retryCallOnTimeout({
-        name: `destroy type ${type}, path: ${path}`,
+        name: `destroy type ${spec.type}, path: ${path}`,
         fn: async () =>
           await axios.request(path, {
             method: "DELETE",

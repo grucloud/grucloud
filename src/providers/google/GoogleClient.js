@@ -4,7 +4,6 @@ const CoreClient = require("../CoreClient");
 const AxiosMaker = require("../AxiosMaker");
 const logger = require("../../logger")({ prefix: "GoogleClient" });
 //const {tos} = require("../../tos")
-
 const onResponseListDefault = ({ items = [] }) => {
   return { total: items.length, items };
 };

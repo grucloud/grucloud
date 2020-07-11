@@ -143,7 +143,7 @@ const ResourceMaker = ({
 
     // Create now
     const instance = await retryCall({
-      name: `create ${resourceName}`,
+      name: `create ${type}/${resourceName}`,
       fn: () =>
         client.create({
           name: resourceName,
@@ -155,10 +155,10 @@ const ResourceMaker = ({
       retryDelay: provider.config().retryDelay,
     });
 
-    //logger.info(`created:  ${tos({ instance })}`);
+    logger.info(`created:  ${type}/${resourceName}`);
 
     const live = await retryCall({
-      name: `create ${resourceName}`,
+      name: `create getLive ${type}/${resourceName}`,
       fn: async () => {
         const live = await getLive();
         if (!live) {
@@ -645,6 +645,11 @@ function CoreProvider({
         tap((options) => logger.debug(`destroyAll ${tos({ options })}`)),
         async () => planFindDestroy(options, PlanDirection.DOWN),
         async (plans) => await planDestroy({ plans }),
+        tap(({ success, results }) =>
+          logger.debug(
+            `destroyAll DONE, success: ${success}, #results ${results.length}`
+          )
+        ),
       ])(options),
     (error) => {
       logError("destroyAll", error);
