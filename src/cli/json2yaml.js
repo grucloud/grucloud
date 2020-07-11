@@ -57,7 +57,7 @@ function stringify(data) {
       var output = "";
 
       if (0 === Object.keys(x).length) {
-        output += "{}";
+        output += "";
         return output;
       }
 

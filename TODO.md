@@ -2,6 +2,9 @@
 
 ## Common:
 
+gc p --provider aws
+error: unknown option '--provider'
+
 - isUpById should return the resource
 
 - terraform output
@@ -31,6 +34,7 @@ for reference Error:
 
 ## TODO Goggle
 
+- vm instance depends on firewall
 - vm instance: network interface from vpc network
 - validate config: check project and region
 
