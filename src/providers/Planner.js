@@ -44,8 +44,7 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
   );
 
   const statusMap = new Map();
-  const itemName = (item) => item.resource.name;
-
+  const itemToKey = (item) => item.resource.name || item.resource.id;
   const findSpecByType = (type, specs) => {
     assert(type, "no type");
     const spec = specs.find((spec) => spec.type === type);
@@ -57,14 +56,15 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
     findSpecByType(item.resource.type, dependencyTree).dependsOn;
 
   plans.map((item) => {
-    const name = itemName(item);
-    if (statusMap.has(name)) {
+    const key = itemToKey(item);
+    // TODO use id instead of name as name can be undefined when resources are not tagged correctly
+    if (statusMap.has(key)) {
       throw {
         code: 422,
-        message: `Planner: duplicated name: ${name}, plans: ${tos(plans)}`,
+        message: `Planner: duplicated key: ${key}, plans: ${tos(plans)}`,
       };
     }
-    statusMap.set(name, {
+    statusMap.set(key, {
       item,
       dependsOn: findDependsOn(item, dependencyTree),
       state: STATES.WAITING,
@@ -72,11 +72,11 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
   });
 
   const runItem = async (entry, onEnd) => {
-    logger.debug(`runItem begin ${tos(itemName(entry.item))}`);
+    logger.debug(`runItem begin ${tos(itemToKey(entry.item))}`);
     assert(entry.item, "no entry.item");
     try {
       if (entry.state !== STATES.WAITING) {
-        logger.debug(`runItem already running ${tos(itemName(entry.item))}`);
+        logger.debug(`runItem already running ${tos(itemToKey(entry.item))}`);
         return;
       }
       onStateChange({
@@ -115,12 +115,12 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
     }
 
     await onEnd(entry.item);
-    logger.debug(`runItem end ${tos(itemName(entry.item))}`);
+    logger.debug(`runItem end ${tos(itemToKey(entry.item))}`);
   };
   // TODO add function mapToArrayOfValues = (map) => [...map.values()]
 
   const onEnd = async (item) => {
-    logger.debug(`onEnd begin ${tos(itemName(item))}`);
+    logger.debug(`onEnd begin ${tos(itemToKey(item))}`);
     await pipe([
       //Exclude the current resource
       filter((x) => x.item.resource.name !== item.resource.name),
@@ -152,7 +152,7 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
         ])
       ),
     ])([...statusMap.values()]);
-    logger.debug(`onEnd end ${tos(itemName(item))}`);
+    logger.debug(`onEnd end ${tos(itemToKey(item))}`);
   };
 
   const run = async () => {
