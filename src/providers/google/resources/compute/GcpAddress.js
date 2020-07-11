@@ -28,11 +28,13 @@ module.exports = GcpAddress = ({ spec, config }) => {
     logger.debug(`stateName ${status}`);
     return status;
   };
-
+  const isInstanceUp = (instance) => {
+    //TODO check address instead
+    return ["RESERVED"].includes(getStateName(instance));
+  };
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
-      states: ["RESERVED"],
-      getStateName,
+      isInstanceUp,
       getById,
     });
 

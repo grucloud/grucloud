@@ -100,11 +100,13 @@ module.exports = GoogleVmInstance = ({ spec, config }) => {
     logger.debug(`stateName ${status}`);
     return status;
   };
+  const isInstanceUp = (instance) => {
+    return ["RUNNING"].includes(getStateName(instance));
+  };
 
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
-      states: ["RUNNING"],
-      getStateName,
+      isInstanceUp,
       getById,
     });
 

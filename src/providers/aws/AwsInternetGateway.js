@@ -49,11 +49,15 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
     return state;
   };
 
+  const isInstanceUp = (instance) => {
+    return ["available"].includes(getStateName(instance));
+  };
+
   const isUpById = isUpByIdCore({
     getById,
-    states: ["available"],
-    getStateName,
+    isInstanceUp,
   });
+
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createInternetGateway-property

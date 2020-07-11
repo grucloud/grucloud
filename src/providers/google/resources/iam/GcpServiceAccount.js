@@ -42,7 +42,7 @@ module.exports = GcpServiceAccount = ({ spec, config }) => {
     spec,
     baseURL: `https://iam.googleapis.com/v1`,
     url: `/projects/${project}/serviceAccounts`,
-    config: { ...config, repeatCount: 2 },
+    config: { ...config, repeatCount: 6 },
     findName,
     findId,
     findTargetId,

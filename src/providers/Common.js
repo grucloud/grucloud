@@ -42,18 +42,15 @@ const getByIdCore = async ({ id, findId, getList }) => {
 
 exports.getByIdCore = getByIdCore;
 
-exports.isUpByIdCore = ({ states, getStateName, getById }) => async ({
-  id,
-}) => {
+exports.isUpByIdCore = ({ isInstanceUp, getById }) => async ({ id }) => {
   logger.debug(`isUpById ${id}`);
   assert(id, "isUpByIdCore id");
   assert(getById, "isUpByIdCore getById");
   let up = false;
   const instance = await getById({ id });
   if (instance) {
-    if (states) {
-      assert(getStateName);
-      up = states.includes(getStateName(instance));
+    if (isInstanceUp) {
+      up = isInstanceUp(instance);
     } else {
       up = true;
     }
@@ -63,8 +60,7 @@ exports.isUpByIdCore = ({ states, getStateName, getById }) => async ({
 };
 
 exports.isDownByIdCore = ({
-  states,
-  getStateName,
+  isInstanceDown,
   getById,
   getList,
   findId,
@@ -78,9 +74,8 @@ exports.isDownByIdCore = ({
   const theGet = getList ? getByIdCore : getById;
   const instance = await theGet({ id, getList, findId });
   if (instance) {
-    if (states) {
-      assert(getStateName, "getStateName");
-      down = states.includes(getStateName(instance));
+    if (isInstanceDown) {
+      down = isInstanceDown(instance);
     }
   } else {
     down = true;

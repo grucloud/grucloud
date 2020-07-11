@@ -64,10 +64,18 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     return state;
   };
 
-  const isUpById = isUpByIdCore({ states: ["running"], getStateName, getById });
+  const isInstanceUp = (instance) => {
+    return ["running"].includes(getStateName(instance));
+  };
+
+  const isInstanceDown = (instance) => {
+    return StateTerminated.includes(getStateName(instance));
+  };
+
+  const isUpById = isUpByIdCore({ isInstanceUp, getById });
+
   const isDownById = isDownByIdCore({
-    states: StateTerminated,
-    getStateName,
+    isInstanceDown,
     getById,
   });
 

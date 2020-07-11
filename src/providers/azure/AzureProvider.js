@@ -22,10 +22,12 @@ const fnSpecs = (config) => {
     return provisioningState;
   };
 
+  const isInstanceUp = (instance) => {
+    return ["Succeeded"].includes(getStateName(instance));
+  };
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
-      states: ["Succeeded"],
-      getStateName,
+      isInstanceUp,
       getById,
     });
 
