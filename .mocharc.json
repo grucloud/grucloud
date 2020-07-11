@@ -2,7 +2,7 @@
   "watch-files": ["src/**/*.js"],
   "extension": ["js"],
   "reporter": "spec",
-  "timeout": 400e3,
+  "timeout": 500e3,
   "ui": "bdd",
   "bail": true,
   "recursive": true
