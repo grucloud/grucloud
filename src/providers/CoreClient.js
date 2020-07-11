@@ -42,7 +42,9 @@ module.exports = CoreClient = ({
     ...properties,
   }),
   findName = (item) => findField({ item, field: "name" }),
-  findId = (item) => item.id,
+  findId = (item) => {
+    return item.id;
+  },
   findTargetId = (item) => item.id,
   onResponseGet = identity,
   onResponseList = identity,
@@ -149,6 +151,7 @@ module.exports = CoreClient = ({
       await retryExpectOk({
         name: `create ${spec.type}/${name}`,
         fn: () => isUpById({ id }),
+        config,
       });
       //TODO isUpById shoould return the resource
       const resource = await getById({ id });
@@ -195,6 +198,7 @@ module.exports = CoreClient = ({
   return {
     spec,
     type,
+    config,
     findId,
     getById,
     getByName,

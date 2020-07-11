@@ -51,6 +51,7 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
     await retryExpectOk({
       name: `isUpById: ${name} id: ${AllocationId}`,
       fn: () => isUpById({ id: AllocationId }),
+      config,
     });
 
     await tagResource({

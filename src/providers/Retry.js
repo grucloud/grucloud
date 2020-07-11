@@ -3,9 +3,11 @@ const assert = require("assert");
 const { of, iif, throwError } = require("rxjs");
 const {
   retryWhen,
+  repeatWhen,
   mergeMap,
   concatMap,
   tap,
+  take,
   delay,
 } = require("rxjs/operators");
 const logger = require("../logger")({ prefix: "Retry" });
@@ -14,22 +16,30 @@ const { logError } = require("./Common");
 const retryCall = async ({
   name = "",
   fn,
+  repeatCount = 0,
+  repeatDelay = 500,
   retryCount = 30,
-  retryDelay = 2e3,
+  retryDelay = 5e3,
   shouldRetry = () => false,
 }) => {
   logger.debug(
-    `retryCall ${name}, retryCount: ${retryCount}, retryDelay: ${retryDelay} `
+    `retryCall ${name}, retryCount: ${retryCount}, retryDelay: ${retryDelay}, repeatCount: ${repeatCount} `
   );
   return of({})
     .pipe(
       mergeMap(async () => await fn()),
+      repeatWhen((result) => {
+        return result.pipe(delay(repeatDelay), take(repeatCount));
+      }),
       retryWhen((errors) =>
         errors.pipe(
           concatMap((error, i) => {
-            logError(`retryCall error ${name}, attempt ${i} `, error);
+            logError(
+              `retryCall error ${name}, attempt ${i}/${retryCount}, retryDelay: ${retryDelay},`,
+              error
+            );
             return iif(
-              () => i > retryCount || !shouldRetry(error),
+              () => i >= retryCount || !shouldRetry(error),
               throwError(error),
               of(error).pipe(delay(retryDelay))
             );
@@ -50,23 +60,19 @@ exports.retryCallOnTimeout = ({ name, fn, config }) =>
     retryDelay: config.retryDelay,
   });
 
-const retryExpectOk = async ({
-  name,
-  fn,
-  retryDelay = 10e3,
-  retryCount = 30,
-}) => {
+const retryExpectOk = async ({ name, fn, config }) => {
   logger.debug(`retryExpectOk ${name}`);
   return retryCall({
     name,
     fn: async () => {
       const result = await fn();
       if (!result) {
-        throw Error("Retry");
+        throw Error(`Retry ${name}`);
       }
     },
-    retryCount,
-    retryDelay,
+    retryCount: config.retryCount || 30,
+    retryDelay: config.retryDelay || 10e3,
+    repeatCount: config.repeatCount,
     shouldRetry: () => true,
   });
 };

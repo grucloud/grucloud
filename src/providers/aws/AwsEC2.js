@@ -83,6 +83,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     await retryExpectOk({
       name: `isUpById: ${name} id: ${InstanceId}`,
       fn: () => isUpById({ id: InstanceId }),
+      config,
     });
     const { eip } = dependencies;
     if (eip) {
@@ -136,6 +137,7 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
     await retryExpectOk({
       name: `isDownById: ${name} id: ${id}`,
       fn: () => isDownById({ id }),
+      config,
     });
 
     logger.debug(`destroy ec2 done, ${tos({ name, id, result })}`);

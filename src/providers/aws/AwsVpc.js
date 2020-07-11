@@ -66,6 +66,7 @@ module.exports = AwsVpc = ({ spec, config }) => {
     await retryExpectOk({
       name: `isUpById: ${name} id: ${VpcId}`,
       fn: () => isUpById({ id: VpcId }),
+      config,
     });
 
     await tagResource({

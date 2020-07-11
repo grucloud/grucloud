@@ -26,7 +26,6 @@ module.exports = GcpServiceAccount = ({ spec, config }) => {
       properties
     );
 
-  const isUpByIdFactory = ({ getById }) => isUpByIdCore({ getById });
   const findName = (item) => {
     const name = item.email.split("@")[0];
     return name;
@@ -43,12 +42,11 @@ module.exports = GcpServiceAccount = ({ spec, config }) => {
     spec,
     baseURL: `https://iam.googleapis.com/v1`,
     url: `/projects/${project}/serviceAccounts`,
-    config,
+    config: { ...config, repeatCount: 2 },
     findName,
     findId,
     findTargetId,
     onResponseList,
-    isUpByIdFactory,
     configDefault,
   });
 };

@@ -23,35 +23,12 @@ const configProviderDefault = {
   stageTagKey: "stage",
   stage: "dev",
   retryCount: 30,
-  retryDelay: 2e3,
+  retryDelay: 10e3,
 };
 
 const PlanDirection = {
   UP: 1,
   DOWN: -1,
-};
-
-const destroyByClient = async ({ client, name, config }) => {
-  assert(client);
-  assert(config);
-
-  logger.info(
-    `destroyByClient: ${tos({ type: client.spec.type, name, config })}`
-  );
-
-  const id = client.findId(config);
-  assert(id, "destroyByClient missing id");
-  const result = await client.destroy({ id, name });
-  await retryExpectOk({
-    name: `destroy ${name}`,
-    fn: () => client.isDownById({ id, name }),
-  });
-
-  logger.debug(
-    `destroyByClient: DONE ${tos({ type: client.spec.type, name, result })}`
-  );
-  //TODO Double check with getByName
-  return result;
 };
 
 const ResourceMaker = ({
@@ -181,7 +158,8 @@ const ResourceMaker = ({
   };
 
   const planUpsert = async ({ resource }) => {
-    logger.info(`planUpsert resource: ${tos(resource.toJSON())}`);
+    const resourceJson = resource.toJSON();
+    logger.info(`planUpsert resource: ${tos(resourceJson)}`);
     const live = await resource.getLive();
     logger.debug(`planUpsert live: ${tos(live)}`);
     const plan = live
@@ -189,7 +167,7 @@ const ResourceMaker = ({
       : [
           {
             action: "CREATE",
-            resource: resource.toJSON(),
+            resource: resourceJson,
             config: await resource.resolveConfig(),
           },
         ];
@@ -282,9 +260,11 @@ function CoreProvider({
   fnSpecs,
   config,
 }) {
-  config = defaultsDeep(configProviderDefault, config);
+  const provideConfig = defaultsDeep(configProviderDefault, config);
   logger.debug(
-    `CoreProvider name: ${providerName}, type ${type}, config: ${tos(config)}`
+    `CoreProvider name: ${providerName}, type ${type}, config: ${tos(
+      provideConfig
+    )}`
   );
   // Target Resources
   const targetResources = new Map();
@@ -303,8 +283,8 @@ function CoreProvider({
 
   const resourceByName = (name) => targetResources.get(name);
 
-  const specs = fnSpecs(config).map((spec) =>
-    _.defaults(spec, SpecDefault({ config, providerName }))
+  const specs = fnSpecs(provideConfig).map((spec) =>
+    _.defaults(spec, SpecDefault({ config: provideConfig, providerName }))
   );
 
   const clients = specs.map((spec) => spec.Client({ spec }));
@@ -329,7 +309,7 @@ function CoreProvider({
     logger.debug(`listLives type: ${client.spec.type}`);
     const { items } = await client.getList();
     //logger.debug(`listLives resources: ${tos(items)}`);
-
+    //TODO use rubico anf tap at the end
     return {
       type: client.spec.type,
       resources: items
@@ -530,7 +510,7 @@ function CoreProvider({
     }
 
     const isNameInOurPlan = resourceNames().includes(
-      fromTagName(name, config.tag)
+      fromTagName(name, provideConfig.tag)
     );
     if (direction == PlanDirection.UP) {
       if (!isNameInOurPlan) {
@@ -610,6 +590,30 @@ function CoreProvider({
     return await planner.run();
   };
 
+  const destroyByClient = async ({ client, name, config }) => {
+    assert(client);
+    assert(config);
+
+    logger.info(
+      `destroyByClient: ${tos({ type: client.spec.type, name, config })}`
+    );
+
+    const id = client.findId(config);
+    assert(id, "destroyByClient missing id");
+    const result = await client.destroy({ id, name });
+    await retryExpectOk({
+      name: `destroy ${name}`,
+      fn: () => client.isDownById({ id, name }),
+      config: client.config || provideConfig,
+    });
+
+    logger.debug(
+      `destroyByClient: DONE ${tos({ type: client.spec.type, name, result })}`
+    );
+    //TODO Double check with getByName
+    return result;
+  };
+
   const destroyById = async ({ type, config, name }) => {
     logger.debug(`destroyById: ${tos({ type, name })}`);
     const client = clientByType(type);
@@ -669,7 +673,7 @@ function CoreProvider({
   const toType = () => type || providerName;
 
   const provider = {
-    config: () => config,
+    config: () => provideConfig,
     name: providerName,
     type: toType,
     destroyAll,
@@ -685,11 +689,10 @@ function CoreProvider({
     resourceByName,
     getTargetResources,
     isPlanEmpty,
-    tos: () => `provider: ${type}, stage: ${config.stage}`,
   };
   const enhanceProvider = {
     ...provider,
-    ...createResourceMakers({ provider, config, specs }),
+    ...createResourceMakers({ provider, config: provideConfig, specs }),
   };
 
   return enhanceProvider;

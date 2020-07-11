@@ -5,7 +5,13 @@ const logger = require("../../logger")({ prefix: "MockClient" });
 const { tos } = require("../../tos");
 const { findField } = require("../Common");
 
-module.exports = MockClient = ({ spec, url, config, configDefault }) => {
+module.exports = MockClient = ({
+  spec,
+  url,
+  config,
+  findId,
+  configDefault,
+}) => {
   assert(spec);
   assert(url);
   assert(config);
@@ -36,6 +42,7 @@ module.exports = MockClient = ({ spec, url, config, configDefault }) => {
     config,
     ...spec, //TODO
     axios: createAxios({ spec, url, config }),
+    findId,
     configDefault,
     findName,
     shouldRetryOnError,

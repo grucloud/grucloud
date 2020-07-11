@@ -91,6 +91,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     await retryExpectOk({
       name: `isUpById: ${name} id: ${RouteTableId}`,
       fn: () => isUpById({ id: RouteTableId }),
+      config,
     });
 
     return { id: RouteTableId };

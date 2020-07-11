@@ -10,6 +10,7 @@ const { isUpByIdCore } = require("../Common");
 const { checkEnv } = require("../../Utils");
 //const compare = require("../../Utils").compare;
 const { tos } = require("../../tos");
+
 const fnSpecs = (config) => {
   const { location, managedByKey, managedByValue, stageTagKey, stage } = config;
   const subscriptionId = process.env.SUBSCRIPTION_ID;
@@ -314,6 +315,8 @@ module.exports = AzureProvider = async ({ name, config }) => {
 
   const configProviderDefault = {
     bearerToken,
+    retryCount: 60,
+    retryDelay: 10e3,
   };
 
   const core = CoreProvider({
