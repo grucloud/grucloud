@@ -45,6 +45,7 @@ module.exports = AzClient = ({
   const core = CoreClient({
     type: "azure",
     spec,
+    config,
     onResponseList,
     configDefault,
     pathGet,

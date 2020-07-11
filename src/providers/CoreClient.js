@@ -1,13 +1,11 @@
 const _ = require("lodash");
 const { isEmpty } = require("lodash/fp");
 const assert = require("assert");
-const { of } = require("rxjs");
-const { retryWhen, take, switchMap } = require("rxjs/operators");
 
 const logger = require("../logger")({ prefix: "CoreClient" });
 const { tos } = require("../tos");
 const identity = (x) => x;
-const { retryExpectOk } = require("./Retry");
+const { retryExpectOk, retryCallOnTimeout } = require("./Retry");
 const {
   getByNameCore,
   findField,
@@ -31,6 +29,7 @@ const errorToJSON = (error) => ({
 module.exports = CoreClient = ({
   spec,
   type,
+  config,
   axios,
   pathGet = (id) => `/${id}`,
   pathCreate = () => `/`,
@@ -54,6 +53,7 @@ module.exports = CoreClient = ({
 }) => {
   assert(spec);
   assert(type);
+  assert(config, "config");
 
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
 
@@ -71,8 +71,13 @@ module.exports = CoreClient = ({
       const path = pathGet(id);
       logger.debug(`getById path: ${path}`);
 
-      const result = await axios.request(path, {
-        method: "GET",
+      const result = await retryCallOnTimeout({
+        name: `getById type ${type}, path: ${path}`,
+        fn: async () =>
+          await axios.request(path, {
+            method: "GET",
+          }),
+        config,
       });
       const data = onResponseGet(result.data);
       logger.debug(`get ${tos(data)}`);
@@ -88,14 +93,21 @@ module.exports = CoreClient = ({
   };
 
   const getList = async () => {
-    logger.debug(`getList type ${type}`);
+    logger.debug(`getList type: ${type}`);
 
     try {
       const path = pathList();
       logger.debug(`getList url: ${path}`);
-      const result = await axios.request(path, {
-        method: "GET",
+
+      const result = await retryCallOnTimeout({
+        name: `getList type: ${type}, path ${path}`,
+        fn: async () =>
+          await axios.request(path, {
+            method: "GET",
+          }),
+        config,
       });
+
       //logger.debug(`getList type ${type}: ${tos(result.data)}`);
 
       const data = onResponseList(result.data);
@@ -123,10 +135,16 @@ module.exports = CoreClient = ({
       const path = pathCreate({ dependencies, name });
       logger.debug(`create url: ${path}`);
 
-      const result = await axios.request(path, {
-        method: verbCreate,
-        data: payload,
+      const result = await retryCallOnTimeout({
+        name: `create type: ${type}, path: ${path}`,
+        fn: async () =>
+          await axios.request(path, {
+            method: verbCreate,
+            data: payload,
+          }),
+        config,
       });
+
       const data = onResponseCreate(result.data);
       logger.debug(`create result: ${tos(data)}`);
 
@@ -158,10 +176,15 @@ module.exports = CoreClient = ({
     try {
       const path = pathDelete(id);
       logger.debug(`destroy url: ${path}`);
-
-      const result = await axios.request(path, {
-        method: "DELETE",
+      const result = await retryCallOnTimeout({
+        name: `destroy type ${type}, path: ${path}`,
+        fn: async () =>
+          await axios.request(path, {
+            method: "DELETE",
+          }),
+        config,
       });
+
       const data = onResponseDelete(result.data);
       logger.debug(
         `destroy ${tos({ name, type, id, data })} should be destroyed`

@@ -1,4 +1,4 @@
-const logger = require("../../logger")({ prefix: "CoreClient" });
+const logger = require("../../logger")({ prefix: "ScwTag" });
 const { tos } = require("../../tos");
 const { hasTag } = require("../TagName");
 

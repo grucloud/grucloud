@@ -6,7 +6,7 @@ const { tos } = require("../tos");
 module.exports = AxiosMaker = ({ baseURL, onHeaders = noop }) => {
   const axios = Axios.create({
     baseURL,
-    timeout: 30e3,
+    timeout: 15e3,
     withCredentials: true,
     headers: { ...onHeaders(), "Content-Type": "application/json" },
   });

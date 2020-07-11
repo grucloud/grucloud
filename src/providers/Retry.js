@@ -1,18 +1,16 @@
 const Promise = require("bluebird");
 const assert = require("assert");
-const { of, throwError } = require("rxjs");
+const { of, iif, throwError } = require("rxjs");
 const {
   retryWhen,
-  take,
   mergeMap,
-  flatMap,
-  concat,
+  concatMap,
   tap,
   delay,
 } = require("rxjs/operators");
-const logger = require("../logger")({ prefix: "CoreClient" });
+const logger = require("../logger")({ prefix: "Retry" });
 const { tos } = require("../tos");
-
+const { logError } = require("./Common");
 const retryCall = async ({
   name = "",
   fn,
@@ -26,24 +24,31 @@ const retryCall = async ({
   return of({})
     .pipe(
       mergeMap(async () => await fn()),
-      retryWhen((errors) => {
-        return errors.pipe(
-          flatMap((error) => {
-            logger.debug(error);
-            if (shouldRetry(error)) {
-              logger.debug(`retry ${name}`);
-              return of({}).pipe(delay(retryDelay));
-            }
-            throw error;
-          }),
-          take(retryCount),
-          concat(throwError(`Request failed after ${retryCount} retries.`))
-        );
-      })
+      retryWhen((errors) =>
+        errors.pipe(
+          concatMap((error, i) => {
+            logError(`retryCall error ${name}, attempt ${i} `, error);
+            return iif(
+              () => i > retryCount || !shouldRetry(error),
+              throwError(error),
+              of(error).pipe(delay(retryDelay))
+            );
+          })
+        )
+      )
     )
     .toPromise();
 };
 exports.retryCall = retryCall;
+
+exports.retryCallOnTimeout = ({ name, fn, config }) =>
+  retryCall({
+    name,
+    fn,
+    shouldRetry: (error) => error.code === "ECONNABORTED",
+    retryCount: config.retryCount,
+    retryDelay: config.retryDelay,
+  });
 
 const retryExpectOk = async ({
   name,

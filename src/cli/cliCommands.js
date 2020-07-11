@@ -71,13 +71,15 @@ const displayError = (name, error) => {
     return;
   }
   if (error.isAxiosError) {
+    const { baseURL, url, method } = error.config;
     const errorToDisplay = {
       Command: name,
       Message: error.message,
       Status: error.response?.status,
+      Code: error.code,
       Output: error.response?.data,
       Input: {
-        config: pick(error.config, ["url", "method", "baseURL"]),
+        url: `${method} ${baseURL}${url}`,
         data: safeJsonParse(error.config?.data),
       },
     };

@@ -33,9 +33,9 @@ module.exports = MockClient = ({ spec, url, config, configDefault }) => {
   const core = CoreClient({
     type: "mock",
     spec,
-    ...spec,
-    axios: createAxios({ spec, url, config }),
     config,
+    ...spec, //TODO
+    axios: createAxios({ spec, url, config }),
     configDefault,
     findName,
     shouldRetryOnError,

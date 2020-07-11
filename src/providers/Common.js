@@ -94,9 +94,10 @@ exports.logError = (prefix, error) => {
   logger.error(`${prefix} error:${error.toString()}`);
   if (error.response) {
     if (error.response.data) {
-      logger.error(`${prefix} data: ${tos(error.response.data)}`);
+      logger.error(`data: ${tos(error.response.data)}`);
     }
-    logger.error(`${prefix} config: ${tos(error.response.config)}`);
+    const { baseURL, url, method } = error.config;
+    logger.error(`config: ${method} ${baseURL}${url}`);
   }
-  logger.error(`${prefix} stack:${error.stack}`);
+  //logger.error(`${prefix} stack:${error.stack}`);
 };

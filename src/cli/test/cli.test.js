@@ -23,6 +23,13 @@ const configFile400RetryOnce = path.join(
   "./config/config.400.retry.once.js"
 );
 
+const configFileTimeout = path.join(__dirname, "./config/config.timeout.js");
+
+const configFileTimeoutOnce = path.join(
+  __dirname,
+  "./config/config.timeout.once.js"
+);
+
 const commands = ["plan", "apply -f", "destroy -f -a", "list"];
 
 const onExitOk = () => assert(false);
@@ -96,7 +103,6 @@ describe("cli error", function () {
     const axios = Axios.create({ baseURL: `http://localhost:${port}` });
     await axios.post("/ip", {});
     const list = await axios.get("/ip");
-    console.log(list);
   });
 
   after(async function () {
@@ -165,5 +171,31 @@ describe("cli error", function () {
       },
     });
     assert.equal(result, 0);
+  });
+
+  it("cli timeout once", async function () {
+    const results = await map.series((command) =>
+      runProgram({
+        cmds: command.split(" "),
+        configFile: configFileTimeoutOnce,
+        onExit: ({ code, error: { error } }) => {
+          assert.equal(code, 0);
+        },
+      })
+    )(commands);
+    assert.deepEqual(results, [0, 0, 0, 0]);
+  });
+  it("cli timeout ", async function () {
+    const results = await map.series((command) =>
+      runProgram({
+        cmds: command.split(" "),
+        configFile: configFileTimeout,
+        onExit: ({ code, error: { error } }) => {
+          assert.equal(code, 422);
+          assert.equal(error.code, "ECONNABORTED");
+        },
+      })
+    )(commands);
+    assert.deepEqual(results, [-1, -1, -1, -1]);
   });
 });

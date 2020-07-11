@@ -27,6 +27,7 @@ module.exports = GoogleClient = ({
   assert(spec);
   assert(spec.type);
   assert(config);
+  assert(config.accessToken);
 
   const shouldRetryOnError = (error) => {
     logger.debug("shouldRetryOnError");
@@ -47,6 +48,7 @@ module.exports = GoogleClient = ({
   return CoreClient({
     type: "google",
     spec,
+    config,
     findName,
     findId,
     findTargetId,

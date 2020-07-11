@@ -38,6 +38,7 @@ module.exports = ScalewayClient = ({
   const core = CoreClient({
     type: "scaleway",
     spec,
+    config,
     onResponseList,
     findName,
     configDefault,

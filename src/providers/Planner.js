@@ -1,5 +1,5 @@
 const assert = require("assert");
-const logger = require("../logger")({ prefix: "CoreClient" });
+const logger = require("../logger")({ prefix: "Planner" });
 const { tos } = require("../tos");
 const { isEmpty, isArray, isFunction } = require("lodash/fp");
 const { filter, map, pipe, tap, any, switchCase } = require("rubico");

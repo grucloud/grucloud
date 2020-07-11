@@ -148,7 +148,7 @@ module.exports = MockProvider = async ({ name, config }) => {
 
   const configDefault = {
     retryCount: 2,
-    retryDelay: 500,
+    retryDelay: 100,
   };
 
   return CoreProvider({
