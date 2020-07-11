@@ -1,9 +1,5 @@
 ## Bugs
 
-- gpp ù
-  "message": "Invalid value for field 'resource.networkInterfaces[0].accessConfigs[0].natIP': '<< address of ip-webserver not available yet >>'. The specified external IP address '<< address of ip-webserver not available yet >>' was not found in region 'europe-west4'."
-
-- planner error when multiple name are undefined
 - sa "accountId": "**\*\***\*\*\*\***\*\***"
 
 ## Common:

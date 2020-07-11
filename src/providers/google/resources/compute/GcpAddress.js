@@ -28,9 +28,9 @@ module.exports = GcpAddress = ({ spec, config }) => {
     logger.debug(`stateName ${status}`);
     return status;
   };
+
   const isInstanceUp = (instance) => {
-    //TODO check address instead
-    return ["RESERVED"].includes(getStateName(instance));
+    return !!instance.address;
   };
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
