@@ -11,14 +11,14 @@ exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
   assert(region);
   assert(stage);
 
-  const { accountId } = process.env;
-  assert(accountId);
+  const { AccountId } = process.env;
+  assert(AccountId);
 
   AWS.config.update({ region });
   const tagApi = new AWS.ResourceGroupsTaggingAPI();
 
-  const arnId = `arn:aws:ec2:${region}:${accountId}:${resourceType}/${resourceId}`;
-  const fqn = `arn:aws:ec2:${region}:${accountId}:${resourceType}/${name}`;
+  const arnId = `arn:aws:ec2:${region}:${AccountId}:${resourceType}/${resourceId}`;
+  const fqn = `arn:aws:ec2:${region}:${AccountId}:${resourceType}/${name}`;
 
   logger.debug(`tagResource: arn ${arnId}`);
   const params = {

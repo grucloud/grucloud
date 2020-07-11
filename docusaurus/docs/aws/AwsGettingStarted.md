@@ -9,7 +9,7 @@ Let's create a simple infrastructure with
 - connected to a public ip address.
 - accessible through SSH
 
-Ensure possession of the **AWSAccessKeyId**, **AWSSecretKey**, **accountId** and **SSH keys**.
+Ensure possession of the **AWSAccessKeyId**, **AWSSecretKey**, **AccountId** and **SSH keys**.
 Visit the [Aws Requirements](./AwsRequirements.md) to retrieve these informations.
 
 ## Getting the code
@@ -43,7 +43,7 @@ cp config/default.env.example config/default.env
 Edit **config/default.env** and set the correct values:
 
 ```sh
-accountId=
+AccountId=
 AWSAccessKeyId=
 AWSSecretKey=
 ```

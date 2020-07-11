@@ -2,7 +2,7 @@ const hiddenCredentials = "****************";
 
 const exlusionList = {
   // aws
-  accountId: hiddenCredentials,
+  AccountId: hiddenCredentials,
   AWSAccessKeyId: hiddenCredentials,
   AWSSecretKey: hiddenCredentials,
   // gcp

@@ -1,11 +1,8 @@
 ## Bugs
 
-- sa "accountId": "**\*\***\*\*\*\***\*\***"
-
 ## Common:
 
 - isUpById should return the resource
-- default for isUpByIdFactory
 
 - terraform output
 - add multiple example for each provider
