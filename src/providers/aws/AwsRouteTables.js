@@ -8,6 +8,7 @@ const { getByIdCore } = require("./AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../Common");
 const { findNameInTags } = require("./AwsCommon");
 const { tagResource } = require("./AwsTagResource");
+const { pipe, filter, map } = require("rubico");
 
 module.exports = AwsRouteTables = ({ spec, config }) => {
   assert(spec);
@@ -104,24 +105,20 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     if (isEmpty(id)) {
       throw Error(`destroy rt invalid id`);
     }
-
     const rtLive = await getById({ id });
+    await pipe([
+      filter((association) => !association.Main),
+      async (associations) =>
+        await map(async (association) => {
+          logger.debug(`destroy rt disassociate ${tos({ association })}`);
+          await ec2
+            .disassociateRouteTable({
+              AssociationId: association.RouteTableAssociationId,
+            })
+            .promise();
+        })(associations),
+    ])(rtLive.Associations);
 
-    const RouteTableAssociationId =
-      rtLive.Associations[0]?.RouteTableAssociationId;
-
-    if (RouteTableAssociationId) {
-      logger.debug(
-        `destroy rt disassociate ${tos({ RouteTableAssociationId })}`
-      );
-      assert(RouteTableAssociationId);
-
-      await ec2
-        .disassociateRouteTable({
-          AssociationId: RouteTableAssociationId,
-        })
-        .promise();
-    }
     logger.debug(`destroy rt delete ${tos({ RouteTableId: id })}`);
     await ec2.deleteRouteTable({ RouteTableId: id }).promise();
     logger.debug(`destroy rt IN PROGRESS, ${tos({ name, id })}`);
@@ -130,6 +127,10 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
 
   const configDefault = async ({ name, properties }) =>
     defaultsDeep({}, properties);
+
+  const cannotBeDeleted = (item, name) => {
+    return !name;
+  };
 
   return {
     type: "RouteTables",
@@ -140,7 +141,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     getByName,
     getById,
     findName,
-    cannotBeDeleted: () => false,
+    cannotBeDeleted,
     getList,
     create,
     destroy,

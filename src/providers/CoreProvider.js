@@ -47,9 +47,9 @@ const ResourceMaker = ({
   const client = spec.Client({ spec });
   let parent;
   const getLive = async () => {
-    logger.info(`getLive ${resourceName}/${type}`);
+    logger.info(`getLive ${type}/${resourceName}`);
     const live = await client.getByName({ name: resourceName });
-    logger.debug(`getLive result: ${tos({ resourceName, type, live })}`);
+    logger.debug(`getLive ${type}/${resourceName} result: ${tos(live)}`);
     return live;
   };
 
@@ -473,7 +473,7 @@ function CoreProvider({
     );
 
     // Cannot delete default resource
-    if (client.cannotBeDeleted(resource)) {
+    if (client.cannotBeDeleted(resource, name)) {
       logger.debug(
         `planFindDestroy ${type}/${name}, default resource cannot be deleted`
       );
@@ -490,7 +490,7 @@ function CoreProvider({
       return true;
     }
     if (!spec.isOurMinion({ resource })) {
-      logger.debug(`planFindDestroy ${type}/${name}, not our minion`);
+      logger.error(`planFindDestroy ${type}/${name}, not our minion`);
       return false;
     }
 
