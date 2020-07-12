@@ -42,3 +42,20 @@ exports.isOurMinionEc2 = ({ resource, config }) => {
   );
   return isMinion;
 };
+
+//TODO put it in AwsS3Bucket
+exports.isOurMinionS3 = ({ resource, config }) => {
+  const { managedByKey, managedByValue } = config;
+  assert(resource);
+  const isMinion = !!resource.TagSet?.find(
+    (tag) => tag.Key === managedByKey && tag.Value === managedByValue
+  );
+
+  logger.debug(
+    `isOurMinion s3: ${tos({
+      isMinion,
+      resource,
+    })}`
+  );
+  return isMinion;
+};

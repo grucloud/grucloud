@@ -20,17 +20,23 @@ const cmds = [
 
 const specs = [
   {
+    path: "aws/s3",
+    cmds,
+  },
+  {
+    path: "aws/ec2",
+    cmds,
+  },
+  {
+    path: "aws/ec2-vpc",
+    cmds,
+  },
+  {
     path: "multi",
     cmds,
   },
-
   {
     path: "azure",
-    cmds,
-  },
-
-  {
-    path: "aws",
     cmds,
   },
   {

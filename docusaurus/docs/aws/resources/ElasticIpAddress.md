@@ -13,7 +13,7 @@ const ip = await provider.makeElasticIpAddress({
 
 ### Examples
 
-- [simple example](https://github.com/FredericHeem/grucloud/blob/master/examples/aws/iac.js#L57)
+- [simple example](https://github.com/FredericHeem/grucloud/blob/master/examples/aws/ec2-vpc/iac.js)
 
 ### Dependencies
 

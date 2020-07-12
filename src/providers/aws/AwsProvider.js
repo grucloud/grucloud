@@ -10,7 +10,9 @@ const CoreProvider = require("../CoreProvider");
 
 const AwsTags = require("./AwsTags");
 
-const AwsClientEC2 = require("./AwsEC2");
+const AwsS3Bucket = require("./AwsS3Bucket");
+
+const AwsEC2 = require("./AwsEC2");
 const AwsClientKeyPair = require("./AwsKeyPair");
 const AwsVpc = require("./AwsVpc");
 const AwsInternetGateway = require("./AwsInternetGateway");
@@ -24,6 +26,12 @@ const fnSpecs = (config) => {
     AwsTags.isOurMinion({ resource, config });
 
   return [
+    {
+      type: "S3Bucket",
+      Client: ({ spec }) => AwsS3Bucket({ spec, config }),
+      isOurMinion: ({ resource }) =>
+        AwsTags.isOurMinionS3({ resource, config }),
+    },
     {
       type: "KeyPair",
       Client: ({ spec }) => AwsClientKeyPair({ spec, config }),
@@ -67,9 +75,14 @@ const fnSpecs = (config) => {
     },
     {
       type: "EC2",
-      dependsOn: ["SecurityGroup", "Subnet", "ElasticIpAddress"],
+      dependsOn: [
+        "SecurityGroup",
+        "Subnet",
+        "ElasticIpAddress",
+        "InternetGateway",
+      ],
       Client: ({ spec }) =>
-        AwsClientEC2({
+        AwsEC2({
           spec,
           config,
         }),
@@ -119,6 +132,7 @@ module.exports = AwsProvider = async ({ name, config }) => {
   AWS.config.apiVersions = {
     ec2: "2016-11-15",
     resourcegroupstaggingapi: "2017-01-26",
+    s3: "2006-03-01",
   };
   AWS.config.update({ region: config.region });
   await validateConfig(config);

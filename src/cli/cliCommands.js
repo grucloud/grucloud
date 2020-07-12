@@ -85,10 +85,12 @@ const displayError = (name, error) => {
     };
     console.error(YAML.stringify(errorToDisplay));
   } else {
+    //TODO find out if it is a aws error, do not display error.stack
     console.error("Command:", name);
-    console.error("Code:   ", error.code);
+    error.code && console.error("Code:   ", error.code);
     error.message && console.error("Message:   ", error.message);
     error.name && console.error("Name:   ", error.name);
+    error.stack && logger.error(error.stack);
     error.stack && console.error(error.stack);
   }
 };

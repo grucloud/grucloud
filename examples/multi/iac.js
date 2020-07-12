@@ -1,4 +1,4 @@
-const AwsStack = require("../aws/iac");
+const AwsStack = require("../aws/ec2-vpc/iac");
 const AzureStack = require("../azure/iac");
 const GoogleStack = require("../google/iac");
 

@@ -39,7 +39,7 @@ describe("AwsElasticIpAddress", async function () {
     });
   });
   after(async () => {
-    await provider?.destroyAll();
+    //await provider?.destroyAll();
   });
   it("eip name", async function () {
     assert.equal(eip.name, resourceName);

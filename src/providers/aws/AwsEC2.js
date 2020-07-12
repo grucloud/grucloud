@@ -1,7 +1,7 @@
 const AWS = require("aws-sdk");
 const { defaultsDeep, isEmpty, map } = require("lodash/fp");
 const assert = require("assert");
-const logger = require("../../logger")({ prefix: "AwsClientEC2" });
+const logger = require("../../logger")({ prefix: "AwsEC2" });
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../Common");
 const { retryExpectOk } = require("../Retry");
 
@@ -10,7 +10,7 @@ const StateTerminated = ["terminated"];
 const { KeyName, getByIdCore } = require("./AwsCommon");
 const { getField } = require("../ProviderCommon");
 
-module.exports = AwsClientEC2 = ({ spec, config }) => {
+module.exports = AwsEC2 = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
@@ -41,9 +41,9 @@ module.exports = AwsClientEC2 = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
   const getList = async () => {
-    logger.debug(`getList`);
+    logger.debug(`getList ec2`);
     const data = await ec2.describeInstances().promise();
-    logger.debug(`getList ${tos(data)}`);
+    //logger.debug(`getList ec2 ${tos(data)}`);
     const items = data.Reservations.filter(
       (reservation) =>
         !StateTerminated.includes(reservation.Instances[0].State.Name)

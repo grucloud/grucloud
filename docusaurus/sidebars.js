@@ -15,6 +15,7 @@ module.exports = {
       "aws/AwsGettingStarted",
       {
         Resources: [
+          "aws/resources/S3Bucket",
           "aws/resources/KeyPair",
           "aws/resources/Vpc",
           "aws/resources/InternetGateway",
