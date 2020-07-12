@@ -126,6 +126,10 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
   const configDefault = async ({ name, properties }) =>
     defaultsDeep({}, properties);
 
+  const cannotBeDeleted = (item, name) => {
+    return !name;
+  };
+
   return {
     type: "InternetGateway",
     spec,
@@ -135,7 +139,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
     getByName,
     getById,
     findName,
-    cannotBeDeleted: () => false,
+    cannotBeDeleted,
     getList,
     create,
     destroy,
