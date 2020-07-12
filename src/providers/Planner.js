@@ -3,7 +3,7 @@ const logger = require("../logger")({ prefix: "Planner" });
 const { tos } = require("../tos");
 const { isEmpty, isArray, isFunction } = require("lodash/fp");
 const { filter, map, pipe, tap, any, switchCase } = require("rubico");
-const { logError } = require("./Common");
+const { logError, convertError } = require("./Common");
 
 const STATES = {
   WAITING: "WAITING",
@@ -103,7 +103,7 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
       });
       entry.state = STATES.DONE;
     } catch (error) {
-      entry.error = error;
+      entry.error = convertError({ error });
       logError("runItem", error);
       onStateChange({
         resource: entry.item.resource,

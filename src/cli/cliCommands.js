@@ -8,7 +8,7 @@ const prompts = require("prompts");
 const colors = require("colors/safe");
 const fs = require("fs");
 const YAML = require("./json2yaml");
-
+const { convertError } = require("../providers/Common");
 const { tos } = require("../tos");
 const {
   map,
@@ -57,42 +57,12 @@ const saveToJson = ({ command, commandOptions, programOptions, result }) => {
   );
 };
 
-const safeJsonParse = (json) => {
-  try {
-    return JSON.parse(json);
-  } catch (error) {
-    return json;
-  }
-};
-
 const displayError = (name, error) => {
   assert(error);
   if (Array.isArray(error)) {
     return;
   }
-  if (error.isAxiosError) {
-    const { baseURL, url, method } = error.config;
-    const errorToDisplay = {
-      Command: name,
-      Message: error.message,
-      Status: error.response?.status,
-      Code: error.code,
-      Output: error.response?.data,
-      Input: {
-        url: `${method} ${baseURL}${url}`,
-        data: safeJsonParse(error.config?.data),
-      },
-    };
-    console.error(YAML.stringify(errorToDisplay));
-  } else {
-    //TODO find out if it is a aws error, do not display error.stack
-    console.error("Command:", name);
-    error.code && console.error("Code:   ", error.code);
-    error.message && console.error("Message:   ", error.message);
-    error.name && console.error("Name:   ", error.name);
-    error.stack && logger.error(error.stack);
-    error.stack && console.error(error.stack);
-  }
+  console.log(convertError({ error, name }));
 };
 
 const displayErrorsCommon = pipe([

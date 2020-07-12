@@ -2,8 +2,6 @@
 
 ## Common:
 
-error: retryCall error create EC2/ec2, attempt 0/30, retryDelay: 10000, error:Gateway.NotAttached: Network vpc-bbbafcd3 is not attached to any internet gateway
-
 - find out if it is a aws error, do not display error.stack
 
 gc p --provider aws
@@ -13,10 +11,6 @@ error: unknown option '--provider'
 - add multiple example for each provider
 
 * compare or compareObject
-
-for reference Error:
-"state": "ERROR",
-"error": {}
 
 ## Cli
 
@@ -31,6 +25,7 @@ for reference Error:
 
 ## TODO Aws:
 
+- add tags for every resource
 - public Ip address in example
 
 - s3

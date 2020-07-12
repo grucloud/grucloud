@@ -2,6 +2,40 @@ const assert = require("assert");
 const logger = require("../logger")({ prefix: "Common" });
 const { tos } = require("../tos");
 
+const safeJsonParse = (json) => {
+  try {
+    return JSON.parse(json);
+  } catch (error) {
+    return json;
+  }
+};
+
+//TODO aws error
+exports.convertError = ({ error, name }) => {
+  if (error.isAxiosError) {
+    const { baseURL, url, method } = error.config;
+    return {
+      Command: name,
+      Message: error.message,
+      Status: error.response?.status,
+      Code: error.code,
+      Output: error.response?.data,
+      Input: {
+        url: `${method} ${baseURL}${url}`,
+        data: safeJsonParse(error.config?.data),
+      },
+    };
+  } else {
+    return {
+      Command: name,
+      name: error.name,
+      code: error.code,
+      message: error.message,
+      stack: error.stack,
+    };
+  }
+};
+
 exports.findField = ({ item, field }) => {
   assert(item, "findField item");
   assert(field, "findField field");

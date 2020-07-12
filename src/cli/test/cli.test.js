@@ -130,9 +130,7 @@ describe("cli error", function () {
           configFile: configFile500,
           onExit: ({ code, error: { error } }) => {
             assert.equal(code, 422);
-            error.forEach((error) =>
-              assert.equal(error.error.response.status, 500)
-            );
+            error.forEach((error) => assert.equal(error.error.Status, 500));
           },
         })
     )(commands);
