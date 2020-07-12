@@ -12,7 +12,6 @@ describe("GcpServiceAccount", async function () {
   const serviceAccountDisplayName = "Sa Display Name";
   let config;
   let provider;
-  let network;
   let serviceAccount;
 
   before(async function () {

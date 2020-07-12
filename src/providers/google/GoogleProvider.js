@@ -8,7 +8,10 @@ const GoogleTag = require("./GoogleTag");
 const compare = require("../../Utils").compare;
 const { tos } = require("../../tos");
 
-const GcpServiceAccount = require("./resources/iam/GcpServiceAccount");
+const {
+  GcpServiceAccount,
+  isOurMinionServiceAccount,
+} = require("./resources/iam/GcpServiceAccount");
 
 //const GcpProject = require("./resources/resourcemanager/GcpProject");
 const GcpNetwork = require("./resources/compute/GcpNetwork");
@@ -40,7 +43,8 @@ const fnSpecs = (config) => {
           spec,
           config,
         }),
-      isOurMinion,
+      isOurMinion: ({ resource, resourceNames }) =>
+        isOurMinionServiceAccount({ resource, resourceNames }),
     },
     {
       type: "Network",

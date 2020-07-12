@@ -150,7 +150,12 @@ const ResourceMaker = ({
       retryDelay: provider.config().retryDelay,
     });
 
-    if (!client.spec.isOurMinion({ resource: live })) {
+    if (
+      !client.spec.isOurMinion({
+        resource: live,
+        resourceNames: provider.resourceNames(),
+      })
+    ) {
       throw Error(`Resource ${type}/${resourceName} is not tagged correctly`);
     }
 
@@ -316,7 +321,10 @@ function CoreProvider({
         .map((item) => ({
           name: client.findName(item),
           id: client.findId(item),
-          managedByUs: client.spec.isOurMinion({ resource: item }),
+          managedByUs: client.spec.isOurMinion({
+            resource: item,
+            resourceNames: resourceNames(),
+          }),
           providerName: client.spec.providerName,
           data: item,
         }))
@@ -473,7 +481,7 @@ function CoreProvider({
     );
 
     // Cannot delete default resource
-    if (client.cannotBeDeleted(resource, name)) {
+    if (client.cannotBeDeleted(resource, resourceNames())) {
       logger.debug(
         `planFindDestroy ${type}/${name}, default resource cannot be deleted`
       );
@@ -489,7 +497,7 @@ function CoreProvider({
       logger.debug(`planFindDestroy ${type}/${name}, delete all`);
       return true;
     }
-    if (!spec.isOurMinion({ resource })) {
+    if (!spec.isOurMinion({ resource, resourceNames: resourceNames() })) {
       logger.error(`planFindDestroy ${type}/${name}, not our minion`);
       return false;
     }
@@ -687,6 +695,7 @@ function CoreProvider({
     targetResourcesAdd,
     clientByType,
     resourceByName,
+    resourceNames,
     getTargetResources,
     isPlanEmpty,
   };

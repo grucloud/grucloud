@@ -4,10 +4,22 @@ const logger = require("../../../../logger")({ prefix: "GcpServiceAccount" });
 const { tos } = require("../../../../tos");
 const GoogleClient = require("../../GoogleClient");
 
+const findName = (item) => {
+  const name = item.email.split("@")[0];
+  return name;
+};
+
+const isOurMinionServiceAccount = ({ resource, resourceNames }) => {
+  assert(resource, "resource");
+  assert(resourceNames, "resourceNames");
+  const isOur = resourceNames.includes(findName(resource));
+  logger.info(`isOurMinionServiceAccount: ${isOur}`);
+  return isOur;
+};
+exports.isOurMinionServiceAccount = isOurMinionServiceAccount;
 // https://cloud.google.com/iam/docs/reference/rest/v1/projects.serviceAccounts
 // https://cloud.google.com/iam/docs/creating-managing-service-accounts#creating
-
-module.exports = GcpServiceAccount = ({ spec, config }) => {
+exports.GcpServiceAccount = ({ spec, config }) => {
   assert(spec);
   assert(config);
   assert(config.stage);
@@ -24,11 +36,6 @@ module.exports = GcpServiceAccount = ({ spec, config }) => {
       properties
     );
 
-  const findName = (item) => {
-    const name = item.email.split("@")[0];
-    return name;
-  };
-
   const findId = (item) => item.uniqueId;
   const findTargetId = (item) => item.uniqueId;
 
@@ -36,11 +43,8 @@ module.exports = GcpServiceAccount = ({ spec, config }) => {
     return { total: accounts.length, items: accounts };
   };
 
-  const cannotBeDeleted = (item, name) => {
-    const isOurMinion = spec.isOurMinion({ resource: item });
-    logger.debug(`gcp sa cannotBeDeleted: ${!isOurMinion}`);
-    return !isOurMinion;
-  };
+  const cannotBeDeleted = (item, resourceNames) =>
+    !isOurMinionServiceAccount({ resource: item, resourceNames });
 
   return GoogleClient({
     spec,
