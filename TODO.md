@@ -2,7 +2,7 @@
 
 ## Common:
 
-- find out if it is a aws error, do not display error.stack
+- remove ramda
 
 gc p --provider aws
 error: unknown option '--provider'

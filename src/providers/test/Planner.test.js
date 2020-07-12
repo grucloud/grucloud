@@ -1,5 +1,4 @@
 const assert = require("assert");
-const _ = require("lodash");
 const sinon = require("sinon");
 const {
   azSpecs,

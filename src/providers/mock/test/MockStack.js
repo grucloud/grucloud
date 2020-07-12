@@ -1,5 +1,4 @@
 const assert = require("assert");
-const _ = require("lodash");
 const MockProvider = require("../MockProvider");
 const MockCloud = require("../MockCloud");
 const { createAxiosMock } = require("./MockAxios");

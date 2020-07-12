@@ -1,4 +1,3 @@
-const _ = require("lodash");
 const { isEmpty } = require("lodash/fp");
 const assert = require("assert");
 

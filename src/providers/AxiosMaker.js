@@ -1,4 +1,3 @@
-const _ = require("lodash");
 const Axios = require("axios");
 const logger = require("../logger")({ prefix: "AxiosMaker" });
 const { tos } = require("../tos");

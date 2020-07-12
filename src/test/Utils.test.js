@@ -1,5 +1,4 @@
 const assert = require("assert");
-const _ = require("lodash");
 const { compare, compareObject } = require("../Utils");
 const { checkConfig } = require("../Utils");
 const { replacerCredentials, hiddenCredentials } = require("../tos");

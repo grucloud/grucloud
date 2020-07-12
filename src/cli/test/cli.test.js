@@ -1,6 +1,5 @@
 const assert = require("assert");
 const Axios = require("axios");
-const _ = require("lodash");
 const path = require("path");
 const shell = require("shelljs");
 const { map, any } = require("rubico");

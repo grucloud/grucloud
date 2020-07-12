@@ -1,9 +1,8 @@
 const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
 const AwsProvider = require("../AwsProvider");
-const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
-describe.only("AwsS3BucketErrors", async function () {
+describe("AwsS3BucketErrors", async function () {
   let config;
   before(async function () {
     try {
