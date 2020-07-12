@@ -23,7 +23,7 @@ const checkError = (success, results) => {
   assert(results[0].item);
   assert(!results[0].input);
   assert(!results[0].output);
-  assert(results[0].error.error);
+  assert(results[0].error);
   assert(!success);
 };
 
@@ -100,7 +100,7 @@ describe("Planner", function () {
       stateChanges.join(",")
     );
   });
-  it("az create reject partial", async function () {
+  it.only("az create reject partial", async function () {
     const stateChanges = [];
     const planner = Planner({
       plans: azPlansCreate().slice(0, 2),
