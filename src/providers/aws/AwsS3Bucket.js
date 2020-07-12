@@ -188,6 +188,7 @@ module.exports = AwsS3 = ({ spec, config }) => {
     type: "S3",
     spec,
     s3,
+    config: { ...config, repeatCount: 2 },
     isUpById,
     isDownById,
     findId,
