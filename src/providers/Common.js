@@ -25,6 +25,19 @@ exports.convertError = ({ error, name }) => {
         data: safeJsonParse(error.config?.data),
       },
     };
+  } else if (error.requestId) {
+    return {
+      Command: name,
+      name: error.name,
+      code: error.code,
+      statusCode: error.statusCode,
+      message: error.message,
+      region: error.region,
+      requestId: error.requestId,
+      retryable: error.retryable,
+      retryDelay: error.retryDelay,
+      time: error.time,
+    };
   } else {
     return {
       Command: name,

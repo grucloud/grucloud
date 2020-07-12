@@ -62,7 +62,7 @@ const displayError = (name, error) => {
   if (Array.isArray(error)) {
     return;
   }
-  console.log(convertError({ error, name }));
+  console.log(YAML.stringify(convertError({ error, name })));
 };
 
 const displayErrorsCommon = pipe([

@@ -598,7 +598,10 @@ function CoreProvider({
     });
     return await planner.run();
   };
-
+  const planQueryAndApply = async () => {
+    const plan = await planQuery();
+    return await planApply({ plan });
+  };
   const destroyByClient = async ({ client, name, config }) => {
     assert(client);
     assert(config);
@@ -687,6 +690,7 @@ function CoreProvider({
     type: toType,
     destroyAll,
     planFindDestroy,
+    planQueryAndApply,
     planQuery,
     planApply,
     planDestroy,
