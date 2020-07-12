@@ -3,7 +3,6 @@ const { defaultsDeep } = require("lodash/fp");
 const logger = require("../../../../logger")({ prefix: "GcpInstance" });
 const { tos } = require("../../../../tos");
 const GoogleClient = require("../../GoogleClient");
-const { isUpByIdCore } = require("../../../Common");
 
 // https://cloud.google.com/resource-manager/reference/rest/v1/projects
 module.exports = GcpProject = ({ spec, config }) => {

@@ -148,13 +148,11 @@ module.exports = CoreClient = ({
       logger.debug(`create findTargetId: ${id}`);
 
       assert(id, "no target id from result");
-      await retryExpectOk({
+      const resource = await retryExpectOk({
         name: `create ${spec.type}/${name}`,
         fn: () => isUpById({ id }),
         config,
       });
-      //TODO isUpById shoould return the resource
-      const resource = await getById({ id });
       logger.debug(`created ${type}/${name}`);
       return onResponseGet(resource);
     } catch (error) {

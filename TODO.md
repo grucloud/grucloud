@@ -5,8 +5,6 @@
 gc p --provider aws
 error: unknown option '--provider'
 
-- isUpById should return the resource
-
 - terraform output
 - add multiple example for each provider
 
@@ -45,12 +43,7 @@ for reference Error:
   ssh-keys = "INSERT_USERNAME:\${file("~/.ssh/id_rsa.pub")}"
   }
   }
-- google_service_account
 - google_project_iam_member
-- google_compute_router
-- google_compute_router_nat
-- google_compute_network_peering
-- google_project
 
 - ssh `terraform output ip`
 - rename in gcp

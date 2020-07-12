@@ -4,8 +4,6 @@ const logger = require("../../../../logger")({ prefix: "GcpServiceAccount" });
 const { tos } = require("../../../../tos");
 const GoogleClient = require("../../GoogleClient");
 
-const { isUpByIdCore } = require("../../../Common");
-
 // https://cloud.google.com/iam/docs/reference/rest/v1/projects.serviceAccounts
 // https://cloud.google.com/iam/docs/creating-managing-service-accounts#creating
 

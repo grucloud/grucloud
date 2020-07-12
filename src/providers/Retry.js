@@ -69,6 +69,7 @@ const retryExpectOk = async ({ name, fn, config }) => {
       if (!result) {
         throw Error(`Retry ${name}`);
       }
+      return result;
     },
     retryCount: config.retryCount || 30,
     retryDelay: config.retryDelay || 10e3,

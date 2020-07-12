@@ -56,7 +56,7 @@ exports.isUpByIdCore = ({ isInstanceUp, getById }) => async ({ id }) => {
     }
   }
   logger.info(`isUpById ${id} ${up ? "UP" : "NOT UP"}`);
-  return up;
+  return up ? instance : undefined;
 };
 
 exports.isDownByIdCore = ({
