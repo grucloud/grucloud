@@ -25,7 +25,7 @@ module.exports = GcpAddress = ({ spec, config }) => {
   const getStateName = (instance) => {
     const { status } = instance;
     assert(status);
-    logger.debug(`stateName ${status}`);
+    logger.debug(`address stateName ${status}`);
     return status;
   };
 

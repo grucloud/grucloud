@@ -13,8 +13,6 @@ exports.isOurMinion = ({ resource, config }) => {
 
   const isMinion = !!_.find(tags, (value, key) => isGruLabel(key, value));
 
-  logger.info(
-    `isOurMinion isMinion: ${isMinion}, ${tos({ config, resource })}`
-  );
+  logger.info(`isOurMinion isMinion: ${isMinion}`);
   return isMinion;
 };

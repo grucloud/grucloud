@@ -97,7 +97,7 @@ module.exports = GoogleVmInstance = ({ spec, config }) => {
   const getStateName = (instance) => {
     const { status } = instance;
     assert(status);
-    logger.debug(`stateName ${status}`);
+    logger.debug(`vm stateName ${status}`);
     return status;
   };
   const isInstanceUp = (instance) => {

@@ -100,7 +100,7 @@ describe("Planner", function () {
       stateChanges.join(",")
     );
   });
-  it.only("az create reject partial", async function () {
+  it("az create reject partial", async function () {
     const stateChanges = [];
     const planner = Planner({
       plans: azPlansCreate().slice(0, 2),

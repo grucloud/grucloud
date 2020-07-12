@@ -136,7 +136,7 @@ describe("AzProvider", async function () {
     assert(success, "destroyAll ko");
   });
   after(async () => {
-    await provider?.destroyAll();
+    //await provider?.destroyAll();
   });
   it("plan", async function () {
     const plan = await provider.planQuery();

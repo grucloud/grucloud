@@ -18,7 +18,7 @@ const fnSpecs = (config) => {
   const getStateName = (instance) => {
     const { provisioningState } = instance.properties;
     assert(provisioningState);
-    logger.debug(`stateName ${provisioningState}`);
+    logger.debug(`az stateName ${provisioningState}`);
     return provisioningState;
   };
 

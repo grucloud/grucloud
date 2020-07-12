@@ -45,7 +45,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
 
   const getStateName = (instance) => {
     const state = instance.Attachments[0]?.State;
-    logger.debug(`stateName ${state}`);
+    logger.debug(`ig stateName ${state}`);
     return state;
   };
 

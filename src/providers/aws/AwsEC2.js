@@ -60,7 +60,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
 
   const getStateName = (instance) => {
     const state = instance.Instances[0].State.Name;
-    logger.debug(`stateName ${state}`);
+    logger.debug(`ec2 stateName ${state}`);
     return state;
   };
 

@@ -163,8 +163,7 @@ const ResourceMaker = ({
   };
 
   const planUpsert = async ({ resource }) => {
-    const resourceJson = resource.toJSON();
-    logger.info(`planUpsert resource: ${tos(resourceJson)}`);
+    logger.info(`planUpsert resource: ${resource.toString()}`);
     const live = await resource.getLive();
     logger.debug(`planUpsert live: ${tos(live)}`);
     const plan = live
@@ -172,7 +171,7 @@ const ResourceMaker = ({
       : [
           {
             action: "CREATE",
-            resource: resourceJson,
+            resource: resource.toJSON(),
             config: await resource.resolveConfig(),
           },
         ];
@@ -181,10 +180,11 @@ const ResourceMaker = ({
   };
 
   const toJSON = () => ({
-    name: resourceName,
-    type,
     provider: provider.name,
+    type,
+    name: resourceName,
   });
+  const toString = () => `${provider.name}/${resourceName}${resourceName}`;
 
   const addParent = (parentToSet) => {
     parent = parentToSet;
@@ -198,6 +198,7 @@ const ResourceMaker = ({
     spec,
     client,
     toJSON,
+    toString,
     resolveConfig,
     create,
     planUpsert,
