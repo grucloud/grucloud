@@ -36,6 +36,12 @@ module.exports = GcpServiceAccount = ({ spec, config }) => {
     return { total: accounts.length, items: accounts };
   };
 
+  const cannotBeDeleted = (item, name) => {
+    const isOurMinion = spec.isOurMinion({ resource: item });
+    logger.debug(`gcp sa cannotBeDeleted: ${!isOurMinion}`);
+    return !isOurMinion;
+  };
+
   return GoogleClient({
     spec,
     baseURL: `https://iam.googleapis.com/v1`,
@@ -46,5 +52,6 @@ module.exports = GcpServiceAccount = ({ spec, config }) => {
     findTargetId,
     onResponseList,
     configDefault,
+    cannotBeDeleted,
   });
 };
