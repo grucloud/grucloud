@@ -50,7 +50,7 @@ describe("AwsInternetGateway", async function () {
   it("ig getLive", async function () {
     await ig.getLive();
   });
-  it("apply and destroy", async function () {
+  it("ig apply and destroy", async function () {
     await testPlanDeploy({ provider });
     const igLive = await ig.getLive();
     const vpcLive = await vpc.getLive();
@@ -61,11 +61,14 @@ describe("AwsInternetGateway", async function () {
     });
 
     const [igs] = await provider.listLives({ types: ["InternetGateway"] });
-    const resource = igs.resources[0].data;
     assert.equal(igs.type, "InternetGateway");
-    assert.equal(resource.Attachments[0].State, "available");
-    assert.equal(resource.Attachments[0].VpcId, vpcLive.VpcId);
-    assert(resource.InternetGatewayId);
+    const myIg = igs.resources.find(
+      (resource) => resource.data.Attachments[0].VpcId === vpcLive.VpcId
+    );
+    assert(myIg);
+    assert.equal(myIg.data.Attachments[0].State, "available");
+
+    assert(myIg.data.InternetGatewayId);
     //assert(resource.PublicIp);
     await testPlanDestroy({ provider });
   });
