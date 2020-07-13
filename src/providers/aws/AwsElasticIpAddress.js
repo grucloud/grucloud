@@ -1,7 +1,7 @@
 const AWS = require("aws-sdk");
 const { defaultsDeep, isEmpty } = require("lodash/fp");
 const assert = require("assert");
-const logger = require("../../logger")({ prefix: "AwsElasticIpAddress" });
+const logger = require("../../logger")({ prefix: "AwsEip" });
 const { tos } = require("../../tos");
 const { retryExpectOk } = require("../Retry");
 const { getByIdCore } = require("./AwsCommon");

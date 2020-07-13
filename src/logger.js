@@ -9,7 +9,7 @@ const transportFiles = [
       format.timestamp({ format: "HH:mm:ss.SSS" }),
       format.printf(
         (info) =>
-          `${info.timestamp} ${info.level}: ${info.message}` +
+          `${info.timestamp} ${info.level.padEnd(5, " ")}: ${info.message}` +
           (info.splat !== undefined ? `${info.splat}` : " ")
       )
     ),
@@ -31,8 +31,8 @@ const logger = createLogger({
 module.exports = ({ prefix = "" }) => {
   return {
     logger,
-    error: (...args) => logger.error(`${prefix} ${args}`),
-    info: (...args) => logger.info(`${prefix} ${args}`),
-    debug: (...args) => logger.debug(`${prefix} ${args}`),
+    error: (...args) => logger.error(`${prefix.padEnd(6, " ")} ${args}`),
+    info: (...args) => logger.info(`${prefix.padEnd(6, " ")} ${args}`),
+    debug: (...args) => logger.debug(`${prefix.padEnd(6, " ")} ${args}`),
   };
 };

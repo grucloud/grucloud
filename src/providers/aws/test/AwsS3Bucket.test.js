@@ -61,7 +61,7 @@ describe("AwsS3Bucket", async function () {
     await testPlanDeploy({ provider });
 
     const s3BucketLive = await s3Bucket.getLive();
-
+    assert(s3BucketLive);
     CheckTagsS3({
       config: provider.config(),
       tags: s3BucketLive.TagSet,

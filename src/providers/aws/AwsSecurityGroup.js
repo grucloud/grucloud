@@ -11,7 +11,7 @@ const {
   isUpByIdCore,
   isDownByIdCore,
 } = require("../Common");
-const logger = require("../../logger")({ prefix: "AwsSecurityGroup" });
+const logger = require("../../logger")({ prefix: "AwsSg" });
 const { tagResource } = require("./AwsTagResource");
 
 const { tos } = require("../../tos");
@@ -31,7 +31,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroups-property
   const getList = async (params = {}) => {
-    logger.debug(`list sg`);
+    logger.debug(`list`);
     const securityGroups = await new Promise((resolve, reject) => {
       ec2.describeSecurityGroups(params, (error, response) => {
         if (error) {
@@ -42,7 +42,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
         }
       });
     });
-    logger.debug(`list sg ${tos(securityGroups)}`);
+    logger.debug(`list ${tos(securityGroups)}`);
 
     return {
       total: securityGroups.length,
@@ -56,9 +56,9 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const isUpById = isUpByIdCore({ getById });
   const isDownById = isDownByIdCore({ getById });
 
-  const cannotBeDeleted = (item) => {
-    assert(item.GroupName);
-    return item.GroupName === "default";
+  const cannotBeDeleted = ({ resource }) => {
+    assert(resource.GroupName);
+    return resource.GroupName === "default";
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
@@ -72,7 +72,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
       ...payload.create,
     };
 
-    logger.debug(`create sg ${tos({ name, createParams, payload })}`);
+    logger.debug(`create ${tos({ name, createParams, payload })}`);
     const { GroupId } = await ec2.createSecurityGroup(createParams).promise();
     logger.debug(`create GroupId ${tos(GroupId)}`);
 
@@ -99,21 +99,21 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
 
     await ec2.authorizeSecurityGroupIngress(ingressParam).promise();
 
-    logger.debug(`create sg DONE`);
+    logger.debug(`create DONE`);
 
     return { GroupId };
   };
 
   const destroy = async ({ id, name }) => {
-    logger.debug(`destroy sg ${tos({ name, id })}`);
+    logger.debug(`destroy ${tos({ name, id })}`);
     assert(id);
     const result = await ec2.deleteSecurityGroup({ GroupId: id }).promise();
-    logger.debug(`destroy sg IN PROGRESS, ${tos({ name, id, result })}`);
+    logger.debug(`destroy IN PROGRESS, ${tos({ name, id, result })}`);
     return result;
   };
   const configDefault = async ({ name, properties, dependencies }) => {
     logger.debug(
-      `configDefault sg ${tos({
+      `configDefault ${tos({
         name,
         properties,
         dependencies,
@@ -126,7 +126,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
         ...(vpc && { VpcId: getField(vpc, "VpcId") }),
       },
     });
-    logger.debug(`configDefault sg ${name} result: ${tos(config)}`);
+    logger.debug(`configDefault ${name} result: ${tos(config)}`);
     return config;
   };
 

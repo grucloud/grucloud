@@ -1,7 +1,7 @@
 const AWS = require("aws-sdk");
 const { isEmpty } = require("lodash/fp");
 const assert = require("assert");
-const logger = require("../../logger")({ prefix: "AwsSubnet" });
+const logger = require("../../logger")({ prefix: "AwsSn" });
 const { getField } = require("../ProviderCommon");
 const { tos } = require("../../tos");
 const {
@@ -87,9 +87,9 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     return config;
   };
 
-  const cannotBeDeleted = (item) => {
-    logger.debug(`cannotBeDeleted: DefaultForAz: ${item.DefaultForAz}`);
-    return item.DefaultForAz;
+  const cannotBeDeleted = ({ resource }) => {
+    logger.debug(`cannotBeDeleted: DefaultForAz: ${resource.DefaultForAz}`);
+    return resource.DefaultForAz;
   };
 
   return {

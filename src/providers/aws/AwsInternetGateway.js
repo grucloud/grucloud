@@ -1,7 +1,7 @@
 const AWS = require("aws-sdk");
 const { defaultsDeep, isEmpty } = require("lodash/fp");
 const assert = require("assert");
-const logger = require("../../logger")({ prefix: "AwsInternetGateway" });
+const logger = require("../../logger")({ prefix: "AwsIgw" });
 const { tos } = require("../../tos");
 const { retryExpectOk } = require("../Retry");
 const { KeyName, getByIdCore } = require("./AwsCommon");
@@ -28,11 +28,11 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInternetGateways-property
   const getList = async (params) => {
-    logger.debug(`list ig ${tos(params)}`);
+    logger.debug(`list ${tos(params)}`);
     const { InternetGateways } = await ec2
       .describeInternetGateways(params)
       .promise();
-    logger.info(`list ig ${tos(InternetGateways)}`);
+    logger.info(`list ${tos(InternetGateways)}`);
 
     return {
       total: InternetGateways.length,
@@ -45,7 +45,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
 
   const getStateName = (instance) => {
     const state = instance.Attachments[0]?.State;
-    logger.debug(`ig stateName ${state}`);
+    logger.debug(`stateName ${state}`);
     return state;
   };
 
@@ -65,7 +65,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
     assert(name);
     //assert(payload);
 
-    logger.debug(`create ig  ${tos({ name, payload })}`);
+    logger.debug(`create ${tos({ name, payload })}`);
     const {
       InternetGateway: { InternetGatewayId },
     } = await ec2.createInternetGateway(payload).promise();
@@ -87,7 +87,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
       InternetGatewayId,
       VpcId: vpcLive.VpcId,
     };
-    logger.debug(`create ig, ig attaching vpc ${tos({ vpcLive })}`);
+    logger.debug(`create, ig attaching vpc ${tos({ vpcLive })}`);
     await ec2.attachInternetGateway(paramsAttach).promise();
     logger.debug(`create ig, vpc attached`);
 
@@ -103,10 +103,10 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#detachInternetGateway-property
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteInternetGateway-property
   const destroy = async ({ id, name }) => {
-    logger.debug(`destroy ig ${tos({ name, id })}`);
+    logger.debug(`destroy ${tos({ name, id })}`);
 
     if (isEmpty(id)) {
-      throw Error(`destroy ig invalid id`);
+      throw Error(`destroy invalid id`);
     }
     const ig = await getById({ id });
     const attachment = ig.Attachments[0];
@@ -115,18 +115,19 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
         InternetGatewayId: id,
         VpcId: attachment.VpcId,
       };
-      logger.debug(`destroy ig detaching vpc ${attachment.VpcId}`);
+      logger.debug(`destroy detaching vpc ${attachment.VpcId}`);
       await ec2.detachInternetGateway(paramsDetach).promise();
     }
     await ec2.deleteInternetGateway({ InternetGatewayId: id }).promise();
-    logger.debug(`destroy ig IN PROGRESS, ${tos({ name, id })}`);
+    logger.debug(`destroyed, ${tos({ name, id })}`);
     return;
   };
 
   const configDefault = async ({ name, properties }) =>
     defaultsDeep({}, properties);
 
-  const cannotBeDeleted = (item, name) => {
+  const cannotBeDeleted = ({ resource, name }) => {
+    logger.debug(`cannotBeDeleted name: ${name} ${tos({ resource })}`);
     return !name;
   };
 

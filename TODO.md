@@ -28,10 +28,14 @@ error: unknown option '--provider'
 
 ## TODO Aws:
 
+aws iam create-user --user-name terraform-user
+aws iam put-user-policy --user-name terraform-user --policy-name least-privilege --policy-document file://policy.json
+
 - add tags for every resource
 - public Ip address in example
 
-- s3
+- s3 versioning
+- s3 website website
 - cloudtrail
 
 ## TODO Goggle

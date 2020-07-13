@@ -1,7 +1,7 @@
 const AWS = require("aws-sdk");
 const { defaultsDeep, isEmpty } = require("lodash/fp");
 const assert = require("assert");
-const logger = require("../../logger")({ prefix: "AwsRouteTables" });
+const logger = require("../../logger")({ prefix: "AwsRtb" });
 const { tos } = require("../../tos");
 const { retryExpectOk } = require("../Retry");
 const { getByIdCore } = require("./AwsCommon");
@@ -29,9 +29,9 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeRouteTables-property
   const getList = async (params) => {
-    logger.debug(`list rt ${tos(params)}`);
+    logger.debug(`list ${tos(params)}`);
     const { RouteTables } = await ec2.describeRouteTables(params).promise();
-    logger.info(`list rt ${tos(RouteTables)}`);
+    logger.info(`list ${tos(RouteTables)}`);
 
     return {
       total: RouteTables.length,
@@ -59,12 +59,12 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     const paramCreate = {
       VpcId: vpcLive.VpcId,
     };
-    logger.debug(`create rt  ${tos({ name, paramCreate })}`);
+    logger.debug(`create ${tos({ name, paramCreate })}`);
     const {
       RouteTable: { RouteTableId },
     } = await ec2.createRouteTable(paramCreate).promise();
     assert(RouteTableId);
-    logger.info(`created rt ${RouteTableId}`);
+    logger.info(`created ${RouteTableId}`);
 
     await tagResource({
       config,
@@ -83,11 +83,11 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
       RouteTableId,
       SubnetId: subnetLive.SubnetId,
     };
-    logger.debug(`create ig, ig attaching subnet ${tos({ subnetLive })}`);
+    logger.debug(`create, associating with subnet ${tos({ subnetLive })}`);
     //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#associateRouteTable-property
     await ec2.associateRouteTable(paramsAttach).promise();
 
-    logger.debug(`create ig, vpc attached`);
+    logger.debug(`associated`);
 
     await retryExpectOk({
       name: `isUpById: ${name} id: ${RouteTableId}`,
@@ -100,17 +100,17 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#disassociateRouteTable-property
   const destroy = async ({ id, name }) => {
-    logger.debug(`destroy rt ${tos({ name, id })}`);
+    logger.debug(`destroy ${tos({ name, id })}`);
 
     if (isEmpty(id)) {
-      throw Error(`destroy rt invalid id`);
+      throw Error(`destroy invalid id`);
     }
     const rtLive = await getById({ id });
     await pipe([
       filter((association) => !association.Main),
       async (associations) =>
         await map(async (association) => {
-          logger.debug(`destroy rt disassociate ${tos({ association })}`);
+          logger.debug(`destroy disassociate ${tos({ association })}`);
           await ec2
             .disassociateRouteTable({
               AssociationId: association.RouteTableAssociationId,
@@ -119,16 +119,17 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
         })(associations),
     ])(rtLive.Associations);
 
-    logger.debug(`destroy rt delete ${tos({ RouteTableId: id })}`);
+    logger.debug(`destroying ${tos({ RouteTableId: id })}`);
     await ec2.deleteRouteTable({ RouteTableId: id }).promise();
-    logger.debug(`destroy rt IN PROGRESS, ${tos({ name, id })}`);
+    logger.debug(`destroyed ${tos({ name, id })}`);
     return;
   };
 
   const configDefault = async ({ name, properties }) =>
     defaultsDeep({}, properties);
 
-  const cannotBeDeleted = (item, name) => {
+  const cannotBeDeleted = ({ resource, name }) => {
+    logger.debug(`cannotBeDeleted name: ${name} ${tos({ resource })}`);
     return !name;
   };
 

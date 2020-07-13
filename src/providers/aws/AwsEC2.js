@@ -1,7 +1,7 @@
 const AWS = require("aws-sdk");
 const { defaultsDeep, isEmpty, map } = require("lodash/fp");
 const assert = require("assert");
-const logger = require("../../logger")({ prefix: "AwsEC2" });
+const logger = require("../../logger")({ prefix: "AwsEc2" });
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../Common");
 const { retryExpectOk } = require("../Retry");
 
@@ -41,14 +41,14 @@ module.exports = AwsEC2 = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
   const getList = async () => {
-    logger.debug(`getList ec2`);
+    logger.debug(`getList`);
     const data = await ec2.describeInstances().promise();
     //logger.debug(`getList ec2 ${tos(data)}`);
     const items = data.Reservations.filter(
       (reservation) =>
         !StateTerminated.includes(reservation.Instances[0].State.Name)
     );
-    logger.debug(`ec2 getList filtered: ${tos(items)}`);
+    logger.debug(`getList filtered: ${tos(items)}`);
     return {
       total: items.length,
       items,
@@ -60,7 +60,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
 
   const getStateName = (instance) => {
     const state = instance.Instances[0].State.Name;
-    logger.debug(`ec2 stateName ${state}`);
+    logger.debug(`stateName ${state}`);
     return state;
   };
 
@@ -83,7 +83,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
   const create = async ({ name, payload, dependencies }) => {
     assert(name);
     assert(payload);
-    logger.debug(`create ec2 ${tos({ name, payload })}`);
+    logger.debug(`create ${tos({ name, payload })}`);
     const data = await ec2.runInstances(payload).promise();
     logger.debug(`create result ${tos(data)}`);
     const instance = data.Instances[0];
@@ -96,7 +96,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     const { eip } = dependencies;
     if (eip) {
       const eipLive = await eip.getLive();
-      logger.debug(`create ec2, associating eip ${tos({ eipLive })}`);
+      logger.debug(`create, associating eip ${tos({ eipLive })}`);
       const { AllocationId } = eipLive;
       assert(AllocationId);
       const paramsAssociate = {
@@ -104,16 +104,16 @@ module.exports = AwsEC2 = ({ spec, config }) => {
         InstanceId,
       };
       await ec2.associateAddress(paramsAssociate).promise();
-      logger.debug(`create ec2, eip associated`);
+      logger.debug(`create, eip associated`);
     }
 
     return instance;
   };
 
   const destroy = async ({ id, name }) => {
-    logger.debug(`destroy ec2 ${tos({ name, id })}`);
+    logger.debug(`destroy ${tos({ name, id })}`);
     if (isEmpty(id)) {
-      throw Error(`destroy invalid ec2 id`);
+      throw Error(`destroy invalid id`);
     }
 
     const result = await ec2
@@ -140,7 +140,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
       });
     }
 
-    logger.debug(`destroy ec2 in progress, ${tos({ name, id })}`);
+    logger.debug(`destroy in progress, ${tos({ name, id })}`);
 
     await retryExpectOk({
       name: `isDownById: ${name} id: ${id}`,
@@ -148,7 +148,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
       config,
     });
 
-    logger.debug(`destroy ec2 done, ${tos({ name, id, result })}`);
+    logger.debug(`destroy done, ${tos({ name, id, result })}`);
     return result;
   };
   const configDefault = async ({ name, properties, dependencies }) => {

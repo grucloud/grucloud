@@ -29,14 +29,14 @@ module.exports = AwsS3 = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listBuckets-property
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
   const getList = async () => {
-    logger.debug(`getList s3`);
+    logger.debug(`getList`);
     const { Buckets } = await s3.listBuckets().promise();
-    logger.debug(`getList s3 ${tos(Buckets)}`);
+    //logger.debug(`getList ${tos(Buckets)}`);
     const fullBuckets = await map.pool(listBucketPoolSize, async (bucket) => ({
       ...bucket,
       ...(await getByName({ name: bucket.Name })),
     }))(Buckets);
-    logger.debug(`getList s3 full ${tos(fullBuckets)}`);
+    logger.debug(`getList full ${tos(fullBuckets)}`);
 
     return {
       total: Buckets.length,
@@ -47,12 +47,12 @@ module.exports = AwsS3 = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicy-property
 
   const getByName = async ({ name }) => {
-    logger.debug(`getByName s3 ${name}`);
+    logger.debug(`getByName ${name}`);
 
     const params = { Bucket: name };
 
     if (!(await isUpById({ id: name }))) {
-      logger.debug(`getByName s3 cannot find: ${name}`);
+      logger.debug(`getByName cannot find: ${name}`);
 
       return;
     }
@@ -60,9 +60,6 @@ module.exports = AwsS3 = ({ spec, config }) => {
     const { LocationConstraint } = await s3.getBucketLocation(params).promise();
 
     //docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketTagging-property
-
-    //TOD handle exception
-    //const { TagSet } = await s3.getBucketTagging(params).promise();
 
     const TagSet = await new Promise((resolve, reject) =>
       s3.getBucketTagging(params, function (err, data) {
@@ -75,7 +72,7 @@ module.exports = AwsS3 = ({ spec, config }) => {
             reject(err);
           }
         } else {
-          logger.debug(`getBucketTagging ${name}: done ${tos(data.TagSet)}`);
+          //logger.debug(`getBucketTagging ${name}: done ${tos(data.TagSet)}`);
           resolve(data.TagSet);
         }
       })
@@ -92,7 +89,7 @@ module.exports = AwsS3 = ({ spec, config }) => {
             reject(err);
           }
         } else {
-          logger.debug(`getBucketPolicyStatus ${name}: done ${tos(data)}`);
+          //logger.debug(`getBucketPolicyStatus ${name}: done ${tos(data)}`);
           resolve(data);
         }
       })
@@ -105,7 +102,7 @@ module.exports = AwsS3 = ({ spec, config }) => {
       LocationConstraint,
       TagSet,
     };
-    logger.debug(`getByName s3 ${name} tags: ${tos(s3Bucket)}`);
+    logger.debug(`getByName ${name}: ${tos(s3Bucket)}`);
 
     return s3Bucket;
   };
@@ -120,18 +117,23 @@ module.exports = AwsS3 = ({ spec, config }) => {
       if (error.statusCode === 404) {
         return false;
       }
+      logger.error(`headBucket`);
+      logger.error(error);
+
       throw error;
     }
   };
 
   const isUpById = async ({ id }) => {
-    logger.debug(`isUpById ${id}`);
-    return await headBucket({ id });
+    const up = await headBucket({ id });
+    logger.debug(`isUpById ${id} ${up ? "UP" : "DOWN"}`);
+    return up;
   };
 
   const isDownById = async ({ id }) => {
-    logger.debug(`isDownById ${id}`);
-    return !(await headBucket({ id }));
+    const up = await headBucket({ id });
+    logger.debug(`isDownById ${id} ${up ? "UP" : "DOWN"}`);
+    return !up;
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property
@@ -140,7 +142,7 @@ module.exports = AwsS3 = ({ spec, config }) => {
     assert(payload);
 
     const { Tagging, ...otherProperties } = payload;
-    logger.debug(`create s3 bucket ${tos({ name, payload })}`);
+    logger.debug(`create bucket ${tos({ name, payload })}`);
 
     const managementTags = [
       {
@@ -182,7 +184,7 @@ module.exports = AwsS3 = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteBucketTagging-property
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteBucketWebsite-property
   const destroy = async ({ id, name }) => {
-    logger.debug(`destroy s3 bucket ${tos({ name, id })}`);
+    logger.debug(`destroy bucket ${tos({ name, id })}`);
     assert(id, `destroy invalid s3 id`);
 
     const params = {
@@ -190,7 +192,7 @@ module.exports = AwsS3 = ({ spec, config }) => {
     };
 
     const result = await s3.deleteBucket(params).promise();
-    logger.debug(`destroy s3 in progress, ${tos({ name, id })}`);
+    logger.debug(`destroy in progress, ${tos({ name, id })}`);
 
     await retryExpectOk({
       name: `isDownById: ${name} id: ${id}`,
@@ -198,7 +200,7 @@ module.exports = AwsS3 = ({ spec, config }) => {
       config,
     });
 
-    logger.debug(`destroy s3 done, ${tos({ name, id, result })}`);
+    logger.debug(`destroy done, ${tos({ name, id, result })}`);
     return result;
   };
 
