@@ -48,7 +48,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
       (reservation) =>
         !StateTerminated.includes(reservation.Instances[0].State.Name)
     );
-    logger.debug(`getList filtered: ${tos(items)}`);
+    logger.debug(`ec2 getList filtered: ${tos(items)}`);
     return {
       total: items.length,
       items,

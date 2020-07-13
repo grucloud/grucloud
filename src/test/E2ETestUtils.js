@@ -89,7 +89,10 @@ const testPlanDestroy = async ({ provider, full = false }) => {
   }
   {
     const plan = await provider.planQuery();
-    assert(!provider.isPlanEmpty(plan));
+    assert(
+      !provider.isPlanEmpty(plan),
+      "plan must no be empty after a destroy"
+    );
   }
   const lives = await provider.listLives({
     our: true,

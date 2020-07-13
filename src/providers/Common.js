@@ -58,7 +58,7 @@ exports.findField = ({ item, field }) => {
     logger.debug(`findField: ${name}`);
     return name;
   } else {
-    logger.debug(`findFields: cannot find name in ${tos(item)}`);
+    logger.debug(`findFields: cannot find name`);
   }
 };
 

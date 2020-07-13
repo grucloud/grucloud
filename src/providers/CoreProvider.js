@@ -499,7 +499,7 @@ function CoreProvider({
       return true;
     }
     if (!spec.isOurMinion({ resource, resourceNames: resourceNames() })) {
-      logger.error(`planFindDestroy ${type}/${name}, not our minion`);
+      logger.debug(`planFindDestroy ${type}/${name}, not our minion`);
       return false;
     }
 
