@@ -31,8 +31,8 @@ const logger = createLogger({
 module.exports = ({ prefix = "" }) => {
   return {
     logger,
-    error: (...args) => logger.error(args),
-    info: (...args) => logger.info(...args),
-    debug: (...args) => logger.debug(...args),
+    error: (...args) => logger.error(`${prefix} ${args}`),
+    info: (...args) => logger.info(`${prefix} ${args}`),
+    debug: (...args) => logger.debug(`${prefix} ${args}`),
   };
 };

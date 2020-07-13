@@ -10,7 +10,6 @@ const safeJsonParse = (json) => {
   }
 };
 
-//TODO aws error
 exports.convertError = ({ error, name }) => {
   if (error.isAxiosError) {
     const { baseURL, url, method } = error.config;
