@@ -1,5 +1,6 @@
 ---
-title: EC2
+id: EC2
+title: EC2 Instance
 ---
 
 Provides an EC2 instance resource, a.k.a virtual machine.

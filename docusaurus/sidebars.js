@@ -15,15 +15,19 @@ module.exports = {
       "aws/AwsGettingStarted",
       {
         Resources: [
-          "aws/resources/S3Bucket",
-          "aws/resources/KeyPair",
-          "aws/resources/Vpc",
-          "aws/resources/InternetGateway",
-          "aws/resources/RouteTables",
-          "aws/resources/Subnet",
-          "aws/resources/SecurityGroup",
-          "aws/resources/EC2",
-          "aws/resources/ElasticIpAddress",
+          { S3: ["aws/resources/S3/S3Bucket"] },
+          {
+            EC2: [
+              "aws/resources/EC2/KeyPair",
+              "aws/resources/EC2/Vpc",
+              "aws/resources/EC2/InternetGateway",
+              "aws/resources/EC2/RouteTables",
+              "aws/resources/EC2/Subnet",
+              "aws/resources/EC2/SecurityGroup",
+              "aws/resources/EC2/EC2",
+              "aws/resources/EC2/ElasticIpAddress",
+            ],
+          },
         ],
       },
       "aws/AwsMisc",
