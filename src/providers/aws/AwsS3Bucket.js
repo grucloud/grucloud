@@ -13,7 +13,7 @@ const listBucketPoolSize = 5;
 module.exports = AwsS3 = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  const clientConfig = { ...config, repeatCount: 6 };
+  const clientConfig = { ...config, retryDelay: 2000, repeatCount: 4 };
   const { managedByKey, managedByValue, stageTagKey, stage } = config;
   assert(stage);
 

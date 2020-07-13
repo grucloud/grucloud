@@ -17,7 +17,7 @@ const retryCall = async ({
   name = "",
   fn,
   repeatCount = 0,
-  repeatDelay = 500,
+  repeatDelay = 1e3,
   retryCount = 30,
   retryDelay = 5e3,
   shouldRetry = () => false,
