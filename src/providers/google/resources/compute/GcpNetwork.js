@@ -23,8 +23,8 @@ module.exports = GcpNetwork = ({ spec, config }) => {
       properties
     );
 
-  const cannotBeDeleted = (item) => {
-    return item.name === "default";
+  const cannotBeDeleted = ({ resource }) => {
+    return resource.name === "default";
   };
 
   return GoogleClient({

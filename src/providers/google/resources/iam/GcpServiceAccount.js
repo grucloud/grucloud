@@ -43,8 +43,8 @@ exports.GcpServiceAccount = ({ spec, config }) => {
     return { total: accounts.length, items: accounts };
   };
 
-  const cannotBeDeleted = (item, resourceNames) =>
-    !isOurMinionServiceAccount({ resource: item, resourceNames });
+  const cannotBeDeleted = ({ resource, resourceNames }) =>
+    !isOurMinionServiceAccount({ resource, resourceNames });
 
   return GoogleClient({
     spec,

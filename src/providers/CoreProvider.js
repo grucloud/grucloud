@@ -4,7 +4,7 @@ const { defaultsDeep } = require("lodash/fp");
 const { isEmpty, flatten, reverse } = require("ramda");
 const { pipe, tap, map, filter, all, tryCatch } = require("rubico");
 const Promise = require("bluebird");
-const logger = require("../logger")({ prefix: "CoreProvider" });
+const logger = require("../logger")({ prefix: "Core" });
 const { tos } = require("../tos");
 const { checkConfig, checkEnv } = require("../Utils");
 const { fromTagName } = require("./TagName");
@@ -336,7 +336,13 @@ function CoreProvider({
           providerName ? item.providerName === providerName : true
         )
         .filter((item) =>
-          canBeDeleted ? !client.cannotBeDeleted(item.data) : true
+          canBeDeleted
+            ? !client.cannotBeDeleted({
+                resource: item.data,
+                name: item.name,
+                resourceNames: resourceNames(),
+              }) //TODO is it ever called ?
+            : true
         ),
     };
   };
@@ -482,7 +488,9 @@ function CoreProvider({
     );
 
     // Cannot delete default resource
-    if (client.cannotBeDeleted(resource, resourceNames())) {
+    if (
+      client.cannotBeDeleted({ resource, name, resourceNames: resourceNames() })
+    ) {
       logger.debug(
         `planFindDestroy ${type}/${name}, default resource cannot be deleted`
       );
