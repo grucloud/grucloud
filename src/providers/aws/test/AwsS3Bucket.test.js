@@ -19,8 +19,24 @@ describe("AwsS3Bucket", async function () {
       name: "aws",
       config: ConfigLoader({ baseDir: __dirname }),
     });
-    s3Bucket = await provider.makeS3Bucket({
-      name: bucketName,
+
+    const { success } = await provider.destroyAll();
+    assert(success, "destroyAll failed");
+  });
+  after(async () => {
+    //await provider?.destroyAll();
+  });
+  it("s3Bucket apply and destroy", async function () {
+    const s3Bucket = await provider.makeS3Bucket({
+      name: `${bucketName}-basic`,
+      properties: () => ({}),
+    });
+    const config = await s3Bucket.resolveConfig();
+    const live = await s3Bucket.getLive();
+
+    //Tag
+    await provider.makeS3Bucket({
+      name: `${bucketName}-tag`,
       properties: () => ({
         Tagging: {
           TagSet: [
@@ -37,27 +53,80 @@ describe("AwsS3Bucket", async function () {
       }),
     });
 
-    const { success } = await provider.destroyAll();
-    assert(success, "destroyAll failed");
-  });
-  after(async () => {
-    //await provider?.destroyAll();
-  });
-  it("s3Bucket name", async function () {
-    assert.equal(s3Bucket.name, bucketName);
-  });
-  it("s3Bucket resolveConfig", async function () {
-    const config = await s3Bucket.resolveConfig();
-    //assert(config.CidrBlock);
-  });
-  it("s3Bucket targets", async function () {
-    const live = await s3Bucket.getLive();
-  });
-  it("s3Bucket listLives", async function () {
-    const result = await provider.listLives({ types: ["S3Bucket"] });
-    assert(result);
-  });
-  it("s3Bucket apply and destroy", async function () {
+    // Versioning
+    await provider.makeS3Bucket({
+      name: `${bucketName}-versioning`,
+      properties: () => ({
+        VersioningConfiguration: {
+          MFADelete: "Disabled",
+          Status: "Enabled",
+        },
+      }),
+    });
+
+    // Website
+    await provider.makeS3Bucket({
+      name: `${bucketName}-website`,
+      properties: () => ({
+        ACL: "public-read",
+        WebsiteConfiguration: {
+          ErrorDocument: {
+            Key: "error.html",
+          },
+          IndexDocument: {
+            Suffix: "index.html",
+          },
+        },
+      }),
+    });
+
+    // CORS
+    await provider.makeS3Bucket({
+      name: `${bucketName}-cors`,
+      properties: () => ({
+        CORSConfiguration: {
+          CORSRules: [
+            {
+              AllowedHeaders: ["Authorization"],
+              AllowedMethods: ["GET"],
+              AllowedOrigins: ["*"],
+              MaxAgeSeconds: 3000,
+            },
+          ],
+        },
+      }),
+    });
+
+    // Logging
+
+    const bucketLogDestination = `${bucketName}-log-destination`;
+    await provider.makeS3Bucket({
+      name: bucketLogDestination,
+      properties: () => ({
+        ACL: "log-delivery-write",
+      }),
+    });
+    await provider.makeS3Bucket({
+      name: `${bucketName}-logging`,
+      properties: () => ({
+        BucketLoggingStatus: {
+          LoggingEnabled: {
+            TargetBucket: bucketLogDestination,
+            TargetGrants: [
+              {
+                Grantee: {
+                  Type: "Group",
+                  URI: "http://acs.amazonaws.com/groups/global/AllUsers",
+                },
+                Permission: "READ",
+              },
+            ],
+            TargetPrefix: "MyBucketLogs/",
+          },
+        },
+      }),
+    });
+
     await testPlanDeploy({ provider });
 
     const s3BucketLive = await s3Bucket.getLive();

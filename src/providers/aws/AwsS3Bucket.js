@@ -1,5 +1,5 @@
 const AWS = require("aws-sdk");
-const { defaultsDeep, unionWith, isEqual } = require("lodash/fp");
+const { defaultsDeep, unionWith, isEqual, isEmpty } = require("lodash/fp");
 const assert = require("assert");
 const logger = require("../../logger")({ prefix: "AwsS3" });
 const { retryExpectOk } = require("../Retry");
@@ -53,19 +53,17 @@ module.exports = AwsS3 = ({ spec, config }) => {
 
     if (!(await isUpById({ id: name }))) {
       logger.debug(`getByName cannot find: ${name}`);
-
       return;
     }
 
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketLocation-property
     const { LocationConstraint } = await s3.getBucketLocation(params).promise();
 
-    //docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketTagging-property
-
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketTagging-property
     const TagSet = await new Promise((resolve, reject) =>
       s3.getBucketTagging(params, function (err, data) {
         if (err) {
           if (err.code === "NoSuchTagSet") {
-            logger.error(`getBucketTagging ${name}: ${err.code}`);
             resolve();
           } else {
             logger.error(`getBucketTagging ${name}, error ${tos(err)}`);
@@ -78,11 +76,11 @@ module.exports = AwsS3 = ({ spec, config }) => {
       })
     );
 
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicyStatus-property
     const PolicyStatus = await new Promise((resolve, reject) =>
       s3.getBucketPolicyStatus(params, function (err, data) {
         if (err) {
           if (err.code === "NoSuchBucketPolicy") {
-            logger.debug(`getBucketPolicyStatus ${name}: ${err.code}`);
             resolve();
           } else {
             logger.error(`getBucketPolicyStatus ${name}, error ${tos(err)}`);
@@ -95,12 +93,73 @@ module.exports = AwsS3 = ({ spec, config }) => {
       })
     );
 
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketVersioning-property
+    const VersioningConfiguration = await new Promise((resolve, reject) =>
+      s3.getBucketVersioning(params, function (err, data) {
+        if (err) {
+          logger.error(`getBucketVersioning ${name}, error ${tos(err)}`);
+          reject(err);
+        } else {
+          resolve(isEmpty(data) ? undefined : data);
+        }
+      })
+    );
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketAcl-property
     const { Grants, Owner } = await s3.getBucketAcl(params).promise();
+
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketWebsite-property
+    const WebsiteConfiguration = await new Promise((resolve, reject) =>
+      s3.getBucketWebsite(params, function (err, data) {
+        if (err) {
+          if (err.code === "NoSuchWebsiteConfiguration") {
+            resolve();
+          } else {
+            logger.error(`getBucketWebsite ${name}, error ${tos(err)}`);
+            reject(err);
+          }
+        } else {
+          resolve(data);
+        }
+      })
+    );
+
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketCors-property
+    const CORSConfiguration = await new Promise((resolve, reject) =>
+      s3.getBucketCors(params, function (err, data) {
+        if (err) {
+          if (err.code === "NoSuchCORSConfiguration") {
+            resolve();
+          } else {
+            logger.error(`getBucketWebsite ${name}, error ${tos(err)}`);
+            reject(err);
+          }
+        } else {
+          resolve(data);
+        }
+      })
+    );
+
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketLogging-property
+    const BucketLoggingStatus = await new Promise((resolve, reject) =>
+      s3.getBucketLogging(params, function (err, data) {
+        if (err) {
+          logger.error(`getBucketLogging ${name}, error ${tos(err)}`);
+          reject(err);
+        } else {
+          resolve(isEmpty(data) ? undefined : data);
+        }
+      })
+    );
+    // Result
     const s3Bucket = {
       Acl: { Grants, Owner },
       PolicyStatus,
       LocationConstraint,
       TagSet,
+      VersioningConfiguration,
+      WebsiteConfiguration,
+      CORSConfiguration,
+      BucketLoggingStatus,
     };
     logger.debug(`getByName ${name}: ${tos(s3Bucket)}`);
 
@@ -141,7 +200,14 @@ module.exports = AwsS3 = ({ spec, config }) => {
     assert(name);
     assert(payload);
 
-    const { Tagging, ...otherProperties } = payload;
+    const {
+      Tagging,
+      VersioningConfiguration,
+      WebsiteConfiguration,
+      CORSConfiguration,
+      BucketLoggingStatus,
+      ...otherProperties
+    } = payload;
     logger.debug(`create bucket ${tos({ name, payload })}`);
 
     const managementTags = [
@@ -163,26 +229,51 @@ module.exports = AwsS3 = ({ spec, config }) => {
     const { Location } = await s3.createBucket(otherProperties).promise();
     logger.debug(`create result ${tos(Location)}`);
 
-    const params = {
-      Bucket: name,
-    };
-
     await retryExpectOk({
       name: `s3 isUpById: ${name}`,
       fn: () => isUpById({ id: name }),
       config: clientConfig,
     });
-    //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketTagging-property
 
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketTagging-property
+    // TODO check if tags correctly
     await s3.putBucketTagging(paramsTag).promise();
 
+    try {
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketVersioning-property
+      if (VersioningConfiguration) {
+        await s3
+          .putBucketVersioning({ Bucket: name, VersioningConfiguration })
+          .promise();
+      }
+
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketWebsite-property
+      if (WebsiteConfiguration) {
+        await s3
+          .putBucketWebsite({ Bucket: name, WebsiteConfiguration })
+          .promise();
+      }
+
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketCors-property
+      if (CORSConfiguration) {
+        await s3.putBucketCors({ Bucket: name, CORSConfiguration }).promise();
+      }
+
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketLogging-property
+      if (BucketLoggingStatus) {
+        await s3
+          .putBucketLogging({ Bucket: name, BucketLoggingStatus })
+          .promise();
+      }
+    } catch (error) {
+      logger.error(error);
+      await destroy({ id: name, name });
+      throw error;
+    }
     return { Location };
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteBucket-property
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteBucketPolicy-property
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteBucketTagging-property
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteBucketWebsite-property
   const destroy = async ({ id, name }) => {
     logger.debug(`destroy bucket ${tos({ name, id })}`);
     assert(id, `destroy invalid s3 id`);

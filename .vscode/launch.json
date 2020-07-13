@@ -128,27 +128,27 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws Plan",
+      "name": "Cli Aws S3 Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/aws/",
+      "cwd": "${workspaceFolder}/examples/aws/s3",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["plan"]
     },
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws List",
+      "name": "Cli Aws S3 List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/aws/",
+      "cwd": "${workspaceFolder}/examples/aws/s3",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["list", "--all"]
+      "args": ["list", "--types", "S3Bucket"]
     },
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws Apply",
+      "name": "Cli Aws S3 Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/aws/",
+      "cwd": "${workspaceFolder}/examples/aws/s3",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["apply", "-f"]
@@ -156,9 +156,47 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws Destroy",
+      "name": "Cli Aws S3 Destroy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/aws/",
+      "cwd": "${workspaceFolder}/examples/aws/s3",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["destroy", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Aws EC2 Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/ec2-vpc",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Aws EC2 List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/ec2-vpc",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["list", "--all"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Aws EC2 Apply",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/ec2-vpc",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["apply", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Aws EC2 Destroy",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/ec2-vpc",
       "console": "integratedTerminal",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["destroy", "-f"]

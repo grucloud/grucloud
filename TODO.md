@@ -2,6 +2,8 @@
 
 ## Common:
 
+should not retruy on real error: 09:25:26.543 error: Common retryCall error create getLive S3Bucket/grucloud-s3bucket-test-tag, attempt 18/30, retryDelay: 10000, error:MissingRequiredParameter: Missing required key 'Bucket' in params
+
 gc d --name grucloud-s3bucket-test
 No resources to destroy
 
@@ -28,15 +30,22 @@ error: unknown option '--provider'
 
 ## TODO Aws:
 
+error padend
+
 aws iam create-user --user-name terraform-user
 aws iam put-user-policy --user-name terraform-user --policy-name least-privilege --policy-document file://policy.json
 
 - add tags for every resource
 - public Ip address in example
 
-- s3 versioning
-- s3 website website
-- cloudtrail
+- s3 encryption
+- s3 lifecycle
+- s3 policy
+- s3 replication
+- s3 acceleration
+- s3 NotificationConfiguration
+
+* cloudtrail
 
 ## TODO Goggle
 

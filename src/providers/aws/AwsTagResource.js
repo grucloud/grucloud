@@ -52,7 +52,10 @@ exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
         .promise();
 
       logger.debug(`getResource for ${arnId}: ${tos(ResourceTagMappingList)}`);
-      if (isEmpty(ResourceTagMappingList[0].Tags)) {
+      if (
+        isEmpty(ResourceTagMappingList) ||
+        isEmpty(ResourceTagMappingList[0].Tags)
+      ) {
         logger.error(`getResource ${arnId} not tagged`);
         throw { code: 422, message: "resource not tagged" };
       }
