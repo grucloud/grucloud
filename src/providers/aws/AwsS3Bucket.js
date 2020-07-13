@@ -13,7 +13,7 @@ const listBucketPoolSize = 5;
 module.exports = AwsS3 = ({ spec, config }) => {
   assert(spec);
   assert(config);
-
+  const clientConfig = { ...config, repeatCount: 6 };
   const { managedByKey, managedByValue, stageTagKey, stage } = config;
   assert(stage);
 
@@ -36,6 +36,7 @@ module.exports = AwsS3 = ({ spec, config }) => {
       ...bucket,
       ...(await getByName({ name: bucket.Name })),
     }))(Buckets);
+    logger.debug(`getList s3 full ${tos(fullBuckets)}`);
 
     return {
       total: Buckets.length,
@@ -57,13 +58,28 @@ module.exports = AwsS3 = ({ spec, config }) => {
     }
 
     const { LocationConstraint } = await s3.getBucketLocation(params).promise();
-    logger.debug(
-      `getByName s3 ${name} LocationConstraint ${LocationConstraint}`
-    );
+
     //docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketTagging-property
 
-    const { TagSet } = await s3.getBucketTagging(params).promise();
-    logger.debug(`getByName s3 ${name} tags: ${tos(TagSet)}`);
+    //TOD handle exception
+    //const { TagSet } = await s3.getBucketTagging(params).promise();
+
+    const TagSet = await new Promise((resolve, reject) =>
+      s3.getBucketTagging(params, function (err, data) {
+        if (err) {
+          if (err.code === "NoSuchTagSet") {
+            logger.error(`getBucketTagging ${name}: ${err.code}`);
+            resolve();
+          } else {
+            logger.error(`getBucketTagging ${name}, error ${tos(err)}`);
+            reject(err);
+          }
+        } else {
+          logger.debug(`getBucketTagging ${name}: done ${tos(data.TagSet)}`);
+          resolve(data.TagSet);
+        }
+      })
+    );
 
     const PolicyStatus = await new Promise((resolve, reject) =>
       s3.getBucketPolicyStatus(params, function (err, data) {
@@ -83,7 +99,15 @@ module.exports = AwsS3 = ({ spec, config }) => {
     );
 
     const { Grants, Owner } = await s3.getBucketAcl(params).promise();
-    return { Acl: { Grants, Owner }, PolicyStatus, LocationConstraint, TagSet };
+    const s3Bucket = {
+      Acl: { Grants, Owner },
+      PolicyStatus,
+      LocationConstraint,
+      TagSet,
+    };
+    logger.debug(`getByName s3 ${name} tags: ${tos(s3Bucket)}`);
+
+    return s3Bucket;
   };
 
   const getById = async ({ id }) => await getByName({ name: id });
@@ -144,7 +168,7 @@ module.exports = AwsS3 = ({ spec, config }) => {
     await retryExpectOk({
       name: `s3 isUpById: ${name}`,
       fn: () => isUpById({ id: name }),
-      config,
+      config: clientConfig,
     });
     //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketTagging-property
 
@@ -188,7 +212,7 @@ module.exports = AwsS3 = ({ spec, config }) => {
     type: "S3",
     spec,
     s3,
-    config: { ...config, repeatCount: 2 },
+    config: clientConfig,
     isUpById,
     isDownById,
     findId,
