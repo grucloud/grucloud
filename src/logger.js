@@ -5,13 +5,15 @@ const transportFiles = [
   {
     filename: "grucloud-debug.log",
     level: "debug",
-    format: format.simple(),
-  } /*,
-  {
-    filename: "grucloud-info.log",
-    level: "info",
-    format: format.simple(),
-  },*/,
+    format: format.combine(
+      format.timestamp({ format: "HH:mm:ss.SSS" }),
+      format.printf(
+        (info) =>
+          `${info.timestamp} ${info.level}: ${info.message}` +
+          (info.splat !== undefined ? `${info.splat}` : " ")
+      )
+    ),
+  },
 ];
 
 transportFiles.forEach((item) => {
