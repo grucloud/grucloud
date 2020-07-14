@@ -5,7 +5,7 @@ const { defaultsDeep } = require("lodash/fp");
 const MockClient = require("./MockClient");
 const CoreProvider = require("../CoreProvider");
 const compare = require("../../Utils").compare;
-const MockTag = require("./MockTag");
+const { isOurMinion } = require("./MockTag");
 const { toTagName } = require("../TagName");
 
 const logger = require("../../logger")({ prefix: "MockProvider" });
@@ -21,9 +21,6 @@ const fnSpecs = (config) => {
     tags: [toTagName(name, config.tag)],
     ...properties,
   });
-
-  const isOurMinion = ({ resource }) =>
-    MockTag.isOurMinion({ resource, tag: config.tag });
 
   return [
     {
