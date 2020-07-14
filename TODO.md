@@ -39,7 +39,6 @@ error: unknown option '--provider'
 
 ## TODO Aws:
 
-- s3 object ETag
 - aws.config.loadFromPath('./AwsConfig.json');
 
 - error padend

@@ -1,5 +1,6 @@
 const AWS = require("aws-sdk");
 const fs = require("fs").promises;
+const md5File = require("md5-file");
 
 const { defaultsDeep, isEmpty } = require("lodash/fp");
 const assert = require("assert");
@@ -216,14 +217,17 @@ exports.AwsS3Object = ({ spec, config }) => {
         message: `missing source attribute on S3Object '${name}'`,
       };
     }
+    //TODO rubico fork
     const Body = await fs.readFile(source);
 
-    //TODO ETag
+    const md5 = await md5File(source);
+
     logger.debug(`create object ${tos({ name, payload })}`);
     const params = {
       ...otherProperties,
       Body,
       Bucket: bucket.name,
+      ContentMD5: new Buffer.from(md5, "hex").toString("base64"),
       Tagging: `${managedByKey}=${managedByValue}&${stageTagKey}=${stage}${
         Tagging && `&${Tagging}`
       }`,
