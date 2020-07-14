@@ -1,16 +1,16 @@
 const AWS = require("aws-sdk");
 const { defaultsDeep, unionWith, isEqual, isEmpty } = require("lodash/fp");
 const assert = require("assert");
-const logger = require("../../logger")({ prefix: "AwsS3" });
-const { retryExpectOk } = require("../Retry");
-const { tos } = require("../../tos");
+const logger = require("../../../logger")({ prefix: "AwsS3" });
+const { retryExpectOk } = require("../../Retry");
+const { tos } = require("../../../tos");
 const { map } = require("rubico");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 
 const listBucketPoolSize = 5;
 
-module.exports = AwsS3 = ({ spec, config }) => {
+exports.AwsS3Bucket = ({ spec, config }) => {
   assert(spec);
   assert(config);
   const clientConfig = { ...config, retryDelay: 2000, repeatCount: 4 };

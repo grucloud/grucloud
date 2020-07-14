@@ -1,8 +1,8 @@
 const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
-const AwsProvider = require("../AwsProvider");
+const AwsProvider = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
-const { CheckTags } = require("./AwsTagCheck");
+const { CheckTags } = require("../../AwsTagCheck");
 
 describe("AwsSecurityGroup", async function () {
   let config;
@@ -12,13 +12,13 @@ describe("AwsSecurityGroup", async function () {
 
   before(async function () {
     try {
-      config = ConfigLoader({ baseDir: __dirname });
+      config = ConfigLoader({ path: "examples/aws/ec2-vpc" });
     } catch (error) {
       this.skip();
     }
     provider = await AwsProvider({
       name: "aws",
-      config: ConfigLoader({ baseDir: __dirname }),
+      config,
     });
     vpc = await provider.makeVpc({
       name: "vpc",

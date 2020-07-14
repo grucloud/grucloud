@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { isOurMinionEc2, isOurMinion } = require("../AwsTags");
+const { isOurMinionEc2, isOurMinion } = require("../AwsEC2Tags");
 
 const config = {
   managedByKey: "ManagedBy",

@@ -1,14 +1,14 @@
 const AWS = require("aws-sdk");
 const { defaultsDeep, isEmpty, map } = require("lodash/fp");
 const assert = require("assert");
-const logger = require("../../logger")({ prefix: "AwsEc2" });
-const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../Common");
-const { retryExpectOk } = require("../Retry");
+const logger = require("../../../logger")({ prefix: "AwsEc2" });
+const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
+const { retryExpectOk } = require("../../Retry");
 
-const { tos } = require("../../tos");
+const { tos } = require("../../../tos");
 const StateTerminated = ["terminated"];
-const { KeyName, getByIdCore } = require("./AwsCommon");
-const { getField } = require("../ProviderCommon");
+const { KeyName, getByIdCore } = require("../AwsCommon");
+const { getField } = require("../../ProviderCommon");
 
 module.exports = AwsEC2 = ({ spec, config }) => {
   assert(spec);

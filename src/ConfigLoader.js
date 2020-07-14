@@ -1,6 +1,6 @@
 const { defaultsDeep, isEmpty } = require("lodash/fp");
 const assert = require("assert");
-const path = require("path");
+const npath = require("path");
 const fs = require("fs");
 const logger = require("./logger")({ prefix: "ConfigLoader" });
 const { map, pipe, tap, filter, switchCase } = require("rubico");
@@ -50,7 +50,7 @@ const envFromDefault = ({ configDir }) => {
   assert(configDir);
   logger.info(`envFromDefault: ${configDir}`);
   pipe([
-    () => path.join(configDir, `default.env`),
+    () => npath.join(configDir, `default.env`),
     switchCase([
       (envFile) => fs.existsSync(envFile),
       (envFile) => envFromFile({ envFile }),
@@ -68,7 +68,7 @@ const envFromStage = ({ configDir, stage }) => {
   assert(stage);
   logger.info(`envFromStage: ${(configDir, stage)}`);
   pipe([
-    () => path.join(configDir, `${stage}.env`),
+    () => npath.join(configDir, `${stage}.env`),
     switchCase([
       (envFile) => fs.existsSync(envFile),
       (envFile) => envFromFile({ envFile }),
@@ -83,23 +83,27 @@ const envLoader = ({ configDir, stage }) => {
 };
 
 const configFromDefault = ({ configDir }) => {
-  const defaultConfigFile = path.join(configDir, "default.js");
+  const defaultConfigFile = npath.join(configDir, "default.js");
   checkFileExist(defaultConfigFile);
   return require(defaultConfigFile)();
 };
 
 const configFromStage = ({ configDir, stage }) => {
-  const stageConfigFile = path.join(configDir, `${stage}.js`);
+  const stageConfigFile = npath.join(configDir, `${stage}.js`);
   if (!fs.existsSync(stageConfigFile)) {
     return;
   }
   return require(stageConfigFile)();
 };
 
-exports.ConfigLoader = ({ baseDir = process.cwd(), stage = "dev" }) => {
+exports.ConfigLoader = ({
+  baseDir = process.cwd(),
+  path = "",
+  stage = "dev",
+}) => {
   //console.log(`ConfigLoader ${baseDir} ${stage}`);
   logger.info(`${(baseDir, stage)}`);
-  const configDir = path.join(baseDir, "config");
+  const configDir = npath.join(baseDir, path, "config");
 
   envLoader({ configDir, stage });
 

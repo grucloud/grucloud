@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { KeyName } = require("../AwsCommon");
+const { KeyName } = require("./AwsCommon");
 //TODO rename CheckTagsEC2
 exports.CheckTags = ({ config, tags, name }) => {
   const { managedByKey, managedByValue, stageTagKey, stage } = config;

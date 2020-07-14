@@ -1,20 +1,20 @@
 var AWS = require("aws-sdk");
 const { defaultsDeep } = require("lodash/fp");
 const assert = require("assert");
-const { getByIdCore } = require("./AwsCommon");
-const { retryExpectOk } = require("../Retry");
-const { getField } = require("../ProviderCommon");
+const { getByIdCore } = require("../AwsCommon");
+const { retryExpectOk } = require("../../Retry");
+const { getField } = require("../../ProviderCommon");
 
 const {
   getByNameCore,
   findField,
   isUpByIdCore,
   isDownByIdCore,
-} = require("../Common");
-const logger = require("../../logger")({ prefix: "AwsSg" });
-const { tagResource } = require("./AwsTagResource");
+} = require("../../Common");
+const logger = require("../../../logger")({ prefix: "AwsSg" });
+const { tagResource } = require("../AwsTagResource");
 
-const { tos } = require("../../tos");
+const { tos } = require("../../../tos");
 module.exports = AwsSecurityGroup = ({ spec, config }) => {
   assert(spec);
   assert(config);

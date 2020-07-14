@@ -38,13 +38,14 @@ const ResourceMaker = ({
   properties = () => ({}),
   spec,
   provider,
+  config,
 }) => {
   const { type } = spec;
   logger.debug(
     `ResourceMaker: ${tos({ type, resourceName, properties: properties() })}`
   );
 
-  const client = spec.Client({ spec });
+  const client = spec.Client({ spec, config });
   let parent;
   const getLive = async () => {
     logger.info(`getLive ${type}/${resourceName}`);
@@ -154,6 +155,7 @@ const ResourceMaker = ({
       !client.spec.isOurMinion({
         resource: live,
         resourceNames: provider.resourceNames(),
+        config: provider.config(),
       })
     ) {
       throw Error(`Resource ${type}/${resourceName} is not tagged correctly`);
@@ -243,7 +245,7 @@ const createResourceMakers = ({ specs, config, provider }) =>
         transformConfig,
         properties,
         dependencies,
-        spec: _.defaults(spec, SpecDefault({ config: provider.config() })),
+        spec: _.defaults(spec, SpecDefault({ config })),
         provider,
         config,
       });
@@ -293,7 +295,9 @@ function CoreProvider({
     _.defaults(spec, SpecDefault({ config: provideConfig, providerName }))
   );
 
-  const clients = specs.map((spec) => spec.Client({ spec }));
+  const clients = specs.map((spec) =>
+    spec.Client({ spec, config: provideConfig })
+  );
 
   const clientByType = (type) => {
     assert(type);
@@ -301,7 +305,7 @@ function CoreProvider({
     if (!spec) {
       throw new Error(`type ${type} not found`);
     }
-    return spec.Client({ spec });
+    return spec.Client({ spec, config: provideConfig });
   };
 
   const filterClient = async ({
@@ -325,6 +329,7 @@ function CoreProvider({
           managedByUs: client.spec.isOurMinion({
             resource: item,
             resourceNames: resourceNames(),
+            config: provider.config(),
           }),
           providerName: client.spec.providerName,
           data: item,
@@ -506,7 +511,13 @@ function CoreProvider({
       logger.debug(`planFindDestroy ${type}/${name}, delete all`);
       return true;
     }
-    if (!spec.isOurMinion({ resource, resourceNames: resourceNames() })) {
+    if (
+      !spec.isOurMinion({
+        resource,
+        resourceNames: resourceNames(),
+        config: provider.config(),
+      })
+    ) {
       logger.debug(`planFindDestroy ${type}/${name}, not our minion`);
       return false;
     }

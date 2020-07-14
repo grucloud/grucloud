@@ -1,23 +1,26 @@
 const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
-const AwsProvider = require("../AwsProvider");
+const AwsProvider = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
-const { CheckTagsS3 } = require("./AwsTagCheck");
+const { CheckTagsS3 } = require("../../AwsTagCheck");
 
 describe("AwsS3Bucket", async function () {
   let config;
   let provider;
   let s3Bucket;
   const bucketName = "grucloud-s3bucket-test";
+
+  console.log(`Current directory: ${process.cwd()}`);
+
   before(async function () {
     try {
-      config = ConfigLoader({ baseDir: __dirname });
+      config = ConfigLoader({ path: "examples/aws/s3" });
     } catch (error) {
       this.skip();
     }
     provider = await AwsProvider({
       name: "aws",
-      config: ConfigLoader({ baseDir: __dirname }),
+      config,
     });
 
     const { success } = await provider.destroyAll();

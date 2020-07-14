@@ -2,13 +2,13 @@ const AWS = require("aws-sdk");
 const { isEmpty } = require("lodash/fp");
 const assert = require("assert");
 const { map, tap, pipe, filter } = require("rubico");
-const logger = require("../../logger")({ prefix: "AwsVpc" });
-const { tos } = require("../../tos");
-const { retryExpectOk } = require("../Retry");
-const { getByIdCore } = require("./AwsCommon");
-const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../Common");
-const { findNameInTags } = require("./AwsCommon");
-const { tagResource } = require("./AwsTagResource");
+const logger = require("../../../logger")({ prefix: "AwsVpc" });
+const { tos } = require("../../../tos");
+const { retryExpectOk } = require("../../Retry");
+const { getByIdCore } = require("../AwsCommon");
+const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
+const { findNameInTags } = require("../AwsCommon");
+const { tagResource } = require("../AwsTagResource");
 
 module.exports = AwsVpc = ({ spec, config }) => {
   assert(spec);

@@ -14,7 +14,7 @@ describe("AzResourceGroup", async function () {
   let rg;
   before(async function () {
     try {
-      config = ConfigLoader({ baseDir: __dirname });
+      config = ConfigLoader({ path: "examples/aws/ec2-vpc" });
     } catch (error) {
       this.skip();
     }

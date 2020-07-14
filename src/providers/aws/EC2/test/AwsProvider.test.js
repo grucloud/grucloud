@@ -1,9 +1,9 @@
 const assert = require("assert");
-const AwsProvider = require("../AwsProvider");
+const AwsProvider = require("../../AwsProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
-const { notAvailable } = require("../../ProviderCommon");
-const { CheckTags } = require("./AwsTagCheck");
+const { notAvailable } = require("../../../ProviderCommon");
+const { CheckTags } = require("../../AwsTagCheck");
 
 describe("AwsProvider", async function () {
   let config;
@@ -23,7 +23,7 @@ describe("AwsProvider", async function () {
 
   before(async function () {
     try {
-      config = ConfigLoader({ baseDir: __dirname });
+      config = ConfigLoader({ path: "examples/aws/ec2-vpc" });
     } catch (error) {
       this.skip();
     }

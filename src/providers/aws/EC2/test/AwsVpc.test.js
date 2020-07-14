@@ -1,12 +1,12 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
 const { ConfigLoader } = require("ConfigLoader");
-const AwsProvider = require("../AwsProvider");
+const AwsProvider = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
-const { CheckTags } = require("./AwsTagCheck");
-const { retryCall } = require("../../Retry");
-const logger = require("../../../logger")({ prefix: "AwsVpc" });
-const { tos } = require("../../../tos");
+const { CheckTags } = require("../../AwsTagCheck");
+const { retryCall } = require("../../../Retry");
+const logger = require("../../../../logger")({ prefix: "AwsVpc" });
+const { tos } = require("../../../../tos");
 
 describe("AwsVpc", async function () {
   let config;
@@ -17,13 +17,13 @@ describe("AwsVpc", async function () {
   let sg;
   before(async function () {
     try {
-      config = ConfigLoader({ baseDir: __dirname });
+      config = ConfigLoader({ path: "examples/aws/ec2-vpc" });
     } catch (error) {
       this.skip();
     }
     provider = await AwsProvider({
       name: "aws",
-      config: ConfigLoader({ baseDir: __dirname }),
+      config,
     });
     const { success } = await provider.destroyAll();
     assert(success);

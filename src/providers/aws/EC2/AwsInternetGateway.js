@@ -1,13 +1,13 @@
 const AWS = require("aws-sdk");
 const { defaultsDeep, isEmpty } = require("lodash/fp");
 const assert = require("assert");
-const logger = require("../../logger")({ prefix: "AwsIgw" });
-const { tos } = require("../../tos");
-const { retryExpectOk } = require("../Retry");
-const { KeyName, getByIdCore } = require("./AwsCommon");
-const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../Common");
-const { findNameInTags } = require("./AwsCommon");
-const { tagResource } = require("./AwsTagResource");
+const logger = require("../../../logger")({ prefix: "AwsIgw" });
+const { tos } = require("../../../tos");
+const { retryExpectOk } = require("../../Retry");
+const { KeyName, getByIdCore } = require("../AwsCommon");
+const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
+const { findNameInTags } = require("../AwsCommon");
+const { tagResource } = require("../AwsTagResource");
 
 module.exports = AwsInternetGateway = ({ spec, config }) => {
   assert(spec);

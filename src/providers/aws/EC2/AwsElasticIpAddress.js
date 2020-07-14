@@ -1,13 +1,13 @@
 const AWS = require("aws-sdk");
 const { defaultsDeep, isEmpty } = require("lodash/fp");
 const assert = require("assert");
-const logger = require("../../logger")({ prefix: "AwsEip" });
-const { tos } = require("../../tos");
-const { retryExpectOk } = require("../Retry");
-const { getByIdCore } = require("./AwsCommon");
-const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../Common");
-const { findNameInTags } = require("./AwsCommon");
-const { tagResource } = require("./AwsTagResource");
+const logger = require("../../../logger")({ prefix: "AwsEip" });
+const { tos } = require("../../../tos");
+const { retryExpectOk } = require("../../Retry");
+const { getByIdCore } = require("../AwsCommon");
+const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
+const { findNameInTags } = require("../AwsCommon");
+const { tagResource } = require("../AwsTagResource");
 
 module.exports = AwsElasticIpAddress = ({ spec, config }) => {
   assert(spec);

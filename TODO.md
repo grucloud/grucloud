@@ -2,6 +2,10 @@
 
 ## Common:
 
+- test should read config from examples
+
+- Provide a summary option for `plan` and/or `apply`
+
 should not retruy on real error: 09:25:26.543 error: Common retryCall error create getLive S3Bucket/grucloud-s3bucket-test-tag, attempt 18/30, retryDelay: 10000, error:MissingRequiredParameter: Missing required key 'Bucket' in params
 
 gc d --name grucloud-s3bucket-test
@@ -38,6 +42,7 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 - add tags for every resource
 - public Ip address in example
 
+- aws_s3_bucket_policy
 - s3 encryption
 - s3 lifecycle
 - s3 policy

@@ -1,8 +1,8 @@
 const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
-const AwsProvider = require("../AwsProvider");
+const AwsProvider = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
-const { CheckTags } = require("./AwsTagCheck");
+const { CheckTags } = require("../../AwsTagCheck");
 
 describe("AwsRouteTables", async function () {
   let config;
@@ -14,13 +14,13 @@ describe("AwsRouteTables", async function () {
 
   before(async function () {
     try {
-      config = ConfigLoader({ baseDir: __dirname });
+      config = ConfigLoader({ path: "examples/aws/ec2-vpc" });
     } catch (error) {
       this.skip();
     }
     provider = await AwsProvider({
       name: "aws",
-      config: ConfigLoader({ baseDir: __dirname }),
+      config,
     });
 
     const { success } = await provider.destroyAll();

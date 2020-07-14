@@ -11,7 +11,7 @@ describe("MockProvider e2e", async function () {
   let provider;
   before(async () => {
     stack = await createStack({
-      config: ConfigLoader({ baseDir: __dirname }),
+      config,
     });
     provider = stack.providers[0];
   });
@@ -126,7 +126,7 @@ describe("MockProvider e2e", async function () {
   });
   it("plan", async function () {
     const { providers } = await createStack({
-      config: ConfigLoader({ baseDir: __dirname }),
+      config,
     });
     const provider = providers[0];
     {

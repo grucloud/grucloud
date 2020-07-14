@@ -1,23 +1,23 @@
 const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
-const AwsProvider = require("../AwsProvider");
+const AwsProvider = require("../../AwsProvider");
 const { map, pipe } = require("rubico");
 
 describe("AwsS3BucketPerf", async function () {
   let config;
   before(async function () {
     try {
-      config = ConfigLoader({ baseDir: __dirname });
+      config = ConfigLoader({ path: "examples/aws/ec2-vpc" });
     } catch (error) {
       this.skip();
     }
   });
   after(async () => {});
 
-  it("many buckets", async function () {
+  it.only("many buckets", async function () {
     const provider = await AwsProvider({
       name: "aws",
-      config: ConfigLoader({ baseDir: __dirname }),
+      config,
     });
 
     const maxBuckets = 10;

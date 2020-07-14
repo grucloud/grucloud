@@ -11,7 +11,7 @@ describe("MockProvider", async function () {
   let provider;
   before(async () => {
     stack = await createStack({
-      config: ConfigLoader({ baseDir: __dirname }),
+      config,
     });
     provider = stack.providers[0];
   });

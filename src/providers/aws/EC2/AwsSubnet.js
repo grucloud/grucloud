@@ -1,17 +1,17 @@
 const AWS = require("aws-sdk");
 const { isEmpty } = require("lodash/fp");
 const assert = require("assert");
-const logger = require("../../logger")({ prefix: "AwsSn" });
-const { getField } = require("../ProviderCommon");
-const { tos } = require("../../tos");
+const logger = require("../../../logger")({ prefix: "AwsSn" });
+const { getField } = require("../../ProviderCommon");
+const { tos } = require("../../../tos");
 const {
   getByNameCore,
   getByIdCore,
   isUpByIdCore,
   isDownByIdCore,
-} = require("../Common");
-const { findNameInTags } = require("./AwsCommon");
-const { tagResource } = require("./AwsTagResource");
+} = require("../../Common");
+const { findNameInTags } = require("../AwsCommon");
+const { tagResource } = require("../AwsTagResource");
 
 module.exports = AwsSubnet = ({ spec, config }) => {
   assert(spec);
