@@ -1,5 +1,6 @@
 const assert = require("assert");
 const { isEmpty } = require("ramda");
+const logger = require("../logger")({ prefix: "TestUtils" });
 
 const testList = async ({ provider }) => {
   const livesAll = await provider.listLives();
@@ -74,6 +75,8 @@ const testDestroyByType = async ({ provider, livesAll }) => {
 };
 
 const testPlanDestroy = async ({ provider, full = false }) => {
+  logger.debug(`testPlanDestroy ${provider.name}`);
+
   if (full) {
     const livesAll = await provider.listLives({ our: true });
     assert(!isEmpty(livesAll));
@@ -99,6 +102,7 @@ const testPlanDestroy = async ({ provider, full = false }) => {
   });
 
   assert(isEmpty(lives));
+  logger.debug(`testPlanDestroy ${provider.name} DONE`);
 };
 
 exports.testPlanDestroy = testPlanDestroy;

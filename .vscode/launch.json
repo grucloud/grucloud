@@ -141,7 +141,7 @@
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/s3",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["list", "--types", "S3Bucket"]
+      "args": ["list", "--types", "S3Bucket", "--types", "S3Object"]
     },
     {
       "type": "node",

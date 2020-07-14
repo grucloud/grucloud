@@ -23,7 +23,7 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
     return id;
   };
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeAddresses-property
-  const getList = async (params = {}) => {
+  const getList = async ({ params } = {}) => {
     logger.debug(`getList ${tos(params)}`);
     const { Addresses } = await ec2.describeAddresses(params).promise();
     logger.info(`getList ${tos(Addresses)}`);

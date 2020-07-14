@@ -28,7 +28,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeRouteTables-property
-  const getList = async (params) => {
+  const getList = async ({ params } = {}) => {
     logger.debug(`list ${tos(params)}`);
     const { RouteTables } = await ec2.describeRouteTables(params).promise();
     logger.info(`list ${tos(RouteTables)}`);

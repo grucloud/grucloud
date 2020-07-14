@@ -2,6 +2,11 @@
 
 ## Common:
 
+- stack trace is not displayed correctly
+
+- return error as an array ?
+- client type redundant ?
+- do not use index.js for S3 and EC2
 - test should read config from examples
 
 - Provide a summary option for `plan` and/or `apply`
@@ -34,7 +39,10 @@ error: unknown option '--provider'
 
 ## TODO Aws:
 
-error padend
+- s3 object ETag
+- aws.config.loadFromPath('./AwsConfig.json');
+
+- error padend
 
 aws iam create-user --user-name terraform-user
 aws iam put-user-policy --user-name terraform-user --policy-name least-privilege --policy-document file://policy.json
@@ -54,6 +62,7 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## TODO Goggle
 
+- document enabling api via gcloud
 - vm instance depends on firewall
 - vm instance: network interface from vpc network
 - validate config: check project and region

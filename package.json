@@ -10,7 +10,7 @@
   "scripts": {
     "test:az": "NODE_PATH=src mocha src/providers/azure/test/**.test.js",
     "test:gcp": "NODE_PATH=src mocha src/providers/google/test/**.test.js",
-    "test:aws": "NODE_PATH=src mocha src/providers/aws/test/**.test.js",
+    "test:aws": "NODE_PATH=src mocha src/providers/aws/**/*.test.js",
     "test:scw": "NODE_PATH=src mocha src/providers/scaleway/test/**.test.js",
     "test:mock": "NODE_PATH=src mocha src/providers/mock/test/**.test.js",
     "test:mocha": "NODE_PATH=src mocha 'src/**/*.test.js'",

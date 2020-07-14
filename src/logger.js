@@ -31,8 +31,8 @@ const logger = createLogger({
 module.exports = ({ prefix = "" }) => {
   return {
     logger,
-    error: (...args) => logger.error(`${prefix.padEnd(6, " ")} ${args}`),
-    info: (...args) => logger.info(`${prefix.padEnd(6, " ")} ${args}`),
-    debug: (...args) => logger.debug(`${prefix.padEnd(6, " ")} ${args}`),
+    error: (...args) => logger.error(`${prefix.padEnd(12, " ")} ${args}`),
+    info: (...args) => logger.info(`${prefix.padEnd(12, " ")} ${args}`),
+    debug: (...args) => logger.debug(`${prefix.padEnd(12, " ")} ${args}`),
   };
 };

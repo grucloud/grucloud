@@ -3,7 +3,6 @@ const { pipe, tryCatch } = require("rubico");
 const { head, tap } = require("ramda");
 const logger = require("../../logger")({ prefix: "Aws" });
 const { tos } = require("../../tos");
-const { logError } = require("../Common");
 
 const KeyName = "Name";
 exports.KeyName = KeyName;
@@ -24,7 +23,7 @@ exports.getByIdCore = ({ fieldIds, getList }) =>
   tryCatch(
     pipe([
       tap(({ id }) => logger.debug(`getById ${fieldIds} ${id}`)),
-      async ({ id }) => await getList({ [fieldIds]: [id] }),
+      async ({ id }) => await getList({ params: { [fieldIds]: [id] } }),
       ({ items }) => items,
       head,
       tap((item) => logger.debug(`getById  ${fieldIds} result: ${tos(item)}`)),

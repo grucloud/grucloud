@@ -30,7 +30,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroups-property
-  const getList = async (params = {}) => {
+  const getList = async ({ params } = {}) => {
     logger.debug(`list`);
     const securityGroups = await new Promise((resolve, reject) => {
       ec2.describeSecurityGroups(params, (error, response) => {

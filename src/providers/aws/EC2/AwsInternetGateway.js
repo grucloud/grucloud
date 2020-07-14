@@ -27,7 +27,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInternetGateways-property
-  const getList = async (params) => {
+  const getList = async ({ params } = {}) => {
     logger.debug(`list ${tos(params)}`);
     const { InternetGateways } = await ec2
       .describeInternetGateways(params)

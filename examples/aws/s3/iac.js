@@ -1,20 +1,32 @@
 const { AwsProvider } = require("@grucloud/core");
-
+const path = require("path");
 const createStack = async ({ config }) => {
   // Create a AWS provider
   const provider = await AwsProvider({ name: "aws", config });
-  const bucketName = "grucloud-s3bucket";
+  const bucketPrefix = "grucloud-s3bucket";
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property
-
-  await provider.makeS3Bucket({
-    name: `${bucketName}-basic`,
+  const bucketName = `${bucketPrefix}-test-basic`;
+  const bucket = await provider.makeS3Bucket({
+    name: bucketName,
     properties: () => ({}),
+  });
+
+  await provider.makeS3Object({
+    name: `file-test`,
+    dependencies: { bucket },
+    properties: () => ({
+      ACL: "public-read",
+      ContentType: "text/plain",
+      ServerSideEncryption: "AES256",
+      Tagging: "key1=value1&key2=value2",
+      source: path.join(__dirname, "./fixtures/testFile.txt"),
+    }),
   });
 
   //Tag
   await provider.makeS3Bucket({
-    name: `${bucketName}-tag`,
+    name: `${bucketPrefix}-tag`,
     properties: () => ({
       Tagging: {
         TagSet: [
@@ -33,7 +45,7 @@ const createStack = async ({ config }) => {
 
   // Versioning
   await provider.makeS3Bucket({
-    name: `${bucketName}-versioning`,
+    name: `${bucketPrefix}-versioning`,
     properties: () => ({
       VersioningConfiguration: {
         MFADelete: "Disabled",
@@ -44,7 +56,7 @@ const createStack = async ({ config }) => {
 
   // Website
   await provider.makeS3Bucket({
-    name: `${bucketName}-website`,
+    name: `${bucketPrefix}-website`,
     properties: () => ({
       ACL: "public-read",
       WebsiteConfiguration: {
@@ -60,7 +72,7 @@ const createStack = async ({ config }) => {
 
   // CORS
   await provider.makeS3Bucket({
-    name: `${bucketName}-cors`,
+    name: `${bucketPrefix}-cors`,
     properties: () => ({
       CORSConfiguration: {
         CORSRules: [
@@ -76,7 +88,7 @@ const createStack = async ({ config }) => {
   });
 
   // Logging
-  const bucketLogDestination = `${bucketName}-log-destination`;
+  const bucketLogDestination = `${bucketPrefix}-log-destination`;
   await provider.makeS3Bucket({
     name: bucketLogDestination,
     properties: () => ({
@@ -85,7 +97,7 @@ const createStack = async ({ config }) => {
   });
 
   await provider.makeS3Bucket({
-    name: `${bucketName}-logged`,
+    name: `${bucketPrefix}-logged`,
     properties: () => ({
       BucketLoggingStatus: {
         LoggingEnabled: {
@@ -104,6 +116,7 @@ const createStack = async ({ config }) => {
       },
     }),
   });
+
   return { providers: [provider] };
 };
 

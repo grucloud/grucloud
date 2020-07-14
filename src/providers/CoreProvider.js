@@ -49,7 +49,7 @@ const ResourceMaker = ({
   let parent;
   const getLive = async () => {
     logger.info(`getLive ${type}/${resourceName}`);
-    const live = await client.getByName({ name: resourceName });
+    const live = await client.getByName({ name: resourceName, dependencies });
     logger.debug(`getLive ${type}/${resourceName} result: ${tos(live)}`);
     return live;
   };
@@ -86,7 +86,10 @@ const ResourceMaker = ({
   ]);
   const resolveConfig = async () => {
     logger.info(`resolveConfig ${type}/${resourceName}`);
-    const { items } = await client.getList();
+    //TODO use function to extract resources: mapTypeToResources.get(client.type)
+    const { items } = await client.getList({
+      resources: provider.getMapTypeToResources().get(client.type),
+    });
     //logger.debug(`config ${tos({ type, resourceName, items })}`);
 
     const resolvedDependencies = await resolveDependencies(dependencies);
@@ -168,6 +171,7 @@ const ResourceMaker = ({
     logger.info(`planUpsert resource: ${resource.toString()}`);
     const live = await resource.getLive();
     logger.debug(`planUpsert live: ${tos(live)}`);
+    //TODO check if live is empty
     const plan = live
       ? planUpdate({ live, resource })
       : [
@@ -275,21 +279,30 @@ function CoreProvider({
     )}`
   );
   // Target Resources
-  const targetResources = new Map();
+  const mapNameToResource = new Map();
+  const mapTypeToResources = new Map();
   const targetResourcesAdd = (resource) => {
-    if (targetResources.has(resource.name)) {
+    assert(resource.name);
+    assert(resource.type);
+    if (mapNameToResource.has(resource.name)) {
       throw {
         code: 400,
         message: `resource name '${resource.name}' already exists`,
       };
     }
-    targetResources.set(resource.name, resource);
+    mapNameToResource.set(resource.name, resource);
+
+    const resourcesPerType = mapTypeToResources.has(resource.type)
+      ? mapTypeToResources.get(resource.type)
+      : [];
+
+    mapTypeToResources.set(resource.type, [...resourcesPerType, resource]);
   };
 
-  const getTargetResources = () => [...targetResources.values()];
-  const resourceNames = () => [...targetResources.keys()];
+  const getTargetResources = () => [...mapNameToResource.values()];
+  const resourceNames = () => [...mapNameToResource.keys()];
 
-  const resourceByName = (name) => targetResources.get(name);
+  const resourceByName = (name) => mapNameToResource.get(name);
 
   const specs = fnSpecs(provideConfig).map((spec) =>
     _.defaults(spec, SpecDefault({ config: provideConfig, providerName }))
@@ -317,7 +330,9 @@ function CoreProvider({
     providerName,
   }) => {
     logger.debug(`listLives type: ${client.spec.type}`);
-    const { items } = await client.getList();
+    const { items } = await client.getList({
+      resources: mapTypeToResources.get(client.type),
+    });
     //logger.debug(`listLives resources: ${tos(items)}`);
     //TODO use rubico anf tap at the end
     return {
@@ -563,7 +578,10 @@ function CoreProvider({
       filter((client) => !client.spec.listOnly),
       map(async (client) =>
         pipe([
-          async () => await client.getList(),
+          async () =>
+            await client.getList({
+              resources: mapTypeToResources.get(client.type),
+            }),
           ({ items }) =>
             items
               .filter((resource) =>
@@ -621,20 +639,30 @@ function CoreProvider({
     const plan = await planQuery();
     return await planApply({ plan });
   };
-  const destroyByClient = async ({ client, name, config }) => {
+  const destroyByClient = async ({
+    client,
+    name,
+    config,
+    resourcesPerType = [],
+  }) => {
     assert(client);
     assert(config);
 
     logger.info(
-      `destroyByClient: ${tos({ type: client.spec.type, name, config })}`
+      `destroyByClient: ${tos({
+        type: client.spec.type,
+        name,
+        config,
+        resourcesPerType,
+      })}`
     );
 
     const id = client.findId(config);
     assert(id, "destroyByClient missing id");
-    const result = await client.destroy({ id, name });
+    const result = await client.destroy({ id, name, resourcesPerType });
     await retryExpectOk({
       name: `destroy ${name}`,
-      fn: () => client.isDownById({ id, name }),
+      fn: () => client.isDownById({ id, name, resourcesPerType }),
       config: client.config || provideConfig,
     });
 
@@ -651,7 +679,12 @@ function CoreProvider({
     if (!client) {
       throw new Error(`Cannot find endpoint type ${type}}`);
     }
-    return await destroyByClient({ client, name, config });
+    return await destroyByClient({
+      client,
+      name,
+      config,
+      resourcesPerType: provider.getMapTypeToResources().get(type),
+    });
   };
 
   const planDestroy = async ({ plans, onStateChange = noop }) => {
@@ -720,6 +753,7 @@ function CoreProvider({
     clientByType,
     resourceByName,
     resourceNames,
+    getMapTypeToResources: () => mapTypeToResources,
     getTargetResources,
     isPlanEmpty,
   };

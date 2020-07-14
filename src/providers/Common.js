@@ -10,7 +10,7 @@ const safeJsonParse = (json) => {
   }
 };
 
-exports.convertError = ({ error, name }) => {
+exports.convertError = ({ error, name, procedure, params }) => {
   if (error.isAxiosError) {
     const { baseURL, url, method } = error.config;
     return {
@@ -30,6 +30,8 @@ exports.convertError = ({ error, name }) => {
       name: error.name,
       code: error.code,
       statusCode: error.statusCode,
+      procedure,
+      params,
       message: error.message,
       region: error.region,
       requestId: error.requestId,

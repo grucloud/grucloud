@@ -11,7 +11,11 @@ const CoreProvider = require("../CoreProvider");
 const AwsS3 = require("./S3");
 const AwsEC2 = require("./EC2");
 
-const fnSpecs = () => [...AwsS3, ...AwsEC2];
+const fnSpecs = () => [
+  //
+  ...AwsS3,
+  ...AwsEC2,
+];
 
 const validateConfig = async ({ region, zone }) => {
   logger.debug(`region: ${region}, zone: ${zone}`);

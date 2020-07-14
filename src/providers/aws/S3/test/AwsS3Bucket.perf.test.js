@@ -14,7 +14,7 @@ describe("AwsS3BucketPerf", async function () {
   });
   after(async () => {});
 
-  it.only("many buckets", async function () {
+  it("many buckets", async function () {
     const provider = await AwsProvider({
       name: "aws",
       config,

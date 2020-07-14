@@ -1,7 +1,7 @@
 const AWS = require("aws-sdk");
 const { defaultsDeep, unionWith, isEqual, isEmpty } = require("lodash/fp");
 const assert = require("assert");
-const logger = require("../../../logger")({ prefix: "AwsS3" });
+const logger = require("../../../logger")({ prefix: "S3Bucket" });
 const { retryExpectOk } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { map } = require("rubico");
@@ -13,7 +13,7 @@ const listBucketPoolSize = 5;
 exports.AwsS3Bucket = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  const clientConfig = { ...config, retryDelay: 2000, repeatCount: 4 };
+  const clientConfig = { ...config, retryDelay: 2000, repeatCount: 7 };
   const { managedByKey, managedByValue, stageTagKey, stage } = config;
   assert(stage);
 
@@ -284,14 +284,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
     const result = await s3.deleteBucket(params).promise();
     logger.debug(`destroy in progress, ${tos({ name, id })}`);
-
-    await retryExpectOk({
-      name: `isDownById: ${name} id: ${id}`,
-      fn: () => isDownById({ id }),
-      config,
-    });
-
-    logger.debug(`destroy done, ${tos({ name, id, result })}`);
     return result;
   };
 
@@ -302,7 +294,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   };
 
   return {
-    type: "S3",
+    type: "S3Bucket",
     spec,
     s3,
     config: clientConfig,
@@ -318,4 +310,20 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     getList,
     configDefault,
   };
+};
+
+exports.isOurMinionS3Bucket = ({ resource, resourceNames, config }) => {
+  const { managedByKey, managedByValue } = config;
+  assert(resource);
+  const isMinion = !!resource.TagSet?.find(
+    (tag) => tag.Key === managedByKey && tag.Value === managedByValue
+  );
+
+  logger.debug(
+    `isOurMinion s3: isMinion ${isMinion}, ${tos({
+      resource,
+      resourceNames,
+    })}`
+  );
+  return isMinion;
 };

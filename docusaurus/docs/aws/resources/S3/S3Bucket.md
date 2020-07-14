@@ -153,3 +153,9 @@ List the S3 buckets for the current account:
 ```
 aws s3 ls
 ```
+
+Remove the bucket and all its content:
+
+```
+aws s3 rb --force s3://yourbucketnamehere
+```

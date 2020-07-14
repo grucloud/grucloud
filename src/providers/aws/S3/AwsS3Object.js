@@ -1,17 +1,36 @@
 const AWS = require("aws-sdk");
-const { defaultsDeep, unionWith, isEqual, isEmpty } = require("lodash/fp");
+const fs = require("fs").promises;
+
+const { defaultsDeep, isEmpty } = require("lodash/fp");
 const assert = require("assert");
-const logger = require("../../../logger")({ prefix: "AwsS3" });
+const logger = require("../../../logger")({ prefix: "S3Object" });
 const { retryExpectOk } = require("../../Retry");
 const { tos } = require("../../../tos");
-const { map } = require("rubico");
-
+const { map, filter, pipe, switchCase } = require("rubico");
+const { convertError } = require("../../Common");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
+
+exports.isOurMinionS3Object = ({ resource, resourceNames, config }) => {
+  const { managedByKey, managedByValue } = config;
+  assert(resource);
+  const isMinion =
+    !!resource.TagSet?.find(
+      (tag) => tag.Key === managedByKey && tag.Value === managedByValue
+    ) || resourceNames.includes(resource.Key);
+
+  logger.debug(
+    `isOurMinion s3: isMinion ${isMinion}, ${tos({
+      resource,
+      resourceNames,
+    })}`
+  );
+  return isMinion;
+};
 
 exports.AwsS3Object = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  const clientConfig = { ...config, retryDelay: 2000, repeatCount: 4 };
+  const clientConfig = { ...config, retryDelay: 2000, repeatCount: 7 };
   const { managedByKey, managedByValue, stageTagKey, stage } = config;
   assert(stage);
 
@@ -19,72 +38,226 @@ exports.AwsS3Object = ({ spec, config }) => {
 
   const findName = (item) => {
     assert(item);
-    return item.Name;
+    return item.Key;
   };
 
-  const findId = (item) => findName(item);
+  const findId = (item) => item.Key;
+
+  //TODO AWS common
+  const listPoolSize = 5;
+
+  const getBucket = ({ dependencies = {}, name }) => {
+    assert(name);
+    const { bucket } = dependencies;
+    if (!bucket) {
+      throw {
+        code: 422,
+        message: `s3 object '${name}' is missing the bucket dependency'`,
+      };
+    }
+    return bucket;
+  };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
-  const getList = async () => {
-    logger.debug(`listObjects`);
-    //TODO name
-    const { Contents } = await s3.listObjects({ Bucket: "" }).promise();
+  const getList = async ({ resources = [] }) => {
+    logger.debug(
+      `listObjects ${resources.map((resource) => resource.name).join(",")}`
+    );
 
-    logger.debug(`listObjects ${tos(Contents)}`);
+    const listObjects = await pipe([
+      async (resources) =>
+        await map.pool(listPoolSize, async (resource) => {
+          //TODO use pipe and tryCatch
+          const bucket = getBucket(resource);
+          const params = {
+            Bucket: bucket.name,
+            Prefix: resource.name,
+            MaxKeys: 1,
+          };
+          logger.debug(`listObject ${tos(params)}`);
+
+          try {
+            const { Contents } = await s3.listObjects(params).promise();
+            const content = Contents[0];
+            if (content) {
+              return { content };
+            }
+            return null;
+          } catch (error) {
+            if (error.code === "NoSuchBucket") {
+              return null;
+            }
+            return {
+              error: convertError({
+                error,
+                procedure: "s3.listObjects",
+                params,
+              }),
+            };
+          }
+        })(resources),
+      filter((result) => result),
+      switchCase([
+        pipe([
+          filter((result) => result.error),
+          (listObjects) => listObjects.length > 0, //TODO use empty
+        ]),
+        (listObjects) => {
+          throw { code: 500, errors: listObjects };
+        },
+        (listObjects) => listObjects,
+      ]),
+    ])(resources);
+
+    logger.debug(`listObjects result: ${tos(listObjects)}`);
 
     return {
-      total: Contents.length,
-      items: Contents,
+      total: listObjects.length,
+      items: map((result) => result.content)(listObjects),
     };
   };
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicy-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
 
-  const getByName = async ({ name }) => {
+  const getByName = async ({ name, dependencies }) => {
     logger.debug(`getByName ${name}`);
+    const bucket = getBucket({ dependencies, name });
 
-    const params = { Bucket: name };
+    try {
+      const paramsListObjects = {
+        Bucket: bucket.name,
+        Prefix: name,
+        MaxKeys: 1,
+      };
+      logger.debug(`getByName paramsListObjects: ${tos(paramsListObjects)}`);
 
-    logger.debug(`getByName ${name}: ${tos({})}`);
+      const { Contents } = await s3.listObjects(paramsListObjects).promise();
+      const content = Contents[0];
 
-    return {};
+      const paramsTagging = {
+        Bucket: bucket.name,
+        Key: name,
+      };
+      const { TagSet } = await s3.getObjectTagging(paramsTagging).promise();
+
+      logger.debug(`getByName ${name}: ${tos({ content, TagSet })}`);
+      if (content) {
+        //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObjectTagging-property
+
+        return { content, TagSet };
+      }
+      return;
+    } catch (error) {
+      if (["NoSuchBucket", "NoSuchKey"].includes(error.code)) {
+        logger.debug(`getByName ${name}: ${error.code}`);
+        return;
+      }
+      throw convertError({
+        error,
+        procedure: "s3.listObjects",
+        params: {
+          Bucket: bucket.name,
+          Key: name,
+        },
+      });
+    }
+  };
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#headObject-property
+  const headObject = async ({ Bucket, Key }) => {
+    assert(Bucket, "headObject Bucket");
+    assert(Key, "headObject Key");
+    try {
+      await s3.headObject({ Bucket, Key }).promise();
+      return true;
+    } catch (error) {
+      if (error.statusCode === 404) {
+        return false;
+      }
+      logger.error(`headObject`);
+      logger.error(error);
+
+      throw error;
+    }
   };
 
   const getById = async ({ id }) => await getByName({ name: id });
 
-  const isUpById = async ({ id }) => {
-    const up = await headBucket({ id });
-    logger.debug(`isUpById ${id} ${up ? "UP" : "DOWN"}`);
+  const isUpById = async ({ Bucket, Key }) => {
+    assert(Bucket, "isUpById Bucket");
+    assert(Key, "isUpById Key");
+    const up = await headObject({ Bucket, Key });
+    logger.debug(`isUpById ${Bucket}/${Key} ${up ? "UP" : "DOWN"}`);
     return up;
   };
 
-  const isDownById = async ({ id }) => {
-    const up = await headBucket({ id });
-    logger.debug(`isDownById ${id} ${up ? "UP" : "DOWN"}`);
+  const isDownById = async ({ id, resourcesPerType }) => {
+    assert(id, "isDownById id");
+    const resource = resourcesPerType.find((resource) => resource.name === id);
+    assert(resource, `isDownById: no resource for id ${id}`);
+    const bucket = getBucket(resource);
+    const up = await headObject({ Bucket: bucket.name, Key: id });
+    logger.debug(`isDownById ${bucket.name}/${id} ${up ? "UP" : "DOWN"}`);
     return !up;
   };
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property
-  const create = async ({ name, payload }) => {
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
+  const create = async ({ name, payload, dependencies }) => {
     assert(name);
     assert(payload);
+    assert(dependencies);
 
+    const bucket = getBucket({ dependencies, name });
+
+    const { Tagging, source, ...otherProperties } = payload;
+
+    if (!source) {
+      throw {
+        code: 422,
+        message: `missing source attribute on S3Object '${name}'`,
+      };
+    }
+    const Body = await fs.readFile(source);
+
+    //TODO ETag
     logger.debug(`create object ${tos({ name, payload })}`);
+    const params = {
+      ...otherProperties,
+      Body,
+      Bucket: bucket.name,
+      Tagging: `${managedByKey}=${managedByValue}&${stageTagKey}=${stage}${
+        Tagging && `&${Tagging}`
+      }`,
+    };
+    const { ETag, ServerSideEncryption } = await s3.putObject(params).promise();
 
-    return {};
+    await retryExpectOk({
+      name: `s3 isUpById: ${bucket.name}/${name}`,
+      fn: () => isUpById({ Bucket: bucket.name, Key: name }),
+      config: clientConfig,
+    });
+
+    return { ETag, ServerSideEncryption };
   };
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteBucket-property
-  const destroy = async ({ id, name }) => {
-    logger.debug(`destroy bucket ${tos({ name, id })}`);
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteObject-property
+  const destroy = async ({ id, resourcesPerType }) => {
+    logger.debug(`destroy object ${tos({ id, resourcesPerType })}`);
     assert(id, `destroy invalid object id`);
-    return;
+    const resource = resourcesPerType.find((resource) => resource.name === id);
+    assert(resource, `no resource for id ${id}`);
+    const bucket = getBucket(resource);
+    var params = {
+      Bucket: bucket.name,
+      Key: id,
+    };
+
+    await s3.deleteObject(params).promise();
   };
 
   const configDefault = async ({ name, properties }) => {
     logger.debug(`configDefault ${tos({ name, properties })}`);
     const { ...otherProperties } = properties;
-    return defaultsDeep({ Bucket: name }, otherProperties);
+    return defaultsDeep({ Key: name }, otherProperties);
   };
 
   return {
