@@ -16,7 +16,7 @@ describe("GcpServiceAccount", async function () {
 
   before(async function () {
     try {
-      config = ConfigLoader({ path: "examples/aws/ec2-vpc" });
+      config = ConfigLoader({ path: "examples/google" });
     } catch (error) {
       this.skip();
     }

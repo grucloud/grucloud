@@ -14,7 +14,7 @@ describe("GoogleAddress", async function () {
   let address;
   before(async function () {
     try {
-      config = ConfigLoader({ path: "examples/aws/ec2-vpc" });
+      config = ConfigLoader({ path: "examples/google" });
     } catch (error) {
       this.skip();
     }

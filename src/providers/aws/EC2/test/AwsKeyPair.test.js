@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
-const AwsProvider = require("../AwsProvider");
+const AwsProvider = require("../../AwsProvider");
 
 describe("AwsKeyPair", async function () {
   let config;
