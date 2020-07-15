@@ -4,7 +4,7 @@ const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "S3Bucket" });
 const { retryExpectOk } = require("../../Retry");
 const { tos } = require("../../../tos");
-const { map } = require("rubico");
+const { map, tap, pipe } = require("rubico");
 const { mapPoolSize } = require("../AwsCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
@@ -54,6 +54,8 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       logger.debug(`getByName cannot find: ${name}`);
       return;
     }
+
+    // TODO use fork
 
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketLocation-property
     const { LocationConstraint } = await s3.getBucketLocation(params).promise();
@@ -273,17 +275,45 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteBucket-property
-  const destroy = async ({ id, name }) => {
-    logger.debug(`destroy bucket ${tos({ name, id })}`);
-    assert(id, `destroy invalid s3 id`);
+  const destroy = async ({ id: Bucket }) => {
+    assert(Bucket, `destroy invalid s3 id`);
 
-    const params = {
-      Bucket: id,
-    };
-
-    const result = await s3.deleteBucket(params).promise();
-    logger.debug(`destroy in progress, ${tos({ name, id })}`);
-    return result;
+    await pipe([
+      tap(() => {
+        logger.debug(`destroy bucket ${tos({ Bucket })}`);
+      }),
+      async () => {
+        do {
+          var isTruncated = await pipe([
+            async () => await s3.listObjectsV2({ Bucket }).promise(),
+            ({ Contents }) => Contents,
+            tap((Contents) => {
+              logger.debug(`listObjects Contents: ${tos({ Contents })}`);
+            }),
+            tap(
+              map.pool(
+                mapPoolSize,
+                async (content) =>
+                  await s3
+                    .deleteObject({
+                      Bucket,
+                      Key: content.Key,
+                    })
+                    .promise()
+              )
+            ),
+            ({ IsTruncated }) => IsTruncated,
+            tap((IsTruncated) => {
+              logger.debug(`IsTruncated: ${IsTruncated}`);
+            }),
+          ])();
+        } while (isTruncated);
+      },
+      async () => await s3.deleteBucket({ Bucket }).promise(),
+      tap(() => {
+        logger.debug(`destroyed, ${tos({ Bucket })}`);
+      }),
+    ])();
   };
 
   const configDefault = async ({ name, properties }) => {
