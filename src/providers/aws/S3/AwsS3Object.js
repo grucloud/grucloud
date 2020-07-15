@@ -7,11 +7,19 @@ const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "S3Object" });
 const { retryExpectOk } = require("../../Retry");
 const { tos } = require("../../../tos");
-const { map, filter, pipe, not, tap, tryCatch, switchCase } = require("rubico");
+const {
+  map,
+  filter,
+  pipe,
+  not,
+  tap,
+  tryCatch,
+  switchCase,
+  fork,
+} = require("rubico");
 const { convertError } = require("../../Common");
 const { mapPoolSize } = require("../AwsCommon");
 
-assert(first);
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Object = ({ spec, config }) => {
   assert(spec);
@@ -47,8 +55,8 @@ exports.AwsS3Object = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
-  const getList = async ({ resources = [] }) => {
-    return await pipe([
+  const getList = async ({ resources = [] }) =>
+    await pipe([
       tap(() => logger.debug(`listObjects #resources ${resources.length}`)),
       async (resources) =>
         await map.pool(
@@ -72,18 +80,17 @@ exports.AwsS3Object = ({ spec, config }) => {
                       () => null,
                     ]),
                   ])(params),
-                (error, params) =>
-                  switchCase([
-                    (error) => error.code === "NoSuchBucket",
-                    () => null,
-                    () => ({
-                      error: convertError({
-                        error,
-                        procedure: "s3.listObjects",
-                        params,
-                      }),
+                switchCase([
+                  (error) => error.code === "NoSuchBucket",
+                  () => null,
+                  (error, params) => ({
+                    error: convertError({
+                      error,
+                      procedure: "s3.listObjects",
+                      params,
                     }),
-                  ])(error)
+                  }),
+                ])
               ),
             ])(resource)
         )(resources),
@@ -101,53 +108,63 @@ exports.AwsS3Object = ({ spec, config }) => {
       }),
       tap((result) => logger.debug(`listObjects result: ${tos(result)}`)),
     ])(resources);
-  };
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
+  const getByName = async ({ name, dependencies }) =>
+    await pipe([
+      tap(() => logger.debug(`getByName ${name}`)),
+      () => getBucket({ dependencies, name }),
+      (bucket) =>
+        tryCatch(
+          async (bucket) =>
+            pipe([
+              async (bucket) =>
+                await fork({
+                  // listObjects
+                  content: async (bucket) =>
+                    await pipe([
+                      (bucket) => ({
+                        Bucket: bucket.name,
+                        Prefix: name,
+                        MaxKeys: 1,
+                      }),
+                      async (params) => await s3.listObjects(params).promise(),
+                      ({ Contents }) => first(Contents),
+                    ])(bucket),
+                  // getObjectTagging
+                  TagSet: async (bucket) =>
+                    await pipe([
+                      (bucket) => ({
+                        Bucket: bucket.name,
+                        Key: name,
+                      }),
+                      //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObjectTagging-property
+                      async (params) =>
+                        await s3.getObjectTagging(params).promise(),
+                      ({ TagSet }) => TagSet,
+                    ])(bucket),
+                })(bucket),
 
-  const getByName = async ({ name, dependencies }) => {
-    logger.debug(`getByName ${name}`);
-    const bucket = getBucket({ dependencies, name });
+              ({ content, TagSet }) => ({ ...content, TagSet }),
+            ])(bucket),
+          switchCase([
+            (error) => ["NoSuchBucket", "NoSuchKey"].includes(error.code),
+            () => null,
+            (error, bucket) => {
+              throw convertError({
+                error,
+                params: {
+                  Bucket: bucket.name,
+                  Key: name,
+                },
+              });
+            },
+          ])
+        )(bucket),
+      tap((result) => {
+        logger.debug(`getByName result: ${tos(result)}`);
+      }),
+    ])();
 
-    try {
-      const paramsListObjects = {
-        Bucket: bucket.name,
-        Prefix: name,
-        MaxKeys: 1,
-      };
-      logger.debug(`getByName paramsListObjects: ${tos(paramsListObjects)}`);
-
-      const { Contents } = await s3.listObjects(paramsListObjects).promise();
-      const content = Contents[0];
-
-      const paramsTagging = {
-        Bucket: bucket.name,
-        Key: name,
-      };
-      const { TagSet } = await s3.getObjectTagging(paramsTagging).promise();
-
-      logger.debug(`getByName ${name}: ${tos({ content, TagSet })}`);
-      if (content) {
-        //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObjectTagging-property
-
-        return { content, TagSet };
-      }
-      return;
-    } catch (error) {
-      if (["NoSuchBucket", "NoSuchKey"].includes(error.code)) {
-        logger.debug(`getByName ${name}: ${error.code}`);
-        return;
-      }
-      throw convertError({
-        error,
-        procedure: "s3.listObjects",
-        params: {
-          Bucket: bucket.name,
-          Key: name,
-        },
-      });
-    }
-  };
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#headObject-property
   const headObject = async ({ Bucket, Key }) => {
     assert(Bucket, "headObject Bucket");
