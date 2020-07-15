@@ -143,7 +143,6 @@ exports.AwsS3Object = ({ spec, config }) => {
                       ({ TagSet }) => TagSet,
                     ])(bucket),
                 })(bucket),
-
               ({ content, TagSet }) => ({ ...content, TagSet }),
             ])(bucket),
           switchCase([
@@ -209,8 +208,6 @@ exports.AwsS3Object = ({ spec, config }) => {
     assert(payload);
     assert(dependencies);
 
-    const bucket = getBucket({ dependencies, name });
-
     const { Tagging, source, ...otherProperties } = payload;
 
     if (!source) {
@@ -219,30 +216,50 @@ exports.AwsS3Object = ({ spec, config }) => {
         message: `missing source attribute on S3Object '${name}'`,
       };
     }
-    //TODO rubico fork
-    const Body = await fs.readFile(source);
 
-    const md5 = await md5File(source);
-
-    logger.debug(`create object ${tos({ name, payload })}`);
-    const params = {
-      ...otherProperties,
-      Body,
-      Bucket: bucket.name,
-      ContentMD5: new Buffer.from(md5, "hex").toString("base64"),
-      Tagging: `${managedByKey}=${managedByValue}&${stageTagKey}=${stage}${
-        Tagging && `&${Tagging}`
-      }`,
-    };
-    const { ETag, ServerSideEncryption } = await s3.putObject(params).promise();
-
-    await retryExpectOk({
-      name: `s3 isUpById: ${bucket.name}/${name}`,
-      fn: () => isUpById({ Bucket: bucket.name, Key: name }),
-      config: clientConfig,
-    });
-
-    return { ETag, ServerSideEncryption };
+    return await pipe([
+      () => getBucket({ dependencies, name }),
+      async (bucket) =>
+        await pipe([
+          () =>
+            fork({
+              Body: async () => await fs.readFile(source),
+              ContentMD5: async () =>
+                await pipe([
+                  async () => await md5File(source),
+                  (md5) => new Buffer.from(md5, "hex").toString("base64"),
+                ])(),
+            })(),
+          async ({ Body, ContentMD5 }) =>
+            pipe([
+              ({ Body, ContentMD5 }) => ({
+                ...otherProperties,
+                Body,
+                Bucket: bucket.name,
+                ContentMD5,
+                Tagging: `${managedByKey}=${managedByValue}&${stageTagKey}=${stage}${
+                  Tagging && `&${Tagging}`
+                }`,
+              }),
+              async (params) => await s3.putObject(params).promise(),
+              tap(
+                async () =>
+                  await retryExpectOk({
+                    name: `s3 isUpById: ${bucket.name}/${name}`,
+                    fn: () => isUpById({ Bucket: bucket.name, Key: name }),
+                    config: clientConfig,
+                  })
+              ),
+              ({ ETag, ServerSideEncryption }) => ({
+                ETag,
+                ServerSideEncryption,
+              }),
+              tap((result) => {
+                logger.debug(`create ${tos(result)}`);
+              }),
+            ])({ Body, ContentMD5 }),
+        ])(),
+    ])();
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteObject-property
