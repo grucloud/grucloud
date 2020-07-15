@@ -2,32 +2,17 @@ const AWS = require("aws-sdk");
 const fs = require("fs").promises;
 const md5File = require("md5-file");
 
-const { defaultsDeep, isEmpty } = require("lodash/fp");
+const { defaultsDeep, isEmpty, first } = require("lodash/fp");
 const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "S3Object" });
 const { retryExpectOk } = require("../../Retry");
 const { tos } = require("../../../tos");
-const { map, filter, pipe, switchCase } = require("rubico");
+const { map, filter, pipe, not, tap, tryCatch, switchCase } = require("rubico");
 const { convertError } = require("../../Common");
+const { mapPoolSize } = require("../AwsCommon");
+
+assert(first);
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
-
-exports.isOurMinionS3Object = ({ resource, resourceNames, config }) => {
-  const { managedByKey, managedByValue } = config;
-  assert(resource);
-  const isMinion =
-    !!resource.TagSet?.find(
-      (tag) => tag.Key === managedByKey && tag.Value === managedByValue
-    ) || resourceNames.includes(resource.Key);
-
-  logger.debug(
-    `isOurMinion s3: isMinion ${isMinion}, ${tos({
-      resource,
-      resourceNames,
-    })}`
-  );
-  return isMinion;
-};
-
 exports.AwsS3Object = ({ spec, config }) => {
   assert(spec);
   assert(config);
@@ -38,16 +23,18 @@ exports.AwsS3Object = ({ spec, config }) => {
   const s3 = new AWS.S3();
 
   const findName = (item) => {
-    assert(item);
+    assert(item, "findName");
     return item.Key;
   };
 
-  const findId = (item) => item.Key;
+  const findId = (item) => {
+    assert(item, "findName");
+    const id = item.Key;
+    assert(id, "findId Id");
+    return id;
+  };
 
-  //TODO AWS common
-  const listPoolSize = 5;
-
-  const getBucket = ({ dependencies = {}, name }) => {
+  const getBucket = ({ name, dependencies = {} }) => {
     assert(name);
     const { bucket } = dependencies;
     if (!bucket) {
@@ -61,61 +48,59 @@ exports.AwsS3Object = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
   const getList = async ({ resources = [] }) => {
-    logger.debug(
-      `listObjects ${resources.map((resource) => resource.name).join(",")}`
-    );
-
-    const listObjects = await pipe([
+    return await pipe([
+      tap(() => logger.debug(`listObjects #resources ${resources.length}`)),
       async (resources) =>
-        await map.pool(listPoolSize, async (resource) => {
-          //TODO use pipe and tryCatch
-          const bucket = getBucket(resource);
-          const params = {
-            Bucket: bucket.name,
-            Prefix: resource.name,
-            MaxKeys: 1,
-          };
-          logger.debug(`listObject ${tos(params)}`);
-
-          try {
-            const { Contents } = await s3.listObjects(params).promise();
-            const content = Contents[0];
-            if (content) {
-              return { content };
-            }
-            return null;
-          } catch (error) {
-            if (error.code === "NoSuchBucket") {
-              return null;
-            }
-            return {
-              error: convertError({
-                error,
-                procedure: "s3.listObjects",
-                params,
+        await map.pool(
+          mapPoolSize,
+          async (resource) =>
+            await pipe([
+              () => getBucket(resource),
+              (bucket) => ({
+                Bucket: bucket.name,
+                Prefix: resource.name,
+                MaxKeys: 1,
               }),
-            };
-          }
-        })(resources),
+              tryCatch(
+                async (params) =>
+                  await pipe([
+                    async (params) => await s3.listObjects(params).promise(),
+                    ({ Contents }) => first(Contents),
+                    switchCase([
+                      (content) => content,
+                      (content) => ({ content }),
+                      () => null,
+                    ]),
+                  ])(params),
+                (error, params) =>
+                  switchCase([
+                    (error) => error.code === "NoSuchBucket",
+                    () => null,
+                    () => ({
+                      error: convertError({
+                        error,
+                        procedure: "s3.listObjects",
+                        params,
+                      }),
+                    }),
+                  ])(error)
+              ),
+            ])(resource)
+        )(resources),
       filter((result) => result),
       switchCase([
-        pipe([
-          filter((result) => result.error),
-          (listObjects) => listObjects.length > 0, //TODO use empty
-        ]),
-        (listObjects) => {
-          throw { code: 500, errors: listObjects };
+        pipe([filter((result) => result.error), not(isEmpty)]),
+        (objects) => {
+          throw { code: 500, errors: objects };
         },
-        (listObjects) => listObjects,
+        (objects) => objects,
       ]),
+      (objects) => ({
+        total: objects.length,
+        items: map((result) => result.content)(objects),
+      }),
+      tap((result) => logger.debug(`listObjects result: ${tos(result)}`)),
     ])(resources);
-
-    logger.debug(`listObjects result: ${tos(listObjects)}`);
-
-    return {
-      total: listObjects.length,
-      items: map((result) => result.content)(listObjects),
-    };
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
@@ -260,8 +245,7 @@ exports.AwsS3Object = ({ spec, config }) => {
 
   const configDefault = async ({ name, properties }) => {
     logger.debug(`configDefault ${tos({ name, properties })}`);
-    const { ...otherProperties } = properties;
-    return defaultsDeep({ Key: name }, otherProperties);
+    return defaultsDeep({ Key: name }, properties);
   };
 
   return {
@@ -281,4 +265,16 @@ exports.AwsS3Object = ({ spec, config }) => {
     getList,
     configDefault,
   };
+};
+
+exports.isOurMinionS3Object = ({ resource, resourceNames = [], config }) => {
+  assert(resource);
+  const { managedByKey, managedByValue } = config;
+  const isMinion =
+    !!resource.TagSet?.find(
+      (tag) => tag.Key === managedByKey && tag.Value === managedByValue
+    ) || resourceNames.includes(resource.Key);
+
+  logger.debug(`isOurMinion s3: isMinion ${isMinion}`);
+  return isMinion;
 };

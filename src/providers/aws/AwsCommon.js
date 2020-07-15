@@ -7,6 +7,8 @@ const { tos } = require("../../tos");
 const KeyName = "Name";
 exports.KeyName = KeyName;
 
+exports.mapPoolSize = 5;
+
 exports.findNameInTags = (item) => {
   assert(item);
   assert(item.Tags);

@@ -107,7 +107,7 @@ describe("AwsVpc", async function () {
 
     await testPlanDestroy({ provider, full: false });
   });
-  it("destroy vpc", async function () {
+  it("vpc destroy vpc", async function () {
     await testPlanDeploy({ provider });
     const vpcLive = await vpc.getLive();
     const { VpcId } = vpcLive;

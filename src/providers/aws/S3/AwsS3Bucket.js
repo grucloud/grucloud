@@ -5,10 +5,9 @@ const logger = require("../../../logger")({ prefix: "S3Bucket" });
 const { retryExpectOk } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { map } = require("rubico");
+const { mapPoolSize } = require("../AwsCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
-
-const listBucketPoolSize = 5;
 
 exports.AwsS3Bucket = ({ spec, config }) => {
   assert(spec);
@@ -32,7 +31,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     logger.debug(`getList`);
     const { Buckets } = await s3.listBuckets().promise();
     //logger.debug(`getList ${tos(Buckets)}`);
-    const fullBuckets = await map.pool(listBucketPoolSize, async (bucket) => ({
+    const fullBuckets = await map.pool(mapPoolSize, async (bucket) => ({
       ...bucket,
       ...(await getByName({ name: bucket.Name })),
     }))(Buckets);
