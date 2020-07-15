@@ -7,10 +7,7 @@ const { CheckTagsS3 } = require("../../AwsTagCheck");
 describe("AwsS3Bucket", async function () {
   let config;
   let provider;
-  let s3Bucket;
   const bucketName = "grucloud-s3bucket-test";
-
-  console.log(`Current directory: ${process.cwd()}`);
 
   before(async function () {
     try {

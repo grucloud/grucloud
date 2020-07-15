@@ -28,7 +28,7 @@ describe("AwsS3Object", async function () {
   after(async () => {
     //await provider?.destroyAll();
   });
-  it.only("s3 object apply and destroy", async function () {
+  it("s3 object apply and destroy", async function () {
     const s3Bucket = await provider.makeS3Bucket({
       name: `${bucketName}-basic`,
       properties: () => ({}),

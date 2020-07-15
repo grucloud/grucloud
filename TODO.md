@@ -39,6 +39,7 @@ error: unknown option '--provider'
 
 ## TODO Aws:
 
+- listObjectsV2
 - aws.config.loadFromPath('./AwsConfig.json');
 
 - error padend
@@ -88,6 +89,8 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## Nice to have
 
+- https://www.cncf.io/
+- https://jonathan.bergknoff.com/journal/terraform-pain-points/
 - terraform workspace new staging
 - terraform workspace select (staging/production)
 - https://cloudcraft.co/

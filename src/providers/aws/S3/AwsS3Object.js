@@ -221,43 +221,43 @@ exports.AwsS3Object = ({ spec, config }) => {
       () => getBucket({ dependencies, name }),
       async (bucket) =>
         await pipe([
-          () =>
-            fork({
-              Body: async () => await fs.readFile(source),
-              ContentMD5: async () =>
-                await pipe([
-                  async () => await md5File(source),
-                  (md5) => new Buffer.from(md5, "hex").toString("base64"),
-                ])(),
-            })(),
-          async ({ Body, ContentMD5 }) =>
-            pipe([
-              ({ Body, ContentMD5 }) => ({
-                ...otherProperties,
-                Body,
-                Bucket: bucket.name,
-                ContentMD5,
-                Tagging: `${managedByKey}=${managedByValue}&${stageTagKey}=${stage}${
-                  Tagging && `&${Tagging}`
-                }`,
-              }),
-              async (params) => await s3.putObject(params).promise(),
-              tap(
-                async () =>
-                  await retryExpectOk({
-                    name: `s3 isUpById: ${bucket.name}/${name}`,
-                    fn: () => isUpById({ Bucket: bucket.name, Key: name }),
-                    config: clientConfig,
-                  })
-              ),
-              ({ ETag, ServerSideEncryption }) => ({
-                ETag,
-                ServerSideEncryption,
-              }),
-              tap((result) => {
-                logger.debug(`create ${tos(result)}`);
-              }),
-            ])({ Body, ContentMD5 }),
+          fork({
+            Body: async () => await fs.readFile(source),
+            ContentMD5: pipe([
+              async () => await md5File(source),
+              (md5) => new Buffer.from(md5, "hex").toString("base64"),
+            ]),
+          }),
+          pipe([
+            tap((x) => {
+              logger.debug(`Body  ContentMD5 ${tos(x)}`);
+            }),
+            ({ Body, ContentMD5 }) => ({
+              ...otherProperties,
+              Body,
+              Bucket: bucket.name,
+              ContentMD5,
+              Tagging: `${managedByKey}=${managedByValue}&${stageTagKey}=${stage}${
+                Tagging && `&${Tagging}`
+              }`,
+            }),
+            async (params) => await s3.putObject(params).promise(),
+            tap(
+              async () =>
+                await retryExpectOk({
+                  name: `s3 isUpById: ${bucket.name}/${name}`,
+                  fn: () => isUpById({ Bucket: bucket.name, Key: name }),
+                  config: clientConfig,
+                })
+            ),
+            ({ ETag, ServerSideEncryption }) => ({
+              ETag,
+              ServerSideEncryption,
+            }),
+            tap((result) => {
+              logger.debug(`create ${tos(result)}`);
+            }),
+          ]),
         ])(),
     ])();
   };
