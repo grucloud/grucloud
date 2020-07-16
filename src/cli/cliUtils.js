@@ -39,7 +39,10 @@ exports.runAsyncCommand = async (command, text) => {
       }
       case "ERROR": {
         const key = resourceToKey(resource);
-        spinnies.fail(key, { text: `${key}: ${error.message}` });
+        spinnies.fail(key, {
+          //TODO build error.ToString()
+          text: `${key}: ${error?.name} ${error.message || ""}`,
+        });
         break;
       }
       default:

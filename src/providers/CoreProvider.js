@@ -470,13 +470,22 @@ function CoreProvider({
           previousState: "INIT",
           nextState: "RUNNING",
         });
-        const actions = await resource.planUpsert({ resource });
-        onStateChange({
-          resource: resource.toJSON(),
-          previousState: "RUNNING",
-          nextState: "DONE",
-        });
-        return actions;
+        try {
+          const actions = await resource.planUpsert({ resource });
+          onStateChange({
+            resource: resource.toJSON(),
+            previousState: "RUNNING",
+            nextState: "DONE",
+          });
+          return actions;
+        } catch (error) {
+          onStateChange({
+            resource: resource.toJSON(),
+            previousState: "RUNNING",
+            nextState: "ERROR",
+            error,
+          });
+        }
       }),
       filter((x) => x),
       flatten,

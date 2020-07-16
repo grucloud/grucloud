@@ -45,7 +45,7 @@ describe("AwsS3Bucket", async function () {
 
     await testPlanDestroy({ provider, full: false });
   });
-  it.only("s3Bucket acl error", async function () {
+  it("s3Bucket acl error", async function () {
     try {
       await provider.makeS3Bucket({
         name: `${bucketPrefix}-acl-accesscontrolpolicy`,
