@@ -7,11 +7,8 @@
 - return error as an array ?
 - client type redundant ?
 - do not use index.js for S3 and EC2
-- test should read config from examples
 
 - Provide a summary option for `plan` and/or `apply`
-
-should not retruy on real error: 09:25:26.543 error: Common retryCall error create getLive S3Bucket/grucloud-s3bucket-test-tag, attempt 18/30, retryDelay: 10000, error:MissingRequiredParameter: Missing required key 'Bucket' in params
 
 gc d --name grucloud-s3bucket-test
 No resources to destroy
@@ -51,12 +48,8 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 - public Ip address in example
 
 - aws_s3_bucket_policy
-- s3 encryption
-- s3 lifecycle
-- s3 policy
-- s3 replication
-- s3 acceleration
-- s3 NotificationConfiguration
+
+- s3 analytics configuration
 
 * cloudtrail
 

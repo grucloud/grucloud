@@ -38,7 +38,7 @@ describe("AwsS3Bucket", async function () {
       }),
     });
 
-    const s3Object = await provider.makeS3Object({
+    await provider.makeS3Object({
       name: `file-test-1`,
       dependencies: { bucket: s3BucketVersioning },
       properties: () => ({
@@ -54,6 +54,72 @@ describe("AwsS3Bucket", async function () {
 
     await testPlanDestroy({ provider, full: false });
   });
+  it.only("s3Bucket ACL", async function () {
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketLifecycleConfiguration-property
+
+    await provider.makeS3Bucket({
+      name: `${bucketName}-lifecycleconfiguration`,
+      properties: () => ({
+        LifecycleConfiguration: {
+          Rules: [
+            {
+              Expiration: {
+                Days: 3650,
+              },
+              Filter: {
+                Prefix: "documents/",
+              },
+              ID: "TestOnly",
+              Status: "Enabled",
+              Transitions: [
+                {
+                  Days: 365,
+                  StorageClass: "GLACIER",
+                },
+              ],
+            },
+          ],
+        },
+      }),
+    });
+    /*
+    await provider.makeS3Bucket({
+      name: `${bucketName}-acl`,
+      properties: () => ({
+        GrantRead: "uri=http://acs.amazonaws.com/groups/s3/LogDelivery",
+      }),
+    });
+*/
+    await testPlanDeploy({ provider });
+
+    await testPlanDestroy({ provider, full: false });
+  });
+  it("s3Bucket object versioning", async function () {
+    const s3BucketVersioning = await provider.makeS3Bucket({
+      name: `${bucketName}-versioning`,
+      properties: () => ({
+        VersioningConfiguration: {
+          MFADelete: "Disabled",
+          Status: "Enabled",
+        },
+      }),
+    });
+
+    await provider.makeS3Object({
+      name: `file-test-1`,
+      dependencies: { bucket: s3BucketVersioning },
+      properties: () => ({
+        ContentType: "text/plain",
+        source: path.join(
+          process.cwd(),
+          "examples/aws/s3/fixtures/testFile.txt"
+        ),
+      }),
+    });
+
+    await testPlanDeploy({ provider });
+    await testPlanDestroy({ provider, full: false });
+  });
 
   it("s3Bucket apply and destroy", async function () {
     const s3Bucket = await provider.makeS3Bucket({
@@ -62,6 +128,24 @@ describe("AwsS3Bucket", async function () {
     });
     const config = await s3Bucket.resolveConfig();
     const live = await s3Bucket.getLive();
+
+    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAccelerateConfiguration-property
+    await provider.makeS3Bucket({
+      name: `${bucketName}-acceleration`,
+      properties: () => ({
+        AccelerateConfiguration: {
+          Status: "Enabled",
+        },
+      }),
+    });
+
+    // ACL
+    await provider.makeS3Bucket({
+      name: `${bucketName}-acl`,
+      properties: () => ({
+        GrantRead: "uri=http://acs.amazonaws.com/groups/s3/LogDelivery",
+      }),
+    });
 
     //Tag
     await provider.makeS3Bucket({

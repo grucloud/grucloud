@@ -2,6 +2,7 @@ const assert = require("assert");
 const urljoin = require("url-join");
 
 const { defaultsDeep, isEqual } = require("lodash/fp");
+const get = require("rubico");
 
 const list = {
   data: {
@@ -21,5 +22,9 @@ describe("Playground", function () {
   it("defaultsDeep", async function () {
     const result = defaultsDeep({ size: 10 }, { size: 20 });
     assert(isEqual(result, { size: 20 }));
+  });
+  it("get", async function () {
+    const obj = { a: "aaa" };
+    assert.equal(get("a")(obj), "aaa");
   });
 });

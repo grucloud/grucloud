@@ -3,7 +3,7 @@ const path = require("path");
 const createStack = async ({ config }) => {
   // Create a AWS provider
   const provider = await AwsProvider({ name: "aws", config });
-  const bucketPrefix = "grucloud-s3bucket";
+  const bucketPrefix = "grucloud";
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property
   const bucketName = `${bucketPrefix}-test-basic`;
@@ -23,6 +23,36 @@ const createStack = async ({ config }) => {
       source: path.join(__dirname, "./fixtures/testFile.txt"),
     }),
   });
+
+  // Accelerate
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAccelerateConfiguration-property
+  await provider.makeS3Bucket({
+    name: `${bucketPrefix}-acceleration`,
+    properties: () => ({
+      AccelerateConfiguration: {
+        Status: "Enabled",
+      },
+    }),
+  });
+  // Acl
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAcl-property
+  /*
+  await provider.makeS3Bucket({
+    name: `${bucketPrefix}-acl`,
+    properties: () => ({
+      AccessControlPolicy: {
+        Grants: [
+          {
+            Grantee: {
+              Type: "Group",
+              ID: "uri=http://acs.amazonaws.com/groups/s3/LogDelivery",
+            },
+            Permission: "FULL_CONTROL",
+          },
+        ],
+      },
+    }),
+  });*/
 
   //Tag
   await provider.makeS3Bucket({
