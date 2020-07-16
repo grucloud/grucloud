@@ -113,23 +113,16 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         pick(["Grants", "Owner"]),
       ]),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketCors-property
-      CORSConfiguration: () =>
-        new Promise((resolve, reject) =>
-          s3.getBucketCors(params, (err, data) =>
-            switchCase([
-              get("err"),
-              switchCase([
-                ({ err }) => err.code === "NoSuchCORSConfiguration",
-                () => resolve(),
-                ({ err }) => {
-                  logger.error(`getBucketCors ${name}, error ${tos(err)}`);
-                  reject(err);
-                },
-              ]),
-              ({ data }) => resolve(data),
-            ])({ err, data })
-          )
-        ),
+      CORSConfiguration: tryCatch(
+        () => s3.getBucketCors(params).promise(),
+        switchCase([
+          err => err.code === "NoSuchCORSConfiguration", () => undefined,
+          err => {
+            logger.error(`getBucketCors ${name}, error ${tos(err)}`);
+            throw err;
+          },
+        ]),
+      ),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketEncryption-property
       ServerSideEncryptionConfiguration: () =>
         new Promise((resolve, reject) =>
