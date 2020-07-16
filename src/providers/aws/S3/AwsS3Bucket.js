@@ -479,7 +479,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     await s3.putBucketTagging(paramsTag).promise();
 
     try {
-      switchCase([
+      await switchCase([
         // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAccelerateConfiguration-property
         () => AccelerateConfiguration,
         () =>

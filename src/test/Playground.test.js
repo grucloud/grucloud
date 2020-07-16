@@ -2,7 +2,7 @@ const assert = require("assert");
 const urljoin = require("url-join");
 
 const { defaultsDeep, isEqual } = require("lodash/fp");
-const get = require("rubico");
+const { get, switchCase } = require("rubico");
 
 const list = {
   data: {
@@ -26,5 +26,16 @@ describe("Playground", function () {
   it("get", async function () {
     const obj = { a: "aaa" };
     assert.equal(get("a")(obj), "aaa");
+  });
+  it("switchCase", async function () {
+    await switchCase([
+      () => true,
+      async () => {
+        console.log("throw 422");
+        throw { code: 422 };
+      },
+      () => {},
+    ])();
+    console.log("after switchCase");
   });
 });

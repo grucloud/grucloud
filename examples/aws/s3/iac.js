@@ -12,13 +12,13 @@ const createStack = async ({ config }) => {
     properties: () => ({}),
   });
 
+  // S3 object
   await provider.makeS3Object({
     name: `file-test`,
     dependencies: { bucket },
     properties: () => ({
       ACL: "public-read",
       ContentType: "text/plain",
-      ServerSideEncryption: "AES256",
       Tagging: "key1=value1&key2=value2",
       source: path.join(__dirname, "./fixtures/testFile.txt"),
     }),
@@ -34,25 +34,39 @@ const createStack = async ({ config }) => {
       },
     }),
   });
-  // Acl
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAcl-property
-  /*
+
   await provider.makeS3Bucket({
-    name: `${bucketPrefix}-acl`,
+    name: `${bucketName}-acl-grantread-log-delivery`,
     properties: () => ({
-      AccessControlPolicy: {
-        Grants: [
+      GrantRead: "uri=http://acs.amazonaws.com/groups/s3/LogDelivery",
+    }),
+  });
+
+  await provider.makeS3Bucket({
+    name: `${bucketName}-lifecycleconfiguration`,
+    properties: () => ({
+      LifecycleConfiguration: {
+        Rules: [
           {
-            Grantee: {
-              Type: "Group",
-              ID: "uri=http://acs.amazonaws.com/groups/s3/LogDelivery",
+            Expiration: {
+              Days: 3650,
             },
-            Permission: "FULL_CONTROL",
+            Filter: {
+              Prefix: "documents/",
+            },
+            ID: "TestOnly",
+            Status: "Enabled",
+            Transitions: [
+              {
+                Days: 365,
+                StorageClass: "GLACIER",
+              },
+            ],
           },
         ],
       },
     }),
-  });*/
+  });
 
   //Tag
   await provider.makeS3Bucket({

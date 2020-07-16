@@ -1,5 +1,4 @@
 const assert = require("assert");
-const path = require("path");
 const { ConfigLoader } = require("ConfigLoader");
 const AwsProvider = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
@@ -8,7 +7,7 @@ const { CheckTagsS3 } = require("../../AwsTagCheck");
 describe("AwsS3Bucket", async function () {
   let config;
   let provider;
-  const bucketName = "grucloud-s3bucket-test";
+  const bucketPrefix = "grucloud-s3bucket-test";
 
   before(async function () {
     try {
@@ -27,206 +26,11 @@ describe("AwsS3Bucket", async function () {
   after(async () => {
     //await provider?.destroyAll();
   });
-  it("s3Bucket object versioning", async function () {
-    const s3BucketVersioning = await provider.makeS3Bucket({
-      name: `${bucketName}-versioning`,
-      properties: () => ({
-        VersioningConfiguration: {
-          MFADelete: "Disabled",
-          Status: "Enabled",
-        },
-      }),
-    });
-
-    await provider.makeS3Object({
-      name: `file-test-1`,
-      dependencies: { bucket: s3BucketVersioning },
-      properties: () => ({
-        ContentType: "text/plain",
-        source: path.join(
-          process.cwd(),
-          "examples/aws/s3/fixtures/testFile.txt"
-        ),
-      }),
-    });
-
-    await testPlanDeploy({ provider });
-
-    await testPlanDestroy({ provider, full: false });
-  });
-  it.only("s3Bucket ACL", async function () {
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketLifecycleConfiguration-property
-
-    await provider.makeS3Bucket({
-      name: `${bucketName}-lifecycleconfiguration`,
-      properties: () => ({
-        LifecycleConfiguration: {
-          Rules: [
-            {
-              Expiration: {
-                Days: 3650,
-              },
-              Filter: {
-                Prefix: "documents/",
-              },
-              ID: "TestOnly",
-              Status: "Enabled",
-              Transitions: [
-                {
-                  Days: 365,
-                  StorageClass: "GLACIER",
-                },
-              ],
-            },
-          ],
-        },
-      }),
-    });
-    /*
-    await provider.makeS3Bucket({
-      name: `${bucketName}-acl`,
-      properties: () => ({
-        GrantRead: "uri=http://acs.amazonaws.com/groups/s3/LogDelivery",
-      }),
-    });
-*/
-    await testPlanDeploy({ provider });
-
-    await testPlanDestroy({ provider, full: false });
-  });
-  it("s3Bucket object versioning", async function () {
-    const s3BucketVersioning = await provider.makeS3Bucket({
-      name: `${bucketName}-versioning`,
-      properties: () => ({
-        VersioningConfiguration: {
-          MFADelete: "Disabled",
-          Status: "Enabled",
-        },
-      }),
-    });
-
-    await provider.makeS3Object({
-      name: `file-test-1`,
-      dependencies: { bucket: s3BucketVersioning },
-      properties: () => ({
-        ContentType: "text/plain",
-        source: path.join(
-          process.cwd(),
-          "examples/aws/s3/fixtures/testFile.txt"
-        ),
-      }),
-    });
-
-    await testPlanDeploy({ provider });
-    await testPlanDestroy({ provider, full: false });
-  });
 
   it("s3Bucket apply and destroy", async function () {
     const s3Bucket = await provider.makeS3Bucket({
-      name: `${bucketName}-basic`,
+      name: `${bucketPrefix}-basic`,
       properties: () => ({}),
-    });
-    const config = await s3Bucket.resolveConfig();
-    const live = await s3Bucket.getLive();
-
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAccelerateConfiguration-property
-    await provider.makeS3Bucket({
-      name: `${bucketName}-acceleration`,
-      properties: () => ({
-        AccelerateConfiguration: {
-          Status: "Enabled",
-        },
-      }),
-    });
-
-    // ACL
-    await provider.makeS3Bucket({
-      name: `${bucketName}-acl`,
-      properties: () => ({
-        GrantRead: "uri=http://acs.amazonaws.com/groups/s3/LogDelivery",
-      }),
-    });
-
-    //Tag
-    await provider.makeS3Bucket({
-      name: `${bucketName}-tag`,
-      properties: () => ({
-        Tagging: {
-          TagSet: [
-            {
-              Key: "Key1",
-              Value: "Value1",
-            },
-            {
-              Key: "Key2",
-              Value: "Value2",
-            },
-          ],
-        },
-      }),
-    });
-
-    // Website
-    await provider.makeS3Bucket({
-      name: `${bucketName}-website`,
-      properties: () => ({
-        ACL: "public-read",
-        WebsiteConfiguration: {
-          ErrorDocument: {
-            Key: "error.html",
-          },
-          IndexDocument: {
-            Suffix: "index.html",
-          },
-        },
-      }),
-    });
-
-    // CORS
-    await provider.makeS3Bucket({
-      name: `${bucketName}-cors`,
-      properties: () => ({
-        CORSConfiguration: {
-          CORSRules: [
-            {
-              AllowedHeaders: ["Authorization"],
-              AllowedMethods: ["GET"],
-              AllowedOrigins: ["*"],
-              MaxAgeSeconds: 3000,
-            },
-          ],
-        },
-      }),
-    });
-
-    // Logging
-
-    const bucketLogDestination = `${bucketName}-log-destination`;
-    await provider.makeS3Bucket({
-      name: bucketLogDestination,
-      properties: () => ({
-        ACL: "log-delivery-write",
-      }),
-    });
-    await provider.makeS3Bucket({
-      name: `${bucketName}-logging`,
-      properties: () => ({
-        BucketLoggingStatus: {
-          LoggingEnabled: {
-            TargetBucket: bucketLogDestination,
-            TargetGrants: [
-              {
-                Grantee: {
-                  Type: "Group",
-                  URI: "http://acs.amazonaws.com/groups/global/AllUsers",
-                },
-                Permission: "READ",
-              },
-            ],
-            TargetPrefix: "MyBucketLogs/",
-          },
-        },
-      }),
     });
 
     await testPlanDeploy({ provider });
@@ -240,5 +44,30 @@ describe("AwsS3Bucket", async function () {
     });
 
     await testPlanDestroy({ provider, full: false });
+  });
+  it.only("s3Bucket acl error", async function () {
+    try {
+      await provider.makeS3Bucket({
+        name: `${bucketPrefix}-acl-accesscontrolpolicy`,
+        properties: () => ({
+          AccessControlPolicy: {
+            Grants: [
+              {
+                Grantee: {
+                  Type: "Group",
+                  ID: "uri=http://acs.amazonaws.com/groups/s3/LogDelivery",
+                },
+                Permission: "FULL_CONTROL",
+              },
+            ],
+          },
+        }),
+      });
+
+      await testPlanDeploy({ provider });
+    } catch (error) {
+      console.log(error.stack);
+      //assert(error);
+    }
   });
 });
