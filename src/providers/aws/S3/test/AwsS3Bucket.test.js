@@ -1,4 +1,5 @@
 const assert = require("assert");
+const path = require("path");
 const { ConfigLoader } = require("ConfigLoader");
 const AwsProvider = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
@@ -26,6 +27,34 @@ describe("AwsS3Bucket", async function () {
   after(async () => {
     //await provider?.destroyAll();
   });
+  it("s3Bucket object versioning", async function () {
+    const s3BucketVersioning = await provider.makeS3Bucket({
+      name: `${bucketName}-versioning`,
+      properties: () => ({
+        VersioningConfiguration: {
+          MFADelete: "Disabled",
+          Status: "Enabled",
+        },
+      }),
+    });
+
+    const s3Object = await provider.makeS3Object({
+      name: `file-test-1`,
+      dependencies: { bucket: s3BucketVersioning },
+      properties: () => ({
+        ContentType: "text/plain",
+        source: path.join(
+          process.cwd(),
+          "examples/aws/s3/fixtures/testFile.txt"
+        ),
+      }),
+    });
+
+    await testPlanDeploy({ provider });
+
+    await testPlanDestroy({ provider, full: false });
+  });
+
   it("s3Bucket apply and destroy", async function () {
     const s3Bucket = await provider.makeS3Bucket({
       name: `${bucketName}-basic`,
@@ -49,17 +78,6 @@ describe("AwsS3Bucket", async function () {
               Value: "Value2",
             },
           ],
-        },
-      }),
-    });
-
-    // Versioning
-    await provider.makeS3Bucket({
-      name: `${bucketName}-versioning`,
-      properties: () => ({
-        VersioningConfiguration: {
-          MFADelete: "Disabled",
-          Status: "Enabled",
         },
       }),
     });

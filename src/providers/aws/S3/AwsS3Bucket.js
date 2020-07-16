@@ -1,14 +1,20 @@
 const AWS = require("aws-sdk");
-const { defaultsDeep, unionWith, isEqual, isEmpty } = require("lodash/fp");
+const {
+  defaultsDeep,
+  unionWith,
+  isEqual,
+  isEmpty,
+  flatten,
+} = require("lodash/fp");
 const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "S3Bucket" });
 const { retryExpectOk } = require("../../Retry");
 const { tos } = require("../../../tos");
-const { map, tap, pipe } = require("rubico");
+const { map, tap, pipe, switchCase, not } = require("rubico");
 const { mapPoolSize } = require("../AwsCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
-
+assert(flatten);
 exports.AwsS3Bucket = ({ spec, config }) => {
   assert(spec);
   assert(config);
@@ -304,7 +310,61 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             ),
             ({ IsTruncated }) => IsTruncated,
             tap((IsTruncated) => {
-              logger.debug(`IsTruncated: ${IsTruncated}`);
+              logger.debug(`listObjects IsTruncated: ${IsTruncated}`);
+            }),
+          ])();
+        } while (isTruncated);
+      },
+      async () => {
+        do {
+          var isTruncated = await pipe([
+            async () => await s3.listObjectVersions({ Bucket }).promise(),
+            tap((result) => {
+              logger.debug(`listObjectVersions: ${tos({ result })}`);
+            }),
+            tap(
+              switchCase([
+                (object) => !isEmpty(object.Versions),
+                async (object) =>
+                  await s3
+                    .deleteObjects({
+                      Bucket,
+                      Delete: {
+                        Objects: object.Versions.map((version) => ({
+                          Key: version.Key,
+                          VersionId: version.VersionId,
+                        })),
+                      },
+                    })
+                    .promise(),
+                () => {
+                  logger.debug(`listObjectVersions: not versions`);
+                },
+              ])
+            ),
+            tap(
+              switchCase([
+                (object) => !isEmpty(object.DeleteMarkers),
+                async (object) =>
+                  await s3
+                    .deleteObjects({
+                      Bucket,
+                      Delete: {
+                        Objects: object.DeleteMarkers.map((version) => ({
+                          Key: version.Key,
+                          VersionId: version.VersionId,
+                        })),
+                      },
+                    })
+                    .promise(),
+                () => {
+                  logger.debug(`listObjectVersions: no DeleteMarkers `);
+                },
+              ])
+            ),
+            ({ IsTruncated }) => IsTruncated,
+            tap((IsTruncated) => {
+              logger.debug(`listObjectVersions IsTruncated: ${IsTruncated}`);
             }),
           ])();
         } while (isTruncated);
