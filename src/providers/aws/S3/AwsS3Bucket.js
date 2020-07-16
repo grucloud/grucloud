@@ -96,21 +96,17 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
     const s3Bucket = await fork({
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketAccelerateConfiguration-property
-      AccelerateConfiguration: () =>
-        new Promise((resolve, reject) =>
-          s3.getBucketAccelerateConfiguration(params, (err, data) =>
-            switchCase([
-              get("err"),
-              ({ err }) => {
-                logger.error(
-                  `getBucketAccelerateConfiguration ${name}, error ${tos(err)}`
-                );
-                reject(err);
-              },
-              ({ data }) => resolve(isEmpty(data) ? undefined : data),
-            ])({ err, data })
-          )
+      AccelerateConfiguration: pipe([
+        tryCatch(
+          () => s3.GetBucketAccelerateConfiguration(params).promise(),
+          err => {
+            logger.error(
+              `getBucketAccelerateConfiguration ${name}, error ${tos(err)}`
+            );
+          },
         ),
+        switchCase([isEmpty, () => undefined, data => data]),
+      ]),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketAcl-property
       ACL: pipe([
         () => s3.getBucketAcl(params).promise(),
