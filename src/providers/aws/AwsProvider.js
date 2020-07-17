@@ -29,8 +29,7 @@ const validateConfig = async ({ region, zone }) => {
   }
 };
 
-module.exports = AwsProvider = async ({ name, config }) => {
-  assert(name);
+module.exports = AwsProvider = async ({ name = "aws", config }) => {
   assert(config);
 
   const mandatoryConfigKeys = ["region", "zone"];

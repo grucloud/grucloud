@@ -250,10 +250,8 @@ const createResources = async ({ provider }) => {
 
 exports.createResources = createResources;
 
-const createStack = async ({ name = "aws", config }) => {
+exports.createStack = async ({ name = "aws", config }) => {
   const provider = await AwsProvider({ name, config });
   const resources = await createResources({ provider });
   return { providers: [provider], resources };
 };
-
-module.exports = createStack;

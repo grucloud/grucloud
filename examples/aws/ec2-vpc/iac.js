@@ -80,7 +80,7 @@ const createResources = async ({ provider }) => {
 
 exports.createResources = createResources;
 
-const createStack = async ({ name = "aws", config }) => {
+exports.createStack = async ({ name = "aws", config }) => {
   // Create a AWS provider
   const provider = await AwsProvider({ name, config });
   const resources = await createResources({ provider });
@@ -91,5 +91,3 @@ const createStack = async ({ name = "aws", config }) => {
 
   return { providers: [provider], resources };
 };
-
-module.exports = createStack;

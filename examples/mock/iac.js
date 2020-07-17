@@ -76,5 +76,3 @@ const createStack = async ({ config }) => {
   });
   return { providers: [provider], ip, volume, server, image };
 };
-
-module.exports = createStack;

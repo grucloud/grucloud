@@ -1,6 +1,6 @@
 const ScalewayProvider = require("@grucloud/core").ScalewayProvider;
 
-const createStack = async ({}) => {
+exports.createStack = async ({}) => {
   const config = {
     zone: "fr-par-1",
     organization: process.env.SCALEWAY_ORGANISATION_ID,
@@ -37,4 +37,3 @@ const createStack = async ({}) => {
   });
   return { providers: [provider] };
 };
-module.exports = createStack;

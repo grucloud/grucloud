@@ -1,6 +1,6 @@
 const GoogleProvider = require("@grucloud/core").GoogleProvider;
 
-const createStack = async ({ config }) => {
+exports.createStack = async ({ config }) => {
   // Create GCP provider
   const { stage } = config;
   const provider = await GoogleProvider({ name: "google", config });
@@ -66,5 +66,3 @@ const createStack = async ({ config }) => {
 
   return { providers: [provider] };
 };
-
-module.exports = createStack;

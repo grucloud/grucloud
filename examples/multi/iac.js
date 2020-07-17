@@ -1,32 +1,33 @@
 const AwsStackEC2Vpc = require("../aws/ec2-vpc/iac");
 const AwsStackS3 = require("../aws/s3/iac");
+const { AwsProvider } = require("@grucloud/core");
 
 const AzureStack = require("../azure/iac");
 const GoogleStack = require("../google/iac");
 
-const createStack = async ({ config }) => {
-  const awsStackEc2Vpc = await AwsStackEC2Vpc({
-    name: "aws-ec2vpc",
+exports.createStack = async ({ config }) => {
+  const awsProvider = await AwsProvider({
     config: { ...config.aws, stage: config.stage },
   });
-  const awsStackS3 = await AwsStackS3({
-    name: "aws-s3",
-    config: { ...config.aws, stage: config.stage },
-  });
-  const azureStack = await AzureStack({
+
+  const azureStack = await AzureStack.createStack({
     config: { ...config.azure, stage: config.stage },
   });
-  const googleStack = await GoogleStack({
+  const googleStack = await GoogleStack.createStack({
     config: { ...config.google, stage: config.stage },
   });
 
   return {
-    providers: [
-      ...awsStackEc2Vpc.providers,
-      ...awsStackS3.providers,
-      ...azureStack.providers,
-      ...googleStack.providers,
-    ],
+    providers: [awsProvider, ...azureStack.providers, ...googleStack.providers],
+    resources: {
+      ec2Vpc: await AwsStackEC2Vpc.createResources({
+        provider: awsProvider,
+      }),
+      s3: await AwsStackS3.createResources({
+        provider: awsProvider,
+      }),
+      azure: azureStack.resources,
+      google: googleStack.resources,
+    },
   };
 };
-module.exports = createStack;

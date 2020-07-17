@@ -1,3 +1,4 @@
+const assert = require("assert");
 const path = require("path");
 const fs = require("fs");
 const { ConfigLoader } = require("../ConfigLoader");
@@ -6,7 +7,8 @@ const creatInfraFromFile = async ({ infraFileName, config, stage }) => {
   //console.log("creatInfraFromFile", infraFileName, config);
   const InfraCode = require(infraFileName);
   //TODO use createStack
-  const infra = await InfraCode({ config: { ...config, stage } });
+  assert(InfraCode.createStack, "missing createStack function");
+  const infra = await InfraCode.createStack({ config: { ...config, stage } });
   if (!infra.providers) {
     throw Error(`no providers provided`);
   }

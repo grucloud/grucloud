@@ -1,6 +1,6 @@
 const { AwsProvider } = require("@grucloud/core");
 
-const createStack = async ({ config }) => {
+exports.createStack = async ({ config }) => {
   // Create a AWS provider
   const provider = await AwsProvider({ name: "aws", config });
 
@@ -22,5 +22,3 @@ const createStack = async ({ config }) => {
 
   return { providers: [provider] };
 };
-
-module.exports = createStack;

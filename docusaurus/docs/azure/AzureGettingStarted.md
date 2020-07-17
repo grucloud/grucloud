@@ -77,7 +77,7 @@ Now it is time to edit the infrastructure **iac.js** file that describes the arc
 const assert = require("assert");
 const { AzureProvider } = require("@grucloud/core");
 
-const createStack = async ({ config }) => {
+exports.createStack = async ({ config }) => {
   const { stage } = config;
   assert(stage);
   // Create an Azure provider
@@ -203,8 +203,6 @@ const createStack = async ({ config }) => {
   });
   return { providers: [provider] };
 };
-
-module.exports = createStack;
 ```
 
 ## Plan

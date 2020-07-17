@@ -36,6 +36,7 @@ error: unknown option '--provider'
 
 ## TODO Aws:
 
+- add example code in AwsGettingStarted
 - listObjectsV2
 - aws.config.loadFromPath('./AwsConfig.json');
 

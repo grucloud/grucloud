@@ -3,7 +3,7 @@ const MockProvider = require("../MockProvider");
 const MockCloud = require("../MockCloud");
 const { createAxiosMock } = require("./MockAxios");
 
-const createStack = async ({ config }) => {
+exports.createStack = async ({ config }) => {
   // Provider
   const mockCloud = MockCloud(config.mockCloudInitStates);
   const provider = await MockProvider({
@@ -69,5 +69,3 @@ const createStack = async ({ config }) => {
   });
   return { providers: [provider], ip, volume, server, image };
 };
-
-module.exports = createStack;
