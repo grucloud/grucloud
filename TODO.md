@@ -47,7 +47,7 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 - add tags for every resource
 - public Ip address in example
 
-- aws_s3_bucket_policy
+- s3 notificationConfiguration example with ServerLess function, sns
 
 - s3 analytics configuration
 

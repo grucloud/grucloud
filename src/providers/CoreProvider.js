@@ -11,7 +11,7 @@ const { fromTagName } = require("./TagName");
 const { SpecDefault } = require("./SpecDefault");
 const { retryExpectOk, retryCall } = require("./Retry");
 const { logError } = require("./Common");
-const { Planner } = require("./Planner");
+const { Planner, mapToGraph } = require("./Planner");
 
 const noop = ({}) => {};
 
@@ -638,7 +638,7 @@ function CoreProvider({
 
     const planner = Planner({
       plans,
-      specs,
+      specs: mapToGraph(mapNameToResource),
       executor,
       onStateChange,
     });
@@ -708,7 +708,7 @@ function CoreProvider({
 
     const planner = Planner({
       plans,
-      specs,
+      specs: mapToGraph(mapNameToResource),
       executor,
       down: true,
       onStateChange,

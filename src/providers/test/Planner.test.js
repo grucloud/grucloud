@@ -38,7 +38,7 @@ describe("Planner", function () {
   }) => {
     assert(resource);
     if (nextState === "RUNNING") {
-      stateChanges.push(resource.type);
+      stateChanges.push(resource.name);
     }
   };
   it("az create ok", async function () {
@@ -55,12 +55,7 @@ describe("Planner", function () {
     assert.equal(results.length, azPlansCreate().length);
 
     assert.equal(
-      [
-        "ResourceGroup",
-        "VirtualNetwork",
-        "SecurityGroup",
-        "NetworkInterface",
-      ].join(","),
+      ["rg", "vnet", "sg", "network-interface"].join(","),
       stateChanges.join(",")
     );
 
@@ -90,12 +85,7 @@ describe("Planner", function () {
     const { success, results } = await planner.run();
     checkOk(success, results);
     assert.equal(
-      [
-        "NetworkInterface",
-        "VirtualNetwork",
-        "SecurityGroup",
-        "ResourceGroup",
-      ].join(","),
+      ["network-interface", "vnet", "sg", "rg"].join(","),
       stateChanges.join(",")
     );
   });
@@ -124,7 +114,7 @@ describe("Planner", function () {
     const { success, results } = await planner.run();
     assert.equal(results.length, 5);
     assert.equal(
-      ["RouteTables", "Instance", "Subnet", "SecurityGroup", "Vpc"].join(","),
+      ["rt", "instance", "subnet", "sg", "vpc"].join(","),
       stateChanges.join(",")
     );
     checkOk(success, results);
@@ -140,10 +130,7 @@ describe("Planner", function () {
     });
     const { success, results } = await planner.run();
     assert.equal(results.length, 3);
-    assert.equal(
-      ["Vpc", "Subnet", "RouteTables"].join(","),
-      stateChanges.join(",")
-    );
+    assert.equal(["vpc", "subnet", "rt"].join(","), stateChanges.join(","));
     checkOk(success, results);
   });
   it("aws destroy ok partial", async function () {
@@ -157,10 +144,7 @@ describe("Planner", function () {
     });
     const { success, results } = await planner.run();
     assert.equal(results.length, 3);
-    assert.equal(
-      ["RouteTables", "Subnet", "Vpc"].join(","),
-      stateChanges.join(",")
-    );
+    assert.equal(["rt", "subnet", "vpc"].join(","), stateChanges.join(","));
     checkOk(success, results);
   });
 });

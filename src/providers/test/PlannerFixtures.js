@@ -1,10 +1,10 @@
 exports.azSpecs = [
-  { type: "ResourceGroup" },
-  { type: "VirtualNetwork", dependsOn: ["ResourceGroup"] },
-  { type: "SecurityGroup", dependsOn: ["ResourceGroup"] },
+  { name: "rg" },
+  { name: "vnet", dependsOn: ["rg"] },
+  { name: "sg", dependsOn: ["rg"] },
   {
-    type: "NetworkInterface",
-    dependsOn: ["ResourceGroup", "VirtualNetwork", "SecurityGroup"],
+    name: "network-interface",
+    dependsOn: ["rg", "vnet", "sg"],
   },
 ];
 const azPlans = [
@@ -14,7 +14,6 @@ const azPlans = [
       type: "ResourceGroup",
       provider: "azure",
     },
-    config: {},
   },
   {
     resource: {
@@ -22,7 +21,6 @@ const azPlans = [
       type: "VirtualNetwork",
       provider: "azure",
     },
-    config: {},
   },
   {
     resource: {
@@ -30,7 +28,6 @@ const azPlans = [
       type: "SecurityGroup",
       provider: "azure",
     },
-    config: {},
   },
   {
     resource: {
@@ -38,7 +35,6 @@ const azPlans = [
       type: "NetworkInterface",
       provider: "azure",
     },
-    config: {},
   },
 ];
 
@@ -48,21 +44,21 @@ exports.azPlansCreate = () => addAction(azPlans, "CREATE");
 exports.azPlansDestroy = () => addAction(azPlans, "DESTROY");
 
 exports.awsSpecs = [
-  { type: "Vpc" },
-  { type: "InternetGateway", dependsOn: ["Vpc"] },
-  { type: "Subnet", dependsOn: ["Vpc"] },
+  { name: "vpc" },
+  { name: "ig", dependsOn: ["vpc"] },
+  { name: "subnet", dependsOn: ["vpc"] },
   {
-    type: "RouteTables",
-    dependsOn: ["Vpc", "Subnet", "InternetGateway"],
+    name: "rt",
+    dependsOn: ["vpc", "subnet", "ig"],
   },
-  { type: "SecurityGroup", dependsOn: ["Vpc"] },
+  { name: "sg", dependsOn: ["vpc"] },
   {
-    type: "Instance",
-    dependsOn: ["Subnet", "SecurityGroup"],
+    name: "instance",
+    dependsOn: ["subnet", "sg", "eip"],
   },
   {
-    type: "ElasticIpAddress",
-    dependsOn: ["InternetGateway", "EC2"],
+    name: "eip",
+    dependsOn: ["ig", "instance"],
   },
 ];
 
@@ -73,7 +69,6 @@ const awsPlans = [
       type: "Vpc",
       provider: "aws",
     },
-    config: {},
   },
   {
     resource: {
@@ -81,7 +76,6 @@ const awsPlans = [
       type: "Subnet",
       provider: "aws",
     },
-    config: {},
   },
   {
     resource: {
@@ -89,7 +83,6 @@ const awsPlans = [
       type: "RouteTables",
       provider: "aws",
     },
-    config: {},
   },
   {
     resource: {
@@ -97,7 +90,6 @@ const awsPlans = [
       type: "SecurityGroup",
       provider: "aws",
     },
-    config: {},
   },
   {
     resource: {
@@ -105,7 +97,6 @@ const awsPlans = [
       type: "Instance",
       provider: "aws",
     },
-    config: {},
   },
 ];
 

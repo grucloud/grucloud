@@ -11,7 +11,7 @@ describe("ScalewayImage", async function () {
 
   before(async function () {
     try {
-      config = ConfigLoader({ path: "examples/aws/ec2-vpc" });
+      config = ConfigLoader({ baseDir: __dirname });
     } catch (error) {
       this.skip();
     }

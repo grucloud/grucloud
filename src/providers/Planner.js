@@ -1,8 +1,17 @@
 const assert = require("assert");
 const logger = require("../logger")({ prefix: "Planner" });
 const { tos } = require("../tos");
-const { isEmpty, isArray, isFunction } = require("lodash/fp");
-const { filter, map, pipe, tap, any, switchCase } = require("rubico");
+const { isEmpty, isArray, isFunction, flatten } = require("lodash/fp");
+const {
+  filter,
+  map,
+  pipe,
+  tap,
+  any,
+  switchCase,
+  reduce,
+  transform,
+} = require("rubico");
 const { logError, convertError } = require("./Common");
 
 const STATES = {
@@ -12,22 +21,52 @@ const STATES = {
   DONE: "DONE",
 };
 
+exports.mapToGraph = pipe([
+  tap((mapResource) => {
+    //logger.debug(`mapToGraph: ${mapResource}`);
+  }),
+  (mapResource) =>
+    map((resource) => {
+      const dependsOn = reduce((acc, resource) => {
+        return pipe([
+          () => [
+            ...acc,
+            resource.name
+              ? resource.name
+              : transform(
+                  map((dep) => dep.name),
+                  () => []
+                )(resource),
+          ],
+          flatten,
+        ])();
+      }, [])(resource.dependencies);
+      return {
+        name: resource.name,
+        dependsOn,
+      };
+    })([...mapResource.values()]),
+  tap((graph) => {
+    logger.debug(`mapToGraph: result ${tos(graph)}`);
+  }),
+]);
+
 const DependencyTree = ({ plans, specs, down }) => {
   if (down) {
     const result = map((spec) => ({
-      type: spec.type,
+      name: spec.name,
       dependsOn: pipe([
-        filter(({ dependsOn = [] }) => dependsOn.includes(spec.type)),
-        map(({ type }) => type),
-        filter((type) => plans.find((plan) => plan.resource.type === type)),
+        filter(({ dependsOn = [] }) => dependsOn.includes(spec.name)),
+        map(({ name }) => name),
+        filter((name) => plans.find((plan) => plan.resource.name === name)), //TODO do we need that ?
       ])(specs),
     }))(specs);
     return result;
   } else {
     return map((spec) => ({
-      type: spec.type,
+      name: spec.name,
       dependsOn: spec.dependsOn?.filter((dependOn) =>
-        plans.find((plan) => plan.resource.type === dependOn)
+        plans.find((plan) => plan.resource.name === dependOn)
       ),
     }))(specs);
   }
@@ -45,15 +84,17 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
 
   const statusMap = new Map();
   const itemToKey = (item) => item.resource.name || item.resource.id;
-  const findSpecByType = (type, specs) => {
-    assert(type, "no type");
-    const spec = specs.find((spec) => spec.type === type);
-    assert(spec, `cannot find spec type for ${type}`);
-    return spec;
-  };
 
-  const findDependsOn = (item, dependencyTree) =>
-    findSpecByType(item.resource.type, dependencyTree).dependsOn;
+  const findDependsOn = (item, dependencyTree) => {
+    if (!item.resource.name) {
+      logger.error(`resource has no name, item ${tos(item)}`);
+      return [];
+    }
+    const spec = dependencyTree.find(
+      (spec) => spec.name === item.resource.name
+    );
+    return spec ? spec.dependsOn : [];
+  };
 
   plans.map((item) => {
     const key = itemToKey(item);
@@ -125,13 +166,13 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
       //Exclude the current resource
       filter((x) => x.item.resource.name !== item.resource.name),
       // Find resources that depends on the one that just ended
-      filter(({ dependsOn = [] }) => dependsOn.includes(item.resource.type)),
+      filter(({ dependsOn = [] }) => dependsOn.includes(item.resource.name)),
       map(
         pipe([
           async (entry) => {
             await pipe([
               // Remove from the dependsOn array the one that just ended
-              filter((x) => x !== item.resource.type),
+              filter((x) => x !== item.resource.name),
               tap((dependsOn) => {
                 entry.dependsOn = dependsOn;
               }),
@@ -162,7 +203,7 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
       return { success: true, results: [] };
     }
 
-    const resourceTypes = plans.map((plan) => plan.resource.type);
+    const resourceTypes = plans.map((plan) => plan.resource.name);
     logger.debug(`Planner resourceTypes ${resourceTypes}`);
 
     const isDependsOnInPlan = (dependsOn = []) =>

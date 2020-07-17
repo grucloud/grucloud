@@ -1,12 +1,6 @@
 const { AwsProvider } = require("@grucloud/core");
 
-const createStack = async ({ config }) => {
-  // Create a AWS provider
-  const provider = await AwsProvider({ name: "aws", config });
-  // Allocate public Ip address
-  //TODO
-  // const ip = await provider.makeAddress({ name: "ip-webserver" });
-  // Allocate a server
+const createResources = async ({ provider }) => {
   const keyPair = await provider.useKeyPair({
     name: "kp",
   });
@@ -65,23 +59,37 @@ const createStack = async ({ config }) => {
     }),
   });
 
+  //TODO make ig and rt compulsory
+  const eip = await provider.makeElasticIpAddress({
+    name: "myip",
+    dependencies: { ig, rt },
+    properties: () => ({}),
+  });
+
   const server = await provider.makeEC2({
     name: "web-server",
-    dependencies: { keyPair, subnet, securityGroups: { sg } },
+    dependencies: { keyPair, subnet, securityGroups: { sg }, eip },
     properties: () => ({
       VolumeSize: 50,
       InstanceType: "t2.micro",
       ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
     }),
   });
+  return { vpc, ig, subnet, rt, sg, eip, server };
+};
 
-  const eip = await provider.makeElasticIpAddress({
-    name: "myip",
-    dependencies: { ec2: server },
-    properties: () => ({}),
-  });
+exports.createResources = createResources;
 
-  return { providers: [provider] };
+const createStack = async ({ name = "aws", config }) => {
+  // Create a AWS provider
+  const provider = await AwsProvider({ name, config });
+  const resources = await createResources({ provider });
+  // Allocate public Ip address
+  //TODO
+  // const ip = await provider.makeAddress({ name: "ip-webserver" });
+  // Allocate a server
+
+  return { providers: [provider], resources };
 };
 
 module.exports = createStack;
