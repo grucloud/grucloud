@@ -61,7 +61,7 @@ describe("GcpSubNetwork", async function () {
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 2);
   });
-  it("subNetwork apply and destroy", async function () {
+  it.skip("subNetwork apply and destroy", async function () {
     await testPlanDeploy({ provider });
 
     const networkLive = await network.getLive();

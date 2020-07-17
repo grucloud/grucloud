@@ -3,10 +3,13 @@ const _ = require("lodash");
 const { defaultsDeep } = require("lodash/fp");
 
 const MockClient = require("./MockClient");
+const MockCloud = require("./MockCloud");
+
 const CoreProvider = require("../CoreProvider");
 const compare = require("../../Utils").compare;
 const { isOurMinion } = require("./MockTag");
 const { toTagName } = require("../TagName");
+const { createAxiosMock } = require("./MockAxios");
 
 const logger = require("../../logger")({ prefix: "MockProvider" });
 const { tos } = require("../../tos");
@@ -139,13 +142,14 @@ const fnSpecs = (config) => {
   ];
 };
 
-module.exports = MockProvider = async ({ name, config }) => {
-  assert(name);
+module.exports = MockProvider = async ({ name = "mock", config }) => {
   assert(config);
 
   const configDefault = {
     retryCount: 2,
     retryDelay: 100,
+    mockCloud: MockCloud(config.mockCloudInitStates),
+    createAxios: createAxiosMock,
   };
 
   return CoreProvider({

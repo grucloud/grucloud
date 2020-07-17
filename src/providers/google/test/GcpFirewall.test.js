@@ -65,7 +65,7 @@ describe("GcpFirewall", async function () {
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 2);
   });
-  it("firewall apply and destroy", async function () {
+  it.skip("firewall apply and destroy", async function () {
     await testPlanDeploy({ provider });
 
     const networkLive = await network.getLive();

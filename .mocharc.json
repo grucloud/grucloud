@@ -1,6 +1,7 @@
 {
   "watch-files": ["src/**/*.js"],
   "extension": ["js"],
+  "exclude": "node_modules",
   "reporter": "spec",
   "timeout": 600e3,
   "ui": "bdd",

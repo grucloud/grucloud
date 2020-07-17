@@ -304,7 +304,7 @@ const fnSpecs = (config) => {
   ];
 };
 
-module.exports = AzureProvider = async ({ name, config }) => {
+module.exports = AzureProvider = async ({ name = "azure", config }) => {
   const mandatoryEnvs = ["TENANT_ID", "SUBSCRIPTION_ID", "APP_ID", "PASSWORD"];
   checkEnv(mandatoryEnvs);
 

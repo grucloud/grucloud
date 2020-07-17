@@ -47,7 +47,7 @@ describe("AwsElasticIpAddress", async function () {
   it("eip getLive", async function () {
     await eip.getLive();
   });
-  it("eip apply and destroy", async function () {
+  it.skip("eip apply and destroy", async function () {
     await testPlanDeploy({ provider });
     const eipLive = await eip.getLive();
 

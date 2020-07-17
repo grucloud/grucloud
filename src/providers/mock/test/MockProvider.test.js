@@ -1,6 +1,6 @@
 const _ = require("lodash");
 const assert = require("assert");
-const createStack = require("./MockStack");
+const { createStack } = require("./MockStack");
 const { ConfigLoader } = require("ConfigLoader");
 
 const logger = require("logger")({ prefix: "MockProviderTest" });

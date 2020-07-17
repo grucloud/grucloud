@@ -1,11 +1,11 @@
 const assert = require("assert");
 const urljoin = require("url-join");
 const MockAdapter = require("axios-mock-adapter");
-const logger = require("../../../logger")({ prefix: "MockAxios" });
+const logger = require("../../logger")({ prefix: "MockAxios" });
 
-const AxiosMaker = require("../../AxiosMaker");
+const AxiosMaker = require("../AxiosMaker");
 
-const { tos } = require("../../../tos");
+const { tos } = require("../../tos");
 const BASE_URL = "http://localhost:8089";
 
 exports.createAxiosMock = ({ config, url, spec }) => {

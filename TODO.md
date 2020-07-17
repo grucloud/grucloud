@@ -36,6 +36,8 @@ error: unknown option '--provider'
 
 ## TODO Aws:
 
+- do not display default acl
+
 - add example code in AwsGettingStarted
 - listObjectsV2
 - aws.config.loadFromPath('./AwsConfig.json');

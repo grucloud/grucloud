@@ -27,7 +27,7 @@ describe("Playground", function () {
     const obj = { a: "aaa" };
     assert.equal(get("a")(obj), "aaa");
   });
-  it("switchCase", async function () {
+  it.skip("switchCase", async function () {
     await switchCase([
       () => true,
       async () => {

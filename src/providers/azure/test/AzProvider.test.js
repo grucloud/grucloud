@@ -143,7 +143,7 @@ describe("AzProvider", async function () {
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 6);
   });
-  it("az apply and destroy", async function () {
+  it.skip("az apply and destroy", async function () {
     await testPlanDeploy({ provider, full: true });
     //TODO check address_space
     await testPlanDestroy({ provider, full: true });

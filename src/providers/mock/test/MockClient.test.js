@@ -3,7 +3,7 @@ const _ = require("lodash");
 const urljoin = require("url-join");
 const MockClient = require("../MockClient");
 const { SpecDefault } = require("../../SpecDefault");
-const { createAxiosMock } = require("./MockAxios");
+const { createAxiosMock } = require("../MockAxios");
 const MockCloud = require("../MockCloud");
 
 describe("MockClient", function () {

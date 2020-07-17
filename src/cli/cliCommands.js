@@ -100,8 +100,8 @@ const displayQueryPlanSummary = ({ providers, create, destroy }) =>
 
 const planQuery = async ({
   infra: { providers },
-  commandOptions,
-  programOptions,
+  commandOptions = {},
+  programOptions = {},
 }) =>
   tryCatch(
     pipe([
@@ -126,8 +126,8 @@ exports.planQuery = planQuery;
 // Plan Apply
 exports.planApply = async ({
   infra: { providers },
-  commandOptions,
-  programOptions,
+  commandOptions = {},
+  programOptions = {},
 }) => {
   const processNoPlan = () => {
     console.log("Nothing to deploy");
@@ -215,8 +215,8 @@ exports.planApply = async ({
 // Plan Destroy
 exports.planDestroy = async ({
   infra: { providers },
-  commandOptions,
-  programOptions,
+  commandOptions = {},
+  programOptions = {},
 }) => {
   const hasEmptyPlan = pipe([pluck("plans"), flatten, isEmpty]);
 
@@ -345,7 +345,7 @@ const displayListResults = ({ providers, types, resources }) => {
 const isEmptyList = pipe([flatten, isEmpty]);
 
 //List all
-exports.list = async ({ infra, commandOptions, programOptions }) =>
+exports.list = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     await pipe([
       async (providers) =>

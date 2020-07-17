@@ -57,7 +57,7 @@ describe("AwsRouteTables", async function () {
   it("rt getLive", async function () {
     await rt.getLive();
   });
-  it("rt apply and destroy", async function () {
+  it.skip("rt apply and destroy", async function () {
     await testPlanDeploy({ provider });
     const rtLive = await rt.getLive();
     const subnetLive = await subnet.getLive();

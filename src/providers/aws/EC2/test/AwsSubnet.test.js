@@ -58,7 +58,7 @@ describe("AwsSubnet", async function () {
     );
     assert(subnetDefault);
   });
-  it("subnet apply and destroy", async function () {
+  it.skip("subnet apply and destroy", async function () {
     await testPlanDeploy({ provider });
 
     const subnetLive = await subnet.getLive();

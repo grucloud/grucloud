@@ -1,17 +1,12 @@
 const assert = require("assert");
 const MockProvider = require("../MockProvider");
-const MockCloud = require("../MockCloud");
-const { createAxiosMock } = require("./MockAxios");
 
 exports.createStack = async ({ config }) => {
   // Provider
-  const mockCloud = MockCloud(config.mockCloudInitStates);
   const provider = await MockProvider({
-    name: "mock",
     config: {
       ...config,
-      mockCloud,
-      createAxios: config.createAxios || createAxiosMock,
+      createAxios: config.createAxios,
     },
   });
 

@@ -94,7 +94,7 @@ describe("AwsVpc", async function () {
     const vpcDefault = vpcs.resources.find((vpc) => vpc.data.IsDefault);
     assert(vpcDefault);
   });
-  it("vpc apply and destroy", async function () {
+  it.skip("vpc apply and destroy", async function () {
     await testPlanDeploy({ provider });
     const vpcLive = await vpc.getLive();
     const { VpcId } = vpcLive;
@@ -107,7 +107,7 @@ describe("AwsVpc", async function () {
 
     await testPlanDestroy({ provider, full: false });
   });
-  it("vpc destroy vpc", async function () {
+  it.skip("vpc destroy vpc", async function () {
     await testPlanDeploy({ provider });
     const vpcLive = await vpc.getLive();
     const { VpcId } = vpcLive;

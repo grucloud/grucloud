@@ -50,7 +50,7 @@ describe("AwsInternetGateway", async function () {
   it("ig getLive", async function () {
     await ig.getLive();
   });
-  it("ig apply and destroy", async function () {
+  it.skip("ig apply and destroy", async function () {
     await testPlanDeploy({ provider });
     const igLive = await ig.getLive();
     const vpcLive = await vpc.getLive();

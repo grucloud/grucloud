@@ -77,7 +77,7 @@ describe("AwsSecurityGroup", async function () {
     const sgDefault = sgs.resources.find((sg) => sg.name === "default");
     assert(sgDefault);
   });
-  it("sg apply and destroy", async function () {
+  it.skip("sg apply and destroy", async function () {
     await testPlanDeploy({ provider });
 
     const sgLive = await sg.getLive();

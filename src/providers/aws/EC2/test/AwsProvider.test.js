@@ -146,7 +146,7 @@ describe("AwsProvider", async function () {
     const lives = await provider.listLives({ all: true });
     assert(lives);
   });
-  it("aws apply plan", async function () {
+  it.skip("aws apply plan", async function () {
     await testPlanDeploy({ provider, full: true });
 
     const serverLive = await server.getLive();

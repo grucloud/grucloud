@@ -144,7 +144,7 @@ const authorize = async ({ applicationCredentials }) => {
   return accessToken;
 };
 
-module.exports = GoogleProvider = async ({ name, config }) => {
+module.exports = GoogleProvider = async ({ name = "google", config }) => {
   checkEnv(["GOOGLE_APPLICATION_CREDENTIALS"]);
 
   const accessToken = await authorize({

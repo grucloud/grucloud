@@ -1,12 +1,10 @@
-const GoogleProvider = require("@grucloud/core").GoogleProvider;
+const { GoogleProvider } = require("@grucloud/core");
 
-exports.createStack = async ({ config }) => {
-  // Create GCP provider
-  const { stage } = config;
-  const provider = await GoogleProvider({ name: "google", config });
+const createResources = async ({ provider }) => {
+  const { stage } = provider.config();
 
   const serviceAccount = await provider.makeServiceAccount({
-    name: "sa-dev",
+    name: `sa-${stage}`,
     properties: () => ({
       serviceAccount: {
         displayName: "SA dev",
@@ -16,13 +14,13 @@ exports.createStack = async ({ config }) => {
 
   // Vpc network
   const network = await provider.makeNetwork({
-    name: "vpc",
+    name: `vpc-${stage}`,
     properties: () => ({ autoCreateSubnetworks: false }),
   });
 
   // Subnetwork
   const subNetwork = await provider.makeSubNetwork({
-    name: "subnetwork",
+    name: `subnetwork-${stage}`,
     dependencies: { network },
     properties: () => ({
       ipCidrRange: "10.164.0.0/20",
@@ -30,7 +28,7 @@ exports.createStack = async ({ config }) => {
   });
 
   const firewall = await provider.makeFirewall({
-    name: "firewall-dev",
+    name: `firewall-${stage}`,
     dependencies: { network },
     properties: () => ({
       allowed: [
@@ -43,10 +41,13 @@ exports.createStack = async ({ config }) => {
   });
 
   // Allocate public Ip address
-  const ip = await provider.makeAddress({ name: "ip-webserver" });
+  const ip = await provider.makeAddress({
+    name: `ip-webserver-${stage}`,
+  });
+
   // Allocate a server
   const server = await provider.makeVmInstance({
-    name: "web-server",
+    name: `webserver-${stage}`,
     dependencies: { ip },
     properties: () => ({
       diskSizeGb: "20",
@@ -64,5 +65,23 @@ exports.createStack = async ({ config }) => {
     }),
   });
 
-  return { providers: [provider] };
+  return {
+    serviceAccount,
+    network,
+    subNetwork,
+    firewall,
+    ip,
+    server,
+  };
+};
+exports.createResources = createResources;
+
+exports.createStack = async ({ config }) => {
+  // Create GCP provider
+  const provider = await GoogleProvider({ name: "google", config });
+
+  return {
+    providers: [provider],
+    resources: await createResources({ provider }),
+  };
 };

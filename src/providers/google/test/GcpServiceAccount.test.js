@@ -60,7 +60,7 @@ describe("GcpServiceAccount", async function () {
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 1);
   });
-  it("serviceAccount apply and destroy", async function () {
+  it.skip("serviceAccount apply and destroy", async function () {
     await testPlanDeploy({ provider });
 
     const serviceAccountLive = await serviceAccount.getLive();

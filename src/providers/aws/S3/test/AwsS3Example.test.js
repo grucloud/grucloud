@@ -16,7 +16,7 @@ describe("AwsS3Bucket Example", async function () {
   after(async () => {
     //await provider?.destroyAll();
   });
-  it("run s3 example", async function () {
+  it.skip("run s3 example", async function () {
     const {
       providers,
       resources: { buckets },

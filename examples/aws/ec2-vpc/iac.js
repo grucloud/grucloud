@@ -1,9 +1,6 @@
 const { AwsProvider } = require("@grucloud/core");
 
-const createResources = async ({ provider }) => {
-  const keyPair = await provider.useKeyPair({
-    name: "kp",
-  });
+const createResources = async ({ provider, resources: { keyPair } }) => {
   const vpc = await provider.makeVpc({
     name: "vpc",
     properties: () => ({
@@ -66,9 +63,19 @@ const createResources = async ({ provider }) => {
     properties: () => ({}),
   });
 
+  // Allocate public Ip address
+  //TODO
+  // const ip = await provider.makeAddress({ name: "ip-webserver" });
+
+  // Allocate a server
   const server = await provider.makeEC2({
     name: "web-server",
-    dependencies: { keyPair, subnet, securityGroups: { sg }, eip },
+    dependencies: {
+      keyPair,
+      subnet,
+      securityGroups: { sg },
+      eip,
+    },
     properties: () => ({
       VolumeSize: 50,
       InstanceType: "t2.micro",
@@ -83,11 +90,12 @@ exports.createResources = createResources;
 exports.createStack = async ({ name = "aws", config }) => {
   // Create a AWS provider
   const provider = await AwsProvider({ name, config });
-  const resources = await createResources({ provider });
-  // Allocate public Ip address
-  //TODO
-  // const ip = await provider.makeAddress({ name: "ip-webserver" });
-  // Allocate a server
+
+  const keyPair = await provider.useKeyPair({
+    name: "kp",
+  });
+
+  const resources = await createResources({ provider, resources: { keyPair } });
 
   return { providers: [provider], resources };
 };

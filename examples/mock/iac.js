@@ -12,16 +12,8 @@ const createAxios = ({ url }) => {
     headers: { "Content-Type": "application/json" },
   });
 };
-const createStack = async ({ config }) => {
-  const { stage, machine } = config;
-  const provider = await MockProvider({
-    name: "mock",
-    config: {
-      ...config,
-      createAxios,
-    },
-  });
 
+const createResources = async ({ provider }) => {
   // Ip
   const ip = await provider.makeIp({ name: "myip" });
 
@@ -74,5 +66,22 @@ const createStack = async ({ config }) => {
       machineType: "f1-micro",
     }),
   });
-  return { providers: [provider], ip, volume, server, image };
+
+  return { ip, volume, server, image };
+};
+exports.createResources = createResources;
+
+exports.createStack = async ({ config }) => {
+  const provider = await MockProvider({
+    name: "mock",
+    config: {
+      ...config,
+      createAxios,
+    },
+  });
+
+  return {
+    providers: [provider],
+    resources: await createResources({ provider }),
+  };
 };
