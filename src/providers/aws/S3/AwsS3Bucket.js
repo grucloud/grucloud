@@ -96,280 +96,273 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
     const s3Bucket = await fork({
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketAccelerateConfiguration-property
-      AccelerateConfiguration: pipe([
-        tryCatch(
-          () => s3.GetBucketAccelerateConfiguration(params).promise(),
-          err => {
-            logger.error(
-              `getBucketAccelerateConfiguration ${name}, error ${tos(err)}`
-            );
-          },
-        ),
-        switchCase([isEmpty, () => undefined, data => data]),
-      ]),
+      AccelerateConfiguration: tryCatch(
+        pipe([
+          () => s3.getBucketAccelerateConfiguration(params).promise(),
+          tap((x) => {
+            logger.debug(`getBucketAccelerateConfiguration ${name} ${tos(x)}`);
+          }),
+          switchCase([isEmpty, () => undefined, (data) => data]),
+        ]),
+        (error) => {
+          logger.error(
+            `getBucketAccelerateConfiguration ${name}, error ${tos(error)}`
+          );
+          throw error;
+        }
+      ),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketAcl-property
-      ACL: pipe([
-        () => s3.getBucketAcl(params).promise(),
-        pick(["Grants", "Owner"]),
-      ]),
+      ACL: tryCatch(
+        pipe([
+          () => s3.getBucketAcl(params).promise(),
+          tap((x) => {
+            logger.debug(`getBucketAcl ${name} ${tos(x)}`);
+          }),
+        ]),
+        (error) => {
+          logger.error(`getBucketAcl ${name}, error ${tos(error)}`);
+          throw error;
+        }
+      ),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketCors-property
       CORSConfiguration: tryCatch(
-        () => s3.getBucketCors(params).promise(),
-        switchCase([
-          err => err.code === "NoSuchCORSConfiguration", () => undefined,
-          err => {
-            logger.error(`getBucketCors ${name}, error ${tos(err)}`);
-            throw err;
-          },
+        pipe([
+          () => s3.getBucketCors(params).promise(),
+          tap((x) => {
+            logger.debug(`getBucketCors ${name} ${tos(x)}`);
+          }),
         ]),
+        switchCase([
+          (error) => error.code === "NoSuchCORSConfiguration",
+          () => undefined,
+          (error) => {
+            logger.error(`getBucketCors ${name}, error ${tos(error)}`);
+            throw error;
+          },
+        ])
       ),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketEncryption-property
-      ServerSideEncryptionConfiguration: () =>
-        new Promise((resolve, reject) =>
-          s3.getBucketEncryption(params, (err, data) =>
-            switchCase([
-              get("err"),
-              switchCase([
-                ({ err }) =>
-                  err.code === "ServerSideEncryptionConfigurationNotFoundError",
-                () => resolve(),
-                ({ err }) => {
-                  logger.error(
-                    `getBucketEncryption ${name}, error ${tos(err)}`
-                  );
-                  reject(err);
-                },
-              ]),
-              ({ data }) => resolve(isEmpty(data) ? undefined : data),
-            ])({ err, data })
-          )
-        ),
+      ServerSideEncryptionConfiguration: tryCatch(
+        pipe([
+          () => s3.getBucketEncryption(params).promise(),
+          tap((x) => {
+            logger.debug(`getBucketEncryption ${name} ${tos(x)}`);
+          }),
+        ]),
+        switchCase([
+          (err) =>
+            err.code === "ServerSideEncryptionConfigurationNotFoundError",
+          () => undefined,
+          (err) => {
+            logger.error(`getBucketEncryption ${name}, error ${tos(err)}`);
+            throw err;
+          },
+        ])
+      ),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketLifecycleConfiguration-property
-      LifecycleConfiguration: () =>
-        new Promise((resolve, reject) =>
-          s3.getBucketLifecycleConfiguration(params, (err, data) =>
-            switchCase([
-              get("err"),
-              switchCase([
-                ({ err }) => err.code === "NoSuchLifecycleConfiguration",
-                () => resolve(),
-                ({ err }) => {
-                  logger.error(
-                    `getBucketLifecycleConfiguration ${name}, error ${tos(err)}`
-                  );
-                  reject(err);
-                },
-              ]),
-              ({ data }) => resolve(data.Rules),
-            ])({ err, data })
-          )
-        ),
+      LifecycleConfiguration: tryCatch(
+        pipe([
+          () => s3.getBucketLifecycleConfiguration(params).promise(),
+          tap((x) => {
+            logger.debug(`getBucketLifecycleConfiguration ${name} ${tos(x)}`);
+          }),
+          switchCase([isEmpty, () => undefined, (data) => data]),
+        ]),
+        switchCase([
+          (err) => err.code === "NoSuchLifecycleConfiguration",
+          () => undefined,
+          (err) => {
+            logger.error(
+              `getBucketLifecycleConfiguration ${name}, error ${tos(err)}`
+            );
+            throw err;
+          },
+        ])
+      ),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketLocation-property
-      LocationConstraint: pipe([
-        () => s3.getBucketLocation(params).promise(),
-        get("LocationConstraint"),
-      ]),
+      LocationConstraint: tryCatch(
+        pipe([
+          () => s3.getBucketLocation(params).promise(),
+          get("LocationConstraint"),
+        ]),
+        (error) => {
+          logger.error(`getBucketLocation ${name}, error ${tos(error)}`);
+          throw error;
+        }
+      ),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketLogging-property
-      BucketLoggingStatus: () =>
-        new Promise((resolve, reject) =>
-          s3.getBucketLogging(params, (err, data) =>
-            switchCase([
-              get("err"),
-              ({ err }) => {
-                logger.error(`getBucketLogging ${name}, error ${tos(err)}`);
-                reject(err);
-              },
-              ({ data }) => resolve(isEmpty(data) ? undefined : data),
-            ])({ err, data })
-          )
-        ),
+      BucketLoggingStatus: tryCatch(
+        pipe([
+          () => s3.getBucketLogging(params).promise(),
+          tap((x) => {
+            logger.debug(`getBucketLogging ${name} ${tos(x)}`);
+          }),
+          switchCase([isEmpty, () => undefined, (data) => data]),
+        ]),
+        (error) => {
+          logger.error(`getBucketLogging ${name}, error ${tos(error)}`);
+          throw error;
+        }
+      ),
+
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketNotificationConfiguration-property
-
-      /* "TopicConfigurations": [],
-        "QueueConfigurations": [],
-        "LambdaFunctionConfigurations": []
-        */
-      NotificationConfiguration: () =>
-        new Promise((resolve, reject) =>
-          s3.getBucketNotificationConfiguration(params, (err, data) =>
-            switchCase([
-              get("err"),
-              ({ err }) => {
-                logger.error(
-                  `getBucketNotificationConfiguration ${name}, error ${tos(
-                    err
-                  )}`
-                );
-                reject(err);
-              },
-              pipe([
-                get("data"),
-                switchCase([
-                  (data) => all(isEmpty)(Object.values(data)),
-                  () => resolve(),
-                  (data) => resolve(data),
-                ]),
-              ]),
-            ])({ err, data })
-          )
-        ),
-
+      NotificationConfiguration: tryCatch(
+        pipe([
+          () => s3.getBucketNotificationConfiguration(params).promise(),
+          tap((x) => {
+            logger.debug(
+              `getBucketNotificationConfiguration ${name} ${tos(x)}`
+            );
+          }),
+          switchCase([
+            (data) => all(isEmpty)(Object.values(data)),
+            () => undefined,
+            (data) => data,
+          ]),
+        ]),
+        (error) => {
+          logger.error(
+            `getBucketNotificationConfiguration ${name}, error ${tos(error)}`
+          );
+          throw error;
+        }
+      ),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicy-property
-      Policy: () =>
-        new Promise((resolve, reject) =>
-          s3.getBucketPolicy(params, (err, data) =>
-            switchCase([
-              get("err"),
-              switchCase([
-                ({ err }) => err.code === "NoSuchBucketPolicy",
-                () => resolve(),
-                ({ err }) => {
-                  logger.error(`getBucketPolicy ${name}, error ${tos(err)}`);
-                  reject(err);
-                },
-              ]),
-              ({ data }) => resolve(isEmpty(data) ? undefined : data),
-            ])({ err, data })
-          )
-        ),
+      Policy: tryCatch(
+        pipe([
+          () => s3.getBucketPolicy(params).promise(),
+          tap((x) => {
+            logger.debug(`getBucketPolicy ${name} ${tos(x)}`);
+          }),
+        ]),
+        switchCase([
+          (err) => err.code === "NoSuchBucketPolicy",
+          () => undefined,
+          (err) => {
+            logger.error(`getBucketPolicy ${name}, error ${tos(err)}`);
+            throw err;
+          },
+        ])
+      ),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicyStatus-property
-      PolicyStatus: () =>
-        new Promise((resolve, reject) =>
-          s3.getBucketPolicyStatus(params, (err, data) =>
-            switchCase([
-              get("err"),
-              switchCase([
-                ({ err }) => err.code === "NoSuchBucketPolicy",
-                () => resolve(),
-                ({ err }) => {
-                  logger.error(
-                    `getBucketPolicyStatus ${name}, error ${tos(err)}`
-                  );
-                  reject(err);
-                },
-              ]),
-              ({ data }) => resolve(data.PolicyStatus),
-            ])({ err, data })
-          )
-        ),
+      PolicyStatus: tryCatch(
+        pipe([
+          () => s3.getBucketPolicyStatus(params).promise(),
+          tap((x) => {
+            logger.debug(`getBucketPolicyStatus ${name} ${tos(x)}`);
+          }),
+          get("PolicyStatus"),
+        ]),
+        switchCase([
+          (err) => err.code === "NoSuchBucketPolicy",
+          () => undefined,
+          (err) => {
+            logger.error(`getBucketPolicyStatus ${name}, error ${tos(err)}`);
+            throw err;
+          },
+        ])
+      ),
       //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketReplication-property
-      ReplicationConfiguration: () =>
-        new Promise((resolve, reject) =>
-          s3.getBucketReplication(params, (err, data) =>
-            switchCase([
-              get("err"),
-              switchCase([
-                ({ err }) =>
-                  err.code === "ReplicationConfigurationNotFoundError",
-                () => resolve(),
-                ({ err }) => {
-                  logger.error(
-                    `getBucketReplication ${name}, error ${tos(err)}`
-                  );
-                  reject(err);
-                },
-              ]),
-              ({ data }) => resolve(data.ReplicationConfiguration),
-            ])({ err, data })
-          )
-        ),
+      ReplicationConfiguration: tryCatch(
+        pipe([
+          () => s3.getBucketReplication(params).promise(),
+          tap((x) => {
+            logger.debug(`getBucketReplication ${name} ${tos(x)}`);
+          }),
+          get("ReplicationConfiguration"),
+        ]),
+        switchCase([
+          (err) => err.code === "ReplicationConfigurationNotFoundError",
+          () => undefined,
+          (err) => {
+            logger.error(`getBucketReplication ${name}, error ${tos(err)}`);
+            throw err;
+          },
+        ])
+      ),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketRequestPayment-property
-
-      // Payer:'BucketOwner'
-      RequestPayment: () =>
-        new Promise((resolve, reject) =>
-          s3.getBucketRequestPayment(params, (err, data) =>
-            switchCase([
-              get("err"),
-              ({ err }) => {
-                logger.error(
-                  `getBucketRequestPayment ${name}, error ${tos(err)}`
-                );
-                reject(err);
-              },
-              pipe([
-                get("data"),
-                switchCase([
-                  (data) => data.Payer === "BucketOwner",
-                  () => resolve(),
-                  (data) => resolve(data),
-                ]),
-              ]),
-            ])({ err, data })
-          )
-        ),
+      RequestPaymentConfiguration: tryCatch(
+        pipe([
+          () => s3.getBucketRequestPayment(params).promise(),
+          switchCase([
+            (data) => data.Payer === "BucketOwner",
+            () => undefined,
+            (data) => data,
+          ]),
+        ]),
+        (err) => {
+          logger.error(`getBucketTagging ${name}, error ${tos(err)}`);
+          throw err;
+        }
+      ),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketTagging-property
-      TagSet: () =>
-        new Promise((resolve, reject) =>
-          s3.getBucketTagging(params, (err, data) =>
-            switchCase([
-              get("err"),
-              switchCase([
-                ({ err }) => err.code === "NoSuchTagSet",
-                () => resolve(),
-                ({ err }) => {
-                  logger.error(`getBucketTagging ${name}, error ${tos(err)}`);
-                  reject(err);
-                },
-              ]),
-              ({ data }) => resolve(data.TagSet),
-            ])({ err, data })
-          )
-        ),
+      Tagging: tryCatch(
+        pipe([
+          () => s3.getBucketTagging(params).promise(),
+          tap((x) => {
+            logger.debug(`getBucketTagging ${name} ${tos(x)}`);
+          }),
+        ]),
+        switchCase([
+          (err) => err.code === "NoSuchTagSet",
+          () => undefined,
+          (err) => {
+            logger.error(`getBucketTagging ${name}, error ${tos(err)}`);
+            throw err;
+          },
+        ])
+      ),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketVersioning-property
-      VersioningConfiguration: () =>
-        new Promise((resolve, reject) =>
-          s3.getBucketVersioning(params, (err, data) =>
-            switchCase([
-              get("err"),
-              ({ err }) => {
-                logger.error(`getBucketVersioning ${name}, error ${tos(err)}`);
-                reject(err);
-              },
-              ({ data }) => resolve(isEmpty(data) ? undefined : data),
-            ])({ err, data })
-          )
-        ),
-
-      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketWebsite-property
-      WebsiteConfiguration: () =>
-        new Promise((resolve, reject) =>
-          s3.getBucketWebsite(params, (err, data) =>
-            switchCase([
-              get("err"),
-              switchCase([
-                ({ err }) => err.code === "NoSuchWebsiteConfiguration",
-                () => resolve(),
-                ({ err }) => {
-                  logger.error(`getBucketWebsite ${name}, error ${tos(err)}`);
-                  reject(err);
-                },
-              ]),
-              ({ data }) => resolve(data),
-            ])({ err, data })
-          )
-        ),
-
+      VersioningConfiguration: tryCatch(
+        pipe([
+          () => s3.getBucketVersioning(params).promise(),
+          switchCase([isEmpty, () => undefined, (data) => data]),
+          tap((x) => {
+            logger.debug(`getBucketVersioning ${name} ${tos(x)}`);
+          }),
+        ]),
+        (err) => {
+          logger.error(`getBucketVersioning ${name}, error ${tos(err)}`);
+          throw err;
+        }
+      ),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketLifecycleConfiguration-property
-      LifecycleConfiguration: () =>
-        new Promise((resolve, reject) =>
-          s3.getBucketLifecycleConfiguration(params, (err, data) =>
-            switchCase([
-              get("err"),
-              switchCase([
-                ({ err }) => err.code === "NoSuchLifecycleConfiguration",
-                () => resolve(),
-                ({ err }) => {
-                  logger.error(
-                    `getBucketLifecycleConfiguration ${name}, error ${tos(err)}`
-                  );
-                  reject(err);
-                },
-              ]),
-              ({ data }) => resolve(data),
-            ])({ err, data })
-          )
-        ),
+      LifecycleConfiguration: tryCatch(
+        pipe([
+          () => s3.getBucketLifecycleConfiguration(params).promise(),
+          tap((x) => {
+            logger.debug(`getBucketLifecycleConfiguration ${name} ${tos(x)}`);
+          }),
+        ]),
+        switchCase([
+          (err) => err.code === "NoSuchLifecycleConfiguration",
+          () => undefined,
+          (err) => {
+            logger.error(
+              `getBucketLifecycleConfiguration ${name}, error ${tos(err)}`
+            );
+            throw err;
+          },
+        ])
+      ),
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketWebsite-property
+      WebsiteConfiguration: tryCatch(
+        pipe([
+          () => s3.getBucketWebsite(params).promise(),
+          switchCase([isEmpty, () => undefined, (data) => data]),
+          tap((x) => {
+            logger.debug(`getBucketWebsite ${name} ${tos(x)}`);
+          }),
+        ]),
+        switchCase([
+          (err) => err.code === "NoSuchWebsiteConfiguration",
+          () => undefined,
+          (err) => {
+            logger.error(`getBucketWebsite ${name}, error ${tos(err)}`);
+            throw err;
+          },
+        ])
+      ),
     })();
 
     logger.debug(`getByName ${name}: ${tos(s3Bucket)}`);
@@ -468,123 +461,153 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     await s3.putBucketTagging(paramsTag).promise();
 
     try {
-      await switchCase([
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAccelerateConfiguration-property
-        () => AccelerateConfiguration,
-        () =>
-          s3
-            .putBucketAccelerateConfiguration({
-              Bucket: name,
-              AccelerateConfiguration,
-            })
-            .promise(),
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAcl-property
-        () =>
-          ACL ||
-          AccessControlPolicy ||
-          GrantFullControl ||
-          GrantRead ||
-          GrantReadACP ||
-          GrantWrite ||
-          GrantWriteACP,
-        async () => {
-          try {
-            await s3
-              .putBucketAcl({
-                Bucket: name,
-                ACL,
-                AccessControlPolicy,
-                GrantFullControl,
-                GrantRead,
-                GrantReadACP,
-                GrantWrite,
-                GrantWriteACP,
-              })
-              .promise();
-          } catch (error) {
-            logger.error(`putBucketAcl ${name}, error: ${error}`);
-            throw error;
-          }
-        },
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketCors-property
-        () => CORSConfiguration,
-        () => s3.putBucketCors({ Bucket: name, CORSConfiguration }).promise(),
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketEncryption-property
-        () => ServerSideEncryptionConfiguration,
-        () =>
-          s3
-            .putBucketEncryption({
-              Bucket: name,
-              ServerSideEncryptionConfiguration,
-            })
-            .promise(),
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketLifecycleConfiguration-property
-        () => LifecycleConfiguration,
-        () =>
-          s3
-            .putBucketLifecycleConfiguration({
-              Bucket: name,
-              LifecycleConfiguration,
-            })
-            .promise(),
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketLogging-property
-        () => BucketLoggingStatus,
-        () =>
-          s3.putBucketLogging({ Bucket: name, BucketLoggingStatus }).promise(),
-        //  https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketNotificationConfiguration-property
-        () => NotificationConfiguration,
-        () =>
-          s3
-            .putBucketNotificationConfiguration({
-              Bucket: name,
-              NotificationConfiguration,
-            })
-            .promise(),
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketPolicy-property
-        () => Policy,
-        () =>
-          s3
-            .putBucketPolicy({
-              Bucket: name,
-              Policy,
-            })
-            .promise(),
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAccelerateConfiguration-property
+      if (AccelerateConfiguration) {
+        await s3
+          .putBucketAccelerateConfiguration({
+            Bucket: name,
+            AccelerateConfiguration,
+          })
+          .promise();
+      }
 
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketReplication-property
-        () => ReplicationConfiguration,
-        () =>
-          s3
-            .putBucketReplicationConfiguration({
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAcl-property
+      if (
+        ACL ||
+        AccessControlPolicy ||
+        GrantFullControl ||
+        GrantRead ||
+        GrantReadACP ||
+        GrantWrite ||
+        GrantWriteACP
+      ) {
+        try {
+          await s3
+            .putBucketAcl({
               Bucket: name,
-              ReplicationConfiguration,
+              ACL,
+              AccessControlPolicy,
+              GrantFullControl,
+              GrantRead,
+              GrantReadACP,
+              GrantWrite,
+              GrantWriteACP,
             })
-            .promise(),
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketRequestPayment-property
-        () => RequestPaymentConfiguration,
-        () =>
-          s3
-            .putBucketRequestPayment({
-              Bucket: name,
-              RequestPaymentConfiguration,
-            })
-            .promise(),
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketVersioning-property
-        () => VersioningConfiguration,
-        () =>
-          s3
-            .putBucketVersioning({ Bucket: name, VersioningConfiguration })
-            .promise(),
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketWebsite-property
-        () => WebsiteConfiguration,
-        () =>
-          s3.putBucketWebsite({ Bucket: name, WebsiteConfiguration }).promise(),
-        () => {},
-      ])();
+            .promise();
+
+          await retryExpectOk({
+            name: `s3 putBucketAcl: ${name}`,
+            fn: async () => {
+              const { Grants } = await s3
+                .getBucketAcl({ Bucket: name })
+                .promise();
+              // TODO use switchCase
+              if (ACL === "log-delivery-write") {
+                if (Grants.length != 3) {
+                  throw Error(`no ACL yet for ${name}`);
+                }
+              }
+              if (ACL === "public-read") {
+                if (Grants.length != 2) {
+                  throw Error(`no ACL yet for ${name}`);
+                }
+              }
+              return true;
+            },
+            config: clientConfig,
+          });
+        } catch (error) {
+          logger.error(`putBucketAcl ${name}, error: ${error}`);
+          throw error;
+        }
+      }
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketCors-property
+      if (CORSConfiguration) {
+        await s3.putBucketCors({ Bucket: name, CORSConfiguration }).promise();
+      }
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketEncryption-property
+      if (ServerSideEncryptionConfiguration) {
+        await s3
+          .putBucketEncryption({
+            Bucket: name,
+            ServerSideEncryptionConfiguration,
+          })
+          .promise();
+      }
+
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketLifecycleConfiguration-property
+      if (LifecycleConfiguration) {
+        await s3
+          .putBucketLifecycleConfiguration({
+            Bucket: name,
+            LifecycleConfiguration,
+          })
+          .promise();
+      }
+
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketLogging-property
+      if (BucketLoggingStatus) {
+        await s3
+          .putBucketLogging({ Bucket: name, BucketLoggingStatus })
+          .promise();
+      }
+      //  https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketNotificationConfiguration-property
+      if (NotificationConfiguration) {
+        await s3
+          .putBucketNotificationConfiguration({
+            Bucket: name,
+            NotificationConfiguration,
+          })
+          .promise();
+      }
+
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketPolicy-property
+      if (Policy) {
+        await s3
+          .putBucketPolicy({
+            Bucket: name,
+            Policy,
+          })
+          .promise();
+      }
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketReplication-property
+      if (ReplicationConfiguration) {
+        await s3
+          .putBucketReplication({
+            Bucket: name,
+            ReplicationConfiguration,
+          })
+          .promise();
+      }
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketRequestPayment-property
+      if (RequestPaymentConfiguration) {
+        await s3
+          .putBucketRequestPayment({
+            Bucket: name,
+            RequestPaymentConfiguration,
+          })
+          .promise();
+      }
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketVersioning-property
+      if (VersioningConfiguration) {
+        await s3
+          .putBucketVersioning({ Bucket: name, VersioningConfiguration })
+          .promise();
+      }
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketWebsite-property
+      if (WebsiteConfiguration) {
+        logger.debug(`putBucketWebsite ${name}: ${tos(WebsiteConfiguration)}`);
+        await s3
+          .putBucketWebsite({ Bucket: name, WebsiteConfiguration })
+          .promise();
+      }
     } catch (error) {
       logger.error(error);
       await destroy({ id: name, name });
       throw error;
     }
+    logger.error(`created final ${name}`);
+
     return { Location };
   };
 
@@ -714,15 +737,10 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 exports.isOurMinionS3Bucket = ({ resource, resourceNames, config }) => {
   const { managedByKey, managedByValue } = config;
   assert(resource);
-  const isMinion = !!resource.TagSet?.find(
+  const isMinion = !!resource.Tagging?.TagSet?.find(
     (tag) => tag.Key === managedByKey && tag.Value === managedByValue
   );
 
-  logger.debug(
-    `isOurMinion s3: isMinion ${isMinion}, ${tos({
-      resource,
-      resourceNames,
-    })}`
-  );
+  logger.debug(`isOurMinion s3 bucket: isMinion ${isMinion}`);
   return isMinion;
 };

@@ -39,7 +39,7 @@ describe("AwsS3Bucket", async function () {
     assert(s3BucketLive);
     CheckTagsS3({
       config: provider.config(),
-      tags: s3BucketLive.TagSet,
+      tags: s3BucketLive.Tagging.TagSet,
       name: s3Bucket.name,
     });
 
@@ -68,6 +68,31 @@ describe("AwsS3Bucket", async function () {
     } catch (error) {
       console.log(error.stack);
       //assert(error);
+    }
+  });
+  it("notification-configuration error", async function () {
+    try {
+      await provider.makeS3Bucket({
+        name: `${bucketPrefix}-notification-configuration`,
+        properties: () => ({
+          NotificationConfiguration: {
+            TopicConfigurations: [
+              {
+                Events: ["s3:ObjectCreated:*"],
+                TopicArn:
+                  "arn:aws:sns:us-west-2:123456789012:s3-notification-topic",
+              },
+            ],
+          },
+        }),
+      });
+
+      const { success, results } = await provider.planQueryAndApply();
+      assert.equal(success, false);
+      assert.equal(results[0].error.code, "InvalidArgument");
+    } catch (error) {
+      console.log(error);
+      assert(false);
     }
   });
 });

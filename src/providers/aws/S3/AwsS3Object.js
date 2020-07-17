@@ -309,6 +309,6 @@ exports.isOurMinionS3Object = ({ resource, resourceNames = [], config }) => {
       (tag) => tag.Key === managedByKey && tag.Value === managedByValue
     ) || resourceNames.includes(resource.Key);
 
-  logger.debug(`isOurMinion s3: isMinion ${isMinion}`);
+  logger.debug(`isOurMinion s3 object: isMinion ${isMinion}`);
   return isMinion;
 };

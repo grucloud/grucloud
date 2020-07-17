@@ -23,11 +23,6 @@ describe("AwsS3BucketErrors", async function () {
       properties: () => ({}),
     });
 
-    try {
-      await provider.planQueryAndApply();
-      assert(false, "should not be here");
-    } catch (error) {
-      assert.equal(error.code, "Forbidden");
-    }
+    await provider.planQueryAndApply();
   });
 });
