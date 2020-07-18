@@ -59,12 +59,12 @@ describe("AwsEC2", async function () {
     const config = await server.resolveConfig();
     assert.equal(config.ImageId, "ami-0917237b4e71c5759");
   });
-  it("plan", async function () {
+  it.skip("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.destroy.length, 0);
     assert.equal(plan.newOrUpdate.length, 1);
   });
-  it("listLives all", async function () {
+  it.skip("listLives all", async function () {
     const lives = await provider.listLives({ all: true });
     assert(lives);
   });

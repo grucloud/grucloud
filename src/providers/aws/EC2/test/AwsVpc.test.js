@@ -88,7 +88,7 @@ describe("AwsVpc", async function () {
   it("vpc getLive", async function () {
     const live = await vpc.getLive();
   });
-  it("vpc listLives", async function () {
+  it.skip("vpc listLives", async function () {
     const [vpcs] = await provider.listLives({ types: ["Vpc"] });
     assert(vpcs);
     const vpcDefault = vpcs.resources.find((vpc) => vpc.data.IsDefault);

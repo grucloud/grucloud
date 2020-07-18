@@ -54,7 +54,7 @@ describe("AwsRouteTables", async function () {
   it("rt name", async function () {
     assert.equal(rt.name, resourceName);
   });
-  it("rt getLive", async function () {
+  it.skip("rt getLive", async function () {
     await rt.getLive();
   });
   it.skip("rt apply and destroy", async function () {

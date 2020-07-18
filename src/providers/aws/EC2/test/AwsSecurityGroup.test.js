@@ -68,7 +68,7 @@ describe("AwsSecurityGroup", async function () {
     const config = await sg.resolveConfig();
     assert.equal(config.ingress.IpPermissions[0].FromPort, 22);
   });
-  it("sg targets", async function () {
+  it.skip("sg targets", async function () {
     const live = await sg.getLive();
   });
   it("sg listLives", async function () {

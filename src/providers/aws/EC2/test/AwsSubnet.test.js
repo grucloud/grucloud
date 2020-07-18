@@ -47,10 +47,10 @@ describe("AwsSubnet", async function () {
     const config = await subnet.resolveConfig();
     assert(config.CidrBlock);
   });
-  it("subnet targets", async function () {
+  it.skip("subnet targets", async function () {
     const live = await subnet.getLive();
   });
-  it("subnet listLives", async function () {
+  it.skip("subnet listLives", async function () {
     const [subnets] = await provider.listLives({ types: ["Subnet"] });
     assert(subnets);
     const subnetDefault = subnets.resources.find(
