@@ -1,5 +1,9 @@
 ## Bugs
 
+- ✖ aws::EC2::web-server: InvalidInstanceID The pending instance 'i-06e51f67236d0d7b9' is not in a valid state for this operation.
+
+- ec2 examples aws::Vpc::undefined when destroyed
+
 ## Common:
 
 - return error as an array ?

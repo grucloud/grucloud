@@ -1,19 +1,25 @@
 const { AwsProvider } = require("@grucloud/core");
-
+const Hooks = require("./hooks");
 const createResources = async ({ provider, resources: { keyPair } }) => {
+  const eip = await provider.makeElasticIpAddress({
+    name: "ip-webserver",
+    dependencies: {},
+    properties: () => ({}),
+  });
+
   return {
+    eip,
     dbServer: await provider.makeEC2({
-      name: "db-server",
-      dependencies: { keyPair },
+      name: "web",
+      dependencies: { keyPair, eip },
       properties: () => ({
         VolumeSize: 50,
         InstanceType: "t2.micro",
-        ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
+        ImageId: "ami-00f6a0c18edb19300", // Ubuntu 18.04
       }),
     }),
   };
 };
-
 exports.createResources = createResources;
 
 exports.createStack = async ({ config }) => {
@@ -23,8 +29,11 @@ exports.createStack = async ({ config }) => {
     name: "kp",
   });
 
+  const resources = await createResources({ provider, resources: { keyPair } });
+
+  provider.hookAdd("ec2", Hooks({ resources }));
+
   return {
     providers: [provider],
-    resources: await createResources({ provider, resources: { keyPair } }),
   };
 };

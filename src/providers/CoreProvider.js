@@ -280,6 +280,12 @@ function CoreProvider({
       provideConfig
     )}`
   );
+
+  const hookMap = new Map();
+  const hookAdd = (name, hook) => {
+    hookMap.set(name, { name, ...hook });
+  };
+
   // Target Resources
   const mapNameToResource = new Map();
   const mapTypeToResources = new Map();
@@ -439,6 +445,25 @@ function CoreProvider({
     );
     return plan;
   };
+
+  const runOnDeployed = ({ hooks }) =>
+    map(
+      tryCatch(
+        ({ onDeployed = () => {} }) =>
+          onDeployed({ resourceMap: mapNameToResource }),
+        (error, hook) => ({ error, hook })
+      )
+    )(hooks);
+
+  const runOnDestroyed = ({ hooks }) =>
+    map(
+      tryCatch(
+        ({ onDestroyed = () => {} }) =>
+          onDestroyed({ resourceMap: mapNameToResource }),
+        (error, hook) => ({ error, hook })
+      )
+    )(hooks);
+
   const planApply = async ({ plan, onStateChange = noop }) => {
     assert(plan);
     logger.info(`Apply Plan ${tos(plan)}`);
@@ -456,6 +481,7 @@ function CoreProvider({
     return {
       results: [...resultCreate.results, ...resultDestroy.results],
       success,
+      hookResults: runOnDeployed({ hooks: [...hookMap.values()] }),
     };
   };
 
@@ -715,7 +741,14 @@ function CoreProvider({
       down: true,
       onStateChange,
     });
-    return await planner.run();
+
+    const plannerResult = await planner.run();
+
+    const hookResults = await runOnDestroyed({ hooks: [...hookMap.values()] });
+    return {
+      ...plannerResult,
+      hookResults,
+    };
   };
 
   const destroyAll = tryCatch(
@@ -767,6 +800,7 @@ function CoreProvider({
     getMapTypeToResources: () => mapTypeToResources,
     getTargetResources,
     isPlanEmpty,
+    hookAdd,
   };
   const enhanceProvider = {
     ...provider,

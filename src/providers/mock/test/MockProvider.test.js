@@ -9,30 +9,34 @@ const toJSON = (x) => JSON.stringify(x, null, 4);
 describe("MockProvider", async function () {
   let stack;
   let provider;
+  let resources;
+  const config = ConfigLoader({ baseDir: __dirname });
+
   before(async () => {
     stack = await createStack({
-      config: ConfigLoader({ baseDir: __dirname }),
+      config,
     });
     provider = stack.providers[0];
+    resources = stack.resources;
   });
 
   it("ip config live ", async function () {
-    const config = await stack.ip.resolveConfig();
+    const config = await resources.ip.resolveConfig();
     assert(config);
   });
   it("image config", async function () {
-    const config = await stack.image.resolveConfig();
+    const config = await resources.image.resolveConfig();
     assert(config);
   });
 
   it("volume config", async function () {
-    const config = await stack.volume.resolveConfig();
+    const config = await resources.volume.resolveConfig();
     assert.equal(config.name, "volume1");
     assert.equal(config.size, 20_000_000_000);
   });
 
   it("server config", async function () {
-    const config = await stack.server.resolveConfig();
+    const config = await resources.server.resolveConfig();
     assert(config);
     assert(config.networkInterfaces[0]);
     assert(config.networkInterfaces[0].accessConfigs);
