@@ -15,8 +15,8 @@ const properties = {
 
 const propertiesToYaml = `storageProfile:
   imageReference:
-    offer: "UbuntuServer"
-    publisher: "Canonical"
+    offer: UbuntuServer
+    publisher: Canonical
 `;
 
 describe("replacerCredentials", function () {
