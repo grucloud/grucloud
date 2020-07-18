@@ -139,8 +139,13 @@ exports.logError = (prefix, error) => {
     if (error.response.data) {
       logger.error(`data: ${tos(error.response.data)}`);
     }
-    const { baseURL, url, method } = error.config;
-    logger.error(`config: ${method} ${baseURL}${url}`);
+    if (error.config) {
+      const { baseURL, url, method } = error.config;
+      logger.error(`config: ${method} ${baseURL}${url}`);
+    }
+    if (error.message) {
+      logger.error(`message: ${error.message}`);
+    }
   }
   //logger.error(`${prefix} stack:${error.stack}`);
 };

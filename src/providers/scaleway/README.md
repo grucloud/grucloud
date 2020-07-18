@@ -12,9 +12,9 @@ Api Specification: https://developers.scaleway.com/static/scaleway.instance.v1.A
 
 ## Environment variable to set
 
-- SCALEWAY_ORGANISATION_ID
-- SCALEWAY_ACCESS_KEY
-- SCALEWAY_SECRET_KEY
+- SCW_ORGANISATION
+- SCW_ACCESS_KEY
+- SCW_SECRET_KEY
 
 ## Mamual Request
 

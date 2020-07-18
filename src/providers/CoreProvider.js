@@ -80,7 +80,9 @@ const ResourceMaker = ({
         return resolveDependencies(dependency);
       }
       const live = await dependency.getLive();
-      return { resource: dependency, live };
+      //TODO refactor
+      const config = await dependency.resolveConfig();
+      return { resource: dependency, live: live || config };
     }),
     tap((x) => logger.debug(`resolveDependencies: ${tos(x)}`)),
   ]);

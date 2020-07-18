@@ -27,8 +27,11 @@ function stringify(data) {
     string: function (x, name) {
       // to avoid the string "true" being confused with the
       // the literal `true`, we always wrap strings in quotes
-      const value = typeof name === "string" ? replacerCredentials(name, x) : x;
-      return JSON.stringify(value);
+      const value =
+        typeof name === "string"
+          ? replacerCredentials(name, x)
+          : JSON.stringify(x);
+      return value;
     },
     array: function (x) {
       var output = "";

@@ -13,7 +13,7 @@
     "test:aws": "NODE_PATH=src mocha src/providers/aws/**/*.test.js",
     "test:scw": "NODE_PATH=src mocha src/providers/scaleway/test/**.test.js",
     "test:mock": "NODE_PATH=src mocha src/providers/mock/test/**.test.js",
-    "test:mocha": "NODE_PATH=src mocha 'src/**/*.test.js' 'examples/multi/*.test.js'",
+    "test:mocha": "NODE_PATH=src mocha 'examples/multi/*.test.js' 'src/**/*.test.js' ",
     "test": "NODE_PATH=src nyc mocha 'examples/multi/*.test.js' 'src/**/*.test.js'",
     "test:example": "node test/testExamples.js",
     "start:mock": "nodemon node src/mockServer/MockServerRun.js",

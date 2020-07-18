@@ -280,6 +280,24 @@
       "args": ["destroy", "-f"]
     },
     {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Scaleway List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/scaleway",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["list"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Scaleway Up",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/scaleway",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["apply", "-f"]
+    },
+    {
       "name": "Debug examples",
       "type": "node",
       "request": "launch",

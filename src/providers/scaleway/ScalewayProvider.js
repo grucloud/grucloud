@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { defaultsDeep } = require("lodash/fp");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 
 const compare = require("../../Utils").compare;
 const CoreProvider = require("../CoreProvider");
@@ -7,11 +7,10 @@ const ScalewayClient = require("./ScalewayClient");
 const logger = require("../../logger")({ prefix: "ScalewayProvider" });
 const ScalewayTag = require("./ScalewayTag");
 const { getField } = require("../ProviderCommon");
-
 const { tos } = require("../../tos");
 const fnSpecs = (config) => {
   const { organization } = config;
-
+  assert(organization);
   const isOurMinion = ({ resource }) =>
     ScalewayTag.isOurMinion({ resource, tag: config.tag });
 
@@ -31,14 +30,14 @@ const fnSpecs = (config) => {
             }
           },
           configDefault: async ({ name, properties }) =>
-            defaultsDeep(
-              {
-                tags: [`name:${name}`, config.tag],
-                organization,
-              },
-              properties
-            ),
+            defaultsDeep({
+              tags: [`name:${name}`, config.tag],
+              organization,
+            })(properties),
           findName: (item) => item.address,
+          findTargetId: (item) => {
+            return item.ip?.id;
+          },
         }),
       type: "Ip",
       isOurMinion,
@@ -86,13 +85,10 @@ const fnSpecs = (config) => {
             };
           },
           configDefault: async ({ name, properties }) =>
-            defaultsDeep(
-              {
-                name,
-                organization,
-              },
-              properties
-            ),
+            defaultsDeep({
+              name,
+              organization,
+            })(properties),
         }),
       type: "Volume",
       propertiesDefault: { volume_type: "l_ssd" },
@@ -107,21 +103,21 @@ const fnSpecs = (config) => {
           onResponseList: ({ servers }) => {
             return { total: servers.length, items: servers };
           },
+          findTargetId: (item) => {
+            return item.server?.id;
+          },
           configDefault: async ({
             name,
             properties,
             dependencies: { image, ip },
           }) => {
-            return defaultsDeep(
-              {
-                name,
-                organization,
-                tags: [name, config.tag],
-                image: getField(image, "id"),
-                ...(ip && { public_ip: getField(ip, "id") }),
-              },
-              properties
-            );
+            return defaultsDeep({
+              name,
+              organization,
+              tags: [name, config.tag],
+              image: getField(image, "id"),
+              ...(ip && { public_ip: getField(ip, "id") }),
+            })(properties);
           },
         }),
       type: "Server",
@@ -146,13 +142,19 @@ const fnSpecs = (config) => {
   ];
 };
 
-module.exports = ScalewayProvider = async ({ name, config }) => {
+module.exports = ScalewayProvider = async ({ name = "scaleway", config }) => {
+  const configProviderDefault = {
+    zone: "fr-par-1",
+    organization: process.env.SCW_ORGANISATION,
+    secretKey: process.env.SCW_SECRET_KEY,
+  };
+
   return CoreProvider({
     type: "scaleway",
     name,
     mandatoryEnvs: ["SCW_ORGANISATION", "SCW_SECRET_KEY"],
     mandatoryConfigKeys: ["zone"],
-    config,
+    config: defaultsDeep(configProviderDefault)(config),
     fnSpecs,
   });
 };

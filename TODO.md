@@ -2,8 +2,6 @@
 
 ## Common:
 
-- stack trace is not displayed correctly
-
 - return error as an array ?
 - client type redundant ?
 - do not use index.js for S3 and EC2

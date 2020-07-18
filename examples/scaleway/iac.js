@@ -1,39 +1,50 @@
+const assert = require("assert");
 const ScalewayProvider = require("@grucloud/core").ScalewayProvider;
 
-exports.createStack = async ({}) => {
-  const config = {
-    zone: "fr-par-1",
-    organization: process.env.SCALEWAY_ORGANISATION_ID,
-    secretKey: process.env.SCALEWAY_SECRET_KEY,
-  };
-  // Create Scaleway provider
-  const provider = await ScalewayProvider({ name: "scaleway", config });
-  // Allocate public Ip address
+const createResources = async ({ provider }) => {
   const ip = await provider.makeIp({ name: "ip-web-server" });
   // Choose an image
   const image = await provider.useImage({
     name: "ubuntu",
-    config: ({ items: images }) => {
+    transformConfig: ({ items: images }) => {
       const image = images.find(
         ({ name, arch, default_bootscript }) =>
-          name.includes("Ubuntu") && arch === "x86_64" && default_bootscript
+          name.includes("Ubuntu") && arch === "x86_64" /*&& default_bootscript*/
       );
+      assert(image, "missing image");
       return image;
     },
   });
-  // Create a server
-  await provider.makeServer({
-    name: "web-server",
-    dependencies: { image, ip },
-    properties: () => ({
+  return {
+    ip,
+    image,
+    server: await provider.makeServer({
       name: "web-server",
-      commercial_type: "DEV1-S",
-      volumes: {
-        "0": {
-          size: 20_000_000_000,
+      dependencies: { image, ip },
+      properties: () => ({
+        name: "web-server",
+        commercial_type: "DEV1-S",
+        volumes: {
+          "0": {
+            size: 20_000_000_000,
+          },
         },
-      },
+      }),
     }),
-  });
-  return { providers: [provider] };
+  };
+};
+exports.createResources = createResources;
+
+exports.createStack = async ({}) => {
+  // Move env
+  const config = {
+    zone: "fr-par-1",
+  };
+  // Create Scaleway provider
+  const provider = await ScalewayProvider({ name: "scaleway", config });
+
+  return {
+    providers: [provider],
+    resources: await createResources({ provider }),
+  };
 };

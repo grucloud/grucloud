@@ -1,7 +1,8 @@
 const assert = require("assert");
 const urljoin = require("url-join");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 
-const { defaultsDeep, isEqual } = require("lodash/fp");
+const { isEqual } = require("lodash/fp");
 const { get, switchCase } = require("rubico");
 
 const list = {
@@ -20,7 +21,7 @@ describe("Playground", function () {
     assert.equal(result, "/test");
   });
   it("defaultsDeep", async function () {
-    const result = defaultsDeep({ size: 10 }, { size: 20 });
+    const result = defaultsDeep({ size: 10 })({ size: 20 });
     assert(isEqual(result, { size: 20 }));
   });
   it("get", async function () {

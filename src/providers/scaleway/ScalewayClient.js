@@ -11,6 +11,7 @@ module.exports = ScalewayClient = ({
   url,
   onResponseList,
   config,
+  findTargetId,
   configDefault,
 }) => {
   assert(url);
@@ -41,6 +42,7 @@ module.exports = ScalewayClient = ({
     config,
     onResponseList,
     findName,
+    findTargetId,
     configDefault,
     axios: AxiosMaker({
       baseURL: urljoin(BASE_URL, "zones", config.zone, url),

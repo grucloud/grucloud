@@ -1,6 +1,7 @@
 const { AwsProvider } = require("@grucloud/core");
 const { GoogleProvider } = require("@grucloud/core");
 const { AzureProvider } = require("@grucloud/core");
+const { ScalewayProvider } = require("@grucloud/core");
 const { MockProvider } = require("@grucloud/core");
 
 const AwsStackEC2 = require("../aws/ec2/iac");
@@ -9,6 +10,7 @@ const AwsStackS3 = require("../aws/s3/iac");
 
 const AzureStack = require("../azure/iac");
 const GoogleStack = require("../google/iac");
+const ScalewayStack = require("../scaleway/iac");
 
 const MockStack = require("../mock/iac");
 
@@ -29,12 +31,22 @@ exports.createStack = async ({ config }) => {
     config: { ...config.azure, stage: config.stage },
   });
 
+  const scalewayProvider = await ScalewayProvider({
+    config: { ...config.scaleway, stage: config.stage },
+  });
+
   const mockProvider = await MockProvider({
     config: { stage: config.stage },
   });
 
   return {
-    providers: [awsProvider, googleProvider, azureProvider, mockProvider],
+    providers: [
+      awsProvider,
+      googleProvider,
+      azureProvider,
+      scalewayProvider,
+      mockProvider,
+    ],
     resources: {
       ec2: await AwsStackEC2.createResources({
         provider: awsProvider,
@@ -52,6 +64,9 @@ exports.createStack = async ({ config }) => {
       }),
       azure: await AzureStack.createResources({
         provider: azureProvider,
+      }),
+      scaleway: await ScalewayStack.createResources({
+        provider: scalewayProvider,
       }),
       mock: await MockStack.createResources({
         provider: mockProvider,
