@@ -13,6 +13,7 @@ const { getField } = require("../../ProviderCommon");
 module.exports = AwsEC2 = ({ spec, config }) => {
   assert(spec);
   assert(config);
+  const clientConfig = { ...config, retryDelay: 2000, repeatCount: 1 };
 
   const { managedByKey, managedByValue, stageTagKey, stage } = config;
   assert(stage);
@@ -91,7 +92,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     await retryExpectOk({
       name: `isUpById: ${name} id: ${InstanceId}`,
       fn: () => isUpById({ id: InstanceId }),
-      config,
+      config: clientConfig,
     });
     const { eip } = dependencies;
     if (eip) {
