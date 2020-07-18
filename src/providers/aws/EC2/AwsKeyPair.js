@@ -1,4 +1,5 @@
 var AWS = require("aws-sdk");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "AwsKp" });
 const { tos } = require("../../../tos");
@@ -43,10 +44,14 @@ module.exports = AwsClientKeyPair = ({ spec, config }) => {
       };
     }
   };
+
+  const configDefault = async ({ properties }) => defaultsDeep({})(properties);
+
   return {
     type: "KeyPair",
     spec,
     findName,
+    configDefault,
     findId,
     getByName,
     getById,
