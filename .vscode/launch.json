@@ -14,7 +14,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Mock Query",
+      "name": "Test Mock Query",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/src/providers/mock/test/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -24,7 +24,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Mock List",
+      "name": "Test Mock List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/src/providers/mock/test/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -33,7 +33,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Mock Apply",
+      "name": "Test  Mock Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/src/providers/mock/test/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -43,7 +43,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Mock Destroy",
+      "name": "Test Mock Destroy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/src/providers/mock/test/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -54,7 +54,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Mock Plan",
+      "name": "Mock Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -63,7 +63,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Mock Run onDeployed",
+      "name": "Mock Run onDeployed",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -72,7 +72,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Mock Apply",
+      "name": "Mock Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -81,7 +81,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Mock Destroy",
+      "name": "Mock Destroy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -90,7 +90,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Mock List",
+      "name": "Mock List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -99,7 +99,16 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Azure Plan",
+      "name": "Azure Run onDeployed",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/azure/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["run", "--onDeployed"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Azure Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/azure/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -108,7 +117,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Azure List",
+      "name": "Azure List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/azure/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -117,7 +126,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Azure Apply",
+      "name": "Azure Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/azure/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -127,7 +136,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Azure Destroy",
+      "name": "Azure Destroy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/azure/",
       "console": "integratedTerminal",
@@ -137,7 +146,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws S3 Plan",
+      "name": "Aws S3 Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/s3",
       "internalConsoleOptions": "openOnSessionStart",
@@ -146,7 +155,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws S3 List",
+      "name": "Aws S3 List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/s3",
       "internalConsoleOptions": "openOnSessionStart",
@@ -155,7 +164,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws S3 Apply",
+      "name": "Aws S3 Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/s3",
       "internalConsoleOptions": "openOnSessionStart",
@@ -165,7 +174,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws S3 Destroy",
+      "name": "Aws S3 Destroy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/s3",
       "console": "integratedTerminal",
@@ -175,7 +184,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws EC2 Run onDeployed",
+      "name": "Aws EC2 Run onDeployed",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/ec2/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -184,7 +193,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws EC2-VPN Run onDeployed",
+      "name": "Aws EC2-VPN Run onDeployed",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/ec2-vpc/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -193,7 +202,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws EC2 Plan",
+      "name": "Aws EC2 Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/ec2-vpc",
       "internalConsoleOptions": "openOnSessionStart",
@@ -202,7 +211,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws EC2 List",
+      "name": "Aws EC2 List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/ec2-vpc",
       "internalConsoleOptions": "openOnSessionStart",
@@ -211,7 +220,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws EC2 Apply",
+      "name": "Aws EC2 Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/ec2-vpc",
       "internalConsoleOptions": "openOnSessionStart",
@@ -221,7 +230,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Aws EC2 Destroy",
+      "name": "Aws EC2 Destroy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/ec2-vpc",
       "console": "integratedTerminal",
@@ -231,7 +240,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Google Plan",
+      "name": "Google Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/google/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -240,7 +249,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Google List",
+      "name": "Google List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/google/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -249,7 +258,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Google Apply",
+      "name": "Google Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/google/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -259,7 +268,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Google Destroy",
+      "name": "Google Destroy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/google/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -269,7 +278,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Multi Plan",
+      "name": "Multi Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/multi/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -279,7 +288,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Multi List",
+      "name": "Multi List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/multi/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -289,7 +298,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Multi Apply",
+      "name": "Multi Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/multi/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -299,7 +308,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Multi Destroy",
+      "name": "Multi Destroy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/multi/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -309,7 +318,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Scaleway List",
+      "name": "Scaleway List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/scaleway",
       "internalConsoleOptions": "openOnSessionStart",
@@ -318,7 +327,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Cli Scaleway Up",
+      "name": "Scaleway Up",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/scaleway",
       "internalConsoleOptions": "openOnSessionStart",

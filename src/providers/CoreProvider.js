@@ -275,10 +275,10 @@ function CoreProvider({
   fnSpecs,
   config,
 }) {
-  const provideConfig = defaultsDeep(configProviderDefault, config);
+  const providerConfig = defaultsDeep(configProviderDefault, config);
   logger.debug(
     `CoreProvider name: ${providerName}, type ${type}, config: ${tos(
-      provideConfig
+      providerConfig
     )}`
   );
 
@@ -313,12 +313,12 @@ function CoreProvider({
 
   const resourceByName = (name) => mapNameToResource.get(name);
 
-  const specs = fnSpecs(provideConfig).map((spec) =>
-    _.defaults(spec, SpecDefault({ config: provideConfig, providerName }))
+  const specs = fnSpecs(providerConfig).map((spec) =>
+    _.defaults(spec, SpecDefault({ config: providerConfig, providerName }))
   );
 
   const clients = specs.map((spec) =>
-    spec.Client({ spec, config: provideConfig })
+    spec.Client({ spec, config: providerConfig })
   );
 
   const clientByType = (type) => {
@@ -327,7 +327,7 @@ function CoreProvider({
     if (!spec) {
       throw new Error(`type ${type} not found`);
     }
-    return spec.Client({ spec, config: provideConfig });
+    return spec.Client({ spec, config: providerConfig });
   };
 
   const filterClient = async ({
@@ -451,7 +451,9 @@ function CoreProvider({
     map(
       tryCatch(
         ({ onDeployed = () => {} }) =>
-          onDeployed({ resourceMap: mapNameToResource }),
+          onDeployed({
+            resourceMap: mapNameToResource,
+          }),
         (error, hook) => ({ error, hook })
       )
     )([...hookMap.values()]);
@@ -460,7 +462,9 @@ function CoreProvider({
     map(
       tryCatch(
         ({ onDestroyed = () => {} }) =>
-          onDestroyed({ resourceMap: mapNameToResource }),
+          onDestroyed({
+            resourceMap: mapNameToResource,
+          }),
         (error, hook) => ({ error, hook })
       )
     )([...hookMap.values()]);
@@ -591,7 +595,7 @@ function CoreProvider({
     }
 
     const isNameInOurPlan = resourceNames().includes(
-      fromTagName(name, provideConfig.tag)
+      fromTagName(name, providerConfig.tag)
     );
     if (direction == PlanDirection.UP) {
       if (!isNameInOurPlan) {
@@ -701,7 +705,7 @@ function CoreProvider({
     await retryExpectOk({
       name: `destroy ${name}`,
       fn: () => client.isDownById({ id, name, resourcesPerType }),
-      config: client.config || provideConfig,
+      config: client.config || providerConfig,
     });
 
     logger.debug(
@@ -788,7 +792,7 @@ function CoreProvider({
   const register = ({ resources }) => {
     const hookFactory = getHookFactory(hookFilenameDefault());
     if (hookFactory) {
-      const hooks = hookFactory({ resources });
+      const hooks = hookFactory({ resources, config: providerConfig });
       hookAdd("default", hooks);
     } else {
       // console.log("no hooks ");
@@ -796,7 +800,7 @@ function CoreProvider({
   };
 
   const provider = {
-    config: () => provideConfig,
+    config: () => providerConfig,
     name: providerName,
     type: toType,
     destroyAll,
@@ -822,7 +826,7 @@ function CoreProvider({
   };
   const enhanceProvider = {
     ...provider,
-    ...createResourceMakers({ provider, config: provideConfig, specs }),
+    ...createResourceMakers({ provider, config: providerConfig, specs }),
   };
 
   return enhanceProvider;

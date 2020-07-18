@@ -1,9 +1,69 @@
 const assert = require("assert");
+const ping = require("ping");
+const Client = require("ssh2").Client;
 
-module.exports = ({ resources, provider }) => {
+const testPing = ({ host }) =>
+  ping.promise.probe(host, {
+    timeout: 3,
+  });
+
+const testSsh = async ({ host, username = "ubuntu", password }) =>
+  await new Promise((resolve, reject) => {
+    const conn = new Client();
+    conn
+      .on("ready", function () {
+        console.log(`ssh to ${host} ok`);
+        resolve();
+      })
+      .on("error", function (error) {
+        console.log(`cannot ssh to ${host}`);
+        reject(error);
+      })
+      .connect({
+        host,
+        port: 22,
+        username,
+        password,
+        agent: process.env.SSH_AUTH_SOCK,
+        //privateKey: require("fs").readFileSync("/here/is/my/key"),
+      });
+  });
+
+module.exports = ({ resources, config }) => {
   return {
     onDeployed: async () => {
-      //console.log("azure onDeployed");
+      console.log("azure onDeployed");
+      const publicIpAddress = await resources.publicIpAddress.getLive();
+      const networkInterface = await resources.networkInterface.getLive();
+      const vm = await resources.vm.getLive();
+
+      //Check network interface id of the vm
+      assert.equal(
+        vm.properties.networkProfile.networkInterfaces[0].id,
+        networkInterface.id
+      );
+
+      // Check ipconfiguration between the publicIpAddress and the networkInterface
+      assert.equal(
+        publicIpAddress.properties.ipConfiguration.id,
+        networkInterface.properties.ipConfigurations[0].id
+      );
+      //      assert.equal(serverInstance.PublicIpAddress, eipLive.PublicIp);
+      const host = publicIpAddress.properties.ipAddress;
+
+      // SSH
+      await testSsh({
+        host,
+        username: process.env.MACHINE_ADMIN_USERNAME,
+        password: process.env.MACHINE_ADMIN_PASSWORD,
+      });
+      //assert(alive, `cannot ping ${host}`);
+
+      // Ping
+      console.log(`Pinging ${host}`);
+
+      const { alive } = await testPing({ host });
+      console.log(`Ping ${host} alive: ${alive}`);
     },
     onDestroyed: async () => {
       //console.log("azure onDestroyed");
