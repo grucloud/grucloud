@@ -127,11 +127,12 @@ const createResources = async ({ provider }) => {
 exports.createResources = createResources;
 
 exports.createStack = async ({ config }) => {
-  // Create an Azure provider
   const provider = await AzureProvider({ name: "azure", config });
+  const resources = await createResources({ provider });
+  provider.register({ resources });
 
   return {
     providers: [provider],
-    resources: await createResources({ provider }),
+    resources,
   };
 };

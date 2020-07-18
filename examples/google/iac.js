@@ -77,11 +77,12 @@ const createResources = async ({ provider }) => {
 exports.createResources = createResources;
 
 exports.createStack = async ({ config }) => {
-  // Create GCP provider
   const provider = await GoogleProvider({ name: "google", config });
+  const resources = await createResources({ provider });
+  provider.register({ resources });
 
   return {
     providers: [provider],
-    resources: await createResources({ provider }),
+    resources,
   };
 };

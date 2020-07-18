@@ -80,8 +80,14 @@ exports.createStack = async ({ config }) => {
     },
   });
 
+  const resources = await createResources({ provider });
+
+  provider.register({
+    resources,
+  });
+
   return {
     providers: [provider],
-    resources: await createResources({ provider }),
+    resources,
   };
 };

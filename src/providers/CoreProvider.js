@@ -1,5 +1,6 @@
 const assert = require("assert");
 const _ = require("lodash");
+const path = require("path");
 const { defaultsDeep } = require("lodash/fp");
 const { isEmpty, flatten, reverse } = require("ramda");
 const { pipe, tap, map, filter, all, tryCatch } = require("rubico");
@@ -446,23 +447,23 @@ function CoreProvider({
     return plan;
   };
 
-  const runOnDeployed = ({ hooks }) =>
+  const runOnDeployed = () =>
     map(
       tryCatch(
         ({ onDeployed = () => {} }) =>
           onDeployed({ resourceMap: mapNameToResource }),
         (error, hook) => ({ error, hook })
       )
-    )(hooks);
+    )([...hookMap.values()]);
 
-  const runOnDestroyed = ({ hooks }) =>
+  const runOnDestroyed = () =>
     map(
       tryCatch(
         ({ onDestroyed = () => {} }) =>
           onDestroyed({ resourceMap: mapNameToResource }),
         (error, hook) => ({ error, hook })
       )
-    )(hooks);
+    )([...hookMap.values()]);
 
   const planApply = async ({ plan, onStateChange = noop }) => {
     assert(plan);
@@ -481,7 +482,7 @@ function CoreProvider({
     return {
       results: [...resultCreate.results, ...resultDestroy.results],
       success,
-      hookResults: runOnDeployed({ hooks: [...hookMap.values()] }),
+      hookResults: runOnDeployed(),
     };
   };
 
@@ -744,7 +745,7 @@ function CoreProvider({
 
     const plannerResult = await planner.run();
 
-    const hookResults = await runOnDestroyed({ hooks: [...hookMap.values()] });
+    const hookResults = await runOnDestroyed();
     return {
       ...plannerResult,
       hookResults,
@@ -779,6 +780,20 @@ function CoreProvider({
   checkConfig(config, mandatoryConfigKeys);
 
   const toType = () => type || providerName;
+  const hookFilenameDefault = () => path.resolve(process.cwd(), "hooks.js");
+  const getHookFactory = tryCatch(require, (error) => {
+    //console.log("getHookFactory", error);
+  });
+
+  const register = ({ resources }) => {
+    const hookFactory = getHookFactory(hookFilenameDefault());
+    if (hookFactory) {
+      const hooks = hookFactory({ resources });
+      hookAdd("default", hooks);
+    } else {
+      // console.log("no hooks ");
+    }
+  };
 
   const provider = {
     config: () => provideConfig,
@@ -800,6 +815,9 @@ function CoreProvider({
     getMapTypeToResources: () => mapTypeToResources,
     getTargetResources,
     isPlanEmpty,
+    register,
+    runOnDeployed,
+    runOnDestroyed,
     hookAdd,
   };
   const enhanceProvider = {

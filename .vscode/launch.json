@@ -63,6 +63,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Cli Mock Run onDeployed",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/mock/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["run", "--onDeployed"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Cli Mock Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/",
@@ -162,6 +171,24 @@
       "console": "integratedTerminal",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["destroy", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Aws EC2 Run onDeployed",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/ec2/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["run", "--onDeployed"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Cli Aws EC2-VPN Run onDeployed",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/ec2-vpc/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["run", "--onDeployed"]
     },
     {
       "type": "node",

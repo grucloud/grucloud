@@ -1,5 +1,6 @@
 const { AwsProvider } = require("@grucloud/core");
 const Hooks = require("./hooks");
+
 const createResources = async ({ provider, resources: { keyPair } }) => {
   const eip = await provider.makeElasticIpAddress({
     name: "ip-webserver",
@@ -9,7 +10,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
 
   return {
     eip,
-    dbServer: await provider.makeEC2({
+    server: await provider.makeEC2({
       name: "web",
       dependencies: { keyPair, eip },
       properties: () => ({
@@ -29,9 +30,9 @@ exports.createStack = async ({ config }) => {
     name: "kp",
   });
 
-  const resources = await createResources({ provider, resources: { keyPair } });
-
-  provider.hookAdd("ec2", Hooks({ resources }));
+  provider.register({
+    resources: await createResources({ provider, resources: { keyPair } }),
+  });
 
   return {
     providers: [provider],

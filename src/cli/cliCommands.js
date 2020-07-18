@@ -1,4 +1,5 @@
 const { pick } = require("lodash");
+
 const assert = require("assert");
 const plu = require("pluralize");
 const logger = require("../logger")({ prefix: "CliCommands" });
@@ -60,6 +61,7 @@ const saveToJson = ({ command, commandOptions, programOptions, result }) => {
 const displayError = (name, error) => {
   assert(error);
   if (Array.isArray(error)) {
+    map((err) => displayError(name, err))(error);
     return;
   }
   console.log(YAML.stringify(convertError({ error, name })));
@@ -122,6 +124,41 @@ const planQuery = async ({
   )({ providers, programOptions });
 
 exports.planQuery = planQuery;
+
+const planRunScript = async ({
+  infra: { providers },
+  commandOptions = {},
+  programOptions = {},
+}) =>
+  tryCatch(
+    pipe([
+      tap((x) => {
+        //logger.debug("planRunScript");
+      }),
+      switchCase([
+        () => commandOptions.onDeployed,
+        () => map((provider) => provider.runOnDeployed())(providers),
+        () => commandOptions.onDestroyed,
+        () => map((provider) => provider.runOnDestroyed())(providers),
+        () => {
+          console.log("no run command found");
+        },
+      ]),
+      flatten,
+      filter((result) => result),
+      filter((result) => result.error),
+      map(({ error }) => convertError({ error, name: "Run Script" })),
+      tap((result) => {
+        throw result;
+      }),
+    ]),
+    (error) => {
+      displayError("planRunScript", error);
+      throw { code: 422, error };
+    }
+  )({ providers, programOptions, commandOptions });
+
+exports.planRunScript = planRunScript;
 
 // Plan Apply
 exports.planApply = async ({

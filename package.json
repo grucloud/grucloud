@@ -48,6 +48,7 @@
     "lodash": "^4.17.15",
     "md5-file": "^5.0.0",
     "node-emoji": "^1.10.0",
+    "ping": "^0.2.3",
     "pluralize": "^8.0.0",
     "prompts": "^2.3.2",
     "querystring": "^0.2.0",
@@ -60,6 +61,7 @@
     "shortid": "^2.2.15",
     "sinon": "^9.0.2",
     "spinnies": "^0.5.1",
+    "ssh2": "^0.8.9",
     "url-join": "^4.0.1",
     "uuid": "^7.0.3",
     "winston": "^3.2.1"

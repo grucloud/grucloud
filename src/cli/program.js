@@ -35,6 +35,27 @@ exports.createProgram = ({ version, commands }) => {
     });
 
   program
+    .command("run")
+    .description("run onDeployed or onDestroy")
+    .alias("r")
+    .option("--onDeployed", "Run Post Deploy Hook")
+    .option("--onDestroyed", "Run Post Destroy Hook")
+
+    .action(async (commandOptions) => {
+      const programOptions = program.opts();
+      await pipe([
+        infraOptions,
+        createInfra,
+        async (infra) =>
+          await commands.planRunScript({
+            infra,
+            commandOptions,
+            programOptions,
+          }),
+      ])(programOptions);
+    });
+
+  program
     .command("apply")
     .description("Apply the plan, a.k.a deploy the resources")
     .alias("a")
