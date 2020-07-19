@@ -12,11 +12,11 @@ const testSsh = async ({ host, username = "ubuntu" }) =>
     const conn = new Client();
     conn
       .on("ready", function () {
-        console.log(`ssh to ${host} ok`);
+        //console.log(`ssh to ${host} ok`);
         resolve();
       })
       .on("error", function (error) {
-        console.log(`cannot ssh to ${host}`);
+        //console.log(`cannot ssh to ${host}`);
         reject(error);
       })
       .connect({
@@ -31,21 +31,35 @@ const testSsh = async ({ host, username = "ubuntu" }) =>
 module.exports = ({ resources: { eip, server }, provider }) => {
   return {
     onDeployed: async () => {
-      console.log("ec2 onDeployed");
+      //console.log("ec2 onDeployed");
 
       const eipLive = await eip.getLive();
       const serverLive = await server.getLive();
-
+      assert(serverLive, "server should be alive");
+      //Static checks
       const serverInstance = serverLive.Instances[0];
       assert.equal(serverInstance.PublicIpAddress, eipLive.PublicIp);
       const host = eipLive.PublicIp;
-      // Ping
-      const { alive } = await testPing({ host });
-      console.log(`Ping ${host} alive: ${alive}`);
-      assert(alive, `cannot ping ${host}`);
 
-      // SSH
-      await testSsh({ host });
+      return {
+        actions: [
+          {
+            name: "Ping",
+            command: async () => {
+              const { alive } = await testPing({ host });
+              //TODO rxjs retryWhen
+              assert(alive, `cannot ping ${host}`);
+            },
+          },
+          {
+            name: "SSH",
+            command: async () => {
+              //TODO rxjs retryWhen
+              await testSsh({ host });
+            },
+          },
+        ],
+      };
     },
     onDestroyed: async () => {
       console.log("ec2 onDestroyed");

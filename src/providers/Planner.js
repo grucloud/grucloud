@@ -124,7 +124,7 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
         return;
       }
       onStateChange({
-        resource: entry.item.resource,
+        uri: entry.item.resource.uri,
         previousState: entry.state,
         nextState: STATES.RUNNING,
       });
@@ -141,7 +141,7 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
       }
       assert(entry.state !== STATES.ERROR, "entry.state !== STATES.ERROR");
       onStateChange({
-        resource: entry.item.resource,
+        uri: entry.item.resource.uri,
         previousState: entry.state,
         nextState: STATES.DONE,
       });
@@ -150,7 +150,7 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
       entry.error = convertError({ error });
       logError("runItem", error);
       onStateChange({
-        resource: entry.item.resource,
+        uri: entry.item.resource.uri,
         previousState: entry.state,
         nextState: STATES.ERROR,
         error,
@@ -208,9 +208,9 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
 
     pipe([
       pluck("resource"),
-      map((resource) =>
+      map((item) =>
         onStateChange({
-          resource,
+          uri: item.uri,
           nextState: "WAITING",
         })
       ),

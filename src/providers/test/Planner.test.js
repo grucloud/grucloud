@@ -32,13 +32,13 @@ describe("Planner", function () {
     .returns(Promise.resolve({ input: {}, output: { success: true } }));
 
   const onStateChange = (stateChanges) => ({
-    resource,
+    uri,
     previousState,
     nextState,
   }) => {
-    assert(resource);
+    assert(uri);
     if (nextState === "RUNNING") {
-      stateChanges.push(resource.name);
+      stateChanges.push(uri.split("::")[2]);
     }
   };
   it("az create ok", async function () {

@@ -13,6 +13,7 @@ module.exports = ({ resources, provider }) => {
       console.log("google onDeployed");
 
       const ip = await resources.ip.getLive();
+      assert(ip, "ip is not live");
       const host = ip.address;
       const server = await resources.server.getLive();
       assert.equal(server.networkInterfaces[0].accessConfigs[0].natIP, host);

@@ -11,54 +11,43 @@ exports.runAsyncCommand = async (command, text) => {
   console.log(`${text}`);
   const spinnies = new Spinnies({ spinner });
 
-  const resourceToKey = (resource) => {
-    //assert(resource.name);
-    assert(resource.type);
-    assert(resource.provider);
-    return `${resource.provider}::${resource.type}::${resource.name}`;
-  };
-
-  const onStateChange = ({ resource, previousState, nextState, error }) => {
+  const onStateChange = ({ uri, previousState, nextState, error }) => {
     logger.debug(
       `onStateChange: ${tos({
-        resource,
+        uri,
         previousState,
         nextState,
       })}`
     );
+    assert(uri, "onStateChange: missing uri");
+
     switch (nextState) {
       case "WAITING": {
-        const key = resourceToKey(resource);
-        assert(key);
-        logger.debug(`spinnies: create: ${key}`);
-        spinnies.add(key, { text: key /*, status: "non-spinnable" */ });
+        logger.debug(`spinnies: create: ${uri}`);
+        spinnies.add(uri, { text: uri /*, status: "non-spinnable" */ });
         break;
       }
       case "RUNNING": {
-        const key = resourceToKey(resource);
-        assert(key);
-        logger.debug(`spinnies running: ${key}`);
-        const spinny = spinnies.pick(key);
+        logger.debug(`spinnies running: ${uri}`);
+        const spinny = spinnies.pick(uri);
         if (spinny) {
-          spinnies.update(key, { text: `${key}`, status: "spinning" });
+          spinnies.update(uri, { text: `${uri}`, status: "spinning" });
         } else {
           //TODO assert ?
-          logger.error(`spinnies not created: ${key}`);
-          spinnies.add(key, { text: key });
+          logger.error(`spinnies not created: ${uri}`);
+          spinnies.add(uri, { text: uri });
         }
         break;
       }
       case "DONE": {
-        const key = resourceToKey(resource);
-        spinnies.succeed(key);
+        spinnies.succeed(uri);
         break;
       }
       case "ERROR": {
-        const key = resourceToKey(resource);
         //TODO build error.ToString()
-        const text = `${key}: ${error?.name} ${error.message || ""}`;
-        logger.debug(`spinnies: failed: ${key}: ${text}`);
-        spinnies.fail(key, { text });
+        const text = `${uri}: ${error?.name} ${error.message || ""}`;
+        logger.debug(`spinnies: failed: ${uri}: ${text}`);
+        spinnies.fail(uri, { text });
         break;
       }
       default:

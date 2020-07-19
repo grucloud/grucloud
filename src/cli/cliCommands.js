@@ -147,9 +147,23 @@ const planRunScript = async ({
       }),
       switchCase([
         () => commandOptions.onDeployed,
-        () => map((provider) => provider.runOnDeployed())(providers),
+        () =>
+          runAsyncCommand(
+            ({ onStateChange }) =>
+              map((provider) => provider.runOnDeployed({ onStateChange }))(
+                providers
+              ),
+            `Running OnDeployed`
+          ),
         () => commandOptions.onDestroyed,
-        () => map((provider) => provider.runOnDestroyed())(providers),
+        () =>
+          runAsyncCommand(
+            ({ onStateChange }) =>
+              map((provider) => provider.runOnDestroyed({ onStateChange }))(
+                providers
+              ),
+            `Running OnDestroyed`
+          ),
         () => {
           console.log("no run command found");
         },

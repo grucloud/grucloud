@@ -13,6 +13,7 @@ const azPlans = [
       name: "rg",
       type: "ResourceGroup",
       provider: "azure",
+      uri: "azure::ResourceGroup::rg",
     },
   },
   {
@@ -20,6 +21,7 @@ const azPlans = [
       name: "vnet",
       type: "VirtualNetwork",
       provider: "azure",
+      uri: "azure::VirtualNetwork::vnet",
     },
   },
   {
@@ -27,6 +29,7 @@ const azPlans = [
       name: "sg",
       type: "SecurityGroup",
       provider: "azure",
+      uri: "azure::SecurityGroup::sg",
     },
   },
   {
@@ -34,6 +37,7 @@ const azPlans = [
       name: "network-interface",
       type: "NetworkInterface",
       provider: "azure",
+      uri: "azure::NetworkInterface::network-interface",
     },
   },
 ];
@@ -68,6 +72,7 @@ const awsPlans = [
       name: "vpc",
       type: "Vpc",
       provider: "aws",
+      uri: "aws::Vpc::vpc",
     },
   },
   {
@@ -75,6 +80,7 @@ const awsPlans = [
       name: "subnet",
       type: "Subnet",
       provider: "aws",
+      uri: "aws::Subnet::subnet",
     },
   },
   {
@@ -82,6 +88,7 @@ const awsPlans = [
       name: "rt",
       type: "RouteTables",
       provider: "aws",
+      uri: "aws::RouteTables::rt",
     },
   },
   {
@@ -89,6 +96,7 @@ const awsPlans = [
       name: "sg",
       type: "SecurityGroup",
       provider: "aws",
+      uri: "aws::SecurityGroup::sg",
     },
   },
   {
@@ -96,6 +104,7 @@ const awsPlans = [
       name: "instance",
       type: "Instance",
       provider: "aws",
+      uri: "aws::Instance::instance",
     },
   },
 ];

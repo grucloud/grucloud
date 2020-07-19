@@ -3,7 +3,7 @@ const _ = require("lodash");
 const path = require("path");
 const { defaultsDeep } = require("lodash/fp");
 const { isEmpty, flatten, reverse } = require("ramda");
-const { pipe, tap, map, filter, all, tryCatch } = require("rubico");
+const { pipe, tap, map, filter, tryCatch, switchCase } = require("rubico");
 const Promise = require("bluebird");
 const logger = require("../logger")({ prefix: "Core" });
 const { tos } = require("../tos");
@@ -15,6 +15,8 @@ const { logError, mapPoolSize } = require("./Common");
 const { Planner, mapToGraph } = require("./Planner");
 
 const noop = ({}) => {};
+const toUri = ({ providerName, type, name }) =>
+  `${providerName}::${type}::${name}`;
 
 const configProviderDefault = {
   tag: "ManagedByGru",
@@ -192,8 +194,19 @@ const ResourceMaker = ({
     provider: provider.name,
     type,
     name: resourceName,
+    uri: toUri({
+      providerName: provider.name,
+      type,
+      name: resourceName,
+    }),
   });
-  const toString = () => `${provider.name}/${resourceName}${resourceName}`;
+
+  const toString = () =>
+    toUri({
+      providerName: provider.name,
+      type,
+      name: resourceName,
+    });
 
   const addParent = (parentToSet) => {
     parent = parentToSet;
@@ -447,14 +460,57 @@ function CoreProvider({
     return plan;
   };
 
-  const runOnDeployed = () =>
+  const runOnDeployed = ({ onStateChange }) =>
     map(
       tryCatch(
-        ({ onDeployed = () => {} }) =>
-          onDeployed({
-            resourceMap: mapNameToResource,
+        pipe([
+          tap(() => {
+            logger.info(`runOnDeployed start`);
           }),
-        (error, hook) => ({ error, hook })
+          ({ onDeployed = () => {} }) =>
+            onDeployed({
+              resourceMap: mapNameToResource,
+            }),
+          switchCase([
+            (result) => result?.actions,
+            ({ actions }) =>
+              map(
+                tryCatch(
+                  pipe([
+                    tap((action) => {
+                      logger.info(`runOnDeployed start ${action.name}`);
+                      onStateChange({
+                        uri: action.name,
+                        nextState: "RUNNING",
+                      });
+                    }),
+                    tap((action) => action.command()),
+                    tap((action) => {
+                      logger.info(`runOnDeployed stop ${action.name}`);
+                      onStateChange({ uri: action.name, nextState: "DONE" });
+                    }),
+                  ]),
+                  (error, action) => {
+                    logger.error(`runOnDeployed error ${action.name}`);
+                    onStateChange({
+                      uri: action.name,
+                      nextState: "ERROR",
+                      error,
+                    });
+
+                    logger.error(error);
+                    return { error };
+                  }
+                )
+              )(actions),
+            () => {
+              console.log("no actions");
+            },
+          ]),
+        ]),
+        (error, hook) => {
+          return { error, hook };
+        }
       )
     )([...hookMap.values()]);
 
@@ -486,7 +542,7 @@ function CoreProvider({
     return {
       results: [...resultCreate.results, ...resultDestroy.results],
       success,
-      hookResults: runOnDeployed(),
+      hookResults: runOnDeployed({ onStateChange }),
     };
   };
 
@@ -500,7 +556,7 @@ function CoreProvider({
       tap(
         map((resource) =>
           onStateChange({
-            resource: resource.toJSON(),
+            uri: resource.toString(),
             nextState: "WAITING",
           })
         )
@@ -508,21 +564,20 @@ function CoreProvider({
       map.pool(mapPoolSize, async (resource) => {
         try {
           onStateChange({
-            resource: resource.toJSON(),
+            uri: resource.toString(),
             nextState: "RUNNING",
           });
           const actions = await resource.planUpsert({ resource });
           onStateChange({
-            resource: resource.toJSON(),
+            uri: resource.toString(),
             nextState: "DONE",
           });
           return actions;
         } catch (error) {
-          logger.error(`error query resource ${resource.toJSON()}`);
-
+          logger.error(`error query resource ${resource.toString()}`);
           logger.error(error);
           onStateChange({
-            resource: resource.toJSON(),
+            uri: resource.toString(),
             nextState: "ERROR",
             error,
           });
@@ -643,6 +698,11 @@ function CoreProvider({
                   type: client.spec.type,
                   name: client.findName(live),
                   id: client.findId(live),
+                  uri: toUri({
+                    providerName,
+                    type: client.spec.type,
+                    name: client.findName(live),
+                  }),
                 },
                 action: "DESTROY",
                 config: live,
