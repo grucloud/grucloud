@@ -297,7 +297,18 @@ function CoreProvider({
 
   const hookMap = new Map();
   const hookAdd = (name, hook) => {
-    hookMap.set(name, { name, ...hook });
+    const defaultHook = {
+      onDeployed: {
+        init: () => {},
+        actions: [],
+      },
+      onDestroyed: {
+        init: () => {},
+        actions: [],
+      },
+    };
+    const newHook = defaultsDeep(defaultHook)(hook);
+    hookMap.set(name, { name, ...newHook });
   };
 
   // Target Resources
@@ -467,46 +478,39 @@ function CoreProvider({
           tap(() => {
             logger.info(`runOnDeployed start`);
           }),
-          ({ onDeployed = () => {} }) =>
-            onDeployed({
-              resourceMap: mapNameToResource,
-            }),
-          switchCase([
-            (result) => result?.actions,
-            ({ actions }) =>
-              map(
-                tryCatch(
-                  pipe([
-                    tap((action) => {
-                      logger.info(`runOnDeployed start ${action.name}`);
-                      onStateChange({
-                        uri: action.name,
-                        nextState: "RUNNING",
-                      });
-                    }),
-                    tap((action) => action.command()),
-                    tap((action) => {
-                      logger.info(`runOnDeployed stop ${action.name}`);
-                      onStateChange({ uri: action.name, nextState: "DONE" });
-                    }),
-                  ]),
-                  (error, action) => {
-                    logger.error(`runOnDeployed error ${action.name}`);
+          async ({ onDeployed = {} }) => {
+            const payload = await onDeployed.init();
+            // TODO rubico assign ?
+            return { ...onDeployed, payload };
+          },
+          ({ actions, payload }) =>
+            map(
+              tryCatch(
+                pipe([
+                  tap((action) => {
                     onStateChange({
                       uri: action.name,
-                      nextState: "ERROR",
-                      error,
+                      nextState: "RUNNING",
                     });
+                  }),
+                  tap((action) => action.command(payload)),
+                  tap((action) => {
+                    onStateChange({ uri: action.name, nextState: "DONE" });
+                  }),
+                ]),
+                (error, action) => {
+                  logger.error(`runOnDeployed error ${action.name}`);
+                  onStateChange({
+                    uri: action.name,
+                    nextState: "ERROR",
+                    error,
+                  });
 
-                    logger.error(error);
-                    return { error };
-                  }
-                )
-              )(actions),
-            () => {
-              console.log("no actions");
-            },
-          ]),
+                  logger.error(error);
+                  return { error };
+                }
+              )
+            )(actions),
         ]),
         (error, hook) => {
           return { error, hook };
@@ -514,6 +518,7 @@ function CoreProvider({
       )
     )([...hookMap.values()]);
 
+  //TODO
   const runOnDestroyed = () =>
     map(
       tryCatch(

@@ -2,11 +2,30 @@ const assert = require("assert");
 
 module.exports = ({ resources, provider }) => {
   return {
-    onDeployed: async () => {
-      console.log("mock onDeployed");
+    onDeployed: {
+      init: async () => {
+        // TODO do ping and ssh
+        return {};
+      },
+      actions: [
+        {
+          name: "Ping",
+          command: async ({}) => {
+            //console.log("do ping ");
+          },
+        },
+      ],
     },
-    onDestroyed: async () => {
-      console.log("mock onDestroyed");
+    onDestroyed: {
+      init: async () => {
+        console.log("onDestroyed");
+      },
+      actions: [
+        {
+          name: "So Stuff",
+          command: async () => {},
+        },
+      ],
     },
   };
 };

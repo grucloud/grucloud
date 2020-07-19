@@ -2,11 +2,28 @@ const assert = require("assert");
 
 module.exports = ({ resources, provider }) => {
   return {
-    onDeployed: async () => {
-      //console.log("s3 onDeployed");
+    onDeployed: {
+      init: async () => {
+        const host = "myhost";
+        return { host };
+      },
+      actions: [
+        {
+          name: "Perform check",
+          command: async ({}) => {},
+        },
+      ],
     },
-    onDestroyed: async () => {
-      //console.log("s3 onDestroyed");
+    onDestroyed: {
+      init: async () => {
+        return {};
+      },
+      actions: [
+        {
+          name: "Perform check",
+          command: async ({}) => {},
+        },
+      ],
     },
   };
 };

@@ -9,23 +9,40 @@ const testPing = ({ host }) =>
 
 module.exports = ({ resources, provider }) => {
   return {
-    onDeployed: async () => {
-      console.log("google onDeployed");
+    onDeployed: {
+      init: async () => {
+        const ip = await resources.ip.getLive();
+        assert(ip, "ip is not live");
+        const host = ip.address;
 
-      const ip = await resources.ip.getLive();
-      assert(ip, "ip is not live");
-      const host = ip.address;
-      const server = await resources.server.getLive();
-      assert.equal(server.networkInterfaces[0].accessConfigs[0].natIP, host);
-      //Ping
+        const server = await resources.server.getLive();
+        assert.equal(server.networkInterfaces[0].accessConfigs[0].natIP, host);
 
-      const { alive } = await testPing({ host });
-      console.log(`Ping ${host} alive: ${alive}`);
-
-      // ssh with  gcloud compute ssh webserver-dev
+        return {
+          host,
+        };
+      },
+      actions: [
+        {
+          name: "Ping",
+          command: async ({ host }) => {
+            const { alive } = await testPing({ host });
+            assert(alive, `Cannot ping ${host}`);
+          },
+        },
+      ],
     },
-    onDestroyed: async () => {
-      //console.log("google onDestroyed");
+
+    onDestroyed: {
+      init: async () => {
+        return {};
+      },
+      actions: [
+        {
+          name: "Perform check",
+          command: async ({}) => {},
+        },
+      ],
     },
   };
 };

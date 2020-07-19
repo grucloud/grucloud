@@ -1,19 +1,36 @@
 const assert = require("assert");
 
 module.exports = ({ resources }) => {
-  const { ip, server } = resources;
   return {
-    onDeployed: async () => {
-      console.log("ip.getLive");
-      try {
-        console.log("ip.getLive, ", await ip.getLive());
-      } catch (error) {
-        console.error(error);
-      }
-      //console.log("mock onDeployed, ", resources);
+    onDeployed: {
+      init: async () => {
+        console.log("onDeployed");
+        return {
+          ip: await resources.ip.getLive(),
+          server: await resources.server.getLive(),
+        };
+      },
+      actions: [
+        {
+          name: "Ping",
+          command: async ({ ip, server }) => {
+            //console.log("do ping ", ip);
+          },
+        },
+      ],
     },
-    onDestroyed: async () => {
-      console.log("mock onDestroyed");
+    onDestroyed: {
+      init: async () => {
+        console.log("onDestroyed");
+      },
+      actions: [
+        {
+          name: "Ping",
+          command: async () => {
+            //console.log("do ping");
+          },
+        },
+      ],
     },
   };
 };

@@ -31,42 +31,61 @@ const testSsh = async ({ host, username = "ubuntu", password }) =>
 
 module.exports = ({ resources, config }) => {
   return {
-    onDeployed: async () => {
-      console.log("azure onDeployed");
-      const publicIpAddress = await resources.publicIpAddress.getLive();
-      const networkInterface = await resources.networkInterface.getLive();
-      const vm = await resources.vm.getLive();
+    onDeployed: {
+      init: async () => {
+        console.log("azure onDeployed");
+        const publicIpAddress = await resources.publicIpAddress.getLive();
+        const networkInterface = await resources.networkInterface.getLive();
+        const vm = await resources.vm.getLive();
 
-      //Check network interface id of the vm
-      assert.equal(
-        vm.properties.networkProfile.networkInterfaces[0].id,
-        networkInterface.id
-      );
+        //Check network interface id of the vm
+        assert.equal(
+          vm.properties.networkProfile.networkInterfaces[0].id,
+          networkInterface.id
+        );
 
-      // Check ipconfiguration between the publicIpAddress and the networkInterface
-      assert.equal(
-        publicIpAddress.properties.ipConfiguration.id,
-        networkInterface.properties.ipConfigurations[0].id
-      );
-      //      assert.equal(serverInstance.PublicIpAddress, eipLive.PublicIp);
-      const host = publicIpAddress.properties.ipAddress;
+        // Check ipconfiguration between the publicIpAddress and the networkInterface
+        assert.equal(
+          publicIpAddress.properties.ipConfiguration.id,
+          networkInterface.properties.ipConfigurations[0].id
+        );
+        //      assert.equal(serverInstance.PublicIpAddress, eipLive.PublicIp);
+        const host = publicIpAddress.properties.ipAddress;
 
-      // SSH
-      await testSsh({
-        host,
-        username: process.env.MACHINE_ADMIN_USERNAME,
-        password: process.env.MACHINE_ADMIN_PASSWORD,
-      });
-      //assert(alive, `cannot ping ${host}`);
-
-      // Ping
-      console.log(`Pinging ${host}`);
-
-      const { alive } = await testPing({ host });
-      console.log(`Ping ${host} alive: ${alive}`);
+        return { host };
+      },
+      actions: [
+        {
+          name: "Ping",
+          command: async ({ host }) => {
+            //console.log(`Pinging ${host}`);
+            const { alive } = await testPing({ host });
+            assert(alive, `Cannot ping ${host}`);
+            //console.log(`Ping ${host} alive: ${alive}`);
+          },
+        },
+        {
+          name: "SSH",
+          command: async ({ host }) => {
+            await testSsh({
+              host,
+              username: process.env.MACHINE_ADMIN_USERNAME,
+              password: process.env.MACHINE_ADMIN_PASSWORD,
+            });
+          },
+        },
+      ],
     },
-    onDestroyed: async () => {
-      //console.log("azure onDestroyed");
+    onDestroyed: {
+      init: async () => {
+        return {};
+      },
+      actions: [
+        {
+          name: "Perform check",
+          command: async ({}) => {},
+        },
+      ],
     },
   };
 };

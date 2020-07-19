@@ -13,29 +13,29 @@ describe("MockProviderHooks", async function () {
   before(async () => {});
 
   it("onDeployed", async function () {
-    const onDeployed = sinon.spy();
-    const onDestroyed = sinon.spy();
+    const onDeployed = { init: sinon.spy() };
+    const onDestroyed = { init: sinon.spy() };
 
     const config = ConfigLoader({ baseDir: __dirname });
     const provider = await MockProvider({ config });
     const resources = await createResources({ provider });
     provider.hookAdd("mock-test", {
-      onDeployed: ({ resourceMap }) => {
-        onDeployed({ provider, resources, resourceMap });
+      onDeployed: {
+        init: onDeployed.init,
       },
-      onDestroyed: ({ resourceMap }) => {
-        onDestroyed({ provider, resources, resourceMap });
+      onDestroyed: {
+        init: onDestroyed.init,
       },
     });
     {
       const { success, hookResults } = await provider.planQueryAndApply();
       assert(success, "planQueryAndApply failed");
-      assert(onDeployed.called);
+      assert(onDeployed.init.called);
     }
     {
       const { success, hookResults } = await provider.destroyAll();
       assert(success, "planDestroy failed");
-      assert(onDestroyed.called);
+      assert(onDestroyed.init.called);
     }
   });
 });

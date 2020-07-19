@@ -30,39 +30,41 @@ const testSsh = async ({ host, username = "ubuntu" }) =>
 
 module.exports = ({ resources: { eip, server }, provider }) => {
   return {
-    onDeployed: async () => {
-      //console.log("ec2 onDeployed");
-
-      const eipLive = await eip.getLive();
-      const serverLive = await server.getLive();
-      assert(serverLive, "server should be alive");
-      //Static checks
-      const serverInstance = serverLive.Instances[0];
-      assert.equal(serverInstance.PublicIpAddress, eipLive.PublicIp);
-      const host = eipLive.PublicIp;
-
-      return {
-        actions: [
-          {
-            name: "Ping",
-            command: async () => {
-              const { alive } = await testPing({ host });
-              //TODO rxjs retryWhen
-              assert(alive, `cannot ping ${host}`);
-            },
+    onDeployed: {
+      init: async () => {
+        const eipLive = await eip.getLive();
+        const serverLive = await server.getLive();
+        assert(serverLive, "server should be alive");
+        //Static checks
+        const serverInstance = serverLive.Instances[0];
+        assert.equal(serverInstance.PublicIpAddress, eipLive.PublicIp);
+        const host = eipLive.PublicIp;
+        return {
+          host,
+        };
+      },
+      actions: [
+        {
+          name: "Ping",
+          command: async ({ host }) => {
+            const { alive } = await testPing({ host });
+            //TODO rxjs retryWhen
+            assert(alive, `cannot ping ${host}`);
           },
-          {
-            name: "SSH",
-            command: async () => {
-              //TODO rxjs retryWhen
-              await testSsh({ host });
-            },
+        },
+        {
+          name: "SSH",
+          command: async ({ host }) => {
+            //TODO rxjs retryWhen
+            await testSsh({ host });
           },
-        ],
-      };
+        },
+      ],
     },
-    onDestroyed: async () => {
-      console.log("ec2 onDestroyed");
+    onDestroyed: {
+      init: () => {
+        console.log("ec2 onDestroyed");
+      },
     },
   };
 };
