@@ -168,6 +168,9 @@ const planRunScript = async ({
           console.log("no run command found");
         },
       ]),
+      tap((x) => {
+        logger.debug("planRunScript Done");
+      }),
       flatten,
       filter((result) => result),
       filter((result) => result.error),

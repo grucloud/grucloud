@@ -1,32 +1,48 @@
 const assert = require("assert");
+const ping = require("ping");
+const Promise = require("bluebird");
+
+const testPing = ({ host }) =>
+  ping.promise.probe(host, {
+    timeout: 10,
+  });
 
 module.exports = ({ resources }) => {
   return {
     onDeployed: {
       init: async () => {
-        console.log("onDeployed");
+        //console.log("onDeployed");
+        const host = "www.google.com";
         return {
-          ip: await resources.ip.getLive(),
-          server: await resources.server.getLive(),
+          host,
         };
       },
       actions: [
         {
           name: "Ping",
-          command: async ({ ip, server }) => {
-            //console.log("do ping ", ip);
+          command: async ({ host }) => {
+            const { alive } = await testPing({ host });
+            assert(alive, `cannot ping ${host}`);
+          },
+        },
+        {
+          name: "SSH",
+          command: async ({ host }) => {
+            await Promise.delay(3e3);
           },
         },
       ],
     },
     onDestroyed: {
       init: async () => {
-        console.log("onDestroyed");
+        await Promise.delay(3e3);
+        //console.log("onDestroyed");
       },
       actions: [
         {
-          name: "Ping",
+          name: "Check Ping KO",
           command: async () => {
+            await Promise.delay(3e3);
             //console.log("do ping");
           },
         },

@@ -471,62 +471,105 @@ function CoreProvider({
     return plan;
   };
 
+  const scriptToUri = ({ type }) => `${providerName}::${type}`;
+
+  const scriptActionToUri = ({ name, type }) => `${name}`;
+
+  const runScriptCommands = ({ onStateChange, type }) =>
+    pipe([
+      tap(() => {
+        onStateChange({
+          uri: scriptToUri({ type }),
+          nextState: "RUNNING",
+        });
+      }),
+      async (script) => {
+        const payload = await script.init();
+        // TODO rubico assign ?
+        return { ...script, payload };
+      },
+
+      ({ actions, type, payload }) =>
+        map(
+          tryCatch(
+            pipe([
+              tap((action) => {
+                onStateChange({
+                  uri: scriptActionToUri({ name: action.name, type }),
+                  nextState: "RUNNING",
+                  indent: 3,
+                });
+              }),
+              tap(async (action) => await action.command(payload)),
+              tap((action) => {
+                onStateChange({
+                  uri: scriptActionToUri({ name: action.name, type }),
+                  nextState: "DONE",
+                });
+              }),
+            ]),
+            (error, action) => {
+              logger.error(`runOnDeployed error ${action.name}`);
+              onStateChange({
+                uri: scriptActionToUri({ name: action.name, type }),
+                nextState: "ERROR",
+                error,
+              });
+
+              logger.error(error);
+              return { error };
+            }
+          )
+        )(actions),
+      tap(() => {
+        onStateChange({
+          uri: scriptToUri({ type }),
+          nextState: "DONE", //TODO check error
+        });
+      }),
+    ]);
+
   const runOnDeployed = ({ onStateChange }) =>
+    pipe([
+      tap((hooks) => {
+        logger.info(`runOnDeployed #hooks ${hooks.length}`);
+      }),
+      map(
+        tryCatch(
+          pipe([
+            tap(() => {
+              logger.info(`runOnDeployed start`);
+            }),
+            async ({ onDeployed }) => ({ ...onDeployed, type: "onDeployed" }),
+            runScriptCommands({ onStateChange, type: "onDeployed" }),
+            tap(() => {
+              logger.info(`runOnDeployed stop`);
+            }),
+          ]),
+          (error, hook) => {
+            logger.error("runOnDeployed");
+            logger.error(error);
+            return { error, hook };
+          }
+        )
+      ),
+    ])([...hookMap.values()]);
+
+  const runOnDestroyed = ({ onStateChange }) =>
     map(
       tryCatch(
         pipe([
           tap(() => {
-            logger.info(`runOnDeployed start`);
+            logger.info(`runOnDestroyed start`);
           }),
-          async ({ onDeployed = {} }) => {
-            const payload = await onDeployed.init();
-            // TODO rubico assign ?
-            return { ...onDeployed, payload };
-          },
-          ({ actions, payload }) =>
-            map(
-              tryCatch(
-                pipe([
-                  tap((action) => {
-                    onStateChange({
-                      uri: action.name,
-                      nextState: "RUNNING",
-                    });
-                  }),
-                  tap((action) => action.command(payload)),
-                  tap((action) => {
-                    onStateChange({ uri: action.name, nextState: "DONE" });
-                  }),
-                ]),
-                (error, action) => {
-                  logger.error(`runOnDeployed error ${action.name}`);
-                  onStateChange({
-                    uri: action.name,
-                    nextState: "ERROR",
-                    error,
-                  });
-
-                  logger.error(error);
-                  return { error };
-                }
-              )
-            )(actions),
+          async ({ onDestroyed }) => ({ ...onDestroyed, type: "onDestroyed" }),
+          runScriptCommands({ onStateChange, type: "onDestroyed" }),
         ]),
         (error, hook) => {
+          logger.error("runOnDestroyed");
+          logger.error(error);
           return { error, hook };
         }
-      )
-    )([...hookMap.values()]);
-
-  //TODO
-  const runOnDestroyed = () =>
-    map(
-      tryCatch(
-        ({ onDestroyed = () => {} }) =>
-          onDestroyed({
-            resourceMap: mapNameToResource,
-          }),
-        (error, hook) => ({ error, hook })
       )
     )([...hookMap.values()]);
 
@@ -547,7 +590,7 @@ function CoreProvider({
     return {
       results: [...resultCreate.results, ...resultDestroy.results],
       success,
-      hookResults: runOnDeployed({ onStateChange }),
+      hookResults: await runOnDeployed({ onStateChange }),
     };
   };
 
@@ -822,7 +865,7 @@ function CoreProvider({
 
     const plannerResult = await planner.run();
 
-    const hookResults = await runOnDestroyed();
+    const hookResults = await runOnDestroyed({ onStateChange });
     return {
       ...plannerResult,
       hookResults,
@@ -859,7 +902,8 @@ function CoreProvider({
   const toType = () => type || providerName;
   const hookFilenameDefault = () => path.resolve(process.cwd(), "hooks.js");
   const getHookFactory = tryCatch(require, (error) => {
-    //console.log("getHookFactory", error);
+    console.log("getHookFactory", error);
+    //TODO check error
   });
 
   const register = ({ resources }) => {
@@ -868,7 +912,7 @@ function CoreProvider({
       const hooks = hookFactory({ resources, config: providerConfig });
       hookAdd("default", hooks);
     } else {
-      // console.log("no hooks ");
+      logger.error(`no hooks`);
     }
   };
 

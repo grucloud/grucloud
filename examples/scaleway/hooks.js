@@ -18,7 +18,7 @@ module.exports = ({ resources, provider }) => {
     },
     onDestroyed: {
       init: async () => {
-        console.log("onDestroyed");
+        //console.log("onDestroyed");
       },
       actions: [
         {

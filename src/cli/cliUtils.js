@@ -11,7 +11,7 @@ exports.runAsyncCommand = async (command, text) => {
   console.log(`${text}`);
   const spinnies = new Spinnies({ spinner });
 
-  const onStateChange = ({ uri, previousState, nextState, error }) => {
+  const onStateChange = ({ uri, previousState, nextState, error, indent }) => {
     logger.debug(
       `onStateChange: ${tos({
         uri,
@@ -24,7 +24,7 @@ exports.runAsyncCommand = async (command, text) => {
     switch (nextState) {
       case "WAITING": {
         logger.debug(`spinnies: create: ${uri}`);
-        spinnies.add(uri, { text: uri /*, status: "non-spinnable" */ });
+        spinnies.add(uri, { text: uri, indent /*, status: "non-spinnable" */ });
         break;
       }
       case "RUNNING": {
@@ -35,7 +35,7 @@ exports.runAsyncCommand = async (command, text) => {
         } else {
           //TODO assert ?
           logger.error(`spinnies not created: ${uri}`);
-          spinnies.add(uri, { text: uri });
+          spinnies.add(uri, { text: uri, indent });
         }
         break;
       }

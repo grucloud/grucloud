@@ -72,6 +72,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Mock Run onDestroyed",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/mock/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["run", "--onDestroyed"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Mock Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/",
