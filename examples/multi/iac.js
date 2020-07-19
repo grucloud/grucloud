@@ -16,8 +16,11 @@ const AwsHooksS3 = require("../aws/s3/hooks");
 const AzureStack = require("../azure/iac");
 const AzureHooks = require("../azure/hooks");
 
-const GoogleStack = require("../google/iac");
-const GoogleHooks = require("../google/hooks");
+const GoogleStackVm = require("../google/vm/iac");
+const GoogleHooksVm = require("../google/vm/hooks");
+
+const GoogleStackVmNetwork = require("../google/vm-network/iac");
+const GoogleHooksVmNetwork = require("../google/vm-network/hooks");
 
 const ScalewayStack = require("../scaleway/iac");
 const ScalewayHooks = require("../scaleway/hooks");
@@ -57,16 +60,37 @@ const createAws = async ({ config }) => {
 };
 
 const createGoogle = async ({ config }) => {
+  const { stage } = config;
   // Google
   const provider = await GoogleProvider({
-    config: { ...config.google, stage: config.stage },
+    config: { ...config.google, stage },
   });
 
-  const resources = await GoogleStack.createResources({
-    provider,
+  // Service Account
+  const serviceAccount = await provider.makeServiceAccount({
+    name: `sa-${stage}`,
+    properties: () => ({
+      serviceAccount: {
+        displayName: "SA dev",
+      },
+    }),
   });
-
-  provider.hookAdd("google", GoogleHooks({ resources }));
+  // simple Vm with a public address
+  {
+    const resources = await GoogleStackVm.createResources({
+      provider,
+      resources: { serviceAccount },
+    });
+    provider.hookAdd("vm", GoogleHooksVm({ resources }));
+  }
+  // Full network, subnet, firewall and vms
+  {
+    const resources = await GoogleStackVmNetwork.createResources({
+      provider,
+      resources: { serviceAccount },
+    });
+    provider.hookAdd("vm-network", GoogleHooksVmNetwork({ resources }));
+  }
   return provider;
 };
 

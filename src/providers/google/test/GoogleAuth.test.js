@@ -6,7 +6,7 @@ describe("GoogleAuth", function () {
   let config;
   before(async function () {
     try {
-      config = ConfigLoader({ path: "examples/google" });
+      config = ConfigLoader({ path: "examples/google/vm" });
     } catch (error) {
       assert(error.code, 422);
       this.skip();

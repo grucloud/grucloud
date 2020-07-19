@@ -4,7 +4,8 @@ const logger = require("../logger")({ prefix: "CliUtils" });
 const { tos } = require("../tos");
 
 const frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
-const spinner = { interval: 200, frames };
+
+const spinner = { interval: 300, frames };
 
 exports.runAsyncCommand = async (command, text) => {
   console.log(`${text}`);
@@ -26,10 +27,25 @@ exports.runAsyncCommand = async (command, text) => {
       })}`
     );
     switch (nextState) {
+      case "WAITING": {
+        const key = resourceToKey(resource);
+        assert(key);
+        logger.debug(`spinnies: create: ${key}`);
+        spinnies.add(key, { text: key /*, status: "non-spinnable" */ });
+        break;
+      }
       case "RUNNING": {
         const key = resourceToKey(resource);
         assert(key);
-        spinnies.add(key, { text: key });
+        logger.debug(`spinnies running: ${key}`);
+        const spinny = spinnies.pick(key);
+        if (spinny) {
+          spinnies.update(key, { text: `${key}`, status: "spinning" });
+        } else {
+          //TODO assert ?
+          logger.error(`spinnies not created: ${key}`);
+          spinnies.add(key, { text: key });
+        }
         break;
       }
       case "DONE": {
@@ -39,10 +55,10 @@ exports.runAsyncCommand = async (command, text) => {
       }
       case "ERROR": {
         const key = resourceToKey(resource);
-        spinnies.fail(key, {
-          //TODO build error.ToString()
-          text: `${key}: ${error?.name} ${error.message || ""}`,
-        });
+        //TODO build error.ToString()
+        const text = `${key}: ${error?.name} ${error.message || ""}`;
+        logger.debug(`spinnies: failed: ${key}: ${text}`);
+        spinnies.fail(key, { text });
         break;
       }
       default:

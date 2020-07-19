@@ -16,7 +16,7 @@ describe("GcpServiceAccount", async function () {
 
   before(async function () {
     try {
-      config = ConfigLoader({ path: "examples/google" });
+      config = ConfigLoader({ path: "examples/google/vm" });
     } catch (error) {
       this.skip();
     }

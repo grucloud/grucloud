@@ -14,7 +14,7 @@ describe("GoogleAddress", async function () {
   let address;
   before(async function () {
     try {
-      config = ConfigLoader({ path: "examples/google" });
+      config = ConfigLoader({ path: "examples/google/vm" });
     } catch (error) {
       this.skip();
     }

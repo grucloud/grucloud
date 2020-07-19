@@ -17,13 +17,12 @@ module.exports = GcpFirewall = ({ spec, config }) => {
   const configDefault = ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ properties, dependencies })}`);
     const { network } = dependencies;
-    assert(network, `Firewall '${name}' is missing the 'network' dependency`);
 
     const config = defaultsDeep(
       {
         name,
         description: managedByDescription,
-        network: getField(network, "selfLink"),
+        ...(network && { network: getField(network, "selfLink") }),
       },
       properties
     );

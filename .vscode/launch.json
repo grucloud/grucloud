@@ -240,27 +240,36 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Google Plan",
+      "name": "Google VM Run onDeployed",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/google/",
+      "cwd": "${workspaceFolder}/examples/google/vm",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["run", "--onDeployed"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Google VM Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/google/vm",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["plan"]
     },
     {
       "type": "node",
       "request": "launch",
-      "name": "Google List",
+      "name": "Google VM List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/google/",
+      "cwd": "${workspaceFolder}/examples/google/vm",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["list", "--all"]
     },
     {
       "type": "node",
       "request": "launch",
-      "name": "Google Apply",
+      "name": "Google VM Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/google/",
+      "cwd": "${workspaceFolder}/examples/google/vm",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["apply", "-f"]
@@ -268,9 +277,9 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Google Destroy",
+      "name": "Google VM Destroy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/google/",
+      "cwd": "${workspaceFolder}/examples/google/vm",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["destroy", "-f"]

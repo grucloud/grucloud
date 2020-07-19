@@ -11,7 +11,7 @@ const { checkConfig, checkEnv } = require("../Utils");
 const { fromTagName } = require("./TagName");
 const { SpecDefault } = require("./SpecDefault");
 const { retryExpectOk, retryCall } = require("./Retry");
-const { logError } = require("./Common");
+const { logError, mapPoolSize } = require("./Common");
 const { Planner, mapToGraph } = require("./Planner");
 
 const noop = ({}) => {};
@@ -497,24 +497,32 @@ function CoreProvider({
     logger.debug(`planUpsert: #resources ${getTargetResources().length}`);
     return pipe([
       filter((resource) => !resource.spec.listOnly),
-      map(async (resource) => {
-        onStateChange({
-          resource: resource.toJSON(),
-          previousState: "INIT",
-          nextState: "RUNNING",
-        });
+      tap(
+        map((resource) =>
+          onStateChange({
+            resource: resource.toJSON(),
+            nextState: "WAITING",
+          })
+        )
+      ),
+      map.pool(mapPoolSize, async (resource) => {
         try {
+          onStateChange({
+            resource: resource.toJSON(),
+            nextState: "RUNNING",
+          });
           const actions = await resource.planUpsert({ resource });
           onStateChange({
             resource: resource.toJSON(),
-            previousState: "RUNNING",
             nextState: "DONE",
           });
           return actions;
         } catch (error) {
+          logger.error(`error query resource ${resource.toJSON()}`);
+
+          logger.error(error);
           onStateChange({
             resource: resource.toJSON(),
-            previousState: "RUNNING",
             nextState: "ERROR",
             error,
           });

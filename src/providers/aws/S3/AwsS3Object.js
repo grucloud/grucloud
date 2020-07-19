@@ -17,8 +17,7 @@ const {
   switchCase,
   fork,
 } = require("rubico");
-const { convertError } = require("../../Common");
-const { mapPoolSize } = require("../AwsCommon");
+const { convertError, mapPoolSize } = require("../../Common");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Object = ({ spec, config }) => {

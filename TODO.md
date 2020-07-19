@@ -60,6 +60,8 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## TODO Goggle
 
+- resource name 'sa-dev' already exists
+
 - document enabling api via gcloud
 - vm instance depends on firewall
 - vm instance: network interface from vpc network

@@ -8,7 +8,7 @@ const programName = "gc";
 
 const cmds = [
   { cmd: "list" },
-  { cmd: "destroy --force -a" },
+  { cmd: "destroy --force" },
   { cmd: "list" },
   { cmd: "destroy --force" },
   { cmd: "apply --force" },
@@ -19,6 +19,10 @@ const cmds = [
 ];
 
 const specs = [
+  {
+    path: "mock",
+    cmds,
+  },
   {
     path: "aws/s3",
     cmds,
@@ -40,7 +44,11 @@ const specs = [
     cmds,
   },
   {
-    path: "google",
+    path: "google/vm",
+    cmds,
+  },
+  {
+    path: "google/vm-network",
     cmds,
   },
 ];

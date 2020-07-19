@@ -34,7 +34,8 @@ gcloud compute images list
 
 ### Examples
 
-- [basic example](https://github.com/FredericHeem/grucloud/blob/master/examples/google/iac.js#L9)
+- [basic example](https://github.com/FredericHeem/grucloud/blob/master/examples/google/vm/iac.js#L9)
+- [full example](https://github.com/FredericHeem/grucloud/blob/master/examples/google/vm-network/iac.js#L9)
 
 ### Properties
 

@@ -24,7 +24,9 @@ const {
   tryCatch,
 } = require("rubico");
 
-const { isEmpty, pluck, flatten } = require("ramda");
+const pluck = require("rubico/x/pluck");
+
+const { isEmpty, flatten } = require("ramda");
 
 // Common
 const plansHasSuccess = all(({ results }) => results.success);
@@ -78,17 +80,25 @@ const displayErrorsCommon = pipe([
 
 // Plan Query
 const doPlanQuery = async ({ providers, programOptions }) =>
-  await map(async (provider) => ({
-    provider,
-    plan: await pipe([
-      () =>
-        runAsyncCommand(
-          ({ onStateChange }) => provider.planQuery({ onStateChange }),
-          `Query Plan for ${provider.name}`
-        ),
-      displayPlan,
-    ])(),
-  }))(providers);
+  pipe([
+    map(async (provider) => ({
+      provider,
+      plan: await pipe([
+        () =>
+          runAsyncCommand(
+            ({ onStateChange }) => provider.planQuery({ onStateChange }),
+            `Query Plan for ${provider.name}`
+          ),
+      ])(),
+    })),
+    tap(
+      pipe([
+        //
+        pluck("plan"),
+        map(displayPlan),
+      ])
+    ),
+  ])(providers);
 
 const displayQueryNoPlan = () =>
   console.log("Nothing to deploy, everything is up to date");

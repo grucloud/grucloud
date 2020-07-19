@@ -2,6 +2,8 @@ const assert = require("assert");
 const logger = require("../logger")({ prefix: "Common" });
 const { tos } = require("../tos");
 
+exports.mapPoolSize = 5;
+
 const safeJsonParse = (json) => {
   try {
     return JSON.parse(json);

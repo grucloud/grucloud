@@ -5,15 +5,33 @@ title: Firewall
 
 Manages a [Firewall](https://cloud.google.com/vpc/docs/firewalls)
 
+Allow ingress traffic from anywhere to SSH and HTTP/HTTPS:
+
 ```js
-const firewall = await provider.makeFirewall({
-  name: "firewall-web-dev",
-  dependencies: { network },
+const firewall22_80_433 = await provider.makeFirewall({
+  name: `firewall-22-80-433-${stage}`,
   properties: () => ({
     allowed: [
       {
+        sourceRanges: ["0.0.0.0/0"],
         IPProtocol: "TCP",
-        ports: [80, 433],
+        ports: [22, 80, 433],
+      },
+    ],
+  }),
+});
+```
+
+Allow ping from anywhere:
+
+```js
+const firewallIcmp = await provider.makeFirewall({
+  name: `firewall-icmp-${stage}`,
+  properties: () => ({
+    allowed: [
+      {
+        sourceRanges: ["0.0.0.0/0"],
+        IPProtocol: "icmp",
       },
     ],
   }),
@@ -22,7 +40,8 @@ const firewall = await provider.makeFirewall({
 
 ### Examples
 
-- [basic example](https://github.com/FredericHeem/grucloud/blob/master/examples/google/iac.js)
+- [basic example](https://github.com/FredericHeem/grucloud/blob/master/examples/google/vm/iac.js)
+- [full example](https://github.com/FredericHeem/grucloud/blob/master/examples/google/vm-network/iac.js)
 
 ### Properties
 

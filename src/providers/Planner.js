@@ -12,6 +12,9 @@ const {
   reduce,
   transform,
 } = require("rubico");
+
+const pluck = require("rubico/x/pluck");
+
 const { logError, convertError } = require("./Common");
 
 const STATES = {
@@ -202,6 +205,16 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
       logger.debug(`Planner run: empty plan `);
       return { success: true, results: [] };
     }
+
+    pipe([
+      pluck("resource"),
+      map((resource) =>
+        onStateChange({
+          resource,
+          nextState: "WAITING",
+        })
+      ),
+    ])(plans);
 
     const resourceTypes = plans.map((plan) => plan.resource.name);
     logger.debug(`Planner resourceTypes ${resourceTypes}`);

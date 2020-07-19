@@ -21,7 +21,7 @@ const {
   all,
   tryCatch,
 } = require("rubico");
-const { mapPoolSize } = require("../AwsCommon");
+const { mapPoolSize } = require("../../Common");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 assert(flatten);
