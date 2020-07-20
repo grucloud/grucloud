@@ -31,14 +31,10 @@ describe("Planner", function () {
     .stub()
     .returns(Promise.resolve({ input: {}, output: { success: true } }));
 
-  const onStateChange = (stateChanges) => ({
-    uri,
-    previousState,
-    nextState,
-  }) => {
-    assert(uri);
+  const onStateChange = (stateChanges) => ({ resource, nextState }) => {
+    assert(resource);
     if (nextState === "RUNNING") {
-      stateChanges.push(uri.split("::")[2]);
+      resource.name && stateChanges.push(resource.name);
     }
   };
   it("az create ok", async function () {

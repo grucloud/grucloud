@@ -12,11 +12,11 @@ const testSsh = async ({ host, username = "ubuntu", password }) =>
     const conn = new Client();
     conn
       .on("ready", function () {
-        console.log(`ssh to ${host} ok`);
+        //console.log(`ssh to ${host} ok`);
         resolve();
       })
       .on("error", function (error) {
-        console.log(`cannot ssh to ${host}`);
+        //console.log(`cannot ssh to ${host}`);
         reject(error);
       })
       .connect({
@@ -56,7 +56,7 @@ module.exports = ({ resources, config }) => {
       },
       actions: [
         {
-          name: "Ping",
+          name: "Ping VM",
           command: async ({ host }) => {
             //console.log(`Pinging ${host}`);
             const { alive } = await testPing({ host });
@@ -65,7 +65,7 @@ module.exports = ({ resources, config }) => {
           },
         },
         {
-          name: "SSH",
+          name: "SSH VM",
           command: async ({ host }) => {
             await testSsh({
               host,

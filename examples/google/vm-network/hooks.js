@@ -13,7 +13,7 @@ module.exports = ({ resources, provider }) => {
       },
       actions: [
         {
-          name: "Check",
+          name: "Check google network",
           command: async ({ ip, server }) => {
             //console.log("do stuff ", ip);
           },

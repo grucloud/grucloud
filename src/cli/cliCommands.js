@@ -28,6 +28,11 @@ const pluck = require("rubico/x/pluck");
 
 const { isEmpty, flatten } = require("ramda");
 
+const TitleDeploying = "Deploying";
+const HooknameDeploying = "onDeployed";
+const TitleDestroying = "Destroying";
+const HooknameDestroying = "onDestroyed";
+
 // Common
 const plansHasSuccess = all(({ results }) => results.success);
 
@@ -79,25 +84,43 @@ const displayErrorsCommon = pipe([
 ]);
 
 // Plan Query
+const TitleQuery = "Fetching Data";
 const doPlanQuery = async ({ providers, programOptions }) =>
   pipe([
-    map(async (provider) => ({
-      provider,
-      plan: await pipe([
-        () =>
-          runAsyncCommand(
-            ({ onStateChange }) => provider.planQuery({ onStateChange }),
-            `Query Plan for ${provider.name}`
-          ),
-      ])(),
-    })),
-    tap(
-      pipe([
-        //
-        pluck("plan"),
-        map(displayPlan),
-      ])
-    ),
+    async (providers) =>
+      await runAsyncCommand(
+        ({ onStateChange }) =>
+          pipe([
+            tap(
+              map.series((provider) =>
+                provider.spinnersStart({
+                  onStateChange,
+                  useHooks: false,
+                  title: TitleQuery,
+                })
+              )
+            ),
+            tap(() => {
+              logger.debug("Spinners started");
+            }),
+            map((provider) => {
+              return assign({
+                plan: async ({ provider }) =>
+                  provider.planQuery({ onStateChange, title: TitleQuery }),
+              })({ provider });
+            }),
+            tap(
+              pipe([
+                tap((xx) => {
+                  logger.debug("planQuery showing result");
+                }),
+                pluck("plan"),
+                map(displayPlan),
+              ])
+            ),
+          ])(providers),
+        `Deploying resources`
+      ),
   ])(providers);
 
 const displayQueryNoPlan = () =>
@@ -143,7 +166,7 @@ const planRunScript = async ({
   tryCatch(
     pipe([
       tap((x) => {
-        //logger.debug("planRunScript");
+        logger.debug("planRunScript");
       }),
       switchCase([
         () => commandOptions.onDeployed,
@@ -171,16 +194,11 @@ const planRunScript = async ({
       tap((x) => {
         logger.debug("planRunScript Done");
       }),
-      flatten,
-      filter((result) => result),
-      filter((result) => result.error),
-      map(({ error }) => convertError({ error, name: "Run Script" })),
-      tap((result) => {
-        throw result;
-      }),
     ]),
     (error) => {
       displayError("planRunScript", error);
+      console.log("Run Script Error:");
+      console.log(error);
       throw { code: 422, error };
     }
   )({ providers, programOptions, commandOptions });
@@ -244,14 +262,35 @@ exports.planApply = async ({
 
   const doPlansDeploy = pipe([
     async (providers) =>
-      await runAsyncCommand(({ onStateChange }) => {
-        return map(({ provider, plan }) => {
-          return assign({
-            results: async ({ provider, plan }) =>
-              provider.planApply({ plan, onStateChange }),
-          })({ provider, plan });
-        })(providers);
-      }, `Deploying resources`),
+      await runAsyncCommand(
+        ({ onStateChange }) =>
+          pipe([
+            tap(
+              map.series(({ provider }) =>
+                provider.spinnersStart({
+                  onStateChange,
+                  title: TitleDeploying,
+                  hookName: HooknameDeploying,
+                })
+              )
+            ),
+            tap(() => {
+              logger.debug("Spinners started");
+            }),
+            map(({ provider, plan }) => {
+              return assign({
+                results: async ({ provider, plan }) =>
+                  provider.planApply({
+                    plan,
+                    onStateChange,
+                    title: TitleDeploying,
+                    hookName: HooknameDeploying,
+                  }),
+              })({ provider, plan });
+            }),
+          ])(providers),
+        `Deploying resources`
+      ),
     tap((result) =>
       saveToJson({ command: "apply", commandOptions, programOptions, result })
     ),
@@ -328,15 +367,38 @@ exports.planDestroy = async ({
 
   const doPlansDestroy = pipe([
     async (providers) =>
-      await runAsyncCommand(({ onStateChange }) => {
-        return map(({ provider, plans }) => {
-          return assign({
-            results: async ({ provider, plans }) =>
-              provider.planDestroy({ plans, onStateChange }),
-          })({ provider, plans });
-        })(providers);
-      }, `Destroying resources`),
-
+      await runAsyncCommand(
+        ({ onStateChange }) =>
+          pipe([
+            tap(
+              map.series(({ provider }) =>
+                provider.spinnersStart({
+                  onStateChange,
+                  title: TitleDestroying,
+                  hookName: HooknameDestroying,
+                })
+              )
+            ),
+            tap(() => {
+              logger.debug("doPlansDestroy Spinners started");
+            }),
+            map(
+              assign({
+                results: async ({ provider, plans }) =>
+                  provider.planDestroy({
+                    plans,
+                    onStateChange,
+                    title: TitleDestroying,
+                    hookName: HooknameDestroying,
+                  }),
+              })
+            ),
+            tap(() => {
+              logger.debug("doPlansDestroy DONE");
+            }),
+          ])(providers),
+        `Destroying resources`
+      ),
     tap((result) =>
       saveToJson({ command: "destroy", commandOptions, programOptions, result })
     ),

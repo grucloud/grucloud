@@ -124,7 +124,7 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
         return;
       }
       onStateChange({
-        uri: entry.item.resource.uri,
+        resource: entry.item.resource,
         previousState: entry.state,
         nextState: STATES.RUNNING,
       });
@@ -141,7 +141,7 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
       }
       assert(entry.state !== STATES.ERROR, "entry.state !== STATES.ERROR");
       onStateChange({
-        uri: entry.item.resource.uri,
+        resource: entry.item.resource,
         previousState: entry.state,
         nextState: STATES.DONE,
       });
@@ -150,7 +150,7 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
       entry.error = convertError({ error });
       logError("runItem", error);
       onStateChange({
-        uri: entry.item.resource.uri,
+        resource: entry.item.resource,
         previousState: entry.state,
         nextState: STATES.ERROR,
         error,
@@ -205,16 +205,6 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
       logger.debug(`Planner run: empty plan `);
       return { success: true, results: [] };
     }
-
-    pipe([
-      pluck("resource"),
-      map((item) =>
-        onStateChange({
-          uri: item.uri,
-          nextState: "WAITING",
-        })
-      ),
-    ])(plans);
 
     const resourceTypes = plans.map((plan) => plan.resource.name);
     logger.debug(`Planner resourceTypes ${resourceTypes}`);

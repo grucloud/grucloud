@@ -65,7 +65,7 @@ exports.createStack = async ({ config }) => {
   const provider = await GoogleProvider({ name: "google", config });
 
   const serviceAccount = await provider.makeServiceAccount({
-    name: `sa-${stage}`,
+    name: `sa-${config.stage}`,
     properties: () => ({
       serviceAccount: {
         displayName: "SA dev",
