@@ -7,11 +7,12 @@ const frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "
 
 const spinner = { interval: 300, frames };
 
-exports.runAsyncCommand = async (command, commandText) => {
-  console.log(`${commandText}`);
+exports.runAsyncCommand = async ({ text, command }) => {
+  console.log(`${text}`);
+  assert(text);
   assert(command);
   const spinnies = new Spinnies({ spinner });
-  logger.debug(`runAsyncCommand: ${JSON.stringify({ commandText })}`);
+  logger.debug(`runAsyncCommand: ${JSON.stringify({ text })}`);
   const spinnerList = [];
   const onStateChange = ({
     uri,
@@ -109,12 +110,12 @@ exports.runAsyncCommand = async (command, commandText) => {
 
   try {
     const result = await command({ onStateChange });
-    logger.debug(`runAsyncCommand end of : ${commandText}`);
+    logger.debug(`runAsyncCommand end of : ${text}`);
     spinnies.stopAll();
     return result;
   } catch (error) {
     spinnies.stopAll();
-    logger.debug(`runAsyncCommand: error for command: ${commandText}`);
+    logger.debug(`runAsyncCommand: error for command: ${text}`);
     logger.debug(error);
 
     throw error;

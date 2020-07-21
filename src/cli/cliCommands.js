@@ -121,8 +121,9 @@ const displayErrorHooks = ({
 const doPlanQuery = async ({ providers, programOptions }) =>
   pipe([
     async (providers) =>
-      await runAsyncCommand(
-        ({ onStateChange }) =>
+      await runAsyncCommand({
+        text: `Querying resources`,
+        command: ({ onStateChange }) =>
           pipe([
             tap(
               map.series((provider) =>
@@ -145,8 +146,7 @@ const doPlanQuery = async ({ providers, programOptions }) =>
               ])
             ),
           ])(providers),
-        `Deploying resources`
-      ),
+      }),
   ])(providers);
 
 const displayQueryNoPlan = () =>
@@ -188,8 +188,9 @@ const commandToFunction = (command) =>
   `run${command.charAt(0).toUpperCase()}${command.slice(1)}`;
 
 const runAsyncCommandHook = ({ hookType, commandTitle, providers }) =>
-  runAsyncCommand(
-    ({ onStateChange }) =>
+  runAsyncCommand({
+    text: commandTitle,
+    command: ({ onStateChange }) =>
       pipe([
         tap(
           map((provider) =>
@@ -204,8 +205,7 @@ const runAsyncCommandHook = ({ hookType, commandTitle, providers }) =>
           if (fun) return await fun({ onStateChange });
         }),
       ])(providers),
-    commandTitle
-  );
+  });
 
 const planRunScript = async ({
   infra: { providers },
@@ -327,8 +327,9 @@ exports.planApply = async ({
 
   const doPlansDeploy = pipe([
     async (providers) =>
-      await runAsyncCommand(
-        ({ onStateChange }) =>
+      await runAsyncCommand({
+        text: `Deploying resources`,
+        command: ({ onStateChange }) =>
           pipe([
             tap(
               map.series(({ provider }) =>
@@ -350,8 +351,7 @@ exports.planApply = async ({
               })({ provider, plan });
             }),
           ])(providers),
-        `Deploying resources`
-      ),
+      }),
 
     tap((result) =>
       saveToJson({ command: "apply", commandOptions, programOptions, result })
@@ -434,8 +434,9 @@ exports.planDestroy = async ({
 
   const doPlansDestroy = pipe([
     async (providers) =>
-      await runAsyncCommand(
-        ({ onStateChange }) =>
+      await runAsyncCommand({
+        text: `Destroying resources`,
+        command: ({ onStateChange }) =>
           pipe([
             tap(
               map.series(({ provider }) =>
@@ -455,8 +456,7 @@ exports.planDestroy = async ({
               //logger.debug("doPlansDestroy DONE");
             }),
           ])(providers),
-        `Destroying resources`
-      ),
+      }),
     tap((result) =>
       saveToJson({ command: "destroy", commandOptions, programOptions, result })
     ),
@@ -540,10 +540,10 @@ exports.list = async ({ infra, commandOptions = {}, programOptions = {} }) =>
           async (provider) =>
             await pipe([
               () =>
-                runAsyncCommand(
-                  () => provider.listLives(commandOptions),
-                  `List for ${provider.name}`
-                ),
+                runAsyncCommand({
+                  text: `List for ${provider.name}`,
+                  command: () => provider.listLives(commandOptions),
+                }),
               tap((targets) =>
                 displayLive({ providerName: provider.name, targets })
               ),
