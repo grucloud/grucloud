@@ -9,7 +9,13 @@ const prompts = require("prompts");
 const colors = require("colors/safe");
 const fs = require("fs");
 const YAML = require("./json2yaml");
-const { convertError } = require("../providers/Common");
+const {
+  convertError,
+  HookType,
+  TitleDeploying,
+  TitleDestroying,
+  TitleQuery,
+} = require("../providers/Common");
 const { tos } = require("../tos");
 const {
   map,
@@ -27,11 +33,6 @@ const {
 const pluck = require("rubico/x/pluck");
 
 const { isEmpty, flatten } = require("ramda");
-
-const TitleDeploying = "Deploying";
-const HooknameDeploying = "onDeployed";
-const TitleDestroying = "Destroying";
-const HooknameDestroying = "onDestroyed";
 
 // Common
 const plansHasSuccess = all(({ results }) => results.success);
@@ -74,17 +75,55 @@ const displayError = (name, error) => {
   console.log(YAML.stringify(convertError({ error, name })));
 };
 
-const displayErrorsCommon = pipe([
+const pluckErrorsCommon = pipe([
+  tap((xx) => {
+    //logger.debug("pluckErrorsCommon ");
+  }),
   filter(({ results: { success } }) => !success),
   flatten,
   pluck("results"),
   pluck("results"),
   flatten,
   filter(({ error }) => error),
+  tap((xx) => {
+    logger.debug("pluckErrorsCommon result  ");
+  }),
+]);
+const pluckErrorsHooks = pipe([
+  tap((xx) => {
+    logger.debug("pluckErrorsHooks ");
+  }),
+  filter(({ results: { success } }) => !success),
+  flatten,
+  pluck("results"),
+  pluck("hookResults"),
+  pluck("results"),
+
+  flatten,
+  filter(({ error }) => error),
+  tap((xx) => {
+    logger.debug("pluckErrorsHooks result  ");
+  }),
 ]);
 
+const displayErrorHooks = ({
+  error = {},
+  hookName,
+  providerName,
+  hookType,
+  action,
+}) => {
+  logger.error(`displayErrorHooks ${tos({ error })}`);
+  //assert(item, "item");
+  const fullName = `${providerName}::${hookName}::${hookType}::${
+    action ? action.name : "init"
+  }`;
+  console.log(`Error running hook '${fullName}'`);
+  displayError(`Hook: ${fullName}`, error);
+};
+
 // Plan Query
-const TitleQuery = "Fetching Data";
+
 const doPlanQuery = async ({ providers, programOptions }) =>
   pipe([
     async (providers) =>
@@ -158,6 +197,30 @@ const planQuery = async ({
 
 exports.planQuery = planQuery;
 
+const commandToFunction = (command) =>
+  `run${command.charAt(0).toUpperCase()}${command.slice(1)}`;
+
+const runAsyncCommandHook = ({ hookType, commandTitle, providers }) =>
+  runAsyncCommand(
+    ({ onStateChange }) =>
+      pipe([
+        tap(
+          map((provider) =>
+            provider.spinnersStart({
+              onStateChange,
+              useResources: false,
+              hookType,
+            })
+          )
+        ),
+        map(async (provider) => {
+          const fun = provider[commandToFunction(hookType)];
+          if (fun) return await fun({ onStateChange });
+        }),
+      ])(providers),
+    commandTitle
+  );
+
 const planRunScript = async ({
   infra: { providers },
   commandOptions = {},
@@ -171,29 +234,36 @@ const planRunScript = async ({
       switchCase([
         () => commandOptions.onDeployed,
         () =>
-          runAsyncCommand(
-            ({ onStateChange }) =>
-              map((provider) => provider.runOnDeployed({ onStateChange }))(
-                providers
-              ),
-            `Running OnDeployed`
-          ),
+          runAsyncCommandHook({
+            providers,
+            hookType: HookType.ON_DEPLOYED,
+            commandTitle: `Running OnDeployed`,
+          }),
         () => commandOptions.onDestroyed,
         () =>
-          runAsyncCommand(
-            ({ onStateChange }) =>
-              map((provider) => provider.runOnDestroyed({ onStateChange }))(
-                providers
-              ),
-            `Running OnDestroyed`
-          ),
+          runAsyncCommandHook({
+            providers,
+            hookType: HookType.ON_DESTROYED,
+            commandTitle: `Running OnDestroyed`,
+          }),
         () => {
           console.log("no run command found");
         },
       ]),
-      tap((x) => {
+      tap((results) => {
         logger.debug("planRunScript Done");
       }),
+      tap(
+        pipe([
+          pluck("results"),
+          flatten,
+          tap((results) => {
+            logger.debug("planRunScript flatten");
+          }),
+          filter(({ error }) => error),
+          map(displayErrorHooks),
+        ])
+      ),
     ]),
     (error) => {
       displayError("planRunScript", error);
@@ -236,6 +306,9 @@ exports.planApply = async ({
   };
 
   const displayDeploySuccess = pipe([
+    tap((result) => {
+      logger.debug("displayDeploySuccess");
+    }),
     countDeployResources,
     ({ create, destroy }) =>
       console.log(
@@ -247,16 +320,22 @@ exports.planApply = async ({
 
   const displayDeployError = ({ item, error = {} }) => {
     logger.error(`displayDeployError ${tos({ item, error })}`);
+    assert(item, "item");
     console.log(`Cannot deploy resource ${formatResource(item.resource)}`);
     displayError("Plan Apply", error);
   };
 
   const displayDeployErrors = pipe([
-    tap((x) => logger.error(`displayDeployErrors begins ${tos(x)}`)),
-    displayErrorsCommon,
-    map(tap(displayDeployError)),
-    (errors) => {
-      throw errors;
+    tap((x) => {
+      logger.error(`displayDeployErrors begins ${tos(x)}`);
+    }),
+    tap(pipe([pluckErrorsCommon, map(tap(displayDeployError))])),
+    tap(pipe([pluckErrorsHooks, map(tap(displayErrorHooks))])),
+
+    (result) => {
+      logger.error(`displayDeployErrors result: ${tos({ result })}`);
+
+      throw result;
     },
   ]);
 
@@ -270,12 +349,12 @@ exports.planApply = async ({
                 provider.spinnersStart({
                   onStateChange,
                   title: TitleDeploying,
-                  hookName: HooknameDeploying,
+                  hookType: HookType.ON_DEPLOYED,
                 })
               )
             ),
             tap(() => {
-              logger.debug("Spinners started");
+              logger.debug("doPlansDeploy Spinners started");
             }),
             map(({ provider, plan }) => {
               return assign({
@@ -283,17 +362,19 @@ exports.planApply = async ({
                   provider.planApply({
                     plan,
                     onStateChange,
-                    title: TitleDeploying,
-                    hookName: HooknameDeploying,
                   }),
               })({ provider, plan });
             }),
           ])(providers),
         `Deploying resources`
       ),
+
     tap((result) =>
       saveToJson({ command: "apply", commandOptions, programOptions, result })
     ),
+    tap((result) => {
+      logger.debug("doPlansDeploy DONE");
+    }),
     switchCase([plansHasSuccess, displayDeploySuccess, displayDeployErrors]),
   ]);
 
@@ -356,12 +437,14 @@ exports.planDestroy = async ({
   };
 
   const displayDestroyErrors = pipe([
-    tap((x) => logger.error(`displayDestroyErrors ${tos(x)}`)),
-    displayErrorsCommon,
-    tap((x) => logger.error(`displayDestroyErrors filtered ${tos(x)}`)),
-    map(tap(displayDestroyError)),
-    (errors) => {
-      throw errors;
+    tap((x) => {
+      logger.error(`displayDestroyErrors ${tos(x)}`);
+    }),
+    tap(pipe([pluckErrorsCommon, map(tap(displayDestroyError))])),
+    tap(pipe([pluckErrorsHooks, map(tap(displayErrorHooks))])),
+
+    (result) => {
+      throw result;
     },
   ]);
 
@@ -375,7 +458,7 @@ exports.planDestroy = async ({
                 provider.spinnersStart({
                   onStateChange,
                   title: TitleDestroying,
-                  hookName: HooknameDestroying,
+                  hookType: HookType.ON_DESTROYED,
                 })
               )
             ),
@@ -389,12 +472,12 @@ exports.planDestroy = async ({
                     plans,
                     onStateChange,
                     title: TitleDestroying,
-                    hookName: HooknameDestroying,
+                    hookType: HookType.ON_DESTROYED,
                   }),
               })
             ),
             tap(() => {
-              logger.debug("doPlansDestroy DONE");
+              //logger.debug("doPlansDestroy DONE");
             }),
           ])(providers),
         `Destroying resources`
@@ -403,6 +486,9 @@ exports.planDestroy = async ({
       saveToJson({ command: "destroy", commandOptions, programOptions, result })
     ),
     switchCase([plansHasSuccess, displayDestroySuccess, displayDestroyErrors]),
+    tap(() => {
+      logger.debug("doPlansDestroy finished");
+    }),
   ]);
 
   const processDestroyPlans = switchCase([

@@ -30,9 +30,17 @@ describe("Multi Example", async function () {
       infra,
       commandOptions: { force: true },
     });
+    await cliCommands.planRunScript({
+      infra,
+      commandOptions: { onDeployed: true },
+    });
     await cliCommands.planDestroy({
       infra,
       commandOptions: { force: true },
+    });
+    await cliCommands.planRunScript({
+      infra,
+      commandOptions: { onDestroyed: true },
     });
     await cliCommands.planDestroy({
       infra,

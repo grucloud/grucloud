@@ -6,6 +6,7 @@
 
 ## Common:
 
+- hookResults along side plannerResults
 - return error as an array ?
 - client type redundant ?
 - do not use index.js for S3 and EC2
@@ -39,7 +40,6 @@ error: unknown option '--provider'
 ## TODO Aws:
 
 - do not display default acl
-
 - add example code in AwsGettingStarted
 - listObjectsV2
 - aws.config.loadFromPath('./AwsConfig.json');

@@ -14,8 +14,9 @@ const displayManagedByUs = (resource) =>
 
 const displayItem = (table, item) => {
   //assert(item.resource.name);
+  //TODO check for resource
   table.push([
-    item.resource.name,
+    item.resource?.name,
     item.action,
     item.resource.type,
     displayResource(item),

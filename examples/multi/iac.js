@@ -125,7 +125,7 @@ const createMock = async ({ config }) => {
 exports.createStack = async ({ config }) => {
   return {
     providers: [
-      //await createMock({ config }),
+      await createMock({ config }),
       await createAws({ config }),
       await createAzure({ config }),
       await createGoogle({ config }),

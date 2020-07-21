@@ -6,11 +6,12 @@ module.exports = ({ resources, provider }) => {
   return {
     onDeployed: {
       init: async () => {
-        return {
+        /*return {
           ip: await resources.ip.getLive(),
           server: await resources.server.getLive(),
-        };
+        };*/
       },
+      /*
       actions: [
         {
           name: "Check google network",
@@ -18,7 +19,7 @@ module.exports = ({ resources, provider }) => {
             //console.log("do stuff ", ip);
           },
         },
-      ],
+      ],*/
     },
   };
 };

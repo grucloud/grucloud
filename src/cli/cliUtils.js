@@ -9,8 +9,10 @@ const spinner = { interval: 300, frames };
 
 exports.runAsyncCommand = async (command, commandText) => {
   console.log(`${commandText}`);
+  assert(command);
   const spinnies = new Spinnies({ spinner });
-
+  logger.debug(`runAsyncCommand: ${JSON.stringify({ commandText })}`);
+  const spinnerList = [];
   const onStateChange = ({
     uri,
     display,
@@ -37,7 +39,7 @@ exports.runAsyncCommand = async (command, commandText) => {
     switch (nextState) {
       case "WAITING": {
         logger.debug(`spinnies: create: ${uri}`);
-
+        spinnerList.push(uri);
         const spinny = spinnies.pick(uri);
         if (spinny) {
           assert(false, `${uri} already created`);
@@ -63,6 +65,13 @@ exports.runAsyncCommand = async (command, commandText) => {
             status: "spinning",
           });
         } else {
+          /*
+          assert(
+            false,
+            `spinnies create in running state: ${uri}, spinnerList: ${spinnerList.join(
+              "\n"
+            )}`
+          );*/
           spinnies.add(uri, { text, color: runningColor, indent });
         }
         break;
@@ -87,7 +96,7 @@ exports.runAsyncCommand = async (command, commandText) => {
           logger.debug(`spinnies: failed: ${uri}: ${text}`);
           spinnies.fail(uri, { text });
         } else {
-          assert(false, `ERROR event: ${uri} was not created`);
+          assert(false, `ERROR event: ${uri} was not created, error: ${error}`);
         }
 
         break;
@@ -100,11 +109,14 @@ exports.runAsyncCommand = async (command, commandText) => {
 
   try {
     const result = await command({ onStateChange });
+    logger.debug(`runAsyncCommand end of : ${commandText}`);
+    spinnies.stopAll();
     return result;
   } catch (error) {
-    logger.debug(`spinnies: error for command: ${commandText}`);
-    logger.debug(error);
     spinnies.stopAll();
+    logger.debug(`runAsyncCommand: error for command: ${commandText}`);
+    logger.debug(error);
+
     throw error;
   }
 };

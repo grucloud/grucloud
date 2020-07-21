@@ -4,6 +4,15 @@ const { tos } = require("../tos");
 
 exports.mapPoolSize = 5;
 
+exports.TitleDeploying = "Deploying";
+exports.TitleDestroying = "Destroying";
+exports.TitleQuery = "Fetching Data";
+
+exports.HookType = {
+  ON_DEPLOYED: "onDeployed",
+  ON_DESTROYED: "onDestroyed",
+};
+
 const safeJsonParse = (json) => {
   try {
     return JSON.parse(json);

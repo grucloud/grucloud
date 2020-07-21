@@ -13,7 +13,8 @@ module.exports = ({ resources }) => {
       init: async () => {
         //console.log("onDeployed");
         const host = "www.google.com";
-        await Promise.delay(2e3);
+        //throw Error("throw in hook init");
+        await Promise.delay(1e3);
         return {
           host,
         };
@@ -29,21 +30,24 @@ module.exports = ({ resources }) => {
         {
           name: "SSH",
           command: async ({ host }) => {
-            await Promise.delay(2e3);
+            //throw Error("SSSSSSSSSS");
+            await Promise.delay(1e3);
           },
         },
       ],
     },
     onDestroyed: {
       init: async () => {
-        await Promise.delay(2e3);
+        //throw Error("throw in onDestroyed hook init");
+        await Promise.delay(1e3);
         //console.log("onDestroyed");
       },
       actions: [
         {
           name: "Check Ping KO",
           command: async () => {
-            await Promise.delay(2e3);
+            //throw Error("SSSSSSSSSS");
+            await Promise.delay(1e3);
             //console.log("do ping");
           },
         },

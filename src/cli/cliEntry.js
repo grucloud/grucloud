@@ -5,7 +5,7 @@ process.on("unhandledRejection", (reason, p) => {
 });
 
 process.on("exit", function () {
-  console.log("grucloud exit");
+  //console.log("grucloud exit");
 });
 
 const { main } = require("./cliMain");
