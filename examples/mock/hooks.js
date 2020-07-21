@@ -14,7 +14,7 @@ module.exports = ({ resources }) => {
         //console.log("onDeployed");
         const host = "www.google.com";
         //throw Error("throw in hook init");
-        await Promise.delay(1e3);
+        await Promise.delay(200);
         return {
           host,
         };
@@ -31,7 +31,7 @@ module.exports = ({ resources }) => {
           name: "SSH",
           command: async ({ host }) => {
             //throw Error("SSSSSSSSSS");
-            await Promise.delay(1e3);
+            await Promise.delay(200);
           },
         },
       ],
@@ -39,7 +39,7 @@ module.exports = ({ resources }) => {
     onDestroyed: {
       init: async () => {
         //throw Error("throw in onDestroyed hook init");
-        await Promise.delay(1e3);
+        await Promise.delay(200);
         //console.log("onDestroyed");
       },
       actions: [
@@ -47,7 +47,7 @@ module.exports = ({ resources }) => {
           name: "Check Ping KO",
           command: async () => {
             //throw Error("SSSSSSSSSS");
-            await Promise.delay(1e3);
+            await Promise.delay(200);
             //console.log("do ping");
           },
         },

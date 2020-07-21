@@ -9,13 +9,7 @@ const prompts = require("prompts");
 const colors = require("colors/safe");
 const fs = require("fs");
 const YAML = require("./json2yaml");
-const {
-  convertError,
-  HookType,
-  TitleDeploying,
-  TitleDestroying,
-  TitleQuery,
-} = require("../providers/Common");
+const { convertError, HookType } = require("../providers/Common");
 const { tos } = require("../tos");
 const {
   map,
@@ -132,22 +126,15 @@ const doPlanQuery = async ({ providers, programOptions }) =>
           pipe([
             tap(
               map.series((provider) =>
-                provider.spinnersStart({
-                  onStateChange,
-                  useHooks: false,
-                  title: TitleQuery,
-                })
+                provider.spinnersStartQuery({ onStateChange })
               )
             ),
-            tap(() => {
-              logger.debug("Spinners started");
-            }),
-            map((provider) => {
-              return assign({
+            map((provider) =>
+              assign({
                 plan: async ({ provider }) =>
-                  provider.planQuery({ onStateChange, title: TitleQuery }),
-              })({ provider });
-            }),
+                  provider.planQuery({ onStateChange }),
+              })({ provider })
+            ),
             tap(
               pipe([
                 tap((xx) => {
@@ -206,9 +193,8 @@ const runAsyncCommandHook = ({ hookType, commandTitle, providers }) =>
       pipe([
         tap(
           map((provider) =>
-            provider.spinnersStart({
+            provider.spinnersStartHook({
               onStateChange,
-              useResources: false,
               hookType,
             })
           )
@@ -346,10 +332,8 @@ exports.planApply = async ({
           pipe([
             tap(
               map.series(({ provider }) =>
-                provider.spinnersStart({
+                provider.spinnersStartDeploy({
                   onStateChange,
-                  title: TitleDeploying,
-                  hookType: HookType.ON_DEPLOYED,
                 })
               )
             ),
@@ -455,24 +439,15 @@ exports.planDestroy = async ({
           pipe([
             tap(
               map.series(({ provider }) =>
-                provider.spinnersStart({
-                  onStateChange,
-                  title: TitleDestroying,
-                  hookType: HookType.ON_DESTROYED,
-                })
+                provider.spinnersStartDestroy({ onStateChange })
               )
             ),
-            tap(() => {
-              logger.debug("doPlansDestroy Spinners started");
-            }),
             map(
               assign({
                 results: async ({ provider, plans }) =>
                   provider.planDestroy({
                     plans,
                     onStateChange,
-                    title: TitleDestroying,
-                    hookType: HookType.ON_DESTROYED,
                   }),
               })
             ),

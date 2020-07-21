@@ -770,19 +770,36 @@ function CoreProvider({
       )([...hookMap.values()])
     );
 
-  const spinnersStart = ({
-    onStateChange: onStateChangeIn,
-    useHooks = true,
-    useResources = true,
-    title,
-    hookType,
-  }) => {
+  const spinnersStartQuery = ({ onStateChange: onStateChangeIn }) => {
     const onStateChange = onStateChangeResource(onStateChangeIn);
-
     return pipe([
       spinnersStartProvider({ onStateChange }),
-      () => useResources && spinnersStartResources({ onStateChange, title })(),
-      () => useHooks && spinnersStartHooks({ onStateChange, hookType })(),
+      spinnersStartResources({ onStateChange, title: TitleQuery }),
+    ])();
+  };
+
+  const spinnersStartDeploy = ({ onStateChange: onStateChangeIn }) => {
+    const onStateChange = onStateChangeResource(onStateChangeIn);
+    return pipe([
+      spinnersStartProvider({ onStateChange }),
+      spinnersStartResources({ onStateChange, title: TitleDeploying }),
+      spinnersStartHooks({ onStateChange, hookType: HookType.ON_DEPLOYED }),
+    ])();
+  };
+  const spinnersStartDestroy = ({ onStateChange: onStateChangeIn }) => {
+    const onStateChange = onStateChangeResource(onStateChangeIn);
+    return pipe([
+      spinnersStartProvider({ onStateChange }),
+      spinnersStartResources({ onStateChange, title: TitleDestroying }),
+      spinnersStartHooks({ onStateChange, hookType: HookType.ON_DESTROYED }),
+    ])();
+  };
+  const spinnersStartHook = ({ onStateChange: onStateChangeIn, hookType }) => {
+    const onStateChange = onStateChangeResource(onStateChangeIn);
+    assert(hookType, "hookType");
+    return pipe([
+      spinnersStartProvider({ onStateChange }),
+      spinnersStartHooks({ onStateChange, hookType }),
     ])();
   };
 
@@ -1290,7 +1307,10 @@ function CoreProvider({
     planQueryAndApply,
     planQuery,
     planApply,
-    spinnersStart,
+    spinnersStartQuery,
+    spinnersStartDeploy,
+    spinnersStartDestroy,
+    spinnersStartHook,
     planDestroy,
     listLives,
     listTargets,
