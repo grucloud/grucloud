@@ -15,6 +15,8 @@ const {
   all,
   not,
 } = require("rubico");
+const pluck = require("rubico/x/pluck");
+
 const Promise = require("bluebird");
 const logger = require("../logger")({ prefix: "Core" });
 const { tos } = require("../tos");
@@ -729,9 +731,17 @@ function CoreProvider({
         }),
     ]);
 
-  const spinnersStartResources = ({ onStateChange, title }) =>
+  const spinnersStartResources = ({ onStateChange, title, resources }) =>
     tap(
       pipe([
+        tap(() => {
+          assert(title, "title");
+          assert(resources, "resources");
+          assert(Array.isArray(resources), "resources must be an array");
+          logger.info(
+            `spinnersStartResources ${title}, ${JSON.stringify(resources)}`
+          );
+        }),
         () =>
           onStateChange({
             resource: plannerResource({ title }),
@@ -745,15 +755,14 @@ function CoreProvider({
           }),
         () =>
           pipe([
-            filter((resource) => !resource.spec.listOnly),
             map((resource) =>
               onStateChange({
-                resource: resource.toJSON(),
+                resource,
                 nextState: "WAITING",
                 indent: 4,
               })
             ),
-          ])(getTargetResources()),
+          ])(resources),
       ])
     );
 
@@ -772,25 +781,80 @@ function CoreProvider({
 
   const spinnersStartQuery = ({ onStateChange: onStateChangeIn }) => {
     const onStateChange = onStateChangeResource(onStateChangeIn);
+    const resources = pipe([
+      filter((resource) => !resource.spec.listOnly),
+      tap((obj) => {
+        logger.debug("spinnersStartQuery no listOnly");
+      }),
+      map((resource) => resource.toJSON()),
+      tap((obj) => {
+        logger.debug("spinnersStartQuery json");
+      }),
+    ])(getTargetResources());
     return pipe([
       spinnersStartProvider({ onStateChange }),
-      spinnersStartResources({ onStateChange, title: TitleQuery }),
+      spinnersStartResources({ onStateChange, title: TitleQuery, resources }),
     ])();
   };
 
-  const spinnersStartDeploy = ({ onStateChange: onStateChangeIn }) => {
+  const spinnersStartDeploy = ({ onStateChange: onStateChangeIn, plan }) => {
     const onStateChange = onStateChangeResource(onStateChangeIn);
     return pipe([
       spinnersStartProvider({ onStateChange }),
-      spinnersStartResources({ onStateChange, title: TitleDeploying }),
-      spinnersStartHooks({ onStateChange, hookType: HookType.ON_DEPLOYED }),
+      tap(
+        switchCase([
+          not(() => isEmpty(plan.newOrUpdate)),
+          pipe([
+            spinnersStartResources({
+              onStateChange,
+              title: TitleDeploying,
+              resources: pluck("resource")(plan.newOrUpdate),
+            }),
+            spinnersStartHooks({
+              onStateChange,
+              hookType: HookType.ON_DEPLOYED,
+            }),
+          ]),
+          () => {
+            logger.debug("no newOrUpdate ");
+          },
+        ])
+      ),
+      tap(
+        switchCase([
+          not(() => isEmpty(plan.destroy)),
+          pipe([
+            spinnersStartResources({
+              onStateChange,
+              title: TitleDestroying,
+              resources: pluck("resource")(plan.destroy),
+            }),
+            spinnersStartHooks({
+              onStateChange,
+              hookType: HookType.ON_DESTROYED,
+            }),
+          ]),
+          () => {
+            logger.debug("no destroy ");
+          },
+        ])
+      ),
     ])();
   };
-  const spinnersStartDestroy = ({ onStateChange: onStateChangeIn }) => {
+  const spinnersStartDestroy = ({ onStateChange: onStateChangeIn, plans }) => {
+    assert(plans, "plans");
+    assert(Array.isArray(plans), "plans !isArray");
     const onStateChange = onStateChangeResource(onStateChangeIn);
+
+    const resources = pluck("resource")(plans);
+    logger.debug(`spinnersStartDestroy #resources: ${resources.length}`);
     return pipe([
       spinnersStartProvider({ onStateChange }),
-      spinnersStartResources({ onStateChange, title: TitleDestroying }),
+      spinnersStartResources({
+        onStateChange,
+        title: TitleDestroying,
+        resources,
+      }),
       spinnersStartHooks({ onStateChange, hookType: HookType.ON_DESTROYED }),
     ])();
   };
@@ -995,7 +1059,7 @@ function CoreProvider({
       logger.debug(`planFindDestroy ${type}/${name}, not our minion`);
       return false;
     }
-
+    //TODO switchCase
     // Delete by type
     if (!_.isEmpty(types)) {
       return types.includes(type);

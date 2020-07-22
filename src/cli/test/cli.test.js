@@ -29,7 +29,14 @@ const configFileTimeoutOnce = path.join(
   "./config/config.timeout.once.js"
 );
 
-const commands = ["plan", "apply -f", "destroy -f -a", "list"];
+const commands = [
+  "plan",
+  "apply -f",
+  "destroy -f -a",
+  "list",
+  "run --onDeployed",
+  "run --onDestroyed",
+];
 
 const onExitOk = () => assert(false);
 const runProgram = async ({
@@ -69,6 +76,9 @@ describe("cli", function () {
   it("list by type", async function () {
     await runProgram({ cmds: ["list", "--types", "Server", "Ip"] });
   });
+  it("list by provider", async function () {
+    await runProgram({ cmds: ["list", "--provider", "Moc"] });
+  });
   it("--config notexisting.js", async function () {
     await main({
       argv: ["xx", "xx", "--config", "notexisting.js", "list"],
@@ -107,7 +117,18 @@ describe("cli error", function () {
   after(async function () {
     await mockServer.stop();
   });
-
+  it("cli invalid provider", async function () {
+    const results = await map.series((command) =>
+      runProgram({
+        cmds: `${command} --provider idonotexist`.split(" "),
+        onExit: ({ code, error: { error } }) => {
+          assert.equal(code, 422);
+          assert(error.message);
+        },
+      })
+    )(commands);
+    assert.deepEqual(results, [-1, -1, -1, -1]);
+  });
   it("cli 404", async function () {
     const results = await map.series((command) =>
       runProgram({
@@ -194,5 +215,15 @@ describe("cli error", function () {
       })
     )(commands);
     assert.deepEqual(results, [-1, -1, -1, -1]);
+  });
+
+  it("cli run invalid command", async function () {
+    const result = await runProgram({
+      cmds: ["run", ""],
+      onExit: ({ code }) => {
+        assert.equal(code, 422);
+      },
+    });
+    assert.equal(result, -1);
   });
 });
