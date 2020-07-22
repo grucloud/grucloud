@@ -121,7 +121,7 @@
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["destroy", "-f", "-p", "idonotexist"]
+      "args": ["destroy", "-f", "-p", "m"]
     },
     {
       "type": "node",

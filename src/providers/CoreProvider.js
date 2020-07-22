@@ -1017,7 +1017,6 @@ function CoreProvider({
       name: nameToDelete = "",
       id: idToDelete = "",
       types = [],
-      provider: providerName = "",
     } = {},
     direction,
   }) => {
@@ -1038,11 +1037,6 @@ function CoreProvider({
         `planFindDestroy ${type}/${name}, default resource cannot be deleted`
       );
       return false;
-    }
-    if (!_.isEmpty(providerName)) {
-      if (providerName !== spec.providerName) {
-        return false;
-      }
     }
     // Delete all
     if (all) {

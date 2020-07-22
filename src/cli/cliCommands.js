@@ -66,6 +66,7 @@ const filterProvidersByName = ({
         },
         (xx) => {
           //  console.log("XX");
+          logger.debug(`filterProvidersByName ${xx.length}`);
         },
       ])
     ),
@@ -165,10 +166,8 @@ const displayCommandHeader = ({ providers, verb }) =>
 
 // Plan Query
 
-const doPlanQuery = async ({ providers, commandOptions, programOptions }) =>
+const doPlanQuery = ({ providers, commandOptions, programOptions }) =>
   pipe([
-    (providers) =>
-      filterProvidersByName({ commandOptions, providers })(providers),
     async (providers) =>
       await runAsyncCommand({
         text: displayCommandHeader({ providers, verb: "Querying" }),
@@ -196,7 +195,7 @@ const doPlanQuery = async ({ providers, commandOptions, programOptions }) =>
             ),
           ])(providers),
       }),
-  ])(providers);
+  ]);
 
 const displayQueryNoPlan = () =>
   console.log("Nothing to deploy, everything is up to date");
@@ -215,7 +214,9 @@ const planQuery = async ({
 }) =>
   tryCatch(
     pipe([
-      doPlanQuery,
+      ({ providers }) =>
+        filterProvidersByName({ commandOptions, providers })(providers),
+      doPlanQuery({ providers, commandOptions, programOptions }),
       tap((result) =>
         saveToJson({ command: "plan", commandOptions, programOptions, result })
       ),
@@ -422,9 +423,9 @@ exports.planApply = async ({
 
   return tryCatch(
     pipe([
-      //({ providers }) =>
-      //  filterProvidersByName({ commandOptions, providers })(providers),
-      doPlanQuery,
+      ({ providers }) =>
+        filterProvidersByName({ commandOptions, providers })(providers),
+      doPlanQuery({ providers, commandOptions, programOptions }),
       switchCase([hasPlans, processDeployPlans, processNoPlan]),
     ]),
     (error) => {
