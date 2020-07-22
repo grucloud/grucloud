@@ -15,8 +15,7 @@ exports.runAsyncCommand = async ({ text, command }) => {
   logger.debug(`runAsyncCommand: ${JSON.stringify({ text })}`);
   const spinnerList = [];
   const onStateChange = ({
-    uri,
-    display,
+    context,
     previousState,
     nextState,
     error,
@@ -25,15 +24,20 @@ exports.runAsyncCommand = async ({ text, command }) => {
   }) => {
     logger.debug(
       `onStateChange: ${tos({
-        uri,
+        context,
         previousState,
         nextState,
         other,
       })}`
     );
 
+    if (!context) {
+      assert(false, "onStateChange: missing context");
+    }
+    const { uri, display } = context;
+
     if (!uri) {
-      assert(!uri, "onStateChange: missing uri");
+      assert(false, "onStateChange: missing context uri");
     }
     const text = display || uri;
 
@@ -66,13 +70,12 @@ exports.runAsyncCommand = async ({ text, command }) => {
             status: "spinning",
           });
         } else {
-          /*
           assert(
             false,
             `spinnies create in running state: ${uri}, spinnerList: ${spinnerList.join(
               "\n"
             )}`
-          );*/
+          );
           spinnies.add(uri, { text, color: runningColor, indent });
         }
         break;

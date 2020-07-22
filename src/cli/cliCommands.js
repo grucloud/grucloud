@@ -376,8 +376,6 @@ exports.planApply = async ({
 
   const doPlansDeploy = ({ commandOptions }) =>
     pipe([
-      //({providers}) =>
-      //  filterProvidersByName({ commandOptions, providers })(providers),
       async (providers) =>
         await runAsyncCommand({
           text: displayCommandHeader({ providers, verb: "Deploying" }),
@@ -394,15 +392,15 @@ exports.planApply = async ({
               tap(() => {
                 logger.debug("doPlansDeploy Spinners started");
               }),
-              map(({ provider, plan }) => {
-                return assign({
+              map(
+                assign({
                   results: async ({ provider, plan }) =>
                     provider.planApply({
                       plan,
                       onStateChange,
                     }),
-                })({ provider, plan });
-              }),
+                })
+              ),
             ])(providers),
         }),
 
@@ -539,29 +537,49 @@ exports.planDestroy = async ({
     },
   ]);
 
-  const findDestroy = async (provider) => {
-    assert(provider.planFindDestroy, "provider.planFindDestroy");
-    return {
-      provider,
-      plans: await pipe([
-        async () => await provider.planFindDestroy(commandOptions),
-        tap((plan) =>
-          displayPlan({
-            //TODO do not display here but at the end
-            providerName: provider.name,
-            newOrUpdate: [],
-            destroy: plan,
-          })
-        ),
-      ])(),
-    };
-  };
-
   return tryCatch(
     pipe([
       ({ providers }) =>
         filterProvidersByName({ commandOptions, providers })(providers),
-      async (providers) => await map(findDestroy)(providers),
+      async (providers) =>
+        await runAsyncCommand({
+          text: displayCommandHeader({
+            providers,
+            verb: "Find Resources",
+          }),
+          command: ({ onStateChange }) =>
+            pipe([
+              tap(
+                map.series((provider) =>
+                  provider.spinnersStartDestroyQuery({ onStateChange })
+                )
+              ),
+              map((provider) =>
+                assign({
+                  plans: async ({ provider }) =>
+                    provider.planFindDestroy({
+                      options: commandOptions,
+                      onStateChange,
+                    }),
+                })({ provider })
+              ),
+              tap((xx) => {
+                logger.debug("doPlansDestroy displaying");
+              }),
+              tap(
+                map(({ provider, plans }) =>
+                  displayPlan({
+                    providerName: provider.name,
+                    newOrUpdate: [],
+                    destroy: plans,
+                  })
+                )
+              ),
+              tap((xx) => {
+                logger.debug("doPlansDestroy DONE");
+              }),
+            ])(providers),
+        }),
       //tap((x) => console.log(JSON.stringify(x, null, 4))),
       switchCase([hasEmptyPlan, processHasNoPlan, processDestroyPlans]),
     ]),

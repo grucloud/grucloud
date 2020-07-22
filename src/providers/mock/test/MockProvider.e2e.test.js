@@ -44,28 +44,11 @@ describe.skip("MockProvider e2e", async function () {
       assert(provider.isPlanEmpty(plan));
     }
     {
-      const planDestroyed = await provider.planFindDestroy({ all: true }, 1);
+      const planDestroyed = await provider.planFindDestroy(
+        { options: { all: true } },
+        1
+      );
       assert.equal(planDestroyed.length, 6);
-    }
-  });
-  it("plan destroy by provider", async function () {
-    {
-      const plan = await provider.planQuery();
-      assert(plan.destroy);
-      const { results, success } = await provider.planApply({ plan });
-      assert(success);
-    }
-    {
-      const planDestroyed = await provider.planFindDestroy({
-        provider: "idonotexist",
-      });
-      assert.equal(planDestroyed.length, 0);
-    }
-    {
-      const planDestroyed = await provider.planFindDestroy({
-        provider: "mock",
-      });
-      assert(planDestroyed.length > 0);
     }
   });
   it("simple plan", async function () {
@@ -186,7 +169,10 @@ describe.skip("MockProvider e2e", async function () {
       assert(configs);
     }
     {
-      const planDestroy = await provider.planFindDestroy({ all: true }, -1);
+      const planDestroy = await provider.planFindDestroy(
+        { options: { all: true } },
+        -1
+      );
       const indexServer = planDestroy.findIndex(
         (item) => item.resource.type === "Server"
       );

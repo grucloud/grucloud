@@ -1,5 +1,5 @@
 module.exports = () => ({
   port: 7089,
   routes: ["/volume", "/ip", "/security_group", "/server"],
-  delay: { min: 100, max: 200 },
+  delay: { min: 50, max: 100 },
 });

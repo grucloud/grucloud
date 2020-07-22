@@ -49,7 +49,9 @@ const testDestroyByName = async ({ provider, livesAll }) => {
   const { name } = livesAll[0].resources[0];
   assert(name);
   const plan = await provider.planFindDestroy({
-    name,
+    options: {
+      name,
+    },
   });
   assert.equal(plan.length, 1);
   assert.equal(plan[0].resource.name, name);
@@ -59,7 +61,9 @@ const testDestroyById = async ({ provider, livesAll }) => {
   const { id } = livesAll[0].resources[0];
   assert(id);
   const plan = await provider.planFindDestroy({
-    id,
+    options: {
+      id,
+    },
   });
   assert.equal(plan.length, 1);
   assert.equal(plan[0].resource.id, id);
@@ -68,7 +72,9 @@ const testDestroyById = async ({ provider, livesAll }) => {
 const testDestroyByType = async ({ provider, livesAll }) => {
   const { type } = livesAll[0];
   const plan = await provider.planFindDestroy({
-    types: [type],
+    options: {
+      types: [type],
+    },
   });
   assert.equal(plan.length, 1);
   assert.equal(plan[0].resource.type, type);

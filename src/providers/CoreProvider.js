@@ -37,6 +37,9 @@ const { Planner, mapToGraph } = require("./Planner");
 
 const identity = (x) => x;
 const noop = ({}) => {};
+
+const filterReadWriteClient = filter((client) => !client.spec.listOnly);
+
 const toUri = ({ providerName, type, name }) =>
   `${providerName}::${type}::${name}`;
 
@@ -335,6 +338,32 @@ function CoreProvider({
     hookMap.set(name, newHook);
   };
 
+  //Rename
+  const contextFromResource = (resource) => ({
+    uri: resource.uri,
+    display: resource.name,
+  });
+
+  const contextFromPlanner = ({ title }) => ({
+    uri: `${providerName}::${title}`,
+    display: title,
+  });
+
+  const contextFromClient = (client) => ({
+    uri: `${providerName}::client::${client.type}`,
+    display: client.type,
+  });
+
+  const contextFromHook = ({ hookType, hookName }) => ({
+    display: `${hookName}::${hookType}`,
+    uri: `${providerName}::${hookName}::${hookType}`,
+  });
+
+  const contextFromHookAction = ({ hookType, hookName, name }) => ({
+    display: `${name}`,
+    uri: `${providerName}::${hookName}::${hookType}::${name}`,
+  });
+
   // Target Resources
   const mapNameToResource = new Map();
   const mapTypeToResources = new Map();
@@ -482,23 +511,26 @@ function CoreProvider({
     return lists;
   };
 
-  const planQuery = async ({ onStateChange: onStateChangeIn } = {}) => {
+  const planQuery = async ({ onStateChange } = {}) => {
     logger.debug(`planQuery begins`);
-    assert(onStateChangeIn);
+    assert(onStateChange);
 
-    const onStateChange = onStateChangeResource(onStateChangeIn);
+    //TODO parallel
     const plan = {
       providerName,
 
       newOrUpdate: await planUpsert({
         onStateChange,
       }),
-      destroy: await planFindDestroy({}, PlanDirection.UP),
+      destroy: await planFindDestroy({
+        onStateChange,
+        direction: PlanDirection.UP,
+      }),
     };
 
     // TODO Check for errors
     onStateChange({
-      resource: plannerResource({ title: TitleQuery }),
+      context: contextFromPlanner({ title: TitleQuery }),
       nextState: "DONE",
     });
 
@@ -507,16 +539,6 @@ function CoreProvider({
     );
     return plan;
   };
-
-  const scriptToUri = ({ hookType, hookName }) => ({
-    display: `${hookName}::${hookType}`,
-    uri: `${providerName}::${hookName}::${hookType}`,
-  });
-
-  const scriptActionTo = ({ hookType, hookName, name }) => ({
-    display: `${name}`,
-    uri: `${providerName}::${hookName}::${hookType}::${name}`,
-  });
 
   const runScriptCommands = ({ onStateChange, hookType, hookName }) =>
     pipe([
@@ -529,7 +551,7 @@ function CoreProvider({
       }),
       tap((x) =>
         onStateChange({
-          resource: scriptToUri({ hookName, hookType }),
+          context: contextFromHook({ hookName, hookType }),
           nextState: "RUNNING",
         })
       ),
@@ -547,7 +569,7 @@ function CoreProvider({
                 pipe([
                   tap((action) => {
                     onStateChange({
-                      resource: scriptActionTo({
+                      context: contextFromHookAction({
                         hookType,
                         hookName,
                         name: action.name,
@@ -559,7 +581,7 @@ function CoreProvider({
                   tap(async (action) => await action.command(payload)),
                   tap((action) => {
                     onStateChange({
-                      resource: scriptActionTo({
+                      context: contextFromHookAction({
                         hookType,
                         hookName,
                         name: action.name,
@@ -574,7 +596,7 @@ function CoreProvider({
                   );
                   logger.error(error);
                   onStateChange({
-                    resource: scriptActionTo({
+                    context: contextFromHookAction({
                       hookType,
                       hookName,
                       name: action.name,
@@ -593,12 +615,12 @@ function CoreProvider({
               pipe([filter(get("error")), isEmpty]),
               () =>
                 onStateChange({
-                  resource: scriptToUri({ hookName, hookType }),
+                  context: contextFromHook({ hookName, hookType }),
                   nextState: "DONE",
                 }),
               (results) =>
                 onStateChange({
-                  resource: scriptToUri({ hookName, hookType }),
+                  context: contextFromHook({ hookName, hookType }),
                   nextState: "ERROR",
                   error: filter(get("error"))(results),
                 }),
@@ -612,7 +634,7 @@ function CoreProvider({
             )}`
           );
           onStateChange({
-            resource: scriptToUri({ hookName, hookType }),
+            context: contextFromHook({ hookName, hookType }),
             nextState: "ERROR",
             error: error,
           });
@@ -702,7 +724,7 @@ function CoreProvider({
       }),
       tap(() => {
         onStateChange({
-          resource: scriptToUri({ hookType, hookName }),
+          context: contextFromHook({ hookType, hookName }),
           nextState: "WAITING",
           indent: 2,
         });
@@ -710,7 +732,11 @@ function CoreProvider({
       ({ actions }) =>
         map((action) =>
           onStateChange({
-            resource: scriptActionTo({ hookType, hookName, name: action.name }),
+            context: contextFromHookAction({
+              hookType,
+              hookName,
+              name: action.name,
+            }),
             nextState: "WAITING",
             indent: 4,
           })
@@ -721,16 +747,23 @@ function CoreProvider({
     pipe([
       () =>
         onStateChange({
-          resource: { uri: providerName },
+          context: { uri: providerName },
           nextState: "WAITING",
         }),
       () =>
         onStateChange({
-          resource: { uri: providerName },
+          context: { uri: providerName },
           nextState: "RUNNING",
         }),
     ]);
-
+  const spinnersStopProvider = ({ onStateChange }) =>
+    pipe([
+      () =>
+        onStateChange({
+          context: { uri: providerName },
+          nextState: "DONE",
+        }),
+    ]);
   const spinnersStartResources = ({ onStateChange, title, resources }) =>
     tap(
       pipe([
@@ -744,25 +777,55 @@ function CoreProvider({
         }),
         () =>
           onStateChange({
-            resource: plannerResource({ title }),
+            context: contextFromPlanner({ title }),
             nextState: "WAITING",
             indent: 2,
           }),
         () =>
           onStateChange({
-            resource: plannerResource({ title }),
+            context: contextFromPlanner({ title }),
             nextState: "RUNNING",
           }),
         () =>
           pipe([
             map((resource) =>
               onStateChange({
-                resource,
+                context: contextFromResource(resource),
                 nextState: "WAITING",
                 indent: 4,
               })
             ),
           ])(resources),
+      ])
+    );
+  const spinnersStartClient = ({ onStateChange, title, clients }) =>
+    tap(
+      pipe([
+        tap(() => {
+          assert(title, "title");
+          assert(clients, "clients");
+          assert(Array.isArray(clients), "clients must be an array");
+          logger.info(
+            `spinnersStartResources ${title}, ${JSON.stringify(clients)}`
+          );
+        }),
+        tap(() =>
+          onStateChange({
+            context: contextFromPlanner({ title }),
+            nextState: "WAITING",
+            indent: 2,
+          })
+        ),
+        () =>
+          pipe([
+            map((client) =>
+              onStateChange({
+                context: contextFromClient(client),
+                nextState: "WAITING",
+                indent: 4,
+              })
+            ),
+          ])(clients),
       ])
     );
 
@@ -779,8 +842,7 @@ function CoreProvider({
       )([...hookMap.values()])
     );
 
-  const spinnersStartQuery = ({ onStateChange: onStateChangeIn }) => {
-    const onStateChange = onStateChangeResource(onStateChangeIn);
+  const spinnersStartQuery = ({ onStateChange }) => {
     const resources = pipe([
       filter((resource) => !resource.spec.listOnly),
       tap((obj) => {
@@ -793,12 +855,20 @@ function CoreProvider({
     ])(getTargetResources());
     return pipe([
       spinnersStartProvider({ onStateChange }),
-      spinnersStartResources({ onStateChange, title: TitleQuery, resources }),
+      spinnersStartResources({
+        onStateChange,
+        title: TitleQuery,
+        resources,
+      }),
+      spinnersStartClient({
+        onStateChange,
+        title: TitleDestroying,
+        clients: filterReadWriteClient(clients),
+      }),
     ])();
   };
 
-  const spinnersStartDeploy = ({ onStateChange: onStateChangeIn, plan }) => {
-    const onStateChange = onStateChangeResource(onStateChangeIn);
+  const spinnersStartDeploy = ({ onStateChange, plan }) => {
     return pipe([
       spinnersStartProvider({ onStateChange }),
       tap(
@@ -841,10 +911,21 @@ function CoreProvider({
       ),
     ])();
   };
-  const spinnersStartDestroy = ({ onStateChange: onStateChangeIn, plans }) => {
+
+  const spinnersStartDestroyQuery = ({ onStateChange }) => {
+    logger.debug(`spinnersStartDestroyQuery #clients: ${clients.length}`);
+    return pipe([
+      spinnersStartProvider({ onStateChange }),
+      spinnersStartClient({
+        onStateChange,
+        title: TitleDestroying,
+        clients: filterReadWriteClient(clients),
+      }),
+    ])();
+  };
+  const spinnersStartDestroy = ({ onStateChange, plans }) => {
     assert(plans, "plans");
     assert(Array.isArray(plans), "plans !isArray");
-    const onStateChange = onStateChangeResource(onStateChangeIn);
 
     const resources = pluck("resource")(plans);
     logger.debug(`spinnersStartDestroy #resources: ${resources.length}`);
@@ -855,35 +936,34 @@ function CoreProvider({
         title: TitleDestroying,
         resources,
       }),
-      spinnersStartHooks({ onStateChange, hookType: HookType.ON_DESTROYED }),
+      spinnersStartHooks({
+        onStateChange,
+        hookType: HookType.ON_DESTROYED,
+      }),
     ])();
   };
-  const spinnersStartHook = ({ onStateChange: onStateChangeIn, hookType }) => {
-    const onStateChange = onStateChangeResource(onStateChangeIn);
+  const spinnersStartHook = ({ onStateChange, hookType }) => {
     assert(hookType, "hookType");
     return pipe([
       spinnersStartProvider({ onStateChange }),
-      spinnersStartHooks({ onStateChange, hookType }),
+      spinnersStartHooks({
+        onStateChange,
+        hookType,
+      }),
     ])();
   };
 
-  const planApply = async ({
-    plan,
-    onStateChange: onStateChangeIn,
-    hookName,
-  }) => {
+  const planApply = async ({ plan, onStateChange, hookName }) => {
     assert(plan);
     //assert(hookName, "hookName");
-    assert(onStateChangeIn);
     const title = TitleDeploying;
-    const onStateChange = onStateChangeResource(onStateChangeIn);
 
     logger.info(`Apply Plan ${tos(plan)}`);
+    //TODO run in parallel
     const resultDestroy = await planDestroy({
       plans: plan.destroy,
-      onStateChange: onStateChangeIn,
+      onStateChange,
       direction: PlanDirection.UP,
-      //hookName,
     });
     const resultCreate = await upsertResources({
       plans: plan.newOrUpdate,
@@ -900,12 +980,12 @@ function CoreProvider({
         () => resultCreate.success,
         () =>
           onStateChange({
-            resource: plannerResource({ title }),
+            context: contextFromPlanner({ title }),
             nextState: "DONE",
           }),
         () =>
           onStateChange({
-            resource: plannerResource({ title }),
+            context: contextFromPlanner({ title }),
             nextState: "ERROR",
             error: {}, //TODO
           }),
@@ -914,12 +994,12 @@ function CoreProvider({
         () => success,
         () =>
           onStateChange({
-            resource: { uri: providerName },
+            context: { uri: providerName },
             nextState: "DONE",
           }),
         () =>
           onStateChange({
-            resource: { uri: providerName },
+            context: { uri: providerName },
             nextState: "ERROR",
             error: {}, //TODO
           }),
@@ -934,11 +1014,6 @@ function CoreProvider({
     };
   };
 
-  const plannerResource = ({ title }) => ({
-    uri: `${providerName}::${title}`,
-    display: title,
-  });
-
   /**
    * Find live resources to create or update based on the target resources
    */
@@ -949,7 +1024,7 @@ function CoreProvider({
       tap(
         map(() =>
           onStateChange({
-            resource: { uri: providerName },
+            context: { uri: providerName },
             nextState: "RUNNING",
           })
         )
@@ -957,7 +1032,7 @@ function CoreProvider({
       tap(
         map((resource) =>
           onStateChange({
-            resource: resource.toJSON(),
+            context: resource.toJSON(),
             nextState: "RUNNING",
           })
         )
@@ -965,12 +1040,12 @@ function CoreProvider({
       map.pool(mapPoolSize, async (resource) => {
         try {
           onStateChange({
-            resource: resource.toJSON(),
+            context: contextFromResource(resource.toJSON()),
             nextState: "RUNNING",
           });
           const actions = await resource.planUpsert({ resource });
           onStateChange({
-            resource: resource.toJSON(),
+            context: contextFromResource(resource.toJSON()),
             nextState: "DONE",
           });
           return actions;
@@ -978,7 +1053,7 @@ function CoreProvider({
           logger.error(`error query resource ${resource.toString()}`);
           logger.error(error);
           onStateChange({
-            resource: resource.toJSON(),
+            context: contextFromResource(resource.toJSON()),
             nextState: "ERROR",
             error,
           });
@@ -992,12 +1067,12 @@ function CoreProvider({
           pipe([filter(get("error")), isEmpty]),
           () =>
             onStateChange({
-              resource: { uri: providerName },
+              context: { uri: providerName },
               nextState: "DONE",
             }),
           (results) =>
             onStateChange({
-              resource: { uri: providerName },
+              context: { uri: providerName },
               nextState: "ERROR",
               error: filter(get("error"))(results),
             }),
@@ -1087,18 +1162,41 @@ function CoreProvider({
     }
   };
 
-  const planFindDestroy = async (options, direction = PlanDirection.DOWN) => {
+  const planFindDestroy = async ({
+    options,
+    direction = PlanDirection.DOWN,
+    onStateChange,
+  }) => {
+    assert(onStateChange);
     return await pipe([
       tap((x) =>
         logger.debug(`planFindDestroy ${tos({ options, direction })}`)
       ),
       filter((client) => !client.spec.listOnly),
+      tap(() =>
+        onStateChange({
+          context: contextFromPlanner({ title: TitleDestroying }),
+          nextState: "RUNNING",
+        })
+      ),
       map(async (client) =>
         pipe([
+          tap(() =>
+            onStateChange({
+              context: contextFromClient(client),
+              nextState: "RUNNING",
+            })
+          ), //TODO tryCatch
           async () =>
             await client.getList({
-              resources: mapTypeToResources.get(client.type),
+              resources: mapTypeToResources.get(client.type), //TODO is used ?
             }),
+          tap(() =>
+            onStateChange({
+              context: contextFromClient(client),
+              nextState: "DONE",
+            })
+          ),
           ({ items }) =>
             items
               .filter((resource) =>
@@ -1121,6 +1219,19 @@ function CoreProvider({
               })),
         ])()
       ),
+      tap(() =>
+        onStateChange({
+          context: contextFromPlanner({ title: TitleDestroying }),
+          nextState: "DONE",
+        })
+      ),
+      tap(() =>
+        onStateChange({
+          context: { uri: providerName },
+          nextState: "DONE",
+        })
+      ),
+
       flatten,
       filter((x) => x),
       flatten,
@@ -1145,11 +1256,14 @@ function CoreProvider({
       if (!resource) {
         assert(false, "no resource");
       }
+      if (!resource.name) {
+        assert(false, "no resource.name");
+      }
+      if (!resource.type) {
+        assert(false, "no resource.type");
+      }
       onStateChange({
-        uri: resource.uri,
-        display: resource.name
-          ? `${resource.type}::${resource.name}`
-          : resource.display,
+        context: contextFromResource(resource),
         error,
         ...other,
       });
@@ -1173,7 +1287,7 @@ function CoreProvider({
       plans,
       specs: mapToGraph(mapNameToResource),
       executor,
-      onStateChange,
+      onStateChange: onStateChangeResource(onStateChange),
     });
     return await planner.run();
   };
@@ -1233,12 +1347,10 @@ function CoreProvider({
 
   const planDestroy = async ({
     plans,
-    onStateChange: onStateChangeIn = identity,
+    onStateChange = identity,
     direction = PlanDirection.DOWN,
   }) => {
     assert(plans);
-    assert(onStateChangeIn);
-    const onStateChange = onStateChangeResource(onStateChangeIn);
 
     const executor = async ({ item }) => {
       return await destroyById({
@@ -1252,15 +1364,14 @@ function CoreProvider({
         tap((options) => logger.debug(`planDestroy ${tos({ options })}`)),
         tap(() =>
           onStateChange({
-            resource: { uri: providerName },
+            context: { uri: providerName },
             nextState: "RUNNING",
           })
         ),
         tap(() =>
           onStateChange({
-            resource: plannerResource({ title: TitleDestroying }),
+            context: contextFromPlanner({ title: TitleDestroying }),
             nextState: "RUNNING",
-            indent: 2,
           })
         ),
       ])();
@@ -1270,7 +1381,7 @@ function CoreProvider({
       specs: mapToGraph(mapNameToResource),
       executor,
       down: true,
-      onStateChange,
+      onStateChange: onStateChangeResource(onStateChange),
     });
 
     const plannerResult = await planner.run();
@@ -1282,14 +1393,14 @@ function CoreProvider({
         tap((options) => logger.debug(`planDestroy ${tos({ options })}`)),
         tap(() =>
           onStateChange({
-            resource: plannerResource({ title: TitleDestroying }),
+            context: contextFromPlanner({ title: TitleDestroying }),
             nextState: hookResults.error ? "ERROR" : "DONE",
             indent: 2,
           })
         ),
         tap(() =>
           onStateChange({
-            resource: { uri: providerName },
+            context: { uri: providerName },
             nextState:
               plannerResult.error || hookResults.error ? "ERROR" : "DONE",
           })
@@ -1311,7 +1422,7 @@ function CoreProvider({
       await pipe([
         tap((options) => logger.debug(`destroyAll ${tos({ options })}`)),
 
-        async () => planFindDestroy(options, PlanDirection.DOWN),
+        async () => planFindDestroy({ options }),
         async (plans) =>
           await planDestroy({ plans, direction: PlanDirection.DOWN }),
 
@@ -1367,6 +1478,7 @@ function CoreProvider({
     planApply,
     spinnersStartQuery,
     spinnersStartDeploy,
+    spinnersStartDestroyQuery,
     spinnersStartDestroy,
     spinnersStartHook,
     planDestroy,
@@ -1381,16 +1493,8 @@ function CoreProvider({
     getTargetResources,
     isPlanEmpty,
     register,
-    runOnDeployed: ({ onStateChange, ...other }) =>
-      runOnDeployed({
-        onStateChange: onStateChangeResource(onStateChange),
-        ...other,
-      }),
-    runOnDestroyed: ({ onStateChange, ...other }) =>
-      runOnDestroyed({
-        onStateChange: onStateChangeResource(onStateChange),
-        ...other,
-      }),
+    runOnDeployed,
+    runOnDestroyed,
     hookAdd,
   };
   const enhanceProvider = {
