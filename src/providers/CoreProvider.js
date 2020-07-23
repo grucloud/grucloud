@@ -15,6 +15,7 @@ const {
   all,
   not,
   any,
+  reduce,
 } = require("rubico");
 const pluck = require("rubico/x/pluck");
 
@@ -43,8 +44,7 @@ const filterReadWriteClient = filter((client) => !client.spec.listOnly);
 
 const hasResultError = any(({ error }) => error);
 
-const nextStateOnResults = (results) =>
-  hasResultError(results) ? "ERROR" : "DONE";
+const nextStateOnError = (error) => (error ? "ERROR" : "DONE");
 
 const toUri = ({ providerName, type, name }) =>
   `${providerName}::${type}::${name}`;
@@ -905,12 +905,12 @@ function CoreProvider({
       ),
       tap(
         switchCase([
-          not(() => isEmpty(plan.destroy)),
+          not(() => isEmpty(plan.destroy.plans)),
           pipe([
             spinnersStartResources({
               onStateChange,
               title: TitleDestroying,
-              resources: pluck("resource")(plan.destroy),
+              resources: pluck("resource")(plan.destroy.plans),
             }),
             spinnersStartHooks({
               onStateChange,
@@ -977,7 +977,7 @@ function CoreProvider({
     logger.info(`Apply Plan ${tos(plan)}`);
     //TODO run in parallel
     const resultDestroy = await planDestroy({
-      plans: plan.destroy,
+      plans: plan.destroy.plans,
       onStateChange,
       direction: PlanDirection.UP,
     });
@@ -1178,6 +1178,42 @@ function CoreProvider({
     }
   };
 
+  const getClients = ({ onStateChange }) =>
+    map(
+      tryCatch(
+        pipe([
+          tap((client) =>
+            onStateChange({
+              context: contextFromClient(client),
+              nextState: "RUNNING",
+            })
+          ),
+          (client) =>
+            assign({ results: ({ client }) => client.getList({}) })({ client }),
+          tap(({ client }) =>
+            onStateChange({
+              context: contextFromClient(client),
+              nextState: "DONE",
+            })
+          ),
+          tap((x) => {
+            logger.debug(`getList done`);
+          }),
+        ]),
+        (error, client) => {
+          logger.error(`getClient error for client type ${client}`);
+          logger.error(error);
+          onStateChange({
+            context: contextFromClient(client),
+            nextState: "ERROR",
+            error: convertError({ error }),
+          });
+
+          return { error, client };
+        }
+      )
+    );
+
   const planFindDestroy = async ({
     options,
     direction = PlanDirection.DOWN,
@@ -1195,91 +1231,65 @@ function CoreProvider({
           nextState: "RUNNING",
         })
       ),
-      //TODO extract function to just list the live resources
-      map(async (client) =>
-        tryCatch(
-          pipe([
-            tap(() =>
-              onStateChange({
-                context: contextFromClient(client),
-                nextState: "RUNNING",
-              })
-            ),
-            async () =>
-              await client.getList({
-                resources: mapTypeToResources.get(client.type), //TODO is used ?
-              }),
-            tap(() =>
-              onStateChange({
-                context: contextFromClient(client),
-                nextState: "DONE",
-              })
-            ),
-            ({ items }) =>
-              items
-                .filter((resource) =>
-                  filterDestroyResources({
-                    client,
-                    resource,
-                    options,
-                    direction,
-                  })
-                )
-                .map((live) => ({
-                  resource: {
-                    provider: providerName,
+      getClients({ onStateChange }),
+      //filter(get("results")),
+      tap((x) => {
+        logger.debug(`planFindDestroy`);
+      }),
+      map(
+        assign({
+          plans: ({ client, results }) =>
+            results?.items
+              .filter((resource) =>
+                filterDestroyResources({
+                  client,
+                  resource,
+                  options,
+                  direction,
+                })
+              )
+              .map((live) => ({
+                resource: {
+                  provider: providerName,
+                  type: client.spec.type,
+                  name: client.findName(live),
+                  id: client.findId(live),
+                  uri: toUri({
+                    providerName,
                     type: client.spec.type,
                     name: client.findName(live),
-                    id: client.findId(live),
-                    uri: toUri({
-                      providerName,
-                      type: client.spec.type,
-                      name: client.findName(live),
-                    }),
-                  },
-                  action: "DESTROY",
-                  config: live,
-                })),
-            flatten,
-            filter((x) => x),
-            flatten,
-            reverse,
-            tap((x) =>
-              logger.debug(
-                `planFindDestroy #resources ${x.length}: ${tos(
-                  x.map((x) => x.resource.name).join(",")
-                )}`
-              )
-            ),
-          ]),
-          (error, client) => {
-            logger.error(`getList error for client type ${client}`);
-            logger.error(error);
-
-            onStateChange({
-              context: contextFromClient(client),
-              nextState: "ERROR",
-              error: convertError({ error }),
-            });
-
-            return { error, client };
-          }
-        )(client)
-      ),
-      filter(not(isEmpty)),
-      flatten,
-      tap((results) =>
-        onStateChange({
-          context: contextFromPlanner({ title: TitleDestroying }),
-          nextState: nextStateOnResults(results),
-          results,
+                  }),
+                },
+                action: "DESTROY",
+                config: live,
+              })),
         })
       ),
-      tap((results) =>
+      tap((results) => {
+        logger.debug(`planFindDestroy`);
+      }),
+      (results) => {
+        const plans = pipe([
+          filter((result) => !isEmpty(result.plans || [])),
+          reduce((acc, result) => [...acc, ...result.plans], []),
+        ])(results);
+        return { error: hasResultError(results), results, plans };
+      },
+      tap((results) => {
+        logger.debug(`planFindDestroy done`);
+      }),
+
+      tap((result) =>
         onStateChange({
-          context: { uri: providerName },
-          nextState: nextStateOnResults(results),
-          results,
+          context: contextFromPlanner({ title: TitleDestroying }),
+          nextState: nextStateOnError(result.error),
+          result,
+        })
+      ),
+      tap((result) =>
+        onStateChange({
+          context: { uri: providerName, result },
+          nextState: nextStateOnError(result.error),
         })
       ),
 
@@ -1391,6 +1401,7 @@ function CoreProvider({
     direction = PlanDirection.DOWN,
   }) => {
     assert(plans);
+    assert(Array.isArray(plans), "plans must be an array");
 
     const executor = async ({ item }) => {
       return await destroyById({
@@ -1417,7 +1428,7 @@ function CoreProvider({
       ])();
     }
     const planner = Planner({
-      plans,
+      plans: plans,
       specs: mapToGraph(mapNameToResource),
       executor,
       down: true,

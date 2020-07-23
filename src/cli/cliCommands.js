@@ -24,6 +24,7 @@ const {
   any,
   or,
   tryCatch,
+  get,
 } = require("rubico");
 
 const pluck = require("rubico/x/pluck");
@@ -189,8 +190,13 @@ const doPlanQuery = ({ providers, commandOptions, programOptions }) =>
                 tap((xx) => {
                   logger.debug("planQuery showing result");
                 }),
-                pluck("plan"),
-                map(displayPlan),
+                map(({ provider, plan }) =>
+                  displayPlan({
+                    providerName: provider.name,
+                    newOrUpdate: plan.newOrUpdate,
+                    destroy: plan.destroy.plans,
+                  })
+                ),
               ])
             ),
           ])(providers),
@@ -439,20 +445,31 @@ exports.planDestroy = async ({
   commandOptions = {},
   programOptions = {},
 }) => {
-  const hasEmptyPlan = pipe([pluck("plans"), flatten, isEmpty]);
+  const hasEmptyPlan = ({ plans }) => isEmpty(plans);
 
   const processHasNoPlan = () => {
     console.log("No resources to destroy");
   };
 
-  const countDestroyed = reduce((acc, value) => acc + value.plans.length, 0);
+  const countDestroyed = reduce((acc, value) => {
+    if (!value.result) {
+      assert(value.result);
+    }
+    return acc + value.result.plans.length;
+  }, 0);
 
   const displayDestroySuccess = pipe([
+    tap((x) => {
+      logger.error(`displayDestroySuccess ${tos(x)}`);
+    }),
     countDestroyed,
+    tap((length) => {
+      logger.error(`displayDestroySuccess ${length}`);
+    }),
     (length) => console.log(`${plu("resource", length, true)} destroyed`),
   ]);
 
-  const promptConfirmDestroy = async (plans) => {
+  const promptConfirmDestroy = async ({ results }) => {
     return await pipe([
       countDestroyed,
       async (length) =>
@@ -465,7 +482,7 @@ exports.planDestroy = async ({
           initial: false,
         }),
       ({ confirmDestroy }) => confirmDestroy,
-    ])(plans);
+    ])(results);
   };
 
   const displayDestroyError = ({ item, error }) => {
@@ -487,29 +504,38 @@ exports.planDestroy = async ({
 
   const doPlansDestroy = ({ commandOptions }) =>
     pipe([
-      async (providers) =>
+      tap((x) => {
+        logger.error(`doPlansDestroy`);
+      }),
+      async (result) =>
         await runAsyncCommand({
-          text: displayCommandHeader({ providers, verb: "Destroying" }),
+          text: displayCommandHeader({
+            providers: result.results,
+            verb: "Destroying",
+          }),
           command: ({ onStateChange }) =>
             pipe([
               tap(
-                map.series(({ provider, plans }) =>
-                  provider.spinnersStartDestroy({ onStateChange, plans })
+                map.series(({ provider, result }) =>
+                  provider.spinnersStartDestroy({
+                    onStateChange,
+                    plans: result.plans,
+                  })
                 )
               ),
               map(
                 assign({
-                  results: async ({ provider, plans }) =>
+                  results: async ({ provider, result }) =>
                     provider.planDestroy({
-                      plans,
+                      plans: result.plans,
                       onStateChange,
                     }),
                 })
               ),
-              tap(() => {
+              tap((xx) => {
                 //logger.debug("doPlansDestroy DONE");
               }),
-            ])(providers),
+            ])(result.results),
         }),
       tap((result) =>
         saveToJson({
@@ -556,7 +582,7 @@ exports.planDestroy = async ({
               ),
               map((provider) =>
                 assign({
-                  plans: async ({ provider }) =>
+                  result: async ({ provider }) =>
                     provider.planFindDestroy({
                       options: commandOptions,
                       onStateChange,
@@ -566,16 +592,12 @@ exports.planDestroy = async ({
               tap((xx) => {
                 logger.debug("doPlansDestroy displaying");
               }),
-              map(({ plans, ...other }) => ({
-                ...other,
-                plans: filter(({ error }) => !error)(plans),
-              })),
               tap(
-                map(({ provider, plans }) =>
+                map(({ provider, result }) =>
                   displayPlan({
                     providerName: provider.name,
                     newOrUpdate: [],
-                    destroy: plans,
+                    destroy: result.plans,
                   })
                 )
               ),
@@ -584,10 +606,26 @@ exports.planDestroy = async ({
               }),
             ])(providers),
         }),
-      //tap((x) => console.log(JSON.stringify(x, null, 4))),
-      switchCase([hasEmptyPlan, processHasNoPlan, processDestroyPlans]),
+      tap((x) => {
+        //console.log(JSON.stringify(x, null, 4));
+      }),
+      (results) => ({
+        error: any(get("result.error"))(results),
+        plans: pipe([pluck("result.plans"), flatten])(results),
+        results,
+      }),
+      tap((x) => {
+        //console.log(JSON.stringify(x, null, 4));
+      }),
+      tap(switchCase([hasEmptyPlan, processHasNoPlan, processDestroyPlans])),
+      tap((result) => {
+        if (result.error) {
+          throw result;
+        }
+      }),
     ]),
     (error) => {
+      //TODO
       displayError("Plan Destroy", error);
       throw { code: 422, error };
     }

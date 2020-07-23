@@ -29,6 +29,7 @@ const displayItem = (table, item) =>
   ])();
 
 exports.displayPlan = async (plan) => {
+  assert(Array.isArray(plan.destroy, "Array.isArray(plan.destroy"));
   if (!hasPlan(plan)) {
     return plan;
   }
@@ -42,6 +43,7 @@ exports.displayPlan = async (plan) => {
   );
 
   plan.newOrUpdate?.forEach((item) => displayItem(table, item));
+  //TODO tap if
   plan.destroy?.forEach((item) => displayItem(table, item));
   console.log(table.toString());
   console.log("\n");

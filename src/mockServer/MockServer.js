@@ -53,6 +53,7 @@ exports.MockServer = (config) => {
         };
         logger.debug(`get ${path}, result: ${tos(context.body)}`);
         context.status = 200;
+        //  context.status = 500;
       })
       .get(path, `${path}/:id`, (context) => {
         const {
