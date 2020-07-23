@@ -568,7 +568,7 @@ exports.planDestroy = async ({
               }),
               map(({ plans, ...other }) => ({
                 ...other,
-                plans: filter(not(pluck("error")))(plans),
+                plans: filter(({ error }) => !error)(plans),
               })),
               tap(
                 map(({ provider, plans }) =>

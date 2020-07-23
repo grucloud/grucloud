@@ -1267,6 +1267,7 @@ function CoreProvider({
         )(client)
       ),
       filter(not(isEmpty)),
+      flatten,
       tap((results) =>
         onStateChange({
           context: contextFromPlanner({ title: TitleDestroying }),
