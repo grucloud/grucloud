@@ -14,6 +14,7 @@ const {
   assign,
   all,
   not,
+  any,
 } = require("rubico");
 const pluck = require("rubico/x/pluck");
 
@@ -39,6 +40,11 @@ const identity = (x) => x;
 const noop = ({}) => {};
 
 const filterReadWriteClient = filter((client) => !client.spec.listOnly);
+
+const hasResultError = any(({ error }) => error);
+
+const nextStateOnResults = (results) =>
+  hasResultError(results) ? "ERROR" : "DONE";
 
 const toUri = ({ providerName, type, name }) =>
   `${providerName}::${type}::${name}`;
@@ -339,9 +345,11 @@ function CoreProvider({
   };
 
   //Rename
-  const contextFromResource = (resource) => ({
-    uri: resource.uri,
-    display: resource.name,
+  const contextFromResource = ({ uri, name, type }) => ({
+    uri: uri,
+    display: name,
+    name,
+    type,
   });
 
   const contextFromPlanner = ({ title }) => ({
@@ -349,10 +357,15 @@ function CoreProvider({
     display: title,
   });
 
-  const contextFromClient = (client) => ({
-    uri: `${providerName}::client::${client.type}`,
-    display: client.type,
-  });
+  const contextFromClient = (client) => {
+    const { type } = client.spec;
+    assert(type, "client.spec.type");
+
+    return {
+      uri: `${providerName}::client::${type}`,
+      display: `${type}`,
+    };
+  };
 
   const contextFromHook = ({ hookType, hookName }) => ({
     display: `${hookName}::${hookType}`,
@@ -927,7 +940,10 @@ function CoreProvider({
     assert(plans, "plans");
     assert(Array.isArray(plans), "plans !isArray");
 
-    const resources = pluck("resource")(plans);
+    const resources = pipe([filter(({ error }) => !error), pluck("resource")])(
+      plans
+    );
+
     logger.debug(`spinnersStartDestroy #resources: ${resources.length}`);
     return pipe([
       spinnersStartProvider({ onStateChange }),
@@ -1179,70 +1195,93 @@ function CoreProvider({
           nextState: "RUNNING",
         })
       ),
+      //TODO extract function to just list the live resources
       map(async (client) =>
-        pipe([
-          tap(() =>
-            onStateChange({
-              context: contextFromClient(client),
-              nextState: "RUNNING",
-            })
-          ), //TODO tryCatch
-          async () =>
-            await client.getList({
-              resources: mapTypeToResources.get(client.type), //TODO is used ?
-            }),
-          tap(() =>
-            onStateChange({
-              context: contextFromClient(client),
-              nextState: "DONE",
-            })
-          ),
-          ({ items }) =>
-            items
-              .filter((resource) =>
-                filterDestroyResources({ client, resource, options, direction })
-              )
-              .map((live) => ({
-                resource: {
-                  provider: providerName,
-                  type: client.spec.type,
-                  name: client.findName(live),
-                  id: client.findId(live),
-                  uri: toUri({
-                    providerName,
+        tryCatch(
+          pipe([
+            tap(() =>
+              onStateChange({
+                context: contextFromClient(client),
+                nextState: "RUNNING",
+              })
+            ),
+            async () =>
+              await client.getList({
+                resources: mapTypeToResources.get(client.type), //TODO is used ?
+              }),
+            tap(() =>
+              onStateChange({
+                context: contextFromClient(client),
+                nextState: "DONE",
+              })
+            ),
+            ({ items }) =>
+              items
+                .filter((resource) =>
+                  filterDestroyResources({
+                    client,
+                    resource,
+                    options,
+                    direction,
+                  })
+                )
+                .map((live) => ({
+                  resource: {
+                    provider: providerName,
                     type: client.spec.type,
                     name: client.findName(live),
-                  }),
-                },
-                action: "DESTROY",
-                config: live,
-              })),
-        ])()
+                    id: client.findId(live),
+                    uri: toUri({
+                      providerName,
+                      type: client.spec.type,
+                      name: client.findName(live),
+                    }),
+                  },
+                  action: "DESTROY",
+                  config: live,
+                })),
+            flatten,
+            filter((x) => x),
+            flatten,
+            reverse,
+            tap((x) =>
+              logger.debug(
+                `planFindDestroy #resources ${x.length}: ${tos(
+                  x.map((x) => x.resource.name).join(",")
+                )}`
+              )
+            ),
+          ]),
+          (error, client) => {
+            logger.error(`getList error for client type ${client}`);
+            logger.error(error);
+
+            onStateChange({
+              context: contextFromClient(client),
+              nextState: "ERROR",
+              error: convertError({ error }),
+            });
+
+            return { error, client };
+          }
+        )(client)
       ),
-      tap(() =>
+      filter(not(isEmpty)),
+      tap((results) =>
         onStateChange({
           context: contextFromPlanner({ title: TitleDestroying }),
-          nextState: "DONE",
+          nextState: nextStateOnResults(results),
+          results,
         })
       ),
-      tap(() =>
+      tap((results) =>
         onStateChange({
           context: { uri: providerName },
-          nextState: "DONE",
+          nextState: nextStateOnResults(results),
+          results,
         })
       ),
 
-      flatten,
-      filter((x) => x),
-      flatten,
-      reverse,
-      tap((x) =>
-        logger.debug(
-          `planFindDestroy #resources ${x.length}: ${tos(
-            x.map((x) => x.resource.name).join(",")
-          )}`
-        )
-      ),
       tap((x) => logger.debug(`planFindDestroy  ${tos(x)}`)),
     ])(clients);
   };

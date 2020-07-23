@@ -566,6 +566,10 @@ exports.planDestroy = async ({
               tap((xx) => {
                 logger.debug("doPlansDestroy displaying");
               }),
+              map(({ plans, ...other }) => ({
+                ...other,
+                plans: filter(not(pluck("error")))(plans),
+              })),
               tap(
                 map(({ provider, plans }) =>
                   displayPlan({
@@ -625,7 +629,9 @@ const listDoOk = ({ commandOptions, programOptions }) =>
     (providers) =>
       runAsyncCommand({
         text: displayCommandHeader({ providers, verb: "Listing" }),
-        command: ({ onStateChange }) =>
+        command: (
+          { onStateChange } //TODO use onStateChange
+        ) =>
           pipe([
             map((provider) =>
               assign({

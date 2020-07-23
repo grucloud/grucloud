@@ -18,7 +18,7 @@ exports.runAsyncCommand = async ({ text, command }) => {
     context,
     previousState,
     nextState,
-    error,
+    error = {},
     indent,
     ...other
   }) => {
@@ -96,9 +96,11 @@ exports.runAsyncCommand = async ({ text, command }) => {
         const spinny = spinnies.pick(uri);
         if (spinny) {
           assert(error, `should have set the error, id: ${uri}`);
-          const text = `${uri}: ${error?.name || ""} ${error.message || ""}`;
-          logger.debug(`spinnies: failed: ${uri}: ${text}`);
-          spinnies.fail(uri, { text });
+          const textWithError = `${text.padEnd(30, " ")} ${
+            error.Message || ""
+          } ${error.message || ""}`;
+          logger.error(textWithError);
+          spinnies.fail(uri, { text: textWithError });
         } else {
           assert(false, `ERROR event: ${uri} was not created, error: ${error}`);
         }

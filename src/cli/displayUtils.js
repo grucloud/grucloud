@@ -3,6 +3,7 @@ const Table = require("cli-table3");
 const colors = require("colors/safe");
 const YAML = require("./json2yaml");
 const { isEmpty } = require("ramda");
+const { switchCase } = require("rubico");
 
 const hasPlan = (plan) => !isEmpty(plan.newOrUpdate) || !isEmpty(plan.destroy);
 
@@ -12,16 +13,20 @@ const displayResource = (item) =>
 const displayManagedByUs = (resource) =>
   resource.managedByUs ? colors.green("Yes") : colors.red("NO");
 
-const displayItem = (table, item) => {
-  //assert(item.resource.name);
-  //TODO check for resource
-  table.push([
-    item.resource?.name,
-    item.action,
-    item.resource.type,
-    displayResource(item),
-  ]);
-};
+const displayItem = (table, item) =>
+  switchCase([
+    () => item.error,
+    () => {
+      table.push(["Error", item.action, "", item.error.message]);
+    },
+    () =>
+      table.push([
+        item.resource?.name,
+        item.action,
+        item.resource?.type,
+        displayResource(item),
+      ]),
+  ])();
 
 exports.displayPlan = async (plan) => {
   if (!hasPlan(plan)) {
