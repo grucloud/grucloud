@@ -69,11 +69,11 @@ module.exports = ({ resources, config }) => {
         {
           name: "SSH VM",
           command: async ({ host }) => {
-            await testSsh({
+            /*await testSsh({
               host,
               username: process.env.MACHINE_ADMIN_USERNAME,
               password: process.env.MACHINE_ADMIN_PASSWORD,
-            });
+            });*/
           },
         },
       ],

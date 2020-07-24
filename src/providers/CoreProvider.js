@@ -347,7 +347,7 @@ function CoreProvider({
   //Rename
   const contextFromResource = ({ uri, name, type }) => ({
     uri: uri,
-    display: name,
+    display: `${type}::${name}`,
     name,
     type,
   });
@@ -763,11 +763,6 @@ function CoreProvider({
           context: { uri: providerName },
           nextState: "WAITING",
         }),
-      () =>
-        onStateChange({
-          context: { uri: providerName },
-          nextState: "RUNNING",
-        }),
     ]);
   const spinnersStopProvider = ({ onStateChange }) =>
     pipe([
@@ -969,10 +964,8 @@ function CoreProvider({
     ])();
   };
 
-  const planApply = async ({ plan, onStateChange, hookName }) => {
+  const planApply = async ({ plan, onStateChange }) => {
     assert(plan);
-    //assert(hookName, "hookName");
-    const title = TitleDeploying;
 
     logger.info(`Apply Plan ${tos(plan)}`);
     //TODO run in parallel
@@ -980,51 +973,30 @@ function CoreProvider({
       plans: plan.destroy.plans,
       onStateChange,
       direction: PlanDirection.UP,
+      title: TitleDestroying,
     });
     const resultCreate = await upsertResources({
       plans: plan.newOrUpdate,
       onStateChange,
+      title: TitleDeploying,
     });
 
-    const hookResults = await runOnDeployed({ onStateChange });
+    const hookResults = !isEmpty(plan.newOrUpdate)
+      ? await runOnDeployed({ onStateChange })
+      : { success: true };
 
     const success =
       resultCreate.success && resultDestroy.success && hookResults.success;
-    //TODO simplify
-    pipe([
-      switchCase([
-        () => resultCreate.success,
-        () =>
-          onStateChange({
-            context: contextFromPlanner({ title }),
-            nextState: "DONE",
-          }),
-        () =>
-          onStateChange({
-            context: contextFromPlanner({ title }),
-            nextState: "ERROR",
-            error: {}, //TODO
-          }),
-      ]),
-      switchCase([
-        () => success,
-        () =>
-          onStateChange({
-            context: { uri: providerName },
-            nextState: "DONE",
-          }),
-        () =>
-          onStateChange({
-            context: { uri: providerName },
-            nextState: "ERROR",
-            error: {}, //TODO
-          }),
-      ]),
-    ])();
+
+    onStateChange({
+      context: { uri: providerName },
+      nextState: nextStateOnError(!success),
+    });
 
     // Stop
     return {
-      results: [...resultCreate.results, ...resultDestroy.results],
+      resultCreate,
+      resultDestroy,
       success,
       hookResults,
     };
@@ -1319,8 +1291,10 @@ function CoreProvider({
       });
     };
   };
-  const upsertResources = async ({ plans = [], onStateChange }) => {
+  const upsertResources = async ({ plans = [], onStateChange, title }) => {
     assert(onStateChange);
+    assert(title);
+
     const executor = async ({ item }) => {
       const engine = resourceByName(item.resource.name);
       if (!engine) {
@@ -1333,13 +1307,26 @@ function CoreProvider({
       return { input, output };
     };
 
-    const planner = Planner({
-      plans,
-      specs: mapToGraph(mapNameToResource),
-      executor,
-      onStateChange: onStateChangeResource(onStateChange),
-    });
-    return await planner.run();
+    return await switchCase([
+      () => !isEmpty(plans),
+      pipe([
+        () =>
+          Planner({
+            plans,
+            specs: mapToGraph(mapNameToResource),
+            executor,
+            onStateChange: onStateChangeResource(onStateChange),
+          }),
+        (planner) => planner.run(),
+        tap((result) =>
+          onStateChange({
+            context: contextFromPlanner({ title }),
+            nextState: nextStateOnError(!result.success),
+          })
+        ),
+      ]),
+      () => ({ success: true }),
+    ])();
   };
 
   const planQueryAndApply = async ({ onStateChange = identity } = {}) => {

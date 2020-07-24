@@ -56,7 +56,7 @@ module.exports = ({ resources: { eip, server }, provider }) => {
           name: "SSH",
           command: async ({ host }) => {
             //TODO rxjs retryWhen
-            await testSsh({ host });
+            //await testSsh({ host });
           },
         },
       ],

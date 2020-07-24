@@ -112,14 +112,16 @@ const displayError = (name, error) => {
 };
 
 const pluckErrorsCommon = pipe([
-  tap((xx) => {
+  tap((aa) => {
     //logger.debug("pluckErrorsCommon ");
   }),
   filter(({ results: { success } }) => !success),
   flatten,
-  pluck("results"),
-  pluck("results"),
+  pluck("results.resultCreate"),
   flatten,
+  tap((xx) => {
+    //logger.debug("pluckErrorsCommon ");
+  }),
   filter(({ error }) => error),
   tap((xx) => {
     logger.debug("pluckErrorsCommon result  ");
@@ -395,7 +397,7 @@ exports.planApply = async ({
                   })
                 )
               ),
-              tap(() => {
+              tap((xx) => {
                 logger.debug("doPlansDeploy Spinners started");
               }),
               map(
