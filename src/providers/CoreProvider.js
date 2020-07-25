@@ -16,6 +16,7 @@ const {
   not,
   any,
   reduce,
+  fork,
 } = require("rubico");
 const pluck = require("rubico/x/pluck");
 
@@ -525,32 +526,43 @@ function CoreProvider({
   };
 
   const planQuery = async ({ onStateChange } = {}) => {
-    logger.debug(`planQuery begins`);
-    assert(onStateChange);
-
-    //TODO parallel
-    const plan = {
-      providerName,
-
-      newOrUpdate: await planUpsert({
-        onStateChange,
+    return await pipe([
+      tap(() => {
+        logger.debug(`planQuery begins`);
+        assert(onStateChange);
       }),
-      destroy: await planFindDestroy({
-        onStateChange,
-        direction: PlanDirection.UP,
+      tap(() =>
+        onStateChange({
+          context: { uri: providerName },
+          nextState: "RUNNING",
+        })
+      ),
+      fork({
+        newOrUpdate: () =>
+          planUpsert({
+            onStateChange,
+          }),
+        destroy: () =>
+          planFindDestroy({
+            onStateChange,
+            direction: PlanDirection.UP,
+          }),
       }),
-    };
-
-    // TODO Check for errors
-    onStateChange({
-      context: contextFromPlanner({ title: TitleQuery }),
-      nextState: "DONE",
-    });
-
-    logger.info(
-      `planQuery results: #create ${plan.newOrUpdate.length}  ${tos(plan)}`
-    );
-    return plan;
+      (result) => ({
+        providerName,
+        ...result,
+      }),
+      tap((result) => {
+        logger.debug(`planQuery ${tos(result)}`);
+      }),
+      tap((result) =>
+        onStateChange({
+          context: { uri: providerName },
+          //TODO
+          nextState: nextStateOnError(result.destroy.error),
+        })
+      ),
+    ])();
   };
 
   const runScriptCommands = ({ onStateChange, hookType, hookName }) =>
@@ -764,14 +776,12 @@ function CoreProvider({
           nextState: "WAITING",
         }),
     ]);
-  const spinnersStopProvider = ({ onStateChange }) =>
-    pipe([
-      () =>
-        onStateChange({
-          context: { uri: providerName },
-          nextState: "DONE",
-        }),
-    ]);
+  const spinnersStopProvider = ({ onStateChange, error }) =>
+    onStateChange({
+      context: { uri: providerName },
+      nextState: nextStateOnError(error),
+    });
+
   const spinnersStartResources = ({ onStateChange, title, resources }) =>
     tap(
       pipe([
@@ -988,11 +998,6 @@ function CoreProvider({
     const success =
       resultCreate.success && resultDestroy.success && hookResults.success;
 
-    onStateChange({
-      context: { uri: providerName },
-      nextState: nextStateOnError(!success),
-    });
-
     // Stop
     return {
       resultCreate,
@@ -1009,13 +1014,11 @@ function CoreProvider({
     logger.debug(`planUpsert: #resources ${getTargetResources().length}`);
     return pipe([
       filter((resource) => !resource.spec.listOnly),
-      tap(
-        map(() =>
-          onStateChange({
-            context: { uri: providerName },
-            nextState: "RUNNING",
-          })
-        )
+      tap(() =>
+        onStateChange({
+          context: contextFromPlanner({ title: TitleQuery }),
+          nextState: "RUNNING",
+        })
       ),
       tap(
         map((resource) =>
@@ -1050,21 +1053,11 @@ function CoreProvider({
       }),
       filter((x) => x),
       flatten,
-      tap(
-        switchCase([
-          pipe([filter(get("error")), isEmpty]),
-          () =>
-            onStateChange({
-              context: { uri: providerName },
-              nextState: "DONE",
-            }),
-          (results) =>
-            onStateChange({
-              context: { uri: providerName },
-              nextState: "ERROR",
-              error: filter(get("error"))(results),
-            }),
-        ])
+      tap((result) =>
+        onStateChange({
+          context: contextFromPlanner({ title: TitleQuery }),
+          nextState: nextStateOnError(hasResultError(result)),
+        })
       ),
       tap((plans) =>
         logger.debug(`planUpsert: plans: ${JSON.stringify(plans, null, 4)}`)
@@ -1197,6 +1190,13 @@ function CoreProvider({
         logger.debug(`planFindDestroy ${tos({ options, direction })}`)
       ),
       filter((client) => !client.spec.listOnly),
+
+      tap(() =>
+        onStateChange({
+          context: { uri: providerName },
+          nextState: "RUNNING",
+        })
+      ),
       tap(() =>
         onStateChange({
           context: contextFromPlanner({ title: TitleDestroying }),
@@ -1258,13 +1258,6 @@ function CoreProvider({
           result,
         })
       ),
-      tap((result) =>
-        onStateChange({
-          context: { uri: providerName, result },
-          nextState: nextStateOnError(result.error),
-        })
-      ),
-
       tap((x) => logger.debug(`planFindDestroy  ${tos(x)}`)),
     ])(clients);
   };
@@ -1432,15 +1425,7 @@ function CoreProvider({
         tap(() =>
           onStateChange({
             context: contextFromPlanner({ title: TitleDestroying }),
-            nextState: hookResults.error ? "ERROR" : "DONE",
-            indent: 2,
-          })
-        ),
-        tap(() =>
-          onStateChange({
-            context: { uri: providerName },
-            nextState:
-              plannerResult.error || hookResults.error ? "ERROR" : "DONE",
+            nextState: nextStateOnError(hookResults.error),
           })
         ),
       ])();
@@ -1519,6 +1504,7 @@ function CoreProvider({
     spinnersStartDestroyQuery,
     spinnersStartDestroy,
     spinnersStartHook,
+    spinnersStopProvider,
     planDestroy,
     listLives,
     listTargets,
