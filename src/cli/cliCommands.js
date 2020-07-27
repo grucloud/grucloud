@@ -112,15 +112,15 @@ const displayError = (name, error) => {
 };
 
 const pluckErrorsCommon = pipe([
-  tap((aa) => {
-    //logger.debug("pluckErrorsCommon ");
+  tap((obj) => {
+    logger.debug(`pluckErrorsCommon ${tos(obj)}`);
   }),
   filter(({ results: { success } }) => !success),
   flatten,
-  pluck("results.resultCreate"),
+  pluck("results.resultCreate.results"),
   flatten,
-  tap((xx) => {
-    //logger.debug("pluckErrorsCommon ");
+  tap((obj) => {
+    //logger.debug("pluckErrorsCommon resultCreate ${obj}");
   }),
   filter(({ error }) => error),
   tap((xx) => {
