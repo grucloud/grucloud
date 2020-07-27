@@ -43,7 +43,7 @@ exports.runAsyncCommand = async ({ text, command }) => {
 
     switch (nextState) {
       case "WAITING": {
-        logger.debug(`spinnies: create: ${uri}`);
+        logger.debug(`spinnies: create uri: ${uri}, text: ${text}`);
         spinnerList.push(uri);
         const spinny = spinnies.pick(uri);
         if (spinny) {
@@ -57,7 +57,7 @@ exports.runAsyncCommand = async ({ text, command }) => {
         break;
       }
       case "RUNNING": {
-        logger.debug(`spinnies running: ${uri}`);
+        logger.debug(`spinnies running uri: ${uri}, text: ${text}`);
         const spinny = spinnies.pick(uri);
         const runningColor = "greenBright";
         if (spinny) {

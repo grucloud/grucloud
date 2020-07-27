@@ -80,8 +80,8 @@ const countDeployResources = reduce(
   (acc, value) => {
     return {
       providers: acc.providers + 1,
-      create: acc.create + value.plan.newOrUpdate.length,
-      destroy: acc.destroy + value.plan.destroy.length,
+      create: acc.create + value.plan.newOrUpdate.plans.length,
+      destroy: acc.destroy + value.plan.destroy.plans.length,
     };
   },
   { providers: 0, create: 0, destroy: 0 }
@@ -197,7 +197,7 @@ const doPlanQuery = ({ providers, commandOptions, programOptions }) =>
         map(({ provider, plan }) =>
           displayPlan({
             providerName: provider.name,
-            newOrUpdate: plan.newOrUpdate,
+            newOrUpdate: plan.newOrUpdate.plans,
             destroy: plan.destroy.plans,
           })
         ),
@@ -452,7 +452,7 @@ exports.planApply = async ({
         filterProvidersByName({ commandOptions, providers })(providers),
       doPlanQuery({ providers, commandOptions, programOptions }),
       tap((xxx) => {
-        console.log("ss");
+        //console.log("planApply");
       }),
       switchCase([hasPlans, processDeployPlans, processNoPlan]),
     ]),

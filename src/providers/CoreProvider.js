@@ -550,6 +550,7 @@ function CoreProvider({
       }),
       (result) => ({
         providerName,
+        error: result.newOrUpdate.error || result.destroy.error,
         ...result,
       }),
       tap((result) => {
@@ -558,8 +559,7 @@ function CoreProvider({
       tap((result) =>
         onStateChange({
           context: { uri: providerName },
-          //TODO
-          nextState: nextStateOnError(result.destroy.error),
+          nextState: nextStateOnError(result.error),
         })
       ),
     ])();
@@ -891,12 +891,12 @@ function CoreProvider({
       spinnersStartProvider({ onStateChange }),
       tap(
         switchCase([
-          not(() => isEmpty(plan.newOrUpdate)),
+          not(() => isEmpty(plan.newOrUpdate.plans)),
           pipe([
             spinnersStartResources({
               onStateChange,
               title: TitleDeploying,
-              resources: pluck("resource")(plan.newOrUpdate),
+              resources: pluck("resource")(plan.newOrUpdate.plans),
             }),
             spinnersStartHooks({
               onStateChange,
@@ -986,12 +986,12 @@ function CoreProvider({
       title: TitleDestroying,
     });
     const resultCreate = await upsertResources({
-      plans: plan.newOrUpdate,
+      plans: plan.newOrUpdate.plans,
       onStateChange,
       title: TitleDeploying,
     });
 
-    const hookResults = !isEmpty(plan.newOrUpdate)
+    const hookResults = !isEmpty(plan.newOrUpdate.plans)
       ? await runOnDeployed({ onStateChange })
       : { success: true };
 
@@ -1023,7 +1023,7 @@ function CoreProvider({
       tap(
         map((resource) =>
           onStateChange({
-            context: resource.toJSON(),
+            context: contextFromResource(resource.toJSON()),
             nextState: "RUNNING",
           })
         )
@@ -1059,8 +1059,9 @@ function CoreProvider({
           nextState: nextStateOnError(hasResultError(result)),
         })
       ),
-      tap((plans) =>
-        logger.debug(`planUpsert: plans: ${JSON.stringify(plans, null, 4)}`)
+      (plans) => ({ error: hasResultError(plans), plans }),
+      tap((result) =>
+        logger.debug(`planUpsert: result: ${JSON.stringify(result, null, 4)}`)
       ),
     ])(getTargetResources());
   };
