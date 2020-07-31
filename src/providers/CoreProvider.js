@@ -178,7 +178,7 @@ const ResourceMaker = ({
           payload,
           dependencies,
         }),
-      shouldRetry: client.shouldRetryOnError,
+      shouldRetryOnException: client.shouldRetryOnException,
       retryCount: provider.config().retryCount,
       retryDelay: provider.config().retryDelay,
     });
@@ -196,7 +196,7 @@ const ResourceMaker = ({
         }
         return live;
       },
-      shouldRetry: () => true,
+      shouldRetryOnException: () => true,
       retryCount: provider.config().retryCount,
       retryDelay: provider.config().retryDelay,
     });

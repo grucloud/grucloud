@@ -1,5 +1,3 @@
-const Promise = require("bluebird");
-const assert = require("assert");
 const { of, iif, throwError } = require("rxjs");
 const {
   retryWhen,
@@ -9,28 +7,42 @@ const {
   tap,
   take,
   delay,
+  catchError,
 } = require("rxjs/operators");
 const logger = require("../logger")({ prefix: "Retry" });
 const { tos } = require("../tos");
 const { logError } = require("./Common");
+
 const retryCall = async ({
   name = "",
   fn,
+  isExpectedResult = () => true,
+  shouldRetryOnException = () => false,
   repeatCount = 0,
   repeatDelay = 1e3,
   retryCount = 30,
   retryDelay = 5e3,
-  shouldRetry = () => false,
 }) => {
   logger.debug(
     `retryCall ${name}, retryCount: ${retryCount}, retryDelay: ${retryDelay}, repeatCount: ${repeatCount} `
   );
   return of({})
     .pipe(
-      mergeMap(async () => await fn()),
-      repeatWhen((result) => {
-        return result.pipe(delay(repeatDelay), take(repeatCount));
+      mergeMap(async () => {
+        const result = await fn();
+        if (!isExpectedResult(result)) {
+          throw {
+            code: 503,
+            type: "retryCall",
+            message: "not expected result",
+            result,
+          };
+        }
+        return result;
       }),
+      repeatWhen((result) =>
+        result.pipe(delay(repeatDelay), take(repeatCount))
+      ),
       retryWhen((errors) =>
         errors.pipe(
           concatMap((error, i) => {
@@ -38,14 +50,24 @@ const retryCall = async ({
               `retryCall error ${name}, attempt ${i}/${retryCount}, retryDelay: ${retryDelay},`,
               error
             );
+
             return iif(
-              () => i >= retryCount || !shouldRetry(error),
+              () =>
+                i >= retryCount ||
+                (!shouldRetryOnException(error) && error.code != 503),
               throwError(error),
               of(error).pipe(delay(retryDelay))
             );
           })
         )
-      )
+      ),
+      catchError((error) => {
+        if (error.code == 503) {
+          return of(error.result);
+        } else {
+          return throwError(error);
+        }
+      })
     )
     .toPromise();
 };
@@ -55,7 +77,7 @@ exports.retryCallOnTimeout = ({ name, fn, config }) =>
   retryCall({
     name,
     fn,
-    shouldRetry: (error) => error.code === "ECONNABORTED",
+    shouldRetryOnException: (error) => error.code === "ECONNABORTED",
     retryCount: config.retryCount,
     retryDelay: config.retryDelay,
   });
@@ -64,17 +86,12 @@ const retryExpectOk = async ({ name, fn, config }) => {
   logger.debug(`retryExpectOk ${name}`);
   return retryCall({
     name,
-    fn: async () => {
-      const result = await fn();
-      if (!result) {
-        throw Error(`Retry ${name}`);
-      }
-      return result;
-    },
+    fn,
+    isExpectedResult: (result) => result,
+    shouldRetryOnException: () => true,
     retryCount: config.retryCount || 30,
     retryDelay: config.retryDelay || 10e3,
     repeatCount: config.repeatCount,
-    shouldRetry: () => true,
   });
 };
 

@@ -60,7 +60,8 @@ exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
         throw { code: 422, message: "resource not tagged" };
       }
     },
-    shouldRetry: () => true,
+    //TODO retry only when code === 422
+    shouldRetryOnException: () => true,
     retryCount: 5,
     retryDelay: config.retryDelay,
   });

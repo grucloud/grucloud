@@ -124,7 +124,7 @@ exports.runAsyncCommand = async ({ text, command }) => {
       logger.error(`spinners still running: ${name}`);
       console.log(`spinners still running: ${name}`);
     });
-    assert.equal(spinnerMap.size, 0);
+    assert.equal(spinnerMap.size, 0, "spinner still active");
     spinnies.stopAll();
     return result;
   } catch (error) {

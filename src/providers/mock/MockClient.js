@@ -19,8 +19,8 @@ module.exports = MockClient = ({
   const { createAxios } = config;
   assert(createAxios);
 
-  const shouldRetryOnError = (error) => {
-    logger.debug("shouldRetryOnError");
+  const shouldRetryOnException = (error) => {
+    logger.debug("shouldRetryOnException");
     const { response } = error;
     if (!response) return false;
     if (
@@ -29,7 +29,7 @@ module.exports = MockClient = ({
         (error) => error.reason === "resourceNotReady"
       )
     ) {
-      logger.info("shouldRetryOnError retrying");
+      logger.info("shouldRetryOnException retrying");
       return true;
     }
     return false;
@@ -45,7 +45,7 @@ module.exports = MockClient = ({
     findId,
     configDefault,
     findName,
-    shouldRetryOnError,
+    shouldRetryOnException,
   });
   return core;
 };

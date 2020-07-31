@@ -28,8 +28,8 @@ module.exports = GoogleClient = ({
   assert(config);
   assert(config.accessToken);
 
-  const shouldRetryOnError = (error) => {
-    logger.debug("shouldRetryOnError");
+  const shouldRetryOnException = (error) => {
+    logger.debug("shouldRetryOnException");
     const { response } = error;
     if (!response) return false;
     if (
@@ -38,7 +38,7 @@ module.exports = GoogleClient = ({
         (error) => error.reason === "resourceNotReady"
       )
     ) {
-      logger.info("shouldRetryOnError retrying");
+      logger.info("shouldRetryOnException retrying");
       return true;
     }
     return false;
@@ -56,7 +56,7 @@ module.exports = GoogleClient = ({
     configDefault,
     findTargetId,
     cannotBeDeleted,
-    shouldRetryOnError,
+    shouldRetryOnException,
     axios: AxiosMaker({
       baseURL: urljoin(baseURL, url),
       onHeaders: () => ({

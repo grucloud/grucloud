@@ -152,7 +152,7 @@ exports.isDownByIdCore = ({
 };
 
 exports.logError = (prefix, error) => {
-  logger.error(`${prefix} error:${error.toString()}`);
+  logger.error(`${prefix} error:${JSON.stringify(error)}`);
   if (error.response) {
     if (error.response.data) {
       logger.error(`data: ${tos(error.response.data)}`);

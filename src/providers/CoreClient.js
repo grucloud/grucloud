@@ -50,7 +50,7 @@ module.exports = CoreClient = ({
   onResponseCreate = identity,
   onResponseDelete = identity,
   cannotBeDeleted = () => false,
-  shouldRetryOnError = () => false,
+  shouldRetryOnException = () => false,
 }) => {
   assert(spec);
   assert(type);
@@ -200,7 +200,7 @@ module.exports = CoreClient = ({
     getByName,
     findName,
     cannotBeDeleted,
-    shouldRetryOnError,
+    shouldRetryOnException,
     isUpById,
     isDownById,
     create,
