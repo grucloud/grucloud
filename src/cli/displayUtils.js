@@ -2,7 +2,7 @@ const assert = require("assert");
 const Table = require("cli-table3");
 const colors = require("colors/safe");
 const YAML = require("./json2yaml");
-const { isEmpty } = require("ramda");
+const isEmpty = require("rubico/x/isEmpty");
 const { switchCase } = require("rubico");
 
 const hasPlan = (plan) => !isEmpty(plan.newOrUpdate) || !isEmpty(plan.destroy);

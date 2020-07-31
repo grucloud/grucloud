@@ -35,8 +35,8 @@ describe("GcpServiceAccount", async function () {
       }),
     });
 
-    const { success } = await provider.destroyAll();
-    assert(success, "destroyAll failed");
+    const { error } = await provider.destroyAll();
+    assert(!error, "destroyAll failed");
   });
   after(async () => {
     //await provider?.destroyAll();
@@ -52,13 +52,15 @@ describe("GcpServiceAccount", async function () {
     assert.equal(config.serviceAccount.displayName, serviceAccountDisplayName);
   });
   it("lives", async function () {
-    const lives = await provider.listLives({ types: "ServiceAccounts" });
+    const { results: lives } = await provider.listLives({
+      types: "ServiceAccounts",
+    });
     //assert(lives[0].resources.length >= 1);
   });
   it("plan", async function () {
     const plan = await provider.planQuery();
-    assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 1);
+    assert.equal(plan.destroy.plans.length, 0);
+    assert.equal(plan.newOrUpdate.plans.length, 1);
   });
   it.skip("serviceAccount apply and destroy", async function () {
     await testPlanDeploy({ provider });

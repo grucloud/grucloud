@@ -2,8 +2,8 @@ const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { CheckTagsS3 } = require("../../AwsTagCheck");
-const createStack = require("../../../../../examples/aws/s3/iac");
-describe("AwsS3Bucket Example", async function () {
+const { createStack } = require("../../../../../examples/aws/s3/iac");
+describe.skip("AwsS3Bucket Example", async function () {
   let config;
 
   before(async function () {
@@ -16,14 +16,14 @@ describe("AwsS3Bucket Example", async function () {
   after(async () => {
     //await provider?.destroyAll();
   });
-  it.skip("run s3 example", async function () {
+  it("run s3 example", async function () {
     const {
       providers,
       resources: { buckets },
     } = await createStack({ config });
     const provider = providers[0];
-    const { success } = await provider.destroyAll();
-    assert(success, "destroyAll failed");
+    const { error } = await provider.destroyAll();
+    assert(!error, "destroyAll failed");
     await testPlanDeploy({ provider });
 
     // Basic

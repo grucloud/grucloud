@@ -14,6 +14,8 @@ exports.runAsyncCommand = async ({ text, command }) => {
   const spinnies = new Spinnies({ spinner });
   logger.debug(`runAsyncCommand: ${JSON.stringify({ text })}`);
   const spinnerList = [];
+  const spinnerMap = new Map();
+
   const onStateChange = ({
     context,
     previousState,
@@ -45,10 +47,12 @@ exports.runAsyncCommand = async ({ text, command }) => {
       case "WAITING": {
         logger.debug(`spinnies: create uri: ${uri}, text: ${text}`);
         spinnerList.push(uri);
+
         const spinny = spinnies.pick(uri);
         if (spinny) {
           assert(false, `${uri} already created`);
         }
+        spinnerMap.set(uri, spinny);
         spinnies.add(uri, {
           text,
           indent,
@@ -87,7 +91,7 @@ exports.runAsyncCommand = async ({ text, command }) => {
         } else {
           assert(false, `DONE event: ${uri} was not created`);
         }
-
+        spinnerMap.delete(uri, spinny);
         break;
       }
       case "ERROR": {
@@ -104,7 +108,7 @@ exports.runAsyncCommand = async ({ text, command }) => {
         } else {
           assert(false, `ERROR event: ${uri} was not created, error: ${error}`);
         }
-
+        spinnerMap.delete(uri, spinny);
         break;
       }
       default:
@@ -116,6 +120,11 @@ exports.runAsyncCommand = async ({ text, command }) => {
   try {
     const result = await command({ onStateChange });
     logger.debug(`runAsyncCommand end of : ${text}`);
+    [...spinnerMap.keys()].forEach((name) => {
+      logger.error(`spinners still running: ${name}`);
+      console.log(`spinners still running: ${name}`);
+    });
+    assert.equal(spinnerMap.size, 0);
     spinnies.stopAll();
     return result;
   } catch (error) {

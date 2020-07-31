@@ -34,8 +34,8 @@ describe("AwsSubnet", async function () {
       }),
     });
 
-    const { success } = await provider.destroyAll();
-    assert(success, "destroyAll failed");
+    const { error } = await provider.destroyAll();
+    assert(!error, "destroyAll failed");
   });
   after(async () => {
     await provider?.destroyAll();
@@ -51,7 +51,9 @@ describe("AwsSubnet", async function () {
     const live = await subnet.getLive();
   });
   it.skip("subnet listLives", async function () {
-    const [subnets] = await provider.listLives({ types: ["Subnet"] });
+    const {
+      results: [subnets],
+    } = await provider.listLives({ types: ["Subnet"] });
     assert(subnets);
     const subnetDefault = subnets.resources.find(
       (subnet) => subnet.data.DefaultForAz

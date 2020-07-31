@@ -23,10 +23,10 @@ describe("AwsRouteTables", async function () {
       config,
     });
 
-    const { success } = await provider.destroyAll();
-    assert(success);
+    const { error } = await provider.destroyAll();
+    assert(!error);
 
-    const lives = await provider.listLives({ our: true });
+    const { results: lives } = await provider.listLives({ our: true });
     assert.equal(lives.length, 0);
 
     vpc = await provider.makeVpc({
@@ -69,7 +69,9 @@ describe("AwsRouteTables", async function () {
       name: rt.name,
     });
 
-    const [rts] = await provider.listLives({ types: ["RouteTables"] });
+    const {
+      results: [rts],
+    } = await provider.listLives({ types: ["RouteTables"] });
     const resource = rts.resources[0].data;
     assert.equal(rts.type, "RouteTables");
     //TODO

@@ -25,8 +25,8 @@ describe("AwsEC2", async function () {
       config,
     });
 
-    const { success } = await provider.destroyAll();
-    assert(success, "destroyAll failed");
+    const { error } = await provider.destroyAll();
+    assert(!error, "destroyAll failed");
 
     keyPair = await provider.useKeyPair({
       name: keyPairName,
@@ -65,7 +65,7 @@ describe("AwsEC2", async function () {
     assert.equal(plan.newOrUpdate.length, 1);
   });
   it.skip("listLives all", async function () {
-    const lives = await provider.listLives({ all: true });
+    const { results: lives } = await provider.listLives({ all: true });
     assert(lives);
   });
   it.skip("ec2 apply plan", async function () {

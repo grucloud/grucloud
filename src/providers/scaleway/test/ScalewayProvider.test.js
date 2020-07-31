@@ -23,8 +23,8 @@ describe("ScalewayProvider", async function () {
       config,
     });
 
-    const { success } = await provider.destroyAll();
-    assert(success);
+    const { error } = await provider.destroyAll();
+    assert(!error);
 
     ip = await provider.makeIp({ name: "myip" });
     image = await provider.useImage({
@@ -64,9 +64,9 @@ describe("ScalewayProvider", async function () {
   });
 
   it("list lives", async function () {
-    const result = await provider.listLives();
+    const { results: lives } = await provider.listLives();
     //console.log(JSON.stringify(result, null, 4));
-    assert(result);
+    assert(lives);
   });
   it("list targets", async function () {
     const result = await provider.listTargets();

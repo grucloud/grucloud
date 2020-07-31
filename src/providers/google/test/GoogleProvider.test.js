@@ -24,8 +24,8 @@ describe("GoogleProvider", async function () {
       config,
     });
 
-    const { success } = await provider.destroyAll();
-    assert(success);
+    const { error } = await provider.destroyAll();
+    assert(!error);
 
     network = await provider.makeNetwork({
       name: "network-dev",
@@ -83,8 +83,8 @@ describe("GoogleProvider", async function () {
   });
   it("plan", async function () {
     const plan = await provider.planQuery();
-    assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 5);
+    assert.equal(plan.destroy.plans.length, 0);
+    assert.equal(plan.newOrUpdate.plans.length, 5);
   });
   it.skip("gcp apply and destroy", async function () {
     await testPlanDeploy({ provider, full: true });

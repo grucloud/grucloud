@@ -132,16 +132,16 @@ describe("AzProvider", async function () {
         },
       }),
     });
-    const { success } = await provider.destroyAll();
-    assert(success, "destroyAll ko");
+    const { error } = await provider.destroyAll();
+    assert(!error, "destroyAll ko");
   });
   after(async () => {
     //await provider?.destroyAll();
   });
   it("plan", async function () {
     const plan = await provider.planQuery();
-    assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 6);
+    assert.equal(plan.destroy.plans.length, 0);
+    assert.equal(plan.newOrUpdate.plans.length, 6);
   });
   it.skip("az apply and destroy", async function () {
     await testPlanDeploy({ provider, full: true });

@@ -4,7 +4,6 @@ const { ConfigLoader } = require("ConfigLoader");
 const AwsProvider = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { CheckTags } = require("../../AwsTagCheck");
-const { retryCall } = require("../../../Retry");
 const logger = require("../../../../logger")({ prefix: "AwsVpc" });
 const { tos } = require("../../../../tos");
 
@@ -25,10 +24,10 @@ describe("AwsVpc", async function () {
       name: "aws",
       config,
     });
-    const { success } = await provider.destroyAll();
-    assert(success);
+    const { error } = await provider.destroyAll();
+    assert(!error);
 
-    const lives = await provider.listLives({ our: true });
+    const { results: lives } = await provider.listLives({ our: true });
     assert.equal(lives.length, 0);
 
     vpc = await provider.makeVpc({
@@ -89,7 +88,9 @@ describe("AwsVpc", async function () {
     const live = await vpc.getLive();
   });
   it.skip("vpc listLives", async function () {
-    const [vpcs] = await provider.listLives({ types: ["Vpc"] });
+    const {
+      results: [vpcs],
+    } = await provider.listLives({ types: ["Vpc"] });
     assert(vpcs);
     const vpcDefault = vpcs.resources.find((vpc) => vpc.data.IsDefault);
     assert(vpcDefault);

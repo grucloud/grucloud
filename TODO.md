@@ -1,11 +1,13 @@
 ## Bugs
 
-- ✖ aws::EC2::web-server: InvalidInstanceID The pending instance 'i-06e51f67236d0d7b9' is not in a valid state for this operation.
+- Are you sure to destroy 9 resources ? despite only one resource to destroy
 
+- //switchCase([plansHasSuccess, displayDeploySuccess, displayDeployErrors]),ß
 - ec2 examples aws::Vpc::undefined when destroyed
 
 ## Common:
 
+- success => error
 - hookResults along side plannerResults
 - return error as an array ?
 - client type redundant ?
@@ -39,6 +41,7 @@ error: unknown option '--provider'
 
 ## TODO Aws:
 
+- getList params in ec2.describeSubnets and
 - do not display default acl
 - add example code in AwsGettingStarted
 - listObjectsV2

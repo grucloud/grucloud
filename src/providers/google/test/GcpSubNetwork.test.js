@@ -41,8 +41,8 @@ describe("GcpSubNetwork", async function () {
       }),
     });
 
-    const { success } = await provider.destroyAll();
-    assert(success);
+    const { error } = await provider.destroyAll();
+    assert(!error);
   });
   after(async () => {
     await provider?.destroyAll();
@@ -58,8 +58,8 @@ describe("GcpSubNetwork", async function () {
   });
   it("plan", async function () {
     const plan = await provider.planQuery();
-    assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 2);
+    assert.equal(plan.destroy.plans.length, 0);
+    assert.equal(plan.newOrUpdate.plans.length, 2);
   });
   it.skip("subNetwork apply and destroy", async function () {
     await testPlanDeploy({ provider });

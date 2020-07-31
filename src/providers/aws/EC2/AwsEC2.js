@@ -41,9 +41,9 @@ module.exports = AwsEC2 = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
-  const getList = async () => {
-    logger.debug(`getList`);
-    const data = await ec2.describeInstances().promise();
+  const getList = async ({ params } = {}) => {
+    logger.debug(`getList ${params}`);
+    const data = await ec2.describeInstances(params).promise();
     //logger.debug(`getList ec2 ${tos(data)}`);
     const items = data.Reservations.filter(
       (reservation) =>
@@ -60,8 +60,9 @@ module.exports = AwsEC2 = ({ spec, config }) => {
   const getById = getByIdCore({ fieldIds: "InstanceIds", getList });
 
   const getStateName = (instance) => {
+    const { InstanceId } = instance.Instances[0];
     const state = instance.Instances[0].State.Name;
-    logger.debug(`stateName ${state}`);
+    logger.debug(`InstanceId ${InstanceId}, stateName ${state} `);
     return state;
   };
 

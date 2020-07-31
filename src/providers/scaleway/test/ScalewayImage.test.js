@@ -20,8 +20,8 @@ describe("ScalewayImage", async function () {
       config,
     });
 
-    const { success } = await provider.destroyAll();
-    assert(success);
+    const { error } = await provider.destroyAll();
+    assert(!error);
 
     image = await provider.useImage({
       name: "ubuntu",
@@ -54,8 +54,8 @@ describe("ScalewayImage", async function () {
   });
   it("plan", async function () {
     const plan = await provider.planQuery();
-    assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 0);
+    assert.equal(plan.destroy.plans.length, 0);
+    assert.equal(plan.newOrUpdate.plans.length, 0);
   });
   it.skip("apply and destroy", async function () {
     await testPlanDeploy({ provider });

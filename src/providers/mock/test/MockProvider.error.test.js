@@ -56,15 +56,17 @@ describe("MockProvider errors", async function () {
 
     const plan1 = await provider1.planQuery();
     const plan2 = await provider2.planQuery();
-
-    const { success: success1 } = await provider1.planApply({
-      plan: plan1,
-    });
-    assert(success1);
-
-    const { success: success2 } = await provider2.planApply({
-      plan: plan2,
-    });
-    assert(!success2);
+    {
+      const { error } = await provider1.planApply({
+        plan: plan1,
+      });
+      assert(!error);
+    }
+    {
+      const { error } = await provider2.planApply({
+        plan: plan2,
+      });
+      assert(error);
+    }
   });
 });

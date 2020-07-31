@@ -28,13 +28,13 @@ describe("MockProviderHooks", async function () {
       },
     });
     {
-      const { success, hookResults } = await provider.planQueryAndApply();
-      assert(success, "planQueryAndApply failed");
+      const { error, hookResults } = await provider.planQueryAndApply();
+      assert(!error, "planQueryAndApply failed");
       assert(onDeployed.init.called);
     }
     {
-      const { success, hookResults } = await provider.destroyAll();
-      assert(success, "planDestroy failed");
+      const { error, hookResults } = await provider.destroyAll();
+      assert(!error, "planDestroy failed");
       assert(onDestroyed.init.called);
     }
   });

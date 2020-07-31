@@ -1,9 +1,9 @@
 const assert = require("assert");
-const { isEmpty } = require("ramda");
+const isEmpty = require("rubico/x/isEmpty");
 const logger = require("../logger")({ prefix: "TestUtils" });
 
 const testList = async ({ provider }) => {
-  const livesAll = await provider.listLives();
+  const { results: livesAll } = await provider.listLives();
   assert(!isEmpty(livesAll));
 
   await testListByName({ provider, livesAll });
@@ -17,7 +17,7 @@ const testListByName = async ({ provider, livesAll }) => {
     (resources) => resources.name
   )[0];
   assert(name);
-  const liveByName = await provider.listLives({
+  const { results: liveByName } = await provider.listLives({
     name,
   });
   assert(liveByName.length >= 1);
@@ -28,7 +28,7 @@ const testListById = async ({ provider, livesAll }) => {
   //Filter By Id
   const { id } = livesAll[0].resources[0];
   assert(id);
-  const live = await provider.listLives({
+  const { results: live } = await provider.listLives({
     id,
   });
   assert.equal(live.length, 1);
@@ -38,7 +38,7 @@ const testListById = async ({ provider, livesAll }) => {
 const testListByType = async ({ provider, livesAll }) => {
   //Filter By Type
   const { type } = livesAll[0];
-  const liveByType = await provider.listLives({
+  const { results: liveByType } = await provider.listLives({
     types: [type],
   });
   assert.equal(liveByType.length, 1);
@@ -84,7 +84,7 @@ const testPlanDestroy = async ({ provider, full = false }) => {
   logger.debug(`testPlanDestroy ${provider.name}`);
 
   if (full) {
-    const livesAll = await provider.listLives({ our: true });
+    const { results: livesAll } = await provider.listLives({ our: true });
     assert(!isEmpty(livesAll));
 
     await testDestroyByName({ provider, livesAll });
@@ -92,9 +92,9 @@ const testPlanDestroy = async ({ provider, full = false }) => {
     await testDestroyByType({ provider, livesAll });
   }
   {
-    const { success, results } = await provider.destroyAll();
+    const { error, results } = await provider.destroyAll();
     assert(results);
-    assert(success, "testPlanDestroy destroyAll failed");
+    assert(!error, "testPlanDestroy destroyAll failed");
   }
   {
     const plan = await provider.planQuery();
@@ -103,7 +103,7 @@ const testPlanDestroy = async ({ provider, full = false }) => {
       "plan must no be empty after a destroy"
     );
   }
-  const lives = await provider.listLives({
+  const { results: lives } = await provider.listLives({
     our: true,
   });
 
@@ -115,8 +115,8 @@ exports.testPlanDestroy = testPlanDestroy;
 
 exports.testPlanDeploy = async ({ provider, full = false }) => {
   {
-    const { success } = await provider.destroyAll();
-    assert(success, "testPlanDeploy destroyAll failed");
+    const { error } = await provider.destroyAll();
+    assert(!error, "testPlanDeploy destroyAll failed");
   }
   {
     const plan = await provider.planQuery();
@@ -124,9 +124,9 @@ exports.testPlanDeploy = async ({ provider, full = false }) => {
       !provider.isPlanEmpty(plan),
       "plan must not be empty after destroyAll"
     );
-    const { success, results } = await provider.planApply({ plan });
-    assert(results);
-    assert(success, "planApply failed");
+    const { error, resultCreate } = await provider.planApply({ plan });
+    assert(resultCreate);
+    assert(!error, "planApply failed");
   }
   {
     const plan = await provider.planQuery();

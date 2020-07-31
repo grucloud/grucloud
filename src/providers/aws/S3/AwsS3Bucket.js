@@ -1,4 +1,5 @@
 const AWS = require("aws-sdk");
+const assert = require("assert");
 const {
   defaultsDeep,
   unionWith,
@@ -6,10 +7,6 @@ const {
   isEmpty,
   flatten,
 } = require("lodash/fp");
-const assert = require("assert");
-const logger = require("../../../logger")({ prefix: "S3Bucket" });
-const { retryExpectOk } = require("../../Retry");
-const { tos } = require("../../../tos");
 const {
   map,
   tap,
@@ -21,10 +18,13 @@ const {
   all,
   tryCatch,
 } = require("rubico");
+const logger = require("../../../logger")({ prefix: "S3Bucket" });
+const { retryExpectOk, retryCall } = require("../../Retry");
+const { tos } = require("../../../tos");
+
 const { mapPoolSize } = require("../../Common");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
-assert(flatten);
 exports.AwsS3Bucket = ({ spec, config }) => {
   assert(spec);
   assert(config);
@@ -375,9 +375,11 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const headBucket = async ({ id }) => {
     try {
       await s3.headBucket({ Bucket: id }).promise();
+      //logger.debug(`headBucket ${id}: UP`);
       return true;
     } catch (error) {
       if (error.statusCode === 404) {
+        //logger.debug(`headBucket ${id}:DOWN`);
         return false;
       }
       logger.error(`headBucket ${id}`);

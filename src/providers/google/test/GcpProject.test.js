@@ -24,8 +24,8 @@ describe.skip("GcpProject", async function () {
     });
     project = await provider.makeProject({ name: projectName });
 
-    const { success } = await provider.destroyAll();
-    assert(success);
+    const { error } = await provider.destroyAll();
+    assert(!error);
   });
   after(async () => {
     await provider?.destroyAll();
@@ -44,8 +44,8 @@ describe.skip("GcpProject", async function () {
   });
   it("plan", async function () {
     const plan = await provider.planQuery();
-    assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 1);
+    assert.equal(plan.destroy.plans.length, 0);
+    assert.equal(plan.newOrUpdate.plans.length, 1);
   });
   it("project apply and destroy", async function () {
     await testPlanDeploy({ provider });

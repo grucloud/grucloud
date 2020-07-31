@@ -21,10 +21,10 @@ describe("AwsElasticIpAddress", async function () {
       config,
     });
 
-    const { success } = await provider.destroyAll();
-    assert(success);
+    const { error } = await provider.destroyAll();
+    assert(!error);
 
-    const lives = await provider.listLives({ our: true });
+    const { results: lives } = await provider.listLives({ our: true });
     assert.equal(lives.length, 0);
 
     eip = await provider.makeElasticIpAddress({
@@ -57,7 +57,9 @@ describe("AwsElasticIpAddress", async function () {
       name: eip.name,
     });
 
-    const [eips] = await provider.listLives({ types: ["ElasticIpAddress"] });
+    const {
+      results: [eips],
+    } = await provider.listLives({ types: ["ElasticIpAddress"] });
     const resource = eips.resources[0].data;
     assert.equal(eips.type, "ElasticIpAddress");
     assert.equal(resource.Domain, "vpc");

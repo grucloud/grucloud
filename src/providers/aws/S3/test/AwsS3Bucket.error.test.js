@@ -23,6 +23,7 @@ describe("AwsS3BucketErrors", async function () {
       properties: () => ({}),
     });
 
-    await provider.planQueryAndApply();
+    const plan = await provider.planQuery();
+    assert(plan.error);
   });
 });

@@ -9,7 +9,7 @@ module.exports = ({ resources, provider }) => {
       },
       actions: [
         {
-          name: "Perform check",
+          name: "Perform deploy check",
           command: async ({}) => {},
         },
       ],
@@ -20,7 +20,7 @@ module.exports = ({ resources, provider }) => {
       },
       actions: [
         {
-          name: "Perform check",
+          name: "Perform destroy check",
           command: async ({}) => {},
         },
       ],

@@ -22,15 +22,15 @@ describe("AwsS3Object", async function () {
       config,
     });
 
-    //const { success } = await provider.destroyAll();
+    //const { error } = await provider.destroyAll();
     //assert(success, "destroyAll failed");
   });
   after(async () => {
     //await provider?.destroyAll();
   });
-  it.skip("s3 object apply and destroy", async function () {
+  it("s3 object apply and destroy", async function () {
     const s3Bucket = await provider.makeS3Bucket({
-      name: `${bucketName}-basic`,
+      name: `${bucketName}-basic-for-object`,
       properties: () => ({}),
     });
 
@@ -54,6 +54,6 @@ describe("AwsS3Object", async function () {
     const s3BucketLive = await s3Bucket.getLive();
     assert(s3BucketLive);
 
-    await testPlanDestroy({ provider, full: false });
+    await testPlanDestroy({ provider });
   });
 });

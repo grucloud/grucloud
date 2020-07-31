@@ -24,8 +24,8 @@ describe("GoogleAddress", async function () {
     });
     address = await provider.makeAddress({ name: addressName });
 
-    const { success } = await provider.destroyAll();
-    assert(success);
+    const { error } = await provider.destroyAll();
+    assert(!error);
   });
   after(async () => {
     await provider?.destroyAll();
@@ -37,13 +37,13 @@ describe("GoogleAddress", async function () {
     assert.equal(config.description, provider.config().managedByDescription);
   });
   it("lives", async function () {
-    const lives = await provider.listLives();
+    const { results: lives } = await provider.listLives();
     //console.log("lives ip", lives);
   });
   it("plan", async function () {
     const plan = await provider.planQuery();
-    assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 1);
+    assert.equal(plan.destroy.plans.length, 0);
+    assert.equal(plan.newOrUpdate.plans.length, 1);
   });
   it.skip("apply and destroy", async function () {
     await testPlanDeploy({ provider });

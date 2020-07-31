@@ -55,6 +55,8 @@ exports.mapToGraph = pipe([
 ]);
 
 const DependencyTree = ({ plans, specs, down }) => {
+  assert(Array.isArray(plans));
+  assert(Array.isArray(specs));
   if (down) {
     const result = map((spec) => ({
       name: spec.name,

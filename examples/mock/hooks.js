@@ -14,7 +14,7 @@ module.exports = ({ resources }) => {
         //console.log("onDeployed");
         const host = "www.google.com";
         //throw Error("throw in hook init");
-        await Promise.delay(200);
+        await Promise.delay(100);
         return {
           host,
         };
@@ -23,15 +23,16 @@ module.exports = ({ resources }) => {
         {
           name: "Ping",
           command: async ({ host }) => {
-            const { alive } = await testPing({ host });
-            assert(alive, `cannot ping ${host}`);
+            //const { alive } = await testPing({ host });
+            //assert(alive, `cannot ping ${host}`);
+            await Promise.delay(100);
           },
         },
         {
           name: "SSH",
           command: async ({ host }) => {
             //throw Error("SSSSSSSSSS");
-            await Promise.delay(200);
+            await Promise.delay(100);
           },
         },
       ],

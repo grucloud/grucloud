@@ -22,10 +22,10 @@ describe("AwsInternetGateway", async function () {
       config,
     });
 
-    const { success } = await provider.destroyAll();
-    assert(success);
+    const { error } = await provider.destroyAll();
+    assert(!error);
 
-    const lives = await provider.listLives({ our: true });
+    const { results: lives } = await provider.listLives({ our: true });
     assert.equal(lives.length, 0);
 
     vpc = await provider.makeVpc({
@@ -60,7 +60,9 @@ describe("AwsInternetGateway", async function () {
       name: ig.name,
     });
 
-    const [igs] = await provider.listLives({ types: ["InternetGateway"] });
+    const {
+      results: [igs],
+    } = await provider.listLives({ types: ["InternetGateway"] });
     assert.equal(igs.type, "InternetGateway");
     const myIg = igs.resources.find(
       (resource) => resource.data.Attachments[0].VpcId === vpcLive.VpcId

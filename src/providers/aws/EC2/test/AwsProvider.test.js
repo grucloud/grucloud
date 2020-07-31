@@ -31,9 +31,10 @@ describe("AwsProvider", async function () {
       name: "aws",
       config,
     });
-    const { success, results } = await provider.destroyAll();
+
+    const { error, results } = await provider.destroyAll();
     assert(results);
-    assert(success);
+    assert(!error);
     keyPair = await provider.useKeyPair({
       name: keyPairName,
     });
@@ -143,7 +144,7 @@ describe("AwsProvider", async function () {
     assert.equal(plan.newOrUpdate.length, 7);
   });
   it.skip("listLives all", async function () {
-    const lives = await provider.listLives({ all: true });
+    const { results: lives } = await provider.listLives({ all: true });
     assert(lives);
   });
   it.skip("aws apply plan", async function () {

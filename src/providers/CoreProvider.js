@@ -2,7 +2,8 @@ const assert = require("assert");
 const _ = require("lodash");
 const path = require("path");
 const { defaultsDeep } = require("lodash/fp");
-const { isEmpty, flatten, reverse } = require("ramda");
+const isEmpty = require("rubico/x/isEmpty");
+const { flatten } = require("ramda");
 const {
   pipe,
   tap,
@@ -13,7 +14,7 @@ const {
   get,
   assign,
   all,
-  not,
+  and,
   any,
   reduce,
   fork,
@@ -38,18 +39,6 @@ const {
 } = require("./Common");
 const { Planner, mapToGraph } = require("./Planner");
 
-const identity = (x) => x;
-const noop = ({}) => {};
-
-const filterReadWriteClient = filter((client) => !client.spec.listOnly);
-
-const hasResultError = any(({ error }) => error);
-
-const nextStateOnError = (error) => (error ? "ERROR" : "DONE");
-
-const toUri = ({ providerName, type, name }) =>
-  `${providerName}::${type}::${name}`;
-
 const configProviderDefault = {
   tag: "ManagedByGru",
   managedByKey: "ManagedBy",
@@ -65,6 +54,27 @@ const PlanDirection = {
   UP: 1,
   DOWN: -1,
 };
+
+exports.PlanDirection;
+
+const identity = (x) => x;
+const noop = ({}) => {};
+
+const isValidPlan = (plan) => !isEmpty(plan.plans) && !plan.error;
+
+const filterReadWriteClient = filter((client) => !client.spec.listOnly);
+
+const hasResultError = any(({ error }) => error);
+
+const nextStateOnError = (error) => (error ? "ERROR" : "DONE");
+
+const toUri = ({ providerName, type, name }) =>
+  `${providerName}::${type}::${name}`;
+
+const augmentResultWithError = (results) => ({
+  error: pipe([flatten, any((result) => result.error)])(results),
+  results,
+});
 
 const ResourceMaker = ({
   name: resourceName,
@@ -346,12 +356,17 @@ function CoreProvider({
   };
 
   //Rename
-  const contextFromResource = ({ uri, name, type }) => ({
-    uri: uri,
-    display: `${type}::${name}`,
-    name,
-    type,
-  });
+  const contextFromResource = ({ uri, name, type } = {}) => {
+    if (!uri) {
+      assert(uri, "uri");
+    }
+    return {
+      uri: uri,
+      display: `${type}::${name}`,
+      name,
+      type,
+    };
+  };
 
   const contextFromPlanner = ({ title }) => ({
     uri: `${providerName}::${title}`,
@@ -485,19 +500,36 @@ function CoreProvider({
         !_.isEmpty(types) ? types.includes(client.spec.type) : true
       ),
       map(
-        async (client) =>
-          await filterClient({
+        tryCatch(
+          (client) =>
+            filterClient({
+              client,
+              our,
+              name,
+              id,
+              canBeDeleted,
+              providerName,
+            }),
+          (error, client) => ({
+            error: convertError({ error }),
             client,
-            our,
-            name,
-            id,
-            canBeDeleted,
-            providerName,
           })
+        )
       ),
-      //tap((list) => logger.debug(`listLives before empty: ${tos(list)}`)),
-      filter((live) => !isEmpty(live.resources)),
-      tap((list) => logger.debug(`listLives results: ${tos(list)}`)),
+      tap((list) => {
+        logger.debug(`listLives: ${tos(list)}`);
+      }),
+      filter((live) => (live.resources ? !isEmpty(live.resources) : true)),
+      tap((list) => {
+        // logger.debug(`listLives: ${tos(list)}`);
+      }),
+      (list) => ({
+        error: hasResultError(list),
+        results: list,
+      }),
+      tap((result) => {
+        logger.debug(`listLives result: ${tos(result)}`);
+      }),
     ])(clients);
   };
 
@@ -525,7 +557,7 @@ function CoreProvider({
     return lists;
   };
 
-  const planQuery = async ({ onStateChange } = {}) => {
+  const planQuery = async ({ onStateChange = identity } = {}) => {
     return await pipe([
       tap(() => {
         logger.debug(`planQuery begins`);
@@ -600,7 +632,6 @@ function CoreProvider({
                         name: action.name,
                       }),
                       nextState: "RUNNING",
-                      indent: 4,
                     });
                   }),
                   tap(async (action) => await action.command(payload)),
@@ -637,6 +668,7 @@ function CoreProvider({
             )(actions),
           tap(
             switchCase([
+              //TODO
               pipe([filter(get("error")), isEmpty]),
               () =>
                 onStateChange({
@@ -668,11 +700,6 @@ function CoreProvider({
       ),
     ]);
 
-  const augmentResultWithSuccess = (results) => ({
-    success: pipe([flatten, all((result) => !result.error)])(results),
-    results,
-  });
-
   const runOnDeployed = ({ onStateChange }) =>
     pipe([
       tap((hooks) => {
@@ -703,8 +730,8 @@ function CoreProvider({
           }
         )()
       ),
-      augmentResultWithSuccess,
-      tap((xx) => {
+      augmentResultWithError,
+      tap((result) => {
         logger.info(`runOnDeployed DONE`);
       }),
     ])([...hookMap.values()]);
@@ -731,7 +758,7 @@ function CoreProvider({
           }
         )()
       ),
-      augmentResultWithSuccess,
+      augmentResultWithError,
       tap((result) => {
         logger.info(`runOnDestroyed DONE`);
       }),
@@ -891,7 +918,7 @@ function CoreProvider({
       spinnersStartProvider({ onStateChange }),
       tap(
         switchCase([
-          not(() => isEmpty(plan.newOrUpdate.plans)),
+          () => isValidPlan(plan.newOrUpdate),
           pipe([
             spinnersStartResources({
               onStateChange,
@@ -910,7 +937,7 @@ function CoreProvider({
       ),
       tap(
         switchCase([
-          not(() => isEmpty(plan.destroy.plans)),
+          () => isValidPlan(plan.destroy),
           pipe([
             spinnersStartResources({
               onStateChange,
@@ -974,37 +1001,60 @@ function CoreProvider({
     ])();
   };
 
-  const planApply = async ({ plan, onStateChange }) => {
-    assert(plan);
-
-    logger.info(`Apply Plan ${tos(plan)}`);
-    //TODO run in parallel
-    const resultDestroy = await planDestroy({
-      plans: plan.destroy.plans,
-      onStateChange,
-      direction: PlanDirection.UP,
-      title: TitleDestroying,
-    });
-    const resultCreate = await upsertResources({
-      plans: plan.newOrUpdate.plans,
-      onStateChange,
-      title: TitleDeploying,
-    });
-
-    const hookResults = !isEmpty(plan.newOrUpdate.plans)
-      ? await runOnDeployed({ onStateChange })
-      : { success: true };
-
-    const success =
-      resultCreate.success && resultDestroy.success && hookResults.success;
-
-    // Stop
-    return {
-      resultCreate,
-      resultDestroy,
-      success,
-      hookResults,
-    };
+  const planApply = async ({ plan, onStateChange = identity }) => {
+    return await pipe([
+      tap(() => {
+        assert(plan);
+        logger.info(`Apply Plan ${tos(plan)}`);
+      }),
+      tap(() =>
+        onStateChange({
+          context: { uri: providerName },
+          nextState: "RUNNING",
+        })
+      ),
+      fork({
+        resultDestroy: switchCase([
+          () => isValidPlan(plan.destroy),
+          () =>
+            planDestroy({
+              plans: plan.destroy.plans,
+              onStateChange,
+              direction: PlanDirection.UP,
+              title: TitleDestroying,
+            }),
+          () => ({ success: true, error: false, destroy: { plans: [] } }),
+        ]),
+        resultCreate: switchCase([
+          () => isValidPlan(plan.newOrUpdate),
+          pipe([
+            () =>
+              upsertResources({
+                plans: plan.newOrUpdate.plans,
+                onStateChange,
+                title: TitleDeploying,
+              }),
+            (create) =>
+              assign({
+                hooks: () => runOnDeployed({ onStateChange }),
+              })({ create }),
+          ]),
+          () => ({
+            create: { success: true, error: false, newOrUpdate: { plans: [] } },
+            hooks: { success: true, error: false },
+          }),
+        ]),
+      }),
+      (result) => ({
+        error:
+          !result.resultCreate.create.success ||
+          result.resultCreate.hooks.error ||
+          !result.resultDestroy.success,
+        resultCreate: result.resultCreate.create,
+        hookResults: result.resultCreate.hooks,
+        resultDestroy: result.resultDestroy,
+      }),
+    ])();
   };
 
   /**
@@ -1184,12 +1234,12 @@ function CoreProvider({
     options,
     direction = PlanDirection.DOWN,
     onStateChange,
-  }) => {
-    assert(onStateChange);
-    return await pipe([
-      tap((x) =>
-        logger.debug(`planFindDestroy ${tos({ options, direction })}`)
-      ),
+  }) =>
+    pipe([
+      tap((x) => {
+        logger.debug(`planFindDestroy ${tos({ options, direction })}`);
+        assert(onStateChange);
+      }),
       filter((client) => !client.spec.listOnly),
 
       tap(() =>
@@ -1261,7 +1311,6 @@ function CoreProvider({
       ),
       tap((x) => logger.debug(`planFindDestroy  ${tos(x)}`)),
     ])(clients);
-  };
 
   const onStateChangeResource = (onStateChange) => {
     return ({ resource, error, ...other }) => {
@@ -1272,9 +1321,12 @@ function CoreProvider({
       if (!resource) {
         assert(false, "no resource");
       }
+      // TODO
+      /*
       if (!resource.name) {
         assert(false, "no resource.name");
       }
+      */
       if (!resource.type) {
         assert(false, "no resource.type");
       }
@@ -1325,7 +1377,7 @@ function CoreProvider({
 
   const planQueryAndApply = async ({ onStateChange = identity } = {}) => {
     const plan = await planQuery({ onStateChange });
-    //TODO
+    if (plan.error) return { error: true, plan };
     return await planApply({ plan, onStateChange });
   };
   const destroyByClient = async ({
@@ -1432,7 +1484,7 @@ function CoreProvider({
       ])();
 
       return {
-        success: hookResults.success && plannerResult.success ? true : false,
+        error: hookResults.error || !plannerResult.success ? true : false,
         results: plannerResult.results,
         hookResults,
       };
@@ -1442,33 +1494,33 @@ function CoreProvider({
   };
 
   const destroyAll = tryCatch(
-    async (options) =>
-      await pipe([
-        tap((options) => logger.debug(`destroyAll ${tos({ options })}`)),
+    pipe([
+      tap(() => logger.debug(`destroyAll`)),
+      async ({ onStateChange = identity } = {}) =>
+        planFindDestroy({ options: {}, onStateChange }),
+      async ({ plans }) =>
+        await planDestroy({ plans, direction: PlanDirection.DOWN }),
 
-        async () => planFindDestroy({ options }),
-        async (plans) =>
-          await planDestroy({ plans, direction: PlanDirection.DOWN }),
-
-        tap(({ success, results }) =>
-          logger.debug(
-            `destroyAll DONE, success: ${success}, #results ${results.length}`
-          )
-        ),
-      ])(options),
+      tap(({ error, results }) =>
+        logger.debug(
+          `destroyAll DONE, error: ${error}, #results ${results.length}`
+        )
+      ),
+    ]),
     (error) => {
       logError("destroyAll", error);
       throw error;
     }
   );
 
-  // TODO switch case
-  const isPlanEmpty = (plan) => {
-    if (isEmpty(plan.newOrUpdate) && isEmpty(plan.destroy)) {
-      return true;
-    }
-    return false;
-  };
+  const isPlanEmpty = switchCase([
+    and([
+      (plan) => isEmpty(plan.newOrUpdate.plans),
+      (plan) => isEmpty(plan.destroy.plans),
+    ]),
+    () => true,
+    () => false,
+  ]);
 
   checkEnv(mandatoryEnvs);
   checkConfig(config, mandatoryConfigKeys);

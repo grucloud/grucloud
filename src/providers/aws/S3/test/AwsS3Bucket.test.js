@@ -20,14 +20,14 @@ describe("AwsS3Bucket", async function () {
       config,
     });
 
-    const { success } = await provider.destroyAll();
-    assert(success, "destroyAll failed");
+    const { error } = await provider.destroyAll();
+    assert(!error, "destroyAll failed");
   });
   after(async () => {
-    //await provider?.destroyAll();
+    await provider?.destroyAll();
   });
 
-  it.skip("s3Bucket apply and destroy", async function () {
+  it("s3Bucket apply and destroy", async function () {
     const s3Bucket = await provider.makeS3Bucket({
       name: `${bucketPrefix}-basic`,
       properties: () => ({}),
@@ -71,28 +71,24 @@ describe("AwsS3Bucket", async function () {
     }
   });
   it("notification-configuration error", async function () {
-    try {
-      await provider.makeS3Bucket({
-        name: `${bucketPrefix}-notification-configuration`,
-        properties: () => ({
-          NotificationConfiguration: {
-            TopicConfigurations: [
-              {
-                Events: ["s3:ObjectCreated:*"],
-                TopicArn:
-                  "arn:aws:sns:us-west-2:123456789012:s3-notification-topic",
-              },
-            ],
-          },
-        }),
-      });
+    await provider.makeS3Bucket({
+      name: `${bucketPrefix}-notification-configuration-invalid-topic`,
+      properties: () => ({
+        NotificationConfiguration: {
+          TopicConfigurations: [
+            {
+              Events: ["s3:ObjectCreated:*"],
+              TopicArn:
+                "arn:aws:sns:us-west-2:123456789012:s3-notification-topic",
+            },
+          ],
+        },
+      }),
+    });
 
-      const { success, results } = await provider.planQueryAndApply();
-      assert.equal(success, false);
-      assert.equal(results[0].error.code, "InvalidArgument");
-    } catch (error) {
-      console.log(error);
-      //assert(false);
-    }
+    const plan = await provider.planQuery();
+    const { error, resultCreate } = await provider.planApply({ plan });
+    assert.equal(error, true);
+    assert.equal(resultCreate.results[0].error.code, "InvalidArgument");
   });
 });

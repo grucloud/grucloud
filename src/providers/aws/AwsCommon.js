@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tryCatch } = require("rubico");
-const { head, tap } = require("ramda");
+const { pipe, tryCatch, tap } = require("rubico");
+const first = require("rubico/x/first");
 const logger = require("../../logger")({ prefix: "Aws" });
 const { tos } = require("../../tos");
 
@@ -25,7 +25,7 @@ exports.getByIdCore = ({ fieldIds, getList }) =>
       tap(({ id }) => logger.debug(`getById ${fieldIds} ${id}`)),
       async ({ id }) => await getList({ params: { [fieldIds]: [id] } }),
       ({ items }) => items,
-      head,
+      first,
       tap((item) => logger.debug(`getById  ${fieldIds} result: ${tos(item)}`)),
     ]),
     (error) => {

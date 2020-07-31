@@ -1,9 +1,9 @@
 const assert = require("assert");
+const { map, pipe } = require("rubico");
 const { ConfigLoader } = require("ConfigLoader");
 const AwsProvider = require("../../AwsProvider");
-const { map, pipe } = require("rubico");
 
-describe("AwsS3BucketPerf", async function () {
+describe.skip("AwsS3BucketPerf", async function () {
   let config;
   before(async function () {
     try {
@@ -40,12 +40,12 @@ describe("AwsS3BucketPerf", async function () {
     ])(maxBuckets);
 
     {
-      const { success } = await provider.planQueryAndApply();
-      assert(success, "planQueryAndApply failed");
+      const { error } = await provider.planQueryAndApply();
+      assert(!error, "planQueryAndApply failed");
     }
     {
-      const { success } = await provider.destroyAll();
-      assert(success, "destroyAll");
+      const { error } = await provider.destroyAll();
+      assert(!error, "destroyAll");
     }
   });
 });

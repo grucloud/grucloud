@@ -19,8 +19,8 @@ describe("ScalewayIp", async function () {
       config,
     });
 
-    const { success } = await provider.destroyAll();
-    assert(success);
+    const { error } = await provider.destroyAll();
+    assert(!error);
 
     ip = await provider.makeIp({ name: "myip" });
   });
@@ -28,7 +28,7 @@ describe("ScalewayIp", async function () {
     await provider?.destroyAll();
   });
 
-  it("ip config", async function () {
+  it("ip resolveConfig", async function () {
     const config = await ip.resolveConfig();
     assert(config.tags);
     assert(config.tags.find((tag) => tag === provider.config().tag));

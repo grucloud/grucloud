@@ -55,8 +55,8 @@ describe("AwsSecurityGroup", async function () {
       }),
     });
 
-    const { success } = await provider.destroyAll();
-    assert(success);
+    const { error } = await provider.destroyAll();
+    assert(!error);
   });
   after(async () => {
     await provider?.destroyAll();
@@ -72,7 +72,9 @@ describe("AwsSecurityGroup", async function () {
     const live = await sg.getLive();
   });
   it("sg listLives", async function () {
-    const [sgs] = await provider.listLives({ types: ["SecurityGroup"] });
+    const {
+      results: [sgs],
+    } = await provider.listLives({ types: ["SecurityGroup"] });
     assert(sgs);
     const sgDefault = sgs.resources.find((sg) => sg.name === "default");
     assert(sgDefault);

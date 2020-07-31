@@ -115,9 +115,7 @@ module.exports = CoreClient = ({
     }
   };
 
-  //TODO same for down
   const isUpById = isUpByIdFactory({ getById, getList, findId });
-
   const isDownById = isDownByIdCore({ getById, getList, findId });
 
   const create = async ({ name, payload, dependencies }) => {

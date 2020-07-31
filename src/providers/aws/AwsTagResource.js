@@ -1,4 +1,4 @@
-const { isEmpty } = require("ramda");
+const isEmpty = require("rubico/x/isEmpty");
 const AWS = require("aws-sdk");
 const assert = require("assert");
 const { KeyName } = require("./AwsCommon");
