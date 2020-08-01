@@ -22,12 +22,10 @@ describe("AwsS3Object", async function () {
       config,
     });
 
-    //const { error } = await provider.destroyAll();
-    //assert(success, "destroyAll failed");
+    const { error } = await provider.destroyAll();
+    assert(!error, "destroyAll failed");
   });
-  after(async () => {
-    //await provider?.destroyAll();
-  });
+
   it("s3 object apply and destroy", async function () {
     const s3Bucket = await provider.makeS3Bucket({
       name: `${bucketName}-basic-for-object`,

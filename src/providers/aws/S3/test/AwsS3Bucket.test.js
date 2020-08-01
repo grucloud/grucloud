@@ -72,6 +72,7 @@ describe("AwsS3Bucket", async function () {
     }
   });
   it("notification-configuration error", async function () {
+    const region = provider.config().region;
     await provider.makeS3Bucket({
       name: `${bucketPrefix}-notification-configuration-invalid-topic`,
       properties: () => ({
@@ -79,8 +80,7 @@ describe("AwsS3Bucket", async function () {
           TopicConfigurations: [
             {
               Events: ["s3:ObjectCreated:*"],
-              TopicArn:
-                "arn:aws:sns:us-west-2:123456789012:s3-notification-topic",
+              TopicArn: `arn:aws:sns:${region}:123456789012:s3-notification-topic`,
             },
           ],
         },
@@ -90,6 +90,10 @@ describe("AwsS3Bucket", async function () {
     const plan = await provider.planQuery();
     const { error, resultCreate } = await provider.planApply({ plan });
     assert.equal(resultCreate.results[0].error.code, "InvalidArgument");
+    assert.equal(
+      resultCreate.results[0].error.message,
+      "Unable to validate the following destination configurations"
+    );
     assert(error, "should have failed");
   });
 });

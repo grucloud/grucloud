@@ -88,8 +88,16 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     logger.debug(`getByName ${name}`);
 
     const params = { Bucket: name };
-
-    if (!(await isUpById({ id: name }))) {
+    if (
+      !(await retryCall({
+        name: `getByName isUpById ${name}`,
+        fn: () => isUpById({ id: name }),
+        isExpectedResult: (result) => result,
+        repeatCount: 7,
+        retryCount: 4,
+        retryDelay: 1e3,
+      }))
+    ) {
       logger.debug(`getByName cannot find: ${name}`);
       return;
     }
