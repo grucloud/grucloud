@@ -206,7 +206,6 @@ module.exports = AwsEC2 = ({ spec, config }) => {
   return {
     type: "EC2",
     spec,
-    ec2,
     isUpById,
     isDownById,
     findId,

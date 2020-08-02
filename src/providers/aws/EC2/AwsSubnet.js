@@ -60,7 +60,6 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     }
 
     const result = await ec2.deleteSubnet({ SubnetId: id }).promise();
-    logger.debug(`destroy subnet IN PROGRESS, ${tos({ name, id, result })}`);
     return result;
   };
   // TODO params in ec2.describeSubnets

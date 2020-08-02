@@ -109,6 +109,9 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
       throw Error(`destroy invalid id`);
     }
     const ig = await getById({ id });
+    if (!ig) {
+      throw Error(`Cannot get internet gateway: ${id}`);
+    }
     const attachment = ig.Attachments[0];
     if (attachment) {
       const paramsDetach = {

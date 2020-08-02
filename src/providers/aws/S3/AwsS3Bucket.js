@@ -728,7 +728,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   return {
     type: "S3Bucket",
     spec,
-    s3,
     config: clientConfig,
     isUpById,
     isDownById,

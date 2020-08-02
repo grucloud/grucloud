@@ -13,6 +13,8 @@ const AwsHooksEC2Vpc = require("../aws/ec2-vpc/hooks");
 const AwsStackS3 = require("../aws/s3/iac");
 const AwsHooksS3 = require("../aws/s3/hooks");
 
+const AwsStackS3Multiple = require("../aws/s3-multiple/iac");
+
 const AzureStack = require("../azure/iac");
 const AzureHooks = require("../azure/hooks");
 
@@ -51,11 +53,18 @@ const createAws = async ({ config }) => {
   });
   provider.hookAdd("ec2-vpc", AwsHooksEC2Vpc({ resources: ec2Vpc }));
 
+  // S3
   const s3 = await AwsStackS3.createResources({
     provider,
   });
 
-  provider.hookAdd("ec3", AwsHooksS3({ resources: s3 }));
+  provider.hookAdd("s3", AwsHooksS3({ resources: s3 }));
+
+  // S3 Multiple
+  const s3Multiple = await AwsStackS3Multiple.createResources({
+    provider,
+  });
+
   return provider;
 };
 
@@ -125,7 +134,7 @@ const createMock = async ({ config }) => {
 exports.createStack = async ({ config }) => {
   return {
     providers: [
-      await createMock({ config }),
+      //await createMock({ config }),
       await createAws({ config }),
       await createAzure({ config }),
       await createGoogle({ config }),

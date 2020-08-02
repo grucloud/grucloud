@@ -105,7 +105,12 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     if (isEmpty(id)) {
       throw Error(`destroy invalid id`);
     }
+
     const rtLive = await getById({ id });
+    if (!rtLive) {
+      throw Error(`Cannot get route tables: ${id}`);
+    }
+
     await pipe([
       filter((association) => !association.Main),
       async (associations) =>

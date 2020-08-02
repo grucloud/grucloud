@@ -87,6 +87,10 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
       throw Error(`destroy elastic ip address invalid id`);
     }
     const eipLive = await getById({ id });
+    if (!eipLive) {
+      throw Error(`Cannot get elastic ip: ${id}`);
+    }
+
     if (eipLive.AssociationId) {
       logger.debug(`destroy eip disassociateAddress ${tos({ eipLive })}`);
 
