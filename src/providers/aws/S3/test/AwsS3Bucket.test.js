@@ -47,30 +47,28 @@ describe("AwsS3Bucket", async function () {
   });
 
   it("s3Bucket acl error", async function () {
-    try {
-      await provider.makeS3Bucket({
-        name: `${bucketPrefix}-acl-accesscontrolpolicy`,
-        properties: () => ({
-          AccessControlPolicy: {
-            Grants: [
-              {
-                Grantee: {
-                  Type: "Group",
-                  ID: "uri=http://acs.amazonaws.com/groups/s3/LogDelivery",
-                },
-                Permission: "FULL_CONTROL",
+    await provider.makeS3Bucket({
+      name: `${bucketPrefix}-acl-accesscontrolpolicy`,
+      properties: () => ({
+        AccessControlPolicy: {
+          Grants: [
+            {
+              Grantee: {
+                Type: "Group",
+                ID: "uri=http://acs.amazonaws.com/groups/s3/LogDelivery",
               },
-            ],
-          },
-        }),
-      });
+              Permission: "FULL_CONTROL",
+            },
+          ],
+        },
+      }),
+    });
 
-      await testPlanDeploy({ provider });
-    } catch (error) {
-      console.log(error.stack);
-      //assert(error);
-    }
+    const { error, resultCreate } = await provider.planQueryAndApply();
+    assert(error, "should have failed");
+    assert.equal(resultCreate.results[0].error.code, "MalformedACLError");
   });
+
   it("notification-configuration error", async function () {
     const region = provider.config().region;
     await provider.makeS3Bucket({
