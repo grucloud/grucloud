@@ -3,7 +3,7 @@ const _ = require("lodash");
 const path = require("path");
 const { defaultsDeep } = require("lodash/fp");
 const isEmpty = require("rubico/x/isEmpty");
-const { flatten } = require("ramda");
+const flatten = require("rubico/x/flatten");
 const {
   pipe,
   tap,

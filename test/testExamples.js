@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const shell = require("shelljs");
 const { pipe, tap, map, any, switchCase, filter } = require("rubico");
-const { flatten } = require("ramda");
+const flatten = require("rubico/x/flatten");
 const examplesPath = "../examples";
 const programName = "gc";
 

@@ -26,7 +26,7 @@ describe("AwsS3Object", async function () {
     assert(!error, "destroyAll failed");
   });
 
-  it("s3 object apply and destroy", async function () {
+  it.skip("s3 object apply and destroy", async function () {
     const s3Bucket = await provider.makeS3Bucket({
       name: `${bucketName}-basic-for-object`,
       properties: () => ({}),

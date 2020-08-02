@@ -29,7 +29,7 @@ const {
 
 const pluck = require("rubico/x/pluck");
 const isEmpty = require("rubico/x/isEmpty");
-const { flatten } = require("ramda");
+const flatten = require("rubico/x/flatten");
 // Common
 const plansHasSuccess = all(({ result }) => !result.error);
 

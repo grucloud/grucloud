@@ -20,8 +20,6 @@
 gc d --name grucloud-s3bucket-test
 No resources to destroy
 
-- remove ramda
-
 gc p --provider aws
 error: unknown option '--provider'
 
