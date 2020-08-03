@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { defaultsDeep } = require("lodash/fp");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 const { getField } = require("../../../ProviderCommon");
 const GoogleClient = require("../../GoogleClient");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
@@ -19,14 +19,11 @@ module.exports = GcpSubNetwork = ({ spec, config }) => {
     const { network } = dependencies;
     assert(network, `SubNetwork '${name}' is missing the 'network' dependency`);
 
-    const config = defaultsDeep(
-      {
-        name,
-        description: managedByDescription,
-        network: getField(network, "selfLink"),
-      },
-      properties
-    );
+    const config = defaultsDeep({
+      name,
+      description: managedByDescription,
+      network: getField(network, "selfLink"),
+    })(properties);
     logger.debug(`configDefault ${tos({ config })}`);
     return config;
   };

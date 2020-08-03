@@ -39,7 +39,7 @@ describe("AwsEC2", async function () {
     });
   });
   after(async () => {
-    //await provider?.destroyAll();
+    await provider?.destroyAll();
   });
   it("ec2 server resolveConfig", async function () {
     assert.equal(server.name, serverName);

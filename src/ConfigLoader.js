@@ -1,4 +1,6 @@
-const { defaultsDeep, isEmpty } = require("lodash/fp");
+const { isEmpty } = require("lodash/fp");
+const defaultsDeep = require("rubico/x/defaultsDeep");
+
 const assert = require("assert");
 const npath = require("path");
 const fs = require("fs");
@@ -108,9 +110,7 @@ exports.ConfigLoader = ({
   envLoader({ configDir, stage });
 
   const defaultConfig = configFromDefault({ configDir });
-  const stageConfig = configFromStage({ configDir, stage });
-  const merged = defaultsDeep(defaultConfig, stageConfig);
-  //console.log(merged);
-
+  const stageConfig = configFromStage({ configDir, stage }) || {};
+  const merged = defaultsDeep(defaultConfig)(stageConfig);
   return merged;
 };

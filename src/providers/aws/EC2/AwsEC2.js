@@ -1,5 +1,7 @@
 const AWS = require("aws-sdk");
-const { defaultsDeep, isEmpty, map } = require("lodash/fp");
+const { isEmpty, map } = require("lodash/fp");
+const defaultsDeep = require("rubico/x/defaultsDeep");
+
 const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "AwsEc2" });
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
@@ -167,40 +169,37 @@ module.exports = AwsEC2 = ({ spec, config }) => {
         SubnetId: getField(subnet, "SubnetId"),
       },
     ];
-    return defaultsDeep(
-      {
-        BlockDeviceMappings: [
-          {
-            DeviceName: "/dev/sdh",
-            Ebs: {
-              VolumeSize: properties.VolumeSize,
+    return defaultsDeep({
+      BlockDeviceMappings: [
+        {
+          DeviceName: "/dev/sdh",
+          Ebs: {
+            VolumeSize: properties.VolumeSize,
+          },
+        },
+      ],
+      ...(subnet && { NetworkInterfaces: buildNetworkInterfaces() }),
+      TagSpecifications: [
+        {
+          ResourceType: "instance",
+          Tags: [
+            {
+              Key: KeyName,
+              Value: name,
             },
-          },
-        ],
-        ...(subnet && { NetworkInterfaces: buildNetworkInterfaces() }),
-        TagSpecifications: [
-          {
-            ResourceType: "instance",
-            Tags: [
-              {
-                Key: KeyName,
-                Value: name,
-              },
-              {
-                Key: managedByKey,
-                Value: managedByValue,
-              },
-              {
-                Key: stageTagKey,
-                Value: stage,
-              },
-            ],
-          },
-        ],
-        ...(keyPair && { KeyName: keyPair.resource.name }),
-      },
-      otherProperties
-    );
+            {
+              Key: managedByKey,
+              Value: managedByValue,
+            },
+            {
+              Key: stageTagKey,
+              Value: stage,
+            },
+          ],
+        },
+      ],
+      ...(keyPair && { KeyName: keyPair.resource.name }),
+    })(otherProperties);
   };
 
   return {

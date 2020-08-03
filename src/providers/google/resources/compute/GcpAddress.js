@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { defaultsDeep } = require("lodash/fp");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 const logger = require("../../../../logger")({ prefix: "GcpInstance" });
 const { tos } = require("../../../../tos");
 const GoogleClient = require("../../GoogleClient");
@@ -14,13 +14,10 @@ module.exports = GcpAddress = ({ spec, config }) => {
   const { project, region, managedByDescription } = config;
 
   const configDefault = ({ name, properties }) =>
-    defaultsDeep(
-      {
-        name,
-        description: managedByDescription,
-      },
-      properties
-    );
+    defaultsDeep({
+      name,
+      description: managedByDescription,
+    })(properties);
 
   const getStateName = (instance) => {
     const { status } = instance;

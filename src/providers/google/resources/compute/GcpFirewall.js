@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { defaultsDeep } = require("lodash/fp");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 const { getField } = require("../../../ProviderCommon");
 const GoogleClient = require("../../GoogleClient");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
@@ -18,14 +18,11 @@ module.exports = GcpFirewall = ({ spec, config }) => {
     logger.debug(`configDefault ${tos({ properties, dependencies })}`);
     const { network } = dependencies;
 
-    const config = defaultsDeep(
-      {
-        name,
-        description: managedByDescription,
-        ...(network && { network: getField(network, "selfLink") }),
-      },
-      properties
-    );
+    const config = defaultsDeep({
+      name,
+      description: managedByDescription,
+      ...(network && { network: getField(network, "selfLink") }),
+    })(properties);
     logger.debug(`configDefault ${tos({ config })}`);
 
     return config;

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { defaultsDeep } = require("lodash/fp");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 const logger = require("../../../../logger")({ prefix: "GcpServiceAccount" });
 const { tos } = require("../../../../tos");
 const GoogleClient = require("../../GoogleClient");
@@ -26,15 +26,12 @@ exports.GcpServiceAccount = ({ spec, config }) => {
   const { project, managedByDescription } = config;
 
   const configDefault = ({ name, properties }) =>
-    defaultsDeep(
-      {
-        accountId: name,
-        serviceAccount: {
-          description: managedByDescription,
-        },
+    defaultsDeep({
+      accountId: name,
+      serviceAccount: {
+        description: managedByDescription,
       },
-      properties
-    );
+    })(properties);
 
   const findId = (item) => item.uniqueId;
   const findTargetId = (item) => item.uniqueId;

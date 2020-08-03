@@ -1,5 +1,4 @@
 const assert = require("assert");
-const _ = require("lodash");
 const { defaultsDeep } = require("lodash/fp");
 
 const MockClient = require("./MockClient");

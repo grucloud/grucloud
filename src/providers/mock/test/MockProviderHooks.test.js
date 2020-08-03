@@ -1,4 +1,3 @@
-const _ = require("lodash");
 const assert = require("assert");
 const { createResources } = require("./MockStack");
 const { ConfigLoader } = require("ConfigLoader");

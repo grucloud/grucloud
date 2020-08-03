@@ -1,6 +1,5 @@
 const assert = require("assert");
-const _ = require("lodash");
-const urljoin = require("url-join");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 const MockClient = require("../MockClient");
 const { SpecDefault } = require("../../SpecDefault");
 const { createAxiosMock } = require("../MockAxios");
@@ -12,12 +11,10 @@ describe("MockClient", function () {
   let mockClient;
   const config = { mockCloud: MockCloud(), createAxios: createAxiosMock };
 
-  const spec = _.defaults(
-    {
-      type: "Server",
-    },
-    SpecDefault({})
-  );
+  const spec = defaultsDeep(SpecDefault({}))({
+    type: "Server",
+  });
+
   it("regex", async function () {
     const r = new RegExp(/^\/.+/);
     assert(!r.test("http://ggg/"));

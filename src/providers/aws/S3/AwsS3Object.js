@@ -1,8 +1,9 @@
 const AWS = require("aws-sdk");
 const fs = require("fs").promises;
 const md5File = require("md5-file");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 
-const { defaultsDeep, isEmpty, first } = require("lodash/fp");
+const { isEmpty, first } = require("lodash/fp");
 const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "S3Object" });
 const { retryExpectOk } = require("../../Retry");
@@ -278,7 +279,7 @@ exports.AwsS3Object = ({ spec, config }) => {
 
   const configDefault = async ({ name, properties }) => {
     logger.debug(`configDefault ${tos({ name, properties })}`);
-    return defaultsDeep({ Key: name }, properties);
+    return defaultsDeep({ Key: name })(properties);
   };
 
   return {

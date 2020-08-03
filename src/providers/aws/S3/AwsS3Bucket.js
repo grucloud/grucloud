@@ -1,12 +1,8 @@
 const AWS = require("aws-sdk");
 const assert = require("assert");
-const {
-  defaultsDeep,
-  unionWith,
-  isEqual,
-  isEmpty,
-  flatten,
-} = require("lodash/fp");
+const { unionWith, isEqual, isEmpty, flatten } = require("lodash/fp");
+const defaultsDeep = require("rubico/x/defaultsDeep");
+
 const {
   map,
   tap,
@@ -722,7 +718,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
   const configDefault = async ({ name, properties }) => {
     logger.debug(`configDefault ${tos({ name, properties })}`);
-    return defaultsDeep({ Bucket: name }, properties);
+    return defaultsDeep({ Bucket: name })(properties);
   };
 
   return {

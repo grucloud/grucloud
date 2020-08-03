@@ -1,4 +1,4 @@
-const { defaultsDeep } = require("lodash/fp");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 const assert = require("assert");
 const logger = require("../../../../logger")({ prefix: "GoogleVmInstance" });
 const { tos } = require("../../../../tos");
@@ -40,56 +40,50 @@ module.exports = GoogleVmInstance = ({ spec, config }) => {
       ...otherProperties
     } = properties;
 
-    const config = defaultsDeep(
-      {
-        kind: "compute#instance",
-        name,
-        zone: `projects/${project}/zones/${zone}`,
-        machineType: `projects/${project}/zones/${zone}/machineTypes/${machineType}`,
-        labels: buildLabel(),
-        metadata: defaultsDeep(
-          {
-            kind: "compute#metadata",
+    const config = defaultsDeep({
+      kind: "compute#instance",
+      name,
+      zone: `projects/${project}/zones/${zone}`,
+      machineType: `projects/${project}/zones/${zone}/machineTypes/${machineType}`,
+      labels: buildLabel(),
+      metadata: defaultsDeep({
+        kind: "compute#metadata",
+      })(metadata || {}),
+      //TODO
+      //serviceAccounts: properties.serviceAccounts,
+      disks: [
+        {
+          kind: "compute#attachedDisk",
+          type: "PERSISTENT",
+          boot: true,
+          mode: "READ_WRITE",
+          autoDelete: true,
+          deviceName: toTagName(name, tag),
+          initializeParams: {
+            sourceImage,
+            diskType: `projects/${project}/zones/${zone}/diskTypes/${diskType}`,
+            diskSizeGb,
           },
-          metadata
-        ),
-        //TODO
-        //serviceAccounts: properties.serviceAccounts,
-        disks: [
-          {
-            kind: "compute#attachedDisk",
-            type: "PERSISTENT",
-            boot: true,
-            mode: "READ_WRITE",
-            autoDelete: true,
-            deviceName: toTagName(name, tag),
-            initializeParams: {
-              sourceImage,
-              diskType: `projects/${project}/zones/${zone}/diskTypes/${diskType}`,
-              diskSizeGb,
+          diskEncryptionKey: {},
+        },
+      ],
+      networkInterfaces: [
+        {
+          kind: "compute#networkInterface",
+          subnetwork: `projects/${project}/regions/${region}/subnetworks/default`,
+          accessConfigs: [
+            {
+              ...(ip && { natIP: getField(ip, "address") }),
+              kind: "compute#accessConfig",
+              name: "External NAT",
+              type: "ONE_TO_ONE_NAT",
+              networkTier: "PREMIUM",
             },
-            diskEncryptionKey: {},
-          },
-        ],
-        networkInterfaces: [
-          {
-            kind: "compute#networkInterface",
-            subnetwork: `projects/${project}/regions/${region}/subnetworks/default`,
-            accessConfigs: [
-              {
-                ...(ip && { natIP: getField(ip, "address") }),
-                kind: "compute#accessConfig",
-                name: "External NAT",
-                type: "ONE_TO_ONE_NAT",
-                networkTier: "PREMIUM",
-              },
-            ],
-            aliasIpRanges: [],
-          },
-        ],
-      },
-      otherProperties
-    );
+          ],
+          aliasIpRanges: [],
+        },
+      ],
+    })(otherProperties);
     logger.debug(`configDefault ${name} result: ${tos(config)}`);
     return config;
   };

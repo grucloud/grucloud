@@ -1,10 +1,21 @@
-const _ = require("lodash");
 const assert = require("assert");
+const forEach = require("rubico/x/forEach");
 const { createStack } = require("./MockStack");
 const { ConfigLoader } = require("ConfigLoader");
 
 const logger = require("logger")({ prefix: "MockProviderTest" });
-const toJSON = (x) => JSON.stringify(x, null, 4);
+
+const displayResource = (resource, depth = 0) => {
+  console.log(
+    "  ".repeat(depth),
+    resource.toJSON && resource.toJSON(),
+    resource.getParent && resource.getParent()?.name
+  );
+  resource.dependencies &&
+    forEach((dep) => {
+      displayResource(dep, depth + 1);
+    })(resource.dependencies);
+};
 
 describe("MockProvider", async function () {
   let stack;
@@ -61,38 +72,11 @@ describe("MockProvider", async function () {
     assert(configs);
   });
 
-  const displayResource = (resource, depth = 0) => {
-    console.log(
-      "  ".repeat(depth),
-      resource.toJSON(),
-      resource.getParent()?.name
-    );
-    _.map(resource.dependencies, (dep) => {
-      displayResource(dep, depth + 1);
-    });
-  };
-  const destroyResource = async (resource) => {
-    await resource.destroy();
-    await Promise.all(
-      _.map(resource.dependencies, async (dep) => {
-        await destroyResource(dep);
-      })
-    );
-  };
-  it.skip("list resources", async function () {
+  it("list resources", async function () {
     const resources = await provider.getTargetResources();
     assert(resources);
     resources.map((resource) => {
       displayResource(resource);
     });
-  });
-  it.skip("find delete order", async function () {
-    const resources = await provider.getTargetResources();
-    assert(resources);
-    await Promise.all(
-      resources
-        .filter((resource) => !resource.getParent())
-        .map(async (resource) => await destroyResource(resource))
-    );
   });
 });

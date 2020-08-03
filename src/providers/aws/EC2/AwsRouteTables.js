@@ -1,5 +1,6 @@
 const AWS = require("aws-sdk");
-const { defaultsDeep, isEmpty } = require("lodash/fp");
+const { isEmpty } = require("lodash/fp");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "AwsRtb" });
 const { tos } = require("../../../tos");
@@ -131,7 +132,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
   };
 
   const configDefault = async ({ name, properties }) =>
-    defaultsDeep({}, properties);
+    defaultsDeep({})(properties);
 
   const cannotBeDeleted = ({ resource, name }) => {
     logger.debug(`cannotBeDeleted name: ${name} ${tos({ resource })}`);

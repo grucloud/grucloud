@@ -1,5 +1,5 @@
 var AWS = require("aws-sdk");
-const { defaultsDeep } = require("lodash/fp");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 const assert = require("assert");
 const { getByIdCore } = require("../AwsCommon");
 const { retryExpectOk } = require("../../Retry");
@@ -120,7 +120,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     );
     // TODO Need vpc name here in parameter
     const { vpc } = dependencies;
-    const config = defaultsDeep(properties, {
+    const config = defaultsDeep(properties)({
       create: {
         ...(vpc && { VpcId: getField(vpc, "VpcId") }),
       },

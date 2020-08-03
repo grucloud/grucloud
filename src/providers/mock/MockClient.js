@@ -1,4 +1,3 @@
-const _ = require("lodash");
 const assert = require("assert");
 const CoreClient = require("../CoreClient");
 const logger = require("../../logger")({ prefix: "MockClient" });

@@ -139,28 +139,35 @@ const pluckErrorsCommon = pipe([
 ]);
 const pluckErrorsDestroy = pipe([
   tap((obj) => {
-    //logger.debug(`pluckErrorsDestroy ${tos(obj)}`);
+    logger.debug(`pluckErrorsDestroy ${tos(obj)}`);
   }),
-  filter(({ result: { success } }) => !success),
-  flatten,
+  filter(({ result: { error } }) => error),
+  tap((obj) => {
+    logger.debug(`pluckErrorsDestroy ${tos(obj)}`);
+  }),
   pluck("result.results"),
   flatten,
   tap((obj) => {
-    //logger.debug(`pluckErrorsDestroy resultCreate ${obj}`);
+    logger.debug(`pluckErrorsDestroy resultCreate ${obj}`);
   }),
   filter(({ error }) => error),
   tap((xx) => {
-    //logger.debug("pluckErrorsDestroy result  ");
+    logger.debug("pluckErrorsDestroy result  ");
   }),
 ]);
 const pluckErrorsHooks = pipe([
   tap((xx) => {
     logger.debug("pluckErrorsHooks ");
   }),
-  filter(({ result: { success } }) => !success),
-  flatten,
-  pluck("result"),
-  pluck("hookResults"),
+  filter(({ result: { error } }) => error),
+  pluck("result.hookResults"),
+  tap((xx) => {
+    logger.debug("pluckErrorsHooks ");
+  }),
+  filter(({ error }) => error),
+  tap((xx) => {
+    logger.debug("pluckErrorsHooks ");
+  }),
   pluck("results"),
 
   flatten,
