@@ -15,6 +15,7 @@ const {
   assign,
   all,
   and,
+  not,
   any,
   reduce,
   fork,
@@ -63,7 +64,13 @@ const noop = ({}) => {};
 const isValidPlan = (plan) => !isEmpty(plan.plans) && !plan.error;
 
 const filterReadWriteClient = filter((client) => !client.spec.listOnly);
-
+/*
+const hasResultError = not(
+  all(({ error }) => {
+    return error === false;
+  })
+);
+*/
 const hasResultError = any(({ error }) => error);
 
 const nextStateOnError = (error) => (error ? "ERROR" : "DONE");
@@ -1102,14 +1109,13 @@ function CoreProvider({
         }
       }),
       filter((x) => x),
-      flatten,
-      tap((result) =>
+      tap((plans) =>
         onStateChange({
           context: contextFromPlanner({ title: TitleQuery }),
-          nextState: nextStateOnError(hasResultError(result)),
+          nextState: nextStateOnError(hasResultError(plans)),
         })
       ),
-      (plans) => ({ error: hasResultError(plans), plans }),
+      (plans) => ({ error: hasResultError(plans), plans: flatten(plans) }),
       tap((result) =>
         logger.debug(`planUpsert: result: ${JSON.stringify(result, null, 4)}`)
       ),

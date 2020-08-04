@@ -285,7 +285,6 @@ exports.AwsS3Object = ({ spec, config }) => {
   return {
     type: "S3Object",
     spec,
-    s3,
     config: clientConfig,
     isUpById,
     isDownById,
