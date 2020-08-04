@@ -1,5 +1,5 @@
 const AWS = require("aws-sdk");
-const { isEmpty } = require("lodash/fp");
+const { isEmpty } = require("rubico/x");
 const assert = require("assert");
 const { map, tap, pipe, filter } = require("rubico");
 const logger = require("../../../logger")({ prefix: "AwsVpc" });

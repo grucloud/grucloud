@@ -1,4 +1,4 @@
-const { isEmpty } = require("lodash/fp");
+const isEmpty = require("rubico/x/isEmpty");
 const assert = require("assert");
 
 const logger = require("../logger")({ prefix: "CoreClient" });

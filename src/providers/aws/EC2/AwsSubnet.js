@@ -1,5 +1,5 @@
 const AWS = require("aws-sdk");
-const { isEmpty } = require("lodash/fp");
+const { isEmpty } = require("rubico/x");
 const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "AwsSn" });
 const { getField } = require("../../ProviderCommon");

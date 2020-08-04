@@ -1,6 +1,6 @@
 const assert = require("assert");
 const fs = require("fs");
-const _ = require("lodash");
+const defaultsDeep = require("rubico/x/defaultsDeep");
 const { JWT } = require("google-auth-library");
 const CoreProvider = require("../CoreProvider");
 const logger = require("../../logger")({ prefix: "GoogleProvider" });
@@ -135,6 +135,7 @@ const authorize = async ({ applicationCredentials }) => {
       if (err) {
         return reject(err);
       }
+      // TODO handle undefined response
       if (response.access_token) {
         resolve(response.access_token);
       }
@@ -165,7 +166,7 @@ module.exports = GoogleProvider = async ({ name = "google", config }) => {
     name,
     mandatoryEnvs: ["GOOGLE_APPLICATION_CREDENTIALS"],
     mandatoryConfigKeys: ["project", "region", "zone"],
-    config: _.defaults(config, configProviderDefault),
+    config: defaultsDeep(configProviderDefault)(config),
     fnSpecs,
   });
 
