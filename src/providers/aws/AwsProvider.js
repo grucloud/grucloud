@@ -1,6 +1,5 @@
 const AWS = require("aws-sdk");
 const assert = require("assert");
-const _ = require("lodash");
 const { map } = require("rubico");
 
 const logger = require("../../logger")({ prefix: "AwsProvider" });

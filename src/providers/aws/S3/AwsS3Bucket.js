@@ -1,8 +1,6 @@
 const AWS = require("aws-sdk");
 const assert = require("assert");
-const { unionWith, isEqual, isEmpty, flatten } = require("lodash/fp");
-const defaultsDeep = require("rubico/x/defaultsDeep");
-
+const { unionWith } = require("lodash/fp");
 const {
   map,
   tap,
@@ -10,10 +8,11 @@ const {
   switchCase,
   fork,
   get,
-  pick,
   all,
   tryCatch,
 } = require("rubico");
+const { defaultsDeep, isEmpty, isDeepEqual } = require("rubico/x");
+
 const logger = require("../../../logger")({ prefix: "S3Bucket" });
 const { retryExpectOk, retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
@@ -450,7 +449,9 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
     const paramsTag = {
       Bucket: name,
-      Tagging: { TagSet: unionWith(Tagging?.TagSet, managementTags, isEqual) },
+      Tagging: {
+        TagSet: unionWith(Tagging?.TagSet, managementTags, isDeepEqual),
+      },
     };
 
     const { Location } = await s3.createBucket(otherProperties).promise();

@@ -1,13 +1,7 @@
+const assert = require("assert");
 const AWS = require("aws-sdk");
 const fs = require("fs").promises;
 const md5File = require("md5-file");
-const defaultsDeep = require("rubico/x/defaultsDeep");
-
-const { isEmpty, first } = require("lodash/fp");
-const assert = require("assert");
-const logger = require("../../../logger")({ prefix: "S3Object" });
-const { retryExpectOk } = require("../../Retry");
-const { tos } = require("../../../tos");
 const {
   map,
   filter,
@@ -18,6 +12,12 @@ const {
   switchCase,
   fork,
 } = require("rubico");
+const { defaultsDeep, isEmpty, first} = require("rubico/x");
+
+const logger = require("../../../logger")({ prefix: "S3Object" });
+const { retryExpectOk } = require("../../Retry");
+const { tos } = require("../../../tos");
+
 const { convertError, mapPoolSize } = require("../../Common");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html

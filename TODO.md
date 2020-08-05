@@ -1,5 +1,6 @@
 ## Bugs
 
+- Destroying resources on 4 providers: ,,,
 - assert.equal(spinnerMap.size, 0, "spinner still active");
 - Are you sure to destroy 9 resources ? despite only one resource to destroy
 - Destroying resources on 2 providers: , missing provider names

@@ -138,7 +138,7 @@ exports.createStack = async ({ config }) => {
       await createAws({ config }),
       await createAzure({ config }),
       await createGoogle({ config }),
-      await createScaleway({ config }),
+      //await createScaleway({ config }),
     ],
   };
 };
