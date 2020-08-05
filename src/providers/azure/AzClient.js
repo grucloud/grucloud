@@ -20,6 +20,7 @@ module.exports = AzClient = ({
   isUpByIdFactory,
   config,
   configDefault,
+  cannotBeDeleted,
 }) => {
   assert(pathBase);
   assert(spec);
@@ -54,6 +55,7 @@ module.exports = AzClient = ({
     pathList,
     verbCreate: "PUT",
     isUpByIdFactory,
+    cannotBeDeleted,
     axios: AxiosMaker({
       baseURL: BASE_URL,
       onHeaders: () => ({

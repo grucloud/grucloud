@@ -63,6 +63,7 @@ const fnSpecs = (config) => {
               },
               properties
             ),
+          cannotBeDeleted: ({ name }) => "NetworkWatcherRG" === name,
         }),
       isOurMinion,
     },
