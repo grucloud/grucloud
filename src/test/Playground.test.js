@@ -1,7 +1,8 @@
 const assert = require("assert");
 const urljoin = require("url-join");
-const {defaultsDeep, isDeepEqual} = require("rubico/x");
+const { defaultsDeep, isDeepEqual } = require("rubico/x");
 const { get, switchCase, all } = require("rubico");
+const { cloneDeep } = require("lodash/fp");
 
 const list = {
   data: {
@@ -25,6 +26,25 @@ describe("Playground", function () {
   it("get", async function () {
     const obj = { a: "aaa" };
     assert.equal(get("a")(obj), "aaa");
+  });
+  it("defaultsDeep no mutation", async function () {
+    const defaultHook = {
+      onDeployed: {
+        init: () => {},
+        actions: [],
+      },
+    };
+    const hook = {
+      onDeployed: {
+        actions: [
+          { name: "Ping", command: async ({ host }) => {} },
+          { name: "SSH", command: async ({ host }) => {} },
+        ],
+      },
+    };
+    const hookCloned = cloneDeep(hook);
+    defaultsDeep(defaultHook)(hookCloned);
+    assert(isDeepEqual(hookCloned, hook));
   });
   it("all", async function () {
     const resultsWithError = [{ data: "a" }, { error: true }];
