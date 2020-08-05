@@ -1,5 +1,4 @@
 const assert = require("assert");
-const _ = require("lodash");
 const { switchCase } = require("rubico");
 const logger = require("../../logger")({ prefix: "GoogleTag" });
 const { tos } = require("../../tos");
@@ -17,7 +16,7 @@ exports.isOurMinion = ({ resource, config }) => {
   const isMinion = switchCase([
     () => hasTag(description, managedByDescription),
     () => true,
-    () => _.find(labels, (value, key) => isGruLabel(key, value)),
+    () => Object.keys(labels).some((key) => isGruLabel(key, labels[key])),
     () => true,
     () => false,
   ])();

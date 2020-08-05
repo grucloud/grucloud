@@ -1,5 +1,4 @@
 const assert = require("assert");
-const _ = require("lodash");
 const logger = require("../../logger")({ prefix: "AzTag" });
 const { tos } = require("../../tos");
 exports.isOurMinion = ({ resource, config }) => {
@@ -11,7 +10,7 @@ exports.isOurMinion = ({ resource, config }) => {
   const isGruLabel = (key, value) =>
     key === managedByKey && value === managedByValue;
 
-  const isMinion = !!_.find(tags, (value, key) => isGruLabel(key, value));
+  const isMinion = !!Object.keys(tags).some((key) => isGruLabel(key, tags[key]));
 
   logger.info(`isOurMinion isMinion: ${isMinion}`);
   return isMinion;

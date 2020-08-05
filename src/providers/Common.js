@@ -2,7 +2,7 @@ const assert = require("assert");
 const logger = require("../logger")({ prefix: "Common" });
 const { tos } = require("../tos");
 const { omit } = require("rubico");
-exports.mapPoolSize = 5;
+exports.mapPoolSize = 20;
 
 exports.TitleDeploying = "Deploying";
 exports.TitleDestroying = "Destroying";
