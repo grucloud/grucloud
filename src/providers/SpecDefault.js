@@ -5,4 +5,5 @@ exports.SpecDefault = ({ providerName }) => ({
   compare,
   providerName,
   listOnly: false,
+  propertiesDefault: {},
 });

@@ -33,7 +33,16 @@ const flatten = require("rubico/x/flatten");
 // Common
 const plansHasSuccess = all(({ result }) => !result.error);
 
-const displayProviderList = pipe([pluck("name"), (list) => list.join(",")]);
+const displayProviderList = pipe([
+  tap((xx) => {
+    logger.debug(xx);
+  }),
+  pluck("name"),
+  tap((xx) => {
+    logger.debug(xx);
+  }),
+  (list) => list.join(","),
+]);
 
 const filterProvidersByName = ({
   commandOptions: { provider: providerOptions = [] },
@@ -616,7 +625,7 @@ exports.planDestroy = async ({
       async (result) =>
         await runAsyncCommand({
           text: displayCommandHeader({
-            providers: result.results,
+            providers: pluck("provider")(result.results),
             verb: "Destroying",
           }),
           command: ({ onStateChange }) =>
