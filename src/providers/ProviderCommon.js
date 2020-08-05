@@ -1,4 +1,5 @@
 const _ = require("lodash");
+const { get } = require("rubico");
 const assert = require("assert");
 const notAvailable = (name, field) => {
   assert(field);
@@ -8,4 +9,4 @@ const notAvailable = (name, field) => {
 exports.notAvailable = notAvailable;
 
 exports.getField = ({ resource, live }, field) =>
-  _.get(live, field, notAvailable(resource.name, field));
+  get(field, notAvailable(resource.name, field))(live);
