@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { defaultsDeep } = require("lodash/fp");
+const { defaultsDeep } = require("rubico/x");
 
 const MockClient = require("./MockClient");
 const MockCloud = require("./MockCloud");
@@ -85,38 +85,35 @@ const fnSpecs = (config) => {
               diskSizeGb,
               ...otherProperties
             } = properties;
-            return defaultsDeep(
-              {
-                name,
-                zone: `projects/${config.project}/zones/${config.zone}`,
-                machineType: `projects/${config.project}/zones/${config.zone}/machineTypes/${machineType}`,
-                tags: {
-                  items: [toTagName(name, config.tag)],
-                },
-                disks: [
-                  {
-                    deviceName: toTagName(name, config.tag),
-                    initializeParams: {
-                      sourceImage:
-                        "projects/debian-cloud/global/images/debian-9-stretch-v20200420",
-                      diskType: `projects/${config.project}/zones/${config.zone}/diskTypes/${diskType}`,
-                      diskSizeGb,
-                    },
-                  },
-                ],
-                networkInterfaces: [
-                  {
-                    subnetwork: `projects/${config.project}/regions/${config.region}/subnetworks/default`,
-                    accessConfigs: [
-                      {
-                        natIP: getField(ip, "address"),
-                      },
-                    ],
-                  },
-                ],
+            return defaultsDeep({
+              name,
+              zone: `projects/${config.project}/zones/${config.zone}`,
+              machineType: `projects/${config.project}/zones/${config.zone}/machineTypes/${machineType}`,
+              tags: {
+                items: [toTagName(name, config.tag)],
               },
-              otherProperties
-            );
+              disks: [
+                {
+                  deviceName: toTagName(name, config.tag),
+                  initializeParams: {
+                    sourceImage:
+                      "projects/debian-cloud/global/images/debian-9-stretch-v20200420",
+                    diskType: `projects/${config.project}/zones/${config.zone}/diskTypes/${diskType}`,
+                    diskSizeGb,
+                  },
+                },
+              ],
+              networkInterfaces: [
+                {
+                  subnetwork: `projects/${config.project}/regions/${config.region}/subnetworks/default`,
+                  accessConfigs: [
+                    {
+                      natIP: getField(ip, "address"),
+                    },
+                  ],
+                },
+              ],
+            })(otherProperties);
           },
         }),
       type: "Server",
@@ -154,7 +151,7 @@ module.exports = MockProvider = async ({ name = "mock", config }) => {
   return CoreProvider({
     type: "mock",
     name,
-    config: defaultsDeep(configDefault, config),
+    config: defaultsDeep(configDefault)(config),
     fnSpecs,
   });
 };

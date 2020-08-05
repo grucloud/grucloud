@@ -1,5 +1,6 @@
 const assert = require("assert");
-const { defaultsDeep } = require("lodash/fp");
+const { defaultsDeep } = require("rubico/x");
+
 const CoreProvider = require("../CoreProvider");
 const AzClient = require("./AzClient");
 const logger = require("../../logger")({ prefix: "AzProvider" });
@@ -56,13 +57,10 @@ const fnSpecs = (config) => {
           isUpByIdFactory,
           config,
           configDefault: ({ properties }) =>
-            defaultsDeep(
-              {
-                location,
-                tags: buildTags(config),
-              },
-              properties
-            ),
+            defaultsDeep({
+              location,
+              tags: buildTags(config),
+            })(properties),
           cannotBeDeleted: ({ name }) => "NetworkWatcherRG" === name,
         }),
       isOurMinion,
@@ -87,13 +85,10 @@ const fnSpecs = (config) => {
           isUpByIdFactory,
           config,
           configDefault: ({ properties }) =>
-            defaultsDeep(
-              {
-                location,
-                tags: buildTags(config),
-              },
-              properties
-            ),
+            defaultsDeep({
+              location,
+              tags: buildTags(config),
+            })(properties),
         }),
       isOurMinion,
     },
@@ -118,13 +113,10 @@ const fnSpecs = (config) => {
           isUpByIdFactory,
           config,
           configDefault: ({ properties }) =>
-            defaultsDeep(
-              {
-                location,
-                tags: buildTags(config),
-              },
-              properties
-            ),
+            defaultsDeep({
+              location,
+              tags: buildTags(config),
+            })(properties),
         }),
       isOurMinion,
     },
@@ -150,11 +142,11 @@ const fnSpecs = (config) => {
           isUpByIdFactory,
           config,
           configDefault: ({ properties, dependencies }) => {
-            return defaultsDeep(properties, {
+            return defaultsDeep({
               location,
               tags: buildTags(config),
               properties: {},
-            });
+            })(properties);
           },
         }),
       isOurMinion,
@@ -228,30 +220,27 @@ const fnSpecs = (config) => {
 
               return subnet.id;
             };
-            return defaultsDeep(
-              {
-                location,
-                tags: buildTags(config),
-                properties: {
-                  networkSecurityGroup: { id: getField(securityGroup, "id") },
-                  ipConfigurations: [
-                    {
-                      properties: {
-                        subnet: {
-                          id: findSubnetId(subnet, virtualNetwork.live),
-                        },
-                        ...(publicIpAddress && {
-                          publicIPAddress: {
-                            id: getField(publicIpAddress, "id"),
-                          },
-                        }),
+            return defaultsDeep({
+              location,
+              tags: buildTags(config),
+              properties: {
+                networkSecurityGroup: { id: getField(securityGroup, "id") },
+                ipConfigurations: [
+                  {
+                    properties: {
+                      subnet: {
+                        id: findSubnetId(subnet, virtualNetwork.live),
                       },
+                      ...(publicIpAddress && {
+                        publicIPAddress: {
+                          id: getField(publicIpAddress, "id"),
+                        },
+                      }),
                     },
-                  ],
-                },
+                  },
+                ],
               },
-              properties
-            );
+            })(properties);
           },
         }),
       isOurMinion,
@@ -282,22 +271,19 @@ const fnSpecs = (config) => {
               networkInterface,
               "networkInterfaces is missing VirtualMachine"
             );
-            return defaultsDeep(
-              {
-                location,
-                tags: buildTags(config),
-                properties: {
-                  networkProfile: {
-                    networkInterfaces: [
-                      {
-                        id: getField(networkInterface, "id"),
-                      },
-                    ],
-                  },
+            return defaultsDeep({
+              location,
+              tags: buildTags(config),
+              properties: {
+                networkProfile: {
+                  networkInterfaces: [
+                    {
+                      id: getField(networkInterface, "id"),
+                    },
+                  ],
                 },
               },
-              properties
-            );
+            })(properties);
           },
         }),
       isOurMinion,
@@ -326,7 +312,7 @@ module.exports = AzureProvider = async ({ name = "azure", config }) => {
     type: "azure",
     name,
     mandatoryConfigKeys: ["location"],
-    config: defaultsDeep(configProviderDefault, config),
+    config: defaultsDeep(configProviderDefault)(config),
     fnSpecs,
   });
 
