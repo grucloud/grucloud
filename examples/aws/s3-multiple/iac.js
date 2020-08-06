@@ -2,7 +2,7 @@ const { AwsProvider } = require("@grucloud/core");
 const { pipe, map } = require("rubico");
 
 const createResources = async ({ provider }) => {
-  const maxBuckets = 5;
+  const maxBuckets = 2;
   const resources = await pipe([
     (maxBuckets) =>
       Array(maxBuckets)
