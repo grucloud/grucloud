@@ -46,6 +46,20 @@ describe("Playground", function () {
     defaultsDeep(defaultHook)(hookCloned);
     assert(isDeepEqual(hookCloned, hook));
   });
+  it("defaultsDeep Cannot read property 'Rules' of undefined", async function () {
+    const result = defaultsDeep({ Bucket: "ciccio" })({
+      ServerSideEncryptionConfiguration: {
+        Rules: [
+          {
+            ApplyServerSideEncryptionByDefault: {
+              SSEAlgorithm: "AES256",
+            },
+          },
+        ],
+      },
+    });
+  });
+
   it("all", async function () {
     const resultsWithError = [{ data: "a" }, { error: true }];
     assert.equal(all((result) => !result.error)(resultsWithError), false);
