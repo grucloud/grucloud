@@ -12,7 +12,8 @@ const {
   switchCase,
   fork,
 } = require("rubico");
-const { defaultsDeep, isEmpty, first} = require("rubico/x");
+const { defaultsDeep } = require("lodash/fp");
+const { isEmpty, first } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "S3Object" });
 const { retryExpectOk } = require("../../Retry");

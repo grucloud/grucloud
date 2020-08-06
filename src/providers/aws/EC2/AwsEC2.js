@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk");
 const { isEmpty, map } = require("lodash/fp");
-const defaultsDeep = require("rubico/x/defaultsDeep");
+const { defaultsDeep } = require("lodash/fp");
 
 const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "AwsEc2" });

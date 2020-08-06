@@ -1,5 +1,6 @@
 const assert = require("assert");
-const defaultsDeep = require("rubico/x/defaultsDeep");
+const { defaultsDeep } = require("lodash/fp");
+
 const MockClient = require("../MockClient");
 const { SpecDefault } = require("../../SpecDefault");
 const { createAxiosMock } = require("../MockAxios");

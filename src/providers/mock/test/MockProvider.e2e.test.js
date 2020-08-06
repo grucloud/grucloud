@@ -32,7 +32,7 @@ describe.skip("MockProvider e2e", async function () {
 
     {
       const plan = await provider.planQuery();
-      assert(plan.destroy);
+      assert(plan.resultDestroy);
       const { results, success } = await provider.planApply({ plan });
       assert(results);
       assert(!error);

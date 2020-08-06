@@ -1,9 +1,10 @@
-const { defaultsDeep, isEmpty } = require("rubico/x");
+const { map, pipe, tap, filter, switchCase } = require("rubico");
+const { defaultsDeep } = require("lodash/fp");
+const { isEmpty } = require("rubico/x");
 const assert = require("assert");
 const npath = require("path");
 const fs = require("fs");
 const logger = require("./logger")({ prefix: "ConfigLoader" });
-const { map, pipe, tap, filter, switchCase } = require("rubico");
 
 const checkFileExist = (fileName) => {
   assert(fileName);

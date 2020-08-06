@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep } = require("lodash/fp");
 
 const CoreProvider = require("../CoreProvider");
 const AzClient = require("./AzClient");

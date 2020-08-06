@@ -27,7 +27,7 @@ describe("Playground", function () {
     const obj = { a: "aaa" };
     assert.equal(get("a")(obj), "aaa");
   });
-  it("defaultsDeep no mutation", async function () {
+  it.skip("defaultsDeep no mutation", async function () {
     const defaultHook = {
       onDeployed: {
         init: () => {},
@@ -46,7 +46,7 @@ describe("Playground", function () {
     defaultsDeep(defaultHook)(hookCloned);
     assert(isDeepEqual(hookCloned, hook));
   });
-  it("defaultsDeep Cannot read property 'Rules' of undefined", async function () {
+  it.skip("defaultsDeep Cannot read property 'Rules' of undefined", async function () {
     const result = defaultsDeep({ Bucket: "ciccio" })({
       ServerSideEncryptionConfiguration: {
         Rules: [

@@ -1,6 +1,6 @@
 const assert = require("assert");
 const fs = require("fs");
-const defaultsDeep = require("rubico/x/defaultsDeep");
+const { defaultsDeep } = require("lodash/fp");
 const { JWT } = require("google-auth-library");
 const CoreProvider = require("../CoreProvider");
 const logger = require("../../logger")({ prefix: "GoogleProvider" });

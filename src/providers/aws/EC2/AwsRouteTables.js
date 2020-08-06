@@ -1,6 +1,9 @@
-const AWS = require("aws-sdk");
-const { defaultsDeep, isEmpty } = require("rubico/x");
 const assert = require("assert");
+const AWS = require("aws-sdk");
+const { pipe, filter, map } = require("rubico");
+const { isEmpty } = require("rubico/x");
+const { defaultsDeep } = require("lodash/fp");
+
 const logger = require("../../../logger")({ prefix: "AwsRtb" });
 const { tos } = require("../../../tos");
 const { retryExpectOk } = require("../../Retry");
@@ -8,7 +11,6 @@ const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { findNameInTags } = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
-const { pipe, filter, map } = require("rubico");
 
 module.exports = AwsRouteTables = ({ spec, config }) => {
   assert(spec);

@@ -2,7 +2,7 @@ const assert = require("assert");
 const Axios = require("axios");
 const path = require("path");
 const shell = require("shelljs");
-const { map, any } = require("rubico");
+const { map } = require("rubico");
 const { main } = require("../cliMain");
 const { MockServer } = require("../../mockServer/MockServer");
 
@@ -29,10 +29,9 @@ const configFileTimeoutOnce = path.join(
   "./config/config.timeout.once.js"
 );
 
-const commands = ["plan", "apply -f", "destroy -f -a", "list"];
-
+const commands = ["destroy -f -a", "list"];
 const commandsHooks = ["run --onDeployed", "run --onDestroyed"];
-const commandsAll = [...commands, ...commandsHooks];
+const commandsAll = ["plan", "apply -f", ...commands, ...commandsHooks];
 
 const onExitOk = () => assert(false);
 const runProgram = async ({
@@ -125,6 +124,100 @@ describe("cli error", function () {
     )(commandsAll);
     assert.deepEqual(results, [-1, -1, -1, -1, -1, -1]);
   });
+  it("cli Query 404", async function () {
+    const result = await runProgram({
+      cmds: "plan",
+      configFile: configFile404,
+      onExit: ({ code, error: { error } }) => {
+        assert.equal(code, 422);
+        assert(error.results[0].resultQuery.error);
+      },
+    });
+    assert.deepEqual(result, -1);
+  });
+  it("cli Query Network error", async function () {
+    const result = await runProgram({
+      cmds: "plan",
+      configFile: configFileNetworkError,
+      onExit: ({ code, error: { error } }) => {
+        assert.equal(code, 422);
+        const { resultQuery } = error.results[0];
+        assert(resultQuery.error);
+        assert.equal(
+          resultQuery.resultCreate.plans[0].message,
+          "Network Error"
+        );
+      },
+    });
+    assert.deepEqual(result, -1);
+  });
+  it("cli Query timeout", async function () {
+    const result = await runProgram({
+      cmds: "plan",
+      configFile: configFileTimeout,
+      onExit: ({ code, error: { error } }) => {
+        assert.equal(code, 422);
+        const { resultQuery } = error.results[0];
+        assert(resultQuery.error);
+        assert.equal(resultQuery.resultCreate.plans[0].code, "ECONNABORTED");
+      },
+    });
+    assert.deepEqual(result, -1);
+  });
+
+  it("cli Apply 404", async function () {
+    const result = await runProgram({
+      cmds: ["apply", "-f"],
+      configFile: configFile404,
+      onExit: ({ code, error: { error } }) => {
+        assert.equal(code, 422);
+        assert(error.results[0].resultQuery.error);
+      },
+    });
+    assert.deepEqual(result, -1);
+  });
+  it("cli Apply Network error", async function () {
+    const result = await runProgram({
+      cmds: ["apply", "-f"],
+      configFile: configFileNetworkError,
+      onExit: ({ code, error: { error } }) => {
+        assert.equal(code, 422);
+        const { resultQuery } = error.results[0];
+        assert(resultQuery.error);
+        assert.equal(
+          resultQuery.resultCreate.plans[0].message,
+          "Network Error"
+        );
+      },
+    });
+    assert.deepEqual(result, -1);
+  });
+  it("cli Apply timeout", async function () {
+    const result = await runProgram({
+      cmds: ["apply", "-f"],
+      configFile: configFileTimeout,
+      onExit: ({ code, error: { error } }) => {
+        assert.equal(code, 422);
+        const { resultQuery } = error.results[0];
+        assert(resultQuery.error);
+        assert.equal(resultQuery.resultCreate.plans[0].code, "ECONNABORTED");
+      },
+    });
+    assert.deepEqual(result, -1);
+  });
+  it("cli Apply 500", async function () {
+    const result = await runProgram({
+      cmds: ["apply", "-f"],
+      configFile: configFile500,
+      onExit: ({ code, error: { error } }) => {
+        assert.equal(code, 422);
+        const { result } = error.results[0];
+        assert(result.error);
+        assert.equal(result.resultCreate.results[0].error.Status, 500);
+      },
+    });
+    assert.deepEqual(result, -1);
+  });
   it("cli 404", async function () {
     const results = await map.series((command) =>
       runProgram({
@@ -136,7 +229,7 @@ describe("cli error", function () {
         },
       })
     )(commands);
-    assert.deepEqual(results, [-1, -1, -1, -1]);
+    assert.deepEqual(results, [-1, -1]);
   });
   it("cli 500", async function () {
     const results = await map.series(
@@ -150,7 +243,7 @@ describe("cli error", function () {
           },
         })
     )(commands);
-    assert.deepEqual(results, [0, -1, -1, 0]);
+    assert.deepEqual(results, [-1, 0]);
   });
   it("cli network error", async function () {
     const results = await map.series((command) =>
@@ -163,7 +256,7 @@ describe("cli error", function () {
         },
       })
     )(commands);
-    assert.deepEqual(results, [-1, -1, -1, -1]);
+    assert.deepEqual(results, [-1, -1]);
   });
 
   it("cli 400 retry", async function () {
@@ -197,7 +290,7 @@ describe("cli error", function () {
         },
       })
     )(commands);
-    assert.deepEqual(results, [0, 0, 0, 0]);
+    assert.deepEqual(results, [0, 0]);
   });
   it("cli timeout ", async function () {
     const results = await map.series((command) =>
@@ -215,7 +308,7 @@ describe("cli error", function () {
         },
       })
     )(commands);
-    assert.deepEqual(results, [-1, -1, -1, -1]);
+    assert.deepEqual(results, [-1, -1]);
   });
 
   it("cli run invalid command", async function () {

@@ -138,10 +138,10 @@ describe("AwsProvider", async function () {
     const config = await server.resolveConfig();
     assert.equal(config.ImageId, "ami-0917237b4e71c5759");
   });
-  it.skip("plan", async function () {
+  it("plan", async function () {
     const plan = await provider.planQuery();
-    assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 7);
+    assert.equal(plan.resultDestroy.plans.length, 0);
+    assert.equal(plan.resultCreate.plans.length, 7);
   });
   it.skip("listLives all", async function () {
     const { results: lives } = await provider.listLives({ all: true });

@@ -1,6 +1,7 @@
-var AWS = require("aws-sdk");
-const defaultsDeep = require("rubico/x/defaultsDeep");
 const assert = require("assert");
+const AWS = require("aws-sdk");
+const { defaultsDeep } = require("lodash/fp");
+
 const logger = require("../../../logger")({ prefix: "AwsKp" });
 const { tos } = require("../../../tos");
 const { getByNameCore, findField } = require("../../Common");

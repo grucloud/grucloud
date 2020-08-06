@@ -1,9 +1,10 @@
 const assert = require("assert");
 const _ = require("lodash");
+
 const path = require("path");
 const { defaultsDeep } = require("lodash/fp");
-const isEmpty = require("rubico/x/isEmpty");
-const flatten = require("rubico/x/flatten");
+
+const { isEmpty, flatten, pluck } = require("rubico/x");
 const {
   pipe,
   tap,
@@ -20,8 +21,6 @@ const {
   reduce,
   fork,
 } = require("rubico");
-const pluck = require("rubico/x/pluck");
-
 const Promise = require("bluebird");
 const logger = require("../logger")({ prefix: "Core" });
 const { tos } = require("../tos");
@@ -152,7 +151,7 @@ const ResourceMaker = ({
 
     const config = await client.configDefault({
       name: resourceName,
-      properties: defaultsDeep(spec.propertiesDefault, properties()),
+      properties: defaultsDeep(spec.propertiesDefault)(properties()),
       dependencies: resolvedDependencies,
     });
     logger.debug(`resolveConfig: configDefault: ${tos(config)}`);
@@ -337,7 +336,7 @@ function CoreProvider({
   fnSpecs,
   config,
 }) {
-  const providerConfig = defaultsDeep(configProviderDefault, config);
+  const providerConfig = defaultsDeep(configProviderDefault)(config);
   logger.debug(
     `CoreProvider name: ${providerName}, type ${type}, config: ${tos(
       providerConfig
@@ -358,6 +357,7 @@ function CoreProvider({
         actions: [],
       },
     };
+    //const newHookdash = _fp.defaultsDeep(defaultHook)(hook);
     const newHook = defaultsDeep(defaultHook)(hook);
     hookMap.set(name, newHook);
   };
@@ -577,11 +577,11 @@ function CoreProvider({
         })
       ),
       fork({
-        newOrUpdate: () =>
+        resultCreate: () =>
           planUpsert({
             onStateChange,
           }),
-        destroy: () =>
+        resultDestroy: () =>
           planFindDestroy({
             onStateChange,
             direction: PlanDirection.UP,
@@ -589,7 +589,7 @@ function CoreProvider({
       }),
       (result) => ({
         providerName,
-        error: result.newOrUpdate.error || result.destroy.error,
+        error: result.resultCreate.error || result.resultDestroy.error,
         ...result,
       }),
       tap((result) => {
@@ -641,7 +641,13 @@ function CoreProvider({
                       nextState: "RUNNING",
                     });
                   }),
-                  tap(async (action) => await action.command(payload)),
+                  tap(async (action) => {
+                    if (action.command) {
+                      await action.command(payload);
+                    } else {
+                      throw `${action} does not have a command function`;
+                    }
+                  }),
                   tap((action) => {
                     onStateChange({
                       context: contextFromHookAction({
@@ -925,12 +931,12 @@ function CoreProvider({
       spinnersStartProvider({ onStateChange }),
       tap(
         switchCase([
-          () => isValidPlan(plan.newOrUpdate),
+          () => isValidPlan(plan.resultCreate),
           pipe([
             spinnersStartResources({
               onStateChange,
               title: TitleDeploying,
-              resources: pluck("resource")(plan.newOrUpdate.plans),
+              resources: pluck("resource")(plan.resultCreate.plans),
             }),
             spinnersStartHooks({
               onStateChange,
@@ -944,12 +950,12 @@ function CoreProvider({
       ),
       tap(
         switchCase([
-          () => isValidPlan(plan.destroy),
+          () => isValidPlan(plan.resultDestroy),
           pipe([
             spinnersStartResources({
               onStateChange,
               title: TitleDestroying,
-              resources: pluck("resource")(plan.destroy.plans),
+              resources: pluck("resource")(plan.resultDestroy.plans),
             }),
             spinnersStartHooks({
               onStateChange,
@@ -1022,10 +1028,10 @@ function CoreProvider({
       ),
       fork({
         resultDestroy: switchCase([
-          () => isValidPlan(plan.destroy),
+          () => isValidPlan(plan.resultDestroy),
           () =>
             planDestroy({
-              plans: plan.destroy.plans,
+              plans: plan.resultDestroy.plans,
               onStateChange,
               direction: PlanDirection.UP,
               title: TitleDestroying,
@@ -1033,11 +1039,11 @@ function CoreProvider({
           () => ({ success: true, error: false, destroy: { plans: [] } }),
         ]),
         resultCreate: switchCase([
-          () => isValidPlan(plan.newOrUpdate),
+          () => isValidPlan(plan.resultCreate),
           pipe([
             () =>
               upsertResources({
-                plans: plan.newOrUpdate.plans,
+                plans: plan.resultCreate.plans,
                 onStateChange,
                 title: TitleDeploying,
               }),
@@ -1521,8 +1527,8 @@ function CoreProvider({
 
   const isPlanEmpty = switchCase([
     and([
-      (plan) => isEmpty(plan.newOrUpdate.plans),
-      (plan) => isEmpty(plan.destroy.plans),
+      (plan) => isEmpty(plan.resultDestroy.plans),
+      (plan) => isEmpty(plan.resultCreate.plans),
     ]),
     () => true,
     () => false,

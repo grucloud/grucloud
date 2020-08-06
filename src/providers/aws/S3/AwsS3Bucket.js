@@ -1,6 +1,7 @@
 const AWS = require("aws-sdk");
 const assert = require("assert");
 const { unionWith } = require("lodash/fp");
+const { defaultsDeep } = require("lodash/fp");
 const {
   map,
   tap,
@@ -11,12 +12,11 @@ const {
   all,
   tryCatch,
 } = require("rubico");
-const { defaultsDeep, isEmpty, isDeepEqual } = require("rubico/x");
+const { isEmpty, isDeepEqual } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "S3Bucket" });
 const { retryExpectOk, retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
-
 const { mapPoolSize } = require("../../Common");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
@@ -89,7 +89,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         fn: () => isUpById({ id: name }),
         isExpectedResult: (result) => result,
         repeatCount: 7,
-        retryCount: 4,
+        retryCount: 7,
         retryDelay: 1e3,
       }))
     ) {
@@ -718,8 +718,9 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   };
 
   const configDefault = async ({ name, properties }) => {
-    logger.debug(`configDefault ${tos({ name, properties })}`);
-    return defaultsDeep({ Bucket: name })(properties);
+    const config = defaultsDeep({ Bucket: name })(properties);
+    logger.debug(`configDefault ${tos({ config })}`);
+    return config;
   };
 
   return {

@@ -1,11 +1,9 @@
 ## Bugs
 
-- Destroying resources on 4 providers: ,,,
 - assert.equal(spinnerMap.size, 0, "spinner still active");
 - Are you sure to destroy 9 resources ? despite only one resource to destroy
 - Destroying resources on 2 providers: , missing provider names
 - gc d -a does not handle deps correclty when resources are not
-- //switchCase([plansHasSuccess, displayDeploySuccess, displayDeployErrors]),ß
 - ec2 examples aws::Vpc::undefined when destroyed
 
 ## Common:

@@ -1,5 +1,6 @@
 const assert = require("assert");
-const defaultsDeep = require("rubico/x/defaultsDeep");
+const { defaultsDeep } = require("lodash/fp");
+
 const logger = require("../../../../logger")({ prefix: "GcpInstance" });
 const { tos } = require("../../../../tos");
 const GoogleClient = require("../../GoogleClient");

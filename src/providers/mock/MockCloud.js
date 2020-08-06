@@ -1,5 +1,5 @@
 const { map, cloneDeep } = require("lodash/fp");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep } = require("lodash/fp");
 
 const assert = require("assert");
 const { v4: uuidv4 } = require("uuid");
