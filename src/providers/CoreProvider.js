@@ -564,8 +564,8 @@ function CoreProvider({
     return lists;
   };
 
-  const planQuery = async ({ onStateChange = identity } = {}) => {
-    return await pipe([
+  const planQuery = async ({ onStateChange = identity } = {}) =>
+    pipe([
       tap(() => {
         logger.debug(`planQuery begins`);
         assert(onStateChange);
@@ -602,7 +602,6 @@ function CoreProvider({
         })
       ),
     ])();
-  };
 
   const runScriptCommands = ({ onStateChange, hookType, hookName }) =>
     pipe([
@@ -621,11 +620,7 @@ function CoreProvider({
       ),
       tryCatch(
         pipe([
-          async (script) => {
-            const payload = await script.init();
-            // TODO rubico assign ?
-            return { ...script, payload };
-          },
+          assign({ payload: (script) => script.init() }),
           ({ actions, payload }) =>
             map.pool(
               10,
@@ -1122,6 +1117,10 @@ function CoreProvider({
         })
       ),
       (plans) => ({ error: hasResultError(plans), plans: flatten(plans) }),
+      assign({
+        targets: () =>
+          map((resource) => resource.toJSON())(getTargetResources()),
+      }),
       tap((result) =>
         logger.debug(`planUpsert: result: ${JSON.stringify(result, null, 4)}`)
       ),

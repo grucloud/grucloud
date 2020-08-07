@@ -1,5 +1,3 @@
-const { pick } = require("lodash");
-
 const assert = require("assert");
 const plu = require("pluralize");
 const logger = require("../logger")({ prefix: "CliCommands" });
@@ -26,10 +24,8 @@ const {
   tryCatch,
   get,
 } = require("rubico");
-
-const pluck = require("rubico/x/pluck");
-const isEmpty = require("rubico/x/isEmpty");
-const flatten = require("rubico/x/flatten");
+const { uniq } = require("lodash/fp");
+const { pluck, isEmpty, flatten } = require("rubico/x");
 // Common
 const plansHasSuccess = all(({ result }) => !result.error);
 
@@ -95,15 +91,20 @@ const countDeployResources = pipe([
     (acc, value) => {
       assert(value.resultCreate, "resultCreate");
       assert(value.resultDestroy, "resultDestroy");
-
       return {
         providers: acc.providers + 1,
+        types:
+          acc.types +
+          pipe([pluck("resource.type"), uniq])(value.resultCreate.plans).length,
         create: acc.create + value.resultCreate.plans.length,
         destroy: acc.destroy + value.resultDestroy.plans.length,
       };
     },
-    { providers: 0, create: 0, destroy: 0 }
+    { providers: 0, types: 0, create: 0, destroy: 0 }
   ),
+  tap((xx) => {
+    logger.debug(`countDeployResources`);
+  }),
 ]);
 
 const hasPlans = pipe([
@@ -414,13 +415,17 @@ exports.planApply = async ({
   const promptConfirmDeploy = async (allPlans) => {
     return await pipe([
       countDeployResources,
-      async ({ create, destroy }) =>
+      async ({ providers, types, create, destroy }) =>
         await prompts({
           type: "confirm",
           name: "confirmDeploy",
           message: `Are you sure to deploy ${plu("resource", create, true)}${
             destroy > 0 ? ` and destroy ${plu("resource", destroy, true)}` : ""
-          } ?`,
+          } of ${plu("type", types, true)} and ${plu(
+            "provider",
+            providers,
+            true
+          )}?`,
           initial: false,
         }),
       ({ confirmDeploy }) => confirmDeploy,
@@ -432,11 +437,15 @@ exports.planApply = async ({
       logger.debug("displayDeploySuccess");
     }),
     countDeployResources,
-    ({ create, destroy }) =>
+    ({ providers, types, create, destroy }) =>
       console.log(
-        `${plu("resource", create, true)} deployed ${
-          destroy > 0 ? `and ${plu("resource", destroy, true)} destroyed` : ""
-        }`
+        `${plu("resource", create, true)} deployed${
+          destroy > 0 ? ` and ${plu("resource", destroy, true)} destroyed` : ""
+        } of ${plu("type", types, true)} and ${plu(
+          "provider",
+          providers,
+          true
+        )}`
       ),
   ]);
 
