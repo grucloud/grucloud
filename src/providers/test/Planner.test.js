@@ -10,26 +10,26 @@ const {
 } = require("./PlannerFixtures");
 const { Planner } = require("../Planner");
 
-const checkOk = (success, results) => {
+const checkOk = (error, results) => {
   assert(results[0].item);
   //assert(results[0].input);
   //assert(results[0].output);
   assert(!results[0].error);
-  assert(success);
+  assert(!error);
 };
 
-const checkError = (success, results) => {
+const checkError = (error, results) => {
   assert(results[0].item);
   assert(!results[0].input);
   assert(!results[0].output);
   assert(results[0].error);
-  assert(!success);
+  assert(error);
 };
 
 describe("Planner", function () {
   const executorOk = sinon
     .stub()
-    .returns(Promise.resolve({ input: {}, output: { success: true } }));
+    .returns(Promise.resolve({ input: {}, output: { error: false } }));
 
   const onStateChange = (stateChanges) => ({ resource, nextState }) => {
     assert(resource);
@@ -46,7 +46,7 @@ describe("Planner", function () {
       onStateChange: onStateChange(stateChanges),
     });
 
-    const { success, results } = await planner.run();
+    const { error, results } = await planner.run();
     assert(results);
     assert.equal(results.length, azPlansCreate().length);
 
@@ -55,7 +55,7 @@ describe("Planner", function () {
       stateChanges.join(",")
     );
 
-    checkOk(success, results);
+    checkOk(error, results);
   });
   it("az create ok partial", async function () {
     const stateChanges = [];
@@ -65,9 +65,9 @@ describe("Planner", function () {
       executor: executorOk,
       onStateChange: onStateChange(stateChanges),
     });
-    const { success, results } = await planner.run();
+    const { error, results } = await planner.run();
     assert.equal(results.length, 2);
-    checkOk(success, results);
+    checkOk(error, results);
   });
   it("az destroy ok", async function () {
     const stateChanges = [];
@@ -78,8 +78,8 @@ describe("Planner", function () {
       down: true,
       onStateChange: onStateChange(stateChanges),
     });
-    const { success, results } = await planner.run();
-    checkOk(success, results);
+    const { error, results } = await planner.run();
+    checkOk(error, results);
     assert.equal(
       ["network-interface", "vnet", "sg", "rg"].join(","),
       stateChanges.join(",")
@@ -93,9 +93,9 @@ describe("Planner", function () {
       executor: sinon.stub().returns(Promise.reject({ error: true })),
       onStateChange: onStateChange(stateChanges),
     });
-    const { success, results } = await planner.run();
+    const { error, results } = await planner.run();
     assert.equal(results.length, 2);
-    checkError(success, results);
+    checkError(error, results);
   });
 
   it("aws destroy ok full", async function () {
@@ -107,13 +107,13 @@ describe("Planner", function () {
       down: true,
       onStateChange: onStateChange(stateChanges),
     });
-    const { success, results } = await planner.run();
+    const { error, results } = await planner.run();
     assert.equal(results.length, 5);
     assert.equal(
       ["rt", "instance", "subnet", "sg", "vpc"].join(","),
       stateChanges.join(",")
     );
-    checkOk(success, results);
+    checkOk(error, results);
   });
 
   it("aws deploy ok partial", async function () {
@@ -124,10 +124,10 @@ describe("Planner", function () {
       executor: executorOk,
       onStateChange: onStateChange(stateChanges),
     });
-    const { success, results } = await planner.run();
+    const { error, results } = await planner.run();
     assert.equal(results.length, 3);
     assert.equal(["vpc", "subnet", "rt"].join(","), stateChanges.join(","));
-    checkOk(success, results);
+    checkOk(error, results);
   });
   it("aws destroy ok partial", async function () {
     const stateChanges = [];
@@ -138,9 +138,9 @@ describe("Planner", function () {
       down: true,
       onStateChange: onStateChange(stateChanges),
     });
-    const { success, results } = await planner.run();
+    const { error, results } = await planner.run();
     assert.equal(results.length, 3);
     assert.equal(["rt", "subnet", "vpc"].join(","), stateChanges.join(","));
-    checkOk(success, results);
+    checkOk(error, results);
   });
 });

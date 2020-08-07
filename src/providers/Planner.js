@@ -205,7 +205,7 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
     logger.debug(`Planner run`);
     if (isEmpty(plans)) {
       logger.debug(`Planner run: empty plan `);
-      return { success: true, results: [] };
+      return { error: false, results: [] };
     }
 
     const resourceTypes = plans.map((plan) => plan.resource.name);
@@ -235,16 +235,16 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
       ),
     ])([...statusMap.values()]);
 
-    const success = !any((entry) => entry.state === STATES.ERROR)([
+    const error = any((entry) => entry.state === STATES.ERROR)([
       ...statusMap.values(),
     ]);
 
     //TODO use pick ?
     const results = [...statusMap.values()];
-    logger.debug(`Planner success: ${success}, result: ${tos(results)}`);
+    logger.debug(`Planner ${error && "error"}, result: ${tos(results)}`);
 
     return {
-      success,
+      error,
       results,
     };
   };

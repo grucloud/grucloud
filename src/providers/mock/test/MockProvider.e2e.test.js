@@ -33,7 +33,7 @@ describe.skip("MockProvider e2e", async function () {
     {
       const plan = await provider.planQuery();
       assert(plan.resultDestroy);
-      const { results, success } = await provider.planApply({ plan });
+      const { results, error } = await provider.planApply({ plan });
       assert(results);
       assert(!error);
     }
@@ -69,7 +69,7 @@ describe.skip("MockProvider e2e", async function () {
       const plan = await provider.planQuery();
       assert(plan.destroy);
       {
-        const { results, success } = await provider.planApply({ plan });
+        const { results, error } = await provider.planApply({ plan });
         assert(!error);
         assert(results);
         results
@@ -155,7 +155,7 @@ describe.skip("MockProvider e2e", async function () {
       assert.equal(plan.newOrUpdate.plans.length, 4);
     }
     {
-      const { success } = await provider.planApply({ plan });
+      const { error } = await provider.planApply({ plan });
       assert(!error);
     }
     {

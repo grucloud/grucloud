@@ -137,7 +137,7 @@ const pluckErrorsCommon = pipe([
   tap((obj) => {
     logger.debug(`pluckErrorsCommon ${tos(obj)}`);
   }),
-  filter(({ result: { success } }) => !success),
+  filter(({ result: { error } }) => error),
   flatten,
   pluck("result.resultCreate.results"),
   flatten,

@@ -8,7 +8,6 @@
 
 ## Common:
 
-- success => error
 - hookResults along side plannerResults
 - return error as an array ?
 - client type redundant ?

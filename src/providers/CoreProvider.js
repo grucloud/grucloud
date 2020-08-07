@@ -1036,7 +1036,7 @@ function CoreProvider({
               direction: PlanDirection.UP,
               title: TitleDestroying,
             }),
-          () => ({ success: true, error: false, destroy: { plans: [] } }),
+          () => ({ error: false, destroy: { plans: [] } }),
         ]),
         resultCreate: switchCase([
           () => isValidPlan(plan.resultCreate),
@@ -1053,16 +1053,16 @@ function CoreProvider({
               })({ create }),
           ]),
           () => ({
-            create: { success: true, error: false, newOrUpdate: { plans: [] } },
-            hooks: { success: true, error: false },
+            create: { error: false, newOrUpdate: { plans: [] } },
+            hooks: { error: false },
           }),
         ]),
       }),
       (result) => ({
         error:
-          !result.resultCreate.create.success ||
+          result.resultCreate.create.error ||
           result.resultCreate.hooks.error ||
-          !result.resultDestroy.success,
+          result.resultDestroy.error,
         resultCreate: result.resultCreate.create,
         hookResults: result.resultCreate.hooks,
         resultDestroy: result.resultDestroy,
@@ -1379,11 +1379,11 @@ function CoreProvider({
         tap((result) =>
           onStateChange({
             context: contextFromPlanner({ title }),
-            nextState: nextStateOnError(!result.success),
+            nextState: nextStateOnError(result.error),
           })
         ),
       ]),
-      () => ({ success: true }),
+      () => ({ error: false }),
     ])();
   };
 
@@ -1496,7 +1496,7 @@ function CoreProvider({
       ])();
 
       return {
-        error: hookResults.error || !plannerResult.success ? true : false,
+        error: hookResults.error || plannerResult.error ? true : false,
         results: plannerResult.results,
         hookResults,
       };
