@@ -584,38 +584,58 @@ exports.planDestroy = async ({
     console.log("No resources to destroy");
   };
 
-  const countDestroyed = reduce((acc, value) => {
-    assert(value.result);
-    assert(value.result.results);
-    return acc + value.result.results.length;
-  }, 0);
+  const countDestroyed = reduce(
+    (acc, value) => {
+      assert(value.result);
+      assert(value.result.results);
+      return {
+        providers: acc.providers + 1,
+        types:
+          acc.types +
+          pipe([pluck("item.resource.type"), uniq])(value.result.results)
+            .length,
+        resources: acc.resources + value.result.results.length,
+      };
+    },
+    { providers: 0, types: 0, resources: 0 }
+  );
 
   const displayDestroySuccess = pipe([
     tap((x) => {
       logger.error(`displayDestroySuccess ${tos(x)}`);
     }),
     countDestroyed,
-    tap((length) => {
-      logger.error(`displayDestroySuccess ${length}`);
+    tap((stats) => {
+      logger.error(`displayDestroySuccess ${tos(stats)}`);
     }),
-    (length) => console.log(`${plu("resource", length, true)} destroyed`),
+    ({ providers, types, resources }) =>
+      console.log(
+        `${plu("resource", resources, true)} destroyed, ${plu(
+          "type",
+          types,
+          true
+        )}, ${plu("provider", providers, true)}`
+      ),
   ]);
 
-  const promptConfirmDestroy = async ({ results }) => {
-    return await pipe([
+  const promptConfirmDestroy = async ({ results }) =>
+    pipe([
       countDestroyed,
-      async (length) =>
+      async ({ providers, types, resources }) =>
         await prompts({
           type: "confirm",
           name: "confirmDestroy",
           message: colors.red(
-            `Are you sure to destroy ${plu("resource", length, true)} ?`
+            `Are you sure to destroy ${plu("resource", resources, true)}, ${plu(
+              "type",
+              types,
+              true
+            )}, ${plu("provider", providers, true)}?`
           ),
           initial: false,
         }),
       ({ confirmDestroy }) => confirmDestroy,
     ])(results);
-  };
 
   const displayDestroyError = ({ item, error }) => {
     console.log(`Cannot destroy resource ${formatResource(item.resource)}`);
@@ -859,6 +879,7 @@ const listDoOk = ({ commandOptions, programOptions }) =>
         ]),
       ])
     ),
+    //TODO
     (results) => ({
       error: any(({ result: { error } }) => error)(results),
       results,
