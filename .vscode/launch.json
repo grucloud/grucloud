@@ -63,9 +63,19 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Mock Simple Apply",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/mock/mock-simple",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["apply", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Mock Run onDeployed",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/mock/",
+      "cwd": "${workspaceFolder}/examples/mock/mock",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["run", "--onDeployed"]
     },
@@ -74,7 +84,7 @@
       "request": "launch",
       "name": "Mock Run no arg",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/mock/",
+      "cwd": "${workspaceFolder}/examples/mock/mock",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["run"]
     },
@@ -83,16 +93,17 @@
       "request": "launch",
       "name": "Mock Run onDestroyed",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/mock/",
+      "cwd": "${workspaceFolder}/examples/mock/mock",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["run", "--onDestroyed"]
     },
+
     {
       "type": "node",
       "request": "launch",
       "name": "Mock Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/mock/",
+      "cwd": "${workspaceFolder}/examples/mock/mock",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["apply", "-f"]
@@ -102,7 +113,7 @@
       "request": "launch",
       "name": "Mock Apply With Provider",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/mock/",
+      "cwd": "${workspaceFolder}/examples/mock/mock",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["apply", "-f", "--provider", "mo"]
     },
@@ -111,7 +122,7 @@
       "request": "launch",
       "name": "Mock Destroy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/mock/",
+      "cwd": "${workspaceFolder}/examples/mock/mock",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["destroy", "-f"]
     },
@@ -120,7 +131,7 @@
       "request": "launch",
       "name": "Mock Destroy by provider",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/mock/",
+      "cwd": "${workspaceFolder}/examples/mock/mock",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["destroy", "-f", "-p", "m"]
     },
@@ -129,7 +140,7 @@
       "request": "launch",
       "name": "Mock List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/mock/",
+      "cwd": "${workspaceFolder}/examples/mock/mock",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["list"]
     },
@@ -138,7 +149,7 @@
       "request": "launch",
       "name": "Mock List by provider",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/mock/",
+      "cwd": "${workspaceFolder}/examples/mock/mock",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["list", "--provider", "ff"]
     },
@@ -348,7 +359,6 @@
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["plan"]
     },
-
     {
       "type": "node",
       "request": "launch",

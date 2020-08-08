@@ -108,7 +108,7 @@ const fnSpecs = (config) => {
                   subnetwork: `projects/${config.project}/regions/${config.region}/subnetworks/default`,
                   accessConfigs: [
                     {
-                      natIP: getField(ip, "address"),
+                      ...(ip && { natIP: getField(ip, "address") }),
                     },
                   ],
                 },
