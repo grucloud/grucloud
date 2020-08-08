@@ -27,8 +27,8 @@ const GoogleHooksVmNetwork = require("../google/vm-network/hooks");
 const ScalewayStack = require("../scaleway/iac");
 const ScalewayHooks = require("../scaleway/hooks");
 
-const MockStack = require("../mock/iac");
-const MockHooks = require("../mock/hooks");
+const MockStack = require("../mock/mock/iac");
+const MockHooks = require("../mock/mock/hooks");
 
 const createAws = async ({ config }) => {
   const provider = await AwsProvider({
@@ -134,7 +134,7 @@ const createMock = async ({ config }) => {
 exports.createStack = async ({ config }) => {
   return {
     providers: [
-      //await createMock({ config }),
+      await createMock({ config }),
       await createAws({ config }),
       await createAzure({ config }),
       await createGoogle({ config }),

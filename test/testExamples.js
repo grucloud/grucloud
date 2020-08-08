@@ -20,7 +20,11 @@ const cmds = [
 
 const specs = [
   {
-    path: "mock",
+    path: "mock/mock",
+    cmds,
+  },
+  {
+    path: "mock/mock-simple",
     cmds,
   },
   {
