@@ -86,6 +86,7 @@ exports.createStack = async ({ config }) => {
   provider.hookAdd("extra", hooks);
 
   provider.register({
+    dirname: __dirname,
     resources,
   });
 

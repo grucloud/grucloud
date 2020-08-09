@@ -1,6 +1,6 @@
 const assert = require("assert");
 const _ = require("lodash");
-
+const fs = require("fs");
 const path = require("path");
 const { defaultsDeep } = require("lodash/fp");
 
@@ -63,19 +63,17 @@ const noop = ({}) => {};
 const isValidPlan = (plan) => !isEmpty(plan.plans) && !plan.error;
 
 const filterReadWriteClient = filter((client) => !client.spec.listOnly);
-/*
-const hasResultError = not(
-  all(({ error }) => {
-    return error === false;
-  })
-);
-*/
+
 const hasResultError = any(({ error }) => error);
 
 const nextStateOnError = (error) => (error ? "ERROR" : "DONE");
 
-const toUri = ({ providerName, type, name }) =>
-  `${providerName}::${type}::${name}`;
+const toUri = ({ providerName, type, name }) => {
+  assert(type, "type");
+  //TODO
+  //assert(name, "name");
+  return `${providerName}::${type}::${name}`;
+};
 
 const augmentResultWithError = (results) => ({
   error: pipe([flatten, any((result) => result.error)])(results),
@@ -656,7 +654,7 @@ function CoreProvider({
                 ]),
                 (error, action) => {
                   logger.error(
-                    `runScriptCommands ${hookType},  error ${action.name}`
+                    `runScriptCommands ${hookType}, error for ${action.name}`
                   );
                   logger.error(error);
                   onStateChange({
@@ -674,23 +672,31 @@ function CoreProvider({
                 }
               )
             )(actions),
-          tap(
-            switchCase([
-              //TODO
-              pipe([filter(get("error")), isEmpty]),
-              () =>
-                onStateChange({
-                  context: contextFromHook({ hookName, hookType }),
-                  nextState: "DONE",
-                }),
-              (results) =>
-                onStateChange({
-                  context: contextFromHook({ hookName, hookType }),
-                  nextState: "ERROR",
-                  error: filter(get("error"))(results),
-                }),
-            ])
+          tap((xx) => {
+            logger.debug(
+              `runScriptCommands ${tos({ hookName, hookType })} ${tos(xx)}`
+            );
+          }),
+          (results) =>
+            assign({
+              error: ({ results }) => any(({ error }) => error)(results),
+            })({
+              results,
+            }),
+          tap((xx) => {
+            logger.debug(
+              `runScriptCommands ${tos({ hookName, hookType })} ${tos(xx)}`
+            );
+          }),
+          tap(({ error }) =>
+            onStateChange({
+              context: contextFromHook({ hookName, hookType }),
+              nextState: nextStateOnError(error),
+            })
           ),
+          tap((xx) => {
+            logger.debug(`runScriptCommands DONE ${tos(xx)}`);
+          }),
         ]),
         (error, script) => {
           logger.debug(
@@ -738,7 +744,10 @@ function CoreProvider({
           }
         )()
       ),
-      augmentResultWithError,
+      (results) =>
+        assign({ error: ({ results }) => any(({ error }) => error)(results) })({
+          results,
+        }),
       tap((result) => {
         logger.info(`runOnDeployed DONE`);
       }),
@@ -952,10 +961,11 @@ function CoreProvider({
               title: TitleDestroying,
               resources: pluck("resource")(plan.resultDestroy.plans),
             }),
-            spinnersStartHooks({
+            //TODO
+            /*spinnersStartHooks({
               onStateChange,
               hookType: HookType.ON_DESTROYED,
-            }),
+            }),*/
           ]),
           () => {
             logger.debug("no destroy ");
@@ -1454,23 +1464,24 @@ function CoreProvider({
         config: item.config,
       });
     };
-    if (direction === PlanDirection.DOWN) {
-      pipe([
-        tap((options) => logger.debug(`planDestroy ${tos({ options })}`)),
-        tap(() =>
-          onStateChange({
-            context: { uri: providerName },
-            nextState: "RUNNING",
-          })
-        ),
-        tap(() =>
-          onStateChange({
-            context: contextFromPlanner({ title: TitleDestroying }),
-            nextState: "RUNNING",
-          })
-        ),
-      ])();
-    }
+    pipe([
+      tap((options) =>
+        logger.debug(`planDestroy ${tos({ direction, options })}`)
+      ),
+      tap(() =>
+        onStateChange({
+          context: { uri: providerName },
+          nextState: "RUNNING",
+        })
+      ),
+      tap(() =>
+        onStateChange({
+          context: contextFromPlanner({ title: TitleDestroying }),
+          nextState: "RUNNING",
+        })
+      ),
+    ])();
+
     const planner = Planner({
       plans: plans,
       specs: mapToGraph(mapNameToResource),
@@ -1481,18 +1492,18 @@ function CoreProvider({
 
     const plannerResult = await planner.run();
 
+    pipe([
+      tap((options) => logger.debug(`planDestroy ${tos({ options })}`)),
+      tap(() =>
+        onStateChange({
+          context: contextFromPlanner({ title: TitleDestroying }),
+          nextState: nextStateOnError(plannerResult.error),
+        })
+      ),
+    ])();
+
     if (direction === PlanDirection.DOWN) {
       const hookResults = await runOnDestroyed({ onStateChange });
-
-      pipe([
-        tap((options) => logger.debug(`planDestroy ${tos({ options })}`)),
-        tap(() =>
-          onStateChange({
-            context: contextFromPlanner({ title: TitleDestroying }),
-            nextState: nextStateOnError(hookResults.error),
-          })
-        ),
-      ])();
 
       return {
         error: hookResults.error || plannerResult.error ? true : false,
@@ -1537,22 +1548,33 @@ function CoreProvider({
   checkConfig(config, mandatoryConfigKeys);
 
   const toType = () => type || providerName;
-  // TODO check if file exsists
-  const hookFilenameDefault = () => path.resolve(process.cwd(), "hooks.js");
+  const hookFilenameDefault = ({ dirname }) =>
+    path.resolve(dirname || process.cwd(), "hooks.js");
+
   const getHookFactory = tryCatch(require, (error) => {
-    console.log("getHookFactory", error);
-    //TODO check error
+    logger.error(`getHookFactory ${tos(error)}`);
+    throw error;
   });
 
-  const register = ({ resources }) => {
-    const hookFactory = getHookFactory(hookFilenameDefault());
-    if (hookFactory) {
-      const hooks = hookFactory({ resources, config: providerConfig });
-      hookAdd("default", hooks);
-    } else {
-      logger.error(`no hooks`);
-    }
-  };
+  const register = ({ resources, dirname }) =>
+    pipe([
+      hookFilenameDefault,
+      switchCase([
+        (fileName) => fs.existsSync(fileName),
+        pipe([
+          getHookFactory,
+          (hookFactory) => {
+            const hooks = hookFactory({ resources, config: providerConfig });
+            hookAdd("default", hooks);
+          },
+        ]),
+        (filename) => {
+          logger.error(`hook '${filename}' does not exist`);
+        },
+      ]),
+    ])({
+      dirname,
+    });
 
   const provider = {
     config: () => providerConfig,

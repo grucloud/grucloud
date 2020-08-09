@@ -419,13 +419,17 @@ exports.planApply = async ({
         await prompts({
           type: "confirm",
           name: "confirmDeploy",
-          message: `Are you sure to deploy ${plu("resource", create, true)}${
-            destroy > 0 ? ` and destroy ${plu("resource", destroy, true)}` : ""
-          } of ${plu("type", types, true)} and ${plu(
+          message: `Are you sure to deploy ${plu(
+            "resource",
+            create,
+            true
+          )}, ${plu("type", types, true)} on ${plu(
             "provider",
             providers,
             true
-          )}?`,
+          )}${
+            destroy > 0 ? ` and destroy ${plu("resource", destroy, true)}` : ""
+          }?`,
           initial: false,
         }),
       ({ confirmDeploy }) => confirmDeploy,
@@ -614,7 +618,7 @@ exports.planDestroy = async ({
           "type",
           types,
           true
-        )}, ${plu("provider", providers, true)}`
+        )} on ${plu("provider", providers, true)}`
       ),
   ]);
 
@@ -630,7 +634,7 @@ exports.planDestroy = async ({
               "type",
               types,
               true
-            )}, ${plu("provider", providers, true)}?`
+            )} on ${plu("provider", providers, true)}?`
           ),
           initial: false,
         }),

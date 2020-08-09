@@ -1,12 +1,14 @@
 ## Bugs
 
-- assert.equal(spinnerMap.size, 0, "spinner still active");
+converted: true
+
 - Are you sure to destroy 9 resources ? despite only one resource to destroy
 - gc d -a does not handle deps correclty when resources are not
 - ec2 examples aws::Vpc::undefined when destroyed
 
 ## Common:
 
+- hookResults = resultHook
 - hookResults along side plannerResults
 - return error as an array ?
 - client type redundant ?

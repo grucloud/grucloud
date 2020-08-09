@@ -48,16 +48,16 @@ exports.runAsyncCommand = async ({ text, command }) => {
         logger.debug(`spinnies: create uri: ${uri}, text: ${text}`);
         spinnerList.push(uri);
 
-        const spinny = spinnies.pick(uri);
-        if (spinny) {
+        if (spinnies.pick(uri)) {
           assert(false, `${uri} already created`);
         }
-        spinnerMap.set(uri, spinny);
-        spinnies.add(uri, {
+        const spinny = {
           text,
           indent,
           color: "yellow",
-        });
+        };
+        spinnerMap.set(uri, spinny);
+        spinnies.add(uri, spinny);
         break;
       }
       case "RUNNING": {
@@ -80,7 +80,6 @@ exports.runAsyncCommand = async ({ text, command }) => {
               "\n"
             )}`
           );
-          spinnies.add(uri, { text, color: runningColor, indent });
         }
         break;
       }
@@ -88,15 +87,14 @@ exports.runAsyncCommand = async ({ text, command }) => {
         const spinny = spinnies.pick(uri);
         if (spinny) {
           spinnies.succeed(uri);
+          spinnerMap.delete(uri, spinny);
         } else {
           assert(false, `DONE event: ${uri} was not created`);
         }
-        spinnerMap.delete(uri, spinny);
+
         break;
       }
       case "ERROR": {
-        //TODO build error.ToString()
-
         const spinny = spinnies.pick(uri);
         if (spinny) {
           assert(error, `should have set the error, id: ${uri}`);
@@ -105,10 +103,10 @@ exports.runAsyncCommand = async ({ text, command }) => {
           } ${error.message || ""}`;
           logger.error(textWithError);
           spinnies.fail(uri, { text: textWithError });
+          spinnerMap.delete(uri, spinny);
         } else {
           assert(false, `ERROR event: ${uri} was not created, error: ${error}`);
         }
-        spinnerMap.delete(uri, spinny);
         break;
       }
       default:
@@ -120,9 +118,11 @@ exports.runAsyncCommand = async ({ text, command }) => {
   try {
     const result = await command({ onStateChange });
     logger.debug(`runAsyncCommand end of : ${text}`);
-    [...spinnerMap.keys()].forEach((name) => {
-      logger.error(`spinners still running: ${name}`);
-      console.log(`spinners still running: ${name}`);
+    [...spinnerMap.keys()].forEach((uri) => {
+      const spinny = spinnies.pick(uri);
+      const msg = `spinners still running: ${uri} in status ${spinny.status}`;
+      logger.error(msg);
+      console.log(msg);
     });
     assert.equal(spinnerMap.size, 0, "spinner still active");
     spinnies.stopAll();

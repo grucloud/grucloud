@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
-const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const cliCommands = require("../../src/cli/cliCommands");
 const { createStack } = require("./iac");
 
