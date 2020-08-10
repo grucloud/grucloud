@@ -8,8 +8,7 @@ converted: true
 
 ## Common:
 
-- hookResults = resultHook
-- hookResults along side plannerResults
+- resultHooks along side plannerResults
 - return error as an array ?
 - client type redundant ?
 - do not use index.js for S3 and EC2

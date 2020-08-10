@@ -709,7 +709,10 @@ function CoreProvider({
             nextState: "ERROR",
             error: error,
           });
-          return { error, hookType, hookName, providerName, script };
+          return {
+            results: [{ error, hookType, hookName, providerName, script }],
+            error: true,
+          };
         }
       ),
     ]);
@@ -1041,7 +1044,7 @@ function CoreProvider({
               direction: PlanDirection.UP,
               title: TitleDestroying,
             }),
-          () => ({ error: false, destroy: { plans: [] } }),
+          () => ({ error: false, results: [] }),
         ]),
         resultCreate: switchCase([
           () => isValidPlan(plan.resultCreate),
@@ -1069,7 +1072,7 @@ function CoreProvider({
           result.resultCreate.hooks.error ||
           result.resultDestroy.error,
         resultCreate: result.resultCreate.create,
-        hookResults: result.resultCreate.hooks,
+        resultHooks: result.resultCreate.hooks,
         resultDestroy: result.resultDestroy,
       }),
     ])();
@@ -1096,29 +1099,33 @@ function CoreProvider({
           })
         )
       ),
-      map.pool(mapPoolSize, async (resource) => {
-        try {
-          onStateChange({
-            context: contextFromResource(resource.toJSON()),
-            nextState: "RUNNING",
-          });
-          const actions = await resource.planUpsert({ resource });
-          onStateChange({
-            context: contextFromResource(resource.toJSON()),
-            nextState: "DONE",
-          });
-          return actions;
-        } catch (error) {
-          logger.error(`error query resource ${resource.toString()}`);
-          logger.error(error);
-          onStateChange({
-            context: contextFromResource(resource.toJSON()),
-            nextState: "ERROR",
-            error,
-          });
-          return { error };
-        }
-      }),
+      map.pool(
+        mapPoolSize,
+        tryCatch(
+          async (resource) => {
+            onStateChange({
+              context: contextFromResource(resource.toJSON()),
+              nextState: "RUNNING",
+            });
+            const actions = await resource.planUpsert({ resource });
+            onStateChange({
+              context: contextFromResource(resource.toJSON()),
+              nextState: "DONE",
+            });
+            return actions;
+          },
+          (error, resource) => {
+            logger.error(`error query resource ${resource.toString()}`);
+            logger.error(error);
+            onStateChange({
+              context: contextFromResource(resource.toJSON()),
+              nextState: "ERROR",
+              error,
+            });
+            return { error: { error } };
+          }
+        )
+      ),
       filter((x) => x),
       tap((plans) =>
         onStateChange({
@@ -1503,12 +1510,12 @@ function CoreProvider({
     ])();
 
     if (direction === PlanDirection.DOWN) {
-      const hookResults = await runOnDestroyed({ onStateChange });
+      const resultHooks = await runOnDestroyed({ onStateChange });
 
       return {
-        error: hookResults.error || plannerResult.error ? true : false,
+        error: resultHooks.error || plannerResult.error ? true : false,
         results: plannerResult.results,
-        hookResults,
+        resultHooks,
       };
     } else {
       return plannerResult;

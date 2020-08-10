@@ -50,16 +50,6 @@
       "console": "integratedTerminal",
       "args": ["--infra", "MockStack.js", "destroy"]
     },
-
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Mock Plan",
-      "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/mock/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["plan"]
-    },
     {
       "type": "node",
       "request": "launch",
@@ -73,10 +63,20 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Mock Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/mock/mock",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Mock Run onDeployed",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/mock",
       "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
       "args": ["run", "--onDeployed"]
     },
     {

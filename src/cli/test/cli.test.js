@@ -144,7 +144,7 @@ describe("cli error", function () {
         const { resultQuery } = error.results[0];
         assert(resultQuery.error);
         assert.equal(
-          resultQuery.resultCreate.plans[0].message,
+          resultQuery.resultCreate.plans[0].error.message,
           "Network Error"
         );
       },
@@ -159,7 +159,10 @@ describe("cli error", function () {
         assert.equal(code, 422);
         const { resultQuery } = error.results[0];
         assert(resultQuery.error);
-        assert.equal(resultQuery.resultCreate.plans[0].code, "ECONNABORTED");
+        assert.equal(
+          resultQuery.resultCreate.plans[0].error.code,
+          "ECONNABORTED"
+        );
       },
     });
     assert.deepEqual(result, -1);
@@ -185,7 +188,7 @@ describe("cli error", function () {
         const { resultQuery } = error.results[0];
         assert(resultQuery.error);
         assert.equal(
-          resultQuery.resultCreate.plans[0].message,
+          resultQuery.resultCreate.plans[0].error.message,
           "Network Error"
         );
       },
@@ -200,7 +203,10 @@ describe("cli error", function () {
         assert.equal(code, 422);
         const { resultQuery } = error.results[0];
         assert(resultQuery.error);
-        assert.equal(resultQuery.resultCreate.plans[0].code, "ECONNABORTED");
+        assert.equal(
+          resultQuery.resultCreate.plans[0].error.code,
+          "ECONNABORTED"
+        );
       },
     });
     assert.deepEqual(result, -1);

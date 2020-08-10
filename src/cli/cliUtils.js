@@ -122,9 +122,8 @@ exports.runAsyncCommand = async ({ text, command }) => {
       const spinny = spinnies.pick(uri);
       const msg = `spinners still running: ${uri} in status ${spinny.status}`;
       logger.error(msg);
-      console.log(msg);
     });
-    assert.equal(spinnerMap.size, 0, "spinner still active");
+    //assert.equal(spinnerMap.size, 0, "spinner still active");
     spinnies.stopAll();
     return result;
   } catch (error) {

@@ -25,7 +25,8 @@ const {
   get,
 } = require("rubico");
 const { uniq } = require("lodash/fp");
-const { pluck, isEmpty, flatten } = require("rubico/x");
+const { pluck, isEmpty, flatten, forEach } = require("rubico/x");
+
 // Common
 const plansHasSuccess = all(({ result }) => !result.error);
 
@@ -125,85 +126,96 @@ const saveToJson = ({ command, commandOptions, programOptions, result }) => {
   );
 };
 
-const displayError = (name, error) => {
-  assert(error);
-  if (Array.isArray(error)) {
-    map((err) => displayError(name, err))(error);
-    return;
+const displayPlanQueryErrorResult = pipe([
+  filter(({ error }) => error),
+  tap((xx) => {
+    logger.debug(tos(xx));
+  }),
+  pluck("error"),
+  //TODO do we need pluck ?
+  forEach((error) => console.log(YAML.stringify(convertError({ error })))),
+]);
+
+const displayPlanApplyErrorResult = pipe([
+  tap((xx) => {
+    logger.debug(tos(xx));
+  }),
+  filter(({ error }) => error),
+  tap((xx) => {
+    logger.debug(tos(xx));
+  }),
+  pluck("error"), //TODO do we need pluck ?
+  tap((xx) => {
+    logger.debug(tos(xx));
+  }),
+  forEach((error) => console.log(YAML.stringify(convertError({ error })))),
+]);
+
+const displayErrorHooks = (resultHooks) => {
+  if (resultHooks?.error) {
+    pipe([
+      tap((xx) => {
+        logger.debug(tos(xx));
+      }),
+      filter(({ error }) => error),
+      pluck("results"),
+      tap((xx) => {
+        logger.debug(tos(xx));
+      }),
+      flatten,
+      filter(({ error }) => error),
+      tap((xx) => {
+        logger.debug(tos(xx));
+      }),
+      forEach(({ error, hookName, providerName, hookType, action }) => {
+        const fullName = `${providerName}::${hookName}::${hookType}::${
+          action ? action.name : "init"
+        }`;
+        console.log(`Error running hook '${fullName}'`);
+        console.log(YAML.stringify(convertError({ error })));
+      }),
+    ])(resultHooks.results);
   }
-  console.log(YAML.stringify(convertError({ error, name })));
 };
 
-const pluckErrorsCommon = pipe([
-  tap((obj) => {
-    logger.debug(`pluckErrorsCommon ${tos(obj)}`);
-  }),
-  filter(({ result: { error } }) => error),
-  flatten,
-  pluck("result.resultCreate.results"),
-  flatten,
-  tap((obj) => {
-    logger.debug("pluckErrorsCommon resultCreate ${obj}");
-  }),
-  filter(({ error }) => error),
-  tap((xx) => {
-    logger.debug("pluckErrorsCommon result  ");
-  }),
-]);
-const pluckErrorsDestroy = pipe([
-  tap((obj) => {
-    logger.debug(`pluckErrorsDestroy ${tos(obj)}`);
-  }),
-  filter(({ result: { error } }) => error),
-  tap((obj) => {
-    logger.debug(`pluckErrorsDestroy ${tos(obj)}`);
-  }),
-  pluck("result.results"),
-  flatten,
-  tap((obj) => {
-    logger.debug(`pluckErrorsDestroy resultCreate ${obj}`);
-  }),
-  filter(({ error }) => error),
-  tap((xx) => {
-    logger.debug("pluckErrorsDestroy result  ");
-  }),
-]);
-const pluckErrorsHooks = pipe([
-  tap((xx) => {
-    logger.debug("pluckErrorsHooks ");
-  }),
-  filter(({ result: { error } }) => error),
-  pluck("result.hookResults"),
-  tap((xx) => {
-    logger.debug("pluckErrorsHooks ");
-  }),
-  filter(({ error }) => error),
-  tap((xx) => {
-    logger.debug("pluckErrorsHooks ");
-  }),
-  pluck("results"),
+const displayError = ({ name, error }) => {
+  assert(error);
+  assert(name);
+  console.error(`ERROR running command '${name}'`);
+  if (error.results) {
+    forEach(({ provider, result, resultQuery }) => {
+      console.log(`Provider ${provider.name}`);
+      if (resultQuery) {
+        displayPlanQueryErrorResult(resultQuery.resultCreate.plans);
+        displayPlanQueryErrorResult(resultQuery.resultDestroy.plans);
+      }
 
-  flatten,
-  filter(({ error }) => error),
-  tap((xx) => {
-    logger.debug("pluckErrorsHooks result  ");
-  }),
-]);
+      displayErrorHooks(result?.resultHooks);
 
-const displayErrorHooks = ({
-  error = {},
-  hookName,
-  providerName,
-  hookType,
-  action,
-}) => {
-  logger.error(`displayErrorHooks ${tos({ error })}`);
-  //assert(item, "item");
-  const fullName = `${providerName}::${hookName}::${hookType}::${
-    action ? action.name : "init"
-  }`;
-  console.log(`Error running hook '${fullName}'`);
-  displayError(`Hook: ${fullName}`, error);
+      if (result?.resultCreate) {
+        displayPlanApplyErrorResult(result.resultCreate.results);
+      }
+      if (result?.resultDestroy) {
+        displayPlanApplyErrorResult(result.resultDestroy.results);
+      }
+      if (result?.results) {
+        pipe([
+          tap((xx) => {
+            logger.debug(tos(xx));
+          }),
+          filter(({ error }) => error),
+          forEach(({ item, client, error }) => {
+            item && console.log(`Resource ${formatResource(item.resource)}`);
+            client && console.log(`Client ${client.type}`);
+
+            console.log(YAML.stringify(convertError({ error, name })));
+          }),
+        ])(result.results);
+      }
+    })(error.results);
+  } else {
+    console.log(YAML.stringify(convertError({ error })));
+  }
 };
 
 const displayCommandHeader = ({ providers, verb }) =>
@@ -214,7 +226,6 @@ const displayCommandHeader = ({ providers, verb }) =>
   )}: ${displayProviderList(providers)}`;
 
 // Plan Query
-
 const doPlanQuery = ({ providers, commandOptions, programOptions }) =>
   pipe([
     async (providers) =>
@@ -301,7 +312,7 @@ const planQuery = async ({
       ),
     ]),
     (error) => {
-      displayError("PlanQuery", error);
+      displayError({ name: "plan", error });
       throw { code: 422, error };
     }
   )({ providers, commandOptions, programOptions });
@@ -329,13 +340,16 @@ const runAsyncCommandHook = ({ hookType, commandTitle, providers }) =>
             assign({
               result: async ({ provider }) => {
                 const fun = provider[commandToFunction(hookType)];
-                if (fun) return await fun({ onStateChange });
+                assert(fun, `no provider hook for ${hookType}`);
+                return {
+                  resultHooks: await fun({ onStateChange }),
+                };
               },
             }),
-            tap(({ provider, result }) =>
+            tap(({ provider, result: { resultHooks } }) =>
               provider.spinnersStopProvider({
                 onStateChange,
-                error: result.error,
+                error: resultHooks.error,
               })
             ),
           ])({ provider })
@@ -378,20 +392,31 @@ const planRunScript = async ({
       tap((result) => {
         logger.debug("planRunScript Done");
       }),
-      tap(
-        pipe([
-          pluck("result"),
-          flatten,
-          tap((result) => {
-            logger.debug("planRunScript flatten");
-          }),
-          filter(({ error }) => error),
-          map(displayErrorHooks),
-        ])
+      //TODO
+      (results) => ({
+        error: any(
+          ({
+            result: {
+              resultHooks: { error },
+            },
+          }) => error
+        )(results),
+        results,
+      }),
+      tap((result) =>
+        saveToJson({
+          command: "runScript",
+          commandOptions,
+          programOptions,
+          result,
+        })
       ),
+      tap((result) => {
+        if (result.error) throw result;
+      }),
     ]),
     (error) => {
-      displayError("planRunScript", error);
+      displayError({ name: "planRunScript", error });
       throw { code: 422, error };
     }
   )({ providers, programOptions, commandOptions });
@@ -451,27 +476,6 @@ exports.planApply = async ({
           true
         )}`
       ),
-  ]);
-
-  const displayDeployError = ({ item, error = {} }) => {
-    logger.error(`displayDeployError ${tos({ item, error })}`);
-    assert(item, "item");
-    console.log(`Cannot deploy resource ${formatResource(item.resource)}`);
-    displayError("Plan Apply", error);
-  };
-
-  const displayDeployErrors = pipe([
-    tap((x) => {
-      logger.error(`displayDeployErrors begins ${tos(x)}`);
-    }),
-    tap(pipe([pluckErrorsCommon, map(tap(displayDeployError))])),
-    tap(pipe([pluckErrorsHooks, map(tap(displayErrorHooks))])),
-
-    (result) => {
-      logger.error(`displayDeployErrors result: ${tos({ result })}`);
-
-      throw result;
-    },
   ]);
 
   const doPlansDeploy = ({ commandOptions }) =>
@@ -540,15 +544,15 @@ exports.planApply = async ({
       tap((result) => {
         logger.debug("doPlansDeploy");
       }),
-      switchCase([
-        ({ error }) => !error,
-        pipe([get("results"), displayDeploySuccess]),
-        displayDeployErrors,
-      ]),
-
-      tap((result) => {
-        logger.debug("doPlansDeploy DONE");
-      }),
+      tap(
+        pipe([
+          tap((result) => {
+            logger.debug("doPlansDeploy");
+          }),
+          get("results"),
+          displayDeploySuccess,
+        ])
+      ),
     ]);
 
   const processDeployPlans = switchCase([
@@ -570,7 +574,8 @@ exports.planApply = async ({
       switchCase([hasPlans, processDeployPlans, processNoPlan]),
     ]),
     (error) => {
-      displayError("Plan Apply", error);
+      displayError({ name: "Plan Apply", error });
+
       throw { code: 422, error };
     }
   )({ providers, commandOptions });
@@ -641,17 +646,14 @@ exports.planDestroy = async ({
       ({ confirmDestroy }) => confirmDestroy,
     ])(results);
 
-  const displayDestroyError = ({ item, error }) => {
-    console.log(`Cannot destroy resource ${formatResource(item.resource)}`);
-    displayError("Plan Destroy", error);
-  };
-
+  //TODO
   const displayDestroyErrors = pipe([
     tap((x) => {
       logger.error(`displayDestroyErrors ${tos(x)}`);
     }),
-    tap(pipe([pluckErrorsDestroy, map(tap(displayDestroyError))])),
-    tap(pipe([pluckErrorsHooks, map(tap(displayErrorHooks))])),
+    //TODO
+    //tap(pipe([pluckErrorsDestroy, map(tap(displayDestroyError))])),
+    //tap(pipe([pluckErrorsHooks, map(tap(displayErrorHooks))])),
 
     (results) => {
       throw { results };
@@ -795,8 +797,7 @@ exports.planDestroy = async ({
       }),
     ]),
     (error) => {
-      //TODO
-      displayError("Plan Destroy", error);
+      displayError({ name: "Plan Destroy", error });
       throw { code: 422, error };
     }
   )({ providers });
@@ -897,7 +898,7 @@ const listDoOk = ({ commandOptions, programOptions }) =>
   ]);
 
 const listDoError = (error) => {
-  displayError("Plan List", error);
+  displayError({ name: "Plan List", error });
   throw { code: 422, error };
 };
 //List all

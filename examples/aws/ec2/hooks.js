@@ -63,7 +63,7 @@ module.exports = ({ resources: { eip, server }, provider }) => {
     },
     onDestroyed: {
       init: () => {
-        console.log("ec2 onDestroyed");
+        //console.log("ec2 onDestroyed");
       },
     },
   };
