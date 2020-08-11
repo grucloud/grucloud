@@ -28,7 +28,6 @@ const { uniq } = require("lodash/fp");
 const { pluck, isEmpty, flatten, forEach } = require("rubico/x");
 
 // Common
-const plansHasSuccess = all(({ result }) => !result.error);
 
 const displayProviderList = pipe([
   tap((xx) => {
@@ -184,6 +183,7 @@ const displayError = ({ name, error }) => {
   console.error(`ERROR running command '${name}'`);
   if (error.results) {
     forEach(({ provider, result, resultQuery }) => {
+      assert(provider.name);
       console.log(`Provider ${provider.name}`);
       if (resultQuery) {
         displayPlanQueryErrorResult(resultQuery.resultCreate.plans);
@@ -595,8 +595,8 @@ exports.planDestroy = async ({
 
   const countDestroyed = reduce(
     (acc, value) => {
-      assert(value.result);
-      assert(value.result.results);
+      assert(value.result, "value.result");
+      assert(value.result.results, "value.result.results");
       return {
         providers: acc.providers + 1,
         types:
@@ -613,6 +613,7 @@ exports.planDestroy = async ({
     tap((x) => {
       logger.error(`displayDestroySuccess ${tos(x)}`);
     }),
+    get("results"),
     countDestroyed,
     tap((stats) => {
       logger.error(`displayDestroySuccess ${tos(stats)}`);
@@ -655,8 +656,8 @@ exports.planDestroy = async ({
     //tap(pipe([pluckErrorsDestroy, map(tap(displayDestroyError))])),
     //tap(pipe([pluckErrorsHooks, map(tap(displayErrorHooks))])),
 
-    (results) => {
-      throw { results };
+    (result) => {
+      throw result;
     },
   ]);
 
@@ -703,6 +704,11 @@ exports.planDestroy = async ({
               }),
             ])(result.results),
         }),
+
+      (results) => ({
+        error: any(({ result: { error } }) => error)(results),
+        results,
+      }),
       tap((result) =>
         saveToJson({
           command: "destroy",
@@ -715,7 +721,7 @@ exports.planDestroy = async ({
         logger.error(`doPlansDestroy`);
       }),
       switchCase([
-        plansHasSuccess,
+        ({ error }) => !error,
         displayDestroySuccess,
         displayDestroyErrors,
       ]),

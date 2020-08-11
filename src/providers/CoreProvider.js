@@ -778,7 +778,11 @@ function CoreProvider({
           }
         )()
       ),
-      augmentResultWithError,
+      //TODO common with runOnDeployed
+      (results) =>
+        assign({ error: ({ results }) => any(({ error }) => error)(results) })({
+          results,
+        }),
       tap((result) => {
         logger.info(`runOnDestroyed DONE`);
       }),
