@@ -11,6 +11,7 @@ const {
   switchCase,
   reduce,
   transform,
+  flatMap,
 } = require("rubico");
 
 const pluck = require("rubico/x/pluck");
@@ -30,20 +31,15 @@ exports.mapToGraph = pipe([
   }),
   (mapResource) =>
     map((resource) => {
-      const dependsOn = reduce((acc, resource) => {
-        return pipe([
-          () => [
-            ...acc,
-            resource.name
-              ? resource.name
-              : transform(
-                  map((dep) => dep.name),
-                  () => []
-                )(resource),
-          ],
-          flatten,
-        ])();
-      }, [])(resource.dependencies);
+      const dependsOn = transform(
+        flatMap((resource) => resource.name
+          ? [resource.name]
+          : transform(
+              map((dep) => dep.name),
+              () => []
+            )(resource)),
+        () => []
+      )(resource.dependencies);
       return {
         name: resource.name,
         dependsOn,
