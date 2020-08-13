@@ -1,4 +1,3 @@
-const _ = require("lodash");
 const { get } = require("rubico");
 const assert = require("assert");
 const notAvailable = (name, field) => {

@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk");
-const { isEmpty, map } = require("lodash/fp");
-const { defaultsDeep } = require("lodash/fp");
+const { map, transform } = require("rubico");
+const { defaultsDeep, isEmpty } = require("rubico/x");
 
 const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "AwsEc2" });
@@ -164,7 +164,10 @@ module.exports = AwsEC2 = ({ spec, config }) => {
         AssociatePublicIpAddress: true,
         DeviceIndex: 0,
         ...(!isEmpty(securityGroups) && {
-          Groups: map((sg) => getField(sg, "GroupId"))(securityGroups),
+          Groups: transform(
+            map((sg) => getField(sg, "GroupId")),
+            () => []
+          )(securityGroups),
         }),
         SubnetId: getField(subnet, "SubnetId"),
       },

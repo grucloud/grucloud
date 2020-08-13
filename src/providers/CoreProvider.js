@@ -1,10 +1,9 @@
 const assert = require("assert");
-const _ = require("lodash");
 const fs = require("fs");
 const path = require("path");
 const { defaultsDeep } = require("lodash/fp");
 
-const { isEmpty, flatten, pluck } = require("rubico/x");
+const { isEmpty, isString, flatten, pluck, forEach } = require("rubico/x");
 const {
   pipe,
   tap,
@@ -75,11 +74,6 @@ const toUri = ({ providerName, type, name }) => {
   return `${providerName}::${type}::${name}`;
 };
 
-const augmentResultWithError = (results) => ({
-  error: pipe([flatten, any((result) => result.error)])(results),
-  results,
-});
-
 const ResourceMaker = ({
   name: resourceName,
   dependencies = {},
@@ -110,7 +104,7 @@ const ResourceMaker = ({
     const target = await resource.resolveConfig();
     logger.debug(`planUpdate target: ${tos(target)}`);
 
-    if (_.isEmpty(target)) {
+    if (isEmpty(target)) {
       return;
     }
     const diff = spec.compare({ target, live });
@@ -122,7 +116,7 @@ const ResourceMaker = ({
 
   const resolveDependencies = pipe([
     map(async (dependency) => {
-      if (_.isString(dependency)) {
+      if (isString(dependency)) {
         return dependency;
       }
       if (!dependency.getLive) {
@@ -163,7 +157,7 @@ const ResourceMaker = ({
       : config;
 
     logger.info(`resolveConfig: final: ${tos(finalConfig)}`);
-    //assert(!_.isEmpty(finalConfig));
+    //assert(!isEmpty(finalConfig));
     return finalConfig;
   };
   const create = async ({ payload }) => {
@@ -274,24 +268,23 @@ const ResourceMaker = ({
     addParent,
     resolveDependencies: () => resolveDependencies(dependencies),
   };
-  //TODO rubico map ?
-  _.map(dependencies, (dependency) => {
-    if (_.isString(dependency)) {
+  forEach((dependency) => {
+    if (isString(dependency)) {
       return;
     }
     if (!dependency) {
       throw { code: 422, message: "missing dependency" };
     }
     if (!dependency.addParent) {
-      _.forEach(dependency, (item) => {
+      forEach((item) => {
         if (item.addParent) {
           item.addParent(resourceMaker);
         }
-      });
+      })(dependency);
     } else {
       dependency.addParent(resourceMaker);
     }
-  });
+  })(dependencies);
   return resourceMaker;
 };
 
@@ -311,7 +304,7 @@ const createResourceMakers = ({ specs, config, provider }) =>
         transformConfig,
         properties,
         dependencies,
-        spec: _.defaults(spec, SpecDefault({ config })),
+        spec: defaultsDeep(SpecDefault({ config }))(spec),
         provider,
         config,
       });
@@ -425,7 +418,7 @@ function CoreProvider({
   const resourceByName = (name) => mapNameToResource.get(name);
 
   const specs = fnSpecs(providerConfig).map((spec) =>
-    _.defaults(spec, SpecDefault({ config: providerConfig, providerName }))
+    defaultsDeep(SpecDefault({ config: providerConfig, providerName }))(spec)
   );
 
   const clients = specs.map((spec) =>
@@ -502,7 +495,7 @@ function CoreProvider({
       ),
       filter((client) => all || !client.spec.listOnly),
       filter((client) =>
-        !_.isEmpty(types) ? types.includes(client.spec.type) : true
+        !isEmpty(types) ? types.includes(client.spec.type) : true
       ),
       map(
         tryCatch(
@@ -716,36 +709,28 @@ function CoreProvider({
         }
       ),
     ]);
-
-  const runOnDeployed = ({ onStateChange }) =>
+  const runHook = ({ onStateChange, hookType, onHook }) =>
     pipe([
       tap((hooks) => {
-        logger.info(`runOnDeployed hookName:  #hooks ${hooks.length}`);
-        //assert(hookName);
+        logger.info(`runHook hookType: ${hookType}, #hooks ${hooks.length}`);
       }),
-      map(({ name, onDeployed }) =>
-        tryCatch(
-          pipe([
-            tap(() => {
-              assert(name, "name");
-              logger.info(`runOnDeployed start ${name}`);
-            }),
-            () => onDeployed,
-            runScriptCommands({
-              onStateChange,
-              hookType: HookType.ON_DEPLOYED,
-              hookName: name,
-            }),
-            tap((obj) => {
-              logger.info(`runOnDeployed stop`);
-            }),
-          ]),
-          (error, hook) => {
-            logger.error("runOnDeployed error");
-            logger.error(error);
-            return { error, hook };
-          }
-        )()
+      map((hook) =>
+        pipe([
+          tap(() => {
+            assert(hook.name, "name");
+            assert(hook[onHook], `hook[onHook]: ${onHook}`);
+            logger.info(`runHook start ${hook.name}`);
+          }),
+          () => hook[onHook],
+          runScriptCommands({
+            onStateChange,
+            hookType,
+            hookName: hook.name,
+          }),
+          tap((obj) => {
+            logger.info(`runHook ${hookType} stop`);
+          }),
+        ])()
       ),
       (results) =>
         assign({ error: ({ results }) => any(({ error }) => error)(results) })({
@@ -756,37 +741,19 @@ function CoreProvider({
       }),
     ])([...hookMap.values()]);
 
+  const runOnDeployed = ({ onStateChange }) =>
+    runHook({
+      onStateChange,
+      onHook: "onDeployed",
+      hookType: HookType.ON_DEPLOYED,
+    });
+
   const runOnDestroyed = ({ onStateChange }) =>
-    pipe([
-      tap((hooks) => {
-        logger.info(`runOnDestroyed hookName, #hooks ${hooks.length}`);
-      }),
-      map(({ name, onDestroyed }) =>
-        tryCatch(
-          pipe([
-            () => onDestroyed,
-            runScriptCommands({
-              onStateChange,
-              hookType: HookType.ON_DESTROYED,
-              hookName: name,
-            }),
-          ]),
-          (error, hook) => {
-            logger.error("runOnDestroyed");
-            logger.error(error);
-            return { error, hook };
-          }
-        )()
-      ),
-      //TODO common with runOnDeployed
-      (results) =>
-        assign({ error: ({ results }) => any(({ error }) => error)(results) })({
-          results,
-        }),
-      tap((result) => {
-        logger.info(`runOnDestroyed DONE`);
-      }),
-    ])([...hookMap.values()]);
+    runHook({
+      onStateChange,
+      onHook: "onDestroyed",
+      hookType: HookType.ON_DESTROYED,
+    });
 
   //TODO Rename
   const setRunningState = ({ onStateChange, hookType, hookName }) =>
@@ -1126,7 +1093,8 @@ function CoreProvider({
               nextState: "ERROR",
               error,
             });
-            return { error: { error } };
+            //TODO
+            return { error };
           }
         )
       ),
@@ -1194,17 +1162,17 @@ function CoreProvider({
     }
     //TODO switchCase
     // Delete by type
-    if (!_.isEmpty(types)) {
+    if (!isEmpty(types)) {
       return types.includes(type);
     }
 
     // Delete by id
-    if (!_.isEmpty(idToDelete)) {
+    if (!isEmpty(idToDelete)) {
       return id === idToDelete;
     }
 
     // Delete by name
-    if (!_.isEmpty(nameToDelete)) {
+    if (!isEmpty(nameToDelete)) {
       return name === nameToDelete;
     }
 
@@ -1515,7 +1483,6 @@ function CoreProvider({
 
     if (direction === PlanDirection.DOWN) {
       const resultHooks = await runOnDestroyed({ onStateChange });
-
       return {
         error: resultHooks.error || plannerResult.error ? true : false,
         results: plannerResult.results,
@@ -1526,25 +1493,20 @@ function CoreProvider({
     }
   };
 
-  const destroyAll = tryCatch(
-    pipe([
-      tap(() => logger.debug(`destroyAll`)),
-      async ({ onStateChange = identity } = {}) =>
-        planFindDestroy({ options: {}, onStateChange }),
-      async ({ plans }) =>
-        await planDestroy({ plans, direction: PlanDirection.DOWN }),
-
-      tap(({ error, results }) =>
-        logger.debug(
-          `destroyAll DONE, error: ${error}, #results ${results.length}`
-        )
-      ),
-    ]),
-    (error) => {
-      logError("destroyAll", error);
-      throw error;
-    }
-  );
+  const destroyAll = pipe([
+    tap(() => logger.debug(`destroyAll`)),
+    async ({ onStateChange = identity } = {}) =>
+      planFindDestroy({ options: {}, onStateChange }),
+    async ({ plans }) =>
+      await planDestroy({ plans, direction: PlanDirection.DOWN }),
+    tap(({ error, results }) =>
+      logger.debug(
+        `destroyAll DONE, ${error && `error: ${error}`}, #results ${
+          results.length
+        }`
+      )
+    ),
+  ]);
 
   const isPlanEmpty = switchCase([
     and([

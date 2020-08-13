@@ -1,7 +1,9 @@
 const assert = require("assert");
-const { isEmpty, isEqual, isObject, get, map } = require("lodash");
+const { isEmpty, isObject, isDeepEqual } = require("rubico/x");
+const { get, map, pipe, filter } = require("rubico");
 const logger = require("./logger")({ prefix: "MocCloud" });
 const { tos } = require("./tos");
+
 exports.checkEnv = (mandatoryEnv = []) => {
   const missingEnv = mandatoryEnv.filter((env) => !process.env[env]);
   const { CONFIG_ENV = "dev" } = process.env;
@@ -30,18 +32,21 @@ exports.checkConfig = (config, mandatoryConfigKeys = []) => {
 const compareObject = ({ target = {}, live = {} }) => {
   //console.log(target, live);
 
-  const diff = map(target, (targetValue, targetKey) => {
-    if (isObject(targetValue)) {
-      return compareObject({ target: targetValue, live: live[targetKey] });
-    }
-    if (targetValue !== live[targetKey]) {
-      return {
-        key: targetKey,
-        targetValue: targetValue,
-        liveValue: live[targetKey],
-      };
-    }
-  }).filter((x) => x);
+  const diff = pipe([
+    map((targetValue, targetKey) => {
+      if (isObject(targetValue)) {
+        return compareObject({ target: targetValue, live: live[targetKey] });
+      }
+      if (targetValue !== live[targetKey]) {
+        return {
+          key: targetKey,
+          targetValue: targetValue,
+          liveValue: live[targetKey],
+        };
+      }
+    }),
+    filter((x) => x),
+  ])(target);
   return diff.length > 0 ? diff : undefined;
 };
 exports.compareObject = compareObject;
@@ -49,10 +54,10 @@ exports.compareObject = compareObject;
 exports.compare = ({ target = {}, targetKeys = [], live = {} }) => {
   logger.debug(`compare ${tos({ target, targetKeys, live })}`);
 
-  const targetDiff = targetKeys
-    .map((targetKey) => {
-      const targetValue = get(target, targetKey);
-      const liveValue = get(live, targetKey);
+  const targetDiff = pipe([
+    map((targetKey) => {
+      const targetValue = get(targetKey)(target);
+      const liveValue = get(targetKey)(live);
 
       logger.debug(
         `compare for targetKey: ${tos({
@@ -70,7 +75,7 @@ exports.compare = ({ target = {}, targetKeys = [], live = {} }) => {
         };
       }
 
-      if (!isEqual(targetValue, liveValue)) {
+      if (!isDeepEqual(targetValue, liveValue)) {
         return {
           key: targetKey,
           type: "DIFF",
@@ -78,8 +83,9 @@ exports.compare = ({ target = {}, targetKeys = [], live = {} }) => {
           liveValue,
         };
       }
-    })
-    .filter((x) => x);
+    }),
+    filter((x) => x),
+  ])(targetKeys);
 
   logger.info(`compare ${tos({ targetDiff })}`);
   return targetDiff;

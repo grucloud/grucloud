@@ -1,7 +1,6 @@
 const assert = require("assert");
 const logger = require("../logger")({ prefix: "Planner" });
 const { tos } = require("../tos");
-const { isEmpty, isArray, isFunction, flatten } = require("lodash/fp");
 const {
   filter,
   map,
@@ -9,13 +8,11 @@ const {
   tap,
   any,
   switchCase,
-  reduce,
   transform,
   flatMap,
 } = require("rubico");
 
-const pluck = require("rubico/x/pluck");
-
+const { isEmpty, isFunction } = require("rubico/x");
 const { logError, convertError } = require("./Common");
 
 const STATES = {
@@ -32,12 +29,14 @@ exports.mapToGraph = pipe([
   (mapResource) =>
     map((resource) => {
       const dependsOn = transform(
-        flatMap((resource) => resource.name
-          ? [resource.name]
-          : transform(
-              map((dep) => dep.name),
-              () => []
-            )(resource)),
+        flatMap((resource) =>
+          resource.name
+            ? [resource.name]
+            : transform(
+                map((dep) => dep.name),
+                () => []
+              )(resource)
+        ),
         () => []
       )(resource.dependencies);
       return {
@@ -74,8 +73,8 @@ const DependencyTree = ({ plans, specs, down }) => {
 };
 
 exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
-  assert(isArray(plans));
-  assert(isArray(specs));
+  assert(Array.isArray(plans));
+  assert(Array.isArray(specs));
   assert(isFunction(executor));
   assert(isFunction(onStateChange));
   const dependencyTree = DependencyTree({ plans, specs, down });

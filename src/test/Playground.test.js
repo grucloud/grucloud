@@ -1,6 +1,6 @@
 const assert = require("assert");
 const urljoin = require("url-join");
-const { defaultsDeep, isDeepEqual } = require("rubico/x");
+const { defaultsDeep, isDeepEqual, unionWith } = require("rubico/x");
 const { get, switchCase, all } = require("rubico");
 const { cloneDeep } = require("lodash/fp");
 
@@ -26,6 +26,58 @@ describe("Playground", function () {
   it("get", async function () {
     const obj = { a: "aaa" };
     assert.equal(get("a")(obj), "aaa");
+  });
+  it("unionWith", async function () {
+    const managementTags = [
+      {
+        Key: "managedBy",
+        Value: "gru",
+      },
+      {
+        Key: "phase",
+        Value: "prod",
+      },
+    ];
+    const otherTags = [
+      {
+        Key: "phase",
+        Value: "prod",
+      },
+      {
+        Key: "key1",
+        Value: "value1",
+      },
+    ];
+    const result = unionWith(isDeepEqual)([managementTags, otherTags]);
+    assert.deepEqual(result, [
+      {
+        Key: "managedBy",
+        Value: "gru",
+      },
+      {
+        Key: "phase",
+        Value: "prod",
+      },
+      {
+        Key: "key1",
+        Value: "value1",
+      },
+    ]);
+  });
+  it.skip("unionWith undefined", async function () {
+    const managementTags = [
+      {
+        Key: "managedBy",
+        Value: "gru",
+      },
+      {
+        Key: "phase",
+        Value: "prod",
+      },
+    ];
+
+    const result = unionWith(isDeepEqual)([undefined, managementTags]);
+    assert.deepEqual(result, managementTags);
   });
   it("defaultsDeep no mutation", async function () {
     const defaultHook = {
