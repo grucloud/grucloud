@@ -1,6 +1,7 @@
 const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
 const AwsProvider = require("../../AwsProvider");
+const cliCommands = require("../../../../cli/cliCommands");
 
 describe("AwsS3BucketErrors", async function () {
   let config;
@@ -23,7 +24,16 @@ describe("AwsS3BucketErrors", async function () {
       properties: () => ({}),
     });
 
-    const plan = await provider.planQuery();
-    assert(plan.error);
+    try {
+      await cliCommands.planApply({
+        infra: { providers: [provider] },
+        commandOptions: { force: true },
+      });
+      assert(false, "should not be here");
+    } catch ({ error }) {
+      const plan = error.results[0].resultQuery.resultCreate.plans[0];
+      assert.equal(plan.error.code, "Forbidden");
+      assert.equal(plan.resource.name, "bucket");
+    }
   });
 });

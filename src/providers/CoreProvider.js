@@ -1093,8 +1093,7 @@ function CoreProvider({
               nextState: "ERROR",
               error,
             });
-            //TODO
-            return { error };
+            return { error, resource: resource.toJSON() };
           }
         )
       ),
@@ -1233,7 +1232,7 @@ function CoreProvider({
   const planFindDestroy = async ({
     options,
     direction = PlanDirection.DOWN,
-    onStateChange,
+    onStateChange = identity,
   }) =>
     pipe([
       tap((x) => {

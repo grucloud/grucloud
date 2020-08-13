@@ -126,13 +126,14 @@ const saveToJson = ({ command, commandOptions, programOptions, result }) => {
 };
 
 const displayPlanQueryErrorResult = pipe([
-  filter(({ error }) => error),
-  tap((xx) => {
-    logger.debug(tos(xx));
+  tap((result) => {
+    logger.debug(result);
   }),
-  pluck("error"),
-  //TODO do we need pluck ?
-  forEach((error) => console.log(YAML.stringify(convertError({ error })))),
+  filter(({ error }) => error),
+  forEach(({ resource, error }) => {
+    console.error(`Resource: ${resource.uri}`);
+    console.log(YAML.stringify(convertError({ error })));
+  }),
 ]);
 
 const displayPlanApplyErrorResult = pipe([
@@ -140,14 +141,10 @@ const displayPlanApplyErrorResult = pipe([
     logger.debug(tos(xx));
   }),
   filter(({ error }) => error),
-  tap((xx) => {
-    logger.debug(tos(xx));
+  forEach(({ error, item: { resource } }) => {
+    console.error(`Resource: ${resource.uri}`);
+    console.log(YAML.stringify(convertError({ error })));
   }),
-  pluck("error"), //TODO do we need pluck ?
-  tap((xx) => {
-    logger.debug(tos(xx));
-  }),
-  forEach((error) => console.log(YAML.stringify(convertError({ error })))),
 ]);
 
 const displayErrorHooks = (resultHooks) => {
