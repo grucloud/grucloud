@@ -23,9 +23,6 @@ const safeJsonParse = (json) => {
 
 exports.convertError = ({ error, name, procedure, params }) => {
   assert(error, "error");
-  if (error.converted) {
-    return omit(["converted"])({ ...error, name });
-  }
   if (error.isAxiosError) {
     const { baseURL, url, method } = error.config;
     return {
@@ -38,7 +35,6 @@ exports.convertError = ({ error, name, procedure, params }) => {
         url: `${method} ${baseURL}${url}`,
         data: safeJsonParse(error.config?.data),
       },
-      converted: true,
     };
   } else if (error.requestId) {
     return {
@@ -54,17 +50,17 @@ exports.convertError = ({ error, name, procedure, params }) => {
       retryable: error.retryable,
       retryDelay: error.retryDelay,
       time: error.time,
-      converted: true,
     };
-  } else {
+  } else if (error.stack) {
     return {
       Command: name,
       name: error.name,
       code: error.code,
       message: error.message,
       stack: error.stack,
-      converted: true,
     };
+  } else {
+    return error;
   }
 };
 
