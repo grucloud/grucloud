@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { compare, compareObject } = require("../Utils");
-const { checkConfig } = require("../Utils");
+const { checkConfig, checkEnv } = require("../Utils");
 const { replacerCredentials, hiddenCredentials } = require("../tos");
 const YAML = require("../cli/json2yaml");
 
@@ -54,7 +54,14 @@ describe("checkConfig", function () {
     assert.throws(() => checkConfig({}, ["iDoNotExist"]), Error);
   });
 });
-
+describe("checkEnv", function () {
+  it("checkEnv empty", async function () {
+    assert.throws(
+      () => checkEnv(["IDONOTEXIST"]),
+      'IDONOTEXIST is missing from the environment files "config/default.env" or "config/dev.env"'
+    );
+  });
+});
 const target = {
   name: "web-server",
   organization: "7734a2c2-df95-409c-bfa0-c094bd12f4ba",
