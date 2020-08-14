@@ -49,16 +49,6 @@ exports.displayPlan = async (plan) => {
   console.log("\n");
   return plan;
 };
-const displayLiveItem = ({ table, resource }) => {
-  assert(resource);
-  assert(resource.data);
-  table.push([
-    resource.name,
-    //resource.id,
-    YAML.stringify(resource.data),
-    resource.managedByUs ? colors.green("Yes") : colors.red("NO"),
-  ]);
-};
 
 const tablePerTypeDefinitions = [
   {
@@ -81,6 +71,14 @@ const tablePerTypeDefault = {
     (resource) => YAML.stringify(resource.data),
     (resource) => displayManagedByUs(resource),
   ],
+};
+
+const displayLiveItem = ({ table, resource, tableDefinitions }) => {
+  assert(resource);
+  assert(resource.data);
+  assert(tableDefinitions);
+
+  table.push(tableDefinitions.fields.map((field) => field(resource)));
 };
 
 const displayTablePerType = ({

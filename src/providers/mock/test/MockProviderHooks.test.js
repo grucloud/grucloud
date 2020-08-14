@@ -42,7 +42,7 @@ describe("MockProviderHooks", async function () {
     assert(onDestroyed.init.called);
   });
 
-  it("init throw ", async function () {
+  it("planApply init throw ", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
     const provider = await MockProvider({ config });
     const resources = await createResources({ provider });
@@ -87,6 +87,34 @@ describe("MockProviderHooks", async function () {
       assert(resultHooks.results[0].results[0].error);
     }
   });
+  it("run --onDeployed init throw ", async function () {
+    const config = ConfigLoader({ baseDir: __dirname });
+    const provider = await MockProvider({ config });
+    const resources = await createResources({ provider });
+    provider.hookAdd("mock-run-ondeployed-init-throw", {
+      onDeployed: {
+        init: () => {
+          throw "i throw in onDeployed init";
+        },
+      },
+    });
+
+    const infra = { providers: [provider] };
+    try {
+      await cliCommands.planRunScript({
+        infra,
+        commandOptions: { onDeployed: true },
+      });
+      assert(false, "should not be here");
+    } catch ({ error }) {
+      assert(error.results);
+      const { resultHooks } = error.results[0].result;
+      assert(resultHooks.error);
+      assert(resultHooks.results[0].error);
+      assert(resultHooks.results[0].results[0].error);
+    }
+  });
+
   it("action throw ", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
     const provider = await MockProvider({ config });

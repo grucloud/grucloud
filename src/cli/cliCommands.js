@@ -24,9 +24,7 @@ const {
   tryCatch,
   get,
 } = require("rubico");
-const { uniq } = require("lodash/fp");
-const { pluck, isEmpty, flatten, forEach } = require("rubico/x");
-
+const { pluck, isEmpty, flatten, forEach, uniq, size } = require("rubico/x");
 // Common
 
 const displayProviderList = pipe([
@@ -95,7 +93,7 @@ const countDeployResources = pipe([
         providers: acc.providers + 1,
         types:
           acc.types +
-          pipe([pluck("resource.type"), uniq])(value.resultCreate.plans).length,
+          pipe([pluck("resource.type"), uniq, size])(value.resultCreate.plans),
         create: acc.create + value.resultCreate.plans.length,
         destroy: acc.destroy + value.resultDestroy.plans.length,
       };
@@ -454,6 +452,9 @@ exports.planApply = async ({
           }?`,
           initial: false,
         }),
+      tap((result) => {
+        logger.debug("promptConfirmDeploy");
+      }),
       ({ confirmDeploy }) => confirmDeploy,
     ])(allPlans);
   };
@@ -499,18 +500,11 @@ exports.planApply = async ({
               map(
                 pipe([
                   assign({
-                    result: async ({ provider, resultQuery }) => {
-                      try {
-                        return await provider.planApply({
-                          plan: resultQuery,
-                          onStateChange,
-                        });
-                      } catch (error) {
-                        logger.error("doPlansDeploy");
-                        logger.error(error);
-                        throw error;
-                      }
-                    },
+                    result: ({ provider, resultQuery }) =>
+                      provider.planApply({
+                        plan: resultQuery,
+                        onStateChange,
+                      }),
                   }),
                   tap(({ provider, result }) =>
                     provider.spinnersStopProvider({
@@ -598,8 +592,7 @@ exports.planDestroy = async ({
         providers: acc.providers + 1,
         types:
           acc.types +
-          pipe([pluck("item.resource.type"), uniq])(value.result.results)
-            .length,
+          pipe([pluck("item.resource.type"), uniq, size])(value.result.results),
         resources: acc.resources + value.result.results.length,
       };
     },
@@ -731,7 +724,7 @@ exports.planDestroy = async ({
     (plans) => commandOptions.force || promptConfirmDestroy(plans),
     doPlansDestroy({ commandOptions }),
     () => {
-      console.log("Aborted");
+      console.log("Abort destroying plan");
     },
   ]);
 
@@ -821,7 +814,10 @@ const countResources = pipe([
   ),
 ]);
 
-const displayNoList = () => console.log("No live resources to list");
+const displayNoList = () => {
+  console.log("No live resources to list");
+};
+
 const displayListSummaryResults = ({ providers, types, resources }) => {
   console.log(
     `${plu("resource", resources, true)}, ${plu("type", types, true)}, ${plu(
@@ -832,7 +828,7 @@ const displayListSummaryResults = ({ providers, types, resources }) => {
   );
 };
 
-const isEmptyList = pipe([pluck("results"), flatten, isEmpty]);
+const isEmptyList = pipe([pluck("result.results"), flatten, isEmpty]);
 
 const listDoOk = ({ commandOptions, programOptions }) =>
   pipe([

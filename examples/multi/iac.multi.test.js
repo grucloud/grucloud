@@ -27,8 +27,9 @@ describe("Multi Example", async function () {
     });
     await cliCommands.planApply({
       infra,
-      commandOptions: { force: true },
+      commandOptions: {},
     });
+    await cliCommands.planQuery({ infra });
     await cliCommands.planRunScript({
       infra,
       commandOptions: { onDeployed: true },
@@ -43,7 +44,11 @@ describe("Multi Example", async function () {
     });
     await cliCommands.planDestroy({
       infra,
-      commandOptions: { force: true },
+      commandOptions: {},
+    });
+    await cliCommands.list({
+      infra,
+      commandOptions: {},
     });
   }).timeout(1500e3);
 });
