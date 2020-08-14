@@ -1,6 +1,6 @@
 ## Bugs
 
-converted: true
+ConfigLoader - envFromStage - (envFile) => envFromFile({ envFile }) not called
 
 - Are you sure to destroy 9 resources ? despite only one resource to destroy
 - gc d -a does not handle deps correclty when resources are not
@@ -9,7 +9,6 @@ converted: true
 ## Common:
 
 - resultHooks along side plannerResults
-- return error as an array ?
 - client type redundant ?
 - do not use index.js for S3 and EC2
 

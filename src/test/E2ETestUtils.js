@@ -53,8 +53,8 @@ const testDestroyByName = async ({ provider, livesAll }) => {
       name,
     },
   });
-  assert.equal(plan.length, 1);
-  assert.equal(plan[0].resource.name, name);
+  assert.equal(plan.plans.length, 1);
+  assert.equal(plan.plans[0].resource.name, name);
 };
 
 const testDestroyById = async ({ provider, livesAll }) => {
@@ -65,8 +65,8 @@ const testDestroyById = async ({ provider, livesAll }) => {
       id,
     },
   });
-  assert.equal(plan.length, 1);
-  assert.equal(plan[0].resource.id, id);
+  assert.equal(plan.plans.length, 1);
+  assert.equal(plan.plans[0].resource.id, id);
 };
 
 const testDestroyByType = async ({ provider, livesAll }) => {
@@ -76,8 +76,8 @@ const testDestroyByType = async ({ provider, livesAll }) => {
       types: [type],
     },
   });
-  assert.equal(plan.length, 1);
-  assert.equal(plan[0].resource.type, type);
+  assert.equal(plan.plans.length, 1);
+  assert.equal(plan.plans[0].resource.type, type);
 };
 
 const testPlanDestroy = async ({ provider, full = false }) => {
