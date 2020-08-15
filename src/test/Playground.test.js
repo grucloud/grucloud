@@ -2,7 +2,7 @@ const assert = require("assert");
 const urljoin = require("url-join");
 const { defaultsDeep, isDeepEqual, unionWith } = require("rubico/x");
 const { get, switchCase, all } = require("rubico");
-const { cloneDeep } = require("lodash/fp");
+const { copyDeep } = require("rubico/monad/Struct");
 
 const list = {
   data: {
@@ -94,7 +94,7 @@ describe("Playground", function () {
         ],
       },
     };
-    const hookCloned = cloneDeep(hook);
+    const hookCloned = copyDeep(hook);
     defaultsDeep(defaultHook)(hookCloned);
     assert(isDeepEqual(hookCloned, hook));
   });

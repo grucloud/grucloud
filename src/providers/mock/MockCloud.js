@@ -1,6 +1,6 @@
-const { map, cloneDeep } = require("lodash/fp");
+const { map, transform } = require("rubico");
+const { copyDeep } = require("rubico/monad/Struct");
 const { defaultsDeep } = require("lodash/fp");
-
 const assert = require("assert");
 const { v4: uuidv4 } = require("uuid");
 const logger = require("../../logger")({ prefix: "MockCloud" });
@@ -40,9 +40,10 @@ const mockCloudInitStatesDefault = [
 module.exports = MockCloud = (initStates = []) => {
   logger.debug(`MockCloud ${tos(initStates)}`);
   initStates = defaultsDeep(mockCloudInitStatesDefault)(initStates);
-  const states = map((state) => [state[0], new Map(cloneDeep(state[1]))])(
-    initStates
-  );
+  const states = transform(
+    map((state) => [state[0], new Map(copyDeep(state[1] || []))]),
+    () => []
+  )(initStates);
   const resourceMap = new Map(states);
   const resourceNameMap = new Map();
 
