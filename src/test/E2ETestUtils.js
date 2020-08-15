@@ -12,7 +12,7 @@ const isPlanEmpty = switchCase([
   () => false,
 ]);
 
-exports.isPlanEmpty;
+exports.isPlanEmpty = isPlanEmpty;
 
 const testList = async ({ provider }) => {
   const { results: livesAll } = await provider.listLives();

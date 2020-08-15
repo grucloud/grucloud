@@ -1,4 +1,5 @@
 const assert = require("assert");
+const path = require("path");
 const { createResources } = require("./MockStack");
 const { ConfigLoader } = require("ConfigLoader");
 const sinon = require("sinon");
@@ -11,6 +12,20 @@ const toJSON = (x) => JSON.stringify(x, null, 4);
 
 describe("MockProviderHooks", async function () {
   before(async () => {});
+  it("exception on hook.js", async function () {
+    const config = ConfigLoader({ baseDir: __dirname });
+    const provider = await MockProvider({ config });
+    const resources = await createResources({ provider });
+    try {
+      provider.register({
+        dirname: path.resolve(__dirname, "fixtures"),
+        resources,
+      });
+      assert(false, "should not be here");
+    } catch (error) {
+      assert.equal(error.message, "Bang");
+    }
+  });
 
   it("onDeployed", async function () {
     const onDeployed = { init: sinon.spy() };

@@ -31,6 +31,10 @@ describe("MockProvider", async function () {
     resources = stack.resources;
   });
 
+  it("type", async function () {
+    assert.equal(provider.type(), "mock");
+  });
+
   it("ip config live ", async function () {
     const config = await resources.ip.resolveConfig();
     assert(config);
