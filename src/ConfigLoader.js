@@ -1,5 +1,5 @@
 const { map, pipe, tap, filter, switchCase } = require("rubico");
-const { defaultsDeep } = require("lodash/fp");
+const { defaultsDeep } = require("rubico/x");
 const { isEmpty } = require("rubico/x");
 const assert = require("assert");
 const npath = require("path");

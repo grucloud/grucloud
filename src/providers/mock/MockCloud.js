@@ -1,6 +1,6 @@
 const { map, transform } = require("rubico");
 const { copyDeep } = require("rubico/monad/Struct");
-const { defaultsDeep } = require("lodash/fp");
+const { defaultsDeep } = require("rubico/x");
 const assert = require("assert");
 const { v4: uuidv4 } = require("uuid");
 const logger = require("../../logger")({ prefix: "MockCloud" });

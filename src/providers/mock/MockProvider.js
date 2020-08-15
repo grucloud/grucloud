@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { defaultsDeep } = require("lodash/fp");
+const { defaultsDeep } = require("rubico/x");
 
 const MockClient = require("./MockClient");
 const MockCloud = require("./MockCloud");

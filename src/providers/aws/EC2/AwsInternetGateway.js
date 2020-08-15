@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk");
 const { isEmpty } = require("rubico/x");
-const { defaultsDeep } = require("lodash/fp");
+const { defaultsDeep } = require("rubico/x");
 
 const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "AwsIgw" });

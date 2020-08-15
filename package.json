@@ -45,7 +45,6 @@
     "dotenv": "^8.2.0",
     "duration": "^0.2.2",
     "google-auth-library": "^6.0.0",
-    "lodash": "^4.17.15",
     "md5-file": "^5.0.0",
     "node-emoji": "^1.10.0",
     "ping": "^0.2.3",

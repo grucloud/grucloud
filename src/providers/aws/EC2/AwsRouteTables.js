@@ -2,7 +2,7 @@ const assert = require("assert");
 const AWS = require("aws-sdk");
 const { pipe, filter, map } = require("rubico");
 const { isEmpty } = require("rubico/x");
-const { defaultsDeep } = require("lodash/fp");
+const { defaultsDeep } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "AwsRtb" });
 const { tos } = require("../../../tos");

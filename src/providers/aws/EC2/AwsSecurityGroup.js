@@ -1,6 +1,6 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
-const { defaultsDeep } = require("lodash/fp");
+const { defaultsDeep } = require("rubico/x");
 
 const { getByIdCore } = require("../AwsCommon");
 const { retryExpectOk } = require("../../Retry");

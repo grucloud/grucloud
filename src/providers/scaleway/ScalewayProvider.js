@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { defaultsDeep } = require("lodash/fp");
+const { defaultsDeep } = require("rubico/x");
 
 const compare = require("../../Utils").compare;
 const CoreProvider = require("../CoreProvider");
