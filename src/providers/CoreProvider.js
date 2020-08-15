@@ -1494,21 +1494,12 @@ function CoreProvider({
     ),
   ]);
 
-  const isPlanEmpty = switchCase([
-    and([
-      (plan) => isEmpty(plan.resultDestroy.plans),
-      (plan) => isEmpty(plan.resultCreate.plans),
-    ]),
-    () => true,
-    () => false,
-  ]);
-
   checkEnv(mandatoryEnvs);
   checkConfig(config, mandatoryConfigKeys);
 
   const toType = () => type || providerName;
-  const hookFilenameDefault = ({ dirname }) =>
-    path.resolve(dirname || process.cwd(), "hooks.js");
+  const hookFilenameDefault = ({ dirname = process.cwd() }) =>
+    path.resolve(dirname, "hooks.js");
 
   const getHookFactory = tryCatch(require, (error) => {
     logger.error(`getHookFactory ${tos(error)}`);
@@ -1560,7 +1551,6 @@ function CoreProvider({
     resourceNames,
     getMapTypeToResources: () => mapTypeToResources,
     getTargetResources,
-    isPlanEmpty,
     register,
     runOnDeployed,
     runOnDestroyed,

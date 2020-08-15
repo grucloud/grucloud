@@ -2,7 +2,11 @@ const assert = require("assert");
 const { createStack } = require("./MockStack");
 const logger = require("logger")({ prefix: "CoreProvider" });
 const { ConfigLoader } = require("ConfigLoader");
-const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
+const {
+  testPlanDeploy,
+  testPlanDestroy,
+  isPlanEmpty,
+} = require("test/E2ETestUtils");
 
 const { tos } = require("../../../tos");
 
@@ -43,7 +47,7 @@ describe("MockProvider e2e", async function () {
     }
     {
       const plan = await provider.planQuery();
-      assert(provider.isPlanEmpty(plan));
+      assert(isPlanEmpty(plan));
     }
     {
       const planDestroyed = await provider.planFindDestroy(

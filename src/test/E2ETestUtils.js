@@ -1,6 +1,18 @@
 const assert = require("assert");
-const isEmpty = require("rubico/x/isEmpty");
+const { switchCase, and } = require("rubico");
+const { isEmpty } = require("rubico/x");
 const logger = require("../logger")({ prefix: "TestUtils" });
+
+const isPlanEmpty = switchCase([
+  and([
+    (plan) => isEmpty(plan.resultDestroy.plans),
+    (plan) => isEmpty(plan.resultCreate.plans),
+  ]),
+  () => true,
+  () => false,
+]);
+
+exports.isPlanEmpty;
 
 const testList = async ({ provider }) => {
   const { results: livesAll } = await provider.listLives();
@@ -98,10 +110,7 @@ const testPlanDestroy = async ({ provider, full = false }) => {
   }
   {
     const plan = await provider.planQuery();
-    assert(
-      !provider.isPlanEmpty(plan),
-      "plan must no be empty after a destroy"
-    );
+    assert(!isPlanEmpty(plan), "plan must no be empty after a destroy");
   }
   const { results: lives } = await provider.listLives({
     our: true,
@@ -120,17 +129,14 @@ exports.testPlanDeploy = async ({ provider, full = false }) => {
   }
   {
     const plan = await provider.planQuery();
-    assert(
-      !provider.isPlanEmpty(plan),
-      "plan must not be empty after destroyAll"
-    );
+    assert(!isPlanEmpty(plan), "plan must not be empty after destroyAll");
     const { error, resultCreate } = await provider.planApply({ plan });
     assert(resultCreate);
     assert(!error, "planApply failed");
   }
   {
     const plan = await provider.planQuery();
-    assert(provider.isPlanEmpty(plan), "plan must be empty after a deploy");
+    assert(isPlanEmpty(plan), "plan must be empty after a deploy");
   }
   if (full) {
     await testList({ provider });
