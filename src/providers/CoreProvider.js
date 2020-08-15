@@ -355,9 +355,7 @@ function CoreProvider({
 
   //Rename
   const contextFromResource = ({ uri, name, type } = {}) => {
-    if (!uri) {
-      assert(uri, "uri");
-    }
+    assert(uri, "uri");
     return {
       uri: uri,
       display: `${type}::${name}`,
@@ -1317,18 +1315,9 @@ function CoreProvider({
         `onStateChangeResource resource:${tos(resource)}, ${tos(other)}`
       );
 
-      if (!resource) {
-        assert(false, "no resource");
-      }
-      // TODO
-      /*
-      if (!resource.name) {
-        assert(false, "no resource.name");
-      }
-      */
-      if (!resource.type) {
-        assert(false, "no resource.type");
-      }
+      assert(resource, "no resource");
+      assert(resource.type, "no resource.type");
+
       onStateChange({
         context: contextFromResource(resource),
         error,
@@ -1342,9 +1331,8 @@ function CoreProvider({
 
     const executor = async ({ item }) => {
       const engine = resourceByName(item.resource.name);
-      if (!engine) {
-        throw Error(`Cannot find resource ${tos(item.resource.name)}`);
-      }
+      assert(engine, `Cannot find resource ${tos(item.resource.name)}`);
+
       const input = await engine.resolveConfig();
       const output = await engine.create({
         payload: input,
@@ -1416,9 +1404,8 @@ function CoreProvider({
   const destroyById = async ({ type, config, name }) => {
     logger.debug(`destroyById: ${tos({ type, name })}`);
     const client = clientByType(type);
-    if (!client) {
-      throw new Error(`Cannot find endpoint type ${type}}`);
-    }
+    assert(client, `Cannot find endpoint type ${type}}`);
+
     return await destroyByClient({
       client,
       name,

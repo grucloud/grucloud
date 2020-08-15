@@ -74,10 +74,12 @@
       "src/**/*.js"
     ],
     "exclude": [
+      "src/cli/cliEntry.js",
       "src/**/*.spec.js",
       "src/**/*test*.js",
       "src/**/test/*.js",
-      "src/cli/test/config/*.js",
+      "src/**/test/config/*.js",
+      "src/cli/test/infra/*.js",
       "src/mockServer/MockServerRun.js",
       "src/mockServer/config.js"
     ],

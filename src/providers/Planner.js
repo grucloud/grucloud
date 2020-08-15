@@ -99,12 +99,11 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
   plans.map((item) => {
     const key = itemToKey(item);
     // TODO use id instead of name as name can be undefined when resources are not tagged correctly
-    if (statusMap.has(key)) {
-      throw {
-        code: 422,
-        message: `Planner: duplicated key: ${key}, plans: ${tos(plans)}`,
-      };
-    }
+    assert(
+      !statusMap.has(key),
+      `Planner: duplicated key: ${key}, plans: ${tos(plans)}`
+    );
+
     statusMap.set(key, {
       item,
       dependsOn: findDependsOn(item, dependencyTree),
@@ -116,10 +115,11 @@ exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
     logger.debug(`runItem begin ${tos(itemToKey(entry.item))}`);
     assert(entry.item, "no entry.item");
     try {
-      if (entry.state !== STATES.WAITING) {
-        logger.debug(`runItem already running ${tos(itemToKey(entry.item))}`);
-        return;
-      }
+      assert.equal(
+        entry.state,
+        STATES.WAITING,
+        `runItem already running ${tos(itemToKey(entry.item))}`
+      );
       onStateChange({
         resource: entry.item.resource,
         previousState: entry.state,

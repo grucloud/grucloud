@@ -77,8 +77,67 @@ describe("cli", function () {
   // TODO
   it("--config notexisting.js", async function () {
     await main({
-      argv: ["xx", "xx", "--config", "notexisting.js", "list"],
+      argv: ["node", "gc", "--config", "notexisting.js", "list"],
       onExit: ({ code }) => assert.equal(code, 422),
+    });
+  });
+  it("--infra infraNoCreateStack.js", async function () {
+    await main({
+      argv: [
+        "node",
+        "gc",
+        "--infra",
+        path.join(__dirname, "infra", "infraNoCreateStack.js"),
+        "--config",
+        configFileDefault,
+        "list",
+      ],
+      onExit: ({ code, error: { message } }) => {
+        assert.equal(code, 400);
+        assert.equal(message, "no createStack provided");
+      },
+    });
+  });
+  it("--infra infraNoInfra.js", async function () {
+    await main({
+      argv: [
+        "node",
+        "gc",
+        "--infra",
+        path.join(__dirname, "infra", "infraNoInfra.js"),
+        "--config",
+        configFileDefault,
+        "list",
+      ],
+      onExit: ({ code, error: { message } }) => {
+        assert.equal(code, 400);
+        assert.equal(message, "no infra provided");
+      },
+    });
+  });
+  it("--infra infraNoProvider.js", async function () {
+    await main({
+      argv: [
+        "node",
+        "gc",
+        "--infra",
+        path.join(__dirname, "infra", "infraNoProvider.js"),
+        "--config",
+        configFileDefault,
+        "list",
+      ],
+      onExit: ({ code, error: { message } }) => {
+        assert.equal(code, 400);
+        assert.equal(message, "no providers provided");
+      },
+    });
+  });
+  it("cannot open default config ", async function () {
+    await main({
+      argv: ["node", "gc", "--infra", filename, "list"],
+      onExit: ({ code, error: { message } }) => {
+        assert.equal(code, 400);
+      },
     });
   });
   it.skip("version", function () {

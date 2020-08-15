@@ -4,21 +4,23 @@ const fs = require("fs");
 const { ConfigLoader } = require("../ConfigLoader");
 
 const creatInfraFromFile = async ({ infraFileName, config, stage }) => {
-  //console.log("creatInfraFromFile", infraFileName, config);
   const InfraCode = require(infraFileName);
-  //TODO use createStack
-  assert(InfraCode.createStack, "missing createStack function");
+  if (!InfraCode.createStack) {
+    throw { code: 400, message: `no createStack provided` };
+  }
+
   const infra = await InfraCode.createStack({ config: { ...config, stage } });
+  if (!infra) {
+    throw { code: 400, message: `no infra provided` };
+  }
   if (!infra.providers) {
-    throw Error(`no providers provided`);
+    throw { code: 400, message: `no providers provided` };
   }
   return infra;
 };
 
 const resolveFilename = ({ fileName, defaultName }) =>
-  fileName
-    ? path.join(process.cwd(), fileName)
-    : path.join(process.cwd(), defaultName);
+  path.resolve(process.cwd(), fileName ? fileName : defaultName);
 
 const checkFileExist = ({ fileName }) => {
   if (!fs.existsSync(fileName)) {

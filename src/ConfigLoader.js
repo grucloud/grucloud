@@ -10,7 +10,7 @@ const checkFileExist = (fileName) => {
   assert(fileName);
   if (!fs.existsSync(fileName)) {
     const message = `Cannot open file ${fileName}`;
-    throw { code: 422, message };
+    throw { code: 400, message };
   }
 };
 
