@@ -50,7 +50,7 @@ module.exports = CoreClient = ({
   onResponseCreate = identity,
   onResponseDelete = identity,
   cannotBeDeleted = () => false,
-  shouldRetryOnException = () => false,
+  shouldRetryOnException,
 }) => {
   assert(spec);
   assert(type);
@@ -61,12 +61,8 @@ module.exports = CoreClient = ({
   const getById = async ({ id }) => {
     logger.debug(`getById ${tos({ type, id })}`);
     assert(id);
-
-    if (isEmpty(id)) {
-      throw Error(`getById ${type}: invalid id`);
-    }
-
-    if (spec.listOnly) return;
+    assert(!isEmpty(id), `getById ${type}: invalid id`);
+    assert(!spec.listOnly);
 
     try {
       const path = pathGet(id);
@@ -122,7 +118,7 @@ module.exports = CoreClient = ({
     logger.debug(`create ${type}/${name}, payload: ${tos(payload)}`);
     assert(name);
     assert(payload);
-    if (spec.listOnly) return;
+    assert(!spec.listOnly);
 
     try {
       const path = pathCreate({ dependencies, name });
@@ -160,11 +156,9 @@ module.exports = CoreClient = ({
 
   const destroy = async ({ id, name }) => {
     logger.debug(`destroy ${tos({ type, name, id })}`);
-    if (spec.listOnly) return;
 
-    if (isEmpty(id)) {
-      throw Error(`destroy ${type}: invalid id`);
-    }
+    assert(!spec.listOnly);
+    assert(!isEmpty(id), `destroy ${type}: invalid id`);
 
     try {
       const path = pathDelete(id);

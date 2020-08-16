@@ -10,6 +10,7 @@ const filename = "src/providers/mock/test/MockStack.js";
 const configFileDefault = "src/providers/mock/test/config/default.js";
 const configFile404 = path.join(__dirname, "./config/config.404.js");
 const configFile500 = path.join(__dirname, "./config/config.500.js");
+const configFileGetId500 = path.join(__dirname, "./config/config.getId.500.js");
 
 const configFileNetworkError = path.join(
   __dirname,
@@ -283,6 +284,7 @@ describe("cli error", function () {
     });
     assert.deepEqual(result, -1);
   });
+
   it("cli 404", async function () {
     const results = await map.series((command) =>
       runProgram({
@@ -384,5 +386,18 @@ describe("cli error", function () {
       },
     });
     assert.equal(result, -1);
+  });
+  it("cli Apply get Id 500", async function () {
+    const result = await runProgram({
+      cmds: ["apply", "-f"],
+      configFile: configFileGetId500,
+      onExit: ({ code, error: { error } }) => {
+        assert.equal(code, 422);
+        const { result } = error.results[0];
+        assert(result.error);
+        assert.equal(result.resultCreate.results[0].error.Status, 500);
+      },
+    });
+    assert.deepEqual(result, -1);
   });
 });
