@@ -1,6 +1,13 @@
-var typeOf = require("remedial").typeOf;
-var trimWhitespace = require("remove-trailing-spaces");
+const assert = require("assert");
+const { typeOf } = require("remedial");
 const { replacerCredentials } = require("../tos");
+
+const trimWhitespace = (input) =>
+  input
+    .split("\n")
+    .map((x) => x.trimRight())
+    .join("\n");
+
 function stringify(data) {
   var handlers,
     indentLevel = "";
@@ -45,10 +52,7 @@ function stringify(data) {
       x.forEach(function (y, i) {
         // TODO how should `undefined` be handled?
         var handler = handlers[typeOf(y)];
-
-        if (!handler) {
-          throw new Error("what the crap: " + typeOf(y));
-        }
+        assert(handler, "what the crap: " + typeOf(y));
 
         output += "\n" + indentLevel + "- " + handler(y, true);
       });
@@ -80,10 +84,7 @@ function stringify(data) {
           // but we'll error on the side of caution
           return;
         }
-
-        if (!handler) {
-          throw new Error("what the crap: " + typeOf(val));
-        }
+        assert(handler, "what the crap: " + typeOf(val));
 
         if (!(inArray && i === 0)) {
           output += "\n" + indentLevel;

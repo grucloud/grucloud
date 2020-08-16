@@ -52,7 +52,6 @@
     "prompts": "^2.3.2",
     "querystring": "^0.2.0",
     "remedial": "^1.0.8",
-    "remove-trailing-spaces": "^1.0.7",
     "rubico": "^1.5.3",
     "rxjs": "^6.6.0",
     "shelljs": "^0.8.4",

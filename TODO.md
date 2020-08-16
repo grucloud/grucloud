@@ -1,7 +1,5 @@
 ## Bugs
 
-ConfigLoader - envFromStage - (envFile) => envFromFile({ envFile }) not called
-
 - Are you sure to destroy 9 resources ? despite only one resource to destroy
 - gc d -a does not handle deps correclty when resources are not
 - ec2 examples aws::Vpc::undefined when destroyed
