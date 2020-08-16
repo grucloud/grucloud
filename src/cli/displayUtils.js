@@ -2,8 +2,8 @@ const assert = require("assert");
 const Table = require("cli-table3");
 const colors = require("colors/safe");
 const YAML = require("./json2yaml");
-const isEmpty = require("rubico/x/isEmpty");
 const { switchCase } = require("rubico");
+const { isEmpty } = require("rubico/x");
 
 const hasPlan = (plan) => !isEmpty(plan.newOrUpdate) || !isEmpty(plan.destroy);
 
@@ -33,6 +33,8 @@ exports.displayPlan = async (plan) => {
   if (!hasPlan(plan)) {
     return plan;
   }
+  assert(plan.providerName);
+
   const table = new Table({
     colWidths: [undefined, undefined, undefined, 120],
     style: { head: [], border: [] },
@@ -43,7 +45,6 @@ exports.displayPlan = async (plan) => {
   );
 
   plan.newOrUpdate?.forEach((item) => displayItem(table, item));
-  //TODO tap if
   plan.destroy?.forEach((item) => displayItem(table, item));
   console.log(table.toString());
   console.log("\n");
