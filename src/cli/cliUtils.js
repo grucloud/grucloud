@@ -32,25 +32,18 @@ exports.runAsyncCommand = async ({ text, command }) => {
         other,
       })}`
     );
-
-    if (!context) {
-      assert(false, "onStateChange: missing context");
-    }
+    assert(context, "onStateChange: missing context");
     const { uri, display } = context;
 
-    if (!uri) {
-      assert(false, "onStateChange: missing context uri");
-    }
+    assert(uri, "onStateChange: missing context uri");
+
     const text = display || uri;
 
     switch (nextState) {
       case "WAITING": {
         logger.debug(`spinnies: create uri: ${uri}, text: ${text}`);
         spinnerList.push(uri);
-
-        if (spinnies.pick(uri)) {
-          assert(false, `${uri} already created`);
-        }
+        assert(!spinnies.pick(uri), `${uri} already created`);
         const spinny = {
           text,
           indent,
@@ -64,54 +57,41 @@ exports.runAsyncCommand = async ({ text, command }) => {
         logger.debug(`spinnies running uri: ${uri}, text: ${text}`);
         const spinny = spinnies.pick(uri);
         const runningColor = "greenBright";
-        if (spinny) {
-          if (spinner.status === "spinning") {
-            assert(false, `${uri} already spinning`);
-          }
-          spinnies.update(uri, {
-            text,
-            color: runningColor,
-            status: "spinning",
-          });
-        } else {
-          assert(
-            false,
-            `spinnies create in running state: ${uri}, spinnerList: ${spinnerList.join(
-              "\n"
-            )}`
-          );
-        }
+
+        assert(
+          spinny,
+          `spinnies create in running state: ${uri}, spinnerList: ${spinnerList.join(
+            "\n"
+          )}`
+        );
+        assert(spinner.status !== "spinning", `${uri} already spinning`);
+
+        spinnies.update(uri, {
+          text,
+          color: runningColor,
+          status: "spinning",
+        });
         break;
       }
       case "DONE": {
         const spinny = spinnies.pick(uri);
-        if (spinny) {
-          spinnies.succeed(uri);
-          spinnerMap.delete(uri, spinny);
-        } else {
-          assert(false, `DONE event: ${uri} was not created`);
-        }
-
+        assert(spinny, `DONE event: ${uri} was not created`);
         break;
       }
       case "ERROR": {
         const spinny = spinnies.pick(uri);
-        if (spinny) {
-          assert(error, `should have set the error, id: ${uri}`);
-          const textWithError = `${text.padEnd(30, " ")} ${
-            error.Message || ""
-          } ${error.message || ""}`;
-          logger.error(textWithError);
-          spinnies.fail(uri, { text: textWithError });
-          spinnerMap.delete(uri, spinny);
-        } else {
-          assert(false, `ERROR event: ${uri} was not created, error: ${error}`);
-        }
+        assert(spinny, `ERROR event: ${uri} was not created, error: ${error}`);
+        assert(error, `should have set the error, id: ${uri}`);
+        const textWithError = `${text.padEnd(30, " ")} ${error.Message || ""} ${
+          error.message || ""
+        }`;
+        logger.error(textWithError);
+        spinnies.fail(uri, { text: textWithError });
+        spinnerMap.delete(uri, spinny);
         break;
       }
       default:
         assert(false, `unknown state ${nextState}`);
-        break;
     }
   };
 

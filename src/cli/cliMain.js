@@ -32,17 +32,11 @@ exports.main = async ({ argv, onExit }) => {
     );
     return 0;
   } catch (error) {
-    const { code } = error;
-    if ([400, 422].includes(code)) {
-      logger.error(error.message);
-      error.message && console.error(`Error: ${error.message}`);
-      onExit({ code, error });
-    } else {
-      error.stack && console.log(error.stack);
-      console.log("Error:");
-      console.log(error);
-      onExit({ code: -1 });
-    }
+    const { code = -1 } = error;
+    logger.error(error.message);
+    error.message && console.error(`Error: ${error.message}`);
+    error.stack && console.log(error.stack);
+    onExit({ code, error });
     //TODO return code if defined or -1
     return -1;
   }
