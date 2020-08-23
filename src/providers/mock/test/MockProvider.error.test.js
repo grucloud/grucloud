@@ -69,4 +69,50 @@ describe("MockProvider errors", async function () {
       assert(error);
     }
   });
+
+  it("empty create plan, non empty destroy plan", async function () {
+    const mockCloud = MockCloud();
+    {
+      const provider = await createMockProvider({
+        name: "mock1",
+        config,
+        mockCloud,
+      });
+
+      const volume = await provider.makeVolume({
+        name: "volume1",
+        properties: () => ({
+          size: 20_000_000_000,
+        }),
+      });
+
+      await provider.makeServer({
+        name: "web-server",
+        properties: () => ({
+          diskSizeGb: "20",
+          machineType: "f1-micro",
+        }),
+      });
+
+      const { error } = await provider.planQueryAndApply();
+      assert(!error);
+    }
+    {
+      const provider = await createMockProvider({
+        name: "mock2",
+        config,
+        mockCloud,
+      });
+
+      const volume = await provider.makeVolume({
+        name: "volume1",
+        properties: () => ({
+          size: 20_000_000_000,
+        }),
+      });
+
+      const { error } = await provider.planQueryAndApply();
+      assert(!error);
+    }
+  });
 });
