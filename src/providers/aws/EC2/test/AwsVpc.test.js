@@ -87,7 +87,7 @@ describe("AwsVpc", async function () {
   it("vpc getLive", async function () {
     const live = await vpc.getLive();
   });
-  it.skip("vpc listLives", async function () {
+  it("vpc listLives", async function () {
     const {
       results: [vpcs],
     } = await provider.listLives({ types: ["Vpc"] });
@@ -95,6 +95,14 @@ describe("AwsVpc", async function () {
     const vpcDefault = vpcs.resources.find((vpc) => vpc.data.IsDefault);
     assert(vpcDefault);
   });
+  it("vpc listLives canBeDeleted", async function () {
+    const { results } = await provider.listLives({
+      types: ["Vpc"],
+      canBeDeleted: true,
+    });
+    assert(isEmpty(results));
+  });
+
   it.skip("vpc apply and destroy", async function () {
     await testPlanDeploy({ provider });
     const vpcLive = await vpc.getLive();

@@ -426,9 +426,7 @@ function CoreProvider({
   const clientByType = (type) => {
     assert(type);
     const spec = specs.find((spec) => spec.type === type);
-    if (!spec) {
-      throw new Error(`type ${type} not found`);
-    }
+    assert(spec, `type ${type} not found`);
     return spec.Client({ spec, config: providerConfig });
   };
 
@@ -440,9 +438,18 @@ function CoreProvider({
     canBeDeleted,
     providerName,
   }) => {
-    logger.debug(`listLives type: ${client.spec.type}`);
+    logger.debug(
+      `listLives type: ${tos({
+        our,
+        name,
+        id,
+        canBeDeleted,
+        providerName,
+        type: client.spec.type,
+      })}`
+    );
     const { items } = await client.getList({
-      resources: mapTypeToResources.get(client.type),
+      resources: mapTypeToResources.get(client.spec.type),
     });
     //logger.debug(`listLives resources: ${tos(items)}`);
     //TODO use rubico anf tap at the end
@@ -472,7 +479,7 @@ function CoreProvider({
                 resource: item.data,
                 name: item.name,
                 resourceNames: resourceNames(),
-              }) //TODO is it ever called ?
+              })
             : true
         ),
     };
