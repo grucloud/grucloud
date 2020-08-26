@@ -116,9 +116,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
 
   const destroy = async ({ id, name }) => {
     logger.debug(`destroy ${tos({ name, id })}`);
-    if (isEmpty(id)) {
-      throw Error(`destroy invalid id`);
-    }
+    assert(!isEmpty(id), `destroy invalid id`);
 
     const result = await ec2
       .terminateInstances({

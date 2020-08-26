@@ -63,36 +63,19 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
       resourceId: AllocationId,
     });
 
-    const ec2Instance = dependencies.ec2;
-    if (ec2Instance) {
-      const ec2InstanceLive = await ec2Instance.getLive();
-      if (ec2InstanceLive) {
-        const { InstanceId } = ec2InstanceLive.Instances[0];
-        assert(InstanceId);
-        const paramsAssociate = {
-          AllocationId,
-          InstanceId,
-        };
-        logger.debug(`create eip, associating ec2${tos({ ec2InstanceLive })}`);
-        await ec2.associateAddress(paramsAssociate).promise();
-        logger.debug(`create eip, ec2 associated`);
-      }
-    }
-
     return { id: AllocationId };
   };
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#releaseAddress-property
   const destroy = async ({ id, name }) => {
     logger.debug(`destroy elastic ip address ${tos({ name, id })}`);
 
-    if (isEmpty(id)) {
-      throw Error(`destroy elastic ip address invalid id`);
-    }
-    const eipLive = await getById({ id });
-    if (!eipLive) {
-      throw Error(`Cannot get elastic ip: ${id}`);
-    }
+    assert(!isEmpty(id), `destroy invalid id`);
 
+    const eipLive = await getById({ id });
+
+    assert(eipLive, `Cannot get elastic ip: ${id}`);
+
+    // TODO may be not need, done in ec2
     if (eipLive.AssociationId) {
       logger.debug(`destroy eip disassociateAddress ${tos({ eipLive })}`);
 
