@@ -56,10 +56,8 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
-  //TODO remove ig and rt, make it automatic
   const eip = await provider.makeElasticIpAddress({
     name: "myip",
-    dependencies: { ig, rt },
     properties: () => ({}),
   });
 

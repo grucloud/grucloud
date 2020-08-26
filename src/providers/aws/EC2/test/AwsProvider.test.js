@@ -94,7 +94,6 @@ describe("AwsProvider", async function () {
 
     eip = await provider.makeElasticIpAddress({
       name: "myip",
-      dependencies: { ig, rt },
       properties: () => ({}),
     });
 

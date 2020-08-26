@@ -1,7 +1,6 @@
 ## Bugs
 
 - Are you sure to destroy 9 resources ? despite only one resource to destroy
-- gc d -a does not handle deps correclty when resources are not
 
 ## Common:
 
