@@ -1,6 +1,7 @@
 const assert = require("assert");
 const ping = require("ping");
 const Client = require("ssh2").Client;
+const { retryCall } = require("@grucloud/core").Retry;
 
 const testPing = ({ host }) =>
   ping.promise.probe(host, {
@@ -12,11 +13,12 @@ const testSsh = async ({ host, username = "ubuntu" }) =>
     const conn = new Client();
     conn
       .on("ready", function () {
-        //console.log(`ssh to ${host} ok`);
+        console.log(`ssh to ${host} ok`);
+        conn.end();
         resolve();
       })
       .on("error", function (error) {
-        //console.log(`cannot ssh to ${host}`);
+        // console.log(`cannot ssh to ${host}`, error);
         reject(error);
       })
       .connect({
@@ -47,16 +49,39 @@ module.exports = ({ resources: { eip, server }, provider }) => {
         {
           name: "Ping",
           command: async ({ host }) => {
-            //const { alive } = await testPing({ host });
-            //TODO rxjs retryWhen
-            //assert(alive, `cannot ping ${host}`);
+            const alive = await retryCall({
+              name: `ping ${host}`,
+              fn: async () => {
+                const { alive } = await testPing({ host });
+                if (!alive) {
+                  throw Error(`cannot ping ${host} yet`);
+                }
+                return alive;
+              },
+              shouldRetryOnException: () => true,
+              retryCount: 20,
+              retryDelay: 2e3,
+            });
+            assert(alive, `cannot ping ${host}`);
           },
         },
         {
           name: "SSH",
           command: async ({ host }) => {
-            //TODO rxjs retryWhen
-            //await testSsh({ host });
+            await testSsh({ host });
+            /*
+            await retryCall({
+              name: `ssh ${host}`,
+              fn: async () => {
+                await testSsh({ host });
+                return true;
+              },
+              shouldRetryOnException: () => true,
+              retryCount: 2,
+              retryDelay: 2e3,
+            });
+            console.log("done");
+            */
           },
         },
       ],

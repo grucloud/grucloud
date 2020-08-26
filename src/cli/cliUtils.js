@@ -76,6 +76,8 @@ exports.runAsyncCommand = async ({ text, command }) => {
       case "DONE": {
         const spinny = spinnies.pick(uri);
         assert(spinny, `DONE event: ${uri} was not created`);
+        spinnies.succeed(uri);
+        spinnerMap.delete(uri, spinny);
         break;
       }
       case "ERROR": {
@@ -102,6 +104,7 @@ exports.runAsyncCommand = async ({ text, command }) => {
       const spinny = spinnies.pick(uri);
       const msg = `spinners still running: ${uri} in status ${spinny.status}`;
       logger.error(msg);
+      // console.log(msg);
     });
     //assert.equal(spinnerMap.size, 0, "spinner still active");
     spinnies.stopAll();

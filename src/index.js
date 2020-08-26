@@ -6,3 +6,4 @@ exports.AzureProvider = require("./providers/azure/AzureProvider");
 exports.MockProvider = require("./providers/mock/MockProvider");
 
 exports.ConfigLoader = require("./ConfigLoader");
+exports.Retry = require("./providers/Retry");
