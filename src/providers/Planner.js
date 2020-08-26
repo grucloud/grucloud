@@ -12,7 +12,7 @@ const {
   flatMap,
 } = require("rubico");
 
-const { isEmpty, isFunction } = require("rubico/x");
+const { isEmpty, isFunction, pluck, find } = require("rubico/x");
 const { logError, convertError } = require("./Common");
 
 const STATES = {
@@ -49,35 +49,82 @@ exports.mapToGraph = pipe([
   }),
 ]);
 
-const DependencyTree = ({ plans, specs, down }) => {
+const dependsOnTypeReverse = (dependsOnType) =>
+  map((spec) => ({
+    providerName: spec.providerName,
+    type: spec.type,
+    dependsOn: pipe([
+      filter(({ dependsOn = [] }) => dependsOn.includes(spec.type)),
+      map(({ type }) => type),
+    ])(dependsOnType),
+  }))(dependsOnType);
+
+const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
   assert(Array.isArray(plans));
-  assert(Array.isArray(specs));
+  assert(Array.isArray(dependsOnType));
+  assert(Array.isArray(dependsOnInstance));
+  //TODO depends on should contains the provider
   if (down) {
-    const result = map((spec) => ({
+    return pipe([
+      pluck("resource"),
+      map(({ name, provider, type }) => ({
+        name,
+        dependsOn: pipe([
+          find((x) => x.providerName === provider && x.type === type),
+          tap((x) => {
+            assert(x);
+          }),
+          ({ dependsOn = [] }) => dependsOn,
+          flatMap((dependOn) =>
+            pipe([
+              filter(({ resource }) => resource.type === dependOn),
+              pluck("resource.name"),
+            ])(plans)
+          ),
+        ])(dependsOnTypeReverse(dependsOnType)),
+      })),
+    ])(plans);
+    /*const result = map((spec) => ({
       name: spec.name,
       dependsOn: pipe([
         filter(({ dependsOn = [] }) => dependsOn.includes(spec.name)),
         map(({ name }) => name),
         filter((name) => plans.find((plan) => plan.resource.name === name)), //TODO do we need that ?
-      ])(specs),
-    }))(specs);
-    return result;
+      ])(dependsOnInstance),
+    }))(dependsOnInstance);*/
   } else {
     return map((spec) => ({
       name: spec.name,
       dependsOn: spec.dependsOn?.filter((dependOn) =>
         plans.find((plan) => plan.resource.name === dependOn)
       ),
-    }))(specs);
+    }))(dependsOnInstance);
   }
 };
 
-exports.Planner = ({ plans, specs, executor, down = false, onStateChange }) => {
+exports.Planner = ({
+  plans,
+  dependsOnType,
+  dependsOnInstance,
+  executor,
+  down = false,
+  onStateChange,
+}) => {
   assert(Array.isArray(plans));
-  assert(Array.isArray(specs));
+  assert(Array.isArray(dependsOnType));
+  assert(Array.isArray(dependsOnInstance));
   assert(isFunction(executor));
   assert(isFunction(onStateChange));
-  const dependencyTree = DependencyTree({ plans, specs, down });
+  const dependencyTree = DependencyTree({
+    plans,
+    dependsOnType: map(({ providerName, type, dependsOn }) => ({
+      providerName,
+      type,
+      dependsOn,
+    }))(dependsOnType),
+    dependsOnInstance,
+    down,
+  });
   logger.debug(
     `Planner #plans: ${plans.length} ${tos({ plans, dependencyTree })} `
   );

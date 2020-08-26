@@ -1353,7 +1353,8 @@ function CoreProvider({
         () =>
           Planner({
             plans,
-            specs: mapToGraph(mapNameToResource),
+            dependsOnType: specs,
+            dependsOnInstance: mapToGraph(mapNameToResource),
             executor,
             onStateChange: onStateChangeResource(onStateChange),
           }),
@@ -1456,7 +1457,8 @@ function CoreProvider({
 
     const planner = Planner({
       plans: plans,
-      specs: mapToGraph(mapNameToResource),
+      dependsOnType: specs,
+      dependsOnInstance: mapToGraph(mapNameToResource),
       executor,
       down: true,
       onStateChange: onStateChangeResource(onStateChange),

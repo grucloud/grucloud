@@ -1,10 +1,12 @@
 const assert = require("assert");
 const sinon = require("sinon");
 const {
-  azSpecs,
+  azDependsOnType,
+  azDependsOnInstance,
   azPlansCreate,
   azPlansDestroy,
-  awsSpecs,
+  awsDependsOnType,
+  awsDependsOnInstance,
   awsPlansCreate,
   awsPlansDestroy,
 } = require("./PlannerFixtures");
@@ -41,7 +43,8 @@ describe("Planner", function () {
     const stateChanges = [];
     const planner = Planner({
       plans: azPlansCreate(),
-      specs: azSpecs,
+      dependsOnType: azDependsOnType,
+      dependsOnInstance: azDependsOnInstance,
       executor: executorOk,
       onStateChange: onStateChange(stateChanges),
     });
@@ -61,7 +64,8 @@ describe("Planner", function () {
     const stateChanges = [];
     const planner = Planner({
       plans: azPlansCreate().slice(0, 2),
-      specs: azSpecs,
+      dependsOnType: azDependsOnType,
+      dependsOnInstance: azDependsOnInstance,
       executor: executorOk,
       onStateChange: onStateChange(stateChanges),
     });
@@ -73,7 +77,8 @@ describe("Planner", function () {
     const stateChanges = [];
     const planner = Planner({
       plans: azPlansDestroy(),
-      specs: azSpecs,
+      dependsOnType: azDependsOnType,
+      dependsOnInstance: azDependsOnInstance,
       executor: executorOk,
       down: true,
       onStateChange: onStateChange(stateChanges),
@@ -89,7 +94,8 @@ describe("Planner", function () {
     const stateChanges = [];
     const planner = Planner({
       plans: azPlansCreate().slice(0, 2),
-      specs: azSpecs,
+      dependsOnType: azDependsOnType,
+      dependsOnInstance: azDependsOnInstance,
       executor: sinon.stub().returns(Promise.reject({ error: true })),
       onStateChange: onStateChange(stateChanges),
     });
@@ -102,7 +108,8 @@ describe("Planner", function () {
     const stateChanges = [];
     const planner = Planner({
       plans: awsPlansDestroy(),
-      specs: awsSpecs,
+      dependsOnType: awsDependsOnType,
+      dependsOnInstance: awsDependsOnInstance,
       executor: executorOk,
       down: true,
       onStateChange: onStateChange(stateChanges),
@@ -120,7 +127,8 @@ describe("Planner", function () {
     const stateChanges = [];
     const planner = Planner({
       plans: awsPlansCreate().slice(0, 3),
-      specs: awsSpecs,
+      dependsOnType: awsDependsOnType,
+      dependsOnInstance: awsDependsOnInstance,
       executor: executorOk,
       onStateChange: onStateChange(stateChanges),
     });
@@ -133,7 +141,8 @@ describe("Planner", function () {
     const stateChanges = [];
     const planner = Planner({
       plans: awsPlansDestroy().slice(0, 3),
-      specs: awsSpecs,
+      dependsOnType: awsDependsOnType,
+      dependsOnInstance: awsDependsOnInstance,
       executor: executorOk,
       down: true,
       onStateChange: onStateChange(stateChanges),

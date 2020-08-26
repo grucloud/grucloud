@@ -94,6 +94,11 @@ describe("MockProvider errors", async function () {
         }),
       });
 
+      await provider.makeIp({
+        name: "ip",
+        properties: () => ({}),
+      });
+
       const { error } = await provider.planQueryAndApply();
       assert(!error);
     }
@@ -102,13 +107,6 @@ describe("MockProvider errors", async function () {
         name: "mock2",
         config,
         mockCloud,
-      });
-
-      const volume = await provider.makeVolume({
-        name: "volume1",
-        properties: () => ({
-          size: 20_000_000_000,
-        }),
       });
 
       const { error } = await provider.planQueryAndApply();

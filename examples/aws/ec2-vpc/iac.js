@@ -56,16 +56,12 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
-  //TODO make ig and rt compulsory
+  //TODO remove ig and rt, make it automatic
   const eip = await provider.makeElasticIpAddress({
     name: "myip",
     dependencies: { ig, rt },
     properties: () => ({}),
   });
-
-  // Allocate public Ip address
-  //TODO
-  // const ip = await provider.makeAddress({ name: "ip-webserver" });
 
   // Allocate a server
   const server = await provider.makeEC2({
