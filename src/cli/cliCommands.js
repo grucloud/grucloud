@@ -29,11 +29,11 @@ const { pluck, isEmpty, flatten, forEach, uniq, size } = require("rubico/x");
 
 const displayProviderList = pipe([
   tap((xx) => {
-    logger.debug(xx);
+    //logger.debug(xx);
   }),
   pluck("name"),
-  tap((xx) => {
-    logger.debug(xx);
+  tap((list) => {
+    assert(list[0]);
   }),
   (list) => list.join(","),
 ]);
@@ -476,16 +476,16 @@ exports.planApply = async ({
       ),
   ]);
 
-  const doPlansDeploy = ({ commandOptions }) =>
+  const doPlansDeploy = ({ commandOptions, providers }) =>
     pipe([
-      async (providers) =>
+      tap((xx) => {
+        logger.debug("doPlansDeploy ");
+      }),
+      async (results) =>
         await runAsyncCommand({
           text: displayCommandHeader({ providers, verb: "Deploying" }),
           command: ({ onStateChange }) =>
             pipe([
-              tap((xx) => {
-                // logger.debug("doPlansDeploy");
-              }),
               tap(
                 map.series(({ provider, resultQuery }) =>
                   provider.spinnersStartDeploy({
@@ -514,10 +514,7 @@ exports.planApply = async ({
                   ),
                 ])
               ),
-              tap((xx) => {
-                logger.debug("doPlansDeploy DONE");
-              }),
-            ])(providers),
+            ])(results),
         }),
       tap((result) => {
         logger.debug("doPlansDeploy");
