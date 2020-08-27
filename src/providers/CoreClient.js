@@ -177,7 +177,6 @@ module.exports = CoreClient = ({
         `destroy ${tos({ name, type, id, data })} should be destroyed`
       );
 
-      // TODO retryCall
       return data;
     } catch (error) {
       logError(`delete ${type}/${name}`, error);

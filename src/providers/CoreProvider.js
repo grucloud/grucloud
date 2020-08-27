@@ -123,19 +123,16 @@ const ResourceMaker = ({
         return resolveDependencies(dependency);
       }
       const live = await dependency.getLive();
-      //TODO refactor
       const config = await dependency.resolveConfig();
-      return { resource: dependency, live: live || config };
+      return { resource: dependency, live, config };
     }),
     tap((x) => logger.debug(`resolveDependencies: ${tos(x)}`)),
   ]);
   const resolveConfig = async () => {
     logger.info(`resolveConfig ${type}/${resourceName}`);
-    //TODO use function to extract resources: mapTypeToResources.get(client.type)
     const { items } = await client.getList({
-      resources: provider.getMapTypeToResources().get(client.type),
+      resources: provider.getResourcesByType(client.type),
     });
-    //logger.debug(`config ${tos({ type, resourceName, items })}`);
 
     const resolvedDependencies = await resolveDependencies(dependencies);
 
@@ -157,7 +154,6 @@ const ResourceMaker = ({
       : config;
 
     logger.info(`resolveConfig: final: ${tos(finalConfig)}`);
-    //assert(!isEmpty(finalConfig));
     return finalConfig;
   };
   const create = async ({ payload }) => {
@@ -403,11 +399,10 @@ function CoreProvider({
     }
     mapNameToResource.set(resource.name, resource);
 
-    const resourcesPerType = mapTypeToResources.has(resource.type)
-      ? mapTypeToResources.get(resource.type)
-      : [];
-
-    mapTypeToResources.set(resource.type, [...resourcesPerType, resource]);
+    mapTypeToResources.set(resource.type, [
+      ...getResourcesByType(resource.type),
+      resource,
+    ]);
   };
 
   const getTargetResources = () => [...mapNameToResource.values()];
@@ -449,7 +444,7 @@ function CoreProvider({
       })}`
     );
     const { items } = await client.getList({
-      resources: mapTypeToResources.get(client.spec.type),
+      resources: getResourcesByType(client.spec.type),
     });
     //logger.debug(`listLives resources: ${tos(items)}`);
     //TODO use rubico anf tap at the end
@@ -1418,7 +1413,7 @@ function CoreProvider({
       client,
       name,
       config,
-      resourcesPerType: provider.getMapTypeToResources().get(type),
+      resourcesPerType: provider.getResourcesByType(type),
     });
   };
 
@@ -1535,6 +1530,8 @@ function CoreProvider({
       dirname,
     });
 
+  const getResourcesByType = (type) => mapTypeToResources.get(type) || [];
+
   const provider = {
     config: () => providerConfig,
     name: providerName,
@@ -1558,7 +1555,7 @@ function CoreProvider({
     clientByType,
     resourceByName,
     resourceNames,
-    getMapTypeToResources: () => mapTypeToResources,
+    getResourcesByType,
     getTargetResources,
     register,
     runOnDeployed,
