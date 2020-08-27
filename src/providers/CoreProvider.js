@@ -760,12 +760,11 @@ function CoreProvider({
       hookType: HookType.ON_DESTROYED,
     });
 
-  //TODO Rename
-  const setRunningState = ({ onStateChange, hookType, hookName }) =>
+  const setHookWaitingState = ({ onStateChange, hookType, hookName }) =>
     pipe([
       tap(({ actions }) => {
         logger.debug(
-          `setRunningState ${hookName}::${hookType}, #actions ${actions.length}`
+          `setHookWaitingState ${hookName}::${hookType}, #actions ${actions.length}`
         );
         assert(hookName, "hookName");
         assert(hookType, "hookType");
@@ -878,7 +877,7 @@ function CoreProvider({
             logger.info(`spinnersStart hook`);
           }),
           () => (hookType === HookType.ON_DESTROYED ? onDestroyed : onDeployed), //TODO refactor
-          setRunningState({ onStateChange, hookType, hookName: name }),
+          setHookWaitingState({ onStateChange, hookType, hookName: name }),
         ])()
       )([...hookMap.values()])
     );
