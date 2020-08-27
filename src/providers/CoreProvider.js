@@ -212,8 +212,7 @@ const ResourceMaker = ({
     logger.info(`planUpsert resource: ${resource.toString()}`);
     const live = await resource.getLive();
     logger.debug(`planUpsert live: ${tos(live)}`);
-    //TODO check if live is empty
-    const plan = live
+    const plan = !isEmpty(live || {})
       ? planUpdate({ live, resource })
       : [
           {
@@ -432,53 +431,59 @@ function CoreProvider({
     id,
     canBeDeleted,
     providerName,
-  }) => {
-    logger.debug(
-      `listLives type: ${tos({
-        our,
-        name,
-        id,
-        canBeDeleted,
-        providerName,
+  }) =>
+    pipe([
+      tap(() => {
+        logger.debug(
+          `listLives type: ${tos({
+            our,
+            name,
+            id,
+            canBeDeleted,
+            providerName,
+            type: client.spec.type,
+          })}`
+        );
+      }),
+      () =>
+        client.getList({
+          resources: getResourcesByType(client.spec.type),
+        }),
+      get("items"),
+      map((item) => ({
+        name: client.findName(item),
+        id: client.findId(item),
+        managedByUs: client.spec.isOurMinion({
+          resource: item,
+          resourceNames: resourceNames(),
+          config: provider.config(),
+        }),
+        providerName: client.spec.providerName,
+        data: item,
+      })),
+      filter((item) => (our ? item.managedByUs : true)),
+      filter((item) => (name ? item.name === name : true)),
+      filter((item) => (id ? item.id === id : true)),
+      filter((item) =>
+        providerName ? item.providerName === providerName : true
+      ),
+      filter((item) =>
+        canBeDeleted
+          ? !client.cannotBeDeleted({
+              resource: item.data,
+              name: item.name,
+              resourceNames: resourceNames(),
+            })
+          : true
+      ),
+      (resources) => ({
         type: client.spec.type,
-      })}`
-    );
-    const { items } = await client.getList({
-      resources: getResourcesByType(client.spec.type),
-    });
-    //logger.debug(`listLives resources: ${tos(items)}`);
-    //TODO use rubico anf tap at the end
-    return {
-      type: client.spec.type,
-      resources: items
-        .map((item) => ({
-          name: client.findName(item),
-          id: client.findId(item),
-          managedByUs: client.spec.isOurMinion({
-            resource: item,
-            resourceNames: resourceNames(),
-            config: provider.config(),
-          }),
-          providerName: client.spec.providerName,
-          data: item,
-        }))
-        .filter((item) => (our ? item.managedByUs : true))
-        .filter((item) => (name ? item.name === name : true))
-        .filter((item) => (id ? item.id === id : true))
-        .filter((item) =>
-          providerName ? item.providerName === providerName : true
-        )
-        .filter((item) =>
-          canBeDeleted
-            ? !client.cannotBeDeleted({
-                resource: item.data,
-                name: item.name,
-                resourceNames: resourceNames(),
-              })
-            : true
-        ),
-    };
-  };
+        resources,
+      }),
+      tap((x) => {
+        console.log(x);
+      }),
+    ])();
 
   const listLives = async ({
     all = false,
