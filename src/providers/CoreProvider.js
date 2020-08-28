@@ -481,7 +481,7 @@ function CoreProvider({
         resources,
       }),
       tap((x) => {
-        console.log(x);
+        //console.log(x);
       }),
     ])();
 
@@ -876,7 +876,13 @@ function CoreProvider({
           tap(() => {
             logger.info(`spinnersStart hook`);
           }),
-          () => (hookType === HookType.ON_DESTROYED ? onDestroyed : onDeployed), //TODO refactor
+          switchCase([
+            () => hookType === HookType.ON_DEPLOYED,
+            () => onDeployed,
+            () => hookType === HookType.ON_DESTROYED,
+            () => onDestroyed,
+            () => assert(`Invalid hook type '${hookType}'`),
+          ]),
           setHookWaitingState({ onStateChange, hookType, hookName: name }),
         ])()
       )([...hookMap.values()])
