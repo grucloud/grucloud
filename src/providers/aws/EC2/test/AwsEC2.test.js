@@ -3,7 +3,7 @@ const AwsProvider = require("../../AwsProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { notAvailable } = require("../../../ProviderCommon");
-const { CheckTags } = require("../../AwsTagCheck");
+const { CheckTagsEC2 } = require("../../AwsTagCheck");
 
 describe("AwsEC2", async function () {
   let config;
@@ -74,7 +74,7 @@ describe("AwsEC2", async function () {
     const serverLive = await server.getLive();
     const serverInstance = serverLive.Instances[0];
 
-    CheckTags({
+    CheckTagsEC2({
       config: provider.config(),
       tags: serverInstance.Tags,
       name: server.name,

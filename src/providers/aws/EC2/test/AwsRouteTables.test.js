@@ -2,7 +2,7 @@ const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
 const AwsProvider = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
-const { CheckTags } = require("../../AwsTagCheck");
+const { CheckTagsEC2 } = require("../../AwsTagCheck");
 
 describe("AwsRouteTables", async function () {
   let config;
@@ -63,7 +63,7 @@ describe("AwsRouteTables", async function () {
     const subnetLive = await subnet.getLive();
     const vpcLive = await vpc.getLive();
 
-    CheckTags({
+    CheckTagsEC2({
       config: provider.config(),
       tags: rtLive.Tags,
       name: rt.name,

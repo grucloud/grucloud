@@ -2,7 +2,7 @@ const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
 const AwsProvider = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
-const { CheckTags } = require("../../AwsTagCheck");
+const { CheckTagsEC2 } = require("../../AwsTagCheck");
 
 describe("AwsInternetGateway", async function () {
   let config;
@@ -54,7 +54,7 @@ describe("AwsInternetGateway", async function () {
     await testPlanDeploy({ provider });
     const igLive = await ig.getLive();
     const vpcLive = await vpc.getLive();
-    CheckTags({
+    CheckTagsEC2({
       config: provider.config(),
       tags: igLive.Tags,
       name: ig.name,

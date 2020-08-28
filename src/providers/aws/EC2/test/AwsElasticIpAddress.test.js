@@ -2,7 +2,7 @@ const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
 const AwsProvider = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
-const { CheckTags } = require("../../AwsTagCheck");
+const { CheckTagsEC2 } = require("../../AwsTagCheck");
 
 describe("AwsElasticIpAddress", async function () {
   let config;
@@ -51,7 +51,7 @@ describe("AwsElasticIpAddress", async function () {
     await testPlanDeploy({ provider });
     const eipLive = await eip.getLive();
 
-    CheckTags({
+    CheckTagsEC2({
       config: provider.config(),
       tags: eipLive.Tags,
       name: eip.name,

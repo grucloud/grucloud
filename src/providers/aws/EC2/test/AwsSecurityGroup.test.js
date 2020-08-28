@@ -2,7 +2,7 @@ const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
 const AwsProvider = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
-const { CheckTags } = require("../../AwsTagCheck");
+const { CheckTagsEC2 } = require("../../AwsTagCheck");
 
 describe("AwsSecurityGroup", async function () {
   let config;
@@ -86,7 +86,11 @@ describe("AwsSecurityGroup", async function () {
     const vpcLive = await vpc.getLive();
     assert.equal(sgLive.VpcId, vpcLive.VpcId);
 
-    CheckTags({ config: provider.config(), tags: sgLive.Tags, name: sg.name });
+    CheckTagsEC2({
+      config: provider.config(),
+      tags: sgLive.Tags,
+      name: sg.name,
+    });
 
     await testPlanDestroy({ provider, full: false });
   });

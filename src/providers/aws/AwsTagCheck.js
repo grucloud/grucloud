@@ -1,7 +1,6 @@
 const assert = require("assert");
 const { KeyName } = require("./AwsCommon");
-//TODO rename CheckTagsEC2
-exports.CheckTags = ({ config, tags, name }) => {
+exports.CheckTagsEC2 = ({ config, tags, name }) => {
   const { managedByKey, managedByValue, stageTagKey, stage } = config;
 
   assert.equal(
