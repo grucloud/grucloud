@@ -8,7 +8,7 @@ const {
   isPlanEmpty,
 } = require("test/E2ETestUtils");
 
-const { tos } = require("../../../tos");
+//const { tos } = require("../../../tos");
 
 describe("MockProvider e2e", async function () {
   let stack;

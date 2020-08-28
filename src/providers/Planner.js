@@ -55,7 +55,7 @@ const dependsOnTypeReverse = (dependsOnType) =>
     type: spec.type,
     dependsOn: pipe([
       filter(({ dependsOn = [] }) => dependsOn.includes(spec.type)),
-      map(({ type }) => type),
+      map(({ providerName, type }) => `${providerName}::${type}`),
     ])(dependsOnType),
   }))(dependsOnType);
 
@@ -63,7 +63,6 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
   assert(Array.isArray(plans));
   assert(Array.isArray(dependsOnType));
   assert(Array.isArray(dependsOnInstance));
-  //TODO depends on should contains the provider
   if (down) {
     return pipe([
       pluck("resource"),
@@ -77,21 +76,16 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
           ({ dependsOn = [] }) => dependsOn,
           flatMap((dependOn) =>
             pipe([
-              filter(({ resource }) => resource.type === dependOn),
+              filter(
+                ({ resource }) =>
+                  `${resource.provider}::${resource.type}` === dependOn
+              ),
               pluck("resource.name"),
             ])(plans)
           ),
         ])(dependsOnTypeReverse(dependsOnType)),
       })),
     ])(plans);
-    /*const result = map((spec) => ({
-      name: spec.name,
-      dependsOn: pipe([
-        filter(({ dependsOn = [] }) => dependsOn.includes(spec.name)),
-        map(({ name }) => name),
-        filter((name) => plans.find((plan) => plan.resource.name === name)), //TODO do we need that ?
-      ])(dependsOnInstance),
-    }))(dependsOnInstance);*/
   } else {
     return map((spec) => ({
       name: spec.name,

@@ -1408,7 +1408,6 @@ function CoreProvider({
     logger.debug(
       `destroyByClient: DONE ${tos({ type: client.spec.type, name, result })}`
     );
-    //TODO Double check with getByName
     return result;
   };
 
