@@ -166,7 +166,7 @@ describe("cli error", function () {
   before(async function () {
     await mockServer.start();
     const axios = Axios.create({ baseURL: `http://localhost:${port}` });
-    await axios.post("/ip", {});
+    await axios.post("/ip", { name: "toto" });
   });
 
   after(async function () {
@@ -303,7 +303,6 @@ describe("cli error", function () {
       async (command) =>
         await runProgram({
           cmds: command.split(" "),
-          configFile: configFile500,
           onExit: ({ code, error }) => {
             assert.equal(code, 422);
             error.error.results.forEach(({ result }) => assert(result.error));

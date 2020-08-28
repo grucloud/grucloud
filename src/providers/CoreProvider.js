@@ -69,8 +69,7 @@ const nextStateOnError = (error) => (error ? "ERROR" : "DONE");
 
 const toUri = ({ providerName, type, name }) => {
   assert(type, "type");
-  //TODO
-  //assert(name, "name");
+  assert(name, "name");
   return `${providerName}::${type}::${name}`;
 };
 
