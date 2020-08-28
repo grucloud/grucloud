@@ -23,9 +23,6 @@ const STATES = {
 };
 
 exports.mapToGraph = pipe([
-  tap((mapResource) => {
-    //logger.debug(`mapToGraph: ${mapResource}`);
-  }),
   (mapResource) =>
     map((resource) => {
       const dependsOn = transform(
@@ -124,6 +121,8 @@ exports.Planner = ({
   );
 
   const statusMap = new Map();
+  const statusValues = () => [...statusMap.values()];
+
   const itemToKey = (item) => item.resource.name || item.resource.id;
 
   const findDependsOn = (item, dependencyTree) => {
@@ -139,7 +138,6 @@ exports.Planner = ({
 
   plans.map((item) => {
     const key = itemToKey(item);
-    // TODO use id instead of name as name can be undefined when resources are not tagged correctly
     assert(
       !statusMap.has(key),
       `Planner: duplicated key: ${key}, plans: ${tos(plans)}`
@@ -199,8 +197,6 @@ exports.Planner = ({
     await onEnd(entry.item);
     logger.debug(`runItem end ${tos(itemToKey(entry.item))}`);
   };
-  // TODO add function mapToArrayOfValues = (map) => [...map.values()]
-
   const onEnd = async (item) => {
     logger.debug(`onEnd begin ${tos(itemToKey(item))}`);
     await pipe([
@@ -233,7 +229,7 @@ exports.Planner = ({
           },
         ])
       ),
-    ])([...statusMap.values()]);
+    ])(statusValues());
     logger.debug(`onEnd end ${tos(itemToKey(item))}`);
   };
 
@@ -269,14 +265,11 @@ exports.Planner = ({
           },
         ])
       ),
-    ])([...statusMap.values()]);
+    ])(statusValues());
 
-    const error = any((entry) => entry.state === STATES.ERROR)([
-      ...statusMap.values(),
-    ]);
+    const error = any((entry) => entry.state === STATES.ERROR)(statusValues());
 
-    //TODO use pick ?
-    const results = [...statusMap.values()];
+    const results = statusValues();
     logger.debug(`Planner ${error && "error"}, result: ${tos(results)}`);
 
     return {
