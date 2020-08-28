@@ -945,11 +945,6 @@ function CoreProvider({
               title: TitleDestroying,
               resources: pluck("resource")(plan.resultDestroy.plans),
             }),
-            //TODO
-            /*spinnersStartHooks({
-              onStateChange,
-              hookType: HookType.ON_DESTROYED,
-            }),*/
           ]),
           () => {
             logger.debug("no destroy ");
@@ -1140,67 +1135,71 @@ function CoreProvider({
     const { type } = spec;
     const name = client.findName(resource);
     const id = client.findId(resource);
+    const isNameInOurPlan = resourceNames().includes(
+      fromTagName(name, providerConfig.tag)
+    );
+
     assert(direction);
     logger.debug(
       `filterDestroyResources ${tos({ name, types, id, resource })}`
     );
-
-    // Cannot delete default resource
-    if (
-      client.cannotBeDeleted({ resource, name, resourceNames: resourceNames() })
-    ) {
-      logger.debug(
-        `planFindDestroy ${type}/${name}, default resource cannot be deleted`
-      );
-      return false;
-    }
-    // Delete all
-    if (all) {
-      logger.debug(`planFindDestroy ${type}/${name}, delete all`);
-      return true;
-    }
-    if (
-      !spec.isOurMinion({
-        resource,
-        resourceNames: resourceNames(),
-        config: provider.config(),
-      })
-    ) {
-      logger.debug(`planFindDestroy ${type}/${name}, not our minion`);
-      return false;
-    }
-    //TODO switchCase
-    // Delete by type
-    if (!isEmpty(types)) {
-      return types.includes(type);
-    }
-
-    // Delete by id
-    if (!isEmpty(idToDelete)) {
-      return id === idToDelete;
-    }
-
-    // Delete by name
-    if (!isEmpty(nameToDelete)) {
-      return name === nameToDelete;
-    }
-
-    const isNameInOurPlan = resourceNames().includes(
-      fromTagName(name, providerConfig.tag)
-    );
-    if (direction == PlanDirection.UP) {
-      if (!isNameInOurPlan) {
+    return switchCase([
+      // Resource that cannot be deleted
+      () =>
+        client.cannotBeDeleted({
+          resource,
+          name,
+          resourceNames: resourceNames(),
+        }),
+      () => {
         logger.debug(
-          `planFindDestroy ${type}/${name} is not ${resourceNames()} and plan UP`
+          `planFindDestroy ${type}/${name}, default resource cannot be deleted`
         );
-        return true;
-      } else {
         return false;
-      }
-    } else {
-      logger.debug(`planFindDestroy ${type}/${name} going down`);
-      return true;
-    }
+      },
+      // Delete all resources
+      () => all,
+      () => {
+        logger.debug(`planFindDestroy ${type}/${name}, delete all`);
+        return true;
+      },
+      // Not our minion
+      () =>
+        !spec.isOurMinion({
+          resource,
+          resourceNames: resourceNames(),
+          config: provider.config(),
+        }),
+      () => {
+        logger.debug(`planFindDestroy ${type}/${name}, not our minion`);
+        return false;
+      },
+      // Delete by type
+      () => !isEmpty(types),
+      () => types.includes(type),
+      // Delete by id
+      () => !isEmpty(idToDelete),
+      () => id === idToDelete,
+      // Delete by name
+      () => !isEmpty(nameToDelete),
+      () => name === nameToDelete,
+      // PlanDirection
+      () => {
+        if (direction == PlanDirection.UP) {
+          if (!isNameInOurPlan) {
+            logger.debug(
+              `planFindDestroy ${type}/${name} is not ${resourceNames()} and plan UP`
+            );
+            return true;
+          } else {
+            return false;
+          }
+        } else {
+          logger.debug(`planFindDestroy ${type}/${name} going down`);
+          return true;
+        }
+      },
+    ])();
   };
 
   const getClients = ({ onStateChange }) =>
