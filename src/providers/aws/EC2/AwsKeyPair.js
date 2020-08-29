@@ -19,10 +19,9 @@ module.exports = AwsClientKeyPair = ({ spec, config }) => {
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
   const getById = ({ id }) => getByIdCore({ id, getList, findId });
 
-  // TODO params in ec2.describeKeyPairs
   const getList = async ({ params } = {}) => {
-    logger.debug(`list keypair `);
-    const { KeyPairs } = await ec2.describeKeyPairs().promise();
+    logger.debug(`list keypair params: ${tos(params)}`);
+    const { KeyPairs } = await ec2.describeKeyPairs(params).promise();
     logger.debug(`list keypair: ${tos(KeyPairs)}`);
 
     return {

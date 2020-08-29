@@ -90,7 +90,6 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
       resourceId: GroupId,
     });
 
-    //TODO empty ingress ?
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
     const ingressParam = {
       GroupId,
@@ -111,6 +110,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     const result = await ec2.deleteSecurityGroup({ GroupId: id }).promise();
     return result;
   };
+
   const configDefault = async ({ name, properties, dependencies }) => {
     logger.debug(
       `configDefault ${tos({
@@ -119,8 +119,9 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
         dependencies,
       })}`
     );
-    // TODO Need vpc name here in parameter
     const { vpc } = dependencies;
+    assert(vpc, "missing vpc dependency");
+
     const config = defaultsDeep(properties)({
       create: {
         ...(vpc && { VpcId: getField(vpc, "VpcId") }),

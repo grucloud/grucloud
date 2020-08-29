@@ -68,10 +68,11 @@ describe("AwsEC2", async function () {
     const { results: lives } = await provider.listLives({ all: true });
     assert(lives);
   });
-  it.skip("ec2 apply plan", async function () {
+  it("ec2 apply plan", async function () {
     await testPlanDeploy({ provider });
 
     const serverLive = await server.getLive();
+
     const serverInstance = serverLive.Instances[0];
 
     CheckTagsEC2({
@@ -80,13 +81,15 @@ describe("AwsEC2", async function () {
       name: server.name,
     });
 
-    //TODO get default vpc and sg and check ec2 belongs to them
-    /*
-    assert.equal(serverInstance.VpcId, vpcLive.VpcId);
-    assert.equal(serverInstance.SecurityGroups[0].GroupId, sgLive.GroupId);
-    assert.equal(subnetLive.VpcId, vpcLive.VpcId);
-    assert.equal(sgLive.VpcId, vpcLive.VpcId);
-*/
+    const {
+      results: [vpcs],
+    } = await provider.listLives({ types: ["Vpc"] });
+    assert(vpcs);
+    const vpcDefault = vpcs.resources.find((vpc) => vpc.data.IsDefault);
+    assert(vpcDefault);
+
+    assert.equal(serverInstance.VpcId, vpcDefault.data.VpcId);
+
     await testPlanDestroy({ provider, full: false });
   });
 });

@@ -61,7 +61,10 @@ exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
       }
     },
     //TODO retry only when code === 422
-    shouldRetryOnException: () => true,
+    shouldRetryOnException: (error) => {
+      logger.error(`AwsTag shouldRetryOnException ${tos(error)}`);
+      return true;
+    },
     retryCount: 5,
     retryDelay: config.retryDelay,
   });

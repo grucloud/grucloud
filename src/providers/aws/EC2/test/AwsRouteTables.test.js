@@ -57,7 +57,7 @@ describe("AwsRouteTables", async function () {
   it.skip("rt getLive", async function () {
     await rt.getLive();
   });
-  it.skip("rt apply and destroy", async function () {
+  it("rt apply and destroy", async function () {
     await testPlanDeploy({ provider });
     const rtLive = await rt.getLive();
     const subnetLive = await subnet.getLive();
@@ -72,13 +72,15 @@ describe("AwsRouteTables", async function () {
     const {
       results: [rts],
     } = await provider.listLives({ types: ["RouteTables"] });
-    const resource = rts.resources[0].data;
     assert.equal(rts.type, "RouteTables");
-    //TODO
-    //assert.equal(resource.Attachments[0].State, "available");
-    //assert.equal(resource.Attachments[0].VpcId, vpcLive.VpcId);
-    //assert(resource.RouteTablesId);
-    //assert(resource.PublicIp);
-    await testPlanDestroy({ provider, full: false });
+
+    const { data: routeTable } = rts.resources.find(
+      (resource) => resource.managedByUs
+    );
+    assert(routeTable);
+    assert.equal(routeTable.Associations[0].SubnetId, subnetLive.SubnetId);
+    assert.equal(routeTable.VpcId, vpcLive.VpcId);
+
+    await testPlanDestroy({ provider });
   });
 });

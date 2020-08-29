@@ -25,7 +25,7 @@ const { convertError, mapPoolSize } = require("../../Common");
 exports.AwsS3Object = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  const clientConfig = { ...config, retryDelay: 2000, repeatCount: 7 };
+  const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
   const { managedByKey, managedByValue, stageTagKey, stage } = config;
   assert(stage);
 

@@ -62,10 +62,9 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     const result = await ec2.deleteSubnet({ SubnetId: id }).promise();
     return result;
   };
-  // TODO params in ec2.describeSubnets
   const getList = async ({ params } = {}) => {
-    logger.debug(`getList subnet`);
-    const { Subnets } = await ec2.describeSubnets().promise();
+    logger.debug(`getList subnet ${tos(params)}`);
+    const { Subnets } = await ec2.describeSubnets(params).promise();
     logger.info(`getList subnet ${tos(Subnets)}`);
 
     return {

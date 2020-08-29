@@ -9,7 +9,7 @@ const { retryExpectOk } = require("../../Retry");
 
 const { tos } = require("../../../tos");
 const StateTerminated = ["terminated"];
-const { KeyName, getByIdCore } = require("../AwsCommon");
+const { KeyName, getByIdCore, findNameInTags } = require("../AwsCommon");
 const { getField } = require("../../ProviderCommon");
 
 module.exports = AwsEC2 = ({ spec, config }) => {
@@ -21,19 +21,8 @@ module.exports = AwsEC2 = ({ spec, config }) => {
   assert(stage);
 
   const ec2 = new AWS.EC2();
-  //TODO
-  //const findName = (item) => findNameInTags(item.Instances[0]);
-  const findName = (item) => {
-    assert(item);
-    assert(item.Instances);
-    const tag = item.Instances[0].Tags.find((tag) => tag.Key === KeyName);
-    if (tag?.Value) {
-      logger.debug(`findName ${tos({ name: tag.Value, item })}`);
-      return tag.Value;
-    } else {
-      throw Error(`cannot find name in ${tos(item)}`);
-    }
-  };
+
+  const findName = (item) => findNameInTags(item.Instances[0]);
 
   const findId = (item) => {
     assert(item);

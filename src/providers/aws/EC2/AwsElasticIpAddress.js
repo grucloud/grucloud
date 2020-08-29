@@ -75,15 +75,6 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
 
     assert(eipLive, `Cannot get elastic ip: ${id}`);
 
-    // TODO may be not need, done in ec2
-    if (eipLive.AssociationId) {
-      logger.debug(`destroy eip disassociateAddress ${tos({ eipLive })}`);
-
-      await ec2.disassociateAddress({
-        AssociationId: eipLive.AssociationId,
-      });
-    }
-
     const result = await ec2.releaseAddress({ AllocationId: id }).promise();
     logger.debug(`destroy vpc IN PROGRESS, ${tos({ name, id, result })}`);
     return result;
