@@ -4,30 +4,17 @@ const { defaultsDeep } = require("rubico/x");
 const logger = require("../../../../logger")({ prefix: "GoogleVmInstance" });
 const { tos } = require("../../../../tos");
 const GoogleClient = require("../../GoogleClient");
+const { buildLabel } = require("../../GoogleCommon");
 const { toTagName } = require("../../../TagName");
 const { getField } = require("../../../ProviderCommon");
 const { isUpByIdCore } = require("../../../Common");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
 
-module.exports = GoogleVmInstance = ({ spec, config }) => {
+module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
   assert(spec);
-  assert(config);
-  assert(config.stage);
-  const {
-    project,
-    region,
-    zone,
-    managedByKey,
-    tag,
-    managedByValue,
-    stageTagKey,
-    stage,
-  } = config;
-
-  const buildLabel = () => ({
-    [managedByKey]: managedByValue,
-    [stageTagKey]: stage,
-  });
+  assert(configProvider);
+  assert(configProvider.stage);
+  const { project, region, zone, tag } = configProvider;
 
   const configDefault = ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ properties, dependencies })}`);
@@ -46,7 +33,7 @@ module.exports = GoogleVmInstance = ({ spec, config }) => {
       name,
       zone: `projects/${project}/zones/${zone}`,
       machineType: `projects/${project}/zones/${zone}/machineTypes/${machineType}`,
-      labels: buildLabel(),
+      labels: buildLabel(configProvider),
       metadata: defaultsDeep({
         kind: "compute#metadata",
       })(metadata || {}),
@@ -95,6 +82,7 @@ module.exports = GoogleVmInstance = ({ spec, config }) => {
     logger.debug(`vm stateName ${status}`);
     return status;
   };
+
   const isInstanceUp = (instance) => {
     return ["RUNNING"].includes(getStateName(instance));
   };
@@ -109,7 +97,7 @@ module.exports = GoogleVmInstance = ({ spec, config }) => {
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
     url: `/projects/${project}/zones/${zone}/instances/`,
-    config,
+    config: configProvider,
     isUpByIdFactory,
     configDefault,
   });
