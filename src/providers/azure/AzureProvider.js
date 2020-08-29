@@ -182,8 +182,6 @@ const fnSpecs = (config) => {
               subnet,
               publicIpAddress,
             } = dependencies;
-            //TODO securityGroup not needed ?
-            assert(securityGroup, "dependencies is missing securityGroup");
             assert(virtualNetwork, "dependencies is missing virtualNetwork");
             assert(subnet, "dependencies is missing subnet");
             assert(publicIpAddress, "dependencies is missing publicIpAddress");
@@ -224,7 +222,9 @@ const fnSpecs = (config) => {
               location,
               tags: buildTags(config),
               properties: {
-                networkSecurityGroup: { id: getField(securityGroup, "id") },
+                ...(securityGroup && {
+                  networkSecurityGroup: { id: getField(securityGroup, "id") },
+                }),
                 ipConfigurations: [
                   {
                     properties: {
