@@ -21,7 +21,7 @@ const { mapPoolSize } = require("../../Common");
 exports.AwsS3Bucket = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  const clientConfig = { ...config, retryDelay: 2000, repeatCount: 7 };
+  const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
   const { managedByKey, managedByValue, stageTagKey, stage } = config;
   assert(stage);
 
@@ -36,44 +36,33 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listBuckets-property
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
-  const getList = async () => {
-    logger.debug(`getList`);
-    const { Buckets } = await s3.listBuckets().promise();
-    //logger.debug(`getList ${tos(Buckets)}`);
-    const fullBuckets = await map.pool(
+  const getList = pipe([
+    tap(() => {
+      logger.debug(`getList`);
+    }),
+    () => s3.listBuckets().promise(),
+    get("Buckets"),
+    map.pool(
       mapPoolSize,
-      async (bucket) => {
-        try {
-          return {
-            ...bucket,
-            ...(await getByName({ name: bucket.Name })),
-          };
-        } catch (error) {
-          return {
-            ...bucket,
-            error,
-          };
-        }
-      }
-      //TODO try
-      /*tryCatch(
+      tryCatch(
         async (bucket) => ({
-          bucket,
+          ...bucket,
           ...(await getByName({ name: bucket.Name })),
         }),
         (err, bucket) => ({
           bucket,
           err,
         })
-      )*/
-    )(Buckets);
-    logger.debug(`getList full ${tos(fullBuckets)}`);
-
-    return {
-      total: Buckets.length,
+      )
+    ),
+    tap((fullBuckets) => {
+      logger.debug(`getList full ${tos(fullBuckets)}`);
+    }),
+    (fullBuckets) => ({
+      total: fullBuckets.length,
       items: fullBuckets,
-    };
-  };
+    }),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicy-property
 
@@ -86,8 +75,8 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         name: `getByName isUpById ${name}`,
         fn: () => isUpById({ id: name }),
         isExpectedResult: (result) => result,
-        repeatCount: 7,
-        retryCount: 7,
+        repeatCount: 5,
+        retryCount: 5,
         retryDelay: 1e3,
       }))
     ) {
@@ -372,7 +361,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
   const getById = async ({ id }) => await getByName({ name: id });
 
-  //TODO retry
   const headBucket = async ({ id }) => {
     try {
       await s3.headBucket({ Bucket: id }).promise();
