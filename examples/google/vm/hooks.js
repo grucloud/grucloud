@@ -1,6 +1,7 @@
 const assert = require("assert");
 const ping = require("ping");
 const Client = require("ssh2").Client;
+const { retryCall } = require("@grucloud/core").Retry;
 
 const testPing = ({ host }) =>
   ping.promise.probe(host, {
@@ -26,9 +27,20 @@ module.exports = ({ resources, provider }) => {
         {
           name: "Ping",
           command: async ({ host }) => {
-            //TODO retry ping
-            //const { alive } = await testPing({ host });
-            //assert(alive, `Cannot ping ${host}`);
+            const alive = await retryCall({
+              name: `ping ${host}`,
+              fn: async () => {
+                const { alive } = await testPing({ host });
+                if (!alive) {
+                  throw Error(`cannot ping ${host} yet`);
+                }
+                return alive;
+              },
+              shouldRetryOnException: () => true,
+              retryCount: 20,
+              retryDelay: 2e3,
+            });
+            assert(alive, `cannot ping ${host}`);
           },
         },
       ],

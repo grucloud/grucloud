@@ -1,6 +1,7 @@
 const assert = require("assert");
 const ping = require("ping");
 const Client = require("ssh2").Client;
+const { retryCall } = require("@grucloud/core").Retry;
 
 const testPing = ({ host }) =>
   ping.promise.probe(host, {
@@ -39,7 +40,7 @@ module.exports = ({ resources, config }) => {
         const publicIpAddress = await resources.publicIpAddress.getLive();
         const networkInterface = await resources.networkInterface.getLive();
         const vm = await resources.vm.getLive();
-
+        assert(vm, "vm not up");
         //Check network interface id of the vm
         assert.equal(
           vm.properties.networkProfile.networkInterfaces[0].id,
@@ -60,21 +61,39 @@ module.exports = ({ resources, config }) => {
         {
           name: "Ping VM",
           command: async ({ host }) => {
-            //console.log(`Pinging ${host}`);
-            //TODO
-            //const { alive } = await testPing({ host });
-            //assert(alive, `Cannot ping ${host}`);
-            //console.log(`Ping ${host} alive: ${alive}`);
+            const alive = await retryCall({
+              name: `ping ${host}`,
+              fn: async () => {
+                const { alive } = await testPing({ host });
+                if (!alive) {
+                  throw Error(`cannot ping ${host} yet`);
+                }
+                return alive;
+              },
+              shouldRetryOnException: () => true,
+              retryCount: 20,
+              retryDelay: 2e3,
+            });
+            assert(alive, `cannot ping ${host}`);
           },
         },
         {
           name: "SSH VM",
           command: async ({ host }) => {
-            /*await testSsh({
-              host,
-              username: process.env.MACHINE_ADMIN_USERNAME,
-              password: process.env.MACHINE_ADMIN_PASSWORD,
-            });*/
+            await retryCall({
+              name: `ssh ${host}`,
+              fn: async () => {
+                await testSsh({
+                  host,
+                  username: process.env.MACHINE_ADMIN_USERNAME,
+                  password: process.env.MACHINE_ADMIN_PASSWORD,
+                });
+                return true;
+              },
+              shouldRetryOnException: () => true,
+              retryCount: 2,
+              retryDelay: 2e3,
+            });
           },
         },
       ],
