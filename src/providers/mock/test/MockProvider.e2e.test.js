@@ -54,7 +54,6 @@ describe("MockProvider e2e", async function () {
         { options: { all: true } },
         1
       );
-      //TODO was 6
       assert.equal(planDestroyed.plans.length, 7);
     }
   });
@@ -146,8 +145,7 @@ describe("MockProvider e2e", async function () {
       const { results: liveResources } = await provider.listLives({
         our: true,
       });
-      //TODO
-      //assert.equal(liveResources.length, 1);
+      assert.equal(liveResources.length, 0);
     }
     {
       const { results: liveResources } = await provider.listLives({
@@ -157,8 +155,7 @@ describe("MockProvider e2e", async function () {
     }
     const plan = await provider.planQuery();
     {
-      //TODO
-      //assert.equal(plan.resultDestroy.plans.length, 1);
+      assert.equal(plan.resultDestroy.plans.length, 0);
       assert.equal(plan.resultCreate.plans.length, 4);
     }
     {
@@ -182,28 +179,17 @@ describe("MockProvider e2e", async function () {
       const { results: listLives } = await provider.listLives({ all: true });
       assert.equal(listLives.length, 5);
     }
-
     {
       const configs = await provider.listConfig();
       assert(configs);
     }
     {
-      const planDestroy = await provider.planFindDestroy(
+      const { plans } = await provider.planFindDestroy(
         { options: { all: true } },
         -1
       );
-      const indexServer = planDestroy.plans.findIndex(
-        (item) => item.resource.type === "Server"
-      );
-      assert(indexServer >= 0);
-      const indexSecurityGroup = planDestroy.plans.findIndex(
-        (item) => item.resource.type === "SecurityGroup"
-      );
-      assert(indexSecurityGroup > 0);
-      //TODO
-      //assert(indexServer < indexSecurityGroup);
-      //assert.equal(planDestroy.length, 6);
-      // Server must be before SecurityGroup
+
+      assert.equal(plans.length, 7);
     }
 
     const { error } = await provider.destroyAll();
