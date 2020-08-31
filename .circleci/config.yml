@@ -1,20 +1,17 @@
-version: 2.1
-orbs:
-  node: circleci/node@4.0.0
 jobs:
-  build-test:
-    executor:
-      name: node/default
-      tag: "14"
+  install-node:
+    docker:
+      - image: "cimg/base:stable"
     steps:
       - checkout
-      - run:
-          name: Install dependencies
-          command: npm install
+      - node/install:
       - run: node --version
       - run: sudo npm run link
       - run: npm test
+orbs:
+  node: circleci/node@14.8.0
+version: 2.1
 workflows:
-  node-tests:
+  test_my_app:
     jobs:
-      - build-test
+      - install-node
