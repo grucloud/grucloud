@@ -4,7 +4,6 @@ const { pipe } = require("rubico");
 const { createInfra } = require("./infra");
 const collect = (value, previous = []) => previous.concat([value]);
 
-//TODO use it
 const optionFilteredByProvider = [
   "-p, --provider <value>",
   "Filter by provider, multiple values allowed",
@@ -31,11 +30,7 @@ exports.createProgram = ({ version, commands }) => {
     .command("plan")
     .description("Query the plan")
     .alias("p")
-    .option(
-      "-p, --provider <value>",
-      "Filter by provider, multiple values allowed",
-      collect
-    )
+    .option(...optionFilteredByProvider)
     .action(async (commandOptions) => {
       const programOptions = program.opts();
       await pipe([
@@ -52,12 +47,7 @@ exports.createProgram = ({ version, commands }) => {
     .alias("r")
     .option("--onDeployed", "Run Post Deploy Hook")
     .option("--onDestroyed", "Run Post Destroy Hook")
-    .option(
-      "-p, --provider <value>",
-      "Filter by provider, multiple values allowed",
-      collect
-    )
-
+    .option(...optionFilteredByProvider)
     .action(async (commandOptions) => {
       const programOptions = program.opts();
       await pipe([
@@ -77,12 +67,7 @@ exports.createProgram = ({ version, commands }) => {
     .description("Apply the plan, a.k.a deploy the resources")
     .alias("a")
     .option("-f, --force", "force deploy, will not prompt user")
-    .option(
-      "-p, --provider <value>",
-      "Filter by provider, multiple values allowed",
-      collect
-    )
-
+    .option(...optionFilteredByProvider)
     .action(async (commandOptions) => {
       const programOptions = program.opts();
       await pipe([
@@ -98,11 +83,7 @@ exports.createProgram = ({ version, commands }) => {
     .description("Destroy the resources")
     .alias("d")
     .option("-f, --force", "force destroy, will not prompt user")
-    .option(
-      "-t, --types <type>",
-      "Filter by type, multiple values allowed",
-      collect
-    )
+    .option(...optionFilteredByProvider)
     .option(
       "-a, --all",
       "destroy all resources including those not managed by us"
@@ -137,12 +118,7 @@ exports.createProgram = ({ version, commands }) => {
       "-d, --canBeDeleted",
       "display resources which can be deleted, a.k.a non default resources"
     )
-    .option(
-      "-p, --provider <value>",
-      "Filter by provider, multiple values allowed",
-      collect
-    )
-
+    .option(...optionFilteredByProvider)
     .action(async (commandOptions) => {
       const programOptions = program.opts();
       await pipe([
