@@ -1,0 +1,10 @@
+sudo: required
+dist: bionic
+language: node_js
+node_js:
+  - "14"
+
+install:
+  - npm i
+  - npm run link
+  - npm test
