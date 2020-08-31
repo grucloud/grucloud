@@ -39,7 +39,7 @@ module.exports = MockClient = ({
     type: "mock",
     spec,
     config,
-    ...spec, //TODO
+    //...spec, //TODO
     axios: createAxios({ spec, url, config }),
     findId,
     configDefault,
