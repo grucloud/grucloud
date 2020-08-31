@@ -16,4 +16,3 @@ workflows:
   node-tests:
     jobs:
       - build-test
-        version: 14
