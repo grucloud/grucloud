@@ -1,5 +1,6 @@
 const assert = require("assert");
 const logger = require("logger")({ prefix: "CoreProvider" });
+const { MockProvider } = require("../MockProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { createAxiosMock } = require("../MockAxios");
 

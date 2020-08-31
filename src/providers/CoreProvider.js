@@ -536,6 +536,7 @@ function CoreProvider({
   };
 
   const listTargets = async () => {
+    //TODO remove Promise.all
     const lists = (
       await Promise.all(
         getTargetResources().map(async (resource) => ({
@@ -549,6 +550,8 @@ function CoreProvider({
   };
 
   const listConfig = async () => {
+    //TODO remove Promise.all
+
     const lists = await Promise.all(
       getTargetResources().map(async (resource) => ({
         resource: resource.toJSON(),
