@@ -387,7 +387,6 @@ const planRunScript = async ({
       tap((result) => {
         logger.debug("planRunScript Done");
       }),
-      //TODO
       (results) => ({
         error: any(
           ({
@@ -880,7 +879,6 @@ const listDoOk = ({ commandOptions, programOptions }) =>
         ]),
       ])
     ),
-    //TODO
     (results) => ({
       error: any(({ result: { error } }) => error)(results),
       results,

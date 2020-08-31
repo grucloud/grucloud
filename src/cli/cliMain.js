@@ -37,7 +37,6 @@ exports.main = async ({ argv, onExit }) => {
     error.message && console.error(`Error: ${error.message}`);
     error.stack && console.log(error.stack);
     onExit({ code, error });
-    //TODO return code if defined or -1
-    return -1;
+    return code;
   }
 };

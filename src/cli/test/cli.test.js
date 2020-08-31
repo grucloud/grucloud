@@ -75,7 +75,6 @@ describe("cli", function () {
   it("list by provider", async function () {
     await runProgram({ cmds: ["list", "--provider", "Moc"] });
   });
-  // TODO
   it("--config notexisting.js", async function () {
     await main({
       argv: ["node", "gc", "--config", "notexisting.js", "list"],
@@ -182,7 +181,7 @@ describe("cli error", function () {
         },
       })
     )(commandsAll);
-    assert.deepEqual(results, [-1, -1, -1, -1, -1, -1]);
+    assert.deepEqual(results, [422, 422, 422, 422, 422, 422]);
   });
   it("cli Query 404", async function () {
     const result = await runProgram({
@@ -193,7 +192,7 @@ describe("cli error", function () {
         assert(error.results[0].resultQuery.error);
       },
     });
-    assert.deepEqual(result, -1);
+    assert.deepEqual(result, 422);
   });
   it("cli Query Network error", async function () {
     const result = await runProgram({
@@ -209,7 +208,7 @@ describe("cli error", function () {
         );
       },
     });
-    assert.deepEqual(result, -1);
+    assert.deepEqual(result, 422);
   });
   it("cli Query timeout", async function () {
     const result = await runProgram({
@@ -225,7 +224,7 @@ describe("cli error", function () {
         );
       },
     });
-    assert.deepEqual(result, -1);
+    assert.deepEqual(result, 422);
   });
 
   it("cli Apply 404", async function () {
@@ -237,7 +236,7 @@ describe("cli error", function () {
         assert(error.results[0].resultQuery.error);
       },
     });
-    assert.deepEqual(result, -1);
+    assert.deepEqual(result, 422);
   });
   it("cli Apply Network error", async function () {
     const result = await runProgram({
@@ -253,7 +252,7 @@ describe("cli error", function () {
         );
       },
     });
-    assert.deepEqual(result, -1);
+    assert.deepEqual(result, 422);
   });
   it("cli Apply timeout", async function () {
     const result = await runProgram({
@@ -269,7 +268,7 @@ describe("cli error", function () {
         );
       },
     });
-    assert.deepEqual(result, -1);
+    assert.deepEqual(result, 422);
   });
   it("cli Apply 500", async function () {
     const result = await runProgram({
@@ -282,7 +281,7 @@ describe("cli error", function () {
         assert.equal(result.resultCreate.results[0].error.Status, 500);
       },
     });
-    assert.deepEqual(result, -1);
+    assert.deepEqual(result, 422);
   });
 
   it("cli 404", async function () {
@@ -296,7 +295,7 @@ describe("cli error", function () {
         },
       })
     )(commands);
-    assert.deepEqual(results, [-1, -1]);
+    assert.deepEqual(results, [422, 422]);
   });
   it("cli 500", async function () {
     const results = await map.series(
@@ -309,7 +308,7 @@ describe("cli error", function () {
           },
         })
     )(commands);
-    assert.deepEqual(results, [-1, 0]);
+    assert.deepEqual(results, [422, 0]);
   });
   it("cli network error", async function () {
     const results = await map.series((command) =>
@@ -322,7 +321,7 @@ describe("cli error", function () {
         },
       })
     )(commands);
-    assert.deepEqual(results, [-1, -1]);
+    assert.deepEqual(results, [422, 422]);
   });
 
   it("cli 400 retry", async function () {
@@ -333,7 +332,7 @@ describe("cli error", function () {
         assert.equal(code, 422);
       },
     });
-    assert.equal(result, -1);
+    assert.equal(result, 422);
   });
   it("cli 400 retry once", async function () {
     const result = await runProgram({
@@ -374,7 +373,7 @@ describe("cli error", function () {
         },
       })
     )(commands);
-    assert.deepEqual(results, [-1, -1]);
+    assert.deepEqual(results, [422, 422]);
   });
 
   it("cli run invalid command", async function () {
@@ -384,7 +383,7 @@ describe("cli error", function () {
         assert.equal(code, 422);
       },
     });
-    assert.equal(result, -1);
+    assert.equal(result, 422);
   });
   it("cli Apply get Id 500", async function () {
     const result = await runProgram({
@@ -397,6 +396,6 @@ describe("cli error", function () {
         assert.equal(result.resultCreate.results[0].error.Status, 500);
       },
     });
-    assert.deepEqual(result, -1);
+    assert.deepEqual(result, 422);
   });
 });
