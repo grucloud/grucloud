@@ -7,4 +7,4 @@ node_js:
 install:
   - npm i
   - npm run link
-  - npm test
+  - DEBUG_CONSOLE=yes npm test

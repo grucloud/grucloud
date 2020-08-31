@@ -1,18 +1,20 @@
 const { createLogger, format, transports } = require("winston");
 const fs = require("fs");
 
+const formatTimestamp = format.combine(
+  format.timestamp({ format: "HH:mm:ss.SSS" }),
+  format.printf(
+    (info) =>
+      `${info.timestamp} ${info.level.padEnd(5, " ")}: ${info.message}` +
+      (info.splat !== undefined ? `${info.splat}` : " ")
+  )
+);
+
 const transportFiles = [
   {
     filename: "grucloud-debug.log",
     level: "debug",
-    format: format.combine(
-      format.timestamp({ format: "HH:mm:ss.SSS" }),
-      format.printf(
-        (info) =>
-          `${info.timestamp} ${info.level.padEnd(5, " ")}: ${info.message}` +
-          (info.splat !== undefined ? `${info.splat}` : " ")
-      )
-    ),
+    format: formatTimestamp,
   },
 ];
 
@@ -27,6 +29,15 @@ const logger = createLogger({
   format: format.combine(format.splat(), format.simple()),
   transports: transportFiles.map((item) => new transports.File(item)),
 });
+
+if (process.env.DEBUG_CONSOLE) {
+  logger.add(
+    new transports.Console({
+      level: "debug",
+      format: formatTimestamp,
+    })
+  );
+}
 
 module.exports = ({ prefix = "" }) => {
   return {
