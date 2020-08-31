@@ -1,7 +1,6 @@
 const assert = require("assert");
-const forEach = require("rubico/x/forEach");
-const { createStack } = require("./MockStack");
 const { ConfigLoader } = require("ConfigLoader");
+const { MockProvider } = require("../MockProvider");
 
 const logger = require("logger")({ prefix: "MockProviderTest" });
 

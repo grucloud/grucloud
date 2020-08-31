@@ -1,7 +1,19 @@
 version: 2.1
 orbs:
   node: circleci/node@3.0.0
+jobs:
+  build-test:
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run: npm run link
+      - run: npm test
 workflows:
   node-tests:
     jobs:
-      - node/test
+      - build-test
+        version: 14

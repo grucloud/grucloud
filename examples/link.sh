@@ -1,0 +1,15 @@
+(cd aws/ec2 && npm run link)
+(cd aws/ec2-vpc && npm run link)
+(cd aws/s3 && npm run link)
+(cd aws/s3-multiple && npm run link)
+(cd aws/s3-simple && npm run link)
+(cd azure/ && npm run link)
+(cd google/vm && npm run link)
+(cd google/vm-network && npm run link)
+(cd mock/mock && npm run link)
+(cd mock/mock-simple && npm run link)
+(cd multi/ && npm run link)
+(cd scaleway/ && npm run link)
+
+
+

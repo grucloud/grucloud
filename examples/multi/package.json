@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "e2e": "gc d -f && gc d -f && gc l && gc a -f && gc a && gc d -f && gc d && gc l"
+    "e2e": "gc d -f && gc d -f && gc l && gc a -f && gc a && gc d -f && gc d && gc l",
+    "link": "npm link @grucloud/core"
   },
   "author": "",
   "license": "ISC",
