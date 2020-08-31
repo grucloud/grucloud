@@ -1248,7 +1248,6 @@ function CoreProvider({
         assert(onStateChange);
       }),
       filter((client) => !client.spec.listOnly),
-
       tap(() =>
         onStateChange({
           context: { uri: providerName },
@@ -1262,7 +1261,6 @@ function CoreProvider({
         })
       ),
       getClients({ onStateChange }),
-      //filter(get("results")),
       tap((x) => {
         logger.debug(`planFindDestroy`);
       }),
@@ -1525,7 +1523,11 @@ function CoreProvider({
         pipe([
           getHookFactory,
           (hookFactory) => {
-            const hooks = hookFactory({ resources, config: providerConfig });
+            const hooks = hookFactory({
+              resources,
+              config: providerConfig,
+              provider,
+            });
             hookAdd("default", hooks);
           },
         ]),

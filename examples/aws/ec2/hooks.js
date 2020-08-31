@@ -31,6 +31,7 @@ const testSsh = async ({ host, username = "ubuntu" }) =>
   });
 
 module.exports = ({ resources: { eip, server }, provider }) => {
+  assert(provider);
   return {
     onDeployed: {
       init: async () => {
@@ -40,6 +41,16 @@ module.exports = ({ resources: { eip, server }, provider }) => {
         //Static checks
         const serverInstance = serverLive.Instances[0];
         assert.equal(serverInstance.PublicIpAddress, eipLive.PublicIp);
+
+        const {
+          results: [vpcs],
+        } = await provider.listLives({ types: ["Vpc"] });
+        assert(vpcs);
+        const vpcDefault = vpcs.resources.find((vpc) => vpc.data.IsDefault);
+        assert(vpcDefault);
+
+        assert.equal(serverInstance.VpcId, vpcDefault.data.VpcId);
+
         const host = eipLive.PublicIp;
         return {
           host,
@@ -68,8 +79,6 @@ module.exports = ({ resources: { eip, server }, provider }) => {
         {
           name: "SSH",
           command: async ({ host }) => {
-            await testSsh({ host });
-            /*
             await retryCall({
               name: `ssh ${host}`,
               fn: async () => {
@@ -81,7 +90,6 @@ module.exports = ({ resources: { eip, server }, provider }) => {
               retryDelay: 2e3,
             });
             console.log("done");
-            */
           },
         },
       ],

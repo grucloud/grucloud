@@ -145,7 +145,6 @@ describe("AzProvider", async function () {
   });
   it.skip("az apply and destroy", async function () {
     await testPlanDeploy({ provider, full: true });
-    //TODO check address_space
     await testPlanDestroy({ provider, full: true });
   });
 });
