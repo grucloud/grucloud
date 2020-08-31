@@ -135,17 +135,19 @@ const authorize = async ({ applicationCredentials }) => {
       if (err) {
         return reject(err);
       }
-      // TODO handle undefined response
-      if (response.access_token) {
+      if (response?.access_token) {
         resolve(response.access_token);
+      } else {
+        reject("Cannot get access_token");
       }
-      reject(err);
     });
   });
   return accessToken;
 };
 
-module.exports = GoogleProvider = async ({ name = "google", config }) => {
+exports.authorize = authorize;
+
+exports.GoogleProvider = async ({ name = "google", config }) => {
   checkEnv(["GOOGLE_APPLICATION_CREDENTIALS"]);
 
   const accessToken = await authorize({

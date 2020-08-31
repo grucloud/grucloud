@@ -1,5 +1,5 @@
 const assert = require("assert");
-const GoogleProvider = require("../GoogleProvider");
+const { GoogleProvider } = require("../GoogleProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { notAvailable } = require("../../ProviderCommon");

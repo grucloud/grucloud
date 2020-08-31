@@ -1,5 +1,5 @@
 const assert = require("assert");
-const GoogleProvider = require("../GoogleProvider");
+const { GoogleProvider } = require("../GoogleProvider");
 const { ConfigLoader } = require("ConfigLoader");
 
 describe("GoogleError", async function () {

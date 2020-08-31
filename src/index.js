@@ -1,5 +1,5 @@
 exports.ScalewayProvider = require("./providers/scaleway/ScalewayProvider");
-exports.GoogleProvider = require("./providers/google/GoogleProvider");
+exports.GoogleProvider = require("./providers/google/GoogleProvider").GoogleProvider;
 exports.AwsProvider = require("./providers/aws/AwsProvider");
 exports.AzureProvider = require("./providers/azure/AzureProvider");
 

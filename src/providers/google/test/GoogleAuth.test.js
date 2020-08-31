@@ -1,6 +1,8 @@
 const assert = require("assert");
+const path = require("path");
 const { JWT } = require("google-auth-library");
 const { ConfigLoader } = require("ConfigLoader");
+const { authorize } = require("../GoogleProvider");
 
 describe("GoogleAuth", function () {
   let config;
@@ -13,7 +15,7 @@ describe("GoogleAuth", function () {
     }
   });
 
-  it("auth", async function () {
+  it("auth ok", async function () {
     const applicationCredentials = process.env.GOOGLE_APPLICATION_CREDENTIALS;
     assert(applicationCredentials);
 
@@ -35,5 +37,19 @@ describe("GoogleAuth", function () {
     });
 
     assert(accessToken);
+  });
+  it("auth ko: account not found", async function () {
+    const applicationCredentials = path.resolve(
+      __dirname,
+      "grucloud-credentials-invalid.json"
+    );
+    try {
+      await authorize({ applicationCredentials });
+    } catch (error) {
+      assert.equal(
+        error.message,
+        "invalid_grant: Invalid grant: account not found"
+      );
+    }
   });
 });
