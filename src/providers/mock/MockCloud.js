@@ -70,8 +70,8 @@ module.exports = MockCloud = (initStates = []) => {
         logger.error(`onDestroy cannot find ${tos({ type, id })}`);
         return;
       }
-      // TODO they should have a name
       const { name } = resource.get(id);
+      assert(name);
       if (name) {
         resourceNameMap.delete(name);
       }
