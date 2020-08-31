@@ -12,9 +12,6 @@
 gc d --name grucloud-s3bucket-test
 No resources to destroy
 
-gc p --provider aws
-error: unknown option '--provider'
-
 - terraform output
 - add multiple example for each provider
 
@@ -32,6 +29,9 @@ error: unknown option '--provider'
 - doc
 
 ## TODO Aws:
+
+- CheckTagsEC2 when creating
+- aws role ad policy
 
 - getList params in ec2.describeSubnets and
 - do not display default acl

@@ -1,6 +1,6 @@
 const Axios = require("axios");
 const MockAdapter = require("axios-mock-adapter");
-const BASE_URL = "http://localhost:8089";
+const { BASE_URL } = require("./config.common");
 
 const createAxios = ({ url }) => {
   const axios = Axios.create({ baseURL: BASE_URL });
