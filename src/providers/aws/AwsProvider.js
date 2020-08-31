@@ -39,7 +39,11 @@ exports.AwsProvider = async ({ name = "aws", config }) => {
     resourcegroupstaggingapi: "2017-01-26",
     s3: "2006-03-01",
   };
-  AWS.config.update({ region: config.region });
+  AWS.config.update({
+    region: config.region,
+    accessKeyId: process.env.AWSAccessKeyId,
+    secretAccessKey: process.env.AWSSecretKey,
+  });
   await validateConfig(config);
 
   return CoreProvider({
