@@ -91,8 +91,8 @@ module.exports = ({ resources, config }) => {
                 return true;
               },
               shouldRetryOnException: () => true,
-              retryCount: 2,
-              retryDelay: 2e3,
+              retryCount: 30,
+              retryDelay: 5e3,
             });
           },
         },

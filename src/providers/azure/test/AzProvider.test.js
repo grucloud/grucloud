@@ -1,5 +1,5 @@
 const assert = require("assert");
-const AzureProvider = require("../AzureProvider");
+const { AzureProvider } = require("../AzureProvider");
 const { ConfigLoader } = require("ConfigLoader");
 
 const {

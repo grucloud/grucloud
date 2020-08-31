@@ -1,7 +1,7 @@
 const assert = require("assert");
 const logger = require("logger")({ prefix: "CoreProvider" });
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
-const ScalewayProvider = require("../ScalewayProvider");
+const { ScalewayProvider } = require("../ScalewayProvider");
 const { ConfigLoader } = require("ConfigLoader");
 
 describe("ScalewayProvider", async function () {
@@ -46,7 +46,7 @@ describe("ScalewayProvider", async function () {
         name: "web-server",
         commercial_type: "DEV1-S",
         volumes: {
-          "0": {
+          0: {
             size: 20_000_000_000,
           },
         },

@@ -44,14 +44,14 @@ const createAws = async ({ config }) => {
     resources: { keyPair },
   });
 
-  provider.hookAdd("ec2", AwsHooksEC2({ resources: ec2 }));
+  provider.hookAdd("ec2", AwsHooksEC2({ resources: ec2, provider }));
 
   // Aws stack ec2-vpc
   const ec2Vpc = await AwsStackEC2Vpc.createResources({
     provider,
     resources: { keyPair },
   });
-  provider.hookAdd("ec2-vpc", AwsHooksEC2Vpc({ resources: ec2Vpc }));
+  provider.hookAdd("ec2-vpc", AwsHooksEC2Vpc({ resources: ec2Vpc, provider }));
 
   // S3
   const s3 = await AwsStackS3.createResources({
@@ -90,7 +90,7 @@ const createGoogle = async ({ config }) => {
       provider,
       resources: { serviceAccount },
     });
-    provider.hookAdd("vm", GoogleHooksVm({ resources }));
+    provider.hookAdd("vm", GoogleHooksVm({ resources, provider }));
   }
   // Full network, subnet, firewall and vms
   {
@@ -98,7 +98,10 @@ const createGoogle = async ({ config }) => {
       provider,
       resources: { serviceAccount },
     });
-    provider.hookAdd("vm-network", GoogleHooksVmNetwork({ resources }));
+    provider.hookAdd(
+      "vm-network",
+      GoogleHooksVmNetwork({ resources, provider })
+    );
   }
   return provider;
 };
@@ -108,7 +111,7 @@ const createAzure = async ({ config }) => {
     config: { ...config.azure, stage: config.stage },
   });
   const resources = await AzureStack.createResources({ provider });
-  provider.hookAdd("azure", AzureHooks({ resources }));
+  provider.hookAdd("azure", AzureHooks({ resources, provider }));
   return provider;
 };
 
@@ -117,7 +120,7 @@ const createScaleway = async ({ config }) => {
     config: { ...config.scaleway, stage: config.stage },
   });
   const resources = await ScalewayStack.createResources({ provider });
-  provider.hookAdd("scaleway", ScalewayHooks({ resources }));
+  provider.hookAdd("scaleway", ScalewayHooks({ resources, provider }));
   return provider;
 };
 

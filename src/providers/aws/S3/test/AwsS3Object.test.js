@@ -1,7 +1,7 @@
 const assert = require("assert");
 const path = require("path");
 const { ConfigLoader } = require("ConfigLoader");
-const AwsProvider = require("../../AwsProvider");
+const { AwsProvider } = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
 describe("AwsS3Object", async function () {

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const AwsProvider = require("../../AwsProvider");
+const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { notAvailable } = require("../../../ProviderCommon");

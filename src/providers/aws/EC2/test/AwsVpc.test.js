@@ -1,7 +1,7 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
 const { ConfigLoader } = require("ConfigLoader");
-const AwsProvider = require("../../AwsProvider");
+const { AwsProvider } = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { CheckTagsEC2 } = require("../../AwsTagCheck");
 const logger = require("../../../../logger")({ prefix: "AwsVpc" });

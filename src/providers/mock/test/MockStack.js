@@ -1,5 +1,5 @@
 const assert = require("assert");
-const MockProvider = require("../MockProvider");
+const { MockProvider } = require("../MockProvider");
 const createResources = async ({ provider }) => {
   // Ip
   const ip = await provider.makeIp({ name: "myip" });

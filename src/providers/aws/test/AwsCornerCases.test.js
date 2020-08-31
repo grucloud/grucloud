@@ -1,5 +1,5 @@
 const assert = require("assert");
-const AwsProvider = require("../AwsProvider");
+const { AwsProvider } = require("../AwsProvider");
 
 describe("AwsProvider Corner case", async function () {
   it("invalid zone", async function () {

@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { map, pipe } = require("rubico");
 const { ConfigLoader } = require("ConfigLoader");
-const AwsProvider = require("../../AwsProvider");
+const { AwsProvider } = require("../../AwsProvider");
 
 describe.skip("AwsS3BucketPerf", async function () {
   let config;

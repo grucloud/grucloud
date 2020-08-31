@@ -1,5 +1,5 @@
 const assert = require("assert");
-const ScalewayProvider = require("../ScalewayProvider");
+const { ScalewayProvider } = require("../ScalewayProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 

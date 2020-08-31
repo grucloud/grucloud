@@ -4,7 +4,7 @@ const { createResources } = require("./MockStack");
 const { ConfigLoader } = require("ConfigLoader");
 const sinon = require("sinon");
 
-const MockProvider = require("../MockProvider");
+const { MockProvider } = require("../MockProvider");
 const cliCommands = require("../../../cli/cliCommands");
 
 const logger = require("logger")({ prefix: "MockProviderTest" });

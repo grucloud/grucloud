@@ -138,7 +138,7 @@ const fnSpecs = (config) => {
   ];
 };
 
-module.exports = MockProvider = async ({ name = "mock", config }) => {
+exports.MockProvider = async ({ name = "mock", config }) => {
   assert(config);
 
   const configDefault = {

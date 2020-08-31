@@ -86,10 +86,9 @@ module.exports = ({ resources: { eip, server }, provider }) => {
                 return true;
               },
               shouldRetryOnException: () => true,
-              retryCount: 2,
-              retryDelay: 2e3,
+              retryCount: 20,
+              retryDelay: 5e3,
             });
-            console.log("done");
           },
         },
       ],

@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
-const AwsProvider = require("../../AwsProvider");
+const { AwsProvider } = require("../../AwsProvider");
 const cliCommands = require("../../../../cli/cliCommands");
 
 const bucketPrefix = "grucloud-s3bucket-test-error";
