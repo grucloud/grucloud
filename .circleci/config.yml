@@ -5,6 +5,7 @@ jobs:
   build-test:
     executor:
       name: node/default
+      version: "14.4.0"
     steps:
       - checkout
       - run:
