@@ -105,7 +105,7 @@ exports.ConfigLoader = ({
   //console.log(`ConfigLoader ${baseDir} ${stage}`);
   logger.info(`${(baseDir, stage)}`);
   const configDir = npath.join(baseDir, path, "config");
-
+  process.env.CONFIG_DIR = configDir;
   envLoader({ configDir, stage });
 
   const defaultConfig = configFromDefault({ configDir });

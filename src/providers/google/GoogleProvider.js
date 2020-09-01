@@ -1,5 +1,6 @@
 const assert = require("assert");
 const fs = require("fs");
+const path = require("path");
 const { defaultsDeep } = require("rubico/x");
 const { JWT } = require("google-auth-library");
 const CoreProvider = require("../CoreProvider");
@@ -151,11 +152,14 @@ exports.GoogleProvider = async ({ name = "google", config }) => {
   checkEnv(["GOOGLE_APPLICATION_CREDENTIALS"]);
 
   const accessToken = await authorize({
-    applicationCredentials: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+    applicationCredentials: path.resolve(
+      process.env.CONFIG_DIR,
+      process.env.GOOGLE_APPLICATION_CREDENTIALS
+    ),
   });
 
   const configProviderDefault = {
-    //rename manageByTag ?
+    //TODO rename manageByTag ?
     tag: "-managed-by-gru",
     managedByKey: "managed-by",
     managedByValue: "grucloud",
