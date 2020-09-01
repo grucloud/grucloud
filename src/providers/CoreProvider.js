@@ -522,9 +522,6 @@ function CoreProvider({
         logger.debug(`listLives: ${tos(list)}`);
       }),
       filter((live) => (live.resources ? !isEmpty(live.resources) : true)),
-      tap((list) => {
-        // logger.debug(`listLives: ${tos(list)}`);
-      }),
       (list) => ({
         error: hasResultError(list),
         results: list,
@@ -535,32 +532,27 @@ function CoreProvider({
     ])(clients);
   };
 
-  const listTargets = async () => {
-    //TODO remove Promise.all
-    const lists = (
-      await Promise.all(
-        getTargetResources().map(async (resource) => ({
-          ...resource.toJSON(),
-          data: await resource.getLive(),
-        }))
-      )
-    ).filter((x) => x.data);
-    logger.debug(`listTargets ${tos(lists)}`);
-    return lists;
-  };
+  const listTargets = () =>
+    pipe([
+      map(async (resource) => ({
+        ...resource.toJSON(),
+        data: await resource.getLive(),
+      })),
+      filter((x) => x.data),
+      tap((list) => {
+        logger.debug(`listTargets ${tos(list)}`);
+      }),
+    ])(getTargetResources());
 
-  const listConfig = async () => {
-    //TODO remove Promise.all
-
-    const lists = await Promise.all(
-      getTargetResources().map(async (resource) => ({
+  const listConfig = () =>
+    pipe([
+      map(async (resource) => ({
         resource: resource.toJSON(),
-        //config: await resource.config(),
-      }))
-    );
-    logger.debug(`listConfig ${JSON.stringify(lists, null, 4)}`);
-    return lists;
-  };
+      })),
+      tap((list) => {
+        logger.debug(`listConfig ${tos(list)}`);
+      }),
+    ])(getTargetResources());
 
   const planQuery = async ({ onStateChange = identity } = {}) =>
     pipe([
