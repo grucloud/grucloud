@@ -10,8 +10,10 @@ exports.isOurMinion = ({ resource, config }) => {
   const isGruLabel = (key, value) =>
     key === managedByKey && value === managedByValue;
 
-  const isMinion = !!Object.keys(tags).some((key) => isGruLabel(key, tags[key]));
+  const isMinion = !!Object.keys(tags).some((key) =>
+    isGruLabel(key, tags[key])
+  );
 
-  logger.info(`isOurMinion isMinion: ${isMinion}`);
+  logger.debug(`isOurMinion isMinion: ${isMinion}`);
   return isMinion;
 };

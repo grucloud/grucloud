@@ -3,20 +3,19 @@ const { tos } = require("../../tos");
 const { hasTag } = require("../TagName");
 
 exports.isOurMinion = ({ resource, tag: ourTag }) => {
-  //logger.info(`isOurMinion ? ${tos({ ourTag, resource })}`);
   if (hasTag(resource.name, ourTag)) {
-    logger.info(`isOurMinion yes, same resource name`);
+    logger.debug(`isOurMinion yes, same resource name`);
     return true;
   }
   if (hasTag(resource.description, ourTag)) {
-    logger.info(`isOurMinion yes, same description`);
+    logger.debug(`isOurMinion yes, same description`);
     return true;
   }
 
   const { tags } = resource;
   if (Array.isArray(tags?.items)) {
     if (tags?.items.some((tag) => tag.includes(ourTag))) {
-      logger.info(`isOurMinion yes, tags?.items`);
+      logger.debug(`isOurMinion yes, tags?.items`);
       return true;
     }
   }
@@ -26,5 +25,5 @@ exports.isOurMinion = ({ resource, tag: ourTag }) => {
     }
   }
 
-  logger.info(`isOurMinion not our minion: ${tos({ ourTag, resource })}`);
+  logger.debug(`isOurMinion not our minion: ${tos({ ourTag, resource })}`);
 };

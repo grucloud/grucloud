@@ -65,7 +65,7 @@ module.exports = AwsSubnet = ({ spec, config }) => {
   const getList = async ({ params } = {}) => {
     logger.debug(`getList subnet ${tos(params)}`);
     const { Subnets } = await ec2.describeSubnets(params).promise();
-    logger.info(`getList subnet ${tos(Subnets)}`);
+    logger.debug(`getList subnet ${tos(Subnets)}`);
 
     return {
       total: Subnets.length,

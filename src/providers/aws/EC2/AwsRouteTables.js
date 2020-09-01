@@ -33,7 +33,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
   const getList = async ({ params } = {}) => {
     logger.debug(`list ${tos(params)}`);
     const { RouteTables } = await ec2.describeRouteTables(params).promise();
-    logger.info(`list ${tos(RouteTables)}`);
+    logger.debug(`list ${tos(RouteTables)}`);
 
     return {
       total: RouteTables.length,

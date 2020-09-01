@@ -13,7 +13,7 @@ const isOurMinionServiceAccount = ({ resource, resourceNames }) => {
   assert(resource, "resource");
   assert(resourceNames, "resourceNames");
   const isOur = resourceNames.includes(findName(resource));
-  logger.info(`isOurMinionServiceAccount: ${isOur}`);
+  logger.debug(`isOurMinionServiceAccount: ${isOur}`);
   return isOur;
 };
 exports.isOurMinionServiceAccount = isOurMinionServiceAccount;

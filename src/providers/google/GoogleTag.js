@@ -21,6 +21,6 @@ exports.isOurMinion = ({ resource, config }) => {
     () => false,
   ])();
 
-  logger.info(`isOurMinion: ${isMinion}`);
+  logger.debug(`isOurMinion: ${isMinion}`);
   return isMinion;
 };

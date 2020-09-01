@@ -28,7 +28,7 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
   const getList = async ({ params } = {}) => {
     logger.debug(`getList ${tos(params)}`);
     const { Addresses } = await ec2.describeAddresses(params).promise();
-    logger.info(`getList ${tos(Addresses)}`);
+    logger.debug(`getList ${tos(Addresses)}`);
 
     return {
       total: Addresses.length,

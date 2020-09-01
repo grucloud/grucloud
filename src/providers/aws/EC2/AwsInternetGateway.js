@@ -34,7 +34,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
     const { InternetGateways } = await ec2
       .describeInternetGateways(params)
       .promise();
-    logger.info(`list ${tos(InternetGateways)}`);
+    logger.debug(`list ${tos(InternetGateways)}`);
 
     return {
       total: InternetGateways.length,
@@ -72,7 +72,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
       InternetGateway: { InternetGatewayId },
     } = await ec2.createInternetGateway(payload).promise();
     assert(InternetGatewayId);
-    logger.info(`created ig ${InternetGatewayId}`);
+    logger.debug(`created ig ${InternetGatewayId}`);
 
     await tagResource({
       config,
