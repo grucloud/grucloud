@@ -9,7 +9,7 @@ jobs:
       - run: sudo npm run link
       - run: npm test
 orbs:
-  node: circleci/node:4.0.0
+  node: circleci/node@4.0.0
 version: 2.1
 workflows:
   test_my_app:
