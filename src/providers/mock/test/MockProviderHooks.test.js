@@ -96,7 +96,7 @@ describe("MockProviderHooks", async function () {
       assert(false, "should not be here");
     } catch ({ error }) {
       assert(error.results);
-      const { resultHooks } = error.results[0].result;
+      const { resultHooks } = error.resultsDestroy[0].result;
       assert(resultHooks.error);
       assert(resultHooks.results[0].error);
       assert(resultHooks.results[0].results[0].error);
@@ -192,7 +192,7 @@ describe("MockProviderHooks", async function () {
       assert(false, "should not be here");
     } catch ({ error }) {
       assert(error.results);
-      const { resultHooks } = error.results[0].result;
+      const { resultHooks } = error.resultsDestroy[0].result;
       assert(resultHooks.error);
       const result = resultHooks.results[0];
       assert(result.error);
