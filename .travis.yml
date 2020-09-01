@@ -4,6 +4,9 @@ language: node_js
 node_js:
   - "14"
 
+before_script:
+  - sudo ntpdate ntp.ubuntu.com
+
 install:
   - npm i
   - npm run link
