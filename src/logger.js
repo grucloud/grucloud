@@ -33,7 +33,7 @@ const logger = createLogger({
 if (process.env.DEBUG_CONSOLE) {
   logger.add(
     new transports.Console({
-      level: "debug",
+      level: "info",
       format: formatTimestamp,
     })
   );
