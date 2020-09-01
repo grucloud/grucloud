@@ -2,18 +2,17 @@ sudo: required
 dist: bionic
 language: node_js
 node_js:
-  - "14"
-
+- '14'
 before_install:
-  - sudo ntpdate 0.amazon.pool.ntp.org
-  - sudo timedatectl set-timezone 'Europe/London'
-  - date
-
+- openssl aes-256-cbc -K $encrypted_28b98b12de56_key -iv $encrypted_28b98b12de56_iv
+  -in default.env.enc -out default.env -d
+- sudo ntpdate 0.amazon.pool.ntp.org
+- sudo timedatectl set-timezone 'Europe/London'
+- date
 install:
-  - date
-  - npm i
-  - npm run link
-  - DEBUG_CONSOLE=yes npm run test:mock
-  - DEBUG_CONSOLE=yes npm run test:az
-
+- date
+- npm i
+- npm run link
+- DEBUG_CONSOLE=yes npm run test:mock
+- DEBUG_CONSOLE=yes npm run test:az
 script: echo "npm test temporarily disabled"
