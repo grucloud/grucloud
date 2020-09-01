@@ -30,7 +30,7 @@ const logger = createLogger({
   transports: transportFiles.map((item) => new transports.File(item)),
 });
 
-if (process.env.DEBUG_CONSOLE) {
+if (process.env.CONTINUOUS_INTEGRATION) {
   logger.add(
     new transports.Console({
       level: "info",

@@ -1,5 +1,6 @@
 const assert = require("assert");
 const ping = require("ping");
+const path = require("path");
 const Client = require("ssh2").Client;
 const { retryCall } = require("@grucloud/core").Retry;
 
@@ -7,6 +8,10 @@ const testPing = ({ host }) =>
   ping.promise.probe(host, {
     timeout: 10,
   });
+
+//const privateKey = require("fs").readFileSync(
+//  path.resolve(__dirname, "../../../secrets/kp.pem")
+//);
 
 const testSsh = async ({ host, username = "ubuntu" }) =>
   await new Promise((resolve, reject) => {
@@ -26,7 +31,7 @@ const testSsh = async ({ host, username = "ubuntu" }) =>
         port: 22,
         username,
         agent: process.env.SSH_AUTH_SOCK,
-        //privateKey: require("fs").readFileSync("/here/is/my/key"),
+        //privateKey,
       });
   });
 

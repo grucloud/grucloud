@@ -1,4 +1,5 @@
 const assert = require("assert");
+const path = require("path");
 const ping = require("ping");
 const Client = require("ssh2").Client;
 const { retryCall } = require("@grucloud/core").Retry;
@@ -26,8 +27,8 @@ const testSsh = async ({ host, username = "ubuntu", password }) =>
         port: 22,
         username,
         password,
-        agent: process.env.SSH_AUTH_SOCK,
-        //privateKey: require("fs").readFileSync("/here/is/my/key"),
+        //agent: process.env.SSH_AUTH_SOCK,
+        //privateKey,
       });
   });
 
