@@ -4,6 +4,8 @@ language: node_js
 node_js:
   - "14"
 before_install:
+  - openssl aes-256-cbc -K $encrypted_44e7586dc596_key -iv $encrypted_44e7586dc596_iv
+    -in secrets/gc.pem.enc -out secrets/gc.pem -d
   - openssl aes-256-cbc -K $encrypted_9a6eea7a7966_key -iv $encrypted_9a6eea7a7966_iv
     -in examples/multi/config/default.env.enc -out examples/multi/config/default.env
     -d
@@ -13,14 +15,13 @@ before_install:
   - sudo ntpdate 0.amazon.pool.ntp.org
   - sudo timedatectl set-timezone 'Europe/London'
   - date
+  - eval "$(ssh-agent -s)"
+  - chmod 600 secrets/gc.pem
+  - ssh-add secrets/gc.pem
+
 install:
   - date
   - npm i
   - npm run link
-  #- DEBUG_CONSOLE=yes npm run test:gcp
-  #- DEBUG_CONSOLE=yes npm run test:mock
-  #- DEBUG_CONSOLE=yes npm run test:az
-  #- DEBUG_CONSOLE=yes npm run test:aws
   - DEBUG_CONSOLE=yes npm test
-
 script: echo "npm test temporarily disabled"

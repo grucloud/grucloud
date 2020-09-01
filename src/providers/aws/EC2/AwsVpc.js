@@ -27,7 +27,7 @@ module.exports = AwsVpc = ({ spec, config }) => {
   const getList = async ({ params } = {}) => {
     logger.debug(`getList vpc ${tos(params)}`);
     const { Vpcs } = await ec2.describeVpcs(params).promise();
-    logger.info(`getList ${tos(Vpcs)}`);
+    logger.debug(`getList ${tos(Vpcs)}`);
 
     return {
       total: Vpcs.length,
