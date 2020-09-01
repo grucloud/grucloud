@@ -4,10 +4,12 @@ language: node_js
 node_js:
   - "14"
 
-before_script:
+before_install:
   - sudo ntpdate ntp.ubuntu.com
+  - date
 
 install:
+  - date
   - npm i
   - npm run link
   - DEBUG_CONSOLE=yes npm test
