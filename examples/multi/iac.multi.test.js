@@ -3,7 +3,7 @@ const { ConfigLoader } = require("ConfigLoader");
 const cliCommands = require("../../src/cli/cliCommands");
 const { createStack } = require("./iac");
 
-describe("Multi Example", async function () {
+describe.skip("Multi Example", async function () {
   let config;
 
   before(async function () {

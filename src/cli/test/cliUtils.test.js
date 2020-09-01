@@ -16,6 +16,9 @@ describe("cliUtils", function () {
     }
   });
   it("StateChange", async function () {
+    if (process.env.CONTINUOUS_INTEGRATION) {
+      return;
+    }
     try {
       await runAsyncCommand({
         text: "throwing",
