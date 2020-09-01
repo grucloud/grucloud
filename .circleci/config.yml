@@ -4,7 +4,7 @@ jobs:
       - image: "cimg/node:current"
     steps:
       - checkout
-      - node/install:
+      - node/install
       - run: node --version
       - run: sudo npm run link
       - run: npm test
