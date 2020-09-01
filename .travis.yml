@@ -15,12 +15,11 @@ before_install:
   - sudo ntpdate 0.amazon.pool.ntp.org
   - sudo timedatectl set-timezone 'Europe/London'
   - date
+
+install:
   - eval "$(ssh-agent -s)"
   - chmod 600 secrets/gc.pem
   - ssh-add secrets/gc.pem
-
-install:
-  - date
   - npm i
   - npm run link
   - DEBUG_CONSOLE=yes npm test
