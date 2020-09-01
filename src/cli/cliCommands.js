@@ -221,7 +221,7 @@ const displayCommandHeader = ({ providers, verb }) =>
   )}: ${displayProviderList(providers)}`;
 
 // Plan Query
-const doPlanQuery = ({ providers, commandOptions, programOptions }) =>
+const doPlanQuery = ({ commandOptions, programOptions }) =>
   pipe([
     async (providers) =>
       await runAsyncCommand({
@@ -241,11 +241,16 @@ const doPlanQuery = ({ providers, commandOptions, programOptions }) =>
             ),
           ])(providers),
       }),
+    (results) => ({
+      error: any(({ resultQuery: { error } }) => error)(results),
+      results,
+    }),
     tap(
       pipe([
         tap((xx) => {
           logger.debug("planQuery displayPlan");
         }),
+        get("results"),
         filter(({ resultQuery }) => !resultQuery.error),
         map(({ provider, resultQuery }) =>
           displayPlan({
@@ -277,12 +282,7 @@ const planQuery = async ({
     pipe([
       ({ providers }) =>
         filterProvidersByName({ commandOptions, providers })(providers),
-      doPlanQuery({ providers, commandOptions, programOptions }),
-      // augmentWithError
-      (results) => ({
-        error: any(({ resultQuery: { error } }) => error)(results),
-        results,
-      }),
+      doPlanQuery({ commandOptions, programOptions }),
       tap((result) =>
         saveToJson({ command: "plan", commandOptions, programOptions, result })
       ),
@@ -552,12 +552,13 @@ exports.planApply = async ({
     pipe([
       ({ providers }) =>
         filterProvidersByName({ commandOptions, providers })(providers),
-      doPlanQuery({ providers, commandOptions, programOptions }),
-      //TODO
-      tap((results) => {
-        if (any(({ resultQuery }) => resultQuery.error)(results))
-          throw { results };
+      doPlanQuery({ commandOptions, programOptions }),
+      tap((result) => {
+        if (result.error) {
+          throw result;
+        }
       }),
+      get("results"),
       switchCase([hasPlans, processDeployPlans, processNoPlan]),
     ]),
     (error) => {
