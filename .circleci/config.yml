@@ -1,8 +1,8 @@
 jobs:
-  install-node:
+  test:
     docker:
-      - image: "cimg/base:stable"
-      - tag: "latest"
+      - image: "cimg/node"
+      - tag: "14.9.0"
     steps:
       - checkout
       - node/install:
@@ -10,9 +10,9 @@ jobs:
       - run: sudo npm run link
       - run: npm test
 orbs:
-  node: circleci/node:14.9.0
+  node: circleci/node:4.0.0
 version: 2.1
 workflows:
   test_my_app:
     jobs:
-      - install-node
+      - test
