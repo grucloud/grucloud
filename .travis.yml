@@ -17,7 +17,9 @@ install:
   - date
   - npm i
   - npm run link
-  - DEBUG_CONSOLE=yes npm run test:aws
+  - DEBUG_CONSOLE=yes npm run test:gcp
   - DEBUG_CONSOLE=yes npm run test:mock
   - DEBUG_CONSOLE=yes npm run test:az
+  - DEBUG_CONSOLE=yes npm run test:aws
+
 script: echo "npm test temporarily disabled"
