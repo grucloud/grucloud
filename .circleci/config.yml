@@ -1,8 +1,7 @@
 jobs:
   test:
     docker:
-      - image: "cimg/node"
-      - tag: "14.9.0"
+      - image: "cimg/node:current"
     steps:
       - checkout
       - node/install:
