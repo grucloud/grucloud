@@ -576,9 +576,9 @@ exports.planDestroy = async ({
 }) => {
   const hasEmptyPlan = ({ plans }) => isEmpty(plans);
 
-  const processHasNoPlan = () => {
+  const processHasNoPlan = tap(() => {
     console.log("No resources to destroy");
-  };
+  });
 
   const countDestroyed = reduce(
     (acc, value) => {
@@ -599,7 +599,7 @@ exports.planDestroy = async ({
     tap((x) => {
       logger.error(`displayDestroySuccess ${tos(x)}`);
     }),
-    get("results"),
+    get("resultsDestroy"),
     countDestroyed,
     tap((stats) => {
       logger.error(`displayDestroySuccess ${tos(stats)}`);
@@ -633,18 +633,10 @@ exports.planDestroy = async ({
       ({ confirmDestroy }) => confirmDestroy,
     ])(results);
 
-  //TODO
   const displayDestroyErrors = pipe([
     tap((x) => {
       logger.error(`displayDestroyErrors ${tos(x)}`);
     }),
-    //TODO
-    //tap(pipe([pluckErrorsDestroy, map(tap(displayDestroyError))])),
-    //tap(pipe([pluckErrorsHooks, map(tap(displayErrorHooks))])),
-
-    (result) => {
-      throw result;
-    },
   ]);
 
   const doPlansDestroy = ({ commandOptions }) =>
@@ -652,48 +644,51 @@ exports.planDestroy = async ({
       tap((x) => {
         logger.error(`doPlansDestroy`);
       }),
-      async (result) =>
-        await runAsyncCommand({
-          text: displayCommandHeader({
-            providers: pluck("provider")(result.results),
-            verb: "Destroying",
-          }),
-          command: ({ onStateChange }) =>
-            pipe([
-              tap(
-                map.series(({ provider, result }) =>
-                  provider.spinnersStartDestroy({
-                    onStateChange,
-                    plans: result.plans,
-                  })
-                )
-              ),
-              map(
-                pipe([
-                  assign({
-                    result: async ({ provider, result }) =>
-                      provider.planDestroy({
-                        plans: result.plans,
-                        onStateChange,
-                      }),
-                  }),
-                  tap(({ provider, result }) =>
-                    provider.spinnersStopProvider({
+      assign({
+        resultsDestroy: async (result) =>
+          await runAsyncCommand({
+            text: displayCommandHeader({
+              providers: pluck("provider")(result.results),
+              verb: "Destroying",
+            }),
+            command: ({ onStateChange }) =>
+              pipe([
+                tap(
+                  map.series(({ provider, result }) =>
+                    provider.spinnersStartDestroy({
                       onStateChange,
-                      error: result.error,
+                      plans: result.plans,
                     })
-                  ),
-                ])
-              ),
-              tap((xx) => {
-                // logger.debug("doPlansDestroy DONE");
-              }),
-            ])(result.results),
-        }),
-
-      (results) => ({
-        error: any(({ result: { error } }) => error)(results),
-        results,
+                  )
+                ),
+                map(
+                  pipe([
+                    assign({
+                      result: async ({ provider, result }) =>
+                        provider.planDestroy({
+                          plans: result.plans,
+                          onStateChange,
+                        }),
+                    }),
+                    tap(({ provider, result }) =>
+                      provider.spinnersStopProvider({
+                        onStateChange,
+                        error: result.error,
+                      })
+                    ),
+                  ])
+                ),
+                tap((xx) => {
+                  // logger.debug("doPlansDestroy DONE");
+                }),
+              ])(result.results),
+          }),
+      }),
+      (result) => ({
+        ...result,
+        error:
+          any(({ result: { error } }) => error)(result.resultsDestroy) ||
+          result.error,
       }),
       tap((result) =>
         saveToJson({
@@ -706,12 +701,14 @@ exports.planDestroy = async ({
       tap((x) => {
         logger.error(`doPlansDestroy`);
       }),
-      switchCase([
-        ({ error }) => !error,
-        displayDestroySuccess,
-        displayDestroyErrors,
-      ]),
-      tap(() => {
+      tap(
+        switchCase([
+          ({ error }) => !error,
+          displayDestroySuccess,
+          displayDestroyErrors,
+        ])
+      ),
+      tap((result) => {
         logger.debug("doPlansDestroy finished");
       }),
     ]);
@@ -719,9 +716,9 @@ exports.planDestroy = async ({
   const processDestroyPlans = switchCase([
     (plans) => commandOptions.force || promptConfirmDestroy(plans),
     doPlansDestroy({ commandOptions }),
-    () => {
+    tap(() => {
       console.log("Abort destroying plan");
-    },
+    }),
   ]);
 
   return tryCatch(
@@ -773,6 +770,9 @@ exports.planDestroy = async ({
           })
         )
       ),
+      tap((x) => {
+        //console.log(JSON.stringify(x, null, 4));
+      }),
       (results) => ({
         error: any(get("result.error"))(results),
         plans: pipe([pluck("result.plans"), flatten])(results),
@@ -781,7 +781,7 @@ exports.planDestroy = async ({
       tap((x) => {
         //console.log(JSON.stringify(x, null, 4));
       }),
-      tap(switchCase([hasEmptyPlan, processHasNoPlan, processDestroyPlans])),
+      switchCase([hasEmptyPlan, processHasNoPlan, processDestroyPlans]),
       tap((result) => {
         if (result.error) {
           throw result;

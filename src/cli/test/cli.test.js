@@ -304,7 +304,9 @@ describe("cli error", function () {
           cmds: command.split(" "),
           onExit: ({ code, error }) => {
             assert.equal(code, 422);
-            error.error.results.forEach(({ result }) => assert(result.error));
+            error.error.resultsDestroy.forEach(({ result }) =>
+              assert(result.error)
+            );
           },
         })
     )(commands);
