@@ -16,14 +16,14 @@ describe("GcpServiceAccount", async function () {
 
   before(async function () {
     try {
-      config = ConfigLoader({ path: "examples/google/vm" });
+      config = ConfigLoader({ path: "examples/multi" });
     } catch (error) {
       this.skip();
     }
 
     provider = await GoogleProvider({
       name: "google",
-      config,
+      config: config.google,
     });
 
     serviceAccount = await provider.makeServiceAccount({

@@ -25,3 +25,12 @@ Now you are ready to clone the code, install the dependencies and run the functi
     cd grucloud
     npm install
     npm run test:ci
+
+### Travis
+
+Enncrypt the _default.env_ and the google credential file:
+
+```
+travis encrypt-file examples/multi/config/default.env examples/multi/config/default.env.enc --add
+travis encrypt-file examples/multi/config/grucloud-e2e-f35e5f0a014a.json examples/multi/config/grucloud-e2e-f35e5f0a014a.json.enc --add
+```

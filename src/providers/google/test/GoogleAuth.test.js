@@ -8,7 +8,7 @@ describe("GoogleAuth", function () {
   let config;
   before(async function () {
     try {
-      config = ConfigLoader({ path: "examples/google/vm" });
+      config = ConfigLoader({ path: "examples/multi" });
     } catch (error) {
       assert(error.code, 422);
       this.skip();
@@ -19,7 +19,10 @@ describe("GoogleAuth", function () {
     const applicationCredentials = process.env.GOOGLE_APPLICATION_CREDENTIALS;
     assert(applicationCredentials);
 
-    const keys = require(applicationCredentials);
+    const keys = require(path.resolve(
+      process.env.CONFIG_DIR,
+      applicationCredentials
+    ));
 
     const client = new JWT({
       email: keys.client_email,

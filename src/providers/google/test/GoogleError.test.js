@@ -6,7 +6,7 @@ describe("GoogleError", async function () {
   let config;
   before(async function () {
     try {
-      config = ConfigLoader({ path: "examples/google/vm" });
+      config = ConfigLoader({ path: "examples/multi" });
     } catch (error) {
       this.skip();
     }
@@ -18,7 +18,7 @@ describe("GoogleError", async function () {
     try {
       await GoogleProvider({
         name: "google",
-        config,
+        config: config.google,
       });
     } catch (error) {
       assert.equal(error.code, 422);
