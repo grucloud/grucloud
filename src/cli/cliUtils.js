@@ -24,7 +24,7 @@ exports.runAsyncCommand = async ({ text, command }) => {
     indent,
     ...other
   }) => {
-    logger.debug(
+    logger.info(
       `onStateChange: ${tos({
         context,
         previousState,
@@ -39,6 +39,9 @@ exports.runAsyncCommand = async ({ text, command }) => {
 
     const text = display || uri;
 
+    if (process.env.CONTINUOUS_INTEGRATION) {
+      return;
+    }
     switch (nextState) {
       case "WAITING": {
         logger.debug(`spinnies: create uri: ${uri}, text: ${text}`);
