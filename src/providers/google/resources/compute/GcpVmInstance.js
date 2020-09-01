@@ -14,7 +14,7 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
   assert(spec);
   assert(configProvider);
   assert(configProvider.stage);
-  const { project, region, zone, tag } = configProvider;
+  const { project, region, zone, managedByTag } = configProvider;
 
   const configDefault = ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ properties, dependencies })}`);
@@ -46,7 +46,7 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
           boot: true,
           mode: "READ_WRITE",
           autoDelete: true,
-          deviceName: toTagName(name, tag),
+          deviceName: toTagName(name, managedByTag),
           initializeParams: {
             sourceImage,
             diskType: `projects/${project}/zones/${zone}/diskTypes/${diskType}`,

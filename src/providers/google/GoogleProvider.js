@@ -159,11 +159,9 @@ exports.GoogleProvider = async ({ name = "google", config }) => {
   });
 
   const configProviderDefault = {
-    //TODO rename manageByTag ?
-    tag: "-managed-by-gru",
+    managedByTag: "-managed-by-gru",
     managedByKey: "managed-by",
     managedByValue: "grucloud",
-    managedByDescription: "Managed By GruCloud",
     accessToken,
   };
 
