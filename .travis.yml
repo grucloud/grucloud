@@ -4,8 +4,12 @@ language: node_js
 node_js:
   - "14"
 before_install:
-  - openssl aes-256-cbc -K $encrypted_28b98b12de56_key -iv $encrypted_28b98b12de56_iv
-    -in examples/multi/config/default.env.enc -out examples/multi/config/default.env -d
+  - openssl aes-256-cbc -K $encrypted_9a6eea7a7966_key -iv $encrypted_9a6eea7a7966_iv
+    -in examples/multi/config/default.env.enc -out examples/multi/config/default.env
+    -d
+  - openssl aes-256-cbc -K $encrypted_b741fc04c6c2_key -iv $encrypted_b741fc04c6c2_iv
+    -in examples/multi/config/grucloud-e2e-f35e5f0a014a.json.enc -out examples/multi/config/grucloud-e2e-f35e5f0a014a.json
+    -d
   - sudo ntpdate 0.amazon.pool.ntp.org
   - sudo timedatectl set-timezone 'Europe/London'
   - date
