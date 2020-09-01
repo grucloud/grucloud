@@ -1388,7 +1388,7 @@ function CoreProvider({
     assert(client);
     assert(config);
 
-    logger.info(
+    logger.debug(
       `destroyByClient: ${tos({
         type: client.spec.type,
         name,

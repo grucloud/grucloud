@@ -33,7 +33,7 @@ const logger = createLogger({
 if (process.env.CONTINUOUS_INTEGRATION) {
   logger.add(
     new transports.Console({
-      level: "info",
+      level: "error",
       format: formatTimestamp,
     })
   );
