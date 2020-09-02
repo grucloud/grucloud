@@ -9,7 +9,7 @@ before_install:
   - date
 install:
   - npm i
-  - npm run encrypt-data-ci
+  - npm run decrypt-data-ci
   - eval "$(ssh-agent -s)"
   - chmod 600 secrets/kp.pem
   - ssh-add secrets/kp.pem

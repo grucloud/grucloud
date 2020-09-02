@@ -6,6 +6,7 @@ jobs:
       - checkout
       - node/install
       - run: node --version
+      - run: npm run decrypt-data-ci
       - run: sudo npm run link
       - run: npm test
 orbs:
