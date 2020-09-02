@@ -18,7 +18,9 @@
     "test:example": "node test/testExamples.js",
     "start:mock": "nodemon node src/mockServer/MockServerRun.js",
     "cpd": "jscpd -r console --format 'javascript,typescript' ./src",
-    "link": "npm link && cd examples && ./link.sh"
+    "link": "npm link && cd examples && ./link.sh",
+    "encrypt-data-ci": "dotenv -- sh secrets/encrypt-data-ci.sh",
+    "decrypt-data-ci": "dotenv -- sh secrets/decrypt-data-ci.sh"
   },
   "keywords": [
     "cloud"
@@ -44,6 +46,7 @@
     "colors": "^1.4.0",
     "commander": "^5.0.0",
     "dotenv": "^8.2.0",
+    "dotenv-cli": "^3.2.0",
     "duration": "^0.2.2",
     "google-auth-library": "^6.0.0",
     "md5-file": "^5.0.0",
