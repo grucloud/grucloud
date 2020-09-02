@@ -1,4 +1,6 @@
 const { of, iif, throwError } = require("rxjs");
+const { pipe, tryCatch, switchCase } = require("rubico");
+
 const {
   retryWhen,
   repeatWhen,
@@ -17,6 +19,7 @@ const retryCall = async ({
   name = "",
   fn,
   isExpectedResult = () => true,
+  isExpectedException = () => false,
   shouldRetryOnException = () => false,
   repeatCount = 0,
   repeatDelay = 1e3,
@@ -28,18 +31,31 @@ const retryCall = async ({
   );
   return of({})
     .pipe(
-      mergeMap(async () => {
-        const result = await fn();
-        if (!isExpectedResult(result)) {
-          throw {
-            code: 503,
-            type: "retryCall",
-            message: "not expected result",
-            result,
-          };
-        }
-        return result;
-      }),
+      mergeMap(
+        tryCatch(
+          pipe([
+            () => fn(),
+            switchCase([
+              (result) => isExpectedResult(result),
+              (result) => result,
+              (result) => {
+                throw {
+                  code: 503,
+                  type: "retryCall",
+                  message: "not expected result",
+                  result,
+                };
+              },
+            ]),
+          ]),
+          (error) => {
+            if (!isExpectedException(error)) {
+              throw error;
+            }
+          }
+        )
+      ),
+
       repeatWhen((result) =>
         result.pipe(delay(repeatDelay), take(repeatCount))
       ),
@@ -78,6 +94,12 @@ exports.retryCallOnTimeout = ({ name, fn, config }) =>
     name,
     fn,
     shouldRetryOnException: (error) => error.code === "ECONNABORTED",
+    isExpectedResult: (result) => {
+      return [200, 201, 204].includes(result.status);
+    },
+    isExpectedException: (error) => {
+      return error.response?.status === 409;
+    },
     retryCount: config.retryCount,
     retryDelay: config.retryDelay,
   });

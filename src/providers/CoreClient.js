@@ -1,4 +1,4 @@
-const isEmpty = require("rubico/x/isEmpty");
+const { isEmpty } = require("rubico/x");
 const assert = require("assert");
 
 const logger = require("../logger")({ prefix: "CoreClient" });
