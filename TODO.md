@@ -1,6 +1,5 @@
 ## Bugs
 
-- count provider counts too much when one provider has nothing to deploy
 - Are you sure to destroy 9 resources ? despite only one resource to destroy
 
 ## Common:
@@ -34,7 +33,6 @@ No resources to destroy
 - CheckTagsEC2 when creating
 - aws role ad policy
 
-- getList params in ec2.describeSubnets and
 - do not display default acl
 - add example code in AwsGettingStarted
 - listObjectsV2

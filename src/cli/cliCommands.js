@@ -103,13 +103,16 @@ const countDeployResources = pipe([
     (acc, value) => {
       assert(value.resultCreate, "resultCreate");
       assert(value.resultDestroy, "resultDestroy");
+      const createCount = value.resultCreate.plans.length;
+      const destroyCount = value.resultDestroy.plans.length;
+      const providerActive = createCount > 0 || destroyCount > 0 ? 1 : 0;
       return {
-        providers: acc.providers + 1,
+        providers: acc.providers + providerActive,
         types:
           acc.types +
           pipe([pluck("resource.type"), uniq, size])(value.resultCreate.plans),
-        create: acc.create + value.resultCreate.plans.length,
-        destroy: acc.destroy + value.resultDestroy.plans.length,
+        create: acc.create + createCount,
+        destroy: acc.destroy + destroyCount,
       };
     },
     { providers: 0, types: 0, create: 0, destroy: 0 }
@@ -589,12 +592,14 @@ exports.planDestroy = async ({
     (acc, value) => {
       assert(value.result, "value.result");
       assert(value.result.results, "value.result.results");
+      const resourceCount = value.result.results.length;
+      const providerActive = resourceCount > 0 ? 1 : 0;
       return {
-        providers: acc.providers + 1,
+        providers: acc.providers + providerActive,
         types:
           acc.types +
           pipe([pluck("item.resource.type"), uniq, size])(value.result.results),
-        resources: acc.resources + value.result.results.length,
+        resources: acc.resources + resourceCount,
       };
     },
     { providers: 0, types: 0, resources: 0 }
