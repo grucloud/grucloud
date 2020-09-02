@@ -10,7 +10,7 @@ jobs:
       - run: openssl version
       - run: npm run decrypt-data-ci
       - run: sudo npm run link
-      - run: npm test
+      - run: CONTINUOUS_INTEGRATION=1 npm test
 orbs:
   node: circleci/node@4.0.0
 version: 2.1
