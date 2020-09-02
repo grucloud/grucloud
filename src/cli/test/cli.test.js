@@ -190,6 +190,7 @@ describe("cli error", function () {
       onExit: ({ code, error: { error } }) => {
         assert.equal(code, 422);
         assert(error.results[0].resultQuery.error);
+        assert.equal(error.results[0].provider.type, "mock");
       },
     });
     assert.deepEqual(result, 422);
@@ -234,6 +235,7 @@ describe("cli error", function () {
       onExit: ({ code, error: { error } }) => {
         assert.equal(code, 422);
         assert(error.results[0].resultQuery.error);
+        assert.equal(error.results[0].provider.type, "mock");
       },
     });
     assert.deepEqual(result, 422);
@@ -292,6 +294,7 @@ describe("cli error", function () {
         onExit: ({ code, error: { error } }) => {
           assert.equal(code, 422);
           assert(error.results[0].result.error);
+          assert.equal(error.results[0].provider.type, "mock");
         },
       })
     )(commands);
@@ -304,6 +307,8 @@ describe("cli error", function () {
           cmds: command.split(" "),
           onExit: ({ code, error }) => {
             assert.equal(code, 422);
+            assert.equal(error.error.results[0].provider.type, "mock");
+            assert.equal(error.error.resultsDestroy[0].provider.type, "mock");
             error.error.resultsDestroy.forEach(({ result }) =>
               assert(result.error)
             );

@@ -27,6 +27,20 @@ const {
 const { pluck, isEmpty, flatten, forEach, uniq, size } = require("rubico/x");
 // Common
 
+const providersToString = map(({ provider, ...other }) => ({
+  provider: provider.toString(),
+  ...other,
+}));
+
+const throwIfError = tap((result) => {
+  if (result.error) {
+    throw {
+      ...result,
+      results: providersToString(result.results),
+    };
+  }
+});
+
 const displayProviderList = pipe([
   tap((xx) => {
     //logger.debug(xx);
@@ -286,9 +300,7 @@ const planQuery = async ({
       tap((result) =>
         saveToJson({ command: "plan", commandOptions, programOptions, result })
       ),
-      tap((result) => {
-        if (result.error) throw result;
-      }),
+      throwIfError,
       tap(
         pipe([
           tap((xx) => {
@@ -405,9 +417,7 @@ const planRunScript = async ({
           result,
         })
       ),
-      tap((result) => {
-        if (result.error) throw result;
-      }),
+      throwIfError,
     ]),
     (error) => {
       displayError({ name: "planRunScript", error });
@@ -525,9 +535,7 @@ exports.planApply = async ({
       tap((result) =>
         saveToJson({ command: "apply", commandOptions, programOptions, result })
       ),
-      tap((result) => {
-        if (result.error) throw result;
-      }),
+      throwIfError,
       tap((result) => {
         logger.debug("doPlansDeploy");
       }),
@@ -553,11 +561,7 @@ exports.planApply = async ({
       ({ providers }) =>
         filterProvidersByName({ commandOptions, providers })(providers),
       doPlanQuery({ commandOptions, programOptions }),
-      tap((result) => {
-        if (result.error) {
-          throw result;
-        }
-      }),
+      throwIfError,
       get("results"),
       switchCase([hasPlans, processDeployPlans, processNoPlan]),
     ]),
@@ -679,9 +683,7 @@ exports.planDestroy = async ({
                     ),
                   ])
                 ),
-                tap((xx) => {
-                  // logger.debug("doPlansDestroy DONE");
-                }),
+                providersToString,
               ])(result.results),
           }),
       }),
@@ -783,11 +785,7 @@ exports.planDestroy = async ({
         //console.log(JSON.stringify(x, null, 4));
       }),
       switchCase([hasEmptyPlan, processHasNoPlan, processDestroyPlans]),
-      tap((result) => {
-        if (result.error) {
-          throw result;
-        }
-      }),
+      throwIfError,
     ]),
     (error) => {
       displayError({ name: "Plan Destroy", error });
@@ -890,9 +888,7 @@ const listDoOk = ({ commandOptions, programOptions }) =>
     tap((result) =>
       saveToJson({ command: "list", commandOptions, programOptions, result })
     ),
-    (result) => {
-      if (result.error) throw result;
-    },
+    throwIfError,
   ]);
 
 const listDoError = (error) => {

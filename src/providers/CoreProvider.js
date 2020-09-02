@@ -1561,6 +1561,7 @@ function CoreProvider({
   const getResourcesByType = (type) => mapTypeToResources.get(type) || [];
 
   const provider = {
+    toString: () => ({ name: providerName, type: toType() }),
     config: () => providerConfig,
     name: providerName,
     type: toType,
