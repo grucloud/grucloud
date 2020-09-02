@@ -10,6 +10,8 @@ const filename = "src/providers/mock/test/MockStack.js";
 const configFileDefault = "src/providers/mock/test/config/default.js";
 const configFile404 = path.join(__dirname, "./config/config.404.js");
 const configFile500 = path.join(__dirname, "./config/config.500.js");
+const configFile409 = path.join(__dirname, "./config/config.409.js");
+
 const configFileGetId500 = path.join(__dirname, "./config/config.getId.500.js");
 
 const configFileNetworkError = path.join(
@@ -281,6 +283,16 @@ describe("cli error", function () {
         const { result } = error.results[0];
         assert(result.error);
         assert.equal(result.resultCreate.results[0].error.Status, 500);
+      },
+    });
+    assert.deepEqual(result, 422);
+  });
+  it("cli Apply 409", async function () {
+    const result = await runProgram({
+      cmds: ["apply", "-f"],
+      configFile: configFile409,
+      onExit: ({ code, error: { error } }) => {
+        assert(error.error);
       },
     });
     assert.deepEqual(result, 422);

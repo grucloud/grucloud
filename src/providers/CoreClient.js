@@ -135,6 +135,11 @@ module.exports = CoreClient = ({
         config,
       });
 
+      if (result.response?.status === 409) {
+        logger.debug(`create: already created ${type}/${name}, 409`);
+        return;
+      }
+      assert(result.data, "result.data");
       const data = onResponseCreate(result.data);
       logger.info(`create result: ${tos(data)}`);
 

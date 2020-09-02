@@ -148,7 +148,7 @@ exports.isDownByIdCore = ({
 
 const errorToString = (error) => {
   try {
-    return JSON.stringify(error, null, 4);
+    return JSON.stringify(error);
   } catch (error) {
     return error.toString();
   }

@@ -53,6 +53,7 @@ const retryCall = async ({
             if (!isExpectedException(error)) {
               throw error;
             }
+            return error;
           }
         )
       ),
