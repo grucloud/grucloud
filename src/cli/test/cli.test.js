@@ -305,6 +305,7 @@ describe("cli error", function () {
       async (command) =>
         await runProgram({
           cmds: command.split(" "),
+          configFile: configFile500,
           onExit: ({ code, error }) => {
             assert.equal(code, 422);
             assert.equal(error.error.results[0].provider.type, "mock");

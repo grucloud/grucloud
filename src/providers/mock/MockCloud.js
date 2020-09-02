@@ -12,6 +12,7 @@ const mockCloudInitStatesDefault = [
       [
         "51.15.246.48",
         {
+          id: "47FF72A9-0665-4EA8-A7D2-9EAA3D749213",
           name: "ip1",
           address: "51.15.246.48",
         },
@@ -19,6 +20,7 @@ const mockCloudInitStatesDefault = [
       [
         "51.15.246.50",
         {
+          id: "57890757-7E7C-4E35-A9B5-201FE1FBD2E0",
           name: "ip2",
           address: "51.15.246.50",
         },
