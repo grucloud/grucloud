@@ -834,14 +834,17 @@ const listDoOk = ({ commandOptions, programOptions }) =>
     (providers) =>
       runAsyncCommand({
         text: displayCommandHeader({ providers, verb: "Listing" }),
-        command: (
-          { onStateChange } //TODO use onStateChange
-        ) =>
+        command: ({ onStateChange }) =>
           pipe([
-            map((provider) =>
+            tap(
+              map.series((provider) =>
+                provider.spinnersStartListLives({ onStateChange })
+              )
+            ),
+            map.pool(10, (provider) =>
               assign({
                 result: async ({ provider }) =>
-                  provider.listLives(commandOptions),
+                  provider.listLives({ ...onStateChange, commandOptions }),
               })({ provider })
             ),
           ])(providers),

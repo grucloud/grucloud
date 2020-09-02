@@ -434,7 +434,7 @@ function CoreProvider({
     pipe([
       tap(() => {
         logger.debug(
-          `listLives type: ${tos({
+          `filterClient ${tos({
             our,
             name,
             id,
@@ -485,6 +485,7 @@ function CoreProvider({
     ])();
 
   const listLives = async ({
+    onStateChange = identity,
     all = false,
     our = false,
     types = [],
@@ -501,21 +502,33 @@ function CoreProvider({
       filter((client) =>
         !isEmpty(types) ? types.includes(client.spec.type) : true
       ),
-      map(
+      map.pool(
+        20,
         tryCatch(
-          (client) =>
-            filterClient({
-              client,
-              our,
-              name,
-              id,
-              canBeDeleted,
-              providerName,
+          pipe([
+            (client) =>
+              filterClient({
+                client,
+                onStateChange,
+                our,
+                name,
+                id,
+                canBeDeleted,
+                providerName,
+              }),
+            tap((xx) => {
+              logger.debug(`listLives filterClient done`);
             }),
-          (error, client) => ({
-            error: convertError({ error }),
-            client,
-          })
+          ]),
+          pipe([
+            tap((error, client) => {
+              logger.debug(`listLives filterClient error`);
+            }),
+            (error, client) => ({
+              error: convertError({ error }),
+              client,
+            }),
+          ])
         )
       ),
       tap((list) => {
@@ -907,6 +920,16 @@ function CoreProvider({
       }),
     ])();
   };
+
+  const spinnersStartListLives = ({ onStateChange }) =>
+    pipe([
+      spinnersStartProvider({ onStateChange }),
+      spinnersStartClient({
+        onStateChange,
+        title: TitleQuery,
+        clients: filterReadWriteClient(clients),
+      }),
+    ])();
 
   const spinnersStartDeploy = ({ onStateChange, plan }) => {
     return pipe([
@@ -1547,6 +1570,7 @@ function CoreProvider({
     planApply,
     spinnersStartQuery,
     spinnersStartDeploy,
+    spinnersStartListLives,
     spinnersStartDestroyQuery,
     spinnersStartDestroy,
     spinnersStartHook,
