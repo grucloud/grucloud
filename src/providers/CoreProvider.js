@@ -1249,7 +1249,7 @@ function CoreProvider({
             nextState: "ERROR",
             error: convertError({ error }),
           });
-
+          //TODO client toString
           return { error, client };
         }
       )
@@ -1315,6 +1315,7 @@ function CoreProvider({
       tap((results) => {
         logger.debug(`planFindDestroy`);
       }),
+      map(({ client, ...other }) => ({ type: client.spec.type, ...other })),
       (results) => {
         const plans = pipe([
           filter((result) => !isEmpty(result.plans || [])),
