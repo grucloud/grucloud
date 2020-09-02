@@ -5,6 +5,7 @@ jobs:
     steps:
       - checkout
       - node/install
+      - run: node install
       - run: node --version
       - run: npm run decrypt-data-ci
       - run: sudo npm run link
