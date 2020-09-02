@@ -60,9 +60,11 @@ exports.createResources = createResources;
 
 exports.createStack = async ({ config }) => {
   const provider = await GoogleProvider({ name: "google", config });
-  assert(config.stage, "missing stage");
+  const { stage } = provider.config();
+  assert(stage, "missing stage");
+
   const serviceAccount = await provider.makeServiceAccount({
-    name: `sa-${config.stage}`,
+    name: `sa-${stage}`,
     properties: () => ({
       serviceAccount: {
         displayName: "SA dev",

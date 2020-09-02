@@ -70,12 +70,12 @@ const createAws = async ({ config }) => {
 };
 
 const createGoogle = async ({ config }) => {
-  const { stage } = config;
-  assert(stage, "missing stage");
   // Google
   const provider = await GoogleProvider({
-    config: { ...config.google, stage },
+    config: config.google,
   });
+  const { stage } = provider.config();
+  assert(stage, "missing stage");
 
   // Service Account
   const serviceAccount = await provider.makeServiceAccount({
