@@ -19,6 +19,7 @@ const errorToJSON = (error) => ({
   name: error.name,
   config: error.config,
   code: error.code,
+  stack: error.stack,
   response: {
     status: error.response?.status,
     data: error.response?.data,

@@ -95,7 +95,7 @@ exports.retryCallOnTimeout = ({ name, fn, config }) =>
     fn,
     shouldRetryOnException: (error) => error.code === "ECONNABORTED",
     isExpectedResult: (result) => {
-      return [200, 201, 204].includes(result.status);
+      return [200, 201, 202, 204].includes(result.status);
     },
     isExpectedException: (error) => {
       return error.response?.status === 409;

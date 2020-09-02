@@ -1,7 +1,6 @@
 const assert = require("assert");
 const logger = require("../logger")({ prefix: "Common" });
 const { tos } = require("../tos");
-const { omit } = require("rubico");
 exports.mapPoolSize = 20;
 
 exports.TitleDeploying = "Deploying";
@@ -147,8 +146,16 @@ exports.isDownByIdCore = ({
   return down;
 };
 
+const errorToString = (error) => {
+  try {
+    return JSON.stringify(error, null, 4);
+  } catch (error) {
+    return error.toString();
+  }
+};
+
 exports.logError = (prefix, error) => {
-  logger.error(`${prefix} error:${JSON.stringify(error)}`);
+  logger.error(`${prefix} error:${errorToString(error)}`);
   if (error.response) {
     if (error.response.data) {
       logger.error(`data: ${tos(error.response.data)}`);

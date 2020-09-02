@@ -141,7 +141,7 @@ exports.createStack = async ({ config }) => {
     providers: [
       await createMock({ config }),
       //await createAws({ config }),
-      //await createAzure({ config }),
+      await createAzure({ config }),
       await createGoogle({ config }),
       //await createScaleway({ config }),
     ],

@@ -1,5 +1,6 @@
 ## Bugs
 
+- count provider counts too much when one provider has nothing to deploy
 - Are you sure to destroy 9 resources ? despite only one resource to destroy
 
 ## Common:
@@ -74,7 +75,6 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 - ssh `terraform output ip`
 - rename in gcp
 - instance: add service account
-- is config.tag still being used ? yes but in instance device name, rename tag to something else
 - create new project such as grucloud-e2e
 - WARNING when gloud config is difference from our config, i.e region
 - document ssh key in meta data
