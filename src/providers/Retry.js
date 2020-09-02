@@ -1,3 +1,4 @@
+const assert = require("assert");
 const { of, iif, throwError } = require("rxjs");
 const { pipe, tryCatch, switchCase } = require("rubico");
 
@@ -95,6 +96,7 @@ exports.retryCallOnTimeout = ({ name, fn, config }) =>
     fn,
     shouldRetryOnException: (error) => error.code === "ECONNABORTED",
     isExpectedResult: (result) => {
+      assert(result.status, `no status in result`);
       return [200, 201, 202, 204].includes(result.status);
     },
     isExpectedException: (error) => {
