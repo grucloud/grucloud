@@ -1285,16 +1285,16 @@ function CoreProvider({
       map(
         assign({
           plans: ({ client, results }) =>
-            results?.items
-              .filter((resource) =>
+            pipe([
+              filter((resource) =>
                 filterDestroyResources({
                   client,
                   resource,
                   options,
                   direction,
                 })
-              )
-              .map((live) => ({
+              ),
+              map((live) => ({
                 resource: {
                   provider: providerName,
                   type: client.spec.type,
@@ -1309,6 +1309,7 @@ function CoreProvider({
                 action: "DESTROY",
                 config: live,
               })),
+            ])(results?.items || []),
         })
       ),
       tap((results) => {
@@ -1413,7 +1414,7 @@ function CoreProvider({
     );
 
     const id = client.findId(config);
-    assert(id, "destroyByClient missing id");
+    assert(id, `destroyByClient missing id in config: ${tos(config)}`);
     const result = await client.destroy({ id, name, resourcesPerType });
     await retryExpectOk({
       name: `destroy ${name}`,
