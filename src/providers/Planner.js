@@ -123,7 +123,11 @@ exports.Planner = ({
   const statusMap = new Map();
   const statusValues = () => [...statusMap.values()];
 
-  const itemToKey = (item) => item.resource.id || item.resource.name;
+  const itemToKey = (item) => {
+    const key = item.resource.id || item.resource.name;
+    assert(key, `mising key for item ${tos(item)}`);
+    return key;
+  };
 
   const findDependsOn = (item, dependencyTree) => {
     if (!item.resource.name) {
