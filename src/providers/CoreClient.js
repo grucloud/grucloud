@@ -123,7 +123,7 @@ module.exports = CoreClient = ({
 
     try {
       const path = pathCreate({ dependencies, name });
-      logger.debug(`create ${spec.type}/${name}`);
+      logger.info(`create ${spec.type}/${name}`);
 
       const result = await retryCallOnTimeout({
         name: `create ${spec.type}/${name}`,
@@ -136,7 +136,7 @@ module.exports = CoreClient = ({
       });
 
       const data = onResponseCreate(result.data);
-      logger.debug(`create result: ${tos(data)}`);
+      logger.info(`create result: ${tos(data)}`);
 
       const id = findTargetId(data);
       logger.debug(`create findTargetId: ${id}`);
@@ -147,7 +147,7 @@ module.exports = CoreClient = ({
         fn: () => isUpById({ id }),
         config,
       });
-      logger.debug(`created ${type}/${name}`);
+      logger.info(`created ${type}/${name}`);
       return onResponseGet(resource);
     } catch (error) {
       logError(`create ${type}/${name}`, error);
@@ -156,7 +156,7 @@ module.exports = CoreClient = ({
   };
 
   const destroy = async ({ id, name }) => {
-    logger.debug(`destroy ${tos({ type, name, id })}`);
+    logger.info(`destroy ${tos({ type, name, id })}`);
 
     assert(!spec.listOnly);
     assert(!isEmpty(id), `destroy ${type}: invalid id`);
@@ -174,9 +174,7 @@ module.exports = CoreClient = ({
       });
 
       const data = onResponseDelete(result.data);
-      logger.debug(
-        `destroy ${tos({ name, type, id, data })} should be destroyed`
-      );
+      logger.info(`destroy ${tos({ name, type, id, data })} destroyed`);
 
       return data;
     } catch (error) {
