@@ -598,12 +598,12 @@ exports.planDestroy = async ({
 
   const displayDestroySuccess = pipe([
     tap((x) => {
-      logger.error(`displayDestroySuccess ${tos(x)}`);
+      logger.debug(`displayDestroySuccess ${tos(x)}`);
     }),
     get("resultsDestroy"),
     countDestroyed,
     tap((stats) => {
-      logger.error(`displayDestroySuccess ${tos(stats)}`);
+      logger.debug(`displayDestroySuccess ${tos(stats)}`);
     }),
     ({ providers, types, resources }) =>
       console.log(
