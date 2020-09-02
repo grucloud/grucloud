@@ -1,3 +1,4 @@
+const assert = require("assert");
 const { AwsProvider } = require("@grucloud/core");
 const { GoogleProvider } = require("@grucloud/core");
 const { AzureProvider } = require("@grucloud/core");
@@ -70,6 +71,7 @@ const createAws = async ({ config }) => {
 
 const createGoogle = async ({ config }) => {
   const { stage } = config;
+  assert(stage, "missing stage");
   // Google
   const provider = await GoogleProvider({
     config: { ...config.google, stage },

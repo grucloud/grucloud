@@ -1,3 +1,4 @@
+const assert = require("assert");
 const { GoogleProvider } = require("@grucloud/core");
 
 const createResources = async ({ provider, resources: { serviceAccount } }) => {
@@ -63,7 +64,7 @@ exports.createResources = createResources;
 
 exports.createStack = async ({ config }) => {
   const provider = await GoogleProvider({ name: "google", config });
-
+  assert(config.stage, "missing stage");
   const serviceAccount = await provider.makeServiceAccount({
     name: `sa-${config.stage}`,
     properties: () => ({
