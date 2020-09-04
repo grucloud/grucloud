@@ -53,4 +53,9 @@ describe("replacerCredentials", function () {
     const result = YAML.stringify(undefined);
     console.log(result);
   });
+
+  it("YAML.stringify undefined in array", async function () {
+    const result = YAML.stringify([undefined]);
+    console.log(result);
+  });
 });

@@ -50,7 +50,6 @@ function stringify(data) {
 
       indentLevel = indentLevel.replace(/$/, "  ");
       x.forEach(function (y, i) {
-        // TODO how should `undefined` be handled?
         var handler = handlers[typeOf(y)];
         assert(handler, "what the crap: " + typeOf(y));
 
@@ -98,7 +97,6 @@ function stringify(data) {
       return output;
     },
     function: function () {
-      // TODO this should throw or otherwise be ignored
       return "[object Function]";
     },
   };
