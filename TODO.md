@@ -4,9 +4,6 @@
 
 ## Common:
 
-- client type redundant ?
-- do not use index.js for S3 and EC2
-
 - Provide a summary option for `plan` and/or `apply`
 
 gc d --name grucloud-s3bucket-test
