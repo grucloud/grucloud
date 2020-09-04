@@ -29,27 +29,6 @@ exports.checkConfig = (config, mandatoryConfigKeys = []) => {
     );
   }
 };
-const compareObject = ({ target = {}, live = {} }) => {
-  //console.log(target, live);
-
-  const diff = pipe([
-    map((targetValue, targetKey) => {
-      if (isObject(targetValue)) {
-        return compareObject({ target: targetValue, live: live[targetKey] });
-      }
-      if (targetValue !== live[targetKey]) {
-        return {
-          key: targetKey,
-          targetValue: targetValue,
-          liveValue: live[targetKey],
-        };
-      }
-    }),
-    filter((x) => x),
-  ])(target);
-  return diff.length > 0 ? diff : undefined;
-};
-exports.compareObject = compareObject;
 
 exports.compare = ({ target = {}, targetKeys = [], live = {} }) => {
   logger.debug(`compare ${tos({ target, targetKeys, live })}`);

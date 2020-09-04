@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { compare, compareObject } = require("../Utils");
+const { compare } = require("../Utils");
 const { checkConfig, checkEnv } = require("../Utils");
 
 describe("checkConfig", function () {
@@ -26,7 +26,7 @@ const target = {
   organization: "7734a2c2-df95-409c-bfa0-c094bd12f4ba",
   tags: ["web-server-gru"],
   volumes: {
-    "0": {
+    0: {
       size: 20000000000,
     },
   },
@@ -36,7 +36,7 @@ const live = {
   name: "web-server",
   arch: "x86_64",
   volumes: {
-    "0": {
+    0: {
       id: "9b0d0b50-0325-4b12-a26a-ea9ebaa60fad",
       size: 10000000000,
     },
@@ -45,13 +45,6 @@ const live = {
 };
 
 describe("compare", function () {
-  it("compareObject", async function () {
-    const diff = compareObject({
-      target,
-      live,
-    });
-    //console.log(JSON.stringify(diff, null, 4));
-  });
   it("compare ok", async function () {
     assert.equal(
       compare({

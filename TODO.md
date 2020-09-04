@@ -2,8 +2,6 @@
 
 ## Common:
 
-- compare or compareObject
-
 ## Cli
 
 - text wrap in table
