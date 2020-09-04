@@ -1,6 +1,6 @@
 ## Bugs
 
-- Are you sure to destroy 9 resources ? despite only one resource to destroy
+- gc l -o displayed managed by us
 
 ## Common:
 
@@ -9,10 +9,7 @@
 gc d --name grucloud-s3bucket-test
 No resources to destroy
 
-- terraform output
-- add multiple example for each provider
-
-* compare or compareObject
+- compare or compareObject
 
 ## Cli
 
@@ -79,6 +76,7 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## Nice to have
 
+- terraform output, i.e - ssh `terraform output ip`
 - https://www.cncf.io/
 - https://jonathan.bergknoff.com/journal/terraform-pain-points/
 - terraform workspace new staging

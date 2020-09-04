@@ -1,14 +1,8 @@
 const assert = require("assert");
 const plu = require("pluralize");
-const logger = require("../logger")({ prefix: "CliCommands" });
-const { runAsyncCommand } = require("./cliUtils");
-const { displayPlan, displayLive } = require("./displayUtils");
 const prompts = require("prompts");
 const colors = require("colors/safe");
 const fs = require("fs");
-const YAML = require("./json2yaml");
-const { convertError, HookType } = require("../providers/Common");
-const { tos } = require("../tos");
 const {
   map,
   pipe,
@@ -25,6 +19,18 @@ const {
   get,
 } = require("rubico");
 const { pluck, isEmpty, flatten, forEach, uniq, size } = require("rubico/x");
+
+const logger = require("../logger")({ prefix: "CliCommands" });
+const YAML = require("./json2yaml");
+const { runAsyncCommand } = require("./cliUtils");
+const {
+  displayPlan,
+  displayPlanSummary,
+  displayLive,
+} = require("./displayUtils");
+const { convertError, HookType } = require("../providers/Common");
+const { tos } = require("../tos");
+
 // Common
 
 const providersToString = map(({ provider, ...other }) => ({
@@ -269,13 +275,16 @@ const doPlanQuery = ({ commandOptions, programOptions }) =>
         }),
         get("results"),
         filter(({ resultQuery }) => !resultQuery.error),
-        map(({ provider, resultQuery }) =>
-          displayPlan({
-            providerName: provider.name,
-            newOrUpdate: resultQuery.resultCreate.plans,
-            destroy: resultQuery.resultDestroy.plans,
-          })
+        tap(
+          map(({ provider, resultQuery }) =>
+            displayPlan({
+              providerName: provider.name,
+              newOrUpdate: resultQuery.resultCreate.plans,
+              destroy: resultQuery.resultDestroy.plans,
+            })
+          )
         ),
+        displayPlanSummary,
       ])
     ),
   ]);
@@ -591,14 +600,14 @@ exports.planDestroy = async ({
   const countDestroyed = reduce(
     (acc, value) => {
       assert(value.result, "value.result");
-      assert(value.result.results, "value.result.results");
-      const resourceCount = value.result.results.length;
+      assert(value.result.plans, "value.result.plans");
+      const resourceCount = value.result.plans.length;
       const providerActive = resourceCount > 0 ? 1 : 0;
       return {
         providers: acc.providers + providerActive,
         types:
           acc.types +
-          pipe([pluck("item.resource.type"), uniq, size])(value.result.results),
+          pipe([pluck("resource.type"), uniq, size])(value.result.plans),
         resources: acc.resources + resourceCount,
       };
     },
@@ -609,7 +618,7 @@ exports.planDestroy = async ({
     tap((x) => {
       logger.debug(`displayDestroySuccess ${tos(x)}`);
     }),
-    get("resultsDestroy"),
+    get("results"),
     countDestroyed,
     tap((stats) => {
       logger.debug(`displayDestroySuccess ${tos(stats)}`);
@@ -626,6 +635,9 @@ exports.planDestroy = async ({
 
   const promptConfirmDestroy = async ({ results }) =>
     pipe([
+      tap((xx) => {
+        logger.debug(`promptConfirmDestroy ${tos(xx)}`);
+      }),
       countDestroyed,
       async ({ providers, types, resources }) =>
         await prompts({

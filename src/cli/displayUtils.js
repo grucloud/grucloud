@@ -2,7 +2,7 @@ const assert = require("assert");
 const Table = require("cli-table3");
 const colors = require("colors/safe");
 const YAML = require("./json2yaml");
-const { switchCase } = require("rubico");
+const { switchCase, pipe, tap, map } = require("rubico");
 const { isEmpty } = require("rubico/x");
 
 const hasPlan = (plan) => !isEmpty(plan.newOrUpdate) || !isEmpty(plan.destroy);
@@ -27,6 +27,22 @@ const displayItem = (table, item) =>
         displayResource(item),
       ]),
   ])();
+
+exports.displayPlanSummary = pipe([
+  tap((result) => {
+    console.log("Plan Summary:");
+  }),
+  map(({ provider, resultQuery }) => {
+    console.log(`Provider: ${provider.name}`);
+    resultQuery.resultCreate.plans.forEach(({ resource }) => {
+      console.log(`+ ${resource.type}::${resource.name}`);
+    });
+    resultQuery.resultDestroy.plans.forEach(({ resource }) => {
+      console.log(`- ${resource.type}::${resource.name}`);
+    });
+    console.log(`\n`);
+  }),
+]);
 
 exports.displayPlan = async (plan) => {
   assert(Array.isArray(plan.destroy, "Array.isArray(plan.destroy"));
