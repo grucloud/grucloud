@@ -2,8 +2,6 @@
 
 ## Common:
 
-add summary for gc list
-
 - compare or compareObject
 
 ## Cli

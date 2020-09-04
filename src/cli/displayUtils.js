@@ -3,7 +3,7 @@ const Table = require("cli-table3");
 const colors = require("colors/safe");
 const YAML = require("./json2yaml");
 const { switchCase, pipe, tap, map } = require("rubico");
-const { isEmpty } = require("rubico/x");
+const { isEmpty, forEach } = require("rubico/x");
 
 const hasPlan = (plan) => !isEmpty(plan.newOrUpdate) || !isEmpty(plan.destroy);
 
@@ -27,6 +27,20 @@ const displayItem = (table, item) =>
         displayResource(item),
       ]),
   ])();
+
+exports.displayListSummary = pipe([
+  tap((result) => {
+    console.log("List Summary:");
+  }),
+  forEach(({ provider, result }) => {
+    console.log(`Provider: ${provider.name}`);
+    forEach(({ type, resources }) => {
+      console.log(`  Type: ${type}`);
+      forEach((resource) => console.log(`    ${resource.name}`))(resources);
+    })(result.results);
+    console.log(`\n`);
+  }),
+]);
 
 exports.displayPlanSummary = pipe([
   tap((result) => {

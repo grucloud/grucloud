@@ -26,6 +26,7 @@ const { runAsyncCommand } = require("./cliUtils");
 const {
   displayPlan,
   displayPlanSummary,
+  displayListSummary,
   displayLive,
 } = require("./displayUtils");
 const { convertError, HookType } = require("../providers/Common");
@@ -886,6 +887,7 @@ const listDoOk = ({ commandOptions, programOptions }) =>
           tap((xx) => {
             logger.debug(`listLives`);
           }),
+          displayListSummary,
           pluck("result"),
           filter(({ error }) => !error),
           pluck("results"),

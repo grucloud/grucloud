@@ -458,6 +458,7 @@ function CoreProvider({
           config: provider.config(),
         }),
         providerName: client.spec.providerName,
+        type: client.spec.type,
         data: item,
       })),
       filter((item) => (our ? item.managedByUs : true)),
