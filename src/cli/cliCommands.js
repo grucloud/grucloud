@@ -762,7 +762,7 @@ exports.planDestroy = async ({
                 pipe([
                   (provider) =>
                     assign({
-                      result: async ({ provider }) =>
+                      result: ({ provider }) =>
                         provider.planFindDestroy({
                           options: commandOptions,
                           onStateChange,

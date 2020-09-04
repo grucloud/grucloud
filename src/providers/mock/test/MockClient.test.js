@@ -30,7 +30,7 @@ describe("MockClient", function () {
   });
   it("list", async function () {
     const { total } = await mockClient.getList();
-    assert.equal(total, 0);
+    assert.equal(total, 1);
   });
   it("get by id", async function () {
     try {
@@ -47,8 +47,8 @@ describe("MockClient", function () {
 
     {
       const { total, items } = await mockClient.getList();
-      assert.equal(total, 1);
-      assert.equal(items.length, 1);
+      assert.equal(total, 2);
+      assert.equal(items.length, 2);
     }
     {
       const data = await mockClient.getById({ id });

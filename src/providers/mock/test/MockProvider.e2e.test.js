@@ -31,7 +31,7 @@ describe("MockProvider e2e", async function () {
       const { results: liveResources } = await provider.listLives({
         all: true,
       });
-      assert.equal(liveResources.length, 3);
+      assert.equal(liveResources.length, 4);
     }
 
     {
@@ -54,7 +54,7 @@ describe("MockProvider e2e", async function () {
         { options: { all: true } },
         1
       );
-      assert.equal(planDestroyed.plans.length, 7);
+      assert.equal(planDestroyed.plans.length, 8);
     }
   });
   it("simple plan", async function () {
@@ -135,11 +135,11 @@ describe("MockProvider e2e", async function () {
       const { results: liveResources } = await provider.listLives({
         all: true,
       });
-      assert.equal(liveResources.length, 3);
+      assert.equal(liveResources.length, 4);
     }
     {
       const { results: liveResources } = await provider.listLives({});
-      assert.equal(liveResources.length, 2);
+      assert.equal(liveResources.length, 3);
     }
     {
       const { results: liveResources } = await provider.listLives({
@@ -151,7 +151,7 @@ describe("MockProvider e2e", async function () {
       const { results: liveResources } = await provider.listLives({
         types: ["Server", "Ip"],
       });
-      assert.equal(liveResources.length, 1);
+      assert.equal(liveResources.length, 2);
     }
     const plan = await provider.planQuery();
     {
@@ -189,7 +189,7 @@ describe("MockProvider e2e", async function () {
         -1
       );
 
-      assert.equal(plans.length, 7);
+      assert.equal(plans.length, 8);
     }
 
     const { error } = await provider.destroyAll();

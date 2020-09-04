@@ -1,13 +1,8 @@
 ## Bugs
 
-- gc l -o displayed managed by us
-
 ## Common:
 
-- Provide a summary option for `plan` and/or `apply`
-
-gc d --name grucloud-s3bucket-test
-No resources to destroy
+add summary for gc list
 
 - compare or compareObject
 
@@ -24,6 +19,7 @@ No resources to destroy
 
 ## TODO Aws:
 
+- s3 bucket managedByUs:false
 - CheckTagsEC2 when creating
 - aws role ad policy
 

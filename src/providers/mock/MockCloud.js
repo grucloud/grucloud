@@ -36,7 +36,7 @@ const mockCloudInitStatesDefault = [
   ],
   ["Volume", [["1", { id: "1", name: "volume" }]]],
   ["SecurityGroup"],
-  ["Server"],
+  ["Server", [["1", { id: "1", name: "myserver" }]]],
 ];
 
 module.exports = MockCloud = (initStates = []) => {

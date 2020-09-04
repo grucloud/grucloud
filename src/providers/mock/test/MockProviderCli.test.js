@@ -18,7 +18,13 @@ describe("MockProviderCli", async function () {
     const resources = await createResources({ provider });
     const infra = { providers: [provider] };
 
-    await cliCommands.planDestroy({
+    const { plans, results } = await cliCommands.planDestroy({
+      infra,
+      commandOptions: { force: true, name: "volume" },
+    });
+    assert.equal(plans[0].resource.name, "volume");
+
+    const resultDestroy = await cliCommands.planDestroy({
       infra,
       commandOptions: { force: true },
     });

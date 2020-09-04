@@ -1,3 +1,4 @@
+const assert = require("assert");
 const Koa = require("koa");
 const Router = require("@koa/router");
 const shortid = require("shortid");
@@ -6,6 +7,7 @@ const Promise = require("bluebird");
 const koaBody = require("koa-body");
 const logger = require("./logger")({ prefix: "MockServer" });
 const { tos } = require("../tos");
+const { map } = require("rubico");
 
 const portDefault = 8089;
 
@@ -42,14 +44,24 @@ exports.MockServer = (config) => {
   const mapRoutes = new Map();
   routes.map((route) => mapRoutes.set(route, new Map()));
 
+  map(({ route, objects }) => {
+    const mapResources = mapRoutes.get(route);
+    assert(mapResources, `mapResources: no route ${route}`);
+
+    map((object) => {
+      const id = shortid.generate();
+      mapResources.set(id, object);
+    })(objects);
+  })(config.seeds || []);
+
   const createRouter = ({ path }) => {
     logger.info(`createRouter ${path}`);
     return new Router()
       .get(`${path}`, (context) => {
-        const mapResouces = mapRoutes.get(path);
+        const mapResources = mapRoutes.get(path);
         context.body = {
-          total: mapResouces.size,
-          items: [...mapResouces.values()],
+          total: mapResources.size,
+          items: [...mapResources.values()],
         };
         logger.debug(`get ${path}, result: ${tos(context.body)}`);
         context.status = 200;

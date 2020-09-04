@@ -1180,6 +1180,12 @@ function CoreProvider({
         logger.debug(`planFindDestroy ${type}/${name}, delete all`);
         return true;
       },
+      // Delete by id
+      () => !isEmpty(idToDelete),
+      () => id === idToDelete,
+      // Delete by name
+      () => !isEmpty(nameToDelete),
+      () => name === nameToDelete,
       // Not our minion
       () =>
         !spec.isOurMinion({
@@ -1194,12 +1200,6 @@ function CoreProvider({
       // Delete by type
       () => !isEmpty(types),
       () => types.includes(type),
-      // Delete by id
-      () => !isEmpty(idToDelete),
-      () => id === idToDelete,
-      // Delete by name
-      () => !isEmpty(nameToDelete),
-      () => name === nameToDelete,
       // PlanDirection
       () => {
         if (direction == PlanDirection.UP) {
@@ -1230,7 +1230,13 @@ function CoreProvider({
             })
           ),
           (client) =>
-            assign({ results: ({ client }) => client.getList({}) })({ client }),
+            assign({
+              results: ({ client }) => {
+                return client.getList();
+              },
+            })({
+              client,
+            }),
           tap(({ client }) =>
             onStateChange({
               context: contextFromClient(client),

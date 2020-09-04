@@ -43,7 +43,7 @@ const testListById = async ({ provider, livesAll }) => {
   const { results: live } = await provider.listLives({
     id,
   });
-  assert.equal(live.length, 1);
+  assert.equal(live.length, 2);
   assert.equal(live[0].resources[0].id, id);
 };
 
