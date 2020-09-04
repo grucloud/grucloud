@@ -50,7 +50,7 @@ exports.MockServer = (config) => {
 
     map((object) => {
       const id = shortid.generate();
-      mapResources.set(id, object);
+      mapResources.set(id, { ...object, id });
     })(objects);
   })(config.seeds || []);
 
