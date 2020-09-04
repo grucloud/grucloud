@@ -1,9 +1,13 @@
 const assert = require("assert");
+const { pipe, filter, tap } = require("rubico");
+const { pluck, size, flatten } = require("rubico/x");
+
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { notAvailable } = require("../../../ProviderCommon");
 const { CheckTagsEC2 } = require("../../AwsTagCheck");
+const cliCommands = require("../../../../cli/cliCommands");
 
 describe("AwsProvider", async function () {
   let config;
@@ -142,9 +146,36 @@ describe("AwsProvider", async function () {
     assert.equal(plan.resultDestroy.plans.length, 0);
     assert.equal(plan.resultCreate.plans.length, 7);
   });
-  it.skip("listLives all", async function () {
+  it("listLives all", async function () {
     const { results: lives } = await provider.listLives({ all: true });
     assert(lives);
+  });
+  it("listLives our", async function () {
+    const { results } = await cliCommands.list({
+      infra: { providers: [provider] },
+      commandOptions: { our: true },
+    });
+
+    assert.equal(
+      pipe([
+        tap((x) => {
+          console.log(x);
+        }),
+        pluck("result.results"),
+        flatten,
+        tap((x) => {
+          console.log(x);
+        }),
+        pluck("resources"),
+        flatten,
+        tap((x) => {
+          console.log(x);
+        }),
+        filter(({ managedByUs }) => !managedByUs),
+        size,
+      ])(results),
+      0
+    );
   });
   it.skip("aws apply plan", async function () {
     await testPlanDeploy({ provider, full: true });

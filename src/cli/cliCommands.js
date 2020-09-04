@@ -859,7 +859,7 @@ const listDoOk = ({ commandOptions, programOptions }) =>
             map.pool(10, (provider) =>
               assign({
                 result: async ({ provider }) =>
-                  provider.listLives({ ...onStateChange, commandOptions }),
+                  provider.listLives({ onStateChange, ...commandOptions }),
               })({ provider })
             ),
           ])(providers),
