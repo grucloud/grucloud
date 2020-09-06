@@ -16,6 +16,7 @@ const logger = require("../../../logger")({ prefix: "S3Bucket" });
 const { retryExpectOk, retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { mapPoolSize } = require("../../Common");
+const { CheckTagsS3 } = require("../AwsTagCheck");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Bucket = ({ spec, config }) => {
@@ -390,6 +391,28 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     return !up;
   };
 
+  const putTags = ({ Bucket, paramsTag }) =>
+    retryCall({
+      name: `tag ${Bucket}`,
+      fn: async () => {
+        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketTagging-property
+        await s3.putBucketTagging(paramsTag).promise();
+        const { TagSet } = await s3.getBucketTagging({ Bucket }).promise();
+        logger.debug(`putTags ${tos(TagSet)}`);
+
+        CheckTagsS3({
+          config,
+          tags: TagSet,
+        });
+      },
+      shouldRetryOnException: (error) => {
+        logger.error(`putTags shouldRetryOnException ${tos(error)}`);
+        return err.code === "NoSuchTagSet";
+      },
+      retryCount: 5,
+      retryDelay: config.retryDelay,
+    });
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property
   const create = async ({ name: Bucket, payload }) => {
     assert(Bucket);
@@ -448,11 +471,9 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       config: clientConfig,
     });
 
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketTagging-property
-    // TODO check if tags correctly
-    await s3.putBucketTagging(paramsTag).promise();
-
     try {
+      await putTags({ Bucket, paramsTag });
+
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAccelerateConfiguration-property
       if (AccelerateConfiguration) {
         await s3
