@@ -1231,13 +1231,7 @@ function CoreProvider({
             })
           ),
           (client) =>
-            assign({
-              results: ({ client }) => {
-                return client.getList();
-              },
-            })({
-              client,
-            }),
+            assign({ results: ({ client }) => client.getList({}) })({ client }),
           tap(({ client }) =>
             onStateChange({
               context: contextFromClient(client),
@@ -1249,14 +1243,13 @@ function CoreProvider({
           }),
         ]),
         (error, client) => {
-          logger.error(`getClient error for client type ${client}`);
+          logger.error(`getClient error for client type ${client.spec.type}`);
           logger.error(error);
           onStateChange({
             context: contextFromClient(client),
             nextState: "ERROR",
             error: convertError({ error }),
           });
-          //TODO client toString
           return { error, client };
         }
       )

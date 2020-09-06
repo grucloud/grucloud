@@ -56,7 +56,7 @@ exports.AwsS3Object = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
-  const getList = async ({ resources = [] }) =>
+  const getList = async ({ resources = [] } = {}) =>
     await pipe([
       tap(() => logger.debug(`listObjects #resources ${resources.length}`)),
       async (resources) =>
