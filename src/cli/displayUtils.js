@@ -36,7 +36,9 @@ exports.displayListSummary = pipe([
     console.log(`Provider: ${provider.name}`);
     forEach(({ type, resources }) => {
       console.log(`  Type: ${type}`);
-      forEach((resource) => console.log(`    ${resource.name}`))(resources);
+      forEach((resource) => console.log(`    ${resource.name || "Default"}`))(
+        resources
+      );
     })(result.results);
     console.log(`\n`);
   }),
