@@ -9,6 +9,10 @@ jobs:
       - run: node --version
       - run: openssl version
       - run: npm run decrypt-data-ci
+      - run: eval "$(ssh-agent -s)"
+      - run: chmod 600 secrets/kp.pem
+      - run: ssh-add secrets/kp.pem
+      - run: ssh-add -l
       - run: sudo npm run link
       - run: CONTINUOUS_INTEGRATION=1 npm test
 orbs:
