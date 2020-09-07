@@ -106,9 +106,21 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       ACL: tryCatch(
         pipe([
           () => s3.getBucketAcl(params).promise(),
-          tap((x) => {
-            logger.debug(`getBucketAcl ${name} ${tos(x)}`);
-          }),
+          (acl) => {
+            logger.debug(`getBucketAcl ${name} ${tos(acl)}`);
+            const grant = acl.Grants[0];
+            const ownerId = acl.Owner.ID;
+            if (
+              ownerId === grant.Grantee.ID &&
+              grant.Permission === "FULL_CONTROL" &&
+              acl.Grants.length === 1
+            ) {
+              logger.debug(`getBucketAcl ${name} default`);
+              return;
+            } else {
+              return acl;
+            }
+          },
         ]),
         (error) => {
           logger.error(`getBucketAcl ${name}, error ${tos(error)}`);

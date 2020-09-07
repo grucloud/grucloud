@@ -37,6 +37,8 @@ describe("AwsS3Bucket", async function () {
 
     const s3BucketLive = await s3Bucket.getLive();
     assert(s3BucketLive);
+    assert(!s3BucketLive.ACL);
+
     CheckTagsS3({
       config: provider.config(),
       tags: s3BucketLive.Tagging.TagSet,

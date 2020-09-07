@@ -2,6 +2,8 @@
 
 ## Common:
 
+regex for --types
+
 ## Cli
 
 - text wrap in table
@@ -15,11 +17,9 @@
 
 ## TODO Aws:
 
-- s3 bucket managedByUs:false
 - CheckTagsEC2 when creating
 - aws role ad policy
 
-- do not display default acl
 - add example code in AwsGettingStarted
 - listObjectsV2
 - aws.config.loadFromPath('./AwsConfig.json');
