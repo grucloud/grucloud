@@ -2,8 +2,6 @@
 
 ## Common:
 
-regex for --types
-
 ## Cli
 
 - text wrap in table
@@ -16,8 +14,6 @@ regex for --types
 - doc
 
 ## TODO Aws:
-
-- config = ConfigLoader({ path: "examples/aws/ec2-vpc" }); => multi
 
 - aws role ad policy
 

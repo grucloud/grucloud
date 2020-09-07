@@ -20,7 +20,7 @@ describe("MockProvider errors", async function () {
   let config;
   let mockCloud;
   before(async () => {
-    config = ConfigLoader({ path: "examples/aws/ec2-vpc" });
+    config = ConfigLoader({ path: "examples/multi" });
     mockCloud = MockCloud();
   });
   after(async () => {});

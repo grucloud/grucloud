@@ -9,7 +9,7 @@ describe("AwsS3BucketErrors", async function () {
   let config;
   before(async function () {
     try {
-      config = ConfigLoader({ path: "examples/aws/ec2-vpc" });
+      config = ConfigLoader({ path: "examples/multi" });
     } catch (error) {
       this.skip();
     }
