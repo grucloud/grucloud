@@ -494,14 +494,16 @@ function CoreProvider({
     id,
     provider: providerName,
     canBeDeleted = false,
-  } = {}) => {
-    return await pipe([
+  } = {}) =>
+    pipe([
       tap(() =>
         logger.debug(`listLives filters: ${tos({ all, our, types, name, id })}`)
       ),
       filter((client) => all || !client.spec.listOnly),
       filter((client) =>
-        !isEmpty(types) ? types.includes(client.spec.type) : true
+        !isEmpty(types)
+          ? any((type) => new RegExp(type, "i").test(client.spec.type))(types)
+          : true
       ),
       map.pool(
         20,
@@ -544,7 +546,6 @@ function CoreProvider({
         logger.debug(`listLives result: ${tos(result)}`);
       }),
     ])(clients);
-  };
 
   const listTargets = () =>
     pipe([
