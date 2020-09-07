@@ -11,13 +11,13 @@ describe("AwsS3Bucket", async function () {
 
   before(async function () {
     try {
-      config = ConfigLoader({ path: "examples/aws/s3" });
+      config = ConfigLoader({ path: "examples/multi" });
     } catch (error) {
       this.skip();
     }
     provider = await AwsProvider({
       name: "aws",
-      config,
+      config: config.aws,
     });
 
     const { error } = await provider.destroyAll();

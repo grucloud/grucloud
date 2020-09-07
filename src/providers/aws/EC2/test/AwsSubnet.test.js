@@ -18,7 +18,7 @@ describe("AwsSubnet", async function () {
     }
     provider = await AwsProvider({
       name: "aws",
-      config,
+      config: config.aws,
     });
     vpc = await provider.makeVpc({
       name: "vpc",

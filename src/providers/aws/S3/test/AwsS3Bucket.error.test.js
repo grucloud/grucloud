@@ -19,7 +19,7 @@ describe("AwsS3BucketErrors", async function () {
   it("s3Bucket already exist", async function () {
     const provider = await AwsProvider({
       name: "aws",
-      config,
+      config: config.aws,
     });
     await provider.makeS3Bucket({
       name: "bucket",
@@ -42,7 +42,7 @@ describe("AwsS3BucketErrors", async function () {
   it("s3Bucket acl error", async function () {
     const provider = await AwsProvider({
       name: "aws",
-      config,
+      config: config.aws,
     });
     await provider.makeS3Bucket({
       name: `${bucketPrefix}-acl-accesscontrolpolicy`,
@@ -69,7 +69,7 @@ describe("AwsS3BucketErrors", async function () {
   it("notification-configuration error", async function () {
     const provider = await AwsProvider({
       name: "aws",
-      config,
+      config: config.aws,
     });
     const region = provider.config().region;
     await provider.makeS3Bucket({
@@ -99,7 +99,7 @@ describe("AwsS3BucketErrors", async function () {
   it("replication-configuration error", async function () {
     const provider = await AwsProvider({
       name: "aws",
-      config,
+      config: config.aws,
     });
     const s3BucketReplicationDestination = await provider.makeS3Bucket({
       name: "replication-configuration-destination",

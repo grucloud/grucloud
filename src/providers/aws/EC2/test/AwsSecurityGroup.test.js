@@ -18,7 +18,7 @@ describe("AwsSecurityGroup", async function () {
     }
     provider = await AwsProvider({
       name: "aws",
-      config,
+      config: config.aws,
     });
     vpc = await provider.makeVpc({
       name: "vpc",
@@ -64,7 +64,7 @@ describe("AwsSecurityGroup", async function () {
   it("empty ingress", async function () {
     const provider = await AwsProvider({
       name: "aws",
-      config,
+      config: config.aws,
     });
     const vpc = await provider.makeVpc({
       name: "vpc",

@@ -33,7 +33,7 @@ describe("AwsProvider", async function () {
     }
     provider = await AwsProvider({
       name: "aws",
-      config,
+      config: config.aws,
     });
 
     const { error, results } = await provider.destroyAll();

@@ -17,7 +17,7 @@ describe.skip("AwsS3BucketPerf", async function () {
   it("many buckets", async function () {
     const provider = await AwsProvider({
       name: "aws",
-      config,
+      config: config.aws,
     });
 
     const maxBuckets = 10;

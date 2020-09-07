@@ -20,7 +20,7 @@ describe("AwsRouteTables", async function () {
     }
     provider = await AwsProvider({
       name: "aws",
-      config,
+      config: config.aws,
     });
 
     const { error } = await provider.destroyAll();
