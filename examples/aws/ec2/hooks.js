@@ -62,7 +62,8 @@ module.exports = ({ resources: { eip, server }, provider }) => {
         };
       },
       actions: [
-        {
+        //Cannot ping from CircleCI
+        /*{
           name: "Ping",
           command: async ({ host }) => {
             const alive = await retryCall({
@@ -75,12 +76,12 @@ module.exports = ({ resources: { eip, server }, provider }) => {
                 return alive;
               },
               shouldRetryOnException: () => true,
-              retryCount: 20,
-              retryDelay: 2e3,
+              retryCount: 40,
+              retryDelay: 5e3,
             });
             assert(alive, `cannot ping ${host}`);
           },
-        },
+        },*/
         {
           name: "SSH",
           command: async ({ host }) => {
@@ -91,7 +92,7 @@ module.exports = ({ resources: { eip, server }, provider }) => {
                 return true;
               },
               shouldRetryOnException: () => true,
-              retryCount: 20,
+              retryCount: 40,
               retryDelay: 5e3,
             });
           },
