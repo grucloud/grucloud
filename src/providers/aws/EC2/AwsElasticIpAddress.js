@@ -1,8 +1,8 @@
+const assert = require("assert");
 const AWS = require("aws-sdk");
 const { isEmpty } = require("rubico/x");
 const { defaultsDeep } = require("rubico/x");
 
-const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "AwsEip" });
 const { tos } = require("../../../tos");
 const { retryExpectOk } = require("../../Retry");
@@ -10,6 +10,7 @@ const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { findNameInTags } = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
+const { CheckTagsEC2 } = require("../AwsTagCheck");
 
 module.exports = AwsElasticIpAddress = ({ spec, config }) => {
   assert(spec);
@@ -42,7 +43,7 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#allocateAddress-property
-  const create = async ({ name, payload, dependencies }) => {
+  const create = async ({ name, payload }) => {
     assert(name);
     //assert(payload);
 
@@ -61,6 +62,13 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
       name,
       resourceType: "eip",
       resourceId: AllocationId,
+    });
+    const eipLive = await getById({ id: AllocationId });
+
+    CheckTagsEC2({
+      config,
+      tags: eipLive.Tags,
+      name,
     });
 
     return { id: AllocationId };

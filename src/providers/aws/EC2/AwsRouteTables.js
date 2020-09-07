@@ -11,6 +11,7 @@ const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { findNameInTags } = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
+const { CheckTagsEC2 } = require("../AwsTagCheck");
 
 module.exports = AwsRouteTables = ({ spec, config }) => {
   assert(spec);
@@ -91,12 +92,17 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
 
     logger.debug(`associated`);
 
-    await retryExpectOk({
+    const rt = await retryExpectOk({
       name: `isUpById: ${name} id: ${RouteTableId}`,
       fn: () => isUpById({ id: RouteTableId }),
       config,
     });
 
+    CheckTagsEC2({
+      config,
+      tags: rt.Tags,
+      name: name,
+    });
     return { id: RouteTableId };
   };
 

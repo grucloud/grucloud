@@ -9,6 +9,7 @@ const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { findNameInTags } = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
+const { CheckTagsEC2 } = require("../AwsTagCheck");
 
 module.exports = AwsVpc = ({ spec, config }) => {
   assert(spec);
@@ -77,6 +78,14 @@ module.exports = AwsVpc = ({ spec, config }) => {
       name,
       resourceType: "vpc",
       resourceId: VpcId,
+    });
+
+    const vpc = await getById({ id: VpcId });
+
+    CheckTagsEC2({
+      config,
+      tags: vpc.Tags,
+      name: name,
     });
 
     return { VpcId };

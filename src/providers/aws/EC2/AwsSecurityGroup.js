@@ -14,8 +14,9 @@ const {
 } = require("../../Common");
 const logger = require("../../../logger")({ prefix: "AwsSg" });
 const { tagResource } = require("../AwsTagResource");
-
+const { CheckTagsEC2 } = require("../AwsTagCheck");
 const { tos } = require("../../../tos");
+
 module.exports = AwsSecurityGroup = ({ spec, config }) => {
   assert(spec);
   assert(config);
@@ -100,6 +101,14 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     await ec2.authorizeSecurityGroupIngress(ingressParam).promise();
 
     logger.debug(`create DONE`);
+
+    const sg = await getById({ id: GroupId });
+
+    CheckTagsEC2({
+      config,
+      tags: sg.Tags,
+      name: name,
+    });
 
     return { GroupId };
   };

@@ -17,7 +17,8 @@ regex for --types
 
 ## TODO Aws:
 
-- CheckTagsEC2 when creating
+- config = ConfigLoader({ path: "examples/aws/ec2-vpc" }); => multi
+
 - aws role ad policy
 
 - add example code in AwsGettingStarted

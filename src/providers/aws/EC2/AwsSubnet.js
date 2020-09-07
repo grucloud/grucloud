@@ -12,6 +12,7 @@ const {
 } = require("../../Common");
 const { findNameInTags } = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
+const { CheckTagsEC2 } = require("../AwsTagCheck");
 
 module.exports = AwsSubnet = ({ spec, config }) => {
   assert(spec);
@@ -50,6 +51,15 @@ module.exports = AwsSubnet = ({ spec, config }) => {
       resourceType: "subnet",
       resourceId: SubnetId,
     });
+
+    const subnet = await getById({ id: SubnetId });
+
+    CheckTagsEC2({
+      config,
+      tags: subnet.Tags,
+      name: name,
+    });
+
     return { SubnetId };
   };
   const destroy = async ({ id, name }) => {

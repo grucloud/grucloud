@@ -10,6 +10,7 @@ const { KeyName, getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { findNameInTags } = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
+const { CheckTagsEC2 } = require("../AwsTagCheck");
 
 module.exports = AwsInternetGateway = ({ spec, config }) => {
   assert(spec);
@@ -93,12 +94,17 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
     await ec2.attachInternetGateway(paramsAttach).promise();
     logger.debug(`create ig, vpc attached`);
 
-    await retryExpectOk({
+    const igw = await retryExpectOk({
       name: `isUpById: ${name} id: ${InternetGatewayId}`,
       fn: () => isUpById({ id: InternetGatewayId }),
       config,
     });
 
+    CheckTagsEC2({
+      config,
+      tags: igw.Tags,
+      name: name,
+    });
     return { id: InternetGatewayId };
   };
 

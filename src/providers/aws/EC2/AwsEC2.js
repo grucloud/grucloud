@@ -11,6 +11,7 @@ const { tos } = require("../../../tos");
 const StateTerminated = ["terminated"];
 const { KeyName, getByIdCore, findNameInTags } = require("../AwsCommon");
 const { getField } = require("../../ProviderCommon");
+const { CheckTagsEC2 } = require("../AwsTagCheck");
 
 module.exports = AwsEC2 = ({ spec, config }) => {
   assert(spec);
@@ -81,11 +82,18 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     logger.debug(`create result ${tos(data)}`);
     const instance = data.Instances[0];
     const { InstanceId } = instance;
-    await retryExpectOk({
+    const instanceUp = await retryExpectOk({
       name: `isUpById: ${name} id: ${InstanceId}`,
       fn: () => isUpById({ id: InstanceId }),
       config: clientConfig,
     });
+
+    CheckTagsEC2({
+      config,
+      tags: instanceUp.Instances[0].Tags,
+      name,
+    });
+
     const { eip } = dependencies;
     if (eip) {
       const eipLive = await eip.getLive();
