@@ -28,6 +28,12 @@ const validateConfig = async ({ region, zone }) => {
   }
 };
 
+const fetchAccountId = async () => {
+  var sts = new AWS.STS();
+  const { Account } = await sts.getCallerIdentity({}).promise();
+  return Account;
+};
+
 exports.AwsProvider = async ({ name = "aws", config }) => {
   assert(config);
 
@@ -44,13 +50,16 @@ exports.AwsProvider = async ({ name = "aws", config }) => {
     accessKeyId: process.env.AWSAccessKeyId,
     secretAccessKey: process.env.AWSSecretKey,
   });
+
   await validateConfig(config);
+
+  const accountId = await fetchAccountId();
 
   return CoreProvider({
     type: "aws",
     name,
-    mandatoryEnvs: ["AWSAccessKeyId", "AWSSecretKey", "AccountId"],
-    config,
+    mandatoryEnvs: ["AWSAccessKeyId", "AWSSecretKey"],
+    config: { ...config, accountId },
     fnSpecs,
   });
 };

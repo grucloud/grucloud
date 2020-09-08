@@ -28,10 +28,6 @@ Visit the [security credentials](https://console.aws.amazon.com/iam/home#/securi
 
 Write down the **AWSAccessKeyId** and **AWSSecretKey**
 
-## Account Id
-
-Visit the [billing page](https://console.aws.amazon.com/billing/home?#/account) and note the **Account Id** under the **Account Settings** section.
-
 ## Configure AWS CLI
 
 Configure the account, region and zone:
