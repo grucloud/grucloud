@@ -55,10 +55,6 @@ describe("AwsEC2", async function () {
     const dependencies = await server.resolveDependencies();
     assert(dependencies.keyPair);
   });
-  it("config", async function () {
-    const config = await server.resolveConfig();
-    assert.equal(config.ImageId, "ami-0917237b4e71c5759");
-  });
   it.skip("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.destroy.length, 0);

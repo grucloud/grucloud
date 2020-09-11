@@ -5,8 +5,6 @@ const { tos } = require("../../../../tos");
 const GoogleClient = require("../../GoogleClient");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
 
-const { isUpByIdCore } = require("../../../Common");
-
 // https://cloud.google.com/compute/docs/reference/rest/v1/networks
 module.exports = GcpNetwork = ({ spec, config }) => {
   assert(spec);

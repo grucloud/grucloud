@@ -2,6 +2,13 @@
 
 ## Common:
 
+Destroying resources on 1 provider: aws
+⠴ aws
+⠴ Destroying
+⠴ IamUser::undefined
+
+- gc d --types Iam
+
 ## Cli
 
 - text wrap in table

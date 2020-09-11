@@ -14,6 +14,9 @@ aws ec2 describe-instances
 aws ec2 describe-instances --filters "Name=tag:name,Values=web-server"
 aws ec2 describe-tags
 aws ec2 describe-account-attributes
+
+aws iam list-users
+aws iam list-user-tags --user-name Alice
 ```
 
 ## Useful Links

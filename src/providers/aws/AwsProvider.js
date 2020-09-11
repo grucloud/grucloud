@@ -9,11 +9,13 @@ const CoreProvider = require("../CoreProvider");
 
 const AwsS3 = require("./S3");
 const AwsEC2 = require("./EC2");
+const AwsIam = require("./IAM");
 
 const fnSpecs = () => [
   //
   ...AwsS3,
   ...AwsEC2,
+  ...AwsIam,
 ];
 
 const validateConfig = async ({ region, zone }) => {
@@ -44,7 +46,9 @@ exports.AwsProvider = async ({ name = "aws", config }) => {
     ec2: "2016-11-15",
     resourcegroupstaggingapi: "2017-01-26",
     s3: "2006-03-01",
+    iam: "2010-05-08",
   };
+
   AWS.config.update({
     region: config.region,
     accessKeyId: process.env.AWSAccessKeyId,

@@ -379,6 +379,7 @@
       "console": "integratedTerminal",
       "args": ["apply", "-f"]
     },
+
     {
       "type": "node",
       "request": "launch",
@@ -414,6 +415,26 @@
       "program": "${workspaceRoot}/test/testExamples",
       "internalConsoleOptions": "openOnSessionStart",
       "cwd": "${workspaceRoot}/test"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Iam User Apply",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/iam/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["apply", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Iam User Destroy",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/iam/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["destroy", "-f"]
     },
     {
       "name": "Debug test",

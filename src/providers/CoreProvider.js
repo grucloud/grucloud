@@ -13,14 +13,10 @@ const {
   switchCase,
   get,
   assign,
-  all,
-  and,
-  not,
   any,
   reduce,
   fork,
 } = require("rubico");
-const Promise = require("bluebird");
 const logger = require("../logger")({ prefix: "Core" });
 const { tos } = require("../tos");
 const { checkConfig, checkEnv } = require("../Utils");
@@ -28,7 +24,6 @@ const { fromTagName } = require("./TagName");
 const { SpecDefault } = require("./SpecDefault");
 const { retryExpectOk, retryCall } = require("./Retry");
 const {
-  logError,
   mapPoolSize,
   convertError,
   HookType,

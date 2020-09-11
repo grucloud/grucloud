@@ -16,6 +16,9 @@ const AwsHooksS3 = require("../aws/s3/hooks");
 
 const AwsStackS3Multiple = require("../aws/s3-multiple/iac");
 
+const AwsStackIamUser = require("../aws/iam/iac");
+const AwsHooksIamUser = require("../aws/iam/hooks");
+
 const AzureStack = require("../azure/iac");
 const AzureHooks = require("../azure/hooks");
 
@@ -59,12 +62,22 @@ const createAws = async ({ config }) => {
     provider,
   });
 
-  provider.hookAdd("s3", AwsHooksS3({ resources: s3 }));
+  provider.hookAdd("s3", AwsHooksS3({ provider, resources: s3 }));
 
   // S3 Multiple
   const s3Multiple = await AwsStackS3Multiple.createResources({
     provider,
   });
+
+  // Iam User
+  const iamUser = await AwsStackIamUser.createResources({
+    provider,
+  });
+
+  provider.hookAdd(
+    "iamUser",
+    AwsHooksIamUser({ provider, resources: iamUser })
+  );
 
   return provider;
 };

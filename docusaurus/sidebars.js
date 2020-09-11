@@ -15,7 +15,6 @@ module.exports = {
       "aws/AwsGettingStarted",
       {
         Resources: [
-          { S3: ["aws/resources/S3/S3Bucket"] },
           {
             EC2: [
               "aws/resources/EC2/KeyPair",
@@ -28,6 +27,8 @@ module.exports = {
               "aws/resources/EC2/ElasticIpAddress",
             ],
           },
+          { IAM: ["aws/resources/IAM/IamUser"] },
+          { S3: ["aws/resources/S3/S3Bucket"] },
         ],
       },
       "aws/AwsMisc",
