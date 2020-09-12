@@ -102,8 +102,7 @@ exports.AwsIamRole = ({ spec, config }) => {
     };
     await iam.tagRole(tagsParam).promise();
     const { Tags } = await iam.listRoleTags({ RoleName: name }).promise();
-    //TODO CheckTagsIAM
-
+    assert(findNameInTags({ Tags }), "no tags");
     return Role;
   };
 

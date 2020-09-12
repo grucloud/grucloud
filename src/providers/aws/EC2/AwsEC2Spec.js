@@ -1,4 +1,6 @@
-const { isOurMinion, isOurMinionEc2 } = require("./AwsEC2Tags");
+const { isOurMinionEc2 } = require("./AwsEC2Tags");
+const { isOurMinion } = require("../AwsCommon");
+
 const { compare } = require("../../../Utils");
 const logger = require("../../../logger")({ prefix: "AWSEC2" });
 const { tos } = require("../../../tos");

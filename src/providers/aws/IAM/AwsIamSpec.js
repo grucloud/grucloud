@@ -2,7 +2,7 @@ const { AwsIamUser } = require("./AwsIamUser");
 const { AwsIamRole } = require("./AwsIamRole");
 const { AwsIamPolicy, isOurMinionIamPolicy } = require("./AwsIamPolicy");
 
-const { isOurMinion } = require("./AwsIamTags");
+const { isOurMinion } = require("../AwsCommon");
 
 module.exports = [
   {

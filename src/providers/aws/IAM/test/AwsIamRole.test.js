@@ -48,10 +48,7 @@ describe("AwsIamRole", async function () {
   });
   it("iamRole resolveConfig", async function () {
     assert.equal(iamRole.name, iamRoleName);
-
     const config = await iamRole.resolveConfig();
-    //TODO
-    //assert.equal(config.ImageId, "ami-0917237b4e71c5759");
   });
   it("iamRole plan", async function () {
     const plan = await provider.planQuery();

@@ -25,6 +25,29 @@ exports.buildTags = ({
   },
 ];
 
+exports.isOurMinion = ({ resource, config }) => {
+  const { managedByKey, managedByValue } = config;
+  assert(resource);
+  assert(resource.Tags);
+
+  let minion = false;
+  if (
+    resource.Tags.find(
+      (tag) => tag.Key === managedByKey && tag.Value === managedByValue
+    )
+  ) {
+    minion = true;
+  }
+
+  logger.debug(
+    `isOurMinion ${tos({
+      minion,
+      resource,
+    })}`
+  );
+  return minion;
+};
+
 exports.findNameInTags = (item) => {
   assert(item);
   assert(item.Tags);
