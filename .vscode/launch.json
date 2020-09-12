@@ -437,6 +437,16 @@
       "args": ["destroy", "-f"]
     },
     {
+      "type": "node",
+      "request": "launch",
+      "name": "Iam User Destroy All",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/iam/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["destroy", "-f", "-a"]
+    },
+    {
       "name": "Debug test",
       "type": "node",
       "request": "launch",

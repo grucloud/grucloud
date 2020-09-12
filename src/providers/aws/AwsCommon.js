@@ -7,6 +7,24 @@ const { tos } = require("../../tos");
 const KeyName = "Name";
 exports.KeyName = KeyName;
 
+exports.buildTags = ({
+  name,
+  config: { managedByKey, managedByValue, stageTagKey, stage },
+}) => [
+  {
+    Key: KeyName,
+    Value: name,
+  },
+  {
+    Key: managedByKey,
+    Value: managedByValue,
+  },
+  {
+    Key: stageTagKey,
+    Value: stage,
+  },
+];
+
 exports.findNameInTags = (item) => {
   assert(item);
   assert(item.Tags);
@@ -17,6 +35,23 @@ exports.findNameInTags = (item) => {
   } else {
     logger.debug(`findNameInTags: cannot find name`);
   }
+};
+
+exports.findNameInDescription = ({ Description = "" }) => {
+  const tags = Description.split("tags:")[1];
+  if (tags) {
+    try {
+      const tagsJson = JSON.parse(tags);
+      const tag = tagsJson.find((tag) => tag.Key === KeyName);
+      if (tag?.Value) {
+        logger.debug(`findNameInDescription ${tag.Value}`);
+        return tag.Value;
+      }
+    } catch (error) {
+      logger.error(`findNameInDescription ${error}`);
+    }
+  }
+  logger.debug(`findNameInDescription: cannot find name`);
 };
 
 exports.getByIdCore = ({ fieldIds, getList }) =>

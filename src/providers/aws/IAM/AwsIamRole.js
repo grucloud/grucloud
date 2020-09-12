@@ -1,16 +1,17 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
-const { map, pipe, tap, tryCatch, get } = require("rubico");
+const { map, pipe, tap, tryCatch, filter, get } = require("rubico");
 const { defaultsDeep, isEmpty } = require("rubico/x");
+const moment = require("moment");
 
-const logger = require("../../../logger")({ prefix: "IamUser" });
+const logger = require("../../../logger")({ prefix: "IamRole" });
 const { retryExpectOk } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { buildTags, findNameInTags } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
-exports.AwsIamUser = ({ spec, config }) => {
+exports.AwsIamRole = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
@@ -20,45 +21,46 @@ exports.AwsIamUser = ({ spec, config }) => {
 
   const findId = (item) => {
     assert(item);
-    const id = item.UserName;
+    const id = item.RoleName;
     assert(id);
     return id;
   };
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listUsers-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listRoles-property
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {
         logger.debug(`getList ${params}`);
       }),
-      () => iam.listUsers(params).promise(),
-      tap((users) => {
-        logger.debug(`getList users: ${tos(users)}`);
+      () => iam.listRoles(params).promise(),
+      tap((roles) => {
+        logger.debug(`getList: ${tos(roles)}`);
       }),
-      get("Users"),
+      get("Roles"),
+      filter((role) => moment(role.CreateDate).isAfter("2020-09-11")),
       map.pool(
         20,
         pipe([
-          tap((user) => {
-            logger.debug(`getList user: ${tos(user)}`);
+          tap((role) => {
+            logger.debug(`getList role: ${tos(role)}`);
           }),
-          async (user) => ({
-            ...user,
+          async (role) => ({
+            ...role,
             Tags: (
-              await iam.listUserTags({ UserName: user.UserName }).promise()
+              await iam.listRoleTags({ RoleName: role.RoleName }).promise()
             ).Tags,
           }),
-          tap((user) => {
-            logger.debug(user);
+          tap((role) => {
+            logger.debug(role);
           }),
         ])
       ),
-      (users) => ({
-        total: users.length,
-        items: users,
+      (roles) => ({
+        total: roles.length,
+        items: roles,
       }),
-      tap((users) => {
-        logger.debug(`getList results: ${tos(users)}`);
+      tap((roles) => {
+        logger.debug(`getList results: ${tos(roles)}`);
       }),
     ])();
 
@@ -69,7 +71,7 @@ exports.AwsIamUser = ({ spec, config }) => {
       logger.debug(`getById ${id}`);
     }),
     tryCatch(
-      ({ id }) => iam.getUser({ UserName: id }).promise(),
+      ({ id }) => iam.getRole({ RoleName: id }).promise(),
       (error) => {
         logger.debug(`getById error: ${tos(error)}`);
         if (error.code !== "NoSuchEntity") {
@@ -85,40 +87,35 @@ exports.AwsIamUser = ({ spec, config }) => {
   const isUpById = isUpByIdCore({ getById });
   const isDownById = isDownByIdCore({ getById });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createUser-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createRole-property
   const create = async ({ name, payload = {}, dependencies }) => {
     assert(name);
     assert(payload);
-    logger.debug(`create ${tos({ name, payload })}`);
+    logger.debug(`create role ${tos({ name, payload })}`);
 
-    const createParams = defaultsDeep({ Tags: buildTags({ name, config }) })(
-      payload
-    );
+    const { Role } = await iam.createRole(payload).promise();
+    logger.debug(`create result ${tos(Role)}`);
 
-    const { User } = await iam.createUser(createParams).promise();
-    logger.debug(`create result ${tos(User)}`);
-    const { UserId, UserName } = User;
+    const tagsParam = {
+      RoleName: name,
+      Tags: defaultsDeep(buildTags({ name, config }))(payload.Tags || []),
+    };
+    await iam.tagRole(tagsParam).promise();
+    const { Tags } = await iam.listRoleTags({ RoleName: name }).promise();
+    //TODO CheckTagsIAM
 
-    //TODO
-    /*
-    CheckTagsIAM({
-      config,
-      tags: instanceUp.Instances[0].Tags,
-      name,
-    });
-*/
-    return User;
+    return Role;
   };
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteUser-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteRole-property
   const destroy = async ({ id, name }) => {
     logger.debug(`destroy ${tos({ name, id })}`);
     assert(!isEmpty(id), `destroy invalid id`);
 
     const deleteParams = {
-      UserName: id,
+      RoleName: id,
     };
-    const result = await iam.deleteUser(deleteParams).promise();
+    const result = await iam.deleteRole(deleteParams).promise();
 
     logger.debug(`destroy in progress, ${tos({ name, id })}`);
 
@@ -134,11 +131,11 @@ exports.AwsIamUser = ({ spec, config }) => {
 
   const configDefault = async ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ dependencies })}`);
-    return defaultsDeep({ UserName: name, Path: "/" })(properties);
+    return defaultsDeep({ RoleName: name, Path: "/" })(properties);
   };
 
   return {
-    type: "IamUser",
+    type: "IamRole",
     spec,
     isUpById,
     isDownById,

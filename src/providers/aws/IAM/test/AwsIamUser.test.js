@@ -35,10 +35,7 @@ describe("AwsIamUser", async function () {
   });
   it("iamUser resolveConfig", async function () {
     assert.equal(iamUser.name, iamUserName);
-
     const config = await iamUser.resolveConfig();
-    //TODO
-    //assert.equal(config.ImageId, "ami-0917237b4e71c5759");
   });
   it("iamUser plan", async function () {
     const plan = await provider.planQuery();

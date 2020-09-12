@@ -62,9 +62,10 @@ const hasResultError = any(({ error }) => error);
 
 const nextStateOnError = (error) => (error ? "ERROR" : "DONE");
 
-const toUri = ({ providerName, type, name }) => {
+const toUri = ({ providerName, type, name, id }) => {
   assert(type, "type");
-  return `${providerName}::${type}::${name || "<<No Name>>"}`;
+  assert(name || id);
+  return `${providerName}::${type}::${name || id}`;
 };
 
 const ResourceMaker = ({
@@ -1299,6 +1300,7 @@ function CoreProvider({
                     providerName,
                     type: client.spec.type,
                     name: client.findName(live),
+                    id: client.findId(live),
                   }),
                 },
                 action: "DESTROY",
