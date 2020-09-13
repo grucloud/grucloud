@@ -7,6 +7,7 @@ const { isOurMinion } = require("../AwsCommon");
 module.exports = [
   {
     type: "IamUser",
+    dependsOn: ["IamPolicy"],
     Client: ({ spec, config }) => AwsIamUser({ spec, config }),
     isOurMinion,
   },

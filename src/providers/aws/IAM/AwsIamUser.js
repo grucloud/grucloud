@@ -1,7 +1,7 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
 const { map, pipe, tap, tryCatch, get } = require("rubico");
-const { defaultsDeep, isEmpty } = require("rubico/x");
+const { defaultsDeep, isEmpty, forEach } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "IamUser" });
 const { retryExpectOk } = require("../../Retry");
@@ -99,38 +99,57 @@ exports.AwsIamUser = ({ spec, config }) => {
     logger.debug(`create result ${tos(User)}`);
     const { UserId, UserName } = User;
 
-    //TODO
-    /*
-    CheckTagsIAM({
-      config,
-      tags: instanceUp.Instances[0].Tags,
-      name,
-    });
-*/
     return User;
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteUser-property
-  const destroy = async ({ id, name }) => {
-    logger.debug(`destroy ${tos({ name, id })}`);
-    assert(!isEmpty(id), `destroy invalid id`);
-
-    const deleteParams = {
-      UserName: id,
-    };
-    const result = await iam.deleteUser(deleteParams).promise();
-
-    logger.debug(`destroy in progress, ${tos({ name, id })}`);
-
-    await retryExpectOk({
-      name: `isDownById: ${name} id: ${id}`,
-      fn: () => isDownById({ id }),
-      config,
-    });
-
-    logger.debug(`destroy done, ${tos({ name, id, result })}`);
-    return result;
-  };
+  const destroy = async ({ id, name }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`destroy ${tos({ name, id })}`);
+        assert(!isEmpty(id), `destroy invalid id`);
+      }),
+      () =>
+        iam
+          .listPolicies({
+            MaxItems: 1e3,
+            OnlyAttached: true,
+            Scope: "Local",
+          })
+          .promise(),
+      get("Policies"),
+      forEach(async (policy) => {
+        logger.debug(`destroy policy: ${policy.PolicyName}`);
+        await iam
+          .detachUserPolicy({
+            PolicyArn: policy.Arn,
+            UserName: id,
+          })
+          .promise();
+        /*await iam
+          .deleteUserPolicy({
+            PolicyName: policy.PolicyName,
+            UserName: id,
+          })
+          .promise();*/
+      }),
+      () =>
+        iam
+          .deleteUser({
+            UserName: id,
+          })
+          .promise(),
+      tap(() =>
+        retryExpectOk({
+          name: `isDownById: ${name} id: ${id}`,
+          fn: () => isDownById({ id }),
+          config,
+        })
+      ),
+      tap(() => {
+        logger.debug(`destroy done, ${tos({ name, id })}`);
+      }),
+    ])();
 
   const configDefault = async ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ dependencies })}`);

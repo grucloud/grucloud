@@ -6,7 +6,9 @@ const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 describe("AwsIamPolicy", async function () {
   let config;
   let provider;
+  let iamUser;
   let iamPolicy;
+  const iamUserName = "alice";
   const iamPolicyName = "policy-example-3";
 
   before(async function () {
@@ -23,8 +25,16 @@ describe("AwsIamPolicy", async function () {
     const { error } = await provider.destroyAll();
     assert(!error, "destroyAll failed");
 
+    iamUser = await provider.makeIamUser({
+      name: iamUserName,
+      properties: () => ({
+        UserName: iamUserName,
+        Path: "/",
+      }),
+    });
     iamPolicy = await provider.makeIamPolicy({
       name: iamPolicyName,
+      dependencies: { iamUser },
       properties: () => ({
         PolicyName: iamPolicyName,
         PolicyDocument: JSON.stringify({
@@ -61,7 +71,7 @@ describe("AwsIamPolicy", async function () {
     });
     assert(lives);
   });
-  it("iamPolicy apply plan", async function () {
+  it.only("iamPolicy apply plan", async function () {
     await testPlanDeploy({ provider });
 
     const iamPolicyLive = await iamPolicy.getLive();

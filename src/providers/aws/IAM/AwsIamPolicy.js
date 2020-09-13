@@ -32,7 +32,10 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       tap(() => {
         logger.debug(`getList ${params}`);
       }),
-      () => iam.listPolicies({ ...params, MaxItems: 1e3 }).promise(),
+      () =>
+        iam
+          .listPolicies({ ...params, Scope: "Local", MaxItems: 1e3 })
+          .promise(),
       tap(({ Policies }) => {
         logger.debug(`getList: ${Policies.length}`);
       }),
@@ -100,7 +103,15 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     };
 
     const { Policy } = await iam.createPolicy(createParams).promise();
-
+    const { iamUser } = dependencies;
+    if (iamUser) {
+      const userLive = await iamUser.getLive();
+      const attachUserPolicyParams = {
+        PolicyArn: Policy.Arn,
+        UserName: userLive.UserName,
+      };
+      await iam.attachUserPolicy(attachUserPolicyParams).promise();
+    }
     logger.debug(`create result ${tos(Policy)}`);
 
     return Policy;

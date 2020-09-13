@@ -3,9 +3,16 @@ id: IamPolicy
 title: Iam Policy
 ---
 
-Provides an Iam Policy
+Provides an Iam Policy.
+
+The example below create an IAM user and a Policy attached to this user.
 
 ```js
+const iamUser = await provider.makeIamUser({
+  name: "Alice",
+  properties: () => ({}),
+});
+
 const iamPolicy = await provider.makeIamPolicy({
   name: "my-policy",
   dependencies: { iamUser },
@@ -41,7 +48,7 @@ const iamPolicy = await provider.makeIamPolicy({
 List all iam policies
 
 ```
-aws iam list-policies
+aws iam list-policies --scope Local
 ```
 
 Delete a policy:
@@ -49,4 +56,10 @@ Delete a policy:
 ```
 aws iam delete-policy --policy-arn arn:aws:iam::840541460064:role/role-example
 
+```
+
+Detach a policy:
+
+```
+aws iam detach-user-policy --user-name alice --policy-arn arn:aws:iam::840541460064:policy/policy-example-3
 ```
