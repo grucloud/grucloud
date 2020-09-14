@@ -97,8 +97,6 @@ exports.AwsIamUser = ({ spec, config }) => {
 
     const { User } = await iam.createUser(createParams).promise();
     logger.debug(`create result ${tos(User)}`);
-    const { UserId, UserName } = User;
-
     return User;
   };
 
@@ -126,12 +124,6 @@ exports.AwsIamUser = ({ spec, config }) => {
             UserName: id,
           })
           .promise();
-        /*await iam
-          .deleteUserPolicy({
-            PolicyName: policy.PolicyName,
-            UserName: id,
-          })
-          .promise();*/
       }),
       () =>
         iam

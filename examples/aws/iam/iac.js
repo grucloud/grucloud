@@ -4,10 +4,32 @@ const createResources = async ({ provider }) => {
   const userName = "Alice";
   const roleName = "role-allow-assume-role";
   const policyName = "myPolicy";
+  const iamInstanceProfileName = "my-profile";
 
   const iamUser = await provider.makeIamUser({
     name: userName,
     properties: () => ({}),
+  });
+
+  const iamRole = await provider.makeIamRole({
+    name: roleName,
+    properties: () => ({
+      RoleName: roleName,
+      Path: "/",
+      AssumeRolePolicyDocument: JSON.stringify({
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Action: "sts:AssumeRole",
+            Principal: {
+              Service: "ec2.amazonaws.com",
+            },
+            Effect: "Allow",
+            Sid: "",
+          },
+        ],
+      }),
+    }),
   });
 
   return {
@@ -30,24 +52,12 @@ const createResources = async ({ provider }) => {
         Path: "/",
       }),
     }),
-    iamRole: await provider.makeIamRole({
-      name: roleName,
+    iamRole,
+    iamInstanceProfile: await provider.makeIamInstanceProfile({
+      name: iamInstanceProfileName,
+      dependencies: { iamRole },
       properties: () => ({
-        RoleName: roleName,
         Path: "/",
-        AssumeRolePolicyDocument: JSON.stringify({
-          Version: "2012-10-17",
-          Statement: [
-            {
-              Action: "sts:AssumeRole",
-              Principal: {
-                Service: "ec2.amazonaws.com",
-              },
-              Effect: "Allow",
-              Sid: "",
-            },
-          ],
-        }),
       }),
     }),
   };
