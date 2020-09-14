@@ -115,7 +115,7 @@ describe("AwsIamPolicy", async function () {
     });
     assert(lives);
   });
-  it.only("iamPolicy apply plan", async function () {
+  it("iamPolicy apply plan", async function () {
     await testPlanDeploy({ provider });
 
     const iamPolicyToUserLive = await iamPolicyToUser.getLive();
