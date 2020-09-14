@@ -7,9 +7,13 @@ describe("AwsIamPolicy", async function () {
   let config;
   let provider;
   let iamUser;
-  let iamPolicy;
+  let iamRole;
+  let iamPolicyToUser;
+  let iamPolicyToRole;
   const iamUserName = "alice";
-  const iamPolicyName = "policy-example-3";
+  const iamRoleName = "role-example";
+  const iamPolicyName = "policy-example-to-user";
+  const iamPolicyNameToRole = "policy-example-to-role";
 
   before(async function () {
     try {
@@ -32,11 +36,50 @@ describe("AwsIamPolicy", async function () {
         Path: "/",
       }),
     });
-    iamPolicy = await provider.makeIamPolicy({
+
+    iamRole = await provider.makeIamRole({
+      name: iamRoleName,
+      properties: () => ({
+        Path: "/",
+        AssumeRolePolicyDocument: JSON.stringify({
+          Version: "2012-10-17",
+          Statement: [
+            {
+              Action: "sts:AssumeRole",
+              Principal: {
+                Service: "ec2.amazonaws.com",
+              },
+              Effect: "Allow",
+              Sid: "",
+            },
+          ],
+        }),
+      }),
+    });
+
+    iamPolicyToUser = await provider.makeIamPolicy({
       name: iamPolicyName,
       dependencies: { iamUser },
       properties: () => ({
         PolicyName: iamPolicyName,
+        PolicyDocument: JSON.stringify({
+          Version: "2012-10-17",
+          Statement: [
+            {
+              Action: ["ec2:Describe*"],
+              Effect: "Allow",
+              Resource: "*",
+            },
+          ],
+        }),
+        Description: "Allow ec2:Describe",
+        Path: "/",
+      }),
+    });
+    iamPolicyToRole = await provider.makeIamPolicy({
+      name: iamPolicyNameToRole,
+      dependencies: { iamRole },
+      properties: () => ({
         PolicyDocument: JSON.stringify({
           Version: "2012-10-17",
           Statement: [
@@ -56,14 +99,15 @@ describe("AwsIamPolicy", async function () {
     // await provider?.destroyAll();
   });
   it("iamPolicy resolveConfig", async function () {
-    assert.equal(iamPolicy.name, iamPolicyName);
+    assert.equal(iamPolicyToUser.name, iamPolicyName);
 
-    const config = await iamPolicy.resolveConfig();
+    const config = await iamPolicyToUser.resolveConfig();
+    //TODO
   });
   it("iamPolicy plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 1);
+    assert.equal(plan.resultCreate.plans.length, 4);
   });
   it("iamPolicy listLives all", async function () {
     const { results: lives } = await provider.listLives({
@@ -74,8 +118,8 @@ describe("AwsIamPolicy", async function () {
   it.only("iamPolicy apply plan", async function () {
     await testPlanDeploy({ provider });
 
-    const iamPolicyLive = await iamPolicy.getLive();
-    assert(iamPolicyLive);
+    const iamPolicyToUser = await iamPolicyToUser.getLive();
+    assert(iamPolicyToUser);
     await testPlanDestroy({ provider });
   });
 });

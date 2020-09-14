@@ -3,7 +3,7 @@ const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
-describe.only("AwsIamInstanceProfile", async function () {
+describe("AwsIamInstanceProfile", async function () {
   let config;
   let provider;
   let iamRole;

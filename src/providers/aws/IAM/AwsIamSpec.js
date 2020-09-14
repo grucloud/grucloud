@@ -17,6 +17,7 @@ module.exports = [
   },
   {
     type: "IamRole",
+    dependsOn: ["IamPolicy"],
     Client: ({ spec, config }) => AwsIamRole({ spec, config }),
     isOurMinion,
   },

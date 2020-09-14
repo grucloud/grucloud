@@ -25,7 +25,6 @@ describe("AwsIamRole", async function () {
     iamRole = await provider.makeIamRole({
       name: iamRoleName,
       properties: () => ({
-        RoleName: iamRoleName,
         Path: "/",
         AssumeRolePolicyDocument: JSON.stringify({
           Version: "2012-10-17",

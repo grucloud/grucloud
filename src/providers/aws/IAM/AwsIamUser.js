@@ -1,7 +1,7 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
 const { map, pipe, tap, tryCatch, get } = require("rubico");
-const { defaultsDeep, isEmpty, forEach } = require("rubico/x");
+const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "IamUser" });
 const { retryExpectOk } = require("../../Retry");
@@ -107,20 +107,21 @@ exports.AwsIamUser = ({ spec, config }) => {
         logger.debug(`destroy ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
-      () =>
+      () => getById({ id }),
+      ({ User }) =>
         iam
-          .listPolicies({
-            MaxItems: 1e3,
-            OnlyAttached: true,
-            Scope: "Local",
+          .listPoliciesGrantingServiceAccess({
+            Arn: User.Arn,
+            ServiceNamespaces: ["iam", "ec2"],
           })
           .promise(),
-      get("Policies"),
+      get("PoliciesGrantingServiceAccess"),
+      pluck("Policies"),
+      flatten,
       forEach(async (policy) => {
-        logger.debug(`destroy policy: ${policy.PolicyName}`);
         await iam
           .detachUserPolicy({
-            PolicyArn: policy.Arn,
+            PolicyArn: policy.PolicyArn,
             UserName: id,
           })
           .promise();

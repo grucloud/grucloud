@@ -1,7 +1,7 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
 const { map, pipe, tap, tryCatch, filter, get } = require("rubico");
-const { defaultsDeep, isEmpty } = require("rubico/x");
+const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
 const moment = require("moment");
 
 const logger = require("../../../logger")({ prefix: "IamRole" });
@@ -107,26 +107,49 @@ exports.AwsIamRole = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteRole-property
-  const destroy = async ({ id, name }) => {
-    logger.debug(`destroy ${tos({ name, id })}`);
-    assert(!isEmpty(id), `destroy invalid id`);
 
-    const deleteParams = {
-      RoleName: id,
-    };
-    const result = await iam.deleteRole(deleteParams).promise();
-
-    logger.debug(`destroy in progress, ${tos({ name, id })}`);
-
-    await retryExpectOk({
-      name: `isDownById: ${name} id: ${id}`,
-      fn: () => isDownById({ id }),
-      config,
-    });
-
-    logger.debug(`destroy done, ${tos({ name, id, result })}`);
-    return result;
-  };
+  const destroy = async ({ id, name }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`destroy ${tos({ name, id })}`);
+        assert(!isEmpty(id), `destroy invalid id`);
+      }),
+      () => getById({ id }),
+      ({ Role }) =>
+        iam
+          .listPoliciesGrantingServiceAccess({
+            Arn: Role.Arn,
+            ServiceNamespaces: ["iam", "ec2"],
+          })
+          .promise(),
+      get("PoliciesGrantingServiceAccess"),
+      pluck("Policies"),
+      flatten,
+      forEach(async (policy) => {
+        await iam
+          .detachRolePolicy({
+            PolicyArn: policy.PolicyArn,
+            RoleName: id,
+          })
+          .promise();
+      }),
+      () =>
+        iam
+          .deleteRole({
+            RoleName: id,
+          })
+          .promise(),
+      tap(() =>
+        retryExpectOk({
+          name: `isDownById: ${name} id: ${id}`,
+          fn: () => isDownById({ id }),
+          config,
+        })
+      ),
+      tap(() => {
+        logger.debug(`destroy done, ${tos({ name, id })}`);
+      }),
+    ])();
 
   const configDefault = async ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ dependencies })}`);

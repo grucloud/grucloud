@@ -3,8 +3,21 @@ const { AwsProvider } = require("@grucloud/core");
 const createResources = async ({ provider }) => {
   const userName = "Alice";
   const roleName = "role-allow-assume-role";
-  const policyName = "myPolicy";
+  const policyNameToUser = "myPolicy-to-user";
+  const policyNameToRole = "myPolicy-to-role";
+
   const iamInstanceProfileName = "my-profile";
+
+  const PolicyDocument = JSON.stringify({
+    Version: "2012-10-17",
+    Statement: [
+      {
+        Action: ["ec2:Describe*"],
+        Effect: "Allow",
+        Resource: "*",
+      },
+    ],
+  });
 
   const iamUser = await provider.makeIamUser({
     name: userName,
@@ -14,7 +27,6 @@ const createResources = async ({ provider }) => {
   const iamRole = await provider.makeIamRole({
     name: roleName,
     properties: () => ({
-      RoleName: roleName,
       Path: "/",
       AssumeRolePolicyDocument: JSON.stringify({
         Version: "2012-10-17",
@@ -33,23 +45,20 @@ const createResources = async ({ provider }) => {
   });
 
   return {
-    iamPolicy: await provider.makeIamPolicy({
-      name: policyName,
+    iamPolicytoUser: await provider.makeIamPolicy({
+      name: policyNameToUser,
       dependencies: { iamUser },
       properties: () => ({
-        PolicyName: policyName,
-        PolicyDocument: JSON.stringify({
-          Version: "2012-10-17",
-          Statement: [
-            {
-              Action: ["ec2:Describe*"],
-              Effect: "Allow",
-              Resource: "*",
-            },
-          ],
-        }),
+        PolicyDocument,
         Description: "Allow ec2:Describe",
-        Path: "/",
+      }),
+    }),
+    iamPolicyToRole: await provider.makeIamPolicy({
+      name: policyNameToRole,
+      dependencies: { iamRole },
+      properties: () => ({
+        PolicyDocument,
+        Description: "Allow ec2:Describe",
       }),
     }),
     iamRole,
