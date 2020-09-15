@@ -44,6 +44,12 @@ exports.AwsIamUser = ({ spec, config }) => {
           }),
           async (user) => ({
             ...user,
+            Groups: await pipe([
+              () =>
+                iam.listGroupsForUser({ UserName: user.UserName }).promise(),
+              get("Groups"),
+              pluck("GroupName"),
+            ])(),
             Tags: (
               await iam.listUserTags({ UserName: user.UserName }).promise()
             ).Tags,

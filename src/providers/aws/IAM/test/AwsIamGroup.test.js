@@ -7,6 +7,8 @@ describe("AwsIamGroup", async function () {
   let config;
   let provider;
   let iamGroup;
+  let iamUser;
+  const userName = "Bob";
   const iamGroupName = "Admin";
 
   before(async function () {
@@ -28,6 +30,12 @@ describe("AwsIamGroup", async function () {
       properties: () => ({
         Path: "/",
       }),
+    });
+
+    iamUser = await provider.makeIamUser({
+      name: userName,
+      dependencies: { iamGroups: [iamGroup] },
+      properties: () => ({}),
     });
   });
   after(async () => {
@@ -54,6 +62,9 @@ describe("AwsIamGroup", async function () {
 
     const iamGroupLive = await iamGroup.getLive();
     assert(iamGroupLive);
+
+    const iamUserLive = await iamUser.getLive();
+    assert.equal(iamGroup.name, iamUserLive.Groups[0]);
     await testPlanDestroy({ provider });
   });
 });
