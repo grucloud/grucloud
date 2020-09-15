@@ -72,6 +72,7 @@ const createAws = async ({ config }) => {
   // Iam User
   const iamUser = await AwsStackIamUser.createResources({
     provider,
+    resources: { keyPair },
   });
 
   provider.hookAdd(

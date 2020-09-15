@@ -53,7 +53,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
   });
 
   const server = await provider.makeEC2({
-    name: "web",
+    name: "web-iam",
     dependencies: { keyPair, iamInstanceProfile },
     properties: () => ({
       VolumeSize: 50,
