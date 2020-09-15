@@ -103,7 +103,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     };
 
     const { Policy } = await iam.createPolicy(createParams).promise();
-    const { iamUser, iamRole } = dependencies;
+    const { iamUser, iamRole, iamGroup } = dependencies;
     if (iamUser) {
       const userLive = await iamUser.getLive();
       const attachUserPolicyParams = {
@@ -118,6 +118,14 @@ exports.AwsIamPolicy = ({ spec, config }) => {
         .attachRolePolicy({
           PolicyArn: Policy.Arn,
           RoleName: roleLive.RoleName, //TODO use iamRole.name ?
+        })
+        .promise();
+    }
+    if (iamGroup) {
+      await iam
+        .attachGroupPolicy({
+          PolicyArn: Policy.Arn,
+          GroupName: iamGroup.name,
         })
         .promise();
     }

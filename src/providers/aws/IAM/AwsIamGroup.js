@@ -3,62 +3,44 @@ const AWS = require("aws-sdk");
 const { map, pipe, tap, tryCatch, get } = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
 
-const logger = require("../../../logger")({ prefix: "IamUser" });
+const logger = require("../../../logger")({ prefix: "IamGroup" });
 const { retryExpectOk } = require("../../Retry");
 const { tos } = require("../../../tos");
-const { buildTags, findNameInTags } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 
+const findName = (item) => item.GroupName;
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
-exports.AwsIamUser = ({ spec, config }) => {
+exports.AwsIamGroup = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
   const iam = new AWS.IAM();
 
-  const findName = (item) => findNameInTags(item);
-
   const findId = (item) => {
     assert(item);
-    const id = item.UserName;
+    const id = item.GroupName;
     assert(id);
     return id;
   };
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listUsers-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listGroups-property
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {
-        logger.debug(`getList ${params}`);
+        logger.debug(`getList ${tos(params)}`);
       }),
-      () => iam.listUsers(params).promise(),
-      tap((users) => {
-        logger.debug(`getList users: ${tos(users)}`);
+      () => iam.listGroups(params).promise(),
+      tap((groups) => {
+        logger.debug(`getList groups: ${tos(groups)}`);
       }),
-      get("Users"),
-      map.pool(
-        20,
-        pipe([
-          tap((user) => {
-            logger.debug(`getList user: ${tos(user)}`);
-          }),
-          async (user) => ({
-            ...user,
-            Tags: (
-              await iam.listUserTags({ UserName: user.UserName }).promise()
-            ).Tags,
-          }),
-          tap((user) => {
-            logger.debug(user);
-          }),
-        ])
-      ),
-      (users) => ({
-        total: users.length,
-        items: users,
+      get("Groups"),
+      (groups) => ({
+        total: groups.length,
+        items: groups,
       }),
-      tap((users) => {
-        logger.debug(`getList results: ${tos(users)}`);
+      tap((groups) => {
+        logger.debug(`getList results: ${tos(groups)}`);
       }),
     ])();
 
@@ -69,7 +51,7 @@ exports.AwsIamUser = ({ spec, config }) => {
       logger.debug(`getById ${id}`);
     }),
     tryCatch(
-      ({ id }) => iam.getUser({ UserName: id }).promise(),
+      ({ id }) => iam.getGroup({ GroupName: id }).promise(),
       (error) => {
         logger.debug(`getById error: ${tos(error)}`);
         if (error.code !== "NoSuchEntity") {
@@ -85,53 +67,31 @@ exports.AwsIamUser = ({ spec, config }) => {
   const isUpById = isUpByIdCore({ getById });
   const isDownById = isDownByIdCore({ getById });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createUser-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createGroup-property
   const create = async ({ name, payload = {}, dependencies }) => {
     assert(name);
     assert(payload);
     logger.debug(`create ${tos({ name, payload })}`);
 
-    const createParams = defaultsDeep({ Tags: buildTags({ name, config }) })(
-      payload
-    );
+    const createParams = defaultsDeep({})(payload);
 
-    const { User } = await iam.createUser(createParams).promise();
-    const { iamGroups } = dependencies;
-    if (iamGroups) {
-      await forEach((group) =>
-        iam.addUserToGroup({ GroupName: group.name, UserName: name }).promise()
-      )(iamGroups);
-    }
-
-    logger.debug(`create result ${tos(User)}`);
-    return User;
+    const { Group } = await iam.createGroup(createParams).promise();
+    logger.debug(`create result ${tos(Group)}`);
+    return Group;
   };
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteUser-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteGroup-property
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
         logger.debug(`destroy ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
-      () => iam.listGroupsForUser({ UserName: id }).promise(),
-      get("Groups"),
-      tap((obj) => {
-        logger.debug(`destroy `);
-      }),
-      forEach(async (group) => {
-        await iam
-          .removeUserFromGroup({
-            GroupName: group.GroupName,
-            UserName: id,
-          })
-          .promise();
-      }),
       () => getById({ id }),
-      ({ User }) =>
+      ({ Group }) =>
         iam
           .listPoliciesGrantingServiceAccess({
-            Arn: User.Arn,
+            Arn: Group.Arn,
             ServiceNamespaces: ["iam", "ec2"],
           })
           .promise(),
@@ -140,27 +100,29 @@ exports.AwsIamUser = ({ spec, config }) => {
       flatten,
       forEach(async (policy) => {
         await iam
-          .detachUserPolicy({
+          .detachGroupPolicy({
             PolicyArn: policy.PolicyArn,
-            UserName: id,
-          })
-          .promise();
-      }),
-      () =>
-        iam.listAttachedUserPolicies({ UserName: id, MaxItems: 1e3 }).promise(),
-      get("AttachedPolicies"),
-      forEach(async (policy) => {
-        await iam
-          .detachUserPolicy({
-            PolicyArn: policy.PolicyArn,
-            UserName: id,
+            GroupName: id,
           })
           .promise();
       }),
       () =>
         iam
-          .deleteUser({
-            UserName: id,
+          .listAttachedGroupPolicies({ GroupName: id, MaxItems: 1e3 })
+          .promise(),
+      get("AttachedPolicies"),
+      forEach(async (policy) => {
+        await iam
+          .detachGroupPolicy({
+            PolicyArn: policy.PolicyArn,
+            GroupName: id,
+          })
+          .promise();
+      }),
+      () =>
+        iam
+          .deleteGroup({
+            GroupName: id,
           })
           .promise(),
       tap(() =>
@@ -177,11 +139,11 @@ exports.AwsIamUser = ({ spec, config }) => {
 
   const configDefault = async ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ dependencies })}`);
-    return defaultsDeep({ UserName: name, Path: "/" })(properties);
+    return defaultsDeep({ GroupName: name, Path: "/" })(properties);
   };
 
   return {
-    type: "IamUser",
+    type: "IamGroup",
     spec,
     isUpById,
     isDownById,
@@ -195,4 +157,12 @@ exports.AwsIamUser = ({ spec, config }) => {
     getList,
     configDefault,
   };
+};
+
+exports.isOurMinionIamGroup = ({ resource, resourceNames }) => {
+  assert(resource);
+  assert(resourceNames, "resourceNames");
+  const isOur = resourceNames.includes(resource.GroupName);
+  logger.debug(`isOurMinionIamGroup: ${isOur}`);
+  return isOur;
 };

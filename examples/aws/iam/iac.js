@@ -2,9 +2,11 @@ const { AwsProvider } = require("@grucloud/core");
 
 const createResources = async ({ provider, resources: { keyPair } }) => {
   const userName = "Alice";
+  const groupName = "Admin";
   const roleName = "role-allow-assume-role";
   const policyNameToUser = "myPolicy-to-user";
   const policyNameToRole = "myPolicy-to-role";
+  const policyNameToGroup = "myPolicy-to-group";
 
   const iamInstanceProfileName = "my-profile";
 
@@ -19,8 +21,14 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     ],
   });
 
+  const iamGroup = await provider.makeIamGroup({
+    name: groupName,
+    properties: () => ({}),
+  });
+
   const iamUser = await provider.makeIamUser({
     name: userName,
+    dependencies: { iamGroups: [iamGroup] },
     properties: () => ({}),
   });
 
@@ -63,6 +71,8 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
   });
 
   return {
+    iamUser,
+    iamGroup,
     iamPolicytoUser: await provider.makeIamPolicy({
       name: policyNameToUser,
       dependencies: { iamUser },
@@ -74,6 +84,14 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     iamPolicyToRole: await provider.makeIamPolicy({
       name: policyNameToRole,
       dependencies: { iamRole },
+      properties: () => ({
+        PolicyDocument,
+        Description: "Allow ec2:Describe",
+      }),
+    }),
+    iamPolicyToGroup: await provider.makeIamPolicy({
+      name: policyNameToGroup,
+      dependencies: { iamGroup },
       properties: () => ({
         PolicyDocument,
         Description: "Allow ec2:Describe",

@@ -1,4 +1,5 @@
 const { AwsIamUser } = require("./AwsIamUser");
+const { AwsIamGroup, isOurMinionIamGroup } = require("./AwsIamGroup");
 const { AwsIamRole } = require("./AwsIamRole");
 const {
   AwsIamInstanceProfile,
@@ -11,9 +12,15 @@ const { isOurMinion } = require("../AwsCommon");
 module.exports = [
   {
     type: "IamUser",
-    dependsOn: ["IamPolicy"],
+    dependsOn: ["IamPolicy", "IamGroup"],
     Client: ({ spec, config }) => AwsIamUser({ spec, config }),
     isOurMinion,
+  },
+  {
+    type: "IamGroup",
+    dependsOn: ["IamPolicy"],
+    Client: ({ spec, config }) => AwsIamGroup({ spec, config }),
+    isOurMinion: isOurMinionIamGroup,
   },
   {
     type: "IamRole",
