@@ -1,6 +1,6 @@
 const { AwsProvider } = require("@grucloud/core");
 
-const createResources = async ({ provider }) => {
+const createResources = async ({ provider, resources: { keyPair } }) => {
   const userName = "Alice";
   const roleName = "role-allow-assume-role";
   const policyNameToUser = "myPolicy-to-user";
@@ -52,10 +52,6 @@ const createResources = async ({ provider }) => {
     }),
   });
 
-  const keyPair = await provider.useKeyPair({
-    name: "kp",
-  });
-  /*
   const server = await provider.makeEC2({
     name: "web",
     dependencies: { keyPair, iamInstanceProfile },
@@ -65,7 +61,6 @@ const createResources = async ({ provider }) => {
       ImageId: "ami-00f6a0c18edb19300", // Ubuntu 18.04
     }),
   });
-  */
 
   return {
     iamPolicytoUser: await provider.makeIamPolicy({
@@ -94,8 +89,12 @@ exports.createStack = async ({ config }) => {
   // Create a AWS provider
   const provider = await AwsProvider({ name: "aws", config });
 
+  const keyPair = await provider.useKeyPair({
+    name: "kp",
+  });
+
   provider.register({
-    resources: await createResources({ provider, resources: {} }),
+    resources: await createResources({ provider, resources: { keyPair } }),
   });
 
   return {
