@@ -12,7 +12,7 @@ const createResources = async ({ provider }) => {
     Version: "2012-10-17",
     Statement: [
       {
-        Action: ["ec2:Describe*"],
+        Action: ["s3:*"],
         Effect: "Allow",
         Resource: "*",
       },
@@ -44,6 +44,29 @@ const createResources = async ({ provider }) => {
     }),
   });
 
+  const iamInstanceProfile = await provider.makeIamInstanceProfile({
+    name: iamInstanceProfileName,
+    dependencies: { iamRole },
+    properties: () => ({
+      Path: "/",
+    }),
+  });
+
+  const keyPair = await provider.useKeyPair({
+    name: "kp",
+  });
+  /*
+  const server = await provider.makeEC2({
+    name: "web",
+    dependencies: { keyPair, iamInstanceProfile },
+    properties: () => ({
+      VolumeSize: 50,
+      InstanceType: "t2.micro",
+      ImageId: "ami-00f6a0c18edb19300", // Ubuntu 18.04
+    }),
+  });
+  */
+
   return {
     iamPolicytoUser: await provider.makeIamPolicy({
       name: policyNameToUser,
@@ -62,13 +85,7 @@ const createResources = async ({ provider }) => {
       }),
     }),
     iamRole,
-    iamInstanceProfile: await provider.makeIamInstanceProfile({
-      name: iamInstanceProfileName,
-      dependencies: { iamRole },
-      properties: () => ({
-        Path: "/",
-      }),
-    }),
+    iamInstanceProfile,
   };
 };
 exports.createResources = createResources;

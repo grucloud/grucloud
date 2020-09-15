@@ -34,7 +34,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
   const getList = async ({ params } = {}) => {
-    logger.debug(`getList ${params}`);
+    logger.debug(`getList ${tos(params)}`);
     const data = await ec2.describeInstances(params).promise();
     //logger.debug(`getList ec2 ${tos(data)}`);
     const items = data.Reservations.filter(
@@ -152,7 +152,12 @@ module.exports = AwsEC2 = ({ spec, config }) => {
   };
   const configDefault = async ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ dependencies })}`);
-    const { keyPair, subnet, securityGroups = {} } = dependencies;
+    const {
+      keyPair,
+      subnet,
+      securityGroups = {},
+      iamInstanceProfile,
+    } = dependencies;
     const { VolumeSize, ...otherProperties } = properties;
     const buildNetworkInterfaces = () => [
       {
@@ -177,6 +182,11 @@ module.exports = AwsEC2 = ({ spec, config }) => {
         },
       ],
       ...(subnet && { NetworkInterfaces: buildNetworkInterfaces() }),
+      ...(iamInstanceProfile && {
+        IamInstanceProfile: {
+          Name: getField(iamInstanceProfile, "InstanceProfileName"),
+        },
+      }),
       TagSpecifications: [
         {
           ResourceType: "instance",

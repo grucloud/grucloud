@@ -127,26 +127,29 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deletePolicy-property
-  const destroy = async ({ id, name }) => {
-    logger.debug(`destroy ${tos({ name, id })}`);
-    assert(!isEmpty(id), `destroy invalid id`);
 
-    const deleteParams = {
-      PolicyArn: id,
-    };
-    const result = await iam.deletePolicy(deleteParams).promise();
-
-    logger.debug(`destroy in progress, ${tos({ name, id })}`);
-
-    await retryExpectOk({
-      name: `isDownById: ${name} id: ${id}`,
-      fn: () => isDownById({ id }),
-      config,
-    });
-
-    logger.debug(`destroy done, ${tos({ name, id, result })}`);
-    return result;
-  };
+  const destroy = async ({ id, name }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`destroy ${tos({ name, id })}`);
+        assert(!isEmpty(id), `destroy invalid id`);
+      }),
+      () =>
+        iam
+          .deletePolicy({
+            PolicyArn: id,
+          })
+          .promise(),
+      () =>
+        retryExpectOk({
+          name: `isDownById: ${name} id: ${id}`,
+          fn: () => isDownById({ id }),
+          config,
+        }),
+      tap(() => {
+        logger.debug(`destroy done ${tos({ name, id })}`);
+      }),
+    ])();
 
   const configDefault = async ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ dependencies })}`);

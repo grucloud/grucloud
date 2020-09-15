@@ -34,3 +34,9 @@ List the tags for a given user
 aws iam list-user-tags --user-name Alice
 
 ```
+
+Delete a user:
+
+```
+aws iam delete-user --user-name Alice
+```

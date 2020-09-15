@@ -13,13 +13,14 @@ const server = await provider.makeEC2({
     InstanceType: "t2.micro",
     ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
   }),
-  dependencies: { keyPair, subnet, securityGroups: { sg } },
+  dependencies: { keyPair, subnet, securityGroups: { sg }, iamInstanceProfile },
 });
 ```
 
 ### Examples
 
 - [simple example](https://github.com/FredericHeem/grucloud/blob/master/examples/aws/ec2/iac.js)
+- [example with IAM](https://github.com/FredericHeem/grucloud/blob/master/examples/aws/iam/iac.js)
 - [full example](https://github.com/FredericHeem/grucloud/blob/master/examples/aws/ec2-vpc/iac.js)
 
 ### Properties
@@ -32,6 +33,7 @@ const server = await provider.makeEC2({
 - [Subnet](./Subnet)
 - [KeyPair](./KeyPair)
 - [ElasticIpAddress](./ElasticIpAddress)
+- [IamInstanceProfile](../IAM/iamInstanceProfile)
 
 ### AWS CLI
 

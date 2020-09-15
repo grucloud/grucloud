@@ -63,6 +63,7 @@ module.exports = [
       "Subnet",
       "ElasticIpAddress",
       "InternetGateway",
+      "IamInstanceProfile",
     ],
     Client: ({ spec, config }) =>
       AwsEC2({
