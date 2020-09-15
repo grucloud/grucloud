@@ -36,6 +36,8 @@ describe("AwsIamUser", async function () {
   it("iamUser resolveConfig", async function () {
     assert.equal(iamUser.name, iamUserName);
     const config = await iamUser.resolveConfig();
+    assert(config.UserName);
+    assert(config.Path);
   });
   it("iamUser plan", async function () {
     const plan = await provider.planQuery();
