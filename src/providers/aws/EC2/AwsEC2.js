@@ -87,15 +87,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
       name: `isUpById: ${name} id: ${InstanceId}`,
       fn: () => isUpById({ id: InstanceId }),
       isExpectedResult: (result) => result,
-      shouldRetryOnException: (error) => {
-        logger.debug(`shouldRetryOnException ${tos(error)}`);
-        const retry =
-          error.message.includes("iamInstanceProfile.name is invalid") ||
-          error.code === 503;
-        logger.debug(`shouldRetryOnException retry: ${retry}`);
-
-        return retry;
-      },
+      shouldRetryOnException: (error) => false,
       ...clientConfig,
     });
 
@@ -235,5 +227,13 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    shouldRetryOnException: (error) => {
+      logger.debug(`shouldRetryOnException ${tos(error)}`);
+      const retry = error.message.includes(
+        "iamInstanceProfile.name is invalid"
+      );
+      logger.debug(`shouldRetryOnException retry: ${retry}`);
+      return retry;
+    },
   };
 };
