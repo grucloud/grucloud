@@ -756,6 +756,12 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    shouldRetryOnException: (error) => {
+      logger.debug(`shouldRetryOnException ${tos(error)}`);
+      const retry = error.code === "NoSuchBucket";
+      logger.debug(`shouldRetryOnException retry: ${retry}`);
+      return retry;
+    },
   };
 };
 
