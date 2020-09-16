@@ -419,7 +419,17 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Iam User Apply",
+      "name": "Iam List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/iam/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["list"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Iam Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/iam/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -429,7 +439,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Iam User Destroy",
+      "name": "Iam Destroy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/iam/",
       "internalConsoleOptions": "openOnSessionStart",
@@ -439,7 +449,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Iam User Destroy All",
+      "name": "Iam Destroy All",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/iam/",
       "internalConsoleOptions": "openOnSessionStart",

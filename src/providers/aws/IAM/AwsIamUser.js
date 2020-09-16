@@ -44,6 +44,28 @@ exports.AwsIamUser = ({ spec, config }) => {
           }),
           async (user) => ({
             ...user,
+            AttachedPolicies: await pipe([
+              () =>
+                iam
+                  .listAttachedUserPolicies({
+                    UserName: user.UserName,
+                    MaxItems: 1e3,
+                  })
+                  .promise(),
+              get("AttachedPolicies"),
+              pluck("PolicyName"),
+            ])(),
+            Policies: await pipe([
+              () =>
+                iam
+                  .listUserPolicies({
+                    UserName: user.UserName,
+                    MaxItems: 1e3,
+                  })
+                  .promise(),
+              get("Policies"),
+              pluck("PolicyName"),
+            ])(),
             Groups: await pipe([
               () =>
                 iam.listGroupsForUser({ UserName: user.UserName }).promise(),
@@ -159,6 +181,16 @@ exports.AwsIamUser = ({ spec, config }) => {
         await iam
           .detachUserPolicy({
             PolicyArn: policy.PolicyArn,
+            UserName: id,
+          })
+          .promise();
+      }),
+      () => iam.listUserPolicies({ UserName: id, MaxItems: 1e3 }).promise(),
+      get("PolicyNames"),
+      forEach(async (policyName) => {
+        await iam
+          .deleteUserPolicy({
+            PolicyName: policyName,
             UserName: id,
           })
           .promise();
