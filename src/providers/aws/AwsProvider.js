@@ -50,7 +50,6 @@ exports.AwsProvider = async ({ name = "aws", config }) => {
 
   AWS.config.update({
     ...(config.region && { region: config.region }),
-    ...(config.zone && { region: config.zone }),
     ...(AWSAccessKeyId && {
       accessKeyId: AWSAccessKeyId,
     }),
@@ -59,7 +58,7 @@ exports.AwsProvider = async ({ name = "aws", config }) => {
     }),
   });
 
-  await validateConfig({ region: AWS.config.region, zone: AWS.config.zone });
+  await validateConfig({ region: AWS.config.region, zone: config.zone });
 
   const accountId = await fetchAccountId();
 
