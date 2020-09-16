@@ -165,6 +165,13 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     return defaultsDeep({ PolicyName: name, Path: "/" })(properties);
   };
 
+  const shouldRetryOnException = (error) => {
+    logger.debug(`shouldRetryOnException ${tos(error)}`);
+    const retry = error.code === "DeleteConflict";
+    logger.debug(`shouldRetryOnException retry: ${retry}`);
+    return retry;
+  };
+
   return {
     type: "IamPolicy",
     spec,
@@ -179,6 +186,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    shouldRetryOnException,
   };
 };
 
