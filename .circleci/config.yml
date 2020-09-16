@@ -14,7 +14,7 @@ jobs:
       - run: ssh-add secrets/kp.pem
       - run: ssh-add -l
       - run: sudo npm run link
-      - run: mkdir /home/circleci/.aws && touch /home/circleci/.aws/credentials
+      - run: mkdir /home/circleci/.aws && touch /home/circleci/.aws/credentials && touch /home/circleci/.aws/config
       - run: CONTINUOUS_INTEGRATION=1 npm test
 orbs:
   node: circleci/node@4.0.0
