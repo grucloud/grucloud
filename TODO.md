@@ -23,7 +23,6 @@ Destroying resources on 1 provider: aws
 ## TODO Aws:
 
 - PolicyDocument stringify
-- aws role ad policy
 
 - add example code in AwsGettingStarted
 - listObjectsV2
