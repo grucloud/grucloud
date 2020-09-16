@@ -77,8 +77,9 @@ describe("AwsIamInstanceProfile", async function () {
     await testPlanDeploy({ provider });
 
     const iamInstanceProfileLive = await iamInstanceProfile.getLive();
-    //TOD check for roles
     assert(iamInstanceProfileLive);
+    assert.equal(iamInstanceProfileLive.Roles[0].RoleName, iamRole.name);
+
     await testPlanDestroy({ provider });
   });
 });
