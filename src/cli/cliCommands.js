@@ -196,43 +196,54 @@ const displayErrorHooks = (resultHooks) => {
   }
 };
 
+const displayErrorResults = ({ results = [], name }) => {
+  if (!isEmpty(results)) {
+    pipe([
+      filter(({ result }) => result?.error),
+      forEach(({ provider, result, resultQuery }) => {
+        assert(provider.name);
+        console.log(`Provider ${provider.name}`);
+        if (resultQuery) {
+          displayPlanQueryErrorResult(resultQuery.resultCreate.plans);
+          displayPlanQueryErrorResult(resultQuery.resultDestroy.plans);
+        }
+
+        displayErrorHooks(result?.resultHooks);
+
+        if (result?.resultCreate) {
+          displayPlanApplyErrorResult(result.resultCreate.results);
+        }
+        if (result?.resultDestroy) {
+          displayPlanApplyErrorResult(result.resultDestroy.results);
+        }
+
+        if (result?.results) {
+          pipe([
+            filter(({ error }) => error),
+            forEach(({ item, type, client, error }) => {
+              item && console.log(`Resource ${formatResource(item.resource)}`);
+              client && console.log(`Client ${client.type}`);
+              type && console.log(`Client ${type}`);
+
+              console.log(YAML.stringify(convertError({ error, name })));
+            }),
+          ])(result.results);
+        }
+      }),
+    ])(results);
+  }
+};
+
 const displayError = ({ name, error }) => {
   assert(error);
   assert(name);
   console.error(`ERROR running command '${name}'`);
-  if (error.results) {
-    forEach(({ provider, result, resultQuery }) => {
-      assert(provider.name);
-      console.log(`Provider ${provider.name}`);
-      if (resultQuery) {
-        displayPlanQueryErrorResult(resultQuery.resultCreate.plans);
-        displayPlanQueryErrorResult(resultQuery.resultDestroy.plans);
-      }
+  displayErrorResults({ name, results: error.results });
+  displayErrorResults({ name, results: error.resultsDestroy });
 
-      displayErrorHooks(result?.resultHooks);
+  const results = error.resultsDestroy || error.results;
 
-      if (result?.resultCreate) {
-        displayPlanApplyErrorResult(result.resultCreate.results);
-      }
-      if (result?.resultDestroy) {
-        displayPlanApplyErrorResult(result.resultDestroy.results);
-      }
-      if (result?.results) {
-        pipe([
-          tap((xx) => {
-            logger.debug(tos(xx));
-          }),
-          filter(({ error }) => error),
-          forEach(({ item, client, error }) => {
-            item && console.log(`Resource ${formatResource(item.resource)}`);
-            client && console.log(`Client ${client.type}`);
-
-            console.log(YAML.stringify(convertError({ error, name })));
-          }),
-        ])(result.results);
-      }
-    })(error.results);
-  } else {
+  if (!results) {
     console.log(YAML.stringify(convertError({ error })));
   }
 };
