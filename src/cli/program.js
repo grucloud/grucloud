@@ -10,6 +10,12 @@ const optionFilteredByProvider = [
   collect,
 ];
 
+const optionFilteredByTypes = [
+  "-t, --types <value>",
+  "Filter by type, multiple values allowed",
+  collect,
+];
+
 exports.createProgram = ({ version, commands }) => {
   const program = new Command();
   program.storeOptionsAsProperties(false);
@@ -84,13 +90,13 @@ exports.createProgram = ({ version, commands }) => {
     .alias("d")
     .option("-f, --force", "force destroy, will not prompt user")
     .option(...optionFilteredByProvider)
+    .option(...optionFilteredByTypes)
     .option(
       "-a, --all",
       "destroy all resources including those not managed by us"
     )
     .option("-n, --name <value>", "destroy by name")
     .option("--id <value>", "destroy by id")
-    .option("-p, --provider <value>", "Filter by provider name", collect)
     .action(async (commandOptions) => {
       const programOptions = program.opts();
       await pipe([
@@ -108,17 +114,13 @@ exports.createProgram = ({ version, commands }) => {
     .option("-a, --all", "List also read-only resources")
     .option("-n, --name <value>", "List by name")
     .option("--id <value>", "List by id")
-    .option(
-      "-t, --types <value>",
-      "Filter by type, multiple values allowed",
-      collect
-    )
     .option("-o, --our", "List only our managed resources")
     .option(
       "-d, --canBeDeleted",
       "display resources which can be deleted, a.k.a non default resources"
     )
     .option(...optionFilteredByProvider)
+    .option(...optionFilteredByTypes)
     .action(async (commandOptions) => {
       const programOptions = program.opts();
       await pipe([

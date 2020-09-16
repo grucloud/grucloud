@@ -1196,7 +1196,7 @@ function CoreProvider({
       },
       // Delete by type
       () => !isEmpty(types),
-      () => types.includes(type),
+      () => any((type) => new RegExp(type, "i").test(spec.type))(types),
       // PlanDirection
       () => {
         if (direction == PlanDirection.UP) {

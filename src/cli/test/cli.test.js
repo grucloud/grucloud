@@ -77,6 +77,10 @@ describe("cli", function () {
   it("list by provider", async function () {
     await runProgram({ cmds: ["list", "--provider", "Moc"] });
   });
+  it("destroy by type", async function () {
+    const result = await runProgram({ cmds: ["d", "--types", "Serv"] });
+    assert.equal(result, 0);
+  });
   it("--config notexisting.js", async function () {
     await main({
       argv: ["node", "gc", "--config", "notexisting.js", "list"],
