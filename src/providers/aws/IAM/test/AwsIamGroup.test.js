@@ -49,7 +49,7 @@ describe("AwsIamGroup", async function () {
   it("iamGroup plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 1);
+    assert.equal(plan.resultCreate.plans.length, 2);
   });
   it("iamGroup listLives all", async function () {
     const { results: lives } = await provider.listLives({
