@@ -87,7 +87,7 @@ exports.AwsS3Object = ({ spec, config }) => {
                   (error, params) => ({
                     error: convertError({
                       error,
-                      procedure: "s3.listObjects",
+                      procedure: "s3.listObjectsV2",
                       params,
                     }),
                   }),
@@ -128,7 +128,8 @@ exports.AwsS3Object = ({ spec, config }) => {
                         Prefix: name,
                         MaxKeys: 1,
                       }),
-                      async (params) => await s3.listObjects(params).promise(),
+                      async (params) =>
+                        await s3.listObjectsV2(params).promise(),
                       ({ Contents }) => first(Contents),
                     ])(bucket),
                   // getObjectTagging
