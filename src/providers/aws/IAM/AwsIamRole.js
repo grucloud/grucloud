@@ -173,7 +173,7 @@ exports.AwsIamRole = ({ spec, config }) => {
         iam
           .listPoliciesGrantingServiceAccess({
             Arn: Role.Arn,
-            ServiceNamespaces: ["iam", "ec2"],
+            ServiceNamespaces: ["iam", "ec2", "s3"],
           })
           .promise(),
       get("PoliciesGrantingServiceAccess"),

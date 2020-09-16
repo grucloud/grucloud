@@ -12,6 +12,21 @@ const iamUser = await provider.makeIamUser({
 });
 ```
 
+### Add a user to groups
+
+```js
+const iamGroup = await provider.makeIamGroup({
+  name: "Admin",
+  properties: () => ({}),
+});
+
+const iamUser = await provider.makeIamUser({
+  name: "Alice",
+  dependencies: { iamGroups: [iamGroup] },
+  properties: () => ({}),
+});
+```
+
 ### Examples
 
 - [simple example](https://github.com/FredericHeem/grucloud/blob/master/examples/aws/iam/iac.js)
@@ -19,6 +34,10 @@ const iamUser = await provider.makeIamUser({
 ### Properties
 
 - [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createUser-property)
+
+### Dependencies
+
+- [IamGroup](./IamGroup)
 
 ### AWS CLI
 

@@ -96,21 +96,24 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     assert(payload);
     logger.debug(`create ${tos({ name, payload })}`);
 
-    const { iamRole } = dependencies;
-    assert(iamRole, "missing dependency iamRole");
-
     const createParams = defaultsDeep({})(payload);
 
     const { InstanceProfile } = await iam
       .createInstanceProfile(createParams)
       .promise();
 
-    await iam
-      .addRoleToInstanceProfile({
-        InstanceProfileName: name,
-        RoleName: iamRole.name,
-      })
-      .promise();
+    const { iamRoles } = dependencies;
+    assert(iamRoles, "missing dependency iamRoles");
+    assert(Array.isArray(iamRoles), "iamRoles must be an array");
+
+    await forEach((iamRole) =>
+      iam
+        .addRoleToInstanceProfile({
+          InstanceProfileName: name,
+          RoleName: iamRole.name,
+        })
+        .promise()
+    )(iamRoles);
 
     logger.debug(`create result ${tos(InstanceProfile)}`);
 

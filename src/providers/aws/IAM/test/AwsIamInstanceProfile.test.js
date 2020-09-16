@@ -47,7 +47,7 @@ describe("AwsIamInstanceProfile", async function () {
 
     iamInstanceProfile = await provider.makeIamInstanceProfile({
       name: iamInstanceProfileName,
-      dependencies: { iamRole },
+      dependencies: { iamRoles: [iamRole] },
       properties: () => ({
         Path: "/",
       }),
@@ -73,10 +73,11 @@ describe("AwsIamInstanceProfile", async function () {
     });
     assert(lives);
   });
-  it("iamInstanceProfile apply plan", async function () {
+  it.only("iamInstanceProfile apply plan", async function () {
     await testPlanDeploy({ provider });
 
     const iamInstanceProfileLive = await iamInstanceProfile.getLive();
+    //TOD check for roles
     assert(iamInstanceProfileLive);
     await testPlanDestroy({ provider });
   });

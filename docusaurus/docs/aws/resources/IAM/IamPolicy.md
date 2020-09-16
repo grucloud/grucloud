@@ -5,20 +5,34 @@ title: Iam Policy
 
 Provides an Iam Policy.
 
-The example below create an IAM user and a Policy attached to this user.
+The examples below create a policy and add it to a role, a user or a group.
+
+### Attach a policy to a role
 
 ```js
-const iamUser = await provider.makeIamUser({
-  name: "Alice",
-  properties: () => ({}),
+const iamRole = await provider.makeIamRole({
+  name: "my-role",
+  properties: () => ({
+    AssumeRolePolicyDocument: {
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Action: "sts:AssumeRole",
+          Principal: {
+            Service: "ec2.amazonaws.com",
+          },
+          Effect: "Allow",
+          Sid: "",
+        },
+      ],
+    },
+  }),
 });
 
 const iamPolicy = await provider.makeIamPolicy({
   name: "my-policy",
-  dependencies: { iamUser },
-
+  dependencies: { iamRole },
   properties: () => ({
-    PolicyName: iamPolicyName,
     PolicyDocument: {
       Version: "2012-10-17",
       Statement: [
@@ -35,6 +49,61 @@ const iamPolicy = await provider.makeIamPolicy({
 });
 ```
 
+### Attach a policy to a user
+
+```js
+const iamUser = await provider.makeIamUser({
+  name: "Alice",
+  properties: () => ({}),
+});
+
+const iamPolicy = await provider.makeIamPolicy({
+  name: "my-policy",
+  dependencies: { iamUser },
+  properties: () => ({
+    PolicyDocument: {
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Action: ["ec2:Describe*"],
+          Effect: "Allow",
+          Resource: "*",
+        },
+      ],
+    },
+    Description: "Allow ec2:Describe",
+    Path: "/",
+  }),
+});
+```
+
+### Attach a policy to a group
+
+```js
+const iamGroup = await provider.makeIamGroup({
+  name: "Admin",
+  properties: () => ({}),
+});
+
+const iamPolicy = await provider.makeIamPolicy({
+  name: "policy-ec2-describe",
+  dependencies: { iamGroup },
+  properties: () => ({
+    PolicyDocument: {
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Action: ["ec2:Describe*"],
+          Effect: "Allow",
+          Resource: "*",
+        },
+      ],
+    },
+    Description: "Allow ec2:Describe",
+  }),
+});
+```
+
 ### Examples
 
 - [simple example](https://github.com/FredericHeem/grucloud/blob/master/examples/aws/iam/iac.js)
@@ -42,6 +111,12 @@ const iamPolicy = await provider.makeIamPolicy({
 ### Properties
 
 - [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createPolicy-property)
+
+### Dependencies
+
+- [IamRole](./IamRole)
+- [IamUser](./IamUser)
+- [IamGroup](./IamGroup)
 
 ### AWS CLI
 

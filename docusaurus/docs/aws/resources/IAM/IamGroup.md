@@ -46,6 +46,15 @@ const iamPolicyToGroup = await provider.makeIamPolicy({
 
 - [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createGroup-property)
 
+### Dependencies
+
+- [IamInstanceProfile](./IamInstanceProfile)
+
+### Used By
+
+- [IamPolicy](./IamPolicy)
+- [IamUser](./IamUser)
+
 ### AWS CLI
 
 List all iam groups

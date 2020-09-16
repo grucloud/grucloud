@@ -54,10 +54,8 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
 
   const iamInstanceProfile = await provider.makeIamInstanceProfile({
     name: iamInstanceProfileName,
-    dependencies: { iamRole },
-    properties: () => ({
-      Path: "/",
-    }),
+    dependencies: { iamRoles: [iamRole] },
+    properties: () => ({}),
   });
 
   const server = await provider.makeEC2({

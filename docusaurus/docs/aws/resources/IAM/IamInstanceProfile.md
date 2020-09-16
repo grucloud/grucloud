@@ -5,7 +5,7 @@ title: Iam Instance Profile
 
 Provides an Iam Instance Profile.
 
-The following examples create an instance profile and a role attached to it:
+The following example create an instance profile, a role attached to this instance profile, and create an ec2 instance under this profile:
 
 ```js
 const iamRole = await provider.makeIamRole({
@@ -30,9 +30,19 @@ const iamRole = await provider.makeIamRole({
 
 const iamInstanceProfile = await provider.makeIamInstanceProfile({
   name: "my-instance-profile",
-  dependencies: { iamRole },
+  dependencies: { iamRoles: [iamRoles] },
   properties: () => ({
     Path: "/",
+  }),
+});
+
+const server = await provider.makeEC2({
+  name: "web-iam",
+  dependencies: { keyPair, iamInstanceProfile },
+  properties: () => ({
+    VolumeSize: 50,
+    InstanceType: "t2.micro",
+    ImageId: "ami-00f6a0c18edb19300", // Ubuntu 18.04
   }),
 });
 ```
@@ -44,6 +54,14 @@ const iamInstanceProfile = await provider.makeIamInstanceProfile({
 ### Properties
 
 - [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createInstanceProfile-property)
+
+### Dependencies
+
+- [IamRole](./IamRole)
+
+### Used By
+
+- [EC2](../EC2/EC2)
 
 ### AWS CLI
 
