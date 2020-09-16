@@ -56,7 +56,7 @@ const envFromDefault = ({ configDir }) => {
       (envFile) => fs.existsSync(envFile),
       (envFile) => envFromFile({ envFile }),
       () => {
-        console.log(
+        logger.info(
           `default environment file ${configDir}/default.env  does not exist`
         );
       },

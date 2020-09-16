@@ -1,9 +1,9 @@
+process.env.AWS_SDK_LOAD_CONFIG = "true";
 const AWS = require("aws-sdk");
 const assert = require("assert");
 const { map } = require("rubico");
 
 const logger = require("../../logger")({ prefix: "AwsProvider" });
-const { checkConfig } = require("../../Utils");
 const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
 
@@ -24,7 +24,7 @@ const validateConfig = async ({ region, zone }) => {
 
   const { AvailabilityZones } = await ec2.describeAvailabilityZones().promise();
   const zones = map((x) => x.ZoneName)(AvailabilityZones);
-  if (!zones.includes(zone)) {
+  if (zone && !zones.includes(zone)) {
     const message = `The configued zone '${zone}' is not part of region ${region}, available zones for this region: ${zones}`;
     throw { code: 400, type: "configuration", message };
   }
@@ -39,9 +39,6 @@ const fetchAccountId = async () => {
 exports.AwsProvider = async ({ name = "aws", config }) => {
   assert(config);
 
-  const mandatoryConfigKeys = ["region", "zone"];
-  checkConfig(config, mandatoryConfigKeys);
-
   AWS.config.apiVersions = {
     ec2: "2016-11-15",
     resourcegroupstaggingapi: "2017-01-26",
@@ -49,20 +46,26 @@ exports.AwsProvider = async ({ name = "aws", config }) => {
     iam: "2010-05-08",
   };
 
+  const { AWSAccessKeyId, AWSSecretKey } = process.env;
+
   AWS.config.update({
-    region: config.region,
-    accessKeyId: process.env.AWSAccessKeyId,
-    secretAccessKey: process.env.AWSSecretKey,
+    ...(config.region && { region: config.region }),
+    ...(config.zone && { region: config.zone }),
+    ...(AWSAccessKeyId && {
+      accessKeyId: AWSAccessKeyId,
+    }),
+    ...(AWSSecretKey && {
+      secretAccessKey: AWSSecretKey,
+    }),
   });
 
-  await validateConfig(config);
+  await validateConfig({ region: AWS.config.region, zone: AWS.config.zone });
 
   const accountId = await fetchAccountId();
 
   return CoreProvider({
     type: "aws",
     name,
-    mandatoryEnvs: ["AWSAccessKeyId", "AWSSecretKey"],
     config: { ...config, accountId },
     fnSpecs,
   });

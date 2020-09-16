@@ -9,7 +9,7 @@ Let's create a simple infrastructure with
 - connected to a public ip address.
 - accessible through SSH
 
-Ensure possession of the **AWSAccessKeyId**, **AWSSecretKey** and **SSH keys**.
+Ensure the AWS CLI is configured properly and the possesion of the **SSH keys**.
 Visit the [Aws Requirements](./AwsRequirements.md) to retrieve these informations.
 
 ## Getting the code
@@ -20,54 +20,22 @@ Install the _grucloud_ command line utility: **gc**
 npm i -g @grucloud/core
 ```
 
-Clone one of the example:
+Clone the source code containing the examples:
 
 ```bash
 git clone git@github.com:FredericHeem/grucloud.git
 ```
 
+Change the directory to one of the examples:
+
 ```bash
-cd grucloud/examples/aws
+cd grucloud/examples/aws/ec2
 ```
+
+Install the node dependencies:
 
 ```bash
 npm install
-```
-
-## Environment file
-
-```sh
-cp config/default.env.example config/default.env
-```
-
-Edit **config/default.env** and set the correct values:
-
-```sh
-AWSAccessKeyId=
-AWSSecretKey=
-```
-
-## config file
-
-Edit **config/default.js** and set the project id, region and zone:
-
-```js
-module.exports = () => ({
-  region: "eu-west-2",
-  zone: "eu-west-2a",
-});
-```
-
-To find out the list of regions:
-
-```
-aws ec2 describe-regions
-```
-
-Choose a region close to your location, at this point select a zone name in the given region:
-
-```
-aws ec2 describe-availability-zones --region eu-west-2
 ```
 
 ## iac.js

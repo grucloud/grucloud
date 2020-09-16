@@ -13,6 +13,7 @@ module.exports = {
     "Amazon Web Service": [
       "aws/AwsRequirements",
       "aws/AwsGettingStarted",
+      "aws/AwsConfig",
       {
         Resources: [
           {
@@ -27,7 +28,15 @@ module.exports = {
               "aws/resources/EC2/ElasticIpAddress",
             ],
           },
-          { IAM: ["aws/resources/IAM/IamUser"] },
+          {
+            IAM: [
+              "aws/resources/IAM/IamInstanceProfile",
+              "aws/resources/IAM/IamGroup",
+              "aws/resources/IAM/IamPolicy",
+              "aws/resources/IAM/IamRole",
+              "aws/resources/IAM/IamUser",
+            ],
+          },
           { S3: ["aws/resources/S3/S3Bucket"] },
         ],
       },
