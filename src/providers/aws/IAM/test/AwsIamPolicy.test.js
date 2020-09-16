@@ -62,7 +62,7 @@ describe("AwsIamPolicy", async function () {
       dependencies: { iamUser },
       properties: () => ({
         PolicyName: iamPolicyName,
-        PolicyDocument: JSON.stringify({
+        PolicyDocument: {
           Version: "2012-10-17",
           Statement: [
             {
@@ -71,7 +71,7 @@ describe("AwsIamPolicy", async function () {
               Resource: "*",
             },
           ],
-        }),
+        },
         Description: "Allow ec2:Describe",
         Path: "/",
       }),
@@ -80,7 +80,7 @@ describe("AwsIamPolicy", async function () {
       name: iamPolicyNameToRole,
       dependencies: { iamRole },
       properties: () => ({
-        PolicyDocument: JSON.stringify({
+        PolicyDocument: {
           Version: "2012-10-17",
           Statement: [
             {
@@ -89,7 +89,7 @@ describe("AwsIamPolicy", async function () {
               Resource: "*",
             },
           ],
-        }),
+        },
         Description: "Allow ec2:Describe",
         Path: "/",
       }),
