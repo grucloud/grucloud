@@ -116,9 +116,17 @@ const ResourceMaker = ({
       if (!dependency.getLive) {
         return resolveDependencies(dependency);
       }
-      const live = await dependency.getLive();
-      const config = await dependency.resolveConfig();
-      return { resource: dependency, live, config };
+      return tryCatch(
+        async (dependency) => {
+          const live = await dependency.getLive();
+          const config = await dependency.resolveConfig();
+          return { resource: dependency, live, config };
+        },
+        (error, dependency) => {
+          logger.error(`resolveDependencies: ${tos(error)}`);
+          return { client, item: { resource: dependency }, error };
+        }
+      )(dependency);
     }),
     tap((x) => logger.debug(`resolveDependencies: ${tos(x)}`)),
   ]);
@@ -129,6 +137,16 @@ const ResourceMaker = ({
     });
 
     const resolvedDependencies = await resolveDependencies(dependencies);
+    if (any(({ error }) => error)(resolvedDependencies)) {
+      logger.error(
+        `resolveConfig ${type}/${resourceName} error in resolveDependencies`
+      );
+
+      throw {
+        message: "error resolving dependencies",
+        results: resolvedDependencies,
+      };
+    }
 
     assert(client.configDefault);
 
