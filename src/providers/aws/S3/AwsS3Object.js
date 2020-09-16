@@ -73,7 +73,7 @@ exports.AwsS3Object = ({ spec, config }) => {
               tryCatch(
                 async (params) =>
                   await pipe([
-                    async (params) => await s3.listObjects(params).promise(),
+                    async (params) => await s3.listObjectsV2(params).promise(),
                     ({ Contents }) => first(Contents),
                     switchCase([
                       (content) => content,

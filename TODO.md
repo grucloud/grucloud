@@ -22,8 +22,8 @@ Destroying resources on 1 provider: aws
 
 ## TODO Aws:
 
+- S3 list more than 1000 items
 - add example code in AwsGettingStarted
-- listObjectsV2
 - aws.config.loadFromPath('./AwsConfig.json');
 
 - error padend
