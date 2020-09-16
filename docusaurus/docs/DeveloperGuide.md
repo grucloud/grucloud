@@ -26,12 +26,18 @@ Now you are ready to clone the code, install the dependencies and run the functi
     npm install
     npm run test:ci
 
-### Travis
+### CircleCI
 
-Enncrypt the _default.env_ and the google credential file:
+Create an _.env_ file at the root directory and set the _KEY_ environment variable to a random value:
+
+```sh
+KEY=527C35A7-E186-44B0-AA38-1B8E18D897CC
+```
+
+Encrypt the _default.env_ and the google credential file:
 
 ```
-travis encrypt-file secrets/gc.pem secrets/gc.pem.enc --add
-travis encrypt-file examples/multi/config/default.env examples/multi/config/default.env.enc --add
-travis encrypt-file examples/multi/config/grucloud-e2e-f35e5f0a014a.json examples/multi/config/grucloud-e2e-f35e5f0a014a.json.enc --add
+npm run encrypt-data-ci
 ```
+
+Go the the _circleCI_ interface and set the _ENV_ variable used to decrypt the secrets
