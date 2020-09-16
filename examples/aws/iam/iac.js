@@ -10,7 +10,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
 
   const iamInstanceProfileName = "my-profile";
 
-  const PolicyDocument = JSON.stringify({
+  const PolicyDocument = {
     Version: "2012-10-17",
     Statement: [
       {
@@ -19,7 +19,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
         Resource: "*",
       },
     ],
-  });
+  };
 
   const iamGroup = await provider.makeIamGroup({
     name: groupName,
@@ -36,7 +36,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     name: roleName,
     properties: () => ({
       Path: "/",
-      AssumeRolePolicyDocument: JSON.stringify({
+      AssumeRolePolicyDocument: {
         Version: "2012-10-17",
         Statement: [
           {
@@ -48,7 +48,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
             Sid: "",
           },
         ],
-      }),
+      },
     }),
   });
 

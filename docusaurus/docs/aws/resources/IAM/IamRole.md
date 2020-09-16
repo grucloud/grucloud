@@ -9,7 +9,7 @@ Provides an Iam Role.
 const iamRole = await provider.makeIamRole({
   name: "my-role",
   properties: () => ({
-    AssumeRolePolicyDocument: JSON.stringify({
+    AssumeRolePolicyDocument: {
       Version: "2012-10-17",
       Statement: [
         {
@@ -21,7 +21,7 @@ const iamRole = await provider.makeIamRole({
           Sid: "",
         },
       ],
-    }),
+    },
   }),
 });
 ```

@@ -41,7 +41,7 @@ describe("AwsIamPolicy", async function () {
       name: iamRoleName,
       properties: () => ({
         Path: "/",
-        AssumeRolePolicyDocument: JSON.stringify({
+        AssumeRolePolicyDocument: {
           Version: "2012-10-17",
           Statement: [
             {
@@ -53,7 +53,7 @@ describe("AwsIamPolicy", async function () {
               Sid: "",
             },
           ],
-        }),
+        },
       }),
     });
 
@@ -96,7 +96,7 @@ describe("AwsIamPolicy", async function () {
     });
   });
   after(async () => {
-    // await provider?.destroyAll();
+    await provider?.destroyAll();
   });
   it("iamPolicy resolveConfig", async function () {
     assert.equal(iamPolicyToUser.name, iamPolicyName);

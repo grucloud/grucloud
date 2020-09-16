@@ -29,7 +29,7 @@ describe("AwsIamInstanceProfile", async function () {
       name: iamRoleName,
       properties: () => ({
         Path: "/",
-        AssumeRolePolicyDocument: JSON.stringify({
+        AssumeRolePolicyDocument: {
           Version: "2012-10-17",
           Statement: [
             {
@@ -41,7 +41,7 @@ describe("AwsIamInstanceProfile", async function () {
               Sid: "",
             },
           ],
-        }),
+        },
       }),
     });
 

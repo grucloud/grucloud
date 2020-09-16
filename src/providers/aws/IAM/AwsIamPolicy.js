@@ -100,6 +100,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       Description: `${payload.Description}, tags:${JSON.stringify(
         buildTags({ name, config })
       )}`,
+      PolicyDocument: JSON.stringify(payload.PolicyDocument),
     };
 
     const { Policy } = await iam.createPolicy(createParams).promise();

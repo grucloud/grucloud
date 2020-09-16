@@ -23,7 +23,7 @@ const iamPolicyToGroup = await provider.makeIamPolicy({
   name: "policy-ec2-describe",
   dependencies: { iamGroup },
   properties: () => ({
-    PolicyDocument: JSON.stringify({
+    PolicyDocument: {
       Version: "2012-10-17",
       Statement: [
         {
@@ -32,7 +32,7 @@ const iamPolicyToGroup = await provider.makeIamPolicy({
           Resource: "*",
         },
       ],
-    }),
+    },
     Description: "Allow ec2:Describe",
   }),
 });

@@ -46,6 +46,53 @@ exports.AwsIamRole = ({ spec, config }) => {
           }),
           async (role) => ({
             ...role,
+            Policies: await pipe([
+              () =>
+                iam
+                  .listRolePolicies({
+                    RoleName: role.RoleName,
+                    MaxItems: 1e3,
+                  })
+                  .promise(),
+              tap((policies) => {
+                logger.debug(`getList listRolePolicies: ${tos(policies)}`);
+              }),
+              get("PolicyNames"),
+            ])(),
+            AttachedPolicies: await pipe([
+              () =>
+                iam
+                  .listAttachedRolePolicies({
+                    RoleName: role.RoleName,
+                    MaxItems: 1e3,
+                  })
+                  .promise(),
+              get("AttachedPolicies"),
+              pluck("PolicyName"),
+              tap((policies) => {
+                logger.debug(
+                  `getList listAttachedRolePolicies: ${tos(policies)}`
+                );
+              }),
+            ])(),
+            InstanceProfiles: await pipe([
+              () =>
+                iam
+                  .listInstanceProfilesForRole({
+                    RoleName: role.RoleName,
+                    MaxItems: 1e3,
+                  })
+                  .promise(),
+              get("InstanceProfiles"),
+              tap((instanceProfiles) => {
+                logger.debug(
+                  `getList listInstanceProfilesForRole: ${tos(
+                    instanceProfiles
+                  )}`
+                );
+              }),
+              pluck("InstanceProfileName"),
+            ])(),
             Tags: (
               await iam.listRoleTags({ RoleName: role.RoleName }).promise()
             ).Tags,
@@ -93,7 +140,14 @@ exports.AwsIamRole = ({ spec, config }) => {
     assert(payload);
     logger.debug(`create role ${tos({ name, payload })}`);
 
-    const { Role } = await iam.createRole(payload).promise();
+    const { Role } = await iam
+      .createRole({
+        ...payload,
+        AssumeRolePolicyDocument: JSON.stringify(
+          payload.AssumeRolePolicyDocument
+        ),
+      })
+      .promise();
     logger.debug(`create result ${tos(Role)}`);
 
     const tagsParam = {

@@ -22,8 +22,6 @@ Destroying resources on 1 provider: aws
 
 ## TODO Aws:
 
-- PolicyDocument stringify
-
 - add example code in AwsGettingStarted
 - listObjectsV2
 - aws.config.loadFromPath('./AwsConfig.json');
