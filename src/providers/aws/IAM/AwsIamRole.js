@@ -1,6 +1,6 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
-const { map, pipe, tap, tryCatch, filter, get } = require("rubico");
+const { map, pipe, tap, tryCatch, filter, get, switchCase } = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
 const moment = require("moment");
 
@@ -119,12 +119,16 @@ exports.AwsIamRole = ({ spec, config }) => {
     }),
     tryCatch(
       ({ id }) => iam.getRole({ RoleName: id }).promise(),
-      (error) => {
-        logger.debug(`getById error: ${tos(error)}`);
-        if (error.code !== "NoSuchEntity") {
+      switchCase([
+        (error) => error.code !== "NoSuchEntity",
+        (error) => {
+          logger.debug(`getById error: ${tos(error)}`);
           throw error;
-        }
-      }
+        },
+        (error, { id }) => {
+          logger.debug(`getById ${id} NoSuchEntity`);
+        },
+      ])
     ),
     tap((result) => {
       logger.debug(`getById result: ${result}`);
@@ -167,25 +171,6 @@ exports.AwsIamRole = ({ spec, config }) => {
       tap(() => {
         logger.debug(`destroy ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
-      }),
-      () => getById({ id }),
-      ({ Role }) =>
-        iam
-          .listPoliciesGrantingServiceAccess({
-            Arn: Role.Arn,
-            ServiceNamespaces: ["iam", "ec2", "s3"],
-          })
-          .promise(),
-      get("PoliciesGrantingServiceAccess"),
-      pluck("Policies"),
-      flatten,
-      forEach(async (policy) => {
-        await iam
-          .detachRolePolicy({
-            PolicyArn: policy.PolicyArn,
-            RoleName: id,
-          })
-          .promise();
       }),
       () =>
         iam

@@ -1,6 +1,6 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
-const { map, pipe, tap, tryCatch, get } = require("rubico");
+const { map, pipe, tap, tryCatch, get, switchCase } = require("rubico");
 const { defaultsDeep, isEmpty, forEach } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "IamInstanceProfile" });
@@ -82,12 +82,16 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
           }),
           get("InstanceProfile"),
         ])(),
-      (error) => {
-        logger.debug(`getById error: ${tos(error)}`);
-        if (error.code !== "NoSuchEntity") {
+      switchCase([
+        (error) => error.code !== "NoSuchEntity",
+        (error) => {
+          logger.debug(`getById error: ${tos(error)}`);
           throw error;
-        }
-      }
+        },
+        (error, { id }) => {
+          logger.debug(`getById ${id} NoSuchEntity`);
+        },
+      ])
     ),
     tap((result) => {
       logger.debug(`getById result: ${tos(result)}`);
@@ -132,7 +136,6 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
           return true;
         }
       },
-      shouldRetryOnException: (error) => false,
       retryDelay: 2e3,
     });
     return instanceUp;

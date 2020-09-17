@@ -1,6 +1,6 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
-const { map, pipe, tap, tryCatch, get } = require("rubico");
+const { map, pipe, tap, tryCatch, get, switchCase } = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "IamGroup" });
@@ -52,12 +52,16 @@ exports.AwsIamGroup = ({ spec, config }) => {
     }),
     tryCatch(
       ({ id }) => iam.getGroup({ GroupName: id }).promise(),
-      (error) => {
-        logger.debug(`getById error: ${tos(error)}`);
-        if (error.code !== "NoSuchEntity") {
+      switchCase([
+        (error) => error.code !== "NoSuchEntity",
+        (error) => {
+          logger.debug(`getById error: ${tos(error)}`);
           throw error;
-        }
-      }
+        },
+        (error, { id }) => {
+          logger.debug(`getById ${id} NoSuchEntity`);
+        },
+      ])
     ),
     tap((result) => {
       logger.debug(`getById result: ${result}`);
@@ -86,25 +90,6 @@ exports.AwsIamGroup = ({ spec, config }) => {
       tap(() => {
         logger.debug(`destroy ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
-      }),
-      () => getById({ id }),
-      ({ Group }) =>
-        iam
-          .listPoliciesGrantingServiceAccess({
-            Arn: Group.Arn,
-            ServiceNamespaces: ["iam", "ec2"],
-          })
-          .promise(),
-      get("PoliciesGrantingServiceAccess"),
-      pluck("Policies"),
-      flatten,
-      forEach(async (policy) => {
-        await iam
-          .detachGroupPolicy({
-            PolicyArn: policy.PolicyArn,
-            GroupName: id,
-          })
-          .promise();
       }),
       () =>
         iam
