@@ -73,7 +73,7 @@ describe("AwsIamInstanceProfile", async function () {
     });
     assert(lives);
   });
-  it.only("iamInstanceProfile apply plan", async function () {
+  it("iamInstanceProfile apply plan", async function () {
     await testPlanDeploy({ provider });
 
     const iamInstanceProfileLive = await iamInstanceProfile.getLive();
