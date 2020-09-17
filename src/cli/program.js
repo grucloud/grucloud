@@ -131,5 +131,21 @@ exports.createProgram = ({ version, commands }) => {
       ])(programOptions);
     });
 
+  program
+    .command("output")
+    .description("Output the value of a resource")
+    .alias("o")
+    .requiredOption("-n, --name <value>", "resource name")
+    .requiredOption("-f, --field <value>", "the resource field to get")
+    .option(...optionFilteredByProvider)
+    .action(async (commandOptions) => {
+      const programOptions = program.opts();
+      await pipe([
+        infraOptions,
+        createInfra,
+        async (infra) =>
+          await commands.output({ infra, commandOptions, programOptions }),
+      ])(programOptions);
+    });
   return program;
 };

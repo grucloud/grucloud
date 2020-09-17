@@ -1,5 +1,4 @@
 const { AwsProvider } = require("@grucloud/core");
-const Hooks = require("./hooks");
 
 const createResources = async ({ provider, resources: { keyPair } }) => {
   const eip = await provider.makeElasticIpAddress({

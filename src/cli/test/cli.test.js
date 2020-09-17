@@ -37,6 +37,7 @@ const commandsHooks = ["run --onDeployed", "run --onDestroyed"];
 const commandsAll = ["plan", "apply -f", ...commands, ...commandsHooks];
 
 const onExitOk = () => assert(false);
+
 const runProgram = async ({
   cmds = [],
   configFile = configFileDefault,
@@ -58,6 +59,15 @@ const runProgram = async ({
 describe("cli", function () {
   it("query plan", async function () {
     await runProgram({ cmds: ["plan"] });
+  });
+  it("output", async function () {
+    await runProgram({ cmds: ["output", "--name", "myip", "--field", "id"] });
+  });
+  it("output name not found", async function () {
+    await runProgram({
+      cmds: ["output", "--name", "idonotexist", "--field", "id"],
+      onExit: ({ code }) => assert.equal(code, 422),
+    });
   });
   it("cli apply plan", async function () {
     await runProgram({ cmds: ["apply", "--force"] });

@@ -28,9 +28,6 @@ Destroying resources on 1 provider: aws
 aws iam create-user --user-name terraform-user
 aws iam put-user-policy --user-name terraform-user --policy-name least-privilege --policy-document file://policy.json
 
-- add tags for every resource
-- public Ip address in example
-
 - s3 notificationConfiguration example with ServerLess function, sns
 
 - s3 analytics configuration
@@ -55,7 +52,6 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
   }
 - google_project_iam_member
 
-- ssh `terraform output ip`
 - rename in gcp
 - instance: add service account
 - create new project such as grucloud-e2e
@@ -67,7 +63,6 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## Nice to have
 
-- terraform output, i.e - ssh `terraform output ip`
 - https://www.cncf.io/
 - https://jonathan.bergknoff.com/journal/terraform-pain-points/
 - terraform workspace new staging

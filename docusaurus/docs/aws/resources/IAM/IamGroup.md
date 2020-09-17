@@ -48,8 +48,6 @@ const iamPolicyToGroup = await provider.makeIamPolicy({
 
 ### Dependencies
 
-- [IamInstanceProfile](./IamInstanceProfile)
-
 ### Used By
 
 - [IamPolicy](./IamPolicy)

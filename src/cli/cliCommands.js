@@ -18,7 +18,15 @@ const {
   tryCatch,
   get,
 } = require("rubico");
-const { pluck, isEmpty, flatten, forEach, uniq, size } = require("rubico/x");
+const {
+  pluck,
+  isEmpty,
+  flatten,
+  forEach,
+  uniq,
+  size,
+  first,
+} = require("rubico/x");
 
 const logger = require("../logger")({ prefix: "CliCommands" });
 const YAML = require("./json2yaml");
@@ -922,9 +930,63 @@ const listDoOk = ({ commandOptions, programOptions }) =>
   ]);
 
 const listDoError = (error) => {
-  displayError({ name: "Plan List", error });
+  displayError({ name: "List", error });
   throw { code: 422, error };
 };
+
 //List all
 exports.list = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(listDoOk({ commandOptions, programOptions }), listDoError)(infra);
+
+//Output
+const OutputDoOk = ({ commandOptions, programOptions }) =>
+  pipe([
+    tap(() => {
+      logger.debug(
+        `output ${JSON.stringify({ commandOptions, programOptions })}`
+      );
+    }),
+    ({ providers }) =>
+      filterProvidersByName({ commandOptions, providers })(providers),
+    tap((providers) => {
+      logger.debug(`output #providers ${providers.length}`);
+    }),
+    forEach((provider) => {
+      logger.debug(`provider ${provider.name}: ${provider.resourceNames()}`);
+    }),
+    filter((provider) => provider.getResourceByName(commandOptions.name)),
+    switchCase([
+      (providers) => isEmpty(providers),
+      () => {
+        throw { message: `Cannot find resource: '${commandOptions.name}'` };
+      },
+      (providers) => size(providers) > 1,
+      () => {
+        throw {
+          message: `resource: '${commandOptions.name}' found in multiple providers, use the --provider option`,
+        };
+      },
+      (providers) => first(providers),
+    ]),
+    (provider) => provider.getResourceByName(commandOptions.name),
+    (resource) => resource.getLive(),
+    tap((live) => {
+      logger.debug(`output live: ${live}`);
+    }),
+    get(commandOptions.field),
+    tap((result) => {
+      logger.debug(`output result: ${result}`);
+      console.log(result);
+    }),
+  ]);
+
+const OutputDoError = (error) => {
+  displayError({ name: "Output", error });
+  throw { code: 422, error };
+};
+
+exports.output = async ({ infra, commandOptions = {}, programOptions = {} }) =>
+  tryCatch(
+    OutputDoOk({ commandOptions, programOptions }),
+    OutputDoError
+  )(infra);

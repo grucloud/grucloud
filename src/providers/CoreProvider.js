@@ -419,7 +419,7 @@ function CoreProvider({
   const getTargetResources = () => [...mapNameToResource.values()];
   const resourceNames = () => [...mapNameToResource.keys()];
 
-  const resourceByName = (name) => mapNameToResource.get(name);
+  const getResourceByName = (name) => mapNameToResource.get(name);
 
   const specs = fnSpecs(providerConfig).map((spec) =>
     defaultsDeep(SpecDefault({ config: providerConfig, providerName }))(spec)
@@ -1373,7 +1373,7 @@ function CoreProvider({
     assert(title);
 
     const executor = async ({ item }) => {
-      const engine = resourceByName(item.resource.name);
+      const engine = getResourceByName(item.resource.name);
       assert(engine, `Cannot find resource ${tos(item.resource.name)}`);
 
       const input = await engine.resolveConfig();
@@ -1599,7 +1599,7 @@ function CoreProvider({
     listConfig,
     targetResourcesAdd,
     clientByType,
-    resourceByName,
+    getResourceByName,
     resourceNames,
     getResourcesByType,
     getTargetResources,

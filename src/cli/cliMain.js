@@ -25,11 +25,13 @@ exports.main = async ({ argv, onExit }) => {
     const startDate = new Date();
     const commmand = await program.parseAsync(argv);
     const duration = new Duration(startDate, new Date());
-    console.log(
-      `Command "${executableName} ${commmand.args.join(
-        " "
-      )}" executed in ${duration.toString(1, 1)}`
-    );
+    if (!["output"].includes(commmand.args[0])) {
+      console.log(
+        `Command "${executableName} ${commmand.args.join(
+          " "
+        )}" executed in ${duration.toString(1, 1)}`
+      );
+    }
     return 0;
   } catch (error) {
     const { code = -1 } = error;

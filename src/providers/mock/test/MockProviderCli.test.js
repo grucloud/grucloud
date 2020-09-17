@@ -18,6 +18,13 @@ describe("MockProviderCli", async function () {
     const resources = await createResources({ provider });
     const infra = { providers: [provider] };
 
+    {
+      const output = await cliCommands.output({
+        infra,
+        commandOptions: { name: "myip", field: "id" },
+      });
+      assert(!output);
+    }
     const { plans, results } = await cliCommands.planDestroy({
       infra,
       commandOptions: { force: true, name: "volume" },
@@ -40,7 +47,14 @@ describe("MockProviderCli", async function () {
     await cliCommands.planApply({
       infra,
     });
-
+    {
+      const output = await cliCommands.output({
+        infra,
+        commandOptions: { name: "myip", field: "id" },
+        programOptions: {},
+      });
+      assert(output);
+    }
     prompts.inject([false]);
     await cliCommands.planDestroy({
       infra,
