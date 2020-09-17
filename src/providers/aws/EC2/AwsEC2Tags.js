@@ -24,15 +24,14 @@ exports.isOurMinion = ({ resource, config }) => {
   );
   return minion;
 };
-
+// Remove it, same as above
 exports.isOurMinionEc2 = ({ resource, config }) => {
   const { managedByKey, managedByValue } = config;
   assert(resource);
-  assert(resource.Instances);
-  const isMinion = resource.Instances.some((instance) =>
-    instance.Tags.find(
-      (tag) => tag.Key === managedByKey && tag.Value === managedByValue
-    )
+  assert(resource.Tags);
+
+  const isMinion = resource.Tags.find(
+    (tag) => tag.Key === managedByKey && tag.Value === managedByValue
   );
 
   logger.debug(

@@ -44,8 +44,7 @@ module.exports = ({ resources: { eip, server }, provider }) => {
         const serverLive = await server.getLive();
         assert(serverLive, "server should be alive");
         //Static checks
-        const serverInstance = serverLive.Instances[0];
-        assert.equal(serverInstance.PublicIpAddress, eipLive.PublicIp);
+        assert.equal(serverLive.PublicIpAddress, eipLive.PublicIp);
 
         const {
           results: [vpcs],
@@ -54,7 +53,7 @@ module.exports = ({ resources: { eip, server }, provider }) => {
         const vpcDefault = vpcs.resources.find((vpc) => vpc.data.IsDefault);
         assert(vpcDefault);
 
-        assert.equal(serverInstance.VpcId, vpcDefault.data.VpcId);
+        assert.equal(serverLive.VpcId, vpcDefault.data.VpcId);
 
         const host = eipLive.PublicIp;
         return {

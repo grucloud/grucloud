@@ -207,7 +207,7 @@ const displayErrorHooks = (resultHooks) => {
 const displayErrorResults = ({ results = [], name }) => {
   if (!isEmpty(results)) {
     pipe([
-      filter(({ result }) => result?.error),
+      //filter(({ result }) => result?.error),
       forEach(({ provider, result, resultQuery }) => {
         assert(provider.name);
         console.log(`Provider ${provider.name}`);

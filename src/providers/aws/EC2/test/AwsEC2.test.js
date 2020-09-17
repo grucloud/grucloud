@@ -64,16 +64,14 @@ describe("AwsEC2", async function () {
     const { results: lives } = await provider.listLives({ all: true });
     assert(lives);
   });
-  it.skip("ec2 apply plan", async function () {
+  it("ec2 apply plan", async function () {
     await testPlanDeploy({ provider });
 
     const serverLive = await server.getLive();
 
-    const serverInstance = serverLive.Instances[0];
-
     CheckTagsEC2({
       config: provider.config(),
-      tags: serverInstance.Tags,
+      tags: serverLive.Tags,
       name: server.name,
     });
 
@@ -84,7 +82,7 @@ describe("AwsEC2", async function () {
     const vpcDefault = vpcs.resources.find((vpc) => vpc.data.IsDefault);
     assert(vpcDefault);
 
-    assert.equal(serverInstance.VpcId, vpcDefault.data.VpcId);
+    assert.equal(serverLive.VpcId, vpcDefault.data.VpcId);
 
     await testPlanDestroy({ provider, full: false });
   });

@@ -181,11 +181,10 @@ describe("AwsProvider", async function () {
     await testPlanDeploy({ provider, full: true });
 
     const serverLive = await server.getLive();
-    const serverInstance = serverLive.Instances[0];
 
     CheckTagsEC2({
       config: provider.config(),
-      tags: serverInstance.Tags,
+      tags: serverLive.Tags,
       name: server.name,
     });
 

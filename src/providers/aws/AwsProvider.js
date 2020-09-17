@@ -65,7 +65,7 @@ exports.AwsProvider = async ({ name = "aws", config }) => {
   return CoreProvider({
     type: "aws",
     name,
-    config: { ...config, accountId },
+    config: { ...config, accountId, region: AWS.config.region },
     fnSpecs,
   });
 };

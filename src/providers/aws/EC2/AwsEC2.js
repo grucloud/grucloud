@@ -1,6 +1,6 @@
 const AWS = require("aws-sdk");
-const { map, transform } = require("rubico");
-const { defaultsDeep, isEmpty } = require("rubico/x");
+const { map, transform, get, tap, pipe, filter } = require("rubico");
+const { defaultsDeep, isEmpty, first, pluck, flatten } = require("rubico/x");
 
 const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "AwsEc2" });
@@ -23,37 +23,54 @@ module.exports = AwsEC2 = ({ spec, config }) => {
 
   const ec2 = new AWS.EC2();
 
-  const findName = (item) => findNameInTags(item.Instances[0]);
+  const findName = (item) => findNameInTags(item);
 
   const findId = (item) => {
     assert(item);
-    const id = item.Instances[0].InstanceId;
+    const id = item.InstanceId;
     assert(id);
     return id;
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
-  const getList = async ({ params } = {}) => {
-    logger.debug(`getList ${tos(params)}`);
-    const data = await ec2.describeInstances(params).promise();
-    //logger.debug(`getList ec2 ${tos(data)}`);
-    const items = data.Reservations.filter(
-      (reservation) =>
-        !StateTerminated.includes(reservation.Instances[0].State.Name)
-    );
-    logger.debug(`getList filtered: ${tos(items)}`);
-    return {
+
+  const getList = pipe([
+    tap(({ params } = {}) => {
+      logger.debug(`getList ${tos(params)}`);
+    }),
+    ({ params } = {}) => ec2.describeInstances(params).promise(),
+    get("Reservations"),
+    tap((obj) => {
+      logger.debug(`getList ${tos(obj)}`);
+    }),
+    pluck("Instances"),
+    flatten,
+    tap((obj) => {
+      logger.debug(`getList ${tos(obj)}`);
+    }),
+    filter((instance) => !StateTerminated.includes(instance.State.Name)),
+    tap((obj) => {
+      logger.debug(`getList ${tos(obj)}`);
+    }),
+    (items) => ({
       total: items.length,
       items,
-    };
-  };
+    }),
+  ]);
 
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
-  const getById = getByIdCore({ fieldIds: "InstanceIds", getList });
+  const getById = pipe([
+    getByIdCore({ fieldIds: "InstanceIds", getList }),
+    tap((obj) => {
+      logger.debug(`getById ${tos(obj)}`);
+    }),
+  ]);
 
   const getStateName = (instance) => {
-    const { InstanceId } = instance.Instances[0];
-    const state = instance.Instances[0].State.Name;
+    const { InstanceId, State } = instance;
+    assert(InstanceId);
+    assert(State);
+    const state = State.Name;
     logger.debug(`InstanceId ${InstanceId}, stateName ${state} `);
     return state;
   };
@@ -87,13 +104,14 @@ module.exports = AwsEC2 = ({ spec, config }) => {
       name: `isUpById: ${name} id: ${InstanceId}`,
       fn: () => isUpById({ id: InstanceId }),
       isExpectedResult: (result) => result,
-      shouldRetryOnException: (error) => false,
       ...clientConfig,
     });
 
+    assert(instanceUp.Tags);
+
     CheckTagsEC2({
       config,
-      tags: instanceUp.Instances[0].Tags,
+      tags: instanceUp.Tags,
       name,
     });
 

@@ -84,7 +84,7 @@ module.exports = [
       const diff = compare({
         target,
         targetKeys: ["InstanceType"], //TODO
-        live: live.Instances[0],
+        live,
       });
       logger.debug(`compare ${tos(diff)}`);
       return diff;

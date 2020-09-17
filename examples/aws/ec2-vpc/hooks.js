@@ -17,8 +17,6 @@ module.exports = ({
         const eipLive = await eip.getLive();
         const serverLive = await server.getLive();
 
-        const serverInstance = serverLive.Instances[0];
-
         //Security Group
         assert.equal(sgLive.VpcId, vpcLive.VpcId);
 
@@ -33,12 +31,12 @@ module.exports = ({
         assert.equal(subnetLive.VpcId, vpcLive.VpcId);
 
         // Server
-        assert.equal(serverInstance.VpcId, vpcLive.VpcId);
+        assert.equal(serverLive.VpcId, vpcLive.VpcId);
 
         //Check public ip address
-        assert.equal(serverInstance.PublicIpAddress, eipLive.PublicIp);
+        assert.equal(serverLive.PublicIpAddress, eipLive.PublicIp);
 
-        assert.equal(serverInstance.SecurityGroups[0].GroupId, sgLive.GroupId);
+        assert.equal(serverLive.SecurityGroups[0].GroupId, sgLive.GroupId);
         return {};
       },
       actions: [
