@@ -6,6 +6,7 @@
 (cd aws/iam && npm run link)
 (cd azure/ && npm run link)
 (cd google/vm && npm run link)
+(cd google/vm-simple && npm run link)
 (cd google/vm-network && npm run link)
 (cd mock/mock && npm run link)
 (cd mock/mock-simple && npm run link)

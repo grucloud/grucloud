@@ -31,7 +31,8 @@ Visit the [Google Cloud Requirements](./docusaurus/docs/google/GoogleRequirement
 
 ### Examples
 
-- [Virtual Machine](./examples/google/vm)
+- [Virtual Machine](./examples/google/vm-simple)
+- [Virtual Machine with Firewall and public ip](./examples/google/vm)
 - [Virtual Machine with full network](./examples/google/vm-network)
 
 ### Resources

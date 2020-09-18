@@ -20,6 +20,7 @@ Destroying resources on 1 provider: aws
 
 ## TODO Aws:
 
+- doc S3 Object
 - add example code in AwsGettingStarted
 - aws.config.loadFromPath('./AwsConfig.json');
 
