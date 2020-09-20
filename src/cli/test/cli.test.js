@@ -142,9 +142,9 @@ describe("cli", function () {
         configFileDefault,
         "list",
       ],
-      onExit: ({ code, error: { message } }) => {
-        assert.equal(code, 400);
-        assert.equal(message, "no providers provided");
+      onExit: ({ code, error }) => {
+        assert.equal(error.code, 422);
+        assert.equal(error.error.message, "no providers provided");
       },
     });
   });

@@ -92,5 +92,5 @@ exports.createStack = async ({ name = "aws", config }) => {
   provider.register({
     resources,
   });
-  return { providers: [provider], resources };
+  return { provider, resources };
 };

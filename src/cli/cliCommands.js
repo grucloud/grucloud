@@ -37,7 +37,11 @@ const {
   displayListSummary,
   displayLive,
 } = require("./displayUtils");
-const { convertError, HookType } = require("../providers/Common");
+const {
+  convertError,
+  HookType,
+  combineProviders,
+} = require("../providers/Common");
 const { tos } = require("../tos");
 
 // Common
@@ -74,6 +78,7 @@ const filterProvidersByName = ({
   pipe([
     tap((xx) => {
       logger.debug(`filterProvidersByName ${providerOptions}`);
+      assert(providers && !isEmpty(providers), "no providers");
       assert(providers[0].name, "not an array of providers");
     }),
     filter(
@@ -319,13 +324,10 @@ const displayQueryPlanSummary = ({ providers, create, destroy }) =>
     } on ${plu("provider", providers, true)}`
   );
 
-const planQuery = async ({
-  infra: { providers },
-  commandOptions = {},
-  programOptions = {},
-}) =>
+const planQuery = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     pipe([
+      combineProviders,
       ({ providers }) =>
         filterProvidersByName({ commandOptions, providers })(providers),
       doPlanQuery({ commandOptions, programOptions }),
@@ -354,7 +356,7 @@ const planQuery = async ({
       displayError({ name: "plan", error });
       throw { code: 422, error };
     }
-  )({ providers, commandOptions, programOptions });
+  )(infra);
 
 exports.planQuery = planQuery;
 
@@ -398,7 +400,7 @@ const runAsyncCommandHook = ({ hookType, commandTitle, providers }) =>
 
 // planRunScript
 const planRunScript = async ({
-  infra: { providers },
+  infra,
   commandOptions = {},
   programOptions = {},
 }) =>
@@ -407,6 +409,7 @@ const planRunScript = async ({
       tap((x) => {
         logger.debug("planRunScript");
       }),
+      combineProviders,
       ({ providers }) =>
         filterProvidersByName({ commandOptions, providers })(providers),
       switchCase([
@@ -455,13 +458,13 @@ const planRunScript = async ({
       displayError({ name: "planRunScript", error });
       throw { code: 422, error };
     }
-  )({ providers, programOptions, commandOptions });
+  )(infra);
 
 exports.planRunScript = planRunScript;
 
 // Plan Apply
 exports.planApply = async ({
-  infra: { providers },
+  infra,
   commandOptions = {},
   programOptions = {},
 }) => {
@@ -584,12 +587,13 @@ exports.planApply = async ({
 
   const processDeployPlans = switchCase([
     (allplans) => commandOptions.force || promptConfirmDeploy(allplans),
-    doPlansDeploy({ commandOptions, providers }),
+    doPlansDeploy({ commandOptions, providers: infra.providers }),
     abortDeploy,
   ]);
 
   return tryCatch(
     pipe([
+      combineProviders,
       ({ providers }) =>
         filterProvidersByName({ commandOptions, providers })(providers),
       doPlanQuery({ commandOptions, programOptions }),
@@ -602,12 +606,12 @@ exports.planApply = async ({
 
       throw { code: 422, error };
     }
-  )({ providers, commandOptions });
+  )(infra);
 };
 
 // Plan Destroy
 exports.planDestroy = async ({
-  infra: { providers },
+  infra,
   commandOptions = {},
   programOptions = {},
 }) => {
@@ -763,6 +767,7 @@ exports.planDestroy = async ({
 
   return tryCatch(
     pipe([
+      combineProviders,
       ({ providers }) =>
         filterProvidersByName({ commandOptions, providers })(providers),
       async (providers) =>
@@ -828,7 +833,7 @@ exports.planDestroy = async ({
       displayError({ name: "Plan Destroy", error });
       throw { code: 422, error };
     }
-  )({ providers });
+  )(infra);
 };
 
 const countResources = pipe([
@@ -864,6 +869,13 @@ const isEmptyList = pipe([pluck("result.results"), flatten, isEmpty]);
 
 const listDoOk = ({ commandOptions, programOptions }) =>
   pipe([
+    tap((x) => {
+      console.log(JSON.stringify(x, null, 4));
+    }),
+    combineProviders,
+    tap((x) => {
+      console.log(JSON.stringify(x, null, 4));
+    }),
     ({ providers }) =>
       filterProvidersByName({ commandOptions, providers })(providers),
     (providers) =>
@@ -946,6 +958,7 @@ const OutputDoOk = ({ commandOptions, programOptions }) =>
         `output ${JSON.stringify({ commandOptions, programOptions })}`
       );
     }),
+    combineProviders,
     ({ providers }) =>
       filterProvidersByName({ commandOptions, providers })(providers),
     tap((providers) => {

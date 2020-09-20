@@ -44,7 +44,7 @@ exports.createStack = async ({ config }) => {
   });
 
   return {
-    providers: [provider],
+    provider,
     resources,
   };
 };

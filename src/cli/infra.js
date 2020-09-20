@@ -13,9 +13,7 @@ const creatInfraFromFile = async ({ infraFileName, config, stage }) => {
   if (!infra) {
     throw { code: 400, message: `no infra provided` };
   }
-  if (!infra.providers) {
-    throw { code: 400, message: `no providers provided` };
-  }
+
   return infra;
 };
 

@@ -42,7 +42,7 @@ describe("MockProviderHooks", async function () {
         init: onDestroyed.init,
       },
     });
-    const infra = { providers: [provider] };
+    const infra = { provider };
 
     await cliCommands.planApply({
       infra,
@@ -74,7 +74,7 @@ describe("MockProviderHooks", async function () {
       },
     });
 
-    const infra = { providers: [provider] };
+    const infra = { provider };
     try {
       await cliCommands.planApply({
         infra,
@@ -114,7 +114,7 @@ describe("MockProviderHooks", async function () {
       },
     });
 
-    const infra = { providers: [provider] };
+    const infra = { provider };
     try {
       await cliCommands.planRunScript({
         infra,
@@ -168,7 +168,7 @@ describe("MockProviderHooks", async function () {
       },
     });
 
-    const infra = { providers: [provider] };
+    const infra = { provider };
     try {
       await cliCommands.planApply({
         infra,

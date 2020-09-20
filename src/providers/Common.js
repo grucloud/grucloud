@@ -1,4 +1,6 @@
 const assert = require("assert");
+const { pipe, tap } = require("rubico");
+const { isEmpty } = require("rubico/x");
 const logger = require("../logger")({ prefix: "Common" });
 const { tos } = require("../tos");
 exports.mapPoolSize = 20;
@@ -11,6 +13,19 @@ exports.HookType = {
   ON_DEPLOYED: "onDeployed",
   ON_DESTROYED: "onDestroyed",
 };
+
+exports.combineProviders = (infra) =>
+  pipe([
+    () => (infra.provider ? [infra.provider] : []),
+    (providers) =>
+      infra.providers ? [...providers, ...infra.providers] : providers,
+    tap((providers) => {
+      if (isEmpty(providers)) {
+        throw { code: 400, message: `no providers provided` };
+      }
+    }),
+    (providers) => ({ ...infra, providers }),
+  ])();
 
 const safeJsonParse = (json) => {
   try {

@@ -201,7 +201,7 @@ exports.createStack = async ({ config }) => {
       },
     }),
   });
-  return { providers: [provider] };
+  return { provider };
 };
 ```
 

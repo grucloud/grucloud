@@ -254,5 +254,5 @@ exports.createStack = async ({ name = "aws", config }) => {
   const provider = await AwsProvider({ name, config });
   const resources = await createResources({ provider });
   provider.register({ resources });
-  return { providers: [provider], resources };
+  return { provider, resources };
 };

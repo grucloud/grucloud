@@ -1,42 +1,11 @@
 const assert = require("assert");
-const { isOurMinionEc2, isOurMinion } = require("../AwsEC2Tags");
+const { isOurMinion } = require("../AwsEC2Tags");
 
 const config = {
   managedByKey: "ManagedBy",
   managedByValue: "GruCloud",
   managedByDescription: "Managed By GruCloud",
 };
-
-describe("isOurMinionEc2", function () {
-  const resource = {
-    Groups: [],
-    Instances: [
-      {
-        Tags: [
-          {
-            Key: "Name",
-            Value: "web-server",
-          },
-          {
-            Key: "ManagedBy",
-            Value: "GruCloud",
-          },
-        ],
-      },
-    ],
-  };
-  it("is our", function () {
-    assert(isOurMinionEc2({ resource, config }));
-  });
-  it("not our", function () {
-    assert(
-      !isOurMinionEc2({
-        resource,
-        config: { managedByKey: "ddd", managedByValue: "other" },
-      })
-    );
-  });
-});
 
 describe("isOurMinion", function () {
   const resource = {

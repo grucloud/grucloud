@@ -1,7 +1,6 @@
 const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
-const { CheckTagsS3 } = require("../../AwsTagCheck");
 const { createStack } = require("../../../../../examples/aws/s3/iac");
 describe.skip("AwsS3Bucket Example", async function () {
   let config;

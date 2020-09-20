@@ -16,7 +16,7 @@ describe("MockProviderCli", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
     const provider = await MockProvider({ config });
     const resources = await createResources({ provider });
-    const infra = { providers: [provider] };
+    const infra = { provider };
 
     {
       const output = await cliCommands.output({

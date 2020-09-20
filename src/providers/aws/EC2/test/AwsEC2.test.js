@@ -64,7 +64,7 @@ describe("AwsEC2", async function () {
     const { results: lives } = await provider.listLives({ all: true });
     assert(lives);
   });
-  it("ec2 apply plan", async function () {
+  it.skip("ec2 apply plan", async function () {
     await testPlanDeploy({ provider });
 
     const serverLive = await server.getLive();

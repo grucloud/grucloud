@@ -20,6 +20,7 @@ Destroying resources on 1 provider: aws
 
 ## TODO Aws:
 
+- ssh should use use kp.pem instead of ssh-add
 - doc S3 Object
 - add example code in AwsGettingStarted
 - aws.config.loadFromPath('./AwsConfig.json');

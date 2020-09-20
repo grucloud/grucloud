@@ -1,4 +1,3 @@
-const { isOurMinionEc2 } = require("./AwsEC2Tags");
 const { isOurMinion } = require("../AwsCommon");
 
 const { compare } = require("../../../Utils");
@@ -89,6 +88,6 @@ module.exports = [
       logger.debug(`compare ${tos(diff)}`);
       return diff;
     },
-    isOurMinion: isOurMinionEc2,
+    isOurMinion,
   },
 ];

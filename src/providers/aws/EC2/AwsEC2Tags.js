@@ -24,21 +24,3 @@ exports.isOurMinion = ({ resource, config }) => {
   );
   return minion;
 };
-// Remove it, same as above
-exports.isOurMinionEc2 = ({ resource, config }) => {
-  const { managedByKey, managedByValue } = config;
-  assert(resource);
-  assert(resource.Tags);
-
-  const isMinion = resource.Tags.find(
-    (tag) => tag.Key === managedByKey && tag.Value === managedByValue
-  );
-
-  logger.debug(
-    `isOurMinion ec2: ${tos({
-      isMinion,
-      resource,
-    })}`
-  );
-  return isMinion;
-};

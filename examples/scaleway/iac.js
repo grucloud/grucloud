@@ -25,7 +25,7 @@ const createResources = async ({ provider }) => {
         name: "web-server",
         commercial_type: "DEV1-S",
         volumes: {
-          "0": {
+          0: {
             size: 20_000_000_000,
           },
         },
@@ -46,7 +46,7 @@ exports.createStack = async ({}) => {
   provider.register({ resources });
 
   return {
-    providers: [provider],
+    provider,
     resources,
   };
 };

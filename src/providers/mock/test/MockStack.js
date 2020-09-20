@@ -65,5 +65,5 @@ exports.createStack = async ({ config }) => {
     config,
   });
   const resources = await createResources({ provider });
-  return { providers: [provider], resources };
+  return { provider, resources };
 };

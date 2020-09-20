@@ -83,7 +83,7 @@ exports.createStack = async ({ config }) => {
   provider.register({ resources });
 
   return {
-    providers: [provider],
+    provider,
     resources,
   };
 };

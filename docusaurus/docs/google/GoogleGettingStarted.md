@@ -86,7 +86,7 @@ exports.createStack = async ({ options }) => {
     }),
   });
 
-  return { providers: [provider] };
+  return { provider };
 };
 ```
 

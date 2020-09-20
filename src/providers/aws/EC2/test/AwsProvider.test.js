@@ -152,7 +152,7 @@ describe("AwsProvider", async function () {
   });
   it("listLives our", async function () {
     const { results } = await cliCommands.list({
-      infra: { providers: [provider] },
+      infra: { provider },
       commandOptions: { our: true },
     });
 
@@ -168,9 +168,6 @@ describe("AwsProvider", async function () {
         }),
         pluck("resources"),
         flatten,
-        tap((x) => {
-          console.log(x);
-        }),
         filter(({ managedByUs }) => !managedByUs),
         size,
       ])(results),

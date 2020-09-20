@@ -28,7 +28,7 @@ describe("AwsS3BucketErrors", async function () {
 
     try {
       await cliCommands.planApply({
-        infra: { providers: [provider] },
+        infra: { provider },
         commandOptions: { force: true },
       });
       assert(false, "should not be here");
