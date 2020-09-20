@@ -520,14 +520,17 @@ exports.planApply = async ({
       ),
   ]);
 
-  const doPlansDeploy = ({ commandOptions, providers }) =>
+  const doPlansDeploy = ({ commandOptions }) =>
     pipe([
       tap((xx) => {
         logger.debug("doPlansDeploy ");
       }),
       async (results) =>
         await runAsyncCommand({
-          text: displayCommandHeader({ providers, verb: "Deploying" }),
+          text: displayCommandHeader({
+            providers: pluck("provider")(results),
+            verb: "Deploying",
+          }),
           command: ({ onStateChange }) =>
             pipe([
               tap(
@@ -599,6 +602,9 @@ exports.planApply = async ({
       doPlanQuery({ commandOptions, programOptions }),
       throwIfError,
       get("results"),
+      tap((result) => {
+        logger.debug("doPlansDeploy");
+      }),
       switchCase([hasPlans, processDeployPlans, processNoPlan]),
     ]),
     (error) => {
