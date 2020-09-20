@@ -27,7 +27,7 @@ describe("MockProvider", async function () {
     stack = await createStack({
       config,
     });
-    provider = stack.providers[0];
+    provider = stack.provider;
     resources = stack.resources;
   });
 

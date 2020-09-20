@@ -17,10 +17,9 @@ describe.skip("AwsS3Bucket Example", async function () {
   });
   it("run s3 example", async function () {
     const {
-      providers,
+      provider,
       resources: { buckets },
     } = await createStack({ config });
-    const provider = providers[0];
     const { error } = await provider.destroyAll();
     assert(!error, "destroyAll failed");
     await testPlanDeploy({ provider });
