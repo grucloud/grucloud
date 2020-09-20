@@ -361,12 +361,11 @@ function CoreProvider({
   };
 
   //Rename
-  const contextFromResource = ({ uri, name, type } = {}) => {
-    //TODO check for name
+  const contextFromResource = ({ uri, name, type, id } = {}) => {
     assert(uri, "uri");
     return {
       uri: uri,
-      display: `${type}::${name}`,
+      display: `${type}::${name || id || "<<No Name>>"}`,
       name,
       type,
     };
