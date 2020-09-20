@@ -19,7 +19,7 @@ describe("MockProvider e2e", async function () {
     stack = await createStack({
       config,
     });
-    provider = stack.providers[0];
+    provider = stack.provider;
   });
   after(async () => {
     const { error } = await provider.destroyAll();
@@ -122,10 +122,9 @@ describe("MockProvider e2e", async function () {
     await testPlanDestroy({ provider, full: true });
   });
   it("plan", async function () {
-    const { providers } = await createStack({
+    const { provider } = await createStack({
       config,
     });
-    const provider = providers[0];
     {
       const listTargets = await provider.listTargets();
       assert.equal(listTargets.length, 0);
