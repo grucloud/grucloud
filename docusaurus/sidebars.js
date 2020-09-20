@@ -37,7 +37,7 @@ module.exports = {
               "aws/resources/IAM/IamUser",
             ],
           },
-          { S3: ["aws/resources/S3/S3Bucket"] },
+          { S3: ["aws/resources/S3/S3Bucket", "aws/resources/S3/S3Object"] },
         ],
       },
       "aws/AwsMisc",
