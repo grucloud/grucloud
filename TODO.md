@@ -2,6 +2,8 @@
 
 ## Common:
 
+do not run hook if deploy fails
+
 ## Cli
 
 - text wrap in table
@@ -34,7 +36,6 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 - resource name 'sa-dev' already exists
 
-- document enabling api via gcloud
 - vm instance depends on firewall
 - vm instance: network interface from vpc network
 - validate config: check project and region
@@ -50,7 +51,6 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 - rename in gcp
 - instance: add service account
-- create new project such as grucloud-e2e
 - WARNING when gloud config is difference from our config, i.e region
 - document ssh key in meta data
 - add service account

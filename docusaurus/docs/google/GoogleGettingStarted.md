@@ -28,23 +28,11 @@ git clone git@github.com:FredericHeem/grucloud.git
 ```
 
 ```bash
-cd grucloud/examples/google
+cd grucloud/examples/google/vm
 ```
 
 ```bash
 npm install
-```
-
-### Environment
-
-```sh
-cp config/default.env.example config/default.env
-```
-
-Edit **config/default.env** and set the correct values:
-
-```sh
-GOOGLE_APPLICATION_CREDENTIALS="/Users/mario/yourproject-605f4eb1b929.json"
 ```
 
 ### Config

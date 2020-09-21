@@ -45,22 +45,21 @@ gcloud projects list
 
 Ensure these API are enabled for your newly created project:
 
-- [Google Engine API](https://console.cloud.google.com/apis/library/compute.googleapis.com)
-- [Service Usage API](https://console.cloud.google.com/apis/library/serviceusage.googleapis.com)
-- [Cloud Resource Manager](https://console.developers.google.com/apis/library/cloudresourcemanager.googleapis.com)
-- [IAM](https://console.developers.google.com/apis/library/iam.googleapis.com)
+```sh
+cd examples/google
+./api-enable.sh
+```
 
 Get the list of all API [here](https://console.cloud.google.com/apis/library)
 
 ## Service Account
 
-Create a [service account](https://console.cloud.google.com/iam-admin/serviceaccounts) and download the credential file.
+Edit the [service-account.sh](../../../examples/google/service-account.sh) script and set _GOOGLE_PROJECT_
 
-Active the service account:
-
-    gcloud auth activate-service-account --key-file=/replace/with/your/credential1118fd0337b2.json
-    gcloud auth list
-    gcloud config set account accountname@yourproject.iam.gserviceaccount.com
+```sh
+cd examples/google
+./service-account.sh
+```
 
 ## SSH keys
 

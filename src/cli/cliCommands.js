@@ -875,13 +875,7 @@ const isEmptyList = pipe([pluck("result.results"), flatten, isEmpty]);
 
 const listDoOk = ({ commandOptions, programOptions }) =>
   pipe([
-    tap((x) => {
-      console.log(JSON.stringify(x, null, 4));
-    }),
     combineProviders,
-    tap((x) => {
-      console.log(JSON.stringify(x, null, 4));
-    }),
     ({ providers }) =>
       filterProvidersByName({ commandOptions, providers })(providers),
     (providers) =>

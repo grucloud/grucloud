@@ -48,6 +48,7 @@
     "dotenv": "^8.2.0",
     "dotenv-cli": "^3.2.0",
     "duration": "^0.2.2",
+    "expand-tilde": "^2.0.2",
     "google-auth-library": "^6.0.0",
     "md5-file": "^5.0.0",
     "moment": "^2.27.0",

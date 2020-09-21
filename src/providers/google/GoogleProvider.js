@@ -3,6 +3,8 @@ const fs = require("fs");
 const path = require("path");
 const { defaultsDeep } = require("rubico/x");
 const { JWT } = require("google-auth-library");
+const expandTilde = require("expand-tilde");
+
 const CoreProvider = require("../CoreProvider");
 const logger = require("../../logger")({ prefix: "GoogleProvider" });
 const GoogleTag = require("./GoogleTag");
@@ -154,7 +156,7 @@ exports.GoogleProvider = async ({ name = "google", config }) => {
   const accessToken = await authorize({
     applicationCredentials: path.resolve(
       process.env.CONFIG_DIR,
-      process.env.GOOGLE_APPLICATION_CREDENTIALS
+      expandTilde(process.env.GOOGLE_APPLICATION_CREDENTIALS)
     ),
   });
 
