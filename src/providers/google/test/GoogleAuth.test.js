@@ -3,6 +3,7 @@ const path = require("path");
 const { JWT } = require("google-auth-library");
 const { ConfigLoader } = require("ConfigLoader");
 const { authorize } = require("../GoogleProvider");
+const expandTilde = require("expand-tilde");
 
 describe("GoogleAuth", function () {
   let config;
@@ -21,7 +22,7 @@ describe("GoogleAuth", function () {
 
     const keys = require(path.resolve(
       process.env.CONFIG_DIR,
-      applicationCredentials
+      expandTilde(applicationCredentials)
     ));
 
     const client = new JWT({
