@@ -28,5 +28,15 @@ describe("Mock Multi", async function () {
       infra: stack1,
       commandOptions: { force: true },
     });
+
+    await cliCommands.planDestroy({
+      infra: stack2,
+      commandOptions: { force: true },
+    });
+
+    await cliCommands.planDestroy({
+      infra: stack1,
+      commandOptions: { force: true },
+    });
   });
 });

@@ -9,7 +9,7 @@ const logger = require("./logger")({ prefix: "MockServer" });
 const { tos } = require("../tos");
 const { map } = require("rubico");
 
-const portDefault = 8089;
+const portDefault = 7089;
 
 exports.portDefault = portDefault;
 

@@ -2,8 +2,6 @@
 
 ## Common:
 
-do not run hook if deploy fails
-
 ## Cli
 
 - text wrap in table
