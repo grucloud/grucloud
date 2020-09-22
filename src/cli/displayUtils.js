@@ -2,7 +2,7 @@ const assert = require("assert");
 const Table = require("cli-table3");
 const colors = require("colors/safe");
 const YAML = require("./json2yaml");
-const { switchCase, pipe, tap, map, reduce } = require("rubico");
+const { switchCase, pipe, tap, map, reduce, filter } = require("rubico");
 const { isEmpty, forEach, pluck, size } = require("rubico/x");
 const hasPlan = (plan) => !isEmpty(plan.newOrUpdate) || !isEmpty(plan.destroy);
 
@@ -134,6 +134,7 @@ exports.displayPlan = async (plan) => {
 const computeLength = ({ field, maxLength, minLength = 8 }) =>
   pipe([
     pluck(field),
+    filter((name) => name),
     map(size),
     (lengths) => Math.max(...lengths),
     (max) => Math.min(maxLength, max),
