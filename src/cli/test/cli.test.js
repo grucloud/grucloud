@@ -173,20 +173,6 @@ describe("cli", function () {
 });
 
 describe("cli error", function () {
-  const routes = ["/ip", "/server", "/volume", "/security_group", "/image"];
-  const port = 8089;
-  const delay = { min: 1, max: 1 };
-  const mockServer = MockServer({ port, routes, delay });
-
-  before(async function () {
-    await mockServer.start();
-    const axios = Axios.create({ baseURL: `http://localhost:${port}` });
-    await axios.post("/ip", { name: "toto" });
-  });
-
-  after(async function () {
-    await mockServer.stop();
-  });
   it("cli invalid provider", async function () {
     const results = await map.series((command) =>
       runProgram({

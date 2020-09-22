@@ -3,15 +3,13 @@ const path = require("path");
 const { createResources } = require("./MockStack");
 const { ConfigLoader } = require("ConfigLoader");
 const sinon = require("sinon");
-
+const config404 = require("../../../cli/test/config/config.500");
 const { MockProvider } = require("../MockProvider");
 const cliCommands = require("../../../cli/cliCommands");
-
 const logger = require("logger")({ prefix: "MockProviderTest" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
 describe("MockProviderHooks", async function () {
-  before(async () => {});
   it("exception on hook.js", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
     const provider = await MockProvider({ config });
@@ -34,6 +32,7 @@ describe("MockProviderHooks", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
     const provider = await MockProvider({ config });
     const resources = await createResources({ provider });
+
     provider.hookAdd("mock-test", {
       onDeployed: {
         init: onDeployed.init,
@@ -56,7 +55,55 @@ describe("MockProviderHooks", async function () {
     });
     assert(onDestroyed.init.called);
   });
+  it("onDeployed and onDestroyed not called when apply fails", async function () {
+    const onDeployed = { init: sinon.spy() };
+    const onDestroyed = { init: sinon.spy() };
 
+    const config = ConfigLoader({ baseDir: __dirname });
+    const provider = await MockProvider({
+      config: { ...config, ...config404 },
+    });
+    const resources = await createResources({ provider });
+
+    provider.hookAdd("mock-test", {
+      onDeployed: {
+        init: onDeployed.init,
+      },
+      onDestroyed: {
+        init: onDestroyed.init,
+      },
+    });
+    const infra = { provider };
+
+    try {
+      await cliCommands.planApply({
+        infra,
+        commandOptions: { force: true },
+      });
+    } catch (error) {
+      assert.equal(
+        error.error.results[0].result.resultCreate.results[0].error.Status,
+        500
+      );
+    }
+
+    assert(!onDeployed.init.called);
+
+    try {
+      await cliCommands.planDestroy({
+        infra,
+        commandOptions: { force: true, all: true },
+      });
+      assert(false, "should not be here");
+    } catch (error) {
+      assert.equal(
+        error.error.resultsDestroy[0].result.results[0].error.Status,
+        500
+      );
+    }
+
+    assert(!onDestroyed.init.called);
+  });
   it("planApply init throw ", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
     const provider = await MockProvider({ config });

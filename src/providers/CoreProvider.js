@@ -736,48 +736,61 @@ function CoreProvider({
         }
       ),
     ]);
-  const runHook = ({ onStateChange, hookType, onHook }) =>
-    pipe([
-      tap((hooks) => {
-        logger.info(`runHook hookType: ${hookType}, #hooks ${hooks.length}`);
-      }),
-      map((hook) =>
+  const runHook = ({ onStateChange, hookType, onHook, skip }) =>
+    switchCase([
+      () => !skip,
+      () =>
         pipe([
-          tap(() => {
-            assert(hook.name, "name");
-            assert(hook[onHook], `hook[onHook]: ${onHook}`);
-            logger.info(`runHook start ${hook.name}`);
+          tap((hooks) => {
+            logger.info(
+              `runHook hookType: ${hookType}, #hooks ${hooks.length}`
+            );
           }),
-          () => hook[onHook],
-          runScriptCommands({
-            onStateChange,
-            hookType,
-            hookName: hook.name,
+          map((hook) =>
+            pipe([
+              tap(() => {
+                assert(hook.name, "name");
+                assert(hook[onHook], `hook[onHook]: ${onHook}`);
+                logger.info(`runHook start ${hook.name}`);
+              }),
+              () => hook[onHook],
+              runScriptCommands({
+                onStateChange,
+                hookType,
+                hookName: hook.name,
+              }),
+              tap((obj) => {
+                logger.info(`runHook ${hookType} stop`);
+              }),
+            ])()
+          ),
+          (results) =>
+            assign({
+              error: ({ results }) => any(({ error }) => error)(results),
+            })({
+              results,
+            }),
+          tap((result) => {
+            logger.info(`runHook DONE`);
           }),
-          tap((obj) => {
-            logger.info(`runHook ${hookType} stop`);
-          }),
-        ])()
-      ),
-      (results) =>
-        assign({ error: ({ results }) => any(({ error }) => error)(results) })({
-          results,
-        }),
-      tap((result) => {
-        logger.info(`runOnDeployed DONE`);
-      }),
-    ])([...hookMap.values()]);
+        ])([...hookMap.values()]),
+      () => {
+        logger.debug(`runHook skipped`);
+      },
+    ])();
 
-  const runOnDeployed = ({ onStateChange }) =>
+  const runOnDeployed = ({ onStateChange, skip }) =>
     runHook({
       onStateChange,
+      skip,
       onHook: "onDeployed",
       hookType: HookType.ON_DEPLOYED,
     });
 
-  const runOnDestroyed = ({ onStateChange }) =>
+  const runOnDestroyed = ({ onStateChange, skip }) =>
     runHook({
       onStateChange,
+      skip,
       onHook: "onDestroyed",
       hookType: HookType.ON_DESTROYED,
     });
@@ -1065,7 +1078,8 @@ function CoreProvider({
               }),
             (create) =>
               assign({
-                hooks: () => runOnDeployed({ onStateChange }),
+                hooks: () =>
+                  runOnDeployed({ onStateChange, skip: create.error }),
               })({ create }),
           ]),
           () => ({
@@ -1512,9 +1526,12 @@ function CoreProvider({
     ])();
 
     if (direction === PlanDirection.DOWN) {
-      const resultHooks = await runOnDestroyed({ onStateChange });
+      const resultHooks = await runOnDestroyed({
+        onStateChange,
+        skip: plannerResult.error,
+      });
       return {
-        error: resultHooks.error || plannerResult.error ? true : false,
+        error: resultHooks?.error || plannerResult.error ? true : false,
         results: plannerResult.results,
         resultHooks,
       };

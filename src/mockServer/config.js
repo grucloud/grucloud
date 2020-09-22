@@ -1,5 +1,5 @@
 module.exports = () => ({
-  port: 7089,
+  port: 8089,
   routes: ["/volume", "/ip", "/security_group", "/server", "/image"],
   seeds: [
     {
@@ -7,5 +7,5 @@ module.exports = () => ({
       objects: [{ name: "myserver" }],
     },
   ],
-  delay: { min: 50, max: 100 },
+  delay: { min: 20, max: 80 },
 });
