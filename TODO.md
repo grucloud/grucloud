@@ -15,6 +15,7 @@
 
 ## TODO Aws:
 
+- check S3 Tags
 - ssh should use use kp.pem instead of ssh-add
 - add example code in AwsGettingStarted
 - aws.config.loadFromPath('./AwsConfig.json');

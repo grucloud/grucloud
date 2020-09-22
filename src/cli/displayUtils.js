@@ -3,7 +3,8 @@ const Table = require("cli-table3");
 const colors = require("colors/safe");
 const YAML = require("./json2yaml");
 const { switchCase, pipe, tap, map } = require("rubico");
-const { isEmpty, forEach } = require("rubico/x");
+const { isEmpty, forEach, pluck, size } = require("rubico/x");
+const { max } = require("rxjs/operators");
 
 const hasPlan = (plan) => !isEmpty(plan.newOrUpdate) || !isEmpty(plan.destroy);
 
@@ -83,10 +84,24 @@ exports.displayPlan = async (plan) => {
   return plan;
 };
 
+const maxLength = ({ field, maxLength }) =>
+  pipe([
+    pluck(field),
+    map(size),
+    (lengths) => Math.max(...lengths),
+    (max) => Math.min(maxLength, max),
+  ]);
+
 const tablePerTypeDefinitions = [
   {
     type: "ServiceAccount",
-    colWidths: [undefined, 120, undefined],
+    colWidths: ({ resources, columns }) => {
+      const emailLength =
+        maxLength({ field: "data.email", maxLength: 60 })(resources) + 2;
+      const managedByUs = 6;
+      const dataLength = columns - emailLength - managedByUs - 10;
+      return [emailLength, dataLength, managedByUs];
+    },
     columns: ["Email", "Data", "Our"],
     fields: [
       (resource) => resource.data.email,
@@ -98,7 +113,13 @@ const tablePerTypeDefinitions = [
 
 const tablePerTypeDefault = {
   columns: ["Name", "Data", "Our"],
-  colWidths: [undefined, 120, undefined],
+  colWidths: ({ resources, columns }) => {
+    const nameLength =
+      maxLength({ field: "name", maxLength: 40 })(resources) + 2;
+    const managedByUs = 6;
+    const dataLength = columns - nameLength - managedByUs - 10;
+    return [nameLength, dataLength, managedByUs];
+  },
   fields: [
     (resource) => resource.name,
     (resource) => YAML.stringify(resource.data),
@@ -124,10 +145,11 @@ const displayTablePerType = ({
     tablePerTypeDefinitions.find((def) => def.type === type) ||
     tablePerTypeDefault;
 
-  //console.log("Terminal columns: " + process.stdout.columns)
-  //TODO
   const table = new Table({
-    colWidths: tableDefinitions.colWidths,
+    colWidths: tableDefinitions.colWidths({
+      resources,
+      columns: process.stdout.columns || 80,
+    }),
     style: { head: [], border: [] },
   });
   table.push([
