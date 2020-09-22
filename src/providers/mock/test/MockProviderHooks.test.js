@@ -80,7 +80,10 @@ describe("MockProviderHooks", async function () {
         infra,
         commandOptions: { force: true },
       });
-    } catch (error) {}
+      assert(false, "should not be here");
+    } catch (error) {
+      assert(error.error);
+    }
 
     assert(!onDeployed.init.called);
 
