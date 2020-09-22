@@ -2,10 +2,8 @@ const assert = require("assert");
 const Table = require("cli-table3");
 const colors = require("colors/safe");
 const YAML = require("./json2yaml");
-const { switchCase, pipe, tap, map } = require("rubico");
+const { switchCase, pipe, tap, map, reduce } = require("rubico");
 const { isEmpty, forEach, pluck, size } = require("rubico/x");
-const { max } = require("rxjs/operators");
-
 const hasPlan = (plan) => !isEmpty(plan.newOrUpdate) || !isEmpty(plan.destroy);
 
 const displayResource = (item) =>
@@ -61,35 +59,85 @@ exports.displayPlanSummary = pipe([
   }),
 ]);
 
+const groupByType = (init = {}) =>
+  reduce((acc, item) => {
+    const { type } = item.resource;
+    if (acc[type]) {
+      return {
+        ...acc,
+        [type]: [item, ...acc[type]],
+      };
+    } else {
+      return { ...acc, [item.resource.type]: [item] };
+    }
+  }, init);
+
+const tablePlanPerType = {
+  columns: ["Name", "Action", "Data"],
+  colWidths: ({ resources, columns }) => {
+    const nameLength =
+      computeLength({ field: "resource.name", maxLength: 40 })(resources) + 2;
+    const actionLength = 10;
+    const dataLength = columns - nameLength - actionLength - 10;
+    return [nameLength, actionLength, dataLength];
+  },
+  fields: [
+    (item) => item.resource.name,
+    (item) => item.action,
+    (item) => YAML.stringify(item.config),
+  ],
+};
+
 exports.displayPlan = async (plan) => {
   assert(Array.isArray(plan.destroy, "Array.isArray(plan.destroy"));
   if (!hasPlan(plan)) {
     return plan;
   }
+
   assert(plan.providerName);
+  pipe([
+    () => groupByType({})(plan.newOrUpdate),
+    (result) => groupByType(result)(plan.destroy),
+    (result) =>
+      map((type) => {
+        const resources = result[type];
+        const tableDefinitions = tablePlanPerType;
+        const table = new Table({
+          colWidths: tableDefinitions.colWidths({
+            resources,
+            columns: process.stdout.columns || 80,
+          }),
+          style: { head: [], border: [] },
+        });
+        table.push([
+          {
+            colSpan: 3,
+            content: colors.yellow(
+              `${resources.length} ${type} from ${plan.providerName}`
+            ),
+          },
+        ]);
+        table.push(tableDefinitions.columns.map((item) => colors.red(item)));
 
-  const table = new Table({
-    colWidths: [undefined, undefined, undefined, 120],
-    style: { head: [], border: [] },
-  });
-  table.push([{ colSpan: 4, content: colors.yellow(plan.providerName) }]);
-  table.push(
-    ["Name", "Action", "Type", "Config"].map((item) => colors.red(item))
-  );
+        resources.forEach((resource) =>
+          displayLiveItem({ table, resource, tableDefinitions })
+        );
 
-  plan.newOrUpdate?.forEach((item) => displayItem(table, item));
-  plan.destroy?.forEach((item) => displayItem(table, item));
-  console.log(table.toString());
-  console.log("\n");
+        console.log(table.toString());
+        console.log("\n");
+      })(Object.keys(result)),
+  ])();
+
   return plan;
 };
 
-const maxLength = ({ field, maxLength }) =>
+const computeLength = ({ field, maxLength, minLength = 8 }) =>
   pipe([
     pluck(field),
     map(size),
     (lengths) => Math.max(...lengths),
     (max) => Math.min(maxLength, max),
+    (min) => Math.max(min, minLength),
   ]);
 
 const tablePerTypeDefinitions = [
@@ -97,7 +145,7 @@ const tablePerTypeDefinitions = [
     type: "ServiceAccount",
     colWidths: ({ resources, columns }) => {
       const emailLength =
-        maxLength({ field: "data.email", maxLength: 60 })(resources) + 2;
+        computeLength({ field: "data.email", maxLength: 60 })(resources) + 2;
       const managedByUs = 6;
       const dataLength = columns - emailLength - managedByUs - 10;
       return [emailLength, dataLength, managedByUs];
@@ -115,7 +163,7 @@ const tablePerTypeDefault = {
   columns: ["Name", "Data", "Our"],
   colWidths: ({ resources, columns }) => {
     const nameLength =
-      maxLength({ field: "name", maxLength: 40 })(resources) + 2;
+      computeLength({ field: "name", maxLength: 40 })(resources) + 2;
     const managedByUs = 6;
     const dataLength = columns - nameLength - managedByUs - 10;
     return [nameLength, dataLength, managedByUs];
@@ -129,9 +177,7 @@ const tablePerTypeDefault = {
 
 const displayLiveItem = ({ table, resource, tableDefinitions }) => {
   assert(resource);
-  assert(resource.data);
   assert(tableDefinitions);
-
   table.push(tableDefinitions.fields.map((field) => field(resource)));
 };
 
@@ -152,6 +198,7 @@ const displayTablePerType = ({
     }),
     style: { head: [], border: [] },
   });
+
   table.push([
     {
       colSpan: 3,

@@ -10,58 +10,96 @@ gc destroy
 ```
 
 ```
-┌───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ mock                                                                                                                                                          │
-├────────────┬─────────┬───────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ Name       │ Action  │ Type          │ Config                                                                                                                 │
-├────────────┼─────────┼───────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ web-server │ DESTROY │ Server        │ id: "9odkiaTdp"                                                                                                        │
-│            │         │               │ name: "web-server"                                                                                                     │
-│            │         │               │ zone: "projects/undefined/zones/undefined"                                                                             │
-│            │         │               │ machineType: "projects/undefined/zones/undefined/machineTypes/f1-micro"                                                │
-│            │         │               │ tags:                                                                                                                  │
-│            │         │               │   items:                                                                                                               │
-│            │         │               │     - "web-serverManagedByGru"                                                                                         │
-│            │         │               │ disks:                                                                                                                 │
-│            │         │               │   - deviceName: "web-serverManagedByGru"                                                                               │
-│            │         │               │     initializeParams:                                                                                                  │
-│            │         │               │       sourceImage: "projects/debian-cloud/global/images/debian-9-stretch-v20200420"                                    │
-│            │         │               │       diskType: "projects/undefined/zones/undefined/diskTypes/pd-standard"                                             │
-│            │         │               │       diskSizeGb: "20"                                                                                                 │
-│            │         │               │ networkInterfaces:                                                                                                     │
-│            │         │               │   - subnetwork: "projects/undefined/regions/undefined/subnetworks/default"                                             │
-│            │         │               │     accessConfigs:                                                                                                     │
-│            │         │               │       - natIP: "<< address of myip not available yet >>"                                                               │
-│            │         │               │                                                                                                                        │
-├────────────┼─────────┼───────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ sg         │ DESTROY │ SecurityGroup │ id: "BLLBCgRVh"                                                                                                        │
-│            │         │               │ name: "sg"                                                                                                             │
-│            │         │               │ tags:                                                                                                                  │
-│            │         │               │   - "sgManagedByGru"                                                                                                   │
-│            │         │               │                                                                                                                        │
-├────────────┼─────────┼───────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ myip       │ DESTROY │ Ip            │ id: "x4iMBAKMTO"                                                                                                       │
-│            │         │               │ name: "myip"                                                                                                           │
-│            │         │               │ tags:                                                                                                                  │
-│            │         │               │   - "myipManagedByGru"                                                                                                 │
-│            │         │               │                                                                                                                        │
-├────────────┼─────────┼───────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ volume1    │ DESTROY │ Volume        │ id: "Fgn_06TaB"                                                                                                        │
-│            │         │               │ name: "volume1"                                                                                                        │
-│            │         │               │ tags:                                                                                                                  │
-│            │         │               │   - "volume1ManagedByGru"                                                                                              │
-│            │         │               │ size: 20000000000                                                                                                      │
-│            │         │               │                                                                                                                        │
-└────────────┴─────────┴───────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 Volume from mock                                                                                     │
+├──────────┬──────────┬──────────────────────────────────────────────────────────────────────────────────┤
+│ Name     │ Action   │ Data                                                                             │
+├──────────┼──────────┼──────────────────────────────────────────────────────────────────────────────────┤
+│ volume1  │ DESTROY  │ id: l5l2HvI7fW                                                                   │
+│          │          │ name: volume1                                                                    │
+│          │          │ tags:                                                                            │
+│          │          │   - "volume1ManagedByGru"                                                        │
+│          │          │ size: 20000000000                                                                │
+│          │          │                                                                                  │
+└──────────┴──────────┴──────────────────────────────────────────────────────────────────────────────────┘
 
 
-✔ Are you sure to destroy 4 resources ? … yes
-Destroying resources
-✓ mock::Server::web-server
-✓ mock::Volume::volume1
-✓ mock::SecurityGroup::sg
-✓ mock::Ip::myip
-4 resources destroyed
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 Ip from mock                                                                                         │
+├──────────┬──────────┬──────────────────────────────────────────────────────────────────────────────────┤
+│ Name     │ Action   │ Data                                                                             │
+├──────────┼──────────┼──────────────────────────────────────────────────────────────────────────────────┤
+│ myip     │ DESTROY  │ id: rVexf87m2u                                                                   │
+│          │          │ name: myip                                                                       │
+│          │          │ tags:                                                                            │
+│          │          │   - "myipManagedByGru"                                                           │
+│          │          │                                                                                  │
+└──────────┴──────────┴──────────────────────────────────────────────────────────────────────────────────┘
+
+
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 SecurityGroup from mock                                                                              │
+├──────────┬──────────┬──────────────────────────────────────────────────────────────────────────────────┤
+│ Name     │ Action   │ Data                                                                             │
+├──────────┼──────────┼──────────────────────────────────────────────────────────────────────────────────┤
+│ sg       │ DESTROY  │ id: HnID4duuM                                                                    │
+│          │          │ name: sg                                                                         │
+│          │          │ tags:                                                                            │
+│          │          │   - "sgManagedByGru"                                                             │
+│          │          │ securityRules:                                                                   │
+│          │          │   - name: SSH                                                                    │
+│          │          │     properties:                                                                  │
+│          │          │       access: Allow                                                              │
+│          │          │       direction: Inbound                                                         │
+│          │          │       protocol: Tcp                                                              │
+│          │          │       destinationPortRange: 22                                                   │
+│          │          │       destinationAddressPrefix: *                                                │
+│          │          │       sourcePortRange: *                                                         │
+│          │          │       sourceAddressPrefix: *                                                     │
+│          │          │       priority: 1000                                                             │
+│          │          │                                                                                  │
+└──────────┴──────────┴──────────────────────────────────────────────────────────────────────────────────┘
+
+
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 Server from mock                                                                                     │
+├────────────┬──────────┬────────────────────────────────────────────────────────────────────────────────┤
+│ Name       │ Action   │ Data                                                                           │
+├────────────┼──────────┼────────────────────────────────────────────────────────────────────────────────┤
+│ web-server │ DESTROY  │ id: pEgR0wW6a3                                                                 │
+│            │          │ name: web-server                                                               │
+│            │          │ zone: projects/undefined/zones/undefined                                       │
+│            │          │ machineType: projects/undefined/zones/undefined/machineTypes/f1-micro          │
+│            │          │ tags:                                                                          │
+│            │          │   items:                                                                       │
+│            │          │     - "web-serverManagedByGru"                                                 │
+│            │          │ disks:                                                                         │
+│            │          │   - deviceName: web-serverManagedByGru                                         │
+│            │          │     initializeParams:                                                          │
+│            │          │       sourceImage: projects/debian-cloud/global/images/debian-9-stretch-v2020… │
+│            │          │       diskType: projects/undefined/zones/undefined/diskTypes/pd-standard       │
+│            │          │       diskSizeGb: 20                                                           │
+│            │          │ networkInterfaces:                                                             │
+│            │          │   - subnetwork: projects/undefined/regions/undefined/subnetworks/default       │
+│            │          │     accessConfigs:                                                             │
+│            │          │       - natIP: << address of myip not available yet >>                         │
+│            │          │                                                                                │
+└────────────┴──────────┴────────────────────────────────────────────────────────────────────────────────┘
+
+
+✔ Are you sure to destroy 4 resources, 4 types on 1 provider? … yes
+Destroying resources on 1 provider: mock
+✓ mock
+  ✓ Destroying
+    ✓ Volume::volume1
+    ✓ Ip::myip
+    ✓ SecurityGroup::sg
+    ✓ Server::web-server
+  ✓ extra::onDestroyed
+    ✓ Check Destroy 1
+  ✓ default::onDestroyed
+    ✓ Check Ping KO
+4 resources destroyed, 4 types on 1 provider
 Command "gc destroy" executed in 2s
 ```
 
