@@ -80,12 +80,7 @@ describe("MockProviderHooks", async function () {
         infra,
         commandOptions: { force: true },
       });
-    } catch (error) {
-      assert.equal(
-        error.error.results[0].result.resultCreate.results[0].error.Status,
-        500
-      );
-    }
+    } catch (error) {}
 
     assert(!onDeployed.init.called);
 
