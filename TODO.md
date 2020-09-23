@@ -2,30 +2,7 @@
 
 ## Common:
 
-gc l
-Listing resources on 1 provider: mock
-mock
-Fetching Data
-Volume
-Ip
-SecurityGroup
-Server
-List Summary:
-Provider: mock
-Type: undefined
-Type: undefined
-Type: undefined
-Type: undefined
-
-0 resources, 0 types, 0 providers
-ERROR running command 'List'
-Provider mock
-
-Message: connect ECONNREFUSED 127.0.0.1:8089
-
 ## Cli
-
-- text wrap in table
 
 ## Azure
 
@@ -63,10 +40,6 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 - https://cloud.google.com/community/tutorials/getting-started-on-gcp-with-terraform
 - https://medium.com/faun/creating-reusable-infrastructure-with-terraform-on-gcp-e17745ac4ff2
 
-- metadata = {
-  ssh-keys = "INSERT_USERNAME:\${file("~/.ssh/id_rsa.pub")}"
-  }
-  }
 - google_project_iam_member
 
 - rename in gcp

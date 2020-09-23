@@ -31,16 +31,23 @@ exports.displayListSummary = pipe([
   tap((result) => {
     console.log("List Summary:");
   }),
-  forEach(({ provider, result }) => {
-    console.log(`Provider: ${provider.name}`);
-    forEach(({ type, resources }) => {
-      console.log(`  Type: ${type}`);
-      forEach((resource) => console.log(`    ${resource.name || "Default"}`))(
-        resources
-      );
-    })(result.results);
-    console.log(`\n`);
-  }),
+  forEach(({ provider, result }) =>
+    pipe([
+      tap((results) => {
+        console.log(`Provider: ${provider.name}`);
+      }),
+      filter(({ error }) => !error),
+      forEach(({ type, resources }) => {
+        console.log(`  Type: ${type}`);
+        forEach((resource) => console.log(`    ${resource.name || "Default"}`))(
+          resources
+        );
+      }),
+      tap(() => {
+        console.log(`\n`);
+      }),
+    ])(result.results)
+  ),
 ]);
 
 exports.displayPlanSummary = pipe([
