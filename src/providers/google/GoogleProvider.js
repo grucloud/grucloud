@@ -1,7 +1,7 @@
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
-const { tryCatch } = require("rubico");
+const { tryCatch, pipe } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { JWT } = require("google-auth-library");
 const expandTilde = require("expand-tilde");
@@ -168,7 +168,7 @@ const getConfig = tryCatch(
   },
   (error) => {
     logger.error(`getConfig: ${error}`);
-    throw error;
+    //throw error;
   }
 );
 exports.authorize = authorize;
@@ -181,22 +181,28 @@ exports.GoogleProvider = async ({ name = "google", config }) => {
   );
   process.env.GOOGLE_APPLICATION_CREDENTIALS = applicationCredentials;
 
-  const localConfig = getConfig();
-  const accessToken = await authorize({
-    applicationCredentials,
-  });
-
-  const { region, zone } = localConfig.config.properties.compute;
-  const { project } = localConfig.config;
-  const configProviderDefault = {
+  const configProviderDefault = await pipe([
+    async (config) => ({
+      ...config,
+      accessToken: await authorize({
+        applicationCredentials,
+      }),
+    }),
+    (config) => {
+      const localConfig = getConfig();
+      if (localConfig) {
+        const { region, zone } = localConfig.config.properties.compute;
+        const { project } = localConfig.config;
+        return defaultsDeep(config)({ project, region, zone });
+      } else {
+        return config;
+      }
+    },
+  ])({
     managedByTag: "-managed-by-gru",
     managedByKey: "managed-by",
     managedByValue: "grucloud",
-    accessToken,
-    project,
-    region,
-    zone,
-  };
+  });
 
   const core = CoreProvider({
     type: "google",
