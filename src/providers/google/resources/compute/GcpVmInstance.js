@@ -18,7 +18,7 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
 
   const configDefault = ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ properties, dependencies })}`);
-    const { ip } = dependencies;
+    const { ip, serviceAccount } = dependencies;
     const {
       machineType,
       diskType,
@@ -28,6 +28,16 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
       ...otherProperties
     } = properties;
 
+    const buildServiceAccount = ({ serviceAccount }) => {
+      if (serviceAccount) {
+        return [
+          {
+            email: getField(serviceAccount, "email"),
+            scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+          },
+        ];
+      }
+    };
     const config = defaultsDeep({
       kind: "compute#instance",
       name,
@@ -37,8 +47,7 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
       metadata: defaultsDeep({
         kind: "compute#metadata",
       })(metadata || {}),
-      //TODO
-      //serviceAccounts: properties.serviceAccounts,
+      serviceAccounts: buildServiceAccount({ serviceAccount }),
       disks: [
         {
           kind: "compute#attachedDisk",

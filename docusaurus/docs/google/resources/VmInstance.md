@@ -8,7 +8,6 @@ Provides a Virtual Machine instance:
 ```js
 const server = await provider.makeVmInstance({
   name: "web-server",
-  dependencies: { ip },
   properties: () => ({
     diskSizeGb: "20",
     machineType: "f1-micro",
@@ -35,6 +34,7 @@ gcloud compute images list
 ### Examples
 
 - [basic example](https://github.com/FredericHeem/grucloud/blob/master/examples/google/vm/iac.js#L9)
+- [VM with SSH keys in metadata](https://github.com/FredericHeem/grucloud/blob/master/examples/google/vm-ssh-keys/iac.js#L9)
 - [full example](https://github.com/FredericHeem/grucloud/blob/master/examples/google/vm-network/iac.js#L9)
 
 ### Properties
@@ -44,3 +44,4 @@ gcloud compute images list
 ### Dependencies
 
 - [Address](./Address)
+- [Service Account](./ServiceAccount)

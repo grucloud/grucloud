@@ -36,12 +36,18 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
   // Allocate a server
   const server = await provider.makeVmInstance({
     name: `webserver-${stage}`,
-    dependencies: { ip },
+    dependencies: { ip, serviceAccount },
     properties: () => ({
       diskSizeGb: "20",
       machineType: "f1-micro",
       sourceImage:
         "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
+      serviceAccounts: [
+        {
+          email: "sa-test1@grucloud-e2e.iam.gserviceaccount.com",
+          scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+        },
+      ],
       metadata: {
         items: [
           {

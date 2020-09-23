@@ -42,10 +42,8 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 - google_project_iam_member
 
 - rename in gcp
-- instance: add service account
 - WARNING when gloud config is difference from our config, i.e region
 - document ssh key in meta data
-- add service account
 
 ## TODO Mock
 
