@@ -33,7 +33,6 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 - resource name 'sa-dev' already exists
 
-- vm instance depends on firewall
 - vm instance: network interface from vpc network
 - validate config: check project and region
 

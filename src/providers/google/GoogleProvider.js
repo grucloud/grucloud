@@ -1,9 +1,11 @@
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
+const { tryCatch } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { JWT } = require("google-auth-library");
 const expandTilde = require("expand-tilde");
+const shell = require("shelljs");
 
 const CoreProvider = require("../CoreProvider");
 const logger = require("../../logger")({ prefix: "GoogleProvider" });
@@ -90,7 +92,12 @@ const fnSpecs = (config) => {
     },
     {
       type: "VmInstance",
-      dependsOn: [/*"Project", */ "ServiceAccount", "Address", "Network"],
+      dependsOn: [
+        /*"Project", */ "ServiceAccount",
+        "Address",
+        "Network",
+        "Firewall",
+      ],
       Client: ({ spec }) =>
         GoogleVmInstance({
           spec,
@@ -148,30 +155,53 @@ const authorize = async ({ applicationCredentials }) => {
   return accessToken;
 };
 
+const getConfig = tryCatch(
+  () => {
+    const command = "gcloud info --format json";
+    const { stdout, code } = shell.exec(command, { silent: true });
+    if (code !== 0) {
+      throw { message: `command '${command}' failed` };
+    }
+    const config = JSON.parse(stdout);
+    logger.debug(`getConfig: ${tos(config)}`);
+    return config;
+  },
+  (error) => {
+    logger.error(`getConfig: ${error}`);
+    throw error;
+  }
+);
 exports.authorize = authorize;
 
 exports.GoogleProvider = async ({ name = "google", config }) => {
   checkEnv(["GOOGLE_APPLICATION_CREDENTIALS"]);
+  const applicationCredentials = path.resolve(
+    process.env.CONFIG_DIR,
+    expandTilde(process.env.GOOGLE_APPLICATION_CREDENTIALS)
+  );
+  process.env.GOOGLE_APPLICATION_CREDENTIALS = applicationCredentials;
 
+  const localConfig = getConfig();
   const accessToken = await authorize({
-    applicationCredentials: path.resolve(
-      process.env.CONFIG_DIR,
-      expandTilde(process.env.GOOGLE_APPLICATION_CREDENTIALS)
-    ),
+    applicationCredentials,
   });
 
+  const { region, zone } = localConfig.config.properties.compute;
+  const { project } = localConfig.config;
   const configProviderDefault = {
     managedByTag: "-managed-by-gru",
     managedByKey: "managed-by",
     managedByValue: "grucloud",
     accessToken,
+    project,
+    region,
+    zone,
   };
 
   const core = CoreProvider({
     type: "google",
     name,
     mandatoryEnvs: ["GOOGLE_APPLICATION_CREDENTIALS"],
-    mandatoryConfigKeys: ["project", "region", "zone"],
     config: defaultsDeep(configProviderDefault)(config),
     fnSpecs,
   });
