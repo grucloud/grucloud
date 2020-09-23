@@ -31,19 +31,15 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## TODO Goggle
 
-- resource name 'sa-dev' already exists
-
 - vm instance: network interface from vpc network
 - validate config: check project and region
 
-- https://cloud.google.com/community/tutorials/getting-started-on-gcp-with-terraform
 - https://medium.com/faun/creating-reusable-infrastructure-with-terraform-on-gcp-e17745ac4ff2
 
 - google_project_iam_member
 
 - rename in gcp
 - WARNING when gloud config is difference from our config, i.e region
-- document ssh key in meta data
 
 ## TODO Mock
 

@@ -42,12 +42,6 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
       machineType: "f1-micro",
       sourceImage:
         "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
-      serviceAccounts: [
-        {
-          email: "sa-test1@grucloud-e2e.iam.gserviceaccount.com",
-          scopes: ["https://www.googleapis.com/auth/cloud-platform"],
-        },
-      ],
       metadata: {
         items: [
           {
