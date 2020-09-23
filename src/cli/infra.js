@@ -13,7 +13,10 @@ const creatInfraFromFile = async ({ infraFileName, config, stage }) => {
   if (!infra) {
     throw { code: 400, message: `no infra provided` };
   }
-
+  const { provider, resources } = infra;
+  if (resources && provider) {
+    provider.register({ resources });
+  }
   return infra;
 };
 

@@ -85,11 +85,6 @@ exports.createStack = async ({ config }) => {
   const hooks = require("./hooksExtra")({ resources, config });
   provider.hookAdd("extra", hooks);
 
-  provider.register({
-    dirname: __dirname,
-    resources,
-  });
-
   return {
     provider,
     resources,

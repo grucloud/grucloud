@@ -109,11 +109,10 @@ exports.createStack = async ({ config }) => {
     name: "kp",
   });
 
-  provider.register({
-    resources: await createResources({ provider, resources: { keyPair } }),
-  });
+  const resources = await createResources({ provider, resources: { keyPair } });
 
   return {
     provider,
+    resources,
   };
 };

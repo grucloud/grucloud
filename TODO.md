@@ -2,6 +2,27 @@
 
 ## Common:
 
+gc l
+Listing resources on 1 provider: mock
+mock
+Fetching Data
+Volume
+Ip
+SecurityGroup
+Server
+List Summary:
+Provider: mock
+Type: undefined
+Type: undefined
+Type: undefined
+Type: undefined
+
+0 resources, 0 types, 0 providers
+ERROR running command 'List'
+Provider mock
+
+Message: connect ECONNREFUSED 127.0.0.1:8089
+
 ## Cli
 
 - text wrap in table

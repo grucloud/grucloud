@@ -43,7 +43,6 @@ exports.createStack = async ({}) => {
   // Create Scaleway provider
   const provider = await ScalewayProvider({ name: "scaleway", config });
   const resources = await createResources({ provider });
-  provider.register({ resources });
 
   return {
     provider,

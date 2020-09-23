@@ -306,6 +306,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Google VM SSH onDeployed",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/google/vm-ssh-keys",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["run", "--onDeployed"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Google VM Run onDeployed",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/google/vm",

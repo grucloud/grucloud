@@ -1570,6 +1570,9 @@ function CoreProvider({
   const register = ({ resources, dirname }) =>
     pipe([
       hookFilenameDefault,
+      tap((filename) => {
+        logger.debug(`register hook '${filename}'`);
+      }),
       switchCase([
         (fileName) => fs.existsSync(fileName),
         pipe([
@@ -1583,9 +1586,9 @@ function CoreProvider({
             hookAdd("default", hooks);
           },
         ]),
-        (filename) => {
+        tap((filename) => {
           logger.error(`hook '${filename}' does not exist`);
-        },
+        }),
       ]),
     ])({
       dirname,

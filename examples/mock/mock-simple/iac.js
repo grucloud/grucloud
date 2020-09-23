@@ -38,11 +38,6 @@ exports.createStack = async ({ config }) => {
 
   const resources = await createResources({ provider });
 
-  provider.register({
-    dirname: __dirname,
-    resources,
-  });
-
   return {
     provider,
     resources,

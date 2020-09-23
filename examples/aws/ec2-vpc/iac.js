@@ -89,8 +89,5 @@ exports.createStack = async ({ name = "aws", config }) => {
     name: "kp",
   });
   const resources = await createResources({ provider, resources: { keyPair } });
-  provider.register({
-    resources,
-  });
   return { provider, resources };
 };

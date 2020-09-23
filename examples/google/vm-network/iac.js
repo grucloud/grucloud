@@ -80,8 +80,6 @@ exports.createStack = async ({ config }) => {
     resources: { serviceAccount },
   });
 
-  provider.register({ resources });
-
   return {
     provider,
     resources,
