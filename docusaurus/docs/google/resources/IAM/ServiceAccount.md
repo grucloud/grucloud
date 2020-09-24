@@ -25,4 +25,5 @@ const sa = await provider.makeServiceAccount({
 
 ### Used By
 
-- [Vm Instance](./VmInstance)
+- [Vm Instance](../Compute/VmInstance)
+- [IamMember](./IamMember)

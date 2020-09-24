@@ -5,9 +5,9 @@ title: VM Instance
 
 Provides a Virtual Machine instance.
 
-# Examples
+## Examples
 
-### Minimum VM
+### Simple VM
 
 ```js
 const server = await provider.makeVmInstance({
@@ -174,4 +174,4 @@ const server = await provider.makeVmInstance({
 ## Dependencies
 
 - [Address](./Address)
-- [Service Account](./ServiceAccount)
+- [Service Account](../IAM/ServiceAccount)

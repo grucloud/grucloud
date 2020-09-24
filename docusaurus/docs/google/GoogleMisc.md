@@ -6,6 +6,7 @@ title: Miscellaneous
 ## Useful commands
 
     gcloud info
+    gcloud compute regions list
     gcloud init
     gcloud config list
     gcloud projects list

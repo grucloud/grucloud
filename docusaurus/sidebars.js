@@ -62,12 +62,22 @@ module.exports = {
       "google/GoogleGettingStarted",
       {
         Resources: [
-          "google/resources/Network",
-          "google/resources/SubNetwork",
-          "google/resources/Firewall",
-          "google/resources/Address",
-          "google/resources/VmInstance",
-          "google/resources/ServiceAccount",
+          {
+            Compute: [
+              "google/resources/Compute/Network",
+              "google/resources/Compute/SubNetwork",
+              "google/resources/Compute/Firewall",
+              "google/resources/Compute/Address",
+              "google/resources/Compute/VmInstance",
+            ],
+          },
+          {
+            IAM: [
+              "google/resources/IAM/IamPolicy",
+              "google/resources/IAM/IamMember",
+              "google/resources/IAM/ServiceAccount",
+            ],
+          },
         ],
       },
       "google/GoogleMisc",
