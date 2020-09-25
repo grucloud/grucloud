@@ -56,7 +56,10 @@ const noop = ({}) => {};
 
 const isValidPlan = (plan) => !isEmpty(plan.plans) && !plan.error;
 
-const filterReadWriteClient = filter((client) => !client.spec.listOnly);
+const filterReadWriteClient = pipe([
+  filter((client) => !client.spec.singleton),
+  filter((client) => !client.spec.listOnly),
+]);
 
 const hasResultError = any(({ error }) => error);
 
@@ -95,7 +98,7 @@ const ResourceMaker = ({
     logger.info(
       `planUpdate resource: ${tos(resource.toJSON())}, live: ${tos(live)}`
     );
-    const target = await resource.resolveConfig();
+    const target = await resource.resolveConfig({ live });
     logger.debug(`planUpdate target: ${tos(target)}`);
 
     if (isEmpty(target)) {
@@ -104,7 +107,9 @@ const ResourceMaker = ({
     const diff = spec.compare({ target, live });
     logger.info(`planUpdate diff ${tos(diff)}`);
     if (diff.length > 0) {
-      return [{ action: "UPDATE", resource: resource.toJSON(), target, live }];
+      return [
+        { action: "UPDATE", resource: resource.toJSON(), config: target, live },
+      ];
     }
   };
 
@@ -119,7 +124,7 @@ const ResourceMaker = ({
       return tryCatch(
         async (dependency) => {
           const live = await dependency.getLive();
-          const config = await dependency.resolveConfig();
+          const config = await dependency.resolveConfig({ live });
           return { resource: dependency, live, config };
         },
         (error, dependency) => {
@@ -130,7 +135,7 @@ const ResourceMaker = ({
     }),
     tap((x) => logger.debug(`resolveDependencies: ${tos(x)}`)),
   ]);
-  const resolveConfig = async () => {
+  const resolveConfig = async ({ live } = {}) => {
     logger.info(`resolveConfig ${type}/${resourceName}`);
     const { items } = await client.getList({
       resources: provider.getResourcesByType(client.type),
@@ -154,6 +159,7 @@ const ResourceMaker = ({
       name: resourceName,
       properties: defaultsDeep(spec.propertiesDefault)(properties()),
       dependencies: resolvedDependencies,
+      live,
     });
     logger.debug(`resolveConfig: configDefault: ${tos(config)}`);
     const finalConfig = transformConfig
@@ -162,6 +168,7 @@ const ResourceMaker = ({
           items,
           config,
           configProvider: provider.config(),
+          live,
         })
       : config;
 
@@ -190,6 +197,57 @@ const ResourceMaker = ({
     });
 
     logger.info(`created:  ${type}/${resourceName}`);
+
+    const live = await retryCall({
+      name: `create getLive ${type}/${resourceName}`,
+      fn: async () => {
+        const live = await getLive();
+        if (!live) {
+          throw Error(
+            `Resource ${type}/${resourceName} not there after being created`
+          );
+        }
+        return live;
+      },
+      shouldRetryOnException: () => true,
+      retryCount: provider.config().retryCount,
+      retryDelay: provider.config().retryDelay,
+    });
+
+    if (
+      !client.spec.isOurMinion({
+        resource: live,
+        resourceNames: provider.resourceNames(),
+        config: provider.config(),
+      })
+    ) {
+      throw Error(`Resource ${type}/${resourceName} is not tagged correctly`);
+    }
+
+    return instance;
+  };
+
+  const update = async ({ payload }) => {
+    logger.info(`update ${tos({ resourceName, type, payload })}`);
+    if (!(await getLive())) {
+      throw Error(`Resource ${type}/${resourceName} does not exists`);
+    }
+
+    // Create now
+    const instance = await retryCall({
+      name: `update ${type}/${resourceName}`,
+      fn: () =>
+        client.update({
+          name: resourceName,
+          payload,
+          dependencies,
+        }),
+      shouldRetryOnException: client.shouldRetryOnException,
+      retryCount: provider.config().retryCount,
+      retryDelay: provider.config().retryDelay,
+    });
+
+    logger.info(`updated:  ${type}/${resourceName}`);
 
     const live = await retryCall({
       name: `create getLive ${type}/${resourceName}`,
@@ -270,6 +328,7 @@ const ResourceMaker = ({
     toString,
     resolveConfig,
     create,
+    update,
     planUpsert,
     getLive,
     addParent,
@@ -1293,7 +1352,7 @@ function CoreProvider({
         logger.debug(`planFindDestroy ${tos({ options, direction })}`);
         assert(onStateChange);
       }),
-      filter((client) => !client.spec.listOnly),
+      filterReadWriteClient,
       tap(() =>
         onStateChange({
           context: { uri: providerName },
@@ -1387,14 +1446,28 @@ function CoreProvider({
     assert(title);
 
     const executor = async ({ item }) => {
-      const engine = getResourceByName(item.resource.name);
-      assert(engine, `Cannot find resource ${tos(item.resource.name)}`);
+      const { resource, live, action } = item;
+      const engine = getResourceByName(resource.name);
+      assert(engine, `Cannot find resource ${tos(resource.name)}`);
 
-      const input = await engine.resolveConfig();
-      const output = await engine.create({
-        payload: input,
-      });
-      return { input, output };
+      const input = await engine.resolveConfig({ live });
+      return switchCase([
+        () => action === "UPDATE",
+        async () => ({
+          input,
+          output: await engine.update({
+            payload: input,
+          }),
+        }),
+        () => action === "CREATE",
+        async () => ({
+          input,
+          output: await engine.create({
+            payload: input,
+          }),
+        }),
+        () => assert("action is not handled"),
+      ])();
     };
 
     return await switchCase([

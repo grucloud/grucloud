@@ -14,6 +14,18 @@ exports.HookType = {
   ON_DESTROYED: "onDestroyed",
 };
 
+exports.axiosErrorToJSON = (error) => ({
+  isAxiosError: true,
+  message: error.message,
+  name: error.name,
+  config: error.config,
+  code: error.code,
+  stack: error.stack,
+  response: {
+    status: error.response?.status,
+    data: error.response?.data,
+  },
+});
 exports.combineProviders = (infra) =>
   pipe([
     () => (infra.provider ? [infra.provider] : []),

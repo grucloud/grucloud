@@ -28,6 +28,9 @@ const GoogleHooksVm = require("../google/vm/hooks");
 const GoogleStackVmNetwork = require("../google/vm-network/iac");
 const GoogleHooksVmNetwork = require("../google/vm-network/hooks");
 
+const GoogleStackIam = require("../google/iam/iac");
+const GoogleHooksIam = require("../google/iam/hooks");
+
 const ScalewayStack = require("../scaleway/iac");
 const ScalewayHooks = require("../scaleway/hooks");
 
@@ -118,6 +121,15 @@ const createGoogle = async ({ config }) => {
       "vm-network",
       GoogleHooksVmNetwork({ resources, provider })
     );
+  }
+
+  // IAM
+  {
+    const resources = await GoogleStackIam.createResources({
+      provider,
+      resources: { serviceAccount },
+    });
+    provider.hookAdd("iam", GoogleHooksIam({ resources, provider }));
   }
   return provider;
 };

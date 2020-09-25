@@ -69,3 +69,21 @@ exports.compare = ({ target = {}, targetKeys = [], live = {} }) => {
   logger.info(`compare ${tos({ targetDiff })}`);
   return targetDiff;
 };
+exports.compareArray = ({ targets = [], lives = [] }) => {
+  logger.debug(`compareArray ${tos({ targets, lives })}`);
+
+  const newElements = pipe([
+    map((target) => {
+      if (!lives.find((live) => isDeepEqual(live, target))) {
+        return {
+          type: "NEW",
+          target,
+        };
+      }
+    }),
+    filter((x) => x),
+  ])(targets);
+  // TODO check for deleted one
+  logger.info(`compareArray ${tos({ newElements })}`);
+  return newElements;
+};

@@ -9,12 +9,14 @@ Provides a IAM Policy for a project.
 const iamPolicy = await provider.makeIamPolicy({
   name: "iam-policy",
   properties: () => ({
-    bindings: [
-      {
-        role: "roles/editor",
-        members: ["user:jane@example.com"],
-      },
-    ],
+    policy: {
+      bindings: [
+        {
+          role: "roles/editor",
+          members: ["user:jane@example.com"],
+        },
+      ],
+    },
   }),
 });
 ```

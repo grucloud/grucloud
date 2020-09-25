@@ -11,20 +11,8 @@ const {
   isUpByIdCore,
   isDownByIdCore,
   logError,
+  axiosErrorToJSON,
 } = require("./Common");
-
-const errorToJSON = (error) => ({
-  isAxiosError: true,
-  message: error.message,
-  name: error.name,
-  config: error.config,
-  code: error.code,
-  stack: error.stack,
-  response: {
-    status: error.response?.status,
-    data: error.response?.data,
-  },
-});
 
 module.exports = CoreClient = ({
   spec,
@@ -35,6 +23,8 @@ module.exports = CoreClient = ({
   pathCreate = () => `/`,
   pathDelete = (id) => `/${id}`,
   pathList = () => `/`,
+  verbGet = "GET",
+  verbList = "GET",
   verbCreate = "POST",
   isUpByIdFactory = ({ getById }) => isUpByIdCore({ getById }),
   configDefault = async ({ name, properties }) => ({
@@ -46,7 +36,7 @@ module.exports = CoreClient = ({
     return item.id;
   },
   findTargetId = (item) => item.id,
-  onResponseGet = identity,
+  onResponseGet = ({ data }) => data,
   onResponseList = identity,
   onResponseCreate = identity,
   onResponseDelete = identity,
@@ -73,11 +63,11 @@ module.exports = CoreClient = ({
         name: `getById type ${spec.type}, path: ${path}`,
         fn: async () =>
           await axios.request(path, {
-            method: "GET",
+            method: verbGet,
           }),
         config,
       });
-      const data = onResponseGet(result.data);
+      const data = onResponseGet({ id, data: result.data });
       logger.debug(`get ${tos(data)}`);
       return data;
     } catch (error) {
@@ -85,7 +75,7 @@ module.exports = CoreClient = ({
       logger.debug(`getById status: ${status}`);
       if (status != 404) {
         logError("getById", error);
-        throw errorToJSON(error);
+        throw axiosErrorToJSON(error);
       }
     }
   };
@@ -97,7 +87,7 @@ module.exports = CoreClient = ({
         name: `getList type: ${spec.type}, path ${path}`,
         fn: async () =>
           await axios.request(path, {
-            method: "GET",
+            method: verbList,
           }),
         config,
       });
@@ -108,7 +98,7 @@ module.exports = CoreClient = ({
       return data;
     } catch (error) {
       logError(`getList ${type}`, error);
-      throw errorToJSON(error);
+      throw axiosErrorToJSON(error);
     }
   };
 
@@ -119,6 +109,7 @@ module.exports = CoreClient = ({
     logger.debug(`create ${type}/${name}, payload: ${tos(payload)}`);
     assert(name);
     assert(payload);
+    assert(!spec.singleton);
     assert(!spec.listOnly);
 
     try {
@@ -153,16 +144,16 @@ module.exports = CoreClient = ({
         config,
       });
       logger.info(`created ${type}/${name}`);
-      return onResponseGet(resource);
+      return onResponseGet({ id, data: resource });
     } catch (error) {
       logError(`create ${type}/${name}`, error);
-      throw errorToJSON(error);
+      throw axiosErrorToJSON(error);
     }
   };
 
   const destroy = async ({ id, name }) => {
     logger.info(`destroy ${tos({ type, name, id })}`);
-
+    assert(!spec.singleton);
     assert(!spec.listOnly);
     assert(!isEmpty(id), `destroy ${type}: invalid id`);
 
@@ -184,7 +175,7 @@ module.exports = CoreClient = ({
       return data;
     } catch (error) {
       logError(`delete ${type}/${name}`, error);
-      throw errorToJSON(error);
+      throw axiosErrorToJSON(error);
     }
   };
 

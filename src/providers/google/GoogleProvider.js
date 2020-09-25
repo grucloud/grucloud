@@ -10,13 +10,15 @@ const shell = require("shelljs");
 const CoreProvider = require("../CoreProvider");
 const logger = require("../../logger")({ prefix: "GoogleProvider" });
 const GoogleTag = require("./GoogleTag");
-const compare = require("../../Utils").compare;
+const { compareArray, compare } = require("../../Utils");
 const { tos } = require("../../tos");
 
 const {
   GcpServiceAccount,
   isOurMinionServiceAccount,
 } = require("./resources/iam/GcpServiceAccount");
+
+const { GcpIamPolicy } = require("./resources/iam/GcpIamPolicy");
 
 //const GcpProject = require("./resources/resourcemanager/GcpProject");
 const GcpNetwork = require("./resources/compute/GcpNetwork");
@@ -50,6 +52,25 @@ const fnSpecs = (config) => {
         }),
       isOurMinion: ({ resource, resourceNames }) =>
         isOurMinionServiceAccount({ resource, resourceNames }),
+    },
+    {
+      type: "IamPolicy",
+      singleton: true,
+      Client: ({ spec }) =>
+        GcpIamPolicy({
+          spec,
+          config,
+        }),
+      isOurMinion: () => true,
+      compare: ({ target, live }) => {
+        logger.debug(`compare policy`);
+        const diff = compareArray({
+          targets: target.policy.bindings,
+          lives: live.bindings,
+        });
+        logger.debug(`compare ${tos(diff)}`);
+        return diff;
+      },
     },
     {
       type: "Network",
@@ -92,12 +113,7 @@ const fnSpecs = (config) => {
     },
     {
       type: "VmInstance",
-      dependsOn: [
-        /*"Project", */ "ServiceAccount",
-        "Address",
-        "Network",
-        "Firewall",
-      ],
+      dependsOn: ["ServiceAccount", "Address", "Network", "Firewall"],
       Client: ({ spec }) =>
         GoogleVmInstance({
           spec,

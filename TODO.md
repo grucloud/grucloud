@@ -1,5 +1,7 @@
 ## Bugs
 
+- list summary in table
+
 ## Common:
 
 ## Cli
@@ -31,12 +33,13 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## TODO Goggle
 
+- policy :
+  //TODO do we use a name ?
+  //TODO how do we prevent being created twice
 - vm instance: network interface from vpc network
 - validate config: check project and region
 
 - https://medium.com/faun/creating-reusable-infrastructure-with-terraform-on-gcp-e17745ac4ff2
-
-- google_project_iam_member
 
 - rename in gcp
 - WARNING when gloud config is difference from our config, i.e region

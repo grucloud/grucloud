@@ -91,7 +91,36 @@ const tablePlanPerType = {
   fields: [
     (item) => item.resource.name,
     (item) => item.action,
-    (item) => YAML.stringify(item.config),
+    switchCase([
+      (item) => item.action === "UPDATE",
+      (item) => {
+        const table = new Table({
+          style: { head: [], border: [] },
+        });
+        table.push([
+          {
+            content: colors.yellow(`NEW`),
+          },
+        ]);
+        table.push([
+          {
+            content: YAML.stringify(item.config),
+          },
+        ]);
+        table.push([
+          {
+            content: colors.yellow(`LIVE`),
+          },
+        ]);
+        table.push([
+          {
+            content: YAML.stringify(item.live),
+          },
+        ]);
+        return table.toString();
+      },
+      (item) => YAML.stringify(item.config),
+    ]),
   ],
 };
 

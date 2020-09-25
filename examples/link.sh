@@ -9,6 +9,7 @@
 (cd google/vm-simple && npm run link)
 (cd google/vm-ssh-keys && npm run link)
 (cd google/vm-network && npm run link)
+(cd google/iam && npm run link)
 (cd mock/mock && npm run link)
 (cd mock/mock-simple && npm run link)
 (cd multi/ && npm run link)
