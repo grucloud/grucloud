@@ -6,14 +6,14 @@ const { GoogleProvider } = require("@grucloud/core");
 const createResources = async ({ provider, resources: { serviceAccount } }) => {
   const iamPolicy = await provider.makeIamPolicy({
     name: "iam-policy",
-    properties: () => ({
+    dependencies: { serviceAccount },
+
+    properties: ({ dependencies: { serviceAccount } }) => ({
       policy: {
         bindings: [
           {
             role: "roles/editor",
-            members: [
-              "serviceAccount:grucloud@grucloud-e2e.iam.gserviceaccount.com",
-            ],
+            members: [`serviceAccount:${serviceAccount.live?.email}`],
           },
         ],
       },

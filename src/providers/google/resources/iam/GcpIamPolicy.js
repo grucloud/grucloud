@@ -29,17 +29,28 @@ exports.GcpIamPolicy = ({ spec, config }) => {
     }),
   });
 
-  const configDefault = ({ name, properties, live }) => {
-    const roleOwnwer = find((binding) => binding.role === "roles/owner")(
-      live.bindings
-    );
-    return {
-      policy: {
-        etag: live.etag,
-        bindings: [...properties.policy.bindings, roleOwnwer],
-      },
-    };
-  };
+  const prevervedRolesName = [
+    "roles/owner",
+    "roles/resourcemanager.projectIamAdmin",
+  ];
+
+  const configDefault = ({ properties, live }) =>
+    pipe([
+      filter((binding) => prevervedRolesName.includes(binding.role)),
+      tap((bindings) => {
+        logger.debug(`configDefault ${tos(bindings)}`);
+      }),
+      //TODO merge members bindings and properties.policy.bindings
+      (preservedBindings) => ({
+        policy: {
+          etag: live.etag,
+          bindings: [...properties.policy.bindings, ...preservedBindings],
+        },
+      }),
+      tap((policy) => {
+        logger.debug(`configDefault ${policy}`);
+      }),
+    ])(live.bindings);
 
   const getList = async () => {
     try {

@@ -38,7 +38,7 @@ describe("GcpIamPolicy", async function () {
     iamPolicy = await provider.makeIamPolicy({
       name: "iam-policy",
       dependencies: { serviceAccount },
-      properties: ({ dependencies: serviceAccount }) => ({
+      properties: ({ dependencies: { serviceAccount } }) => ({
         policy: {
           bindings: [`serviceAccount:${serviceAccount.live?.email}`],
         },
@@ -78,7 +78,7 @@ describe("GcpIamPolicy", async function () {
     assert(planUpdate.live);
     assert(planUpdate.live.etag);
   });
-  it("iamPolicy apply and destroy", async function () {
+  it.only("iamPolicy apply and destroy", async function () {
     const { error, resultCreate } = await provider.planQueryAndApply();
     assert(!error, "should have failed");
     const live = await iamPolicy.getLive();
