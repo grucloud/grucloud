@@ -3,11 +3,13 @@ const { GoogleProvider } = require("../GoogleProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { pipe, tap, map, get, filter } = require("rubico");
 const { find, isDeepEqual } = require("rubico/x");
+const chance = require("chance")();
 
 describe("GcpIamPolicy", async function () {
   let config;
   let provider;
   let iamPolicy;
+  let serviceAccount;
   const bindingEditor = {
     role: "roles/editor",
     members: ["serviceAccount:grucloud@grucloud-e2e.iam.gserviceaccount.com"],
@@ -25,11 +27,20 @@ describe("GcpIamPolicy", async function () {
       config: config.google,
     });
 
+    const saName = `sa-${chance.guid()}`;
+    serviceAccount = await provider.makeServiceAccount({
+      name: saName,
+      properties: () => ({
+        accountId: saName,
+        displayName: saName,
+      }),
+    });
     iamPolicy = await provider.makeIamPolicy({
       name: "iam-policy",
-      properties: () => ({
+      dependencies: { serviceAccount },
+      properties: ({ dependencies: serviceAccount }) => ({
         policy: {
-          bindings: [bindingEditor],
+          bindings: [`serviceAccount:${serviceAccount.live?.email}`],
         },
       }),
     });
@@ -57,8 +68,8 @@ describe("GcpIamPolicy", async function () {
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 1);
-    const planUpdate = plan.resultCreate.plans[0];
+    assert.equal(plan.resultCreate.plans.length, 2);
+    const planUpdate = plan.resultCreate.plans[1];
     assert.equal(planUpdate.action, "UPDATE");
     assert(planUpdate.config);
     assert(planUpdate.config.policy.etag);

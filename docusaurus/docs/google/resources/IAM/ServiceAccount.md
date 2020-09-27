@@ -8,7 +8,7 @@ Provides a [Service Account](https://cloud.google.com/compute/docs/access/servic
 ```js
 const sa = await provider.makeServiceAccount({
   name: "sa",
-  propertie: () => ({
+  properties: () => ({
     accountId: "sa-dev",
     displayName: "SA dev",
   }),

@@ -28,8 +28,8 @@ const GoogleHooksVm = require("../google/vm/hooks");
 const GoogleStackVmNetwork = require("../google/vm-network/iac");
 const GoogleHooksVmNetwork = require("../google/vm-network/hooks");
 
-const GoogleStackIam = require("../google/iam/iac");
-const GoogleHooksIam = require("../google/iam/hooks");
+const GoogleStackIam = require("../google/iam/iam-policy/iac");
+const GoogleHooksIam = require("../google/iam/iam-policy/hooks");
 
 const ScalewayStack = require("../scaleway/iac");
 const ScalewayHooks = require("../scaleway/hooks");
