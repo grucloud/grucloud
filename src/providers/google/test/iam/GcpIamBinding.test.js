@@ -41,7 +41,7 @@ describe("GcpIamBinding", async function () {
     assert(!error, "destroyAll failed");
   });
   after(async () => {
-    //await provider?.destroyAll();
+    await provider?.destroyAll();
   });
   it("iamBinding config", async function () {
     const iamBindingLive = await iamBindingServiceAccount.getLive();
@@ -69,6 +69,30 @@ describe("GcpIamBinding", async function () {
     const live = await iamBindingServiceAccount.getLive();
     assert(live.members);
     assert(live.role);
+    {
+      const provider = await GoogleProvider({
+        name: "google",
+        config: config.google,
+      });
+
+      const saName = `sa-${chance.guid().slice(0, 15)}`;
+      const serviceAccount = await provider.makeServiceAccount({
+        name: saName,
+        properties: () => ({
+          accountId: saName,
+        }),
+      });
+      const iamBindingServiceAccount = await provider.makeIamBinding({
+        name: roleEditor,
+        dependencies: { serviceAccounts: [serviceAccount] },
+        properties: ({}) => ({}),
+      });
+      const plan = await provider.planQuery();
+      assert.equal(plan.resultDestroy.plans.length, 0);
+      assert.equal(plan.resultCreate.plans.length, 2);
+      const planCreate = plan.resultCreate.plans[1];
+      assert.equal(planCreate.action, "UPDATE");
+    }
   });
 
   it("iamBindingEmail", async function () {

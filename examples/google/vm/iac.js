@@ -1,8 +1,6 @@
 const assert = require("assert");
 const { GoogleProvider } = require("@grucloud/core");
 
-//TODO serviceAccount
-
 const createResources = async ({ provider, resources: { serviceAccount } }) => {
   const { stage } = provider.config();
   // Allocate public Ip address
