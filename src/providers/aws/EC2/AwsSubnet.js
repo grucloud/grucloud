@@ -1,4 +1,5 @@
 const AWS = require("aws-sdk");
+const { switchCase } = require("rubico");
 const { isEmpty } = require("rubico/x");
 const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "AwsSn" });
@@ -20,7 +21,11 @@ module.exports = AwsSubnet = ({ spec, config }) => {
 
   const ec2 = new AWS.EC2();
 
-  const findName = findNameInTags;
+  const findName = switchCase([
+    (item) => item.DefaultForAz,
+    () => "default",
+    findNameInTags,
+  ]);
 
   const findId = (item) => {
     assert(item);

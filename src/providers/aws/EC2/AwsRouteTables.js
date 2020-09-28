@@ -22,7 +22,14 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
 
   const ec2 = new AWS.EC2();
 
-  const findName = findNameInTags;
+  const findName = (item) => {
+    const name = findNameInTags(item);
+    if (name) {
+      return name;
+    }
+    return findId(item);
+  };
+
   const findId = (item) => {
     assert(item);
     const id = item.RouteTableId;

@@ -31,23 +31,38 @@ exports.displayListSummary = pipe([
   tap((result) => {
     console.log("List Summary:");
   }),
-  forEach(({ provider, result }) =>
-    pipe([
+  forEach(({ provider, result }) => {
+    const table = new Table({
+      colWidths: tableSummaryDefs.colWidths({
+        columns: process.stdout.columns || 80,
+      }),
+      style: { head: [], border: [] },
+    });
+    table.push([
+      {
+        colSpan: 2,
+        content: colors.yellow(`${provider.name}`),
+      },
+    ]);
+
+    return pipe([
       tap((results) => {
-        console.log(`Provider: ${provider.name}`);
+        //console.log(`Provider: ${provider.name}`);
       }),
       filter(({ error }) => !error),
       forEach(({ type, resources }) => {
-        console.log(`  Type: ${type}`);
-        forEach((resource) => console.log(`    ${resource.name || "Default"}`))(
-          resources
-        );
+        table.push([
+          {
+            content: type,
+          },
+          { content: pluck("name")(resources).join("\n") },
+        ]);
       }),
       tap(() => {
-        console.log(`\n`);
+        console.log(table.toString());
       }),
-    ])(result.results)
-  ),
+    ])(result.results);
+  }),
 ]);
 
 exports.displayPlanSummary = pipe([
@@ -78,6 +93,20 @@ const groupByType = (init = {}) =>
       return { ...acc, [item.resource.type]: [item] };
     }
   }, init);
+
+const tableSummaryDefs = {
+  columns: ["Type", "Resoures"],
+  colWidths: ({ columns }) => {
+    const typeLength = 20;
+    const resourceLength = columns - typeLength - 10;
+    return [typeLength, resourceLength];
+  },
+  fields: [
+    //
+    (item) => item.resource.type,
+    (item) => item.resource.name,
+  ],
+};
 
 const tablePlanPerType = {
   columns: ["Name", "Action", "Data"],

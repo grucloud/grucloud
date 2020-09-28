@@ -204,7 +204,7 @@ const getConfig = tryCatch(
     return config;
   },
   (error) => {
-    logger.error(`getConfig: ${error}`);
+    logger.error(`getConfig: ${tos(error)}`);
     //throw error;
   }
 );
