@@ -150,7 +150,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
 
   const cannotBeDeleted = ({ resource, name }) => {
     logger.debug(`cannotBeDeleted name: ${name} ${tos({ resource })}`);
-    return !name;
+    return resource.RouteTableId === name;
   };
 
   return {

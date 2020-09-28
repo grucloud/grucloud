@@ -126,7 +126,7 @@ exports.Planner = ({
   const itemToKey = (item) => {
     const key = item.resource.id || item.resource.name;
     assert(key, `mising key for item ${tos(item)}`);
-    return key;
+    return `${item.resource.provider}::${item.resource.type}::${key}`;
   };
 
   const findDependsOn = (item, dependencyTree) => {

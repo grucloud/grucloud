@@ -146,7 +146,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
 
   const cannotBeDeleted = ({ resource, name }) => {
     logger.debug(`cannotBeDeleted name: ${name} ${tos({ resource })}`);
-    return !name;
+    return resource.InternetGatewayId === name;
   };
 
   return {
