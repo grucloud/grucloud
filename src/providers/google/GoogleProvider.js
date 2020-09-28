@@ -54,8 +54,7 @@ const fnSpecs = (config) => {
           spec,
           config,
         }),
-      isOurMinion: ({ resource, resourceNames }) =>
-        isOurMinionServiceAccount({ resource, resourceNames }),
+      isOurMinion: isOurMinionServiceAccount,
     },
     {
       type: "IamPolicy",

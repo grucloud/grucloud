@@ -1246,7 +1246,13 @@ function CoreProvider({
 
     assert(direction);
     logger.debug(
-      `filterDestroyResources ${tos({ name, types, id, resource })}`
+      `filterDestroyResources ${tos({
+        name,
+        types,
+        id,
+        resource,
+        isNameInOurPlan,
+      })}`
     );
     return switchCase([
       // Resource that cannot be deleted
@@ -1255,6 +1261,7 @@ function CoreProvider({
           resource,
           name,
           resourceNames: resourceNames(),
+          config: providerConfig,
         }),
       () => {
         logger.debug(
@@ -1300,8 +1307,10 @@ function CoreProvider({
             return false;
           }
         } else {
-          logger.debug(`planFindDestroy ${type}/${name} going down`);
-          return true;
+          logger.debug(
+            `planFindDestroy ${type}/${name} going down: ${isNameInOurPlan}`
+          );
+          return isNameInOurPlan;
         }
       },
     ])();

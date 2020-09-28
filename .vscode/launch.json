@@ -342,9 +342,9 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Google IAM Policy Apply",
+      "name": "Google IAM Binding Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/google/iam/iam-policy",
+      "cwd": "${workspaceFolder}/examples/google/iam/iam-binding",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["apply", "-f"]
@@ -352,20 +352,29 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Google IAM Policy Plan",
+      "name": "Google IAM Binding Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/google/iam/iam-policy",
+      "cwd": "${workspaceFolder}/examples/google/iam/iam-binding",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["plan"]
     },
     {
       "type": "node",
       "request": "launch",
-      "name": "Google IAM Policy List",
+      "name": "Google IAM Binding List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/google/iam/iam-policy",
+      "cwd": "${workspaceFolder}/examples/google/iam/iam-binding",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["list", "--all"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Google IAM Destroy",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/google/iam/iam-binding",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["destroy"]
     },
     {
       "type": "node",

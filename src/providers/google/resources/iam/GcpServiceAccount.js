@@ -12,11 +12,17 @@ const findName = (item) => {
   return name;
 };
 
-const isOurMinionServiceAccount = ({ resource, resourceNames }) => {
+const isOurMinionServiceAccount = ({
+  name,
+  config,
+  resource,
+  resourceNames,
+}) => {
+  assert(config, "config");
   assert(resource, "resource");
   assert(resourceNames, "resourceNames");
-  const isOur = resourceNames.includes(findName(resource));
-  logger.debug(`isOurMinionServiceAccount: ${isOur}`);
+  const isOur = resource.description === config.managedByDescription;
+  logger.debug(`isOurMinionServiceAccount: name: ${name} ${isOur}`);
   return isOur;
 };
 
@@ -79,8 +85,8 @@ exports.GcpServiceAccount = ({ spec, config }) => {
       (accounts) => ({ total: accounts.length, items: accounts }),
     ])(accounts);
 
-  const cannotBeDeleted = ({ resource, resourceNames }) =>
-    !isOurMinionServiceAccount({ resource, resourceNames });
+  const cannotBeDeleted = ({ name, config, resource, resourceNames }) =>
+    !isOurMinionServiceAccount({ name, config, resource, resourceNames });
 
   return GoogleClient({
     spec,

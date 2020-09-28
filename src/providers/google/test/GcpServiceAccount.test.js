@@ -62,11 +62,24 @@ describe("GcpServiceAccount", async function () {
     assert.equal(plan.resultDestroy.plans.length, 0);
     assert.equal(plan.resultCreate.plans.length, 1);
   });
-  it.skip("serviceAccount apply and destroy", async function () {
+  it("serviceAccount apply and destroy", async function () {
     await testPlanDeploy({ provider });
 
     const serviceAccountLive = await serviceAccount.getLive();
 
-    await testPlanDestroy({ provider });
+    const providerEmpty = await GoogleProvider({
+      name: "google",
+      config: config.google,
+    });
+    {
+      const { error, results } = await providerEmpty.destroyAll();
+      assert(!error, "destroyAll failed");
+      assert.equal(results.length, 0);
+    }
+    {
+      const { error, results } = await provider.destroyAll();
+      assert(!error, "destroyAll failed");
+      assert.equal(results.length, 1);
+    }
   });
 });
