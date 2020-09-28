@@ -1,29 +1,18 @@
 const assert = require("assert");
 const { GoogleProvider } = require("@grucloud/core");
 
-//TODO do we use a name ?
-//TODO how do we prevent being created twice
 const createResources = async ({ provider, resources: { serviceAccount } }) => {
-  const iamPolicy = await provider.makeIamPolicy({
-    name: "iam-policy",
-    properties: () => ({
-      policy: {
-        bindings: [
-          {
-            role: "roles/editor",
-            members: [
-              "serviceAccount:grucloud@grucloud-e2e.iam.gserviceaccount.com",
-            ],
-          },
-        ],
-      },
-    }),
+  const iamBinding = await provider.makeIamBinding({
+    name: "roles/editor",
+    dependencies: { serviceAccounts: [serviceAccount] },
+    properties: () => ({}),
   });
 
   return {
-    iamPolicy,
+    iamBinding,
   };
 };
+
 exports.createResources = createResources;
 
 exports.createStack = async ({ config }) => {

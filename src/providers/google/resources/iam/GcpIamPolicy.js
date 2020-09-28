@@ -109,6 +109,5 @@ exports.GcpIamPolicy = ({ spec, config }) => {
     getByName,
     configDefault,
     cannotBeDeleted: () => true,
-    singleton: true,
   };
 };

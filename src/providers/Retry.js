@@ -66,7 +66,7 @@ const retryCall = async ({
           concatMap((error, i) => {
             logError(
               `retryCall error ${name}, attempt ${i}/${retryCount}, retryDelay: ${retryDelay},`,
-              error
+              tos(error)
             );
 
             return iif(

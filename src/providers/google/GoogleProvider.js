@@ -19,6 +19,10 @@ const {
 } = require("./resources/iam/GcpServiceAccount");
 
 const { GcpIamPolicy } = require("./resources/iam/GcpIamPolicy");
+const {
+  GcpIamBinding,
+  isOurMinionIamBinding,
+} = require("./resources/iam/GcpIamBinding");
 
 //const GcpProject = require("./resources/resourcemanager/GcpProject");
 const GcpNetwork = require("./resources/compute/GcpNetwork");
@@ -67,6 +71,24 @@ const fnSpecs = (config) => {
         const diff = compareArray({
           targets: target.policy.bindings,
           lives: live.bindings,
+        });
+        logger.debug(`compare ${tos(diff)}`);
+        return diff;
+      },
+    },
+    {
+      type: "IamBinding",
+      Client: ({ spec }) =>
+        GcpIamBinding({
+          spec,
+          config,
+        }),
+      isOurMinion: isOurMinionIamBinding,
+      compare: ({ target, live }) => {
+        logger.debug(`compare binding`);
+        const diff = compareArray({
+          targets: target.members,
+          lives: live.members,
         });
         logger.debug(`compare ${tos(diff)}`);
         return diff;

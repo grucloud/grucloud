@@ -1519,6 +1519,8 @@ function CoreProvider({
     const id = client.findId(config);
     assert(id, `destroyByClient missing id in config: ${tos(config)}`);
     const result = await client.destroy({ id, name, resourcesPerType });
+
+    assert(client.isDownById, "client.isDownById");
     await retryExpectOk({
       name: `destroy ${name}`,
       fn: () => client.isDownById({ id, name, resourcesPerType }),

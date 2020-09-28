@@ -5,23 +5,39 @@ title: IAM Binding
 
 Provides a IAM Binding for a project.
 
+## Examples
+
+### Bind a user to a role
+
 ```js
 const iamBinding = await provider.makeIamBinding({
-  name: "iam-binding-role-editor",
+  name: "roles/editor",
   properties: () => ({
-    role: "roles/editor",
     members: ["user:jane@example.com"],
   }),
 });
 ```
 
-### Examples
+### Bind a service account to a role
 
-- [basic example](https://github.com/FredericHeem/grucloud/blob/master/examples/google/iam/iac.js#L7)
+```js
+const serviceAccount = await provider.makeServiceAccount({
+  name: "sa",
+  properties: () => ({
+    accountId: "sa",
+  }),
+});
 
-### Properties
+const iamBinding = await provider.makeIamBinding({
+  name: "roles/editor",
+  dependencies: { serviceAccounts: [serviceAccount] },
+  properties: ({}) => ({}),
+});
+```
 
-- [all properties](https://cloud.google.com/compute/docs/reference/rest/v1/addresses/insert#request-body)
+### Example Code
+
+- [basic example](https://github.com/FredericHeem/grucloud/blob/master/examples/google/iam/iam-binding/iac.js#L7)
 
 ### Used By
 
