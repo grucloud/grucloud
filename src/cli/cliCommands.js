@@ -223,10 +223,10 @@ const displayErrorResults = ({ results = [], name }) => {
 
         displayErrorHooks(result?.resultHooks);
 
-        if (result?.resultCreate) {
+        if (result?.resultCreate?.results) {
           displayPlanApplyErrorResult(result.resultCreate.results);
         }
-        if (result?.resultDestroy) {
+        if (result?.resultDestroy?.results) {
           displayPlanApplyErrorResult(result.resultDestroy.results);
         }
 
