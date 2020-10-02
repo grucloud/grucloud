@@ -2,7 +2,7 @@ module.exports = {
   title: "GruCloud",
   tagline: "Infrastructure as Code",
   url: "https://grucloud.github.io/",
-  baseUrl: "/grucloud/",
+  baseUrl: "/",
   favicon: "img/cloud.svg",
   organizationName: "grucloud", // Usually your GitHub org/user name.
   projectName: "grucloud", // Usually your repo name.
