@@ -1,7 +1,5 @@
 ## Bugs
 
-- list summary in table
-
 ## Common:
 
 ## Cli

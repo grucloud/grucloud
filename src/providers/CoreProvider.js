@@ -747,7 +747,13 @@ function CoreProvider({
                   });
 
                   logger.error(error);
-                  return { error, action, hookType, hookName, providerName };
+                  return {
+                    error,
+                    action: action.name,
+                    hookType,
+                    hookName,
+                    providerName,
+                  };
                 }
               )
             )(actions),

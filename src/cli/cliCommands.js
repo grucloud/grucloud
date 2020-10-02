@@ -200,7 +200,7 @@ const displayErrorHooks = (resultHooks) => {
       }),
       forEach(({ error, hookName, providerName, hookType, action }) => {
         const fullName = `${providerName}::${hookName}::${hookType}::${
-          action ? action.name : "init"
+          action ? action : "init"
         }`;
         console.log(`Error running hook '${fullName}'`);
         console.log(YAML.stringify(convertError({ error })));
