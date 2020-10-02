@@ -13,7 +13,7 @@ const resourceGroup = await provider.makeResourceGroup({
 
 ### Examples
 
-- [basic example](https://github.com/FredericHeem/grucloud/blob/master/examples/azure/iac.js#9)
+- [basic example](https://github.com/grucloud/grucloud/blob/master/examples/azure/iac.js#9)
 
 ### Properties
 

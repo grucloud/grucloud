@@ -21,7 +21,7 @@ git config --global user.email
 
 Now you are ready to clone the code, install the dependencies and run the functional testing against a mock cloud provider.
 
-    git clone https://github.com/FredericHeem/grucloud
+    git clone https://github.com/grucloud/grucloud
     cd grucloud
     npm install
     npm run test:ci

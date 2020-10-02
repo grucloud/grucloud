@@ -51,7 +51,7 @@ az vm image list  --output table
 
 ### Examples
 
-- [basic example](https://github.com/FredericHeem/grucloud/blob/master/examples/azure/iac.js#L97)
+- [basic example](https://github.com/grucloud/grucloud/blob/master/examples/azure/iac.js#L97)
 
 ### Properties
 

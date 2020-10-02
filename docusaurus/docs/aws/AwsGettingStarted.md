@@ -23,7 +23,7 @@ npm i -g @grucloud/core
 Clone the source code containing the examples:
 
 ```bash
-git clone git@github.com:FredericHeem/grucloud.git
+git clone git@github.com:grucloud/grucloud.git
 ```
 
 Change the directory to one of the examples:

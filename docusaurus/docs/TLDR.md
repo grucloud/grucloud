@@ -14,7 +14,7 @@ npm i -g @grucloud/core
 Clone the source code and install the dependencies
 
 ```
-git clone git@github.com:FredericHeem/grucloud.git
+git clone git@github.com:grucloud/grucloud.git
 cd grucloud
 npm install
 ```

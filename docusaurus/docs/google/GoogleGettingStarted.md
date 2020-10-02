@@ -24,7 +24,7 @@ npm i -g @grucloud/core
 Clone one of the example:
 
 ```bash
-git clone git@github.com:FredericHeem/grucloud.git
+git clone git@github.com:grucloud/grucloud.git
 ```
 
 ```bash

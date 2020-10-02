@@ -25,7 +25,7 @@ npm i -g @grucloud/core
 Clone the code and go to one of the azure examples:
 
 ```bash
-git clone git@github.com:FredericHeem/grucloud.git
+git clone git@github.com:grucloud/grucloud.git
 ```
 
 ```bash

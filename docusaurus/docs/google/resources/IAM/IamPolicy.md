@@ -23,7 +23,7 @@ const iamPolicy = await provider.makeIamPolicy({
 
 ### Examples
 
-- [basic example](https://github.com/FredericHeem/grucloud/blob/master/examples/google/iam/iac.js#L7)
+- [basic example](https://github.com/grucloud/grucloud/blob/master/examples/google/iam/iac.js#L7)
 
 ### Properties
 
