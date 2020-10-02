@@ -19,9 +19,9 @@ const server = await provider.makeEC2({
 
 ### Examples
 
-- [simple example](https://github.com/FredericHeem/grucloud/blob/master/examples/aws/ec2/iac.js)
-- [example with IAM](https://github.com/FredericHeem/grucloud/blob/master/examples/aws/iam/iac.js)
-- [full example](https://github.com/FredericHeem/grucloud/blob/master/examples/aws/ec2-vpc/iac.js)
+- [simple example](https://github.com/grucloud/grucloud/blob/master/examples/aws/ec2/iac.js)
+- [example with IAM](https://github.com/grucloud/grucloud/blob/master/examples/aws/iam/iac.js)
+- [full example](https://github.com/grucloud/grucloud/blob/master/examples/aws/ec2-vpc/iac.js)
 
 ### Properties
 

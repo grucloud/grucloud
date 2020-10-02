@@ -15,7 +15,7 @@ const vpc = provider.makeVpc({
 
 ### Example
 
-- [simple example](https://github.com/FredericHeem/grucloud/blob/master/examples/aws/ec2-vpc/iac.js#L13)
+- [simple example](https://github.com/grucloud/grucloud/blob/master/examples/aws/ec2-vpc/iac.js#L13)
 
 ### Used By
 

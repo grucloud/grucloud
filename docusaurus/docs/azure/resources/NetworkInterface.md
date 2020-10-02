@@ -32,7 +32,7 @@ const networkInterface = await provider.makeNetworkInterface({
 
 ### Examples
 
-- [basic example](https://github.com/FredericHeem/grucloud/blob/master/examples/azure/iac.js#70)
+- [basic example](https://github.com/grucloud/grucloud/blob/master/examples/azure/iac.js#70)
 
 ### Properties
 

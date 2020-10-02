@@ -14,7 +14,7 @@ const keyPair = await provider.useKeyPair({
 
 ### Examples
 
-- [simple example](https://github.com/FredericHeem/grucloud/blob/master/examples/aws/iac.js#L10)
+- [simple example](https://github.com/grucloud/grucloud/blob/master/examples/aws/iac.js#L10)
 
 ### Used By
 
