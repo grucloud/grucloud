@@ -88,7 +88,7 @@ describe("GcpIamBinding", async function () {
         properties: ({}) => ({}),
       });
       const plan = await provider.planQuery();
-      assert.equal(plan.resultDestroy.plans.length, 0);
+      assert.equal(plan.resultDestroy.plans.length, 1);
       assert.equal(plan.resultCreate.plans.length, 2);
       const planCreate = plan.resultCreate.plans[1];
       assert.equal(planCreate.action, "UPDATE");
