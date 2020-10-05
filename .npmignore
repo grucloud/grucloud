@@ -7,3 +7,8 @@ coverage
 .vscode/
 .mocharc.json
 examples/
+docusaurus
+secrets
+.travis.yml
+.circleci
+.github
