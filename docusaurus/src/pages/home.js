@@ -26,7 +26,7 @@ const features = [
   {
     title: <>Multi Cloud</>,
     //imageUrl: 'img/undraw_docusaurus_mountain.svg',
-    description: <>Grucloud supports the major the major Cloud Providers</>,
+    description: <>Grucloud supports the major Cloud Providers</>,
   },
   {
     title: <>Javascript</>,
