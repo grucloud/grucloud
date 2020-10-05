@@ -24,7 +24,11 @@
     "decrypt-data-ci": "dotenv -- sh secrets/decrypt-data-ci.sh"
   },
   "keywords": [
-    "cloud"
+    "cloud",
+    "infra as code",
+    "aws",
+    "azure",
+    "gcp"
   ],
   "author": "Frederic Heem",
   "license": "ISC",
