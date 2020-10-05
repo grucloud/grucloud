@@ -7,6 +7,7 @@
   "bin": {
     "gc": "./src/cli/cliEntry.js"
   },
+  "homepage": "https://www.grucloud.com",
   "scripts": {
     "test:az": "NODE_PATH=src mocha 'src/providers/azure/test/**.test.js'",
     "test:gcp": "NODE_PATH=src mocha 'src/providers/google/test/**.test.js'",
