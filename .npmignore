@@ -12,3 +12,4 @@ secrets
 .travis.yml
 .circleci
 .github
+test/
