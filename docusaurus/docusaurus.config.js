@@ -1,10 +1,10 @@
 module.exports = {
   title: "GruCloud",
   tagline: "Infrastructure as Code",
-  url: "https://grucloud.com",
+  url: "https://grucloud.github.io/",
   baseUrl: "/",
   favicon: "img/cloud.svg",
-  organizationName: "fredericheem", // Usually your GitHub org/user name.
+  organizationName: "grucloud", // Usually your GitHub org/user name.
   projectName: "grucloud", // Usually your repo name.
   themeConfig: {
     navbar: {
@@ -22,7 +22,7 @@ module.exports = {
         },
         /*{ to: "blog", label: "Blog", position: "left" },*/
         {
-          href: "https://github.com/fredericheem/grucloud",
+          href: "https://github.com/grucloud/grucloud",
           label: "GitHub",
           position: "right",
         },
