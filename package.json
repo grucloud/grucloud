@@ -21,7 +21,8 @@
     "cpd": "jscpd -r console --format 'javascript,typescript' ./src",
     "link": "npm link && cd examples && ./link.sh",
     "encrypt-data-ci": "dotenv -- sh secrets/encrypt-data-ci.sh",
-    "decrypt-data-ci": "dotenv -- sh secrets/decrypt-data-ci.sh"
+    "decrypt-data-ci": "dotenv -- sh secrets/decrypt-data-ci.sh",
+    "np": "np --test-script  test:mock"
   },
   "keywords": [
     "cloud",
@@ -58,6 +59,7 @@
     "md5-file": "^5.0.0",
     "moment": "^2.27.0",
     "node-emoji": "^1.10.0",
+    "np": "^6.5.0",
     "ping": "^0.2.3",
     "pluralize": "^8.0.0",
     "prompts": "^2.3.2",
