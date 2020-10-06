@@ -4,7 +4,7 @@ const { pipe, tap, map, get, filter, tryCatch } = require("rubico");
 
 const { first, find, defaultsDeep } = require("rubico/x");
 const AxiosMaker = require("../../../AxiosMaker");
-const { retryCallOnTimeout } = require("../../../Retry");
+const { retryCallOnError } = require("../../../Retry");
 const { getField } = require("../../../ProviderCommon");
 const { isDownByIdCore } = require("../../../Common");
 const logger = require("../../../../logger")({ prefix: "GcpIamPolicy" });
@@ -63,7 +63,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
   const getIamPolicy = tryCatch(
     pipe([
       () =>
-        retryCallOnTimeout({
+        retryCallOnError({
           name: `getList type: ${spec.type}`,
           fn: () =>
             axios.request(":getIamPolicy", {
@@ -115,7 +115,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
       getIamPolicy,
       (policy) => ({ ...policy, bindings: [...policy.bindings, payload] }),
       (policy) =>
-        retryCallOnTimeout({
+        retryCallOnError({
           name: `update type: ${spec.type}`,
           fn: async () =>
             await axios.request(":setIamPolicy", {
@@ -135,7 +135,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
       getIamPolicy,
       //TODO
       ({ policy }) =>
-        retryCallOnTimeout({
+        retryCallOnError({
           name: `update type: ${spec.type}`,
           fn: async () =>
             await axios.request(":setIamPolicy", {
@@ -161,7 +161,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
         bindings: filter(({ role }) => role !== id)(bindings),
       }),
       (policy) =>
-        retryCallOnTimeout({
+        retryCallOnError({
           name: `destroy type: ${spec.type}`,
           fn: async () =>
             await axios.request(":setIamPolicy", {

@@ -4,7 +4,7 @@ const assert = require("assert");
 const logger = require("../logger")({ prefix: "CoreClient" });
 const { tos } = require("../tos");
 const identity = (x) => x;
-const { retryExpectOk, retryCallOnTimeout } = require("./Retry");
+const { retryExpectOk, retryCallOnError } = require("./Retry");
 const {
   getByNameCore,
   findField,
@@ -59,7 +59,7 @@ module.exports = CoreClient = ({
       const path = pathGet(id);
       logger.debug(`getById path: ${path}`);
 
-      const result = await retryCallOnTimeout({
+      const result = await retryCallOnError({
         name: `getById type ${spec.type}, path: ${path}`,
         fn: async () =>
           await axios.request(path, {
@@ -83,7 +83,7 @@ module.exports = CoreClient = ({
   const getList = async () => {
     try {
       const path = pathList();
-      const result = await retryCallOnTimeout({
+      const result = await retryCallOnError({
         name: `getList type: ${spec.type}, path ${path}`,
         fn: async () =>
           await axios.request(path, {
@@ -116,7 +116,7 @@ module.exports = CoreClient = ({
       const path = pathCreate({ dependencies, name });
       logger.info(`create ${spec.type}/${name}`);
 
-      const result = await retryCallOnTimeout({
+      const result = await retryCallOnError({
         name: `create ${spec.type}/${name}`,
         fn: async () =>
           await axios.request(path, {
@@ -160,7 +160,7 @@ module.exports = CoreClient = ({
     try {
       const path = pathDelete(id);
       logger.debug(`destroy url: ${path}`);
-      const result = await retryCallOnTimeout({
+      const result = await retryCallOnError({
         name: `destroy type ${spec.type}, path: ${path}`,
         fn: async () =>
           await axios.request(path, {
