@@ -1633,7 +1633,7 @@ function CoreProvider({
   const destroyAll = pipe([
     tap(() => logger.debug(`destroyAll`)),
     async ({ onStateChange = identity } = {}) =>
-      planFindDestroy({ options: {}, onStateChange }),
+      planFindDestroy({ options: { all: true }, onStateChange }),
     async ({ plans }) =>
       await planDestroy({ plans, direction: PlanDirection.DOWN }),
     tap(({ error, results }) =>
