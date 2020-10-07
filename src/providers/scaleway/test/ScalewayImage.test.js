@@ -3,7 +3,7 @@ const { ScalewayProvider } = require("../ScalewayProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
-describe("ScalewayImage", async function () {
+describe.only("ScalewayImage", async function () {
   let config;
 
   let provider;
@@ -11,16 +11,16 @@ describe("ScalewayImage", async function () {
 
   before(async function () {
     try {
-      config = ConfigLoader({ baseDir: __dirname });
+      config = ConfigLoader({ path: "examples/multi" });
     } catch (error) {
       this.skip();
     }
     provider = await ScalewayProvider({
       name: "scaleway",
-      config,
+      config: config.scaleway,
     });
 
-    const { error } = await provider.destroyAll();
+    const { error } = await provider.destroyAll({ all: false });
     assert(!error);
 
     image = await provider.useImage({
@@ -38,7 +38,7 @@ describe("ScalewayImage", async function () {
   });
 
   after(async () => {
-    await provider?.destroyAll();
+    await provider?.destroyAll({ all: false });
   });
   it("targetResources size ", async function () {
     assert.equal(provider.getTargetResources().length, 1);

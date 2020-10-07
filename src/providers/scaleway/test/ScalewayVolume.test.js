@@ -10,13 +10,13 @@ describe("ScalewayVolume", async function () {
 
   before(async function () {
     try {
-      config = ConfigLoader({ baseDir: __dirname });
+      config = ConfigLoader({ path: "examples/multi" });
     } catch (error) {
       this.skip();
     }
     provider = await ScalewayProvider({
       name: "scaleway",
-      config,
+      config: config.scaleway,
     });
     volume = await provider.makeVolume({
       name: "volume1",
@@ -27,7 +27,7 @@ describe("ScalewayVolume", async function () {
   });
 
   after(async () => {
-    await provider?.destroyAll();
+    await provider?.destroyAll({ all: false });
   });
 
   it("volume config", async function () {
