@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/core",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Infrastructure as Code",
   "public": true,
   "main": "src/index.js",
@@ -9,10 +9,10 @@
   },
   "homepage": "https://www.grucloud.com",
   "scripts": {
-    "test:az": "NODE_PATH=src mocha 'src/providers/azure/test/**.test.js'",
-    "test:gcp": "NODE_PATH=src mocha 'src/providers/google/test/**.test.js'",
+    "test:az": "NODE_PATH=src mocha 'src/providers/azure/**/**.test.js'",
+    "test:gcp": "NODE_PATH=src mocha 'src/providers/google/**/**.test.js'",
     "test:aws": "NODE_PATH=src mocha 'src/providers/aws/**/**.test.js'",
-    "test:scw": "NODE_PATH=src mocha 'src/providers/scaleway/test/**.test.js'",
+    "test:scw": "NODE_PATH=src mocha 'src/providers/scaleway/**/**.test.js'",
     "test:mock": "NODE_PATH=src mocha 'src/cli/test/*.test.js' 'src/test/*.test.js'  'src/mockServer/*.test.js' 'src/providers/mock/test/**/*.test.js'",
     "test:mocha": "NODE_PATH=src mocha 'examples/multi/*.test.js' 'src/**/*.test.js' ",
     "test": "NODE_PATH=src nyc mocha 'examples/multi/*.test.js' 'src/**/*.test.js'",

@@ -4,7 +4,7 @@ const Duration = require("duration");
 const pkg = require("../../package.json");
 const { createProgram } = require("./program");
 const commands = require("./cliCommands");
-const logger = require("../logger")({ prefix: "AwsClientEC2" });
+const logger = require("../logger")({ prefix: "CliMain" });
 
 const executableName = "gc";
 

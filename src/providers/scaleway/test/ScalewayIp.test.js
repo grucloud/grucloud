@@ -10,22 +10,22 @@ describe("ScalewayIp", async function () {
   let ip;
   before(async function () {
     try {
-      config = ConfigLoader({ baseDir: __dirname });
+      config = ConfigLoader({ path: "examples/multi" });
     } catch (error) {
       this.skip();
     }
     provider = await ScalewayProvider({
       name: "scaleway",
-      config,
+      config: config.scaleway,
     });
 
-    const { error } = await provider.destroyAll();
+    const { error } = await provider.destroyAll({ all: false });
     assert(!error);
 
     ip = await provider.makeIp({ name: "myip" });
   });
   after(async () => {
-    await provider?.destroyAll();
+    await provider?.destroyAll({ all: false });
   });
 
   it("ip resolveConfig", async function () {

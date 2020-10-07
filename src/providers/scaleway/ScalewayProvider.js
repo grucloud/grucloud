@@ -8,6 +8,7 @@ const logger = require("../../logger")({ prefix: "ScalewayProvider" });
 const ScalewayTag = require("./ScalewayTag");
 const { getField } = require("../ProviderCommon");
 const { tos } = require("../../tos");
+
 const fnSpecs = (config) => {
   const { organization } = config;
   assert(organization);

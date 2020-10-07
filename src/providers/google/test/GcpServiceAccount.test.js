@@ -72,12 +72,12 @@ describe("GcpServiceAccount", async function () {
       config: config.google,
     });
     {
-      const { error, results } = await providerEmpty.destroyAll();
+      const { error, results } = await providerEmpty.destroyAll({ all: false });
       assert(!error, "destroyAll failed");
       assert.equal(results.length, 0);
     }
     {
-      const { error, results } = await provider.destroyAll();
+      const { error, results } = await provider.destroyAll({ all: false });
       assert(!error, "destroyAll failed");
       assert.equal(results.length, 1);
     }

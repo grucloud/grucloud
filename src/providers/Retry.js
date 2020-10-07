@@ -91,11 +91,12 @@ const retryCall = async ({
 };
 exports.retryCall = retryCall;
 
-exports.retryCallOnTimeout = ({ name, fn, config }) =>
+exports.retryCallOnError = ({ name, fn, config }) =>
   retryCall({
     name,
     fn,
-    shouldRetryOnException: (error) => error.code === "ECONNABORTED",
+    shouldRetryOnException: (error) =>
+      ["ECONNABORTED", "ECONNRESET"].includes(error.code),
     isExpectedResult: (result) => {
       assert(result.status, `no status in result`);
       return [200, 201, 202, 204].includes(result.status);

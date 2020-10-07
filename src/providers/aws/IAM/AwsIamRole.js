@@ -229,6 +229,10 @@ exports.AwsIamRole = ({ spec, config }) => {
     return defaultsDeep({ RoleName: name, Path: "/" })(properties);
   };
 
+  const cannotBeDeleted = (item) => {
+    return item.resource.Path.includes("/aws-service-role");
+  };
+
   return {
     type: "IamRole",
     spec,
@@ -237,7 +241,7 @@ exports.AwsIamRole = ({ spec, config }) => {
     findId,
     getByName,
     getById,
-    cannotBeDeleted: () => false,
+    cannotBeDeleted,
     findName,
     create,
     destroy,

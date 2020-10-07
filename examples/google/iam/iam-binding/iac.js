@@ -3,7 +3,7 @@ const { GoogleProvider } = require("@grucloud/core");
 
 const createResources = async ({ provider, resources: { serviceAccount } }) => {
   const iamBinding = await provider.makeIamBinding({
-    name: "roles/editor",
+    name: "roles/storage.admin",
     dependencies: { serviceAccounts: [serviceAccount] },
     properties: () => ({}),
   });

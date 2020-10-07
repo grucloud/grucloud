@@ -4,7 +4,7 @@ const { pipe, tap, map, get, filter } = require("rubico");
 
 const { first, find } = require("rubico/x");
 const AxiosMaker = require("../../../AxiosMaker");
-const { retryCallOnTimeout } = require("../../../Retry");
+const { retryCallOnError } = require("../../../Retry");
 
 const logger = require("../../../../logger")({ prefix: "GcpIamPolicy" });
 const { tos } = require("../../../../tos");
@@ -54,7 +54,7 @@ exports.GcpIamPolicy = ({ spec, config }) => {
 
   const getList = async () => {
     try {
-      const result = await retryCallOnTimeout({
+      const result = await retryCallOnError({
         name: `getList type: ${spec.type}`,
         fn: async () =>
           await axios.request(":getIamPolicy", {
@@ -86,7 +86,7 @@ exports.GcpIamPolicy = ({ spec, config }) => {
       console.log("update");
     }),
     ({ payload }) =>
-      retryCallOnTimeout({
+      retryCallOnError({
         name: `update type: ${spec.type}`,
         fn: async () =>
           await axios.request(":setIamPolicy", {
