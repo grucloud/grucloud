@@ -1,7 +1,7 @@
 const { GoogleProvider } = require("@grucloud/core");
 
 exports.createStack = async ({ config }) => {
-  const provider = await GoogleProvider({ name: "google", config });
+  const provider = await GoogleProvider({ config });
 
   const server = await provider.makeVmInstance({
     name: `webserver`,
