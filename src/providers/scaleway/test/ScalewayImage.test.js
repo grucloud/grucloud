@@ -3,7 +3,7 @@ const { ScalewayProvider } = require("../ScalewayProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
-describe.only("ScalewayImage", async function () {
+describe("ScalewayImage", async function () {
   let config;
 
   let provider;
