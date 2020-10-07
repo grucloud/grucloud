@@ -81,7 +81,9 @@ function Home() {
         `}
       >
         <h1 className="hero__title">{siteConfig.title}</h1>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
+        <p className="hero__subtitle">Infrastructure as Code</p>
+        <p className="hero__subtitle">Deploy and Destroy Cloud Resources </p>
+
         <h2>Get Started</h2>
         <div
           css={css`
