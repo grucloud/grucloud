@@ -6,7 +6,12 @@ module.exports = {
   favicon: "img/cloud.svg",
   organizationName: "grucloud", // Usually your GitHub org/user name.
   projectName: "grucloud", // Usually your repo name.
+  plugins: ["@docusaurus/plugin-google-gtag"],
   themeConfig: {
+    gtag: {
+      trackingID: "UA-179962442-1",
+      anonymizeIP: true,
+    },
     navbar: {
       title: "GruCloud",
       logo: {
