@@ -11,22 +11,32 @@ import styles from "./styles.module.css";
 import AwsLogo from "./img/aws.svg";
 import GcpLogo from "./img/gcp.svg";
 import AzureLogo from "./img/azure.svg";
+import MainLogo from "./img/gc.svg";
+
+import createConsole from "./components/console";
+const context = {};
+const Console = createConsole(context);
 
 const features = [
   {
-    title: <>Easy to Use</>,
+    title: <>Cloud Resources</>,
     //imageUrl: 'img/undraw_docusaurus_mountain.svg',
     description: (
       <>
-        Grucloud was designed from the ground up to be easily installed and used
-        to get your infrastrucure up and running quickly.
+        Code you infrastructure for predictable deployment, manages the
+        dependencies between cloud resources
       </>
     ),
   },
   {
     title: <>Multi Cloud</>,
     //imageUrl: 'img/undraw_docusaurus_mountain.svg',
-    description: <>Grucloud supports the major Cloud Providers</>,
+    description: (
+      <>
+        Grucloud supports the major Cloud Providers such as Amazon Web Service,
+        Google Could and Microsoft Azure.
+      </>
+    ),
   },
   {
     title: <>Javascript</>,
@@ -70,39 +80,81 @@ const LinkLogo = ({ Logo, url }) => (
 function Home() {
   const context = useDocusaurusContext();
   const { siteConfig = {} } = context;
+  const Console = createConsole(context);
+
   return (
     <Layout
       title={`${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />"
+      description="Deploy, Update and Destroy Infrastructures as Code"
     >
       <header
         css={css`
           text-align: center;
+          background-color: #f7f8fa;
+          padding: 1rem;
         `}
       >
-        <h1 className="hero__title">{siteConfig.title}</h1>
-        <p className="hero__subtitle">Infrastructure as Code</p>
-        <p className="hero__subtitle">Deploy and Destroy Cloud Resources </p>
-
-        <h2>Get Started</h2>
         <div
           css={css`
             display: flex;
-            flex-direction: column;
+            justify-items: center;
+            justify-content: center;
             align-items: center;
-            > a {
-              margin: 0.5rem 0 0.5rem 0;
-              width: 400px;
+            > * {
+              margin: 5px;
             }
           `}
         >
-          <LinkLogo Logo={AwsLogo} url="docs/aws/AwsGettingStarted" />
-          <LinkLogo Logo={GcpLogo} url="docs/google/GoogleGettingStarted" />
-          <LinkLogo Logo={AzureLogo} url="docs/azure/AzureGettingStarted" />
+          <MainLogo
+            css={css`
+              width: 100px;
+              height: 100px;
+            `}
+          />{" "}
+          <h1 className="hero__title">{siteConfig.title}</h1>
         </div>
+
+        <p className="hero__subtitle">Infrastructure as Code in Javascript</p>
+        <p className="hero__subtitle">Deploy and Destroy Cloud Resources </p>
       </header>
       <main>
-        <section className={styles.features}>
+        <section
+          css={css`
+            text-align: center;
+            padding: 30px;
+          `}
+        >
+          <h1>Get Started</h1>
+          <div
+            css={css`
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              > a {
+                margin: 0.5rem 0 0.5rem 0;
+                width: 400px;
+              }
+            `}
+          >
+            <LinkLogo Logo={AwsLogo} url="docs/aws/AwsGettingStarted" />
+            <LinkLogo Logo={GcpLogo} url="docs/google/GoogleGettingStarted" />
+            <LinkLogo Logo={AzureLogo} url="docs/azure/AzureGettingStarted" />
+          </div>
+          {/*<Console
+            css={css`
+              border: 1px solid red;
+              width: 200px;
+              display: block;
+            `}
+            text={`Ciao\nBello`}
+          />*/}
+        </section>
+        <section
+          css={css`
+            background-color: #f7f8fa;
+          `}
+          className={styles.features}
+        >
           <div className="container">
             <div className="row">
               {features.map((props, idx) => (

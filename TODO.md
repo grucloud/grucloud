@@ -2,6 +2,15 @@
 
 ## Common:
 
+- displayPlan error
+
+- iam deal with deleted user
+
+## Web site
+
+- https://alternativeto.net/Manage/AddItem.aspx
+- sitemap
+
 ## Cli
 
 ## Azure
