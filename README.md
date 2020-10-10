@@ -3,15 +3,15 @@ Code your infrastructure with Javascript to deploy, manage and dispose various r
 
 # Getting Started
 
-- [AWS](./docusaurus/docs/aws/AwsGettingStarted)
-- [Google Cloud](./docusaurus/docs/google/GoogleGettingStarted)
-- [Microsoft Azure](./docusaurus/docs/azure/AzureGettingStarted)
+- [AWS](./docusaurus/docs/aws/AwsGettingStarted.md)
+- [Google Cloud](./docusaurus/docs/google/GoogleGettingStarted.md)
+- [Microsoft Azure](./docusaurus/docs/azure/AzureGettingStarted.md)
 
 # Providers
 
 ## Amazon Web Service
 
-Visit the [Aws Requirements](./docusaurus/docs/aws/AwsRequirements) to prepare for the [AWS Getting Started Guide](./docusaurus/docs/aws/AwsGettingStarted)
+Visit the [Aws Requirements](./docusaurus/docs/aws/AwsRequirements.md) to prepare for the [AWS Getting Started Guide](./docusaurus/docs/aws/AwsGettingStarted.md)
 
 ### Examples
 
@@ -21,13 +21,13 @@ Visit the [Aws Requirements](./docusaurus/docs/aws/AwsRequirements) to prepare f
 
 ### Resources
 
-- EC2: [EC2](./docusaurus/docs/aws/resources/EC2/EC2), [ElasticIpAddress](./docusaurus/docs/aws/resources/EC2/ElasticIpAddress), [InternetGateway](./docusaurus/docs/aws/resources/EC2/InternetGateway), [KeyPair](./docusaurus/docs/aws/resources/EC2/KeyPair), [RouteTables](./docusaurus/docs/aws/resources/EC2/RouteTables), [SecurityGroup](./docusaurus/docs/aws/resources/EC2/SecurityGroup), [Subnet](./docusaurus/docs/aws/resources/EC2/Subnet), [Vpc](./docusaurus/docs/aws/resources/EC2/Vpc)
-- IAM: [IamInstanceProfile](./docusaurus/docs/aws/resources/IAM/IamInstanceProfile), [IamGroup](./docusaurus/docs/aws/resources/IAM/IamGroup), [IamPolicy](./docusaurus/docs/aws/resources/IAM/IamPolicy), [IamRole](./docusaurus/docs/aws/resources/IAM/IamRole), [IamUser](./docusaurus/docs/aws/resources/IAM/IamUser)
-- S3: [S3Bucket](./docusaurus/docs/aws/resources/S3/S3Bucket), [S3Object](./docusaurus/docs/aws/resources/S3/S3Object)
+- EC2: [EC2](./docusaurus/docs/aws/resources/EC2/EC2.md), [ElasticIpAddress](./docusaurus/docs/aws/resources/EC2/ElasticIpAddress.md), [InternetGateway](./docusaurus/docs/aws/resources/EC2/InternetGateway.md), [KeyPair](./docusaurus/docs/aws/resources/EC2/KeyPair.md), [RouteTables](./docusaurus/docs/aws/resources/EC2/RouteTables.md), [SecurityGroup](./docusaurus/docs/aws/resources/EC2/SecurityGroup.md), [Subnet](./docusaurus/docs/aws/resources/EC2/Subnet.md), [Vpc](./docusaurus/docs/aws/resources/EC2/Vpc.md)
+- IAM: [IamInstanceProfile](./docusaurus/docs/aws/resources/IAM/IamInstanceProfile.md), [IamGroup](./docusaurus/docs/aws/resources/IAM/IamGroup.md), [IamPolicy](./docusaurus/docs/aws/resources/IAM/IamPolicy.md), [IamRole](./docusaurus/docs/aws/resources/IAM/IamRole.md), [IamUser](./docusaurus/docs/aws/resources/IAM/IamUser.md)
+- S3: [S3Bucket](./docusaurus/docs/aws/resources/S3/S3Bucket.md), [S3Object](./docusaurus/docs/aws/resources/S3/S3Object.md)
 
 ## Google Cloud
 
-Visit the [Google Cloud Requirements](./docusaurus/docs/google/GoogleRequirements) to prepare for the [Google Getting Started Guide](./docusaurus/docs/google/GoogleGettingStarted)
+Visit the [Google Cloud Requirements](./docusaurus/docs/google/GoogleRequirements.md) to prepare for the [Google Getting Started Guide](./docusaurus/docs/google/GoogleGettingStarted.md)
 
 ### Examples
 
@@ -37,7 +37,7 @@ Visit the [Google Cloud Requirements](./docusaurus/docs/google/GoogleRequirement
 
 ### Resources
 
-Available Resources: [Address](./docusaurus/docs/google/resources/Address), [Firewall](./docusaurus/docs/google/resources/Firewall), [Network](./docusaurus/docs/google/resources/Network), [ServiceAccount](./docusaurus/docs/google/resources/ServiceAccount), [SubNetwork](./docusaurus/docs/google/resources/SubNetwork), [VmInstance](./docusaurus/docs/google/resources/VmInstance)
+Available Resources: [Address](./docusaurus/docs/google/resources/Address.md), [Firewall](./docusaurus/docs/google/resources/Firewall.md), [Network](./docusaurus/docs/google/resources/Network.md), [ServiceAccount](./docusaurus/docs/google/resources/ServiceAccount.md), [SubNetwork](./docusaurus/docs/google/resources/SubNetwork.md), [VmInstance](./docusaurus/docs/google/resources/VmInstance.md)
 
 ## Microsoft Azure
 
@@ -47,15 +47,15 @@ Available Resources: [Address](./docusaurus/docs/google/resources/Address), [Fir
 
 ### Resources
 
-Available Resources: [ResourceGroup](./docusaurus/docs/azure/resources/ResourceGroup), [VirtualNetwork](./docusaurus/docs/azure/resources/VirtualNetwork), [SecurityGroup](./docusaurus/docs/azure/resources/SecurityGroup), [PublicIpAddress](./docusaurus/docs/azure/resources/PublicIpAddress), [NetworkInterface](./docusaurus/docs/azure/resources/NetworkInterface), [VirtualMachine](./docusaurus/docs/azure/resources/VirtualMachine)
+Available Resources: [ResourceGroup](./docusaurus/docs/azure/resources/ResourceGroup.md), [VirtualNetwork](./docusaurus/docs/azure/resources/VirtualNetwork.md), [SecurityGroup](./docusaurus/docs/azure/resources/SecurityGroup.md), [PublicIpAddress](./docusaurus/docs/azure/resources/PublicIpAddress.md), [NetworkInterface](./docusaurus/docs/azure/resources/NetworkInterface.md), [VirtualMachine](./docusaurus/docs/azure/resources/VirtualMachine.md)
 
 # Misc
 
 ### Console & Portal
 
-| Provider           | Console                                           |     |
-| ------------------ | ------------------------------------------------- | --- |
-| Google Cloud       | https://console.cloud.google.com/home/dashboard   |     |
-| Amazon Web Service | https://console.aws.amazon.com                    |     |
-| Microsoft Azure    | https://portal.azure.com                          |     |
+| Provider           | Console                                           |
+| ------------------ | ------------------------------------------------- |
+| Google Cloud       | https://console.cloud.google.com/home/dashboard   |
+| Amazon Web Service | https://console.aws.amazon.com                    |
+| Microsoft Azure    | https://portal.azure.com                          |
 | Scaleway           | https://console.cloud.scaleway.com/home/dashboard |
