@@ -152,7 +152,7 @@ function Home() {
               align-items: center;
               > a {
                 margin: 0.5rem 0 0.5rem 0;
-                width: 400px;
+                width: 320px;
               }
             `}
           >
@@ -177,19 +177,29 @@ function Home() {
         </section>
         <section
           css={css`
-            padding: 1rem;
             display: flex;
             flex-direction: column;
+            padding: 1rem;
+            max-width: 100vw;
           `}
         >
           <h2 css={css``}>Infrastructure file</h2>
           <p>Simple example of a virtual machine deployed on Google Cloud:</p>
           <div
             css={css`
-              width: 900px;
+              overflow: scroll;
             `}
           >
-            <SyntaxHighlighter language="javascript" style={docco}>
+            <SyntaxHighlighter
+              language="javascript"
+              style={{
+                ...docco,
+                hljs: {
+                  ...docco.hljs,
+                  display: "inline-block",
+                },
+              }}
+            >
               {gcpExample}
             </SyntaxHighlighter>
           </div>
@@ -198,6 +208,7 @@ function Home() {
           css={css`
             background-color: #f7f8fa;
             padding: 1rem;
+
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -216,7 +227,7 @@ function Home() {
               id="asciicast-iframe-13761"
               name="asciicast-iframe-13761"
               scrolling="no"
-              style={{ width: "900px", height: "725px" }}
+              style={{ width: "100%", height: "720px" }}
             ></iframe>
           </div>
         </section>
