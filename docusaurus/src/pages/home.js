@@ -21,32 +21,38 @@ SyntaxHighlighter.registerLanguage("javascript", js);
 
 const features = [
   {
-    title: <>Cloud Resources</>,
-    //imageUrl: 'img/undraw_docusaurus_mountain.svg',
+    title: <>Features</>,
     description: (
       <>
-        Code you infrastructure for predictable deployment, manages the
-        dependencies between cloud resources
+        <p>Define your cloud infrastructure in Javascript.</p>
+        <p>Deploy, destroy and list resources on various clouds.</p>
+        <p>Share and compose infrastructure.</p>
+        <p>Automatic resource dependencies management.</p>
       </>
     ),
   },
   {
-    title: <>Multi Cloud</>,
-    //imageUrl: 'img/undraw_docusaurus_mountain.svg',
+    title: <>Benefit</>,
     description: (
       <>
-        Grucloud supports the major Cloud Providers such as Amazon Web Service,
-        Google Could and Microsoft Azure.
+        <p>Predictable deployment.</p>
+        <p>Stop paying for ununsed resources. Re-deploy them when necessary</p>
+        <p>Create various deployment stages: production, uat, test, etc ...</p>
       </>
     ),
   },
+
   {
-    title: <>Javascript</>,
-    //imageUrl: "img/undraw_docusaurus_tree.svg",
+    title: <>Tech</>,
     description: (
       <>
-        Every Software that can be written in Javascript will be eventually
-        written in Javascript. Infrastrucure as Code is not an exception
+        <p>
+          Use Javascript, a true programming language, no more YAML or Domain
+          Specific language.
+        </p>
+        <p>Easy to add new resources or new cloud providers.</p>
+        <p>Robust against cloud service providers API failures.</p>
+        <p>Open Source.</p>
       </>
     ),
   },
@@ -62,7 +68,7 @@ function Feature({ imageUrl, title, description }) {
         </div>
       )}
       <h3>{title}</h3>
-      <p>{description}</p>
+      <div>{description}</div>
     </div>
   );
 }
@@ -203,6 +209,15 @@ function Home() {
               {gcpExample}
             </SyntaxHighlighter>
           </div>
+          <Link
+            css={css`
+              width: 250px;
+            `}
+            className={classnames("button  button--secondary")}
+            to={"https://github.com/grucloud/grucloud/tree/main/examples"}
+          >
+            See more examples
+          </Link>
         </section>
         <section
           css={css`
@@ -216,7 +231,7 @@ function Home() {
           `}
         >
           <div>
-            <h2>GC Command Line Interface</h2>
+            <h2>GruCloud Command Line Interface</h2>
             <p>
               Use the <em>gc</em> command line interface to deploy and destroy
               the infrastructure:
@@ -229,6 +244,15 @@ function Home() {
               scrolling="no"
               style={{ width: "100%", height: "720px" }}
             ></iframe>
+            <Link
+              css={css`
+                width: 300px;
+              `}
+              className={classnames("button  button--secondary")}
+              to={"https://www.grucloud.com/docs/cli/gc"}
+            >
+              Visit the GruCloud CLI documentation
+            </Link>
           </div>
         </section>
       </main>
