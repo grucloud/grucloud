@@ -37,7 +37,10 @@ Visit the [Google Cloud Requirements](./docusaurus/docs/google/GoogleRequirement
 
 ### Resources
 
-Available Resources: [Address](./docusaurus/docs/google/resources/Address.md), [Firewall](./docusaurus/docs/google/resources/Firewall.md), [Network](./docusaurus/docs/google/resources/Network.md), [ServiceAccount](./docusaurus/docs/google/resources/ServiceAccount.md), [SubNetwork](./docusaurus/docs/google/resources/SubNetwork.md), [VmInstance](./docusaurus/docs/google/resources/VmInstance.md)
+Available Resources:
+
+- Compute: [Address](./docusaurus/docs/google/resources/Compute/Address.md), [Firewall](./docusaurus/docs/google/resources/Compute/Firewall.md), [Network](./docusaurus/docs/google/resources/Compute/Network.md), [SubNetwork](./docusaurus/docs/google/resources/Compute/SubNetwork.md), [VmInstance](./docusaurus/docs/google/resources/Compute/VmInstance.md)
+- IAM: [ServiceAccount](./docusaurus/docs/google/resources/IAM/ServiceAccount.md),[IamBinding](./docusaurus/docs/google/resources/IAM/IamBinding.md),[IamMember](./docusaurus/docs/google/resources/IAM/IamMember.md),[IamPolicy](./docusaurus/docs/google/resources/IAM/IamPolicy.md),
 
 ## Microsoft Azure
 
