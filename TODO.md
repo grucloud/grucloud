@@ -2,6 +2,16 @@
 
 ## Common:
 
+- PROMPT='%4~ %# '
+- displayPlan error
+- add a delete summary
+- iam deal with deleted user
+
+## Web site
+
+- https://alternativeto.net/Manage/AddItem.aspx
+- sitemap
+
 ## Cli
 
 ## Azure
