@@ -1,21 +1,23 @@
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import classnames from "classnames";
 import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import styles from "./styles.module.css";
-
 import AwsLogo from "./img/aws.svg";
 import GcpLogo from "./img/gcp.svg";
 import AzureLogo from "./img/azure.svg";
 import MainLogo from "./img/gc.svg";
 
-import createConsole from "./components/console";
-const context = {};
-const Console = createConsole(context);
+import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
+import js from "react-syntax-highlighter/dist/esm/languages/hljs/javascript";
+import docco from "react-syntax-highlighter/dist/esm/styles/hljs/docco";
+
+SyntaxHighlighter.registerLanguage("javascript", js);
 
 const features = [
   {
@@ -80,7 +82,19 @@ const LinkLogo = ({ Logo, url }) => (
 function Home() {
   const context = useDocusaurusContext();
   const { siteConfig = {} } = context;
-  const Console = createConsole(context);
+  const [gcpExample, setGcpExample] = useState("");
+
+  // TODO exrract in a component
+  useEffect(() => {
+    async function fetchData() {
+      const result = await axios(
+        "https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/vm-simple/iac.js"
+      );
+      setGcpExample(result.data);
+    }
+
+    fetchData();
+  }, []);
 
   return (
     <Layout
@@ -117,7 +131,13 @@ function Home() {
         <p className="hero__subtitle">Infrastructure as Code in Javascript</p>
         <p className="hero__subtitle">Deploy and Destroy Cloud Resources </p>
       </header>
-      <main>
+      <main
+        css={css`
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        `}
+      >
         <section
           css={css`
             text-align: center;
@@ -140,14 +160,6 @@ function Home() {
             <LinkLogo Logo={GcpLogo} url="docs/google/GoogleGettingStarted" />
             <LinkLogo Logo={AzureLogo} url="docs/azure/AzureGettingStarted" />
           </div>
-          {/*<Console
-            css={css`
-              border: 1px solid red;
-              width: 200px;
-              display: block;
-            `}
-            text={`Ciao\nBello`}
-          />*/}
         </section>
         <section
           css={css`
@@ -161,6 +173,51 @@ function Home() {
                 <Feature key={idx} {...props} />
               ))}
             </div>
+          </div>
+        </section>
+        <section
+          css={css`
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+          `}
+        >
+          <h2 css={css``}>Infrastructure file</h2>
+          <p>Simple example of a virtual machine deployed on Google Cloud:</p>
+          <div
+            css={css`
+              width: 900px;
+            `}
+          >
+            <SyntaxHighlighter language="javascript" style={docco}>
+              {gcpExample}
+            </SyntaxHighlighter>
+          </div>
+        </section>
+        <section
+          css={css`
+            background-color: #f7f8fa;
+            padding: 1rem;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          `}
+        >
+          <div>
+            <h2>GC Command Line Interface</h2>
+            <p>
+              Use the <em>gc</em> command line interface to deploy and destroy
+              the infrastructure:
+            </p>
+            <iframe
+              data-autoplay
+              src="https://asciinema.org/a/VNjhjXHwRhGkuP6kcMBks3Kmo/embed?autoplay=true&amp;speed=6&amp;loop=true"
+              id="asciicast-iframe-13761"
+              name="asciicast-iframe-13761"
+              scrolling="no"
+              style={{ width: "900px", height: "725px" }}
+            ></iframe>
           </div>
         </section>
       </main>
