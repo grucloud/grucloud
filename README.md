@@ -1,3 +1,5 @@
+![GruCloud](./docusaurus/static/img/grucloud-logo.png "GruCloud")
+
 **GruCloud** is an "infrastructure as code" tool.
 Code your infrastructure with Javascript to deploy, manage and dispose various resources on different cloud provider such as AWS, Google Cloud and Microsoft Azure.
 
@@ -40,7 +42,7 @@ Visit the [Google Cloud Requirements](./docusaurus/docs/google/GoogleRequirement
 Available Resources:
 
 - Compute: [Address](./docusaurus/docs/google/resources/Compute/Address.md), [Firewall](./docusaurus/docs/google/resources/Compute/Firewall.md), [Network](./docusaurus/docs/google/resources/Compute/Network.md), [SubNetwork](./docusaurus/docs/google/resources/Compute/SubNetwork.md), [VmInstance](./docusaurus/docs/google/resources/Compute/VmInstance.md)
-- IAM: [ServiceAccount](./docusaurus/docs/google/resources/IAM/ServiceAccount.md),[IamBinding](./docusaurus/docs/google/resources/IAM/IamBinding.md),[IamMember](./docusaurus/docs/google/resources/IAM/IamMember.md),[IamPolicy](./docusaurus/docs/google/resources/IAM/IamPolicy.md),
+- IAM: [ServiceAccount](./docusaurus/docs/google/resources/IAM/ServiceAccount.md), [IamBinding](./docusaurus/docs/google/resources/IAM/IamBinding.md), [IamMember](./docusaurus/docs/google/resources/IAM/IamMember.md), [IamPolicy](./docusaurus/docs/google/resources/IAM/IamPolicy.md)
 
 ## Microsoft Azure
 
