@@ -35,38 +35,41 @@ module.exports = {
       ],
     },
     footer: {
-      style: "dark",
       links: [
-        /*{
-          title: "Docs",
-          items: [
-            {
-              label: "Style Guide",
-              to: "docs/doc1",
-            },
-            {
-              label: "Second Doc",
-              to: "docs/doc2",
-            },
-          ],
-        },*/
-        /*{
+        {
           title: "Community",
           items: [
             {
+              label: "Twitter",
+              href: "https://twitter.com/grucloud",
+            },
+            {
               label: "Stack Overflow",
-              href: "https://stackoverflow.com/questions/tagged/docusaurus",
+              href: "https://stackoverflow.com/questions/tagged/grucloud",
             },
             {
               label: "Discord",
-              href: "https://discordapp.com/invite/docusaurus",
-            },
-            {
-              label: "Twitter",
-              href: "https://twitter.com/docusaurus",
+              href: "https://discordapp.com/invite/grucloud",
             },
           ],
-        },*/
+        },
+        {
+          title: "Documentation",
+          items: [
+            {
+              label: "AWS",
+              href: "/docs/aws/AwsGettingStarted",
+            },
+            {
+              label: "Google Cloud",
+              href: "/docs/google/GoogleGettingStarted",
+            },
+            {
+              label: "Microsoft Azure",
+              href: "/docs/azure/AzureGettingStarted",
+            },
+          ],
+        },
         /*{
           title: "More",
           items: [
