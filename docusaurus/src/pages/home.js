@@ -7,6 +7,7 @@ import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import useBaseUrl from "@docusaurus/useBaseUrl";
+import Head from "@docusaurus/Head";
 import styles from "./styles.module.css";
 import AwsLogo from "./img/aws.svg";
 import GcpLogo from "./img/gcp.svg";
@@ -18,6 +19,23 @@ import js from "react-syntax-highlighter/dist/esm/languages/hljs/javascript";
 import docco from "react-syntax-highlighter/dist/esm/styles/hljs/docco";
 
 SyntaxHighlighter.registerLanguage("javascript", js);
+
+const MySEO = () => (
+  <>
+    <Head>
+      <meta
+        property="og:description"
+        content="Insfrastructure as Javascript Code"
+      />
+      <meta
+        property="og:image"
+        content="https://grucloud.com/img/grucloud-logo.png"
+      />
+      <meta charSet="utf-8" />
+      <title>GruCloud</title>
+    </Head>
+  </>
+);
 
 const features = [
   {
@@ -105,8 +123,9 @@ function Home() {
   return (
     <Layout
       title={`${siteConfig.title}`}
-      description="Deploy, Update and Destroy Infrastructures as Code"
+      description="Infrastructures as Javascript Code"
     >
+      <MySEO />
       <header
         css={css`
           text-align: center;
