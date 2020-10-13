@@ -108,7 +108,7 @@ function Home() {
   const { siteConfig = {} } = context;
   const [gcpExample, setGcpExample] = useState("");
 
-  // TODO exrract in a component
+  // TODO extract in a component
   useEffect(() => {
     async function fetchData() {
       const result = await axios(
