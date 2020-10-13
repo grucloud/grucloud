@@ -1,4 +1,5 @@
-import React from "react";
+/** @jsx jsx */
+import { css, jsx } from "@emotion/core";
 import {
   Appear,
   Box,
@@ -23,16 +24,19 @@ import {
 } from "spectacle";
 import lightTheme from "prism-react-renderer/themes/nightOwlLight";
 import MainLogo from "./img/gc.svg";
-
+import AwsLogo from "./img/aws.svg";
+import GcpLogo from "./img/gcp.svg";
+import AzureLogo from "./img/azure.svg";
 const theme = {
   colors: {
-    primary: "black",
-    primary: "white",
-    secondary: "white",
+    primary: "#666666",
+    secondary: "#0018A8",
+    tertiary: "white",
   },
   fontSizes: {
-    header: "64px",
+    header: "52px",
     paragraph: "28px",
+    text: "42px",
   },
 };
 
@@ -55,8 +59,8 @@ const template = () => (
 
 function App() {
   return (
-    <Deck theme={theme} template={template}>
-      <Slide>
+    <Deck backgroundColor="white" theme={theme} template={template}>
+      <Slide backgroundColor="white">
         <FlexBox
           justifyContent="space-between"
           alignItems="center"
@@ -64,44 +68,63 @@ function App() {
         >
           <MainLogo />
           <Heading>GruCloud</Heading>
-          <Heading>Infrastructure as Javascript Code</Heading>
+          <Text>Infrastructure as Javascript Code</Text>
         </FlexBox>
       </Slide>
       <Slide>
         <Heading>Principles</Heading>
         <UnorderedList>
           <ListItem>
-            <Text>Codify deployment in Javascript code.</Text>
-          </ListItem>
-          <ListItem>
-            <Text>No YAML or Domain Specific language.</Text>
+            <Text>Define Infrastructure with Javascript code.</Text>
           </ListItem>
           <ListItem>
             <Text>
               Use the GruCloud CLI to deploy, update and destroy cloud resources
             </Text>
           </ListItem>
+          <ListItem>
+            <Text>No YAML or Domain Specific language.</Text>
+          </ListItem>
         </UnorderedList>
       </Slide>
       <Slide>
-        <Heading>Cloud Providers</Heading>
-        <UnorderedList>
-          <ListItem>
-            <Text>Aws</Text>
-          </ListItem>
-          <ListItem>
-            <Text>Google Cloud</Text>
-          </ListItem>
-          <ListItem>
-            <Text>Microsoft Azure</Text>
-          </ListItem>
-        </UnorderedList>
+        <Grid
+          gridTemplateColumns="1fr 1fr 1fr"
+          gridTemplateRows="1fr 5fr"
+          gridRowGap={1}
+          alignItems="center"
+        >
+          <Text>
+            <AwsLogo />
+          </Text>
+          <Text>
+            <GcpLogo />
+          </Text>
+          <Text>
+            <AzureLogo />
+          </Text>
+          <div>
+            <Text>EC2 Instance</Text>
+            <Text>S3: Bucket, Object</Text>
+            <Text>IAM: User, Group, Policy, Instance Profile</Text>
+          </div>
+          <div>
+            <Text>VM, Address, Network, Security Group</Text>
+            <Text>IAM Policy</Text>
+          </div>
+          <div>
+            <Text>
+              VM, Network Interface, PublicAddress, Security Group, Resource
+              Group
+            </Text>
+          </div>
+        </Grid>
       </Slide>
       <Slide>
         <Heading>Infrastructure Code</Heading>
 
         <CodePane
-          autoFillHeight="true"
+          autoFillHeight
           language="javascript"
           theme={lightTheme}
           fontSize="15"
@@ -127,6 +150,41 @@ exports.createStack = async ({ config }) => {
 };
 `}
         </CodePane>
+      </Slide>
+      <Slide>
+        <FlexBox
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <div>
+            <Heading>Commands</Heading>
+            <UnorderedList>
+              <ListItem>
+                <Text>gc plan</Text>
+              </ListItem>
+              <ListItem>
+                <Text>gc apply</Text>
+              </ListItem>
+              <ListItem>
+                <Text>gc destroy</Text>
+              </ListItem>
+              <ListItem>
+                <Text>gc list</Text>
+              </ListItem>
+            </UnorderedList>
+          </div>
+          <div>
+            <iframe
+              data-autoplay
+              src="https://asciinema.org/a/VNjhjXHwRhGkuP6kcMBks3Kmo/embed?autoplay=true&amp;speed=6&amp;loop=true"
+              id="asciicast-iframe-13761"
+              name="asciicast-iframe-13761"
+              scrolling="no"
+              style={{ width: "900px", height: "720px" }}
+            ></iframe>
+          </div>
+        </FlexBox>
       </Slide>
     </Deck>
   );
