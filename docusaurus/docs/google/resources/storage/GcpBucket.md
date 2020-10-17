@@ -22,7 +22,7 @@ const bucket = await provider.makeBucket({
 
 ## Properties
 
-See [Bucket Create properties](https://cloud.google.com/storage/docs/json_api/v1/buckets/insert#request-body)
+See [Bucket create properties](https://cloud.google.com/storage/docs/json_api/v1/buckets/insert#request-body)
 
 ## Used By
 

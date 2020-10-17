@@ -61,7 +61,6 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 - refactor: client.getList({
   resources: provider.getResourcesByType(client.spec.type),
 
-- object md5
 - service account managedByUs false despite description: Managee By GruCloud
 - vm instance: network interface from vpc network
 - validate config: check project and region
@@ -69,7 +68,6 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 - https://medium.com/faun/creating-reusable-infrastructure-with-terraform-on-gcp-e17745ac4ff2
 
 - rename in gcp
-- WARNING when gloud config is difference from our config, i.e region
 
 ## TODO Mock
 

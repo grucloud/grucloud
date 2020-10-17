@@ -26,6 +26,10 @@ const Object = await provider.makeObject({
 });
 ```
 
+### Properties
+
+See [Object create properties](https://cloud.google.com/storage/docs/json_api/v1/objects/insert#request-body)
+
 ### Example Code
 
 - [basic example](https://github.com/grucloud/grucloud/blob/master/examples/google/storage/simple/iac.js#L7)
