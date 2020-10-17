@@ -225,7 +225,7 @@ exports.AwsS3Object = ({ spec, config }) => {
         await pipe([
           fork({
             Body: async () => await fs.readFile(source),
-            ContentMD5: await md5FileBase64(source),
+            ContentMD5: async () => await md5FileBase64(source),
           }),
           pipe([
             tap((x) => {
