@@ -136,7 +136,7 @@ const ResourceMaker = ({
   const resolveConfig = async ({ live } = {}) => {
     logger.info(`resolveConfig ${type}/${resourceName}`);
     const { items } = await client.getList({
-      resources: provider.getResourcesByType(client.type),
+      resources: provider.getResourcesByType(client.spec.type),
     });
 
     const resolvedDependencies = await resolveDependencies(dependencies);
@@ -1254,6 +1254,7 @@ function CoreProvider({
     logger.debug(
       `filterDestroyResources ${tos({
         name,
+        all,
         types,
         id,
         resource,
@@ -1333,7 +1334,12 @@ function CoreProvider({
             })
           ),
           (client) =>
-            assign({ results: ({ client }) => client.getList({}) })({ client }),
+            assign({
+              results: ({ client }) =>
+                client.getList({
+                  resources: provider.getResourcesByType(client.spec.type),
+                }),
+            })({ client }),
           tap(({ client }) =>
             onStateChange({
               context: contextFromClient(client),

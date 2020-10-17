@@ -4,7 +4,7 @@ const { getField } = require("../../../ProviderCommon");
 const GoogleClient = require("../../GoogleClient");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
 
-const logger = require("../../../../logger")({ prefix: "GcpInstance" });
+const logger = require("../../../../logger")({ prefix: "GcpSubNetwork" });
 const { tos } = require("../../../../tos");
 
 // https://cloud.google.com/compute/docs/reference/rest/v1/subnetworks

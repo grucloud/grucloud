@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { defaultsDeep } = require("rubico/x");
-const logger = require("../../../../logger")({ prefix: "GcpInstance" });
+const logger = require("../../../../logger")({ prefix: "GcpNetwork" });
 const { tos } = require("../../../../tos");
 const GoogleClient = require("../../GoogleClient");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");

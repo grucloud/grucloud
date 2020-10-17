@@ -28,4 +28,11 @@ const replacerCredentials = (name, value) => {
 
 exports.hiddenCredentials = hiddenCredentials;
 exports.replacerCredentials = replacerCredentials;
-exports.tos = (x) => JSON.stringify(x, replacerCredentials, 4);
+exports.tos = (x) => {
+  try {
+    return JSON.stringify(x, replacerCredentials, 4);
+  } catch (error) {
+    console.log("Cannot stringify", error);
+    return x;
+  }
+};

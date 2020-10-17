@@ -116,7 +116,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
       (policy) => ({ ...policy, bindings: [...policy.bindings, payload] }),
       (policy) =>
         retryCallOnError({
-          name: `update type: ${spec.type}`,
+          name: `create`,
           fn: async () =>
             await axios.request(":setIamPolicy", {
               method: "POST",
@@ -136,7 +136,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
       //TODO
       ({ policy }) =>
         retryCallOnError({
-          name: `update type: ${spec.type}`,
+          name: `update`,
           fn: async () =>
             await axios.request(":setIamPolicy", {
               method: "POST",
@@ -162,7 +162,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
       }),
       (policy) =>
         retryCallOnError({
-          name: `destroy type: ${spec.type}`,
+          name: `destroy ${id}`,
           fn: async () =>
             await axios.request(":setIamPolicy", {
               method: "POST",

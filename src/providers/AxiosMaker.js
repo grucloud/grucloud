@@ -2,12 +2,16 @@ const Axios = require("axios");
 const logger = require("../logger")({ prefix: "AxiosMaker" });
 const { tos } = require("../tos");
 
-module.exports = AxiosMaker = ({ baseURL, onHeaders = noop }) => {
+module.exports = AxiosMaker = ({
+  baseURL,
+  onHeaders = noop,
+  contentType = "application/json",
+}) => {
   const axios = Axios.create({
     baseURL,
     timeout: 15e3,
     withCredentials: true,
-    headers: { ...onHeaders(), "Content-Type": "application/json" },
+    headers: { ...onHeaders(), "Content-Type": contentType },
   });
 
   axios.interceptors.request.use(

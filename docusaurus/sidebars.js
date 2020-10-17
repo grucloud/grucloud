@@ -78,6 +78,12 @@ module.exports = {
               "google/resources/IAM/ServiceAccount",
             ],
           },
+          {
+            Storage: [
+              "google/resources/storage/GcpBucket",
+              "google/resources/storage/GcpObject",
+            ],
+          },
         ],
       },
       "google/GoogleMisc",
