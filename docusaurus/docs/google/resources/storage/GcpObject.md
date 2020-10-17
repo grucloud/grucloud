@@ -20,7 +20,8 @@ const Object = await provider.makeObject({
   dependencies: { bucket: bucket },
   properties: () => ({
     path: "/",
-    content: "ciao",
+    contentType: "text/plain",
+    source: path.join(process.cwd(), "testFile.txt"),
   }),
 });
 ```

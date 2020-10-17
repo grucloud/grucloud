@@ -24,6 +24,7 @@ describe("GcpBucket", async function () {
       name: "google",
       config: config.google,
     });
+
     bucket = await provider.makeBucket({
       name: bucketName,
       properties: () => ({ storageClass: "STANDARD" }),
@@ -34,7 +35,10 @@ describe("GcpBucket", async function () {
       dependencies: { bucket: bucket },
       properties: () => ({
         path: "/",
-        content: "ciao",
+        source: path.join(
+          process.cwd(),
+          "examples/aws/s3/fixtures/testFile.txt"
+        ),
       }),
     });
 
@@ -42,7 +46,7 @@ describe("GcpBucket", async function () {
     assert(!error);
   });
   after(async () => {
-    //await provider?.destroyAll();
+    await provider?.destroyAll();
   });
   it("bucket config", async function () {
     const config = await bucket.resolveConfig();

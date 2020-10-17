@@ -1,4 +1,6 @@
 const assert = require("assert");
+const fs = require("fs").promises;
+const md5File = require("md5-file");
 const urljoin = require("url-join");
 const {
   pipe,
@@ -25,7 +27,7 @@ const {
   GCP_STORAGE_BASE_URL,
   GCP_STORAGE_UPLOAD_URL,
 } = require("./GcpStorageCommon");
-const { isUpByIdCore, isDownByIdCore } = require("../../../Common");
+const { isDownByIdCore } = require("../../../Common");
 const { buildLabel } = require("../../GoogleCommon");
 const logger = require("../../../../logger")({ prefix: "GcpObject" });
 const { tos } = require("../../../../tos");
@@ -222,6 +224,10 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
                 data: {
                   ...payload,
                   metadata: buildLabel(configProvider),
+                  md5Hash: pipe([
+                    async () => await md5File(payload.source),
+                    (md5) => new Buffer.from(md5, "hex").toString("base64"),
+                  ]),
                 },
               }
             ),
@@ -240,7 +246,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
           fn: async () =>
             await axiosUpload.request(sessionUri, {
               method: "PUT",
-              data: payload.content,
+              data: payload.content || (await fs.readFile(payload.source)),
             }),
           config: configProvider,
         }),

@@ -1,4 +1,6 @@
+const path = require("path");
 const chance = require("chance")();
+
 const { GoogleProvider } = require("@grucloud/core");
 
 exports.createStack = async ({ config }) => {
@@ -14,7 +16,8 @@ exports.createStack = async ({ config }) => {
     dependencies: { bucket: myBucket },
     properties: () => ({
       path: "/",
-      content: "ciao",
+      contentType: "text/json",
+      source: path.join(process.cwd(), "package.json"),
     }),
   });
   return {
