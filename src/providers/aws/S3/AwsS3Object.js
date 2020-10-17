@@ -17,7 +17,7 @@ const logger = require("../../../logger")({ prefix: "S3Object" });
 const { retryExpectOk } = require("../../Retry");
 const { tos } = require("../../../tos");
 
-const { convertError, mapPoolSize } = require("../../Common");
+const { convertError, mapPoolSize, md5FileBase64 } = require("../../Common");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Object = ({ spec, config }) => {
@@ -225,10 +225,7 @@ exports.AwsS3Object = ({ spec, config }) => {
         await pipe([
           fork({
             Body: async () => await fs.readFile(source),
-            ContentMD5: pipe([
-              async () => await md5File(source),
-              (md5) => new Buffer.from(md5, "hex").toString("base64"),
-            ]),
+            ContentMD5: await md5FileBase64(source),
           }),
           pipe([
             tap((x) => {

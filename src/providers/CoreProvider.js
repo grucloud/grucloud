@@ -102,7 +102,7 @@ const ResourceMaker = ({
     if (isEmpty(target)) {
       return;
     }
-    const diff = spec.compare({ target, live });
+    const diff = await spec.compare({ target, live });
     logger.info(`planUpdate diff ${tos(diff)}`);
     if (diff.length > 0) {
       return [

@@ -28,7 +28,7 @@ describe("GcpBucket", async function () {
 
     bucket = await provider.makeBucket({
       name: bucketName,
-      properties: () => ({ storageClass: "STANDARD" }),
+      properties: () => ({}),
     });
 
     file = await provider.makeObject({
@@ -66,6 +66,35 @@ describe("GcpBucket", async function () {
   it("gcp bucket apply and destroy", async function () {
     await testPlanDeploy({ provider });
 
+    {
+      const provider = await GoogleProvider({
+        name: "google",
+        config: config.google,
+      });
+
+      const bucket = await provider.makeBucket({
+        name: bucketName,
+        properties: () => ({}),
+      });
+
+      const file = await provider.makeObject({
+        name: `myfile`,
+        dependencies: { bucket: bucket },
+        properties: () => ({
+          path: "/",
+          source: path.join(
+            process.cwd(),
+            "examples/aws/s3/fixtures/testFile2.txt"
+          ),
+        }),
+      });
+      const plan = await provider.planQuery();
+      assert.equal(plan.resultCreate.plans.length, 1);
+      assert.equal(plan.resultCreate.plans[0].action, "UPDATE");
+
+      const { error } = await provider.planApply({ plan });
+      assert(!error);
+    }
     const { error, results } = await provider.destroyAll();
     assert(!error);
     assert.equal(results.length, 2);
