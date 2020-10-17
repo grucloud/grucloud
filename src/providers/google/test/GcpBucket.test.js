@@ -1,3 +1,4 @@
+const path = require("path");
 const assert = require("assert");
 const chance = require("chance")();
 const { GoogleProvider } = require("../GoogleProvider");
