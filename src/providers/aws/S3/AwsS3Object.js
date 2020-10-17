@@ -12,9 +12,7 @@ const {
   switchCase,
   fork,
 } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
-const { isEmpty, first } = require("rubico/x");
-
+const { defaultsDeep, isEmpty, first } = require("rubico/x");
 const logger = require("../../../logger")({ prefix: "S3Object" });
 const { retryExpectOk } = require("../../Retry");
 const { tos } = require("../../../tos");
@@ -58,7 +56,9 @@ exports.AwsS3Object = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
   const getList = async ({ resources = [] } = {}) =>
     await pipe([
-      tap(() => logger.debug(`listObjects #resources ${resources.length}`)),
+      tap(() => {
+        logger.debug(`getList #resources ${resources.length}`);
+      }),
       async (resources) =>
         await map.pool(
           mapPoolSize,

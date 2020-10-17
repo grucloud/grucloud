@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { defaultsDeep } = require("rubico/x");
 
-const logger = require("../../../../logger")({ prefix: "GcpInstance" });
+const logger = require("../../../../logger")({ prefix: "GcpAddress" });
 const { tos } = require("../../../../tos");
 const GoogleClient = require("../../GoogleClient");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
@@ -20,16 +20,10 @@ module.exports = GcpAddress = ({ spec, config }) => {
       description: managedByDescription,
     })(properties);
 
-  const getStateName = (instance) => {
-    const { status } = instance;
-    assert(status);
-    logger.debug(`address stateName ${status}`);
-    return status;
-  };
-
   const isInstanceUp = (instance) => {
     return !!instance.address;
   };
+
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
       isInstanceUp,

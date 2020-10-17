@@ -15,11 +15,14 @@ module.exports = GoogleClient = ({
   config,
   findName,
   findId,
+  pathList,
+  pathCreate,
   findTargetId = (item) => item.targetId,
   configDefault,
   isUpByIdFactory,
   onResponseList = onResponseListDefault,
   cannotBeDeleted,
+  onCreateExpectedException,
 }) => {
   assert(baseURL);
   assert(url);
@@ -50,6 +53,8 @@ module.exports = GoogleClient = ({
     config,
     findName,
     findId,
+    pathList,
+    pathCreate,
     findTargetId,
     isUpByIdFactory,
     onResponseList,
@@ -57,6 +62,7 @@ module.exports = GoogleClient = ({
     findTargetId,
     cannotBeDeleted,
     shouldRetryOnException,
+    onCreateExpectedException,
     axios: AxiosMaker({
       baseURL: urljoin(baseURL, url),
       onHeaders: () => ({

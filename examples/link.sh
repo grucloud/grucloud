@@ -11,6 +11,8 @@
 (cd google/vm-network && npm run link)
 (cd google/iam/iam-policy && npm run link)
 (cd google/iam/iam-binding && npm run link)
+(cd google/storage/simple && npm run link)
+
 (cd mock/mock && npm run link)
 (cd mock/mock-simple && npm run link)
 (cd multi/ && npm run link)

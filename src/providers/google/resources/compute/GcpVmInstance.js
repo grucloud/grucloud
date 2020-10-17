@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { defaultsDeep } = require("rubico/x");
 
-const logger = require("../../../../logger")({ prefix: "GoogleVmInstance" });
+const logger = require("../../../../logger")({ prefix: "GcpVmInstance" });
 const { tos } = require("../../../../tos");
 const GoogleClient = require("../../GoogleClient");
 const { buildLabel } = require("../../GoogleCommon");

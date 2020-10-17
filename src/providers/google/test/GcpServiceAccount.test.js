@@ -53,9 +53,9 @@ describe("GcpServiceAccount", async function () {
   });
   it("lives", async function () {
     const { results: lives } = await provider.listLives({
-      types: "ServiceAccounts",
+      types: ["ServiceAccount"],
     });
-    //assert(lives[0].resources.length >= 1);
+    assert(lives[0].resources.length >= 1);
   });
   it("plan", async function () {
     const plan = await provider.planQuery();
@@ -66,6 +66,11 @@ describe("GcpServiceAccount", async function () {
     await testPlanDeploy({ provider });
 
     const serviceAccountLive = await serviceAccount.getLive();
+
+    const { results: lives } = await provider.listLives({
+      types: ["ServiceAccount"],
+    });
+    assert(lives[0].resources.length >= 1);
 
     const providerEmpty = await GoogleProvider({
       name: "google",

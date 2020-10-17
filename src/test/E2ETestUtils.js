@@ -92,7 +92,7 @@ const testDestroyByType = async ({ provider, livesAll }) => {
   assert.equal(plan.plans[0].resource.type, type);
 };
 
-const testPlanDestroy = async ({ provider, full = false }) => {
+const testPlanDestroy = async ({ provider, type, full = false }) => {
   logger.debug(`testPlanDestroy ${provider.name}`);
 
   if (full) {
@@ -114,6 +114,7 @@ const testPlanDestroy = async ({ provider, full = false }) => {
   }
   const { results: lives } = await provider.listLives({
     our: true,
+    types: [type],
   });
 
   assert(isEmpty(lives));

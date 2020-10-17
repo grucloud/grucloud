@@ -42,6 +42,7 @@ module.exports = CoreClient = ({
   onResponseDelete = identity,
   cannotBeDeleted = () => false,
   shouldRetryOnException,
+  onCreateExpectedException,
 }) => {
   assert(spec);
   assert(type);
@@ -92,8 +93,6 @@ module.exports = CoreClient = ({
         config,
       });
 
-      //logger.debug(`getList type ${type}: ${tos(result.data)}`);
-
       const data = onResponseList(result.data);
       return data;
     } catch (error) {
@@ -118,6 +117,7 @@ module.exports = CoreClient = ({
 
       const result = await retryCallOnError({
         name: `create ${spec.type}/${name}`,
+        isExpectedException: onCreateExpectedException,
         fn: async () =>
           await axios.request(path, {
             method: verbCreate,
@@ -195,5 +195,6 @@ module.exports = CoreClient = ({
     destroy,
     getList,
     configDefault,
+    axios,
   };
 };

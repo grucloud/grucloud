@@ -91,7 +91,12 @@ const retryCall = async ({
 };
 exports.retryCall = retryCall;
 
-exports.retryCallOnError = ({ name, fn, config }) =>
+exports.retryCallOnError = ({
+  name,
+  fn,
+  config,
+  isExpectedException = () => false,
+}) =>
   retryCall({
     name,
     fn,
@@ -101,9 +106,7 @@ exports.retryCallOnError = ({ name, fn, config }) =>
       assert(result.status, `no status in result`);
       return [200, 201, 202, 204].includes(result.status);
     },
-    isExpectedException: (error) => {
-      return error.response?.status === 409;
-    },
+    isExpectedException,
     retryCount: config.retryCount,
     retryDelay: config.retryDelay,
   });
