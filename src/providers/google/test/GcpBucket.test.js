@@ -58,7 +58,7 @@ describe("GcpBucket", async function () {
     assert.equal(plan.resultDestroy.plans.length, 0);
     assert.equal(plan.resultCreate.plans.length, 2);
   });
-  it.only("gcp bucket apply and destroy", async function () {
+  it("gcp bucket apply and destroy", async function () {
     await testPlanDeploy({ provider });
 
     const { error, results } = await provider.destroyAll();
