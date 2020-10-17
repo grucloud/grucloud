@@ -12,7 +12,7 @@ const logger = require("../../logger")({ prefix: "GoogleProvider" });
 const { tos } = require("../../tos");
 
 const GcpCompute = require("./resources/compute/");
-const GcpIam = require("./resources/IAM/");
+const GcpIam = require("./resources/iam/");
 const GcpStorage = require("./resources/storage/");
 
 const { checkEnv } = require("../../Utils");
