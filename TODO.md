@@ -37,7 +37,6 @@
 
 ## TODO Aws:
 
-- s3 object update
 - check S3 Tags
 - ssh should use use kp.pem instead of ssh-add
 - add example code in AwsGettingStarted

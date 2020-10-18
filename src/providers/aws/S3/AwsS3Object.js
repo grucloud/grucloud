@@ -112,7 +112,9 @@ exports.AwsS3Object = ({ spec, config }) => {
 
   const getByName = async ({ name, dependencies }) =>
     await pipe([
-      tap(() => logger.debug(`getByName ${name}`)),
+      tap(() => {
+        logger.debug(`getByName ${name}`);
+      }),
       () => getBucket({ dependencies, name }),
       (bucket) =>
         tryCatch(
@@ -120,17 +122,14 @@ exports.AwsS3Object = ({ spec, config }) => {
             pipe([
               async (bucket) =>
                 await fork({
-                  // listObjects
+                  // headObject
                   content: async (bucket) =>
                     await pipe([
                       (bucket) => ({
                         Bucket: bucket.name,
-                        Prefix: name,
-                        MaxKeys: 1,
+                        Key: name,
                       }),
-                      async (params) =>
-                        await s3.listObjectsV2(params).promise(),
-                      ({ Contents }) => first(Contents),
+                      async (params) => await s3.headObject(params).promise(),
                     ])(bucket),
                   // getObjectTagging
                   TagSet: async (bucket) =>
@@ -148,7 +147,8 @@ exports.AwsS3Object = ({ spec, config }) => {
               ({ content, TagSet }) => ({ ...content, TagSet }),
             ])(bucket),
           switchCase([
-            (error) => ["NoSuchBucket", "NoSuchKey"].includes(error.code),
+            (error) =>
+              ["NoSuchBucket", "NoSuchKey", "NotFound"].includes(error.code),
             () => null,
             (error, bucket) => {
               throw convertError({
@@ -219,6 +219,8 @@ exports.AwsS3Object = ({ spec, config }) => {
       };
     }
 
+    logger.debug(`create ${tos(name)}`);
+
     return await pipe([
       () => getBucket({ dependencies, name }),
       async (bucket) =>
@@ -229,7 +231,7 @@ exports.AwsS3Object = ({ spec, config }) => {
           }),
           pipe([
             tap((x) => {
-              logger.debug(`Body  ContentMD5 ${tos(x)}`);
+              //logger.debug(`Body  ContentMD5 ${tos(x)}`);
             }),
             ({ Body, ContentMD5 }) => ({
               ...otherProperties,
@@ -239,6 +241,9 @@ exports.AwsS3Object = ({ spec, config }) => {
               Tagging: `${managedByKey}=${managedByValue}&${stageTagKey}=${stage}${
                 Tagging && `&${Tagging}`
               }`,
+              Metadata: {
+                md5hash: ContentMD5,
+              },
             }),
             async (params) => await s3.putObject(params).promise(),
             tap(
@@ -293,6 +298,7 @@ exports.AwsS3Object = ({ spec, config }) => {
     cannotBeDeleted: () => false,
     findName,
     create,
+    update: create,
     destroy,
     getList,
     configDefault,
