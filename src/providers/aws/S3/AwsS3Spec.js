@@ -29,7 +29,7 @@ module.exports = [
         const md5 = await md5FileBase64(target.source);
 
         if (md5hash !== md5) {
-          return [{ type: "DIFF", target, live: omit(["Body"])(live) }];
+          return [{ type: "DIFF", target, live }];
         }
       }
 
