@@ -119,6 +119,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     if (eip) {
       const eipLive = await eip.getLive();
       logger.debug(`create, associating eip ${tos({ eipLive })}`);
+      assert(eipLive);
       const { AllocationId } = eipLive;
       assert(AllocationId);
       const paramsAssociate = {
