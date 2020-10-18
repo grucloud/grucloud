@@ -1,6 +1,5 @@
 const assert = require("assert");
 const fs = require("fs").promises;
-const md5File = require("md5-file");
 const urljoin = require("url-join");
 const {
   pipe,
@@ -18,6 +17,7 @@ const {
   axiosErrorToJSON,
   mapPoolSize,
   convertError,
+  md5FileBase64,
 } = require("../../../Common");
 const { retryCallOnError } = require("../../../Retry");
 
@@ -224,10 +224,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
                 data: {
                   ...payload,
                   metadata: buildLabel(configProvider),
-                  md5Hash: pipe([
-                    async () => await md5File(payload.source),
-                    (md5) => new Buffer.from(md5, "hex").toString("base64"),
-                  ]),
+                  md5Hash: await md5FileBase64(payload.source),
                 },
               }
             ),
@@ -256,27 +253,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
       }),
     ])();
 
-  const update = ({ name, payload, dependencies }) =>
-    pipe([
-      tap((xx) => {
-        //console.log("update");
-      }),
-      //TODO
-      ({}) =>
-        retryCallOnError({
-          name: `update type: ${spec.type}`,
-          fn: async () =>
-            await axios.request(":setIamPolicy", {
-              method: "POST",
-              data: {},
-            }),
-          config: configProvider,
-        }),
-      get("data"),
-      tap((xx) => {
-        console.log("updated");
-      }),
-    ])();
+  const update = create;
 
   const destroy = ({ id, name, resourcesPerType }) =>
     tryCatch(

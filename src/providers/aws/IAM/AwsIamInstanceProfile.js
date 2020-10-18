@@ -105,7 +105,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   const create = async ({ name, payload = {}, dependencies }) => {
     assert(name);
     assert(payload);
-    logger.debug(`create ${tos({ name, payload })}`);
+    logger.debug(`create instance profile: ${tos({ name, payload })}`);
 
     const createParams = defaultsDeep({})(payload);
 
@@ -129,7 +129,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     )(iamRoles);
 
     const instanceUp = await retryCall({
-      name: `getById: ${name}`,
+      name: `create instance profile, getById: ${name}`,
       fn: () => getById({ id: name }),
       isExpectedResult: (result) => {
         if (result && !isEmpty(result.Roles)) {

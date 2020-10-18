@@ -1,10 +1,11 @@
 const assert = require("assert");
+const md5File = require("md5-file");
 const { pipe, tap } = require("rubico");
 const { isEmpty } = require("rubico/x");
 const logger = require("../logger")({ prefix: "Common" });
 const { tos } = require("../tos");
-exports.mapPoolSize = 20;
 
+exports.mapPoolSize = 20;
 exports.TitleDeploying = "Deploying";
 exports.TitleDestroying = "Destroying";
 exports.TitleQuery = "Fetching Data";
@@ -197,3 +198,8 @@ exports.logError = (prefix, error) => {
   }
   //logger.error(`${prefix} stack:${error.stack}`);
 };
+
+exports.md5FileBase64 = pipe([
+  async (source) => await md5File(source),
+  (md5) => new Buffer.from(md5, "hex").toString("base64"),
+]);

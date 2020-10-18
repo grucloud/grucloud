@@ -1,6 +1,10 @@
+const assert = require("assert");
+const { md5FileBase64 } = require("../../../Common");
+const GoogleTag = require("../../GoogleTag");
+const logger = require("../../../../logger")({ prefix: "GcpStorageSpec" });
+
 const { GcpBucket } = require("./GcpBucket");
 const { GcpObject, isGcpObjectOurMinion } = require("./GcpObject");
-const GoogleTag = require("../../GoogleTag");
 
 module.exports = (config) => [
   {
@@ -19,6 +23,18 @@ module.exports = (config) => [
         spec,
         config,
       }),
+    compare: async ({ target, live }) => {
+      logger.debug(`compare object`);
+      assert(live.md5Hash);
+      if (target.source) {
+        const md5 = await md5FileBase64(target.source);
+        if (live.md5Hash !== md5) {
+          return [{ type: "DIFF", target, live }];
+        }
+      }
+
+      return [];
+    },
     isOurMinion: ({ resource }) => isGcpObjectOurMinion({ resource, config }),
   },
 ];

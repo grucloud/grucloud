@@ -97,7 +97,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   const create = async ({ name, payload = {}, dependencies }) => {
     assert(name);
     assert(payload);
-    logger.debug(`create ${tos({ name, payload })}`);
+    logger.debug(`create policy ${tos({ name, payload })}`);
 
     const createParams = {
       ...payload,

@@ -18,7 +18,7 @@ describe("Multi Example", async function () {
 
     await cliCommands.planDestroy({
       infra,
-      commandOptions: { force: true },
+      commandOptions: { force: true, all: true },
     });
     await cliCommands.planQuery({ infra });
     await cliCommands.planApply({

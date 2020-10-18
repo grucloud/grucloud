@@ -102,7 +102,7 @@ const ResourceMaker = ({
     if (isEmpty(target)) {
       return;
     }
-    const diff = spec.compare({ target, live });
+    const diff = await spec.compare({ target, live });
     logger.info(`planUpdate diff ${tos(diff)}`);
     if (diff.length > 0) {
       return [
@@ -1203,7 +1203,7 @@ function CoreProvider({
           },
           (error, resource) => {
             logger.error(`error query resource ${resource.toString()}`);
-            logger.error(error);
+            logger.error(JSON.stringify(error, null, 4));
             onStateChange({
               context: contextFromResource(resource.toJSON()),
               nextState: "ERROR",

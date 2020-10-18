@@ -76,7 +76,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         name: `getByName isUpById ${name}`,
         fn: () => isUpById({ id: name }),
         isExpectedResult: (result) => result,
-        repeatCount: 5,
+        repeatCount: 0,
         retryCount: 5,
         retryDelay: 1e3,
       }))
