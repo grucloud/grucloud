@@ -2,6 +2,7 @@
 
 ## Common:
 
+- add default cannotBeDeleted
 - PROMPT='%4~ %# '
 - displayPlan error
 - add a delete summary

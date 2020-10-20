@@ -518,6 +518,7 @@ function CoreProvider({
       }),
       () =>
         client.getList({
+          provider,
           resources: getResourcesByType(client.spec.type),
         }),
       get("items"),

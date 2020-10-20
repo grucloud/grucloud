@@ -81,9 +81,9 @@ module.exports = CoreClient = ({
     }
   };
 
-  const getList = async () => {
+  const getList = async ({ resources }) => {
     try {
-      const path = pathList();
+      const path = pathList({ resources });
       const result = await retryCallOnError({
         name: `getList type: ${spec.type}, path ${path}`,
         fn: async () =>
@@ -96,7 +96,7 @@ module.exports = CoreClient = ({
       const data = onResponseList(result.data);
       return data;
     } catch (error) {
-      logError(`getList ${type}`, error);
+      logError(`getList ${spec.type}`, error);
       throw axiosErrorToJSON(error);
     }
   };

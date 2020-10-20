@@ -7,12 +7,66 @@ const GcpSubNetwork = require("./GcpSubNetwork");
 const GcpFirewall = require("./GcpFirewall");
 const GoogleVmInstance = require("./GcpVmInstance");
 const GcpAddress = require("./GcpAddress");
+const { GcpSslCertificate } = require("./GcpSslCertificate");
+const { GcpBackendBucket } = require("./GcpBackendBucket");
+const { GcpHttpsTargetProxy } = require("./GcpHttpsTargetProxy");
+const { GcpUrlMap } = require("./GcpUrlMap");
+const { GcpGlobalForwardingRule } = require("./GcpGlobalForwardingRule");
 
 module.exports = (config) => {
   const isOurMinion = ({ resource }) =>
     GoogleTag.isOurMinion({ resource, config });
 
   return [
+    {
+      type: "SslCertificate",
+      Client: ({ spec }) =>
+        GcpSslCertificate({
+          spec,
+          config,
+        }),
+      isOurMinion,
+    },
+    {
+      type: "BackendBucket",
+      Client: ({ spec }) =>
+        GcpBackendBucket({
+          spec,
+          config,
+        }),
+      isOurMinion,
+    },
+
+    {
+      type: "UrlMap",
+      dependsOn: ["BackendBucket"],
+      Client: ({ spec }) =>
+        GcpUrlMap({
+          spec,
+          config,
+        }),
+      isOurMinion,
+    },
+    {
+      type: "HttpsTargetProxy",
+      dependsOn: ["UrlMap", "SslCertificate"],
+      Client: ({ spec }) =>
+        GcpHttpsTargetProxy({
+          spec,
+          config,
+        }),
+      isOurMinion,
+    },
+    {
+      type: "GlobalForwardingRule",
+      dependsOn: ["HttpsTargetProxy"],
+      Client: ({ spec }) =>
+        GcpGlobalForwardingRule({
+          spec,
+          config,
+        }),
+      isOurMinion,
+    },
     {
       type: "Network",
       Client: ({ spec }) =>

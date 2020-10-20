@@ -14,13 +14,15 @@ const { tos } = require("../../tos");
 const GcpCompute = require("./resources/compute/");
 const GcpIam = require("./resources/iam/");
 const GcpStorage = require("./resources/storage/");
+const GcpDns = require("./resources/dns/");
 
 const { checkEnv } = require("../../Utils");
 
 const fnSpecs = (config) => [
-  ...GcpStorage(config),
+  /*...GcpStorage(config),
   ...GcpIam(config),
-  ...GcpCompute(config),
+  ...GcpCompute(config),*/
+  ...GcpDns(config),
 ];
 
 const authorize = async ({ applicationCredentials }) => {
