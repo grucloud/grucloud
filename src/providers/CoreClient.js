@@ -48,7 +48,8 @@ module.exports = CoreClient = ({
   assert(type);
   assert(config, "config");
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = ({ provider, name }) =>
+    getByNameCore({ provider, name, getList, findName });
 
   const getById = async ({ id }) => {
     logger.debug(`getById ${tos({ type, id })}`);
@@ -81,9 +82,9 @@ module.exports = CoreClient = ({
     }
   };
 
-  const getList = async ({ resources }) => {
+  const getList = async () => {
     try {
-      const path = pathList({ resources });
+      const path = pathList();
       const result = await retryCallOnError({
         name: `getList type: ${spec.type}, path ${path}`,
         fn: async () =>

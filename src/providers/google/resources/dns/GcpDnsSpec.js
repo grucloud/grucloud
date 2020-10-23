@@ -1,9 +1,12 @@
 const assert = require("assert");
+
 const GoogleTag = require("../../GoogleTag");
 const logger = require("../../../../logger")({ prefix: "GcpDnsSpec" });
 
-const { GcpDnsManagedZone } = require("./GcpDnsManagedZone");
-const { GcpDnsResourceRecordSet } = require("./GcpDnsResourceRecordSet");
+const {
+  GcpDnsManagedZone,
+  compareDnsManagedZone,
+} = require("./GcpDnsManagedZone");
 
 module.exports = (config) => [
   {
@@ -14,14 +17,6 @@ module.exports = (config) => [
         config,
       }),
     isOurMinion: ({ resource }) => GoogleTag.isOurMinion({ resource, config }),
-  },
-  {
-    type: "DnsResourceRecordSet",
-    Client: ({ spec }) =>
-      GcpDnsResourceRecordSet({
-        spec,
-        config,
-      }),
-    isOurMinion: ({ resource }) => GoogleTag.isOurMinion({ resource, config }),
+    compare: compareDnsManagedZone,
   },
 ];

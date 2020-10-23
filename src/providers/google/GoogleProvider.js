@@ -19,9 +19,9 @@ const GcpDns = require("./resources/dns/");
 const { checkEnv } = require("../../Utils");
 
 const fnSpecs = (config) => [
-  /*...GcpStorage(config),
+  ...GcpStorage(config),
   ...GcpIam(config),
-  ...GcpCompute(config),*/
+  ...GcpCompute(config),
   ...GcpDns(config),
 ];
 

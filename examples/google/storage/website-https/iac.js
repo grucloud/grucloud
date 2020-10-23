@@ -8,12 +8,12 @@ exports.createStack = async ({ config }) => {
   const domain = "gcp.grucloud.com";
 
   const provider = await GoogleProvider({ config });
-  /*
+
   const myBucket = await provider.makeBucket({
     name: bucketName,
     properties: () => ({}),
   });
-  
+
   const file = await provider.makeObject({
     name: `myfile`,
     dependencies: { bucket: myBucket },
@@ -57,16 +57,20 @@ exports.createStack = async ({ config }) => {
     dependencies: { httpsTargetProxy },
     properties: () => ({}),
   });
-*/
+
   const dnsManagedZone = await provider.makeDnsManagedZone({
     name: "dns-managed-zone",
-    properties: () => ({ dnsName: `${domain}.` }),
-  });
-
-  const dnsResourceRecordSet = await provider.makeDnsResourceRecordSet({
-    name: "resource-record-set",
-    dependencies: { dnsManagedZone },
-    properties: () => ({ dnsName: `${domain}.` }),
+    properties: () => ({
+      dnsName: `${domain}.`,
+      recordSet: [
+        {
+          name: `${domain}.`,
+          rrdatas: ["1.2.3.1"],
+          ttl: 86400,
+          type: "A",
+        },
+      ],
+    }),
   });
 
   return {
