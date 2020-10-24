@@ -33,11 +33,8 @@ describe("MockClient", function () {
     assert.equal(total, 1);
   });
   it("get by id", async function () {
-    try {
-      await mockClient.getById({ id: "asdfg" });
-    } catch (error) {
-      assert.equal(error.response.status, 404);
-    }
+    const result = await mockClient.getById({ id: "asdfg" });
+    assert(!result);
   });
   it("create", async function () {
     const { id } = await mockClient.create({

@@ -1,5 +1,6 @@
-const { isEmpty } = require("rubico/x");
 const assert = require("assert");
+const { tryCatch, pipe, tap, switchCase } = require("rubico");
+const { isEmpty } = require("rubico/x");
 
 const logger = require("../logger")({ prefix: "CoreClient" });
 const { tos } = require("../tos");
@@ -51,134 +52,153 @@ module.exports = CoreClient = ({
   const getByName = ({ provider, name }) =>
     getByNameCore({ provider, name, getList, findName });
 
-  const getById = async ({ id }) => {
-    logger.debug(`getById ${tos({ type, id })}`);
-    assert(id);
-    assert(!isEmpty(id), `getById ${type}: invalid id`);
-    assert(!spec.listOnly);
-
-    try {
-      const path = pathGet(id);
-      logger.debug(`getById path: ${path}`);
-
-      const result = await retryCallOnError({
-        name: `getById type ${spec.type}, path: ${path}`,
-        fn: async () =>
-          await axios.request(path, {
-            method: verbGet,
+  const getById = async ({ id }) =>
+    tryCatch(
+      pipe([
+        tap(() => {
+          logger.debug(`getById ${tos({ type, id })}`);
+          assert(!isEmpty(id), `getById ${type}: invalid id`);
+          assert(!spec.listOnly);
+        }),
+        () => pathGet(id),
+        async (path) =>
+          await retryCallOnError({
+            name: `getById type ${spec.type}, path: ${path}`,
+            fn: async () =>
+              await axios.request(path, {
+                method: verbGet,
+              }),
+            config,
           }),
-        config,
-      });
-      const data = onResponseGet({ id, data: result.data });
-      logger.debug(`get ${tos(data)}`);
-      return data;
-    } catch (error) {
-      const status = error.response?.status;
-      logger.debug(`getById status: ${status}`);
-      if (status != 404) {
-        logError("getById", error);
-        throw axiosErrorToJSON(error);
-      }
-    }
-  };
+        (result) => onResponseGet({ id, data: result.data }),
+        tap((data) => {
+          logger.debug(`getById ${tos(data)}`);
+        }),
+      ]),
+      switchCase([
+        (error) => error.response?.status !== 404,
+        (error) => {
+          logError("getById", error);
+          throw axiosErrorToJSON(error);
+        },
+        () => {},
+      ])
+    )();
 
-  const getList = async () => {
-    try {
-      const path = pathList();
-      const result = await retryCallOnError({
-        name: `getList type: ${spec.type}, path ${path}`,
-        fn: async () =>
-          await axios.request(path, {
-            method: verbList,
-          }),
-        config,
-      });
-
-      const data = onResponseList(result.data);
-      return data;
-    } catch (error) {
+  const getList = tryCatch(
+    pipe([
+      () => pathList(),
+      (path) =>
+        retryCallOnError({
+          name: `getList type: ${spec.type}, path ${path}`,
+          fn: async () =>
+            await axios.request(path, {
+              method: verbList,
+            }),
+          config,
+        }),
+      (result) => onResponseList(result.data),
+    ]),
+    (error) => {
       logError(`getList ${spec.type}`, error);
       throw axiosErrorToJSON(error);
     }
-  };
+  );
 
   const isUpById = isUpByIdFactory({ getById, getList, findId });
   const isDownById = isDownByIdCore({ getById, getList, findId });
 
-  const create = async ({ name, payload, dependencies }) => {
-    logger.debug(`create ${type}/${name}, payload: ${tos(payload)}`);
-    assert(name);
-    assert(payload);
-    assert(!spec.singleton);
-    assert(!spec.listOnly);
-
-    try {
-      const path = pathCreate({ dependencies, name });
-      logger.info(`create ${spec.type}/${name}`);
-
-      const result = await retryCallOnError({
-        name: `create ${spec.type}/${name}`,
-        isExpectedException: onCreateExpectedException,
-        fn: async () =>
-          await axios.request(path, {
-            method: verbCreate,
-            data: payload,
+  const create = async ({ name, payload, dependencies }) =>
+    tryCatch(
+      pipe([
+        tap(() => {
+          logger.debug(`create ${type}/${name}, payload: ${tos(payload)}`);
+          assert(name);
+          assert(payload);
+          assert(!spec.singleton);
+          assert(!spec.listOnly);
+        }),
+        () => pathCreate({ dependencies, name }),
+        tap((path) => {
+          logger.info(`create ${spec.type}/${name}, path: ${path}`);
+        }),
+        (path) =>
+          retryCallOnError({
+            name: `create ${spec.type}/${name}`,
+            isExpectedException: onCreateExpectedException,
+            fn: async () =>
+              await axios.request(path, {
+                method: verbCreate,
+                data: payload,
+              }),
+            config,
           }),
-        config,
-      });
-
-      if (result.response?.status === 409) {
-        logger.debug(`create: already created ${type}/${name}, 409`);
-        return;
+        switchCase([
+          (result) => result.response?.status === 409,
+          () => {
+            logger.debug(`create: already created ${type}/${name}, 409`);
+            //TODO get by id ?
+          },
+          pipe([
+            tap((result) => {
+              assert(result.data, "result.data");
+            }),
+            (result) => onResponseCreate(result.data),
+            (data) =>
+              pipe([
+                () => findTargetId(data),
+                tap((id) => {
+                  assert(id, `no target id from result: ${tos(data)}`);
+                }),
+                (id) =>
+                  pipe([
+                    () =>
+                      retryExpectOk({
+                        name: `create isUpById ${spec.type}/${name}, id: ${id}`,
+                        fn: () => isUpById({ id }),
+                        config,
+                      }),
+                    (resource) => onResponseGet({ id, data: resource }),
+                  ])(),
+              ])(),
+          ]),
+        ]),
+      ]),
+      (error) => {
+        logError(`create ${type}/${name}`, error);
+        throw axiosErrorToJSON(error);
       }
-      assert(result.data, "result.data");
-      const data = onResponseCreate(result.data);
-      logger.info(`create result: ${tos(data)}`);
+    )();
 
-      const id = findTargetId(data);
-      logger.debug(`create findTargetId: ${id}`);
-
-      assert(id, "no target id from result");
-      const resource = await retryExpectOk({
-        name: `create ${spec.type}/${name}`,
-        fn: () => isUpById({ id }),
-        config,
-      });
-      logger.info(`created ${type}/${name}`);
-      return onResponseGet({ id, data: resource });
-    } catch (error) {
-      logError(`create ${type}/${name}`, error);
-      throw axiosErrorToJSON(error);
-    }
-  };
-
-  const destroy = async ({ id, name }) => {
-    logger.info(`destroy ${tos({ type, name, id })}`);
-    assert(!spec.singleton);
-    assert(!spec.listOnly);
-    assert(!isEmpty(id), `destroy ${type}: invalid id`);
-
-    try {
-      const path = pathDelete(id);
-      logger.debug(`destroy url: ${path}`);
-      const result = await retryCallOnError({
-        name: `destroy type ${spec.type}, path: ${path}`,
-        fn: async () =>
-          await axios.request(path, {
-            method: "DELETE",
+  const destroy = async ({ id, name }) =>
+    tryCatch(
+      pipe([
+        tap(() => {
+          logger.info(`destroy ${tos({ type, name, id })}`);
+          assert(!spec.singleton);
+          assert(!spec.listOnly);
+          assert(!isEmpty(id), `destroy ${type}: invalid id`);
+        }),
+        () => pathDelete(id),
+        (path) =>
+          retryCallOnError({
+            name: `destroy type ${spec.type}, path: ${path}`,
+            fn: async () =>
+              await axios.request(path, {
+                method: "DELETE",
+              }),
+            config,
           }),
-        config,
-      });
-
-      const data = onResponseDelete(result.data);
-      logger.info(`destroy ${tos({ name, type, id, data })} destroyed`);
-
-      return data;
-    } catch (error) {
-      logError(`delete ${type}/${name}`, error);
-      throw axiosErrorToJSON(error);
-    }
-  };
+        (result) => onResponseDelete(result.data),
+        tap((data) => {
+          logger.info(`destroy ${tos({ name, type, id, data })} destroyed`);
+        }),
+      ]),
+      (error) => {
+        logError(`delete ${type}/${name}`, error);
+        throw axiosErrorToJSON(error);
+      }
+    )();
 
   return {
     spec,
