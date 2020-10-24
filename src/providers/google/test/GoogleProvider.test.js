@@ -13,6 +13,7 @@ describe("GoogleProvider", async function () {
   let server;
   let ip;
   const ipName = "ip-webserver";
+  const types = ["Network", "SubNetwork", "Firewall", "Address", "VmInstance"];
   before(async function () {
     try {
       config = ConfigLoader({ path: "examples/multi" });
@@ -84,10 +85,10 @@ describe("GoogleProvider", async function () {
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 5);
+    assert.equal(plan.resultCreate.plans.length, types.length);
   });
-  it.skip("gcp apply and destroy", async function () {
-    await testPlanDeploy({ provider, full: true });
+  it("gcp apply and destroy", async function () {
+    await testPlanDeploy({ provider, types, full: true });
 
     const serverLive = await server.getLive();
     const { status, labels } = serverLive;
@@ -102,6 +103,6 @@ describe("GoogleProvider", async function () {
       ipLive.address
     );
 
-    await testPlanDestroy({ provider, full: true });
+    await testPlanDestroy({ provider, types, full: true });
   });
 });

@@ -9,6 +9,7 @@ const {
 
 describe("GoogleAddress", async function () {
   const addressName = "myaddress-test";
+  const types = ["Address"];
   let config;
   let provider;
   let address;
@@ -36,17 +37,13 @@ describe("GoogleAddress", async function () {
     assert.equal(config.name, addressName);
     assert.equal(config.description, provider.config().managedByDescription);
   });
-  it("lives", async function () {
-    const { results: lives } = await provider.listLives();
-    //console.log("lives ip", lives);
-  });
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 1);
+    assert.equal(plan.resultCreate.plans.length, types.length);
   });
-  it.skip("apply and destroy", async function () {
-    await testPlanDeploy({ provider });
-    await testPlanDestroy({ provider });
+  it("apply and destroy", async function () {
+    await testPlanDeploy({ provider, types });
+    await testPlanDestroy({ provider, types });
   });
 });

@@ -8,6 +8,14 @@ const {
 } = require("../../../test/E2ETestUtils");
 
 describe("GcpWebSiteHttps", async function () {
+  const types = [
+    "SslCertificate",
+    "GlobalForwardingRule",
+    "HttpsTargetProxy",
+    "UrlMap",
+    "BackendBucket",
+    "Bucket",
+  ];
   const bucketName = "test-gcp-grucloud";
   const domain = "test.gcp.grucloud.com";
   const certificateName = "ssl-certificate-test";
@@ -87,10 +95,10 @@ describe("GcpWebSiteHttps", async function () {
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 6);
+    assert.equal(plan.resultCreate.plans.length, types.length);
   });
   it("website https apply and destroy", async function () {
-    await testPlanDeploy({ provider });
+    await testPlanDeploy({ provider, types });
 
     // SSL Certificate
     const sslCertificateLive = await sslCertificate.getLive();
@@ -103,6 +111,6 @@ describe("GcpWebSiteHttps", async function () {
     assert(sslCertificateLive.managed.domains[0], domain);
     assert(sslCertificateLive.type, "MANAGED");
 
-    await testPlanDestroy({ provider });
+    await testPlanDestroy({ provider, types });
   });
 });

@@ -7,8 +7,9 @@ const {
   testPlanDestroy,
 } = require("../../../../test/E2ETestUtils");
 
-describe.only("GcpDnsManagedZone", async function () {
-  const domain = "gcp.grucloud.com";
+describe("GcpDnsManagedZone", async function () {
+  const types = ["DnsManagedZone"];
+  const domain = "gcp.grucloud.com.";
   let config;
   let provider;
   let dnsManagedZone;
@@ -38,14 +39,15 @@ describe.only("GcpDnsManagedZone", async function () {
     const config = await dnsManagedZone.resolveConfig();
     assert(config);
     assert.equal(config.description, provider.config().managedByDescription);
+    assert(Array.isArray(config.recordSet));
   });
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 1);
+    assert.equal(plan.resultCreate.plans.length, types.length);
   });
   it("dns managed zone apply and destroy", async function () {
-    await testPlanDeploy({ provider });
-    await testPlanDestroy({ provider });
+    await testPlanDeploy({ provider, types });
+    await testPlanDestroy({ provider, types });
   });
 });

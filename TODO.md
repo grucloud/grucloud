@@ -2,6 +2,7 @@
 
 ## Common:
 
+- add types to testPlanDestroy
 - add default cannotBeDeleted
 - PROMPT='%4~ %# '
 - displayPlan error

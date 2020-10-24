@@ -2,6 +2,7 @@ const assert = require("assert");
 const { switchCase, and } = require("rubico");
 const { isEmpty } = require("rubico/x");
 const logger = require("../logger")({ prefix: "TestUtils" });
+const { tos } = require("../tos");
 
 const isPlanEmpty = switchCase([
   and([
@@ -92,7 +93,7 @@ const testDestroyByType = async ({ provider, livesAll }) => {
   assert.equal(plan.plans[0].resource.type, type);
 };
 
-const testPlanDestroy = async ({ provider, type, full = false }) => {
+const testPlanDestroy = async ({ provider, types = [], full = false }) => {
   logger.debug(`testPlanDestroy ${provider.name}`);
 
   if (full) {
@@ -114,16 +115,16 @@ const testPlanDestroy = async ({ provider, type, full = false }) => {
   }
   const { results: lives } = await provider.listLives({
     our: true,
-    types: [type],
+    types,
   });
 
-  assert(isEmpty(lives));
+  assert(isEmpty(lives), tos(lives));
   logger.debug(`testPlanDestroy ${provider.name} DONE`);
 };
 
 exports.testPlanDestroy = testPlanDestroy;
 
-exports.testPlanDeploy = async ({ provider, full = false }) => {
+exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
   {
     const { error } = await provider.destroyAll();
     assert(!error, "testPlanDeploy destroyAll failed");
@@ -133,11 +134,22 @@ exports.testPlanDeploy = async ({ provider, full = false }) => {
     assert(!isPlanEmpty(plan), "plan must not be empty after destroyAll");
     const { error, resultCreate } = await provider.planApply({ plan });
     assert(resultCreate);
-    assert(!error, "planApply failed");
+    assert(!error, `planApply failed: ${tos(resultCreate)}`);
+  }
+  {
+    const { results: lives } = await provider.listLives({
+      our: true,
+      types,
+    });
+
+    assert(!isEmpty(lives), tos(lives));
   }
   {
     const plan = await provider.planQuery();
-    assert(isPlanEmpty(plan), "plan must be empty after a deploy");
+    assert(
+      isPlanEmpty(plan),
+      `plan must be empty after a deploy: ${tos(plan)}`
+    );
   }
   if (full) {
     await testList({ provider });
