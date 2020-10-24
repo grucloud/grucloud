@@ -33,8 +33,8 @@ exports.compareDnsManagedZone = async ({ target, live }) =>
   pipe([
     tap(() => {
       logger.debug(`compareDnsManagedZone ${tos({ target, live })}`);
-      assert(target.recordSet);
-      assert(live.recordSet);
+      assert(target.recordSet, "target.recordSet");
+      assert(live.recordSet, "live.recordSet");
     }),
     () => filterNonDeletableRecords(live.recordSet),
     fork({
@@ -71,15 +71,13 @@ const filterNonDeletableRecords = pipe([
 
 // https://cloud.google.com/dns/docs/reference/v1/managedZones
 exports.GcpDnsManagedZone = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
-
   const { project, managedByDescription } = config;
 
   const configDefault = ({ name, properties }) =>
     defaultsDeep({
       name,
       description: managedByDescription,
+      recordSet: [],
     })(properties);
 
   const findName = (item) => {
@@ -174,7 +172,7 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
     pipe([
       tap(() => {
         logger.debug(`create ${name}, payload: ${tos(payload)}`);
-        assert(name);
+        assert(name, "name");
         assert(payload.name, "missing name");
         assert(payload.recordSet, "missing recordSet");
       }),
@@ -186,7 +184,7 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
               fn: async () =>
                 await axios.request(`/`, {
                   method: "POST",
-                  data: payload,
+                  data: omit(["recordSet"])(payload),
                 }),
               config,
             }),
@@ -195,7 +193,7 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
             logger.debug(`create ${result}`);
           }),
         ]),
-        () => {
+        (error) => {
           logError(`create`, error);
           throw axiosErrorToJSON(error);
         }
@@ -207,9 +205,9 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
     pipe([
       tap(() => {
         logger.debug(`update ${name}, payload: ${tos(payload)}`);
-        assert(name);
-        assert(live);
-        assert(diff);
+        assert(name, "name");
+        assert(live, "live");
+        assert(diff, "diff");
         assert(payload.recordSet, "missing recordSet");
         assert(diff.needUpdate, "diff.needUpate");
       }),
