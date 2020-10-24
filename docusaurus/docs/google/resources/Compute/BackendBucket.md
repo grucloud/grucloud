@@ -1,6 +1,6 @@
 ---
 id: BackendBucket
-title: SSL Certificate
+title: Backend Bucket
 ---
 
 Provides a backend bucket.

@@ -1,6 +1,6 @@
 ---
-id: HttpsTargetProxy
-title: Https Target Proxy
+id: UrlMap
+title: Url Map
 ---
 
 Provides a URL Map used by the HTTPS load balancer.

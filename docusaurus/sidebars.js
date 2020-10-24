@@ -89,6 +89,9 @@ module.exports = {
               "google/resources/storage/GcpObject",
             ],
           },
+          {
+            DNS: ["google/resources/DNS/DnsManagedZone"],
+          },
         ],
       },
       "google/GoogleMisc",
