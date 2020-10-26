@@ -87,7 +87,7 @@ describe("GoogleProvider", async function () {
     assert.equal(plan.resultDestroy.plans.length, 0);
     assert.equal(plan.resultCreate.plans.length, types.length);
   });
-  it("gcp apply and destroy", async function () {
+  it.only("gcp apply and destroy", async function () {
     await testPlanDeploy({ provider, types, full: true });
 
     const serverLive = await server.getLive();

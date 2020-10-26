@@ -1,4 +1,6 @@
 const { compare } = require("../../../../Utils");
+const logger = require("../../../../logger")({ prefix: "GcpComputeSpec" });
+
 const { tos } = require("../../../../tos");
 const GoogleTag = require("../../GoogleTag");
 
@@ -120,6 +122,7 @@ module.exports = (config) => {
         sourceImage:
           "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
       },
+      //TODO move inside VmInstance
       compare: ({ target, live }) => {
         logger.debug(`compare server`);
         const diff = compare({

@@ -1220,6 +1220,7 @@ function CoreProvider({
             logger.error(`error query resource ${resource.toString()}`);
             logger.error(JSON.stringify(error, null, 4));
             logger.error(error.toString());
+            error.stack && logger.error(error.stack);
 
             onStateChange({
               context: contextFromResource(resource.toJSON()),
