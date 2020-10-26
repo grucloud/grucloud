@@ -147,6 +147,7 @@ exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
   }
   {
     const plan = await provider.planQuery();
+    assert(!plan.error, tos(plan));
     assert(
       isPlanEmpty(plan),
       `plan must be empty after a deploy: ${tos(plan)}`
