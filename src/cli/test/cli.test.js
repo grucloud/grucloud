@@ -415,7 +415,10 @@ describe("cli error", function () {
         const { result } = error.results[0];
         assert(result.error);
         assert(result.resultCreate.results[0]);
-        assert(result.resultCreate.results[0].error);
+        assert(
+          result.resultCreate.results[0].error,
+          `result.resultCreate.results: ${tos(result.resultCreate.results)}`
+        );
         assert.equal(result.resultCreate.results[0].error.Status, 500);
       },
     });
