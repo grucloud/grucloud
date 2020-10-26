@@ -5,6 +5,7 @@ const shell = require("shelljs");
 const { map } = require("rubico");
 const { main } = require("../cliMain");
 const { MockServer } = require("../../mockServer/MockServer");
+const { tos } = require("../../tos");
 
 const filename = "src/providers/mock/test/MockStack.js";
 const configFileDefault = "src/providers/mock/test/config/default.js";
