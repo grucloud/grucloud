@@ -131,6 +131,7 @@ exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
   }
   {
     const plan = await provider.planQuery();
+    assert(!plan.error, tos(plan));
     assert(!isPlanEmpty(plan), "plan must not be empty after destroyAll");
     const { error, resultCreate } = await provider.planApply({ plan });
     assert(resultCreate);
