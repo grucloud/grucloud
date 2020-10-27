@@ -18,7 +18,7 @@ const sslCertificate = await provider.makeSslCertificate({
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/master/examples/google/storage/website-https/iac.js#L7)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https/iac.js#L7)
 
 ### Properties
 

@@ -32,7 +32,7 @@ See [Object create properties](https://cloud.google.com/storage/docs/json_api/v1
 
 ### Example Code
 
-- [basic example](https://github.com/grucloud/grucloud/blob/master/examples/google/storage/simple/iac.js#L7)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/simple/iac.js#L7)
 
 ## Depends On
 

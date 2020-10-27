@@ -11,7 +11,7 @@ const network = await provider.makeNetwork({ name: "network" });
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/master/examples/google/vm-network/iac.js)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/vm-network/iac.js)
 
 ### Properties
 

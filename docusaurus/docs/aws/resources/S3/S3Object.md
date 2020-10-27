@@ -30,7 +30,7 @@ const s3Object = await provider.makeS3Object({
 
 ## Example Code
 
-- [simple example](https://github.com/grucloud/grucloud/blob/master/examples/aws/s3/iac.js)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/s3/iac.js)
 
 ## Properties
 

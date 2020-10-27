@@ -11,7 +11,7 @@ const project = await provider.makeProject({ name: "myproject" });
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/master/examples/google/iac.js)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/iac.js)
 
 ### Properties
 

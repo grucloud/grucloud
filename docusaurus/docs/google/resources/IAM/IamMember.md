@@ -25,7 +25,7 @@ const iamMember = await provider.makeProjectIamMember({
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/master/examples/google/iam/iac.js#L7)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/iam/iac.js#L7)
 
 ### Properties
 
