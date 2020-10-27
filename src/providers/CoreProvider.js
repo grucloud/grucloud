@@ -748,7 +748,9 @@ function CoreProvider({
                   logger.error(
                     `runScriptCommands ${hookType}, error for ${action.name}`
                   );
-                  logger.error(error);
+                  logger.error(tos(error));
+                  error.stack && logger.error(error.stack);
+
                   onStateChange({
                     context: contextFromHookAction({
                       hookType,
@@ -759,7 +761,6 @@ function CoreProvider({
                     error: convertError({ error }),
                   });
 
-                  logger.error(error);
                   return {
                     error,
                     action: action.name,
@@ -1450,9 +1451,8 @@ function CoreProvider({
         return { error: hasResultError(results), results, plans };
       },
       tap((results) => {
-        logger.debug(`planFindDestroy done`);
+        logger.debug(`planFindDestroy`);
       }),
-
       tap((result) =>
         onStateChange({
           context: contextFromPlanner({ title: TitleDestroying }),
@@ -1460,7 +1460,9 @@ function CoreProvider({
           result,
         })
       ),
-      tap((x) => logger.debug(`planFindDestroy  ${tos(x)}`)),
+      tap((x) => {
+        logger.debug(`planFindDestroy  ${tos(x)}`);
+      }),
     ])(clients);
 
   const onStateChangeResource = (onStateChange) => {

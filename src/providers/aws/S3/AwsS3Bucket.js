@@ -632,7 +632,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       await destroy({ id: Bucket, name: Bucket });
       throw error;
     }
-    logger.error(`created final ${Bucket}`);
+    logger.debug(`created final ${Bucket}`);
 
     return { Location };
   };
