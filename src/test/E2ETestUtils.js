@@ -89,7 +89,7 @@ const testDestroyByType = async ({ provider, livesAll }) => {
       types: [type],
     },
   });
-  assert(plan.plans.length >= 2);
+  assert(plan.plans.length >= 1);
   assert.equal(plan.plans[0].resource.type, type);
 };
 
