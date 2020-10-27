@@ -66,7 +66,7 @@ const testDestroyByName = async ({ provider, livesAll }) => {
       name,
     },
   });
-  assert.equal(plan.plans.length, 1);
+  assert.equal(plan.plans.length, 1, tos(plan.plans));
   assert.equal(plan.plans[0].resource.name, name);
 };
 
@@ -89,7 +89,7 @@ const testDestroyByType = async ({ provider, livesAll }) => {
       types: [type],
     },
   });
-  assert.equal(plan.plans.length, 1);
+  assert(plan.plans.length >= 2);
   assert.equal(plan.plans[0].resource.type, type);
 };
 
@@ -97,7 +97,10 @@ const testPlanDestroy = async ({ provider, types = [], full = false }) => {
   logger.debug(`testPlanDestroy ${provider.name}`);
 
   if (full) {
-    const { results: livesAll } = await provider.listLives({ our: true });
+    const { results: livesAll } = await provider.listLives({
+      our: true,
+      canBeDeleted: true,
+    });
     assert(!isEmpty(livesAll));
 
     await testDestroyByName({ provider, livesAll });

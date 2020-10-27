@@ -547,6 +547,12 @@ function CoreProvider({
         providerName: client.spec.providerName,
         type: client.spec.type,
         data: item,
+        cannotBeDeleted: client.cannotBeDeleted({
+          resource: item,
+          name: client.findName(item),
+          resourceNames: resourceNames(),
+          config,
+        }),
       })),
       filter((item) => (our ? item.managedByUs : true)),
       filter((item) => (name ? item.name === name : true)),
@@ -554,15 +560,7 @@ function CoreProvider({
       filter((item) =>
         providerName ? item.providerName === providerName : true
       ),
-      filter((item) =>
-        canBeDeleted
-          ? !client.cannotBeDeleted({
-              resource: item.data,
-              name: item.name,
-              resourceNames: resourceNames(),
-            })
-          : true
-      ),
+      filter((item) => (canBeDeleted ? !item.cannotBeDeleted : true)),
       (resources) => ({
         type: client.spec.type,
         resources,
