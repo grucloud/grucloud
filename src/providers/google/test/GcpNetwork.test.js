@@ -7,7 +7,7 @@ const {
   testPlanDestroy,
 } = require("../../../test/E2ETestUtils");
 
-describe("GcpVpc", async function () {
+describe("GcpNetwork", async function () {
   const networkName = "network-test";
   let config;
   let provider;

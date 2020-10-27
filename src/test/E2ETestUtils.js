@@ -2,6 +2,7 @@ const assert = require("assert");
 const { switchCase, and } = require("rubico");
 const { isEmpty } = require("rubico/x");
 const logger = require("../logger")({ prefix: "TestUtils" });
+const { tos } = require("../tos");
 
 const isPlanEmpty = switchCase([
   and([
@@ -65,7 +66,7 @@ const testDestroyByName = async ({ provider, livesAll }) => {
       name,
     },
   });
-  assert.equal(plan.plans.length, 1);
+  assert.equal(plan.plans.length, 1, tos(plan.plans));
   assert.equal(plan.plans[0].resource.name, name);
 };
 
@@ -88,15 +89,18 @@ const testDestroyByType = async ({ provider, livesAll }) => {
       types: [type],
     },
   });
-  assert.equal(plan.plans.length, 1);
+  assert(plan.plans.length >= 1);
   assert.equal(plan.plans[0].resource.type, type);
 };
 
-const testPlanDestroy = async ({ provider, type, full = false }) => {
+const testPlanDestroy = async ({ provider, types = [], full = false }) => {
   logger.debug(`testPlanDestroy ${provider.name}`);
 
   if (full) {
-    const { results: livesAll } = await provider.listLives({ our: true });
+    const { results: livesAll } = await provider.listLives({
+      our: true,
+      canBeDeleted: true,
+    });
     assert(!isEmpty(livesAll));
 
     await testDestroyByName({ provider, livesAll });
@@ -114,30 +118,43 @@ const testPlanDestroy = async ({ provider, type, full = false }) => {
   }
   const { results: lives } = await provider.listLives({
     our: true,
-    types: [type],
+    types,
   });
 
-  assert(isEmpty(lives));
+  assert(isEmpty(lives), tos(lives));
   logger.debug(`testPlanDestroy ${provider.name} DONE`);
 };
 
 exports.testPlanDestroy = testPlanDestroy;
 
-exports.testPlanDeploy = async ({ provider, full = false }) => {
+exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
   {
     const { error } = await provider.destroyAll();
     assert(!error, "testPlanDeploy destroyAll failed");
   }
   {
     const plan = await provider.planQuery();
+    assert(!plan.error, tos(plan));
     assert(!isPlanEmpty(plan), "plan must not be empty after destroyAll");
     const { error, resultCreate } = await provider.planApply({ plan });
     assert(resultCreate);
-    assert(!error, "planApply failed");
+    assert(!error, `planApply failed: ${tos(resultCreate)}`);
+  }
+  {
+    const { results: lives } = await provider.listLives({
+      our: true,
+      types,
+    });
+
+    assert(!isEmpty(lives), tos(lives));
   }
   {
     const plan = await provider.planQuery();
-    assert(isPlanEmpty(plan), "plan must be empty after a deploy");
+    assert(!plan.error, tos(plan));
+    assert(
+      isPlanEmpty(plan),
+      `plan must be empty after a deploy: ${tos(plan)}`
+    );
   }
   if (full) {
     await testList({ provider });

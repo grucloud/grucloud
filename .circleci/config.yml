@@ -1,7 +1,7 @@
 jobs:
   test:
     docker:
-      - image: "cimg/node:current"
+      - image: "cimg/node:14.14"
     steps:
       - checkout
       - node/install
@@ -20,6 +20,6 @@ orbs:
   node: circleci/node@4.0.0
 version: 2.1
 workflows:
-  test_my_app:
+  test:
     jobs:
       - test

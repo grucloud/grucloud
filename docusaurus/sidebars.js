@@ -64,10 +64,15 @@ module.exports = {
         Resources: [
           {
             Compute: [
-              "google/resources/Compute/Network",
-              "google/resources/Compute/SubNetwork",
-              "google/resources/Compute/Firewall",
               "google/resources/Compute/Address",
+              "google/resources/Compute/BackendBucket",
+              "google/resources/Compute/Firewall",
+              "google/resources/Compute/GlobalForwardingRule",
+              "google/resources/Compute/HttpsTargetProxy",
+              "google/resources/Compute/Network",
+              "google/resources/Compute/SslCertificate",
+              "google/resources/Compute/SubNetwork",
+              "google/resources/Compute/UrlMap",
               "google/resources/Compute/VmInstance",
             ],
           },
@@ -83,6 +88,9 @@ module.exports = {
               "google/resources/storage/GcpBucket",
               "google/resources/storage/GcpObject",
             ],
+          },
+          {
+            DNS: ["google/resources/DNS/DnsManagedZone"],
           },
         ],
       },

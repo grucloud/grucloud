@@ -10,6 +10,7 @@ const {
 } = require("../../../test/E2ETestUtils");
 
 describe("GcpBucket", async function () {
+  const types = ["Bucket", "Object"];
   const bucketName = `mybucket-test-${chance.guid()}`;
   let config;
   let provider;
@@ -61,10 +62,10 @@ describe("GcpBucket", async function () {
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 2);
+    assert.equal(plan.resultCreate.plans.length, types.length);
   });
   it("gcp bucket apply and destroy", async function () {
-    await testPlanDeploy({ provider });
+    await testPlanDeploy({ provider, types });
 
     {
       const provider = await GoogleProvider({
@@ -95,9 +96,7 @@ describe("GcpBucket", async function () {
       const { error } = await provider.planApply({ plan });
       assert(!error);
     }
-    const { error, results } = await provider.destroyAll();
-    assert(!error);
-    assert.equal(results.length, 2);
-    //  await testPlanDestroy({ provider, type: "Bucket" });
+
+    await testPlanDestroy({ provider, types });
   });
 });

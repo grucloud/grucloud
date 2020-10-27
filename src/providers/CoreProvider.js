@@ -83,11 +83,15 @@ const ResourceMaker = ({
   const { type } = spec;
   logger.debug(`ResourceMaker: ${tos({ type, resourceName })}`);
 
-  const client = spec.Client({ spec, config });
+  const client = spec.Client({ provider, spec, config });
   let parent;
   const getLive = async () => {
     logger.info(`getLive ${type}/${resourceName}`);
-    const live = await client.getByName({ name: resourceName, dependencies });
+    const live = await client.getByName({
+      provider,
+      name: resourceName,
+      dependencies,
+    });
     logger.debug(`getLive ${type}/${resourceName} result: ${tos(live)}`);
     return live;
   };
@@ -104,9 +108,16 @@ const ResourceMaker = ({
     }
     const diff = await spec.compare({ target, live });
     logger.info(`planUpdate diff ${tos(diff)}`);
-    if (diff.length > 0) {
+    // TODO unify
+    if (diff.length > 0 || diff.needUpdate) {
       return [
-        { action: "UPDATE", resource: resource.toJSON(), config: target, live },
+        {
+          action: "UPDATE",
+          resource: resource.toJSON(),
+          config: target,
+          live,
+          diff,
+        },
       ];
     }
   };
@@ -136,6 +147,7 @@ const ResourceMaker = ({
   const resolveConfig = async ({ live } = {}) => {
     logger.info(`resolveConfig ${type}/${resourceName}`);
     const { items } = await client.getList({
+      provider,
       resources: provider.getResourcesByType(client.spec.type),
     });
 
@@ -227,10 +239,10 @@ const ResourceMaker = ({
     return instance;
   };
 
-  const update = async ({ payload }) => {
+  const update = async ({ payload, diff, live }) => {
     logger.info(`update ${tos({ resourceName, type, payload })}`);
     if (!(await getLive())) {
-      throw Error(`Resource ${type}/${resourceName} does not exists`);
+      throw Error(`Resource ${type}/${resourceName} does not exist`);
     }
 
     // Create now
@@ -241,6 +253,8 @@ const ResourceMaker = ({
           name: resourceName,
           payload,
           dependencies,
+          diff,
+          live,
         }),
       shouldRetryOnException: client.shouldRetryOnException,
       retryCount: provider.config().retryCount,
@@ -249,7 +263,7 @@ const ResourceMaker = ({
 
     logger.info(`updated:  ${type}/${resourceName}`);
 
-    const live = await retryCall({
+    const liveInstance = await retryCall({
       name: `create getLive ${type}/${resourceName}`,
       fn: async () => {
         const live = await getLive();
@@ -267,7 +281,7 @@ const ResourceMaker = ({
 
     if (
       !client.spec.isOurMinion({
-        resource: live,
+        resource: liveInstance,
         resourceNames: provider.resourceNames(),
         config: provider.config(),
       })
@@ -485,7 +499,7 @@ function CoreProvider({
   );
 
   const clients = specs.map((spec) =>
-    spec.Client({ spec, config: providerConfig })
+    spec.Client({ mapTypeToResources, spec, config: providerConfig })
   );
 
   const clientByType = (type) => {
@@ -518,6 +532,7 @@ function CoreProvider({
       }),
       () =>
         client.getList({
+          provider,
           resources: getResourcesByType(client.spec.type),
         }),
       get("items"),
@@ -532,6 +547,12 @@ function CoreProvider({
         providerName: client.spec.providerName,
         type: client.spec.type,
         data: item,
+        cannotBeDeleted: client.cannotBeDeleted({
+          resource: item,
+          name: client.findName(item),
+          resourceNames: resourceNames(),
+          config,
+        }),
       })),
       filter((item) => (our ? item.managedByUs : true)),
       filter((item) => (name ? item.name === name : true)),
@@ -539,15 +560,7 @@ function CoreProvider({
       filter((item) =>
         providerName ? item.providerName === providerName : true
       ),
-      filter((item) =>
-        canBeDeleted
-          ? !client.cannotBeDeleted({
-              resource: item.data,
-              name: item.name,
-              resourceNames: resourceNames(),
-            })
-          : true
-      ),
+      filter((item) => (canBeDeleted ? !item.cannotBeDeleted : true)),
       (resources) => ({
         type: client.spec.type,
         resources,
@@ -1204,6 +1217,9 @@ function CoreProvider({
           (error, resource) => {
             logger.error(`error query resource ${resource.toString()}`);
             logger.error(JSON.stringify(error, null, 4));
+            logger.error(error.toString());
+            error.stack && logger.error(error.stack);
+
             onStateChange({
               context: contextFromResource(resource.toJSON()),
               nextState: "ERROR",
@@ -1337,6 +1353,7 @@ function CoreProvider({
             assign({
               results: ({ client }) =>
                 client.getList({
+                  provider,
                   resources: provider.getResourcesByType(client.spec.type),
                 }),
             })({ client }),
@@ -1467,7 +1484,7 @@ function CoreProvider({
     assert(title);
 
     const executor = async ({ item }) => {
-      const { resource, live, action } = item;
+      const { resource, live, action, diff } = item;
       const engine = getResourceByName(resource.name);
       assert(engine, `Cannot find resource ${tos(resource.name)}`);
 
@@ -1478,6 +1495,8 @@ function CoreProvider({
           input,
           output: await engine.update({
             payload: input,
+            live,
+            diff,
           }),
         }),
         () => action === "CREATE",
@@ -1543,7 +1562,7 @@ function CoreProvider({
 
     assert(client.isDownById, "client.isDownById");
     await retryExpectOk({
-      name: `destroy ${name}`,
+      name: `destroy ${name}, isDownById`,
       fn: () => client.isDownById({ id, name, resourcesPerType }),
       config: client.config || providerConfig,
     });

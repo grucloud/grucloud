@@ -454,7 +454,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       ...otherProperties
     } = payload;
 
-    logger.debug(`create bucket ${tos({ Bucket, payload })}`);
+    logger.info(`create bucket ${tos({ Bucket, payload })}`);
 
     const managementTags = [
       {
@@ -474,6 +474,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       },
     };
 
+    // TODO retry
     const { Location } = await s3.createBucket(otherProperties).promise();
     logger.debug(`create result ${tos(Location)}`);
 

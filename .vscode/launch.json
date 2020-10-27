@@ -306,6 +306,42 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Google Website HTTPS List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/google/storage/website-https",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["list", "-a"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Google Website HTTPS Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/google/storage/website-https",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Google Website HTTPS Apply",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/google/storage/website-https",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["apply", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Google Website HTTPS Destroy",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/google/storage/website-https",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["destroy", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Google VM SSH onDeployed",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/google/vm-ssh-keys",

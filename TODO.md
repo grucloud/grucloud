@@ -2,6 +2,9 @@
 
 ## Common:
 
+- travis
+- add types to testPlanDestroy
+- add default cannotBeDeleted
 - PROMPT='%4~ %# '
 - displayPlan error
 - add a delete summary

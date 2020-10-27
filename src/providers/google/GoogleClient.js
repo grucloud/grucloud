@@ -21,7 +21,7 @@ module.exports = GoogleClient = ({
   configDefault,
   isUpByIdFactory,
   onResponseList = onResponseListDefault,
-  cannotBeDeleted,
+  cannotBeDeleted = () => false,
   onCreateExpectedException,
 }) => {
   assert(baseURL);
