@@ -1,4 +1,3 @@
-const { map, transform } = require("rubico");
 const { copyDeep } = require("rubico/monad/Struct");
 const { defaultsDeep } = require("rubico/x");
 const assert = require("assert");
@@ -42,10 +41,10 @@ const mockCloudInitStatesDefault = [
 module.exports = MockCloud = (initStates = []) => {
   logger.debug(`MockCloud ${tos(initStates)}`);
   initStates = defaultsDeep(mockCloudInitStatesDefault)(initStates);
-  const states = transform(
-    map((state) => [state[0], new Map(copyDeep(state[1] || []))]),
-    () => []
-  )(initStates);
+  const states = initStates.map((state) => [
+    state[0],
+    new Map(copyDeep(state[1] || [])),
+  ]);
   const resourceMap = new Map(states);
   const resourceNameMap = new Map();
 
