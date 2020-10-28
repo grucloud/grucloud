@@ -192,6 +192,22 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
           tap((result) => {
             logger.debug(`create ${result}`);
           }),
+          () =>
+            retryCallOnError({
+              name: `create recordSet ${name}`,
+              fn: async () =>
+                await axios.request(`/${name}/changes`, {
+                  method: "POST",
+                  data: {
+                    additions: payload.recordSet,
+                  },
+                }),
+              config,
+            }),
+          get("data"),
+          tap((result) => {
+            logger.debug(`create recordset ${result}`);
+          }),
         ]),
         (error) => {
           logError(`create`, error);

@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { GoogleProvider } = require("../../GoogleProvider");
 const { ConfigLoader } = require("ConfigLoader");
-
+const { isEmpty } = require("rubico/x");
 const {
   testPlanDeploy,
   testPlanDestroy,
@@ -12,6 +12,7 @@ describe("GcpDnsManagedZone", async function () {
   const domain = "gcp.grucloud.com.";
   let config;
   let provider;
+  let dnsManagedZoneEmpty;
   let dnsManagedZone;
 
   before(async function () {
@@ -25,10 +26,26 @@ describe("GcpDnsManagedZone", async function () {
       config: config.google,
     });
 
-    dnsManagedZone = await provider.makeDnsManagedZone({
-      name: "dns-managed-zone",
-      properties: () => ({ dnsName: domain }),
+    dnsManagedZoneEmpty = await provider.makeDnsManagedZone({
+      name: "dns-managed-zone-empty",
+      properties: () => ({ dnsName: `empty-${domain}` }),
     });
+
+    dnsManagedZone = await provider.makeDnsManagedZone({
+      name: "dns-managed-zone-with-recordset",
+      properties: () => ({
+        dnsName: domain,
+        recordSet: [
+          {
+            name: `${domain}`,
+            rrdatas: ["1.2.3.4"],
+            ttl: 86400,
+            type: "A",
+          },
+        ],
+      }),
+    });
+
     const { error } = await provider.destroyAll();
     assert(!error);
   });
@@ -36,7 +53,7 @@ describe("GcpDnsManagedZone", async function () {
     await provider?.destroyAll();
   });
   it("dns managed zone config", async function () {
-    const config = await dnsManagedZone.resolveConfig();
+    const config = await dnsManagedZoneEmpty.resolveConfig();
     assert(config);
     assert.equal(config.description, provider.config().managedByDescription);
     assert(Array.isArray(config.recordSet));
@@ -44,10 +61,15 @@ describe("GcpDnsManagedZone", async function () {
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, types.length);
+    assert.equal(plan.resultCreate.plans.length, 2);
   });
+
   it("dns managed zone apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
+
+    const dnsManagedZoneLive = await dnsManagedZone.getLive();
+    assert.equal(dnsManagedZoneLive.recordSet.length, 2 + 1);
+
     await testPlanDestroy({ provider, types });
   });
 });
