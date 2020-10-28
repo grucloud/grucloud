@@ -18,7 +18,7 @@ module.exports = AxiosMaker = ({
     function (config) {
       const { method, baseURL, url } = config;
       logger.debug(`axios request ${method} ${baseURL}${url}`);
-      config.data && logger.debug(tos(config.data));
+      //config.data && logger.debug(tos(config.data));
       return config;
     },
     function (error) {
@@ -32,7 +32,7 @@ module.exports = AxiosMaker = ({
       const { config, status } = response;
       const { method, baseURL, url } = config;
       logger.debug(`axios response ${status}, ${method} ${baseURL}${url}`);
-      logger.debug(tos(response.data));
+      //logger.debug(tos(response.data));
       return response;
     },
     function (error) {

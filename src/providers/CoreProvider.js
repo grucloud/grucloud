@@ -147,7 +147,7 @@ const ResourceMaker = ({
   const resolveConfig = async ({ live } = {}) => {
     logger.info(`resolveConfig ${type}/${resourceName}`);
     const { items } = await client.getList({
-      provider,
+      deep: true,
       resources: provider.getResourcesByType(client.spec.type),
     });
 
@@ -532,7 +532,7 @@ function CoreProvider({
       }),
       () =>
         client.getList({
-          provider,
+          deep: true,
           resources: getResourcesByType(client.spec.type),
         }),
       get("items"),
@@ -1354,7 +1354,6 @@ function CoreProvider({
             assign({
               results: ({ client }) =>
                 client.getList({
-                  provider,
                   resources: provider.getResourcesByType(client.spec.type),
                 }),
             })({ client }),
@@ -1370,7 +1369,7 @@ function CoreProvider({
         ]),
         (error, client) => {
           logger.error(`getClient error for client type ${client.spec.type}`);
-          logger.error(error);
+          logger.error(tos(error));
           onStateChange({
             context: contextFromClient(client),
             nextState: "ERROR",

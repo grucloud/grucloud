@@ -12,9 +12,13 @@ const {
 describe("GcpBucket", async function () {
   const types = ["Bucket", "Object"];
   const bucketName = `mybucket-test-${chance.guid()}`;
+  const bucketNamePublic = `test.gcp.grucloud.com`;
+
   let config;
   let provider;
   let bucket;
+  let bucketPublic;
+
   let file;
   before(async function () {
     try {
@@ -32,6 +36,19 @@ describe("GcpBucket", async function () {
       properties: () => ({}),
     });
 
+    bucketPublic = await provider.makeBucket({
+      name: bucketNamePublic,
+      properties: () => ({
+        iam: {
+          bindings: [
+            {
+              role: "roles/storage.objectViewer",
+              members: ["allUsers"],
+            },
+          ],
+        },
+      }),
+    });
     file = await provider.makeObject({
       name: `myfile`,
       dependencies: { bucket: bucket },
@@ -48,7 +65,7 @@ describe("GcpBucket", async function () {
     assert(!error);
   });
   after(async () => {
-    await provider?.destroyAll();
+    //await provider?.destroyAll();
   });
   it("bucket config", async function () {
     const config = await bucket.resolveConfig();
@@ -62,10 +79,13 @@ describe("GcpBucket", async function () {
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, types.length);
+    assert.equal(plan.resultCreate.plans.length, 3);
   });
-  it("gcp bucket apply and destroy", async function () {
+  it.only("gcp bucket apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
+    const bucketLive = await bucket.getLive();
+
+    const bucketPublicLive = await bucketPublic.getLive();
 
     {
       const provider = await GoogleProvider({
@@ -96,7 +116,6 @@ describe("GcpBucket", async function () {
       const { error } = await provider.planApply({ plan });
       assert(!error);
     }
-
     await testPlanDestroy({ provider, types });
   });
 });
