@@ -43,7 +43,7 @@ module.exports = MockCloud = (initStates = []) => {
   logger.debug(`MockCloud ${tos(initStates)}`);
   initStates = defaultsDeep(mockCloudInitStatesDefault)(initStates);
   const states = transform(
-    map((state) => [state[0], new Map(copyDeep(state[1] || []))]),
+    map((state) => [[state[0], new Map(copyDeep(state[1] || []))]]),
     () => []
   )(initStates);
   const resourceMap = new Map(states);
