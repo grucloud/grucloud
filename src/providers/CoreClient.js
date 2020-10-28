@@ -189,6 +189,9 @@ module.exports = CoreClient = ({
                 method: "DELETE",
               }),
             config,
+            isExpectedException: (error) => {
+              return [404].includes(error.response?.status);
+            },
           }),
         (result) => onResponseDelete(result.data),
         tap((data) => {
