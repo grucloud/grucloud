@@ -528,7 +528,7 @@ function CoreProvider({
   }) =>
     pipe([
       tap(() => {
-        logger.debug(
+        logger.info(
           `filterClient ${tos({
             our,
             name,
@@ -591,7 +591,7 @@ function CoreProvider({
   } = {}) =>
     pipe([
       tap(() =>
-        logger.debug(`listLives filters: ${tos({ all, our, types, name, id })}`)
+        logger.info(`listLives filters: ${tos({ all, our, types, name, id })}`)
       ),
       filter((client) => all || !client.spec.listOnly),
       filter((client) =>
@@ -628,16 +628,13 @@ function CoreProvider({
           ])
         )
       ),
-      tap((list) => {
-        logger.debug(`listLives: ${tos(list)}`);
-      }),
       filter((live) => (live.resources ? !isEmpty(live.resources) : true)),
       (list) => ({
         error: hasResultError(list),
         results: list,
       }),
       tap((result) => {
-        logger.debug(`listLives result: ${tos(result)}`);
+        logger.info(`listLives result: ${tos(result)}`);
       }),
     ])(clients);
 
@@ -666,7 +663,7 @@ function CoreProvider({
   const planQuery = async ({ onStateChange = identity } = {}) =>
     pipe([
       tap(() => {
-        logger.debug(`planQuery begins`);
+        logger.info(`planQuery begins`);
         assert(onStateChange);
       }),
       tap(() =>
@@ -691,15 +688,15 @@ function CoreProvider({
         error: result.resultCreate.error || result.resultDestroy.error,
         ...result,
       }),
-      tap((result) => {
-        logger.debug(`planQuery ${tos(result)}`);
-      }),
       tap((result) =>
         onStateChange({
           context: { uri: providerName },
           nextState: nextStateOnError(result.error),
         })
       ),
+      tap((result) => {
+        logger.info(`planQuery ${tos(result)}`);
+      }),
     ])();
 
   const runScriptCommands = ({ onStateChange, hookType, hookName }) =>
@@ -707,7 +704,7 @@ function CoreProvider({
       tap((x) => {
         assert(hookType, "hookType");
         assert(hookName, "hookName");
-        logger.debug(
+        logger.info(
           `runScriptCommands hookName: ${hookName}, type: ${hookType}`
         );
       }),
@@ -803,7 +800,7 @@ function CoreProvider({
             })
           ),
           tap((xx) => {
-            logger.debug(`runScriptCommands DONE ${tos(xx)}`);
+            logger.info(`runScriptCommands DONE ${tos(xx)}`);
           }),
         ]),
         (error, script) => {
@@ -1185,6 +1182,9 @@ function CoreProvider({
         resultHooks: result.resultCreate.hooks,
         resultDestroy: result.resultDestroy,
       }),
+      tap((result) => {
+        logger.info(`Apply result: ${tos(result)}`);
+      }),
     ])();
   };
 
@@ -1192,7 +1192,7 @@ function CoreProvider({
    * Find live resources to create or update based on the target resources
    */
   const planUpsert = async ({ onStateChange = noop }) => {
-    logger.debug(`planUpsert: #resources ${getTargetResources().length}`);
+    logger.info(`planUpsert: #resources ${getTargetResources().length}`);
     return pipe([
       filter((resource) => !resource.spec.listOnly),
       tap(() =>
@@ -1396,7 +1396,7 @@ function CoreProvider({
   }) =>
     pipe([
       tap((x) => {
-        logger.debug(`planFindDestroy ${tos({ options, direction })}`);
+        logger.info(`planFindDestroy ${tos({ options, direction })}`);
         assert(onStateChange);
       }),
       filterReadWriteClient,
@@ -1469,7 +1469,7 @@ function CoreProvider({
         })
       ),
       tap((x) => {
-        logger.debug(`planFindDestroy  ${tos(x)}`);
+        logger.info(`planFindDestroy result: ${tos(x)}`);
       }),
     ])(clients);
 
@@ -1601,20 +1601,12 @@ function CoreProvider({
     onStateChange = identity,
     direction = PlanDirection.DOWN,
   }) => {
-    assert(plans);
-    assert(Array.isArray(plans), "plans must be an array");
-
-    const executor = async ({ item }) => {
-      return await destroyById({
-        name: item.resource.name,
-        type: item.resource.type,
-        config: item.config,
-      });
-    };
     pipe([
-      tap((options) =>
-        logger.debug(`planDestroy ${tos({ direction, options })}`)
-      ),
+      tap(() => {
+        assert(plans);
+        assert(Array.isArray(plans), "plans must be an array");
+        logger.info(`planDestroy ${tos({ plans, direction })}`);
+      }),
       tap(() =>
         onStateChange({
           context: { uri: providerName },
@@ -1633,7 +1625,12 @@ function CoreProvider({
       plans: plans,
       dependsOnType: specs,
       dependsOnInstance: mapToGraph(mapNameToResource),
-      executor,
+      executor: async ({ item }) =>
+        destroyById({
+          name: item.resource.name,
+          type: item.resource.type,
+          config: item.config,
+        }),
       down: true,
       onStateChange: onStateChangeResource(onStateChange),
     });
@@ -1641,13 +1638,13 @@ function CoreProvider({
     const plannerResult = await planner.run();
 
     pipe([
-      tap((options) => logger.debug(`planDestroy ${tos({ options })}`)),
       tap(() =>
         onStateChange({
           context: contextFromPlanner({ title: TitleDestroying }),
           nextState: nextStateOnError(plannerResult.error),
         })
       ),
+      tap(() => logger.info(`planDestroy result: ${tos(plannerResult)}`)),
     ])();
 
     if (direction === PlanDirection.DOWN) {
@@ -1672,7 +1669,7 @@ function CoreProvider({
     async ({ plans }) =>
       await planDestroy({ plans, direction: PlanDirection.DOWN }),
     tap(({ error, results }) =>
-      logger.debug(
+      logger.info(
         `destroyAll DONE, ${error && `error: ${error}`}, #results ${
           results.length
         }`
