@@ -17,7 +17,7 @@ const { buildLabel } = require("../../GoogleCommon");
 const logger = require("../../../../logger")({ prefix: "GcpBucket" });
 const { tos } = require("../../../../tos");
 const { retryCallOnError } = require("../../../Retry");
-const { mapPoolSize } = require("../../../Common");
+const { mapPoolSize, getByNameCore } = require("../../../Common");
 
 const findTargetId = (item) => item.id;
 
@@ -52,6 +52,36 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
 
   const { axios } = client;
 
+  const getIam = assign({
+    iam: pipe([
+      (item) =>
+        retryCallOnError({
+          name: `getIam ${item.name}`,
+          fn: () =>
+            axios.request(`/${item.name}/iam`, {
+              method: "GET",
+            }),
+          config: configProvider,
+        }),
+      get("data"),
+    ]),
+  });
+
+  const getById = async ({ id }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`getById ${tos({ id })}`);
+      }),
+      () => client.getById({ id }),
+      getIam,
+      tap((data) => {
+        logger.debug(`getById ${tos(data)}`);
+      }),
+    ])();
+
+  const getByName = ({ provider, name }) =>
+    getByNameCore({ provider, name, getList, findName: client.findName });
+
   const create = async ({ name, payload, dependencies }) =>
     pipe([
       tap(() => {
@@ -79,34 +109,18 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
         ])
       ),
     ])();
+
   const getList = async ({ deep }) =>
     pipe([
       tap(() => {
-        logger.debug(`getList bucket`);
+        logger.debug(`getList bucket, deep: ${deep}`);
       }),
       () => client.getList(),
       //
       switchCase([
         () => deep,
         pipe([
-          ({ items }) =>
-            map.pool(
-              mapPoolSize,
-              assign({
-                iam: pipe([
-                  (item) =>
-                    retryCallOnError({
-                      name: `getIam ${item.name}`,
-                      fn: () =>
-                        axios.request(`/${item.name}/iam`, {
-                          method: "GET",
-                        }),
-                      config: configProvider,
-                    }),
-                  get("data"),
-                ]),
-              })
-            )(items),
+          ({ items }) => map.pool(mapPoolSize, getIam)(items),
           (items) => ({ items, total: items.length }),
         ]),
         (result) => result,
@@ -156,6 +170,9 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
               method: "DELETE",
             }),
           config: configProvider,
+          isExpectedException: (error) => {
+            return [404].includes(error.response?.status);
+          },
         }),
       get("data"),
       tap((xx) => {
@@ -165,6 +182,8 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
 
   return {
     ...client,
+    getById,
+    getByName,
     getList,
     create,
     destroy,
