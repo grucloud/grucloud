@@ -96,7 +96,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
                 iam: pipe([
                   (item) =>
                     retryCallOnError({
-                      name: `setIam`,
+                      name: `getIam ${item.name}`,
                       fn: () =>
                         axios.request(`/${item.name}/iam`, {
                           method: "GET",

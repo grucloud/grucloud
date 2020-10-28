@@ -23,15 +23,7 @@ module.exports = GoogleClient = ({
   onResponseList = onResponseListDefault,
   cannotBeDeleted = () => false,
   onCreateExpectedException,
-}) => {
-  assert(baseURL);
-  assert(url);
-  assert(spec);
-  assert(spec.type);
-  assert(config);
-  assert(config.accessToken);
-
-  const shouldRetryOnException = (error) => {
+  shouldRetryOnException = (error) => {
     logger.debug("shouldRetryOnException");
     const { response } = error;
     if (!response) return false;
@@ -45,7 +37,14 @@ module.exports = GoogleClient = ({
       return true;
     }
     return false;
-  };
+  },
+}) => {
+  assert(baseURL);
+  assert(url);
+  assert(spec);
+  assert(spec.type);
+  assert(config);
+  assert(config.accessToken);
 
   return CoreClient({
     type: "google",

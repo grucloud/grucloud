@@ -126,6 +126,7 @@ module.exports = CoreClient = ({
           retryCallOnError({
             name: `create ${spec.type}/${name}`,
             isExpectedException: onCreateExpectedException,
+            shouldRetryOnException,
             fn: async () =>
               await axios.request(path, {
                 method: verbCreate,
