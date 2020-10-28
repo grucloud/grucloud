@@ -69,6 +69,7 @@ exports.createStack = async ({ config }) => {
 
   const backendBucket = await provider.makeBackendBucket({
     name: "backend-bucket",
+    dependencies: { bucket: myBucket },
     properties: () => ({
       bucketName,
     }),
