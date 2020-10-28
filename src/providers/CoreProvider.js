@@ -123,6 +123,9 @@ const ResourceMaker = ({
   };
 
   const resolveDependencies = pipe([
+    tap((dependencies) => {
+      logger.debug(`resolveDependencies: ${Object.keys(dependencies)}`);
+    }),
     map(async (dependency) => {
       if (isString(dependency)) {
         return dependency;
@@ -133,6 +136,11 @@ const ResourceMaker = ({
       return tryCatch(
         async (dependency) => {
           const live = await dependency.getLive();
+          if (!live) {
+            logger.debug(
+              `resolveDependencies: no live for dependency ${dependency.name}`
+            );
+          }
           const config = await dependency.resolveConfig({ live });
           return { resource: dependency, live, config };
         },
@@ -142,12 +150,13 @@ const ResourceMaker = ({
         }
       )(dependency);
     }),
-    tap((x) => logger.debug(`resolveDependencies: ${tos(x)}`)),
+    tap((x) => {
+      logger.debug(`resolveDependencies: ${tos(x)}`);
+    }),
   ]);
   const resolveConfig = async ({ live } = {}) => {
     logger.info(`resolveConfig ${type}/${resourceName}`);
     const { items } = await client.getList({
-      deep: true,
       resources: provider.getResourcesByType(client.spec.type),
     });
 
