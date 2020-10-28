@@ -66,6 +66,8 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## TODO Goggle
 
+- gcp object path properties
+
 - isExpectedException: (error) => {
   return error.response?.status === 409;
   },

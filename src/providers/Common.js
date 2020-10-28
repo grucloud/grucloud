@@ -110,7 +110,7 @@ exports.getByNameCore = async ({ name, findName, getList }) => {
   assert(findName, "findName");
   assert(getList, "getList");
 
-  const { items } = await getList();
+  const { items } = await getList({ deep: true });
   const instance = items.find((item) => findName(item) === name);
   logger.debug(`getByName ${name}: ${tos({ instance })}`);
 
