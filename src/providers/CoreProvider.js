@@ -231,6 +231,8 @@ const ResourceMaker = ({
         return live;
       },
       shouldRetryOnException: () => true,
+      //TODO refactor
+      repeatCount: provider.config().repeatCount,
       retryCount: provider.config().retryCount,
       retryDelay: provider.config().retryDelay,
     });
@@ -1128,8 +1130,8 @@ function CoreProvider({
     ])();
   };
 
-  const planApply = async ({ plan, onStateChange = identity }) => {
-    return await pipe([
+  const planApply = async ({ plan, onStateChange = identity }) =>
+    pipe([
       tap(() => {
         assert(plan);
         logger.info(`Apply Plan ${tos(plan)}`);
@@ -1140,7 +1142,7 @@ function CoreProvider({
           nextState: "RUNNING",
         })
       ),
-      fork({
+      assign({
         resultDestroy: switchCase([
           () => isValidPlan(plan.resultDestroy),
           () =>
@@ -1152,6 +1154,8 @@ function CoreProvider({
             }),
           () => ({ error: false, results: [] }),
         ]),
+      }),
+      assign({
         resultCreate: switchCase([
           () => isValidPlan(plan.resultCreate),
           pipe([
@@ -1186,7 +1190,6 @@ function CoreProvider({
         logger.info(`Apply result: ${tos(result)}`);
       }),
     ])();
-  };
 
   /**
    * Find live resources to create or update based on the target resources
@@ -1603,7 +1606,6 @@ function CoreProvider({
   }) => {
     pipe([
       tap(() => {
-        assert(plans);
         assert(Array.isArray(plans), "plans must be an array");
         logger.info(`planDestroy ${tos({ plans, direction })}`);
       }),
