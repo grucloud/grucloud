@@ -20,7 +20,7 @@ exports.GcpBackendBucket = ({ spec, config }) => {
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
     url: `/projects/${project}/global/backendBuckets`,
-    config,
+    config: { ...config, repeatCount: 1 },
     configDefault,
   });
 };
