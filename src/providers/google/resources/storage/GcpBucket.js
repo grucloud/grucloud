@@ -54,6 +54,9 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
 
   const getIam = assign({
     iam: pipe([
+      tap((item) => {
+        logger.debug(`getIam name: ${tos(item.name)}`);
+      }),
       (item) =>
         retryCallOnError({
           name: `getIam ${item.name}`,
@@ -64,18 +67,24 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
           config: configProvider,
         }),
       get("data"),
+      tap((result) => {
+        logger.debug(`getIam result: ${tos(result)}`);
+      }),
     ]),
   });
 
   const getById = async ({ id }) =>
     pipe([
       tap(() => {
-        logger.debug(`getById ${tos({ id })}`);
+        logger.info(`getById ${tos({ id })}`);
       }),
       () => client.getById({ id }),
-      getIam,
+      tap((result) => {
+        logger.info(`getById partial ${tos({ result })}`);
+      }),
+      getIam, //TODO do we need it here ?
       tap((data) => {
-        logger.debug(`getById ${tos(data)}`);
+        logger.debug(`getById result: ${tos(data)}`);
       }),
     ])();
 
@@ -85,10 +94,9 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
   const create = async ({ name, payload, dependencies }) =>
     pipe([
       tap(() => {
-        logger.debug(`create bucket ${name}`);
+        logger.info(`create bucket ${name}`);
       }),
       () => client.create({ name, payload, dependencies }),
-      //
       tap((result) => {
         logger.debug(`created bucket ${name}`);
       }),
@@ -113,10 +121,13 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
   const getList = async ({ deep }) =>
     pipe([
       tap(() => {
-        logger.debug(`getList bucket, deep: ${deep}`);
+        logger.info(`getList bucket, deep: ${deep}`);
       }),
       () => client.getList(),
       //
+      tap((result) => {
+        logger.debug(`getList #items ${result.items.length}`);
+      }),
       switchCase([
         () => deep,
         pipe([
@@ -126,7 +137,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
         (result) => result,
       ]),
       tap((result) => {
-        logger.debug(`getList bucket`);
+        logger.debug(`getList bucket result: ${tos(result)}`);
       }),
     ])();
 

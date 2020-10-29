@@ -116,8 +116,8 @@ exports.getByNameCore = async ({ name, findName, getList }) => {
 
   return instance;
 };
-const getByIdCore = async ({ id, findId, getList }) => {
-  logger.info(`getById ${id}`);
+const getByIdCore = async ({ type, name, id, findId, getList }) => {
+  logger.info(`getById ${JSON.stringify({ type, name, id })}`);
   assert(id, "getByIdCore id");
   assert(findId, "getByIdCore findId");
   assert(getList, "getByIdCore getList");
@@ -131,12 +131,16 @@ const getByIdCore = async ({ id, findId, getList }) => {
 
 exports.getByIdCore = getByIdCore;
 
-exports.isUpByIdCore = ({ isInstanceUp, getById }) => async ({ id }) => {
-  logger.debug(`isUpById ${id}`);
+exports.isUpByIdCore = ({ isInstanceUp, getById }) => async ({
+  id,
+  name,
+  type,
+}) => {
+  logger.debug(`isUpById ${JSON.stringify({ type, name, id })}`);
   assert(id, "isUpByIdCore id");
   assert(getById, "isUpByIdCore getById");
   let up = false;
-  const instance = await getById({ id });
+  const instance = await getById({ type, name, id });
   if (instance) {
     if (isInstanceUp) {
       up = isInstanceUp(instance);
@@ -144,11 +148,15 @@ exports.isUpByIdCore = ({ isInstanceUp, getById }) => async ({ id }) => {
       up = true;
     }
   }
-  logger.info(`isUpById ${id} ${up ? "UP" : "NOT UP"}`);
+  logger.info(
+    `isUpById ${JSON.stringify({ type, name, id })} ${up ? "UP" : "NOT UP"}`
+  );
   return up ? instance : undefined;
 };
 
 exports.isDownByIdCore = ({
+  type,
+  name,
   isInstanceDown,
   getById,
   getList,
@@ -161,7 +169,7 @@ exports.isDownByIdCore = ({
   let down = false;
 
   const theGet = getList ? getByIdCore : getById;
-  const instance = await theGet({ id, getList, findId });
+  const instance = await theGet({ type, name, id, getList, findId });
   if (instance) {
     if (isInstanceDown) {
       down = isInstanceDown(instance);
@@ -170,7 +178,11 @@ exports.isDownByIdCore = ({
     down = true;
   }
 
-  logger.info(`isDownById ${down} ${down ? "DOWN" : "NOT DOWN"}`);
+  logger.info(
+    `isDownById ${JSON.stringify({ type, name, id })}${down} ${
+      down ? "DOWN" : "NOT DOWN"
+    }`
+  );
   return down;
 };
 

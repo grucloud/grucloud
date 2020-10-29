@@ -52,18 +52,20 @@ module.exports = CoreClient = ({
   const getByName = ({ provider, name }) =>
     getByNameCore({ provider, name, getList, findName });
 
-  const getById = async ({ id }) =>
+  const getById = async ({ name, id }) =>
     tryCatch(
       pipe([
         tap(() => {
-          logger.debug(`getById ${tos({ type, id })}`);
+          logger.debug(
+            `getById ${JSON.stringify({ type: spec.type, name, id })}`
+          );
           assert(!isEmpty(id), `getById ${type}: invalid id`);
           assert(!spec.listOnly);
         }),
         () => pathGet(id),
         async (path) =>
           await retryCallOnError({
-            name: `getById type ${spec.type}, path: ${path}`,
+            name: `getById type ${spec.type}, name: ${name}, path: ${path}`,
             fn: async () =>
               await axios.request(path, {
                 method: verbGet,
@@ -72,7 +74,7 @@ module.exports = CoreClient = ({
           }),
         (result) => onResponseGet({ id, data: result.data }),
         tap((data) => {
-          logger.debug(`getById ${tos(data)}`);
+          logger.debug(`getById result: ${tos(data)}`);
         }),
       ]),
       switchCase([
@@ -134,8 +136,15 @@ module.exports = CoreClient = ({
               }),
             config,
           }),
+        tap((result) => {
+          logger.info(
+            `created ${spec.type}/${name}, status: ${
+              result.status
+            }, data: ${tos(result.data)}`
+          );
+        }),
         switchCase([
-          (result) => result.response?.status === 409,
+          (result) => result.status === 409,
           () => {
             logger.debug(`create: already created ${type}/${name}, 409`);
             //TODO get by id ?
@@ -144,6 +153,7 @@ module.exports = CoreClient = ({
             tap((result) => {
               assert(result.data, "result.data");
             }),
+
             (result) => onResponseCreate(result.data),
             (data) =>
               pipe([
@@ -156,7 +166,7 @@ module.exports = CoreClient = ({
                     () =>
                       retryExpectOk({
                         name: `create isUpById ${spec.type}/${name}, id: ${id}`,
-                        fn: () => isUpById({ id }),
+                        fn: () => isUpById({ type: spec.type, name, id }),
                         config,
                       }),
                     (resource) => onResponseGet({ id, data: resource }),
