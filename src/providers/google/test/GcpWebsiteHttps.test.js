@@ -16,7 +16,7 @@ describe("GcpWebSiteHttps", async function () {
     "BackendBucket",
     "Bucket",
   ];
-  const bucketName = "test-gcp-grucloud";
+  const bucketName = "test.gcp.grucloud.com";
   const domain = "test.gcp.grucloud.com";
   const certificateName = "ssl-certificate-test";
 
