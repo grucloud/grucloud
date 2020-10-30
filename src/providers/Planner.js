@@ -26,11 +26,11 @@ exports.mapToGraph = pipe([
   (mapResource) =>
     map((resource) => {
       const dependsOn = transform(
-        flatMap((resource) =>
+        map((resource) =>
           resource.name
             ? [resource.name]
             : transform(
-                map((dep) => dep.name),
+                map((dep) => [dep.name]),
                 () => []
               )(resource)
         ),

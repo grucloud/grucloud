@@ -1238,7 +1238,7 @@ function CoreProvider({
               nextState: "ERROR",
               error,
             });
-            return { error, resource: resource.toJSON() };
+            return [{ error, resource: resource.toJSON() }];
           }
         )
       ),
