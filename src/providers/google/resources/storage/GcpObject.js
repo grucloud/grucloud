@@ -88,7 +88,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
     pipe([
       ({ bucket, name }) =>
         retryCallOnError({
-          name: `getObject `,
+          name: `getObject /${bucket.name}/o/${name}`,
           fn: () =>
             axios.request(`/${bucket.name}/o/${name}`, {
               method: "GET",
@@ -98,7 +98,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
         }),
       get("data"),
       tap((result) => {
-        logger.debug(`getObjects ${tos(result)}`);
+        logger.debug(`getObject ${tos(result)}`);
       }),
     ]),
     (error) => {
@@ -106,7 +106,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
       throw axiosErrorToJSON(error);
     }
   );
-
+  /*
   const getObjects = tryCatch(
     pipe([
       (bucket) =>
@@ -129,7 +129,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
       throw axiosErrorToJSON(error);
     }
   );
-
+*/
   const getList = async ({ resources = [] } = {}) =>
     await pipe([
       tap(() => {
@@ -142,30 +142,19 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
             await pipe([
               () => getBucket(resource),
               tryCatch(
-                pipe([
-                  (bucket) => getObject({ bucket, name: resource.name }),
-                  tap((result) => {
-                    logger.debug(`getList #result ${tos(result)}`);
+                pipe([(bucket) => getObject({ bucket, name: resource.name })]),
+                (error, params) => ({
+                  error: convertError({
+                    error,
+                    procedure: "getObjects",
+                    params,
                   }),
-                ]),
-                switchCase([
-                  (error) => {
-                    return error.response?.status === 404;
-                  },
-                  () => null,
-                  (error, params) => ({
-                    error: convertError({
-                      error,
-                      procedure: "getObjects",
-                      params,
-                    }),
-                  }),
-                ])
+                })
               ),
             ])(resource)
         )(resources),
       tap((result) => {
-        logger.debug(`getList`);
+        logger.debug(`getList #items ${result.length}`);
       }),
       filter((result) => result),
       switchCase([
@@ -190,12 +179,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
         logger.debug(`getByName ${name}`);
       }),
       () => getBucket({ dependencies, name }),
-      getObjects,
-      tap((obj) => {
-        logger.debug(`getByName`);
-      }),
-      get("items"),
-      (items = []) => find((item) => item.name === name)(items),
+      (bucket) => getObject({ bucket, name }),
       tap((result) => {
         logger.debug(`getByName name: ${name}, result: ${tos(result)}`);
       }),

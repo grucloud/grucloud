@@ -76,7 +76,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         name: `getByName isUpById ${name}`,
         fn: () => isUpById({ id: name }),
         isExpectedResult: (result) => result,
-        repeatCount: 0,
+        repeatCount: 1,
         retryCount: 5,
         retryDelay: 1e3,
       }))
@@ -632,7 +632,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       await destroy({ id: Bucket, name: Bucket });
       throw error;
     }
-    logger.error(`created final ${Bucket}`);
+    logger.debug(`created final ${Bucket}`);
 
     return { Location };
   };

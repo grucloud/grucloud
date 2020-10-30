@@ -123,6 +123,9 @@ const ResourceMaker = ({
   };
 
   const resolveDependencies = pipe([
+    tap((dependencies) => {
+      logger.debug(`resolveDependencies: ${Object.keys(dependencies)}`);
+    }),
     map(async (dependency) => {
       if (isString(dependency)) {
         return dependency;
@@ -133,6 +136,11 @@ const ResourceMaker = ({
       return tryCatch(
         async (dependency) => {
           const live = await dependency.getLive();
+          if (!live) {
+            logger.debug(
+              `resolveDependencies: no live for dependency ${dependency.name}`
+            );
+          }
           const config = await dependency.resolveConfig({ live });
           return { resource: dependency, live, config };
         },
@@ -142,12 +150,13 @@ const ResourceMaker = ({
         }
       )(dependency);
     }),
-    tap((x) => logger.debug(`resolveDependencies: ${tos(x)}`)),
+    tap((x) => {
+      logger.debug(`resolveDependencies: ${tos(x)}`);
+    }),
   ]);
   const resolveConfig = async ({ live } = {}) => {
     logger.info(`resolveConfig ${type}/${resourceName}`);
     const { items } = await client.getList({
-      provider,
       resources: provider.getResourcesByType(client.spec.type),
     });
 
@@ -222,6 +231,8 @@ const ResourceMaker = ({
         return live;
       },
       shouldRetryOnException: () => true,
+      //TODO refactor
+      repeatCount: provider.config().repeatCount,
       retryCount: provider.config().retryCount,
       retryDelay: provider.config().retryDelay,
     });
@@ -519,7 +530,7 @@ function CoreProvider({
   }) =>
     pipe([
       tap(() => {
-        logger.debug(
+        logger.info(
           `filterClient ${tos({
             our,
             name,
@@ -532,7 +543,7 @@ function CoreProvider({
       }),
       () =>
         client.getList({
-          provider,
+          deep: true,
           resources: getResourcesByType(client.spec.type),
         }),
       get("items"),
@@ -582,7 +593,7 @@ function CoreProvider({
   } = {}) =>
     pipe([
       tap(() =>
-        logger.debug(`listLives filters: ${tos({ all, our, types, name, id })}`)
+        logger.info(`listLives filters: ${tos({ all, our, types, name, id })}`)
       ),
       filter((client) => all || !client.spec.listOnly),
       filter((client) =>
@@ -619,16 +630,13 @@ function CoreProvider({
           ])
         )
       ),
-      tap((list) => {
-        logger.debug(`listLives: ${tos(list)}`);
-      }),
       filter((live) => (live.resources ? !isEmpty(live.resources) : true)),
       (list) => ({
         error: hasResultError(list),
         results: list,
       }),
       tap((result) => {
-        logger.debug(`listLives result: ${tos(result)}`);
+        logger.info(`listLives result: ${tos(result)}`);
       }),
     ])(clients);
 
@@ -657,7 +665,7 @@ function CoreProvider({
   const planQuery = async ({ onStateChange = identity } = {}) =>
     pipe([
       tap(() => {
-        logger.debug(`planQuery begins`);
+        logger.info(`planQuery begins`);
         assert(onStateChange);
       }),
       tap(() =>
@@ -682,15 +690,15 @@ function CoreProvider({
         error: result.resultCreate.error || result.resultDestroy.error,
         ...result,
       }),
-      tap((result) => {
-        logger.debug(`planQuery ${tos(result)}`);
-      }),
       tap((result) =>
         onStateChange({
           context: { uri: providerName },
           nextState: nextStateOnError(result.error),
         })
       ),
+      tap((result) => {
+        logger.info(`planQuery ${tos(result)}`);
+      }),
     ])();
 
   const runScriptCommands = ({ onStateChange, hookType, hookName }) =>
@@ -698,7 +706,7 @@ function CoreProvider({
       tap((x) => {
         assert(hookType, "hookType");
         assert(hookName, "hookName");
-        logger.debug(
+        logger.info(
           `runScriptCommands hookName: ${hookName}, type: ${hookType}`
         );
       }),
@@ -748,7 +756,9 @@ function CoreProvider({
                   logger.error(
                     `runScriptCommands ${hookType}, error for ${action.name}`
                   );
-                  logger.error(error);
+                  logger.error(tos(error));
+                  error.stack && logger.error(error.stack);
+
                   onStateChange({
                     context: contextFromHookAction({
                       hookType,
@@ -759,7 +769,6 @@ function CoreProvider({
                     error: convertError({ error }),
                   });
 
-                  logger.error(error);
                   return {
                     error,
                     action: action.name,
@@ -793,7 +802,7 @@ function CoreProvider({
             })
           ),
           tap((xx) => {
-            logger.debug(`runScriptCommands DONE ${tos(xx)}`);
+            logger.info(`runScriptCommands DONE ${tos(xx)}`);
           }),
         ]),
         (error, script) => {
@@ -1121,8 +1130,8 @@ function CoreProvider({
     ])();
   };
 
-  const planApply = async ({ plan, onStateChange = identity }) => {
-    return await pipe([
+  const planApply = async ({ plan, onStateChange = identity }) =>
+    pipe([
       tap(() => {
         assert(plan);
         logger.info(`Apply Plan ${tos(plan)}`);
@@ -1133,7 +1142,7 @@ function CoreProvider({
           nextState: "RUNNING",
         })
       ),
-      fork({
+      assign({
         resultDestroy: switchCase([
           () => isValidPlan(plan.resultDestroy),
           () =>
@@ -1145,6 +1154,8 @@ function CoreProvider({
             }),
           () => ({ error: false, results: [] }),
         ]),
+      }),
+      assign({
         resultCreate: switchCase([
           () => isValidPlan(plan.resultCreate),
           pipe([
@@ -1175,14 +1186,16 @@ function CoreProvider({
         resultHooks: result.resultCreate.hooks,
         resultDestroy: result.resultDestroy,
       }),
+      tap((result) => {
+        logger.info(`Apply result: ${tos(result)}`);
+      }),
     ])();
-  };
 
   /**
    * Find live resources to create or update based on the target resources
    */
   const planUpsert = async ({ onStateChange = noop }) => {
-    logger.debug(`planUpsert: #resources ${getTargetResources().length}`);
+    logger.info(`planUpsert: #resources ${getTargetResources().length}`);
     return pipe([
       filter((resource) => !resource.spec.listOnly),
       tap(() =>
@@ -1353,7 +1366,6 @@ function CoreProvider({
             assign({
               results: ({ client }) =>
                 client.getList({
-                  provider,
                   resources: provider.getResourcesByType(client.spec.type),
                 }),
             })({ client }),
@@ -1369,7 +1381,7 @@ function CoreProvider({
         ]),
         (error, client) => {
           logger.error(`getClient error for client type ${client.spec.type}`);
-          logger.error(error);
+          logger.error(tos(error));
           onStateChange({
             context: contextFromClient(client),
             nextState: "ERROR",
@@ -1387,7 +1399,7 @@ function CoreProvider({
   }) =>
     pipe([
       tap((x) => {
-        logger.debug(`planFindDestroy ${tos({ options, direction })}`);
+        logger.info(`planFindDestroy ${tos({ options, direction })}`);
         assert(onStateChange);
       }),
       filterReadWriteClient,
@@ -1450,9 +1462,8 @@ function CoreProvider({
         return { error: hasResultError(results), results, plans };
       },
       tap((results) => {
-        logger.debug(`planFindDestroy done`);
+        logger.debug(`planFindDestroy`);
       }),
-
       tap((result) =>
         onStateChange({
           context: contextFromPlanner({ title: TitleDestroying }),
@@ -1460,7 +1471,9 @@ function CoreProvider({
           result,
         })
       ),
-      tap((x) => logger.debug(`planFindDestroy  ${tos(x)}`)),
+      tap((x) => {
+        logger.info(`planFindDestroy result: ${tos(x)}`);
+      }),
     ])(clients);
 
   const onStateChangeResource = (onStateChange) => {
@@ -1591,20 +1604,11 @@ function CoreProvider({
     onStateChange = identity,
     direction = PlanDirection.DOWN,
   }) => {
-    assert(plans);
-    assert(Array.isArray(plans), "plans must be an array");
-
-    const executor = async ({ item }) => {
-      return await destroyById({
-        name: item.resource.name,
-        type: item.resource.type,
-        config: item.config,
-      });
-    };
     pipe([
-      tap((options) =>
-        logger.debug(`planDestroy ${tos({ direction, options })}`)
-      ),
+      tap(() => {
+        assert(Array.isArray(plans), "plans must be an array");
+        logger.info(`planDestroy ${tos({ plans, direction })}`);
+      }),
       tap(() =>
         onStateChange({
           context: { uri: providerName },
@@ -1623,7 +1627,12 @@ function CoreProvider({
       plans: plans,
       dependsOnType: specs,
       dependsOnInstance: mapToGraph(mapNameToResource),
-      executor,
+      executor: async ({ item }) =>
+        destroyById({
+          name: item.resource.name,
+          type: item.resource.type,
+          config: item.config,
+        }),
       down: true,
       onStateChange: onStateChangeResource(onStateChange),
     });
@@ -1631,13 +1640,13 @@ function CoreProvider({
     const plannerResult = await planner.run();
 
     pipe([
-      tap((options) => logger.debug(`planDestroy ${tos({ options })}`)),
       tap(() =>
         onStateChange({
           context: contextFromPlanner({ title: TitleDestroying }),
           nextState: nextStateOnError(plannerResult.error),
         })
       ),
+      tap(() => logger.info(`planDestroy result: ${tos(plannerResult)}`)),
     ])();
 
     if (direction === PlanDirection.DOWN) {
@@ -1662,7 +1671,7 @@ function CoreProvider({
     async ({ plans }) =>
       await planDestroy({ plans, direction: PlanDirection.DOWN }),
     tap(({ error, results }) =>
-      logger.debug(
+      logger.info(
         `destroyAll DONE, ${error && `error: ${error}`}, #results ${
           results.length
         }`

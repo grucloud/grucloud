@@ -106,7 +106,7 @@ const iamPolicy = await provider.makeIamPolicy({
 
 ### Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/master/examples/aws/iam/iac.js)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam/iac.js)
 
 ### Properties
 

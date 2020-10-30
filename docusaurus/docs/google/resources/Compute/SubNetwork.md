@@ -17,7 +17,7 @@ const subNetwork = await provider.makeSubNetwork({
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/master/examples/google/vm-network/iac.js)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/vm-network/iac.js)
 
 ### Properties
 

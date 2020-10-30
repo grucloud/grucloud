@@ -17,7 +17,7 @@ const sa = await provider.makeServiceAccount({
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/master/examples/google/vm/iac.js)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/vm/iac.js)
 
 ### Properties
 

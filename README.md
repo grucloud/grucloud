@@ -41,8 +41,10 @@ Visit the [Google Cloud Requirements](./docusaurus/docs/google/GoogleRequirement
 
 Available Resources:
 
-- Compute: [Address](./docusaurus/docs/google/resources/Compute/Address.md), [Firewall](./docusaurus/docs/google/resources/Compute/Firewall.md), [Network](./docusaurus/docs/google/resources/Compute/Network.md), [SubNetwork](./docusaurus/docs/google/resources/Compute/SubNetwork.md), [VmInstance](./docusaurus/docs/google/resources/Compute/VmInstance.md)
+- Compute: [Address](./docusaurus/docs/google/resources/Compute/Address.md), [BackendBucket](./docusaurus/docs/google/resources/Compute/BackendBucket.md), [Firewall](./docusaurus/docs/google/resources/Compute/Firewall.md), [GlobalForwardingRule](./docusaurus/docs/google/resources/Compute/GlobalForwardingRule.md), [HttpsTargetProxy](./docusaurus/docs/google/resources/Compute/HttpsTargetProxy.md) [Network](./docusaurus/docs/google/resources/Compute/Network.md), [SslCertificate](./docusaurus/docs/google/resources/Compute/SslCertificate.md),, [SubNetwork](./docusaurus/docs/google/resources/Compute/SubNetwork.md), [UrlMap](./docusaurus/docs/google/resources/Compute/UrlMap.md), [VmInstance](./docusaurus/docs/google/resources/Compute/VmInstance.md)
 - IAM: [ServiceAccount](./docusaurus/docs/google/resources/IAM/ServiceAccount.md), [IamBinding](./docusaurus/docs/google/resources/IAM/IamBinding.md), [IamMember](./docusaurus/docs/google/resources/IAM/IamMember.md), [IamPolicy](./docusaurus/docs/google/resources/IAM/IamPolicy.md)
+- Storage: [Bucket](./docusaurus/docs/google/resources/storage/GcpBucket.md), [Object](./docusaurus/docs/google/resources/storage/GcpObject.md)
+- DNS: [DnsManagedZone](./docusaurus/docs/google/resources/DNS/DnsManagedZone.md)
 
 ## Microsoft Azure
 

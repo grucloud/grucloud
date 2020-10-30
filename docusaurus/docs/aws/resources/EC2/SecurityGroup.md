@@ -37,7 +37,7 @@ const sg = await provider.makeSecurityGroup({
 
 ### Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/master/examples/aws/ec2-vpc/iac.js#L26)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-vpc/iac.js#L26)
 
 ### Properties
 

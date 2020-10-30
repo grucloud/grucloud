@@ -10,7 +10,7 @@ const ip = await provider.makeAddress({ name: "ip-webserver" });
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/master/examples/google/vm/iac.js#L7)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/vm/iac.js#L7)
 
 ### Properties
 

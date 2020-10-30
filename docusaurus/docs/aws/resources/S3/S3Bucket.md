@@ -351,7 +351,7 @@ const s3Bucket = await provider.makeS3Bucket({
 
 ## Examples Code
 
-- [simple example](https://github.com/grucloud/grucloud/blob/master/examples/aws/s3/iac.js)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/s3/iac.js)
 
 ## Properties
 

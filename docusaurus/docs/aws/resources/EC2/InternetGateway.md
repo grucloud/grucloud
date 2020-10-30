@@ -13,7 +13,7 @@ const ig = await provider.makeInternetGateway({
 
 ### Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/master/examples/aws/ec2-vpc/iac.js)
+- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-vpc/iac.js)
 
 ### Dependencies
 

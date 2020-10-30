@@ -27,5 +27,8 @@ exports.GcpUrlMap = ({ spec, config }) => {
     url: `/projects/${project}/global/urlMaps`,
     config,
     configDefault,
+    shouldRetryOnException: (error) => {
+      return error.response?.status === 404;
+    },
   });
 };

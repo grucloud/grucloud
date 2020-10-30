@@ -37,7 +37,7 @@ const iamBinding = await provider.makeIamBinding({
 
 ### Example Code
 
-- [basic example](https://github.com/grucloud/grucloud/blob/master/examples/google/iam/iam-binding/iac.js#L7)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/iam/iam-binding/iac.js#L7)
 
 ### Used By
 

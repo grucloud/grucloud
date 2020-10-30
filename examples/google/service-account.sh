@@ -10,6 +10,7 @@ gcloud iam service-accounts keys create ${GOOGLE_APPLICATION_CREDENTIALS} --iam-
 gcloud projects add-iam-policy-binding ${GOOGLE_PROJECT} --member serviceAccount:grucloud@${GOOGLE_PROJECT}.iam.gserviceaccount.com --role roles/iam.serviceAccountAdmin
 gcloud projects add-iam-policy-binding ${GOOGLE_PROJECT} --member serviceAccount:grucloud@${GOOGLE_PROJECT}.iam.gserviceaccount.com --role roles/compute.admin
 gcloud projects add-iam-policy-binding ${GOOGLE_PROJECT} --member serviceAccount:grucloud@${GOOGLE_PROJECT}.iam.gserviceaccount.com --role roles/storage.admin
+gcloud projects add-iam-policy-binding ${GOOGLE_PROJECT} --member serviceAccount:grucloud@${GOOGLE_PROJECT}.iam.gserviceaccount.com --role roles/network.admin
 gcloud projects add-iam-policy-binding ${GOOGLE_PROJECT} --member serviceAccount:grucloud@${GOOGLE_PROJECT}.iam.gserviceaccount.com --role roles/dns.admin
 gcloud projects add-iam-policy-binding ${GOOGLE_PROJECT} --member serviceAccount:grucloud@${GOOGLE_PROJECT}.iam.gserviceaccount.com --role roles/editor
 gcloud projects add-iam-policy-binding ${GOOGLE_PROJECT} --member serviceAccount:grucloud@${GOOGLE_PROJECT}.iam.gserviceaccount.com --role roles/resourcemanager.projectIamAdmin

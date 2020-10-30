@@ -2,6 +2,14 @@
 
 ## Common:
 
+Resource: aws::S3Bucket::grucloud-policy
+
+name: OperationAborted
+code: OperationAborted
+statusCode: 409
+message: A conflicting conditional operation is currently in progress against this resource. Please try again.
+region: null
+
 - travis
 - add types to testPlanDestroy
 - add default cannotBeDeleted
@@ -57,6 +65,8 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 * cloudtrail
 
 ## TODO Goggle
+
+- gcp object path properties
 
 - isExpectedException: (error) => {
   return error.response?.status === 409;

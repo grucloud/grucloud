@@ -1,5 +1,14 @@
 const assert = require("assert");
-const { pipe, tap, map, get, filter, tryCatch } = require("rubico");
+const {
+  pipe,
+  tap,
+  map,
+  get,
+  filter,
+  tryCatch,
+  switchCase,
+  assign,
+} = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const GoogleClient = require("../../GoogleClient");
@@ -8,7 +17,7 @@ const { buildLabel } = require("../../GoogleCommon");
 const logger = require("../../../../logger")({ prefix: "GcpBucket" });
 const { tos } = require("../../../../tos");
 const { retryCallOnError } = require("../../../Retry");
-const { mapPoolSize } = require("../../../Common");
+const { mapPoolSize, getByNameCore } = require("../../../Common");
 
 const findTargetId = (item) => item.id;
 
@@ -42,6 +51,95 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
   });
 
   const { axios } = client;
+
+  const getIam = assign({
+    iam: pipe([
+      tap((item) => {
+        logger.debug(`getIam name: ${tos(item.name)}`);
+      }),
+      (item) =>
+        retryCallOnError({
+          name: `getIam ${item.name}`,
+          fn: () =>
+            axios.request(`/${item.name}/iam`, {
+              method: "GET",
+            }),
+          config: configProvider,
+        }),
+      get("data"),
+      tap((result) => {
+        logger.debug(`getIam result: ${tos(result)}`);
+      }),
+    ]),
+  });
+
+  const getById = async ({ id }) =>
+    pipe([
+      tap(() => {
+        logger.info(`getById ${tos({ id })}`);
+      }),
+      () => client.getById({ id }),
+      tap((result) => {
+        logger.info(`getById partial ${tos({ result })}`);
+      }),
+      getIam, //TODO do we need it here ?
+      tap((data) => {
+        logger.debug(`getById result: ${tos(data)}`);
+      }),
+    ])();
+
+  const getByName = ({ provider, name }) =>
+    getByNameCore({ provider, name, getList, findName: client.findName });
+
+  const create = async ({ name, payload, dependencies }) =>
+    pipe([
+      tap(() => {
+        logger.info(`create bucket ${name}`);
+      }),
+      () => client.create({ name, payload, dependencies }),
+      tap((result) => {
+        logger.debug(`created bucket ${name}`);
+      }),
+      tap(
+        switchCase([
+          () => payload.iam,
+          () =>
+            retryCallOnError({
+              name: `setIam`,
+              fn: () =>
+                axios.request(`/${name}/iam`, {
+                  method: "PUT",
+                  data: payload.iam,
+                }),
+              config: configProvider,
+            }),
+          () => {},
+        ])
+      ),
+    ])();
+
+  const getList = async ({ deep }) =>
+    pipe([
+      tap(() => {
+        logger.info(`getList bucket, deep: ${deep}`);
+      }),
+      () => client.getList(),
+      //
+      tap((result) => {
+        logger.debug(`getList #items ${result.items.length}`);
+      }),
+      switchCase([
+        () => deep,
+        pipe([
+          ({ items }) => map.pool(mapPoolSize, getIam)(items),
+          (items) => ({ items, total: items.length }),
+        ]),
+        (result) => result,
+      ]),
+      tap((result) => {
+        logger.debug(`getList bucket result: ${tos(result)}`);
+      }),
+    ])();
 
   const destroy = async ({ id: bucketName }) =>
     await pipe([
@@ -83,6 +181,9 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
               method: "DELETE",
             }),
           config: configProvider,
+          isExpectedException: (error) => {
+            return [404].includes(error.response?.status);
+          },
         }),
       get("data"),
       tap((xx) => {
@@ -92,6 +193,10 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
 
   return {
     ...client,
+    getById,
+    getByName,
+    getList,
+    create,
     destroy,
   };
 };

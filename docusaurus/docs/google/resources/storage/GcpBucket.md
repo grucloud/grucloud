@@ -18,7 +18,7 @@ const bucket = await provider.makeBucket({
 
 ### Example Code
 
-- [basic example](https://github.com/grucloud/grucloud/blob/master/examples/google/storage/simple/iac.js#L7)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/simple/iac.js#L7)
 
 ## Properties
 
