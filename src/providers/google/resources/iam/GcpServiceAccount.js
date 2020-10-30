@@ -92,7 +92,7 @@ exports.GcpServiceAccount = ({ spec, config }) => {
     spec,
     baseURL,
     url,
-    config: { ...config, repeatCount: 4 },
+    config: { ...config, repeatCount: 6 },
     findName,
     findId,
     findTargetId,
