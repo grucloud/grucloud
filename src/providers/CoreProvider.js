@@ -85,12 +85,13 @@ const ResourceMaker = ({
 
   const client = spec.Client({ provider, spec, config });
   let parent;
-  const getLive = async () => {
+  const getLive = async ({ deep } = {}) => {
     logger.info(`getLive ${type}/${resourceName}`);
     const live = await client.getByName({
       provider,
       name: resourceName,
       dependencies,
+      deep,
     });
     logger.debug(`getLive ${type}/${resourceName} result: ${tos(live)}`);
     return live;

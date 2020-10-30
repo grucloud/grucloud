@@ -85,7 +85,7 @@ describe("GcpBucket", async function () {
     await testPlanDeploy({ provider, types });
     const bucketLive = await bucket.getLive();
 
-    const bucketPublicLive = await bucketPublic.getLive();
+    const bucketPublicLive = await bucketPublic.getLive({ deep: true });
     assert(bucketPublicLive.iam);
     {
       const provider = await GoogleProvider({

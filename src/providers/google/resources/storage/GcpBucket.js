@@ -55,6 +55,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
   const getIam = assign({
     iam: pipe([
       tap((item) => {
+        assert(item.name, "item.name");
         logger.debug(`getIam name: ${tos(item.name)}`);
       }),
       (item) =>
@@ -73,23 +74,19 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
     ]),
   });
 
-  const getById = async ({ id }) =>
+  const getById = async ({ id, name, deep }) =>
     pipe([
       tap(() => {
-        logger.info(`getById ${tos({ id })}`);
+        logger.info(`getById ${JSON.stringify({ id, name })}`);
       }),
-      () => client.getById({ id }),
+      () => client.getById({ id, name }),
+      switchCase([(result) => result && deep, getIam, (result) => result]),
       tap((result) => {
-        logger.info(`getById partial ${tos({ result })}`);
-      }),
-      getIam, //TODO do we need it here ?
-      tap((data) => {
-        logger.debug(`getById result: ${tos(data)}`);
+        logger.debug(`getById result: ${tos(result)}`);
       }),
     ])();
 
-  const getByName = ({ provider, name }) =>
-    getByNameCore({ provider, name, getList, findName: client.findName });
+  const getByName = ({ name, deep }) => getById({ id: name, name, deep });
 
   const create = async ({ name, payload, dependencies }) =>
     pipe([
@@ -181,6 +178,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
               method: "DELETE",
             }),
           config: configProvider,
+          //TODO may not need that
           isExpectedException: (error) => {
             return [404].includes(error.response?.status);
           },
