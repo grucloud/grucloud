@@ -198,7 +198,7 @@ describe("cli error", function () {
     });
     assert.deepEqual(result, 422);
   });
-  it("cli Query Network error", async function () {
+  it.only("cli Query Network error", async function () {
     const result = await runProgram({
       cmds: "plan",
       configFile: configFileNetworkError,
@@ -206,6 +206,18 @@ describe("cli error", function () {
         assert.equal(code, 422);
         const { resultQuery } = error.results[0];
         assert(resultQuery.error);
+        assert(
+          resultQuery.resultCreate,
+          `missing resultCreate in ${resultQuery}`
+        );
+        assert(
+          resultQuery.resultCreate.plans[0],
+          `missing resultCreate.plans[0] in ${resultQuery}`
+        );
+        assert(
+          resultQuery.resultCreate.plans[0].error,
+          `missing resultCreate.plans[0].error in ${resultQuery}`
+        );
         assert.equal(
           resultQuery.resultCreate.plans[0].error.message,
           "Network Error"
