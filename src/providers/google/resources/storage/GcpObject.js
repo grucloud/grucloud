@@ -1,6 +1,8 @@
 const assert = require("assert");
 const fs = require("fs").promises;
 const urljoin = require("url-join");
+const querystring = require("querystring");
+
 const {
   pipe,
   tap,
@@ -41,6 +43,11 @@ const findName = (item) => {
 const findId = (item) => {
   assert(item.id, "findId item.id");
   return item.id;
+};
+
+const objectPath = (bucketName, name) => {
+  assert(name);
+  return `/${bucketName}/o/${querystring.escape(name)}`;
 };
 
 exports.GcpObject = ({ spec, config: configProvider }) => {
@@ -86,11 +93,12 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
 
   const getObject = tryCatch(
     pipe([
-      ({ bucket, name }) =>
+      ({ bucket, name }) => objectPath(bucket.name, name),
+      (path) =>
         retryCallOnError({
-          name: `getObject /${bucket.name}/o/${name}`,
+          name: `getObject ${path}`,
           fn: () =>
-            axios.request(`/${bucket.name}/o/${name}`, {
+            axios.request(path, {
               method: "GET",
             }),
           config: configProvider,
@@ -106,30 +114,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
       throw axiosErrorToJSON(error);
     }
   );
-  /*
-  const getObjects = tryCatch(
-    pipe([
-      (bucket) =>
-        retryCallOnError({
-          name: `getObjects ${bucket.name}`,
-          fn: () =>
-            axios.request(`/${bucket.name}/o`, {
-              method: "GET",
-            }),
-          config: configProvider,
-          isExpectedException: (error) => error.response?.status === 404,
-        }),
-      get("data"),
-      tap((result) => {
-        logger.debug(`getObjects ${tos(result)}`);
-      }),
-    ]),
-    (error) => {
-      logError(`getObjects`, error);
-      throw axiosErrorToJSON(error);
-    }
-  );
-*/
+
   const getList = async ({ resources = [] } = {}) =>
     await pipe([
       tap(() => {
@@ -192,16 +177,18 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
   const create = ({ name, payload, dependencies }) =>
     pipe([
       tap((obj) => {
-        logger.debug(`create ${name}`);
+        logger.info(`create ${name}`);
         assert(name, "missing name");
         assert(dependencies.bucket, "missing bucket dependencies");
       }),
       () =>
         retryCallOnError({
-          name: `upload sessionId`,
+          name: `upload ${name} sessionId`,
           fn: async () =>
             await axios.request(
-              `/b/${dependencies.bucket.name}/o?uploadType=resumable&name=${name}`,
+              `/b/${
+                dependencies.bucket.name
+              }/o?uploadType=resumable&name=${querystring.escape(name)}`,
               {
                 baseURL: GCP_STORAGE_UPLOAD_URL,
                 method: "POST",
@@ -214,16 +201,10 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
             ),
           config: configProvider,
         }),
-      tap((obj) => {
-        logger.debug(`create`);
-      }),
       get("headers.location"),
-      tap((obj) => {
-        logger.debug(`create`);
-      }),
       (sessionUri) =>
         retryCallOnError({
-          name: `upload`,
+          name: `upload ${name} content`,
           fn: async () =>
             await axiosUpload.request(sessionUri, {
               method: "PUT",
@@ -233,7 +214,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
         }),
       get("data"),
       tap((obj) => {
-        logger.debug(`create`);
+        logger.info(`object created ${name}`);
       }),
     ])();
 
@@ -243,7 +224,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
     tryCatch(
       pipe([
         tap(() => {
-          logger.debug(`destroy id: ${id}, name: ${name}`);
+          logger.info(`destroy id: ${id}, name: ${name}`);
         }),
         () => resourcesPerType.find((resource) => resource.name === name),
         tap((resource) => {
@@ -253,18 +234,19 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
           );
         }),
         getBucket,
-        (bucket) =>
+        (bucket) => objectPath(bucket.name, name),
+        (path) =>
           retryCallOnError({
-            name: `destroy ${bucket.name}/${name}`,
+            name: `destroy ${path}`,
             fn: async () =>
-              await axios.request(`/${bucket.name}/o/${name}`, {
+              await axios.request(path, {
                 method: "DELETE",
               }),
             config: configProvider,
           }),
         get("data"),
         tap(() => {
-          logger.debug(`destroyed id: ${id}, name: ${name}`);
+          logger.info(`destroyed id: ${id}, name: ${name}`);
         }),
       ]),
       (error) => {

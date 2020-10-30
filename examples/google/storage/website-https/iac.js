@@ -25,7 +25,7 @@ async function getFilesWalk(dir) {
 
 exports.createStack = async ({ config }) => {
   const bucketName = "gcp.grucloud.com";
-  const domain = "gcp.grucloud.com";
+  const domain = bucketName;
 
   const provider = await GoogleProvider({ config });
 
@@ -44,7 +44,7 @@ exports.createStack = async ({ config }) => {
     }),
   });
   const websiteDir = "../../../../docusaurus/build/";
-  const files = (await getFiles(websiteDir)).slice(0, 2);
+  const files = await getFiles(websiteDir);
 
   await map((file) =>
     provider.makeObject({
