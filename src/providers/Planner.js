@@ -24,23 +24,20 @@ const STATES = {
 
 exports.mapToGraph = pipe([
   (mapResource) =>
-    map((resource) => {
-      const dependsOn = transform(
-        map((resource) =>
+    map((resource) => ({
+      name: resource.name,
+      dependsOn: transform(
+        flatMap((resource) =>
           resource.name
             ? [resource.name]
             : transform(
-                map((dep) => [dep.name]),
+                map((dep) => dep.name),
                 () => []
               )(resource)
         ),
         () => []
-      )(resource.dependencies);
-      return {
-        name: resource.name,
-        dependsOn,
-      };
-    })([...mapResource.values()]),
+      )(resource.dependencies),
+    }))([...mapResource.values()]),
   tap((graph) => {
     logger.debug(`mapToGraph: result ${tos(graph)}`);
   }),
