@@ -1238,7 +1238,7 @@ function CoreProvider({
               nextState: "ERROR",
               error,
             });
-            return { error, resource: resource.toJSON() };
+            return [{ error, resource: resource.toJSON() }];
           }
         )
       ),
@@ -1249,14 +1249,15 @@ function CoreProvider({
           nextState: nextStateOnError(hasResultError(plans)),
         })
       ),
-      (plans) => ({ error: hasResultError(plans), plans: flatten(plans) }),
+      flatten,
+      (plans) => ({ error: hasResultError(plans), plans }),
       assign({
         targets: () =>
           map((resource) => resource.toJSON())(getTargetResources()),
       }),
-      tap((result) =>
-        logger.debug(`planUpsert: result: ${JSON.stringify(result, null, 4)}`)
-      ),
+      tap((result) => {
+        logger.info(`planUpsert: result: ${tos(result)}`);
+      }),
     ])(getTargetResources());
   };
 
