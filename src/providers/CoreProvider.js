@@ -151,7 +151,7 @@ const ResourceMaker = ({
       )(dependency);
     }),
     tap((x) => {
-      logger.debug(`resolveDependencies: ${tos(x)}`);
+      logger.debug(`resolveDependencies result: ${tos(x)}`);
     }),
   ]);
   const resolveConfig = async ({ live } = {}) => {
@@ -1238,7 +1238,7 @@ function CoreProvider({
               nextState: "ERROR",
               error,
             });
-            return [{ error, resource: resource.toJSON() }];
+            return { error, resource: resource.toJSON() };
           }
         )
       ),
