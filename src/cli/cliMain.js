@@ -5,6 +5,7 @@ const pkg = require("../../package.json");
 const { createProgram } = require("./program");
 const commands = require("./cliCommands");
 const logger = require("../logger")({ prefix: "CliMain" });
+const { tos } = require("../tos");
 
 const executableName = "gc";
 
@@ -35,7 +36,8 @@ exports.main = async ({ argv, onExit }) => {
     return 0;
   } catch (error) {
     const { code = -1 } = error;
-    logger.error(error.message);
+    logger.error("main error:");
+    logger.error(tos(error));
     error.message && console.error(`Error: ${error.message}`);
     error.stack && console.log(error.stack);
     onExit({ code, error });

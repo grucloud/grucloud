@@ -206,6 +206,22 @@ describe("cli error", function () {
         assert.equal(code, 422);
         const { resultQuery } = error.results[0];
         assert(resultQuery.error);
+        assert(
+          resultQuery.resultCreate,
+          `missing resultCreate in ${tos(resultQuery)}`
+        );
+        assert(
+          resultQuery.resultCreate.plans[0],
+          `missing resultCreate.plans[0] in ${tos(resultQuery)}`
+        );
+        assert(
+          resultQuery.resultCreate.plans[0].resource,
+          `missing resultCreate.plans[0].resource in ${tos(resultQuery)}`
+        );
+        assert(
+          resultQuery.resultCreate.plans[0].error,
+          `missing resultCreate.plans[0].error in ${tos(resultQuery)}`
+        );
         assert.equal(
           resultQuery.resultCreate.plans[0].error.message,
           "Network Error"

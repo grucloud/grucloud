@@ -187,7 +187,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
         DeviceIndex: 0,
         ...(!isEmpty(securityGroups) && {
           Groups: transform(
-            map((sg) => getField(sg, "GroupId")),
+            map((sg) => [getField(sg, "GroupId")]),
             () => []
           )(securityGroups),
         }),

@@ -38,7 +38,10 @@ const retryCall = async ({
             () => fn(),
             switchCase([
               (result) => isExpectedResult(result),
-              (result) => result,
+              (result) => {
+                logger.debug(`retryCall ${name}, success`);
+                return result;
+              },
               (result) => {
                 throw {
                   code: 503,
@@ -65,7 +68,7 @@ const retryCall = async ({
         errors.pipe(
           concatMap((error, i) => {
             logError(
-              `retryCall error ${name}, attempt ${i}/${retryCount}, retryDelay: ${retryDelay},`,
+              `retryCall error ${name}, attempt ${i}/${retryCount}`,
               tos(error)
             );
 

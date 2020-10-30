@@ -122,45 +122,60 @@ const ResourceMaker = ({
     }
   };
 
-  const resolveDependencies = pipe([
-    tap((dependencies) => {
-      logger.debug(`resolveDependencies: ${Object.keys(dependencies)}`);
-    }),
-    map(async (dependency) => {
-      if (isString(dependency)) {
-        return dependency;
-      }
-      if (!dependency.getLive) {
-        return resolveDependencies(dependency);
-      }
-      return tryCatch(
-        async (dependency) => {
-          const live = await dependency.getLive();
-          if (!live) {
-            logger.debug(
-              `resolveDependencies: no live for dependency ${dependency.name}`
-            );
-          }
-          const config = await dependency.resolveConfig({ live });
-          return { resource: dependency, live, config };
-        },
-        (error, dependency) => {
-          logger.error(`resolveDependencies: ${tos(error)}`);
-          return { client, item: { resource: dependency }, error };
+  const resolveDependencies = ({ dependencies, dependenciesMustBeUp }) =>
+    pipe([
+      tap(() => {
+        logger.debug(
+          `resolveDependencies for ${resourceName}: ${Object.keys(
+            dependencies
+          )}`
+        );
+      }),
+      map(async (dependency) => {
+        if (isString(dependency)) {
+          return dependency;
         }
-      )(dependency);
-    }),
-    tap((x) => {
-      logger.debug(`resolveDependencies: ${tos(x)}`);
-    }),
-  ]);
-  const resolveConfig = async ({ live } = {}) => {
+        if (!dependency.getLive) {
+          return resolveDependencies({
+            dependencies: dependency,
+            dependenciesMustBeUp,
+          });
+        }
+        return tryCatch(
+          async (dependency) => {
+            const live = await dependency.getLive();
+
+            if (dependenciesMustBeUp && !live) {
+              throw {
+                message: `${type}/${resourceName} dependency ${dependency.name} is not up`,
+              };
+            }
+            const config = await dependency.resolveConfig({ live });
+            return { resource: dependency, live, config };
+          },
+          (error, dependency) => {
+            logger.error(`resolveDependencies: ${tos(error)}`);
+            return { client, item: { resource: dependency }, error };
+          }
+        )(dependency);
+      }),
+      tap((result) => {
+        logger.debug(
+          `resolveDependencies for ${resourceName}, result: ${tos(result)}`
+        );
+      }),
+    ])(dependencies);
+  const resolveConfig = async ({ live, dependenciesMustBeUp } = {}) => {
     logger.info(`resolveConfig ${type}/${resourceName}`);
     const { items } = await client.getList({
       resources: provider.getResourcesByType(client.spec.type),
     });
 
-    const resolvedDependencies = await resolveDependencies(dependencies);
+    const resolvedDependencies = await resolveDependencies({
+      resourceName,
+      dependencies,
+      dependenciesMustBeUp,
+    });
     if (any(({ error }) => error)(resolvedDependencies)) {
       logger.error(
         `resolveConfig ${type}/${resourceName} error in resolveDependencies`
@@ -357,7 +372,8 @@ const ResourceMaker = ({
     planUpsert,
     getLive,
     addParent,
-    resolveDependencies: () => resolveDependencies(dependencies),
+    resolveDependencies: () =>
+      resolveDependencies({ resourceName, dependencies }),
   };
   forEach((dependency) => {
     if (isString(dependency)) {
@@ -1238,7 +1254,7 @@ function CoreProvider({
               nextState: "ERROR",
               error,
             });
-            return { error, resource: resource.toJSON() };
+            return [{ error, resource: resource.toJSON() }];
           }
         )
       ),
@@ -1249,14 +1265,15 @@ function CoreProvider({
           nextState: nextStateOnError(hasResultError(plans)),
         })
       ),
-      (plans) => ({ error: hasResultError(plans), plans: flatten(plans) }),
+      flatten,
+      (plans) => ({ error: hasResultError(plans), plans }),
       assign({
         targets: () =>
           map((resource) => resource.toJSON())(getTargetResources()),
       }),
-      tap((result) =>
-        logger.debug(`planUpsert: result: ${JSON.stringify(result, null, 4)}`)
-      ),
+      tap((result) => {
+        logger.info(`planUpsert: result: ${tos(result)}`);
+      }),
     ])(getTargetResources());
   };
 
@@ -1501,7 +1518,10 @@ function CoreProvider({
       const engine = getResourceByName(resource.name);
       assert(engine, `Cannot find resource ${tos(resource.name)}`);
 
-      const input = await engine.resolveConfig({ live });
+      const input = await engine.resolveConfig({
+        live,
+        dependenciesMustBeUp: true,
+      });
       return switchCase([
         () => action === "UPDATE",
         async () => ({

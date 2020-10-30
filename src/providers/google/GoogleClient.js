@@ -3,7 +3,7 @@ const urljoin = require("url-join");
 const CoreClient = require("../CoreClient");
 const AxiosMaker = require("../AxiosMaker");
 const logger = require("../../logger")({ prefix: "GoogleClient" });
-//const {tos} = require("../../tos")
+const { tos } = require("../../tos");
 const onResponseListDefault = ({ items = [] }) => {
   return { total: items.length, items };
 };
@@ -24,7 +24,7 @@ module.exports = GoogleClient = ({
   cannotBeDeleted = () => false,
   onCreateExpectedException,
   shouldRetryOnException = (error) => {
-    logger.debug("shouldRetryOnException");
+    logger.info(`shouldRetryOnException ${tos(error)}`);
     const { response } = error;
     if (!response) return false;
     if (
@@ -36,6 +36,8 @@ module.exports = GoogleClient = ({
       logger.info("shouldRetryOnException retrying");
       return true;
     }
+    logger.info("shouldRetryOnException NOT retrying");
+
     return false;
   },
 }) => {
