@@ -208,15 +208,15 @@ describe("cli error", function () {
         assert(resultQuery.error);
         assert(
           resultQuery.resultCreate,
-          `missing resultCreate in ${resultQuery}`
+          `missing resultCreate in ${tos(resultQuery)}`
         );
         assert(
           resultQuery.resultCreate.plans[0],
-          `missing resultCreate.plans[0] in ${resultQuery}`
+          `missing resultCreate.plans[0] in ${tos(resultQuery)}`
         );
         assert(
           resultQuery.resultCreate.plans[0].error,
-          `missing resultCreate.plans[0].error in ${resultQuery}`
+          `missing resultCreate.plans[0].error in ${tos(resultQuery)}`
         );
         assert.equal(
           resultQuery.resultCreate.plans[0].error.message,
