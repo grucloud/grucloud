@@ -42,3 +42,7 @@ const urlMap = await provider.makeUrlMap({
 ## Used By
 
 - [HttpTargetProxy](./HttpTargetProxy.md)
+
+## GCloud docs
+
+- [Url Map concepts](https://cloud.google.com/load-balancing/docs/url-map-concepts)

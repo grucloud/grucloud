@@ -306,6 +306,24 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Aws IAM Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/iam",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["apply", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Aws IAM Destroy",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/iam",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["destroy", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Google Website HTTPS List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/google/storage/website-https",
