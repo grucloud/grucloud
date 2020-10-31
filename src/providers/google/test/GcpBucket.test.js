@@ -13,7 +13,7 @@ describe("GcpBucket", async function () {
   const types = ["Bucket", "Object"];
   const bucketName = `mybucket-test-${chance.guid()}`;
   const bucketNamePublic = `test.gcp.grucloud.com`;
-
+  const objectName = `mypath/myfile`;
   let config;
   let provider;
   let bucket;
@@ -50,7 +50,7 @@ describe("GcpBucket", async function () {
       }),
     });
     file = await provider.makeObject({
-      name: `myfile`,
+      name: objectName,
       dependencies: { bucket: bucket },
       properties: () => ({
         path: "/",
@@ -99,7 +99,7 @@ describe("GcpBucket", async function () {
       });
 
       const file = await provider.makeObject({
-        name: `myfile`,
+        name: objectName,
         dependencies: { bucket: bucket },
         properties: () => ({
           path: "/",

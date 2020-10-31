@@ -102,11 +102,12 @@ module.exports = AwsEC2 = ({ spec, config }) => {
 
     const instanceUp = await retryCall({
       name: `isUpById: ${name} id: ${InstanceId}`,
-      fn: () => isUpById({ id: InstanceId }),
+      fn: () => isUpById({ name, id: InstanceId }),
       isExpectedResult: (result) => result,
       ...clientConfig,
     });
 
+    assert(instanceUp);
     assert(instanceUp.Tags);
 
     CheckTagsEC2({
