@@ -1,9 +1,16 @@
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
-const { defaultsDeep } = require("rubico/x");
-
-const { isEmpty, isString, flatten, pluck, forEach } = require("rubico/x");
+const { groupBy, values } = require("lodash/fp");
+const {
+  isEmpty,
+  isString,
+  flatten,
+  pluck,
+  forEach,
+  first,
+  defaultsDeep,
+} = require("rubico/x");
 const {
   pipe,
   tap,
@@ -166,6 +173,7 @@ const ResourceMaker = ({
         );
       }),
     ])(dependencies);
+
   const resolveConfig = async ({ live, dependenciesMustBeUp } = {}) => {
     logger.info(`resolveConfig ${type}/${resourceName}`);
     const { items } = await client.getList({
@@ -456,25 +464,66 @@ function CoreProvider({
         actions: [],
       },
     };
-    //const newHookdash = _fp.defaultsDeep(defaultHook)(hook);
     const newHook = defaultsDeep(defaultHook)(hook);
     hookMap.set(name, newHook);
   };
 
-  //Rename
-  const contextFromResource = ({ uri, name, type, id } = {}) => {
-    assert(uri, "uri");
+  const contextFromProvider = () => ({
+    uri: providerName,
+    displayText: () => providerName,
+  });
+
+  const contextFromResource = ({ operation, resource }) => {
+    assert(operation);
+    assert(resource);
+    const { type, id } = resource;
+    const uri = `${providerName}::${operation}::${type}`;
+    const displayText = (state) => {
+      if (!state) {
+        assert(state, `no state for ${uri}`);
+      }
+      return `${type} ${state.completed}/${state.total}`;
+    };
+
     return {
-      uri: uri,
-      display: `${type}::${name || id || "<<No Name>>"}`,
-      name,
-      type,
+      uri,
+      displayText,
+      onErrorDefault: ({ spinnerMap, spinnies }) => {},
+      onDone: ({ state, spinnerMap, spinnies }) => {
+        if (!state) {
+          assert(state, `no state for ${uri}`);
+        }
+        const completed = state.completed + 1;
+        const newState = { ...state, completed };
+        spinnies.update(uri, {
+          text: displayText(newState),
+          color: "greenBright",
+          status: "spinning",
+        });
+
+        spinnerMap.set(uri, { state: newState });
+
+        if (completed === state.total) {
+          spinnies.succeed(uri);
+          spinnerMap.delete(uri);
+        }
+      },
     };
   };
 
+  const contextFromResourceType = ({ operation, resourcesPerType }) => {
+    assert(operation);
+    const { provider, type, resources } = resourcesPerType;
+    assert(Array.isArray(resources), "Array.isArray(resources)");
+    return {
+      uri: `${provider}::${operation}::${type}`,
+      displayText: (state) => `${type} ${state.completed}/${state.total}`,
+      state: { completed: 0, total: resources.length },
+    };
+  };
   const contextFromPlanner = ({ title }) => ({
     uri: `${providerName}::${title}`,
-    display: title,
+    displayText: () => title,
   });
 
   const contextFromClient = (client) => {
@@ -483,19 +532,21 @@ function CoreProvider({
 
     return {
       uri: `${providerName}::client::${type}`,
-      display: `${type}`,
+      displayText: () => type,
     };
   };
 
   const contextFromHook = ({ hookType, hookName }) => ({
-    display: `${hookName}::${hookType}`,
     uri: `${providerName}::${hookName}::${hookType}`,
+    displayText: () => `${hookName}::${hookType}`,
   });
 
   const contextFromHookAction = ({ hookType, hookName, name }) => ({
-    display: `${name}`,
     uri: `${providerName}::${hookName}::${hookType}::${name}`,
+    displayText: () => name,
   });
+
+  const typeFromResources = pipe([first, get("type")]);
 
   // Target Resources
   const mapNameToResource = new Map();
@@ -687,7 +738,7 @@ function CoreProvider({
       }),
       tap(() =>
         onStateChange({
-          context: { uri: providerName },
+          context: contextFromProvider(),
           nextState: "RUNNING",
         })
       ),
@@ -709,7 +760,7 @@ function CoreProvider({
       }),
       tap((result) =>
         onStateChange({
-          context: { uri: providerName },
+          context: contextFromProvider(),
           nextState: nextStateOnError(result.error),
         })
       ),
@@ -930,28 +981,36 @@ function CoreProvider({
     ]);
 
   const spinnersStartProvider = ({ onStateChange }) =>
-    pipe([
-      () =>
-        onStateChange({
-          context: { uri: providerName },
-          nextState: "WAITING",
-        }),
-    ]);
-  const spinnersStopProvider = ({ onStateChange, error }) =>
-    onStateChange({
-      context: { uri: providerName },
-      nextState: nextStateOnError(error),
-    });
+    tap(
+      pipe([
+        () =>
+          onStateChange({
+            context: contextFromProvider(),
+            nextState: "WAITING",
+          }),
+      ])
+    );
 
-  const spinnersStartResources = ({ onStateChange, title, resources }) =>
+  const spinnersStopProvider = ({ onStateChange, error }) =>
+    tap(
+      onStateChange({
+        context: contextFromProvider(),
+        nextState: nextStateOnError(error),
+      })
+    );
+
+  const spinnersStartResources = ({ onStateChange, title, resourcesPerType }) =>
     tap(
       pipe([
         tap(() => {
           assert(title, "title");
-          assert(resources, "resources");
-          assert(Array.isArray(resources), "resources must be an array");
+          assert(resourcesPerType, "resourcesPerType");
+          assert(
+            Array.isArray(resourcesPerType),
+            "resourcesPerType must be an array"
+          );
           logger.info(
-            `spinnersStartResources ${title}, ${JSON.stringify(resources)}`
+            `spinnersStartResources ${title}, ${tos(resourcesPerType)}`
           );
         }),
         () =>
@@ -967,14 +1026,17 @@ function CoreProvider({
           }),
         () =>
           pipe([
-            map((resource) =>
+            map((resourcesPerType) =>
               onStateChange({
-                context: contextFromResource(resource),
+                context: contextFromResourceType({
+                  operation: title,
+                  resourcesPerType,
+                }),
                 nextState: "WAITING",
                 indent: 4,
               })
             ),
-          ])(resources),
+          ])(resourcesPerType),
       ])
     );
   const spinnersStartClient = ({ onStateChange, title, clients }) =>
@@ -985,7 +1047,7 @@ function CoreProvider({
           assert(clients, "clients");
           assert(Array.isArray(clients), "clients must be an array");
           logger.info(
-            `spinnersStartResources ${title}, ${JSON.stringify(clients)}`
+            `spinnersStartClient ${title}, ${JSON.stringify(clients)}`
           );
         }),
         tap(() =>
@@ -1027,81 +1089,119 @@ function CoreProvider({
       )([...hookMap.values()])
     );
 
-  const spinnersStartQuery = ({ onStateChange }) => {
-    const resources = pipe([
-      filter((resource) => !resource.spec.listOnly),
+  const spinnersStartQuery = ({ onStateChange }) =>
+    pipe([
       tap((obj) => {
-        logger.debug("spinnersStartQuery no listOnly");
+        logger.debug("spinnersStartQuery");
       }),
-      map((resource) => resource.toJSON()),
+      map(filter((resource) => !resource.spec.listOnly)),
+      filter((resources) => !isEmpty(resources)),
       tap((obj) => {
-        logger.debug("spinnersStartQuery json");
+        logger.debug("spinnersStartQuery");
       }),
-    ])(getTargetResources());
-    return pipe([
+      map((resources) => ({
+        provider: providerName,
+        type: typeFromResources(resources),
+        resources: map((resource) => ({
+          type: resource.type,
+          name: resource.name,
+        }))(resources),
+      })),
+      tap((obj) => {
+        logger.debug("spinnersStartQuery");
+      }),
       spinnersStartProvider({ onStateChange }),
-      spinnersStartResources({
-        onStateChange,
-        title: TitleQuery,
-        resources,
+      tap((obj) => {
+        logger.debug("spinnersStartQuery");
       }),
+      (resourcesPerType) =>
+        spinnersStartResources({
+          onStateChange,
+          title: TitleQuery,
+          resourcesPerType,
+        })(),
       spinnersStartClient({
         onStateChange,
         title: TitleDestroying,
         clients: filterReadWriteClient(clients),
       }),
-    ])();
-  };
+    ])([...mapTypeToResources.values()]);
 
   const spinnersStartListLives = ({ onStateChange }) =>
-    pipe([
-      spinnersStartProvider({ onStateChange }),
-      spinnersStartClient({
-        onStateChange,
-        title: TitleQuery,
-        clients: filterReadWriteClient(clients),
-      }),
-    ])();
+    tap(
+      pipe([
+        spinnersStartProvider({ onStateChange }),
+        spinnersStartClient({
+          onStateChange,
+          title: TitleQuery,
+          clients: filterReadWriteClient(clients),
+        }),
+      ])
+    )();
 
-  const spinnersStartDeploy = ({ onStateChange, plan }) => {
-    return pipe([
-      spinnersStartProvider({ onStateChange }),
-      tap(
-        switchCase([
-          () => isValidPlan(plan.resultCreate),
-          pipe([
-            spinnersStartResources({
-              onStateChange,
-              title: TitleDeploying,
-              resources: pluck("resource")(plan.resultCreate.plans),
-            }),
-            spinnersStartHooks({
-              onStateChange,
-              hookType: HookType.ON_DEPLOYED,
-            }),
-          ]),
-          () => {
-            logger.debug("no newOrUpdate ");
-          },
-        ])
-      ),
-      tap(
-        switchCase([
-          () => isValidPlan(plan.resultDestroy),
-          pipe([
-            spinnersStartResources({
-              onStateChange,
-              title: TitleDestroying,
-              resources: pluck("resource")(plan.resultDestroy.plans),
-            }),
-          ]),
-          () => {
-            logger.debug("no destroy ");
-          },
-        ])
-      ),
-    ])();
-  };
+  const planToResourcesPerType = pipe([
+    tap((plans) => {
+      logger.debug("planToResourcesPerType");
+    }),
+    pluck("resource"),
+    groupBy("type"),
+    values,
+    map((resources) => ({
+      type: typeFromResources(resources),
+      provider: providerName,
+      resources,
+    })),
+    tap((obj) => {
+      logger.debug("planToResourcesPerType");
+    }),
+  ]);
+  const spinnersStartDeploy = ({ onStateChange, plan }) =>
+    tap(
+      pipe([
+        tap(() => {
+          logger.debug("spinnersStartDeploy");
+        }),
+        spinnersStartProvider({ onStateChange }),
+        tap(
+          switchCase([
+            () => isValidPlan(plan.resultCreate),
+            pipe([
+              spinnersStartResources({
+                onStateChange,
+                title: TitleDeploying,
+                resourcesPerType: planToResourcesPerType(
+                  plan.resultCreate.plans
+                ),
+              }),
+              spinnersStartHooks({
+                onStateChange,
+                hookType: HookType.ON_DEPLOYED,
+              }),
+            ]),
+            () => {
+              logger.debug("no newOrUpdate ");
+            },
+          ])
+        ),
+        tap(
+          switchCase([
+            () => isValidPlan(plan.resultDestroy),
+            pipe([
+              spinnersStartResources({
+                onStateChange,
+                title: TitleDestroying,
+                resourcesPerType: planToResourcesPerType(
+                  plan.resultDestroy.plans
+                ),
+              }),
+            ]),
+            () => {
+              logger.debug("no destroy ");
+            },
+          ])
+        ),
+      ])
+    )();
 
   const spinnersStartDestroyQuery = ({ onStateChange }) => {
     logger.debug(`spinnersStartDestroyQuery #clients: ${clients.length}`);
@@ -1128,7 +1228,7 @@ function CoreProvider({
       spinnersStartResources({
         onStateChange,
         title: TitleDestroying,
-        resources,
+        resourcesPerType: planToResourcesPerType(plans),
       }),
       spinnersStartHooks({
         onStateChange,
@@ -1155,7 +1255,7 @@ function CoreProvider({
       }),
       tap(() =>
         onStateChange({
-          context: { uri: providerName },
+          context: contextFromProvider(),
           nextState: "RUNNING",
         })
       ),
@@ -1208,9 +1308,6 @@ function CoreProvider({
       }),
     ])();
 
-  /**
-   * Find live resources to create or update based on the target resources
-   */
   const planUpsert = async ({ onStateChange = noop }) => {
     logger.info(`planUpsert: #resources ${getTargetResources().length}`);
     return pipe([
@@ -1224,7 +1321,10 @@ function CoreProvider({
       tap(
         map((resource) =>
           onStateChange({
-            context: contextFromResource(resource.toJSON()),
+            context: contextFromResource({
+              operation: TitleQuery,
+              resource: resource.toJSON(),
+            }),
             nextState: "RUNNING",
           })
         )
@@ -1234,12 +1334,18 @@ function CoreProvider({
         tryCatch(
           async (resource) => {
             onStateChange({
-              context: contextFromResource(resource.toJSON()),
+              context: contextFromResource({
+                operation: TitleQuery,
+                resource: resource.toJSON(),
+              }),
               nextState: "RUNNING",
             });
             const actions = await resource.planUpsert({ resource });
             onStateChange({
-              context: contextFromResource(resource.toJSON()),
+              context: contextFromResource({
+                operation: TitleQuery,
+                resource: resource.toJSON(),
+              }),
               nextState: "DONE",
             });
             return actions;
@@ -1251,7 +1357,10 @@ function CoreProvider({
             error.stack && logger.error(error.stack);
 
             onStateChange({
-              context: contextFromResource(resource.toJSON()),
+              context: contextFromResource({
+                operation: TitleQuery,
+                resource: resource.toJSON(),
+              }),
               nextState: "ERROR",
               error,
             });
@@ -1423,7 +1532,7 @@ function CoreProvider({
       filterReadWriteClient,
       tap(() =>
         onStateChange({
-          context: { uri: providerName },
+          context: contextFromProvider(),
           nextState: "RUNNING",
         })
       ),
@@ -1494,7 +1603,7 @@ function CoreProvider({
       }),
     ])(clients);
 
-  const onStateChangeResource = (onStateChange) => {
+  const onStateChangeResource = ({ operation, onStateChange }) => {
     return ({ resource, error, ...other }) => {
       logger.debug(
         `onStateChangeResource resource:${tos(resource)}, ${tos(other)}`
@@ -1504,7 +1613,7 @@ function CoreProvider({
       assert(resource.type, "no resource.type");
 
       onStateChange({
-        context: contextFromResource(resource),
+        context: contextFromResource({ operation, resource }),
         error,
         ...other,
       });
@@ -1553,7 +1662,10 @@ function CoreProvider({
             dependsOnType: specs,
             dependsOnInstance: mapToGraph(mapNameToResource),
             executor,
-            onStateChange: onStateChangeResource(onStateChange),
+            onStateChange: onStateChangeResource({
+              operation: TitleDeploying,
+              onStateChange,
+            }),
           }),
         (planner) => planner.run(),
         tap((result) =>
@@ -1632,7 +1744,7 @@ function CoreProvider({
       }),
       tap(() =>
         onStateChange({
-          context: { uri: providerName },
+          context: contextFromProvider(),
           nextState: "RUNNING",
         })
       ),
@@ -1655,7 +1767,10 @@ function CoreProvider({
           config: item.config,
         }),
       down: true,
-      onStateChange: onStateChangeResource(onStateChange),
+      onStateChange: onStateChangeResource({
+        operation: TitleDestroying,
+        onStateChange,
+      }),
     });
 
     const plannerResult = await planner.run();

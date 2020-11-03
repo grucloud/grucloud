@@ -23,7 +23,7 @@ describe("cliUtils", function () {
       await runAsyncCommand({
         text: "throwing",
         command: ({ onStateChange }) => {
-          const context = { uri: "uri1" };
+          const context = { uri: "uri1", displayText: () => "" };
           onStateChange({ context, nextState: "BADNEXTSTATE" });
         },
       });

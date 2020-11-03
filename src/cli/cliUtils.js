@@ -25,41 +25,73 @@ exports.runAsyncCommand = async ({ text, command }) => {
     ...other
   }) => {
     logger.info(
-      `onStateChange: ${tos({
-        context,
-        previousState,
-        nextState,
-        other,
-      })}`
+      `onStateChange: ${JSON.stringify(
+        {
+          context,
+          previousState,
+          nextState,
+          other,
+        },
+        null,
+        4
+      )}`
     );
     assert(context, "onStateChange: missing context");
-    const { uri, display } = context;
+    const onDoneDefault = ({ state, spinnerMap }) => {
+      logger.debug(
+        `onDoneDefault: uri: ${uri} `,
+        JSON.stringify(spinnies.spinners.mock)
+      );
 
+      spinnies.update(uri, {
+        text: displayText(state),
+        status: "succeed",
+      });
+
+      spinnerMap.delete(uri);
+    };
+
+    const onErrorDefault = ({ spinnerMap, spinnies }) => {
+      spinnerMap.delete(uri);
+    };
+
+    const {
+      uri,
+      displayText,
+      onDone = onDoneDefault,
+      onError = onErrorDefault,
+    } = context;
+
+    assert(displayText, "onStateChange: missing context displayText");
     assert(uri, "onStateChange: missing context uri");
-
-    const text = display || uri;
 
     if (process.env.CONTINUOUS_INTEGRATION) {
       return;
     }
     switch (nextState) {
       case "WAITING": {
-        logger.debug(`spinnies: create uri: ${uri}, text: ${text}`);
+        logger.debug(`spinnies: create uri: ${uri}`);
         spinnerList.push(uri);
-        assert(!spinnies.pick(uri), `${uri} already created`);
-        const spinny = {
-          text,
+        assert(
+          !spinnies.pick(uri),
+          `${uri} already created, list: ${tos(spinnerList)}`
+        );
+
+        spinnerMap.set(uri, { state: context.state });
+        spinnies.add(uri, {
+          text: displayText(context.state),
           indent,
           color: "yellow",
-        };
-        spinnerMap.set(uri, spinny);
-        spinnies.add(uri, spinny);
+        });
         break;
       }
       case "RUNNING": {
-        logger.debug(`spinnies running uri: ${uri}, text: ${text}`);
+        logger.debug(`spinnies running uri: ${uri}`);
+        const spinner = spinnerMap.get(uri);
+        if (!spinner) {
+          assert(false, `event RUNNING but ${uri} was not created`);
+        }
         const spinny = spinnies.pick(uri);
-        const runningColor = "greenBright";
 
         assert(
           spinny,
@@ -67,32 +99,46 @@ exports.runAsyncCommand = async ({ text, command }) => {
             "\n"
           )}`
         );
-        assert(spinner.status !== "spinning", `${uri} already spinning`);
-
         spinnies.update(uri, {
-          text,
-          color: runningColor,
+          text: displayText(spinner.state),
+          color: "greenBright",
           status: "spinning",
         });
+
         break;
       }
       case "DONE": {
+        logger.debug(`spinnies: uri: ${uri} DONE`);
+
         const spinny = spinnies.pick(uri);
         assert(spinny, `DONE event: ${uri} was not created`);
-        spinnies.succeed(uri);
-        spinnerMap.delete(uri, spinny);
+
+        const spinner = spinnerMap.get(uri);
+        if (!spinner) {
+          assert(false, `event DONE but ${uri} was not created`);
+        }
+
+        onDone({ state: spinner.state, spinnerMap, spinnies });
+
         break;
       }
       case "ERROR": {
+        logger.error(`spinnies: uri: ${uri} ERROR`);
+
         const spinny = spinnies.pick(uri);
         assert(spinny, `ERROR event: ${uri} was not created, error: ${error}`);
         assert(error, `should have set the error, id: ${uri}`);
-        const textWithError = `${text.padEnd(30, " ")} ${error.Message || ""} ${
-          error.message || ""
-        }`;
+        const spinner = spinnerMap.get(uri);
+        assert(spinner, `event ERROR but ${uri} was not created`);
+
+        const textWithError = `${displayText(spinner.state).padEnd(30, " ")} ${
+          error.Message || ""
+        } ${error.message || ""}`;
         logger.error(textWithError);
+
         spinnies.fail(uri, { text: textWithError });
-        spinnerMap.delete(uri, spinny);
+        onError({ state: spinner.state, spinnerMap, spinnies });
+
         break;
       }
       default:
@@ -105,6 +151,7 @@ exports.runAsyncCommand = async ({ text, command }) => {
     logger.debug(`runAsyncCommand end of : ${text}`);
     [...spinnerMap.keys()].forEach((uri) => {
       const spinny = spinnies.pick(uri);
+      assert(spinny);
       const msg = `spinners still running: ${uri} in status ${spinny.status}`;
       logger.error(msg);
       // console.log(msg);
