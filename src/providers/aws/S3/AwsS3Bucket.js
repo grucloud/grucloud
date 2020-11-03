@@ -39,7 +39,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
   const getList = pipe([
     tap(() => {
-      logger.debug(`getList`);
+      logger.info(`getList`);
     }),
     () => s3.listBuckets().promise(),
     get("Buckets"),
@@ -57,6 +57,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       )
     ),
     tap((fullBuckets) => {
+      logger.info(`getList #items ${fullBuckets.length}`);
       logger.debug(`getList full ${tos(fullBuckets)}`);
     }),
     (fullBuckets) => ({
@@ -68,7 +69,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicy-property
 
   const getByName = async ({ name }) => {
-    logger.debug(`getByName ${name}`);
+    logger.info(`getByName ${name}`);
 
     const params = { Bucket: name };
     if (
@@ -632,7 +633,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       await destroy({ id: Bucket, name: Bucket });
       throw error;
     }
-    logger.debug(`created final ${Bucket}`);
+    logger.info(`created final ${Bucket}`);
 
     return { Location };
   };
@@ -643,7 +644,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
     await pipe([
       tap(() => {
-        logger.debug(`destroy bucket ${tos({ Bucket })}`);
+        logger.info(`destroy bucket ${tos({ Bucket })}`);
       }),
       async () => {
         do {
@@ -731,7 +732,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       },
       async () => await s3.deleteBucket({ Bucket }).promise(),
       tap(() => {
-        logger.debug(`destroyed, ${tos({ Bucket })}`);
+        logger.info(`destroyed, ${tos({ Bucket })}`);
       }),
     ])();
   };
