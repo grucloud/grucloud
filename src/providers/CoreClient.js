@@ -56,18 +56,18 @@ module.exports = CoreClient = ({
     tryCatch(
       pipe([
         tap(() => {
-          logger.debug(
+          logger.info(
             `getById ${JSON.stringify({ type: spec.type, name, id })}`
           );
           assert(!isEmpty(id), `getById ${type}: invalid id`);
           assert(!spec.listOnly);
         }),
         () => pathGet(id),
-        async (path) =>
-          await retryCallOnError({
+        (path) =>
+          retryCallOnError({
             name: `getById type ${spec.type}, name: ${name}, path: ${path}`,
-            fn: async () =>
-              await axios.request(path, {
+            fn: () =>
+              axios.request(path, {
                 method: verbGet,
               }),
             config,
