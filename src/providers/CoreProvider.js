@@ -176,9 +176,6 @@ const ResourceMaker = ({
 
   const resolveConfig = async ({ live, dependenciesMustBeUp } = {}) => {
     logger.info(`resolveConfig ${type}/${resourceName}`);
-    const { items } = await client.getList({
-      resources: provider.getResourcesByType(client.spec.type),
-    });
 
     const resolvedDependencies = await resolveDependencies({
       resourceName,
@@ -206,16 +203,25 @@ const ResourceMaker = ({
       dependencies: resolvedDependencies,
       live,
     });
-    logger.debug(`resolveConfig: configDefault: ${tos(config)}`);
-    const finalConfig = transformConfig
-      ? await transformConfig({
-          dependencies: resolvedDependencies,
-          items,
-          config,
-          configProvider: provider.config(),
-          live,
-        })
-      : config;
+
+    const finalConfig = await switchCase([
+      () => transformConfig,
+      pipe([
+        () =>
+          client.getList({
+            resources: provider.getResourcesByType(client.spec.type),
+          }),
+        ({ items }) =>
+          transformConfig({
+            dependencies: resolvedDependencies,
+            items,
+            config,
+            configProvider: provider.config(),
+            live,
+          }),
+      ]),
+      () => config,
+    ])();
 
     logger.info(`resolveConfig: final: ${tos(finalConfig)}`);
     return finalConfig;
