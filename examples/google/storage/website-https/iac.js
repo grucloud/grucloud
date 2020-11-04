@@ -103,6 +103,17 @@ exports.createStack = async ({ config }) => {
         recordSet: [
           {
             name: `${domain}.`,
+            rrdatas: [
+              "ns-cloud-b1.googledomains.com.",
+              "ns-cloud-b2.googledomains.com.",
+              "ns-cloud-b3.googledomains.com.",
+              "ns-cloud-b4.googledomains.com.",
+            ],
+            ttl: 21600,
+            type: "NS",
+          },
+          {
+            name: `${domain}.`,
             rrdatas: [globalForwardingRule.live?.IPAddress],
             ttl: 86400,
             type: "A",
