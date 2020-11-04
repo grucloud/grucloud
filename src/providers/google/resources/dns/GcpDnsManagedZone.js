@@ -13,7 +13,7 @@ const {
   or,
   switchCase,
 } = require("rubico");
-const { defaultsDeep, isDeepEqual, isEmpty } = require("rubico/x");
+const { defaultsDeep, isDeepEqual, isEmpty, find } = require("rubico/x");
 const urljoin = require("url-join");
 const { differenceWith, isEqual } = require("lodash/fp");
 const { GCP_DNS_BASE_URL } = require("./GcpDnsCommon");
@@ -36,7 +36,11 @@ exports.compareDnsManagedZone = async ({ target, live }) =>
       assert(target.recordSet, "target.recordSet");
       assert(live.recordSet, "live.recordSet");
     }),
-    () => filterNonDeletableRecords(live.recordSet),
+    () =>
+      filterNonDeletableRecords({
+        targetRecordSet: target.recordSet,
+        liveRecordSet: live.recordSet,
+      }),
     fork({
       additions: (liveRecordSet) =>
         differenceWith(isEqual, target.recordSet, liveRecordSet),
@@ -61,13 +65,22 @@ exports.compareDnsManagedZone = async ({ target, live }) =>
     }),
   ])();
 
-const filterNonDeletableRecords = pipe([
-  filter((record) => !["SOA", "NS"].includes(record.type)),
-  map(omit(["kind", "signatureRrdatas"])),
-  tap((liveRecordSet) => {
-    logger.debug(`filterNonDeletableRecords: ${tos(liveRecordSet)}`);
-  }),
-]);
+const filterNonDeletableRecords = ({ targetRecordSet, liveRecordSet }) =>
+  pipe([
+    () =>
+      filter(
+        (type) =>
+          !find((targetRecord) => targetRecord.type === type)(targetRecordSet)
+      )(["SOA", "NS"]),
+    tap((types) => {
+      logger.debug(`filterNonDeletableRecords: types: ${types}`);
+    }),
+    (types) => filter((record) => !types.includes(record.type))(liveRecordSet),
+    map(omit(["kind", "signatureRrdatas"])),
+    tap((liveRecordSet) => {
+      logger.debug(`filterNonDeletableRecords: ${tos(liveRecordSet)}`);
+    }),
+  ])();
 
 // https://cloud.google.com/dns/docs/reference/v1/managedZones
 exports.GcpDnsManagedZone = ({ spec, config }) => {
@@ -133,7 +146,7 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
         }),
         (items) => ({ length: items.length, items }),
       ]),
-      () => {
+      (error) => {
         logError(`list`, error);
         throw axiosErrorToJSON(error);
       }
@@ -181,8 +194,8 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
           () =>
             retryCallOnError({
               name: `create ${name}`,
-              fn: async () =>
-                await axios.request(`/`, {
+              fn: () =>
+                axios.request(`/`, {
                   method: "POST",
                   data: omit(["recordSet"])(payload),
                 }),
@@ -194,13 +207,33 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
           }),
           () =>
             retryCallOnError({
+              name: `list change ${name}`,
+              fn: () =>
+                axios.request(`/${name}/rrsets`, {
+                  method: "GET",
+                }),
+              config,
+            }),
+          get("data.rrsets"),
+          tap((rrsets) => {
+            logger.debug(`create changes ${tos(rrsets)}`);
+          }),
+          (rrsets) => ({
+            additions: payload.recordSet,
+            deletions: filter(({ type }) =>
+              find((record) => record.type === type)(payload.recordSet)
+            )(rrsets),
+          }),
+          tap((data) => {
+            logger.debug(`create changes data ${tos(data)}`);
+          }),
+          (data) =>
+            retryCallOnError({
               name: `create recordSet ${name}`,
-              fn: async () =>
-                await axios.request(`/${name}/changes`, {
+              fn: () =>
+                axios.request(`/${name}/changes`, {
                   method: "POST",
-                  data: {
-                    additions: payload.recordSet,
-                  },
+                  data,
                 }),
               config,
             }),
@@ -299,7 +332,11 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
         tap((rrsets) => {
           logger.debug(`destroy ${name}`);
         }),
-        filterNonDeletableRecords,
+        (rrsets) =>
+          filterNonDeletableRecords({
+            targetRecordSet: [],
+            liveRecordSet: rrsets,
+          }),
         tap((rrsets) => {
           logger.debug(`destroy ${name}`);
         }),

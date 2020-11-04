@@ -5,6 +5,7 @@
 (cd aws/s3-simple && npm run link)
 (cd aws/iam && npm run link)
 (cd azure/ && npm run link)
+(cd google/dns/github-page && npm run link)
 (cd google/vm && npm run link)
 (cd google/vm-simple && npm run link)
 (cd google/vm-ssh-keys && npm run link)

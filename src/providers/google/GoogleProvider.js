@@ -1,7 +1,7 @@
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
-const { tryCatch, pipe } = require("rubico");
+const { tryCatch, pipe, pick } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { JWT } = require("google-auth-library");
 const expandTilde = require("expand-tilde");
@@ -17,6 +17,11 @@ const GcpStorage = require("./resources/storage/");
 const GcpDns = require("./resources/dns/");
 
 const { checkEnv } = require("../../Utils");
+
+const computeDefault = {
+  region: "europe-west4",
+  zone: "europe-west4-a",
+};
 
 const fnSpecs = (config) => [
   ...GcpStorage(config),
@@ -91,9 +96,15 @@ exports.GoogleProvider = async ({ name = "google", config }) => {
     (config) => {
       const localConfig = getConfig();
       if (localConfig) {
-        const { region, zone } = localConfig.config.properties.compute;
         const { project } = localConfig.config;
-        return defaultsDeep(config)({ project, region, zone });
+        return pipe([
+          defaultsDeep({ project }),
+          defaultsDeep(
+            pick(["region", "zone"])(localConfig.config.properties.compute) ||
+              {}
+          ),
+          defaultsDeep(computeDefault),
+        ])(config);
       } else {
         return config;
       }
