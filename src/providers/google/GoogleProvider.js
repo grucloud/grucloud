@@ -129,7 +129,7 @@ const runGCloudCommand = tryCatch(
 );
 
 const getConfig = () =>
-  runGCloudCommand({ command: "xxgcloud info --format json" });
+  runGCloudCommand({ command: "gcloud info --format json" });
 
 const getDefaultAccessToken = () => {
   const result = runGCloudCommand({
@@ -207,6 +207,7 @@ const serviceAccountCreate = async ({
     serviceAccountName,
     projectId,
   });
+  console.log(`Creating service account ${serviceAccountEmail}`);
 
   return pipe([
     tap((xx) => {
@@ -369,7 +370,8 @@ const addIamPolicy = async ({ accessToken, projectId, serviceAccountName }) => {
   ])();
 };
 const createProject = async ({ accessToken, projectName, projectId }) => {
-  logger.debug(`createProject ${projectName}`);
+  console.log(`Creating project ${projectName}, projectId: ${projectId}`);
+
   assert(projectName);
   const axiosProject = AxiosMaker({
     baseURL: `https://cloudresourcemanager.googleapis.com/v1/projects`,
@@ -415,6 +417,7 @@ const setupBilling = async ({ accessToken, projectId }) => {
       Authorization: `Bearer ${accessToken}`,
     }),
   });
+  console.log(`Setup billing`);
 
   return pipe([
     tap(() => {
@@ -428,6 +431,9 @@ const setupBilling = async ({ accessToken, projectId }) => {
     switchCase([
       get("billingEnabled"),
       tap((billingInfo) => {
+        console.log(
+          `billing '${billingInfo.billingAccountName}' already enabled`
+        );
         logger.debug(`billing already enabled`);
       }),
       pipe([
@@ -462,17 +468,17 @@ const setupBilling = async ({ accessToken, projectId }) => {
     ]),
   ])();
 };
-const setup = async ({
+const init = async ({
   gcloudConfig,
   projectId,
   projectName,
   applicationCredentialsFile,
 }) => {
   if (!gcloudConfig.config) {
-    logger.debug(`gcloud is not installed, setup aborted`);
+    console.error(`gcloud is not installed, setup aborted`);
     return;
   }
-
+  console.log(`Initializing project ${projectId}`);
   const accessToken = getDefaultAccessToken();
   if (!accessToken) {
     logger.debug(
@@ -484,14 +490,21 @@ const setup = async ({
   const serviceAccountName = "grucloud";
 
   await createProject({ projectName, projectId, accessToken });
+
   await setupBilling({ projectId, accessToken });
+  console.log(`Enable services`);
 
   await serviceEnable({ projectId, accessToken });
+
   await serviceAccountCreate({
     projectId,
     accessToken,
     serviceAccountName,
   });
+  console.log(
+    `Create and save credential file to ${applicationCredentialsFile}`
+  );
+
   await serviceAccountKeyCreate({
     projectId,
     projectName,
@@ -499,12 +512,14 @@ const setup = async ({
     serviceAccountName,
     applicationCredentialsFile,
   });
+  console.log(`Set iam policy`);
 
   await addIamPolicy({
     accessToken,
     projectId,
     serviceAccountName,
   });
+  console.log(`Project is now initialized`);
 };
 
 exports.GoogleProvider = async ({ name = "google", config: configUser }) => {
@@ -541,13 +556,6 @@ exports.GoogleProvider = async ({ name = "google", config: configUser }) => {
     projectId,
   });
 
-  await setup({
-    gcloudConfig,
-    projectName,
-    projectId,
-    applicationCredentialsFile,
-  });
-
   const serviceAccountAccessToken = await authorize({
     applicationCredentialsFile,
   });
@@ -560,6 +568,13 @@ exports.GoogleProvider = async ({ name = "google", config: configUser }) => {
       accessToken: serviceAccountAccessToken,
     })(config),
     fnSpecs,
+    init: () =>
+      init({
+        gcloudConfig,
+        projectName,
+        projectId,
+        applicationCredentialsFile,
+      }),
   });
 
   return core;
