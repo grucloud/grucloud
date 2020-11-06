@@ -37,6 +37,14 @@ npm install
 
 Edit _config/default.js_ ans set the _projectName_
 
+## Initialise
+
+Initialise the project:
+
+```sh
+gc init
+```
+
 ## iac.js
 
 Now it is time to edit the infrastructure **iac.js** file that describes the architecture:

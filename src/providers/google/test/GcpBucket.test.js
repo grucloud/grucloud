@@ -92,6 +92,7 @@ describe("GcpBucket", async function () {
         name: "google",
         config: config.google,
       });
+      await provider.start();
 
       const bucket = await provider.makeBucket({
         name: bucketName,

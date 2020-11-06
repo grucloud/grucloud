@@ -51,12 +51,12 @@ const servicesApis = [
 ];
 
 const rolesDefault = [
-  "roles/iam.serviceAccountAdmin",
-  "roles/compute.admin",
-  "roles/storage.admin",
-  "roles/dns.admin",
-  "roles/editor",
-  "roles/resourcemanager.projectIamAdmin",
+  "iam.serviceAccountAdmin",
+  "compute.admin",
+  "storage.admin",
+  "dns.admin",
+  "editor",
+  "resourcemanager.projectIamAdmin",
 ];
 
 const fnSpecs = (config) => [
@@ -82,7 +82,7 @@ const authorize = async ({ applicationCredentialsFile }) => {
       .then(() => true)
       .catch(() => false))
   ) {
-    const message = `Cannot open application credentials file ${applicationCredentialsFile}`;
+    const message = `Cannot open application credentials file ${applicationCredentialsFile}\nPease run the command 'gc init' to initialise the provider`;
     throw { code: 422, message };
   }
   const keys = require(applicationCredentialsFile);
@@ -160,7 +160,9 @@ const serviceEnable = async ({ accessToken, projectId }) => {
   });
   return pipe([
     tap(() => {
-      logger.debug("getting services");
+      console.log(
+        `Enabling ${servicesApis.length} services: ${servicesApis.join(", ")}`
+      );
     }),
     () => axios.get("/services?filter=state:ENABLED"),
     tap((xxx) => {
@@ -177,12 +179,12 @@ const serviceEnable = async ({ accessToken, projectId }) => {
       (serviceIds) => !isEmpty(serviceIds),
       pipe([
         tap((serviceIds) => {
-          logger.debug(`enabling ${serviceIds.length} services`);
+          logger.info(`Enabling ${serviceIds.length} services`);
         }),
         (serviceIds) => axios.post("/services:batchEnable", { serviceIds }),
       ]),
       tap(() => {
-        logger.debug("services already enabled");
+        console.log("Services already enabled");
       }),
     ]),
   ])();
@@ -289,7 +291,7 @@ const serviceAccountKeyCreate = async ({
         }),
       ]),
       tap(() => {
-        logger.debug("service account key already created");
+        console.log("Service account key already created");
       }),
     ]),
   ])();
@@ -297,26 +299,37 @@ const serviceAccountKeyCreate = async ({
 
 const addRolesToBindings = ({ currentBindings, rolesToAdd, member }) =>
   pipe([
-    map(({ role, members }) => {
-      if (rolesToAdd.includes(role)) {
-        return { role, members: uniq([...members, member]) };
-      } else {
-        return { role, members };
-      }
-    }),
-    (bindings) =>
+    () => map((role) => `roles/${role}`)(rolesToAdd),
+    (rolesToAddPrefixed) =>
       pipe([
-        () =>
-          filter((role) => !find((binding) => binding.role === role)(bindings))(
-            rolesToAdd
-          ),
-        map((role) => ({ role, members: [member] })),
-        (newBindings) => [...bindings, ...newBindings],
-      ])(),
-    tap((xx) => {
-      logger.debug("addRolesToBindings");
-    }),
-  ])(currentBindings);
+        tap(() => {
+          console.log(
+            `Bind ${rolesToAdd.length} roles: ${rolesToAdd.join(
+              ", "
+            )} to member: ${member}`
+          );
+        }),
+        map(({ role, members }) => {
+          if (rolesToAddPrefixed.includes(role)) {
+            return { role, members: uniq([...members, member]) };
+          } else {
+            return { role, members };
+          }
+        }),
+        (bindings) =>
+          pipe([
+            () =>
+              filter(
+                (role) => !find((binding) => binding.role === role)(bindings)
+              )(rolesToAddPrefixed),
+            map((role) => ({ role, members: [member] })),
+            (newBindings) => [...bindings, ...newBindings],
+          ])(),
+        tap((xx) => {
+          logger.debug("addRolesToBindings");
+        }),
+      ])(currentBindings),
+  ])();
 
 const addIamPolicy = async ({ accessToken, projectId, serviceAccountName }) => {
   const axios = AxiosMaker({
@@ -363,7 +376,7 @@ const addIamPolicy = async ({ accessToken, projectId, serviceAccountName }) => {
             }),
           ]),
           tap(() => {
-            logger.debug(`iam policy already up to date`);
+            console.log(`Iam policy already up to date`);
           }),
         ]),
       ])(),
@@ -391,7 +404,7 @@ const createProject = async ({ accessToken, projectName, projectId }) => {
     switchCase([
       (project) => project,
       tap((project) => {
-        logger.debug(`project ${projectName} already exist`);
+        console.log(`project ${projectName} already exist`);
       }),
       pipe([
         tap(() => {
@@ -492,7 +505,6 @@ const init = async ({
   await createProject({ projectName, projectId, accessToken });
 
   await setupBilling({ projectId, accessToken });
-  console.log(`Enable services`);
 
   await serviceEnable({ projectId, accessToken });
 
@@ -512,7 +524,7 @@ const init = async ({
     serviceAccountName,
     applicationCredentialsFile,
   });
-  console.log(`Set iam policy`);
+  console.log(`Update iam policy`);
 
   await addIamPolicy({
     accessToken,
@@ -556,18 +568,22 @@ exports.GoogleProvider = async ({ name = "google", config: configUser }) => {
     projectId,
   });
 
-  const serviceAccountAccessToken = await authorize({
-    applicationCredentialsFile,
-  });
+  let serviceAccountAccessToken;
 
+  const start = async () => {
+    serviceAccountAccessToken = await authorize({
+      applicationCredentialsFile,
+    });
+  };
   const core = CoreProvider({
     type: "google",
     name,
     config: defaultsDeep({
       project: config.projectId,
-      accessToken: serviceAccountAccessToken,
+      accessToken: () => serviceAccountAccessToken,
     })(config),
     fnSpecs,
+    start,
     init: () =>
       init({
         gcloudConfig,

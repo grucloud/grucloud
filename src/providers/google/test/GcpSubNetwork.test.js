@@ -28,6 +28,8 @@ describe("GcpSubNetwork", async function () {
       config: config.google,
     });
 
+    await provider.start();
+
     network = await provider.makeNetwork({
       name: networkName,
       properties: () => ({ autoCreateSubnetworks: false }),

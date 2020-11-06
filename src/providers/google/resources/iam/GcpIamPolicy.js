@@ -1,14 +1,13 @@
 const assert = require("assert");
-const urljoin = require("url-join");
 const { pipe, tap, map, get, filter } = require("rubico");
 
 const { first, find } = require("rubico/x");
-const AxiosMaker = require("../../../AxiosMaker");
 const { retryCallOnError } = require("../../../Retry");
 
 const logger = require("../../../../logger")({ prefix: "GcpIamPolicy" });
 const { tos } = require("../../../../tos");
 const { axiosErrorToJSON, logError } = require("../../../Common");
+const { createAxiosMakerGoogle } = require("../../GoogleCommon");
 
 // https://cloud.google.com/iam/docs/granting-changing-revoking-access#iam-modify-policy-role-rests
 exports.GcpIamPolicy = ({ spec, config }) => {
@@ -16,17 +15,13 @@ exports.GcpIamPolicy = ({ spec, config }) => {
   assert(config);
   const { project } = config;
 
-  const baseURL = `https://cloudresourcemanager.googleapis.com/v1`;
-  const url = `/projects/${project}`;
-
   const findName = () => "policy";
   const findId = () => "policy";
 
-  const axios = AxiosMaker({
-    baseURL: urljoin(baseURL, url),
-    onHeaders: () => ({
-      Authorization: `Bearer ${config.accessToken}`,
-    }),
+  const axios = createAxiosMakerGoogle({
+    baseURL: `https://cloudresourcemanager.googleapis.com/v1`,
+    url: `/projects/${project}`,
+    config,
   });
 
   const prevervedRolesName = [

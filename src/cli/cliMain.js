@@ -38,7 +38,7 @@ exports.main = async ({ argv, onExit }) => {
   } catch (error) {
     const { code = -1 } = error;
     logger.error("main error:");
-    console.error(YAML.stringify(convertError({ error })));
+    //console.error(YAML.stringify(convertError({ error })));
     error.stack && console.log(error.stack);
     onExit({ code, error });
     return code;

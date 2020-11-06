@@ -128,6 +128,7 @@ const testPlanDestroy = async ({ provider, types = [], full = false }) => {
 exports.testPlanDestroy = testPlanDestroy;
 
 exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
+  await provider.start();
   {
     const { error } = await provider.destroyAll();
     assert(!error, "testPlanDeploy destroyAll failed");

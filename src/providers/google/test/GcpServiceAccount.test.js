@@ -25,6 +25,7 @@ describe("GcpServiceAccount", async function () {
       name: "google",
       config: config.google,
     });
+    await provider.start();
 
     serviceAccount = await provider.makeServiceAccount({
       name: serviceAccountName,

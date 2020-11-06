@@ -22,8 +22,9 @@ const {
   md5FileBase64,
 } = require("../../../Common");
 const { retryCallOnError } = require("../../../Retry");
-
 const AxiosMaker = require("../../../AxiosMaker");
+
+const { createAxiosMakerGoogle } = require("../../GoogleCommon");
 
 const {
   GCP_STORAGE_BASE_URL,
@@ -54,17 +55,14 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
   assert(spec);
   assert(configProvider);
 
-  const axios = AxiosMaker({
-    baseURL: urljoin(GCP_STORAGE_BASE_URL, "/b"),
-    onHeaders: () => ({
-      Authorization: `Bearer ${configProvider.accessToken}`,
-    }),
+  const axios = createAxiosMakerGoogle({
+    baseURL: GCP_STORAGE_BASE_URL,
+    url: "/b",
+    config: configProvider,
   });
 
-  const axiosUpload = AxiosMaker({
-    onHeaders: () => ({
-      Authorization: `Bearer ${configProvider.accessToken}`,
-    }),
+  const axiosUpload = createAxiosMakerGoogle({
+    config: configProvider,
     contentType: "application/x-www-form-urlencoded",
   });
 

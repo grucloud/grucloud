@@ -268,6 +268,38 @@ const displayCommandHeader = ({ providers, verb }) =>
     true
   )}: ${displayProviderList(providers)}`;
 
+const setupProviders = ({ commandOptions }) =>
+  pipe([
+    combineProviders,
+    ({ providers }) =>
+      filterProvidersByName({ commandOptions, providers })(providers),
+    tap((xx) => {
+      logger.debug("setupProviders");
+    }),
+    tap(
+      pipe([
+        map(
+          tryCatch(
+            (provider) => provider.start(),
+            (error, provider) => {
+              return { error, provider };
+            }
+          )
+        ),
+      ]),
+      tap.if(
+        any(({ error }) => error),
+        (results) => {
+          throw results;
+        }
+      )
+    ),
+    //has error ?
+    tap((xx) => {
+      logger.debug("setupProviders");
+    }),
+  ]);
+
 // Plan Query
 const doPlanQuery = ({ commandOptions, programOptions }) =>
   pipe([
@@ -327,9 +359,7 @@ const displayQueryPlanSummary = ({ providers, create, destroy }) =>
 const planQuery = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     pipe([
-      combineProviders,
-      ({ providers }) =>
-        filterProvidersByName({ commandOptions, providers })(providers),
+      setupProviders({ commandOptions }),
       doPlanQuery({ commandOptions, programOptions }),
       tap((result) =>
         saveToJson({ command: "plan", commandOptions, programOptions, result })
@@ -409,9 +439,7 @@ const planRunScript = async ({
       tap((x) => {
         logger.debug("planRunScript");
       }),
-      combineProviders,
-      ({ providers }) =>
-        filterProvidersByName({ commandOptions, providers })(providers),
+      setupProviders({ commandOptions }),
       switchCase([
         () => commandOptions.onDeployed,
         (providers) =>
@@ -596,9 +624,7 @@ exports.planApply = async ({
 
   return tryCatch(
     pipe([
-      combineProviders,
-      ({ providers }) =>
-        filterProvidersByName({ commandOptions, providers })(providers),
+      setupProviders({ commandOptions }),
       doPlanQuery({ commandOptions, programOptions }),
       throwIfError,
       get("results"),
@@ -773,9 +799,7 @@ exports.planDestroy = async ({
 
   return tryCatch(
     pipe([
-      combineProviders,
-      ({ providers }) =>
-        filterProvidersByName({ commandOptions, providers })(providers),
+      setupProviders({ commandOptions }),
       async (providers) =>
         await runAsyncCommand({
           text: displayCommandHeader({
@@ -875,9 +899,7 @@ const isEmptyList = pipe([pluck("result.results"), flatten, isEmpty]);
 
 const listDoOk = ({ commandOptions, programOptions }) =>
   pipe([
-    combineProviders,
-    ({ providers }) =>
-      filterProvidersByName({ commandOptions, providers })(providers),
+    setupProviders({ commandOptions }),
     (providers) =>
       runAsyncCommand({
         text: displayCommandHeader({ providers, verb: "Listing" }),
@@ -958,9 +980,7 @@ const OutputDoOk = ({ commandOptions, programOptions }) =>
         `output ${JSON.stringify({ commandOptions, programOptions })}`
       );
     }),
-    combineProviders,
-    ({ providers }) =>
-      filterProvidersByName({ commandOptions, providers })(providers),
+    setupProviders({ commandOptions }),
     tap((providers) => {
       logger.debug(`output #providers ${providers.length}`);
     }),
@@ -1003,3 +1023,31 @@ exports.output = async ({ infra, commandOptions = {}, programOptions = {} }) =>
     OutputDoOk({ commandOptions, programOptions }),
     OutputDoError
   )(infra);
+
+//Init
+const InitDoOk = ({ commandOptions, programOptions }) =>
+  pipe([
+    tap(() => {
+      logger.debug(
+        `init ${JSON.stringify({ commandOptions, programOptions })}`
+      );
+    }),
+    combineProviders,
+    ({ providers }) =>
+      filterProvidersByName({ commandOptions, providers })(providers),
+    forEach(async (provider) => {
+      logger.debug(`provider ${provider.name}: ${provider.resourceNames()}`);
+      provider.init && (await provider.init());
+    }),
+    tap((result) => {
+      logger.debug(`init result`);
+    }),
+  ]);
+
+const InitDoError = (error) => {
+  displayError({ name: "Init", error });
+  throw { code: 422, error };
+};
+
+exports.init = async ({ infra, commandOptions = {}, programOptions = {} }) =>
+  tryCatch(InitDoOk({ commandOptions, programOptions }), InitDoError)(infra);

@@ -25,6 +25,8 @@ describe("GcpDnsManagedZone", async function () {
       config: config.google,
     });
 
+    await provider.start();
+
     dnsManagedZoneEmpty = await provider.makeDnsManagedZone({
       name: "dns-managed-zone-empty",
       properties: () => ({ dnsName: `empty-${domain}` }),

@@ -25,6 +25,8 @@ describe("GoogleProvider", async function () {
       config: config.google,
     });
 
+    await provider.start();
+
     const { error } = await provider.destroyAll();
     assert(!error);
 

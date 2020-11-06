@@ -1,15 +1,14 @@
 const assert = require("assert");
-const urljoin = require("url-join");
 const { pipe, tap, map, get, filter, tryCatch } = require("rubico");
 
 const { first, find, defaultsDeep } = require("rubico/x");
-const AxiosMaker = require("../../../AxiosMaker");
 const { retryCallOnError } = require("../../../Retry");
 const { getField } = require("../../../ProviderCommon");
 const { isDownByIdCore } = require("../../../Common");
 const logger = require("../../../../logger")({ prefix: "GcpIamPolicy" });
 const { tos } = require("../../../../tos");
 const { axiosErrorToJSON, logError } = require("../../../Common");
+const { createAxiosMakerGoogle } = require("../../GoogleCommon");
 
 const findName = ({ role }) => {
   assert(role);
@@ -36,14 +35,10 @@ exports.GcpIamBinding = ({ spec, config }) => {
   assert(config);
   const { project } = config;
 
-  const baseURL = `https://cloudresourcemanager.googleapis.com/v1`;
-  const url = `/projects/${project}`;
-
-  const axios = AxiosMaker({
-    baseURL: urljoin(baseURL, url),
-    onHeaders: () => ({
-      Authorization: `Bearer ${config.accessToken}`,
-    }),
+  const axios = createAxiosMakerGoogle({
+    baseURL: `https://cloudresourcemanager.googleapis.com/v1`,
+    url: `/projects/${project}`,
+    config,
   });
 
   const configDefault = ({ name, properties, dependencies }) =>

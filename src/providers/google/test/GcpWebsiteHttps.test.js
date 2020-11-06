@@ -41,6 +41,8 @@ describe("GcpWebSiteHttps", async function () {
       config: config.google,
     });
 
+    await provider.start();
+
     myBucket = await provider.makeBucket({
       name: bucketName,
       properties: () => ({}),

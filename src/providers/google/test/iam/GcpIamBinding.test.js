@@ -24,6 +24,8 @@ describe("GcpIamBinding", async function () {
       config: config.google,
     });
 
+    await provider.start();
+
     const saName = `sa-${chance.guid().slice(0, 15)}`;
     serviceAccount = await provider.makeServiceAccount({
       name: saName,
