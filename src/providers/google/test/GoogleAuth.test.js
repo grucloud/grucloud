@@ -16,7 +16,7 @@ describe("GoogleAuth", function () {
     }
   });
 
-  it("auth ok", async function () {
+  it.skip("auth ok", async function () {
     const applicationCredentials = process.env.GOOGLE_APPLICATION_CREDENTIALS;
     assert(applicationCredentials);
 

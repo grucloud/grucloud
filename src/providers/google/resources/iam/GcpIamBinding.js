@@ -77,7 +77,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
       }),
     ]),
     (error) => {
-      logError(`getIamPolicy ${type}`, error);
+      logError(`getIamPolicy`, error);
       throw axiosErrorToJSON(error);
     }
   );
@@ -88,7 +88,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
       ({ bindings }) => ({ total: bindings.length, items: bindings }),
     ]),
     (error) => {
-      logError(`getList ${type}`, error);
+      logError(`getList`, error);
       throw axiosErrorToJSON(error);
     }
   );

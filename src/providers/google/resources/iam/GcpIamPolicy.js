@@ -65,7 +65,7 @@ exports.GcpIamPolicy = ({ spec, config }) => {
 
       return { total: 1, items: [result.data] };
     } catch (error) {
-      logError(`getList ${type}`, error);
+      logError(`getList`, error);
       throw axiosErrorToJSON(error);
     }
   };

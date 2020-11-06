@@ -1,13 +1,32 @@
 const assert = require("assert");
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
-const { tryCatch, pipe, pick } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const {
+  map,
+  tryCatch,
+  pipe,
+  pick,
+  get,
+  tap,
+  filter,
+  switchCase,
+} = require("rubico");
+const {
+  defaultsDeep,
+  pluck,
+  isEmpty,
+  find,
+  uniq,
+  isDeepEqual,
+  first,
+} = require("rubico/x");
 const { JWT } = require("google-auth-library");
 const expandTilde = require("expand-tilde");
 const shell = require("shelljs");
 
 const CoreProvider = require("../CoreProvider");
+const AxiosMaker = require("../AxiosMaker");
+
 const logger = require("../../logger")({ prefix: "GoogleProvider" });
 const { tos } = require("../../tos");
 
@@ -16,12 +35,27 @@ const GcpIam = require("./resources/iam/");
 const GcpStorage = require("./resources/storage/");
 const GcpDns = require("./resources/dns/");
 
-const { checkEnv } = require("../../Utils");
-
 const computeDefault = {
   region: "europe-west4",
   zone: "europe-west4-a",
 };
+
+const servicesApis = [
+  "cloudresourcemanager.googleapis.com",
+  "iam.googleapis.com",
+  "compute.googleapis.com",
+  "serviceusage.googleapis.com",
+  "dns.googleapis.com",
+];
+
+const rolesDefault = [
+  "roles/iam.serviceAccountAdmin",
+  "roles/compute.admin",
+  "roles/storage.admin",
+  "roles/dns.admin",
+  "roles/editor",
+  "roles/resourcemanager.projectIamAdmin",
+];
 
 const fnSpecs = (config) => [
   ...GcpStorage(config),
@@ -29,10 +63,24 @@ const fnSpecs = (config) => [
   ...GcpCompute(config),
   ...GcpDns(config),
 ];
+const ProjectId = ({ projectName }) => `grucloud-${projectName}`;
+
+const ApplicationCredentialsFile = ({ gcloudConfig, projectName }) =>
+  path.resolve(
+    gcloudConfig.config.paths.global_config_dir,
+    `grucloud-${projectName}.json`
+  );
 
 const authorize = async ({ applicationCredentials }) => {
+  logger.debug(`authorize with file: ${applicationCredentials}`);
+
   assert(applicationCredentials);
-  if (!fs.existsSync(applicationCredentials)) {
+  if (
+    !(await fs
+      .access(applicationCredentials)
+      .then(() => true)
+      .catch(() => false))
+  ) {
     const message = `Cannot open application credentials file ${applicationCredentials}`;
     throw { code: 422, message };
   }
@@ -48,6 +96,8 @@ const authorize = async ({ applicationCredentials }) => {
   const accessToken = await new Promise((resolve, reject) => {
     client.authorize((err, response) => {
       if (err) {
+        logger.error(`authorize error with ${keys.client_email}`);
+        logger.error(tos(err));
         return reject(err);
       }
       if (response?.access_token) {
@@ -60,47 +110,419 @@ const authorize = async ({ applicationCredentials }) => {
   return accessToken;
 };
 
-const getConfig = tryCatch(
-  () => {
-    const command = "gcloud info --format json";
-    const { stdout, code } = shell.exec(command, { silent: true });
+const runGCloudCommand = tryCatch(
+  ({ command }) => {
+    const { stdout, stderr, code } = shell.exec(command, { silent: true });
     if (code !== 0) {
-      throw { message: `command '${command}' failed` };
+      throw { message: `command '${command}' failed`, stdout, stderr, code };
     }
     const config = JSON.parse(stdout);
-    logger.debug(`getConfig: ${tos(config)}`);
+    logger.debug(`runGCloudCommand: '${command}' result: ${tos(config)}`);
     return config;
   },
   (error) => {
-    logger.error(`getConfig: ${tos(error)}`);
+    logger.error(`runGCloudCommand: ${tos(error)}`);
     //throw error;
+    return { error };
   }
 );
+
+const getConfig = () =>
+  runGCloudCommand({ command: "gcloud info --format json" });
+
+const getDefaultAccessToken = () => {
+  const result = runGCloudCommand({
+    command: "gcloud auth print-access-token --format json",
+  });
+  if (result.error) {
+    const result = runGCloudCommand({
+      command: "gcloud auth login",
+    });
+    if (!result.error) {
+      return getDefaultAccessToken();
+    }
+  } else {
+    assert(result.token_response);
+    assert(result.token_response.access_token);
+    return result.token_response.access_token;
+  }
+};
+
 exports.authorize = authorize;
 
-exports.GoogleProvider = async ({ name = "google", config }) => {
-  checkEnv(["GOOGLE_APPLICATION_CREDENTIALS"]);
-  const applicationCredentials = path.resolve(
-    process.env.CONFIG_DIR,
-    expandTilde(process.env.GOOGLE_APPLICATION_CREDENTIALS)
-  );
-  process.env.GOOGLE_APPLICATION_CREDENTIALS = applicationCredentials;
-
-  const configProviderDefault = await pipe([
-    async (config) => ({
-      ...config,
-      accessToken: await authorize({
-        applicationCredentials,
+const serviceEnable = async ({ accessToken, projectId }) => {
+  const axios = AxiosMaker({
+    baseURL: `https://serviceusage.googleapis.com/v1/projects/${projectId}`,
+    onHeaders: () => ({
+      Authorization: `Bearer ${accessToken}`,
+    }),
+  });
+  return pipe([
+    tap(() => {
+      logger.debug("getting services");
+    }),
+    () => axios.get("/services?filter=state:ENABLED"),
+    tap((xxx) => {
+      logger.debug("services");
+    }),
+    get("data.services"),
+    tap((xxx) => {
+      logger.debug("services");
+    }),
+    pluck("config.name"),
+    (servicesEnabled = []) =>
+      filter((service) => !servicesEnabled.includes(service))(servicesApis),
+    switchCase([
+      (serviceIds) => !isEmpty(serviceIds),
+      pipe([
+        tap((serviceIds) => {
+          logger.debug(`enabling ${serviceIds.length} services`);
+        }),
+        (serviceIds) => axios.post("/services:batchEnable", { serviceIds }),
+      ]),
+      tap(() => {
+        logger.debug("services already enabled");
       }),
+    ]),
+  ])();
+};
+
+const ServiceAccountEmail = ({ serviceAccountName, projectId }) =>
+  `${serviceAccountName}@${projectId}.iam.gserviceaccount.com`;
+
+const serviceAccountCreate = async ({
+  accessToken,
+  projectId,
+  serviceAccountName,
+}) => {
+  const axios = AxiosMaker({
+    baseURL: `https://iam.googleapis.com/v1/projects/${projectId}/serviceAccounts`,
+    onHeaders: () => ({
+      Authorization: `Bearer ${accessToken}`,
+    }),
+  });
+
+  const serviceAccountEmail = ServiceAccountEmail({
+    serviceAccountName,
+    projectId,
+  });
+
+  return pipe([
+    tap((xx) => {
+      logger.debug("getting service accounts");
+    }),
+    () => axios.get("/"),
+    get("data.accounts"),
+    find((account) => account.email === serviceAccountEmail),
+    tap((xx) => {
+      logger.debug("serviceAccountCreate");
+    }),
+    switchCase([
+      (account) => !account,
+      pipe([
+        () => {
+          logger.debug(`creating service account ${serviceAccountName}`);
+        },
+        () =>
+          axios.post("/", {
+            accountId: serviceAccountName,
+            serviceAccount: {
+              displayName: `${serviceAccountName} service account`,
+            },
+          }),
+        () => {
+          logger.debug(`service account ${serviceAccountName} created`);
+        },
+      ]),
+      tap((account) => {
+        logger.debug("service account already created");
+      }),
+    ]),
+  ])();
+};
+
+const serviceAccountKeyCreate = async ({
+  accessToken,
+  projectId,
+  projectName,
+  serviceAccountName,
+  gcloudConfig,
+}) => {
+  const serviceAccountEmail = ServiceAccountEmail({
+    serviceAccountName,
+    projectId,
+  });
+
+  const axios = AxiosMaker({
+    baseURL: `https://iam.googleapis.com/v1/projects/${projectId}/serviceAccounts/${serviceAccountEmail}/keys`,
+    onHeaders: () => ({
+      Authorization: `Bearer ${accessToken}`,
+    }),
+  });
+  const applicationCredentialsFile = ApplicationCredentialsFile({
+    gcloudConfig,
+    projectName,
+  });
+  return pipe([
+    switchCase([
+      () =>
+        fs
+          .access(applicationCredentialsFile)
+          .then(() => false)
+          .catch(() => true),
+      pipe([
+        tap((xx) => {
+          logger.debug(
+            `creating service account keys for ${serviceAccountEmail}`
+          );
+        }),
+        () => axios.post("/", {}),
+        get("data"),
+        tap((xx) => {
+          logger.debug("service account keys created");
+        }),
+        ({ privateKeyData }) =>
+          Buffer.from(privateKeyData, "base64").toString("utf-8"),
+        (credentials) => fs.writeFile(applicationCredentialsFile, credentials),
+        tap((xx) => {
+          logger.debug(
+            `service account keys saved in ${applicationCredentialsFile}`
+          );
+        }),
+      ]),
+      tap(() => {
+        logger.debug("service account key already created");
+      }),
+    ]),
+  ])();
+};
+
+const addRolesToBindings = ({ currentBindings, rolesToAdd, member }) =>
+  pipe([
+    map(({ role, members }) => {
+      if (rolesToAdd.includes(role)) {
+        return { role, members: uniq([...members, member]) };
+      } else {
+        return { role, members };
+      }
+    }),
+    (bindings) =>
+      pipe([
+        () =>
+          filter((role) => !find((binding) => binding.role === role)(bindings))(
+            rolesToAdd
+          ),
+        map((role) => ({ role, members: [member] })),
+        (newBindings) => [...bindings, ...newBindings],
+      ])(),
+    tap((xx) => {
+      logger.debug("addRolesToBindings");
+    }),
+  ])(currentBindings);
+
+const addIamPolicy = async ({ accessToken, projectId, serviceAccountName }) => {
+  const axios = AxiosMaker({
+    baseURL: `https://cloudresourcemanager.googleapis.com/v1/projects/${projectId}`,
+    onHeaders: () => ({
+      Authorization: `Bearer ${accessToken}`,
+    }),
+  });
+
+  const member = `serviceAccount:${ServiceAccountEmail({
+    serviceAccountName,
+    projectId,
+  })}`;
+
+  return pipe([
+    tap(() => {
+      logger.debug("getting iam policy");
+    }),
+    () => axios.post(":getIamPolicy"),
+    get("data"),
+    (currentPolicy) =>
+      pipe([
+        () => ({
+          etag: currentPolicy.etag,
+          bindings: addRolesToBindings({
+            currentBindings: currentPolicy.bindings,
+            rolesToAdd: rolesDefault,
+            member,
+          }),
+        }),
+        switchCase([
+          (newPolicy) =>
+            !isDeepEqual(currentPolicy.bindings, newPolicy.bindings),
+          pipe([
+            tap((newPolicy) => {
+              logger.debug(`updating iam policy`);
+              logger.debug(tos(currentPolicy));
+              logger.debug(`new policy:`);
+              logger.debug(tos(newPolicy));
+            }),
+            (policy) => axios.post(":setIamPolicy", { policy }),
+            tap((xx) => {
+              logger.debug("iam policy updated");
+            }),
+          ]),
+          tap(() => {
+            logger.debug(`iam policy already up to date`);
+          }),
+        ]),
+      ])(),
+  ])();
+};
+const createProject = async ({ accessToken, projectName, projectId }) => {
+  logger.debug(`createProject ${projectName}`);
+  assert(projectName);
+  const axiosProject = AxiosMaker({
+    baseURL: `https://cloudresourcemanager.googleapis.com/v1/projects`,
+    onHeaders: () => ({
+      Authorization: `Bearer ${accessToken}`,
+    }),
+  });
+
+  return pipe([
+    () => axiosProject.get("/"),
+    get("data.projects"), //
+    tap((xxx) => {
+      logger.debug(`createProject`);
+    }),
+    filter(({ lifecycleState }) => lifecycleState === "ACTIVE"),
+    find((project) => project.projectId === projectId),
+    switchCase([
+      (project) => project,
+      tap((project) => {
+        logger.debug(`project ${projectName} already exist`);
+      }),
+      pipe([
+        tap(() => {
+          logger.debug(`creating project ${projectName}`);
+        }),
+        () =>
+          axiosProject.post("/", {
+            name: projectName,
+            projectId,
+          }),
+        tap(() => {
+          logger.debug(`project ${projectName} created`);
+        }),
+      ]),
+    ]),
+  ])();
+};
+
+const setupBilling = async ({ accessToken, projectId }) => {
+  const axiosBilling = AxiosMaker({
+    baseURL: `https://cloudbilling.googleapis.com/v1`,
+    onHeaders: () => ({
+      Authorization: `Bearer ${accessToken}`,
+    }),
+  });
+
+  return pipe([
+    tap(() => {
+      logger.debug(`setupBilling billingAccounts for project ${projectId}`);
+    }),
+    () => axiosBilling.get(`/projects/${projectId}/billingInfo`),
+    get("data"),
+    tap((billingInfo) => {
+      logger.debug(`setupBilling billingInfo for project: ${billingInfo}`);
+    }),
+    switchCase([
+      get("billingEnabled"),
+      tap((billingInfo) => {
+        logger.debug(`billing already enabled`);
+      }),
+      pipe([
+        () => axiosBilling.get(`/billingAccounts`),
+        get("data.billingAccounts"),
+        tap((billingAccounts) => {
+          logger.debug(`setupBilling billingAccounts: ${tos(billingAccounts)}`);
+        }),
+        filter(({ open }) => open),
+        switchCase([
+          isEmpty,
+          () => {
+            throw "no active billing account";
+          },
+          pipe([
+            first,
+            tap((billingAccount) => {
+              logger.debug(`enabling billing account ${tos(billingAccount)}`);
+            }),
+            tap((billingAccount) =>
+              axiosBilling.put(`/projects/${projectId}/billingInfo`, {
+                billingAccountName: billingAccount.name,
+                billingEnabled: true,
+              })
+            ),
+            tap(() => {
+              logger.debug(`billing account enabled`);
+            }),
+          ]),
+        ]),
+      ]),
+    ]),
+  ])();
+};
+const setup = async ({ gcloudConfig, projectId, projectName }) => {
+  if (!gcloudConfig) {
+    logger.debug(`gcloud is not installed, setup aborted`);
+    return;
+  }
+
+  const accessToken = getDefaultAccessToken();
+  if (!accessToken) {
+    logger.debug(
+      `cannot get default access token, run 'gcloud auth login' and try again`
+    );
+    return;
+  }
+
+  const serviceAccountName = "grucloud";
+
+  await createProject({ projectName, projectId, accessToken });
+  await setupBilling({ projectId, accessToken });
+
+  await serviceEnable({ projectId, accessToken });
+  await serviceAccountCreate({
+    projectId,
+    accessToken,
+    serviceAccountName,
+  });
+  await serviceAccountKeyCreate({
+    projectId,
+    projectName,
+    accessToken,
+    serviceAccountName,
+    gcloudConfig,
+  });
+
+  await addIamPolicy({
+    accessToken,
+    projectId,
+    serviceAccountName,
+  });
+};
+
+exports.GoogleProvider = async ({ name = "google", config: configUser }) => {
+  const { projectName } = configUser;
+  assert(projectName, "missing projectName");
+
+  const gcloudConfig = getConfig();
+
+  const config = await pipe([
+    defaultsDeep({
+      managedByTag: "-managed-by-gru",
+      managedByKey: "managed-by",
+      managedByValue: "grucloud",
+      projectId: ProjectId({ projectName }),
     }),
     (config) => {
-      const localConfig = getConfig();
-      if (localConfig) {
-        const { project } = localConfig.config;
+      if (gcloudConfig) {
         return pipe([
-          defaultsDeep({ project }),
           defaultsDeep(
-            pick(["region", "zone"])(localConfig.config.properties.compute) ||
+            pick(["region", "zone"])(gcloudConfig.config.properties.compute) ||
               {}
           ),
           defaultsDeep(computeDefault),
@@ -109,17 +531,30 @@ exports.GoogleProvider = async ({ name = "google", config }) => {
         return config;
       }
     },
-  ])({
-    managedByTag: "-managed-by-gru",
-    managedByKey: "managed-by",
-    managedByValue: "grucloud",
+  ])(configUser);
+
+  await setup({
+    gcloudConfig,
+    projectName,
+    projectId: config.projectId,
+  });
+
+  const applicationCredentials = ApplicationCredentialsFile({
+    gcloudConfig,
+    projectName,
+  });
+
+  const serviceAccountAccessToken = await authorize({
+    applicationCredentials,
   });
 
   const core = CoreProvider({
     type: "google",
     name,
-    mandatoryEnvs: ["GOOGLE_APPLICATION_CREDENTIALS"],
-    config: defaultsDeep(configProviderDefault)(config),
+    config: defaultsDeep({
+      project: config.projectId,
+      accessToken: serviceAccountAccessToken,
+    })(config),
     fnSpecs,
   });
 
