@@ -1,6 +1,8 @@
 const assert = require("assert");
 const fs = require("fs").promises;
 const path = require("path");
+const os = require("os");
+
 const {
   map,
   tryCatch,
@@ -65,26 +67,25 @@ const fnSpecs = (config) => [
 ];
 const ProjectId = ({ projectName }) => `grucloud-${projectName}`;
 
-const ApplicationCredentialsFile = ({ gcloudConfig, projectName }) =>
-  path.resolve(
-    gcloudConfig.config.paths.global_config_dir,
-    `grucloud-${projectName}.json`
-  );
+const ApplicationCredentialsFile = ({
+  configDir = path.resolve(os.homedir(), ".config/gcloud"),
+  projectName,
+}) => path.resolve(configDir, `grucloud-${projectName}.json`);
 
-const authorize = async ({ applicationCredentials }) => {
-  logger.debug(`authorize with file: ${applicationCredentials}`);
+const authorize = async ({ applicationCredentialsFile }) => {
+  logger.debug(`authorize with file: ${applicationCredentialsFile}`);
 
-  assert(applicationCredentials);
+  assert(applicationCredentialsFile);
   if (
     !(await fs
-      .access(applicationCredentials)
+      .access(applicationCredentialsFile)
       .then(() => true)
       .catch(() => false))
   ) {
-    const message = `Cannot open application credentials file ${applicationCredentials}`;
+    const message = `Cannot open application credentials file ${applicationCredentialsFile}`;
     throw { code: 422, message };
   }
-  const keys = require(applicationCredentials);
+  const keys = require(applicationCredentialsFile);
   logger.debug(`authorize with email: ${keys.client_email}`);
 
   const client = new JWT({
@@ -128,7 +129,7 @@ const runGCloudCommand = tryCatch(
 );
 
 const getConfig = () =>
-  runGCloudCommand({ command: "gcloud info --format json" });
+  runGCloudCommand({ command: "xxgcloud info --format json" });
 
 const getDefaultAccessToken = () => {
   const result = runGCloudCommand({
@@ -244,9 +245,8 @@ const serviceAccountCreate = async ({
 const serviceAccountKeyCreate = async ({
   accessToken,
   projectId,
-  projectName,
   serviceAccountName,
-  gcloudConfig,
+  applicationCredentialsFile,
 }) => {
   const serviceAccountEmail = ServiceAccountEmail({
     serviceAccountName,
@@ -259,10 +259,7 @@ const serviceAccountKeyCreate = async ({
       Authorization: `Bearer ${accessToken}`,
     }),
   });
-  const applicationCredentialsFile = ApplicationCredentialsFile({
-    gcloudConfig,
-    projectName,
-  });
+
   return pipe([
     switchCase([
       () =>
@@ -465,8 +462,13 @@ const setupBilling = async ({ accessToken, projectId }) => {
     ]),
   ])();
 };
-const setup = async ({ gcloudConfig, projectId, projectName }) => {
-  if (!gcloudConfig) {
+const setup = async ({
+  gcloudConfig,
+  projectId,
+  projectName,
+  applicationCredentialsFile,
+}) => {
+  if (!gcloudConfig.config) {
     logger.debug(`gcloud is not installed, setup aborted`);
     return;
   }
@@ -495,7 +497,7 @@ const setup = async ({ gcloudConfig, projectId, projectName }) => {
     projectName,
     accessToken,
     serviceAccountName,
-    gcloudConfig,
+    applicationCredentialsFile,
   });
 
   await addIamPolicy({
@@ -519,7 +521,7 @@ exports.GoogleProvider = async ({ name = "google", config: configUser }) => {
       projectId: ProjectId({ projectName }),
     }),
     (config) => {
-      if (gcloudConfig) {
+      if (gcloudConfig.config) {
         return pipe([
           defaultsDeep(
             pick(["region", "zone"])(gcloudConfig.config.properties.compute) ||
@@ -533,19 +535,20 @@ exports.GoogleProvider = async ({ name = "google", config: configUser }) => {
     },
   ])(configUser);
 
+  const applicationCredentialsFile = ApplicationCredentialsFile({
+    configDir: gcloudConfig.config?.paths.global_config_dir,
+    projectName,
+  });
+
   await setup({
     gcloudConfig,
     projectName,
     projectId: config.projectId,
-  });
-
-  const applicationCredentials = ApplicationCredentialsFile({
-    gcloudConfig,
-    projectName,
+    applicationCredentialsFile,
   });
 
   const serviceAccountAccessToken = await authorize({
-    applicationCredentials,
+    applicationCredentialsFile,
   });
 
   const core = CoreProvider({
