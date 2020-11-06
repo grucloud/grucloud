@@ -69,8 +69,8 @@ const ProjectId = ({ projectName }) => `grucloud-${projectName}`;
 
 const ApplicationCredentialsFile = ({
   configDir = path.resolve(os.homedir(), ".config/gcloud"),
-  projectName,
-}) => path.resolve(configDir, `grucloud-${projectName}.json`);
+  projectId,
+}) => path.resolve(configDir, `${projectId}.json`);
 
 const authorize = async ({ applicationCredentialsFile }) => {
   logger.debug(`authorize with file: ${applicationCredentialsFile}`);
@@ -535,15 +535,16 @@ exports.GoogleProvider = async ({ name = "google", config: configUser }) => {
     },
   ])(configUser);
 
+  const { projectId } = config;
   const applicationCredentialsFile = ApplicationCredentialsFile({
     configDir: gcloudConfig.config?.paths.global_config_dir,
-    projectName,
+    projectId,
   });
 
   await setup({
     gcloudConfig,
     projectName,
-    projectId: config.projectId,
+    projectId,
     applicationCredentialsFile,
   });
 
