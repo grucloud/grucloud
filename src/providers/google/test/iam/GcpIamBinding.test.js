@@ -63,7 +63,7 @@ describe("GcpIamBinding", async function () {
     assert.equal(planCreate.action, "CREATE");
     assert.equal(planCreate.config.role, roleEditor);
   });
-  it.only("iamBinding apply and destroy", async function () {
+  it("iamBinding apply and destroy", async function () {
     const { error, resultCreate } = await provider.planQueryAndApply();
     assert(!error, "should not have failed");
     const live = await iamBindingServiceAccount.getLive();
