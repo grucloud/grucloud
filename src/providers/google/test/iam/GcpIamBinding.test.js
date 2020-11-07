@@ -100,6 +100,8 @@ describe("GcpIamBinding", async function () {
       name: "google",
       config: config.google,
     });
+    await provider.start();
+
     const email = "user:joe@gmail.com";
     const iamBindingEmail = await provider.makeIamBinding({
       name: roleEditor,
