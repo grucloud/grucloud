@@ -1,8 +1,6 @@
 const assert = require("assert");
 const { GoogleProvider } = require("../../GoogleProvider");
 const { ConfigLoader } = require("ConfigLoader");
-const { pipe, tap, map, get, filter } = require("rubico");
-const { find, isDeepEqual } = require("rubico/x");
 const chance = require("chance")();
 
 describe("GcpIamBinding", async function () {
@@ -65,7 +63,7 @@ describe("GcpIamBinding", async function () {
     assert.equal(planCreate.action, "CREATE");
     assert.equal(planCreate.config.role, roleEditor);
   });
-  it("iamBinding apply and destroy", async function () {
+  it.only("iamBinding apply and destroy", async function () {
     const { error, resultCreate } = await provider.planQueryAndApply();
     assert(!error, "should not have failed");
     const live = await iamBindingServiceAccount.getLive();
@@ -76,7 +74,7 @@ describe("GcpIamBinding", async function () {
         name: "google",
         config: config.google,
       });
-
+      await provider.start();
       const saName = `sa-${chance.guid().slice(0, 15)}`;
       const serviceAccount = await provider.makeServiceAccount({
         name: saName,
