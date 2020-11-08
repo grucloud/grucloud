@@ -27,7 +27,7 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
 exports.createResources = createResources;
 
 exports.createStack = async ({ config }) => {
-  const provider = await GoogleProvider({ name: "google", config });
+  const provider = GoogleProvider({ name: "google", config });
   const { stage } = provider.config();
   assert(stage, "missing stage");
 

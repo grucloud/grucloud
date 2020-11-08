@@ -16,10 +16,13 @@ describe("AwsSecurityGroup", async function () {
     } catch (error) {
       this.skip();
     }
-    provider = await AwsProvider({
+    provider = AwsProvider({
       name: "aws",
       config: config.aws,
     });
+
+    await provider.start();
+
     vpc = await provider.makeVpc({
       name: "vpc",
       properties: () => ({
@@ -62,10 +65,11 @@ describe("AwsSecurityGroup", async function () {
     await provider?.destroyAll();
   });
   it("empty ingress", async function () {
-    const provider = await AwsProvider({
+    const provider = AwsProvider({
       name: "aws",
       config: config.aws,
     });
+    await provider.start();
     const vpc = await provider.makeVpc({
       name: "vpc",
       properties: () => ({

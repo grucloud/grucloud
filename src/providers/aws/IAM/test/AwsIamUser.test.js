@@ -14,10 +14,12 @@ describe("AwsIamUser", async function () {
     } catch (error) {
       this.skip();
     }
-    provider = await AwsProvider({
+    provider = AwsProvider({
       name: "aws",
       config: config.aws,
     });
+
+    await provider.start();
 
     const { error } = await provider.destroyAll();
     assert(!error, "destroyAll failed");

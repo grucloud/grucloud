@@ -10,7 +10,7 @@ describe("MockProviderCornerCase", async function () {
   before(async () => {});
 
   it("undefined dependencies", async function () {
-    const provider = await MockProvider({
+    const provider = MockProvider({
       config,
     });
     try {

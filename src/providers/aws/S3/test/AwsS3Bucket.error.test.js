@@ -17,10 +17,13 @@ describe("AwsS3BucketErrors", async function () {
   after(async () => {});
 
   it("s3Bucket already exist", async function () {
-    const provider = await AwsProvider({
+    const provider = AwsProvider({
       name: "aws",
       config: config.aws,
     });
+
+    await provider.start();
+
     await provider.makeS3Bucket({
       name: "bucket",
       properties: () => ({}),
@@ -40,10 +43,11 @@ describe("AwsS3BucketErrors", async function () {
   });
 
   it("s3Bucket acl error", async function () {
-    const provider = await AwsProvider({
+    const provider = AwsProvider({
       name: "aws",
       config: config.aws,
     });
+    await provider.start();
     await provider.makeS3Bucket({
       name: `${bucketPrefix}-acl-accesscontrolpolicy`,
       properties: () => ({
@@ -67,10 +71,13 @@ describe("AwsS3BucketErrors", async function () {
   });
 
   it("notification-configuration error", async function () {
-    const provider = await AwsProvider({
+    const provider = AwsProvider({
       name: "aws",
       config: config.aws,
     });
+
+    await provider.start();
+
     const region = provider.config().region;
     await provider.makeS3Bucket({
       name: `${bucketPrefix}-notification-configuration-invalid-topic`,
@@ -97,10 +104,13 @@ describe("AwsS3BucketErrors", async function () {
     assert(error, "should have failed");
   });
   it("replication-configuration error", async function () {
-    const provider = await AwsProvider({
+    const provider = AwsProvider({
       name: "aws",
       config: config.aws,
     });
+
+    await provider.start();
+
     const s3BucketReplicationDestination = await provider.makeS3Bucket({
       name: "replication-configuration-destination",
       properties: () => ({}),

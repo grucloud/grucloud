@@ -534,13 +534,13 @@ const init = async ({
   console.log(`Project is now initialized`);
 };
 
-exports.GoogleProvider = async ({ name = "google", config: configUser }) => {
+exports.GoogleProvider = ({ name = "google", config: configUser }) => {
   const { projectName } = configUser;
   assert(projectName, "missing projectName");
 
   const gcloudConfig = getConfig();
 
-  const config = await pipe([
+  const config = pipe([
     defaultsDeep({
       managedByTag: "-managed-by-gru",
       managedByKey: "managed-by",

@@ -59,7 +59,7 @@ module.exports = AzClient = ({
     axios: AxiosMaker({
       baseURL: BASE_URL,
       onHeaders: () => ({
-        Authorization: `Bearer ${config.bearerToken}`,
+        Authorization: `Bearer ${config.bearerToken()}`,
       }),
     }),
   });

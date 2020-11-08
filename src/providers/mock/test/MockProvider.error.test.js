@@ -7,7 +7,7 @@ const { createAxiosMock } = require("../MockAxios");
 const { tos } = require("../../../tos");
 
 const createMockProvider = async ({ name, config, mockCloud }) => {
-  return await MockProvider({
+  return MockProvider({
     name,
     config: {
       ...config,

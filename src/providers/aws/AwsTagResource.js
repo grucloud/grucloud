@@ -17,8 +17,8 @@ exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
   AWS.config.update({ region });
   const tagApi = new AWS.ResourceGroupsTaggingAPI();
 
-  const arnId = `arn:aws:ec2:${region}:${accountId}:${resourceType}/${resourceId}`;
-  const fqn = `arn:aws:ec2:${region}:${accountId}:${resourceType}/${name}`;
+  const arnId = `arn:aws:ec2:${region}:${accountId()}:${resourceType}/${resourceId}`;
+  const fqn = `arn:aws:ec2:${region}:${accountId()}:${resourceType}/${name}`;
 
   logger.debug(`tagResource: arn ${arnId}`);
   const params = {

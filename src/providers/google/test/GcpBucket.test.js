@@ -26,7 +26,7 @@ describe("GcpBucket", async function () {
     } catch (error) {
       this.skip();
     }
-    provider = await GoogleProvider({
+    provider = GoogleProvider({
       name: "google",
       config: config.google,
     });
@@ -88,7 +88,7 @@ describe("GcpBucket", async function () {
     const bucketPublicLive = await bucketPublic.getLive({ deep: true });
     assert(bucketPublicLive.iam);
     {
-      const provider = await GoogleProvider({
+      const provider = GoogleProvider({
         name: "google",
         config: config.google,
       });

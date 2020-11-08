@@ -21,7 +21,7 @@ describe("GcpServiceAccount", async function () {
       this.skip();
     }
 
-    provider = await GoogleProvider({
+    provider = GoogleProvider({
       name: "google",
       config: config.google,
     });
@@ -73,7 +73,7 @@ describe("GcpServiceAccount", async function () {
     });
     assert(lives[0].resources.length >= 1);
 
-    const providerEmpty = await GoogleProvider({
+    const providerEmpty = GoogleProvider({
       name: "google",
       config: config.google,
     });

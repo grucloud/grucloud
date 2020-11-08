@@ -17,7 +17,7 @@ describe("GcpIamBinding", async function () {
       this.skip();
     }
 
-    provider = await GoogleProvider({
+    provider = GoogleProvider({
       name: "google",
       config: config.google,
     });
@@ -70,7 +70,7 @@ describe("GcpIamBinding", async function () {
     assert(live.members);
     assert(live.role);
     {
-      const provider = await GoogleProvider({
+      const provider = GoogleProvider({
         name: "google",
         config: config.google,
       });
@@ -96,7 +96,7 @@ describe("GcpIamBinding", async function () {
   });
 
   it("iamBindingEmail", async function () {
-    const provider = await GoogleProvider({
+    const provider = GoogleProvider({
       name: "google",
       config: config.google,
     });

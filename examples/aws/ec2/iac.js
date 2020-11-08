@@ -24,7 +24,7 @@ exports.createResources = createResources;
 
 exports.createStack = async ({ config }) => {
   // Create a AWS provider
-  const provider = await AwsProvider({ name: "aws", config });
+  const provider = AwsProvider({ name: "aws", config });
   const keyPair = await provider.useKeyPair({
     name: "kp",
   });

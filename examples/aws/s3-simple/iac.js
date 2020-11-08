@@ -31,7 +31,7 @@ const createResources = async ({ provider }) => {
 exports.createResources = createResources;
 
 exports.createStack = async ({ name = "aws", config }) => {
-  const provider = await AwsProvider({ name, config });
+  const provider = AwsProvider({ name, config });
   const resources = await createResources({ provider });
   return { provider, resources };
 };

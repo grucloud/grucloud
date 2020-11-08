@@ -20,7 +20,7 @@ describe("GcpDnsManagedZone", async function () {
     } catch (error) {
       this.skip();
     }
-    provider = await GoogleProvider({
+    provider = GoogleProvider({
       name: "google",
       config: config.google,
     });
