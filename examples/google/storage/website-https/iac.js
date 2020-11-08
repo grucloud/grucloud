@@ -27,7 +27,7 @@ exports.createStack = async ({ config }) => {
   const bucketName = "gcp.grucloud.com";
   const domain = bucketName;
 
-  const provider = await GoogleProvider({ config });
+  const provider = GoogleProvider({ config });
 
   const myBucket = await provider.makeBucket({
     name: bucketName,

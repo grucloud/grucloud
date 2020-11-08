@@ -449,6 +449,8 @@ function CoreProvider({
   mandatoryConfigKeys = [],
   fnSpecs,
   config,
+  init = () => {},
+  start = () => {},
 }) {
   const providerConfig = defaultsDeep(configProviderDefault)(config);
   logger.debug(
@@ -1894,6 +1896,8 @@ function CoreProvider({
     runOnDeployed,
     runOnDestroyed,
     hookAdd,
+    init,
+    start,
   };
   const enhanceProvider = {
     ...provider,

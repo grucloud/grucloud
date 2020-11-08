@@ -31,10 +31,12 @@ describe("AwsProvider", async function () {
     } catch (error) {
       this.skip();
     }
-    provider = await AwsProvider({
+    provider = AwsProvider({
       name: "aws",
       config: config.aws,
     });
+
+    await provider.start();
 
     const { error, results } = await provider.destroyAll();
     assert(results);

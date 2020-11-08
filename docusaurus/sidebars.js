@@ -3,6 +3,7 @@ module.exports = {
     Introduction: ["TLDR"],
     "Command Line Interface": [
       "cli/gc",
+      "cli/Init",
       "cli/PlanQuery",
       "cli/PlanApply",
       "cli/List",

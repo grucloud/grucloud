@@ -16,7 +16,7 @@ describe("GoogleAuth", function () {
     }
   });
 
-  it("auth ok", async function () {
+  it.skip("auth ok", async function () {
     const applicationCredentials = process.env.GOOGLE_APPLICATION_CREDENTIALS;
     assert(applicationCredentials);
 
@@ -43,12 +43,12 @@ describe("GoogleAuth", function () {
     assert(accessToken);
   });
   it("auth ko: account not found", async function () {
-    const applicationCredentials = path.resolve(
+    const applicationCredentialsFile = path.resolve(
       __dirname,
       "grucloud-credentials-invalid.json"
     );
     try {
-      await authorize({ applicationCredentials });
+      await authorize({ applicationCredentialsFile });
     } catch (error) {
       assert.equal(
         error.message,

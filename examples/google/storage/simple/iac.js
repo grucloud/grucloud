@@ -4,7 +4,7 @@ const chance = require("chance")();
 const { GoogleProvider } = require("@grucloud/core");
 
 exports.createStack = async ({ config }) => {
-  const provider = await GoogleProvider({ config });
+  const provider = GoogleProvider({ config });
 
   const myBucket = await provider.makeBucket({
     name: `grucloud-test`,

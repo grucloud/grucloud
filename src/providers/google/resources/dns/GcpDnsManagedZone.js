@@ -14,10 +14,10 @@ const {
   switchCase,
 } = require("rubico");
 const { defaultsDeep, isDeepEqual, isEmpty, find } = require("rubico/x");
-const urljoin = require("url-join");
 const { differenceWith, isEqual } = require("lodash/fp");
 const { GCP_DNS_BASE_URL } = require("./GcpDnsCommon");
-const AxiosMaker = require("../../../AxiosMaker");
+const { createAxiosMakerGoogle } = require("../../GoogleCommon");
+
 const {
   logError,
   axiosErrorToJSON,
@@ -98,11 +98,10 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
     return item.name;
   };
 
-  const axios = AxiosMaker({
-    baseURL: urljoin(GCP_DNS_BASE_URL, `/projects/${project}/managedZones`),
-    onHeaders: () => ({
-      Authorization: `Bearer ${config.accessToken}`,
-    }),
+  const axios = createAxiosMakerGoogle({
+    baseURL: GCP_DNS_BASE_URL,
+    url: `/projects/${project}/managedZones`,
+    config,
   });
 
   const getList = async () =>

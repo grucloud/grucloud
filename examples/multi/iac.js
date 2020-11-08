@@ -38,7 +38,7 @@ const MockStack = require("../mock/mock/iac");
 const MockHooks = require("../mock/mock/hooks");
 
 const createAws = async ({ config }) => {
-  const provider = await AwsProvider({
+  const provider = AwsProvider({
     config: { ...config.aws, stage: config.stage },
   });
 
@@ -88,7 +88,7 @@ const createAws = async ({ config }) => {
 
 const createGoogle = async ({ config }) => {
   // Google
-  const provider = await GoogleProvider({
+  const provider = GoogleProvider({
     config: config.google,
   });
   const { stage } = provider.config();
@@ -135,7 +135,7 @@ const createGoogle = async ({ config }) => {
 };
 
 const createAzure = async ({ config }) => {
-  const provider = await AzureProvider({
+  const provider = AzureProvider({
     config: { ...config.azure, stage: config.stage },
   });
   const resources = await AzureStack.createResources({ provider });
@@ -144,16 +144,16 @@ const createAzure = async ({ config }) => {
 };
 
 const createScaleway = async ({ config }) => {
-  const provider = await ScalewayProvider({
+  const provider = ScalewayProvider({
     config: { ...config.scaleway, stage: config.stage },
   });
-  const resources = await ScalewayStack.createResources({ provider });
+  const resources = ScalewayStack.createResources({ provider });
   provider.hookAdd("scaleway", ScalewayHooks({ resources, provider }));
   return provider;
 };
 
 const createMock = async ({ config }) => {
-  const provider = await MockProvider({
+  const provider = MockProvider({
     config: { stage: config.stage },
   });
 

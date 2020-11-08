@@ -140,7 +140,7 @@ const createResources = async ({ provider }) => {
 exports.createResources = createResources;
 
 exports.createStack = async ({ config }) => {
-  const provider = await AzureProvider({ name: "azure", config });
+  const provider = AzureProvider({ name: "azure", config });
   const resources = await createResources({ provider });
 
   return {

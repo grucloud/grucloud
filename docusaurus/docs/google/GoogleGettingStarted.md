@@ -11,8 +11,6 @@ First of all, make sure all the gcp prerequisites has been met: [GoogleRequireme
 gcloud info
 ```
 
-To go further, you'll need a **service account**, **project**, **region** and **zone**
-
 ## Getting the code
 
 Install the grucloud command line utility: **gc**
@@ -35,13 +33,19 @@ cd grucloud/examples/google/vm
 npm install
 ```
 
-### Config
+## Project Name
 
-Find out the default region, zone and project:
+Edit _config/default.js_ ans set the _projectName_
 
+## Initialise
+
+Initialise the project:
+
+```sh
+gc init
 ```
-gcloud config list
-```
+
+## iac.js
 
 Now it is time to edit the infrastructure **iac.js** file that describes the architecture:
 

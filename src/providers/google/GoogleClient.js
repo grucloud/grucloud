@@ -1,8 +1,8 @@
 const assert = require("assert");
-const urljoin = require("url-join");
 const CoreClient = require("../CoreClient");
-const AxiosMaker = require("../AxiosMaker");
 const logger = require("../../logger")({ prefix: "GoogleClient" });
+const { createAxiosMakerGoogle } = require("./GoogleCommon");
+
 const { tos } = require("../../tos");
 const onResponseListDefault = ({ items = [] }) => {
   return { total: items.length, items };
@@ -64,11 +64,10 @@ module.exports = GoogleClient = ({
     cannotBeDeleted,
     shouldRetryOnException,
     onCreateExpectedException,
-    axios: AxiosMaker({
-      baseURL: urljoin(baseURL, url),
-      onHeaders: () => ({
-        Authorization: `Bearer ${config.accessToken}`,
-      }),
+    axios: createAxiosMakerGoogle({
+      baseURL,
+      url,
+      config,
     }),
   });
 };

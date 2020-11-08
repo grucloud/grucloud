@@ -23,7 +23,10 @@ exports.createProgram = ({ version, commands }) => {
   program.allowUnknownOption(); // For testing
   program.version(version);
   program.option("-i, --infra <file>", "infrastructure default is iac.js");
-  program.option("-c, --config <file>", "config file, default is config.js");
+  program.option(
+    "-c, --config <file>",
+    "config file, default is config/default.js"
+  );
   program.option("-j, --json <file>", "write result to a file in json format");
 
   const infraOptions = ({ infra, config, stage }) => ({
@@ -33,8 +36,22 @@ exports.createProgram = ({ version, commands }) => {
   });
 
   program
+    .command("init")
+    .description("Initialise the cloud providers")
+    .alias("i")
+    .action(async (commandOptions) => {
+      const programOptions = program.opts();
+      await pipe([
+        infraOptions,
+        createInfra,
+        async (infra) =>
+          await commands.init({ infra, commandOptions, programOptions }),
+      ])(programOptions);
+    });
+
+  program
     .command("plan")
-    .description("Query the plan")
+    .description("Find out which resources need to be deployed or destroyed")
     .alias("p")
     .option(...optionFilteredByProvider)
     .action(async (commandOptions) => {

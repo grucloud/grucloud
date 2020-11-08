@@ -5,7 +5,7 @@ exports.createStack = async ({ config }) => {
   const { domain } = config;
   assert(domain, "missing domain");
 
-  const provider = await GoogleProvider({ config });
+  const provider = GoogleProvider({ config });
 
   const dnsManagedZone = await provider.makeDnsManagedZone({
     name: "domain",

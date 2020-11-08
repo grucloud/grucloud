@@ -306,6 +306,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Aws IAM Init",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/iam",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["init"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Aws IAM Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/iam",
@@ -320,6 +329,15 @@
       "cwd": "${workspaceFolder}/examples/aws/iam",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["destroy", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Google Website HTTPS Init",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/google/storage/website-https",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["init"]
     },
     {
       "type": "node",

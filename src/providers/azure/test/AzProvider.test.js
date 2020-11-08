@@ -23,7 +23,7 @@ describe("AzProvider", async function () {
     } catch (error) {
       this.skip();
     }
-    provider = await AzureProvider({
+    provider = AzureProvider({
       name: "azure",
       config,
     });

@@ -6,8 +6,9 @@ const { createProgram } = require("./program");
 const commands = require("./cliCommands");
 const logger = require("../logger")({ prefix: "CliMain" });
 const { tos } = require("../tos");
-
+const { convertError } = require("../providers/Common");
 const executableName = "gc";
+const YAML = require("./json2yaml");
 
 exports.main = async ({ argv, onExit }) => {
   const program = createProgram({
@@ -37,8 +38,7 @@ exports.main = async ({ argv, onExit }) => {
   } catch (error) {
     const { code = -1 } = error;
     logger.error("main error:");
-    logger.error(tos(error));
-    error.message && console.error(`Error: ${error.message}`);
+    //console.error(YAML.stringify(convertError({ error })));
     error.stack && console.log(error.stack);
     onExit({ code, error });
     return code;

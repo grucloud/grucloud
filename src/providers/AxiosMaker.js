@@ -11,7 +11,6 @@ module.exports = AxiosMaker = ({
     baseURL,
     timeout: 15e3,
     withCredentials: true,
-    headers: { ...onHeaders(), "Content-Type": contentType },
   });
 
   axios.interceptors.request.use(
@@ -19,7 +18,13 @@ module.exports = AxiosMaker = ({
       const { method, baseURL, url } = config;
       logger.debug(`axios request ${method} ${baseURL}${url}`);
       //config.data && logger.debug(tos(config.data));
-      return config;
+      return {
+        ...config,
+        headers: {
+          ...config.headers,
+          common: { ...onHeaders(), "Content-Type": contentType },
+        },
+      };
     },
     function (error) {
       logger.debug(`axios request error ${error}`);

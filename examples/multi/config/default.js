@@ -1,6 +1,7 @@
 module.exports = () => ({
   google: {
-    project: "grucloud-e2e",
+    projectName: "grucloud-e2e",
+    projectId: "grucloud-e2e",
     region: "europe-west4",
     zone: "europe-west4-a",
   },

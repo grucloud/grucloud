@@ -41,7 +41,7 @@ exports.createStack = async ({}) => {
     zone: "fr-par-1",
   };
   // Create Scaleway provider
-  const provider = await ScalewayProvider({ name: "scaleway", config });
+  const provider = ScalewayProvider({ name: "scaleway", config });
   const resources = await createResources({ provider });
 
   return {

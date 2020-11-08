@@ -1,7 +1,6 @@
 const assert = require("assert");
 const { GoogleProvider } = require("../../GoogleProvider");
 const { ConfigLoader } = require("ConfigLoader");
-const { isEmpty } = require("rubico/x");
 const {
   testPlanDeploy,
   testPlanDestroy,
@@ -21,10 +20,12 @@ describe("GcpDnsManagedZone", async function () {
     } catch (error) {
       this.skip();
     }
-    provider = await GoogleProvider({
+    provider = GoogleProvider({
       name: "google",
       config: config.google,
     });
+
+    await provider.start();
 
     dnsManagedZoneEmpty = await provider.makeDnsManagedZone({
       name: "dns-managed-zone-empty",

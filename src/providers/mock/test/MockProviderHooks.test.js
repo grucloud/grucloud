@@ -12,7 +12,7 @@ const toJSON = (x) => JSON.stringify(x, null, 4);
 describe("MockProviderHooks", async function () {
   it("exception on hook.js", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
-    const provider = await MockProvider({ config });
+    const provider = MockProvider({ config });
     const resources = await createResources({ provider });
     try {
       provider.register({
@@ -30,7 +30,7 @@ describe("MockProviderHooks", async function () {
     const onDestroyed = { init: sinon.spy() };
 
     const config = ConfigLoader({ baseDir: __dirname });
-    const provider = await MockProvider({ config });
+    const provider = MockProvider({ config });
     const resources = await createResources({ provider });
 
     provider.hookAdd("mock-test", {
@@ -60,7 +60,7 @@ describe("MockProviderHooks", async function () {
     const onDestroyed = { init: sinon.spy() };
 
     const config = ConfigLoader({ baseDir: __dirname });
-    const provider = await MockProvider({
+    const provider = MockProvider({
       config: { ...config, ...config404 },
     });
     const resources = await createResources({ provider });
@@ -104,7 +104,7 @@ describe("MockProviderHooks", async function () {
   });
   it("planApply init throw ", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
-    const provider = await MockProvider({ config });
+    const provider = MockProvider({ config });
     const resources = await createResources({ provider });
     provider.hookAdd("mock-init-throw", {
       onDeployed: {
@@ -149,7 +149,7 @@ describe("MockProviderHooks", async function () {
   });
   it("run --onDeployed init throw ", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
-    const provider = await MockProvider({ config });
+    const provider = MockProvider({ config });
     const resources = await createResources({ provider });
     provider.hookAdd("mock-run-ondeployed-init-throw", {
       onDeployed: {
@@ -177,7 +177,7 @@ describe("MockProviderHooks", async function () {
 
   it("action throw ", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
-    const provider = await MockProvider({ config });
+    const provider = MockProvider({ config });
     const resources = await createResources({ provider });
     const message = "i throw in a command";
     provider.hookAdd("mock-action-throw", {

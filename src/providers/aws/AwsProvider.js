@@ -36,7 +36,7 @@ const fetchAccountId = async () => {
   return Account;
 };
 
-exports.AwsProvider = async ({ name = "aws", config }) => {
+exports.AwsProvider = ({ name = "aws", config }) => {
   assert(config);
 
   AWS.config.apiVersions = {
@@ -58,14 +58,22 @@ exports.AwsProvider = async ({ name = "aws", config }) => {
     }),
   });
 
-  await validateConfig({ region: AWS.config.region, zone: config.zone });
+  let accountId;
+  const start = async () => {
+    accountId = await fetchAccountId();
 
-  const accountId = await fetchAccountId();
+    await validateConfig({ region: AWS.config.region, zone: config.zone });
+  };
 
   return CoreProvider({
     type: "aws",
     name,
-    config: { ...config, accountId, region: AWS.config.region },
+    config: {
+      ...config,
+      accountId: () => accountId,
+      region: AWS.config.region,
+    },
     fnSpecs,
+    start,
   });
 };

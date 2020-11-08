@@ -143,7 +143,7 @@ const fnSpecs = (config) => {
   ];
 };
 
-exports.ScalewayProvider = async ({ name = "scaleway", config }) => {
+exports.ScalewayProvider = ({ name = "scaleway", config }) => {
   const configProviderDefault = {
     zone: "fr-par-1",
     organization: process.env.SCW_ORGANISATION,

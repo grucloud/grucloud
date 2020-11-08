@@ -14,7 +14,7 @@ describe("MockProviderCli", async function () {
 
   it("abort deploy and destroy", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
-    const provider = await MockProvider({ config });
+    const provider = MockProvider({ config });
     const resources = await createResources({ provider });
     const infra = { provider };
 

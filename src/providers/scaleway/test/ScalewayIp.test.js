@@ -14,7 +14,7 @@ describe("ScalewayIp", async function () {
     } catch (error) {
       this.skip();
     }
-    provider = await ScalewayProvider({
+    provider = ScalewayProvider({
       name: "scaleway",
       config: config.scaleway,
     });

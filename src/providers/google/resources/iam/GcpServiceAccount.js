@@ -5,7 +5,7 @@ const { defaultsDeep } = require("rubico/x");
 const logger = require("../../../../logger")({ prefix: "GcpServiceAccount" });
 const { tos } = require("../../../../tos");
 const GoogleClient = require("../../GoogleClient");
-const AxiosMaker = require("../../../AxiosMaker");
+const { createAxiosMakerGoogle } = require("../../GoogleCommon");
 
 const findName = (item) => {
   const name = item.email.split("@")[0];
@@ -37,11 +37,9 @@ exports.GcpServiceAccount = ({ spec, config }) => {
   const baseURL = `https://iam.googleapis.com/v1`;
   const url = `/projects/${project}/serviceAccounts`;
 
-  const axios = AxiosMaker({
-    baseURL,
-    onHeaders: () => ({
-      Authorization: `Bearer ${accessToken}`,
-    }),
+  const axios = createAxiosMakerGoogle({
+    baseURL: baseURL,
+    config,
   });
 
   const fetchIamPolicy = pipe([

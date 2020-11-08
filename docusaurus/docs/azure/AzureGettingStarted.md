@@ -81,7 +81,7 @@ exports.createStack = async ({ config }) => {
   const { stage } = config;
   assert(stage);
   // Create an Azure provider
-  const provider = await AzureProvider({ name: "azure", config });
+  const provider = AzureProvider({ name: "azure", config });
 
   // https://docs.microsoft.com/en-us/rest/api/apimanagement/2019-12-01/apimanagementservice/createorupdate
   const rg = await provider.makeResourceGroup({

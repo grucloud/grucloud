@@ -291,19 +291,24 @@ const fnSpecs = (config) => {
   ];
 };
 
-exports.AzureProvider = async ({ name = "azure", config }) => {
+exports.AzureProvider = ({ name = "azure", config }) => {
   const mandatoryEnvs = ["TENANT_ID", "SUBSCRIPTION_ID", "APP_ID", "PASSWORD"];
   checkEnv(mandatoryEnvs);
 
   const { TENANT_ID, APP_ID, PASSWORD } = process.env;
-  const { bearerToken } = await AzAuthorize({
-    tenantId: TENANT_ID,
-    appId: APP_ID,
-    password: PASSWORD,
-  });
+
+  let bearerToken;
+  const start = async () => {
+    const result = await AzAuthorize({
+      tenantId: TENANT_ID,
+      appId: APP_ID,
+      password: PASSWORD,
+    });
+    bearerToken = result.bearerToken;
+  };
 
   const configProviderDefault = {
-    bearerToken,
+    bearerToken: () => bearerToken,
     retryCount: 60,
     retryDelay: 10e3,
   };
@@ -314,6 +319,7 @@ exports.AzureProvider = async ({ name = "azure", config }) => {
     mandatoryConfigKeys: ["location"],
     config: defaultsDeep(configProviderDefault)(config),
     fnSpecs,
+    start,
   });
 
   return core;

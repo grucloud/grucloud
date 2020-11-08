@@ -1,8 +1,6 @@
 const assert = require("assert");
 const { GoogleProvider } = require("../../GoogleProvider");
 const { ConfigLoader } = require("ConfigLoader");
-const { pipe, tap, map, get, filter } = require("rubico");
-const { find, isDeepEqual } = require("rubico/x");
 const chance = require("chance")();
 
 describe("GcpIamBinding", async function () {
@@ -19,10 +17,12 @@ describe("GcpIamBinding", async function () {
       this.skip();
     }
 
-    provider = await GoogleProvider({
+    provider = GoogleProvider({
       name: "google",
       config: config.google,
     });
+
+    await provider.start();
 
     const saName = `sa-${chance.guid().slice(0, 15)}`;
     serviceAccount = await provider.makeServiceAccount({
@@ -70,11 +70,11 @@ describe("GcpIamBinding", async function () {
     assert(live.members);
     assert(live.role);
     {
-      const provider = await GoogleProvider({
+      const provider = GoogleProvider({
         name: "google",
         config: config.google,
       });
-
+      await provider.start();
       const saName = `sa-${chance.guid().slice(0, 15)}`;
       const serviceAccount = await provider.makeServiceAccount({
         name: saName,
@@ -96,10 +96,12 @@ describe("GcpIamBinding", async function () {
   });
 
   it("iamBindingEmail", async function () {
-    const provider = await GoogleProvider({
+    const provider = GoogleProvider({
       name: "google",
       config: config.google,
     });
+    await provider.start();
+
     const email = "user:joe@gmail.com";
     const iamBindingEmail = await provider.makeIamBinding({
       name: roleEditor,

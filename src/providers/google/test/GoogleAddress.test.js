@@ -19,10 +19,13 @@ describe("GoogleAddress", async function () {
     } catch (error) {
       this.skip();
     }
-    provider = await GoogleProvider({
+    provider = GoogleProvider({
       name: "google",
       config: config.google,
     });
+
+    await provider.start();
+
     address = await provider.makeAddress({ name: addressName });
 
     const { error } = await provider.destroyAll();

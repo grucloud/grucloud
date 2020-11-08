@@ -20,10 +20,12 @@ describe("GoogleProvider", async function () {
     } catch (error) {
       this.skip();
     }
-    provider = await GoogleProvider({
+    provider = GoogleProvider({
       name: "google",
       config: config.google,
     });
+
+    await provider.start();
 
     const { error } = await provider.destroyAll();
     assert(!error);

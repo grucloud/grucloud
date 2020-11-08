@@ -16,7 +16,7 @@ describe("GoogleError", async function () {
   it("application credentials not found", async function () {
     process.env.GOOGLE_APPLICATION_CREDENTIALS = "/i/do/not/exist";
     try {
-      await GoogleProvider({
+      GoogleProvider({
         name: "google",
         config: config.google,
       });
