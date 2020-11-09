@@ -16,7 +16,7 @@ const { CheckTagsEC2 } = require("../AwsTagCheck");
 module.exports = AwsEC2 = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  const clientConfig = { ...config, retryDelay: 2000, repeatCount: 1 };
+  const clientConfig = { ...config, retryDelay: 5000, repeatCount: 1 };
 
   const { managedByKey, managedByValue, stageTagKey, stage } = config;
   assert(stage);
@@ -68,8 +68,8 @@ module.exports = AwsEC2 = ({ spec, config }) => {
 
   const getStateName = (instance) => {
     const { InstanceId, State } = instance;
-    assert(InstanceId);
-    assert(State);
+    assert(InstanceId, "InstanceId");
+    assert(State, "State");
     const state = State.Name;
     logger.debug(`InstanceId ${InstanceId}, stateName ${state} `);
     return state;
@@ -92,8 +92,8 @@ module.exports = AwsEC2 = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property
   const create = async ({ name, payload, dependencies }) => {
-    assert(name);
-    assert(payload);
+    assert(name, "name");
+    assert(payload, "payload");
     logger.debug(`create ${tos({ name, payload })}`);
     const data = await ec2.runInstances(payload).promise();
     logger.debug(`create result ${tos(data)}`);
@@ -107,8 +107,8 @@ module.exports = AwsEC2 = ({ spec, config }) => {
       ...clientConfig,
     });
 
-    assert(instanceUp);
-    assert(instanceUp.Tags);
+    assert(instanceUp, "instanceUp");
+    assert(instanceUp.Tags, "instanceUp.Tags");
 
     CheckTagsEC2({
       config,
@@ -120,9 +120,9 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     if (eip) {
       const eipLive = await eip.getLive();
       logger.debug(`create, associating eip ${tos({ eipLive })}`);
-      assert(eipLive);
+      assert(eipLive, "eipLive");
       const { AllocationId } = eipLive;
-      assert(AllocationId);
+      assert(AllocationId, "AllocationId");
       const paramsAssociate = {
         AllocationId,
         InstanceId,
