@@ -99,12 +99,13 @@ exports.retryCallOnError = ({
   fn,
   config,
   isExpectedException = () => false,
+  shouldRetryOnException = (error) =>
+    ["ECONNABORTED", "ECONNRESET"].includes(error.code),
 }) =>
   retryCall({
     name,
     fn,
-    shouldRetryOnException: (error) =>
-      ["ECONNABORTED", "ECONNRESET"].includes(error.code),
+    shouldRetryOnException,
     isExpectedResult: (result) => {
       assert(result.status, `no status in result`);
       return [200, 201, 202, 204].includes(result.status);

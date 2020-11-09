@@ -23,7 +23,6 @@ const {
   first,
 } = require("rubico/x");
 const { JWT } = require("google-auth-library");
-const expandTilde = require("expand-tilde");
 const shell = require("shelljs");
 
 const CoreProvider = require("../CoreProvider");
@@ -36,20 +35,42 @@ const GcpCompute = require("./resources/compute/");
 const GcpIam = require("./resources/iam/");
 const GcpStorage = require("./resources/storage/");
 const GcpDns = require("./resources/dns/");
+const { retryCallOnError } = require("../Retry");
 
 const computeDefault = {
   region: "europe-west4",
   zone: "europe-west4-a",
 };
 
-const servicesApis = [
-  "cloudresourcemanager.googleapis.com",
-  "iam.googleapis.com",
-  "compute.googleapis.com",
-  "serviceusage.googleapis.com",
-  "dns.googleapis.com",
-];
-
+const servicesApiMapBase = {
+  "cloudbilling.googleapis.com": {
+    url: ({ projectId }) =>
+      `https://cloudbilling.googleapis.com/v1/projects/${projectId}/billingInfo`,
+  },
+  "cloudresourcemanager.googleapis.com": {
+    url: ({ projectId }) =>
+      `https://cloudresourcemanager.googleapis.com/v1/projects/${projectId}/:getIamPolicy`,
+    method: "POST",
+  },
+  "iam.googleapis.com": {
+    url: ({ projectId }) =>
+      `https://iam.googleapis.com/v1/projects/${projectId}/serviceAccounts`,
+  },
+  "serviceusage.googleapis.com": {
+    url: ({ projectId }) =>
+      `https://storage.googleapis.com/storage/v1/b?project=${projectId}`,
+  },
+};
+const servicesApiMapMain = {
+  "compute.googleapis.com": {
+    url: ({ projectId, zone }) =>
+      `https://compute.googleapis.com/compute/v1/projects/${projectId}/global/images`,
+  },
+  "dns.googleapis.com": {
+    url: ({ projectId }) =>
+      `https://dns.googleapis.com/dns/v1beta2/projects/${projectId}/managedZones`,
+  },
+};
 const rolesDefault = [
   "iam.serviceAccountAdmin",
   "compute.admin",
@@ -58,7 +79,6 @@ const rolesDefault = [
   "editor",
   "resourcemanager.projectIamAdmin",
 ];
-
 const ServiceAccountName = "grucloud";
 
 const fnSpecs = (config) => [
@@ -165,6 +185,13 @@ const getDefaultAccessToken = () => {
 
 exports.authorize = authorize;
 
+const createAxiosGeneric = ({ accessToken }) =>
+  AxiosMaker({
+    onHeaders: () => ({
+      Authorization: `Bearer ${accessToken}`,
+    }),
+  });
+
 const createAxiosService = ({ accessToken, projectId }) =>
   AxiosMaker({
     baseURL: `https://serviceusage.googleapis.com/v1/projects/${projectId}`,
@@ -173,15 +200,17 @@ const createAxiosService = ({ accessToken, projectId }) =>
     }),
   });
 
-const serviceEnable = async ({ accessToken, projectId }) => {
-  const axios = createAxiosService({ accessToken, projectId });
+const serviceEnable = async ({ accessToken, projectId, servicesApiMap }) => {
+  const axiosService = createAxiosService({ accessToken, projectId });
+  const axios = createAxiosGeneric({ accessToken, projectId });
+  const servicesApis = Object.keys(servicesApiMap);
   return pipe([
     tap(() => {
       console.log(
         `Enabling ${servicesApis.length} services: ${servicesApis.join(", ")}`
       );
     }),
-    () => axios.get("/services?filter=state:ENABLED"),
+    () => axiosService.get("/services?filter=state:ENABLED"),
     get("data.services"),
     tap((xxx) => {
       logger.debug("services");
@@ -195,7 +224,41 @@ const serviceEnable = async ({ accessToken, projectId }) => {
         tap((serviceIds) => {
           logger.info(`Enabling ${serviceIds.length} services`);
         }),
-        (serviceIds) => axios.post("/services:batchEnable", { serviceIds }),
+        tap((serviceIds) =>
+          axiosService.post("/services:batchEnable", { serviceIds })
+        ),
+        tap(() => {
+          console.log(
+            `Waiting for services to take off, may take up to 10 minutes`
+          );
+        }),
+        map((serviceId) =>
+          pipe([
+            () => servicesApiMap[serviceId].url({ projectId }),
+            (url) =>
+              retryCallOnError({
+                name: `check for serviceId ${serviceId}, getting ${url}`,
+                fn: () =>
+                  axios.request({
+                    url,
+                    method: servicesApiMap[serviceId].method || "GET",
+                  }),
+                config: { retryCount: 120, retryDelay: 10e3 },
+                shouldRetryOnException: (error) => {
+                  return (
+                    ["ECONNABORTED", "ECONNRESET"].includes(error.code) ||
+                    [403].includes(error.response?.status)
+                  );
+                },
+              }),
+            tap(() => {
+              console.log(`Service ${serviceId} is up`);
+            }),
+          ])()
+        ),
+        tap(() => {
+          logger.info(`services up and running`);
+        }),
       ]),
       tap(() => {
         console.log("Services already enabled");
@@ -204,8 +267,10 @@ const serviceEnable = async ({ accessToken, projectId }) => {
   ])();
 };
 
-const serviceDisable = async ({ accessToken, projectId }) => {
+const serviceDisable = async ({ accessToken, projectId, servicesApiMap }) => {
   const axios = createAxiosService({ accessToken, projectId });
+  const servicesApis = Object.keys(servicesApiMap);
+
   return pipe([
     tap(() => {
       console.log(
@@ -329,7 +394,12 @@ const serviceAccountDelete = async ({
         tap((account) => {
           logger.debug(`deleting service account ${serviceAccountName}`);
         }),
-        (account) => axios.delete(`/${account.uniqueId}`),
+        (account) =>
+          axios.delete(`/${account.uniqueId}`).catch((error) => {
+            if (error.response?.status !== 404) {
+              throw error;
+            }
+          }),
         () => {
           console.log(`service account ${serviceAccountName} deleted`);
         },
@@ -787,9 +857,19 @@ const init = async ({
 
   await createProject({ projectName, projectId, accessToken });
 
+  await serviceEnable({
+    projectId,
+    accessToken,
+    servicesApiMap: servicesApiMapBase,
+  });
+
   await billingEnable({ projectId, accessToken });
 
-  await serviceEnable({ projectId, accessToken });
+  await serviceEnable({
+    projectId,
+    accessToken,
+    servicesApiMap: servicesApiMapMain,
+  });
 
   await serviceAccountCreate({
     projectId,
@@ -859,8 +939,16 @@ const unInit = async ({
 
   //await billingDisable({ projectId, accessToken });
   //await removeProject({ projectName, projectId, accessToken });
-
-  await serviceDisable({ projectId, accessToken });
+  await serviceDisable({
+    projectId,
+    accessToken,
+    servicesApiMap: servicesApiMapMain,
+  });
+  await serviceDisable({
+    projectId,
+    accessToken,
+    servicesApiMap: servicesApiMapBase,
+  });
 
   console.log(`Project is now un-initialized`);
 };
@@ -909,6 +997,7 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
       applicationCredentialsFile,
     });
   };
+
   const core = CoreProvider({
     type: "google",
     name,

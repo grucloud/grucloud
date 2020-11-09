@@ -30,5 +30,5 @@ describe("GoogleProviderInit", async function () {
     await provider.unInit();
     await provider.init();
     await provider.init();
-  });
+  }).timeout(1000e3);
 });

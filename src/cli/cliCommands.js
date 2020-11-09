@@ -46,6 +46,11 @@ const { tos } = require("../tos");
 
 // Common
 
+const DisplayAndThrow = ({ name }) => (error) => {
+  displayError({ name, error });
+  throw { code: 422, error };
+};
+
 const providersToString = map(({ provider, ...other }) => ({
   provider: provider.toString(),
   ...other,
@@ -213,9 +218,12 @@ const displayErrorResults = ({ results = [], name }) => {
   if (!isEmpty(results)) {
     pipe([
       //filter(({ result }) => result?.error),
-      forEach(({ provider, result, resultQuery }) => {
+      forEach(({ provider, result, error, resultQuery }) => {
         assert(provider.name);
         console.log(`Provider ${provider.name}`);
+        if (error) {
+          console.log(YAML.stringify(convertError({ error, name })));
+        }
         if (resultQuery) {
           displayPlanQueryErrorResult(resultQuery.resultCreate.plans);
           displayPlanQueryErrorResult(resultQuery.resultDestroy.plans);
@@ -382,10 +390,7 @@ const planQuery = async ({ infra, commandOptions = {}, programOptions = {} }) =>
         ])
       ),
     ]),
-    (error) => {
-      displayError({ name: "plan", error });
-      throw { code: 422, error };
-    }
+    DisplayAndThrow({ name: "Plan" })
   )(infra);
 
 exports.planQuery = planQuery;
@@ -482,10 +487,7 @@ const planRunScript = async ({
       ),
       throwIfError,
     ]),
-    (error) => {
-      displayError({ name: "planRunScript", error });
-      throw { code: 422, error };
-    }
+    DisplayAndThrow({ name: "Run Script" })
   )(infra);
 
 exports.planRunScript = planRunScript;
@@ -633,11 +635,7 @@ exports.planApply = async ({
       }),
       switchCase([hasPlans, processDeployPlans, processNoPlan]),
     ]),
-    (error) => {
-      displayError({ name: "Plan Apply", error });
-
-      throw { code: 422, error };
-    }
+    DisplayAndThrow({ name: "Plan Apply" })
   )(infra);
 };
 
@@ -859,10 +857,7 @@ exports.planDestroy = async ({
       switchCase([hasEmptyPlan, processHasNoPlan, processDestroyPlans]),
       throwIfError,
     ]),
-    (error) => {
-      displayError({ name: "Plan Destroy", error });
-      throw { code: 422, error };
-    }
+    DisplayAndThrow({ name: "Plan Destroy" })
   )(infra);
 };
 
@@ -963,14 +958,12 @@ const listDoOk = ({ commandOptions, programOptions }) =>
     throwIfError,
   ]);
 
-const listDoError = (error) => {
-  displayError({ name: "List", error });
-  throw { code: 422, error };
-};
-
 //List all
 exports.list = async ({ infra, commandOptions = {}, programOptions = {} }) =>
-  tryCatch(listDoOk({ commandOptions, programOptions }), listDoError)(infra);
+  tryCatch(
+    listDoOk({ commandOptions, programOptions }),
+    DisplayAndThrow({ name: "List" })
+  )(infra);
 
 //Output
 const OutputDoOk = ({ commandOptions, programOptions }) =>
@@ -1013,60 +1006,52 @@ const OutputDoOk = ({ commandOptions, programOptions }) =>
     }),
   ]);
 
-const OutputDoError = (error) => {
-  displayError({ name: "Output", error });
-  throw { code: 422, error };
-};
-
 exports.output = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     OutputDoOk({ commandOptions, programOptions }),
-    OutputDoError
+    DisplayAndThrow({ name: "Output" })
   )(infra);
 
 //Init
-const InitDoOk = ({ commandOptions, programOptions }) =>
+const DoCommand = ({ commandOptions, programOptions, command }) =>
   pipe([
+    tap((xxx) => {
+      logger.debug(`DoCommand ${command}`);
+    }),
     combineProviders,
     ({ providers }) =>
       filterProvidersByName({ commandOptions, providers })(providers),
-    map(async (provider) => {
-      await provider.init();
+    map(
+      tryCatch(
+        async (provider) => await provider[command](),
+        (error, provider) => {
+          return { error, provider };
+        }
+      )
+    ),
+    (results) => ({
+      error: any(get("error"))(results),
+      results,
     }),
-    tap((result) => {
-      logger.debug(`init result`);
-    }),
+    switchCase([
+      ({ error }) => error,
+      (result) => {
+        throw result;
+      },
+      tap((xxx) => {
+        logger.debug(`${command} done`);
+      }),
+    ]),
   ]);
-
-const InitDoError = (error) => {
-  displayError({ name: "Init", error });
-  throw { code: 422, error };
-};
 
 exports.init = async ({ infra, commandOptions = {}, programOptions = {} }) =>
-  tryCatch(InitDoOk({ commandOptions, programOptions }), InitDoError)(infra);
-
-//UnInit
-const UnInitDoOk = ({ commandOptions, programOptions }) =>
-  pipe([
-    combineProviders,
-    ({ providers }) =>
-      filterProvidersByName({ commandOptions, providers })(providers),
-    map(async (provider) => {
-      await provider.unInit();
-    }),
-    tap((result) => {
-      logger.debug(`uninit result`);
-    }),
-  ]);
-
-const UnInitDoError = (error) => {
-  displayError({ name: "UnInit", error });
-  throw { code: 422, error };
-};
+  tryCatch(
+    DoCommand({ commandOptions, programOptions, command: "init" }),
+    DisplayAndThrow({ name: "Init" })
+  )(infra);
 
 exports.unInit = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
-    UnInitDoOk({ commandOptions, programOptions }),
-    UnInitDoError
+    DoCommand({ commandOptions, programOptions, command: "unInit" }),
+    DisplayAndThrow({ name: "UnInit" })
   )(infra);
