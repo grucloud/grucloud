@@ -342,6 +342,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Google Website HTTPS UnInit",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/google/storage/website-https",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["uninit"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Google Website HTTPS List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/google/storage/website-https",

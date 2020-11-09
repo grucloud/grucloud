@@ -59,6 +59,8 @@ const rolesDefault = [
   "resourcemanager.projectIamAdmin",
 ];
 
+const ServiceAccountName = "grucloud";
+
 const fnSpecs = (config) => [
   ...GcpStorage(config),
   ...GcpIam(config),
@@ -72,7 +74,12 @@ const ApplicationCredentialsFile = ({
   projectId,
 }) => path.resolve(configDir, `${projectId}.json`);
 
-const authorize = async ({ applicationCredentialsFile }) => {
+const authorize = async ({
+  gcloudConfig,
+  projectName,
+  projectId,
+  applicationCredentialsFile,
+}) => {
   logger.debug(`authorize with file: ${applicationCredentialsFile}`);
 
   assert(applicationCredentialsFile);
@@ -82,8 +89,15 @@ const authorize = async ({ applicationCredentialsFile }) => {
       .then(() => true)
       .catch(() => false))
   ) {
-    const message = `Cannot open application credentials file ${applicationCredentialsFile}\nPease run the command 'gc init' to initialise the provider`;
-    throw { code: 422, message };
+    const message = `Cannot open application credentials file ${applicationCredentialsFile}\nRunning 'gc init'`;
+    console.log(message);
+    await init({
+      gcloudConfig,
+      projectName,
+      projectId,
+      applicationCredentialsFile,
+      serviceAccountName: ServiceAccountName,
+    });
   }
   const keys = require(applicationCredentialsFile);
   logger.debug(`authorize with email: ${keys.client_email}`);
@@ -151,13 +165,16 @@ const getDefaultAccessToken = () => {
 
 exports.authorize = authorize;
 
-const serviceEnable = async ({ accessToken, projectId }) => {
-  const axios = AxiosMaker({
+const createAxiosService = ({ accessToken, projectId }) =>
+  AxiosMaker({
     baseURL: `https://serviceusage.googleapis.com/v1/projects/${projectId}`,
     onHeaders: () => ({
       Authorization: `Bearer ${accessToken}`,
     }),
   });
+
+const serviceEnable = async ({ accessToken, projectId }) => {
+  const axios = createAxiosService({ accessToken, projectId });
   return pipe([
     tap(() => {
       console.log(
@@ -165,9 +182,6 @@ const serviceEnable = async ({ accessToken, projectId }) => {
       );
     }),
     () => axios.get("/services?filter=state:ENABLED"),
-    tap((xxx) => {
-      logger.debug("services");
-    }),
     get("data.services"),
     tap((xxx) => {
       logger.debug("services");
@@ -190,6 +204,52 @@ const serviceEnable = async ({ accessToken, projectId }) => {
   ])();
 };
 
+const serviceDisable = async ({ accessToken, projectId }) => {
+  const axios = createAxiosService({ accessToken, projectId });
+  return pipe([
+    tap(() => {
+      console.log(
+        `Disabling ${servicesApis.length} services: ${servicesApis.join(", ")}`
+      );
+    }),
+    () => axios.get("/services?filter=state:ENABLED"),
+    get("data.services"),
+    tap((xxx) => {
+      logger.debug("services");
+    }),
+    pluck("config.name"),
+    (servicesEnabled = []) =>
+      filter((service) => servicesEnabled.includes(service))(servicesApis),
+    switchCase([
+      (serviceIds) => !isEmpty(serviceIds),
+      pipe([
+        tap((serviceIds) => {
+          logger.info(`Disabled ${serviceIds.length} services`);
+        }),
+        map((serviceId) =>
+          axios.post(`/services/${serviceId}:disable`, {
+            disableDependentServices: true,
+          })
+        ),
+        tap((xxx) => {
+          console.log("Services disabled");
+        }),
+      ]),
+      tap(() => {
+        console.log("Services already disabled");
+      }),
+    ]),
+  ])();
+};
+
+const createAxiosServiceAccount = ({ accessToken, projectId }) =>
+  AxiosMaker({
+    baseURL: `https://iam.googleapis.com/v1/projects/${projectId}/serviceAccounts`,
+    onHeaders: () => ({
+      Authorization: `Bearer ${accessToken}`,
+    }),
+  });
+
 const ServiceAccountEmail = ({ serviceAccountName, projectId }) =>
   `${serviceAccountName}@${projectId}.iam.gserviceaccount.com`;
 
@@ -198,17 +258,12 @@ const serviceAccountCreate = async ({
   projectId,
   serviceAccountName,
 }) => {
-  const axios = AxiosMaker({
-    baseURL: `https://iam.googleapis.com/v1/projects/${projectId}/serviceAccounts`,
-    onHeaders: () => ({
-      Authorization: `Bearer ${accessToken}`,
-    }),
-  });
-
+  const axios = createAxiosServiceAccount({ accessToken, projectId });
   const serviceAccountEmail = ServiceAccountEmail({
     serviceAccountName,
     projectId,
   });
+
   console.log(`Creating service account ${serviceAccountEmail}`);
 
   return pipe([
@@ -245,6 +300,59 @@ const serviceAccountCreate = async ({
   ])();
 };
 
+const serviceAccountDelete = async ({
+  accessToken,
+  projectId,
+  serviceAccountName,
+}) => {
+  const axios = createAxiosServiceAccount({ accessToken, projectId });
+  const serviceAccountEmail = ServiceAccountEmail({
+    serviceAccountName,
+    projectId,
+  });
+
+  console.log(`Deleting service account ${serviceAccountEmail}`);
+
+  return pipe([
+    tap((xx) => {
+      logger.debug("getting service accounts");
+    }),
+    () => axios.get("/"),
+    get("data.accounts"),
+    find((account) => account.email === serviceAccountEmail),
+    tap((xx) => {
+      logger.debug("serviceAccountDelete");
+    }),
+    switchCase([
+      (account) => account,
+      pipe([
+        tap((account) => {
+          logger.debug(`deleting service account ${serviceAccountName}`);
+        }),
+        (account) => axios.delete(`/${account.uniqueId}`),
+        () => {
+          console.log(`service account ${serviceAccountName} deleted`);
+        },
+      ]),
+      tap(() => {
+        console.log("service account already deleted");
+      }),
+    ]),
+  ])();
+};
+
+const createAxiosServiceAccountKey = ({
+  accessToken,
+  projectId,
+  serviceAccountEmail,
+}) =>
+  AxiosMaker({
+    baseURL: `https://iam.googleapis.com/v1/projects/${projectId}/serviceAccounts/${serviceAccountEmail}/keys`,
+    onHeaders: () => ({
+      Authorization: `Bearer ${accessToken}`,
+    }),
+  });
+
 const serviceAccountKeyCreate = async ({
   accessToken,
   projectId,
@@ -256,11 +364,10 @@ const serviceAccountKeyCreate = async ({
     projectId,
   });
 
-  const axios = AxiosMaker({
-    baseURL: `https://iam.googleapis.com/v1/projects/${projectId}/serviceAccounts/${serviceAccountEmail}/keys`,
-    onHeaders: () => ({
-      Authorization: `Bearer ${accessToken}`,
-    }),
+  const axios = createAxiosServiceAccountKey({
+    accessToken,
+    projectId,
+    serviceAccountEmail,
   });
 
   return pipe([
@@ -297,7 +404,63 @@ const serviceAccountKeyCreate = async ({
   ])();
 };
 
-const addRolesToBindings = ({ currentBindings, rolesToAdd, member }) =>
+const serviceAccountKeyDelete = async ({
+  accessToken,
+  projectId,
+  serviceAccountName,
+  applicationCredentialsFile,
+}) => {
+  const serviceAccountEmail = ServiceAccountEmail({
+    serviceAccountName,
+    projectId,
+  });
+
+  const axios = createAxiosServiceAccountKey({
+    accessToken,
+    projectId,
+    serviceAccountEmail,
+  });
+
+  return pipe([
+    switchCase([
+      () =>
+        fs
+          .access(applicationCredentialsFile)
+          .then(() => true)
+          .catch(() => false),
+      pipe([
+        tap((xx) => {
+          logger.debug(
+            `delete service account keys for ${serviceAccountEmail}`
+          );
+        }),
+        () => fs.readFile(applicationCredentialsFile, "utf-8"),
+        (content) => JSON.parse(content),
+        tap((content) => {
+          logger.debug(`serviceAccountKeyDelete`);
+        }),
+        ({ private_key_id }) =>
+          axios.delete(`/${private_key_id}`).catch((error) => {
+            logger.error(`error deleting key ${private_key_id}`);
+          }),
+        tap((xx) => {
+          logger.debug("service account keys deleted");
+        }),
+        () => fs.unlink(applicationCredentialsFile),
+        tap((xx) => {
+          console.log(
+            `service account keys file '${applicationCredentialsFile}' deleted`
+          );
+        }),
+      ]),
+      tap(() => {
+        console.log("Service account key already deleted");
+      }),
+    ]),
+  ])();
+};
+
+const bindingsAdd = ({ currentBindings, rolesToAdd, member }) =>
   pipe([
     () => map((role) => `roles/${role}`)(rolesToAdd),
     (rolesToAddPrefixed) =>
@@ -326,23 +489,48 @@ const addRolesToBindings = ({ currentBindings, rolesToAdd, member }) =>
             (newBindings) => [...bindings, ...newBindings],
           ])(),
         tap((xx) => {
-          logger.debug("addRolesToBindings");
+          logger.debug("bindingsAdd");
         }),
       ])(currentBindings),
   ])();
 
-const addIamPolicy = async ({ accessToken, projectId, serviceAccountName }) => {
-  const axios = AxiosMaker({
+const bindingsRemove = ({ currentBindings, memberToRemove }) =>
+  pipe([
+    tap(() => {
+      console.log(`Remove Bindings for member: ${memberToRemove}`);
+    }),
+    map(({ role, members }) => {
+      return {
+        role,
+        members: pipe([
+          filter((member) => member != memberToRemove),
+          filter((member) => !member.startsWith("deleted:")),
+        ])(members),
+      };
+    }),
+    filter((binding) => !isEmpty(binding.members)),
+    tap((xx) => {
+      logger.debug("bindingsRemove");
+    }),
+  ])(currentBindings);
+
+const createAxiosIam = ({ projectId, accessToken }) =>
+  AxiosMaker({
     baseURL: `https://cloudresourcemanager.googleapis.com/v1/projects/${projectId}`,
     onHeaders: () => ({
       Authorization: `Bearer ${accessToken}`,
     }),
   });
 
-  const member = `serviceAccount:${ServiceAccountEmail({
+const MemberServiceAccount = ({ serviceAccountName, projectId }) =>
+  `serviceAccount:${ServiceAccountEmail({
     serviceAccountName,
     projectId,
   })}`;
+
+const iamPolicyAdd = async ({ accessToken, projectId, serviceAccountName }) => {
+  const axios = createAxiosIam({ projectId, accessToken });
+  const member = MemberServiceAccount({ serviceAccountName, projectId });
 
   return pipe([
     tap(() => {
@@ -354,7 +542,7 @@ const addIamPolicy = async ({ accessToken, projectId, serviceAccountName }) => {
       pipe([
         () => ({
           etag: currentPolicy.etag,
-          bindings: addRolesToBindings({
+          bindings: bindingsAdd({
             currentBindings: currentPolicy.bindings,
             rolesToAdd: rolesDefault,
             member,
@@ -382,6 +570,61 @@ const addIamPolicy = async ({ accessToken, projectId, serviceAccountName }) => {
       ])(),
   ])();
 };
+
+const iamPolicyRemove = async ({
+  accessToken,
+  projectId,
+  serviceAccountName,
+}) => {
+  const axios = createAxiosIam({ projectId, accessToken });
+  const memberToRemove = MemberServiceAccount({
+    serviceAccountName,
+    projectId,
+  });
+
+  console.log(`Removing Iam binding for member ${memberToRemove} `);
+
+  return pipe([
+    tap(() => {
+      logger.debug("getting iam policy");
+    }),
+    () => axios.post(":getIamPolicy"),
+    get("data"),
+    (currentPolicy) =>
+      pipe([
+        tap(() => {
+          logger.debug("iamPolicyRemove ");
+        }),
+        () => ({
+          etag: currentPolicy.etag,
+          bindings: bindingsRemove({
+            currentBindings: currentPolicy.bindings,
+            memberToRemove,
+          }),
+        }),
+        switchCase([
+          (newPolicy) =>
+            !isDeepEqual(currentPolicy.bindings, newPolicy.bindings),
+          pipe([
+            tap((newPolicy) => {
+              logger.debug(`updating iam policy`);
+              logger.debug(tos(currentPolicy));
+              logger.debug(`new policy:`);
+              logger.debug(tos(newPolicy));
+            }),
+            (policy) => axios.post(":setIamPolicy", { policy }),
+            tap((xx) => {
+              logger.debug("iam policy updated");
+            }),
+          ]),
+          tap(() => {
+            console.log(`Iam policy already up to date`);
+          }),
+        ]),
+      ])(),
+  ])();
+};
+
 const createProject = async ({ accessToken, projectName, projectId }) => {
   console.log(`Creating project ${projectName}, projectId: ${projectId}`);
 
@@ -395,7 +638,7 @@ const createProject = async ({ accessToken, projectName, projectId }) => {
 
   return pipe([
     () => axiosProject.get("/"),
-    get("data.projects"), //
+    get("data.projects"),
     tap((xxx) => {
       logger.debug(`createProject`);
     }),
@@ -423,23 +666,26 @@ const createProject = async ({ accessToken, projectName, projectId }) => {
   ])();
 };
 
-const setupBilling = async ({ accessToken, projectId }) => {
-  const axiosBilling = AxiosMaker({
+const createAxiosBilling = ({ accessToken, projectId }) =>
+  AxiosMaker({
     baseURL: `https://cloudbilling.googleapis.com/v1`,
     onHeaders: () => ({
       Authorization: `Bearer ${accessToken}`,
     }),
   });
+
+const billingEnable = async ({ accessToken, projectId }) => {
+  const axiosBilling = createAxiosBilling({ accessToken });
   console.log(`Setup billing`);
 
   return pipe([
     tap(() => {
-      logger.debug(`setupBilling billingAccounts for project ${projectId}`);
+      logger.debug(`billingEnable for project ${projectId}`);
     }),
     () => axiosBilling.get(`/projects/${projectId}/billingInfo`),
     get("data"),
     tap((billingInfo) => {
-      logger.debug(`setupBilling billingInfo for project: ${billingInfo}`);
+      logger.debug(`billingEnable billingInfo for project: ${billingInfo}`);
     }),
     switchCase([
       get("billingEnabled"),
@@ -453,7 +699,9 @@ const setupBilling = async ({ accessToken, projectId }) => {
         () => axiosBilling.get(`/billingAccounts`),
         get("data.billingAccounts"),
         tap((billingAccounts) => {
-          logger.debug(`setupBilling billingAccounts: ${tos(billingAccounts)}`);
+          logger.debug(
+            `billingEnable billingAccounts: ${tos(billingAccounts)}`
+          );
         }),
         filter(({ open }) => open),
         switchCase([
@@ -481,11 +729,48 @@ const setupBilling = async ({ accessToken, projectId }) => {
     ]),
   ])();
 };
+const billingDisable = async ({ accessToken, projectId }) => {
+  const axiosBilling = createAxiosBilling({ accessToken });
+  console.log(`Disable billing`);
+
+  return pipe([
+    tap(() => {
+      logger.debug(`billingDisable for project ${projectId}`);
+    }),
+    () => axiosBilling.get(`/projects/${projectId}/billingInfo`),
+    get("data"),
+    tap((billingInfo) => {
+      logger.debug(`billingDisable billingInfo: ${billingInfo}`);
+    }),
+    switchCase([
+      get("billingEnabled"),
+      pipe([
+        tap((billingInfo) => {
+          console.log(`billing '${billingInfo.billingAccountName}'`);
+          logger.debug(`disable billing`);
+        }),
+        tap((billingInfo) =>
+          axiosBilling.put(`/projects/${projectId}/billingInfo`, {
+            billingAccountName: billingInfo.billingAccountName,
+            billingEnabled: false,
+          })
+        ),
+        tap((billingInfo) => {
+          console.log(`billing '${billingInfo.billingAccountName}' disabled`);
+        }),
+      ]),
+      tap(() => {
+        logger.debug(`billing already disabled`);
+      }),
+    ]),
+  ])();
+};
 const init = async ({
   gcloudConfig,
   projectId,
   projectName,
   applicationCredentialsFile,
+  serviceAccountName,
 }) => {
   if (!gcloudConfig.config) {
     console.error(`gcloud is not installed, setup aborted`);
@@ -500,11 +785,9 @@ const init = async ({
     return;
   }
 
-  const serviceAccountName = "grucloud";
-
   await createProject({ projectName, projectId, accessToken });
 
-  await setupBilling({ projectId, accessToken });
+  await billingEnable({ projectId, accessToken });
 
   await serviceEnable({ projectId, accessToken });
 
@@ -526,12 +809,60 @@ const init = async ({
   });
   console.log(`Update iam policy`);
 
-  await addIamPolicy({
+  await iamPolicyAdd({
     accessToken,
     projectId,
     serviceAccountName,
   });
   console.log(`Project is now initialized`);
+};
+
+const unInit = async ({
+  gcloudConfig,
+  projectId,
+  projectName,
+  applicationCredentialsFile,
+  serviceAccountName,
+}) => {
+  if (!gcloudConfig.config) {
+    console.error(`gcloud is not installed, setup aborted`);
+    return;
+  }
+  console.log(`De-initializing project ${projectId}`);
+  const accessToken = getDefaultAccessToken();
+  if (!accessToken) {
+    logger.debug(
+      `cannot get default access token, run 'gcloud auth login' and try again`
+    );
+    return;
+  }
+
+  await iamPolicyRemove({
+    accessToken,
+    projectId,
+    serviceAccountName,
+  });
+
+  await serviceAccountKeyDelete({
+    projectId,
+    projectName,
+    accessToken,
+    serviceAccountName,
+    applicationCredentialsFile,
+  });
+
+  await serviceAccountDelete({
+    projectId,
+    accessToken,
+    serviceAccountName,
+  });
+
+  //await billingDisable({ projectId, accessToken });
+  //await removeProject({ projectName, projectId, accessToken });
+
+  await serviceDisable({ projectId, accessToken });
+
+  console.log(`Project is now un-initialized`);
 };
 
 exports.GoogleProvider = ({ name = "google", config: configUser }) => {
@@ -572,6 +903,9 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
 
   const start = async () => {
     serviceAccountAccessToken = await authorize({
+      gcloudConfig,
+      projectId,
+      projectName,
       applicationCredentialsFile,
     });
   };
@@ -590,6 +924,15 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
         projectName,
         projectId,
         applicationCredentialsFile,
+        serviceAccountName: ServiceAccountName,
+      }),
+    unInit: () =>
+      unInit({
+        gcloudConfig,
+        projectName,
+        projectId,
+        applicationCredentialsFile,
+        serviceAccountName: ServiceAccountName,
       }),
   });
 

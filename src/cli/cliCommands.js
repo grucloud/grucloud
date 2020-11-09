@@ -280,7 +280,7 @@ const setupProviders = ({ commandOptions }) =>
       pipe([
         map(
           tryCatch(
-            (provider) => provider.start(),
+            async (provider) => await provider.start(),
             (error, provider) => {
               return { error, provider };
             }
@@ -1027,17 +1027,11 @@ exports.output = async ({ infra, commandOptions = {}, programOptions = {} }) =>
 //Init
 const InitDoOk = ({ commandOptions, programOptions }) =>
   pipe([
-    tap(() => {
-      logger.debug(
-        `init ${JSON.stringify({ commandOptions, programOptions })}`
-      );
-    }),
     combineProviders,
     ({ providers }) =>
       filterProvidersByName({ commandOptions, providers })(providers),
-    forEach(async (provider) => {
-      logger.debug(`provider ${provider.name}: ${provider.resourceNames()}`);
-      provider.init && (await provider.init());
+    map(async (provider) => {
+      await provider.init();
     }),
     tap((result) => {
       logger.debug(`init result`);
@@ -1051,3 +1045,28 @@ const InitDoError = (error) => {
 
 exports.init = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(InitDoOk({ commandOptions, programOptions }), InitDoError)(infra);
+
+//UnInit
+const UnInitDoOk = ({ commandOptions, programOptions }) =>
+  pipe([
+    combineProviders,
+    ({ providers }) =>
+      filterProvidersByName({ commandOptions, providers })(providers),
+    map(async (provider) => {
+      await provider.unInit();
+    }),
+    tap((result) => {
+      logger.debug(`uninit result`);
+    }),
+  ]);
+
+const UnInitDoError = (error) => {
+  displayError({ name: "UnInit", error });
+  throw { code: 422, error };
+};
+
+exports.unInit = async ({ infra, commandOptions = {}, programOptions = {} }) =>
+  tryCatch(
+    UnInitDoOk({ commandOptions, programOptions }),
+    UnInitDoError
+  )(infra);
