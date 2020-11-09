@@ -100,7 +100,7 @@ const authorize = async ({
   projectId,
   applicationCredentialsFile,
 }) => {
-  logger.debug(`authorize with file: ${applicationCredentialsFile}`);
+  logger.info(`authorize with file: ${applicationCredentialsFile}`);
 
   assert(applicationCredentialsFile);
   if (
@@ -120,8 +120,8 @@ const authorize = async ({
     });
   }
   const keys = require(applicationCredentialsFile);
-  logger.debug(`authorize with email: ${keys.client_email}`);
-
+  logger.info(`authorize with email: ${keys.client_email}`);
+  assert(keys.private_key, "keys.private_key");
   const client = new JWT({
     email: keys.client_email,
     key: keys.private_key,
