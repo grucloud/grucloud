@@ -12,7 +12,7 @@ const {
 describe("GcpBucket", async function () {
   const types = ["Bucket", "Object"];
   const bucketName = `mybucket-test-${chance.guid()}`;
-  const bucketNamePublic = `test.gcp.grucloud.com`;
+  const bucketNamePublic = `grucloud-test-bucket`;
   const objectName = `mypath/myfile`;
   let config;
   let provider;
@@ -81,7 +81,7 @@ describe("GcpBucket", async function () {
     assert.equal(plan.resultDestroy.plans.length, 0);
     assert.equal(plan.resultCreate.plans.length, 3);
   });
-  it("gcp bucket apply and destroy", async function () {
+  it.only("gcp bucket apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
     const bucketLive = await bucket.getLive();
 
