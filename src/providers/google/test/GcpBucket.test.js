@@ -12,7 +12,7 @@ const {
 describe("GcpBucket", async function () {
   const types = ["Bucket", "Object"];
   const bucketName = `mybucket-test-${chance.guid()}`;
-  const bucketNamePublic = `test.gcp.grucloud.com`;
+  const bucketNamePublic = `grucloud-test-bucket`;
   const objectName = `mypath/myfile`;
   let config;
   let provider;

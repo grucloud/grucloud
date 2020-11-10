@@ -50,6 +50,20 @@ exports.createProgram = ({ version, commands }) => {
     });
 
   program
+    .command("uninit")
+    .description("Un-initialise the cloud providers")
+    .alias("u")
+    .action(async (commandOptions) => {
+      const programOptions = program.opts();
+      await pipe([
+        infraOptions,
+        createInfra,
+        async (infra) =>
+          await commands.unInit({ infra, commandOptions, programOptions }),
+      ])(programOptions);
+    });
+
+  program
     .command("plan")
     .description("Find out which resources need to be deployed or destroyed")
     .alias("p")

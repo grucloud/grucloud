@@ -112,6 +112,7 @@ exports.getByNameCore = async ({ name, findName, getList }) => {
 
   const { items } = await getList({ deep: true });
   const instance = items.find((item) => findName(item) === name);
+  logger.info(`getByName ${name}: ${instance ? "UP" : "DOWN"}`);
   logger.debug(`getByName ${name}: ${tos({ instance })}`);
 
   return instance;

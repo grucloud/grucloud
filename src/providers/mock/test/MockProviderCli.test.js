@@ -19,6 +19,20 @@ describe("MockProviderCli", async function () {
     const infra = { provider };
 
     {
+      const init = await cliCommands.init({
+        infra,
+        commandOptions: {},
+      });
+      assert(!init.error);
+    }
+    {
+      const unInit = await cliCommands.unInit({
+        infra,
+        commandOptions: {},
+      });
+      assert(!unInit.error);
+    }
+    {
       const output = await cliCommands.output({
         infra,
         commandOptions: { name: "myip", field: "id" },

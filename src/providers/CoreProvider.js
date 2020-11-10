@@ -450,6 +450,7 @@ function CoreProvider({
   fnSpecs,
   config,
   init = () => {},
+  unInit = () => {},
   start = () => {},
 }) {
   const providerConfig = defaultsDeep(configProviderDefault)(config);
@@ -1897,6 +1898,7 @@ function CoreProvider({
     runOnDestroyed,
     hookAdd,
     init,
+    unInit,
     start,
   };
   const enhanceProvider = {

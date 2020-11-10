@@ -67,7 +67,7 @@ describe("GoogleProvider", async function () {
     });
   });
   after(async () => {
-    //await provider?.destroyAll();
+    await provider?.destroyAll();
   });
 
   it("gcp server resolveConfig ", async function () {
