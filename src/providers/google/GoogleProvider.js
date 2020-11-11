@@ -70,6 +70,10 @@ const servicesApiMapMain = {
     url: ({ projectId }) =>
       `https://dns.googleapis.com/dns/v1beta2/projects/${projectId}/managedZones`,
   },
+  /*"domains.googleapis.com": {
+    url: ({ projectId }) =>
+      `https://domains.googleapis.com/v1beta1/projects/${projectId}/locations/global/registrations`,
+  },*/
 };
 const rolesDefault = [
   "iam.serviceAccountAdmin",
@@ -77,6 +81,7 @@ const rolesDefault = [
   "storage.admin",
   "storage.objectAdmin",
   "dns.admin",
+  //"domains.admin",
   "editor",
   "resourcemanager.projectIamAdmin",
 ];
