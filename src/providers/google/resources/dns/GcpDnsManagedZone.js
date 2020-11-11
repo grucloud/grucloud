@@ -110,10 +110,7 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
         () =>
           retryCallOnError({
             name: `getList`,
-            fn: async () =>
-              await axios.request("/", {
-                method: "GET",
-              }),
+            fn: () => axios.get("/"),
             config,
           }),
         tap((xxx) => {

@@ -29,9 +29,14 @@ exports.createStack = async ({ config }) => {
 
   const provider = GoogleProvider({ config });
 
-  const myBucket = await provider.makeBucket({
+  const bucketPublic = await provider.makeBucket({
     name: bucketName,
     properties: () => ({
+      iamConfiguration: {
+        uniformBucketLevelAccess: {
+          enabled: true,
+        },
+      },
       iam: {
         bindings: [
           {
@@ -49,7 +54,7 @@ exports.createStack = async ({ config }) => {
   await map((file) =>
     provider.makeObject({
       name: file,
-      dependencies: { bucket: myBucket },
+      dependencies: { bucket: bucketPublic },
       properties: () => ({
         path: "/",
         contentType: mime.lookup(file),
@@ -69,7 +74,7 @@ exports.createStack = async ({ config }) => {
 
   const backendBucket = await provider.makeBackendBucket({
     name: "backend-bucket",
-    dependencies: { bucket: myBucket },
+    dependencies: { bucket: bucketPublic },
     properties: () => ({
       bucketName,
     }),
@@ -118,6 +123,12 @@ exports.createStack = async ({ config }) => {
             ttl: 86400,
             type: "A",
           },
+          {
+            name: `www.${domain}.`,
+            rrdatas: [globalForwardingRule.live?.IPAddress],
+            ttl: 86400,
+            type: "A",
+          },
         ],
       };
     },
@@ -125,5 +136,6 @@ exports.createStack = async ({ config }) => {
 
   return {
     provider,
+    resources: { bucketPublic, dnsManagedZone },
   };
 };

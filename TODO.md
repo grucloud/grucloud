@@ -2,6 +2,8 @@
 
 ## Common:
 
+add error ENOTFOUND in shouldRetryOnException
+
 Resource: aws::S3Bucket::grucloud-policy
 
 name: OperationAborted

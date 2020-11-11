@@ -290,19 +290,18 @@ const setupProviders = ({ commandOptions }) =>
           tryCatch(
             async (provider) => await provider.start(),
             (error, provider) => {
-              return { error, provider };
+              return { error, provider: provider.toString() };
             }
           )
         ),
-      ]),
-      tap.if(
-        any(({ error }) => error),
-        (results) => {
-          throw results;
-        }
-      )
+        tap.if(
+          any(({ error } = {}) => error),
+          (results) => {
+            throw results;
+          }
+        ),
+      ])
     ),
-    //has error ?
     tap((xx) => {
       logger.debug("setupProviders");
     }),
