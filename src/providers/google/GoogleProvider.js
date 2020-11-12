@@ -75,6 +75,7 @@ const rolesDefault = [
   "iam.serviceAccountAdmin",
   "compute.admin",
   "storage.admin",
+  "storage.objectAdmin",
   "dns.admin",
   "editor",
   "resourcemanager.projectIamAdmin",
@@ -355,7 +356,7 @@ const serviceAccountCreate = async ({
             },
           }),
         () => {
-          logger.debug(`service account ${serviceAccountName} created`);
+          logger.debug(`Service account ${serviceAccountEmail} created`);
         },
       ]),
       tap((account) => {
@@ -401,7 +402,7 @@ const serviceAccountDelete = async ({
             }
           }),
         () => {
-          console.log(`service account ${serviceAccountName} deleted`);
+          console.log(`Service account ${serviceAccountEmail} deleted`);
         },
       ]),
       tap(() => {
@@ -865,12 +866,6 @@ const init = async ({
 
   await billingEnable({ projectId, accessToken });
 
-  await serviceEnable({
-    projectId,
-    accessToken,
-    servicesApiMap: servicesApiMapMain,
-  });
-
   await serviceAccountCreate({
     projectId,
     accessToken,
@@ -894,6 +889,13 @@ const init = async ({
     projectId,
     serviceAccountName,
   });
+
+  await serviceEnable({
+    projectId,
+    accessToken,
+    servicesApiMap: servicesApiMapMain,
+  });
+
   console.log(`Project is now initialized`);
 };
 
@@ -996,6 +998,7 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
       projectName,
       applicationCredentialsFile,
     });
+    logger.debug(`started`);
   };
 
   const core = CoreProvider({

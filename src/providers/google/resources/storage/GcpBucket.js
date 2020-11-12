@@ -92,6 +92,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
     pipe([
       tap(() => {
         logger.info(`create bucket ${name}`);
+        logger.debug(`bucket create payload ${tos(payload)}`);
       }),
       () => client.create({ name, payload, dependencies }),
       tap((result) => {

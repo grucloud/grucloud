@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "*",
-    "mime-types": "^2.1.27"
+    "mime-types": "^2.1.27",
+    "node-dig-dns": "^0.2.12"
   }
 }

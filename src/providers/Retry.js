@@ -101,15 +101,16 @@ exports.retryCallOnError = ({
   isExpectedException = () => false,
   shouldRetryOnException = (error) =>
     ["ECONNABORTED", "ECONNRESET"].includes(error.code),
+  isExpectedResult = (result) => {
+    assert(result.status, `no status in result`);
+    return [200, 201, 202, 204].includes(result.status);
+  },
 }) =>
   retryCall({
     name,
     fn,
     shouldRetryOnException,
-    isExpectedResult: (result) => {
-      assert(result.status, `no status in result`);
-      return [200, 201, 202, 204].includes(result.status);
-    },
+    isExpectedResult,
     isExpectedException,
     retryCount: config.retryCount,
     retryDelay: config.retryDelay,
