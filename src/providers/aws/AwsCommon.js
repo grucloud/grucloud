@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tryCatch, tap } = require("rubico");
+const { pipe, tryCatch, tap, switchCase } = require("rubico");
 const first = require("rubico/x/first");
 const logger = require("../../logger")({ prefix: "Aws" });
 const { tos } = require("../../tos");

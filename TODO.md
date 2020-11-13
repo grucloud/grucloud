@@ -69,6 +69,7 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## TODO Goggle
 
+- The field 'entity.managedZone.dnsName' cannot be modified.
 - gcp object path properties
 
 - isExpectedException: (error) => {
