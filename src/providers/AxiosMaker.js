@@ -15,8 +15,8 @@ module.exports = AxiosMaker = ({
 
   axios.interceptors.request.use(
     function (config) {
-      const { method, baseURL, url } = config;
-      logger.debug(`axios request ${method} ${baseURL ? baseURL : ""}${url}`);
+      const { method, baseURL = "", url } = config;
+      logger.debug(`axios request ${method} ${baseURL}${url}`);
       //config.data && logger.debug(tos(config.data));
       return {
         ...config,
@@ -35,17 +35,15 @@ module.exports = AxiosMaker = ({
   axios.interceptors.response.use(
     function (response) {
       const { config, status } = response;
-      const { method, baseURL, url } = config;
-      logger.debug(
-        `axios response ${status}, ${method} ${baseURL ? baseURL : ""}${url}`
-      );
+      const { method, baseURL = "", url } = config;
+      logger.debug(`axios response ${status}, ${method} ${baseURL}${url}`);
       //logger.debug(tos(response.data));
       return response;
     },
     function (error) {
       if (error.response?.status === 404) {
-        const { method, baseURL, url } = error.config;
-        logger.info(`axios error ${method} ${baseURL ? baseURL : ""}${url}`);
+        const { method, baseURL = "", url } = error.config;
+        logger.info(`axios error ${method} ${baseURL}${url}`);
         logger.info(`axios error ${error}`);
       } else {
         logger.error(`axios error config: ${tos(error.config)}`);
