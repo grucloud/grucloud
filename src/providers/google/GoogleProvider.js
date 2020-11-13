@@ -183,9 +183,8 @@ const getDefaultAccessToken = () => {
       return getDefaultAccessToken();
     }
   } else {
-    assert(result.token_response);
-    assert(result.token_response.access_token);
-    return result.token_response.access_token;
+    assert(result.token, `no token in ${tos(result)}`);
+    return result.token;
   }
 };
 
