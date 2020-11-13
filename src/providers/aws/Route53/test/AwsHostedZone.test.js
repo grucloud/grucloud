@@ -27,11 +27,24 @@ describe("AwsHostedZone", async function () {
 
     hostedZone = await provider.makeHostedZone({
       name: hostedZoneName,
-      properties: () => ({}),
+      properties: () => ({
+        RecordSet: [
+          {
+            Name: hostedZoneName,
+            ResourceRecords: [
+              {
+                Value: "192.0.2.44",
+              },
+            ],
+            TTL: 60,
+            Type: "A",
+          },
+        ],
+      }),
     });
   });
   after(async () => {
-    await provider?.destroyAll();
+    //await provider?.destroyAll();
   });
   it("hostedZone resolveConfig", async function () {
     assert.equal(hostedZone.name, hostedZoneName);
@@ -50,7 +63,7 @@ describe("AwsHostedZone", async function () {
     assert(lives);
   });
 
-  it("hostedZone apply plan", async function () {
+  it.only("hostedZone apply plan", async function () {
     await testPlanDeploy({ provider, types: ["HostedZone"] });
 
     const hostedZoneLive = await hostedZone.getLive();

@@ -1,6 +1,15 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
-const { map, pipe, tap, tryCatch, get, switchCase } = require("rubico");
+const {
+  map,
+  pipe,
+  tap,
+  tryCatch,
+  get,
+  switchCase,
+  pick,
+  filter,
+} = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "HostedZone" });
@@ -36,6 +45,15 @@ exports.AwsHostedZone = ({ spec, config }) => {
       get("HostedZones"),
       map(async (hostedZone) => ({
         ...hostedZone,
+        RecordSet: await pipe([
+          () =>
+            route53
+              .listResourceRecordSets({
+                HostedZoneId: hostedZone.Id,
+              })
+              .promise(),
+          get("ResourceRecordSets"),
+        ])(),
         Tags: await pipe([
           () =>
             route53
@@ -85,14 +103,17 @@ exports.AwsHostedZone = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#createHostedZone-property
-  const create = async ({ name, payload = {} }) => {
-    return pipe([
+  const create = async ({ name, payload = {} }) =>
+    pipe([
       tap(() => {
         assert(name);
         assert(payload);
         logger.info(`create hosted zone: ${name}, ${tos(payload)}`);
       }),
-      () => route53.createHostedZone(payload).promise(),
+      () =>
+        route53
+          .createHostedZone(pick(["Name", "CallerReference"])(payload))
+          .promise(),
       tap(({ HostedZone }) => {
         logger.debug(
           `created hosted zone: ${name}, result: ${tos(HostedZone)}`
@@ -107,11 +128,23 @@ exports.AwsHostedZone = ({ spec, config }) => {
           })
           .promise()
       ),
+      tap(({ HostedZone }) =>
+        route53
+          .changeResourceRecordSets({
+            HostedZoneId: HostedZone.Id,
+            ChangeBatch: {
+              Changes: map((ResourceRecordSet) => ({
+                Action: "CREATE",
+                ResourceRecordSet,
+              }))(payload.RecordSet),
+            },
+          })
+          .promise()
+      ),
       tap(({ HostedZone }) => {
         logger.debug(`created done`);
       }),
     ])();
-  };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#deleteHostedZone-property
   const destroy = async ({ id, name }) =>
@@ -120,6 +153,28 @@ exports.AwsHostedZone = ({ spec, config }) => {
         logger.debug(`destroy ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
+      () =>
+        route53
+          .listResourceRecordSets({
+            HostedZoneId: id,
+          })
+          .promise(),
+      get("ResourceRecordSets"),
+      (RecordSet) =>
+        route53
+          .changeResourceRecordSets({
+            HostedZoneId: id,
+            ChangeBatch: {
+              Changes: pipe([
+                filter((record) => !["NS", "SOA"].includes(record.Type)),
+                map((ResourceRecordSet) => ({
+                  Action: "DELETE",
+                  ResourceRecordSet,
+                })),
+              ])(RecordSet),
+            },
+          })
+          .promise(),
       () =>
         route53
           .deleteHostedZone({
@@ -139,9 +194,10 @@ exports.AwsHostedZone = ({ spec, config }) => {
     ])();
 
   const configDefault = async ({ name, properties, dependencies }) => {
-    logger.debug(`configDefault ${tos({ dependencies })}`);
     const CallerReference = `grucloud-${name}-${new Date()}`;
-    return defaultsDeep({ Name: name, CallerReference })(properties);
+    return defaultsDeep({ Name: name, CallerReference, RecordSet: [] })(
+      properties
+    );
   };
 
   return {
