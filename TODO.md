@@ -4,7 +4,8 @@
 
 add error ENOTFOUND in shouldRetryOnException
 
-Resource: aws::S3Bucket::grucloud-policy
+- add provider start error test
+  Resource: aws::S3Bucket::grucloud-policy
 
 name: OperationAborted
 code: OperationAborted

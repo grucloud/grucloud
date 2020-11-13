@@ -60,7 +60,9 @@ module.exports = ({ resources, provider }) => {
       init: async () => {
         const dnsManagedZoneLive = await resources.dnsManagedZone.getLive();
         assert(dnsManagedZoneLive.nameServers);
-        return { dnsManagedZoneLive };
+
+        const sslCertificateLive = await resources.sslCertificate.getLive();
+        return { dnsManagedZoneLive, sslCertificateLive };
       },
       actions: [
         {
@@ -111,7 +113,15 @@ module.exports = ({ resources, provider }) => {
             });
           },
         },
-
+        {
+          name: `ssl certificate ready`,
+          command: async ({ sslCertificateLive }) => {
+            assert(
+              sslCertificateLive.certificate,
+              "ssl certificate not yet ready"
+            );
+          },
+        },
         {
           name: `dig nameservers managedZone ${resources.bucketPublic.name}`,
           command: async ({ dnsManagedZoneLive }) => {

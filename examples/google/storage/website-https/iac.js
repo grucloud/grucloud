@@ -128,6 +128,6 @@ exports.createStack = async ({ config }) => {
 
   return {
     provider,
-    resources: { bucketPublic, dnsManagedZone },
+    resources: { bucketPublic, dnsManagedZone, sslCertificate },
   };
 };
