@@ -16,9 +16,34 @@ const bucket = await provider.makeBucket({
 });
 ```
 
-### Example Code
+### Static Website Bucket
+
+```js
+const bucketPublic = await provider.makeBucket({
+  name: "demo.yourwebite.com",
+  properties: () => ({
+    iamConfiguration: {
+      uniformBucketLevelAccess: {
+        enabled: true,
+      },
+    },
+    iam: {
+      bindings: [
+        {
+          role: "roles/storage.objectViewer",
+          members: ["allUsers"],
+        },
+      ],
+    },
+    website: { mainPageSuffix: "index.html", notFoundPage: "404.html" },
+  }),
+});
+```
+
+## Example Code
 
 - [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/simple/iac.js#L7)
+- [https static website](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https/iac.js#L7)
 
 ## Properties
 

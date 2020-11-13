@@ -64,41 +64,6 @@ module.exports = ({ resources, provider }) => {
       },
       actions: [
         {
-          name: `dig nameservers managedZone ${resources.bucketPublic.name}`,
-          command: async ({ dnsManagedZoneLive }) => {
-            const nameServer = dnsManagedZoneLive.nameServers[0];
-            await checkDig({
-              nameServer,
-              domain: resources.bucketPublic.name,
-              dnsManagedZoneLive,
-            });
-          },
-        },
-        {
-          name: `dig nameservers recordSet ${resources.bucketPublic.name}`,
-          command: async ({ dnsManagedZoneLive }) => {
-            const nameServer = pipe([
-              find((record) => record.type === "NS"),
-              get("rrdatas"),
-              first,
-            ])(dnsManagedZoneLive.recordSet);
-            await checkDig({
-              nameServer,
-              domain: resources.bucketPublic.name,
-              dnsManagedZoneLive,
-            });
-          },
-        },
-        {
-          name: `dig default nameserver ${resources.bucketPublic.name}`,
-          command: async ({ dnsManagedZoneLive }) => {
-            await checkDig({
-              domain: resources.bucketPublic.name,
-              dnsManagedZoneLive,
-            });
-          },
-        },
-        {
           name: `get ${bucketUrlIndex}`,
           command: async ({}) => {
             await retryCallOnError({
@@ -143,6 +108,42 @@ module.exports = ({ resources, provider }) => {
                 );
               },
               config: { retryCount: 20, retryDelay: 5e3 },
+            });
+          },
+        },
+
+        {
+          name: `dig nameservers managedZone ${resources.bucketPublic.name}`,
+          command: async ({ dnsManagedZoneLive }) => {
+            const nameServer = dnsManagedZoneLive.nameServers[0];
+            await checkDig({
+              nameServer,
+              domain: resources.bucketPublic.name,
+              dnsManagedZoneLive,
+            });
+          },
+        },
+        {
+          name: `dig nameservers recordSet ${resources.bucketPublic.name}`,
+          command: async ({ dnsManagedZoneLive }) => {
+            const nameServer = pipe([
+              find((record) => record.type === "NS"),
+              get("rrdatas"),
+              first,
+            ])(dnsManagedZoneLive.recordSet);
+            await checkDig({
+              nameServer,
+              domain: resources.bucketPublic.name,
+              dnsManagedZoneLive,
+            });
+          },
+        },
+        {
+          name: `dig default nameserver ${resources.bucketPublic.name}`,
+          command: async ({ dnsManagedZoneLive }) => {
+            await checkDig({
+              domain: resources.bucketPublic.name,
+              dnsManagedZoneLive,
             });
           },
         },
