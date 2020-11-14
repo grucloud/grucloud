@@ -7,6 +7,7 @@ describe("AwsHostedZone", async function () {
   let config;
   let provider;
   let hostedZone;
+  let hostedZoneEmpty;
   const hostedZoneName = "aws.grucloud.com";
 
   before(async function () {
@@ -42,6 +43,10 @@ describe("AwsHostedZone", async function () {
         ],
       }),
     });
+    hostedZoneEmpty = await provider.makeHostedZone({
+      name: "aws-empty.grucloud.com",
+      properties: () => ({}),
+    });
   });
   after(async () => {
     //await provider?.destroyAll();
@@ -54,7 +59,7 @@ describe("AwsHostedZone", async function () {
   it("hostedZone plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 1);
+    assert.equal(plan.resultCreate.plans.length, 2);
   });
   it("hostedZone listLives all", async function () {
     const { results: lives } = await provider.listLives({

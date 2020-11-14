@@ -1,6 +1,6 @@
 require("dotenv").config();
 const { Command } = require("commander");
-const { pipe } = require("rubico");
+const { pipe, tryCatch } = require("rubico");
 const { createInfra } = require("./infra");
 const collect = (value, previous = []) => previous.concat([value]);
 
@@ -15,6 +15,11 @@ const optionFilteredByTypes = [
   "Filter by type, multiple values allowed",
   collect,
 ];
+const handleError = (error) => {
+  console.error("ERROR:");
+  console.error(error);
+  throw error;
+};
 
 exports.createProgram = ({ version, commands }) => {
   const program = new Command();
@@ -35,48 +40,37 @@ exports.createProgram = ({ version, commands }) => {
     stage: stage || process.env.STAGE || "dev",
   });
 
+  const runCommand = ({ commandName, program }) => async (commandOptions) => {
+    const programOptions = program.opts();
+    return tryCatch(
+      pipe([
+        infraOptions,
+        createInfra,
+        (infra) =>
+          commands[commandName]({ infra, commandOptions, programOptions }),
+      ]),
+      handleError
+    )(programOptions);
+  };
+
   program
     .command("init")
     .description("Initialise the cloud providers")
     .alias("i")
-    .action(async (commandOptions) => {
-      const programOptions = program.opts();
-      await pipe([
-        infraOptions,
-        createInfra,
-        async (infra) =>
-          await commands.init({ infra, commandOptions, programOptions }),
-      ])(programOptions);
-    });
+    .action(runCommand({ commandName: "init", program }));
 
   program
     .command("uninit")
     .description("Un-initialise the cloud providers")
     .alias("u")
-    .action(async (commandOptions) => {
-      const programOptions = program.opts();
-      await pipe([
-        infraOptions,
-        createInfra,
-        async (infra) =>
-          await commands.unInit({ infra, commandOptions, programOptions }),
-      ])(programOptions);
-    });
+    .action(runCommand({ commandName: "unInit", program }));
 
   program
     .command("plan")
     .description("Find out which resources need to be deployed or destroyed")
     .alias("p")
     .option(...optionFilteredByProvider)
-    .action(async (commandOptions) => {
-      const programOptions = program.opts();
-      await pipe([
-        infraOptions,
-        createInfra,
-        async (infra) =>
-          await commands.planQuery({ infra, commandOptions, programOptions }),
-      ])(programOptions);
-    });
+    .action(runCommand({ commandName: "planQuery", program }));
 
   program
     .command("run")
@@ -85,19 +79,7 @@ exports.createProgram = ({ version, commands }) => {
     .option("--onDeployed", "Run Post Deploy Hook")
     .option("--onDestroyed", "Run Post Destroy Hook")
     .option(...optionFilteredByProvider)
-    .action(async (commandOptions) => {
-      const programOptions = program.opts();
-      await pipe([
-        infraOptions,
-        createInfra,
-        async (infra) =>
-          await commands.planRunScript({
-            infra,
-            commandOptions,
-            programOptions,
-          }),
-      ])(programOptions);
-    });
+    .action(runCommand({ commandName: "planRunScript", program }));
 
   program
     .command("apply")
@@ -105,15 +87,7 @@ exports.createProgram = ({ version, commands }) => {
     .alias("a")
     .option("-f, --force", "force deploy, will not prompt user")
     .option(...optionFilteredByProvider)
-    .action(async (commandOptions) => {
-      const programOptions = program.opts();
-      await pipe([
-        infraOptions,
-        createInfra,
-        async (infra) =>
-          await commands.planApply({ infra, commandOptions, programOptions }),
-      ])(programOptions);
-    });
+    .action(runCommand({ commandName: "planApply", program }));
 
   program
     .command("destroy")
@@ -128,15 +102,7 @@ exports.createProgram = ({ version, commands }) => {
     )
     .option("-n, --name <value>", "destroy by name")
     .option("--id <value>", "destroy by id")
-    .action(async (commandOptions) => {
-      const programOptions = program.opts();
-      await pipe([
-        infraOptions,
-        createInfra,
-        async (infra) =>
-          await commands.planDestroy({ infra, commandOptions, programOptions }),
-      ])(programOptions);
-    });
+    .action(runCommand({ commandName: "planDestroy", program }));
 
   program
     .command("list")
@@ -152,15 +118,7 @@ exports.createProgram = ({ version, commands }) => {
     )
     .option(...optionFilteredByProvider)
     .option(...optionFilteredByTypes)
-    .action(async (commandOptions) => {
-      const programOptions = program.opts();
-      await pipe([
-        infraOptions,
-        createInfra,
-        async (infra) =>
-          await commands.list({ infra, commandOptions, programOptions }),
-      ])(programOptions);
-    });
+    .action(runCommand({ commandName: "list", program }));
 
   program
     .command("output")
@@ -169,14 +127,7 @@ exports.createProgram = ({ version, commands }) => {
     .requiredOption("-n, --name <value>", "resource name")
     .requiredOption("-f, --field <value>", "the resource field to get")
     .option(...optionFilteredByProvider)
-    .action(async (commandOptions) => {
-      const programOptions = program.opts();
-      await pipe([
-        infraOptions,
-        createInfra,
-        async (infra) =>
-          await commands.output({ infra, commandOptions, programOptions }),
-      ])(programOptions);
-    });
+    .action(runCommand({ commandName: "output", program }));
+
   return program;
 };

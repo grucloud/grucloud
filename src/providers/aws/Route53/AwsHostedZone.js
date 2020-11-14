@@ -129,17 +129,24 @@ exports.AwsHostedZone = ({ spec, config }) => {
           .promise()
       ),
       tap(({ HostedZone }) =>
-        route53
-          .changeResourceRecordSets({
-            HostedZoneId: HostedZone.Id,
-            ChangeBatch: {
-              Changes: map((ResourceRecordSet) => ({
-                Action: "CREATE",
-                ResourceRecordSet,
-              }))(payload.RecordSet),
-            },
-          })
-          .promise()
+        pipe([
+          map((ResourceRecordSet) => ({
+            Action: "CREATE",
+            ResourceRecordSet,
+          })),
+          tap.if(
+            (Changes) => !isEmpty(Changes),
+            async (Changes) =>
+              await route53
+                .changeResourceRecordSets({
+                  HostedZoneId: HostedZone.id,
+                  ChangeBatch: {
+                    Changes,
+                  },
+                })
+                .promise()
+          ),
+        ])()
       ),
       tap(({ HostedZone }) => {
         logger.debug(`created done`);
@@ -160,21 +167,26 @@ exports.AwsHostedZone = ({ spec, config }) => {
           })
           .promise(),
       get("ResourceRecordSets"),
-      (RecordSet) =>
-        route53
-          .changeResourceRecordSets({
-            HostedZoneId: id,
-            ChangeBatch: {
-              Changes: pipe([
-                filter((record) => !["NS", "SOA"].includes(record.Type)),
-                map((ResourceRecordSet) => ({
-                  Action: "DELETE",
-                  ResourceRecordSet,
-                })),
-              ])(RecordSet),
-            },
-          })
-          .promise(),
+      filter((record) => !["NS", "SOA"].includes(record.Type)),
+      map((ResourceRecordSet) => ({
+        Action: "DELETE",
+        ResourceRecordSet,
+      })),
+      tap((Changes) => {
+        logger.debug(`destroy ${tos(Changes)}`);
+      }),
+      tap.if(
+        (Changes) => !isEmpty(Changes),
+        async (Changes) =>
+          await route53
+            .changeResourceRecordSets({
+              HostedZoneId: id,
+              ChangeBatch: {
+                Changes,
+              },
+            })
+            .promise()
+      ),
       () =>
         route53
           .deleteHostedZone({

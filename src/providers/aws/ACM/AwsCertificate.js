@@ -16,9 +16,9 @@ const logger = require("../../../logger")({ prefix: "CertificateManager" });
 const { retryExpectOk } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
-const { buildTags } = require("../AwsCommon");
+const { buildTags, findNameInTags } = require("../AwsCommon");
 
-const findName = (item) => item.DomainName;
+const findName = findNameInTags;
 
 const findId = (item) => {
   assert(item);

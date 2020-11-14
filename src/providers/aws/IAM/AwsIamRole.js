@@ -17,7 +17,7 @@ exports.AwsIamRole = ({ spec, config }) => {
 
   const iam = new AWS.IAM();
 
-  const findName = (item) => findNameInTags(item);
+  const findName = findNameInTags;
 
   const findId = (item) => {
     assert(item);

@@ -23,7 +23,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
 
   const ec2 = new AWS.EC2();
 
-  const findName = (item) => findNameInTags(item);
+  const findName = findNameInTags;
 
   const findId = (item) => {
     assert(item);

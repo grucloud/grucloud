@@ -50,7 +50,7 @@ describe("AwsCertificate", async function () {
     assert(lives);
   });
 
-  it.only("certificate apply plan", async function () {
+  it("certificate apply plan", async function () {
     await testPlanDeploy({ provider, types: ["Certificate"] });
 
     const certificateLive = await certificate.getLive();

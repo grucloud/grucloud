@@ -4,6 +4,7 @@
 (cd aws/s3-multiple && npm run link)
 (cd aws/s3-simple && npm run link)
 (cd aws/iam && npm run link)
+(cd aws/website-https && npm run link)
 (cd azure/ && npm run link)
 (cd google/dns/github-page && npm run link)
 (cd google/vm && npm run link)
