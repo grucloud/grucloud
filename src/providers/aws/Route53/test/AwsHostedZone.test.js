@@ -63,7 +63,7 @@ describe("AwsHostedZone", async function () {
     assert(lives);
   });
 
-  it.only("hostedZone apply plan", async function () {
+  it("hostedZone apply plan", async function () {
     await testPlanDeploy({ provider, types: ["HostedZone"] });
 
     const hostedZoneLive = await hostedZone.getLive();
