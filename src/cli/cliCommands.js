@@ -113,8 +113,8 @@ const filterProvidersByName = ({
     ),
   ]);
 
-const formatResource = ({ provider, type, name } = {}) =>
-  `${provider}/${type}/${name}`;
+const formatResource = ({ provider, type, name, id } = {}) =>
+  `${provider}/${type}/${name || id}`;
 
 const countDeployResources = pipe([
   tap((xx) => {

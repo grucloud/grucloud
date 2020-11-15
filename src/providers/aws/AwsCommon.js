@@ -50,7 +50,7 @@ exports.isOurMinion = ({ resource, config }) => {
 
 exports.findNameInTags = (item) => {
   assert(item);
-  assert(item.Tags);
+  assert(Array.isArray(item.Tags), `no Tags array in ${tos(item)}`);
   const tag = item.Tags.find((tag) => tag.Key === KeyName);
   if (tag?.Value) {
     logger.debug(`findNameInTags ${tag.Value}`);

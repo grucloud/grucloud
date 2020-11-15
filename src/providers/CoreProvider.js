@@ -679,6 +679,9 @@ function CoreProvider({
           ? any((type) => new RegExp(type, "i").test(client.spec.type))(types)
           : true
       ),
+      tap((clients) => {
+        logger.info(`listLives #clients: ${clients.length}`);
+      }),
       map.pool(
         20,
         tryCatch(
@@ -698,9 +701,9 @@ function CoreProvider({
             }),
           ]),
           pipe([
-            tap((error, client) => {
+            /*tap((error, client) => {
               logger.debug(`listLives filterClient error`);
-            }),
+            }),*/
             (error, client) => ({
               error: convertError({ error }),
               client,

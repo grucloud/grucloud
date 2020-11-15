@@ -203,6 +203,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Aws Website List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/website-https",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["list"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Aws Website Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/website-https",
@@ -216,7 +225,7 @@
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/website-https",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["destroy", "-f"]
+      "args": ["destroy", "-f", "-a"]
     },
     {
       "type": "node",

@@ -27,7 +27,7 @@ const findId = (item) => {
   return id;
 };
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
 exports.AwsCertificate = ({ spec, config }) => {
   assert(spec);
   assert(config);
@@ -116,7 +116,6 @@ exports.AwsCertificate = ({ spec, config }) => {
           })
           .promise()
       ),
-
       tap(({ CertificateArn }) => {
         logger.debug(`created done`);
       }),
