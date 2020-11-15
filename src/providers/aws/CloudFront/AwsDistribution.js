@@ -156,7 +156,35 @@ exports.AwsDistribution = ({ spec, config }) => {
         logger.debug(`destroy ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
-      () => update({ id, payload: { DistributionConfig: { Enabled: false } } }),
+      () =>
+        update({
+          id,
+          payload: {
+            DistributionConfig: {
+              Enabled: false,
+              DefaultCacheBehavior: {
+                ForwardedValues: {
+                  QueryString: false,
+                  Cookies: {
+                    Forward: "none",
+                  },
+                  Headers: {
+                    Quantity: 0,
+                    Items: [],
+                  },
+                  QueryStringCacheKeys: {
+                    Quantity: 0,
+                    Items: [],
+                  },
+                },
+                MinTTL: 60,
+                DefaultTTL: 86400,
+                MaxTTL: 31536000,
+                CachePolicyId: "",
+              },
+            },
+          },
+        }),
       tap((xxx) => {
         logger.debug(`destroy`);
       }),

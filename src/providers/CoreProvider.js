@@ -671,7 +671,9 @@ function CoreProvider({
   } = {}) =>
     pipe([
       tap(() =>
-        logger.info(`listLives filters: ${tos({ all, our, types, name, id })}`)
+        logger.info(
+          `listLives filters: ${JSON.stringify({ all, our, types, name, id })}`
+        )
       ),
       filter((client) => all || !client.spec.listOnly),
       filter((client) =>
