@@ -136,17 +136,17 @@ exports.AwsHostedZone = ({ spec, config }) => {
           })),
           tap.if(
             (Changes) => !isEmpty(Changes),
-            async (Changes) =>
-              await route53
+            (Changes) =>
+              route53
                 .changeResourceRecordSets({
-                  HostedZoneId: HostedZone.id,
+                  HostedZoneId: HostedZone.Id,
                   ChangeBatch: {
                     Changes,
                   },
                 })
                 .promise()
           ),
-        ])()
+        ])(payload.RecordSet)
       ),
       tap(({ HostedZone }) => {
         logger.debug(`created done`);
@@ -167,6 +167,9 @@ exports.AwsHostedZone = ({ spec, config }) => {
           })
           .promise(),
       get("ResourceRecordSets"),
+      tap((ResourceRecordSet) => {
+        logger.debug(`destroy ${tos(ResourceRecordSet)}`);
+      }),
       filter((record) => !["NS", "SOA"].includes(record.Type)),
       map((ResourceRecordSet) => ({
         Action: "DELETE",
@@ -177,8 +180,8 @@ exports.AwsHostedZone = ({ spec, config }) => {
       }),
       tap.if(
         (Changes) => !isEmpty(Changes),
-        async (Changes) =>
-          await route53
+        (Changes) =>
+          route53
             .changeResourceRecordSets({
               HostedZoneId: id,
               ChangeBatch: {

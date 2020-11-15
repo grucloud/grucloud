@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { find } = require("rubico/x");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
@@ -73,7 +74,7 @@ describe("AwsHostedZone", async function () {
 
     const hostedZoneLive = await hostedZone.getLive();
     assert(hostedZoneLive);
-
+    assert(find((record) => record.Type === "A")(hostedZoneLive.RecordSet));
     await testPlanDestroy({ provider });
   });
 });

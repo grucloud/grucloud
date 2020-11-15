@@ -161,12 +161,12 @@ describe("AwsProvider", async function () {
     assert.equal(
       pipe([
         tap((x) => {
-          console.log(x);
+          //console.log(x);
         }),
         pluck("result.results"),
         flatten,
         tap((x) => {
-          console.log(x);
+          //console.log(x);
         }),
         pluck("resources"),
         flatten,
