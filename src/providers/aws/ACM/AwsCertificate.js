@@ -46,7 +46,15 @@ exports.AwsCertificate = ({ spec, config }) => {
         //logger.debug(`getList ${tos(xxx)}`);
       }),
       map(async (certificate) => ({
-        ...certificate,
+        ...(await pipe([
+          () =>
+            acm
+              .describeCertificate({
+                CertificateArn: certificate.CertificateArn,
+              })
+              .promise(),
+          get("Certificate"),
+        ])()),
         Tags: await pipe([
           () =>
             acm

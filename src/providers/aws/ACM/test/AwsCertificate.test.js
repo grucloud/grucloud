@@ -50,12 +50,13 @@ describe("AwsCertificate", async function () {
     assert(lives);
   });
 
-  it("certificate apply plan", async function () {
+  it.only("certificate apply plan", async function () {
     await testPlanDeploy({ provider, types: ["Certificate"] });
 
     const certificateLive = await certificate.getLive();
     assert(certificateLive);
-
+    assert.equal(certificateLive.DomainName, certificateName);
+    assert.equal(certificateLive.Type, "AMAZON_ISSUED");
     await testPlanDestroy({ provider });
   });
 });

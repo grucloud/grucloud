@@ -2,6 +2,8 @@
 
 ## Common:
 
+same name but different type
+
 add error ENOTFOUND in shouldRetryOnException
 
 - add provider start error test
