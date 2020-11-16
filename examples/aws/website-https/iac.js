@@ -19,29 +19,33 @@ const createResources = async ({ provider, config }) => {
     }),
   });
 
-  const hostedZone = await provider.makeHostedZone({
-    name: `${domainName}`,
-    properties: () => ({
-      RecordSet: [
-        {
-          Name: domainName,
-          ResourceRecords: [
-            {
-              Value: "192.0.2.44",
-            },
-          ],
-          TTL: 60,
-          Type: "A",
-        },
-      ],
-    }),
-  });
-
   const certificate = await provider.makeCertificate({
     name: `certificate-${domainName}`,
     properties: () => ({ DomainName: domainName }),
   });
 
+  const hostedZone = await provider.makeHostedZone({
+    name: `${domainName}`,
+    dependencies: { certificate },
+    properties: ({ dependencies: { certificate } }) => {
+      const record =
+        certificate.live?.DomainValidationOptions[0].ResourceRecord;
+      return {
+        RecordSet: [
+          {
+            Name: record?.Name,
+            ResourceRecords: [
+              {
+                Value: record?.Value,
+              },
+            ],
+            Type: "CNAME",
+          },
+        ],
+      };
+    },
+  });
+  /*
   const distribution = await provider.makeCloudFrontDistribution({
     name: `distribution-${domainName}`,
     dependencies: { websiteBucket },
@@ -81,7 +85,8 @@ const createResources = async ({ provider, config }) => {
       };
     },
   });
-  return { websiteBucket, hostedZone, certificate, distribution };
+  */
+  return { websiteBucket, hostedZone, certificate /*, distribution*/ };
 };
 
 exports.createResources = createResources;

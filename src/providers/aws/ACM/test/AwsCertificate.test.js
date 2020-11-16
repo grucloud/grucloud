@@ -36,7 +36,7 @@ describe("AwsCertificate", async function () {
   it("certificate resolveConfig", async function () {
     assert.equal(certificate.name, certificateName);
     const config = await certificate.resolveConfig();
-    assert.equal(config.Name, certificateName);
+    assert.equal(config.DomainName, certificateName);
   });
   it("certificate plan", async function () {
     const plan = await provider.planQuery();
@@ -50,7 +50,7 @@ describe("AwsCertificate", async function () {
     assert(lives);
   });
 
-  it.only("certificate apply plan", async function () {
+  it("certificate apply plan", async function () {
     await testPlanDeploy({ provider, types: ["Certificate"] });
 
     const certificateLive = await certificate.getLive();

@@ -125,7 +125,7 @@ exports.AwsCertificate = ({ spec, config }) => {
           .promise()
       ),
       tap(({ CertificateArn }) => {
-        logger.debug(`created done`);
+        logger.info(`created done CertificateArn: ${CertificateArn}`);
       }),
     ])();
 
@@ -155,7 +155,9 @@ exports.AwsCertificate = ({ spec, config }) => {
     ])();
 
   const configDefault = async ({ name, properties, dependencies }) => {
-    return defaultsDeep({ DomainName: name })(properties);
+    return defaultsDeep({ DomainName: name, ValidationMethod: "DNS" })(
+      properties
+    );
   };
 
   return {
