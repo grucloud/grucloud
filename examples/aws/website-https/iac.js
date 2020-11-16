@@ -25,7 +25,7 @@ const createResources = async ({ provider, config }) => {
   });
 
   const hostedZone = await provider.makeHostedZone({
-    name: `${domainName}`,
+    name: `${domainName}.`,
     dependencies: { certificate },
     properties: ({ dependencies: { certificate } }) => {
       const record =
@@ -39,6 +39,7 @@ const createResources = async ({ provider, config }) => {
                 Value: record?.Value,
               },
             ],
+            TTL: 10000,
             Type: "CNAME",
           },
         ],

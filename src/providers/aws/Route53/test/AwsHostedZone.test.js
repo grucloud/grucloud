@@ -11,28 +11,20 @@ describe("AwsHostedZone", async function () {
   let hostedZoneEmpty;
   const hostedZoneName = "aws.grucloud.com";
 
-  before(async function () {
-    try {
-      config = ConfigLoader({ path: "examples/multi" });
-    } catch (error) {
-      this.skip();
-    }
-    provider = AwsProvider({
+  const createProvider = async ({ config }) => {
+    const provider = AwsProvider({
       name: "aws",
       config: config.aws,
     });
 
     await provider.start();
 
-    const { error } = await provider.destroyAll();
-    assert(!error, "destroyAll failed");
-
     hostedZone = await provider.makeHostedZone({
-      name: hostedZoneName,
+      name: `${hostedZoneName}.`,
       properties: () => ({
         RecordSet: [
           {
-            Name: hostedZoneName,
+            Name: `${hostedZoneName}.`,
             ResourceRecords: [
               {
                 Value: "192.0.2.44",
@@ -45,9 +37,49 @@ describe("AwsHostedZone", async function () {
       }),
     });
     hostedZoneEmpty = await provider.makeHostedZone({
-      name: "aws-empty.grucloud.com",
+      name: "aws-empty.grucloud.com.",
       properties: () => ({}),
     });
+
+    return provider;
+  };
+  const createProviderNext = async ({ config }) => {
+    const provider = AwsProvider({
+      name: "aws",
+      config: config.aws,
+    });
+
+    await provider.start();
+
+    hostedZone = await provider.makeHostedZone({
+      name: `${hostedZoneName}.`,
+      properties: () => ({
+        RecordSet: [
+          {
+            Name: "_0bc9df9e6752c379559a2f41be63ff04.aws.grucloud.com.",
+            ResourceRecords: [
+              {
+                Value:
+                  "_ebff683f9ce743915b12f5a2105c9108.wggjkglgrm.acm-validations.aws.",
+              },
+            ],
+            TTL: 60,
+            Type: "CNAME",
+          },
+        ],
+      }),
+    });
+    return provider;
+  };
+  before(async function () {
+    try {
+      config = ConfigLoader({ path: "examples/multi" });
+    } catch (error) {
+      this.skip();
+    }
+    provider = await createProvider({ config });
+    const { error } = await provider.destroyAll();
+    assert(!error, "destroyAll failed");
   });
   after(async () => {
     //await provider?.destroyAll();
@@ -75,6 +107,25 @@ describe("AwsHostedZone", async function () {
     const hostedZoneLive = await hostedZone.getLive();
     assert(hostedZoneLive);
     assert(find((record) => record.Type === "A")(hostedZoneLive.RecordSet));
+
+    const providerNext = await createProviderNext({ config });
+
+    const plan = await providerNext.planQuery();
+    assert.equal(plan.resultDestroy.plans.length, 1);
+    assert.equal(plan.resultCreate.plans.length, 1);
+    const update = plan.resultCreate.plans[0];
+    assert.equal(update.action, "UPDATE");
+    assert.equal(update.diff.additions[0].Type, "CNAME");
+    assert.equal(update.diff.deletions[0].Type, "A");
+    const {
+      error,
+      resultCreate,
+      resultDestroy,
+    } = await providerNext.planApply({ plan });
+    assert(!error);
+    assert.equal(resultCreate.results.length, 1);
+    assert.equal(resultDestroy.results.length, 1);
+
     await testPlanDestroy({ provider });
   });
 });

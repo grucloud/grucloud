@@ -1,3 +1,3 @@
 module.exports = () => ({
-  domainName: "aws.grucloud.com",
+  domainName: "grucloud.org",
 });

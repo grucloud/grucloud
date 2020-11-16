@@ -9,8 +9,18 @@ const {
   switchCase,
   pick,
   filter,
+  assign,
+  fork,
+  or,
+  omit,
 } = require("rubico");
-const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
+const {
+  find,
+  defaultsDeep,
+  isEmpty,
+  differenceWith,
+  isDeepEqual,
+} = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "HostedZone" });
 const { retryExpectOk } = require("../../Retry");
@@ -18,8 +28,8 @@ const { tos } = require("../../../tos");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { buildTags } = require("../AwsCommon");
 
-// Remove the final dot
-const findName = (item) => item.Name.slice(0, -1);
+//Check for the final dot
+const findName = (item) => item.Name;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsHostedZone = ({ spec, config }) => {
@@ -208,6 +218,55 @@ exports.AwsHostedZone = ({ spec, config }) => {
       }),
     ])();
 
+  const update = async ({ name, live, diff }) =>
+    pipe([
+      tap(() => {
+        logger.info(`update ${name}, diff: ${tos(diff)}`);
+        assert(name, "name");
+        assert(live, "live");
+        assert(diff, "diff");
+        assert(diff.needUpdate, "diff.needUpate");
+        assert(diff.deletions, "diff.deletions");
+        assert(diff.additions, "diff.additions");
+      }),
+      switchCase([
+        () => diff.needUpdateRecordSet,
+        tryCatch(
+          pipe([
+            () => [
+              ...map((ResourceRecordSet) => ({
+                Action: "DELETE",
+                ResourceRecordSet,
+              }))(diff.deletions),
+              ...map((ResourceRecordSet) => ({
+                Action: "CREATE",
+                ResourceRecordSet,
+              }))(diff.additions),
+            ],
+            tap((Changes) => {
+              logger.debug(`update changes ${tos(Changes)}`);
+            }),
+            (Changes) =>
+              route53
+                .changeResourceRecordSets({
+                  HostedZoneId: live.Id,
+                  ChangeBatch: {
+                    Changes,
+                  },
+                })
+                .promise(),
+            tap(({ ChangeInfo }) => {
+              logger.info(`updated ${name}, ChangeInfo: ${ChangeInfo}`);
+            }),
+          ]),
+          (error) => {
+            logError(`update`, error);
+            throw axiosErrorToJSON(error);
+          }
+        ),
+      ]),
+    ])();
+
   const configDefault = async ({ name, properties, dependencies }) => {
     const CallerReference = `grucloud-${name}-${new Date()}`;
     return defaultsDeep({ Name: name, CallerReference, RecordSet: [] })(
@@ -226,8 +285,64 @@ exports.AwsHostedZone = ({ spec, config }) => {
     cannotBeDeleted: () => false,
     findName,
     create,
+    update,
     destroy,
     getList,
     configDefault,
   };
 };
+
+const filterNonDeletableRecords = ({ targetRecordSet, liveRecordSet }) =>
+  pipe([
+    () =>
+      filter(
+        (type) =>
+          !find((targetRecord) => targetRecord.Type === type)(targetRecordSet)
+      )(["SOA", "NS"]),
+    tap((types) => {
+      logger.debug(`filterNonDeletableRecords: types: ${types}`);
+    }),
+    (types) => filter((record) => !types.includes(record.Type))(liveRecordSet),
+    tap((liveRecordSet) => {
+      logger.debug(`filterNonDeletableRecords: ${tos(liveRecordSet)}`);
+    }),
+  ])();
+
+exports.compareHostedZone = async ({ target, live }) =>
+  pipe([
+    tap(() => {
+      logger.debug(`compareHostedZone ${tos({ target, live })}`);
+      assert(target.RecordSet, "target.recordSet");
+      assert(live.RecordSet, "live.recordSet");
+    }),
+    () =>
+      filterNonDeletableRecords({
+        targetRecordSet: target.RecordSet,
+        liveRecordSet: live.RecordSet,
+      }),
+    fork({
+      additions: (liveRecordSet) =>
+        differenceWith(isDeepEqual, target.RecordSet)(liveRecordSet),
+      deletions: (liveRecordSet) =>
+        differenceWith(isDeepEqual, liveRecordSet)(target.RecordSet),
+    }),
+    tap((xxx) => {
+      logger.debug(`compareHostedZone `);
+    }),
+    assign({
+      needUpdateRecordSet: or([
+        (diff) => !isEmpty(diff.additions),
+        (diff) => !isEmpty(diff.deletions),
+      ]),
+      needUpdateManagedZone: () => target.Name !== live.Name,
+    }),
+    assign({
+      needUpdate: or([
+        (diff) => diff.needUpdateRecordSet,
+        (diff) => diff.needUpdateManagedZone,
+      ]),
+    }),
+    tap((diff) => {
+      logger.debug(`compareHostedZone diff:${tos(diff)}`);
+    }),
+  ])();
