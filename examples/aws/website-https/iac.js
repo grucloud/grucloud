@@ -1,9 +1,37 @@
+const assert = require("assert");
+const path = require("path");
+const { map } = require("rubico");
+const { resolve } = require("path");
+const { readdir } = require("fs").promises;
+const mime = require("mime-types");
+
 const { AwsProvider } = require("@grucloud/core");
-const { pipe, map } = require("rubico");
+
+async function getFiles(dir) {
+  const dirResolved = resolve(dir);
+  const files = await getFilesWalk(dir);
+  return files.map((file) => file.replace(`${dirResolved}/`, ""));
+}
+
+async function getFilesWalk(dir) {
+  const dirents = await readdir(dir, { withFileTypes: true });
+  const files = await Promise.all(
+    dirents.map((dirent) => {
+      const res = resolve(dir, dirent.name);
+      return dirent.isDirectory() ? getFilesWalk(res) : res;
+    })
+  );
+  return files.flat();
+}
 
 const createResources = async ({ provider, resources: { certificate } }) => {
   const config = provider.config();
-  const { domainName } = config;
+  const { domainName, websiteDir } = config;
+  assert(domainName);
+  assert(websiteDir);
+
+  const files = await getFiles(websiteDir);
+
   const websiteBucket = await provider.makeS3Bucket({
     name: `${domainName}-bucket`,
     properties: () => ({
@@ -18,6 +46,18 @@ const createResources = async ({ provider, resources: { certificate } }) => {
       },
     }),
   });
+
+  await map((file) =>
+    provider.makeS3Object({
+      name: file,
+      dependencies: { bucket: websiteBucket },
+      properties: () => ({
+        ACL: "public-read",
+        ContentType: mime.lookup(file) || "text/plain",
+        source: path.join(websiteDir, file),
+      }),
+    })
+  )(files);
 
   const hostedZone = await provider.makeHostedZone({
     name: `${domainName}.`,
