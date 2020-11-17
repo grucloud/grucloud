@@ -7,7 +7,9 @@ describe("AwsCertificate", async function () {
   let config;
   let provider;
   let certificate;
-  const certificateName = "aws.grucloud.com";
+  const types = ["Certificate"];
+  const domainName = "aws.grucloud.com";
+  const certificateName = `certificate::aws.grucloud.com`;
 
   before(async function () {
     try {
@@ -27,7 +29,7 @@ describe("AwsCertificate", async function () {
 
     certificate = await provider.makeCertificate({
       name: certificateName,
-      properties: () => ({}),
+      properties: () => ({ DomainName: domainName }),
     });
   });
   after(async () => {
@@ -36,27 +38,25 @@ describe("AwsCertificate", async function () {
   it("certificate resolveConfig", async function () {
     assert.equal(certificate.name, certificateName);
     const config = await certificate.resolveConfig();
-    assert.equal(config.DomainName, certificateName);
+    assert.equal(config.DomainName, domainName);
   });
-  it("certificate plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 1);
-  });
-  it("certificate listLives all", async function () {
-    const { results: lives } = await provider.listLives({
-      types: ["Certificate"],
-    });
-    assert(lives);
-  });
-
   it("certificate apply plan", async function () {
-    await testPlanDeploy({ provider, types: ["Certificate"] });
+    await testPlanDeploy({
+      provider,
+      types,
+      planResult: { create: 1, destroy: 0 },
+    });
 
     const certificateLive = await certificate.getLive();
     assert(certificateLive);
-    assert.equal(certificateLive.DomainName, certificateName);
+    assert.equal(certificateLive.DomainName, domainName);
     assert.equal(certificateLive.Type, "AMAZON_ISSUED");
-    await testPlanDestroy({ provider });
+    const DomainValidationOptions = certificateLive.DomainValidationOptions[0];
+    assert.equal(DomainValidationOptions.DomainName, domainName);
+    assert.equal(DomainValidationOptions.ResourceRecord.Type, "CNAME");
+    assert(DomainValidationOptions.ResourceRecord.Name);
+    assert(DomainValidationOptions.ResourceRecord.Value);
+
+    await testPlanDestroy({ provider, types });
   });
 });

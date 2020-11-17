@@ -33,13 +33,10 @@ exports.AwsCertificate = ({ spec, config }) => {
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {
-        logger.debug(`getList certificate ${tos(params)}`);
+        logger.info(`getList certificate ${tos(params)}`);
       }),
       () => acm.listCertificates(params).promise(),
       get("CertificateSummaryList"),
-      tap((xxx) => {
-        //logger.debug(`getList ${tos(xxx)}`);
-      }),
       map(async (certificate) => ({
         ...(await pipe([
           () =>
@@ -75,7 +72,7 @@ exports.AwsCertificate = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#getCertificate-property
   const getById = pipe([
     tap(({ id }) => {
-      logger.debug(`getById ${id}`);
+      logger.info(`getById ${id}`);
     }),
     tryCatch(
       ({ id }) => acm.describeCertificate({ CertificateArn: id }).promise(),
@@ -110,21 +107,19 @@ exports.AwsCertificate = ({ spec, config }) => {
         assert(payload);
         logger.info(`create certificate: ${name}, ${tos(payload)}`);
       }),
-      // Add tags directly in payload
-      () => acm.requestCertificate(payload).promise(),
+      () => ({
+        ...payload,
+        Tags: [...payload.Tags, ...buildTags({ name, config })],
+      }),
+      tap((params) => {
+        logger.debug(`create certificate: ${name}, params: ${tos(params)}`);
+      }),
+      (params) => acm.requestCertificate(params).promise(),
       tap(({ CertificateArn }) => {
         logger.debug(
           `created certificate: ${name}, result: ${tos(CertificateArn)}`
         );
       }),
-      tap(({ CertificateArn }) =>
-        acm
-          .addTagsToCertificate({
-            CertificateArn,
-            Tags: buildTags({ name, config }),
-          })
-          .promise()
-      ),
       ({ CertificateArn }) =>
         retryCall({
           name: `certificate isUpById: ${name} id: ${CertificateArn}`,
@@ -140,7 +135,7 @@ exports.AwsCertificate = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.debug(`destroy ${tos({ name, id })}`);
+        logger.info(`destroy ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
       () =>
@@ -157,14 +152,16 @@ exports.AwsCertificate = ({ spec, config }) => {
         })
       ),
       tap(() => {
-        logger.debug(`destroy done, ${tos({ name, id })}`);
+        logger.info(`certificate destroyed ${tos({ name, id })}`);
       }),
     ])();
 
   const configDefault = async ({ name, properties, dependencies }) => {
-    return defaultsDeep({ DomainName: name, ValidationMethod: "DNS" })(
-      properties
-    );
+    return defaultsDeep({
+      DomainName: name,
+      ValidationMethod: "DNS",
+      Tags: [],
+    })(properties);
   };
 
   return {

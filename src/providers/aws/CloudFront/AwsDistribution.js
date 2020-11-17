@@ -34,13 +34,10 @@ exports.AwsDistribution = ({ spec, config }) => {
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {
-        logger.debug(`getList distributions ${tos(params)}`);
+        logger.info(`getList distributions ${tos(params)}`);
       }),
       () => cloudfront.listDistributions(params).promise(),
       get("DistributionList.Items"),
-      tap((xxx) => {
-        logger.debug(`getList ${tos(xxx)}`);
-      }),
       map(async (distribution) => ({
         ...distribution,
         Tags: await pipe([
@@ -50,9 +47,6 @@ exports.AwsDistribution = ({ spec, config }) => {
                 Resource: distribution.ARN,
               })
               .promise(),
-          tap((xxx) => {
-            logger.debug(`getList tags ${tos(xxx)}`);
-          }),
           get("Tags.Items"),
         ])(),
       })),
@@ -61,6 +55,7 @@ exports.AwsDistribution = ({ spec, config }) => {
         items: distributions,
       }),
       tap((distributions) => {
+        logger.info(`getList #distributions ${distributions.length}`);
         logger.debug(`getList distributions result: ${tos(distributions)}`);
       }),
     ])();
@@ -70,7 +65,7 @@ exports.AwsDistribution = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#getDistribution-property
   const getById = pipe([
     tap(({ id }) => {
-      logger.debug(`getById ${id}`);
+      logger.info(`getById ${id}`);
     }),
     tryCatch(
       ({ id }) => cloudfront.getDistribution({ Id: id }).promise(),
@@ -99,34 +94,27 @@ exports.AwsDistribution = ({ spec, config }) => {
       tap(() => {
         assert(name);
         assert(payload);
-        logger.info(`create distribution: ${name}, ${tos(payload)}`);
+        logger.info(`create distribution: ${name}`);
+        logger.debug(`create distribution: ${name}, ${tos(payload)}`);
       }),
       () => cloudfront.createDistributionWithTags(payload).promise(),
       tap((result) => {
+        logger.info(`distribution created: ${name}`);
         logger.debug(`created distribution: ${name}, result: ${tos(result)}`);
-      }),
-      tap((result) => {
-        logger.debug(`created done`);
       }),
     ])();
 
   const update = ({ name, id, payload }) =>
     pipe([
       tap(() => {
-        logger.debug(`update ${tos({ id })}`);
+        logger.info(`update ${tos({ name, id })}`);
       }),
       () => cloudfront.getDistributionConfig({ Id: id }).promise(),
       (config) =>
         pipe([
           get("DistributionConfig"),
-          tap((xxx) => {
-            logger.debug(`update `);
-          }),
           (distributionConfig) =>
             defaultsDeep(distributionConfig)(payload.DistributionConfig),
-          tap((distributionConfig) => {
-            logger.debug(`update `);
-          }),
           (DistributionConfig) =>
             cloudfront
               .updateDistribution({
@@ -141,19 +129,22 @@ exports.AwsDistribution = ({ spec, config }) => {
         ])(config),
       () =>
         retryCall({
-          name: `distribution is deployed ? : id: ${id}`,
+          name: `is distribution ${name} deployed ? : id: ${id}`,
           fn: () => cloudfront.getDistribution({ Id: id }).promise(),
           isExpectedResult: (result) => ["Deployed"].includes(result.Status),
           retryCount: 6 * 60,
           retryDelay: 10e3,
         }),
+      tap(() => {
+        logger.info(`distribution updated: ${tos({ name, id })}`);
+      }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#deleteDistribution-property
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.debug(`destroy ${tos({ name, id })}`);
+        logger.info(`destroy ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
       () =>
@@ -185,13 +176,6 @@ exports.AwsDistribution = ({ spec, config }) => {
             },
           },
         }),
-      tap((xxx) => {
-        logger.debug(`destroy`);
-      }),
-      ,
-      tap((xxx) => {
-        logger.debug(`destroy`);
-      }),
       ({ ETag }) =>
         cloudfront
           .deleteDistribution({
@@ -207,7 +191,7 @@ exports.AwsDistribution = ({ spec, config }) => {
         })
       ),
       tap(() => {
-        logger.debug(`destroy done, ${tos({ name, id })}`);
+        logger.info(`distribution destroyed, ${tos({ name, id })}`);
       }),
     ])();
 

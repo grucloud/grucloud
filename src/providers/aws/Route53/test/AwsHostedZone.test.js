@@ -8,6 +8,7 @@ describe("AwsHostedZone", async function () {
   let config;
   let provider;
   let hostedZone;
+  const types = ["HostedZone"];
   let hostedZoneEmpty;
   const hostedZoneName = "aws.grucloud.com";
 
@@ -89,20 +90,13 @@ describe("AwsHostedZone", async function () {
     const config = await hostedZone.resolveConfig();
     assert.equal(config.Name, `${hostedZoneName}.`);
   });
-  it("hostedZone plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 2);
-  });
-  it("hostedZone listLives all", async function () {
-    const { results: lives } = await provider.listLives({
-      types: ["HostedZone"],
-    });
-    assert(lives);
-  });
 
   it("hostedZone apply plan", async function () {
-    await testPlanDeploy({ provider, types: ["HostedZone"] });
+    await testPlanDeploy({
+      provider,
+      types,
+      planResult: { create: 2, destroy: 0 },
+    });
 
     const hostedZoneLive = await hostedZone.getLive();
     assert(hostedZoneLive);
@@ -126,6 +120,6 @@ describe("AwsHostedZone", async function () {
     assert.equal(resultCreate.results.length, 1);
     assert.equal(resultDestroy.results.length, 1);
 
-    await testPlanDestroy({ provider });
+    await testPlanDestroy({ provider, types });
   });
 });
