@@ -2,8 +2,6 @@
 
 ## Common:
 
-same name but different type
-
 add error ENOTFOUND in shouldRetryOnException
 
 - add provider start error test
@@ -53,7 +51,7 @@ region: null
 
 ## TODO Aws:
 
-- List Summary: missing name for IamRole
+- CallerReference distribution
 - check S3 Tags
 - ssh should use use kp.pem instead of ssh-add
 - add example code in AwsGettingStarted

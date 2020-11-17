@@ -566,16 +566,27 @@ function CoreProvider({
   // Target Resources
   const mapNameToResource = new Map();
   const mapTypeToResources = new Map();
+  const resourceKey = (resource) => {
+    assert(resource.type);
+    assert(resource.name);
+    return `${resource.spec?.providerName || resource.provider}::${
+      resource.type
+    }::${resource.name}`;
+  };
   const targetResourcesAdd = (resource) => {
     assert(resource.name);
     assert(resource.type);
-    if (mapNameToResource.has(resource.name)) {
+    assert(resource.spec.providerName);
+
+    if (mapNameToResource.has(resourceKey(resource))) {
       throw {
         code: 400,
-        message: `resource name '${resource.name}' already exists`,
+        message: `resource '${JSON.stringify(
+          resourceKey(resource)
+        )}' already exists`,
       };
     }
-    mapNameToResource.set(resource.name, resource);
+    mapNameToResource.set(resourceKey(resource), resource);
 
     mapTypeToResources.set(resource.type, [
       ...getResourcesByType(resource.type),
@@ -584,9 +595,10 @@ function CoreProvider({
   };
 
   const getTargetResources = () => [...mapNameToResource.values()];
-  const resourceNames = () => [...mapNameToResource.keys()];
+  const resourceNames = () => pluck(["name"])([...mapNameToResource.values()]);
 
-  const getResourceByName = (name) => mapNameToResource.get(name);
+  const getResource = (resource) =>
+    mapNameToResource.get(resourceKey(resource));
 
   const specs = fnSpecs(providerConfig).map((spec) =>
     defaultsDeep(SpecDefault({ config: providerConfig, providerName }))(spec)
@@ -1646,8 +1658,8 @@ function CoreProvider({
 
     const executor = async ({ item }) => {
       const { resource, live, action, diff } = item;
-      const engine = getResourceByName(resource.name);
-      assert(engine, `Cannot find resource ${tos(resource.name)}`);
+      const engine = getResource(resource);
+      assert(engine, `Cannot find resource ${tos(resource)}`);
 
       const input = await engine.resolveConfig({
         live,
@@ -1900,7 +1912,7 @@ function CoreProvider({
     listConfig,
     targetResourcesAdd,
     clientByType,
-    getResourceByName,
+    getResource,
     resourceNames,
     getResourcesByType,
     getTargetResources,

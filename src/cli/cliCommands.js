@@ -973,7 +973,7 @@ exports.list = async ({ infra, commandOptions = {}, programOptions = {} }) =>
 const OutputDoOk = ({ commandOptions, programOptions }) =>
   pipe([
     tap(() => {
-      logger.debug(
+      logger.info(
         `output ${JSON.stringify({ commandOptions, programOptions })}`
       );
     }),
@@ -985,11 +985,19 @@ const OutputDoOk = ({ commandOptions, programOptions }) =>
     forEach((provider) => {
       logger.debug(`provider ${provider.name}: ${provider.resourceNames()}`);
     }),
-    filter((provider) => provider.getResourceByName(commandOptions.name)),
+    filter((provider) =>
+      provider.getResource({
+        provider: provider.name,
+        type: commandOptions.type,
+        name: commandOptions.name,
+      })
+    ),
     switchCase([
       (providers) => isEmpty(providers),
       () => {
-        throw { message: `Cannot find resource: '${commandOptions.name}'` };
+        throw {
+          message: `Cannot find resource: '${commandOptions.type}::${commandOptions.name}'`,
+        };
       },
       (providers) => size(providers) > 1,
       () => {
@@ -999,14 +1007,19 @@ const OutputDoOk = ({ commandOptions, programOptions }) =>
       },
       (providers) => first(providers),
     ]),
-    (provider) => provider.getResourceByName(commandOptions.name),
+    (provider) =>
+      provider.getResource({
+        provider: provider.name,
+        type: commandOptions.type,
+        name: commandOptions.name,
+      }),
     (resource) => resource.getLive(),
     tap((live) => {
       logger.debug(`output live: ${live}`);
     }),
     get(commandOptions.field),
     tap((result) => {
-      logger.debug(`output result: ${result}`);
+      logger.info(`output result: ${result}`);
       console.log(result);
     }),
   ]);

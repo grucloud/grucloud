@@ -125,6 +125,7 @@ exports.createProgram = ({ version, commands }) => {
     .description("Output the value of a resource")
     .alias("o")
     .requiredOption("-n, --name <value>", "resource name")
+    .requiredOption("-t, --type <value>", "resource type")
     .requiredOption("-f, --field <value>", "the resource field to get")
     .option(...optionFilteredByProvider)
     .action(runCommand({ commandName: "output", program }));

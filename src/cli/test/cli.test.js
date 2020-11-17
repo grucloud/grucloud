@@ -62,11 +62,21 @@ describe("cli", function () {
     await runProgram({ cmds: ["plan"] });
   });
   it("output", async function () {
-    await runProgram({ cmds: ["output", "--name", "myip", "--field", "id"] });
+    await runProgram({
+      cmds: ["output", "--type", "Ip", "--name", "myip", "--field", "id"],
+    });
   });
   it("output name not found", async function () {
     await runProgram({
-      cmds: ["output", "--name", "idonotexist", "--field", "id"],
+      cmds: [
+        "output",
+        "--type",
+        "Ip",
+        "--name",
+        "idonotexist",
+        "--field",
+        "id",
+      ],
       onExit: ({ code }) => assert.equal(code, 422),
     });
   });

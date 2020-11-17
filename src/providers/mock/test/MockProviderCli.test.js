@@ -77,7 +77,7 @@ describe("MockProviderCli", async function () {
     {
       const output = await cliCommands.output({
         infra,
-        commandOptions: { name: "myip", field: "id" },
+        commandOptions: { type: "Ip", name: "myip", field: "id" },
       });
       assert(!output);
     }
@@ -106,7 +106,7 @@ describe("MockProviderCli", async function () {
     {
       const output = await cliCommands.output({
         infra,
-        commandOptions: { name: "myip", field: "id" },
+        commandOptions: { type: "Ip", name: "myip", field: "id" },
         programOptions: {},
       });
       assert(output);
