@@ -11,6 +11,7 @@ const {
   tryCatch,
   switchCase,
   fork,
+  get,
 } = require("rubico");
 const { defaultsDeep, isEmpty, first } = require("rubico/x");
 const logger = require("../../../logger")({ prefix: "S3Object" });
@@ -29,17 +30,9 @@ exports.AwsS3Object = ({ spec, config }) => {
 
   const s3 = new AWS.S3();
 
-  const findName = (item) => {
-    assert(item, "findName");
-    return item.Key;
-  };
+  const findName = get("Key");
 
-  const findId = (item) => {
-    assert(item, "findName");
-    const id = item.Key;
-    assert(id, "findId Id");
-    return id;
-  };
+  const findId = findName;
 
   const getBucket = ({ name, dependencies = {} }) => {
     assert(name);
@@ -111,7 +104,7 @@ exports.AwsS3Object = ({ spec, config }) => {
     ])(resources);
 
   const getByName = async ({ name, dependencies }) =>
-    await pipe([
+    pipe([
       tap(() => {
         logger.debug(`getByName ${name}`);
       }),

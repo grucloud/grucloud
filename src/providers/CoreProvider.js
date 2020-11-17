@@ -488,6 +488,11 @@ function CoreProvider({
     displayText: () => providerName,
   });
 
+  const contextFromProviderInit = () => ({
+    uri: `${providerName}::start`,
+    displayText: () => "Initialising",
+  });
+
   const contextFromResource = ({ operation, resource }) => {
     assert(operation);
     assert(resource);
@@ -1020,11 +1025,17 @@ function CoreProvider({
             context: contextFromProvider(),
             nextState: "WAITING",
           }),
+        () =>
+          onStateChange({
+            context: contextFromProviderInit(),
+            nextState: "WAITING",
+            indent: 2,
+          }),
       ])
     );
 
   const spinnersStopProvider = ({ onStateChange, error }) =>
-    tap(
+    tap(() =>
       onStateChange({
         context: contextFromProvider(),
         nextState: nextStateOnError(error),
@@ -1101,7 +1112,34 @@ function CoreProvider({
           ])(clients),
       ])
     );
-
+  const spinnersStopClient = ({ onStateChange, title, clients }) =>
+    tap(
+      pipe([
+        tap(() => {
+          assert(title, "title");
+          assert(clients, "clients");
+          assert(Array.isArray(clients), "clients must be an array");
+          logger.info(
+            `spinnersStopClient ${title}, ${JSON.stringify(clients)}`
+          );
+        }),
+        tap(() =>
+          onStateChange({
+            context: contextFromPlanner({ title }),
+            nextState: "DONE",
+          })
+        ),
+        () =>
+          pipe([
+            map((client) =>
+              onStateChange({
+                context: contextFromClient(client),
+                nextState: "DONE",
+              })
+            ),
+          ])(clients),
+      ])
+    );
   const spinnersStartHooks = ({ onStateChange, hookType }) =>
     tap(() =>
       map(({ name, onDeployed, onDestroyed }) =>
@@ -1168,6 +1206,19 @@ function CoreProvider({
           title: TitleQuery,
           clients: filterReadWriteClient(clients),
         }),
+      ])
+    )();
+
+  const spinnersStopListLives = ({ onStateChange }) =>
+    tap(
+      pipe([
+        () => {},
+        spinnersStopClient({
+          onStateChange,
+          title: TitleQuery,
+          clients: filterReadWriteClient(clients),
+        }),
+        spinnersStopProvider({ onStateChange }),
       ])
     )();
 
@@ -1889,6 +1940,38 @@ function CoreProvider({
 
   const getResourcesByType = (type) => mapTypeToResources.get(type) || [];
 
+  const startBase = ({ onStateChange = identity } = {}) =>
+    tryCatch(
+      pipe([
+        tap(() => {
+          logger.debug(`start`);
+        }),
+        () => start(),
+        tap(() =>
+          onStateChange({
+            context: contextFromProviderInit(),
+            nextState: "DONE",
+          })
+        ),
+        tap(() => {
+          logger.debug(`start done`);
+        }),
+      ]),
+      (error) => {
+        logger.error(`start error ${tos(error)}`);
+        onStateChange({
+          context: contextFromProviderInit(),
+          nextState: "ERROR",
+          error,
+        });
+        onStateChange({
+          context: contextFromProvider(),
+          nextState: "ERROR",
+        });
+        throw error;
+      }
+    )();
+
   const provider = {
     toString: () => ({ name: providerName, type: toType() }),
     config: () => providerConfig,
@@ -1902,6 +1985,7 @@ function CoreProvider({
     spinnersStartQuery,
     spinnersStartDeploy,
     spinnersStartListLives,
+    spinnersStopListLives,
     spinnersStartDestroyQuery,
     spinnersStartDestroy,
     spinnersStartHook,
@@ -1922,7 +2006,7 @@ function CoreProvider({
     hookAdd,
     init,
     unInit,
-    start,
+    start: startBase,
   };
   const enhanceProvider = {
     ...provider,

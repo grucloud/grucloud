@@ -1,5 +1,6 @@
 const assert = require("assert");
 const { defaultsDeep } = require("rubico/x");
+const Promise = require("bluebird");
 
 const MockClient = require("./MockClient");
 const MockCloud = require("./MockCloud");
@@ -148,10 +149,16 @@ exports.MockProvider = ({ name = "mock", config }) => {
     createAxios: createAxiosMock,
   };
 
+  const start = () => {
+    //throw Error("throw error in init");
+    return Promise.delay(1);
+  };
+
   return CoreProvider({
     type: "mock",
     name,
     config: defaultsDeep(configDefault)(config),
     fnSpecs,
+    start,
   });
 };

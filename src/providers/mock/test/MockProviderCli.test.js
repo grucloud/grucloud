@@ -74,7 +74,7 @@ describe("MockProviderCli", async function () {
     } catch (ex) {
       assert.equal(ex.code, 422);
       assert(ex.error);
-      assert(ex.error[0].error.message);
+      assert(ex.error.message);
     }
   });
   it("abort deploy and destroy", async function () {

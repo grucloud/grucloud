@@ -46,6 +46,11 @@ const { tos } = require("../tos");
 
 // Common
 
+const assignStart = ({ onStateChange }) =>
+  assign({
+    resultStart: ({ provider }) => provider.start({ onStateChange }),
+  });
+
 const DisplayAndThrow = ({ name }) => (error) => {
   displayError({ name, error });
   throw { code: 422, error };
@@ -286,28 +291,6 @@ const setupProviders = ({ commandOptions }) =>
     tap((xx) => {
       logger.debug("setupProviders");
     }),
-    tap(
-      pipe([
-        ({ providers }) =>
-          map(
-            tryCatch(
-              async (provider) => await provider.start(),
-              (error, provider) => {
-                return { error, provider: provider.toString() };
-              }
-            )
-          )(providers),
-        tap.if(
-          any(({ error } = {}) => error),
-          (results) => {
-            throw results;
-          }
-        ),
-      ])
-    ),
-    tap((xx) => {
-      logger.debug("setupProviders");
-    }),
   ]);
 
 // Plan Query
@@ -324,10 +307,13 @@ const doPlanQuery = ({ commandOptions, programOptions }) =>
               )
             ),
             map((provider) =>
-              assign({
-                resultQuery: async ({ provider }) =>
-                  provider.planQuery({ onStateChange }),
-              })({ provider })
+              pipe([
+                assignStart({ onStateChange }),
+                assign({
+                  resultQuery: async ({ provider }) =>
+                    provider.planQuery({ onStateChange }),
+                }),
+              ])({ provider })
             ),
           ])(providers),
       }),
@@ -415,6 +401,7 @@ const runAsyncCommandHook = ({ hookType, commandTitle, providers }) =>
         ),
         map((provider) =>
           pipe([
+            assignStart({ onStateChange }),
             assign({
               result: async ({ provider }) => {
                 const fun = provider[commandToFunction(hookType)];
@@ -580,6 +567,7 @@ exports.planApply = async ({
               }),
               mapFunction(infra.sequencial)(
                 pipe([
+                  assignStart({ onStateChange }),
                   assign({
                     result: ({ provider, resultQuery }) =>
                       provider.planApply({
@@ -743,6 +731,7 @@ exports.planDestroy = async ({
                 ),
                 map(
                   pipe([
+                    assignStart({ onStateChange }),
                     assign({
                       result: async ({ provider, result }) =>
                         provider.planDestroy({
@@ -818,13 +807,16 @@ exports.planDestroy = async ({
               map(
                 pipe([
                   (provider) =>
-                    assign({
-                      result: ({ provider }) =>
-                        provider.planFindDestroy({
-                          options: commandOptions,
-                          onStateChange,
-                        }),
-                    })({ provider }),
+                    pipe([
+                      assignStart({ onStateChange }),
+                      assign({
+                        result: ({ provider }) =>
+                          provider.planFindDestroy({
+                            options: commandOptions,
+                            onStateChange,
+                          }),
+                      }),
+                    ])({ provider }),
                   tap(({ provider, result }) =>
                     provider.spinnersStopProvider({
                       onStateChange,
@@ -909,11 +901,19 @@ const listDoOk = ({ commandOptions, programOptions }) =>
                 provider.spinnersStartListLives({ onStateChange })
               )
             ),
-            map.pool(10, (provider) =>
-              assign({
-                result: async ({ provider }) =>
-                  provider.listLives({ onStateChange, ...commandOptions }),
-              })({ provider })
+            map((provider) =>
+              pipe([
+                assignStart({ onStateChange }),
+                assign({
+                  result: ({ provider }) =>
+                    provider.listLives({ onStateChange, ...commandOptions }),
+                }),
+              ])({ provider })
+            ),
+            tap(
+              map.series(({ provider }) =>
+                provider.spinnersStopListLives({ onStateChange })
+              )
             ),
           ])(providers),
       }),

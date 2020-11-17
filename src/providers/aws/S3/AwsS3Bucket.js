@@ -68,16 +68,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     logger.info(`getByName ${name}, deep: ${deep}`);
 
     const params = { Bucket: name };
-    if (
-      !(await retryCall({
-        name: `getByName isUpById ${name}`,
-        fn: () => isUpById({ id: name }),
-        isExpectedResult: (result) => result,
-        repeatCount: 1,
-        retryCount: 5,
-        retryDelay: 1e3,
-      }))
-    ) {
+    if (!(await isUpById({ id: name }))) {
       logger.debug(`getByName cannot find: ${name}`);
       return;
     }
@@ -476,10 +467,13 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         logger.debug(`create result ${tos(Location)}`);
       }),
       tap(() =>
-        retryExpectOk({
+        retryCall({
           name: `s3 isUpById: ${Bucket}`,
           fn: () => isUpById({ id: Bucket }),
-          config: clientConfig,
+          isExpectedResult: (result) => result,
+          repeatCount: 5,
+          retryCount: 10,
+          retryDelay: 1e3,
         })
       ),
     ])();
