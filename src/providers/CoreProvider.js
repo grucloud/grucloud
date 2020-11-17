@@ -93,6 +93,7 @@ const ResourceMaker = ({
   logger.debug(`ResourceMaker: ${tos({ type, resourceName })}`);
 
   const client = spec.Client({ provider, spec, config });
+  // Add defaults for cannotBeDeleted
   let parent;
   const getLive = async ({ deep } = {}) => {
     logger.info(`getLive ${type}/${resourceName}`);
@@ -1498,7 +1499,7 @@ function CoreProvider({
     ])();
   };
 
-  const getClients = ({ onStateChange }) =>
+  const getClients = ({ onStateChange, deep }) =>
     map(
       tryCatch(
         pipe([
@@ -1512,6 +1513,7 @@ function CoreProvider({
             assign({
               results: ({ client }) =>
                 client.getList({
+                  deep,
                   resources: provider.getResourcesByType(client.spec.type),
                 }),
             })({ client }),
@@ -1561,7 +1563,7 @@ function CoreProvider({
           nextState: "RUNNING",
         })
       ),
-      getClients({ onStateChange }),
+      getClients({ onStateChange, deep: false }),
       tap((x) => {
         logger.debug(`planFindDestroy`);
       }),

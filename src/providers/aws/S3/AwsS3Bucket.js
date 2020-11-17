@@ -26,48 +26,46 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
   const s3 = new AWS.S3();
 
-  const findName = (item) => {
-    assert(item);
-    return item.Name;
-  };
+  const findName = get("Name");
 
-  const findId = (item) => findName(item);
+  const findId = findName;
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listBuckets-property
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
-  const getList = pipe([
-    tap(() => {
-      logger.info(`getList s3Bucket`);
-    }),
-    () => s3.listBuckets().promise(),
-    get("Buckets"),
-    map.pool(
-      mapPoolSize,
-      tryCatch(
-        async (bucket) => ({
-          ...bucket,
-          ...(await getByName({ name: bucket.Name })),
-        }),
-        (err, bucket) => ({
-          bucket,
-          err,
-        })
-      )
-    ),
-    tap((fullBuckets) => {
-      logger.info(`getList s3bucket #items ${fullBuckets.length}`);
-      logger.debug(`getList full ${tos(fullBuckets)}`);
-    }),
-    (fullBuckets) => ({
-      total: fullBuckets.length,
-      items: fullBuckets,
-    }),
-  ]);
+  const getList = ({ deep = true }) =>
+    pipe([
+      tap(() => {
+        logger.info(`getList s3Bucket deep:${deep}`);
+      }),
+      () => s3.listBuckets().promise(),
+      get("Buckets"),
+      map.pool(
+        mapPoolSize,
+        tryCatch(
+          async (bucket) => ({
+            ...bucket,
+            ...(deep && (await getByName({ name: bucket.Name }))),
+          }),
+          (err, bucket) => ({
+            bucket,
+            err,
+          })
+        )
+      ),
+      tap((fullBuckets) => {
+        logger.info(`getList s3bucket #items ${fullBuckets.length}`);
+        logger.debug(`getList full ${tos(fullBuckets)}`);
+      }),
+      (fullBuckets) => ({
+        total: fullBuckets.length,
+        items: fullBuckets,
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicy-property
 
-  const getByName = async ({ name }) => {
-    logger.info(`getByName ${name}`);
+  const getByName = async ({ name, deep }) => {
+    logger.info(`getByName ${name}, deep: ${deep}`);
 
     const params = { Bucket: name };
     if (
@@ -727,9 +725,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   };
 
   const configDefault = async ({ name, properties }) => {
-    const config = defaultsDeep({ Bucket: name })(properties);
-    logger.debug(`configDefault ${tos({ config })}`);
-    return config;
+    return defaultsDeep({ Bucket: name })(properties);
   };
 
   return {
