@@ -9,7 +9,7 @@ describe("AwsSecurityGroup", async function () {
   let provider;
   let vpc;
   let sg;
-
+  const types = ["SecurityGroup"];
   before(async function () {
     try {
       config = ConfigLoader({ path: "examples/multi" });
@@ -96,19 +96,8 @@ describe("AwsSecurityGroup", async function () {
     const config = await sg.resolveConfig();
     assert.equal(config.ingress.IpPermissions[0].FromPort, 22);
   });
-  it.skip("sg targets", async function () {
-    const live = await sg.getLive();
-  });
-  it("sg listLives", async function () {
-    const {
-      results: [sgs],
-    } = await provider.listLives({ types: ["SecurityGroup"] });
-    assert(sgs);
-    const sgDefault = sgs.resources.find((sg) => sg.name === "default");
-    assert(sgDefault);
-  });
   it.skip("sg apply and destroy", async function () {
-    await testPlanDeploy({ provider });
+    await testPlanDeploy({ provider, types });
 
     const sgLive = await sg.getLive();
     const vpcLive = await vpc.getLive();
@@ -120,6 +109,6 @@ describe("AwsSecurityGroup", async function () {
       name: sg.name,
     });
 
-    await testPlanDestroy({ provider, full: false });
+    await testPlanDestroy({ provider, full: false, types });
   });
 });

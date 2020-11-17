@@ -10,6 +10,7 @@ describe("AwsIamPolicy", async function () {
   let iamRole;
   let iamPolicyToUser;
   let iamPolicyToRole;
+  const types = ["IamPolicy", "IamRole", "IamUser"];
   const iamUserName = "alice";
   const iamRoleName = "role-example";
   const iamPolicyName = "policy-example-to-user";
@@ -100,26 +101,18 @@ describe("AwsIamPolicy", async function () {
   });
   it("iamPolicy resolveConfig", async function () {
     assert.equal(iamPolicyToUser.name, iamPolicyName);
-
     const config = await iamPolicyToUser.resolveConfig();
     //TODO
   });
-  it("iamPolicy plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 4);
-  });
-  it("iamPolicy listLives all", async function () {
-    const { results: lives } = await provider.listLives({
-      types: ["IamPolicy"],
-    });
-    assert(lives);
-  });
   it("iamPolicy apply plan", async function () {
-    await testPlanDeploy({ provider });
+    await testPlanDeploy({
+      provider,
+      types,
+      planResult: { create: 2, destroy: 0 },
+    });
 
     const iamPolicyToUserLive = await iamPolicyToUser.getLive();
     assert(iamPolicyToUserLive);
-    await testPlanDestroy({ provider });
+    await testPlanDestroy({ provider, types });
   });
 });

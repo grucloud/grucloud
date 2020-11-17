@@ -8,6 +8,7 @@ describe("AwsIamGroup", async function () {
   let provider;
   let iamGroup;
   let iamUser;
+  const types = ["IamGroup", "IamUser"];
   const userName = "Bob";
   const iamGroupName = "Admin";
 
@@ -48,25 +49,18 @@ describe("AwsIamGroup", async function () {
     const config = await iamGroup.resolveConfig();
     assert.equal(config.GroupName, iamGroupName);
   });
-  it("iamGroup plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 2);
-  });
-  it("iamGroup listLives all", async function () {
-    const { results: lives } = await provider.listLives({
-      types: ["IamGroup"],
-    });
-    assert(lives);
-  });
   it("iamGroup apply plan", async function () {
-    await testPlanDeploy({ provider });
+    await testPlanDeploy({
+      provider,
+      types,
+      planResult: { create: 2, destroy: 0 },
+    });
 
     const iamGroupLive = await iamGroup.getLive();
     assert(iamGroupLive);
 
     const iamUserLive = await iamUser.getLive();
     assert.equal(iamGroup.name, iamUserLive.Groups[0]);
-    await testPlanDestroy({ provider });
+    await testPlanDestroy({ provider, types });
   });
 });
