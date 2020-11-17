@@ -462,15 +462,27 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       },
     };
 
-    // TODO retry
-    const { Location } = await s3.createBucket(otherProperties).promise();
-    logger.debug(`create result ${tos(Location)}`);
-
-    await retryExpectOk({
-      name: `s3 isUpById: ${Bucket}`,
-      fn: () => isUpById({ id: Bucket }),
-      config: clientConfig,
-    });
+    const { Location } = await pipe([
+      () =>
+        retryCall({
+          name: `s3 createBucket: ${Bucket}`,
+          fn: () => s3.createBucket(otherProperties).promise(),
+          shouldRetryOnException: (error) => {
+            logger.error(`create error ${tos(error)}`);
+            return ["OperationAborted"].includes(error.code);
+          },
+        }),
+      tap(({ Location }) => {
+        logger.debug(`create result ${tos(Location)}`);
+      }),
+      tap(() =>
+        retryExpectOk({
+          name: `s3 isUpById: ${Bucket}`,
+          fn: () => isUpById({ id: Bucket }),
+          config: clientConfig,
+        })
+      ),
+    ])();
 
     try {
       await putTags({ Bucket, paramsTag });
