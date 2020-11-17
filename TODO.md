@@ -4,8 +4,6 @@
 
 add error ENOTFOUND in shouldRetryOnException
 
-- add provider start error test
-
 - add types to testPlanDestroy
 - add default cannotBeDeleted
 - PROMPT='%4~ %# '
