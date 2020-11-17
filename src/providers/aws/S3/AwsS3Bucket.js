@@ -17,59 +17,55 @@ const { retryExpectOk, retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { mapPoolSize } = require("../../Common");
 const { CheckTagsS3 } = require("../AwsTagCheck");
-
+const { buildTags } = require("../AwsCommon");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Bucket = ({ spec, config }) => {
   assert(spec);
   assert(config);
   const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
-  const { managedByKey, managedByValue, stageTagKey, stage } = config;
-  assert(stage);
 
   const s3 = new AWS.S3();
 
-  const findName = (item) => {
-    assert(item);
-    return item.Name;
-  };
+  const findName = get("Name");
 
-  const findId = (item) => findName(item);
+  const findId = findName;
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listBuckets-property
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
-  const getList = pipe([
-    tap(() => {
-      logger.info(`getList`);
-    }),
-    () => s3.listBuckets().promise(),
-    get("Buckets"),
-    map.pool(
-      mapPoolSize,
-      tryCatch(
-        async (bucket) => ({
-          ...bucket,
-          ...(await getByName({ name: bucket.Name })),
-        }),
-        (err, bucket) => ({
-          bucket,
-          err,
-        })
-      )
-    ),
-    tap((fullBuckets) => {
-      logger.info(`getList #items ${fullBuckets.length}`);
-      logger.debug(`getList full ${tos(fullBuckets)}`);
-    }),
-    (fullBuckets) => ({
-      total: fullBuckets.length,
-      items: fullBuckets,
-    }),
-  ]);
+  const getList = ({ deep = true }) =>
+    pipe([
+      tap(() => {
+        logger.info(`getList s3Bucket deep:${deep}`);
+      }),
+      () => s3.listBuckets().promise(),
+      get("Buckets"),
+      map.pool(
+        mapPoolSize,
+        tryCatch(
+          async (bucket) => ({
+            ...bucket,
+            ...(deep && (await getByName({ name: bucket.Name }))),
+          }),
+          (err, bucket) => ({
+            bucket,
+            err,
+          })
+        )
+      ),
+      tap((fullBuckets) => {
+        logger.info(`getList s3bucket #items ${fullBuckets.length}`);
+        logger.debug(`getList full ${tos(fullBuckets)}`);
+      }),
+      (fullBuckets) => ({
+        total: fullBuckets.length,
+        items: fullBuckets,
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicy-property
 
-  const getByName = async ({ name }) => {
-    logger.info(`getByName ${name}`);
+  const getByName = async ({ name, deep }) => {
+    logger.info(`getByName ${name}, deep: ${deep}`);
 
     const params = { Bucket: name };
     if (
@@ -457,16 +453,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
     logger.info(`create bucket ${tos({ Bucket, payload })}`);
 
-    const managementTags = [
-      {
-        Key: managedByKey,
-        Value: managedByValue,
-      },
-      {
-        Key: stageTagKey,
-        Value: stage,
-      },
-    ];
+    const managementTags = buildTags({ name: Bucket, config });
 
     const paramsTag = {
       Bucket,
@@ -738,9 +725,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   };
 
   const configDefault = async ({ name, properties }) => {
-    const config = defaultsDeep({ Bucket: name })(properties);
-    logger.debug(`configDefault ${tos({ config })}`);
-    return config;
+    return defaultsDeep({ Bucket: name })(properties);
   };
 
   return {
@@ -767,11 +752,12 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   };
 };
 
-exports.isOurMinionS3Bucket = ({ resource, resourceNames, config }) => {
-  const { managedByKey, managedByValue } = config;
+exports.isOurMinionS3Bucket = ({ resource, config }) => {
+  const { createdByProviderKey, providerName } = config;
+
   assert(resource);
   const isMinion = !!resource.Tagging?.TagSet?.find(
-    (tag) => tag.Key === managedByKey && tag.Value === managedByValue
+    (tag) => tag.Key === createdByProviderKey && tag.Value === providerName
   );
 
   logger.debug(`isOurMinion s3 bucket: isMinion ${isMinion}`);

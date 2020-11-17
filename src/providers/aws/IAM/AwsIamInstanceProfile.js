@@ -201,7 +201,8 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
 };
 
 exports.isOurMinionInstanceProfile = ({ resource, config }) => {
-  const { managedByKey, managedByValue } = config;
+  const { createdByProviderKey, providerName } = config;
+
   assert(resource);
   const { Roles = [] } = resource;
   if (isEmpty(Roles)) {
@@ -211,7 +212,7 @@ exports.isOurMinionInstanceProfile = ({ resource, config }) => {
   let minion = false;
   if (
     Roles[0].Tags.find(
-      (tag) => tag.Key === managedByKey && tag.Value === managedByValue
+      (tag) => tag.Key === createdByProviderKey && tag.Value === providerName
     )
   ) {
     minion = true;

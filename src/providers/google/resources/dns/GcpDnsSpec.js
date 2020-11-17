@@ -8,6 +8,8 @@ const {
   compareDnsManagedZone,
 } = require("./GcpDnsManagedZone");
 
+//const { GcpDomain, compareDomain } = require("./GcpDomain");
+
 module.exports = (config) => [
   {
     type: "DnsManagedZone",
@@ -19,4 +21,14 @@ module.exports = (config) => [
     isOurMinion: ({ resource }) => GoogleTag.isOurMinion({ resource, config }),
     compare: compareDnsManagedZone,
   },
+  /*{
+    type: "Domain",
+    Client: ({ spec }) =>
+      GcpDomain({
+        spec,
+        config,
+      }),
+    isOurMinion: ({ resource }) => GoogleTag.isOurMinion({ resource, config }),
+    compare: compareDomain,
+  },*/
 ];

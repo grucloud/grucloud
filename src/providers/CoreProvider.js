@@ -46,6 +46,7 @@ const configProviderDefault = {
   managedByKey: "ManagedBy",
   managedByValue: "GruCloud",
   managedByDescription: "Managed By GruCloud",
+  createdByProviderKey: "CreatedByProvider",
   stageTagKey: "stage",
   stage: "dev",
   retryCount: 30,
@@ -92,6 +93,7 @@ const ResourceMaker = ({
   logger.debug(`ResourceMaker: ${tos({ type, resourceName })}`);
 
   const client = spec.Client({ provider, spec, config });
+  // Add defaults for cannotBeDeleted
   let parent;
   const getLive = async ({ deep } = {}) => {
     logger.info(`getLive ${type}/${resourceName}`);
@@ -453,7 +455,10 @@ function CoreProvider({
   unInit = () => {},
   start = () => {},
 }) {
-  const providerConfig = defaultsDeep(configProviderDefault)(config);
+  const providerConfig = pipe([
+    defaultsDeep({ providerName }),
+    defaultsDeep(configProviderDefault),
+  ])(config);
   logger.debug(
     `CoreProvider name: ${providerName}, type ${type}, config: ${tos(
       providerConfig
@@ -561,16 +566,27 @@ function CoreProvider({
   // Target Resources
   const mapNameToResource = new Map();
   const mapTypeToResources = new Map();
+  const resourceKey = (resource) => {
+    assert(resource.type);
+    assert(resource.name);
+    return `${resource.spec?.providerName || resource.provider}::${
+      resource.type
+    }::${resource.name}`;
+  };
   const targetResourcesAdd = (resource) => {
     assert(resource.name);
     assert(resource.type);
-    if (mapNameToResource.has(resource.name)) {
+    assert(resource.spec.providerName);
+
+    if (mapNameToResource.has(resourceKey(resource))) {
       throw {
         code: 400,
-        message: `resource name '${resource.name}' already exists`,
+        message: `resource '${JSON.stringify(
+          resourceKey(resource)
+        )}' already exists`,
       };
     }
-    mapNameToResource.set(resource.name, resource);
+    mapNameToResource.set(resourceKey(resource), resource);
 
     mapTypeToResources.set(resource.type, [
       ...getResourcesByType(resource.type),
@@ -579,9 +595,10 @@ function CoreProvider({
   };
 
   const getTargetResources = () => [...mapNameToResource.values()];
-  const resourceNames = () => [...mapNameToResource.keys()];
+  const resourceNames = () => pluck(["name"])([...mapNameToResource.values()]);
 
-  const getResourceByName = (name) => mapNameToResource.get(name);
+  const getResource = (resource) =>
+    mapNameToResource.get(resourceKey(resource));
 
   const specs = fnSpecs(providerConfig).map((spec) =>
     defaultsDeep(SpecDefault({ config: providerConfig, providerName }))(spec)
@@ -671,7 +688,9 @@ function CoreProvider({
   } = {}) =>
     pipe([
       tap(() =>
-        logger.info(`listLives filters: ${tos({ all, our, types, name, id })}`)
+        logger.info(
+          `listLives filters: ${JSON.stringify({ all, our, types, name, id })}`
+        )
       ),
       filter((client) => all || !client.spec.listOnly),
       filter((client) =>
@@ -679,6 +698,9 @@ function CoreProvider({
           ? any((type) => new RegExp(type, "i").test(client.spec.type))(types)
           : true
       ),
+      tap((clients) => {
+        logger.info(`listLives #clients: ${clients.length}`);
+      }),
       map.pool(
         20,
         tryCatch(
@@ -698,9 +720,9 @@ function CoreProvider({
             }),
           ]),
           pipe([
-            tap((error, client) => {
+            /*tap((error, client) => {
               logger.debug(`listLives filterClient error`);
-            }),
+            }),*/
             (error, client) => ({
               error: convertError({ error }),
               client,
@@ -1489,7 +1511,7 @@ function CoreProvider({
     ])();
   };
 
-  const getClients = ({ onStateChange }) =>
+  const getClients = ({ onStateChange, deep }) =>
     map(
       tryCatch(
         pipe([
@@ -1503,6 +1525,7 @@ function CoreProvider({
             assign({
               results: ({ client }) =>
                 client.getList({
+                  deep,
                   resources: provider.getResourcesByType(client.spec.type),
                 }),
             })({ client }),
@@ -1552,7 +1575,7 @@ function CoreProvider({
           nextState: "RUNNING",
         })
       ),
-      getClients({ onStateChange }),
+      getClients({ onStateChange, deep: false }),
       tap((x) => {
         logger.debug(`planFindDestroy`);
       }),
@@ -1635,8 +1658,8 @@ function CoreProvider({
 
     const executor = async ({ item }) => {
       const { resource, live, action, diff } = item;
-      const engine = getResourceByName(resource.name);
-      assert(engine, `Cannot find resource ${tos(resource.name)}`);
+      const engine = getResource(resource);
+      assert(engine, `Cannot find resource ${tos(resource)}`);
 
       const input = await engine.resolveConfig({
         live,
@@ -1889,7 +1912,7 @@ function CoreProvider({
     listConfig,
     targetResourcesAdd,
     clientByType,
-    getResourceByName,
+    getResource,
     resourceNames,
     getResourcesByType,
     getTargetResources,

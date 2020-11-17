@@ -70,6 +70,10 @@ const servicesApiMapMain = {
     url: ({ projectId }) =>
       `https://dns.googleapis.com/dns/v1beta2/projects/${projectId}/managedZones`,
   },
+  /*"domains.googleapis.com": {
+    url: ({ projectId }) =>
+      `https://domains.googleapis.com/v1beta1/projects/${projectId}/locations/global/registrations`,
+  },*/
 };
 const rolesDefault = [
   "iam.serviceAccountAdmin",
@@ -77,6 +81,7 @@ const rolesDefault = [
   "storage.admin",
   "storage.objectAdmin",
   "dns.admin",
+  //"domains.admin",
   "editor",
   "resourcemanager.projectIamAdmin",
 ];
@@ -178,9 +183,8 @@ const getDefaultAccessToken = () => {
       return getDefaultAccessToken();
     }
   } else {
-    assert(result.token_response);
-    assert(result.token_response.access_token);
-    return result.token_response.access_token;
+    assert(result.token, `no token in ${tos(result)}`);
+    return result.token;
   }
 };
 

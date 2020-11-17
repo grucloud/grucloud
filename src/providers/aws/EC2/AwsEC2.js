@@ -9,7 +9,7 @@ const { retryExpectOk, retryCall } = require("../../Retry");
 
 const { tos } = require("../../../tos");
 const StateTerminated = ["terminated"];
-const { KeyName, getByIdCore, findNameInTags } = require("../AwsCommon");
+const { getByIdCore, findNameInTags, buildTags } = require("../AwsCommon");
 const { getField } = require("../../ProviderCommon");
 const { CheckTagsEC2 } = require("../AwsTagCheck");
 
@@ -18,12 +18,9 @@ module.exports = AwsEC2 = ({ spec, config }) => {
   assert(config);
   const clientConfig = { ...config, retryDelay: 5000, repeatCount: 1 };
 
-  const { managedByKey, managedByValue, stageTagKey, stage } = config;
-  assert(stage);
-
   const ec2 = new AWS.EC2();
 
-  const findName = (item) => findNameInTags(item);
+  const findName = findNameInTags;
 
   const findId = (item) => {
     assert(item);
@@ -213,20 +210,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
       TagSpecifications: [
         {
           ResourceType: "instance",
-          Tags: [
-            {
-              Key: KeyName,
-              Value: name,
-            },
-            {
-              Key: managedByKey,
-              Value: managedByValue,
-            },
-            {
-              Key: stageTagKey,
-              Value: stage,
-            },
-          ],
+          Tags: buildTags({ config, name }),
         },
       ],
       ...(keyPair && { KeyName: keyPair.resource.name }),

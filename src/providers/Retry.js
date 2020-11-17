@@ -67,10 +67,7 @@ const retryCall = async ({
       retryWhen((errors) =>
         errors.pipe(
           concatMap((error, i) => {
-            logError(
-              `retryCall error ${name}, attempt ${i}/${retryCount}`,
-              tos(error)
-            );
+            logger.info(`retryCall error ${name}, attempt ${i}/${retryCount}`);
 
             return iif(
               () =>

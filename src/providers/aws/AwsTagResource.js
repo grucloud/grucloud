@@ -7,9 +7,18 @@ const logger = require("../../logger")({ prefix: "AwsTagResource" });
 const { retryCall } = require("../Retry");
 
 exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
-  const { managedByKey, managedByValue, region, stageTagKey, stage } = config;
+  const {
+    createdByProviderKey,
+    providerName,
+    managedByKey,
+    managedByValue,
+    region,
+    stageTagKey,
+    stage,
+  } = config;
   assert(region);
   assert(stage);
+  assert(providerName);
 
   const { accountId } = config;
   assert(accountId);
@@ -26,6 +35,7 @@ exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
     Tags: {
       [KeyName]: name,
       [managedByKey]: managedByValue,
+      [createdByProviderKey]: providerName,
       [stageTagKey]: stage,
       id: resourceId,
       arnId,

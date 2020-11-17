@@ -17,6 +17,8 @@ module.exports = {
       "aws/AwsConfig",
       {
         Resources: [
+          { ACM: ["aws/resources/ACM/AcmCertificate"] },
+          { CloudFront: ["aws/resources/CloudFront/CloudFrontDistribution"] },
           {
             EC2: [
               "aws/resources/EC2/KeyPair",
@@ -38,6 +40,7 @@ module.exports = {
               "aws/resources/IAM/IamUser",
             ],
           },
+          { Route53: ["aws/resources/Route53/Route53HostedZone"] },
           { S3: ["aws/resources/S3/S3Bucket", "aws/resources/S3/S3Object"] },
         ],
       },

@@ -17,20 +17,14 @@ exports.AwsIamRole = ({ spec, config }) => {
 
   const iam = new AWS.IAM();
 
-  const findName = (item) => findNameInTags(item);
-
-  const findId = (item) => {
-    assert(item);
-    const id = item.RoleName;
-    assert(id);
-    return id;
-  };
+  const findName = get("RoleName");
+  const findId = findName;
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listRoles-property
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {
-        logger.debug(`getList ${params}`);
+        logger.info(`getList role ${params}`);
       }),
       () => iam.listRoles(params).promise(),
       tap((roles) => {
@@ -107,6 +101,7 @@ exports.AwsIamRole = ({ spec, config }) => {
         items: roles,
       }),
       tap((roles) => {
+        logger.info(`getList #roles: ${roles.length}`);
         logger.debug(`getList results: ${tos(roles)}`);
       }),
     ])();
@@ -115,7 +110,7 @@ exports.AwsIamRole = ({ spec, config }) => {
 
   const getById = pipe([
     tap(({ id }) => {
-      logger.debug(`getById ${id}`);
+      logger.info(`getById role ${id}`);
     }),
     tryCatch(
       ({ id }) => iam.getRole({ RoleName: id }).promise(),
@@ -131,7 +126,7 @@ exports.AwsIamRole = ({ spec, config }) => {
       ])
     ),
     tap((result) => {
-      logger.debug(`getById result: ${result}`);
+      logger.debug(`getById role result: ${tos(result)}`);
     }),
   ]);
 
@@ -142,7 +137,7 @@ exports.AwsIamRole = ({ spec, config }) => {
   const create = async ({ name, payload = {}, dependencies }) => {
     assert(name);
     assert(payload);
-    logger.debug(`create role ${tos({ name, payload })}`);
+    logger.info(`create role ${tos({ name, payload })}`);
 
     const { Role } = await iam
       .createRole({
@@ -224,8 +219,7 @@ exports.AwsIamRole = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) => {
-    logger.debug(`configDefault ${tos({ dependencies })}`);
+  const configDefault = async ({ name, properties }) => {
     return defaultsDeep({ RoleName: name, Path: "/" })(properties);
   };
 

@@ -43,9 +43,9 @@ exports.compareDnsManagedZone = async ({ target, live }) =>
       }),
     fork({
       additions: (liveRecordSet) =>
-        differenceWith(isEqual, target.recordSet, liveRecordSet),
+        differenceWith(isEqual, target.recordSet)(liveRecordSet),
       deletions: (liveRecordSet) =>
-        differenceWith(isEqual, liveRecordSet, target.recordSet),
+        differenceWith(isEqual, liveRecordSet)(target.recordSet),
     }),
     assign({
       needUpdateRecordSet: or([

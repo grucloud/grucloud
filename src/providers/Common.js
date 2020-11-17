@@ -51,7 +51,7 @@ const safeJsonParse = (json) => {
 exports.convertError = ({ error, name, procedure, params }) => {
   assert(error, "error");
   if (error.config) {
-    const { baseURL, url, method } = error.config;
+    const { baseURL = "", url, method } = error.config;
     return {
       Command: name,
       Message: error.message,
@@ -202,7 +202,7 @@ exports.logError = (prefix, error) => {
       logger.error(`data: ${tos(error.response.data)}`);
     }
     if (error.config) {
-      const { baseURL, url, method } = error.config;
+      const { baseURL = "", url, method } = error.config;
       logger.error(`config: ${method} ${baseURL}${url}`);
     }
     if (error.message) {

@@ -10,12 +10,17 @@ const CoreProvider = require("../CoreProvider");
 const AwsS3 = require("./S3");
 const AwsEC2 = require("./EC2");
 const AwsIam = require("./IAM");
+const AwsRoute53 = require("./Route53");
+const AwsCertificateManager = require("./ACM");
+const AwsCloudFront = require("./CloudFront");
 
 const fnSpecs = () => [
-  //
   ...AwsS3,
   ...AwsEC2,
   ...AwsIam,
+  ...AwsRoute53,
+  ...AwsCertificateManager,
+  ...AwsCloudFront,
 ];
 
 const validateConfig = async ({ region, zone }) => {
@@ -44,6 +49,9 @@ exports.AwsProvider = ({ name = "aws", config }) => {
     resourcegroupstaggingapi: "2017-01-26",
     s3: "2006-03-01",
     iam: "2010-05-08",
+    route53: "2013-04-01",
+    acm: "2015-12-08",
+    cloudfront: "2020-05-31",
   };
 
   const { AWSAccessKeyId, AWSSecretKey } = process.env;

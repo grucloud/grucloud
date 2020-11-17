@@ -4,7 +4,8 @@
 
 add error ENOTFOUND in shouldRetryOnException
 
-Resource: aws::S3Bucket::grucloud-policy
+- add provider start error test
+  Resource: aws::S3Bucket::grucloud-policy
 
 name: OperationAborted
 code: OperationAborted
@@ -50,6 +51,7 @@ region: null
 
 ## TODO Aws:
 
+- CallerReference distribution
 - check S3 Tags
 - ssh should use use kp.pem instead of ssh-add
 - add example code in AwsGettingStarted
@@ -68,6 +70,7 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## TODO Goggle
 
+- The field 'entity.managedZone.dnsName' cannot be modified.
 - gcp object path properties
 
 - isExpectedException: (error) => {

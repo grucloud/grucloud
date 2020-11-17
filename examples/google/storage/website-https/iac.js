@@ -1,3 +1,4 @@
+const assert = require("assert");
 const path = require("path");
 const { map } = require("rubico");
 const { resolve } = require("path");
@@ -24,8 +25,12 @@ async function getFilesWalk(dir) {
 }
 
 exports.createStack = async ({ config }) => {
-  const bucketName = "gcp.grucloud.com";
+  const { bucketName, websiteDir } = config;
+  assert(bucketName);
+  assert(websiteDir);
+
   const domain = bucketName;
+  const files = await getFiles(websiteDir);
 
   const provider = GoogleProvider({ config });
 
@@ -48,8 +53,6 @@ exports.createStack = async ({ config }) => {
       website: { mainPageSuffix: "index.html", notFoundPage: "404.html" },
     }),
   });
-  const websiteDir = "../../../../docusaurus/build/";
-  const files = await getFiles(websiteDir);
 
   await map((file) =>
     provider.makeObject({
@@ -108,17 +111,6 @@ exports.createStack = async ({ config }) => {
         recordSet: [
           {
             name: `${domain}.`,
-            rrdatas: [
-              "ns-cloud-b1.googledomains.com.",
-              "ns-cloud-b2.googledomains.com.",
-              "ns-cloud-b3.googledomains.com.",
-              "ns-cloud-b4.googledomains.com.",
-            ],
-            ttl: 21600,
-            type: "NS",
-          },
-          {
-            name: `${domain}.`,
             rrdatas: [globalForwardingRule.live?.IPAddress],
             ttl: 86400,
             type: "A",
@@ -136,6 +128,6 @@ exports.createStack = async ({ config }) => {
 
   return {
     provider,
-    resources: { bucketPublic, dnsManagedZone },
+    resources: { bucketPublic, dnsManagedZone, sslCertificate },
   };
 };

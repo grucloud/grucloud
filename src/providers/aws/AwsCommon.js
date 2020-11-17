@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tryCatch, tap } = require("rubico");
+const { pipe, tryCatch, tap, switchCase } = require("rubico");
 const first = require("rubico/x/first");
 const logger = require("../../logger")({ prefix: "Aws" });
 const { tos } = require("../../tos");
@@ -9,31 +9,49 @@ exports.KeyName = KeyName;
 
 exports.buildTags = ({
   name,
-  config: { managedByKey, managedByValue, stageTagKey, stage },
-}) => [
-  {
-    Key: KeyName,
-    Value: name,
+  config: {
+    managedByKey,
+    managedByValue,
+    stageTagKey,
+    createdByProviderKey,
+    stage,
+    providerName,
   },
-  {
-    Key: managedByKey,
-    Value: managedByValue,
-  },
-  {
-    Key: stageTagKey,
-    Value: stage,
-  },
-];
+}) => {
+  assert(name);
+  assert(providerName);
+  assert(stage);
+  return [
+    {
+      Key: KeyName,
+      Value: name,
+    },
+    {
+      Key: managedByKey,
+      Value: managedByValue,
+    },
+    {
+      Key: createdByProviderKey,
+      Value: providerName,
+    },
+    {
+      Key: stageTagKey,
+      Value: stage,
+    },
+  ];
+};
 
 exports.isOurMinion = ({ resource, config }) => {
-  const { managedByKey, managedByValue } = config;
+  const { createdByProviderKey, providerName } = config;
+  assert(providerName);
+  assert(createdByProviderKey);
   assert(resource);
   assert(resource.Tags);
 
   let minion = false;
   if (
     resource.Tags.find(
-      (tag) => tag.Key === managedByKey && tag.Value === managedByValue
+      (tag) => tag.Key === createdByProviderKey && tag.Value === providerName
     )
   ) {
     minion = true;
@@ -50,7 +68,7 @@ exports.isOurMinion = ({ resource, config }) => {
 
 exports.findNameInTags = (item) => {
   assert(item);
-  assert(item.Tags);
+  assert(Array.isArray(item.Tags), `no Tags array in ${tos(item)}`);
   const tag = item.Tags.find((tag) => tag.Key === KeyName);
   if (tag?.Value) {
     logger.debug(`findNameInTags ${tag.Value}`);

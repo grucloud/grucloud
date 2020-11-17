@@ -43,7 +43,7 @@
     "nyc": "^15.0.1"
   },
   "dependencies": {
-    "aws-sdk": "^2.670.0",
+    "aws-sdk": "^2.792.0",
     "axios": "^0.19.2",
     "axios-mock-adapter": "^1.18.1",
     "bluebird": "^3.7.2",
@@ -65,7 +65,7 @@
     "prompts": "^2.3.2",
     "querystring": "^0.2.0",
     "remedial": "^1.0.8",
-    "rubico": "^1.6.9",
+    "rubico": "^1.6.11",
     "rxjs": "^6.6.0",
     "shelljs": "^0.8.4",
     "shortid": "^2.2.15",

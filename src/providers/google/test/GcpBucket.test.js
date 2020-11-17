@@ -39,6 +39,11 @@ describe("GcpBucket", async function () {
     bucketPublic = await provider.makeBucket({
       name: bucketNamePublic,
       properties: () => ({
+        iamConfiguration: {
+          uniformBucketLevelAccess: {
+            enabled: true,
+          },
+        },
         iam: {
           bindings: [
             {
@@ -47,6 +52,7 @@ describe("GcpBucket", async function () {
             },
           ],
         },
+        website: { mainPageSuffix: "index.html", notFoundPage: "404.html" },
       }),
     });
     file = await provider.makeObject({
@@ -87,6 +93,9 @@ describe("GcpBucket", async function () {
 
     const bucketPublicLive = await bucketPublic.getLive({ deep: true });
     assert(bucketPublicLive.iam);
+    assert(bucketPublicLive.iamConfiguration);
+    assert(bucketPublicLive.website);
+
     {
       const provider = GoogleProvider({
         name: "google",
