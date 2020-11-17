@@ -43,8 +43,8 @@ module.exports = AxiosMaker = ({
     function (error) {
       if (error.response?.status === 404) {
         const { method, baseURL = "", url } = error.config;
-        logger.info(`axios error ${method} ${baseURL}${url}`);
-        logger.info(`axios error ${error}`);
+        logger.info(`axios ${method} ${baseURL}${url}`);
+        logger.info(`axios ${error}`);
       } else {
         logger.error(`axios error config: ${tos(error.config)}`);
         logger.error(`axios error ${error}`);

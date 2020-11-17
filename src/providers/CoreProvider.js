@@ -166,7 +166,10 @@ const ResourceMaker = ({
           },
           (error, dependency) => {
             logger.error(`resolveDependencies: ${tos(error)}`);
-            return { client, item: { resource: dependency }, error };
+            return {
+              item: { resource: dependency.toString() },
+              error,
+            };
           }
         )(dependency);
       }),
@@ -177,58 +180,71 @@ const ResourceMaker = ({
       }),
     ])(dependencies);
 
-  const resolveConfig = async ({ live, dependenciesMustBeUp } = {}) => {
-    logger.info(`resolveConfig ${type}/${resourceName}`);
+  const resolveConfig = async ({ live, dependenciesMustBeUp } = {}) =>
+    pipe([
+      tap(() => {
+        logger.info(`resolveConfig ${type}/${resourceName}`);
+      }),
+      () =>
+        resolveDependencies({
+          resourceName,
+          dependencies,
+          dependenciesMustBeUp,
+        }),
+      switchCase([
+        any(({ error }) => error),
+        (resolvedDependencies) => {
+          logger.error(
+            `resolveConfig ${type}/${resourceName} error in resolveDependencies`
+          );
 
-    const resolvedDependencies = await resolveDependencies({
-      resourceName,
-      dependencies,
-      dependenciesMustBeUp,
-    });
-    if (any(({ error }) => error)(resolvedDependencies)) {
-      logger.error(
-        `resolveConfig ${type}/${resourceName} error in resolveDependencies`
-      );
-
-      throw {
-        message: "error resolving dependencies",
-        results: resolvedDependencies,
-      };
-    }
-
-    assert(client.configDefault);
-
-    const config = await client.configDefault({
-      name: resourceName,
-      properties: defaultsDeep(spec.propertiesDefault)(
-        properties({ dependencies: resolvedDependencies })
-      ),
-      dependencies: resolvedDependencies,
-      live,
-    });
-
-    const finalConfig = await switchCase([
-      () => transformConfig,
-      pipe([
-        () =>
-          client.getList({
-            resources: provider.getResourcesByType(client.spec.type),
+          throw {
+            message: "error resolving dependencies",
+            results: filter(get("error"))(resolvedDependencies),
+          };
+        },
+        pipe([
+          tap(() => {
+            logger.info(`resolveConfig ${type}/${resourceName}`);
           }),
-        ({ items }) =>
-          transformConfig({
-            dependencies: resolvedDependencies,
-            items,
-            config,
-            configProvider: provider.config(),
-            live,
-          }),
+          async (resolvedDependencies) => {
+            assert(client.configDefault);
+
+            const config = await client.configDefault({
+              name: resourceName,
+              properties: defaultsDeep(spec.propertiesDefault)(
+                properties({ dependencies: resolvedDependencies })
+              ),
+              dependencies: resolvedDependencies,
+              live,
+            });
+
+            const finalConfig = await switchCase([
+              () => transformConfig,
+              pipe([
+                () =>
+                  client.getList({
+                    resources: provider.getResourcesByType(client.spec.type),
+                  }),
+                ({ items }) =>
+                  transformConfig({
+                    dependencies: resolvedDependencies,
+                    items,
+                    config,
+                    configProvider: provider.config(),
+                    live,
+                  }),
+              ]),
+              () => config,
+            ])();
+
+            logger.info(`resolveConfig: final: ${tos(finalConfig)}`);
+            return finalConfig;
+          },
+        ]),
       ]),
-      () => config,
     ])();
 
-    logger.info(`resolveConfig: final: ${tos(finalConfig)}`);
-    return finalConfig;
-  };
   const create = async ({ payload }) => {
     logger.info(`create ${tos({ resourceName, type, payload })}`);
     // Is the resource already created ?
