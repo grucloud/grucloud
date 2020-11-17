@@ -10,7 +10,14 @@ const {
   pick,
   filter,
 } = require("rubico");
-const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
+const {
+  first,
+  defaultsDeep,
+  isEmpty,
+  forEach,
+  pluck,
+  flatten,
+} = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "CertificateManager" });
 const { retryExpectOk, retryCall } = require("../../Retry");
@@ -92,9 +99,11 @@ exports.AwsCertificate = ({ spec, config }) => {
     }),
   ]);
 
-  const isInstanceUp = (instance) => {
-    return instance.Certificate?.DomainValidationOptions[0].ResourceRecord;
-  };
+  const isInstanceUp = pipe([
+    get("Certificate.DomainValidationOptions"),
+    first,
+    get("ResourceRecord"),
+  ]);
 
   const isUpById = isUpByIdCore({ isInstanceUp, getById });
   const isDownById = isDownByIdCore({ getById });
