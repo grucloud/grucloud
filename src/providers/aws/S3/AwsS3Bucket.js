@@ -407,7 +407,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       },
       shouldRetryOnException: (error) => {
         logger.error(`putTags shouldRetryOnException ${tos(error)}`);
-        return err.code === "NoSuchTagSet";
+        return error.code === "NoSuchTagSet";
       },
       retryCount: 5,
       retryDelay: config.retryDelay,
