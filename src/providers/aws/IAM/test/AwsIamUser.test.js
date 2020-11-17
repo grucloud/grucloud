@@ -42,7 +42,7 @@ describe("AwsIamUser", async function () {
     assert(config.UserName);
     assert(config.Path);
   });
-  it("iamUser apply plan", async function () {
+  it.skip("iamUser apply plan", async function () {
     await testPlanDeploy({
       provider,
       types,

@@ -49,7 +49,7 @@ describe("AwsIamGroup", async function () {
     const config = await iamGroup.resolveConfig();
     assert.equal(config.GroupName, iamGroupName);
   });
-  it("iamGroup apply plan", async function () {
+  it.skip("iamGroup apply plan", async function () {
     await testPlanDeploy({
       provider,
       types,

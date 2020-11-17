@@ -104,7 +104,7 @@ describe("AwsIamPolicy", async function () {
     const config = await iamPolicyToUser.resolveConfig();
     //TODO
   });
-  it("iamPolicy apply plan", async function () {
+  it.skip("iamPolicy apply plan", async function () {
     await testPlanDeploy({
       provider,
       types,

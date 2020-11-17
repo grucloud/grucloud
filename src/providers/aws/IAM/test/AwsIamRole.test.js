@@ -56,7 +56,7 @@ describe("AwsIamRole", async function () {
     const { results: lives } = await provider.listLives({ types });
     assert(lives);
   });
-  it("iamRole apply plan", async function () {
+  it.skip("iamRole apply plan", async function () {
     await testPlanDeploy({
       provider,
       types,
