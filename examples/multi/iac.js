@@ -43,7 +43,7 @@ const MockHooks = require("../mock/mock/hooks");
 
 const createAws = async ({ config }) => {
   const provider = AwsProvider({
-    config: { ...config.aws, stage: config.stage, ...AwsConfigWebSite() },
+    config: { ...config.aws, stage: config.stage },
   });
 
   const keyPair = await provider.useKeyPair({
