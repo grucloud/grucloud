@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const GoogleClient = require("../../GoogleClient");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
