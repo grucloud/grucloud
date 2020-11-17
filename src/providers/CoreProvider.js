@@ -46,6 +46,7 @@ const configProviderDefault = {
   managedByKey: "ManagedBy",
   managedByValue: "GruCloud",
   managedByDescription: "Managed By GruCloud",
+  createdByProviderKey: "CreatedByProvider",
   stageTagKey: "stage",
   stage: "dev",
   retryCount: 30,
@@ -453,7 +454,10 @@ function CoreProvider({
   unInit = () => {},
   start = () => {},
 }) {
-  const providerConfig = defaultsDeep(configProviderDefault)(config);
+  const providerConfig = pipe([
+    defaultsDeep({ providerName }),
+    defaultsDeep(configProviderDefault),
+  ])(config);
   logger.debug(
     `CoreProvider name: ${providerName}, type ${type}, config: ${tos(
       providerConfig

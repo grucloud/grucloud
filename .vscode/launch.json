@@ -230,6 +230,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Aws Website onDeployed",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/website-https",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["run", "--onDeployed"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Aws S3 Simple Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/s3-simple",

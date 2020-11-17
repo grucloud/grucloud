@@ -17,14 +17,12 @@ const { retryExpectOk, retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { mapPoolSize } = require("../../Common");
 const { CheckTagsS3 } = require("../AwsTagCheck");
-
+const { buildTags } = require("../AwsCommon");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Bucket = ({ spec, config }) => {
   assert(spec);
   assert(config);
   const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
-  const { managedByKey, managedByValue, stageTagKey, stage } = config;
-  assert(stage);
 
   const s3 = new AWS.S3();
 
@@ -39,7 +37,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
   const getList = pipe([
     tap(() => {
-      logger.info(`getList`);
+      logger.info(`getList s3Bucket`);
     }),
     () => s3.listBuckets().promise(),
     get("Buckets"),
@@ -57,7 +55,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       )
     ),
     tap((fullBuckets) => {
-      logger.info(`getList #items ${fullBuckets.length}`);
+      logger.info(`getList s3bucket #items ${fullBuckets.length}`);
       logger.debug(`getList full ${tos(fullBuckets)}`);
     }),
     (fullBuckets) => ({
@@ -457,16 +455,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
     logger.info(`create bucket ${tos({ Bucket, payload })}`);
 
-    const managementTags = [
-      {
-        Key: managedByKey,
-        Value: managedByValue,
-      },
-      {
-        Key: stageTagKey,
-        Value: stage,
-      },
-    ];
+    const managementTags = buildTags({ name: Bucket, config });
 
     const paramsTag = {
       Bucket,
@@ -767,11 +756,12 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   };
 };
 
-exports.isOurMinionS3Bucket = ({ resource, resourceNames, config }) => {
-  const { managedByKey, managedByValue } = config;
+exports.isOurMinionS3Bucket = ({ resource, config }) => {
+  const { createdByProviderKey, providerName } = config;
+
   assert(resource);
   const isMinion = !!resource.Tagging?.TagSet?.find(
-    (tag) => tag.Key === managedByKey && tag.Value === managedByValue
+    (tag) => tag.Key === createdByProviderKey && tag.Value === providerName
   );
 
   logger.debug(`isOurMinion s3 bucket: isMinion ${isMinion}`);

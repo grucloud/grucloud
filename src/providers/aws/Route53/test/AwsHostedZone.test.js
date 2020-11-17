@@ -85,9 +85,9 @@ describe("AwsHostedZone", async function () {
     //await provider?.destroyAll();
   });
   it("hostedZone resolveConfig", async function () {
-    assert.equal(hostedZone.name, hostedZoneName);
+    assert.equal(hostedZone.name, `${hostedZoneName}.`);
     const config = await hostedZone.resolveConfig();
-    assert.equal(config.Name, hostedZoneName);
+    assert.equal(config.Name, `${hostedZoneName}.`);
   });
   it("hostedZone plan", async function () {
     const plan = await provider.planQuery();

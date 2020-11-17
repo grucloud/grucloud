@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "*"
+    "@grucloud/core": "*",
+    "node-dig-dns": "^0.2.12"
   }
 }

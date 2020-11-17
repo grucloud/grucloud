@@ -13,19 +13,14 @@ const {
 const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "CertificateManager" });
-const { retryExpectOk } = require("../../Retry");
+const { retryExpectOk, retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { buildTags, findNameInTags } = require("../AwsCommon");
 
 const findName = findNameInTags;
 
-const findId = (item) => {
-  assert(item);
-  const id = item.CertificateArn;
-  assert(id);
-  return id;
-};
+const findId = get("CertificateArn");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
 exports.AwsCertificate = ({ spec, config }) => {
@@ -38,7 +33,7 @@ exports.AwsCertificate = ({ spec, config }) => {
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {
-        logger.debug(`getList ${tos(params)}`);
+        logger.debug(`getList certificate ${tos(params)}`);
       }),
       () => acm.listCertificates(params).promise(),
       get("CertificateSummaryList"),
@@ -70,6 +65,7 @@ exports.AwsCertificate = ({ spec, config }) => {
         items: certificates,
       }),
       tap((certificates) => {
+        logger.info(`getList #certificates : ${certificates.length}`);
         logger.debug(`getList certificates result: ${tos(certificates)}`);
       }),
     ])();
@@ -82,7 +78,7 @@ exports.AwsCertificate = ({ spec, config }) => {
       logger.debug(`getById ${id}`);
     }),
     tryCatch(
-      ({ id }) => acm.getCertificate({ CertificateArn: id }).promise(),
+      ({ id }) => acm.describeCertificate({ CertificateArn: id }).promise(),
       switchCase([
         (error) => error.code !== "ResourceNotFoundException",
         (error) => {
@@ -99,7 +95,11 @@ exports.AwsCertificate = ({ spec, config }) => {
     }),
   ]);
 
-  const isUpById = isUpByIdCore({ getById });
+  const isInstanceUp = (instance) => {
+    return instance.Certificate?.DomainValidationOptions[0].ResourceRecord;
+  };
+
+  const isUpById = isUpByIdCore({ isInstanceUp, getById });
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#requestCertificate-property
@@ -110,6 +110,7 @@ exports.AwsCertificate = ({ spec, config }) => {
         assert(payload);
         logger.info(`create certificate: ${name}, ${tos(payload)}`);
       }),
+      // Add tags directly in payload
       () => acm.requestCertificate(payload).promise(),
       tap(({ CertificateArn }) => {
         logger.debug(
@@ -124,8 +125,14 @@ exports.AwsCertificate = ({ spec, config }) => {
           })
           .promise()
       ),
+      ({ CertificateArn }) =>
+        retryCall({
+          name: `certificate isUpById: ${name} id: ${CertificateArn}`,
+          fn: () => isUpById({ name, id: CertificateArn }),
+          isExpectedResult: (result) => result,
+        }),
       tap(({ CertificateArn }) => {
-        logger.info(`created done CertificateArn: ${CertificateArn}`);
+        logger.info(`created CertificateArn: ${CertificateArn}`);
       }),
     ])();
 

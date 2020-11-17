@@ -4,6 +4,7 @@ module.exports = () => ({
     projectId: "grucloud-e2e",
     region: "europe-west4",
     zone: "europe-west4-a",
+    domainName: "grucloud.org",
   },
   aws: {
     region: "eu-west-2",

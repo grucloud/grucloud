@@ -1,6 +1,15 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
-const { map, pipe, tap, tryCatch, get, filter, switchCase } = require("rubico");
+const {
+  map,
+  pipe,
+  tap,
+  tryCatch,
+  get,
+  filter,
+  switchCase,
+  fork,
+} = require("rubico");
 const { defaultsDeep, isEmpty } = require("rubico/x");
 const moment = require("moment");
 const logger = require("../../../logger")({ prefix: "IamPolicy" });
@@ -145,6 +154,27 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       tap(() => {
         logger.debug(`destroy ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
+      }),
+      () =>
+        iam
+          .listEntitiesForPolicy({
+            PolicyArn: id,
+            EntityFilter: "LocalManagedPolicy",
+          })
+          .promise(),
+      tap((result) => {
+        logger.debug(`destroy ${tos(result)}`);
+      }),
+      fork({
+        PolicyUsers: pipe([
+          get("PolicyUsers"),
+          map((policyUser) => {
+            //TODO
+            logger.debug(`destroy ${tos(policyUser)}`);
+          }),
+        ]),
+        //PolicyGroups: ({ PolicyGroups }) => {},
+        //PolicyRoles: ({ PolicyRoles }) => {},
       }),
       () =>
         iam

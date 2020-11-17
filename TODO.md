@@ -53,6 +53,7 @@ region: null
 
 ## TODO Aws:
 
+- List Summary: missing name for IamRole
 - check S3 Tags
 - ssh should use use kp.pem instead of ssh-add
 - add example code in AwsGettingStarted

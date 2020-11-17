@@ -1,9 +1,9 @@
 const { AwsProvider } = require("@grucloud/core");
 const { pipe, map } = require("rubico");
 
-const createResources = async ({ provider, config }) => {
+const createResources = async ({ provider, resources: { certificate } }) => {
+  const config = provider.config();
   const { domainName } = config;
-
   const websiteBucket = await provider.makeS3Bucket({
     name: `${domainName}-bucket`,
     properties: () => ({
@@ -17,11 +17,6 @@ const createResources = async ({ provider, config }) => {
         },
       },
     }),
-  });
-
-  const certificate = await provider.makeCertificate({
-    name: `certificate-${domainName}`,
-    properties: () => ({ DomainName: domainName }),
   });
 
   const hostedZone = await provider.makeHostedZone({
@@ -39,14 +34,14 @@ const createResources = async ({ provider, config }) => {
                 Value: record?.Value,
               },
             ],
-            TTL: 10000,
+            TTL: 300,
             Type: "CNAME",
           },
         ],
       };
     },
   });
-  /*
+
   const distribution = await provider.makeCloudFrontDistribution({
     name: `distribution-${domainName}`,
     dependencies: { websiteBucket },
@@ -86,14 +81,34 @@ const createResources = async ({ provider, config }) => {
       };
     },
   });
-  */
-  return { websiteBucket, hostedZone, certificate /*, distribution*/ };
+
+  return { websiteBucket, hostedZone, distribution };
 };
 
 exports.createResources = createResources;
 
 exports.createStack = async ({ name = "aws", config }) => {
+  const providerUsEast = AwsProvider({
+    name: "aws-us-east",
+    config: { ...config, region: "us-east-1" },
+  });
   const provider = AwsProvider({ name, config });
-  const resources = await createResources({ provider, config });
-  return { provider, resources };
+
+  const DomainName = provider.config().domainName;
+
+  const certificate = await providerUsEast.makeCertificate({
+    name: `certificate-${DomainName}`,
+    properties: () => ({ DomainName }),
+  });
+
+  const resources = await createResources({
+    provider,
+    resources: { certificate },
+    config,
+  });
+  return {
+    sequencial: true,
+    providers: [providerUsEast, provider],
+    resources: { ...resources, certificate },
+  };
 };

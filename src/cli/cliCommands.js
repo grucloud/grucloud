@@ -279,21 +279,24 @@ const displayCommandHeader = ({ providers, verb }) =>
 const setupProviders = ({ commandOptions }) =>
   pipe([
     combineProviders,
-    ({ providers }) =>
-      filterProvidersByName({ commandOptions, providers })(providers),
+    assign({
+      providers: ({ providers }) =>
+        filterProvidersByName({ commandOptions, providers })(providers),
+    }),
     tap((xx) => {
       logger.debug("setupProviders");
     }),
     tap(
       pipe([
-        map(
-          tryCatch(
-            async (provider) => await provider.start(),
-            (error, provider) => {
-              return { error, provider: provider.toString() };
-            }
-          )
-        ),
+        ({ providers }) =>
+          map(
+            tryCatch(
+              async (provider) => await provider.start(),
+              (error, provider) => {
+                return { error, provider: provider.toString() };
+              }
+            )
+          )(providers),
         tap.if(
           any(({ error } = {}) => error),
           (results) => {
@@ -310,8 +313,8 @@ const setupProviders = ({ commandOptions }) =>
 // Plan Query
 const doPlanQuery = ({ commandOptions, programOptions }) =>
   pipe([
-    async (providers) =>
-      await runAsyncCommand({
+    ({ providers }) =>
+      runAsyncCommand({
         text: displayCommandHeader({ providers, verb: "Querying" }),
         command: ({ onStateChange }) =>
           pipe([
@@ -444,6 +447,7 @@ const planRunScript = async ({
         logger.debug("planRunScript");
       }),
       setupProviders({ commandOptions }),
+      get("providers"),
       switchCase([
         () => commandOptions.onDeployed,
         (providers) =>
@@ -549,13 +553,14 @@ exports.planApply = async ({
       ),
   ]);
 
-  const doPlansDeploy = ({ commandOptions }) =>
+  const mapFunction = (sequencial) => (sequencial ? map.series : map);
+  const doPlansDeploy = ({ commandOptions, infra }) =>
     pipe([
       tap((xx) => {
-        logger.debug("doPlansDeploy ");
+        logger.debug("doPlansDeploy ", infra.sequencial);
       }),
-      async (results) =>
-        await runAsyncCommand({
+      (results) =>
+        runAsyncCommand({
           text: displayCommandHeader({
             providers: pluck("provider")(results),
             verb: "Deploying",
@@ -573,7 +578,7 @@ exports.planApply = async ({
               tap((xx) => {
                 logger.debug("doPlansDeploy Spinners started");
               }),
-              map(
+              mapFunction(infra.sequencial)(
                 pipe([
                   assign({
                     result: ({ provider, resultQuery }) =>
@@ -619,7 +624,7 @@ exports.planApply = async ({
 
   const processDeployPlans = switchCase([
     (allplans) => commandOptions.force || promptConfirmDeploy(allplans),
-    doPlansDeploy({ commandOptions, providers: infra.providers }),
+    doPlansDeploy({ commandOptions, infra }),
     abortDeploy,
   ]);
 
@@ -797,8 +802,8 @@ exports.planDestroy = async ({
   return tryCatch(
     pipe([
       setupProviders({ commandOptions }),
-      async (providers) =>
-        await runAsyncCommand({
+      ({ providers }) =>
+        runAsyncCommand({
           text: displayCommandHeader({
             providers,
             verb: "Find",
@@ -894,7 +899,7 @@ const isEmptyList = pipe([pluck("result.results"), flatten, isEmpty]);
 const listDoOk = ({ commandOptions, programOptions }) =>
   pipe([
     setupProviders({ commandOptions }),
-    (providers) =>
+    ({ providers }) =>
       runAsyncCommand({
         text: displayCommandHeader({ providers, verb: "Listing" }),
         command: ({ onStateChange }) =>
@@ -973,6 +978,7 @@ const OutputDoOk = ({ commandOptions, programOptions }) =>
       );
     }),
     setupProviders({ commandOptions }),
+    get("providers"),
     tap((providers) => {
       logger.debug(`output #providers ${providers.length}`);
     }),
