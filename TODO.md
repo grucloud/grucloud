@@ -2,8 +2,6 @@
 
 ## Common:
 
-add error ENOTFOUND in shouldRetryOnException
-
 - add types to testPlanDestroy
 - add default cannotBeDeleted
 - PROMPT='%4~ %# '

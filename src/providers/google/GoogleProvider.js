@@ -250,10 +250,7 @@ const serviceEnable = async ({ accessToken, projectId, servicesApiMap }) => {
                   }),
                 config: { retryCount: 120, retryDelay: 10e3 },
                 shouldRetryOnException: (error) => {
-                  return (
-                    ["ECONNABORTED", "ECONNRESET"].includes(error.code) ||
-                    [403].includes(error.response?.status)
-                  );
+                  return [403].includes(error.response?.status);
                 },
               }),
             tap(() => {
