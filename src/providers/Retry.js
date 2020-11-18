@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { of, iif, throwError } = require("rxjs");
-const { pipe, tryCatch, switchCase } = require("rubico");
+const { pipe, tryCatch, switchCase, or } = require("rubico");
 
 const {
   retryWhen,
@@ -67,7 +67,7 @@ const retryCall = async ({
       retryWhen((errors) =>
         errors.pipe(
           concatMap((error, i) => {
-            logger.info(`retryCall error ${name}, attempt ${i}/${retryCount}`);
+            logger.info(`retryCall ${name}, attempt ${i}/${retryCount}`);
 
             return iif(
               () =>
@@ -91,13 +91,15 @@ const retryCall = async ({
 };
 exports.retryCall = retryCall;
 
+const shouldRetryOnExceptionDefault = (error) =>
+  ["ECONNABORTED", "ECONNRESET", "ENOTFOUND"].includes(error.code);
+
 exports.retryCallOnError = ({
   name,
   fn,
   config,
   isExpectedException = () => false,
-  shouldRetryOnException = (error) =>
-    ["ECONNABORTED", "ECONNRESET"].includes(error.code),
+  shouldRetryOnException = (error) => false,
   isExpectedResult = (result) => {
     assert(result.status, `no status in result`);
     return [200, 201, 202, 204].includes(result.status);
@@ -106,7 +108,10 @@ exports.retryCallOnError = ({
   retryCall({
     name,
     fn,
-    shouldRetryOnException,
+    shouldRetryOnException: or([
+      shouldRetryOnException,
+      shouldRetryOnExceptionDefault,
+    ]),
     isExpectedResult,
     isExpectedException,
     retryCount: config.retryCount,

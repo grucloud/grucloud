@@ -15,9 +15,10 @@ const optionFilteredByTypes = [
   "Filter by type, multiple values allowed",
   collect,
 ];
+
 const handleError = (error) => {
-  console.error("ERROR:");
-  console.error(error);
+  //console.error("ERROR:");
+  //console.error(error);
   throw error;
 };
 

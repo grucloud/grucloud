@@ -72,10 +72,7 @@ module.exports = ({ resources, provider }) => {
               name: `get  ${bucketUrlIndex}`,
               fn: () => axios.get(bucketUrlIndex),
               shouldRetryOnException: (error) => {
-                return (
-                  ["ECONNABORTED", "ECONNRESET"].includes(error.code) ||
-                  [404].includes(error.response?.status)
-                );
+                return [404].includes(error.response?.status);
               },
               config: { retryCount: 20, retryDelay: 5e3 },
             });
@@ -88,10 +85,7 @@ module.exports = ({ resources, provider }) => {
               name: `get  ${bucketStorageUrl}`,
               fn: () => axios.get(bucketStorageUrl),
               shouldRetryOnException: (error) => {
-                return (
-                  ["ECONNABORTED", "ECONNRESET"].includes(error.code) ||
-                  [404].includes(error.response?.status)
-                );
+                return [404].includes(error.response?.status);
               },
               config: { retryCount: 20, retryDelay: 5e3 },
             });
@@ -104,10 +98,7 @@ module.exports = ({ resources, provider }) => {
               name: `get  ${bucketUrl404}`,
               fn: () => axios.get(bucketUrl404),
               shouldRetryOnException: (error) => {
-                return (
-                  ["ECONNABORTED", "ECONNRESET"].includes(error.code) ||
-                  [404].includes(error.response?.status)
-                );
+                return [404].includes(error.response?.status);
               },
               config: { retryCount: 20, retryDelay: 5e3 },
             });
@@ -164,11 +155,7 @@ module.exports = ({ resources, provider }) => {
               name: `get  ${bucketUrl}`,
               fn: () => axios.get(bucketUrl),
               shouldRetryOnException: (error) => {
-                return (
-                  ["ECONNABORTED", "ECONNRESET", "ENOTFOUND"].includes(
-                    error.code
-                  ) || [404].includes(error.response?.status)
-                );
+                return [404].includes(error.response?.status);
               },
               config: { retryCount: 20, retryDelay: 5e3 },
             });

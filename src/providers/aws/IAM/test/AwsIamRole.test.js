@@ -7,6 +7,7 @@ describe("AwsIamRole", async function () {
   let config;
   let provider;
   let iamRole;
+  const types = ["IamRole"];
   const iamRoleName = "role-example";
   before(async function () {
     try {
@@ -51,20 +52,19 @@ describe("AwsIamRole", async function () {
     assert.equal(iamRole.name, iamRoleName);
     const config = await iamRole.resolveConfig();
   });
-  it("iamRole plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 1);
-  });
   it("iamRole listLives all", async function () {
-    const { results: lives } = await provider.listLives({ types: ["IamRole"] });
+    const { results: lives } = await provider.listLives({ types });
     assert(lives);
   });
-  it("iamRole apply plan", async function () {
-    await testPlanDeploy({ provider });
+  it.skip("iamRole apply plan", async function () {
+    await testPlanDeploy({
+      provider,
+      types,
+      planResult: { create: 1, destroy: 0 },
+    });
 
     const iamRoleLive = await iamRole.getLive();
     assert(iamRoleLive);
-    await testPlanDestroy({ provider });
+    await testPlanDestroy({ provider, types });
   });
 });

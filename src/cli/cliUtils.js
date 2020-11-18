@@ -123,13 +123,16 @@ exports.runAsyncCommand = async ({ text, command }) => {
         break;
       }
       case "ERROR": {
-        logger.error(`spinnies: uri: ${uri} ERROR`);
+        logger.error(`spinnies: uri: ${uri} ERROR: ${tos(error)}`);
 
         const spinny = spinnies.pick(uri);
         assert(spinny, `ERROR event: ${uri} was not created, error: ${error}`);
         assert(error, `should have set the error, id: ${uri}`);
         const spinner = spinnerMap.get(uri);
-        assert(spinner, `event ERROR but ${uri} was not created`);
+        if (!spinner) {
+          logger.error(`spinnies: uri: ${uri} ERROR: ${tos(error)}`);
+          return;
+        }
 
         const textWithError = `${displayText(spinner.state).padEnd(30, " ")} ${
           error.Message || ""

@@ -8,6 +8,7 @@ describe("AwsIamInstanceProfile", async function () {
   let provider;
   let iamRole;
   let iamInstanceProfile;
+  const types = ["IamInstanceProfile", "IamRole"];
   const iamRoleName = "role-example-for-instance-profile";
   const iamInstanceProfileName = "instance-profile-example";
 
@@ -64,24 +65,17 @@ describe("AwsIamInstanceProfile", async function () {
     assert(config.InstanceProfileName);
     assert(config.Path);
   });
-  it("iamInstanceProfile plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 2);
-  });
-  it("iamInstanceProfile listLives all", async function () {
-    const { results: lives } = await provider.listLives({
-      types: ["IamInstanceProfile"],
-    });
-    assert(lives);
-  });
   it("iamInstanceProfile apply plan", async function () {
-    await testPlanDeploy({ provider });
+    await testPlanDeploy({
+      provider,
+      types,
+      planResult: { create: 2, destroy: 0 },
+    });
 
     const iamInstanceProfileLive = await iamInstanceProfile.getLive();
     assert(iamInstanceProfileLive);
     assert.equal(iamInstanceProfileLive.Roles[0].RoleName, iamRole.name);
 
-    await testPlanDestroy({ provider });
+    await testPlanDestroy({ provider, types });
   });
 });

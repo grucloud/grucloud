@@ -49,9 +49,6 @@ describe("AwsInternetGateway", async function () {
   it("ig name", async function () {
     assert.equal(ig.name, resourceName);
   });
-  it.skip("ig getLive", async function () {
-    await ig.getLive();
-  });
   it.skip("ig apply and destroy", async function () {
     await testPlanDeploy({ provider });
     const igLive = await ig.getLive();

@@ -68,16 +68,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     logger.info(`getByName ${name}, deep: ${deep}`);
 
     const params = { Bucket: name };
-    if (
-      !(await retryCall({
-        name: `getByName isUpById ${name}`,
-        fn: () => isUpById({ id: name }),
-        isExpectedResult: (result) => result,
-        repeatCount: 1,
-        retryCount: 5,
-        retryDelay: 1e3,
-      }))
-    ) {
+    if (!(await isUpById({ id: name }))) {
       logger.debug(`getByName cannot find: ${name}`);
       return;
     }
@@ -416,7 +407,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       },
       shouldRetryOnException: (error) => {
         logger.error(`putTags shouldRetryOnException ${tos(error)}`);
-        return err.code === "NoSuchTagSet";
+        return error.code === "NoSuchTagSet";
       },
       retryCount: 5,
       retryDelay: config.retryDelay,
@@ -462,15 +453,30 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       },
     };
 
-    // TODO retry
-    const { Location } = await s3.createBucket(otherProperties).promise();
-    logger.debug(`create result ${tos(Location)}`);
-
-    await retryExpectOk({
-      name: `s3 isUpById: ${Bucket}`,
-      fn: () => isUpById({ id: Bucket }),
-      config: clientConfig,
-    });
+    const { Location } = await pipe([
+      () =>
+        retryCall({
+          name: `s3 createBucket: ${Bucket}`,
+          fn: () => s3.createBucket(otherProperties).promise(),
+          shouldRetryOnException: (error) => {
+            logger.error(`create error ${tos(error)}`);
+            return ["OperationAborted"].includes(error.code);
+          },
+        }),
+      tap(({ Location }) => {
+        logger.debug(`create result ${tos(Location)}`);
+      }),
+      tap(() =>
+        retryCall({
+          name: `s3 isUpById: ${Bucket}`,
+          fn: () => isUpById({ id: Bucket }),
+          isExpectedResult: (result) => result,
+          repeatCount: 5,
+          retryCount: 10,
+          retryDelay: 1e3,
+        })
+      ),
+    ])();
 
     try {
       await putTags({ Bucket, paramsTag });

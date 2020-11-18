@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const GoogleClient = require("../../GoogleClient");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
@@ -22,16 +23,12 @@ exports.GcpGlobalForwardingRule = ({ spec, config }) => {
     })(properties);
   };
 
-  const isInstanceUp = (instance) => {
-    return !!instance.IPAddress;
-  };
-
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
-      isInstanceUp,
+      isInstanceUp: get("IPAddress"),
       getById,
     });
-  // Up when IPAddress is valid
+
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,

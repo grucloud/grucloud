@@ -166,7 +166,10 @@ const ResourceMaker = ({
           },
           (error, dependency) => {
             logger.error(`resolveDependencies: ${tos(error)}`);
-            return { client, item: { resource: dependency }, error };
+            return {
+              item: { resource: dependency.toString() },
+              error,
+            };
           }
         )(dependency);
       }),
@@ -177,58 +180,71 @@ const ResourceMaker = ({
       }),
     ])(dependencies);
 
-  const resolveConfig = async ({ live, dependenciesMustBeUp } = {}) => {
-    logger.info(`resolveConfig ${type}/${resourceName}`);
+  const resolveConfig = async ({ live, dependenciesMustBeUp } = {}) =>
+    pipe([
+      tap(() => {
+        logger.info(`resolveConfig ${type}/${resourceName}`);
+      }),
+      () =>
+        resolveDependencies({
+          resourceName,
+          dependencies,
+          dependenciesMustBeUp,
+        }),
+      switchCase([
+        any(({ error }) => error),
+        (resolvedDependencies) => {
+          logger.error(
+            `resolveConfig ${type}/${resourceName} error in resolveDependencies`
+          );
 
-    const resolvedDependencies = await resolveDependencies({
-      resourceName,
-      dependencies,
-      dependenciesMustBeUp,
-    });
-    if (any(({ error }) => error)(resolvedDependencies)) {
-      logger.error(
-        `resolveConfig ${type}/${resourceName} error in resolveDependencies`
-      );
-
-      throw {
-        message: "error resolving dependencies",
-        results: resolvedDependencies,
-      };
-    }
-
-    assert(client.configDefault);
-
-    const config = await client.configDefault({
-      name: resourceName,
-      properties: defaultsDeep(spec.propertiesDefault)(
-        properties({ dependencies: resolvedDependencies })
-      ),
-      dependencies: resolvedDependencies,
-      live,
-    });
-
-    const finalConfig = await switchCase([
-      () => transformConfig,
-      pipe([
-        () =>
-          client.getList({
-            resources: provider.getResourcesByType(client.spec.type),
+          throw {
+            message: "error resolving dependencies",
+            results: filter(get("error"))(resolvedDependencies),
+          };
+        },
+        pipe([
+          tap(() => {
+            logger.info(`resolveConfig ${type}/${resourceName}`);
           }),
-        ({ items }) =>
-          transformConfig({
-            dependencies: resolvedDependencies,
-            items,
-            config,
-            configProvider: provider.config(),
-            live,
-          }),
+          async (resolvedDependencies) => {
+            assert(client.configDefault);
+
+            const config = await client.configDefault({
+              name: resourceName,
+              properties: defaultsDeep(spec.propertiesDefault)(
+                properties({ dependencies: resolvedDependencies })
+              ),
+              dependencies: resolvedDependencies,
+              live,
+            });
+
+            const finalConfig = await switchCase([
+              () => transformConfig,
+              pipe([
+                () =>
+                  client.getList({
+                    resources: provider.getResourcesByType(client.spec.type),
+                  }),
+                ({ items }) =>
+                  transformConfig({
+                    dependencies: resolvedDependencies,
+                    items,
+                    config,
+                    configProvider: provider.config(),
+                    live,
+                  }),
+              ]),
+              () => config,
+            ])();
+
+            logger.info(`resolveConfig: final: ${tos(finalConfig)}`);
+            return finalConfig;
+          },
+        ]),
       ]),
-      () => config,
     ])();
 
-    logger.info(`resolveConfig: final: ${tos(finalConfig)}`);
-    return finalConfig;
-  };
   const create = async ({ payload }) => {
     logger.info(`create ${tos({ resourceName, type, payload })}`);
     // Is the resource already created ?
@@ -486,6 +502,11 @@ function CoreProvider({
   const contextFromProvider = () => ({
     uri: providerName,
     displayText: () => providerName,
+  });
+
+  const contextFromProviderInit = () => ({
+    uri: `${providerName}::start`,
+    displayText: () => "Initialising",
   });
 
   const contextFromResource = ({ operation, resource }) => {
@@ -1020,11 +1041,17 @@ function CoreProvider({
             context: contextFromProvider(),
             nextState: "WAITING",
           }),
+        () =>
+          onStateChange({
+            context: contextFromProviderInit(),
+            nextState: "WAITING",
+            indent: 2,
+          }),
       ])
     );
 
   const spinnersStopProvider = ({ onStateChange, error }) =>
-    tap(
+    tap(() =>
       onStateChange({
         context: contextFromProvider(),
         nextState: nextStateOnError(error),
@@ -1101,7 +1128,34 @@ function CoreProvider({
           ])(clients),
       ])
     );
-
+  const spinnersStopClient = ({ onStateChange, title, clients }) =>
+    tap(
+      pipe([
+        tap(() => {
+          assert(title, "title");
+          assert(clients, "clients");
+          assert(Array.isArray(clients), "clients must be an array");
+          logger.info(
+            `spinnersStopClient ${title}, ${JSON.stringify(clients)}`
+          );
+        }),
+        tap(() =>
+          onStateChange({
+            context: contextFromPlanner({ title }),
+            nextState: "DONE",
+          })
+        ),
+        () =>
+          pipe([
+            map((client) =>
+              onStateChange({
+                context: contextFromClient(client),
+                nextState: "DONE",
+              })
+            ),
+          ])(clients),
+      ])
+    );
   const spinnersStartHooks = ({ onStateChange, hookType }) =>
     tap(() =>
       map(({ name, onDeployed, onDestroyed }) =>
@@ -1168,6 +1222,19 @@ function CoreProvider({
           title: TitleQuery,
           clients: filterReadWriteClient(clients),
         }),
+      ])
+    )();
+
+  const spinnersStopListLives = ({ onStateChange }) =>
+    tap(
+      pipe([
+        () => {},
+        spinnersStopClient({
+          onStateChange,
+          title: TitleQuery,
+          clients: filterReadWriteClient(clients),
+        }),
+        spinnersStopProvider({ onStateChange }),
       ])
     )();
 
@@ -1889,6 +1956,38 @@ function CoreProvider({
 
   const getResourcesByType = (type) => mapTypeToResources.get(type) || [];
 
+  const startBase = ({ onStateChange = identity } = {}) =>
+    tryCatch(
+      pipe([
+        tap(() => {
+          logger.debug(`start`);
+        }),
+        () => start(),
+        tap(() =>
+          onStateChange({
+            context: contextFromProviderInit(),
+            nextState: "DONE",
+          })
+        ),
+        tap(() => {
+          logger.debug(`start done`);
+        }),
+      ]),
+      (error) => {
+        logger.error(`start error ${tos(error)}`);
+        onStateChange({
+          context: contextFromProviderInit(),
+          nextState: "ERROR",
+          error,
+        });
+        onStateChange({
+          context: contextFromProvider(),
+          nextState: "ERROR",
+        });
+        throw error;
+      }
+    )();
+
   const provider = {
     toString: () => ({ name: providerName, type: toType() }),
     config: () => providerConfig,
@@ -1902,6 +2001,7 @@ function CoreProvider({
     spinnersStartQuery,
     spinnersStartDeploy,
     spinnersStartListLives,
+    spinnersStopListLives,
     spinnersStartDestroyQuery,
     spinnersStartDestroy,
     spinnersStartHook,
@@ -1922,7 +2022,7 @@ function CoreProvider({
     hookAdd,
     init,
     unInit,
-    start,
+    start: startBase,
   };
   const enhanceProvider = {
     ...provider,

@@ -54,6 +54,29 @@ describe("MockProviderCli", async function () {
       checkError(ex);
     }
   });
+  it("start error", async function () {
+    const config = ConfigLoader({ baseDir: __dirname });
+    const provider = MockProvider({ config });
+    const resources = await createResources({ provider });
+    const infra = { provider };
+    const errorMessage = "stub-error";
+
+    provider.start = sinon
+      .stub()
+      .returns(Promise.reject({ message: errorMessage }));
+
+    try {
+      await cliCommands.list({
+        infra,
+        commandOptions: {},
+      });
+      assert("should not be here");
+    } catch (ex) {
+      assert.equal(ex.code, 422);
+      assert(ex.error);
+      assert(ex.error.message);
+    }
+  });
   it("abort deploy and destroy", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
     const provider = MockProvider({ config });

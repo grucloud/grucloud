@@ -7,6 +7,7 @@ describe("AwsIamUser", async function () {
   let config;
   let provider;
   let iamUser;
+  const types = ["IamUser"];
   const iamUserName = "Alice";
   before(async function () {
     try {
@@ -41,20 +42,15 @@ describe("AwsIamUser", async function () {
     assert(config.UserName);
     assert(config.Path);
   });
-  it("iamUser plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 1);
-  });
-  it("iamUser listLives all", async function () {
-    const { results: lives } = await provider.listLives({ types: ["IamUser"] });
-    assert(lives);
-  });
-  it("iamUser apply plan", async function () {
-    await testPlanDeploy({ provider });
+  it.skip("iamUser apply plan", async function () {
+    await testPlanDeploy({
+      provider,
+      types,
+      planResult: { create: 2, destroy: 0 },
+    });
 
     const iamUserLive = await iamUser.getLive();
     assert(iamUserLive);
-    await testPlanDestroy({ provider });
+    await testPlanDestroy({ provider, types });
   });
 });
