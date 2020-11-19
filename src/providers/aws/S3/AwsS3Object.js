@@ -1,7 +1,7 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
 const fs = require("fs").promises;
-const md5File = require("md5-file");
+
 const {
   map,
   filter,
@@ -17,7 +17,6 @@ const { defaultsDeep, isEmpty, first } = require("rubico/x");
 const logger = require("../../../logger")({ prefix: "S3Object" });
 const { retryExpectOk } = require("../../Retry");
 const { tos } = require("../../../tos");
-
 const { convertError, mapPoolSize, md5FileBase64 } = require("../../Common");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
@@ -308,4 +307,22 @@ exports.isOurMinionS3Object = ({ resource, resourceNames = [], config }) => {
 
   logger.debug(`isOurMinion s3 object: isMinion ${isMinion}`);
   return isMinion;
+};
+
+exports.compareS3Object = async ({ target, live }) => {
+  logger.debug(`compare object`);
+  const md5hash = live.Metadata?.md5hash;
+  if (!md5hash) {
+    logger.debug(`no md5 hash for ${tos(live)}`);
+    return [];
+  }
+  if (target.source) {
+    const md5 = await md5FileBase64(target.source);
+
+    if (md5hash !== md5) {
+      return [{ type: "DIFF", target, live }];
+    }
+  }
+
+  return [];
 };
