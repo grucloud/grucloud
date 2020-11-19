@@ -1043,7 +1043,7 @@ exports.output = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   )(infra);
 
 //Init
-const DoCommand = ({ commandOptions, programOptions, command }) =>
+const DoCommand = ({ commandOptions, command }) =>
   pipe([
     tap((xxx) => {
       logger.debug(`DoCommand ${command}`);
@@ -1053,9 +1053,10 @@ const DoCommand = ({ commandOptions, programOptions, command }) =>
       filterProvidersByName({ commandOptions, providers })(providers),
     map(
       tryCatch(
-        async (provider) => await provider[command](),
+        async (provider) =>
+          await provider[command]({ options: commandOptions }),
         (error, provider) => {
-          return { error, provider };
+          return { error, provider: provider.toString() };
         }
       )
     ),
@@ -1073,6 +1074,20 @@ const DoCommand = ({ commandOptions, programOptions, command }) =>
       }),
     ]),
   ]);
+
+exports.info = async ({ infra, commandOptions = {}, programOptions = {} }) =>
+  tryCatch(
+    pipe([
+      tap((xxx) => {
+        logger.debug(`info`);
+      }),
+      DoCommand({ commandOptions, programOptions, command: "info" }),
+      tap((info) => {
+        console.log(YAML.stringify(info.results));
+      }),
+    ]),
+    DisplayAndThrow({ name: "Info" })
+  )(infra);
 
 exports.init = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(

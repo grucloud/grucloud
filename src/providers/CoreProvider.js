@@ -490,6 +490,7 @@ function CoreProvider({
   mandatoryConfigKeys = [],
   fnSpecs,
   config,
+  info = () => ({}),
   init = () => {},
   unInit = () => {},
   start = () => {},
@@ -2013,9 +2014,10 @@ function CoreProvider({
         throw error;
       }
     )();
+  const toString = () => ({ name: providerName, type: toType() });
 
   const provider = {
-    toString: () => ({ name: providerName, type: toType() }),
+    toString,
     config: () => providerConfig,
     name: providerName,
     type: toType,
@@ -2046,6 +2048,14 @@ function CoreProvider({
     runOnDeployed,
     runOnDestroyed,
     hookAdd,
+    info: pipe([
+      () => startBase(),
+      () => ({
+        provider: toString(),
+        stage: providerConfig.stage,
+        ...info(),
+      }),
+    ]),
     init,
     unInit,
     start: startBase,

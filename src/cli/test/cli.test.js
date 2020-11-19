@@ -58,6 +58,9 @@ const runProgram = async ({
 };
 
 describe("cli", function () {
+  it("info", async function () {
+    await runProgram({ cmds: ["info"] });
+  });
   it("query plan", async function () {
     await runProgram({ cmds: ["plan"] });
   });

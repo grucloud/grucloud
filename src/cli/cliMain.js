@@ -21,8 +21,8 @@ exports.main = async ({ argv, onExit }) => {
   logger.info(new Date().toUTCString());
 
   logger.info(`argv: ${argv}`);
-  const { stage } = process.env;
-  logger.info(`stage: ${stage}`);
+  const { STAGE } = process.env;
+  logger.info(`stage: ${STAGE}`);
   try {
     const startDate = new Date();
     const commmand = await program.parseAsync(argv);
