@@ -1036,8 +1036,9 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
     })(config),
     fnSpecs,
     start,
-    info: () =>
+    info: ({ options }) =>
       info({
+        options,
         config,
         gcloudConfig,
         projectName,
