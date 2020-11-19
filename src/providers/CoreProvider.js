@@ -1602,7 +1602,7 @@ function CoreProvider({
             })
           ),
           tap((x) => {
-            logger.debug(`getList done`);
+            logger.debug(`getClients done`);
           }),
         ]),
         (error, client) => {

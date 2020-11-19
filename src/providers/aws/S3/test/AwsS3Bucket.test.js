@@ -7,6 +7,7 @@ const { CheckTagsS3 } = require("../../AwsTagCheck");
 describe("AwsS3Bucket", async function () {
   let config;
   let provider;
+  const types = ["S3Bucket"];
   const bucketPrefix = "grucloud-s3bucket-test";
 
   before(async function () {
@@ -21,9 +22,6 @@ describe("AwsS3Bucket", async function () {
     });
 
     await provider.start();
-
-    const { error } = await provider.destroyAll();
-    assert(!error, "destroyAll failed");
   });
   after(async () => {
     await provider?.destroyAll();
@@ -35,7 +33,7 @@ describe("AwsS3Bucket", async function () {
       properties: () => ({}),
     });
 
-    await testPlanDeploy({ provider });
+    await testPlanDeploy({ provider, types });
 
     const s3BucketLive = await s3Bucket.getLive();
     assert(s3BucketLive);
@@ -43,10 +41,10 @@ describe("AwsS3Bucket", async function () {
 
     CheckTagsS3({
       config: provider.config(),
-      tags: s3BucketLive.Tagging.TagSet,
+      tags: s3BucketLive.Tags,
       name: s3Bucket.name,
     });
 
-    await testPlanDestroy({ provider, full: false });
+    await testPlanDestroy({ provider, full: false, types });
   });
 });

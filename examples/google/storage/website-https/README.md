@@ -32,6 +32,16 @@ The _init_ command will create the project, setup the billing, enable the api se
 gc init
 ```
 
+## Add the service account as the domain owner
+
+The service account operating by grucloud need to be added as the domain owner.
+
+This service account created previously with the **init** command is in the form of grucloud@**YourProjectId**.iam.gserviceaccount.com
+
+Follow the manual steps at the [domain name verification documentation](https://cloud.google.com/storage/docs/domain-name-verification).
+
+> Google does not provide any API to automate this step.
+
 ## Deploy
 
 Deploy this infrastucture with the _apply_ command

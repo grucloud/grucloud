@@ -140,7 +140,7 @@ exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
       types,
     });
 
-    assert(isEmpty(lives), tos(lives));
+    assert(isEmpty(lives), `shoud be empty after destroy, lives:${tos(lives)}`);
   }
   {
     const plan = await provider.planQuery();
@@ -156,7 +156,7 @@ exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
       types,
     });
 
-    assert(!isEmpty(lives), tos(lives));
+    assert(!isEmpty(lives), `shoud not be empty after an apply`);
   }
   {
     const plan = await provider.planQuery();
