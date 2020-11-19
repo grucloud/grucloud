@@ -100,6 +100,7 @@ const testPlanDestroy = async ({ provider, types = [], full = false }) => {
     const { results: livesAll } = await provider.listLives({
       our: true,
       canBeDeleted: true,
+      types,
     });
     assert(!isEmpty(livesAll));
 
@@ -108,7 +109,7 @@ const testPlanDestroy = async ({ provider, types = [], full = false }) => {
     await testDestroyByType({ provider, livesAll });
   }
   {
-    const { error, results } = await provider.destroyAll();
+    const { error, results } = await provider.destroyAll({ types });
     assert(results);
     assert(!error, "testPlanDestroy destroyAll failed");
   }
@@ -130,8 +131,16 @@ exports.testPlanDestroy = testPlanDestroy;
 exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
   await provider.start();
   {
-    const { error } = await provider.destroyAll();
+    const { error } = await provider.destroyAll({ types });
     assert(!error, "testPlanDeploy destroyAll failed");
+  }
+  {
+    const { results: lives } = await provider.listLives({
+      our: true,
+      types,
+    });
+
+    assert(isEmpty(lives), tos(lives));
   }
   {
     const plan = await provider.planQuery();

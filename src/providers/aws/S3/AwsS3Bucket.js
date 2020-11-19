@@ -27,8 +27,32 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const s3 = new AWS.S3();
 
   const findName = get("Name");
-
   const findId = findName;
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketTagging-property
+  const getBucketTagging = (params) =>
+    tryCatch(
+      pipe([
+        tap((x) => {
+          logger.debug(`getBucketTagging ${params.Bucket}`);
+        }),
+        () => s3.getBucketTagging(params).promise(),
+        get("TagSet"),
+        tap((TagSet) => {
+          logger.debug(
+            `getBucketTagging ${params.Bucket} result: ${tos(TagSet)}`
+          );
+        }),
+      ]),
+      switchCase([
+        (err) => err.code === "NoSuchTagSet",
+        () => undefined,
+        (err) => {
+          logger.error(`getBucketTagging ${params.Bucket}, error ${tos(err)}`);
+          throw err;
+        },
+      ])
+    );
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listBuckets-property
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
@@ -44,7 +68,9 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         tryCatch(
           async (bucket) => ({
             ...bucket,
-            ...(deep && (await getByName({ name: bucket.Name }))),
+            Tags: await getBucketTagging({ Bucket: bucket.Name })(),
+            ...(deep &&
+              (await getByName({ name: bucket.Name, getTags: false }))),
           }),
           (err, bucket) => ({
             bucket,
@@ -64,7 +90,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicy-property
 
-  const getByName = async ({ name, deep }) => {
+  const getByName = async ({ name, deep, getTags = true }) => {
     logger.info(`getByName ${name}, deep: ${deep}`);
 
     const params = { Bucket: name };
@@ -74,6 +100,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     }
 
     const s3Bucket = await fork({
+      ...(getTags && { Tags: getBucketTagging(params) }),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketAccelerateConfiguration-property
       AccelerateConfiguration: tryCatch(
         pipe([
@@ -285,23 +312,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
           logger.error(`getBucketTagging ${name}, error ${tos(err)}`);
           throw err;
         }
-      ),
-      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketTagging-property
-      Tagging: tryCatch(
-        pipe([
-          () => s3.getBucketTagging(params).promise(),
-          tap((x) => {
-            logger.debug(`getBucketTagging ${name} ${tos(x)}`);
-          }),
-        ]),
-        switchCase([
-          (err) => err.code === "NoSuchTagSet",
-          () => undefined,
-          (err) => {
-            logger.error(`getBucketTagging ${name}, error ${tos(err)}`);
-            throw err;
-          },
-        ])
       ),
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketVersioning-property
       VersioningConfiguration: tryCatch(
@@ -762,7 +772,8 @@ exports.isOurMinionS3Bucket = ({ resource, config }) => {
   const { createdByProviderKey, providerName } = config;
 
   assert(resource);
-  const isMinion = !!resource.Tagging?.TagSet?.find(
+  assert(resource.Tags);
+  const isMinion = !!resource.Tags.find(
     (tag) => tag.Key === createdByProviderKey && tag.Value === providerName
   );
 

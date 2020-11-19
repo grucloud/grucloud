@@ -270,16 +270,15 @@ const ResourceMaker = ({
 
     const live = await retryCall({
       name: `create getLive ${type}/${resourceName}`,
-      fn: async () => {
-        const live = await getLive();
-        if (!live) {
-          throw Error(
-            `Resource ${type}/${resourceName} not there after being created`
-          );
-        }
-        return live;
+      fn: () => getLive(),
+      shouldRetryOnException: (error) => {
+        logger.info(`created: shouldRetryOnException ${tos(error)}`);
+        return false;
       },
-      shouldRetryOnException: () => true,
+      isExpectedResult: (result) => {
+        return result;
+      },
+
       //TODO refactor
       repeatCount: provider.config().repeatCount,
       retryCount: provider.config().retryCount,
@@ -1902,10 +1901,9 @@ function CoreProvider({
 
   const destroyAll = pipe([
     tap(() => logger.debug(`destroyAll`)),
-    async ({ onStateChange = identity, all = true } = {}) =>
-      planFindDestroy({ options: { all }, onStateChange }),
-    async ({ plans }) =>
-      await planDestroy({ plans, direction: PlanDirection.DOWN }),
+    ({ onStateChange = identity, all = false, types = [] } = {}) =>
+      planFindDestroy({ options: { all, types }, onStateChange }),
+    ({ plans }) => planDestroy({ plans, direction: PlanDirection.DOWN }),
     tap(({ error, results }) =>
       logger.info(
         `destroyAll DONE, ${error && `error: ${error}`}, #results ${
