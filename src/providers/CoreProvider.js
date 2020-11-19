@@ -65,10 +65,34 @@ const noop = ({}) => {};
 
 const isValidPlan = (plan) => !isEmpty(plan.plans) && !plan.error;
 
-const filterReadWriteClient = pipe([
-  filter((client) => !client.spec.singleton),
-  filter((client) => !client.spec.listOnly),
-]);
+const filterByType = ({ types }) =>
+  filter((client) =>
+    !isEmpty(types)
+      ? any((type) => new RegExp(type, "i").test(client.spec.type))(types)
+      : true
+  );
+
+const filterReadClient = ({ types, all }) =>
+  pipe([
+    filterByType({ types }),
+    filter((client) => all || !client.spec.listOnly),
+    tap((clients) => {
+      logger.debug(`filterReadClient #client ${clients.length}`);
+    }),
+  ]);
+
+const filterReadWriteClient = ({ types } = {}) =>
+  pipe([
+    tap(() => {
+      logger.debug(`filterReadWriteClient ${types}`);
+    }),
+    filterByType({ types }),
+    filter((client) => !client.spec.singleton),
+    filter((client) => !client.spec.listOnly),
+    tap((clients) => {
+      logger.debug(`filterReadWriteClient #clients ${clients.length}`);
+    }),
+  ]);
 
 const hasResultError = any(({ error }) => error);
 
@@ -712,12 +736,7 @@ function CoreProvider({
           `listLives filters: ${JSON.stringify({ all, our, types, name, id })}`
         )
       ),
-      filter((client) => all || !client.spec.listOnly),
-      filter((client) =>
-        !isEmpty(types)
-          ? any((type) => new RegExp(type, "i").test(client.spec.type))(types)
-          : true
-      ),
+      filterReadClient({ types, all }),
       tap((clients) => {
         logger.info(`listLives #clients: ${clients.length}`);
       }),
@@ -782,11 +801,13 @@ function CoreProvider({
       }),
     ])(getTargetResources());
 
-  const planQuery = async ({ onStateChange = identity } = {}) =>
+  const planQuery = async ({
+    onStateChange = identity,
+    commandOptions = {},
+  } = {}) =>
     pipe([
       tap(() => {
         logger.info(`planQuery begins`);
-        assert(onStateChange);
       }),
       tap(() =>
         onStateChange({
@@ -803,6 +824,7 @@ function CoreProvider({
           planFindDestroy({
             onStateChange,
             direction: PlanDirection.UP,
+            options: commandOptions,
           }),
       }),
       (result) => ({
@@ -817,7 +839,7 @@ function CoreProvider({
         })
       ),
       tap((result) => {
-        logger.info(`planQuery ${tos(result)}`);
+        logger.info(`planQuery result: ${tos(result)}`);
       }),
     ])();
 
@@ -1174,16 +1196,13 @@ function CoreProvider({
       )([...hookMap.values()])
     );
 
-  const spinnersStartQuery = ({ onStateChange }) =>
+  const spinnersStartQuery = ({ onStateChange, options }) =>
     pipe([
-      tap((obj) => {
+      tap(() => {
         logger.debug("spinnersStartQuery");
       }),
       map(filter((resource) => !resource.spec.listOnly)),
       filter((resources) => !isEmpty(resources)),
-      tap((obj) => {
-        logger.debug("spinnersStartQuery");
-      }),
       map((resources) => ({
         provider: providerName,
         type: typeFromResources(resources),
@@ -1192,13 +1211,7 @@ function CoreProvider({
           name: resource.name,
         }))(resources),
       })),
-      tap((obj) => {
-        logger.debug("spinnersStartQuery");
-      }),
       spinnersStartProvider({ onStateChange }),
-      tap((obj) => {
-        logger.debug("spinnersStartQuery");
-      }),
       (resourcesPerType) =>
         spinnersStartResources({
           onStateChange,
@@ -1208,30 +1221,35 @@ function CoreProvider({
       spinnersStartClient({
         onStateChange,
         title: TitleDestroying,
-        clients: filterReadWriteClient(clients),
+        clients: filterReadWriteClient(options)(clients),
       }),
     ])([...mapTypeToResources.values()]);
 
-  const spinnersStartListLives = ({ onStateChange }) =>
+  const spinnersStartListLives = ({ onStateChange, options }) =>
     tap(
       pipe([
+        tap(() => {
+          logger.debug(`spinnersStartListLives ${options.types}`);
+        }),
         spinnersStartProvider({ onStateChange }),
         spinnersStartClient({
           onStateChange,
           title: TitleQuery,
-          clients: filterReadWriteClient(clients),
+          clients: filterReadClient(options)(clients),
         }),
       ])
     )();
 
-  const spinnersStopListLives = ({ onStateChange }) =>
+  const spinnersStopListLives = ({ onStateChange, options }) =>
     tap(
       pipe([
-        () => {},
+        tap(() => {
+          logger.debug("spinnersStopListLives");
+        }),
         spinnersStopClient({
           onStateChange,
           title: TitleQuery,
-          clients: filterReadWriteClient(clients),
+          clients: filterReadWriteClient(options)(clients),
         }),
         spinnersStopProvider({ onStateChange }),
       ])
@@ -1301,17 +1319,19 @@ function CoreProvider({
       ])
     )();
 
-  const spinnersStartDestroyQuery = ({ onStateChange }) => {
-    logger.debug(`spinnersStartDestroyQuery #clients: ${clients.length}`);
-    return pipe([
+  const spinnersStartDestroyQuery = ({ onStateChange, options }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`spinnersStartDestroyQuery #clients: ${clients.length}`);
+      }),
       spinnersStartProvider({ onStateChange }),
       spinnersStartClient({
         onStateChange,
         title: TitleDestroying,
-        clients: filterReadWriteClient(clients),
+        clients: filterReadWriteClient(options)(clients),
       }),
     ])();
-  };
+
   const spinnersStartDestroy = ({ onStateChange, plans }) => {
     assert(plans, "plans");
     assert(Array.isArray(plans), "plans !isArray");
@@ -1334,16 +1354,18 @@ function CoreProvider({
       }),
     ])();
   };
-  const spinnersStartHook = ({ onStateChange, hookType }) => {
-    assert(hookType, "hookType");
-    return pipe([
+
+  const spinnersStartHook = ({ onStateChange, hookType }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`spinnersStartHook hookType: ${hookType}`);
+      }),
       spinnersStartProvider({ onStateChange }),
       spinnersStartHooks({
         onStateChange,
         hookType,
       }),
     ])();
-  };
 
   const planApply = async ({ plan, onStateChange = identity }) =>
     pipe([
@@ -1627,8 +1649,9 @@ function CoreProvider({
       tap((x) => {
         logger.info(`planFindDestroy ${tos({ options, direction })}`);
         assert(onStateChange);
+        assert(options);
       }),
-      filterReadWriteClient,
+      filterReadWriteClient(options),
       tap(() =>
         onStateChange({
           context: contextFromProvider(),
@@ -1641,6 +1664,9 @@ function CoreProvider({
           nextState: "RUNNING",
         })
       ),
+      tap((x) => {
+        logger.debug(`planFindDestroy ${tos(options)}`);
+      }),
       getClients({ onStateChange, deep: false }),
       tap((x) => {
         logger.debug(`planFindDestroy`);
@@ -1900,7 +1926,9 @@ function CoreProvider({
   };
 
   const destroyAll = pipe([
-    tap(() => logger.debug(`destroyAll`)),
+    tap(() => {
+      logger.info(`destroyAll`);
+    }),
     ({ onStateChange = identity, all = false, types = [] } = {}) =>
       planFindDestroy({ options: { all, types }, onStateChange }),
     ({ plans }) => planDestroy({ plans, direction: PlanDirection.DOWN }),

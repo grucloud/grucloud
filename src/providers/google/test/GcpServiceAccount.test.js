@@ -8,6 +8,7 @@ const {
 } = require("../../../test/E2ETestUtils");
 
 describe("GcpServiceAccount", async function () {
+  const types = ["ServiceAccount"];
   const serviceAccountName = "sa-test";
   const serviceAccountDisplayName = "Sa Display Name";
   let config;
@@ -52,26 +53,16 @@ describe("GcpServiceAccount", async function () {
     );
     assert.equal(config.serviceAccount.displayName, serviceAccountDisplayName);
   });
-  it("lives", async function () {
-    const { results: lives } = await provider.listLives({
-      types: ["ServiceAccount"],
-    });
-    assert(lives[0].resources.length >= 1);
-  });
-  it("plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 1);
-  });
+
   it("serviceAccount apply and destroy", async function () {
-    await testPlanDeploy({ provider });
+    await testPlanDeploy({
+      provider,
+      types,
+      planResult: { create: 1, destroy: 0 },
+    });
 
     const serviceAccountLive = await serviceAccount.getLive();
-
-    const { results: lives } = await provider.listLives({
-      types: ["ServiceAccount"],
-    });
-    assert(lives[0].resources.length >= 1);
+    assert(serviceAccountLive);
 
     const providerEmpty = GoogleProvider({
       name: "google",

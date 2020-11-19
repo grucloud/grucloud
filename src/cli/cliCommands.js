@@ -303,7 +303,10 @@ const doPlanQuery = ({ commandOptions, programOptions }) =>
           pipe([
             tap(
               map.series((provider) =>
-                provider.spinnersStartQuery({ onStateChange })
+                provider.spinnersStartQuery({
+                  onStateChange,
+                  options: commandOptions,
+                })
               )
             ),
             map((provider) =>
@@ -311,7 +314,7 @@ const doPlanQuery = ({ commandOptions, programOptions }) =>
                 assignStart({ onStateChange }),
                 assign({
                   resultQuery: async ({ provider }) =>
-                    provider.planQuery({ onStateChange }),
+                    provider.planQuery({ onStateChange, commandOptions }),
                 }),
               ])({ provider })
             ),
@@ -801,7 +804,10 @@ exports.planDestroy = async ({
             pipe([
               tap(
                 map.series((provider) =>
-                  provider.spinnersStartDestroyQuery({ onStateChange })
+                  provider.spinnersStartDestroyQuery({
+                    onStateChange,
+                    options: commandOptions,
+                  })
                 )
               ),
               map(
@@ -898,7 +904,10 @@ const listDoOk = ({ commandOptions, programOptions }) =>
           pipe([
             tap(
               map.series((provider) =>
-                provider.spinnersStartListLives({ onStateChange })
+                provider.spinnersStartListLives({
+                  onStateChange,
+                  options: commandOptions,
+                })
               )
             ),
             map((provider) =>
@@ -912,7 +921,10 @@ const listDoOk = ({ commandOptions, programOptions }) =>
             ),
             tap(
               map.series(({ provider }) =>
-                provider.spinnersStopListLives({ onStateChange })
+                provider.spinnersStopListLives({
+                  onStateChange,
+                  options: commandOptions,
+                })
               )
             ),
           ])(providers),
