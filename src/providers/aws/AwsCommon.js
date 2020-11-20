@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, tryCatch, tap, switchCase } = require("rubico");
-const first = require("rubico/x/first");
+const { pipe, tryCatch, tap, switchCase, and } = require("rubico");
+const { first, find } = require("rubico/x");
 const logger = require("../../logger")({ prefix: "Aws" });
 const { tos } = require("../../tos");
 
@@ -42,24 +42,25 @@ exports.buildTags = ({
 };
 
 exports.isOurMinion = ({ resource, config }) => {
-  const { createdByProviderKey, providerName } = config;
+  const { createdByProviderKey, providerName, stageTagKey, stage } = config;
   return pipe([
     tap(() => {
       assert(providerName);
       assert(createdByProviderKey);
       assert(resource);
+      assert(stage);
     }),
-    switchCase(
-      [
-        (Tags) =>
-          !!Tags.find(
-            (tag) =>
-              tag.Key === createdByProviderKey && tag.Value === providerName
-          ),
-      ],
+    switchCase([
+      and([
+        find(
+          (tag) =>
+            tag.Key === createdByProviderKey && tag.Value === providerName
+        ),
+        find((tag) => tag.Key === stageTagKey && tag.Value === stage),
+      ]),
       () => true,
-      () => false
-    ),
+      () => false,
+    ]),
     tap((minion) => {
       logger.debug(`isOurMinion ${minion} ${tos(resource)}`);
     }),
