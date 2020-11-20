@@ -478,7 +478,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
           },
         }),
       tap(({ Location }) => {
-        logger.debug(`create result ${tos(Location)}`);
+        logger.info(`create bucket result ${tos(Location)}`);
       }),
       tap(() =>
         retryCall({
