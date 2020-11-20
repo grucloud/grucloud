@@ -162,8 +162,8 @@ exports.AwsIamUser = ({ spec, config }) => {
       () =>
         iam.listAttachedUserPolicies({ UserName: id, MaxItems: 1e3 }).promise(),
       get("AttachedPolicies"),
-      forEach(async (policy) => {
-        await iam
+      forEach((policy) => {
+        iam
           .detachUserPolicy({
             PolicyArn: policy.PolicyArn,
             UserName: id,
@@ -172,8 +172,8 @@ exports.AwsIamUser = ({ spec, config }) => {
       }),
       () => iam.listUserPolicies({ UserName: id, MaxItems: 1e3 }).promise(),
       get("PolicyNames"),
-      forEach(async (policyName) => {
-        await iam
+      forEach((policyName) => {
+        iam
           .deleteUserPolicy({
             PolicyName: policyName,
             UserName: id,
