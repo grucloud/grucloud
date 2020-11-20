@@ -1017,12 +1017,14 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
   let serviceAccountAccessToken;
 
   const start = async () => {
-    serviceAccountAccessToken = await authorize({
-      gcloudConfig,
-      projectId,
-      projectName,
-      applicationCredentialsFile,
-    });
+    if (!serviceAccountAccessToken) {
+      serviceAccountAccessToken = await authorize({
+        gcloudConfig,
+        projectId,
+        projectName,
+        applicationCredentialsFile,
+      });
+    }
     logger.debug(`started`);
   };
 
