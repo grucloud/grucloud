@@ -1,4 +1,6 @@
 const assert = require("assert");
+const { tryCatch, map, pipe } = require("rubico");
+const { forEach } = require("rubico/x");
 const { createResources } = require("./MockStack");
 const { ConfigLoader } = require("ConfigLoader");
 const prompts = require("prompts");
@@ -65,17 +67,32 @@ describe("MockProviderCli", async function () {
       .stub()
       .returns(Promise.reject({ message: errorMessage }));
 
-    try {
-      await cliCommands.list({
-        infra,
-        commandOptions: {},
-      });
-      assert("should not be here");
-    } catch (ex) {
-      assert.equal(ex.code, 422);
-      assert(ex.error);
-      assert(ex.error.message);
-    }
+    await pipe([
+      map(
+        tryCatch(
+          async ({ command, options = {} }) => {
+            await cliCommands[command]({
+              infra,
+              commandOptions: options,
+            });
+            assert(`should not be here for command ${command}`);
+          },
+          (ex) => ex
+        )
+      ),
+      forEach((ex) => {
+        assert.equal(ex.code, 422);
+        assert(ex.error);
+        assert(ex.error.message);
+      }),
+    ])([
+      //{ command: "info" },
+      { command: "list" },
+      { command: "planQuery" },
+      { command: "planApply" },
+      { command: "planDestroy" },
+      { command: "planRunScript", options: { onDeployed: true } },
+    ]);
   });
   it("abort deploy and destroy", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
@@ -83,6 +100,14 @@ describe("MockProviderCli", async function () {
     const resources = await createResources({ provider });
     const infra = { provider };
 
+    {
+      const info = await cliCommands.info({
+        infra,
+        commandOptions: {},
+      });
+      assert(!info.error);
+      assert(info.results);
+    }
     {
       const init = await cliCommands.init({
         infra,
