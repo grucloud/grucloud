@@ -203,7 +203,7 @@ describe("cli error", function () {
             422,
             `invalid code error code for command ${command}`
           );
-          assert(error.error.message);
+          assert(error.error.message, `no message in command: ${command}`);
         },
       })
     )(commandsAll);

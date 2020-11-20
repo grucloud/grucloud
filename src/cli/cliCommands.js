@@ -109,7 +109,7 @@ const filterProvidersByName = ({
             providers.length,
             true
           )} available: ${displayProviderList(providers)}`;
-          throw { code: 422, message };
+          throw { message };
         },
         tap((xx) => {
           logger.debug(`filterProvidersByName ${xx.length}`);
@@ -639,10 +639,10 @@ exports.planApply = async ({
     abortDeploy,
   ]);
 
-  return pipe([
-    setupProviders({ commandOptions }),
-    (infra) =>
-      tryCatch(
+  return tryCatch(
+    pipe([
+      setupProviders({ commandOptions }),
+      (infra) =>
         pipe([
           doPlanQuery({ commandOptions, programOptions }),
           throwIfError,
@@ -662,10 +662,10 @@ exports.planApply = async ({
           tap((result) => {
             logger.debug("doPlansDeploy");
           }),
-        ]),
-        DisplayAndThrow({ name: "Plan Apply" })
-      )(infra),
-  ])(infra);
+        ])(infra),
+    ]),
+    DisplayAndThrow({ name: "Plan Apply" })
+  )(infra);
 };
 
 // Plan Destroy
@@ -826,10 +826,10 @@ exports.planDestroy = async ({
     }),
   ]);
 
-  return pipe([
-    setupProviders({ commandOptions }),
-    (infra) =>
-      tryCatch(
+  return tryCatch(
+    pipe([
+      setupProviders({ commandOptions }),
+      (infra) =>
         pipe([
           ({ providers }) =>
             runAsyncCommand({
@@ -906,10 +906,10 @@ exports.planDestroy = async ({
           tap((x) => {
             //console.log(JSON.stringify(x, null, 4));
           }),
-        ]),
-        DisplayAndThrow({ name: "Plan Destroy" })
-      )(infra),
-  ])(infra);
+        ])(infra),
+    ]),
+    DisplayAndThrow({ name: "Plan Destroy" })
+  )(infra);
 };
 
 const countResources = pipe([
