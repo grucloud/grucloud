@@ -34,6 +34,7 @@ exports.main = async ({ argv, onExit }) => {
         )}" executed in ${duration.toString(1, 1)}`
       );
     }
+    onExit({ code: 0 });
     return 0;
   } catch (error) {
     const { code = -1 } = error;

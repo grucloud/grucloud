@@ -192,30 +192,44 @@ const displayPlanApplyErrorResult = pipe([
   }),
 ]);
 
-const displayErrorHooks = (resultHooks) => {
-  if (resultHooks?.error) {
+const displayErrorHooks = ({ resultsHook }) => {
+  if (resultsHook?.error) {
     pipe([
       tap((xx) => {
         logger.debug(tos(xx));
       }),
-      filter(({ error }) => error),
+      pluck("result"),
+      tap((xx) => {
+        logger.debug(tos(xx));
+      }),
+      filter(get("error")),
+      pluck("results"),
+      flatten,
+      tap((xx) => {
+        logger.debug(tos(xx));
+      }),
+      filter(get("error")),
+      tap((xx) => {
+        logger.debug(tos(xx));
+      }),
       pluck("results"),
       tap((xx) => {
         logger.debug(tos(xx));
       }),
       flatten,
-      filter(({ error }) => error),
       tap((xx) => {
         logger.debug(tos(xx));
       }),
+      filter(get("error")),
       forEach(({ error, hookName, providerName, hookType, action }) => {
+        assert(providerName);
         const fullName = `${providerName}::${hookName}::${hookType}::${
           action ? action : "init"
         }`;
         console.log(`Error running hook '${fullName}'`);
         console.log(YAML.stringify(convertError({ error })));
       }),
-    ])(resultHooks.results);
+    ])(resultsHook.results);
   }
 };
 
@@ -233,8 +247,6 @@ const displayErrorResults = ({ results = [], name }) => {
           displayPlanQueryErrorResult(resultQuery.resultCreate.plans);
           displayPlanQueryErrorResult(resultQuery.resultDestroy.plans);
         }
-
-        displayErrorHooks(result?.resultHooks);
 
         if (result?.resultCreate?.results) {
           displayPlanApplyErrorResult(result.resultCreate.results);
@@ -266,8 +278,9 @@ const displayError = ({ name, error }) => {
   console.error(`ERROR running command '${name}'`);
   displayErrorResults({ name, results: error.results });
   displayErrorResults({ name, results: error.resultsDestroy });
+  displayErrorHooks({ name, resultsHook: error.resultsHook });
 
-  const results = error.resultsDestroy || error.results;
+  const results = error.resultsDestroy || error.results || error.resultsHook;
 
   if (!results) {
     console.log(YAML.stringify(convertError({ error })));
@@ -390,40 +403,56 @@ const commandToFunction = (command) =>
   `run${command.charAt(0).toUpperCase()}${command.slice(1)}`;
 
 const runAsyncCommandHook = ({ hookType, commandTitle, providers }) =>
-  runAsyncCommand({
-    text: displayCommandHeader({ providers, verb: commandTitle }),
-    command: ({ onStateChange }) =>
-      pipe([
-        tap(
-          map((provider) =>
-            provider.spinnersStartHook({
-              onStateChange,
-              hookType,
-            })
-          )
-        ),
-        map((provider) =>
-          pipe([
-            assignStart({ onStateChange }),
-            assign({
-              result: async ({ provider }) => {
-                const fun = provider[commandToFunction(hookType)];
-                assert(fun, `no provider hook for ${hookType}`);
-                return {
-                  resultHooks: await fun({ onStateChange }),
-                };
-              },
-            }),
-            tap(({ provider, result: { resultHooks } }) =>
-              provider.spinnersStopProvider({
-                onStateChange,
-                error: resultHooks.error,
-              })
-            ),
-          ])({ provider })
-        ),
-      ])(providers),
-  });
+  pipe([
+    tap((xxx) => {
+      logger.debug(`runAsyncCommandHook hookType: ${hookType}`);
+      assert(Array.isArray(providers));
+    }),
+    assign({
+      resultsHook: () =>
+        runAsyncCommand({
+          text: displayCommandHeader({ providers, verb: commandTitle }),
+          command: ({ onStateChange }) =>
+            pipe([
+              tap(
+                map((provider) =>
+                  provider.spinnersStartHook({
+                    onStateChange,
+                    hookType,
+                  })
+                )
+              ),
+              map((provider) =>
+                pipe([
+                  assignStart({ onStateChange }),
+                  assign({
+                    result: async ({ provider }) => {
+                      const fun = provider[commandToFunction(hookType)];
+                      assert(fun, `no provider hook for ${hookType}`);
+                      return await fun({ onStateChange });
+                    },
+                  }),
+                  tap(({ provider, result }) =>
+                    provider.spinnersStopProvider({
+                      onStateChange,
+                      error: result.error,
+                    })
+                  ),
+                ])({ provider })
+              ),
+              (results) => ({
+                error: any(get("result.error"))(results),
+                results,
+              }),
+            ])(providers),
+        }),
+    }),
+    assign({ error: ({ error, resultsHook }) => error || resultsHook.error }),
+    tap((xxx) => {
+      logger.debug(`runAsyncCommandHook hookType: ${hookType} DONE`);
+    }),
+    throwIfError,
+  ]);
 
 // planRunScript
 const planRunScript = async ({
@@ -445,30 +474,20 @@ const planRunScript = async ({
             providers,
             hookType: HookType.ON_DEPLOYED,
             commandTitle: `Running OnDeployed`,
-          }),
+          })({}),
         () => commandOptions.onDestroyed,
         (providers) =>
           runAsyncCommandHook({
             providers,
             hookType: HookType.ON_DESTROYED,
             commandTitle: `Running OnDestroyed`,
-          }),
+          })({}),
         () => {
           throw { code: 422, message: "no command found" };
         },
       ]),
       tap((result) => {
         logger.debug("planRunScript Done");
-      }),
-      (results) => ({
-        error: any(
-          ({
-            result: {
-              resultHooks: { error },
-            },
-          }) => error
-        )(results),
-        results,
       }),
       tap((result) =>
         saveToJson({
@@ -486,19 +505,20 @@ const planRunScript = async ({
 exports.planRunScript = planRunScript;
 
 // Plan Apply
+
+const processNoPlan = () => {
+  console.log("Nothing to deploy");
+};
+
+const abortDeploy = () => {
+  console.log("Deployment aborted");
+};
+
 exports.planApply = async ({
   infra,
   commandOptions = {},
   programOptions = {},
 }) => {
-  const processNoPlan = () => {
-    console.log("Nothing to deploy");
-  };
-
-  const abortDeploy = () => {
-    console.log("Deployment aborted");
-  };
-
   const promptConfirmDeploy = async (allPlans) => {
     return await pipe([
       countDeployResources,
@@ -619,19 +639,33 @@ exports.planApply = async ({
     abortDeploy,
   ]);
 
-  return tryCatch(
-    pipe([
-      setupProviders({ commandOptions }),
-      doPlanQuery({ commandOptions, programOptions }),
-      throwIfError,
-      get("results"),
-      tap((result) => {
-        logger.debug("doPlansDeploy");
-      }),
-      switchCase([hasPlans, processDeployPlans, processNoPlan]),
-    ]),
-    DisplayAndThrow({ name: "Plan Apply" })
-  )(infra);
+  return pipe([
+    setupProviders({ commandOptions }),
+    (infra) =>
+      tryCatch(
+        pipe([
+          doPlanQuery({ commandOptions, programOptions }),
+          throwIfError,
+          get("results"),
+          tap((result) => {
+            logger.debug("doPlansDeploy");
+          }),
+          switchCase([hasPlans, processDeployPlans, processNoPlan]),
+          tap((result) => {
+            logger.debug("doPlansDeploy");
+          }),
+          runAsyncCommandHook({
+            providers: infra.providers,
+            hookType: HookType.ON_DEPLOYED,
+            commandTitle: `Running OnDeployed`,
+          }),
+          tap((result) => {
+            logger.debug("doPlansDeploy");
+          }),
+        ]),
+        DisplayAndThrow({ name: "Plan Apply" })
+      )(infra),
+  ])(infra);
 };
 
 // Plan Destroy
@@ -754,6 +788,7 @@ exports.planDestroy = async ({
               ])(result.results),
           }),
       }),
+
       (result) => ({
         ...result,
         error:
@@ -791,76 +826,90 @@ exports.planDestroy = async ({
     }),
   ]);
 
-  return tryCatch(
-    pipe([
-      setupProviders({ commandOptions }),
-      ({ providers }) =>
-        runAsyncCommand({
-          text: displayCommandHeader({
-            providers,
-            verb: "Find",
-          }),
-          command: ({ onStateChange }) =>
-            pipe([
-              tap(
-                map.series((provider) =>
-                  provider.spinnersStartDestroyQuery({
-                    onStateChange,
-                    options: commandOptions,
-                  })
-                )
-              ),
-              map(
+  return pipe([
+    setupProviders({ commandOptions }),
+    (infra) =>
+      tryCatch(
+        pipe([
+          ({ providers }) =>
+            runAsyncCommand({
+              text: displayCommandHeader({
+                providers,
+                verb: "Find",
+              }),
+              command: ({ onStateChange }) =>
                 pipe([
-                  (provider) =>
-                    pipe([
-                      assignStart({ onStateChange }),
-                      assign({
-                        result: ({ provider }) =>
-                          provider.planFindDestroy({
-                            options: commandOptions,
-                            onStateChange,
-                          }),
-                      }),
-                    ])({ provider }),
-                  tap(({ provider, result }) =>
-                    provider.spinnersStopProvider({
-                      onStateChange,
-                      error: result.error,
-                    })
+                  tap(
+                    map.series((provider) =>
+                      provider.spinnersStartDestroyQuery({
+                        onStateChange,
+                        options: commandOptions,
+                      })
+                    )
                   ),
-                ])
-              ),
-            ])(providers),
-        }),
-      tap((x) => {
-        //console.log(JSON.stringify(x, null, 4));
-      }),
-      tap(
-        map(({ provider, result }) =>
-          displayPlan({
-            providerName: provider.name,
-            newOrUpdate: [],
-            destroy: result.plans,
-          })
-        )
-      ),
-      tap((x) => {
-        //console.log(JSON.stringify(x, null, 4));
-      }),
-      (results) => ({
-        error: any(get("result.error"))(results),
-        plans: pipe([pluck("result.plans"), flatten])(results),
-        results,
-      }),
-      tap((x) => {
-        //console.log(JSON.stringify(x, null, 4));
-      }),
-      switchCase([hasEmptyPlan, processHasNoPlan, processDestroyPlans]),
-      throwIfError,
-    ]),
-    DisplayAndThrow({ name: "Plan Destroy" })
-  )(infra);
+                  map(
+                    pipe([
+                      (provider) =>
+                        pipe([
+                          assignStart({ onStateChange }),
+                          assign({
+                            result: ({ provider }) =>
+                              provider.planFindDestroy({
+                                options: commandOptions,
+                                onStateChange,
+                              }),
+                          }),
+                        ])({ provider }),
+                      tap(({ provider, result }) =>
+                        provider.spinnersStopProvider({
+                          onStateChange,
+                          error: result.error,
+                        })
+                      ),
+                    ])
+                  ),
+                ])(providers),
+            }),
+          tap((x) => {
+            //console.log(JSON.stringify(x, null, 4));
+          }),
+          tap(
+            map(({ provider, result }) =>
+              displayPlan({
+                providerName: provider.name,
+                newOrUpdate: [],
+                destroy: result.plans,
+              })
+            )
+          ),
+          tap((x) => {
+            //console.log(JSON.stringify(x, null, 4));
+          }),
+          (results) => ({
+            error: any(get("result.error"))(results),
+            plans: pipe([pluck("result.plans"), flatten])(results),
+            results,
+          }),
+          tap((x) => {
+            //console.log(JSON.stringify(x, null, 4));
+          }),
+          switchCase([hasEmptyPlan, processHasNoPlan, processDestroyPlans]),
+          throwIfError,
+          tap((x) => {
+            //console.log(JSON.stringify(x, null, 4));
+          }),
+          runAsyncCommandHook({
+            providers: infra.providers,
+            hookType: HookType.ON_DESTROYED,
+            commandTitle: `Running OnDestroyed`,
+          }),
+          tap((x) => {
+            //console.log(JSON.stringify(x, null, 4));
+          }),
+        ]),
+        DisplayAndThrow({ name: "Plan Destroy" })
+      )(infra),
+  ])(infra);
 };
 
 const countResources = pipe([

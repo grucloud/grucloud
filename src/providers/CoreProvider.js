@@ -1078,7 +1078,7 @@ function CoreProvider({
         context: contextFromProvider(),
         nextState: nextStateOnError(error),
       })
-    );
+    )();
 
   const spinnersStartResources = ({ onStateChange, title, resourcesPerType }) =>
     tap(
@@ -1179,23 +1179,29 @@ function CoreProvider({
       ])
     );
   const spinnersStartHooks = ({ onStateChange, hookType }) =>
-    tap(() =>
-      map(({ name, onDeployed, onDestroyed }) =>
-        pipe([
-          tap(() => {
-            logger.info(`spinnersStart hook`);
-          }),
-          switchCase([
-            () => hookType === HookType.ON_DEPLOYED,
-            () => onDeployed,
-            () => hookType === HookType.ON_DESTROYED,
-            () => onDestroyed,
-            () => assert(`Invalid hook type '${hookType}'`),
-          ]),
-          setHookWaitingState({ onStateChange, hookType, hookName: name }),
-        ])()
-      )([...hookMap.values()])
-    );
+    pipe([
+      () => [...hookMap.values()],
+      tap((hooks) => {
+        logger.info(`spinnersStart #hooks ${hooks.length}`);
+      }),
+      tap(
+        map(({ name, onDeployed, onDestroyed }) =>
+          pipe([
+            tap(() => {
+              logger.debug(`spinnersStart hook`);
+            }),
+            switchCase([
+              () => hookType === HookType.ON_DEPLOYED,
+              () => onDeployed,
+              () => hookType === HookType.ON_DESTROYED,
+              () => onDestroyed,
+              () => assert(`Invalid hook type '${hookType}'`),
+            ]),
+            setHookWaitingState({ onStateChange, hookType, hookName: name }),
+          ])()
+        )
+      ),
+    ]);
 
   const spinnersStartQuery = ({ onStateChange, options }) =>
     pipe([
@@ -1290,10 +1296,6 @@ function CoreProvider({
                   plan.resultCreate.plans
                 ),
               }),
-              spinnersStartHooks({
-                onStateChange,
-                hookType: HookType.ON_DEPLOYED,
-              }),
             ]),
             () => {
               logger.debug("no newOrUpdate ");
@@ -1349,10 +1351,6 @@ function CoreProvider({
         title: TitleDestroying,
         resourcesPerType: planToResourcesPerType(plans),
       }),
-      spinnersStartHooks({
-        onStateChange,
-        hookType: HookType.ON_DESTROYED,
-      }),
     ])();
   };
 
@@ -1403,25 +1401,16 @@ function CoreProvider({
                 onStateChange,
                 title: TitleDeploying,
               }),
-            (create) =>
-              assign({
-                hooks: () =>
-                  runOnDeployed({ onStateChange, skip: create.error }),
-              })({ create }),
           ]),
-          () => ({
-            create: { error: false, newOrUpdate: { plans: [] } },
-            hooks: { error: false },
-          }),
+          () => ({ error: false, newOrUpdate: { plans: [] } }),
         ]),
       }),
+      tap((result) => {
+        logger.info(`Apply result: ${tos(result)}`);
+      }),
       (result) => ({
-        error:
-          result.resultCreate.create.error ||
-          result.resultCreate.hooks.error ||
-          result.resultDestroy.error,
-        resultCreate: result.resultCreate.create,
-        resultHooks: result.resultCreate.hooks,
+        error: result.resultCreate.error || result.resultDestroy.error,
+        resultCreate: result.resultCreate,
         resultDestroy: result.resultDestroy,
       }),
       tap((result) => {
@@ -1911,19 +1900,7 @@ function CoreProvider({
       tap(() => logger.info(`planDestroy result: ${tos(plannerResult)}`)),
     ])();
 
-    if (direction === PlanDirection.DOWN) {
-      const resultHooks = await runOnDestroyed({
-        onStateChange,
-        skip: plannerResult.error,
-      });
-      return {
-        error: resultHooks?.error || plannerResult.error ? true : false,
-        results: plannerResult.results,
-        resultHooks,
-      };
-    } else {
-      return plannerResult;
-    }
+    return plannerResult;
   };
 
   const destroyAll = pipe([

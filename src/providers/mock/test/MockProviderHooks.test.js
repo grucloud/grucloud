@@ -128,10 +128,11 @@ describe("MockProviderHooks", async function () {
       assert(false, "should not be here");
     } catch ({ error }) {
       assert(error.results);
-      const { resultHooks } = error.results[0].result;
-      assert(resultHooks.error);
-      assert(resultHooks.results[0].error);
-      assert(resultHooks.results[0].results[0].error);
+      assert(error.error);
+
+      const { resultsHook } = error;
+      assert(resultsHook.error);
+      assert(resultsHook.results[0].result.results[0].error);
     }
     try {
       await cliCommands.planDestroy({
@@ -139,12 +140,12 @@ describe("MockProviderHooks", async function () {
         commandOptions: { force: true },
       });
       assert(false, "should not be here");
-    } catch ({ error }) {
-      assert(error.results);
-      const { resultHooks } = error.resultsDestroy[0].result;
-      assert(resultHooks.error);
-      assert(resultHooks.results[0].error);
-      assert(resultHooks.results[0].results[0].error);
+    } catch (ex) {
+      const { error } = ex;
+      const { resultsHook } = error;
+      assert(resultsHook);
+      assert(resultsHook.error);
+      assert(resultsHook.results[0].result.results[0].error);
     }
   });
   it("run --onDeployed init throw ", async function () {
@@ -167,11 +168,9 @@ describe("MockProviderHooks", async function () {
       });
       assert(false, "should not be here");
     } catch ({ error }) {
-      assert(error.results);
-      const { resultHooks } = error.results[0].result;
-      assert(resultHooks.error);
-      assert(resultHooks.results[0].error);
-      assert(resultHooks.results[0].results[0].error);
+      const { resultsHook } = error;
+      assert(resultsHook.error);
+      assert(resultsHook.results[0].result.results[0].error);
     }
   });
 
@@ -220,14 +219,14 @@ describe("MockProviderHooks", async function () {
         commandOptions: { force: true },
       });
       assert(false, "should not be here");
-    } catch ({ error }) {
-      assert(error.results);
-      const { resultHooks } = error.results[0].result;
-      assert(resultHooks.error);
-      const result = resultHooks.results[0];
+    } catch (ex) {
+      const { error } = ex;
+      const { resultsHook } = error;
+      assert(resultsHook.error);
+      const result = resultsHook.results[0].result;
       assert(result.error);
-      assert(result.results[1].error);
-      assert.equal(result.results[1].error.message, message);
+      assert(result.results[0].results[1].error);
+      assert.equal(result.results[0].results[1].error.message, message);
     }
     try {
       await cliCommands.planDestroy({
@@ -237,12 +236,11 @@ describe("MockProviderHooks", async function () {
       assert(false, "should not be here");
     } catch ({ error }) {
       assert(error.results);
-      const { resultHooks } = error.resultsDestroy[0].result;
-      assert(resultHooks.error);
-      const result = resultHooks.results[0];
+      const { resultsHook } = error;
+      assert(resultsHook.error);
+      const result = resultsHook.results[0].result;
       assert(result.error);
-      assert(result.results[1].error);
-      assert.equal(result.results[1].error.message, message);
+      assert.equal(result.results[0].results[1].error.message, message);
     }
   });
 });

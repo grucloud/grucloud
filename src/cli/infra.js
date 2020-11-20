@@ -2,7 +2,10 @@ const assert = require("assert");
 const path = require("path");
 const fs = require("fs");
 const { ConfigLoader } = require("../ConfigLoader");
+const { switchCase, pipe, tap } = require("rubico");
+const { forEach } = require("rubico/x");
 
+const { combineProviders } = require("../providers/Common");
 const creatInfraFromFile = async ({ infraFileName, config, stage }) => {
   const InfraCode = require(infraFileName);
   if (!InfraCode.createStack) {
@@ -13,11 +16,17 @@ const creatInfraFromFile = async ({ infraFileName, config, stage }) => {
   if (!infra) {
     throw { code: 400, message: `no infra provided` };
   }
-  const { provider, resources } = infra;
-  if (resources && provider) {
-    provider.register({ resources });
-  }
-  return infra;
+
+  const { resources, provider } = infra;
+
+  //assert(resources, "createStack must export resources");
+  return pipe([
+    tap.if(
+      () => provider && resources,
+      () => provider.register({ resources })
+    ),
+    combineProviders,
+  ])(infra);
 };
 
 const resolveFilename = ({ fileName, defaultName }) =>

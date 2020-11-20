@@ -44,7 +44,7 @@ const testListById = async ({ provider, livesAll }) => {
   const { results: live } = await provider.listLives({
     id,
   });
-  assert.equal(live.length, 1);
+  assert(live.length >= 1);
   assert.equal(live[0].resources[0].id, id);
 };
 
@@ -146,9 +146,10 @@ exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
     const plan = await provider.planQuery();
     assert(!plan.error, tos(plan));
     assert(!isPlanEmpty(plan), "plan must not be empty after destroyAll");
-    const { error, resultCreate } = await provider.planApply({ plan });
+    const resultApply = await provider.planApply({ plan });
+    const { error, resultCreate } = resultApply;
     assert(resultCreate);
-    assert(!error, `planApply failed: ${tos(resultCreate)}`);
+    assert(!error, `planApply failed: ${tos(resultApply)}`);
   }
   {
     const { results: lives } = await provider.listLives({

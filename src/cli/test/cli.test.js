@@ -32,12 +32,18 @@ const configFileTimeoutOnce = path.join(
   __dirname,
   "./config/config.timeout.once.js"
 );
+const commandsReadOnly = ["plan", "list"];
+const commandsWrite = ["destroy -f -a"];
 
-const commands = ["destroy -f -a", "list"];
 const commandsHooks = ["run --onDeployed", "run --onDestroyed"];
-const commandsAll = ["plan", "apply -f", ...commands, ...commandsHooks];
+const commandsAll = [
+  "apply -f",
+  ...commandsWrite,
+  ...commandsReadOnly,
+  ...commandsHooks,
+];
 
-const onExitOk = () => assert(false);
+const onExitOk = ({ code }) => assert.equal(code, 0);
 
 const runProgram = async ({
   cmds = [],
@@ -157,8 +163,8 @@ describe("cli", function () {
         "list",
       ],
       onExit: ({ code, error }) => {
-        assert.equal(error.code, 422);
-        assert.equal(error.error.message, "no providers provided");
+        assert.equal(error.code, 400);
+        assert.equal(error.message, "no providers provided");
       },
     });
   });
@@ -191,9 +197,13 @@ describe("cli error", function () {
     const results = await map.series((command) =>
       runProgram({
         cmds: `${command} --provider idonotexist`.split(" "),
-        onExit: ({ code, error: { error } }) => {
-          assert.equal(code, 422);
-          assert(error.message);
+        onExit: ({ code, error }) => {
+          assert.equal(
+            code,
+            422,
+            `invalid code error code for command ${command}`
+          );
+          assert(error.error.message);
         },
       })
     )(commandsAll);
@@ -335,44 +345,42 @@ describe("cli error", function () {
         configFile: configFile404,
         onExit: ({ code, error: { error } }) => {
           assert.equal(code, 422);
-          assert(error.results[0].result.error);
           assert.equal(error.results[0].provider.type, "mock");
         },
       })
-    )(commands);
+    )(commandsReadOnly);
     assert.deepEqual(results, [422, 422]);
   });
   it("cli 500", async function () {
-    const results = await map.series(
-      async (command) =>
-        await runProgram({
-          cmds: command.split(" "),
-          configFile: configFile500,
-          onExit: ({ code, error }) => {
-            assert.equal(code, 422);
-            assert.equal(error.error.results[0].provider.type, "mock");
-            assert(error.error.results[0].result.results[0].type);
-            assert.equal(error.error.resultsDestroy[0].provider.type, "mock");
-            error.error.resultsDestroy.forEach(({ result }) =>
-              assert(result.error)
-            );
-          },
-        })
-    )(commands);
-    assert.deepEqual(results, [422, 0]);
+    const results = await map.series((command) =>
+      runProgram({
+        cmds: command.split(" "),
+        configFile: configFile500,
+        onExit: ({ code, error }) => {
+          assert.equal(code, 422);
+          assert.equal(error.error.results[0].provider.type, "mock");
+          assert(error.error.results[0].result.results[0].type);
+          assert.equal(error.error.resultsDestroy[0].provider.type, "mock");
+          error.error.resultsDestroy.forEach(({ result }) =>
+            assert(result.error)
+          );
+        },
+      })
+    )(commandsWrite);
+    assert.deepEqual(results, [422]);
   });
   it("cli network error", async function () {
     const results = await map.series((command) =>
       runProgram({
         cmds: command.split(" "),
         configFile: configFileNetworkError,
-        onExit: ({ code, error: { error } }) => {
-          assert.equal(code, 422);
-          assert(error.results[0].result.error);
+        onExit: ({ code, error }) => {
+          assert.equal(code, 422, `command ${command}`);
+          assert(error.error.results[0], `command ${command}`);
         },
       })
-    )(commands);
-    assert.deepEqual(results, [422, 422]);
+    )([...commandsReadOnly, ...commandsWrite]);
+    assert.deepEqual(results, [422, 422, 422]);
   });
 
   it("cli 400 retry", async function () {
@@ -397,25 +405,25 @@ describe("cli error", function () {
   });
 
   it("cli timeout once", async function () {
-    const results = await map.series((command) =>
+    await map.series((command) =>
       runProgram({
         cmds: command.split(" "),
         configFile: configFileTimeoutOnce,
-        onExit: ({ code, error: { error } }) => {
+        onExit: ({ code, error }) => {
           assert.equal(code, 0);
+          assert(!error);
         },
       })
-    )(commands);
-    assert.deepEqual(results, [0, 0]);
+    )(commandsAll);
   });
   it("cli timeout ", async function () {
     const results = await map.series((command) =>
       runProgram({
         cmds: command.split(" "),
         configFile: configFileTimeout,
-        onExit: ({ code, error: { error } }) => {
+        onExit: ({ code, error }) => {
           assert.equal(code, 422);
-          assert(error.results[0].result.error);
+          assert(error.error.results[0]);
 
           /*assert.equal(
             error.results[0].result.results[0].error.Code,
@@ -423,7 +431,7 @@ describe("cli error", function () {
           );*/
         },
       })
-    )(commands);
+    )(commandsReadOnly);
     assert.deepEqual(results, [422, 422]);
   });
 

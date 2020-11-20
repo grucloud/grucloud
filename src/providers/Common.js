@@ -1,6 +1,6 @@
 const assert = require("assert");
 const md5File = require("md5-file");
-const { pipe, tap } = require("rubico");
+const { pipe, tap, omit } = require("rubico");
 const { isEmpty } = require("rubico/x");
 const logger = require("../logger")({ prefix: "Common" });
 const { tos } = require("../tos");
@@ -38,6 +38,7 @@ exports.combineProviders = (infra) =>
       }
     }),
     (providers) => ({ ...infra, providers }),
+    omit(["provider"]),
   ])();
 
 const safeJsonParse = (json) => {
