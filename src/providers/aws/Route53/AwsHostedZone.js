@@ -25,7 +25,13 @@ const {
 const logger = require("../../../logger")({ prefix: "HostedZone" });
 const { retryExpectOk } = require("../../Retry");
 const { tos } = require("../../../tos");
-const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
+const {
+  getByNameCore,
+  isUpByIdCore,
+  isDownByIdCore,
+  logError,
+  axiosErrorToJSON,
+} = require("../../Common");
 const { buildTags } = require("../AwsCommon");
 
 //Check for the final dot
