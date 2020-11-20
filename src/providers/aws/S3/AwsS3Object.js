@@ -19,13 +19,26 @@ const { retryExpectOk } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { convertError, mapPoolSize, md5FileBase64 } = require("../../Common");
 
+const buildTags = ({
+  config: {
+    managedByKey,
+    managedByValue,
+    stageTagKey,
+    createdByProviderKey,
+    providerName,
+    stage,
+  },
+  Tagging,
+}) =>
+  `${managedByKey}=${managedByValue}&${stageTagKey}=${stage}&${createdByProviderKey}=${providerName}${
+    Tagging ? `&${Tagging}` : ""
+  }`;
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Object = ({ spec, config }) => {
   assert(spec);
   assert(config);
   const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
-  const { managedByKey, managedByValue, stageTagKey, stage } = config;
-  assert(stage);
 
   const s3 = new AWS.S3();
 
@@ -47,49 +60,48 @@ exports.AwsS3Object = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
   const getList = async ({ resources = [] } = {}) =>
-    await pipe([
+    pipe([
       tap(() => {
         logger.debug(`getList #resources ${resources.length}`);
       }),
-      async (resources) =>
-        await map.pool(
-          mapPoolSize,
-          async (resource) =>
-            await pipe([
-              () => getBucket(resource),
-              (bucket) => ({
-                Bucket: bucket.name,
-                Prefix: resource.name,
-                MaxKeys: 1,
-              }),
-              tryCatch(
-                async (params) =>
-                  await pipe([
-                    async (params) => await s3.listObjectsV2(params).promise(),
-                    ({ Contents }) => first(Contents),
-                    switchCase([
-                      (content) => content,
-                      (content) => ({ content }),
-                      () => null,
-                    ]),
-                  ])(params),
-                switchCase([
-                  (error) => error.code === "NoSuchBucket",
-                  () => null,
-                  (error, params) => ({
-                    error: convertError({
-                      error,
-                      procedure: "s3.listObjectsV2",
-                      params,
-                    }),
+      (resources) =>
+        map.pool(mapPoolSize, (resource) =>
+          pipe([
+            () => getBucket(resource),
+            (bucket) => ({
+              Bucket: bucket.name,
+              Prefix: resource.name,
+              MaxKeys: 1,
+            }),
+            tryCatch(
+              (params) =>
+                pipe([
+                  (params) => s3.listObjectsV2(params).promise(),
+                  get("Contents"),
+                  first,
+                  switchCase([
+                    (content) => content,
+                    get("content"),
+                    () => null,
+                  ]),
+                ])(params),
+              switchCase([
+                (error) => error.code === "NoSuchBucket",
+                () => null,
+                (error, params) => ({
+                  error: convertError({
+                    error,
+                    procedure: "s3.listObjectsV2",
+                    params,
                   }),
-                ])
-              ),
-            ])(resource)
+                }),
+              ])
+            ),
+          ])(resource)
         )(resources),
       filter((result) => result),
       switchCase([
-        pipe([filter((result) => result.error), not(isEmpty)]),
+        pipe([filter(get("error")), not(isEmpty)]),
         (objects) => {
           throw { code: 500, errors: objects };
         },
@@ -99,44 +111,43 @@ exports.AwsS3Object = ({ spec, config }) => {
         total: objects.length,
         items: map((result) => result.content)(objects),
       }),
-      tap((result) => logger.debug(`listObjects result: ${tos(result)}`)),
+      tap((result) => {
+        logger.debug(`listObjects result: ${tos(result)}`);
+      }),
     ])(resources);
 
   const getByName = async ({ name, dependencies }) =>
     pipe([
       tap(() => {
-        logger.debug(`getByName ${name}`);
+        logger.info(`getByName ${name}`);
       }),
       () => getBucket({ dependencies, name }),
       (bucket) =>
         tryCatch(
           async (bucket) =>
             pipe([
-              async (bucket) =>
-                await fork({
-                  // headObject
-                  content: async (bucket) =>
-                    await pipe([
-                      (bucket) => ({
-                        Bucket: bucket.name,
-                        Key: name,
-                      }),
-                      async (params) => await s3.headObject(params).promise(),
-                    ])(bucket),
-                  // getObjectTagging
-                  TagSet: async (bucket) =>
-                    await pipe([
-                      (bucket) => ({
-                        Bucket: bucket.name,
-                        Key: name,
-                      }),
-                      //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObjectTagging-property
-                      async (params) =>
-                        await s3.getObjectTagging(params).promise(),
-                      ({ TagSet }) => TagSet,
-                    ])(bucket),
-                })(bucket),
-              ({ content, TagSet }) => ({ ...content, TagSet }),
+              fork({
+                //TODO get param before
+                // headObject
+                content: pipe([
+                  (bucket) => ({
+                    Bucket: bucket.name,
+                    Key: name,
+                  }),
+                  (params) => s3.headObject(params).promise(),
+                ]),
+                // getObjectTagging
+                Tags: pipe([
+                  (bucket) => ({
+                    Bucket: bucket.name,
+                    Key: name,
+                  }),
+                  //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObjectTagging-property
+                  (params) => s3.getObjectTagging(params).promise(),
+                  get("TagSet"),
+                ]),
+              }),
+              ({ content, Tags }) => ({ ...content, Tags }),
             ])(bucket),
           switchCase([
             (error) =>
@@ -211,15 +222,15 @@ exports.AwsS3Object = ({ spec, config }) => {
       };
     }
 
-    logger.debug(`create ${tos(name)}`);
+    logger.info(`create ${tos(name)}`);
 
-    return await pipe([
+    return pipe([
       () => getBucket({ dependencies, name }),
-      async (bucket) =>
-        await pipe([
+      (bucket) =>
+        pipe([
           fork({
-            Body: async () => await fs.readFile(source),
-            ContentMD5: async () => await md5FileBase64(source),
+            Body: () => fs.readFile(source),
+            ContentMD5: () => md5FileBase64(source),
           }),
           pipe([
             tap((x) => {
@@ -230,28 +241,25 @@ exports.AwsS3Object = ({ spec, config }) => {
               Body,
               Bucket: bucket.name,
               ContentMD5,
-              Tagging: `${managedByKey}=${managedByValue}&${stageTagKey}=${stage}${
-                Tagging && `&${Tagging}`
-              }`,
+              Tagging: buildTags({ config, Tagging }),
               Metadata: {
                 md5hash: ContentMD5,
               },
             }),
-            async (params) => await s3.putObject(params).promise(),
-            tap(
-              async () =>
-                await retryExpectOk({
-                  name: `s3 isUpById: ${bucket.name}/${name}`,
-                  fn: () => isUpById({ Bucket: bucket.name, Key: name }),
-                  config: clientConfig,
-                })
+            (params) => s3.putObject(params).promise(),
+            tap(() =>
+              retryExpectOk({
+                name: `s3 isUpById: ${bucket.name}/${name}`,
+                fn: () => isUpById({ Bucket: bucket.name, Key: name }),
+                config: clientConfig,
+              })
             ),
             ({ ETag, ServerSideEncryption }) => ({
               ETag,
               ServerSideEncryption,
             }),
             tap((result) => {
-              logger.debug(`create ${tos(result)}`);
+              logger.info(`created object: ${tos(result)}`);
             }),
           ]),
         ])(),
@@ -274,7 +282,6 @@ exports.AwsS3Object = ({ spec, config }) => {
   };
 
   const configDefault = async ({ name, properties }) => {
-    logger.debug(`configDefault ${tos({ name, properties })}`);
     return defaultsDeep({ Key: name })(properties);
   };
 
@@ -301,7 +308,7 @@ exports.isOurMinionS3Object = ({ resource, resourceNames = [], config }) => {
   assert(resource);
   const { managedByKey, managedByValue } = config;
   const isMinion =
-    !!resource.TagSet?.find(
+    !!resource.Tags?.find(
       (tag) => tag.Key === managedByKey && tag.Value === managedByValue
     ) || resourceNames.includes(resource.Key);
 
@@ -320,6 +327,7 @@ exports.compareS3Object = async ({ target, live }) => {
     const md5 = await md5FileBase64(target.source);
 
     if (md5hash !== md5) {
+      logger.debug(`object are different`);
       return [{ type: "DIFF", target, live }];
     }
   }
