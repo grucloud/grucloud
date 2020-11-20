@@ -1258,7 +1258,7 @@ function CoreProvider({
           title: TitleQuery,
           clients: filterReadWriteClient(options)(clients),
         }),
-        spinnersStopProvider({ onStateChange }),
+        () => spinnersStopProvider({ onStateChange }),
       ])
     )();
 
