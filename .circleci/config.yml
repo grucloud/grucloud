@@ -17,7 +17,7 @@ jobs:
       - run: mkdir /home/circleci/.aws && touch /home/circleci/.aws/credentials && touch /home/circleci/.aws/config
       - run: CONTINUOUS_INTEGRATION=1 npm test
 orbs:
-  node: circleci/node@4.0.0
+  node: circleci/node@4.1.0
 version: 2.1
 workflows:
   test:
