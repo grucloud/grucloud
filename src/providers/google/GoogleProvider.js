@@ -1038,7 +1038,7 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
     })(config),
     fnSpecs,
     start,
-    info: ({ options }) =>
+    info: ({ options } = {}) =>
       info({
         options,
         config,
@@ -1048,7 +1048,7 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
         applicationCredentialsFile,
         serviceAccountName: ServiceAccountName,
       }),
-    init: ({ options }) =>
+    init: ({ options } = {}) =>
       init({
         options,
         gcloudConfig,
@@ -1057,7 +1057,7 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
         applicationCredentialsFile,
         serviceAccountName: ServiceAccountName,
       }),
-    unInit: ({ options }) =>
+    unInit: ({ options } = {}) =>
       unInit({
         options,
         gcloudConfig,
