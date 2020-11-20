@@ -2,8 +2,9 @@ const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const cliCommands = require("../../../../cli/cliCommands");
-
-const bucketPrefix = "grucloud-s3bucket-test-error";
+const { tos } = require("../../../../tos");
+const types = ["S3Bucket"];
+const bucketPrefix = "grucloud";
 
 describe("AwsS3BucketErrors", async function () {
   let config;
@@ -65,19 +66,6 @@ describe("AwsS3BucketErrors", async function () {
       }),
     });
 
-    const { error, resultCreate } = await provider.planQueryAndApply();
-    assert(error, "should have failed");
-    assert.equal(resultCreate.results[0].error.code, "MalformedACLError");
-  });
-
-  it("notification-configuration error", async function () {
-    const provider = AwsProvider({
-      name: "aws",
-      config: config.aws,
-    });
-
-    await provider.start();
-
     const region = provider.config().region;
     await provider.makeS3Bucket({
       name: `${bucketPrefix}-notification-configuration-invalid-topic`,
@@ -92,24 +80,6 @@ describe("AwsS3BucketErrors", async function () {
         },
       }),
     });
-
-    const plan = await provider.planQuery();
-    const { error, resultCreate } = await provider.planApply({ plan });
-    /*
-    assert.equal(resultCreate.results[0].error.code, "InvalidArgument");
-    assert.equal(
-      resultCreate.results[0].error.message,
-      "Unable to validate the following destination configurations"
-    );*/
-    assert(error, "should have failed");
-  });
-  it("replication-configuration error", async function () {
-    const provider = AwsProvider({
-      name: "aws",
-      config: config.aws,
-    });
-
-    await provider.start();
 
     const s3BucketReplicationDestination = await provider.makeS3Bucket({
       name: "replication-configuration-destination",
@@ -135,16 +105,33 @@ describe("AwsS3BucketErrors", async function () {
         },
       }),
     });
+    const resultDestroy = await provider.destroyAll({
+      types,
+      all: true,
+    });
+    assert(!resultDestroy.error, "should not have failed");
 
-    const plan = await provider.planQuery();
-    const { error, resultCreate } = await provider.planApply({ plan });
-    /*
-    assert.equal(resultCreate.results[0].error.code, "InvalidArgument");
-    assert.equal(
-      resultCreate.results[0].error.message,
-      "Unable to validate the following destination configurations"
-    );
-    */
+    const { error, resultCreate } = await provider.planQueryAndApply();
     assert(error, "should have failed");
+    assert.equal(
+      resultCreate.results[0].error.code,
+      "MalformedACLError",
+      `not MalformedACLError in ${tos(resultCreate)}`
+    );
+    assert.equal(
+      resultCreate.results[1].error.code,
+      "InvalidArgument",
+      `not ''InvalidArgument'' in ${tos(resultCreate)}`
+    );
+    assert.equal(
+      resultCreate.results[3].error.code,
+      "InvalidRequest",
+      `not ''InvalidRequest'' in ${tos(resultCreate)}`
+    );
+    {
+      const resultDestroy = await provider.destroyAll({
+        types,
+      });
+    }
   });
 });

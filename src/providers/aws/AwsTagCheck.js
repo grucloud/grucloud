@@ -11,12 +11,13 @@ exports.CheckAwsTags = ({ config, tags, name }) => {
     providerName,
   } = config;
   assert(tags);
-  assert(name);
+
   assert.equal(
     tags.find((tag) => tag.Key === managedByKey).Value,
     managedByValue
   );
-  assert.equal(tags.find((tag) => tag.Key === KeyName).Value, name);
+  assert(name);
+  //assert.equal(tags.find((tag) => tag.Key === KeyName).Value, name);
   assert.equal(tags.find((tag) => tag.Key === stageTagKey).Value, stage);
   assert.equal(
     tags.find((tag) => tag.Key === createdByProviderKey).Value,

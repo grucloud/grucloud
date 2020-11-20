@@ -48,10 +48,6 @@ exports.isOurMinion = ({ resource, config }) => {
       assert(providerName);
       assert(createdByProviderKey);
       assert(resource);
-      assert(
-        Array.isArray(resource.Tags),
-        `resource ${tos(resource)} has not tags`
-      );
     }),
     switchCase(
       [
@@ -67,7 +63,7 @@ exports.isOurMinion = ({ resource, config }) => {
     tap((minion) => {
       logger.debug(`isOurMinion ${minion} ${tos(resource)}`);
     }),
-  ])(resource.Tags);
+  ])(resource.Tags || []);
 };
 
 exports.findNameInTags = (item) => {

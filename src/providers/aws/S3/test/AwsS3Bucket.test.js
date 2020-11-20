@@ -8,7 +8,7 @@ describe("AwsS3Bucket", async function () {
   let config;
   let provider;
   const types = ["S3Bucket"];
-  const bucketPrefix = "grucloud-s3bucket-test";
+  const bucketPrefix = "grucloud-t-";
 
   before(async function () {
     try {
@@ -27,7 +27,7 @@ describe("AwsS3Bucket", async function () {
     await provider?.destroyAll();
   });
 
-  it("s3Bucket apply and destroy", async function () {
+  it.skip("s3Bucket apply and destroy", async function () {
     const s3Bucket = await provider.makeS3Bucket({
       name: `${bucketPrefix}-basic`,
       properties: () => ({}),

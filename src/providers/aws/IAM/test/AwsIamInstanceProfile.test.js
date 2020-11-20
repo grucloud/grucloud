@@ -65,7 +65,7 @@ describe("AwsIamInstanceProfile", async function () {
     assert(config.InstanceProfileName);
     assert(config.Path);
   });
-  it("iamInstanceProfile apply plan", async function () {
+  it.skip("iamInstanceProfile apply plan", async function () {
     await testPlanDeploy({
       provider,
       types,

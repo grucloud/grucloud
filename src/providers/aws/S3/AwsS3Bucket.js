@@ -417,6 +417,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         CheckAwsTags({
           config,
           tags: TagSet,
+          name: Bucket,
         });
       },
       shouldRetryOnException: (error) => {
