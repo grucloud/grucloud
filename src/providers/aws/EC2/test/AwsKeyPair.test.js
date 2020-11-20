@@ -20,16 +20,11 @@ describe("AwsKeyPair", async function () {
 
     await provider.start();
 
-    const { error } = await provider.destroyAll();
-    assert(!error);
-
     keyPair = await provider.useKeyPair({
       name: "kp",
     });
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("keyPair name", async function () {
     assert.equal(keyPair.name, "kp");
   });

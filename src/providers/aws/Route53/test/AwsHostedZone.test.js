@@ -79,12 +79,8 @@ describe("AwsHostedZone", async function () {
       this.skip();
     }
     provider = await createProvider({ config });
-    const { error } = await provider.destroyAll();
-    assert(!error, "destroyAll failed");
   });
-  after(async () => {
-    //await provider?.destroyAll();
-  });
+  after(async () => {});
   it("hostedZone resolveConfig", async function () {
     assert.equal(hostedZone.name, `${hostedZoneName}.`);
     const config = await hostedZone.resolveConfig();

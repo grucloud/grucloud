@@ -24,12 +24,6 @@ describe("AwsInternetGateway", async function () {
 
     await provider.start();
 
-    const { error } = await provider.destroyAll();
-    assert(!error);
-
-    const { results: lives } = await provider.listLives({ our: true });
-    assert.equal(lives.length, 0);
-
     vpc = await provider.makeVpc({
       name: "vpc",
       properties: () => ({
@@ -43,9 +37,7 @@ describe("AwsInternetGateway", async function () {
       properties: () => ({}),
     });
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("ig name", async function () {
     assert.equal(ig.name, resourceName);
   });

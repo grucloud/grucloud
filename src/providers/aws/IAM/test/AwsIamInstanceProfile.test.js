@@ -25,9 +25,6 @@ describe("AwsIamInstanceProfile", async function () {
 
     await provider.start();
 
-    const { error } = await provider.destroyAll();
-    assert(!error, "destroyAll failed");
-
     iamRole = await provider.makeIamRole({
       name: iamRoleName,
       properties: () => ({
@@ -56,9 +53,7 @@ describe("AwsIamInstanceProfile", async function () {
       }),
     });
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("iamInstanceProfile resolveConfig", async function () {
     assert.equal(iamInstanceProfile.name, iamInstanceProfileName);
     const config = await iamInstanceProfile.resolveConfig();

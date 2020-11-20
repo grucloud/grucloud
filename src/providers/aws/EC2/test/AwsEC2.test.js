@@ -25,8 +25,6 @@ describe("AwsEC2", async function () {
       config: config.aws,
     });
     await provider.start();
-    const { error } = await provider.destroyAll();
-    assert(!error, "destroyAll failed");
 
     keyPair = await provider.useKeyPair({
       name: keyPairName,
@@ -38,9 +36,7 @@ describe("AwsEC2", async function () {
       dependencies: { keyPair },
     });
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("ec2 server resolveConfig", async function () {
     assert.equal(server.name, serverName);
 

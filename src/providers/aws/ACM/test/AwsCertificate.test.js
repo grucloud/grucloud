@@ -24,17 +24,12 @@ describe("AwsCertificate", async function () {
 
     await provider.start();
 
-    const { error } = await provider.destroyAll();
-    assert(!error, "destroyAll failed");
-
     certificate = await provider.makeCertificate({
       name: certificateName,
       properties: () => ({ DomainName: domainName }),
     });
   });
-  after(async () => {
-    //await provider?.destroyAll();
-  });
+  after(async () => {});
   it("certificate resolveConfig", async function () {
     assert.equal(certificate.name, certificateName);
     const config = await certificate.resolveConfig();

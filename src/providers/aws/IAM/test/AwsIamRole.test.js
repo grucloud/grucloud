@@ -22,9 +22,6 @@ describe("AwsIamRole", async function () {
 
     await provider.start();
 
-    const { error } = await provider.destroyAll();
-    assert(!error, "destroyAll failed");
-
     iamRole = await provider.makeIamRole({
       name: iamRoleName,
       properties: () => ({
@@ -45,9 +42,7 @@ describe("AwsIamRole", async function () {
       }),
     });
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("iamRole resolveConfig", async function () {
     assert.equal(iamRole.name, iamRoleName);
     const config = await iamRole.resolveConfig();

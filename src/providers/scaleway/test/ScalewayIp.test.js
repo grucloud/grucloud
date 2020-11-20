@@ -19,14 +19,9 @@ describe("ScalewayIp", async function () {
       config: config.scaleway,
     });
 
-    const { error } = await provider.destroyAll({ all: false });
-    assert(!error);
-
     ip = await provider.makeIp({ name: "myip" });
   });
-  after(async () => {
-    await provider?.destroyAll({ all: false });
-  });
+  after(async () => {});
 
   it("ip resolveConfig", async function () {
     const config = await ip.resolveConfig();

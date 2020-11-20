@@ -38,9 +38,6 @@ describe("AwsProvider", async function () {
 
     await provider.start();
 
-    const { error, results } = await provider.destroyAll();
-    assert(results);
-    assert(!error);
     keyPair = await provider.useKeyPair({
       name: keyPairName,
     });
@@ -109,9 +106,7 @@ describe("AwsProvider", async function () {
       dependencies: { keyPair, subnet, securityGroups: { sg }, eip },
     });
   });
-  after(async () => {
-    //await provider?.destroyAll();
-  });
+  after(async () => {});
   it("aws server resolveConfig", async function () {
     assert.equal(server.name, serverName);
 

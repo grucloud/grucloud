@@ -27,12 +27,6 @@ describe("AwsVpc", async function () {
 
     await provider.start();
 
-    const { error } = await provider.destroyAll();
-    assert(!error);
-
-    const { results: lives } = await provider.listLives({ our: true });
-    assert.equal(lives.length, 0);
-
     vpc = await provider.makeVpc({
       name: "vpc",
       properties: () => ({
@@ -81,9 +75,7 @@ describe("AwsVpc", async function () {
       }),
     });
   });
-  after(async () => {
-    //await provider?.destroyAll();
-  });
+  after(async () => {});
   it("vpc name", async function () {
     assert.equal(vpc.name, "vpc");
   });

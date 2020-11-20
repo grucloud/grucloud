@@ -23,13 +23,8 @@ describe("AzResourceGroup", async function () {
       config,
     });
     rg = await provider.makeResourceGroup({ name: rgName });
-
-    const { error } = await provider.destroyAll();
-    assert(!error, "destroyAll ko");
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("config", async function () {
     const config = await rg.resolveConfig();
     assert(config);

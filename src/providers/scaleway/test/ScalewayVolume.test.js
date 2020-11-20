@@ -26,9 +26,7 @@ describe("ScalewayVolume", async function () {
     });
   });
 
-  after(async () => {
-    await provider?.destroyAll({ all: false });
-  });
+  after(async () => {});
 
   it("volume config", async function () {
     const config = await volume.resolveConfig();

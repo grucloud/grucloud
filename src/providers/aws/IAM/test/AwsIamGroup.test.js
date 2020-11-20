@@ -25,9 +25,6 @@ describe("AwsIamGroup", async function () {
 
     await provider.start();
 
-    const { error } = await provider.destroyAll();
-    assert(!error, "destroyAll failed");
-
     iamGroup = await provider.makeIamGroup({
       name: iamGroupName,
       properties: () => ({
@@ -41,9 +38,7 @@ describe("AwsIamGroup", async function () {
       properties: () => ({}),
     });
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("iamGroup resolveConfig", async function () {
     assert.equal(iamGroup.name, iamGroupName);
     const config = await iamGroup.resolveConfig();
