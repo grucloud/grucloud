@@ -2,7 +2,7 @@ const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
-const { CheckTagsEC2 } = require("../../AwsTagCheck");
+const { CheckAwsTags } = require("../../AwsTagCheck");
 
 describe("AwsSubnet", async function () {
   let config;
@@ -70,7 +70,7 @@ describe("AwsSubnet", async function () {
     const vpcLive = await vpc.getLive();
     assert.equal(subnetLive.VpcId, vpcLive.VpcId);
 
-    CheckTagsEC2({
+    CheckAwsTags({
       config: provider.config(),
       tags: subnetLive.Tags,
       name: subnet.name,

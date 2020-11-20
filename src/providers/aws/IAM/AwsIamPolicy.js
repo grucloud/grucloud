@@ -159,7 +159,6 @@ exports.AwsIamPolicy = ({ spec, config }) => {
         iam
           .listEntitiesForPolicy({
             PolicyArn: id,
-            EntityFilter: "LocalManagedPolicy",
           })
           .promise(),
       tap((result) => {
@@ -168,13 +167,46 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       fork({
         PolicyUsers: pipe([
           get("PolicyUsers"),
-          map((policyUser) => {
-            //TODO
-            logger.debug(`destroy ${tos(policyUser)}`);
+          tap((policyUsers) => {
+            logger.debug(`destroy detachUserPolicy ${tos(policyUsers)}`);
           }),
+          map((policyUsers) =>
+            iam
+              .detachUserPolicy({
+                PolicyArn: id,
+                UserName: policyUsers.UserName,
+              })
+              .promise()
+          ),
         ]),
-        //PolicyGroups: ({ PolicyGroups }) => {},
-        //PolicyRoles: ({ PolicyRoles }) => {},
+        PolicyGroups: pipe([
+          get("PolicyGroups"),
+          tap((policyGroups) => {
+            logger.debug(`destroy detachGroupPolicy ${tos(policyGroups)}`);
+          }),
+          map((policyGroup) =>
+            iam
+              .detachGroupPolicy({
+                PolicyArn: id,
+                GroupName: policyGroup.GroupName,
+              })
+              .promise()
+          ),
+        ]),
+        PolicyRoles: pipe([
+          get("PolicyRoles"),
+          tap((policyRoles) => {
+            logger.debug(`destroy detachRolePolicy ${tos(policyRoles)}`);
+          }),
+          map((policyRole) =>
+            iam
+              .detachRolePolicy({
+                PolicyArn: id,
+                RoleName: policyRole.RoleName,
+              })
+              .promise()
+          ),
+        ]),
       }),
       () =>
         iam

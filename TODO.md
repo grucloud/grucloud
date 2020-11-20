@@ -2,6 +2,10 @@
 
 ## Common:
 
+- config command to display region project, service account etc ...
+- isMinion based on phase
+- run ci test with different phase
+
 - add types to testPlanDestroy
 - add default cannotBeDeleted
 - PROMPT='%4~ %# '
@@ -39,8 +43,9 @@
 
 ## TODO Aws:
 
+- invalidate cloufront cache
+- CF priceClass 100
 - CallerReference distribution
-- check S3 Tags
 - ssh should use use kp.pem instead of ssh-add
 - add example code in AwsGettingStarted
 - aws.config.loadFromPath('./AwsConfig.json');

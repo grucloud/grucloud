@@ -1,4 +1,4 @@
 module.exports = () => ({
-  domainName: "grucloud.org",
+  DomainName: "grucloud.org",
   websiteDir: "../../../docusaurus/build/",
 });

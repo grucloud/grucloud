@@ -1,23 +1,20 @@
 const AWS = require("aws-sdk");
-const { isEmpty } = require("rubico/x");
-const { defaultsDeep } = require("rubico/x");
-
+const { get, pipe, filter, map } = require("rubico");
+const { defaultsDeep, isEmpty } = require("rubico/x");
 const assert = require("assert");
+
 const logger = require("../../../logger")({ prefix: "AwsIgw" });
 const { tos } = require("../../../tos");
 const { retryExpectOk } = require("../../Retry");
-const { KeyName, getByIdCore } = require("../AwsCommon");
+const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { findNameInTags } = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
-const { CheckTagsEC2 } = require("../AwsTagCheck");
+const { CheckAwsTags } = require("../AwsTagCheck");
 
 module.exports = AwsInternetGateway = ({ spec, config }) => {
   assert(spec);
   assert(config);
-
-  const { stage } = config;
-  assert(stage);
 
   const ec2 = new AWS.EC2();
 
@@ -29,12 +26,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
     return findId(item);
   };
 
-  const findId = (item) => {
-    assert(item);
-    const id = item.InternetGatewayId;
-    assert(id);
-    return id;
-  };
+  const findId = get("InternetGatewayId");
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInternetGateways-property
   const getList = async ({ params } = {}) => {
@@ -107,7 +99,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
       config,
     });
 
-    CheckTagsEC2({
+    CheckAwsTags({
       config,
       tags: igw.Tags,
       name: name,

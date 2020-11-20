@@ -43,27 +43,27 @@ exports.buildTags = ({
 
 exports.isOurMinion = ({ resource, config }) => {
   const { createdByProviderKey, providerName } = config;
-  assert(providerName);
-  assert(createdByProviderKey);
-  assert(resource);
-  assert(resource.Tags);
-
-  let minion = false;
-  if (
-    resource.Tags.find(
-      (tag) => tag.Key === createdByProviderKey && tag.Value === providerName
-    )
-  ) {
-    minion = true;
-  }
-
-  logger.debug(
-    `isOurMinion ${tos({
-      minion,
-      resource,
-    })}`
-  );
-  return minion;
+  return pipe([
+    tap(() => {
+      assert(providerName);
+      assert(createdByProviderKey);
+      assert(resource);
+    }),
+    switchCase(
+      [
+        (Tags) =>
+          !!Tags.find(
+            (tag) =>
+              tag.Key === createdByProviderKey && tag.Value === providerName
+          ),
+      ],
+      () => true,
+      () => false
+    ),
+    tap((minion) => {
+      logger.debug(`isOurMinion ${minion} ${tos(resource)}`);
+    }),
+  ])(resource.Tags || []);
 };
 
 exports.findNameInTags = (item) => {

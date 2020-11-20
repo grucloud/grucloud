@@ -1,5 +1,5 @@
 const AWS = require("aws-sdk");
-const { switchCase } = require("rubico");
+const { get, switchCase } = require("rubico");
 const { isEmpty } = require("rubico/x");
 const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "AwsSn" });
@@ -13,7 +13,7 @@ const {
 } = require("../../Common");
 const { findNameInTags } = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
-const { CheckTagsEC2 } = require("../AwsTagCheck");
+const { CheckAwsTags } = require("../AwsTagCheck");
 
 module.exports = AwsSubnet = ({ spec, config }) => {
   assert(spec);
@@ -27,12 +27,7 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     findNameInTags,
   ]);
 
-  const findId = (item) => {
-    assert(item);
-    const id = item.SubnetId;
-    assert(id);
-    return id;
-  };
+  const findId = get("SubnetId");
 
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
   const getById = ({ id }) => getByIdCore({ id, getList, findId });
@@ -59,7 +54,7 @@ module.exports = AwsSubnet = ({ spec, config }) => {
 
     const subnet = await getById({ id: SubnetId });
 
-    CheckTagsEC2({
+    CheckAwsTags({
       config,
       tags: subnet.Tags,
       name: name,

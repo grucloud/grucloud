@@ -126,7 +126,9 @@ const authorize = async ({
     });
   }
   const keys = require(applicationCredentialsFile);
-  logger.info(`authorize with email: ${keys.client_email}`);
+  logger.info(
+    `authorize with email: ${keys.client_email}, keyId: ${keys.private_key_id}`
+  );
   assert(keys.private_key, "keys.private_key");
   const client = new JWT({
     email: keys.client_email,
@@ -837,12 +839,32 @@ const billingDisable = async ({ accessToken, projectId }) => {
     ]),
   ])();
 };
+
+const info = async ({
+  config,
+  gcloudConfig,
+  projectId,
+  projectName,
+  applicationCredentialsFile,
+  serviceAccountName,
+}) => {
+  return {
+    stage: config.stage,
+    projectId,
+    projectName,
+    applicationCredentialsFile,
+    serviceAccountName,
+    hasGCloud: !!gcloudConfig,
+  };
+};
+
 const init = async ({
   gcloudConfig,
   projectId,
   projectName,
   applicationCredentialsFile,
   serviceAccountName,
+  options,
 }) => {
   if (!gcloudConfig.config) {
     console.error(`gcloud is not installed, setup aborted`);
@@ -906,6 +928,7 @@ const unInit = async ({
   projectName,
   applicationCredentialsFile,
   serviceAccountName,
+  options,
 }) => {
   if (!gcloudConfig.config) {
     console.error(`gcloud is not installed, setup aborted`);
@@ -942,17 +965,18 @@ const unInit = async ({
 
   //await billingDisable({ projectId, accessToken });
   //await removeProject({ projectName, projectId, accessToken });
-  await serviceDisable({
-    projectId,
-    accessToken,
-    servicesApiMap: servicesApiMapMain,
-  });
-  await serviceDisable({
-    projectId,
-    accessToken,
-    servicesApiMap: servicesApiMapBase,
-  });
-
+  if (options.servicesDelete) {
+    await serviceDisable({
+      projectId,
+      accessToken,
+      servicesApiMap: servicesApiMapMain,
+    });
+    await serviceDisable({
+      projectId,
+      accessToken,
+      servicesApiMap: servicesApiMapBase,
+    });
+  }
   console.log(`Project is now un-initialized`);
 };
 
@@ -993,12 +1017,14 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
   let serviceAccountAccessToken;
 
   const start = async () => {
-    serviceAccountAccessToken = await authorize({
-      gcloudConfig,
-      projectId,
-      projectName,
-      applicationCredentialsFile,
-    });
+    if (!serviceAccountAccessToken) {
+      serviceAccountAccessToken = await authorize({
+        gcloudConfig,
+        projectId,
+        projectName,
+        applicationCredentialsFile,
+      });
+    }
     logger.debug(`started`);
   };
 
@@ -1006,21 +1032,34 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
     type: "google",
     name,
     config: defaultsDeep({
+      //Replace project with projectId
       project: config.projectId,
       accessToken: () => serviceAccountAccessToken,
     })(config),
     fnSpecs,
     start,
-    init: () =>
-      init({
+    info: ({ options } = {}) =>
+      info({
+        options,
+        config,
         gcloudConfig,
         projectName,
         projectId,
         applicationCredentialsFile,
         serviceAccountName: ServiceAccountName,
       }),
-    unInit: () =>
+    init: ({ options } = {}) =>
+      init({
+        options,
+        gcloudConfig,
+        projectName,
+        projectId,
+        applicationCredentialsFile,
+        serviceAccountName: ServiceAccountName,
+      }),
+    unInit: ({ options } = {}) =>
       unInit({
+        options,
         gcloudConfig,
         projectName,
         projectId,

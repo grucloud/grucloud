@@ -172,8 +172,8 @@ exports.AwsIamRole = ({ spec, config }) => {
           .listInstanceProfilesForRole({ RoleName: id, MaxItems: 1e3 })
           .promise(),
       get("InstanceProfiles"),
-      forEach(async (instanceProfile) => {
-        await iam
+      forEach((instanceProfile) => {
+        iam
           .removeRoleFromInstanceProfile({
             InstanceProfileName: instanceProfile.InstanceProfileName,
             RoleName: id,
@@ -183,8 +183,8 @@ exports.AwsIamRole = ({ spec, config }) => {
       () =>
         iam.listAttachedRolePolicies({ RoleName: id, MaxItems: 1e3 }).promise(),
       get("AttachedPolicies"),
-      forEach(async (policy) => {
-        await iam
+      forEach((policy) => {
+        iam
           .detachRolePolicy({
             PolicyArn: policy.PolicyArn,
             RoleName: id,
@@ -193,8 +193,8 @@ exports.AwsIamRole = ({ spec, config }) => {
       }),
       () => iam.listRolePolicies({ RoleName: id, MaxItems: 1e3 }).promise(),
       get("PolicyNames"),
-      forEach(async (policyName) => {
-        await iam
+      forEach((policyName) => {
+        iam
           .deleteRolePolicy({
             PolicyName: policyName,
             RoleName: id,

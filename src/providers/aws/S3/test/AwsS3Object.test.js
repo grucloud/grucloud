@@ -4,12 +4,65 @@ const { ConfigLoader } = require("ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
+const bucketName = "grucloud-s3bucket-test-update";
+const types = ["S3Bucket", "S3Object"];
+
+const createStack = async ({ config }) => {
+  const provider = AwsProvider({
+    name: "aws",
+    config: config.aws,
+  });
+
+  await provider.start();
+
+  const s3Bucket = await provider.makeS3Bucket({
+    name: bucketName,
+    properties: () => ({}),
+  });
+
+  const s3Object = await provider.makeS3Object({
+    name: `file-test`,
+    dependencies: { bucket: s3Bucket },
+    properties: () => ({
+      ACL: "public-read",
+      ContentType: "text/plain",
+      source: path.join(process.cwd(), "examples/aws/s3/fixtures/testFile.txt"),
+    }),
+  });
+
+  return provider;
+};
+
+const createStackNext = async ({ config }) => {
+  const provider = AwsProvider({
+    name: "aws",
+    config: config.aws,
+  });
+
+  await provider.start();
+
+  const s3Bucket = await provider.makeS3Bucket({
+    name: bucketName,
+    properties: () => ({}),
+  });
+
+  const s3Object = await provider.makeS3Object({
+    name: `file-test`,
+    dependencies: { bucket: s3Bucket },
+    properties: () => ({
+      ACL: "public-read",
+      ContentType: "text/plain",
+      source: path.join(
+        process.cwd(),
+        "examples/aws/s3/fixtures/testFile2.txt"
+      ),
+    }),
+  });
+
+  return provider;
+};
 describe("AwsS3Object", async function () {
   let config;
-  let provider;
-  const bucketName = "grucloud-s3bucket-test";
-
-  console.log(`Current directory: ${process.cwd()}`);
 
   before(async function () {
     try {
@@ -17,43 +70,20 @@ describe("AwsS3Object", async function () {
     } catch (error) {
       this.skip();
     }
-    provider = AwsProvider({
-      name: "aws",
-      config: config.aws,
-    });
-
-    await provider.start();
-
-    const { error } = await provider.destroyAll();
-    assert(!error, "destroyAll failed");
   });
 
-  it.skip("s3 object apply and destroy", async function () {
-    const s3Bucket = await provider.makeS3Bucket({
-      name: `${bucketName}-basic-for-object`,
-      properties: () => ({}),
-    });
+  it("s3 object apply, update destroy", async function () {
+    const provider = await createStack({ config });
 
-    const s3Object = await provider.makeS3Object({
-      name: `file-test`,
-      dependencies: { bucket: s3Bucket },
-      properties: () => ({
-        ACL: "public-read",
-        ContentType: "text/plain",
-        ServerSideEncryption: "AES256",
-        Tagging: "key1=value1&key2=value2",
-        source: path.join(
-          process.cwd(),
-          "examples/aws/s3/fixtures/testFile.txt"
-        ),
-      }),
-    });
+    await testPlanDeploy({ provider, types });
 
-    await testPlanDeploy({ provider });
+    const providerNext = await createStackNext({ config });
+    const plan = await providerNext.planQuery();
+    assert.equal(plan.resultDestroy.plans.length, 0);
+    assert.equal(plan.resultCreate.plans.length, 1);
+    const update = plan.resultCreate.plans[0];
+    assert.equal(update.action, "UPDATE");
 
-    const s3BucketLive = await s3Bucket.getLive();
-    assert(s3BucketLive);
-
-    await testPlanDestroy({ provider });
+    await testPlanDestroy({ provider, types });
   });
 });

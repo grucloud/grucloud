@@ -145,27 +145,27 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.debug(`destroy ${tos({ name, id })}`);
+        logger.info(`destroy iam instance profile ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
       () => getById({ id }),
-      tap(
-        async (instanceProfile) =>
-          await forEach((role) =>
-            iam
-              .removeRoleFromInstanceProfile({
-                InstanceProfileName: id,
-                RoleName: role.RoleName,
-              })
-              .promise()
-          )(instanceProfile.Roles)
+      tap((instanceProfile) =>
+        forEach((role) =>
+          iam
+            .removeRoleFromInstanceProfile({
+              InstanceProfileName: id,
+              RoleName: role.RoleName,
+            })
+            .promise()
+        )(instanceProfile.Roles)
       ),
-      () =>
+      tap(() =>
         iam
           .deleteInstanceProfile({
             InstanceProfileName: id,
           })
-          .promise(),
+          .promise()
+      ),
       tap(() =>
         retryExpectOk({
           name: `isDownById: ${name} id: ${id}`,
@@ -174,7 +174,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
         })
       ),
       tap(() => {
-        logger.debug(`destroy done, ${tos({ name, id })}`);
+        logger.info(`destroy iam instance profile done, ${tos({ name, id })}`);
       }),
     ])();
 

@@ -1,6 +1,6 @@
 const assert = require("assert");
 const md5File = require("md5-file");
-const { pipe, tap } = require("rubico");
+const { pipe, tap, omit } = require("rubico");
 const { isEmpty } = require("rubico/x");
 const logger = require("../logger")({ prefix: "Common" });
 const { tos } = require("../tos");
@@ -38,6 +38,7 @@ exports.combineProviders = (infra) =>
       }
     }),
     (providers) => ({ ...infra, providers }),
+    omit(["provider"]),
   ])();
 
 const safeJsonParse = (json) => {
@@ -141,7 +142,7 @@ exports.isUpByIdCore = ({ isInstanceUp, getById }) => async ({
   assert(id, "isUpByIdCore id");
   assert(getById, "isUpByIdCore getById");
   let up = false;
-  const instance = await getById({ type, name, id });
+  const instance = await getById({ type, name, id, deep: false });
   if (instance) {
     if (isInstanceUp) {
       up = isInstanceUp(instance);
@@ -170,7 +171,14 @@ exports.isDownByIdCore = ({
   let down = false;
 
   const theGet = getList ? getByIdCore : getById;
-  const instance = await theGet({ type, name, id, getList, findId });
+  const instance = await theGet({
+    type,
+    name,
+    id,
+    getList,
+    findId,
+    deep: false,
+  });
   if (instance) {
     if (isInstanceDown) {
       down = isInstanceDown(instance);
@@ -213,6 +221,6 @@ exports.logError = (prefix, error) => {
 };
 
 exports.md5FileBase64 = pipe([
-  async (source) => await md5File(source),
+  (source) => md5File(source),
   (md5) => new Buffer.from(md5, "hex").toString("base64"),
 ]);

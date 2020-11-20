@@ -1,7 +1,7 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
+const { get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-
 const { getByIdCore } = require("../AwsCommon");
 const { retryExpectOk } = require("../../Retry");
 const { getField } = require("../../ProviderCommon");
@@ -14,7 +14,7 @@ const {
 } = require("../../Common");
 const logger = require("../../../logger")({ prefix: "AwsSg" });
 const { tagResource } = require("../AwsTagResource");
-const { CheckTagsEC2 } = require("../AwsTagCheck");
+const { CheckAwsTags } = require("../AwsTagCheck");
 const { tos } = require("../../../tos");
 
 module.exports = AwsSecurityGroup = ({ spec, config }) => {
@@ -24,12 +24,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const ec2 = new AWS.EC2();
 
   const findName = (item) => findField({ item, field: "GroupName" });
-  const findId = (item) => {
-    assert(item);
-    const id = item.GroupId;
-    assert(id);
-    return id;
-  };
+  const findId = get("GroupId");
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroups-property
   const getList = async ({ params } = {}) => {
@@ -104,7 +99,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
 
     const sg = await getById({ id: GroupId });
 
-    CheckTagsEC2({
+    CheckAwsTags({
       config,
       tags: sg.Tags,
       name: name,

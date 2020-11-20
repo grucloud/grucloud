@@ -55,6 +55,11 @@ exports.createProgram = ({ version, commands }) => {
   };
 
   program
+    .command("info")
+    .description("Get Information about the current project")
+    .action(runCommand({ commandName: "info", program }));
+
+  program
     .command("init")
     .description("Initialise the cloud providers")
     .alias("i")

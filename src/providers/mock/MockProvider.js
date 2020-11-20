@@ -138,8 +138,9 @@ const fnSpecs = (config) => {
     },
   ];
 };
+const providerType = "mock";
 
-exports.MockProvider = ({ name = "mock", config }) => {
+exports.MockProvider = ({ name = providerType, config }) => {
   assert(config);
 
   const configDefault = {
@@ -154,11 +155,16 @@ exports.MockProvider = ({ name = "mock", config }) => {
     return Promise.delay(1);
   };
 
+  const info = () => {
+    return { ...config };
+  };
+
   return CoreProvider({
-    type: "mock",
+    type: providerType,
     name,
     config: defaultsDeep(configDefault)(config),
     fnSpecs,
     start,
+    info,
   });
 };

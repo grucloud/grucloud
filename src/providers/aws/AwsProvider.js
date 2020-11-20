@@ -1,7 +1,7 @@
 process.env.AWS_SDK_LOAD_CONFIG = "true";
 const AWS = require("aws-sdk");
 const assert = require("assert");
-const { map } = require("rubico");
+const { map, pipe, get } = require("rubico");
 
 const logger = require("../../logger")({ prefix: "AwsProvider" });
 const { tos } = require("../../tos");
@@ -35,11 +35,11 @@ const validateConfig = async ({ region, zone }) => {
   }
 };
 
-const fetchAccountId = async () => {
-  var sts = new AWS.STS();
-  const { Account } = await sts.getCallerIdentity({}).promise();
-  return Account;
-};
+const fetchAccountId = pipe([
+  () => new AWS.STS(),
+  (sts) => sts.getCallerIdentity({}).promise(),
+  get("Account"),
+]);
 
 exports.AwsProvider = ({ name = "aws", config }) => {
   assert(config);

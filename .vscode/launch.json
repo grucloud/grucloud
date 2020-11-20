@@ -369,6 +369,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Google Website HTTPS Info",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/google/storage/website-https",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["info"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Google Website HTTPS Init",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/google/storage/website-https",
@@ -556,6 +565,15 @@
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/multi/",
       "internalConsoleOptions": "openOnSessionStart",
+      "args": ["info"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Multi Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/multi/",
+      "internalConsoleOptions": "openOnSessionStart",
       "args": ["plan"]
     },
     {
@@ -588,6 +606,16 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["destroy", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Multi onDeployed",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/multi/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["run", "--onDeployed"]
     },
     {
       "type": "node",

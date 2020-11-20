@@ -65,10 +65,34 @@ const noop = ({}) => {};
 
 const isValidPlan = (plan) => !isEmpty(plan.plans) && !plan.error;
 
-const filterReadWriteClient = pipe([
-  filter((client) => !client.spec.singleton),
-  filter((client) => !client.spec.listOnly),
-]);
+const filterByType = ({ types }) =>
+  filter((client) =>
+    !isEmpty(types)
+      ? any((type) => new RegExp(type, "i").test(client.spec.type))(types)
+      : true
+  );
+
+const filterReadClient = ({ types, all }) =>
+  pipe([
+    filterByType({ types }),
+    filter((client) => all || !client.spec.listOnly),
+    tap((clients) => {
+      logger.debug(`filterReadClient #client ${clients.length}`);
+    }),
+  ]);
+
+const filterReadWriteClient = ({ types } = {}) =>
+  pipe([
+    tap(() => {
+      logger.debug(`filterReadWriteClient ${types}`);
+    }),
+    filterByType({ types }),
+    filter((client) => !client.spec.singleton),
+    filter((client) => !client.spec.listOnly),
+    tap((clients) => {
+      logger.debug(`filterReadWriteClient #clients ${clients.length}`);
+    }),
+  ]);
 
 const hasResultError = any(({ error }) => error);
 
@@ -270,16 +294,15 @@ const ResourceMaker = ({
 
     const live = await retryCall({
       name: `create getLive ${type}/${resourceName}`,
-      fn: async () => {
-        const live = await getLive();
-        if (!live) {
-          throw Error(
-            `Resource ${type}/${resourceName} not there after being created`
-          );
-        }
-        return live;
+      fn: () => getLive(),
+      shouldRetryOnException: (error) => {
+        logger.info(`created: shouldRetryOnException ${tos(error)}`);
+        return false;
       },
-      shouldRetryOnException: () => true,
+      isExpectedResult: (result) => {
+        return result;
+      },
+
       //TODO refactor
       repeatCount: provider.config().repeatCount,
       retryCount: provider.config().retryCount,
@@ -467,6 +490,7 @@ function CoreProvider({
   mandatoryConfigKeys = [],
   fnSpecs,
   config,
+  info = () => ({}),
   init = () => {},
   unInit = () => {},
   start = () => {},
@@ -713,12 +737,7 @@ function CoreProvider({
           `listLives filters: ${JSON.stringify({ all, our, types, name, id })}`
         )
       ),
-      filter((client) => all || !client.spec.listOnly),
-      filter((client) =>
-        !isEmpty(types)
-          ? any((type) => new RegExp(type, "i").test(client.spec.type))(types)
-          : true
-      ),
+      filterReadClient({ types, all }),
       tap((clients) => {
         logger.info(`listLives #clients: ${clients.length}`);
       }),
@@ -783,11 +802,13 @@ function CoreProvider({
       }),
     ])(getTargetResources());
 
-  const planQuery = async ({ onStateChange = identity } = {}) =>
+  const planQuery = async ({
+    onStateChange = identity,
+    commandOptions = {},
+  } = {}) =>
     pipe([
       tap(() => {
         logger.info(`planQuery begins`);
-        assert(onStateChange);
       }),
       tap(() =>
         onStateChange({
@@ -804,6 +825,7 @@ function CoreProvider({
           planFindDestroy({
             onStateChange,
             direction: PlanDirection.UP,
+            options: commandOptions,
           }),
       }),
       (result) => ({
@@ -818,7 +840,7 @@ function CoreProvider({
         })
       ),
       tap((result) => {
-        logger.info(`planQuery ${tos(result)}`);
+        logger.info(`planQuery result: ${tos(result)}`);
       }),
     ])();
 
@@ -1056,7 +1078,7 @@ function CoreProvider({
         context: contextFromProvider(),
         nextState: nextStateOnError(error),
       })
-    );
+    )();
 
   const spinnersStartResources = ({ onStateChange, title, resourcesPerType }) =>
     tap(
@@ -1157,34 +1179,37 @@ function CoreProvider({
       ])
     );
   const spinnersStartHooks = ({ onStateChange, hookType }) =>
-    tap(() =>
-      map(({ name, onDeployed, onDestroyed }) =>
-        pipe([
-          tap(() => {
-            logger.info(`spinnersStart hook`);
-          }),
-          switchCase([
-            () => hookType === HookType.ON_DEPLOYED,
-            () => onDeployed,
-            () => hookType === HookType.ON_DESTROYED,
-            () => onDestroyed,
-            () => assert(`Invalid hook type '${hookType}'`),
-          ]),
-          setHookWaitingState({ onStateChange, hookType, hookName: name }),
-        ])()
-      )([...hookMap.values()])
-    );
-
-  const spinnersStartQuery = ({ onStateChange }) =>
     pipe([
-      tap((obj) => {
+      () => [...hookMap.values()],
+      tap((hooks) => {
+        logger.info(`spinnersStart #hooks ${hooks.length}`);
+      }),
+      tap(
+        map(({ name, onDeployed, onDestroyed }) =>
+          pipe([
+            tap(() => {
+              logger.debug(`spinnersStart hook`);
+            }),
+            switchCase([
+              () => hookType === HookType.ON_DEPLOYED,
+              () => onDeployed,
+              () => hookType === HookType.ON_DESTROYED,
+              () => onDestroyed,
+              () => assert(`Invalid hook type '${hookType}'`),
+            ]),
+            setHookWaitingState({ onStateChange, hookType, hookName: name }),
+          ])()
+        )
+      ),
+    ]);
+
+  const spinnersStartQuery = ({ onStateChange, options }) =>
+    pipe([
+      tap(() => {
         logger.debug("spinnersStartQuery");
       }),
       map(filter((resource) => !resource.spec.listOnly)),
       filter((resources) => !isEmpty(resources)),
-      tap((obj) => {
-        logger.debug("spinnersStartQuery");
-      }),
       map((resources) => ({
         provider: providerName,
         type: typeFromResources(resources),
@@ -1193,13 +1218,7 @@ function CoreProvider({
           name: resource.name,
         }))(resources),
       })),
-      tap((obj) => {
-        logger.debug("spinnersStartQuery");
-      }),
       spinnersStartProvider({ onStateChange }),
-      tap((obj) => {
-        logger.debug("spinnersStartQuery");
-      }),
       (resourcesPerType) =>
         spinnersStartResources({
           onStateChange,
@@ -1209,32 +1228,37 @@ function CoreProvider({
       spinnersStartClient({
         onStateChange,
         title: TitleDestroying,
-        clients: filterReadWriteClient(clients),
+        clients: filterReadWriteClient(options)(clients),
       }),
     ])([...mapTypeToResources.values()]);
 
-  const spinnersStartListLives = ({ onStateChange }) =>
+  const spinnersStartListLives = ({ onStateChange, options }) =>
     tap(
       pipe([
+        tap(() => {
+          logger.debug(`spinnersStartListLives ${options.types}`);
+        }),
         spinnersStartProvider({ onStateChange }),
         spinnersStartClient({
           onStateChange,
           title: TitleQuery,
-          clients: filterReadWriteClient(clients),
+          clients: filterReadClient(options)(clients),
         }),
       ])
     )();
 
-  const spinnersStopListLives = ({ onStateChange }) =>
+  const spinnersStopListLives = ({ onStateChange, options }) =>
     tap(
       pipe([
-        () => {},
+        tap(() => {
+          logger.debug("spinnersStopListLives");
+        }),
         spinnersStopClient({
           onStateChange,
           title: TitleQuery,
-          clients: filterReadWriteClient(clients),
+          clients: filterReadWriteClient(options)(clients),
         }),
-        spinnersStopProvider({ onStateChange }),
+        () => spinnersStopProvider({ onStateChange }),
       ])
     )();
 
@@ -1272,10 +1296,6 @@ function CoreProvider({
                   plan.resultCreate.plans
                 ),
               }),
-              spinnersStartHooks({
-                onStateChange,
-                hookType: HookType.ON_DEPLOYED,
-              }),
             ]),
             () => {
               logger.debug("no newOrUpdate ");
@@ -1302,17 +1322,19 @@ function CoreProvider({
       ])
     )();
 
-  const spinnersStartDestroyQuery = ({ onStateChange }) => {
-    logger.debug(`spinnersStartDestroyQuery #clients: ${clients.length}`);
-    return pipe([
+  const spinnersStartDestroyQuery = ({ onStateChange, options }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`spinnersStartDestroyQuery #clients: ${clients.length}`);
+      }),
       spinnersStartProvider({ onStateChange }),
       spinnersStartClient({
         onStateChange,
         title: TitleDestroying,
-        clients: filterReadWriteClient(clients),
+        clients: filterReadWriteClient(options)(clients),
       }),
     ])();
-  };
+
   const spinnersStartDestroy = ({ onStateChange, plans }) => {
     assert(plans, "plans");
     assert(Array.isArray(plans), "plans !isArray");
@@ -1329,22 +1351,20 @@ function CoreProvider({
         title: TitleDestroying,
         resourcesPerType: planToResourcesPerType(plans),
       }),
-      spinnersStartHooks({
-        onStateChange,
-        hookType: HookType.ON_DESTROYED,
-      }),
     ])();
   };
-  const spinnersStartHook = ({ onStateChange, hookType }) => {
-    assert(hookType, "hookType");
-    return pipe([
+
+  const spinnersStartHook = ({ onStateChange, hookType }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`spinnersStartHook hookType: ${hookType}`);
+      }),
       spinnersStartProvider({ onStateChange }),
       spinnersStartHooks({
         onStateChange,
         hookType,
       }),
     ])();
-  };
 
   const planApply = async ({ plan, onStateChange = identity }) =>
     pipe([
@@ -1381,25 +1401,16 @@ function CoreProvider({
                 onStateChange,
                 title: TitleDeploying,
               }),
-            (create) =>
-              assign({
-                hooks: () =>
-                  runOnDeployed({ onStateChange, skip: create.error }),
-              })({ create }),
           ]),
-          () => ({
-            create: { error: false, newOrUpdate: { plans: [] } },
-            hooks: { error: false },
-          }),
+          () => ({ error: false, newOrUpdate: { plans: [] } }),
         ]),
       }),
+      tap((result) => {
+        logger.info(`Apply result: ${tos(result)}`);
+      }),
       (result) => ({
-        error:
-          result.resultCreate.create.error ||
-          result.resultCreate.hooks.error ||
-          result.resultDestroy.error,
-        resultCreate: result.resultCreate.create,
-        resultHooks: result.resultCreate.hooks,
+        error: result.resultCreate.error || result.resultDestroy.error,
+        resultCreate: result.resultCreate,
         resultDestroy: result.resultDestroy,
       }),
       tap((result) => {
@@ -1603,7 +1614,7 @@ function CoreProvider({
             })
           ),
           tap((x) => {
-            logger.debug(`getList done`);
+            logger.debug(`getClients done`);
           }),
         ]),
         (error, client) => {
@@ -1628,8 +1639,9 @@ function CoreProvider({
       tap((x) => {
         logger.info(`planFindDestroy ${tos({ options, direction })}`);
         assert(onStateChange);
+        assert(options);
       }),
-      filterReadWriteClient,
+      filterReadWriteClient(options),
       tap(() =>
         onStateChange({
           context: contextFromProvider(),
@@ -1642,6 +1654,9 @@ function CoreProvider({
           nextState: "RUNNING",
         })
       ),
+      tap((x) => {
+        logger.debug(`planFindDestroy ${tos(options)}`);
+      }),
       getClients({ onStateChange, deep: false }),
       tap((x) => {
         logger.debug(`planFindDestroy`);
@@ -1885,27 +1900,16 @@ function CoreProvider({
       tap(() => logger.info(`planDestroy result: ${tos(plannerResult)}`)),
     ])();
 
-    if (direction === PlanDirection.DOWN) {
-      const resultHooks = await runOnDestroyed({
-        onStateChange,
-        skip: plannerResult.error,
-      });
-      return {
-        error: resultHooks?.error || plannerResult.error ? true : false,
-        results: plannerResult.results,
-        resultHooks,
-      };
-    } else {
-      return plannerResult;
-    }
+    return plannerResult;
   };
 
   const destroyAll = pipe([
-    tap(() => logger.debug(`destroyAll`)),
-    async ({ onStateChange = identity, all = true } = {}) =>
-      planFindDestroy({ options: { all }, onStateChange }),
-    async ({ plans }) =>
-      await planDestroy({ plans, direction: PlanDirection.DOWN }),
+    tap(() => {
+      logger.info(`destroyAll`);
+    }),
+    ({ onStateChange = identity, all = false, types = [] } = {}) =>
+      planFindDestroy({ options: { all, types }, onStateChange }),
+    ({ plans }) => planDestroy({ plans, direction: PlanDirection.DOWN }),
     tap(({ error, results }) =>
       logger.info(
         `destroyAll DONE, ${error && `error: ${error}`}, #results ${
@@ -1987,9 +1991,10 @@ function CoreProvider({
         throw error;
       }
     )();
+  const toString = () => ({ name: providerName, type: toType() });
 
   const provider = {
-    toString: () => ({ name: providerName, type: toType() }),
+    toString,
     config: () => providerConfig,
     name: providerName,
     type: toType,
@@ -2020,6 +2025,14 @@ function CoreProvider({
     runOnDeployed,
     runOnDestroyed,
     hookAdd,
+    info: pipe([
+      () => startBase(),
+      () => ({
+        provider: toString(),
+        stage: providerConfig.stage,
+        ...info(),
+      }),
+    ]),
     init,
     unInit,
     start: startBase,

@@ -44,7 +44,7 @@ const testListById = async ({ provider, livesAll }) => {
   const { results: live } = await provider.listLives({
     id,
   });
-  assert.equal(live.length, 1);
+  assert(live.length >= 1);
   assert.equal(live[0].resources[0].id, id);
 };
 
@@ -100,6 +100,7 @@ const testPlanDestroy = async ({ provider, types = [], full = false }) => {
     const { results: livesAll } = await provider.listLives({
       our: true,
       canBeDeleted: true,
+      types,
     });
     assert(!isEmpty(livesAll));
 
@@ -108,7 +109,7 @@ const testPlanDestroy = async ({ provider, types = [], full = false }) => {
     await testDestroyByType({ provider, livesAll });
   }
   {
-    const { error, results } = await provider.destroyAll();
+    const { error, results } = await provider.destroyAll({ types });
     assert(results);
     assert(!error, "testPlanDestroy destroyAll failed");
   }
@@ -130,16 +131,8 @@ exports.testPlanDestroy = testPlanDestroy;
 exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
   await provider.start();
   {
-    const { error } = await provider.destroyAll();
+    const { error } = await provider.destroyAll({ types });
     assert(!error, "testPlanDeploy destroyAll failed");
-  }
-  {
-    const plan = await provider.planQuery();
-    assert(!plan.error, tos(plan));
-    assert(!isPlanEmpty(plan), "plan must not be empty after destroyAll");
-    const { error, resultCreate } = await provider.planApply({ plan });
-    assert(resultCreate);
-    assert(!error, `planApply failed: ${tos(resultCreate)}`);
   }
   {
     const { results: lives } = await provider.listLives({
@@ -147,7 +140,24 @@ exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
       types,
     });
 
-    assert(!isEmpty(lives), tos(lives));
+    assert(isEmpty(lives), `shoud be empty after destroy, lives:${tos(lives)}`);
+  }
+  {
+    const plan = await provider.planQuery();
+    assert(!plan.error, tos(plan));
+    assert(!isPlanEmpty(plan), "plan must not be empty after destroyAll");
+    const resultApply = await provider.planApply({ plan });
+    const { error, resultCreate } = resultApply;
+    assert(resultCreate);
+    assert(!error, `planApply failed: ${tos(resultApply)}`);
+  }
+  {
+    const { results: lives } = await provider.listLives({
+      our: true,
+      types,
+    });
+
+    assert(!isEmpty(lives), `shoud not be empty after an apply`);
   }
   {
     const plan = await provider.planQuery();

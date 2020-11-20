@@ -16,18 +16,13 @@ describe("GoogleProviderInit", async function () {
     });
 
     await provider.start();
-
-    const { error } = await provider.destroyAll();
-    assert(!error);
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
 
   it("init and unit", async function () {
     await provider.init();
-    await provider.unInit();
-    await provider.unInit();
+    await provider.unInit({});
+    await provider.unInit({});
     await provider.init();
     await provider.init();
   }).timeout(1000e3);

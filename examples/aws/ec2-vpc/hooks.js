@@ -7,8 +7,9 @@ module.exports = ({
   return {
     onDeployed: {
       init: async () => {
-        console.log("ec2-vpc onDeployed");
+        //console.log("ec2-vpc onDeployed");
         //Check dependencies
+
         const sgLive = await sg.getLive();
         const igLive = await ig.getLive();
         const rtLive = await rt.getLive();

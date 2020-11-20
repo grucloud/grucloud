@@ -1,6 +1,6 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
-const { pipe, filter, map } = require("rubico");
+const { get, pipe, filter, map } = require("rubico");
 const { isEmpty } = require("rubico/x");
 const { defaultsDeep } = require("rubico/x");
 
@@ -11,7 +11,7 @@ const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { findNameInTags } = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
-const { CheckTagsEC2 } = require("../AwsTagCheck");
+const { CheckAwsTags } = require("../AwsTagCheck");
 
 module.exports = AwsRouteTables = ({ spec, config }) => {
   assert(spec);
@@ -30,12 +30,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     return findId(item);
   };
 
-  const findId = (item) => {
-    assert(item);
-    const id = item.RouteTableId;
-    assert(id);
-    return id;
-  };
+  const findId = get("RouteTableId");
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeRouteTables-property
   const getList = async ({ params } = {}) => {
@@ -105,7 +100,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
       config,
     });
 
-    CheckTagsEC2({
+    CheckAwsTags({
       config,
       tags: rt.Tags,
       name: name,

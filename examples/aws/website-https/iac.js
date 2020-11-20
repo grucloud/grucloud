@@ -23,17 +23,19 @@ async function getFilesWalk(dir) {
   );
   return files.flat();
 }
+const makeDomainName = ({ DomainName, stage }) =>
+  `${stage == "production" ? "" : `${stage}.`}${DomainName}`;
 
 const createResources = async ({ provider, resources: { certificate } }) => {
   const config = provider.config();
-  const { domainName, websiteDir } = config;
-  assert(domainName);
+  const { DomainName, websiteDir, stage } = config;
+  assert(DomainName);
   assert(websiteDir);
 
   const files = await getFiles(websiteDir);
-
+  const bucketName = `${DomainName}-${stage}`;
   const websiteBucket = await provider.makeS3Bucket({
-    name: `${domainName}-bucket`,
+    name: bucketName,
     properties: () => ({
       ACL: "public-read",
       WebsiteConfiguration: {
@@ -60,7 +62,10 @@ const createResources = async ({ provider, resources: { certificate } }) => {
   )(files);
 
   const hostedZone = await provider.makeHostedZone({
-    name: `${domainName}.`,
+    name: `${makeDomainName({
+      DomainName,
+      stage,
+    })}.`,
     dependencies: { certificate },
     properties: ({ dependencies: { certificate } }) => {
       const record =
@@ -83,15 +88,15 @@ const createResources = async ({ provider, resources: { certificate } }) => {
   });
 
   const distribution = await provider.makeCloudFrontDistribution({
-    name: `distribution-${domainName}`,
+    name: `distribution-${bucketName}`,
     dependencies: { websiteBucket },
-    properties: ({ dependencies }) => {
+    properties: ({}) => {
       return {
         DistributionConfigWithTags: {
           DistributionConfig: {
-            Comment: `${domainName}.s3.amazonaws.com`,
+            Comment: `${bucketName}.s3.amazonaws.com`,
             DefaultCacheBehavior: {
-              TargetOriginId: `S3-${domainName}`,
+              TargetOriginId: `S3-${bucketName}`,
               ViewerProtocolPolicy: "redirect-to-https",
               ForwardedValues: {
                 Cookies: {
@@ -109,8 +114,8 @@ const createResources = async ({ provider, resources: { certificate } }) => {
             Origins: {
               Items: [
                 {
-                  DomainName: `${domainName}.s3.amazonaws.com`,
-                  Id: `S3-${domainName}`,
+                  DomainName: `${bucketName}.s3.amazonaws.com`,
+                  Id: `S3-${bucketName}`,
                   S3OriginConfig: { OriginAccessIdentity: "" },
                 },
               ],
@@ -134,21 +139,29 @@ exports.createStack = async ({ name = "aws", config }) => {
   });
   const provider = AwsProvider({ name, config });
 
-  const DomainName = provider.config().domainName;
+  const { DomainName, stage } = provider.config();
 
   const certificate = await providerUsEast.makeCertificate({
-    name: `certificate-${DomainName}`,
-    properties: () => ({ DomainName }),
+    name: `certificate-${DomainName}-${stage}`,
+    properties: () => ({
+      DomainName: makeDomainName({ DomainName, stage }),
+    }),
   });
 
-  const resources = await createResources({
-    provider,
-    resources: { certificate },
-    config,
-  });
+  const resources = {
+    ...(await createResources({
+      provider,
+      resources: { certificate },
+      config,
+    })),
+    certificate,
+  };
+
+  provider.register({ resources });
+
   return {
     sequencial: true,
     providers: [providerUsEast, provider],
-    resources: { ...resources, certificate },
+    resources,
   };
 };

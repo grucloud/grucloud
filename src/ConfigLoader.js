@@ -5,6 +5,7 @@ const assert = require("assert");
 const npath = require("path");
 const fs = require("fs");
 const logger = require("./logger")({ prefix: "ConfigLoader" });
+const { tos } = require("./tos");
 
 const checkFileExist = (fileName) => {
   assert(fileName);
@@ -100,7 +101,7 @@ const configFromStage = ({ configDir, stage }) => {
 exports.ConfigLoader = ({
   baseDir = process.cwd(),
   path = "",
-  stage = "dev",
+  stage = process.env.STAGE || "dev",
 }) => {
   //console.log(`ConfigLoader ${baseDir} ${stage}`);
   logger.info(`${(baseDir, stage)}`);
@@ -111,5 +112,7 @@ exports.ConfigLoader = ({
   const defaultConfig = configFromDefault({ configDir });
   const stageConfig = configFromStage({ configDir, stage }) || {};
   const merged = defaultsDeep(defaultConfig)(stageConfig);
+  logger.info(`config: ${tos(merged)}`);
+
   return merged;
 };
