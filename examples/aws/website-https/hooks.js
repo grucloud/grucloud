@@ -41,9 +41,9 @@ const checkDig = async ({ nameServer, domain, type = "A", hostedZoneLive }) => {
 };
 
 module.exports = ({ resources, provider }) => {
-  const { domainName } = provider.config();
-  assert(domainName);
-  const bucketUrl = `https://${domainName}`;
+  const { DomainName } = provider.config();
+  assert(DomainName);
+  const bucketUrl = `https://${DomainName}`;
   const bucketStorageUrl = `http://${resources.websiteBucket.name}.s3.amazonaws.com`;
   const bucketUrlIndex = `${bucketStorageUrl}/index.html`;
   const bucketUrl404 = `${bucketStorageUrl}/404.html`;
@@ -112,7 +112,7 @@ module.exports = ({ resources, provider }) => {
         },
 
         {
-          name: `dig nameservers from RecordSet ${domainName}`,
+          name: `dig nameservers from RecordSet ${DomainName}`,
           command: async ({ hostedZoneLive }) => {
             const nameServer = pipe([
               find((record) => record.Type === "NS"),
@@ -122,16 +122,16 @@ module.exports = ({ resources, provider }) => {
             ])(hostedZoneLive.RecordSet);
             await checkDig({
               nameServer,
-              domain: domainName,
+              domain: DomainName,
               hostedZoneLive,
             });
           },
         },
         {
-          name: `dig default nameserver ${domainName}`,
+          name: `dig default nameserver ${DomainName}`,
           command: async ({ hostedZoneLive }) => {
             await checkDig({
-              domain: domainName,
+              domain: DomainName,
               hostedZoneLive,
             });
           },
