@@ -7,6 +7,8 @@ const {
   tryCatch,
   get,
   switchCase,
+  assign,
+  eq,
   pick,
   filter,
   omit,
@@ -20,7 +22,6 @@ const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { buildTags, findNameInTags } = require("../AwsCommon");
 
 const findName = findNameInTags;
-
 const findId = get("Id");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
@@ -38,18 +39,19 @@ exports.AwsDistribution = ({ spec, config }) => {
       }),
       () => cloudfront.listDistributions(params).promise(),
       get("DistributionList.Items"),
-      map(async (distribution) => ({
-        ...distribution,
-        Tags: await pipe([
-          () =>
-            cloudfront
-              .listTagsForResource({
-                Resource: distribution.ARN,
-              })
-              .promise(),
-          get("Tags.Items"),
-        ])(),
-      })),
+      map(
+        assign({
+          Tags: pipe([
+            (distribution) =>
+              cloudfront
+                .listTagsForResource({
+                  Resource: distribution.ARN,
+                })
+                .promise(),
+            get("Tags.Items"),
+          ]),
+        })
+      ),
       (distributions) => ({
         total: distributions.length,
         items: distributions,
@@ -85,7 +87,11 @@ exports.AwsDistribution = ({ spec, config }) => {
     }),
   ]);
 
-  const isUpById = isUpByIdCore({ getById });
+  const isUpById = isUpByIdCore({
+    isInstanceUp: eq(get("Distribution.Status"), "Deployed"),
+    getById,
+  });
+
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#createDistributionWithTags-property
@@ -99,15 +105,29 @@ exports.AwsDistribution = ({ spec, config }) => {
       }),
       () => cloudfront.createDistributionWithTags(payload).promise(),
       tap((result) => {
-        logger.info(`distribution created: ${name}`);
         logger.debug(`created distribution: ${name}, result: ${tos(result)}`);
+      }),
+      findId,
+      tap((id) =>
+        retryCall({
+          name: `is distribution ${name} deployed ? name: ${name}`,
+          fn: () => isUpById({ id }),
+          isExpectedResult: (result) => {
+            return result;
+          },
+          retryCount: 6 * 60,
+          retryDelay: 10e3,
+        })
+      ),
+      tap((id) => {
+        logger.info(`distribution created: ${name}, id: ${id}`);
       }),
     ])();
 
   const update = ({ name, id, payload }) =>
     pipe([
       tap(() => {
-        logger.info(`update ${tos({ name, id })}`);
+        logger.info(`update distribution ${tos({ name, id })}`);
       }),
       () => cloudfront.getDistributionConfig({ Id: id }).promise(),
       (config) =>
@@ -124,14 +144,16 @@ exports.AwsDistribution = ({ spec, config }) => {
               })
               .promise(),
           tap((xxx) => {
-            logger.debug(`update `);
+            logger.debug(`updated distribution ${tos({ name, id })}`);
           }),
         ])(config),
       () =>
         retryCall({
-          name: `is distribution ${name} deployed ? : id: ${id}`,
-          fn: () => cloudfront.getDistribution({ Id: id }).promise(),
-          isExpectedResult: (result) => ["Deployed"].includes(result.Status),
+          name: `is distribution  updated ? : ${name} id: ${id}`,
+          fn: () => isUpById({ id }),
+          isExpectedResult: (result) => {
+            return result;
+          },
           retryCount: 6 * 60,
           retryDelay: 10e3,
         }),
@@ -150,6 +172,7 @@ exports.AwsDistribution = ({ spec, config }) => {
       () =>
         update({
           id,
+          name,
           payload: {
             DistributionConfig: {
               Enabled: false,
