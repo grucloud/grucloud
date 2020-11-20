@@ -1,7 +1,7 @@
 jobs:
   test:
     docker:
-      - image: "cimg/node:14.14"
+      - image: "cimg/node:14.15"
     steps:
       - checkout
       - node/install
