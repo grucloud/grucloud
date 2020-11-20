@@ -18,7 +18,7 @@ const testSsh = async ({ host, username = "ubuntu" }) =>
     const conn = new Client();
     conn
       .on("ready", function () {
-        console.log(`ssh to ${host} ok`);
+        //console.log(`ssh to ${host} ok`);
         conn.end();
         resolve();
       })
