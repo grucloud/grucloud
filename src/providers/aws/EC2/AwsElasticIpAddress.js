@@ -1,7 +1,7 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
-const { isEmpty } = require("rubico/x");
-const { defaultsDeep } = require("rubico/x");
+const { get, pipe, filter, map } = require("rubico");
+const { defaultsDeep, isEmpty } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "AwsEip" });
 const { tos } = require("../../../tos");
@@ -10,7 +10,7 @@ const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { findNameInTags } = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
-const { CheckTagsEC2 } = require("../AwsTagCheck");
+const { CheckAwsTags } = require("../AwsTagCheck");
 
 module.exports = AwsElasticIpAddress = ({ spec, config }) => {
   assert(spec);
@@ -19,12 +19,7 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
   const ec2 = new AWS.EC2();
 
   const findName = findNameInTags;
-  const findId = (item) => {
-    assert(item);
-    const id = item.AllocationId;
-    assert(id);
-    return id;
-  };
+  const findId = get("AllocationId");
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeAddresses-property
   const getList = async ({ params } = {}) => {
     logger.debug(`getList ${tos(params)}`);
@@ -65,7 +60,7 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
     });
     const eipLive = await getById({ id: AllocationId });
 
-    CheckTagsEC2({
+    CheckAwsTags({
       config,
       tags: eipLive.Tags,
       name,

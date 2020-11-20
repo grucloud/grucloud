@@ -3,7 +3,7 @@ const AWS = require("aws-sdk");
 const { ConfigLoader } = require("ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
-const { CheckTagsEC2 } = require("../../AwsTagCheck");
+const { CheckAwsTags } = require("../../AwsTagCheck");
 const logger = require("../../../../logger")({ prefix: "AwsVpc" });
 const { tos } = require("../../../../tos");
 
@@ -111,7 +111,7 @@ describe("AwsVpc", async function () {
     const vpcLive = await vpc.getLive();
     const { VpcId } = vpcLive;
 
-    CheckTagsEC2({
+    CheckAwsTags({
       config: provider.config(),
       tags: vpcLive.Tags,
       name: vpc.name,

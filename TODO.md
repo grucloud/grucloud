@@ -2,8 +2,6 @@
 
 ## Common:
 
-- S3Object tag phase undefineds
-
 - config command to display region project, service account etc ...
 - isMinion based on phase
 - run ci test with different phase

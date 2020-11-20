@@ -16,7 +16,7 @@ const logger = require("../../../logger")({ prefix: "S3Bucket" });
 const { retryExpectOk, retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { mapPoolSize } = require("../../Common");
-const { CheckTagsS3 } = require("../AwsTagCheck");
+const { CheckAwsTags } = require("../AwsTagCheck");
 const { buildTags } = require("../AwsCommon");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Bucket = ({ spec, config }) => {
@@ -414,7 +414,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         const { TagSet } = await s3.getBucketTagging({ Bucket }).promise();
         logger.debug(`putTags ${tos(TagSet)}`);
 
-        CheckTagsS3({
+        CheckAwsTags({
           config,
           tags: TagSet,
         });

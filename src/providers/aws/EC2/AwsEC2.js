@@ -11,7 +11,7 @@ const { tos } = require("../../../tos");
 const StateTerminated = ["terminated"];
 const { getByIdCore, findNameInTags, buildTags } = require("../AwsCommon");
 const { getField } = require("../../ProviderCommon");
-const { CheckTagsEC2 } = require("../AwsTagCheck");
+const { CheckAwsTags } = require("../AwsTagCheck");
 
 module.exports = AwsEC2 = ({ spec, config }) => {
   assert(spec);
@@ -22,12 +22,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
 
   const findName = findNameInTags;
 
-  const findId = (item) => {
-    assert(item);
-    const id = item.InstanceId;
-    assert(id);
-    return id;
-  };
+  const findId = get("InstanceId");
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
 
@@ -107,7 +102,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     assert(instanceUp, "instanceUp");
     assert(instanceUp.Tags, "instanceUp.Tags");
 
-    CheckTagsEC2({
+    CheckAwsTags({
       config,
       tags: instanceUp.Tags,
       name,

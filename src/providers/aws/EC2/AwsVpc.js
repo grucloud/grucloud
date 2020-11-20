@@ -1,7 +1,7 @@
 const AWS = require("aws-sdk");
 const { isEmpty } = require("rubico/x");
 const assert = require("assert");
-const { map, tap, pipe, filter } = require("rubico");
+const { get, map, tap, pipe, filter } = require("rubico");
 const logger = require("../../../logger")({ prefix: "AwsVpc" });
 const { tos } = require("../../../tos");
 const { retryExpectOk } = require("../../Retry");
@@ -9,7 +9,7 @@ const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { findNameInTags } = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
-const { CheckTagsEC2 } = require("../AwsTagCheck");
+const { CheckAwsTags } = require("../AwsTagCheck");
 
 module.exports = AwsVpc = ({ spec, config }) => {
   assert(spec);
@@ -18,12 +18,7 @@ module.exports = AwsVpc = ({ spec, config }) => {
   const ec2 = new AWS.EC2();
 
   const findName = findNameInTags;
-  const findId = (item) => {
-    assert(item);
-    const id = item.VpcId;
-    assert(id);
-    return id;
-  };
+  const findId = get("VpcId");
 
   const getList = async ({ params } = {}) => {
     logger.debug(`getList vpc ${tos(params)}`);
@@ -82,7 +77,7 @@ module.exports = AwsVpc = ({ spec, config }) => {
 
     const vpc = await getById({ id: VpcId });
 
-    CheckTagsEC2({
+    CheckAwsTags({
       config,
       tags: vpc.Tags,
       name: name,

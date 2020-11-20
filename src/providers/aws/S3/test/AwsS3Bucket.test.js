@@ -2,7 +2,7 @@ const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
-const { CheckTagsS3 } = require("../../AwsTagCheck");
+const { CheckAwsTags } = require("../../AwsTagCheck");
 
 describe("AwsS3Bucket", async function () {
   let config;
@@ -39,7 +39,7 @@ describe("AwsS3Bucket", async function () {
     assert(s3BucketLive);
     assert(!s3BucketLive.ACL);
 
-    CheckTagsS3({
+    CheckAwsTags({
       config: provider.config(),
       tags: s3BucketLive.Tags,
       name: s3Bucket.name,
