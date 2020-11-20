@@ -298,18 +298,6 @@ exports.AwsS3Object = ({ spec, config }) => {
   };
 };
 
-exports.isOurMinionS3Object = ({ resource, resourceNames = [], config }) => {
-  assert(resource);
-  const { managedByKey, managedByValue } = config;
-  const isMinion =
-    !!resource.Tags?.find(
-      (tag) => tag.Key === managedByKey && tag.Value === managedByValue
-    ) || resourceNames.includes(resource.Key);
-
-  logger.debug(`isOurMinion s3 object: isMinion ${isMinion}`);
-  return isMinion;
-};
-
 exports.compareS3Object = async ({ target, live }) => {
   logger.debug(`compare object`);
   const md5hash = live.Metadata?.md5hash;
