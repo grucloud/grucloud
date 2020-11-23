@@ -6,7 +6,7 @@ jobs:
       - checkout
       - node/install:
           node-version: "14.15"
-          npm-version: "6.14.9"
+          npm-version: "6.14.8"
       - run: npm install
       - run: node --version
       - run: openssl version
