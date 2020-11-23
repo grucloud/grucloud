@@ -842,7 +842,7 @@ const billingDisable = async ({ accessToken, projectId }) => {
   ])();
 };
 
-const info = async ({
+const info = ({
   config,
   gcloudConfig,
   projectId,
