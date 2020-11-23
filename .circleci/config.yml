@@ -5,8 +5,7 @@ jobs:
     steps:
       - checkout
       - node/install:
-        node-version: 14.15
-
+          node-version: 14.15
       - run: npm install
       - run: node --version
       - run: openssl version
