@@ -3,7 +3,6 @@
 ## Common:
 
 - config command to display region project, service account etc ...
-- isMinion based on phase
 - run ci test with different phase
 
 - add types to testPlanDestroy

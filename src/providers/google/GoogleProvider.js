@@ -155,6 +155,8 @@ const authorize = async ({
 
 const runGCloudCommand = tryCatch(
   ({ command }) => {
+    logger.debug(`runGCloudCommand: ${command}`);
+
     const { stdout, stderr, code } = shell.exec(command, { silent: true });
     if (code !== 0) {
       throw { message: `command '${command}' failed`, stdout, stderr, code };
@@ -981,8 +983,9 @@ const unInit = async ({
 };
 
 exports.GoogleProvider = ({ name = "google", config: configUser }) => {
-  const { projectName } = configUser;
-  assert(projectName, "missing projectName");
+  assert(configUser.projectName, "missing projectName");
+
+  const projectName = configUser.projectName(configUser);
 
   const gcloudConfig = getConfig();
 
@@ -991,7 +994,6 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
       managedByTag: "-managed-by-gru",
       managedByKey: "managed-by",
       managedByValue: "grucloud",
-      projectId: ProjectId({ projectName }),
     }),
     (config) => {
       if (gcloudConfig.config) {
@@ -1008,7 +1010,15 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
     },
   ])(configUser);
 
-  const { projectId } = config;
+  logger.debug(`config: ${tos(config)}`);
+  const projectId = switchCase([
+    () => configUser.projectId,
+    () => configUser.projectId(configUser),
+    () => ProjectId({ projectName }),
+  ])();
+
+  logger.debug(`projectId: ${projectId}`);
+
   const applicationCredentialsFile = ApplicationCredentialsFile({
     configDir: gcloudConfig.config?.paths.global_config_dir,
     projectId,
@@ -1032,8 +1042,6 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
     type: "google",
     name,
     config: defaultsDeep({
-      //Replace project with projectId
-      project: config.projectId,
       accessToken: () => serviceAccountAccessToken,
     })(config),
     fnSpecs,

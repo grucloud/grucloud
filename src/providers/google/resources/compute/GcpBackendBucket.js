@@ -10,7 +10,7 @@ exports.GcpBackendBucket = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const { project, managedByDescription } = config;
+  const { projectId, managedByDescription } = config;
 
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
@@ -27,7 +27,7 @@ exports.GcpBackendBucket = ({ spec, config }) => {
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${project}/global/backendBuckets`,
+    url: `/projects/${projectId(config)}/global/backendBuckets`,
     config: { ...config, repeatCount: 1 },
     configDefault,
     isUpByIdFactory,

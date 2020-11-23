@@ -1,4 +1,4 @@
 module.exports = () => ({
   domain: "grucloud.com.",
-  projectName: "github-page",
+  projectName: () => "github-page",
 });

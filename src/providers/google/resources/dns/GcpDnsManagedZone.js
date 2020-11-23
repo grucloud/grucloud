@@ -84,7 +84,7 @@ const filterNonDeletableRecords = ({ targetRecordSet, liveRecordSet }) =>
 
 // https://cloud.google.com/dns/docs/reference/v1/managedZones
 exports.GcpDnsManagedZone = ({ spec, config }) => {
-  const { project, managedByDescription } = config;
+  const { projectId, managedByDescription } = config;
 
   const configDefault = ({ name, properties }) =>
     defaultsDeep({
@@ -93,14 +93,12 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
       recordSet: [],
     })(properties);
 
-  const findName = (item) => {
-    assert(item.name, "item.name");
-    return item.name;
-  };
+  const findName = get("name");
+  const findId = findName;
 
   const axios = createAxiosMakerGoogle({
     baseURL: GCP_DNS_BASE_URL,
-    url: `/projects/${project}/managedZones`,
+    url: `/projects/${projectId(config)}/managedZones`,
     config,
   });
 
@@ -249,7 +247,7 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
   const update = async ({ name, payload, live, diff }) =>
     pipe([
       tap(() => {
-        logger.debug(`update ${name}, payload: ${tos(payload)}`);
+        logger.info(`update ${name}, payload: ${tos(payload)}`);
         assert(name, "name");
         assert(live, "live");
         assert(diff, "diff");
@@ -298,7 +296,7 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
               }),
             get("data"),
             tap((result) => {
-              logger.debug(`update ${result}`);
+              logger.info(`update ${result}`);
             }),
           ]),
           (error) => {
@@ -313,7 +311,7 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
     tryCatch(
       pipe([
         tap(() => {
-          logger.debug(`destroy ${name}`);
+          logger.info(`destroy ${name}`);
         }),
         () =>
           retryCallOnError({
@@ -360,7 +358,7 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
           }),
         get("data"),
         tap((result) => {
-          logger.debug(`destroy`);
+          logger.info(`destroyed`);
         }),
       ]),
       (error) => {
@@ -368,8 +366,6 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
         throw axiosErrorToJSON(error);
       }
     )();
-
-  const findId = (item) => item.name;
 
   const getByName = ({ provider, name }) =>
     getByNameCore({ provider, name, getList, findName });

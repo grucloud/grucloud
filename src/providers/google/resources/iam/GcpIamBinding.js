@@ -10,10 +10,7 @@ const { tos } = require("../../../../tos");
 const { axiosErrorToJSON, logError } = require("../../../Common");
 const { createAxiosMakerGoogle } = require("../../GoogleCommon");
 
-const findName = ({ role }) => {
-  assert(role);
-  return role;
-};
+const findName = get("role");
 const findId = findName;
 
 const isOurMinionIamBinding = ({ resource, resourceNames }) => {
@@ -33,11 +30,11 @@ exports.isOurMinionIamBinding = isOurMinionIamBinding;
 exports.GcpIamBinding = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  const { project } = config;
+  const { projectId } = config;
 
   const axios = createAxiosMakerGoogle({
     baseURL: `https://cloudresourcemanager.googleapis.com/v1`,
-    url: `/projects/${project}`,
+    url: `/projects/${projectId(config)}`,
     config,
   });
 

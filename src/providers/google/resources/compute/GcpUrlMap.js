@@ -10,7 +10,7 @@ exports.GcpUrlMap = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const { project, managedByDescription } = config;
+  const { projectId, managedByDescription } = config;
 
   const configDefault = ({ name, properties, dependencies }) => {
     const { service } = dependencies;
@@ -24,7 +24,7 @@ exports.GcpUrlMap = ({ spec, config }) => {
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${project}/global/urlMaps`,
+    url: `/projects/${projectId(config)}/global/urlMaps`,
     config,
     configDefault,
   });

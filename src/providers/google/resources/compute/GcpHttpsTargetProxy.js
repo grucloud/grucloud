@@ -11,7 +11,7 @@ exports.GcpHttpsTargetProxy = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const { project, managedByDescription } = config;
+  const { projectId, managedByDescription } = config;
 
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
@@ -27,7 +27,9 @@ exports.GcpHttpsTargetProxy = ({ spec, config }) => {
     return defaultsDeep({
       name,
       description: managedByDescription,
-      urlMap: `projects/${project}/global/urlMaps/${urlMap.resource.name}`,
+      urlMap: `projects/${projectId(config)}/global/urlMaps/${
+        urlMap.resource.name
+      }`,
       sslCertificates: [getField(sslCertificate, "selfLink")],
     })(properties);
   };
@@ -35,7 +37,7 @@ exports.GcpHttpsTargetProxy = ({ spec, config }) => {
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${project}/global/targetHttpsProxies`,
+    url: `/projects/${projectId(config)}/global/targetHttpsProxies`,
     config,
     isUpByIdFactory,
     configDefault,

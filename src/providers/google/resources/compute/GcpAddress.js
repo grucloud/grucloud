@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const logger = require("../../../../logger")({ prefix: "GcpAddress" });
@@ -12,7 +13,7 @@ module.exports = GcpAddress = ({ spec, config }) => {
   assert(spec);
   assert(config);
   assert(config.stage);
-  const { project, region, managedByDescription } = config;
+  const { projectId, region, managedByDescription } = config;
 
   const configDefault = ({ name, properties }) =>
     defaultsDeep({
@@ -20,20 +21,16 @@ module.exports = GcpAddress = ({ spec, config }) => {
       description: managedByDescription,
     })(properties);
 
-  const isInstanceUp = (instance) => {
-    return !!instance.address;
-  };
-
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
-      isInstanceUp,
+      isInstanceUp: get("address"),
       getById,
     });
 
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${project}/regions/${region}/addresses/`,
+    url: `/projects/${projectId(config)}/regions/${region}/addresses/`,
     config,
     isUpByIdFactory,
     configDefault,

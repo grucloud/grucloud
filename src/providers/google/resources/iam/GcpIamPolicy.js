@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, map, get, filter } = require("rubico");
+const { pipe, tap, map, get, filter, tryCatch } = require("rubico");
 
 const { first, find } = require("rubico/x");
 const { retryCallOnError } = require("../../../Retry");
@@ -13,14 +13,14 @@ const { createAxiosMakerGoogle } = require("../../GoogleCommon");
 exports.GcpIamPolicy = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  const { project } = config;
+  const { projectId } = config;
 
   const findName = () => "policy";
   const findId = () => "policy";
 
   const axios = createAxiosMakerGoogle({
     baseURL: `https://cloudresourcemanager.googleapis.com/v1`,
-    url: `/projects/${project}`,
+    url: `/projects/${projectId(config)}`,
     config,
   });
 
@@ -47,23 +47,25 @@ exports.GcpIamPolicy = ({ spec, config }) => {
       }),
     ])(live.bindings);
 
-  const getList = async () => {
-    try {
-      const result = await retryCallOnError({
-        name: `getList type: ${spec.type}`,
-        fn: async () =>
-          await axios.request(":getIamPolicy", {
-            method: "POST",
-          }),
-        config,
-      });
-
-      return { total: 1, items: [result.data] };
-    } catch (error) {
+  const getList = tryCatch(
+    pipe([
+      () =>
+        retryCallOnError({
+          name: `getList getIamPolicy`,
+          fn: () =>
+            axios.request(":getIamPolicy", {
+              method: "POST",
+            }),
+          config,
+        }),
+      get("data"),
+      (data) => ({ total: 1, items: [data] }),
+    ]),
+    (error) => {
       logError(`getList`, error);
       throw axiosErrorToJSON(error);
     }
-  };
+  );
 
   const getByName = pipe([
     tap(() => {
@@ -82,9 +84,9 @@ exports.GcpIamPolicy = ({ spec, config }) => {
     }),
     ({ payload }) =>
       retryCallOnError({
-        name: `update type: ${spec.type}`,
-        fn: async () =>
-          await axios.request(":setIamPolicy", {
+        name: `setIamPolicy`,
+        fn: () =>
+          axios.request(":setIamPolicy", {
             method: "POST",
             data: payload,
           }),
@@ -94,6 +96,7 @@ exports.GcpIamPolicy = ({ spec, config }) => {
       console.log("updated");
     }),
   ]);
+
   return {
     spec,
     config,
