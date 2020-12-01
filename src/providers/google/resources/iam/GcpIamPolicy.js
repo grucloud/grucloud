@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { pipe, tap, map, get, filter, tryCatch } = require("rubico");
-const { compareArray } = require("../../../../Utils");
 const {
   find,
   first,

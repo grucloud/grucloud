@@ -2,7 +2,6 @@
 
 ## Common:
 
-- remove compare
 - config command to display region project, service account etc ...
 - run ci test with different phase
 

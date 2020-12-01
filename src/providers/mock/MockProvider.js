@@ -6,7 +6,6 @@ const MockClient = require("./MockClient");
 const MockCloud = require("./MockCloud");
 
 const CoreProvider = require("../CoreProvider");
-const compare = require("../../Utils").compare;
 const { isOurMinion } = require("./MockTag");
 const { toTagName } = require("../TagName");
 const { createAxiosMock } = require("./MockAxios");
