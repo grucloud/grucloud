@@ -10,7 +10,7 @@ describe("AwsEC2", async function () {
   let provider;
   let server;
   let keyPair;
-
+  const types = ["Instance"];
   const keyPairName = "kp";
   const serverName = "web-server";
 
@@ -47,21 +47,8 @@ describe("AwsEC2", async function () {
     assert.equal(config.MinCount, 1);
     assert.equal(config.KeyName, keyPair.name);
   });
-  it("server resolveDependencies", async function () {
-    const dependencies = await server.resolveDependencies();
-    assert(dependencies.keyPair);
-  });
-  it.skip("plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.destroy.length, 0);
-    assert.equal(plan.newOrUpdate.length, 1);
-  });
-  it.skip("listLives all", async function () {
-    const { results: lives } = await provider.listLives({ all: true });
-    assert(lives);
-  });
   it.skip("ec2 apply plan", async function () {
-    await testPlanDeploy({ provider });
+    await testPlanDeploy({ provider, types });
 
     const serverLive = await server.getLive();
 
@@ -80,6 +67,6 @@ describe("AwsEC2", async function () {
 
     assert.equal(serverLive.VpcId, vpcDefault.data.VpcId);
 
-    await testPlanDestroy({ provider, full: false });
+    await testPlanDestroy({ provider, types, full: false });
   });
 });

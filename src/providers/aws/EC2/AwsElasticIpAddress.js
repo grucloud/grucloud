@@ -95,7 +95,6 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
     getByName,
     getById,
     findName,
-    cannotBeDeleted: () => false,
     getList,
     create,
     destroy,

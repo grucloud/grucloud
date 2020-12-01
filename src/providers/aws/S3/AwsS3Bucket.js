@@ -758,7 +758,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     findId,
     getByName,
     getById,
-    cannotBeDeleted: () => false,
     findName,
     create,
     destroy,

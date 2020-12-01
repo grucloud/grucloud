@@ -288,7 +288,6 @@ exports.AwsS3Object = ({ spec, config }) => {
     findId,
     getByName,
     getById,
-    cannotBeDeleted: () => false,
     findName,
     create,
     update: create,
@@ -303,16 +302,16 @@ exports.compareS3Object = async ({ target, live }) => {
   const md5hash = live.Metadata?.md5hash;
   if (!md5hash) {
     logger.debug(`no md5 hash for ${tos(live)}`);
-    return [];
+    return {};
   }
   if (target.source) {
     const md5 = await md5FileBase64(target.source);
 
     if (md5hash !== md5) {
       logger.debug(`object are different`);
-      return [{ type: "DIFF", target, live }];
+      return { updated: target };
     }
   }
 
-  return [];
+  return {};
 };

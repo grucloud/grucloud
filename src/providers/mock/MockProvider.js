@@ -123,17 +123,6 @@ const fnSpecs = (config) => {
         diskSizeGb: "10",
         diskType: "pd-standard",
       },
-
-      compare: ({ target, live }) => {
-        logger.debug(`compare server`);
-        const diff = compare({
-          target,
-          targetKeys: ["machineType"],
-          live,
-        });
-        logger.debug(`compare ${tos(diff)}`);
-        return diff;
-      },
       isOurMinion,
     },
   ];

@@ -2,11 +2,11 @@
 
 ## Common:
 
+- remove compare
 - config command to display region project, service account etc ...
 - run ci test with different phase
 
 - add types to testPlanDestroy
-- add default cannotBeDeleted
 - PROMPT='%4~ %# '
 - displayPlan error
 - add a delete summary
@@ -42,6 +42,7 @@
 
 ## TODO Aws:
 
+- get index.html from cloudfront domain name
 - invalidate cloufront cache
 - CF priceClass 100
 - CallerReference distribution

@@ -9,7 +9,6 @@ const { getByNameCore, findField } = require("../../Common");
 module.exports = AwsClientKeyPair = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  logger.info(`${tos(config)}`);
 
   const ec2 = new AWS.EC2();
 

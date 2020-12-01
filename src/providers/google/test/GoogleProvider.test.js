@@ -21,7 +21,6 @@ describe("GoogleProvider", async function () {
       this.skip();
     }
     provider = GoogleProvider({
-      name: "google",
       config: config.google,
     });
 
@@ -72,7 +71,7 @@ describe("GoogleProvider", async function () {
 
   it("gcp server resolveConfig ", async function () {
     const config = await server.resolveConfig();
-    const { project, zone } = provider.config();
+    const { projectId, zone } = provider.config();
     assert.equal(
       config.machineType,
       `projects/${projectId(

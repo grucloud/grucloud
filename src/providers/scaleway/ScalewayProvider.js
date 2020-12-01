@@ -56,6 +56,7 @@ const fnSpecs = (config) => {
         }),
       type: "Bootscript",
       listOnly: true,
+      listHide: true,
     },
     {
       Client: ({ spec }) =>
@@ -70,6 +71,7 @@ const fnSpecs = (config) => {
         }),
       type: "Image",
       listOnly: true,
+      listHide: true,
     },
     {
       Client: ({ spec }) =>

@@ -50,7 +50,7 @@ exports.compare = ({ target = {}, targetKeys = [], live = {} }) => {
           key: targetKey,
           type: "NEW",
           targetValue,
-          liveValue: undefined,
+          liveValue: liveValue,
         };
       }
 

@@ -122,17 +122,6 @@ module.exports = (config) => {
         sourceImage:
           "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
       },
-      //TODO move inside VmInstance
-      compare: ({ target, live }) => {
-        logger.debug(`compare server`);
-        const diff = compare({
-          target,
-          targetKeys: [], //TODO
-          live,
-        });
-        logger.debug(`compare ${tos(diff)}`);
-        return diff;
-      },
       isOurMinion,
     },
   ];

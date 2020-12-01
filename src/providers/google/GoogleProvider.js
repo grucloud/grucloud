@@ -125,32 +125,44 @@ const authorize = async ({
       serviceAccountName: ServiceAccountName,
     });
   }
-  const keys = require(applicationCredentialsFile);
-  logger.info(
-    `authorize with email: ${keys.client_email}, keyId: ${keys.private_key_id}`
-  );
-  assert(keys.private_key, "keys.private_key");
-  const client = new JWT({
-    email: keys.client_email,
-    key: keys.private_key,
-    scopes: ["https://www.googleapis.com/auth/cloud-platform"],
-  });
 
-  const accessToken = await new Promise((resolve, reject) => {
-    client.authorize((err, response) => {
-      if (err) {
-        logger.error(`authorize error with ${keys.client_email}`);
-        logger.error(tos(err));
-        return reject(err);
-      }
-      if (response?.access_token) {
-        resolve(response.access_token);
-      } else {
-        reject("Cannot get access_token");
-      }
-    });
-  });
-  return accessToken;
+  return pipe([
+    () => fs.readFile(applicationCredentialsFile, "utf-8"),
+    (content) => JSON.parse(content),
+    tap((keys) => {
+      logger.info(
+        `authorize with email: ${keys.client_email}, keyId: ${keys.private_key_id}`
+      );
+      assert(keys.private_key, "keys.private_key");
+    }),
+    (keys) =>
+      pipe([
+        () =>
+          new JWT({
+            email: keys.client_email,
+            key: keys.private_key,
+            scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+          }),
+        (client) =>
+          new Promise((resolve, reject) => {
+            client.authorize((err, response) => {
+              if (err) {
+                logger.error(`authorize error with ${keys.client_email}`);
+                logger.error(tos(err));
+                return reject(err);
+              }
+              if (response?.access_token) {
+                resolve(response.access_token);
+              } else {
+                reject("Cannot get access_token");
+              }
+            });
+          }),
+      ])(),
+    tap((token) => {
+      logger.debug(`authorized ${token}`);
+    }),
+  ])();
 };
 
 const runGCloudCommand = tryCatch(
@@ -930,7 +942,7 @@ const unInit = async ({
   projectName,
   applicationCredentialsFile,
   serviceAccountName,
-  options,
+  options = {},
 }) => {
   if (!gcloudConfig.config) {
     console.error(`gcloud is not installed, setup aborted`);

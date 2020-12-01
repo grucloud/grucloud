@@ -10,6 +10,13 @@ Provides a Cloud Front distribution.
 ```js
 const domainName = "your.domain.name.com";
 
+const certificate = await providerUsEast.makeCertificate({
+  name: `certificate-${domainName}`,
+  properties: () => ({
+    DomainName: domainName,
+  }),
+});
+
 const websiteBucket = await provider.makeS3Bucket({
   name: `${domainName}-bucket`,
   properties: () => ({
@@ -27,12 +34,14 @@ const websiteBucket = await provider.makeS3Bucket({
 
 const distribution = await provider.makeCloudFrontDistribution({
   name: `distribution-${domainName}`,
-  dependencies: { websiteBucket },
+  dependencies: { websiteBucket, certificate },
   properties: ({ dependencies }) => {
     return {
       DistributionConfigWithTags: {
         DistributionConfig: {
           Comment: `${domainName}.s3.amazonaws.com`,
+          Aliases: { Quantity: 1, Items: [domainName] },
+          DefaultRootObject: "index.html",
           DefaultCacheBehavior: {
             TargetOriginId: `S3-${domainName}`,
             ViewerProtocolPolicy: "redirect-to-https",

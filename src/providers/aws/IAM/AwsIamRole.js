@@ -91,9 +91,6 @@ exports.AwsIamRole = ({ spec, config }) => {
               await iam.listRoleTags({ RoleName: role.RoleName }).promise()
             ).Tags,
           }),
-          tap((role) => {
-            logger.debug(role);
-          }),
         ])
       ),
       (roles) => ({

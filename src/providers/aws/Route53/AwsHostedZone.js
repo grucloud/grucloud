@@ -12,14 +12,19 @@ const {
   assign,
   fork,
   or,
+  not,
+  eq,
   omit,
+  and,
 } = require("rubico");
 const {
   find,
+  pluck,
   defaultsDeep,
   isEmpty,
   differenceWith,
   isDeepEqual,
+  flatten,
 } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "HostedZone" });
@@ -34,22 +39,26 @@ const {
 } = require("../../Common");
 const { buildTags } = require("../AwsCommon");
 
+const getNewCallerReference = () => `grucloud-${new Date()}`;
+
 //Check for the final dot
 const findName = (item) => item.Name;
-
+const canDeleteRecord = (zoneName) =>
+  not(
+    and([
+      (record) => ["NS", "SOA"].includes(record.Type),
+      eq(get("Name"), zoneName),
+    ])
+  );
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsHostedZone = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
   const route53 = new AWS.Route53();
+  const route53domains = new AWS.Route53Domains();
 
-  const findId = (item) => {
-    assert(item);
-    const id = item.Id;
-    assert(id);
-    return id;
-  };
+  const findId = get("Id");
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZones-property
   const getList = async ({ params } = {}) =>
@@ -118,55 +127,134 @@ exports.AwsHostedZone = ({ spec, config }) => {
   const isUpById = isUpByIdCore({ getById });
   const isDownById = isDownByIdCore({ getById });
 
+  const createReusableDelegationSet = pipe([
+    () =>
+      route53
+        .createReusableDelegationSet({
+          CallerReference: getNewCallerReference(),
+        })
+        .promise(),
+    get("DelegationSet.Id"),
+    (DelegationSetId) => DelegationSetId.replace("/delegationset/", ""),
+    tap((DelegationSetId) => {
+      logger.debug(`create DelegationSet: ${DelegationSetId}`);
+    }),
+  ]);
+
+  const findOrCreateReusableDelegationSet = pipe([
+    tap(() => {
+      logger.info(`findOrCreateReusableDelegationSet`);
+    }),
+    getList,
+    get("items"),
+    pluck("Tags"),
+    filter(not(isEmpty)),
+    flatten,
+    find(eq(get("Key"), "DelegationSetId")),
+    get("Value"),
+    tap((DelegationSetId) => {
+      logger.debug(`findOrCreateReusableDelegationSet ${DelegationSetId}`);
+    }),
+    switchCase([
+      (DelegationSetId) => DelegationSetId,
+      (DelegationSetId) => DelegationSetId,
+      createReusableDelegationSet,
+    ]),
+  ]);
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#createHostedZone-property
-  const create = async ({ name, payload = {} }) =>
+  const create = async ({
+    name,
+    payload = {},
+    resolvedDependencies: { domain },
+  }) =>
     pipe([
       tap(() => {
         assert(name);
         assert(payload);
-        logger.info(`create hosted zone: ${name}, ${tos(payload)}`);
-      }),
-      () =>
-        route53
-          .createHostedZone(pick(["Name", "CallerReference"])(payload))
-          .promise(),
-      tap(({ HostedZone }) => {
-        logger.debug(
-          `created hosted zone: ${name}, result: ${tos(HostedZone)}`
+        logger.info(
+          `create hosted zone: ${name}, ${tos(payload)}, ${tos({
+            domain,
+          })}`
         );
       }),
-      tap(({ HostedZone }) =>
-        route53
-          .changeTagsForResource({
-            ResourceId: HostedZone.Id,
-            AddTags: buildTags({ name, config }),
-            ResourceType: "hostedzone",
-          })
-          .promise()
-      ),
-      tap(({ HostedZone }) =>
+      findOrCreateReusableDelegationSet,
+      (DelegationSetId) =>
         pipe([
-          map((ResourceRecordSet) => ({
-            Action: "CREATE",
-            ResourceRecordSet,
-          })),
-          tap.if(
-            (Changes) => !isEmpty(Changes),
-            (Changes) =>
-              route53
-                .changeResourceRecordSets({
-                  HostedZoneId: HostedZone.Id,
-                  ChangeBatch: {
-                    Changes,
-                  },
-                })
-                .promise()
+          () =>
+            route53
+              .createHostedZone({
+                Name: payload.Name,
+                CallerReference: getNewCallerReference(),
+                DelegationSetId,
+              })
+              .promise(),
+          tap((result) => {
+            logger.debug(
+              `created hosted zone: ${name}, result: ${tos(result)}`
+            );
+          }),
+          tap(({ HostedZone }) =>
+            route53
+              .changeTagsForResource({
+                ResourceId: HostedZone.Id,
+                AddTags: [
+                  ...buildTags({ name, config }),
+                  { Key: "DelegationSetId", Value: DelegationSetId },
+                ],
+                ResourceType: "hostedzone",
+              })
+              .promise()
           ),
-        ])(payload.RecordSet)
-      ),
-      tap(({ HostedZone }) => {
-        logger.debug(`created done`);
-      }),
+          tap(({ HostedZone }) =>
+            pipe([
+              map((ResourceRecordSet) => ({
+                Action: "CREATE",
+                ResourceRecordSet,
+              })),
+              tap.if(not(isEmpty), (Changes) =>
+                route53
+                  .changeResourceRecordSets({
+                    HostedZoneId: HostedZone.Id,
+                    ChangeBatch: {
+                      Changes,
+                    },
+                  })
+                  .promise()
+              ),
+            ])(payload.RecordSet)
+          ),
+          tap.if(
+            ({ DelegationSet }) =>
+              domain &&
+              !isEmpty(
+                differenceWith(
+                  isDeepEqual,
+                  DelegationSet.NameServers
+                )(domain.live.Nameservers)
+              ),
+            pipe([
+              get("DelegationSet.NameServers"),
+              tap((NameServers) => {
+                logger.debug(`updateDomainNameservers ${NameServers}`);
+              }),
+              map((nameserver) => ({ Name: nameserver })),
+              (Nameservers) =>
+                route53domains
+                  .updateDomainNameservers({
+                    DomainName: domain.live.DomainName,
+                    Nameservers,
+                  })
+                  .promise(),
+              tap(({ OperationId }) => {
+                logger.debug(`updateDomainNameservers ${tos({ OperationId })}`);
+              }),
+            ])
+          ),
+          tap((HostedZone) => {
+            logger.debug(`created done`);
+          }),
+        ])(),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#deleteHostedZone-property
@@ -175,6 +263,7 @@ exports.AwsHostedZone = ({ spec, config }) => {
       tap(() => {
         logger.debug(`destroy ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
+        assert(name, "destroy name");
       }),
       () =>
         route53
@@ -186,10 +275,10 @@ exports.AwsHostedZone = ({ spec, config }) => {
       tap((ResourceRecordSet) => {
         logger.debug(`destroy ${tos(ResourceRecordSet)}`);
       }),
-      filter((record) => !["NS", "SOA"].includes(record.Type)),
+      filter(canDeleteRecord(name)),
       map((ResourceRecordSet) => ({
         Action: "DELETE",
-        ResourceRecordSet,
+        ResourceRecordSet: filterEmptyResourceRecords(ResourceRecordSet),
       })),
       tap((Changes) => {
         logger.debug(`destroy ${tos(Changes)}`);
@@ -224,6 +313,12 @@ exports.AwsHostedZone = ({ spec, config }) => {
       }),
     ])();
 
+  const filterEmptyResourceRecords = switchCase([
+    pipe([get("ResourceRecords"), isEmpty]),
+    omit(["ResourceRecords"]),
+    (ResourceRecordSet) => ResourceRecordSet,
+  ]);
+
   const update = async ({ name, live, diff }) =>
     pipe([
       tap(() => {
@@ -242,7 +337,9 @@ exports.AwsHostedZone = ({ spec, config }) => {
             () => [
               ...map((ResourceRecordSet) => ({
                 Action: "DELETE",
-                ResourceRecordSet,
+                ResourceRecordSet: filterEmptyResourceRecords(
+                  ResourceRecordSet
+                ),
               }))(diff.deletions),
               ...map((ResourceRecordSet) => ({
                 Action: "CREATE",
@@ -274,10 +371,10 @@ exports.AwsHostedZone = ({ spec, config }) => {
     ])();
 
   const configDefault = async ({ name, properties, dependencies }) => {
-    const CallerReference = `grucloud-${name}-${new Date()}`;
-    return defaultsDeep({ Name: name, CallerReference, RecordSet: [] })(
-      properties
-    );
+    return defaultsDeep({
+      Name: name,
+      RecordSet: [],
+    })(properties);
   };
 
   return {
@@ -288,7 +385,6 @@ exports.AwsHostedZone = ({ spec, config }) => {
     findId,
     getByName,
     getById,
-    cannotBeDeleted: () => false,
     findName,
     create,
     update,
@@ -298,34 +394,14 @@ exports.AwsHostedZone = ({ spec, config }) => {
   };
 };
 
-const filterNonDeletableRecords = ({ targetRecordSet, liveRecordSet }) =>
-  pipe([
-    () =>
-      filter(
-        (type) =>
-          !find((targetRecord) => targetRecord.Type === type)(targetRecordSet)
-      )(["SOA", "NS"]),
-    tap((types) => {
-      logger.debug(`filterNonDeletableRecords: types: ${types}`);
-    }),
-    (types) => filter((record) => !types.includes(record.Type))(liveRecordSet),
-    tap((liveRecordSet) => {
-      logger.debug(`filterNonDeletableRecords: ${tos(liveRecordSet)}`);
-    }),
-  ])();
-
-exports.compareHostedZone = async ({ target, live }) =>
+exports.compareHostedZone = async ({ target, live, dependencies }) =>
   pipe([
     tap(() => {
-      logger.debug(`compareHostedZone ${tos({ target, live })}`);
+      logger.debug(`compareHostedZone ${tos({ target, live, dependencies })}`);
       assert(target.RecordSet, "target.recordSet");
       assert(live.RecordSet, "live.recordSet");
     }),
-    () =>
-      filterNonDeletableRecords({
-        targetRecordSet: target.RecordSet,
-        liveRecordSet: live.RecordSet,
-      }),
+    () => filter(canDeleteRecord(target.Name))(live.RecordSet),
     fork({
       additions: (liveRecordSet) =>
         differenceWith(isDeepEqual, target.RecordSet)(liveRecordSet),

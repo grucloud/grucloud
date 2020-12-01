@@ -384,6 +384,5 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
     getById,
     isDownById,
     findId,
-    cannotBeDeleted: () => false,
   };
 };

@@ -50,13 +50,13 @@ gc init
 Now it is time to edit the infrastructure **iac.js** file that describes the architecture:
 
 ```js
-const GoogleProvider = require("@grucloud/core").GoogleProvider;
+const { GoogleProvider } = require("@grucloud/core");
 
 const config = require("./config");
 
 exports.createStack = async ({ options }) => {
   // Create GCP provider
-  const provider = GoogleProvider({ name: "google" }, config);
+  const provider = GoogleProvider({ config });
   // Allocate public Ip address
   const ip = await provider.makeAddress({ name: "ip-webserver" });
   // Allocate a server

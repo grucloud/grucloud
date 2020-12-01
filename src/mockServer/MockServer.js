@@ -71,6 +71,8 @@ exports.MockServer = (config) => {
         const {
           params: { id },
         } = context;
+        logger.debug(`get ${path}, id: ${id}`);
+
         const mapResources = mapRoutes.get(path);
         if (mapResources.has(id)) {
           context.body = {
@@ -106,6 +108,8 @@ exports.MockServer = (config) => {
         const { body } = request;
         const mapResources = mapRoutes.get(path);
         const id = shortid.generate();
+        logger.debug(`post path: ${path}, id: ${id}`);
+
         mapResources.set(id, { id, ...body });
         //TODO hook to transform input into created object
         context.body = { id, data: mapResources.get(id) };

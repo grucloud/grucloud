@@ -109,13 +109,12 @@ describe("AwsProvider", async function () {
   after(async () => {});
   it("aws server resolveConfig", async function () {
     assert.equal(server.name, serverName);
-
     const config = await server.resolveConfig();
     assert.equal(config.ImageId, "ami-0917237b4e71c5759");
     assert.equal(config.InstanceType, "t2.micro");
     assert.equal(config.MaxCount, 1);
     assert.equal(config.MinCount, 1);
-    assert.equal(config.KeyName, keyPair.name);
+    //assert.equal(config.KeyName, keyPair.name);
     assert.equal(
       config.NetworkInterfaces[0].SubnetId,
       notAvailable(subnetName, "SubnetId")
@@ -126,7 +125,9 @@ describe("AwsProvider", async function () {
     );
   });
   it("server resolveDependencies", async function () {
-    const dependencies = await server.resolveDependencies();
+    const dependencies = await server.resolveDependencies({
+      dependenciesMustBeUp: false,
+    });
     assert(dependencies.subnet);
     assert.equal(dependencies.subnet.resource.name, subnetName);
     //assert(dependencies.subnet.live);

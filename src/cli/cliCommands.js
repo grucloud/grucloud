@@ -1102,8 +1102,7 @@ const DoCommand = ({ commandOptions, command }) =>
       filterProvidersByName({ commandOptions, providers })(providers),
     map(
       tryCatch(
-        async (provider) =>
-          await provider[command]({ options: commandOptions }),
+        (provider) => provider[command]({ options: commandOptions }),
         (error, provider) => {
           return { error, provider: provider.toString() };
         }

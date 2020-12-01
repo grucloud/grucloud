@@ -4,19 +4,14 @@ const { retryCallOnError, retryCall } = require("@grucloud/core").Retry;
 const Axios = require("axios");
 const { pipe, get } = require("rubico");
 const { first, find } = require("rubico/x");
-
+const { makeDomainName } = require("./iac");
 const checkDigResult = ({ type, digResult, liveRecordSet }) => {
   if (!digResult.answer) {
     return false;
   }
   const entryAnswer = find((answer) => answer.type === type)(digResult.answer);
-  const entryExpected = find((liveRecord) => liveRecord.Type === type)(
-    liveRecordSet
-  );
 
-  return (
-    entryAnswer && entryAnswer.value === entryExpected.ResourceRecord[0].Value
-  );
+  return !!entryAnswer?.value;
 };
 
 const checkDig = async ({ nameServer, domain, type = "A", hostedZoneLive }) => {
@@ -41,9 +36,13 @@ const checkDig = async ({ nameServer, domain, type = "A", hostedZoneLive }) => {
 };
 
 module.exports = ({ resources, provider }) => {
-  const { DomainName } = provider.config();
+  const { DomainName, stage } = provider.config();
   assert(DomainName);
-  const bucketUrl = `https://${DomainName}`;
+  const domainName = makeDomainName({
+    DomainName,
+    stage,
+  });
+  const bucketUrl = `https://${domainName}`;
   const bucketStorageUrl = `http://${resources.websiteBucket.name}.s3.amazonaws.com`;
   const bucketUrlIndex = `${bucketStorageUrl}/index.html`;
   const bucketUrl404 = `${bucketStorageUrl}/404.html`;
@@ -72,6 +71,10 @@ module.exports = ({ resources, provider }) => {
               fn: () => axios.get(bucketUrlIndex),
               shouldRetryOnException: (error) => {
                 return [404].includes(error.response?.status);
+              },
+              isExpectedResult: (result) => {
+                assert(result.headers["content-type"], `text/html`);
+                return [200].includes(result.status);
               },
               config: { retryCount: 20, retryDelay: 5e3 },
             });
@@ -106,13 +109,12 @@ module.exports = ({ resources, provider }) => {
         {
           name: `ssl certificate ready`,
           command: async ({ sslCertificateLive }) => {
-            //TODO find Status
-            assert.equal(sslCertificateLive.Status, "READY");
+            assert.equal(sslCertificateLive.Status, "ISSUED");
           },
         },
 
         {
-          name: `dig nameservers from RecordSet ${DomainName}`,
+          name: `dig nameservers from RecordSet ${domainName}`,
           command: async ({ hostedZoneLive }) => {
             const nameServer = pipe([
               find((record) => record.Type === "NS"),
@@ -122,16 +124,16 @@ module.exports = ({ resources, provider }) => {
             ])(hostedZoneLive.RecordSet);
             await checkDig({
               nameServer,
-              domain: DomainName,
+              domain: domainName,
               hostedZoneLive,
             });
           },
         },
         {
-          name: `dig default nameserver ${DomainName}`,
+          name: `dig default nameserver ${domainName}`,
           command: async ({ hostedZoneLive }) => {
             await checkDig({
-              domain: DomainName,
+              domain: domainName,
               hostedZoneLive,
             });
           },
@@ -144,6 +146,13 @@ module.exports = ({ resources, provider }) => {
               fn: () => axios.get(bucketUrl),
               shouldRetryOnException: (error) => {
                 return [404].includes(error.response?.status);
+              },
+              isExpectedResult: (result) => {
+                assert.equal(
+                  result.headers["content-type"],
+                  `application/html`
+                );
+                return [200].includes(result.status);
               },
               config: { retryCount: 20, retryDelay: 5e3 },
             });

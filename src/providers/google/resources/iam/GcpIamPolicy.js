@@ -1,7 +1,16 @@
 const assert = require("assert");
 const { pipe, tap, map, get, filter, tryCatch } = require("rubico");
-
-const { first, find } = require("rubico/x");
+const { compareArray } = require("../../../../Utils");
+const {
+  find,
+  first,
+  pluck,
+  defaultsDeep,
+  isEmpty,
+  differenceWith,
+  isDeepEqual,
+  flatten,
+} = require("rubico/x");
 const { retryCallOnError } = require("../../../Retry");
 
 const logger = require("../../../../logger")({ prefix: "GcpIamPolicy" });
@@ -109,3 +118,13 @@ exports.GcpIamPolicy = ({ spec, config }) => {
     cannotBeDeleted: () => true,
   };
 };
+
+exports.compareIamPolicy = pipe([
+  ({ target, live }) => ({
+    added: differenceWith(isDeepEqual, target.policy.bindings)(live.bindings),
+    deleted: differenceWith(isDeepEqual, live.bindings)(target.policy.bindings),
+  }),
+  tap((diff) => {
+    logger.debug(`compareIamPolicy ${tos(diff)}`);
+  }),
+]);

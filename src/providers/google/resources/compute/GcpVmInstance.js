@@ -42,9 +42,9 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
     const config = defaultsDeep({
       kind: "compute#instance",
       name,
-      zone: `projects/${projectId(config)}/zones/${zone}`,
+      zone: `projects/${projectId(configProvider)}/zones/${zone}`,
       machineType: `projects/${projectId(
-        config
+        configProvider
       )}/zones/${zone}/machineTypes/${machineType}`,
       labels: buildLabel(configProvider),
       metadata: defaultsDeep({
@@ -62,7 +62,7 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
           initializeParams: {
             sourceImage,
             diskType: `projects/${projectId(
-              config
+              configProvider
             )}/zones/${zone}/diskTypes/${diskType}`,
             diskSizeGb,
           },
@@ -73,7 +73,7 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
         {
           kind: "compute#networkInterface",
           subnetwork: `projects/${projectId(
-            config
+            configProvider
           )}/regions/${region}/subnetworks/default`,
           accessConfigs: [
             {

@@ -1,7 +1,13 @@
 const assert = require("assert");
 const { pipe, tap, map, get, filter, tryCatch } = require("rubico");
 
-const { first, find, defaultsDeep } = require("rubico/x");
+const {
+  first,
+  find,
+  defaultsDeep,
+  differenceWith,
+  isDeepEqual,
+} = require("rubico/x");
 const { retryCallOnError } = require("../../../Retry");
 const { getField } = require("../../../ProviderCommon");
 const { isDownByIdCore } = require("../../../Common");
@@ -180,3 +186,13 @@ exports.GcpIamBinding = ({ spec, config }) => {
     cannotBeDeleted,
   };
 };
+
+exports.compareIamBinding = pipe([
+  ({ target, live }) => ({
+    added: differenceWith(isDeepEqual, target.members)(live.members),
+    deleted: differenceWith(isDeepEqual, live.members)(target.members),
+  }),
+  tap((diff) => {
+    logger.debug(`compareIamBinding ${tos(diff)}`);
+  }),
+]);
