@@ -124,6 +124,11 @@ describe("AwsProvider", async function () {
       notAvailable(securityGroupName, "GroupId")
     );
   });
+  it("aws info", async function () {
+    const info = await provider.info();
+    assert(info.accountId);
+    assert(info.region);
+  });
   it("server resolveDependencies", async function () {
     const dependencies = await server.resolveDependencies({
       dependenciesMustBeUp: false,

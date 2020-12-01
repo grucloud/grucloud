@@ -75,7 +75,10 @@ exports.AwsProvider = ({ name = "aws", config }) => {
 
     await validateConfig({ region: AWS.config.region, zone: config.zone });
   };
-
+  const info = () => ({
+    accountId,
+    region: AWS.config.region,
+  });
   return CoreProvider({
     type: "aws",
     name,
@@ -86,5 +89,6 @@ exports.AwsProvider = ({ name = "aws", config }) => {
     },
     fnSpecs,
     start,
+    info,
   });
 };

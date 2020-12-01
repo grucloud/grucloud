@@ -866,6 +866,8 @@ const info = ({
     stage: config.stage,
     projectId,
     projectName,
+    region: config.region,
+    zone: config.zone,
     applicationCredentialsFile,
     serviceAccountName,
     hasGCloud: !!gcloudConfig,

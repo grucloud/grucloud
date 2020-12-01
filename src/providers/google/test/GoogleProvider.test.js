@@ -68,7 +68,12 @@ describe("GoogleProvider", async function () {
   after(async () => {
     await provider?.destroyAll();
   });
-
+  it("gcp info", async function () {
+    const info = await provider.info();
+    assert(info.projectId);
+    assert(info.region);
+    assert(info.zone);
+  });
   it("gcp server resolveConfig ", async function () {
     const config = await server.resolveConfig();
     const { projectId, zone } = provider.config();
