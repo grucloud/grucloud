@@ -138,6 +138,12 @@ describe("AzProvider", async function () {
   after(async () => {
     //await provider?.destroyAll();
   });
+  it("az info", async function () {
+    const info = await provider.info();
+    assert(info.subscriptionId);
+    assert(info.tenantId);
+    assert(info.appId);
+  });
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.resultDestroy.plans.length, 0);

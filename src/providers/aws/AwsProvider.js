@@ -70,15 +70,17 @@ exports.AwsProvider = ({ name = "aws", config }) => {
   });
 
   let accountId;
+
   const start = async () => {
     accountId = await fetchAccountId();
-
     await validateConfig({ region: AWS.config.region, zone: config.zone });
   };
+
   const info = () => ({
     accountId,
     region: AWS.config.region,
   });
+
   return CoreProvider({
     type: "aws",
     name,
