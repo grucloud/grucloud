@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { get, eq } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const logger = require("../../../../logger")({ prefix: "GcpVmInstance" });
@@ -14,7 +15,7 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
   assert(spec);
   assert(configProvider);
   assert(configProvider.stage);
-  const { project, region, zone, managedByTag } = configProvider;
+  const { projectId, region, zone, managedByTag } = configProvider;
 
   const configDefault = ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ properties, dependencies })}`);
@@ -41,8 +42,10 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
     const config = defaultsDeep({
       kind: "compute#instance",
       name,
-      zone: `projects/${project}/zones/${zone}`,
-      machineType: `projects/${project}/zones/${zone}/machineTypes/${machineType}`,
+      zone: `projects/${projectId(configProvider)}/zones/${zone}`,
+      machineType: `projects/${projectId(
+        configProvider
+      )}/zones/${zone}/machineTypes/${machineType}`,
       labels: buildLabel(configProvider),
       metadata: defaultsDeep({
         kind: "compute#metadata",
@@ -58,7 +61,9 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
           deviceName: toTagName(name, managedByTag),
           initializeParams: {
             sourceImage,
-            diskType: `projects/${project}/zones/${zone}/diskTypes/${diskType}`,
+            diskType: `projects/${projectId(
+              configProvider
+            )}/zones/${zone}/diskTypes/${diskType}`,
             diskSizeGb,
           },
           diskEncryptionKey: {},
@@ -67,7 +72,9 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
       networkInterfaces: [
         {
           kind: "compute#networkInterface",
-          subnetwork: `projects/${project}/regions/${region}/subnetworks/default`,
+          subnetwork: `projects/${projectId(
+            configProvider
+          )}/regions/${region}/subnetworks/default`,
           accessConfigs: [
             {
               ...(ip && { natIP: getField(ip, "address") }),
@@ -107,27 +114,16 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
     return config;
   };
 
-  const getStateName = (instance) => {
-    const { status } = instance;
-    assert(status);
-    logger.debug(`vm stateName ${status}`);
-    return status;
-  };
-
-  const isInstanceUp = (instance) => {
-    return ["RUNNING"].includes(getStateName(instance));
-  };
-
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
-      isInstanceUp,
+      isInstanceUp: eq(get("status"), "RUNNING"),
       getById,
     });
 
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${project}/zones/${zone}/instances`,
+    url: `/projects/${projectId(configProvider)}/zones/${zone}/instances`,
     config: configProvider,
     isUpByIdFactory,
     configDefault,

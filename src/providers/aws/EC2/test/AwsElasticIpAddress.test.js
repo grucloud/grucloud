@@ -23,9 +23,6 @@ describe("AwsElasticIpAddress", async function () {
 
     await provider.start();
 
-    const { error } = await provider.destroyAll();
-    assert(!error);
-
     const { results: lives } = await provider.listLives({ our: true });
     assert.equal(lives.length, 0);
 
@@ -40,9 +37,7 @@ describe("AwsElasticIpAddress", async function () {
       properties: () => ({}),
     });
   });
-  after(async () => {
-    //await provider?.destroyAll();
-  });
+  after(async () => {});
   it("eip name", async function () {
     assert.equal(eip.name, resourceName);
   });

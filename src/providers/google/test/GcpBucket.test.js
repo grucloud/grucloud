@@ -27,7 +27,6 @@ describe("GcpBucket", async function () {
       this.skip();
     }
     provider = GoogleProvider({
-      name: "google",
       config: config.google,
     });
 
@@ -66,21 +65,12 @@ describe("GcpBucket", async function () {
         ),
       }),
     });
-
-    const { error } = await provider.destroyAll();
-    assert(!error);
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("bucket config", async function () {
     const config = await bucket.resolveConfig();
     assert(config);
     assert.equal(config.name, bucketName);
-  });
-  it("lives", async function () {
-    const { results: lives } = await provider.listLives();
-    //console.log("lives ip", lives);
   });
   it("plan", async function () {
     const plan = await provider.planQuery();
@@ -98,7 +88,6 @@ describe("GcpBucket", async function () {
 
     {
       const provider = GoogleProvider({
-        name: "google",
         config: config.google,
       });
       await provider.start();

@@ -23,9 +23,6 @@ describe("ScalewayProvider", async function () {
       config: config.scaleway,
     });
 
-    const { error } = await provider.destroyAll({ all: false });
-    assert(!error);
-
     ip = await provider.makeIp({ name: "myip" });
     image = await provider.useImage({
       name: "ubuntu",
@@ -53,9 +50,7 @@ describe("ScalewayProvider", async function () {
       }),
     });
   });
-  after(async () => {
-    await provider?.destroyAll({ all: false });
-  });
+  after(async () => {});
 
   it("list all config", async function () {
     const configs = await provider.listConfig();

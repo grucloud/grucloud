@@ -75,7 +75,7 @@ const filterByType = ({ types }) =>
 const filterReadClient = ({ types, all }) =>
   pipe([
     filterByType({ types }),
-    filter((client) => all || !client.spec.listOnly),
+    filter((client) => all || !client.spec.listHide),
     tap((clients) => {
       logger.debug(`filterReadClient #client ${clients.length}`);
     }),
@@ -83,14 +83,16 @@ const filterReadClient = ({ types, all }) =>
 
 const filterReadWriteClient = ({ types } = {}) =>
   pipe([
-    tap(() => {
-      logger.debug(`filterReadWriteClient ${types}`);
+    tap((clients) => {
+      logger.debug(
+        `filterReadWriteClient types: ${types}, #clients ${clients.length}`
+      );
     }),
     filterByType({ types }),
     filter((client) => !client.spec.singleton),
     filter((client) => !client.spec.listOnly),
     tap((clients) => {
-      logger.debug(`filterReadWriteClient #clients ${clients.length}`);
+      logger.debug(`filterReadWriteClient result #clients ${clients.length}`);
     }),
   ]);
 
@@ -104,6 +106,11 @@ const toUri = ({ providerName, type, name, id }) => {
   return `${providerName}::${type}::${name || id}`;
 };
 
+const createClient = ({ spec, provider, config, mapTypeToResources }) =>
+  defaultsDeep({ cannotBeDeleted: () => false })(
+    spec.Client({ provider, spec, config, mapTypeToResources })
+  );
+
 const ResourceMaker = ({
   name: resourceName,
   dependencies = {},
@@ -116,8 +123,7 @@ const ResourceMaker = ({
   const { type } = spec;
   logger.debug(`ResourceMaker: ${tos({ type, resourceName })}`);
 
-  const client = spec.Client({ provider, spec, config });
-  // Add defaults for cannotBeDeleted
+  const client = createClient({ provider, spec, config });
   let parent;
   const getLive = async ({ deep } = {}) => {
     logger.info(`getLive ${type}/${resourceName}`);
@@ -135,16 +141,25 @@ const ResourceMaker = ({
     logger.info(
       `planUpdate resource: ${tos(resource.toJSON())}, live: ${tos(live)}`
     );
-    const target = await resource.resolveConfig({ live });
+
+    const resolvedDependencies = await resolveDependencies({
+      resourceName,
+      dependencies,
+    });
+    const target = await resource.resolveConfig({ live, resolvedDependencies });
     logger.debug(`planUpdate target: ${tos(target)}`);
 
     if (isEmpty(target)) {
       return;
     }
-    const diff = await spec.compare({ target, live });
+    const diff = await spec.compare({
+      target,
+      live,
+      dependencies: resource.dependencies,
+    });
     logger.info(`planUpdate diff ${tos(diff)}`);
     // TODO unify
-    if (diff.length > 0 || diff.needUpdate) {
+    if (diff.needUpdate || !isEmpty(diff.added) || !isEmpty(diff.updated)) {
       return [
         {
           action: "UPDATE",
@@ -163,7 +178,7 @@ const ResourceMaker = ({
         logger.debug(
           `resolveDependencies for ${resourceName}: ${Object.keys(
             dependencies
-          )}`
+          )}, dependenciesMustBeUp: ${dependenciesMustBeUp}`
         );
       }),
       map(async (dependency) => {
@@ -171,10 +186,20 @@ const ResourceMaker = ({
           return dependency;
         }
         if (!dependency.getLive) {
-          return resolveDependencies({
-            dependencies: dependency,
-            dependenciesMustBeUp,
-          });
+          return tryCatch(
+            () =>
+              resolveDependencies({
+                dependencies: dependency,
+                dependenciesMustBeUp,
+              }),
+            (error) => {
+              logger.error(`resolveDependencies: ${tos(error)}`);
+              return {
+                dependency,
+                error,
+              };
+            }
+          )();
         }
         return tryCatch(
           async (dependency) => {
@@ -185,7 +210,13 @@ const ResourceMaker = ({
                 message: `${type}/${resourceName} dependency ${dependency.name} is not up`,
               };
             }
-            const config = await dependency.resolveConfig({ live });
+            const resolvedDependencies = await dependency.resolveDependencies({
+              dependenciesMustBeUp,
+            });
+            const config = await dependency.resolveConfig({
+              live,
+              resolvedDependencies,
+            });
             return { resource: dependency, live, config };
           },
           (error, dependency) => {
@@ -202,74 +233,79 @@ const ResourceMaker = ({
           `resolveDependencies for ${resourceName}, result: ${tos(result)}`
         );
       }),
+      tap.if(any(get("error")), (resolvedDependencies) => {
+        logger.error(
+          `resolveDependencies ${type}/${resourceName} error in resolveDependencies`
+        );
+
+        throw {
+          message: "error resolving dependencies",
+          results: filter(get("error"))(resolvedDependencies),
+        };
+      }),
+      tap((result) => {
+        logger.debug(
+          `resolveDependencies for ${resourceName}, result: ${tos(result)}`
+        );
+      }),
     ])(dependencies);
 
-  const resolveConfig = async ({ live, dependenciesMustBeUp } = {}) =>
+  const resolveConfig = async ({ live, resolvedDependencies } = {}) =>
     pipe([
       tap(() => {
-        logger.info(`resolveConfig ${type}/${resourceName}`);
+        logger.debug(
+          `resolveConfig ${type}/${resourceName}, ${tos({
+            live,
+            resolvedDependencies,
+          })}`
+        );
+        assert(client.configDefault);
+        assert(spec.propertiesDefault);
       }),
-      () =>
-        resolveDependencies({
-          resourceName,
-          dependencies,
-          dependenciesMustBeUp,
-        }),
       switchCase([
-        any(({ error }) => error),
-        (resolvedDependencies) => {
-          logger.error(
-            `resolveConfig ${type}/${resourceName} error in resolveDependencies`
-          );
-
-          throw {
-            message: "error resolving dependencies",
-            results: filter(get("error"))(resolvedDependencies),
-          };
-        },
-        pipe([
-          tap(() => {
-            logger.info(`resolveConfig ${type}/${resourceName}`);
+        () => resolvedDependencies,
+        () => resolvedDependencies,
+        () =>
+          resolveDependencies({
+            resourceName,
+            dependencies,
           }),
-          async (resolvedDependencies) => {
-            assert(client.configDefault);
-
-            const config = await client.configDefault({
-              name: resourceName,
-              properties: defaultsDeep(spec.propertiesDefault)(
-                properties({ dependencies: resolvedDependencies })
-              ),
-              dependencies: resolvedDependencies,
-              live,
-            });
-
-            const finalConfig = await switchCase([
-              () => transformConfig,
-              pipe([
-                () =>
-                  client.getList({
-                    resources: provider.getResourcesByType(client.spec.type),
-                  }),
-                ({ items }) =>
-                  transformConfig({
-                    dependencies: resolvedDependencies,
-                    items,
-                    config,
-                    configProvider: provider.config(),
-                    live,
-                  }),
-              ]),
-              () => config,
-            ])();
-
-            logger.info(`resolveConfig: final: ${tos(finalConfig)}`);
-            return finalConfig;
-          },
-        ]),
       ]),
+      async (resolvedDependencies) => {
+        const config = await client.configDefault({
+          name: resourceName,
+          properties: defaultsDeep(spec.propertiesDefault)(
+            properties({ dependencies: resolvedDependencies })
+          ),
+          dependencies: resolvedDependencies,
+          live,
+        });
+
+        const finalConfig = await switchCase([
+          () => transformConfig,
+          pipe([
+            () =>
+              client.getList({
+                resources: provider.getResourcesByType(client.spec.type),
+              }),
+            ({ items }) =>
+              transformConfig({
+                dependencies: resolvedDependencies,
+                items,
+                config,
+                configProvider: provider.config(),
+                live,
+              }),
+          ]),
+          () => config,
+        ])();
+
+        logger.info(`resolveConfig: final: ${tos(finalConfig)}`);
+        return finalConfig;
+      },
     ])();
 
-  const create = async ({ payload }) => {
+  const create = async ({ payload, resolvedDependencies }) => {
     logger.info(`create ${tos({ resourceName, type, payload })}`);
     // Is the resource already created ?
     if (await getLive()) {
@@ -284,6 +320,7 @@ const ResourceMaker = ({
           name: resourceName,
           payload,
           dependencies,
+          resolvedDependencies,
         }),
       shouldRetryOnException: client.shouldRetryOnException,
       retryCount: provider.config().retryCount,
@@ -338,6 +375,7 @@ const ResourceMaker = ({
           dependencies,
           diff,
           live,
+          id: client.findId(live),
         }),
       shouldRetryOnException: client.shouldRetryOnException,
       retryCount: provider.config().retryCount,
@@ -375,22 +413,32 @@ const ResourceMaker = ({
     return instance;
   };
 
-  const planUpsert = async ({ resource }) => {
-    logger.info(`planUpsert resource: ${resource.toString()}`);
-    const live = await resource.getLive();
-    logger.debug(`planUpsert live: ${tos(live)}`);
-    const plan = !isEmpty(live || {})
-      ? planUpdate({ live, resource })
-      : [
-          {
-            action: "CREATE",
-            resource: resource.toJSON(),
-            config: await resource.resolveConfig(),
-          },
-        ];
-    logger.debug(`planUpsert plan: ${tos(plan)}`);
-    return plan;
-  };
+  const planUpsert = async ({ resource }) =>
+    pipe([
+      tap(() => {
+        logger.info(`planUpsert resource: ${resource.toString()}`);
+      }),
+      () => resource.getLive(),
+      switchCase([
+        isEmpty,
+        pipe([
+          () =>
+            resolveDependencies({
+              resourceName,
+              dependencies,
+              dependenciesMustBeUp: false,
+            }),
+          async (resolvedDependencies) => [
+            {
+              action: "CREATE",
+              resource: resource.toJSON(),
+              config: await resource.resolveConfig({ resolvedDependencies }),
+            },
+          ],
+        ]),
+        (live) => planUpdate({ live, resource }),
+      ]),
+    ])();
 
   const toJSON = () => ({
     provider: provider.name,
@@ -429,8 +477,8 @@ const ResourceMaker = ({
     planUpsert,
     getLive,
     addParent,
-    resolveDependencies: () =>
-      resolveDependencies({ resourceName, dependencies }),
+    resolveDependencies: ({ dependenciesMustBeUp }) =>
+      resolveDependencies({ resourceName, dependencies, dependenciesMustBeUp }),
   };
   forEach((dependency) => {
     if (isString(dependency)) {
@@ -650,14 +698,14 @@ function CoreProvider({
   );
 
   const clients = specs.map((spec) =>
-    spec.Client({ mapTypeToResources, spec, config: providerConfig })
+    createClient({ mapTypeToResources, spec, config: providerConfig })
   );
 
   const clientByType = (type) => {
     assert(type);
     const spec = specs.find((spec) => spec.type === type);
     assert(spec, `type ${type} not found`);
-    return spec.Client({ spec, config: providerConfig });
+    return createClient({ mapTypeToResources, spec, config: providerConfig });
   };
 
   const filterClient = async ({
@@ -1742,10 +1790,12 @@ function CoreProvider({
       const { resource, live, action, diff } = item;
       const engine = getResource(resource);
       assert(engine, `Cannot find resource ${tos(resource)}`);
-
+      const resolvedDependencies = await engine.resolveDependencies({
+        dependenciesMustBeUp: true,
+      });
       const input = await engine.resolveConfig({
         live,
-        dependenciesMustBeUp: true,
+        resolvedDependencies,
       });
       return switchCase([
         () => action === "UPDATE",
@@ -1755,6 +1805,7 @@ function CoreProvider({
             payload: input,
             live,
             diff,
+            resolvedDependencies,
           }),
         }),
         () => action === "CREATE",
@@ -1762,13 +1813,14 @@ function CoreProvider({
           input,
           output: await engine.create({
             payload: input,
+            resolvedDependencies,
           }),
         }),
         () => assert("action is not handled"),
       ])();
     };
 
-    return await switchCase([
+    return switchCase([
       () => !isEmpty(plans),
       pipe([
         () =>
@@ -2031,6 +2083,9 @@ function CoreProvider({
         provider: toString(),
         stage: providerConfig.stage,
         ...info(),
+      }),
+      tap((info) => {
+        logger.debug(`info  ${tos(info)}`);
       }),
     ]),
     init,

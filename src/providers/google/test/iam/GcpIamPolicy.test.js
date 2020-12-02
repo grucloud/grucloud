@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { GoogleProvider } = require("../GoogleProvider");
+const { GoogleProvider } = require("../../GoogleProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { pipe, tap, map, get, filter } = require("rubico");
 const { find, isDeepEqual } = require("rubico/x");
@@ -23,16 +23,18 @@ describe.skip("GcpIamPolicy", async function () {
     }
 
     provider = GoogleProvider({
-      name: "google",
       config: config.google,
     });
+    await provider.start();
 
-    const saName = `sa-${chance.guid()}`;
+    const saName = `sa-${chance.guid().slice(0, 15)}`;
     serviceAccount = await provider.makeServiceAccount({
       name: saName,
       properties: () => ({
         accountId: saName,
-        displayName: saName,
+        serviceAccount: {
+          displayName: saName,
+        },
       }),
     });
     iamPolicy = await provider.makeIamPolicy({
@@ -40,17 +42,17 @@ describe.skip("GcpIamPolicy", async function () {
       dependencies: { serviceAccount },
       properties: ({ dependencies: { serviceAccount } }) => ({
         policy: {
-          bindings: [`serviceAccount:${serviceAccount.live?.email}`],
+          bindings: [
+            {
+              role: "roles/editor",
+              members: [`serviceAccount:${serviceAccount.live?.email}`],
+            },
+          ],
         },
       }),
     });
-
-    const { error } = await provider.destroyAll();
-    assert(!error, "destroyAll failed");
   });
-  after(async () => {
-    //await provider?.destroyAll();
-  });
+  after(async () => {});
   it("iamPolicy config", async function () {
     const iamPolicyLive = await iamPolicy.getLive();
     const config = await iamPolicy.resolveConfig({ live: iamPolicyLive });
@@ -79,9 +81,14 @@ describe.skip("GcpIamPolicy", async function () {
     assert(planUpdate.live.etag);
   });
   it("iamPolicy apply and destroy", async function () {
-    const { error, resultCreate } = await provider.planQueryAndApply();
-    assert(!error, "should have failed");
+    const {
+      error,
+      resultCreate,
+      resultDestroy,
+    } = await provider.planQueryAndApply();
+    assert(!error, "should not have failed");
     const live = await iamPolicy.getLive();
+
     assert(
       find((binding) => isDeepEqual(binding, bindingEditor))(live.bindings)
     );

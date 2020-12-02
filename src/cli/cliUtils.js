@@ -51,7 +51,8 @@ exports.runAsyncCommand = async ({ text, command }) => {
       spinnerMap.delete(uri);
     };
 
-    const onErrorDefault = ({ spinnerMap, spinnies }) => {
+    const onErrorDefault = ({ spinnerMap }) => {
+      logger.debug(`onErrorDefault: delete uri: ${uri} `);
       spinnerMap.delete(uri);
     };
 
@@ -86,7 +87,7 @@ exports.runAsyncCommand = async ({ text, command }) => {
         break;
       }
       case "RUNNING": {
-        logger.debug(`spinnies running uri: ${uri}`);
+        logger.debug(`spinnies RUNNING uri: ${uri}`);
         const spinner = spinnerMap.get(uri);
         if (!spinner) {
           assert(false, `event RUNNING but ${uri} was not created`);
@@ -108,18 +109,20 @@ exports.runAsyncCommand = async ({ text, command }) => {
         break;
       }
       case "DONE": {
-        logger.debug(`spinnies: uri: ${uri} DONE`);
+        logger.debug(`spinnies DONE uri: ${uri} `);
 
         const spinny = spinnies.pick(uri);
         assert(spinny, `DONE event: ${uri} was not created`);
 
         const spinner = spinnerMap.get(uri);
         if (!spinner) {
-          assert(false, `event DONE but ${uri} was not created`);
+          logger.error(
+            `event DONE but ${uri} was not created or is already deleted`
+          );
+          return;
         }
 
         onDone({ state: spinner.state, spinnerMap, spinnies });
-
         break;
       }
       case "ERROR": {
@@ -130,7 +133,7 @@ exports.runAsyncCommand = async ({ text, command }) => {
         assert(error, `should have set the error, id: ${uri}`);
         const spinner = spinnerMap.get(uri);
         if (!spinner) {
-          logger.error(`spinnies: uri: ${uri} ERROR: ${tos(error)}`);
+          logger.error(`spinnies ERROR: uri: ${uri}, error: ${tos(error)}`);
           return;
         }
 

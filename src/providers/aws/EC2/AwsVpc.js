@@ -1,7 +1,7 @@
 const AWS = require("aws-sdk");
 const { isEmpty } = require("rubico/x");
 const assert = require("assert");
-const { get, map, tap, pipe, filter } = require("rubico");
+const { get, map, tap, pipe, filter, switchCase } = require("rubico");
 const logger = require("../../../logger")({ prefix: "AwsVpc" });
 const { tos } = require("../../../tos");
 const { retryExpectOk } = require("../../Retry");
@@ -17,7 +17,12 @@ module.exports = AwsVpc = ({ spec, config }) => {
 
   const ec2 = new AWS.EC2();
 
-  const findName = findNameInTags;
+  const findName = switchCase([
+    get("IsDefault"),
+    () => "default",
+    findNameInTags,
+  ]);
+
   const findId = get("VpcId");
 
   const getList = async ({ params } = {}) => {

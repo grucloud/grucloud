@@ -1,8 +1,8 @@
 const logger = require("../logger")({ prefix: "SpecDefault" });
-const { compare } = require("../Utils");
+const { detailedDiff } = require("deep-object-diff");
 
 exports.SpecDefault = ({ providerName }) => ({
-  compare,
+  compare: detailedDiff,
   providerName,
   listOnly: false,
   propertiesDefault: {},

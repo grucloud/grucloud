@@ -2,6 +2,8 @@ const AWS = require("aws-sdk");
 const assert = require("assert");
 const {
   map,
+  filter,
+  not,
   tap,
   pipe,
   switchCase,
@@ -63,6 +65,9 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       }),
       () => s3.listBuckets().promise(),
       get("Buckets"),
+      tap((Buckets) => {
+        logger.info(`getList s3Bucket `);
+      }),
       map.pool(
         mapPoolSize,
         tryCatch(
@@ -72,12 +77,16 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             ...(deep &&
               (await getByName({ name: bucket.Name, getTags: false }))),
           }),
-          (err, bucket) => ({
+          (error, bucket) => ({
             bucket,
-            err,
+            error,
           })
         )
       ),
+      tap((Buckets) => {
+        logger.info(`getList s3Bucket `);
+      }),
+      filter(pipe([get("error"), isEmpty])),
       tap((fullBuckets) => {
         logger.info(`getList s3bucket #items ${fullBuckets.length}`);
         logger.debug(`getList full ${tos(fullBuckets)}`);
@@ -758,7 +767,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     findId,
     getByName,
     getById,
-    cannotBeDeleted: () => false,
     findName,
     create,
     destroy,

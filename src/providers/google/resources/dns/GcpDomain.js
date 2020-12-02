@@ -42,7 +42,7 @@ exports.compareDomain = async ({ target, live }) =>
 // https://cloud.google.com/domains/docs/
 
 exports.GcpDomain = ({ spec, config }) => {
-  const { project, managedByDescription } = config;
+  const { projectId, managedByDescription } = config;
 
   const configDefault = ({ name, properties }) =>
     defaultsDeep({
@@ -51,14 +51,12 @@ exports.GcpDomain = ({ spec, config }) => {
       recordSet: [],
     })(properties);
 
-  const findName = (item) => {
-    assert(item.name, "item.name");
-    return item.name;
-  };
+  const findName = get("name");
+  const findId = findName;
 
   const axios = createAxiosMakerGoogle({
     baseURL: GCP_DOMAIN_BASE_URL,
-    url: `/projects/${project}`,
+    url: `/projects/${projectId(config)}`,
     config,
   });
 
@@ -114,8 +112,6 @@ exports.GcpDomain = ({ spec, config }) => {
         logger.debug(`getById ${id} not found`);
       }
     )();
-
-  const findId = (item) => item.name;
 
   const getByName = ({ provider, name }) =>
     getByNameCore({ provider, name, getList, findName });

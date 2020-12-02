@@ -23,9 +23,7 @@ describe("AwsS3Bucket", async function () {
 
     await provider.start();
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
 
   it.skip("s3Bucket apply and destroy", async function () {
     const s3Bucket = await provider.makeS3Bucket({

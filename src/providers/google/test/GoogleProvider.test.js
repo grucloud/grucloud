@@ -21,7 +21,6 @@ describe("GoogleProvider", async function () {
       this.skip();
     }
     provider = GoogleProvider({
-      name: "google",
       config: config.google,
     });
 
@@ -69,13 +68,20 @@ describe("GoogleProvider", async function () {
   after(async () => {
     await provider?.destroyAll();
   });
-
+  it("gcp info", async function () {
+    const info = await provider.info();
+    assert(info.projectId);
+    assert(info.region);
+    assert(info.zone);
+  });
   it("gcp server resolveConfig ", async function () {
     const config = await server.resolveConfig();
-    const { project, zone } = provider.config();
+    const { projectId, zone } = provider.config();
     assert.equal(
       config.machineType,
-      `projects/${project}/zones/${zone}/machineTypes/f1-micro`
+      `projects/${projectId(
+        provider.config()
+      )}/zones/${zone}/machineTypes/f1-micro`
     );
     assert.equal(config.disks[0].initializeParams.diskSizeGb, "20");
     assert.equal(config.name, "web-server");

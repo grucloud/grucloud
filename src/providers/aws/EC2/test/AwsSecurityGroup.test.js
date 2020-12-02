@@ -57,13 +57,8 @@ describe("AwsSecurityGroup", async function () {
         },
       }),
     });
-
-    const { error } = await provider.destroyAll();
-    assert(!error);
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("empty ingress", async function () {
     const provider = AwsProvider({
       name: "aws",

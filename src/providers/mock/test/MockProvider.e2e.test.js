@@ -138,7 +138,7 @@ describe("MockProvider e2e", async function () {
     }
     {
       const { results: liveResources } = await provider.listLives({});
-      assert.equal(liveResources.length, 3);
+      assert.equal(liveResources.length, 4);
     }
     {
       const { results: liveResources } = await provider.listLives({
@@ -178,7 +178,7 @@ describe("MockProvider e2e", async function () {
     }
     {
       const { results: listLives } = await provider.listLives();
-      assert.equal(listLives.length, 4);
+      assert.equal(listLives.length, 5);
     }
     {
       const { results: listLives } = await provider.listLives({ all: true });

@@ -56,6 +56,7 @@ const fnSpecs = (config) => {
         }),
       type: "Bootscript",
       listOnly: true,
+      listHide: true,
     },
     {
       Client: ({ spec }) =>
@@ -70,6 +71,7 @@ const fnSpecs = (config) => {
         }),
       type: "Image",
       listOnly: true,
+      listHide: true,
     },
     {
       Client: ({ spec }) =>
@@ -122,16 +124,6 @@ const fnSpecs = (config) => {
           },
         }),
       type: "Server",
-      compare: ({ target, live }) => {
-        logger.debug(`compare server`);
-        const diff = compare({
-          target,
-          targetKeys: ["commercial_type", "volumes.0.size"],
-          live,
-        });
-        logger.debug(`compare ${tos(diff)}`);
-        return diff;
-      },
       propertiesDefault: {
         dynamic_ip_required: false,
         commercial_type: "DEV1-S",

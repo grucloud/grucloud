@@ -1,6 +1,5 @@
 const { isOurMinion } = require("../AwsCommon");
 
-const { compare } = require("../../../Utils");
 const logger = require("../../../logger")({ prefix: "AWSEC2" });
 const { tos } = require("../../../tos");
 
@@ -76,17 +75,6 @@ module.exports = [
       MaxCount: 1,
       MinCount: 1,
       ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
-    },
-
-    compare: ({ target, live }) => {
-      logger.debug(`compare server`);
-      const diff = compare({
-        target,
-        targetKeys: ["InstanceType"], //TODO
-        live,
-      });
-      logger.debug(`compare ${tos(diff)}`);
-      return diff;
     },
     isOurMinion,
   },

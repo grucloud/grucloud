@@ -10,7 +10,7 @@ exports.GcpSslCertificate = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const { project, managedByDescription } = config;
+  const { projectId, managedByDescription } = config;
 
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
@@ -28,7 +28,7 @@ exports.GcpSslCertificate = ({ spec, config }) => {
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${project}/global/sslCertificates`,
+    url: `/projects/${projectId(config)}/global/sslCertificates`,
     config,
     configDefault,
     isUpByIdFactory,

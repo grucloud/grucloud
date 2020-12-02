@@ -29,7 +29,7 @@ module.exports = (config) => [
       if (target.source) {
         const md5 = await md5FileBase64(target.source);
         if (live.md5Hash !== md5) {
-          return [{ type: "DIFF", target, live }];
+          return { updated: target };
         }
       }
 

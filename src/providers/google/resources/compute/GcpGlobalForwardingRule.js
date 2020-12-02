@@ -11,7 +11,7 @@ exports.GcpGlobalForwardingRule = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const { project, managedByDescription } = config;
+  const { projectId, managedByDescription } = config;
 
   const configDefault = ({ name, properties, dependencies }) => {
     const { httpsTargetProxy } = dependencies;
@@ -32,7 +32,7 @@ exports.GcpGlobalForwardingRule = ({ spec, config }) => {
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${project}/global/forwardingRules`,
+    url: `/projects/${projectId(config)}/global/forwardingRules`,
     config,
     configDefault,
     isUpByIdFactory,

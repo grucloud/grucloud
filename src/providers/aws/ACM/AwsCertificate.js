@@ -181,7 +181,6 @@ exports.AwsCertificate = ({ spec, config }) => {
     findId,
     getByName,
     getById,
-    cannotBeDeleted: () => false,
     findName,
     create,
     destroy,

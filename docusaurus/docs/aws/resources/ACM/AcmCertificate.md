@@ -23,7 +23,16 @@ const hostedZone = await provider.makeHostedZone({
   name: `${domainName}.`,
   dependencies: { certificate },
   properties: ({ dependencies: { certificate } }) => {
-    const record = certificate.live?.DomainValidationOptions[0].ResourceRecord;
+    const domainValidationOption = certificate.live?.DomainValidationOptions[0];
+    const record = domainValidationOption?.ResourceRecord;
+    if (domainValidationOption) {
+      assert(
+        record,
+        `missing record in DomainValidationOptions, certificate ${JSON.stringify(
+          certificate.live
+        )}`
+      );
+    }
     return {
       RecordSet: [
         {

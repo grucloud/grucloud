@@ -125,36 +125,50 @@ const authorize = async ({
       serviceAccountName: ServiceAccountName,
     });
   }
-  const keys = require(applicationCredentialsFile);
-  logger.info(
-    `authorize with email: ${keys.client_email}, keyId: ${keys.private_key_id}`
-  );
-  assert(keys.private_key, "keys.private_key");
-  const client = new JWT({
-    email: keys.client_email,
-    key: keys.private_key,
-    scopes: ["https://www.googleapis.com/auth/cloud-platform"],
-  });
 
-  const accessToken = await new Promise((resolve, reject) => {
-    client.authorize((err, response) => {
-      if (err) {
-        logger.error(`authorize error with ${keys.client_email}`);
-        logger.error(tos(err));
-        return reject(err);
-      }
-      if (response?.access_token) {
-        resolve(response.access_token);
-      } else {
-        reject("Cannot get access_token");
-      }
-    });
-  });
-  return accessToken;
+  return pipe([
+    () => fs.readFile(applicationCredentialsFile, "utf-8"),
+    (content) => JSON.parse(content),
+    tap((keys) => {
+      logger.info(
+        `authorize with email: ${keys.client_email}, keyId: ${keys.private_key_id}`
+      );
+      assert(keys.private_key, "keys.private_key");
+    }),
+    (keys) =>
+      pipe([
+        () =>
+          new JWT({
+            email: keys.client_email,
+            key: keys.private_key,
+            scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+          }),
+        (client) =>
+          new Promise((resolve, reject) => {
+            client.authorize((err, response) => {
+              if (err) {
+                logger.error(`authorize error with ${keys.client_email}`);
+                logger.error(tos(err));
+                return reject(err);
+              }
+              if (response?.access_token) {
+                resolve(response.access_token);
+              } else {
+                reject("Cannot get access_token");
+              }
+            });
+          }),
+      ])(),
+    tap((token) => {
+      logger.debug(`authorized ${token}`);
+    }),
+  ])();
 };
 
 const runGCloudCommand = tryCatch(
   ({ command }) => {
+    logger.debug(`runGCloudCommand: ${command}`);
+
     const { stdout, stderr, code } = shell.exec(command, { silent: true });
     if (code !== 0) {
       throw { message: `command '${command}' failed`, stdout, stderr, code };
@@ -840,7 +854,7 @@ const billingDisable = async ({ accessToken, projectId }) => {
   ])();
 };
 
-const info = async ({
+const info = ({
   config,
   gcloudConfig,
   projectId,
@@ -852,6 +866,8 @@ const info = async ({
     stage: config.stage,
     projectId,
     projectName,
+    region: config.region,
+    zone: config.zone,
     applicationCredentialsFile,
     serviceAccountName,
     hasGCloud: !!gcloudConfig,
@@ -928,7 +944,7 @@ const unInit = async ({
   projectName,
   applicationCredentialsFile,
   serviceAccountName,
-  options,
+  options = {},
 }) => {
   if (!gcloudConfig.config) {
     console.error(`gcloud is not installed, setup aborted`);
@@ -981,8 +997,9 @@ const unInit = async ({
 };
 
 exports.GoogleProvider = ({ name = "google", config: configUser }) => {
-  const { projectName } = configUser;
-  assert(projectName, "missing projectName");
+  assert(configUser.projectName, "missing projectName");
+
+  const projectName = configUser.projectName(configUser);
 
   const gcloudConfig = getConfig();
 
@@ -991,7 +1008,6 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
       managedByTag: "-managed-by-gru",
       managedByKey: "managed-by",
       managedByValue: "grucloud",
-      projectId: ProjectId({ projectName }),
     }),
     (config) => {
       if (gcloudConfig.config) {
@@ -1008,7 +1024,15 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
     },
   ])(configUser);
 
-  const { projectId } = config;
+  logger.debug(`config: ${tos(config)}`);
+  const projectId = switchCase([
+    () => configUser.projectId,
+    () => configUser.projectId(configUser),
+    () => ProjectId({ projectName }),
+  ])();
+
+  logger.debug(`projectId: ${projectId}`);
+
   const applicationCredentialsFile = ApplicationCredentialsFile({
     configDir: gcloudConfig.config?.paths.global_config_dir,
     projectId,
@@ -1032,8 +1056,6 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
     type: "google",
     name,
     config: defaultsDeep({
-      //Replace project with projectId
-      project: config.projectId,
       accessToken: () => serviceAccountAccessToken,
     })(config),
     fnSpecs,

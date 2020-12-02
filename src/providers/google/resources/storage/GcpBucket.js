@@ -17,9 +17,9 @@ const { buildLabel } = require("../../GoogleCommon");
 const logger = require("../../../../logger")({ prefix: "GcpBucket" });
 const { tos } = require("../../../../tos");
 const { retryCallOnError } = require("../../../Retry");
-const { mapPoolSize, getByNameCore } = require("../../../Common");
+const { mapPoolSize } = require("../../../Common");
 
-const findTargetId = (item) => item.id;
+const findTargetId = get("id");
 
 // https://cloud.google.com/storage/docs/json_api/v1/buckets
 // https://cloud.google.com/storage/docs/json_api/v1/buckets/insert
@@ -27,8 +27,8 @@ const findTargetId = (item) => item.id;
 exports.GcpBucket = ({ spec, config: configProvider }) => {
   assert(spec);
   assert(configProvider);
-  const { project, region } = configProvider;
-  const queryParam = () => `/?project=${project}`;
+  const { projectId, region } = configProvider;
+  const queryParam = () => `/?project=${projectId(configProvider)}`;
   const pathList = queryParam;
   const pathCreate = queryParam;
 
@@ -139,8 +139,8 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
       }),
     ])();
 
-  const destroy = async ({ id: bucketName }) =>
-    await pipe([
+  const destroy = ({ id: bucketName }) =>
+    pipe([
       tap(() => {
         assert(bucketName, `destroy invalid id`);
         logger.debug(`destroy bucket ${bucketName}`);

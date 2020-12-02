@@ -27,9 +27,6 @@ describe("AwsIamPolicy", async function () {
       config: config.aws,
     });
 
-    const { error } = await provider.destroyAll();
-    assert(!error, "destroyAll failed");
-
     iamUser = await provider.makeIamUser({
       name: iamUserName,
       properties: () => ({
@@ -96,9 +93,7 @@ describe("AwsIamPolicy", async function () {
       }),
     });
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("iamPolicy resolveConfig", async function () {
     assert.equal(iamPolicyToUser.name, iamPolicyName);
     const config = await iamPolicyToUser.resolveConfig();

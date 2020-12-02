@@ -10,6 +10,7 @@ const {
   switchCase,
   transform,
   flatMap,
+  tryCatch,
 } = require("rubico");
 
 const { isEmpty, isFunction, pluck, find } = require("rubico/x");
@@ -121,6 +122,8 @@ exports.Planner = ({
   const statusValues = () => [...statusMap.values()];
 
   const itemToKey = (item) => {
+    assert(item, "item");
+    assert(item.resource, "item.resource");
     const key = item.resource.id || item.resource.name;
     assert(key, `mising key for item ${tos(item)}`);
     return `${item.resource.provider}::${item.resource.type}::${key}`;
@@ -152,6 +155,8 @@ exports.Planner = ({
   });
 
   const runItem = async (entry, onEnd) => {
+    assert(entry);
+    assert(entry.item);
     logger.debug(`runItem begin ${tos(itemToKey(entry.item))}`);
     assert(entry.item, "no entry.item");
     try {
@@ -195,44 +200,60 @@ exports.Planner = ({
       });
       entry.state = STATES.ERROR;
     }
-
     await onEnd(entry.item);
+
     logger.debug(`runItem end ${tos(itemToKey(entry.item))}`);
   };
   const onEnd = async (item) => {
-    logger.debug(`onEnd begin ${tos(itemToKey(item))}`);
     await pipe([
+      tap(() => {
+        logger.debug(`onEnd begin ${tos(itemToKey(item))}`);
+      }),
       //Exclude the current resource
       filter((x) => x.item.resource.name !== item.resource.name),
       // Find resources that depends on the one that just ended
       filter(({ dependsOn = [] }) => dependsOn.includes(item.resource.name)),
-      map(
-        pipe([
-          async (entry) => {
-            await pipe([
-              // Remove from the dependsOn array the one that just ended
-              filter((x) => x !== item.resource.name),
-              tap((dependsOn) => {
-                entry.dependsOn = dependsOn;
-              }),
-              tap((dependsOn) => {
-                logger.debug(
-                  `onEnd  ${tos({ name: entry.item.resource.name, dependsOn })}`
-                );
-              }),
-              switchCase([
-                isEmpty,
-                async () => {
-                  await runItem(entry, onEnd);
-                },
-                () => {},
-              ]),
-            ])(entry.dependsOn);
-          },
-        ])
+      map((entry) =>
+        tryCatch(
+          pipe([
+            // Remove from the dependsOn array the one that just ended
+            filter((x) => x !== item.resource.name),
+            tap((dependsOn) => {
+              entry.dependsOn = dependsOn;
+            }),
+            tap((dependsOn) => {
+              logger.debug(
+                `onEnd  ${tos({ name: entry.item.resource.name, dependsOn })}`
+              );
+            }),
+            tap((xxx) => {
+              logger.debug(`onEnd  ${tos(xxx)}`);
+            }),
+            switchCase([
+              isEmpty,
+              tryCatch(
+                () => runItem(entry, onEnd),
+                (error) => {
+                  logger.error(`Planner onEnd  ${tos({ error, entry })}`);
+                  return { error, entry };
+                }
+              ),
+              () => {},
+            ]),
+            tap((xxx) => {
+              logger.debug(`onEnd  ${tos(xxx)}`);
+            }),
+          ]),
+          (error) => {
+            logger.error(`Planner onEnd  ${tos({ error, entry })}`);
+            return { error, entry };
+          }
+        )(entry.dependsOn)
       ),
+      tap(() => {
+        logger.debug(`onEnd end ${tos(itemToKey(item))}`);
+      }),
     ])(statusValues());
-    logger.debug(`onEnd end ${tos(itemToKey(item))}`);
   };
 
   const run = async () => {
@@ -261,11 +282,13 @@ exports.Planner = ({
         );
       }),
       map(
-        pipe([
-          async (entry) => {
-            await runItem(entry, onEnd);
-          },
-        ])
+        tryCatch(
+          (entry) => runItem(entry, onEnd),
+          (error) => {
+            logger.error(`Planner error ${tos(error)}`);
+            return { error };
+          }
+        )
       ),
     ])(statusValues());
 

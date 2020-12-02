@@ -20,9 +20,6 @@ describe("ScalewayImage", async function () {
       config: config.scaleway,
     });
 
-    const { error } = await provider.destroyAll({ all: false });
-    assert(!error);
-
     image = await provider.useImage({
       name: "ubuntu",
       config: ({ items: images }) => {
@@ -37,9 +34,7 @@ describe("ScalewayImage", async function () {
     });
   });
 
-  after(async () => {
-    await provider?.destroyAll({ all: false });
-  });
+  after(async () => {});
   it("targetResources size ", async function () {
     assert.equal(provider.getTargetResources().length, 1);
   });

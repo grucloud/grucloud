@@ -6,7 +6,6 @@ const MockClient = require("./MockClient");
 const MockCloud = require("./MockCloud");
 
 const CoreProvider = require("../CoreProvider");
-const compare = require("../../Utils").compare;
 const { isOurMinion } = require("./MockTag");
 const { toTagName } = require("../TagName");
 const { createAxiosMock } = require("./MockAxios");
@@ -122,17 +121,6 @@ const fnSpecs = (config) => {
         machineType: "f1-micro",
         diskSizeGb: "10",
         diskType: "pd-standard",
-      },
-
-      compare: ({ target, live }) => {
-        logger.debug(`compare server`);
-        const diff = compare({
-          target,
-          targetKeys: ["machineType"],
-          live,
-        });
-        logger.debug(`compare ${tos(diff)}`);
-        return diff;
       },
       isOurMinion,
     },

@@ -295,7 +295,7 @@ exports.AzureProvider = ({ name = "azure", config }) => {
   const mandatoryEnvs = ["TENANT_ID", "SUBSCRIPTION_ID", "APP_ID", "PASSWORD"];
   checkEnv(mandatoryEnvs);
 
-  const { TENANT_ID, APP_ID, PASSWORD } = process.env;
+  const { TENANT_ID, APP_ID, PASSWORD, SUBSCRIPTION_ID } = process.env;
 
   let bearerToken;
   const start = async () => {
@@ -313,6 +313,12 @@ exports.AzureProvider = ({ name = "azure", config }) => {
     retryDelay: 10e3,
   };
 
+  const info = () => ({
+    subscriptionId: SUBSCRIPTION_ID,
+    tenantId: TENANT_ID,
+    appId: APP_ID,
+  });
+
   const core = CoreProvider({
     type: "azure",
     name,
@@ -320,6 +326,7 @@ exports.AzureProvider = ({ name = "azure", config }) => {
     config: defaultsDeep(configProviderDefault)(config),
     fnSpecs,
     start,
+    info,
   });
 
   return core;

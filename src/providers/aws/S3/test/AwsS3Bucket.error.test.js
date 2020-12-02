@@ -45,7 +45,6 @@ describe("AwsS3BucketErrors", async function () {
 
   it("s3Bucket acl error", async function () {
     const provider = AwsProvider({
-      name: "aws",
       config: config.aws,
     });
     await provider.start();

@@ -29,8 +29,22 @@ const mockCloudInitStatesDefault = [
   [
     "Image",
     [
-      ["1", { name: "Ubuntu", arch: "x86_64" }],
-      ["2", { name: "CentOS", arch: "x86_64" }],
+      [
+        "1",
+        {
+          name: "Ubuntu",
+          id: "47FF72A9-0665-4EA8-A7D2-9EAA3D749214",
+          arch: "x86_64",
+        },
+      ],
+      [
+        "2",
+        {
+          name: "CentOS",
+          id: "57890757-7E7C-4E35-A9B5-201FE1FBD2E1",
+          arch: "x86_64",
+        },
+      ],
     ],
   ],
   ["Volume", [["1", { id: "1", name: "volume" }]]],

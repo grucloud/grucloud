@@ -1,4 +1,3 @@
-const { compareArray } = require("../../../../Utils");
 const { tos } = require("../../../../tos");
 
 const {
@@ -6,8 +5,12 @@ const {
   isOurMinionServiceAccount,
 } = require("./GcpServiceAccount");
 
-const { GcpIamPolicy } = require("./GcpIamPolicy");
-const { GcpIamBinding, isOurMinionIamBinding } = require("./GcpIamBinding");
+const { GcpIamPolicy, compareIamPolicy } = require("./GcpIamPolicy");
+const {
+  GcpIamBinding,
+  isOurMinionIamBinding,
+  compareIamBinding,
+} = require("./GcpIamBinding");
 
 const logger = require("../../../../logger")({ prefix: "GcpIamSpec" });
 
@@ -30,15 +33,7 @@ module.exports = (config) => [
         config,
       }),
     isOurMinion: () => true,
-    compare: ({ target, live }) => {
-      logger.debug(`compare policy`);
-      const diff = compareArray({
-        targets: target.policy.bindings,
-        lives: live.bindings,
-      });
-      logger.debug(`compare ${tos(diff)}`);
-      return diff;
-    },
+    compare: compareIamPolicy,
   },
   {
     type: "IamBinding",
@@ -48,14 +43,6 @@ module.exports = (config) => [
         config,
       }),
     isOurMinion: isOurMinionIamBinding,
-    compare: ({ target, live }) => {
-      logger.debug(`compare binding`);
-      const diff = compareArray({
-        targets: target.members,
-        lives: live.members,
-      });
-      logger.debug(`compare ${tos(diff)}`);
-      return diff;
-    },
+    compare: compareIamBinding,
   },
 ];

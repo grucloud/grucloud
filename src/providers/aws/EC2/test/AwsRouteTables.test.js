@@ -25,9 +25,6 @@ describe("AwsRouteTables", async function () {
 
     await provider.start();
 
-    const { error } = await provider.destroyAll();
-    assert(!error);
-
     const { results: lives } = await provider.listLives({ our: true });
     assert.equal(lives.length, 0);
 
@@ -50,9 +47,7 @@ describe("AwsRouteTables", async function () {
       properties: () => ({}),
     });
   });
-  after(async () => {
-    //await provider?.destroyAll();
-  });
+  after(async () => {});
   it("rt name", async function () {
     assert.equal(rt.name, resourceName);
   });

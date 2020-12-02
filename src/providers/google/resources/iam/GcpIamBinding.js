@@ -1,7 +1,13 @@
 const assert = require("assert");
 const { pipe, tap, map, get, filter, tryCatch } = require("rubico");
 
-const { first, find, defaultsDeep } = require("rubico/x");
+const {
+  first,
+  find,
+  defaultsDeep,
+  differenceWith,
+  isDeepEqual,
+} = require("rubico/x");
 const { retryCallOnError } = require("../../../Retry");
 const { getField } = require("../../../ProviderCommon");
 const { isDownByIdCore } = require("../../../Common");
@@ -10,10 +16,7 @@ const { tos } = require("../../../../tos");
 const { axiosErrorToJSON, logError } = require("../../../Common");
 const { createAxiosMakerGoogle } = require("../../GoogleCommon");
 
-const findName = ({ role }) => {
-  assert(role);
-  return role;
-};
+const findName = get("role");
 const findId = findName;
 
 const isOurMinionIamBinding = ({ resource, resourceNames }) => {
@@ -33,11 +36,11 @@ exports.isOurMinionIamBinding = isOurMinionIamBinding;
 exports.GcpIamBinding = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  const { project } = config;
+  const { projectId } = config;
 
   const axios = createAxiosMakerGoogle({
     baseURL: `https://cloudresourcemanager.googleapis.com/v1`,
-    url: `/projects/${project}`,
+    url: `/projects/${projectId(config)}`,
     config,
   });
 
@@ -183,3 +186,13 @@ exports.GcpIamBinding = ({ spec, config }) => {
     cannotBeDeleted,
   };
 };
+
+exports.compareIamBinding = pipe([
+  ({ target, live }) => ({
+    added: differenceWith(isDeepEqual, target.members)(live.members),
+    deleted: differenceWith(isDeepEqual, live.members)(target.members),
+  }),
+  tap((diff) => {
+    logger.debug(`compareIamBinding ${tos(diff)}`);
+  }),
+]);

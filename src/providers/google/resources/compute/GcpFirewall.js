@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { eq, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getField } = require("../../../ProviderCommon");
 const GoogleClient = require("../../GoogleClient");
@@ -12,7 +13,7 @@ module.exports = GcpFirewall = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const { project, managedByDescription } = config;
+  const { projectId, managedByDescription } = config;
 
   const configDefault = ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ properties, dependencies })}`);
@@ -28,14 +29,12 @@ module.exports = GcpFirewall = ({ spec, config }) => {
     return config;
   };
 
-  const cannotBeDeleted = (item) => {
-    return item.name === "default";
-  };
+  const cannotBeDeleted = eq(get("name", "default"));
 
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${project}/global/firewalls`,
+    url: `/projects/${projectId(config)}/global/firewalls`,
     config,
     configDefault,
     cannotBeDeleted,

@@ -265,7 +265,6 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
     destroy,
     getByName,
     configDefault,
-    cannotBeDeleted: () => false,
   };
 };
 

@@ -12,16 +12,13 @@ describe.skip("AwsS3Bucket Example", async function () {
       this.skip();
     }
   });
-  after(async () => {
-    //await provider?.destroyAll();
-  });
+  after(async () => {});
   it("run s3 example", async function () {
     const {
       provider,
       resources: { buckets },
     } = await createStack({ config });
-    const { error } = await provider.destroyAll();
-    assert(!error, "destroyAll failed");
+
     await testPlanDeploy({ provider });
 
     // Basic

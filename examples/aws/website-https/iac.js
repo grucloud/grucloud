@@ -23,14 +23,25 @@ async function getFilesWalk(dir) {
   );
   return files.flat();
 }
+
 const makeDomainName = ({ DomainName, stage }) =>
   `${stage == "production" ? "" : `${stage}.`}${DomainName}`;
+exports.makeDomainName = makeDomainName;
 
-const createResources = async ({ provider, resources: { certificate } }) => {
+const createResources = async ({
+  provider,
+  resources: { certificate, domain },
+}) => {
   const config = provider.config();
   const { DomainName, websiteDir, stage } = config;
+
   assert(DomainName);
   assert(websiteDir);
+
+  const domainName = makeDomainName({
+    DomainName,
+    stage,
+  });
 
   const files = await getFiles(websiteDir);
   const bucketName = `${DomainName}-${stage}`;
@@ -61,40 +72,16 @@ const createResources = async ({ provider, resources: { certificate } }) => {
     })
   )(files);
 
-  const hostedZone = await provider.makeHostedZone({
-    name: `${makeDomainName({
-      DomainName,
-      stage,
-    })}.`,
-    dependencies: { certificate },
-    properties: ({ dependencies: { certificate } }) => {
-      const record =
-        certificate.live?.DomainValidationOptions[0].ResourceRecord;
-      return {
-        RecordSet: [
-          {
-            Name: record?.Name,
-            ResourceRecords: [
-              {
-                Value: record?.Value,
-              },
-            ],
-            TTL: 300,
-            Type: "CNAME",
-          },
-        ],
-      };
-    },
-  });
-
   const distribution = await provider.makeCloudFrontDistribution({
     name: `distribution-${bucketName}`,
-    dependencies: { websiteBucket },
+    dependencies: { websiteBucket, certificate },
     properties: ({}) => {
       return {
         DistributionConfigWithTags: {
           DistributionConfig: {
             Comment: `${bucketName}.s3.amazonaws.com`,
+            Aliases: { Quantity: 1, Items: [domainName] },
+            DefaultRootObject: "index.html",
             DefaultCacheBehavior: {
               TargetOriginId: `S3-${bucketName}`,
               ViewerProtocolPolicy: "redirect-to-https",
@@ -127,6 +114,51 @@ const createResources = async ({ provider, resources: { certificate } }) => {
     },
   });
 
+  const hostedZoneName = `${makeDomainName({
+    DomainName,
+    stage,
+  })}.`;
+
+  const hostedZone = await provider.makeHostedZone({
+    name: hostedZoneName,
+    dependencies: { certificate, domain, distribution },
+    properties: ({ dependencies: { certificate, distribution } }) => {
+      const domainValidationOption =
+        certificate.live?.DomainValidationOptions[0];
+      const record = domainValidationOption?.ResourceRecord;
+      if (domainValidationOption) {
+        assert(
+          record,
+          `missing record in DomainValidationOptions, certificate ${JSON.stringify(
+            certificate.live
+          )}`
+        );
+      }
+      return {
+        RecordSet: [
+          {
+            Name: record?.Name,
+            ResourceRecords: [
+              {
+                Value: record?.Value,
+              },
+            ],
+            TTL: 300,
+            Type: "CNAME",
+          },
+          {
+            Name: hostedZoneName,
+            Type: "A",
+            AliasTarget: {
+              HostedZoneId: "Z2FDTNDATAQYW2",
+              DNSName: distribution.live?.DomainName,
+              EvaluateTargetHealth: false,
+            },
+          },
+        ],
+      };
+    },
+  });
   return { websiteBucket, hostedZone, distribution };
 };
 
@@ -148,10 +180,14 @@ exports.createStack = async ({ name = "aws", config }) => {
     }),
   });
 
+  const domain = await provider.useRoute53Domain({
+    name: `${DomainName}`,
+  });
+
   const resources = {
     ...(await createResources({
       provider,
-      resources: { certificate },
+      resources: { certificate, domain },
       config,
     })),
     certificate,

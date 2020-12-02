@@ -1,4 +1,4 @@
 module.exports = () => ({
-  projectName: "grucloud-e2e",
-  projectId: "grucloud-e2e",
+  projectName: () => "grucloud-e2e",
+  projectId: () => "grucloud-e2e",
 });

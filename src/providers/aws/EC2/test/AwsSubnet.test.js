@@ -36,13 +36,8 @@ describe("AwsSubnet", async function () {
         CidrBlock: "10.1.0.1/24",
       }),
     });
-
-    const { error } = await provider.destroyAll();
-    assert(!error, "destroyAll failed");
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("subnet name", async function () {
     assert.equal(subnet.name, subnetName);
   });

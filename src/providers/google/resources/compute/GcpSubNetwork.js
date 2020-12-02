@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { eq, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getField } = require("../../../ProviderCommon");
 const GoogleClient = require("../../GoogleClient");
@@ -12,7 +13,7 @@ module.exports = GcpSubNetwork = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const { project, region, managedByDescription } = config;
+  const { projectId, region, managedByDescription } = config;
 
   const configDefault = ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ properties, dependencies })}`);
@@ -28,16 +29,12 @@ module.exports = GcpSubNetwork = ({ spec, config }) => {
     return config;
   };
 
-  const cannotBeDeleted = ({ resource }) => {
-    return resource.name === "default";
-  };
-
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${project}/regions/${region}/subnetworks`,
+    url: `/projects/${projectId(config)}/regions/${region}/subnetworks`,
     config,
     configDefault,
-    cannotBeDeleted,
+    cannotBeDeleted: eq(get("resource.name", "default")),
   });
 };

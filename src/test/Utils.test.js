@@ -1,5 +1,4 @@
 const assert = require("assert");
-const { compare } = require("../Utils");
 const { checkConfig, checkEnv } = require("../Utils");
 
 describe("checkConfig", function () {
@@ -43,24 +42,3 @@ const live = {
   },
   tags: ["web-server-gru"],
 };
-
-describe("compare", function () {
-  it("compare ok", async function () {
-    assert.equal(
-      compare({
-        target,
-        targetKeys: ["volumes.0.size", "commercial_type"],
-        live,
-      }).length,
-      2
-    );
-    assert.equal(
-      compare({
-        target,
-        targetKeys: ["volumes.0.id"],
-        live,
-      }).length,
-      1
-    );
-  });
-});

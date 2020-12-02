@@ -18,7 +18,6 @@ describe("GcpIamBinding", async function () {
     }
 
     provider = GoogleProvider({
-      name: "google",
       config: config.google,
     });
 
@@ -71,7 +70,6 @@ describe("GcpIamBinding", async function () {
     assert(live.role);
     {
       const provider = GoogleProvider({
-        name: "google",
         config: config.google,
       });
       await provider.start();

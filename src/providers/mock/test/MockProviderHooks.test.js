@@ -3,9 +3,10 @@ const path = require("path");
 const { createResources } = require("./MockStack");
 const { ConfigLoader } = require("ConfigLoader");
 const sinon = require("sinon");
-const config404 = require("../../../cli/test/config/config.500");
+const config404 = require("../../../cli/test/config/config.404");
 const { MockProvider } = require("../MockProvider");
 const cliCommands = require("../../../cli/cliCommands");
+const { tos } = require("../../../tos");
 const logger = require("logger")({ prefix: "MockProviderTest" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
 
@@ -82,7 +83,7 @@ describe("MockProviderHooks", async function () {
       });
       assert(false, "should not be here");
     } catch (error) {
-      assert(error.error);
+      assert(error.error, tos(error));
     }
 
     assert(!onDeployed.init.called);
@@ -95,8 +96,8 @@ describe("MockProviderHooks", async function () {
       assert(false, "should not be here");
     } catch (error) {
       assert.equal(
-        error.error.resultsDestroy[0].result.results[0].error.Status,
-        500
+        error.error.results[0].result.results[0].error.response.status,
+        404
       );
     }
 

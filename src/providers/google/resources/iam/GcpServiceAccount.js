@@ -32,10 +32,10 @@ exports.isOurMinionServiceAccount = isOurMinionServiceAccount;
 exports.GcpServiceAccount = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  const { project, managedByDescription, accessToken } = config;
+  const { projectId, managedByDescription, accessToken } = config;
 
   const baseURL = `https://iam.googleapis.com/v1`;
-  const url = `/projects/${project}/serviceAccounts`;
+  const url = `/projects/${projectId(config)}/serviceAccounts`;
 
   const axios = createAxiosMakerGoogle({
     baseURL: baseURL,
