@@ -62,3 +62,4 @@ const hostedZone = await provider.makeHostedZone({
 ## UsedBy
 
 - [HostedZone](../Route53/Route53HostedZone)
+- [CloudFrontDistribution](../CloudFront/CloudFrontDistribution)
