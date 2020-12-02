@@ -82,23 +82,13 @@ describe.skip("GcpWebSiteHttps", async function () {
       dependencies: { httpsTargetProxy },
       properties: () => ({}),
     });
-
-    const { error } = await provider.destroyAll();
-    assert(!error);
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("ssl certificate config", async function () {
     const config = await sslCertificate.resolveConfig();
     assert(config);
     assert.equal(config.name, certificateName);
     assert.equal(config.description, provider.config().managedByDescription);
-  });
-  it("plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, types.length);
   });
   it("website https apply and destroy", async function () {
     await testPlanDeploy({ provider, types });

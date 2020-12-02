@@ -42,26 +42,13 @@ describe("GcpSubNetwork", async function () {
         ipCidrRange: "10.164.0.0/20",
       }),
     });
-
-    const { error } = await provider.destroyAll();
-    assert(!error);
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("subNetwork config", async function () {
     const config = await subNetwork.resolveConfig();
     assert(config);
     assert.equal(config.name, subNetworkName);
     assert.equal(config.description, provider.config().managedByDescription);
-  });
-  it("lives", async function () {
-    await provider.listLives();
-  });
-  it("plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 2);
   });
   it.skip("subNetwork apply and destroy", async function () {
     await testPlanDeploy({ provider });

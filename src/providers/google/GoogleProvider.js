@@ -965,20 +965,21 @@ const unInit = async ({
     serviceAccountName,
   });
 
-  await serviceAccountKeyDelete({
-    projectId,
-    projectName,
-    accessToken,
-    serviceAccountName,
-    applicationCredentialsFile,
-  });
+  if (options.serviceAccountDelete) {
+    await serviceAccountKeyDelete({
+      projectId,
+      projectName,
+      accessToken,
+      serviceAccountName,
+      applicationCredentialsFile,
+    });
 
-  await serviceAccountDelete({
-    projectId,
-    accessToken,
-    serviceAccountName,
-  });
-
+    await serviceAccountDelete({
+      projectId,
+      accessToken,
+      serviceAccountName,
+    });
+  }
   //await billingDisable({ projectId, accessToken });
   //await removeProject({ projectName, projectId, accessToken });
   if (options.servicesDelete) {

@@ -8,6 +8,7 @@ describe("GcpIamBinding", async function () {
   let provider;
   let iamBindingServiceAccount;
   let serviceAccount;
+  const types = ["IamBinding"];
   const roleEditor = "roles/editor";
 
   before(async function () {
@@ -35,36 +36,17 @@ describe("GcpIamBinding", async function () {
       dependencies: { serviceAccounts: [serviceAccount] },
       properties: ({}) => ({}),
     });
-
-    const { error } = await provider.destroyAll();
-    assert(!error, "destroyAll failed");
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("iamBinding config", async function () {
     const iamBindingLive = await iamBindingServiceAccount.getLive();
     const config = await iamBindingServiceAccount.resolveConfig({
       live: iamBindingLive,
     });
   });
-  it("lives", async function () {
-    const { results: lives } = await provider.listLives({
-      types: "IamBinding",
-    });
-    assert(lives[0].resources.length >= 1);
-  });
-  it("plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 2);
-    const planCreate = plan.resultCreate.plans[1];
-    assert.equal(planCreate.action, "CREATE");
-    assert.equal(planCreate.config.role, roleEditor);
-  });
   it("iamBinding apply and destroy", async function () {
-    const { error, resultCreate } = await provider.planQueryAndApply();
-    assert(!error, "should not have failed");
+    const result = await provider.planQueryAndApply();
+    assert(!result.error, "should not have failed");
     const live = await iamBindingServiceAccount.getLive();
     assert(live.members);
     assert(live.role);
@@ -95,7 +77,6 @@ describe("GcpIamBinding", async function () {
 
   it("iamBindingEmail", async function () {
     const provider = GoogleProvider({
-      name: "google",
       config: config.google,
     });
     await provider.start();

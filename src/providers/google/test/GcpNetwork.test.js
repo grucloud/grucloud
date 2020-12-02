@@ -23,26 +23,13 @@ describe("GcpNetwork", async function () {
       config: config.google,
     });
     network = await provider.makeNetwork({ name: networkName });
-
-    const { error } = await provider.destroyAll();
-    assert(!error);
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("network config", async function () {
     const config = await network.resolveConfig();
     assert(config);
     assert.equal(config.name, networkName);
     assert.equal(config.description, provider.config().managedByDescription);
-  });
-  it("lives", async function () {
-    await provider.listLives();
-  });
-  it("plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 1);
   });
   it.skip("network apply and destroy", async function () {
     await testPlanDeploy({ provider });

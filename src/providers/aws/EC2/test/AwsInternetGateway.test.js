@@ -10,7 +10,7 @@ describe("AwsInternetGateway", async function () {
   let vpc;
   let ig;
   const resourceName = "ig";
-
+  const types = ["InternetGateway"];
   before(async function () {
     try {
       config = ConfigLoader({ path: "examples/multi" });
@@ -42,7 +42,7 @@ describe("AwsInternetGateway", async function () {
     assert.equal(ig.name, resourceName);
   });
   it.skip("ig apply and destroy", async function () {
-    await testPlanDeploy({ provider });
+    await testPlanDeploy({ provider, types });
     const igLive = await ig.getLive();
     const vpcLive = await vpc.getLive();
     CheckAwsTags({
@@ -53,7 +53,7 @@ describe("AwsInternetGateway", async function () {
 
     const {
       results: [igs],
-    } = await provider.listLives({ types: ["InternetGateway"] });
+    } = await provider.listLives({ types });
     assert.equal(igs.type, "InternetGateway");
     const myIg = igs.resources.find(
       (resource) => resource.data.Attachments[0].VpcId === vpcLive.VpcId
@@ -63,6 +63,6 @@ describe("AwsInternetGateway", async function () {
 
     assert(myIg.data.InternetGatewayId);
     //assert(resource.PublicIp);
-    await testPlanDestroy({ provider });
+    await testPlanDestroy({ provider, types });
   });
 });

@@ -26,9 +26,6 @@ describe("GoogleProvider", async function () {
 
     await provider.start();
 
-    const { error } = await provider.destroyAll();
-    assert(!error);
-
     network = await provider.makeNetwork({
       name: "network-dev",
       properties: () => ({ autoCreateSubnetworks: false }),
@@ -65,9 +62,7 @@ describe("GoogleProvider", async function () {
       }),
     });
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("gcp info", async function () {
     const info = await provider.info();
     assert(info.projectId);
@@ -90,11 +85,7 @@ describe("GoogleProvider", async function () {
       notAvailable(ipName, "address")
     );
   });
-  it("plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, types.length);
-  });
+
   it("gcp apply and destroy", async function () {
     await testPlanDeploy({ provider, types, full: true });
 
