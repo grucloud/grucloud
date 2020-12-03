@@ -40,30 +40,6 @@
 ## TODO Aws:
 
 - multi provider stuck on us-east-1
-- certificate isOurMinion false
-- Listing resources on 1 provider: aws
-  ✓ aws
-  ✓ Initialising
-  ✓ Fetching Data
-  ✓ S3Bucket
-  ✓ S3Object
-  KeyPair
-  ✓ Vpc
-  ✓ InternetGateway
-  ✓ Subnet
-  ✓ RouteTables
-  ✓ SecurityGroup
-  ✓ ElasticIpAddress
-  ✓ EC2
-  ✓ IamUser
-  ✓ IamGroup
-  ✓ IamRole
-  ✓ IamPolicy
-  ✓ IamInstanceProfile
-  ✓ HostedZone
-  Route53Domain
-  ✓ Certificate
-  ✓ CloudFrontDistribution
 
 - invalidate cloufront cache
 - CF priceClass 100
