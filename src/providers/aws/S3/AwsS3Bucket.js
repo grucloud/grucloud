@@ -524,8 +524,8 @@ exports.AwsS3Bucket = ({ spec, config }) => {
           name: `s3 createBucket: ${Bucket}`,
           fn: () => s3.createBucket(otherProperties).promise(),
           shouldRetryOnException: (error) => {
-            logger.error(`create error ${tos(error)}`);
-            return ["OperationAborted"].includes(error.code);
+            logger.error(`createBucket error ${tos(error)}`);
+            return true;
           },
         }),
       tap(({ Location }) => {
@@ -545,156 +545,166 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
     try {
       await putTags({ Bucket, paramsTag });
+      await retryCall({
+        name: `s3 put: ${Bucket}`,
+        fn: async () => {
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAccelerateConfiguration-property
+          if (AccelerateConfiguration) {
+            await s3
+              .putBucketAccelerateConfiguration({
+                Bucket,
+                AccelerateConfiguration,
+              })
+              .promise();
+          }
 
-      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAccelerateConfiguration-property
-      if (AccelerateConfiguration) {
-        await s3
-          .putBucketAccelerateConfiguration({
-            Bucket,
-            AccelerateConfiguration,
-          })
-          .promise();
-      }
-
-      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAcl-property
-      if (
-        ACL ||
-        AccessControlPolicy ||
-        GrantFullControl ||
-        GrantRead ||
-        GrantReadACP ||
-        GrantWrite ||
-        GrantWriteACP
-      ) {
-        try {
-          await s3
-            .putBucketAcl({
-              Bucket,
-              ACL,
-              AccessControlPolicy,
-              GrantFullControl,
-              GrantRead,
-              GrantReadACP,
-              GrantWrite,
-              GrantWriteACP,
-            })
-            .promise();
-
-          await retryCall({
-            name: `s3 getBucketAcl: ${Bucket}`,
-            fn: pipe([
-              () => s3.getBucketAcl({ Bucket }).promise(),
-              get("Grants"),
-              tap((Grants) => {
-                logger.debug(
-                  `getBucketAcl ${Bucket}, ACL: ${ACL}, ${tos({ Grants })}`
-                );
-              }),
-              switchCase([
-                () => ACL === "log-delivery-write",
-                (Grants) => {
-                  if (Grants.length != 3) {
-                    const message = `no ACL yet for ${Bucket}`;
-                    logger.error(message);
-                    throw Error(message);
-                  }
-                },
-                () => ACL === "public-read",
-                (Grants) => {
-                  if (Grants.length != 2) {
-                    const message = `no ACL yet for ${Bucket}`;
-                    logger.error(message);
-                    throw Error(message);
-                  }
-                },
-                () => true,
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAcl-property
+          if (
+            ACL ||
+            AccessControlPolicy ||
+            GrantFullControl ||
+            GrantRead ||
+            GrantReadACP ||
+            GrantWrite ||
+            GrantWriteACP
+          ) {
+            await retryCall({
+              name: `s3 getBucketAcl: ${Bucket}`,
+              fn: pipe([
+                () =>
+                  s3
+                    .putBucketAcl({
+                      Bucket,
+                      ACL,
+                      AccessControlPolicy,
+                      GrantFullControl,
+                      GrantRead,
+                      GrantReadACP,
+                      GrantWrite,
+                      GrantWriteACP,
+                    })
+                    .promise(),
+                () => s3.getBucketAcl({ Bucket }).promise(),
+                get("Grants"),
+                tap((Grants) => {
+                  logger.debug(
+                    `getBucketAcl ${Bucket}, ACL: ${ACL}, ${tos({ Grants })}`
+                  );
+                }),
+                switchCase([
+                  () => ACL === "log-delivery-write",
+                  (Grants) => {
+                    if (Grants.length != 3) {
+                      const message = `no ACL yet for ${Bucket}`;
+                      logger.error(message);
+                      throw Error(message);
+                    }
+                  },
+                  () => ACL === "public-read",
+                  (Grants) => {
+                    if (Grants.length != 2) {
+                      const message = `no ACL yet for ${Bucket}`;
+                      logger.error(message);
+                      throw Error(message);
+                    }
+                  },
+                  () => true,
+                ]),
               ]),
-            ]),
-          });
-        } catch (error) {
-          logger.error(`putBucketAcl ${Bucket}, error: ${error}`);
-          throw error;
-        }
-      }
-      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketCors-property
-      if (CORSConfiguration) {
-        await s3.putBucketCors({ Bucket, CORSConfiguration }).promise();
-      }
-      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketEncryption-property
-      if (ServerSideEncryptionConfiguration) {
-        await s3
-          .putBucketEncryption({
-            Bucket,
-            ServerSideEncryptionConfiguration,
-          })
-          .promise();
-      }
+            });
+          }
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketCors-property
+          if (CORSConfiguration) {
+            await s3.putBucketCors({ Bucket, CORSConfiguration }).promise();
+          }
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketEncryption-property
+          if (ServerSideEncryptionConfiguration) {
+            await s3
+              .putBucketEncryption({
+                Bucket,
+                ServerSideEncryptionConfiguration,
+              })
+              .promise();
+          }
 
-      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketLifecycleConfiguration-property
-      if (LifecycleConfiguration) {
-        await s3
-          .putBucketLifecycleConfiguration({
-            Bucket,
-            LifecycleConfiguration,
-          })
-          .promise();
-      }
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketLifecycleConfiguration-property
+          if (LifecycleConfiguration) {
+            await s3
+              .putBucketLifecycleConfiguration({
+                Bucket,
+                LifecycleConfiguration,
+              })
+              .promise();
+          }
 
-      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketLogging-property
-      if (BucketLoggingStatus) {
-        await s3.putBucketLogging({ Bucket, BucketLoggingStatus }).promise();
-      }
-      //  https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketNotificationConfiguration-property
-      if (NotificationConfiguration) {
-        await s3
-          .putBucketNotificationConfiguration({
-            Bucket,
-            NotificationConfiguration,
-          })
-          .promise();
-      }
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketLogging-property
+          if (BucketLoggingStatus) {
+            await s3
+              .putBucketLogging({ Bucket, BucketLoggingStatus })
+              .promise();
+          }
+          //  https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketNotificationConfiguration-property
+          if (NotificationConfiguration) {
+            await s3
+              .putBucketNotificationConfiguration({
+                Bucket,
+                NotificationConfiguration,
+              })
+              .promise();
+          }
 
-      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketPolicy-property
-      if (Policy) {
-        await s3
-          .putBucketPolicy({
-            Bucket,
-            Policy,
-          })
-          .promise();
-      }
-      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketReplication-property
-      if (ReplicationConfiguration) {
-        await s3
-          .putBucketReplication({
-            Bucket,
-            ReplicationConfiguration,
-          })
-          .promise();
-      }
-      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketRequestPayment-property
-      if (RequestPaymentConfiguration) {
-        await s3
-          .putBucketRequestPayment({
-            Bucket,
-            RequestPaymentConfiguration,
-          })
-          .promise();
-      }
-      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketVersioning-property
-      if (VersioningConfiguration) {
-        await s3
-          .putBucketVersioning({ Bucket, VersioningConfiguration })
-          .promise();
-      }
-      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketWebsite-property
-      if (WebsiteConfiguration) {
-        logger.debug(
-          `putBucketWebsite ${Bucket}: ${tos(WebsiteConfiguration)}`
-        );
-        await s3.putBucketWebsite({ Bucket, WebsiteConfiguration }).promise();
-      }
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketPolicy-property
+          if (Policy) {
+            await s3
+              .putBucketPolicy({
+                Bucket,
+                Policy,
+              })
+              .promise();
+          }
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketReplication-property
+          if (ReplicationConfiguration) {
+            await s3
+              .putBucketReplication({
+                Bucket,
+                ReplicationConfiguration,
+              })
+              .promise();
+          }
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketRequestPayment-property
+          if (RequestPaymentConfiguration) {
+            await s3
+              .putBucketRequestPayment({
+                Bucket,
+                RequestPaymentConfiguration,
+              })
+              .promise();
+          }
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketVersioning-property
+          if (VersioningConfiguration) {
+            await s3
+              .putBucketVersioning({ Bucket, VersioningConfiguration })
+              .promise();
+          }
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketWebsite-property
+          if (WebsiteConfiguration) {
+            logger.debug(
+              `putBucketWebsite ${Bucket}: ${tos(WebsiteConfiguration)}`
+            );
+            await s3
+              .putBucketWebsite({ Bucket, WebsiteConfiguration })
+              .promise();
+          }
+        },
+        shouldRetryOnException: (error) => {
+          logger.error(`s3 put shouldRetryOnException ${tos(error)}`);
+          return true;
+        },
+        retryCount: 10,
+        retryDelay: 2e3,
+      });
     } catch (error) {
+      logger.error("s3 bucket put error");
       logger.error(error);
       await destroy({ id: Bucket, name: Bucket });
       throw error;
@@ -822,9 +832,9 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException: (error) => {
-      logger.debug(`shouldRetryOnException ${tos(error)}`);
+      logger.error(`shouldRetryOnException ${tos(error)}`);
       const retry = error.code === "NoSuchBucket";
-      logger.debug(`shouldRetryOnException retry: ${retry}`);
+      logger.error(`shouldRetryOnException retry: ${retry}`);
       return retry;
     },
   };
