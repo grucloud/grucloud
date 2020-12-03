@@ -1,7 +1,3 @@
-const assert = require("assert");
-
-const logger = require("../../../logger")({ prefix: "AwsRoute53Spec" });
-const { tos } = require("../../../tos");
 const { isOurMinion } = require("../AwsCommon");
 
 const { AwsCertificate } = require("./AwsCertificate");

@@ -1304,7 +1304,7 @@ function CoreProvider({
         spinnersStopClient({
           onStateChange,
           title: TitleQuery,
-          clients: filterReadWriteClient(options)(clients),
+          clients: filterReadClient(options)(clients),
         }),
         () => spinnersStopProvider({ onStateChange }),
       ])
