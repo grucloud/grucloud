@@ -52,11 +52,13 @@ describe("AwsEC2", async function () {
 
     const serverLive = await server.getLive();
 
-    CheckAwsTags({
-      config: provider.config(),
-      tags: serverLive.Tags,
-      name: server.name,
-    });
+    assert(
+      CheckAwsTags({
+        config: provider.config(),
+        tags: serverLive.Tags,
+        name: server.name,
+      })
+    );
 
     const {
       results: [vpcs],

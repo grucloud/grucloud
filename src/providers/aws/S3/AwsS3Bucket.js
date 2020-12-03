@@ -15,7 +15,7 @@ const {
 const { isEmpty, isDeepEqual, defaultsDeep, unionWith } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "S3Bucket" });
-const { retryExpectOk, retryCall } = require("../../Retry");
+const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { mapPoolSize } = require("../../Common");
 const { CheckAwsTags } = require("../AwsTagCheck");
@@ -83,9 +83,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
           })
         )
       ),
-      tap((Buckets) => {
-        logger.info(`getList s3Bucket `);
-      }),
       filter(pipe([get("error"), isEmpty])),
       tap((fullBuckets) => {
         logger.info(`getList s3bucket #items ${fullBuckets.length}`);
@@ -417,21 +414,25 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const putTags = ({ Bucket, paramsTag }) =>
     retryCall({
       name: `tag ${Bucket}`,
-      fn: async () => {
+      fn: pipe([
         // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketTagging-property
-        await s3.putBucketTagging(paramsTag).promise();
-        const { TagSet } = await s3.getBucketTagging({ Bucket }).promise();
-        logger.debug(`putTags ${tos(TagSet)}`);
-
-        CheckAwsTags({
-          config,
-          tags: TagSet,
-          name: Bucket,
-        });
-      },
+        () => s3.putBucketTagging(paramsTag).promise(),
+        () => s3.getBucketTagging({ Bucket }).promise(),
+        get("TagSet"),
+        tap((TagSet) => {
+          logger.debug(`putTags Bucket: ${Bucket}, TagSet: ${tos(TagSet)}`);
+        }),
+        (TagSet) =>
+          CheckAwsTags({
+            config,
+            tags: TagSet,
+            name: Bucket,
+          }),
+      ]),
+      isExpectedResult: (result) => result,
       shouldRetryOnException: (error) => {
         logger.error(`putTags shouldRetryOnException ${tos(error)}`);
-        return error.code === "NoSuchTagSet";
+        return true;
       },
       retryCount: 5,
       retryDelay: config.retryDelay,
@@ -539,28 +540,36 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             })
             .promise();
 
-          await retryExpectOk({
-            name: `s3 putBucketAcl: ${Bucket}`,
-            fn: async () => {
-              const { Grants } = await s3.getBucketAcl({ Bucket }).promise();
+          await retryCall({
+            name: `s3 getBucketAcl: ${Bucket}`,
+            fn: pipe([
+              () => s3.getBucketAcl({ Bucket }).promise(),
+              get("Grants"),
+              tap((Grants) => {
+                logger.debug(
+                  `getBucketAcl ${Bucket}, ACL: ${ACL}, ${tos({ Grants })}`
+                );
+              }),
               switchCase([
                 () => ACL === "log-delivery-write",
-                () => {
+                (Grants) => {
                   if (Grants.length != 3) {
-                    throw Error(`no ACL yet for ${Bucket}`);
+                    const message = `no ACL yet for ${Bucket}`;
+                    logger.error(message);
+                    throw Error(message);
                   }
                 },
                 () => ACL === "public-read",
-                () => {
+                (Grants) => {
                   if (Grants.length != 2) {
-                    throw Error(`no ACL yet for ${Bucket}`);
+                    const message = `no ACL yet for ${Bucket}`;
+                    logger.error(message);
+                    throw Error(message);
                   }
                 },
-              ])();
-
-              return true;
-            },
-            config: clientConfig,
+                () => true,
+              ]),
+            ]),
           });
         } catch (error) {
           logger.error(`putBucketAcl ${Bucket}, error: ${error}`);

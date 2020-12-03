@@ -103,11 +103,13 @@ describe("AwsVpc", async function () {
     const vpcLive = await vpc.getLive();
     const { VpcId } = vpcLive;
 
-    CheckAwsTags({
-      config: provider.config(),
-      tags: vpcLive.Tags,
-      name: vpc.name,
-    });
+    assert(
+      CheckAwsTags({
+        config: provider.config(),
+        tags: vpcLive.Tags,
+        name: vpc.name,
+      })
+    );
 
     await testPlanDestroy({ provider, full: false });
   });

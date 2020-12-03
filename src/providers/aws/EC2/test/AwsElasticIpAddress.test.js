@@ -45,11 +45,13 @@ describe("AwsElasticIpAddress", async function () {
     await testPlanDeploy({ provider, types });
     const eipLive = await eip.getLive();
 
-    CheckAwsTags({
-      config: provider.config(),
-      tags: eipLive.Tags,
-      name: eip.name,
-    });
+    assert(
+      CheckAwsTags({
+        config: provider.config(),
+        tags: eipLive.Tags,
+        name: eip.name,
+      })
+    );
 
     const {
       results: [eips],

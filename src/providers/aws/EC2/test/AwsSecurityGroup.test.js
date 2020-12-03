@@ -98,11 +98,13 @@ describe("AwsSecurityGroup", async function () {
     const vpcLive = await vpc.getLive();
     assert.equal(sgLive.VpcId, vpcLive.VpcId);
 
-    CheckAwsTags({
-      config: provider.config(),
-      tags: sgLive.Tags,
-      name: sg.name,
-    });
+    assert(
+      CheckAwsTags({
+        config: provider.config(),
+        tags: sgLive.Tags,
+        name: sg.name,
+      })
+    );
 
     await testPlanDestroy({ provider, full: false, types });
   });

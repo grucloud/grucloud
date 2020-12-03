@@ -60,11 +60,13 @@ describe("AwsRouteTables", async function () {
     const subnetLive = await subnet.getLive();
     const vpcLive = await vpc.getLive();
 
-    CheckAwsTags({
-      config: provider.config(),
-      tags: rtLive.Tags,
-      name: rt.name,
-    });
+    assert(
+      CheckAwsTags({
+        config: provider.config(),
+        tags: rtLive.Tags,
+        name: rt.name,
+      })
+    );
 
     const {
       results: [rts],

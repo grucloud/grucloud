@@ -2,9 +2,8 @@
 
 ## Common:
 
-- run ci test with different phase
+- retryExpectOk => retryCall
 
-- add types to testPlanDestroy
 - PROMPT='%4~ %# '
 - displayPlan error
 - add a delete summary
@@ -40,7 +39,32 @@
 
 ## TODO Aws:
 
-- get index.html from cloudfront domain name
+- multi provider stuck on us-east-1
+- certificate isOurMinion false
+- Listing resources on 1 provider: aws
+  ✓ aws
+  ✓ Initialising
+  ✓ Fetching Data
+  ✓ S3Bucket
+  ✓ S3Object
+  KeyPair
+  ✓ Vpc
+  ✓ InternetGateway
+  ✓ Subnet
+  ✓ RouteTables
+  ✓ SecurityGroup
+  ✓ ElasticIpAddress
+  ✓ EC2
+  ✓ IamUser
+  ✓ IamGroup
+  ✓ IamRole
+  ✓ IamPolicy
+  ✓ IamInstanceProfile
+  ✓ HostedZone
+  Route53Domain
+  ✓ Certificate
+  ✓ CloudFrontDistribution
+
 - invalidate cloufront cache
 - CF priceClass 100
 - CallerReference distribution

@@ -45,11 +45,13 @@ describe("AwsInternetGateway", async function () {
     await testPlanDeploy({ provider, types });
     const igLive = await ig.getLive();
     const vpcLive = await vpc.getLive();
-    CheckAwsTags({
-      config: provider.config(),
-      tags: igLive.Tags,
-      name: ig.name,
-    });
+    assert(
+      CheckAwsTags({
+        config: provider.config(),
+        tags: igLive.Tags,
+        name: ig.name,
+      })
+    );
 
     const {
       results: [igs],
