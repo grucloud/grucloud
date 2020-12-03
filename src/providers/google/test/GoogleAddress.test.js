@@ -27,25 +27,15 @@ describe("GoogleAddress", async function () {
     await provider.start();
 
     address = await provider.makeAddress({ name: addressName });
-
-    const { error } = await provider.destroyAll();
-    assert(!error);
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("address config", async function () {
     const config = await address.resolveConfig();
     assert(config);
     assert.equal(config.name, addressName);
     assert.equal(config.description, provider.config().managedByDescription);
   });
-  it("plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, types.length);
-  });
-  it("apply and destroy", async function () {
+  it.skip("apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
     await testPlanDestroy({ provider, types });
   });

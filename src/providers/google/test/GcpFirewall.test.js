@@ -46,26 +46,13 @@ describe("GcpFirewall", async function () {
         ],
       }),
     });
-
-    const { error } = await provider.destroyAll();
-    assert(!error);
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("firewall config", async function () {
     const config = await firewall.resolveConfig();
     assert(config);
     assert.equal(config.name, firewallName);
     assert.equal(config.description, provider.config().managedByDescription);
-  });
-  it("lives", async function () {
-    await provider.listLives();
-  });
-  it("plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 2);
   });
   it.skip("firewall apply and destroy", async function () {
     await testPlanDeploy({ provider });

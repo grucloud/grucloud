@@ -36,13 +36,8 @@ describe("GcpServiceAccount", async function () {
         },
       }),
     });
-
-    const { error } = await provider.destroyAll();
-    assert(!error, "destroyAll failed");
   });
-  after(async () => {
-    //await provider?.destroyAll();
-  });
+  after(async () => {});
   it("serviceAccount config", async function () {
     const config = await serviceAccount.resolveConfig();
     assert(config);
@@ -65,16 +60,21 @@ describe("GcpServiceAccount", async function () {
     assert(serviceAccountLive);
 
     const providerEmpty = GoogleProvider({
-      name: "google",
       config: config.google,
     });
     {
-      const { error, results } = await providerEmpty.destroyAll({ all: false });
+      const { error, results } = await providerEmpty.destroyAll({
+        all: false,
+        types,
+      });
       assert(!error, "destroyAll failed");
       assert.equal(results.length, 0);
     }
     {
-      const { error, results } = await provider.destroyAll({ all: false });
+      const { error, results } = await provider.destroyAll({
+        all: false,
+        types,
+      });
       assert(!error, "destroyAll failed");
       assert.equal(results.length, 1);
     }

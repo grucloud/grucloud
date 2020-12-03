@@ -5,6 +5,7 @@ const { AwsProvider } = require("../../AwsProvider");
 
 describe.skip("AwsS3BucketPerf", async function () {
   let config;
+  const types = ["S3Bucket"];
   before(async function () {
     try {
       config = ConfigLoader({ path: "examples/multi" });
@@ -46,7 +47,7 @@ describe.skip("AwsS3BucketPerf", async function () {
       assert(!error, "planQueryAndApply failed");
     }
     {
-      const { error } = await provider.destroyAll();
+      const { error } = await provider.destroyAll({ types });
       assert(!error, "destroyAll");
     }
   });

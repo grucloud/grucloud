@@ -86,3 +86,4 @@ const distribution = await provider.makeCloudFrontDistribution({
 ### Dependencies
 
 - [S3Bucket](../S3/S3Bucket)
+- [Certificate](../ACM/AcmCertificate)

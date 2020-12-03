@@ -161,7 +161,7 @@ exports.AwsIamRole = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.debug(`destroy ${tos({ name, id })}`);
+        logger.info(`destroy iam role ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
       () =>
@@ -206,13 +206,13 @@ exports.AwsIamRole = ({ spec, config }) => {
           .promise(),
       tap(() =>
         retryExpectOk({
-          name: `isDownById: ${name} id: ${id}`,
+          name: `isDownById iam role: ${name} id: ${id}`,
           fn: () => isDownById({ id }),
           config,
         })
       ),
       tap(() => {
-        logger.debug(`destroy done, ${tos({ name, id })}`);
+        logger.info(`destroy iam role done, ${tos({ name, id })}`);
       }),
     ])();
 

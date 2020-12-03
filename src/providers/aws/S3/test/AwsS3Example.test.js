@@ -4,7 +4,7 @@ const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { createStack } = require("../../../../../examples/aws/s3/iac");
 describe.skip("AwsS3Bucket Example", async function () {
   let config;
-
+  const types = ["S3Bucket"];
   before(async function () {
     try {
       config = ConfigLoader({ path: "examples/aws/s3" });
@@ -19,7 +19,7 @@ describe.skip("AwsS3Bucket Example", async function () {
       resources: { buckets },
     } = await createStack({ config });
 
-    await testPlanDeploy({ provider });
+    await testPlanDeploy({ provider, types });
 
     // Basic
     const basic = await buckets.basic.getLive();
@@ -98,6 +98,6 @@ describe.skip("AwsS3Bucket Example", async function () {
     assert.equal(website.WebsiteConfiguration.ErrorDocument.Key, "error.html");
 
     // Destroy
-    await testPlanDestroy({ provider, full: false });
+    await testPlanDestroy({ provider, full: false, types });
   });
 });

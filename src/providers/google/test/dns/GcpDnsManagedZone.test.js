@@ -46,23 +46,13 @@ describe("GcpDnsManagedZone", async function () {
         ],
       }),
     });
-
-    const { error } = await provider.destroyAll();
-    assert(!error);
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("dns managed zone config", async function () {
     const config = await dnsManagedZoneEmpty.resolveConfig();
     assert(config);
     assert.equal(config.description, provider.config().managedByDescription);
     assert(Array.isArray(config.recordSet));
-  });
-  it("plan", async function () {
-    const plan = await provider.planQuery();
-    //assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 2);
   });
 
   it("dns managed zone apply and destroy", async function () {

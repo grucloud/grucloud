@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, map, get, filter, tryCatch } = require("rubico");
+const { pipe, tap, map, get, filter, tryCatch, switchCase } = require("rubico");
 
 const {
   first,
@@ -7,6 +7,7 @@ const {
   defaultsDeep,
   differenceWith,
   isDeepEqual,
+  uniq,
 } = require("rubico/x");
 const { retryCallOnError } = require("../../../Retry");
 const { getField } = require("../../../ProviderCommon");
@@ -62,7 +63,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
     pipe([
       () =>
         retryCallOnError({
-          name: `getList type: ${spec.type}`,
+          name: `getIamPolicy`,
           fn: () =>
             axios.request(":getIamPolicy", {
               method: "POST",
@@ -93,14 +94,14 @@ exports.GcpIamBinding = ({ spec, config }) => {
 
   const getByName = ({ name }) =>
     pipe([
-      tap((obj) => {
-        logger.debug(`getByName`);
+      tap(() => {
+        logger.debug(`getByName ${name}`);
       }),
       getList,
       get("items"),
       find((binding) => binding.role === name),
-      tap((xxx) => {
-        logger.debug(`getByName`);
+      tap((binding) => {
+        logger.debug(`getByName result: ${tos(binding)}`);
       }),
     ])();
 
@@ -112,11 +113,14 @@ exports.GcpIamBinding = ({ spec, config }) => {
     pipe([
       getIamPolicy,
       (policy) => ({ ...policy, bindings: [...policy.bindings, payload] }),
+      tap((policy) => {
+        logger.debug(`create policy: ${tos(policy)}`);
+      }),
       (policy) =>
         retryCallOnError({
-          name: `create`,
-          fn: async () =>
-            await axios.request(":setIamPolicy", {
+          name: `create iam binding`,
+          fn: () =>
+            axios.request(":setIamPolicy", {
               method: "POST",
               data: { policy },
             }),
@@ -125,18 +129,39 @@ exports.GcpIamBinding = ({ spec, config }) => {
       get("data"),
     ])();
 
+  const updateBinding = ({ currentBindings, newBinding }) =>
+    map(
+      switchCase([
+        (binding) => binding.role === newBinding.role,
+        ({ role, members }) => ({
+          role,
+          members: uniq([...members, ...newBinding.members]),
+        }),
+        (binding) => binding,
+      ])
+    )(currentBindings);
+
   const update = ({ payload }) =>
     pipe([
-      tap((xx) => {
-        //console.log("update");
+      tap(() => {
+        logger.info(`update new binding ${tos(payload)}`);
       }),
       getIamPolicy,
-      //TODO
-      ({ policy }) =>
+      ({ bindings, etag }) => ({
+        etag,
+        bindings: updateBinding({
+          currentBindings: bindings,
+          newBinding: payload,
+        }),
+      }),
+      tap((policy) => {
+        logger.debug(`update policy: ${tos(policy)}`);
+      }),
+      (policy) =>
         retryCallOnError({
-          name: `update`,
-          fn: async () =>
-            await axios.request(":setIamPolicy", {
+          name: `update iam binding`,
+          fn: () =>
+            axios.request(":setIamPolicy", {
               method: "POST",
               data: { policy },
             }),
@@ -144,7 +169,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
         }),
       get("data"),
       tap((xx) => {
-        console.log("updated");
+        logger.info(`new binding updated ${tos(payload)}`);
       }),
     ])();
 
@@ -160,9 +185,9 @@ exports.GcpIamBinding = ({ spec, config }) => {
       }),
       (policy) =>
         retryCallOnError({
-          name: `destroy ${id}`,
-          fn: async () =>
-            await axios.request(":setIamPolicy", {
+          name: `destroy iam binding ${id}`,
+          fn: () =>
+            axios.request(":setIamPolicy", {
               method: "POST",
               data: { policy },
             }),

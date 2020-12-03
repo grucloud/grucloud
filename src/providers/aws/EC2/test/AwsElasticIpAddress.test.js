@@ -9,7 +9,7 @@ describe("AwsElasticIpAddress", async function () {
   let provider;
   let eip;
   const resourceName = "myip";
-
+  const types = ["ElasticIpAddress"];
   before(async function () {
     try {
       config = ConfigLoader({ path: "examples/multi" });
@@ -42,7 +42,7 @@ describe("AwsElasticIpAddress", async function () {
     assert.equal(eip.name, resourceName);
   });
   it.skip("eip apply and destroy", async function () {
-    await testPlanDeploy({ provider });
+    await testPlanDeploy({ provider, types });
     const eipLive = await eip.getLive();
 
     CheckAwsTags({
@@ -59,6 +59,6 @@ describe("AwsElasticIpAddress", async function () {
     assert.equal(resource.Domain, "vpc");
     assert(resource.PublicIp);
 
-    await testPlanDestroy({ provider });
+    await testPlanDestroy({ provider, types });
   });
 });

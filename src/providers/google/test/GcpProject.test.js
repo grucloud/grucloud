@@ -23,13 +23,8 @@ describe.skip("GcpProject", async function () {
       config: config.google,
     });
     project = await provider.makeProject({ name: projectName });
-
-    const { error } = await provider.destroyAll();
-    assert(!error);
   });
-  after(async () => {
-    await provider?.destroyAll();
-  });
+  after(async () => {});
   it("project config", async function () {
     const config = await project.resolveConfig();
     assert(config);
@@ -39,14 +34,7 @@ describe.skip("GcpProject", async function () {
       provider.config().stage
     );
   });
-  it("lives", async function () {
-    await provider.listLives();
-  });
-  it("plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 1);
-  });
+
   it("project apply and destroy", async function () {
     await testPlanDeploy({ provider });
     await testPlanDestroy({ provider });
