@@ -100,11 +100,14 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
       config,
     });
 
-    CheckAwsTags({
-      config,
-      tags: rt.Tags,
-      name: name,
-    });
+    assert(
+      CheckAwsTags({
+        config,
+        tags: rt.Tags,
+        name: name,
+      }),
+      `missing tag for ${name}`
+    );
     return { id: RouteTableId };
   };
 

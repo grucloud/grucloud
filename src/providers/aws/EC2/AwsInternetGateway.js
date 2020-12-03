@@ -99,11 +99,14 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
       config,
     });
 
-    CheckAwsTags({
-      config,
-      tags: igw.Tags,
-      name: name,
-    });
+    assert(
+      CheckAwsTags({
+        config,
+        tags: igw.Tags,
+        name: name,
+      }),
+      `missing tag for ${name}`
+    );
     return { id: InternetGatewayId };
   };
 

@@ -65,11 +65,13 @@ describe("AwsSubnet", async function () {
     const vpcLive = await vpc.getLive();
     assert.equal(subnetLive.VpcId, vpcLive.VpcId);
 
-    CheckAwsTags({
-      config: provider.config(),
-      tags: subnetLive.Tags,
-      name: subnet.name,
-    });
+    assert(
+      CheckAwsTags({
+        config: provider.config(),
+        tags: subnetLive.Tags,
+        name: subnet.name,
+      })
+    );
 
     await testPlanDestroy({ provider, full: false });
   });

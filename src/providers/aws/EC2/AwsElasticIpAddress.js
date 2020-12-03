@@ -60,11 +60,14 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
     });
     const eipLive = await getById({ id: AllocationId });
 
-    CheckAwsTags({
-      config,
-      tags: eipLive.Tags,
-      name,
-    });
+    assert(
+      CheckAwsTags({
+        config,
+        tags: eipLive.Tags,
+        name,
+      }),
+      `missing tag for ${name}`
+    );
 
     return { id: AllocationId };
   };

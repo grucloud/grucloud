@@ -99,11 +99,14 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
 
     const sg = await getById({ id: GroupId });
 
-    CheckAwsTags({
-      config,
-      tags: sg.Tags,
-      name: name,
-    });
+    assert(
+      CheckAwsTags({
+        config,
+        tags: sg.Tags,
+        name: name,
+      }),
+      `missing tag for ${name}`
+    );
 
     return { GroupId };
   };

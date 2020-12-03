@@ -37,11 +37,13 @@ describe("AwsS3Bucket", async function () {
     assert(s3BucketLive);
     assert(!s3BucketLive.ACL);
 
-    CheckAwsTags({
-      config: provider.config(),
-      tags: s3BucketLive.Tags,
-      name: s3Bucket.name,
-    });
+    assert(
+      CheckAwsTags({
+        config: provider.config(),
+        tags: s3BucketLive.Tags,
+        name: s3Bucket.name,
+      })
+    );
 
     await testPlanDestroy({ provider, full: false, types });
   });

@@ -54,11 +54,14 @@ module.exports = AwsSubnet = ({ spec, config }) => {
 
     const subnet = await getById({ id: SubnetId });
 
-    CheckAwsTags({
-      config,
-      tags: subnet.Tags,
-      name: name,
-    });
+    assert(
+      CheckAwsTags({
+        config,
+        tags: subnet.Tags,
+        name: name,
+      }),
+      `missing tag for ${name}`
+    );
 
     return { SubnetId };
   };

@@ -182,11 +182,13 @@ describe("AwsProvider", async function () {
 
     const serverLive = await server.getLive();
 
-    CheckAwsTags({
-      config: provider.config(),
-      tags: serverLive.Tags,
-      name: server.name,
-    });
+    assert(
+      CheckAwsTags({
+        config: provider.config(),
+        tags: serverLive.Tags,
+        name: server.name,
+      })
+    );
 
     //Check dependencies
     const sgLive = await sg.getLive();

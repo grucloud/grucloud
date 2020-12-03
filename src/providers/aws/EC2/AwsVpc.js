@@ -82,11 +82,14 @@ module.exports = AwsVpc = ({ spec, config }) => {
 
     const vpc = await getById({ id: VpcId });
 
-    CheckAwsTags({
-      config,
-      tags: vpc.Tags,
-      name: name,
-    });
+    assert(
+      CheckAwsTags({
+        config,
+        tags: vpc.Tags,
+        name: name,
+      }),
+      `missing tag for ${name}`
+    );
 
     return { VpcId };
   };

@@ -102,11 +102,14 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     assert(instanceUp, "instanceUp");
     assert(instanceUp.Tags, "instanceUp.Tags");
 
-    CheckAwsTags({
-      config,
-      tags: instanceUp.Tags,
-      name,
-    });
+    assert(
+      CheckAwsTags({
+        config,
+        tags: instanceUp.Tags,
+        name,
+      }),
+      `missing tag for ${name}`
+    );
 
     const { eip } = dependencies;
     if (eip) {
