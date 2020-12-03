@@ -2,9 +2,8 @@
 
 ## Common:
 
-- run ci test with different phase
+- retryExpectOk => retryCall
 
-- add types to testPlanDestroy
 - PROMPT='%4~ %# '
 - displayPlan error
 - add a delete summary
@@ -40,7 +39,6 @@
 
 ## TODO Aws:
 
-- get index.html from cloudfront domain name
 - invalidate cloufront cache
 - CF priceClass 100
 - CallerReference distribution
