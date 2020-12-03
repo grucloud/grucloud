@@ -539,11 +539,16 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             })
             .promise();
 
-          await retryExpectOk({
+          await retryCall({
             name: `s3 getBucketAcl: ${Bucket}`,
             fn: pipe([
               () => s3.getBucketAcl({ Bucket }).promise(),
               get("Grants"),
+              tap((Grants) => {
+                logger.debug(
+                  `getBucketAcl ${Bucket}, ACL: ${ACL}, ${tos({ Grants })}`
+                );
+              }),
               switchCase([
                 () => ACL === "log-delivery-write",
                 (Grants) => {
@@ -563,8 +568,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
                 },
                 () => true,
               ]),
-            ])(),
-            config: clientConfig,
+            ]),
           });
         } catch (error) {
           logger.error(`putBucketAcl ${Bucket}, error: ${error}`);
