@@ -540,26 +540,30 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             .promise();
 
           await retryExpectOk({
-            name: `s3 putBucketAcl: ${Bucket}`,
-            fn: async () => {
-              const { Grants } = await s3.getBucketAcl({ Bucket }).promise();
+            name: `s3 getBucketAcl: ${Bucket}`,
+            fn: pipe([
+              () => s3.getBucketAcl({ Bucket }).promise(),
+              get("Grants"),
               switchCase([
                 () => ACL === "log-delivery-write",
-                () => {
+                (Grants) => {
                   if (Grants.length != 3) {
-                    throw Error(`no ACL yet for ${Bucket}`);
+                    const message = `no ACL yet for ${Bucket}`;
+                    logger.error(message);
+                    throw Error(message);
                   }
                 },
                 () => ACL === "public-read",
-                () => {
+                (Grants) => {
                   if (Grants.length != 2) {
-                    throw Error(`no ACL yet for ${Bucket}`);
+                    const message = `no ACL yet for ${Bucket}`;
+                    logger.error(message);
+                    throw Error(message);
                   }
                 },
-              ])();
-
-              return true;
-            },
+                () => true,
+              ]),
+            ])(),
             config: clientConfig,
           });
         } catch (error) {
