@@ -351,46 +351,74 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketPolicy-property
-
-  const getByName = async ({ name, deep = true, getTags = true }) => {
-    logger.info(`getByName ${name}, deep: ${deep}`);
-
-    const params = { Bucket: name };
-    if (!(await isUpById({ id: name }))) {
-      logger.debug(`getByName cannot find: ${name}`);
-      return;
-    }
-    const s3Bucket = await fork({
-      ...(getTags && { Tags: getBucketTagging(params) }),
-      ...(deep && {
-        AccelerateConfiguration: getAccelerateConfiguration({ name, params }),
-        ACL: getACL({ name, params }),
-        CORSConfiguration: getCORSConfiguration({ name, params }),
-        ServerSideEncryptionConfiguration: getServerSideEncryptionConfiguration(
-          { name, params }
-        ),
-        LocationConstraint: getLocationConstraint({ name, params }),
-        BucketLoggingStatus: getBucketLoggingStatus({ name, params }),
-        NotificationConfiguration: getNotificationConfiguration({
-          name,
-          params,
-        }),
-        Policy: getPolicy({ name, params }),
-        PolicyStatus: getPolicyStatus({ name, params }),
-        ReplicationConfiguration: getReplicationConfiguration({ name, params }),
-        RequestPaymentConfiguration: getRequestPaymentConfiguration({
-          name,
-          params,
-        }),
-        VersioningConfiguration: getVersioningConfiguration({ name, params }),
-        LifecycleConfiguration: getLifecycleConfiguration({ name, params }),
-        WebsiteConfiguration: getWebsiteConfiguration({ name, params }),
+  const getByName = async ({ name, deep = true, getTags = true }) =>
+    pipe([
+      tap(() => {
+        logger.info(`getByName ${name}, deep: ${deep}`);
       }),
-    })();
-
-    logger.debug(`getByName ${name}: ${tos(s3Bucket)}`);
-    return s3Bucket;
-  };
+      switchCase([
+        () => isUpById({ id: name }),
+        pipe([
+          () => ({ Bucket: name }),
+          (params) =>
+            retryCall({
+              name: `get s3 properties ${name}`,
+              fn: fork({
+                ...(getTags && { Tags: getBucketTagging(params) }),
+                ...(deep && {
+                  AccelerateConfiguration: getAccelerateConfiguration({
+                    name,
+                    params,
+                  }),
+                  ACL: getACL({ name, params }),
+                  CORSConfiguration: getCORSConfiguration({ name, params }),
+                  ServerSideEncryptionConfiguration: getServerSideEncryptionConfiguration(
+                    { name, params }
+                  ),
+                  LocationConstraint: getLocationConstraint({ name, params }),
+                  BucketLoggingStatus: getBucketLoggingStatus({ name, params }),
+                  NotificationConfiguration: getNotificationConfiguration({
+                    name,
+                    params,
+                  }),
+                  Policy: getPolicy({ name, params }),
+                  PolicyStatus: getPolicyStatus({ name, params }),
+                  ReplicationConfiguration: getReplicationConfiguration({
+                    name,
+                    params,
+                  }),
+                  RequestPaymentConfiguration: getRequestPaymentConfiguration({
+                    name,
+                    params,
+                  }),
+                  VersioningConfiguration: getVersioningConfiguration({
+                    name,
+                    params,
+                  }),
+                  LifecycleConfiguration: getLifecycleConfiguration({
+                    name,
+                    params,
+                  }),
+                  WebsiteConfiguration: getWebsiteConfiguration({
+                    name,
+                    params,
+                  }),
+                }),
+              }),
+              shouldRetryOnException: (error) => {
+                logger.error(`getByName shouldRetryOnException ${tos(error)}`);
+                return true;
+              },
+              retryCount: 5,
+              retryDelay: config.retryDelay,
+            }),
+        ]),
+        () => undefined,
+      ]),
+      tap((s3Bucket) => {
+        logger.debug(`getByName ${name}: ${tos(s3Bucket)}`);
+      }),
+    ])();
 
   const getById = async ({ id }) => await getByName({ name: id });
 
