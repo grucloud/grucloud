@@ -5,7 +5,7 @@ const { defaultsDeep, isEmpty, first, pluck, flatten } = require("rubico/x");
 const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "AwsEc2" });
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
-const { retryExpectOk, retryCall } = require("../../Retry");
+const { retryCall } = require("../../Retry");
 
 const { tos } = require("../../../tos");
 const StateTerminated = ["terminated"];
@@ -159,7 +159,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
 
     logger.debug(`destroy in progress, ${tos({ name, id })}`);
 
-    await retryExpectOk({
+    await retryCall({
       name: `isDownById: ${name} id: ${id}`,
       fn: () => isDownById({ id }),
       config,

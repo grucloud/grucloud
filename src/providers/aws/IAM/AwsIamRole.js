@@ -5,7 +5,7 @@ const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
 const moment = require("moment");
 
 const logger = require("../../../logger")({ prefix: "IamRole" });
-const { retryExpectOk } = require("../../Retry");
+const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { buildTags, findNameInTags } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
@@ -205,7 +205,7 @@ exports.AwsIamRole = ({ spec, config }) => {
           })
           .promise(),
       tap(() =>
-        retryExpectOk({
+        retryCall({
           name: `isDownById iam role: ${name} id: ${id}`,
           fn: () => isDownById({ id }),
           config,

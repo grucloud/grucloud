@@ -3,7 +3,7 @@ const AWS = require("aws-sdk");
 const { get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { getByIdCore } = require("../AwsCommon");
-const { retryExpectOk } = require("../../Retry");
+const { retryCall } = require("../../Retry");
 const { getField } = require("../../ProviderCommon");
 
 const {
@@ -73,7 +73,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     const { GroupId } = await ec2.createSecurityGroup(createParams).promise();
     logger.debug(`create GroupId ${tos(GroupId)}`);
 
-    await retryExpectOk({
+    await retryCall({
       name: `isUpById: ${name} id: ${GroupId}`,
       fn: () => isUpById({ id: GroupId }),
       config,

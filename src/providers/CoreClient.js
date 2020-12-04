@@ -5,7 +5,7 @@ const { isEmpty } = require("rubico/x");
 const logger = require("../logger")({ prefix: "CoreClient" });
 const { tos } = require("../tos");
 const identity = (x) => x;
-const { retryExpectOk, retryCallOnError } = require("./Retry");
+const { retryCall, retryCallOnError } = require("./Retry");
 const {
   getByNameCore,
   findField,
@@ -164,7 +164,7 @@ module.exports = CoreClient = ({
                 (id) =>
                   pipe([
                     () =>
-                      retryExpectOk({
+                      retryCall({
                         name: `create isUpById ${spec.type}/${name}, id: ${id}`,
                         fn: () => isUpById({ type: spec.type, name, id }),
                         config,

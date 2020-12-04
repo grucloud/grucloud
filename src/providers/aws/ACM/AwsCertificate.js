@@ -20,7 +20,7 @@ const {
 } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "CertificateManager" });
-const { retryExpectOk, retryCall } = require("../../Retry");
+const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { buildTags, findNameInTags } = require("../AwsCommon");
@@ -133,7 +133,6 @@ exports.AwsCertificate = ({ spec, config }) => {
         retryCall({
           name: `certificate isUpById: ${name} id: ${CertificateArn}`,
           fn: () => isUpById({ name, id: CertificateArn }),
-          isExpectedResult: (result) => result,
         }),
       tap(({ CertificateArn }) => {
         logger.info(`created CertificateArn: ${CertificateArn}`);
@@ -154,7 +153,7 @@ exports.AwsCertificate = ({ spec, config }) => {
           })
           .promise(),
       tap(() =>
-        retryExpectOk({
+        retryCall({
           name: `isDownById: ${name} id: ${id}`,
           fn: () => isDownById({ id }),
           config,

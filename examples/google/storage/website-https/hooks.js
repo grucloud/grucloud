@@ -38,8 +38,7 @@ const checkDig = async ({
         liveRecordSet: dnsManagedZoneLive.recordSet,
       });
     },
-    retryCount: 20,
-    retryDelay: 5e3,
+    config: { retryCount: 20, retryDelay: 5e3 },
   });
 };
 

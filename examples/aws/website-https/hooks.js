@@ -30,8 +30,7 @@ const checkDig = async ({ nameServer, domain, type = "A", hostedZoneLive }) => {
         liveRecordSet: hostedZoneLive.RecordSet,
       });
     },
-    retryCount: 20,
-    retryDelay: 5e3,
+    config: { retryCount: 20, retryDelay: 5e3 },
   });
 };
 

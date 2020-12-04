@@ -46,9 +46,7 @@ module.exports = ({ resources: { ip, server }, provider }) => {
                 await testSsh({ host });
                 return true;
               },
-              shouldRetryOnException: () => true,
-              retryCount: 40,
-              retryDelay: 5e3,
+              config: { retryCount: 40, retryDelay: 5e3 },
             });
           },
         },

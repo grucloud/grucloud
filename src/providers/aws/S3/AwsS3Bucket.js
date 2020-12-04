@@ -409,8 +409,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
                 logger.error(`getByName shouldRetryOnException ${tos(error)}`);
                 return true;
               },
-              retryCount: 5,
-              retryDelay: config.retryDelay,
+              config: { retryCount: 5, retryDelay: config.retryDelay },
             }),
         ]),
         () => undefined,
@@ -469,13 +468,11 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             name: Bucket,
           }),
       ]),
-      isExpectedResult: (result) => result,
       shouldRetryOnException: (error) => {
         logger.error(`putTags shouldRetryOnException ${tos(error)}`);
         return true;
       },
-      retryCount: 5,
-      retryDelay: config.retryDelay,
+      cofnig: { retryCount: 5, retryDelay: config.retryDelay },
     });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property
@@ -535,10 +532,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         retryCall({
           name: `s3 isUpById: ${Bucket}`,
           fn: () => isUpById({ id: Bucket }),
-          isExpectedResult: (result) => result,
-          repeatCount: 6,
-          retryCount: 10,
-          retryDelay: 1e3,
+          config: { repeatCount: 6, retryCount: 10, retryDelay: 1e3 },
         })
       ),
     ])();
@@ -570,6 +564,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
           ) {
             await retryCall({
               name: `s3 getBucketAcl: ${Bucket}`,
+              isExpectedResult: () => true,
               fn: pipe([
                 () =>
                   s3
@@ -700,8 +695,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
           logger.error(`s3 put shouldRetryOnException ${tos(error)}`);
           return true;
         },
-        retryCount: 10,
-        retryDelay: 2e3,
+        config: { retryCount: 10, retryDelay: 2e3 },
       });
     } catch (error) {
       logger.error("s3 bucket put error");
@@ -838,17 +832,4 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       return retry;
     },
   };
-};
-
-exports.isOurMinionS3Bucket = ({ resource, config }) => {
-  const { createdByProviderKey, providerName } = config;
-
-  assert(resource);
-  assert(resource.Tags);
-  const isMinion = !!resource.Tags.find(
-    (tag) => tag.Key === createdByProviderKey && tag.Value === providerName
-  );
-
-  logger.debug(`isOurMinion s3 bucket: isMinion ${isMinion}`);
-  return isMinion;
 };

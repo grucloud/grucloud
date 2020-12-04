@@ -4,7 +4,7 @@ const assert = require("assert");
 const { get, map, tap, pipe, filter, switchCase } = require("rubico");
 const logger = require("../../../logger")({ prefix: "AwsVpc" });
 const { tos } = require("../../../tos");
-const { retryExpectOk } = require("../../Retry");
+const { retryCall } = require("../../Retry");
 const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { findNameInTags } = require("../AwsCommon");
@@ -67,7 +67,7 @@ module.exports = AwsVpc = ({ spec, config }) => {
     } = await ec2.createVpc(payload).promise();
     logger.info(`create vpc ${VpcId}`);
 
-    await retryExpectOk({
+    await retryCall({
       name: `isUpById: ${name} id: ${VpcId}`,
       fn: () => isUpById({ id: VpcId }),
       config,

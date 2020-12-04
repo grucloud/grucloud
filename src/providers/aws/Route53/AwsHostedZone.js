@@ -28,7 +28,7 @@ const {
 } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "HostedZone" });
-const { retryExpectOk } = require("../../Retry");
+const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const {
   getByNameCore,
@@ -302,7 +302,7 @@ exports.AwsHostedZone = ({ spec, config }) => {
           })
           .promise(),
       tap(() =>
-        retryExpectOk({
+        retryCall({
           name: `isDownById: ${name} id: ${id}`,
           fn: () => isDownById({ id }),
           config,

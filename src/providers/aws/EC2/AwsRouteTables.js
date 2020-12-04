@@ -6,7 +6,7 @@ const { defaultsDeep } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "AwsRtb" });
 const { tos } = require("../../../tos");
-const { retryExpectOk } = require("../../Retry");
+const { retryCall } = require("../../Retry");
 const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { findNameInTags } = require("../AwsCommon");
@@ -94,7 +94,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
 
     logger.debug(`associated`);
 
-    const rt = await retryExpectOk({
+    const rt = await retryCall({
       name: `isUpById: ${name} id: ${RouteTableId}`,
       fn: () => isUpById({ id: RouteTableId }),
       config,

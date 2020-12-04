@@ -4,7 +4,7 @@ const { map, pipe, tap, tryCatch, get, switchCase } = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "IamGroup" });
-const { retryExpectOk } = require("../../Retry");
+const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 
@@ -111,7 +111,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
           })
           .promise(),
       tap(() =>
-        retryExpectOk({
+        retryCall({
           name: `isDownById: ${name} id: ${id}`,
           fn: () => isDownById({ id }),
           config,

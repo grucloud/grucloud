@@ -13,7 +13,7 @@ const {
 const { defaultsDeep, isEmpty } = require("rubico/x");
 const moment = require("moment");
 const logger = require("../../../logger")({ prefix: "IamPolicy" });
-const { retryExpectOk } = require("../../Retry");
+const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { buildTags, findNameInDescription } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
@@ -215,7 +215,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
           })
           .promise(),
       () =>
-        retryExpectOk({
+        retryCall({
           name: `isDownById: ${name} id: ${id}`,
           fn: () => isDownById({ id }),
           config,

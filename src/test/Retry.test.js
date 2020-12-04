@@ -35,8 +35,7 @@ describe("Retry", function () {
     const result = await retryCall({
       name: "retryCall expect true success",
       fn: async () => fn({}),
-      retryCount: 2,
-      retryDelay,
+      config: { retryCount: 2, retryDelay },
     });
     assert(result);
   });
@@ -48,8 +47,7 @@ describe("Retry", function () {
       name: "retryCall expect true fails",
       fn: async () => fn({}),
 
-      retryCount: 1,
-      retryDelay,
+      config: { retryCount: 1, retryDelay },
     });
     assert(!result);
   });
@@ -61,8 +59,7 @@ describe("Retry", function () {
       name: "retryCall expect 42 success",
       fn: async () => fn({}),
       isExpectedResult: (result) => result === 42,
-      retryCount: 2,
-      retryDelay,
+      config: { retryCount: 2, retryDelay },
     });
     assert.equal(result, 42);
   });
@@ -74,8 +71,7 @@ describe("Retry", function () {
       name: "retryCall expect 42 success",
       fn: async () => fn({}),
       isExpectedResult: (result) => result === 42,
-      retryCount: 1,
-      retryDelay,
+      config: { retryCount: 1, retryDelay },
     });
     assert.equal(result, 1);
   });
@@ -89,8 +85,7 @@ describe("Retry", function () {
         name: "retryCall expect 42 success",
         fn: async () => fn({}),
         isExpectedResult: (result) => result === 42,
-        retryCount: 1,
-        retryDelay,
+        config: { retryCount: 1, retryDelay },
       });
       assert(false);
     } catch (error) {

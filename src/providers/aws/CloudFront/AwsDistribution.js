@@ -17,7 +17,7 @@ const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
 const logger = require("../../../logger")({ prefix: "AwsDistribution" });
-const { retryExpectOk, retryCall } = require("../../Retry");
+const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { buildTags, findNameInTags } = require("../AwsCommon");
@@ -114,11 +114,7 @@ exports.AwsDistribution = ({ spec, config }) => {
         retryCall({
           name: `is distribution ${name} deployed ? name: ${name}`,
           fn: () => isUpById({ id }),
-          isExpectedResult: (result) => {
-            return result;
-          },
-          retryCount: 6 * 60,
-          retryDelay: 10e3,
+          config: { retryCount: 6 * 60, retryDelay: 10e3 },
         })
       ),
       tap((id) => {
@@ -159,11 +155,7 @@ exports.AwsDistribution = ({ spec, config }) => {
         retryCall({
           name: `is distribution  updated ? : ${name} id: ${id}`,
           fn: () => isUpById({ id }),
-          isExpectedResult: (result) => {
-            return result;
-          },
-          retryCount: 6 * 60,
-          retryDelay: 10e3,
+          config: { retryCount: 6 * 60, retryDelay: 10e3 },
         }),
       tap(() => {
         logger.info(`distribution updated: ${tos({ name, id })}`);
@@ -217,7 +209,7 @@ exports.AwsDistribution = ({ spec, config }) => {
           })
           .promise(),
       tap(() =>
-        retryExpectOk({
+        retryCall({
           name: `isDownById: ${name} id: ${id}`,
           fn: () => isDownById({ id }),
           config,
