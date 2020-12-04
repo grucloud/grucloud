@@ -84,6 +84,7 @@ describe("Retry", function () {
       await retryCall({
         name: "retryCall expect 42 success",
         fn: async () => fn({}),
+        shouldRetryOnException: () => false,
         isExpectedResult: (result) => result === 42,
         config: { retryCount: 1, retryDelay },
       });
