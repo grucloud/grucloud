@@ -19,7 +19,7 @@ const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { mapPoolSize } = require("../../Common");
 const { CheckAwsTags } = require("../AwsTagCheck");
-const { buildTags } = require("../AwsCommon");
+const { buildTags, shouldRetryOnException } = require("../AwsCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Bucket = ({ spec, config }) => {
@@ -565,6 +565,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             await retryCall({
               name: `s3 getBucketAcl: ${Bucket}`,
               isExpectedResult: () => true,
+              shouldRetryOnException,
               fn: pipe([
                 () =>
                   s3
