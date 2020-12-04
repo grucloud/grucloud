@@ -7,7 +7,11 @@ const moment = require("moment");
 const logger = require("../../../logger")({ prefix: "IamRole" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
-const { buildTags, findNameInTags } = require("../AwsCommon");
+const {
+  buildTags,
+  findNameInTags,
+  shouldRetryOnException,
+} = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
@@ -238,5 +242,6 @@ exports.AwsIamRole = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    shouldRetryOnException,
   };
 };

@@ -23,7 +23,11 @@ const logger = require("../../../logger")({ prefix: "CertificateManager" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
-const { buildTags, findNameInTags } = require("../AwsCommon");
+const {
+  buildTags,
+  findNameInTags,
+  shouldRetryOnException,
+} = require("../AwsCommon");
 
 const findName = findNameInTags;
 
@@ -185,5 +189,6 @@ exports.AwsCertificate = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    shouldRetryOnException,
   };
 };

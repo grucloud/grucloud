@@ -2,7 +2,7 @@ const assert = require("assert");
 const AWS = require("aws-sdk");
 const { get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-const { getByIdCore } = require("../AwsCommon");
+const { getByIdCore, shouldRetryOnException } = require("../AwsCommon");
 const { retryCall } = require("../../Retry");
 const { getField } = require("../../ProviderCommon");
 
@@ -69,7 +69,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
       ...payload.create,
     };
 
-    logger.debug(`create ${tos({ name, createParams, payload })}`);
+    logger.debug(`create sg ${tos({ name, createParams, payload })}`);
     const { GroupId } = await ec2.createSecurityGroup(createParams).promise();
     logger.debug(`create GroupId ${tos(GroupId)}`);
 
@@ -152,5 +152,6 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
+    shouldRetryOnException,
   };
 };

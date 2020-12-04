@@ -331,10 +331,6 @@ const ResourceMaker = ({
     const live = await retryCall({
       name: `create getLive ${type}/${resourceName}`,
       fn: () => getLive(),
-      shouldRetryOnException: (error) => {
-        logger.info(`created: shouldRetryOnException ${tos(error)}`);
-        return false;
-      },
       config: provider.config(),
     });
 
@@ -370,8 +366,7 @@ const ResourceMaker = ({
           id: client.findId(live),
         }),
       shouldRetryOnException: client.shouldRetryOnException,
-      retryCount: provider.config().retryCount,
-      retryDelay: provider.config().retryDelay,
+      config: provider.config(),
     });
 
     logger.info(`updated:  ${type}/${resourceName}`);
@@ -387,9 +382,7 @@ const ResourceMaker = ({
         }
         return live;
       },
-      shouldRetryOnException: () => true,
-      retryCount: provider.config().retryCount,
-      retryDelay: provider.config().retryDelay,
+      config: provider.config(),
     });
 
     if (

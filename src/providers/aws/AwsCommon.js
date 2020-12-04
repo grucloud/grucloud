@@ -1,11 +1,16 @@
 const assert = require("assert");
-const { pipe, tryCatch, tap, switchCase, and } = require("rubico");
+const { pipe, tryCatch, tap, switchCase, and, get } = require("rubico");
 const { first, find } = require("rubico/x");
 const logger = require("../../logger")({ prefix: "Aws" });
 const { tos } = require("../../tos");
 
 const KeyName = "Name";
 exports.KeyName = KeyName;
+
+exports.shouldRetryOnException = (error) => {
+  logger.error(`aws shouldRetryOnException ${tos(error)}`);
+  return ![400].includes(error.statusCode);
+};
 
 exports.buildTags = ({
   name,
@@ -100,8 +105,8 @@ exports.getByIdCore = ({ fieldIds, getList }) =>
   tryCatch(
     pipe([
       tap(({ id }) => logger.debug(`getById ${fieldIds} ${id}`)),
-      async ({ id }) => await getList({ params: { [fieldIds]: [id] } }),
-      ({ items }) => items,
+      ({ id }) => getList({ params: { [fieldIds]: [id] } }),
+      get("items"),
       first,
       tap((item) => logger.debug(`getById  ${fieldIds} result: ${tos(item)}`)),
     ]),

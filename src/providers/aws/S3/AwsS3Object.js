@@ -16,6 +16,8 @@ const {
 const { defaultsDeep, isEmpty, first, find } = require("rubico/x");
 const logger = require("../../../logger")({ prefix: "S3Object" });
 const { retryCall } = require("../../Retry");
+const { shouldRetryOnException } = require("../AwsCommon");
+
 const { tos } = require("../../../tos");
 const { convertError, mapPoolSize, md5FileBase64 } = require("../../Common");
 
@@ -294,6 +296,7 @@ exports.AwsS3Object = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    shouldRetryOnException,
   };
 };
 

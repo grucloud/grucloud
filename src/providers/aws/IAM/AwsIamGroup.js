@@ -7,8 +7,10 @@ const logger = require("../../../logger")({ prefix: "IamGroup" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
+const { shouldRetryOnException } = require("../AwsCommon");
 
-const findName = (item) => item.GroupName;
+const findName = get("GroupName");
+const findId = findName;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamGroup = ({ spec, config }) => {
@@ -16,13 +18,6 @@ exports.AwsIamGroup = ({ spec, config }) => {
   assert(config);
 
   const iam = new AWS.IAM();
-
-  const findId = (item) => {
-    assert(item);
-    const id = item.GroupName;
-    assert(id);
-    return id;
-  };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listGroups-property
   const getList = async ({ params } = {}) =>
@@ -140,6 +135,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    shouldRetryOnException,
   };
 };
 

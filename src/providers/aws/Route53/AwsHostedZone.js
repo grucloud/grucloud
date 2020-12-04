@@ -37,7 +37,7 @@ const {
   logError,
   axiosErrorToJSON,
 } = require("../../Common");
-const { buildTags } = require("../AwsCommon");
+const { buildTags, shouldRetryOnException } = require("../AwsCommon");
 
 const getNewCallerReference = () => `grucloud-${new Date()}`;
 
@@ -391,6 +391,7 @@ exports.AwsHostedZone = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    shouldRetryOnException,
   };
 };
 

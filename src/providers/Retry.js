@@ -21,7 +21,10 @@ const retryCall = async ({
   fn,
   isExpectedResult = (result) => result,
   isExpectedException = () => false,
-  shouldRetryOnException = () => true,
+  shouldRetryOnException = (error) => {
+    logger.error(`shouldRetryOnException ${name}, error: ${tos(error)}`);
+    return true;
+  },
   config: {
     repeatCount = 0,
     repeatDelay = 1e3,

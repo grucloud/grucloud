@@ -9,7 +9,7 @@ const { tos } = require("../../../tos");
 const { retryCall } = require("../../Retry");
 const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
-const { findNameInTags } = require("../AwsCommon");
+const { findNameInTags, shouldRetryOnException } = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
 const { CheckAwsTags } = require("../AwsTagCheck");
 
@@ -165,5 +165,6 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
+    shouldRetryOnException,
   };
 };

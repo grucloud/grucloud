@@ -20,7 +20,11 @@ const logger = require("../../../logger")({ prefix: "AwsDistribution" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
-const { buildTags, findNameInTags } = require("../AwsCommon");
+const {
+  buildTags,
+  findNameInTags,
+  shouldRetryOnException,
+} = require("../AwsCommon");
 const { getField } = require("../../ProviderCommon");
 
 const findName = findNameInTags;
@@ -259,6 +263,7 @@ exports.AwsDistribution = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    shouldRetryOnException,
   };
 };
 
