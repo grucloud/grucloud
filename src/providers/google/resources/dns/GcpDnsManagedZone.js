@@ -16,7 +16,10 @@ const {
 const { defaultsDeep, isDeepEqual, isEmpty, find } = require("rubico/x");
 const { differenceWith, isEqual } = require("lodash/fp");
 const { GCP_DNS_BASE_URL } = require("./GcpDnsCommon");
-const { createAxiosMakerGoogle } = require("../../GoogleCommon");
+const {
+  createAxiosMakerGoogle,
+  shouldRetryOnException,
+} = require("../../GoogleCommon");
 
 const {
   logError,
@@ -384,5 +387,6 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
     getById,
     isDownById,
     findId,
+    shouldRetryOnException,
   };
 };

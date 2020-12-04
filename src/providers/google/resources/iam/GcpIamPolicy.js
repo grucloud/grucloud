@@ -15,7 +15,10 @@ const { retryCallOnError } = require("../../../Retry");
 const logger = require("../../../../logger")({ prefix: "GcpIamPolicy" });
 const { tos } = require("../../../../tos");
 const { axiosErrorToJSON, logError } = require("../../../Common");
-const { createAxiosMakerGoogle } = require("../../GoogleCommon");
+const {
+  createAxiosMakerGoogle,
+  shouldRetryOnException,
+} = require("../../GoogleCommon");
 
 // https://cloud.google.com/iam/docs/granting-changing-revoking-access#iam-modify-policy-role-rests
 exports.GcpIamPolicy = ({ spec, config }) => {
@@ -115,6 +118,7 @@ exports.GcpIamPolicy = ({ spec, config }) => {
     getByName,
     configDefault,
     cannotBeDeleted: () => true,
+    shouldRetryOnException,
   };
 };
 

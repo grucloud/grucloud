@@ -15,7 +15,10 @@ const { isDownByIdCore } = require("../../../Common");
 const logger = require("../../../../logger")({ prefix: "GcpIamPolicy" });
 const { tos } = require("../../../../tos");
 const { axiosErrorToJSON, logError } = require("../../../Common");
-const { createAxiosMakerGoogle } = require("../../GoogleCommon");
+const {
+  createAxiosMakerGoogle,
+  shouldRetryOnException,
+} = require("../../GoogleCommon");
 
 const findName = get("role");
 const findId = findName;
@@ -209,6 +212,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
     getByName,
     configDefault,
     cannotBeDeleted,
+    shouldRetryOnException,
   };
 };
 
