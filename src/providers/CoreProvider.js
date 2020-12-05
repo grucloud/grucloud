@@ -30,7 +30,7 @@ const { tos } = require("../tos");
 const { checkConfig, checkEnv } = require("../Utils");
 const { fromTagName } = require("./TagName");
 const { SpecDefault } = require("./SpecDefault");
-const { retryExpectOk, retryCall } = require("./Retry");
+const { retryCall } = require("./Retry");
 const {
   mapPoolSize,
   convertError,
@@ -323,8 +323,7 @@ const ResourceMaker = ({
           resolvedDependencies,
         }),
       shouldRetryOnException: client.shouldRetryOnException,
-      retryCount: provider.config().retryCount,
-      retryDelay: provider.config().retryDelay,
+      config: provider.config(),
     });
 
     logger.info(`created:  ${type}/${resourceName}`);
@@ -332,18 +331,7 @@ const ResourceMaker = ({
     const live = await retryCall({
       name: `create getLive ${type}/${resourceName}`,
       fn: () => getLive(),
-      shouldRetryOnException: (error) => {
-        logger.info(`created: shouldRetryOnException ${tos(error)}`);
-        return false;
-      },
-      isExpectedResult: (result) => {
-        return result;
-      },
-
-      //TODO refactor
-      repeatCount: provider.config().repeatCount,
-      retryCount: provider.config().retryCount,
-      retryDelay: provider.config().retryDelay,
+      config: provider.config(),
     });
 
     if (
@@ -378,8 +366,7 @@ const ResourceMaker = ({
           id: client.findId(live),
         }),
       shouldRetryOnException: client.shouldRetryOnException,
-      retryCount: provider.config().retryCount,
-      retryDelay: provider.config().retryDelay,
+      config: provider.config(),
     });
 
     logger.info(`updated:  ${type}/${resourceName}`);
@@ -395,9 +382,7 @@ const ResourceMaker = ({
         }
         return live;
       },
-      shouldRetryOnException: () => true,
-      retryCount: provider.config().retryCount,
-      retryDelay: provider.config().retryDelay,
+      config: provider.config(),
     });
 
     if (
@@ -1874,7 +1859,7 @@ function CoreProvider({
     const result = await client.destroy({ id, name, resourcesPerType });
 
     assert(client.isDownById, "client.isDownById");
-    await retryExpectOk({
+    await retryCall({
       name: `destroy ${name}, isDownById`,
       fn: () => client.isDownById({ id, name, resourcesPerType }),
       config: client.config || providerConfig,

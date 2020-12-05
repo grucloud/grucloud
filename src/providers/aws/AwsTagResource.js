@@ -45,6 +45,7 @@ exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
 
   await retryCall({
     name: `tag ${arnId}`,
+    isExpectedResult: () => true,
     fn: async () => {
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ResourceGroupsTaggingAPI.html#getResources-property
       await tagApi.tagResources(params).promise();
@@ -70,12 +71,10 @@ exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
         throw { code: 422, message: "resource not tagged" };
       }
     },
-    //TODO retry only when code === 422
     shouldRetryOnException: (error) => {
       logger.error(`AwsTag shouldRetryOnException ${tos(error)}`);
       return true;
     },
-    retryCount: 5,
-    retryDelay: config.retryDelay,
+    config: { retryCount: 5, retryDelay: config.retryDelay },
   });
 };

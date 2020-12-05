@@ -32,7 +32,7 @@ exports.isOurMinionServiceAccount = isOurMinionServiceAccount;
 exports.GcpServiceAccount = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  const { projectId, managedByDescription, accessToken } = config;
+  const { projectId, managedByDescription } = config;
 
   const baseURL = `https://iam.googleapis.com/v1`;
   const url = `/projects/${projectId(config)}/serviceAccounts`;
@@ -55,8 +55,8 @@ exports.GcpServiceAccount = ({ spec, config }) => {
       },
     })(properties);
 
-  const findId = (item) => item.uniqueId;
-  const findTargetId = (item) => item.uniqueId;
+  const findId = get("uniqueId");
+  const findTargetId = findId;
 
   const onResponseGet = pipe([
     tap((xxx) => {
@@ -90,7 +90,7 @@ exports.GcpServiceAccount = ({ spec, config }) => {
     spec,
     baseURL,
     url,
-    config: { ...config, repeatCount: 6 },
+    config: { ...config, repeatCount: 2 },
     findName,
     findId,
     findTargetId,

@@ -28,7 +28,7 @@ const {
 } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "HostedZone" });
-const { retryExpectOk } = require("../../Retry");
+const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const {
   getByNameCore,
@@ -37,7 +37,7 @@ const {
   logError,
   axiosErrorToJSON,
 } = require("../../Common");
-const { buildTags } = require("../AwsCommon");
+const { buildTags, shouldRetryOnException } = require("../AwsCommon");
 
 const getNewCallerReference = () => `grucloud-${new Date()}`;
 
@@ -302,7 +302,7 @@ exports.AwsHostedZone = ({ spec, config }) => {
           })
           .promise(),
       tap(() =>
-        retryExpectOk({
+        retryCall({
           name: `isDownById: ${name} id: ${id}`,
           fn: () => isDownById({ id }),
           config,
@@ -391,6 +391,7 @@ exports.AwsHostedZone = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    shouldRetryOnException,
   };
 };
 

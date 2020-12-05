@@ -92,8 +92,7 @@ module.exports = ({ resources, config }) => {
                 return true;
               },
               shouldRetryOnException: () => true,
-              retryCount: 30,
-              retryDelay: 5e3,
+              config: { retryCount: 30, retryDelay: 5e3 },
             });
           },
         },

@@ -17,7 +17,6 @@ describe("AwsSecurityGroup", async function () {
       this.skip();
     }
     provider = AwsProvider({
-      name: "aws",
       config: config.aws,
     });
 
@@ -61,14 +60,13 @@ describe("AwsSecurityGroup", async function () {
   after(async () => {});
   it("empty ingress", async function () {
     const provider = AwsProvider({
-      name: "aws",
       config: config.aws,
     });
     await provider.start();
     const vpc = await provider.makeVpc({
       name: "vpc",
       properties: () => ({
-        CidrBlock: "10.1.0.1/16",
+        CidrBlock: "11.1.0.1/16",
       }),
     });
     await provider.makeSecurityGroup({
@@ -82,7 +80,7 @@ describe("AwsSecurityGroup", async function () {
     });
     const { error, resultCreate } = await provider.planQueryAndApply();
     assert(error, "should have failed");
-    assert(resultCreate.results[1].error.code, "MissingParameter");
+    assert(resultCreate.results[1].error.code, "InvalidParameterValue");
   });
   it("sg name", async function () {
     assert.equal(sg.name, "sg");

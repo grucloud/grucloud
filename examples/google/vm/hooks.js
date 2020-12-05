@@ -36,9 +36,7 @@ module.exports = ({ resources, provider }) => {
                 }
                 return alive;
               },
-              shouldRetryOnException: () => true,
-              retryCount: 20,
-              retryDelay: 2e3,
+              config: { retryCount: 20, retryDelay: 2e3 },
             });
             assert(alive, `cannot ping ${host}`);
           },

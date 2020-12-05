@@ -22,9 +22,12 @@ module.exports = GoogleClient = ({
   isUpByIdFactory,
   onResponseList = onResponseListDefault,
   cannotBeDeleted = () => false,
-  onCreateExpectedException,
+  onCreateExpectedException = (error) => {
+    logger.info(`onCreateExpectedException ${tos(error)}`);
+    return error.response?.status === 409;
+  },
   shouldRetryOnException = (error) => {
-    logger.info(`shouldRetryOnException ${tos(error)}`);
+    logger.error(`shouldRetryOnException ${tos(error)}`);
     const { response } = error;
     if (!response) return false;
     if (

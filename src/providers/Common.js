@@ -188,7 +188,7 @@ exports.isDownByIdCore = ({
   }
 
   logger.info(
-    `isDownById ${JSON.stringify({ type, name, id })}${down} ${
+    `isDownById ${JSON.stringify({ type, name, id })} ${
       down ? "DOWN" : "NOT DOWN"
     }`
   );

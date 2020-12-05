@@ -15,7 +15,9 @@ const {
 } = require("rubico");
 const { defaultsDeep, isEmpty, first, find } = require("rubico/x");
 const logger = require("../../../logger")({ prefix: "S3Object" });
-const { retryExpectOk } = require("../../Retry");
+const { retryCall } = require("../../Retry");
+const { shouldRetryOnException } = require("../AwsCommon");
+
 const { tos } = require("../../../tos");
 const { convertError, mapPoolSize, md5FileBase64 } = require("../../Common");
 
@@ -232,7 +234,7 @@ exports.AwsS3Object = ({ spec, config }) => {
             }),
             (params) => s3.putObject(params).promise(),
             tap(() =>
-              retryExpectOk({
+              retryCall({
                 name: `s3 isUpById: ${bucket.name}/${name}`,
                 fn: () => isUpById({ Bucket: bucket.name, Key: name }),
                 config: clientConfig,
@@ -294,6 +296,7 @@ exports.AwsS3Object = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    shouldRetryOnException,
   };
 };
 

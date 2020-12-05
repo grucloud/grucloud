@@ -91,8 +91,7 @@ module.exports = ({ resources: { eip, server }, provider }) => {
                 return true;
               },
               shouldRetryOnException: () => true,
-              retryCount: 40,
-              retryDelay: 5e3,
+              config: { retryCount: 40, retryDelay: 5e3 },
             });
           },
         },

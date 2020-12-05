@@ -2,8 +2,6 @@
 
 ## Common:
 
-- retryExpectOk => retryCall
-
 - PROMPT='%4~ %# '
 - displayPlan error
 - add a delete summary

@@ -5,10 +5,10 @@ const { defaultsDeep, isEmpty } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "AwsEip" });
 const { tos } = require("../../../tos");
-const { retryExpectOk } = require("../../Retry");
+const { retryCall } = require("../../Retry");
 const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
-const { findNameInTags } = require("../AwsCommon");
+const { findNameInTags, shouldRetryOnException } = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
 const { CheckAwsTags } = require("../AwsTagCheck");
 
@@ -46,7 +46,7 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
     const { AllocationId } = await ec2.allocateAddress(payload).promise();
     logger.info(`created elastic ip ${AllocationId}`);
 
-    await retryExpectOk({
+    await retryCall({
       name: `isUpById: ${name} id: ${AllocationId}`,
       fn: () => isUpById({ id: AllocationId }),
       config,
@@ -102,5 +102,6 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
+    shouldRetryOnException,
   };
 };

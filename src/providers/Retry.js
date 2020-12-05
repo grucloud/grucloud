@@ -19,13 +19,18 @@ const { logError } = require("./Common");
 const retryCall = async ({
   name = "",
   fn,
-  isExpectedResult = () => true,
+  isExpectedResult = (result) => result,
   isExpectedException = () => false,
-  shouldRetryOnException = () => false,
-  repeatCount = 0,
-  repeatDelay = 1e3,
-  retryCount = 30,
-  retryDelay = 5e3,
+  shouldRetryOnException = (error) => {
+    logger.error(`shouldRetryOnException ${name}, error: ${tos(error)}`);
+    return true;
+  },
+  config: {
+    repeatCount = 0,
+    repeatDelay = 1e3,
+    retryCount = 30,
+    retryDelay = 5e3,
+  } = {},
 }) => {
   logger.debug(
     `retryCall ${name}, retryCount: ${retryCount}, retryDelay: ${retryDelay}, repeatCount: ${repeatCount} `
@@ -99,7 +104,7 @@ exports.retryCallOnError = ({
   fn,
   config,
   isExpectedException = () => false,
-  shouldRetryOnException = (error) => false,
+  shouldRetryOnException = () => false,
   isExpectedResult = (result) => {
     assert(result.status, `no status in result`);
     return [200, 201, 202, 204].includes(result.status);
@@ -114,21 +119,5 @@ exports.retryCallOnError = ({
     ]),
     isExpectedResult,
     isExpectedException,
-    retryCount: config.retryCount,
-    retryDelay: config.retryDelay,
+    config,
   });
-
-const retryExpectOk = async ({ name, fn, config }) => {
-  logger.debug(`retryExpectOk ${name}`);
-  return retryCall({
-    name,
-    fn,
-    isExpectedResult: (result) => result,
-    shouldRetryOnException: () => true,
-    retryCount: config.retryCount || 30,
-    retryDelay: config.retryDelay || 10e3,
-    repeatCount: config.repeatCount,
-  });
-};
-
-exports.retryExpectOk = retryExpectOk;

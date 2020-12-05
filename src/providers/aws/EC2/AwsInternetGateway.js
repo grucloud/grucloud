@@ -5,10 +5,10 @@ const assert = require("assert");
 
 const logger = require("../../../logger")({ prefix: "AwsIgw" });
 const { tos } = require("../../../tos");
-const { retryExpectOk } = require("../../Retry");
+const { retryCall } = require("../../Retry");
 const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
-const { findNameInTags } = require("../AwsCommon");
+const { findNameInTags, shouldRetryOnException } = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
 const { CheckAwsTags } = require("../AwsTagCheck");
 
@@ -93,7 +93,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
     await ec2.attachInternetGateway(paramsAttach).promise();
     logger.debug(`create ig, vpc attached`);
 
-    const igw = await retryExpectOk({
+    const igw = await retryCall({
       name: `isUpById: ${name} id: ${InternetGatewayId}`,
       fn: () => isUpById({ id: InternetGatewayId }),
       config,
@@ -158,5 +158,6 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
     create,
     destroy,
     configDefault,
+    shouldRetryOnException,
   };
 };

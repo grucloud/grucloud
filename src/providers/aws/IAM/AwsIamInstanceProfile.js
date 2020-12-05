@@ -4,9 +4,10 @@ const { map, pipe, tap, tryCatch, get, switchCase } = require("rubico");
 const { defaultsDeep, isEmpty, forEach } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "IamInstanceProfile" });
-const { retryExpectOk, retryCall } = require("../../Retry");
+const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
+const { shouldRetryOnException } = require("../AwsCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamInstanceProfile = ({ spec, config }) => {
@@ -167,7 +168,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
           .promise()
       ),
       tap(() =>
-        retryExpectOk({
+        retryCall({
           name: `isDownById: ${name} id: ${id}`,
           fn: () => isDownById({ id }),
           config,
@@ -196,6 +197,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    shouldRetryOnException,
   };
 };
 

@@ -1,11 +1,11 @@
 const assert = require("assert");
-const { tryCatch, pipe, tap, switchCase } = require("rubico");
+const { tryCatch, pipe, tap, switchCase, eq, get } = require("rubico");
 const { isEmpty } = require("rubico/x");
 
 const logger = require("../logger")({ prefix: "CoreClient" });
 const { tos } = require("../tos");
 const identity = (x) => x;
-const { retryExpectOk, retryCallOnError } = require("./Retry");
+const { retryCall, retryCallOnError } = require("./Retry");
 const {
   getByNameCore,
   findField,
@@ -129,12 +129,12 @@ module.exports = CoreClient = ({
             name: `create ${spec.type}/${name}`,
             isExpectedException: onCreateExpectedException,
             shouldRetryOnException,
-            fn: async () =>
-              await axios.request(path, {
+            fn: () =>
+              axios.request(path, {
                 method: verbCreate,
                 data: payload,
               }),
-            config,
+            config: { ...config, repeatCount: 0 },
           }),
         tap((result) => {
           logger.info(
@@ -144,9 +144,9 @@ module.exports = CoreClient = ({
           );
         }),
         switchCase([
-          (result) => result.status === 409,
+          eq(get("response.status"), 409),
           () => {
-            logger.debug(`create: already created ${type}/${name}, 409`);
+            logger.error(`create: already created ${type}/${name}, 409`);
             //TODO get by id ?
           },
           pipe([
@@ -164,7 +164,7 @@ module.exports = CoreClient = ({
                 (id) =>
                   pipe([
                     () =>
-                      retryExpectOk({
+                      retryCall({
                         name: `create isUpById ${spec.type}/${name}, id: ${id}`,
                         fn: () => isUpById({ type: spec.type, name, id }),
                         config,
@@ -198,7 +198,7 @@ module.exports = CoreClient = ({
               await axios.request(path, {
                 method: "DELETE",
               }),
-            config,
+            config: { ...config, repeatCount: 0 },
             isExpectedException: (error) => {
               return [404].includes(error.response?.status);
             },
