@@ -38,6 +38,7 @@ const {
   TitleQuery,
   TitleDeploying,
   TitleDestroying,
+  TitlePlanningDestroy,
 } = require("./Common");
 const { Planner, mapToGraph } = require("./Planner");
 
@@ -614,18 +615,60 @@ function CoreProvider({
       state: { completed: 0, total: resources.length },
     };
   };
-  const contextFromPlanner = ({ title }) => ({
-    uri: `${providerName}::${title}`,
-    displayText: () => title,
-  });
 
-  const contextFromClient = (client) => {
-    const { type } = client.spec;
-    assert(type, "client.spec.type");
+  const contextFromPlanner = ({ title, total = 0 }) => {
+    const uri = `${providerName}::${title}`;
 
     return {
-      uri: `${providerName}::client::${type}`,
+      uri,
+      state: { completed: 0, total },
+
+      displayText: (state) => {
+        assert(state, `no state for ${uri}`);
+        return total
+          ? `${title} ${state.completed}/${state.total}`
+          : `${title}`;
+      },
+    };
+  };
+
+  const contextFromClient = ({ client, title }) => {
+    const { type } = client.spec;
+    assert(type, "client.spec.type");
+    assert(title, "title");
+    const uri = `${providerName}::${title}`;
+
+    const displayText = (state) => {
+      assert(state, `no state for ${uri}`);
+      const text = `${title} ${state.completed}/${state.total}`;
+      logger.debug(`contextFromClient ${text}`);
+      return text;
+    };
+
+    return {
+      hide: true,
+      uri: `${providerName}::${title}::${type}`,
       displayText: () => type,
+      onDone: ({ spinnerMap, spinnies }) => {
+        const context = spinnerMap.get(uri);
+        assert(context, `no context for ${uri}`);
+        const { state } = context;
+        assert(state);
+        const completed = state.completed + 1;
+        const newState = { ...state, completed };
+        spinnies.update(uri, {
+          text: displayText(newState),
+          color: "greenBright",
+          status: "spinning",
+        });
+
+        spinnerMap.set(uri, { state: newState });
+
+        if (completed === state.total) {
+          spinnies.succeed(uri);
+          spinnerMap.delete(uri);
+        }
+      },
     };
   };
 
@@ -1129,7 +1172,10 @@ function CoreProvider({
         }),
         () =>
           onStateChange({
-            context: contextFromPlanner({ title }),
+            context: contextFromPlanner({
+              title,
+              total: resourcesPerType.length,
+            }),
             nextState: "WAITING",
             indent: 2,
           }),
@@ -1166,7 +1212,7 @@ function CoreProvider({
         }),
         tap(() =>
           onStateChange({
-            context: contextFromPlanner({ title }),
+            context: contextFromPlanner({ title, total: clients.length }),
             nextState: "WAITING",
             indent: 2,
           })
@@ -1175,7 +1221,7 @@ function CoreProvider({
           pipe([
             map((client) =>
               onStateChange({
-                context: contextFromClient(client),
+                context: contextFromClient({ client, title }),
                 nextState: "WAITING",
                 indent: 4,
               })
@@ -1194,21 +1240,21 @@ function CoreProvider({
             `spinnersStopClient ${title}, ${JSON.stringify(clients)}`
           );
         }),
+        () =>
+          pipe([
+            map((client) =>
+              onStateChange({
+                context: contextFromClient({ client, title }),
+                nextState: "DONE",
+              })
+            ),
+          ])(clients),
         tap(() =>
           onStateChange({
             context: contextFromPlanner({ title }),
             nextState: "DONE",
           })
         ),
-        () =>
-          pipe([
-            map((client) =>
-              onStateChange({
-                context: contextFromClient(client),
-                nextState: "DONE",
-              })
-            ),
-          ])(clients),
       ])
     );
   const spinnersStartHooks = ({ onStateChange, hookType }) =>
@@ -1260,7 +1306,7 @@ function CoreProvider({
         })(),
       spinnersStartClient({
         onStateChange,
-        title: TitleDestroying,
+        title: TitlePlanningDestroy,
         clients: filterReadWriteClient(options)(clients),
       }),
     ])([...mapTypeToResources.values()]);
@@ -1363,7 +1409,7 @@ function CoreProvider({
       spinnersStartProvider({ onStateChange }),
       spinnersStartClient({
         onStateChange,
-        title: TitleDestroying,
+        title: TitlePlanningDestroy,
         clients: filterReadWriteClient(options)(clients),
       }),
     ])();
@@ -1622,13 +1668,13 @@ function CoreProvider({
     ])();
   };
 
-  const getClients = ({ onStateChange, deep }) =>
+  const getClients = ({ onStateChange, deep, title }) =>
     map(
       tryCatch(
         pipe([
           tap((client) =>
             onStateChange({
-              context: contextFromClient(client),
+              context: contextFromClient({ client, title }),
               nextState: "RUNNING",
             })
           ),
@@ -1642,7 +1688,7 @@ function CoreProvider({
             })({ client }),
           tap(({ client }) =>
             onStateChange({
-              context: contextFromClient(client),
+              context: contextFromClient({ client, title }),
               nextState: "DONE",
             })
           ),
@@ -1654,7 +1700,7 @@ function CoreProvider({
           logger.error(`getClient error for client type ${client.spec.type}`);
           logger.error(tos(error));
           onStateChange({
-            context: contextFromClient(client),
+            context: contextFromClient({ client, title }),
             nextState: "ERROR",
             error: convertError({ error }),
           });
@@ -1690,7 +1736,7 @@ function CoreProvider({
       tap((x) => {
         logger.debug(`planFindDestroy ${tos(options)}`);
       }),
-      getClients({ onStateChange, deep: false }),
+      getClients({ onStateChange, title: TitleDestroying, deep: false }),
       tap((x) => {
         logger.debug(`planFindDestroy`);
       }),
