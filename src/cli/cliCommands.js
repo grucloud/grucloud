@@ -63,7 +63,7 @@ const providersToString = map(({ provider, ...other }) => ({
 }));
 
 const throwIfError = tap((result) => {
-  if (result.error) {
+  if (result?.error) {
     throw {
       ...result,
       results: providersToString(result.results),
@@ -674,6 +674,7 @@ exports.planDestroy = async ({
 
   const processHasNoPlan = tap(() => {
     console.log("No resources to destroy");
+    return true;
   });
 
   const countDestroyed = reduce(
@@ -817,9 +818,9 @@ exports.planDestroy = async ({
   const processDestroyPlans = switchCase([
     (plans) => commandOptions.force || promptConfirmDestroy(plans),
     doPlansDestroy({ commandOptions }),
-    tap(() => {
+    () => {
       console.log("Abort destroying plan");
-    }),
+    },
   ]);
 
   return tryCatch(
@@ -892,14 +893,14 @@ exports.planDestroy = async ({
           }),
           switchCase([hasEmptyPlan, processHasNoPlan, processDestroyPlans]),
           throwIfError,
-          tap((x) => {
-            //console.log(JSON.stringify(x, null, 4));
-          }),
-          runAsyncCommandHook({
-            providers: infra.providers,
-            hookType: HookType.ON_DESTROYED,
-            commandTitle: `Running OnDestroyed`,
-          }),
+          tap.if(
+            not(isEmpty),
+            runAsyncCommandHook({
+              providers: infra.providers,
+              hookType: HookType.ON_DESTROYED,
+              commandTitle: `Running OnDestroyed`,
+            })
+          ),
           tap((x) => {
             //console.log(JSON.stringify(x, null, 4));
           }),
