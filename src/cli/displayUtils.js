@@ -1,9 +1,13 @@
 const assert = require("assert");
+const emoji = require("node-emoji");
 const Table = require("cli-table3");
 const colors = require("colors/safe");
 const YAML = require("./json2yaml");
-const { switchCase, pipe, tap, map, reduce, filter } = require("rubico");
+const { switchCase, pipe, tap, map, reduce, filter, not } = require("rubico");
 const { isEmpty, forEach, pluck, size } = require("rubico/x");
+
+const { planToResourcesPerType } = require("../providers/Common");
+
 const hasPlan = (plan) => !isEmpty(plan.newOrUpdate) || !isEmpty(plan.destroy);
 
 const displayResource = (item) =>
@@ -65,21 +69,116 @@ exports.displayListSummary = pipe([
   }),
 ]);
 
+const displayResourcePerType = ({
+  table,
+  title,
+  providerName,
+  plans,
+  colorName,
+}) =>
+  tap.if(
+    not(isEmpty),
+    pipe([
+      tap(() =>
+        table.push([
+          {
+            colSpan: 2,
+            content: colors[colorName]["bold"](title),
+          },
+        ])
+      ),
+      () =>
+        planToResourcesPerType({
+          providerName,
+          plans,
+        }),
+      map((resourcesPerType) =>
+        table.push([
+          {
+            content: `${colors[colorName]["bold"](resourcesPerType.type)}`,
+          },
+          {
+            content: pipe([
+              pluck("name"),
+              (names) => names.join(", "),
+              (names) => colors[colorName](names),
+            ])(resourcesPerType.resources),
+          },
+        ])
+      ),
+    ])
+  )(plans);
+
 exports.displayPlanSummary = pipe([
-  tap((result) => {
-    console.log("Plan Summary:");
-  }),
-  map(({ provider, resultQuery }) => {
-    console.log(`Provider: ${provider.name}`);
-    resultQuery.resultCreate.plans.forEach(({ resource }) => {
-      console.log(`+ ${resource.type}::${resource.name}`);
-    });
-    resultQuery.resultDestroy.plans.forEach(({ resource }) => {
-      console.log(`- ${resource.type}::${resource.name}`);
-    });
-    console.log(`\n`);
-  }),
+  map(({ provider, resultQuery }) =>
+    pipe([
+      () =>
+        new Table({
+          colWidths: tableSummaryDefs.colWidths({
+            columns: process.stdout.columns || 80,
+          }),
+          wordWrap: true,
+          style: { head: [], border: [] },
+        }),
+      tap((table) =>
+        table.push([
+          {
+            colSpan: 2,
+            content: colors.yellow(
+              `Plan summary for provider ${provider.name}`
+            ),
+          },
+        ])
+      ),
+      tap((table) =>
+        displayResourcePerType({
+          table,
+          providerName: provider.name,
+          plans: resultQuery.resultCreate.plans,
+          title: "DEPLOY RESOURCES",
+          colorName: "brightGreen",
+        })
+      ),
+      tap((table) =>
+        displayResourcePerType({
+          table,
+          providerName: provider.name,
+          plans: resultQuery.resultDestroy.plans,
+          title: "DESTROY RESOURCES",
+          colorName: "brightRed",
+        })
+      ),
+      tap((table) => {
+        console.log(table.toString());
+      }),
+    ])()
+  ),
 ]);
+
+exports.displayPlanDestroySummary = forEach(({ provider, result }) =>
+  pipe([
+    () =>
+      new Table({
+        colWidths: tableSummaryDefs.colWidths({
+          columns: process.stdout.columns || 80,
+        }),
+        wordWrap: true,
+        style: { head: [], border: [] },
+      }),
+    tap((table) =>
+      displayResourcePerType({
+        table,
+        providerName: provider.name,
+        plans: result.plans,
+        title: `Destroy summary for provider ${provider.name}`,
+        colorName: "brightRed",
+      })
+    ),
+    tap((table) => {
+      console.log(table.toString());
+    }),
+  ])()
+);
 
 const groupByType = (init = {}) =>
   reduce((acc, item) => {

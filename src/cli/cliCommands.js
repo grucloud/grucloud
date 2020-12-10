@@ -34,6 +34,7 @@ const { runAsyncCommand } = require("./cliUtils");
 const {
   displayPlan,
   displayPlanSummary,
+  displayPlanDestroySummary,
   displayListSummary,
   displayLive,
 } = require("./displayUtils");
@@ -508,6 +509,7 @@ exports.planRunScript = planRunScript;
 
 const processNoPlan = () => {
   console.log("Nothing to deploy");
+  return true;
 };
 
 const abortDeploy = () => {
@@ -647,21 +649,15 @@ exports.planApply = async ({
           doPlanQuery({ commandOptions, programOptions }),
           throwIfError,
           get("results"),
-          tap((result) => {
-            logger.debug("doPlansDeploy");
-          }),
           switchCase([hasPlans, processDeployPlans, processNoPlan]),
-          tap((result) => {
-            logger.debug("doPlansDeploy");
-          }),
-          runAsyncCommandHook({
-            providers: infra.providers,
-            hookType: HookType.ON_DEPLOYED,
-            commandTitle: `Running OnDeployed`,
-          }),
-          tap((result) => {
-            logger.debug("doPlansDeploy");
-          }),
+          tap.if(
+            (result) => result,
+            runAsyncCommandHook({
+              providers: infra.providers,
+              hookType: HookType.ON_DEPLOYED,
+              commandTitle: `Running OnDeployed`,
+            })
+          ),
         ])(infra),
     ]),
     DisplayAndThrow({ name: "Plan Apply" })
@@ -882,6 +878,7 @@ exports.planDestroy = async ({
               })
             )
           ),
+          displayPlanDestroySummary,
           tap((x) => {
             //console.log(JSON.stringify(x, null, 4));
           }),

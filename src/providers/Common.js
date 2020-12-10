@@ -1,7 +1,7 @@
 const assert = require("assert");
 const md5File = require("md5-file");
-const { pipe, tap, omit } = require("rubico");
-const { isEmpty } = require("rubico/x");
+const { pipe, tap, omit, get, map } = require("rubico");
+const { isEmpty, groupBy, values, first, pluck } = require("rubico/x");
 const logger = require("../logger")({ prefix: "Common" });
 const { tos } = require("../tos");
 
@@ -15,6 +15,29 @@ exports.HookType = {
   ON_DEPLOYED: "onDeployed",
   ON_DESTROYED: "onDestroyed",
 };
+
+const typeFromResources = pipe([first, get("type")]);
+exports.typeFromResources = typeFromResources;
+
+exports.planToResourcesPerType = ({ providerName, plans }) =>
+  pipe([
+    tap((plans) => {
+      logger.debug("planToResourcesPerType");
+      assert(providerName);
+      assert(plans);
+    }),
+    pluck("resource"),
+    groupBy("type"),
+    values,
+    map((resources) => ({
+      type: typeFromResources(resources),
+      provider: providerName,
+      resources,
+    })),
+    tap((obj) => {
+      logger.debug("planToResourcesPerType");
+    }),
+  ])(plans);
 
 exports.axiosErrorToJSON = (error) => ({
   isAxiosError: true,
