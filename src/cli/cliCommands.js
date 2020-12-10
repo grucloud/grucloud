@@ -505,6 +505,8 @@ const planRunScript = async ({
 
 exports.planRunScript = planRunScript;
 
+const mapFunction = (sequencial) => (sequencial ? map.series : map);
+
 // Plan Apply
 
 const processNoPlan = () => {
@@ -565,7 +567,6 @@ exports.planApply = async ({
       ),
   ]);
 
-  const mapFunction = (sequencial) => (sequencial ? map.series : map);
   const doPlansDeploy = ({ commandOptions, infra }) =>
     pipe([
       tap((xx) => {
@@ -741,7 +742,7 @@ exports.planDestroy = async ({
     }),
   ]);
 
-  const doPlansDestroy = ({ commandOptions }) =>
+  const doPlansDestroy = ({ commandOptions, infra }) =>
     pipe([
       tap((x) => {
         logger.error(`doPlansDestroy`);
@@ -763,7 +764,8 @@ exports.planDestroy = async ({
                     })
                   )
                 ),
-                map(
+                (results) => results.reverse(),
+                mapFunction(infra.sequencial)(
                   pipe([
                     assignStart({ onStateChange }),
                     assign({
@@ -817,7 +819,7 @@ exports.planDestroy = async ({
 
   const processDestroyPlans = switchCase([
     (plans) => commandOptions.force || promptConfirmDestroy(plans),
-    doPlansDestroy({ commandOptions }),
+    doPlansDestroy({ commandOptions, infra }),
     () => {
       console.log("Abort destroying plan");
     },
