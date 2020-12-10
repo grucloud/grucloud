@@ -4,7 +4,6 @@
 
 - add project name as aws tags
 - PROMPT='%4~ %# '
-- displayPlan error
 - iam deal with deleted user
 - check for duplicated name, eg: ig, use id for OnStateChange
 
