@@ -7,10 +7,8 @@ const {
   flatten,
   pluck,
   forEach,
-  first,
+
   defaultsDeep,
-  groupBy,
-  values,
 } = require("rubico/x");
 const {
   pipe,
@@ -39,6 +37,8 @@ const {
   TitleDeploying,
   TitleDestroying,
   TitlePlanningDestroy,
+  typeFromResources,
+  planToResourcesPerType,
 } = require("./Common");
 const { Planner, mapToGraph } = require("./Planner");
 
@@ -681,8 +681,6 @@ function CoreProvider({
     uri: `${providerName}::${hookName}::${hookType}::${name}`,
     displayText: () => name,
   });
-
-  const typeFromResources = pipe([first, get("type")]);
 
   // Target Resources
   const mapNameToResource = new Map();
@@ -1341,22 +1339,6 @@ function CoreProvider({
       ])
     )();
 
-  const planToResourcesPerType = pipe([
-    tap((plans) => {
-      logger.debug("planToResourcesPerType");
-    }),
-    pluck("resource"),
-    groupBy("type"),
-    values,
-    map((resources) => ({
-      type: typeFromResources(resources),
-      provider: providerName,
-      resources,
-    })),
-    tap((obj) => {
-      logger.debug("planToResourcesPerType");
-    }),
-  ]);
   const spinnersStartDeploy = ({ onStateChange, plan }) =>
     tap(
       pipe([
@@ -1371,9 +1353,10 @@ function CoreProvider({
               spinnersStartResources({
                 onStateChange,
                 title: TitleDeploying,
-                resourcesPerType: planToResourcesPerType(
-                  plan.resultCreate.plans
-                ),
+                resourcesPerType: planToResourcesPerType({
+                  providerName,
+                  plans: plan.resultCreate.plans,
+                }),
               }),
             ]),
             () => {
@@ -1388,9 +1371,10 @@ function CoreProvider({
               spinnersStartResources({
                 onStateChange,
                 title: TitleDestroying,
-                resourcesPerType: planToResourcesPerType(
-                  plan.resultDestroy.plans
-                ),
+                resourcesPerType: planToResourcesPerType({
+                  providerName,
+                  plans: plan.resultDestroy.plans,
+                }),
               }),
             ]),
             () => {
@@ -1428,7 +1412,10 @@ function CoreProvider({
       spinnersStartResources({
         onStateChange,
         title: TitleDestroying,
-        resourcesPerType: planToResourcesPerType(plans),
+        resourcesPerType: planToResourcesPerType({
+          providerName,
+          plans: plan.resultDestroy.plans,
+        }),
       }),
     ])();
   };
