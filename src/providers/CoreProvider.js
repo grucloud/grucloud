@@ -1414,7 +1414,7 @@ function CoreProvider({
         title: TitleDestroying,
         resourcesPerType: planToResourcesPerType({
           providerName,
-          plans: plan.resultDestroy.plans,
+          plans,
         }),
       }),
     ])();

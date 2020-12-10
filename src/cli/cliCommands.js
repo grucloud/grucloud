@@ -34,6 +34,7 @@ const { runAsyncCommand } = require("./cliUtils");
 const {
   displayPlan,
   displayPlanSummary,
+  displayPlanDestroySummary,
   displayListSummary,
   displayLive,
 } = require("./displayUtils");
@@ -877,6 +878,7 @@ exports.planDestroy = async ({
               })
             )
           ),
+          displayPlanDestroySummary,
           tap((x) => {
             //console.log(JSON.stringify(x, null, 4));
           }),

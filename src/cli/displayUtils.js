@@ -155,6 +155,31 @@ exports.displayPlanSummary = pipe([
   ),
 ]);
 
+exports.displayPlanDestroySummary = forEach(({ provider, result }) =>
+  pipe([
+    () =>
+      new Table({
+        colWidths: tableSummaryDefs.colWidths({
+          columns: process.stdout.columns || 80,
+        }),
+        wordWrap: true,
+        style: { head: [], border: [] },
+      }),
+    tap((table) =>
+      displayResourcePerType({
+        table,
+        providerName: provider.name,
+        plans: result.plans,
+        title: `Destroy summary for provider ${provider.name}`,
+        colorName: "brightRed",
+      })
+    ),
+    tap((table) => {
+      console.log(table.toString());
+    }),
+  ])()
+);
+
 const groupByType = (init = {}) =>
   reduce((acc, item) => {
     const { type } = item.resource;
