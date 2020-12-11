@@ -30,7 +30,15 @@ exports.mapToGraph = pipe([
     map((resource) => ({
       ...resource.toJSON(),
       dependsOn: transform(
-        flatMap((resource) => (resource.name ? [resource.toJSON()] : [])),
+        flatMap(
+          switchCase([
+            (resource) => resource.name,
+            (resource) => [resource.toJSON()],
+            (resource) => Array.isArray(resource),
+            map((resource) => resource.toJSON()),
+            () => [],
+          ])
+        ),
         () => []
       )(resource.dependencies),
     }))([...mapResource.values()]),
@@ -79,7 +87,7 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
           ])(dependsOnTypeReverse(dependsOnType)),
         })),
         tap((graph) => {
-          logger.debug(`DependencyTree down: ${tos(graph)}`);
+          logger.info(`DependencyTree down: ${tos(graph)}`);
         }),
       ])(plans),
     () =>
@@ -101,7 +109,7 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
           ])(spec.dependsOn),
         })),
         tap((graph) => {
-          logger.debug(`DependencyTree up: ${tos(graph)}`);
+          logger.info(`DependencyTree up: ${tos(graph)}`);
         }),
       ])(dependsOnInstance),
   ])();
