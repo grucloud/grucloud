@@ -15,7 +15,14 @@ const {
   get,
 } = require("rubico");
 
-const { isEmpty, isFunction, pluck, find, forEach } = require("rubico/x");
+const {
+  isEmpty,
+  isFunction,
+  pluck,
+  find,
+  forEach,
+  isString,
+} = require("rubico/x");
 const { logError, convertError } = require("./Common");
 
 const STATES = {
@@ -32,11 +39,14 @@ exports.mapToGraph = pipe([
       dependsOn: transform(
         flatMap(
           switchCase([
+            isString,
+            () => [],
             (resource) => resource.name,
             (resource) => [resource.toJSON()],
-            (resource) => Array.isArray(resource),
-            map((resource) => resource.toJSON()),
-            () => [],
+            transform(
+              map((dep) => dep.toJSON()),
+              () => []
+            ),
           ])
         ),
         () => []
