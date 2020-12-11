@@ -30,14 +30,7 @@ exports.mapToGraph = pipe([
     map((resource) => ({
       ...resource.toJSON(),
       dependsOn: transform(
-        flatMap((resource) =>
-          resource.name
-            ? [resource.toJSON()]
-            : transform(
-                map((dep) => dep.toJSON()),
-                () => []
-              )(resource)
-        ),
+        flatMap((resource) => (resource.name ? [resource.toJSON()] : [])),
         () => []
       )(resource.dependencies),
     }))([...mapResource.values()]),
