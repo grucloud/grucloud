@@ -253,19 +253,15 @@ exports.AwsS3Object = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteObject-property
-  const destroy = async ({ id, resourcesPerType }) =>
+  const destroy = async ({ id, resource }) =>
     pipe([
       tap(() => {
         logger.info(
           `destroy object ${tos({
             id,
-            resourcesPerType: resourcesPerType.length,
+            resource: resource.toJSON(),
           })}`
         );
-      }),
-      find((resource) => resource.name === id),
-      tap((resource) => {
-        assert(resource, `no resource for id ${id}`);
       }),
       getBucket,
       (bucket) => ({
@@ -276,7 +272,7 @@ exports.AwsS3Object = ({ spec, config }) => {
       tap(() => {
         logger.info(`destroyed object ${tos({ id })}`);
       }),
-    ])(resourcesPerType);
+    ])(resource);
 
   const configDefault = async ({ name, properties }) =>
     defaultsDeep({ Key: name })(properties);

@@ -103,8 +103,8 @@ exports.AwsHostedZone = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#getHostedZone-property
   const getById = pipe([
-    tap(({ id }) => {
-      logger.debug(`getById ${id}`);
+    tap(({ id, name }) => {
+      logger.debug(`getById ${id}, name: ${name}`);
     }),
     tryCatch(
       ({ id }) => route53.getHostedZone({ Id: id }).promise(),
@@ -261,7 +261,7 @@ exports.AwsHostedZone = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.debug(`destroy ${tos({ name, id })}`);
+        logger.info(`destroy ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
         assert(name, "destroy name");
       }),
@@ -304,12 +304,12 @@ exports.AwsHostedZone = ({ spec, config }) => {
       tap(() =>
         retryCall({
           name: `isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id }),
+          fn: () => isDownById({ id, name }),
           config,
         })
       ),
       tap(() => {
-        logger.debug(`destroy done, ${tos({ name, id })}`);
+        logger.info(`destroy done, ${tos({ name, id })}`);
       }),
     ])();
 
@@ -328,24 +328,18 @@ exports.AwsHostedZone = ({ spec, config }) => {
         assert(diff, "diff");
         assert(diff.needUpdate, "diff.needUpate");
         assert(diff.deletions, "diff.deletions");
-        assert(diff.additions, "diff.additions");
       }),
       switchCase([
         () => diff.needUpdateRecordSet,
         tryCatch(
           pipe([
-            () => [
-              ...map((ResourceRecordSet) => ({
+            () =>
+              map((ResourceRecordSet) => ({
                 Action: "DELETE",
                 ResourceRecordSet: filterEmptyResourceRecords(
                   ResourceRecordSet
                 ),
               }))(diff.deletions),
-              ...map((ResourceRecordSet) => ({
-                Action: "CREATE",
-                ResourceRecordSet,
-              }))(diff.additions),
-            ],
             tap((Changes) => {
               logger.debug(`update changes ${tos(Changes)}`);
             }),
@@ -395,28 +389,46 @@ exports.AwsHostedZone = ({ spec, config }) => {
   };
 };
 
-exports.compareHostedZone = async ({ target, live, dependencies }) =>
+exports.compareHostedZone = async ({ usedBySet, target, live, dependencies }) =>
   pipe([
     tap(() => {
       logger.debug(`compareHostedZone ${tos({ target, live, dependencies })}`);
       assert(target.RecordSet, "target.recordSet");
       assert(live.RecordSet, "live.recordSet");
+      assert(usedBySet, "usedBySet");
     }),
-    () => filter(canDeleteRecord(target.Name))(live.RecordSet),
     fork({
-      additions: (liveRecordSet) =>
-        differenceWith(isDeepEqual, target.RecordSet)(liveRecordSet),
-      deletions: (liveRecordSet) =>
-        differenceWith(isDeepEqual, liveRecordSet)(target.RecordSet),
+      liveRecordSet: () => filter(canDeleteRecord(target.Name))(live.RecordSet),
+      targetRecordSet: async () =>
+        map(
+          tryCatch(
+            (resource) => resource.resolveConfig(),
+            (error) => {
+              logger.error(error);
+              return { error };
+            }
+          )
+        )([...usedBySet.values()]),
+    }),
+    //TODO throw if error
+    tap((xxx) => {
+      logger.debug(`compareHostedZone `);
+    }),
+    fork({
+      deletions: ({ liveRecordSet, targetRecordSet }) =>
+        differenceWith(
+          (left, right) =>
+            and([eq(get("Name"), right.Name), eq(get("Type"), right.Type)])(
+              left
+            ),
+          liveRecordSet
+        )(targetRecordSet),
     }),
     tap((xxx) => {
       logger.debug(`compareHostedZone `);
     }),
     assign({
-      needUpdateRecordSet: or([
-        (diff) => !isEmpty(diff.additions),
-        (diff) => !isEmpty(diff.deletions),
-      ]),
+      needUpdateRecordSet: or([(diff) => !isEmpty(diff.deletions)]),
       needUpdateManagedZone: () => target.Name !== live.Name,
     }),
     assign({

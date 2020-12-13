@@ -127,6 +127,7 @@ module.exports = ({ resources, provider }) => {
         {
           name: `ssl certificate ready`,
           command: async ({ sslCertificateLive }) => {
+            //TODO retry
             assert.equal(sslCertificateLive.Status, "ISSUED");
           },
         },

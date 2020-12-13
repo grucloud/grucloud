@@ -9,9 +9,12 @@ const {
   switchCase,
   assign,
   eq,
+  or,
+  not,
   pick,
   filter,
   omit,
+  and,
 } = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
@@ -20,11 +23,7 @@ const logger = require("../../../logger")({ prefix: "AwsDistribution" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
-const {
-  buildTags,
-  findNameInTags,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+const { buildTags, findNameInTags } = require("../AwsCommon");
 const { getField } = require("../../ProviderCommon");
 
 const findName = findNameInTags;
@@ -263,10 +262,23 @@ exports.AwsDistribution = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException,
+    shouldRetryOnException: pipe([
+      tap((error) => {
+        logger.info(`distribution shouldRetryOnException ${tos(error)}`);
+      }),
+      or([
+        not(eq(get("statusCode"), 400)),
+        eq(get("code"), "InvalidViewerCertificate"),
+      ]),
+      tap((result) => {
+        logger.info(
+          `distribution shouldRetryOnException result: ${tos(result)}`
+        );
+      }),
+    ]),
   };
 };
-
+//TODO omit with deep keys
 exports.compareDistribution = async ({ target, live, dependencies }) =>
   pipe([
     () =>

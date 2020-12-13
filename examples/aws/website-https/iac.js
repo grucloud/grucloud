@@ -26,22 +26,16 @@ async function getFilesWalk(dir) {
 
 const makeDomainName = ({ DomainName, stage }) =>
   `${stage == "production" ? "" : `${stage}.`}${DomainName}`;
+
 exports.makeDomainName = makeDomainName;
 
-const createResources = async ({
-  provider,
-  resources: { certificate, domain },
-}) => {
+const createResources = async ({ provider }) => {
   const config = provider.config();
   const { DomainName, websiteDir, stage } = config;
 
   assert(DomainName);
   assert(websiteDir);
-
-  const domainName = makeDomainName({
-    DomainName,
-    stage,
-  });
+  assert(stage);
 
   const files = await getFiles(websiteDir);
   const bucketName = `${DomainName}-${stage}`;
@@ -71,6 +65,56 @@ const createResources = async ({
       }),
     })
   )(files);
+
+  const domainName = makeDomainName({
+    DomainName,
+    stage,
+  });
+
+  const certificate = await provider.makeCertificate({
+    name: `certificate-${DomainName}-${stage}`,
+    properties: () => ({
+      DomainName: domainName,
+    }),
+  });
+
+  const domain = await provider.useRoute53Domain({
+    name: DomainName,
+  });
+
+  const hostedZone = await provider.makeHostedZone({
+    name: `${domainName}.`,
+    dependencies: { domain },
+    properties: ({}) => ({}),
+  });
+
+  const recordValidation = await provider.makeRoute53Record({
+    name: `validation-${domainName}.`,
+    dependencies: { hostedZone, certificate },
+    properties: ({ dependencies: { certificate } }) => {
+      const domainValidationOption =
+        certificate?.live?.DomainValidationOptions[0];
+      const record = domainValidationOption?.ResourceRecord;
+      if (domainValidationOption) {
+        assert(
+          record,
+          `missing record in DomainValidationOptions, certificate ${JSON.stringify(
+            certificate.live
+          )}`
+        );
+      }
+      return {
+        Name: record?.Name,
+        ResourceRecords: [
+          {
+            Value: record?.Value,
+          },
+        ],
+        TTL: 300,
+        Type: "CNAME",
+      };
+    },
+  });
 
   const distribution = await provider.makeCloudFrontDistribution({
     name: `distribution-${bucketName}`,
@@ -119,85 +163,42 @@ const createResources = async ({
     stage,
   })}.`;
 
-  const hostedZone = await provider.makeHostedZone({
+  const recordCloudFront = await provider.makeRoute53Record({
     name: hostedZoneName,
-    dependencies: { certificate, domain, distribution },
-    properties: ({ dependencies: { certificate, distribution } }) => {
-      const domainValidationOption =
-        certificate.live?.DomainValidationOptions[0];
-      const record = domainValidationOption?.ResourceRecord;
-      if (domainValidationOption) {
-        assert(
-          record,
-          `missing record in DomainValidationOptions, certificate ${JSON.stringify(
-            certificate.live
-          )}`
-        );
-      }
+    dependencies: { hostedZone, distribution },
+    properties: ({ dependencies: { distribution } }) => {
       return {
-        RecordSet: [
-          {
-            Name: record?.Name,
-            ResourceRecords: [
-              {
-                Value: record?.Value,
-              },
-            ],
-            TTL: 300,
-            Type: "CNAME",
-          },
-          {
-            Name: hostedZoneName,
-            Type: "A",
-            AliasTarget: {
-              HostedZoneId: "Z2FDTNDATAQYW2",
-              DNSName: distribution.live?.DomainName,
-              EvaluateTargetHealth: false,
-            },
-          },
-        ],
+        Name: hostedZoneName,
+        Type: "A",
+        AliasTarget: {
+          HostedZoneId: "Z2FDTNDATAQYW2",
+          DNSName: distribution?.live?.DomainName,
+          EvaluateTargetHealth: false,
+        },
       };
     },
   });
-  return { websiteBucket, hostedZone, distribution };
+
+  return { websiteBucket, recordCloudFront, distribution, hostedZone };
 };
 
 exports.createResources = createResources;
 
 exports.createStack = async ({ name = "aws", config }) => {
-  const providerUsEast = AwsProvider({
+  const provider = AwsProvider({
     name: "aws-us-east",
     config: { ...config, region: "us-east-1" },
   });
-  const provider = AwsProvider({ name, config });
 
-  const { DomainName, stage } = provider.config();
-
-  const certificate = await providerUsEast.makeCertificate({
-    name: `certificate-${DomainName}-${stage}`,
-    properties: () => ({
-      DomainName: makeDomainName({ DomainName, stage }),
-    }),
+  const resources = await createResources({
+    provider,
+    config,
   });
-
-  const domain = await provider.useRoute53Domain({
-    name: `${DomainName}`,
-  });
-
-  const resources = {
-    ...(await createResources({
-      provider,
-      resources: { certificate, domain },
-      config,
-    })),
-    certificate,
-  };
 
   provider.register({ resources });
 
   return {
-    sequencial: true,
-    providers: [providerUsEast, provider],
+    provider,
     resources,
   };
 };

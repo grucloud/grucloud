@@ -2,6 +2,7 @@
 
 ## Common:
 
+- omit with deep keys
 - add project name as aws tags
 - PROMPT='%4~ %# '
 - iam deal with deleted user

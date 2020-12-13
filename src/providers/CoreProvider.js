@@ -7,7 +7,7 @@ const {
   flatten,
   pluck,
   forEach,
-
+  find,
   defaultsDeep,
 } = require("rubico/x");
 const {
@@ -22,6 +22,7 @@ const {
   any,
   reduce,
   fork,
+  eq,
 } = require("rubico");
 const logger = require("../logger")({ prefix: "Core" });
 const { tos } = require("../tos");
@@ -125,35 +126,33 @@ const ResourceMaker = ({
   logger.debug(`ResourceMaker: ${tos({ type, resourceName })}`);
 
   const client = createClient({ provider, spec, config });
-  let parent;
+  const usedBySet = new Set();
   const getLive = async ({ deep } = {}) => {
     logger.info(`getLive ${type}/${resourceName}`);
     const live = await client.getByName({
       provider,
       name: resourceName,
       dependencies,
+      resolveConfig,
       deep,
     });
     logger.debug(`getLive ${type}/${resourceName} result: ${tos(live)}`);
     return live;
   };
 
-  const planUpdate = async ({ resource, live }) => {
-    logger.info(
-      `planUpdate resource: ${tos(resource.toJSON())}, live: ${tos(live)}`
+  const planUpdate = async ({ resource, target, live }) => {
+    logger.debug(
+      `planUpdate resource: ${tos(resource.toJSON())}, target: ${tos(
+        target
+      )}, live: ${tos(live)}`
     );
 
-    const resolvedDependencies = await resolveDependencies({
-      resourceName,
-      dependencies,
-    });
-    const target = await resource.resolveConfig({ live, resolvedDependencies });
-    logger.debug(`planUpdate target: ${tos(target)}`);
-
     if (isEmpty(target)) {
+      //TODO do we need this ?
       return;
     }
     const diff = await spec.compare({
+      usedBySet,
       target,
       live,
       dependencies: resource.dependencies,
@@ -348,7 +347,7 @@ const ResourceMaker = ({
     return instance;
   };
 
-  const update = async ({ payload, diff, live }) => {
+  const update = async ({ payload, diff, live, resolvedDependencies }) => {
     logger.info(`update ${tos({ resourceName, type, payload })}`);
     if (!(await getLive())) {
       throw Error(`Resource ${type}/${resourceName} does not exist`);
@@ -362,6 +361,7 @@ const ResourceMaker = ({
           name: resourceName,
           payload,
           dependencies,
+          resolvedDependencies,
           diff,
           live,
           id: client.findId(live),
@@ -404,25 +404,29 @@ const ResourceMaker = ({
       tap(() => {
         logger.info(`planUpsert resource: ${resource.toString()}`);
       }),
-      () => resource.getLive(),
-      switchCase([
-        isEmpty,
-        pipe([
+      fork({
+        live: () => resource.getLive(),
+        target: pipe([
           () =>
             resolveDependencies({
               resourceName,
               dependencies,
               dependenciesMustBeUp: false,
             }),
-          async (resolvedDependencies) => [
-            {
-              action: "CREATE",
-              resource: resource.toJSON(),
-              config: await resource.resolveConfig({ resolvedDependencies }),
-            },
-          ],
+          (resolvedDependencies) =>
+            resource.resolveConfig({ resolvedDependencies }),
         ]),
-        (live) => planUpdate({ live, resource }),
+      }),
+      switchCase([
+        pipe([get("live"), isEmpty]),
+        ({ target }) => [
+          {
+            action: "CREATE",
+            resource: resource.toJSON(),
+            config: target,
+          },
+        ],
+        ({ live, target }) => planUpdate({ live, target, resource }),
       ]),
     ])();
 
@@ -444,15 +448,17 @@ const ResourceMaker = ({
       name: resourceName,
     });
 
-  const addParent = (parentToSet) => {
-    parent = parentToSet;
+  const addUsedBy = (usedBy) => {
+    usedBySet.add(usedBy);
   };
+
   const resourceMaker = {
     type,
     provider,
     name: resourceName,
     dependencies,
-    getParent: () => parent,
+    addUsedBy,
+    usedBy: () => usedBySet,
     spec,
     client,
     toJSON,
@@ -462,7 +468,6 @@ const ResourceMaker = ({
     update,
     planUpsert,
     getLive,
-    addParent,
     resolveDependencies: ({ dependenciesMustBeUp }) =>
       resolveDependencies({ resourceName, dependencies, dependenciesMustBeUp }),
   };
@@ -473,14 +478,14 @@ const ResourceMaker = ({
     if (!dependency) {
       throw { code: 422, message: "missing dependency" };
     }
-    if (!dependency.addParent) {
+    if (!dependency.addUsedBy) {
       forEach((item) => {
-        if (item.addParent) {
-          item.addParent(resourceMaker);
+        if (item.addUsedBy) {
+          item.addUsedBy(resourceMaker);
         }
       })(dependency);
     } else {
-      dependency.addParent(resourceMaker);
+      dependency.addUsedBy(resourceMaker);
     }
   })(dependencies);
   return resourceMaker;
@@ -1716,7 +1721,7 @@ function CoreProvider({
       ),
       tap(() =>
         onStateChange({
-          context: contextFromPlanner({ title: TitleDestroying }),
+          context: contextFromPlanner({ title: TitlePlanningDestroy }),
           nextState: "RUNNING",
         })
       ),
@@ -1874,42 +1879,56 @@ function CoreProvider({
     name,
     config,
     resourcesPerType = [],
-  }) => {
-    assert(client);
-    assert(config);
-
-    logger.debug(
-      `destroyByClient: ${tos({
-        type: client.spec.type,
-        name,
-        config,
-        resourcesPerType,
-      })}`
-    );
-
-    const id = client.findId(config);
-    assert(id, `destroyByClient missing id in config: ${tos(config)}`);
-    const result = await client.destroy({ id, name, resourcesPerType });
-
-    assert(client.isDownById, "client.isDownById");
-    await retryCall({
-      name: `destroy ${name}, isDownById`,
-      fn: () => client.isDownById({ id, name, resourcesPerType }),
-      config: client.config || providerConfig,
-    });
-
-    logger.debug(
-      `destroyByClient: DONE ${tos({ type: client.spec.type, name, result })}`
-    );
-    return result;
-  };
+  }) =>
+    pipe([
+      tap((x) => {
+        logger.debug(
+          `destroyByClient: ${tos({
+            type: client.spec.type,
+            name,
+            config,
+            resourcesPerType,
+          })}`
+        );
+        assert(client);
+        assert(client.isDownById, "client.isDownById");
+        assert(config);
+      }),
+      () => client.findId(config),
+      tap((id) => {
+        assert(id, `destroyByClient missing id in config: ${tos(config)}`);
+      }),
+      (id) =>
+        pipe([
+          find(eq(get("name"), name)),
+          tap((resource) => {
+            //assert(resource, `no resource for id ${id}`);
+          }),
+          (resource) => client.destroy({ id, name, resource }),
+          tap((resource) =>
+            retryCall({
+              name: `destroy type: ${client.spec.type}, name: ${name}, isDownById`,
+              fn: () => client.isDownById({ id, name, resource }),
+              config: client.config || providerConfig,
+            })
+          ),
+        ])(resourcesPerType),
+      tap(() => {
+        logger.info(
+          `destroyByClient: DONE ${tos({
+            type: client.spec.type,
+            name,
+          })}`
+        );
+      }),
+    ])();
 
   const destroyById = async ({ type, config, name }) => {
     logger.debug(`destroyById: ${tos({ type, name })}`);
     const client = clientByType(type);
     assert(client, `Cannot find endpoint type ${type}}`);
 
-    return await destroyByClient({
+    return destroyByClient({
       client,
       name,
       config,
