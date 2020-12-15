@@ -179,7 +179,13 @@ const createResources = async ({ provider }) => {
     },
   });
 
-  return { websiteBucket, recordCloudFront, distribution, hostedZone };
+  return {
+    certificate,
+    websiteBucket,
+    recordCloudFront,
+    distribution,
+    hostedZone,
+  };
 };
 
 exports.createResources = createResources;

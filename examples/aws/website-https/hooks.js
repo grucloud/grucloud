@@ -41,6 +41,8 @@ module.exports = ({ resources, provider }) => {
   assert(hostedZone);
   assert(distribution);
   assert(DomainName);
+  assert(certificate);
+
   const domainName = makeDomainName({
     DomainName,
     stage,

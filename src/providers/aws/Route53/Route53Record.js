@@ -347,7 +347,7 @@ exports.Route53Record = ({ spec, config }) => {
     ])();
 
   const configDefault = async ({ name, properties, dependencies }) => {
-    return defaultsDeep({ Name: name })(properties);
+    return defaultsDeep({ Name: name, ResourceRecords: [] })(properties);
   };
 
   return {
@@ -374,8 +374,8 @@ exports.compareRoute53Record = async ({ target, live, dependencies }) =>
       logger.debug(
         `compareRoute53Record ${tos({ target, live, dependencies })}`
       );
-      assert(target.ResourceRecords, "target.recordSet");
-      assert(live.ResourceRecords, "live.recordSet");
+      assert(target, "target");
+      assert(live.ResourceRecords, "live.ResourceRecords");
     }),
     () => detailedDiff(omit(["Tags"])(live), target),
     tap((diff) => {
