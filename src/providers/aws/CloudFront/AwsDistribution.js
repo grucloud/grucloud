@@ -40,29 +40,33 @@ exports.AwsDistribution = ({ spec, config }) => {
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {
-        logger.info(`getList distributions ${tos(params)}`);
+        logger.info(`getList distributions`);
       }),
       () => cloudfront.listDistributions(params).promise(),
       get("DistributionList.Items"),
-      map(
-        assign({
-          Tags: pipe([
-            (distribution) =>
-              cloudfront
-                .listTagsForResource({
-                  Resource: distribution.ARN,
-                })
-                .promise(),
-            get("Tags.Items"),
-          ]),
-        })
-      ),
+      map(async (distribution) => ({
+        ...distribution,
+        ...(await pipe([
+          () =>
+            cloudfront.getDistributionConfig({ Id: distribution.Id }).promise(),
+          get("DistributionConfig"),
+        ])()),
+        Tags: await pipe([
+          (distribution) =>
+            cloudfront
+              .listTagsForResource({
+                Resource: distribution.ARN,
+              })
+              .promise(),
+          get("Tags.Items"),
+        ])(distribution),
+      })),
       (distributions) => ({
         total: distributions.length,
         items: distributions,
       }),
       tap((distributions) => {
-        logger.info(`getList #distributions ${distributions.length}`);
+        logger.info(`getList #distributions ${distributions.total}`);
         logger.debug(`getList distributions result: ${tos(distributions)}`);
       }),
     ])();
@@ -284,14 +288,11 @@ exports.compareDistribution = async ({ target, live, dependencies }) =>
     () =>
       pipe([
         get("DistributionConfigWithTags.DistributionConfig"),
-        omit(["CallerReference"]),
+        omit([
+          "CallerReference",
+          "ViewerCertificate.CloudFrontDefaultCertificate",
+        ]),
       ])(target),
-    (targetFiltered) => ({
-      ...targetFiltered,
-      ViewerCertificate: omit(["CloudFrontDefaultCertificate"])(
-        targetFiltered.ViewerCertificate
-      ),
-    }),
     tap((targetFiltered) => {
       logger.debug(`compareDistribution diff:${tos(targetFiltered)}`);
     }),
