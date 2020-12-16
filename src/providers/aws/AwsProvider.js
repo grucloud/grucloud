@@ -60,7 +60,6 @@ exports.AwsProvider = ({ name = "aws", config }) => {
   const { AWSAccessKeyId, AWSSecretKey } = process.env;
 
   AWS.config.update({
-    ...(config.region && { region: config.region }),
     ...(AWSAccessKeyId && {
       accessKeyId: AWSAccessKeyId,
     }),
@@ -73,7 +72,10 @@ exports.AwsProvider = ({ name = "aws", config }) => {
 
   const start = async () => {
     accountId = await fetchAccountId();
-    await validateConfig({ region: AWS.config.region, zone: config.zone });
+    await validateConfig({
+      region: config.region || AWS.config.region,
+      zone: config.zone,
+    });
   };
 
   const info = () => ({
