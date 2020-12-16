@@ -21,19 +21,13 @@ exports.AwsIamUser = ({ spec, config }) => {
   const iam = new AWS.IAM({ region: config.region });
 
   const findName = findNameInTags;
-
-  const findId = (item) => {
-    assert(item);
-    const id = item.UserName;
-    assert(id);
-    return id;
-  };
+  const findId = get("UserName");
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listUsers-property
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {
-        logger.debug(`getList ${params}`);
+        logger.debug(`getList iam user`);
       }),
       () => iam.listUsers(params).promise(),
       tap((users) => {
@@ -45,7 +39,7 @@ exports.AwsIamUser = ({ spec, config }) => {
         pipe([
           tap((user) => {
             logger.debug(`getList user: ${tos(user)}`);
-          }),
+          }), //TODO use assign
           async (user) => ({
             ...user,
             AttachedPolicies: await pipe([
@@ -90,6 +84,7 @@ exports.AwsIamUser = ({ spec, config }) => {
         items: users,
       }),
       tap((users) => {
+        logger.info(`getList #results: ${tos(users.total)}`);
         logger.debug(`getList results: ${tos(users)}`);
       }),
     ])();
@@ -147,16 +142,16 @@ exports.AwsIamUser = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.debug(`destroy ${tos({ name, id })}`);
+        logger.info(`destroy iam user ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
       () => iam.listGroupsForUser({ UserName: id }).promise(),
       get("Groups"),
-      tap((obj) => {
-        logger.debug(`destroy `);
+      tap((Groups = []) => {
+        logger.debug(`destroy iam user Groups: ${Groups.length}`);
       }),
-      forEach(async (group) => {
-        await iam
+      forEach((group) => {
+        iam
           .removeUserFromGroup({
             GroupName: group.GroupName,
             UserName: id,
@@ -166,6 +161,11 @@ exports.AwsIamUser = ({ spec, config }) => {
       () =>
         iam.listAttachedUserPolicies({ UserName: id, MaxItems: 1e3 }).promise(),
       get("AttachedPolicies"),
+      tap((AttachedPolicies = []) => {
+        logger.debug(
+          `destroy iam user AttachedPolicies: ${AttachedPolicies.length}`
+        );
+      }),
       forEach((policy) => {
         iam
           .detachUserPolicy({
@@ -176,6 +176,9 @@ exports.AwsIamUser = ({ spec, config }) => {
       }),
       () => iam.listUserPolicies({ UserName: id, MaxItems: 1e3 }).promise(),
       get("PolicyNames"),
+      tap((PolicyNames = []) => {
+        logger.debug(`destroy iam user PolicyNames: ${PolicyNames.length}`);
+      }),
       forEach((policyName) => {
         iam
           .deleteUserPolicy({
@@ -198,7 +201,7 @@ exports.AwsIamUser = ({ spec, config }) => {
         })
       ),
       tap(() => {
-        logger.debug(`destroy done, ${tos({ name, id })}`);
+        logger.info(`destroy iam user done, ${tos({ name, id })}`);
       }),
     ])();
 

@@ -16,17 +16,8 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
 
   const iam = new AWS.IAM({ region: config.region });
 
-  const findName = (item) => {
-    assert(item.InstanceProfileName);
-    return item.InstanceProfileName;
-  };
-
-  const findId = (item) => {
-    assert(item);
-    const id = item.InstanceProfileName;
-    assert(id);
-    return id;
-  };
+  const findName = get("InstanceProfileName");
+  const findId = findName;
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listInstanceProfiles-property
   const getList = async ({ params } = {}) =>
@@ -53,9 +44,6 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
                 await iam.listRoleTags({ RoleName: role.RoleName }).promise()
               ).Tags,
             }))(instanceProfile.Roles),
-          }),
-          tap((role) => {
-            logger.debug(role);
           }),
         ])
       ),
