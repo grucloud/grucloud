@@ -21,7 +21,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   assert(spec);
   assert(config);
   const { managedByDescription } = config;
-  const ec2 = new AWS.EC2();
+  const ec2 = new AWS.EC2({ region: config.region });
 
   const findName = (item) => findField({ item, field: "GroupName" });
   const findId = get("GroupId");

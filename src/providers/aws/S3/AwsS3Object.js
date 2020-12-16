@@ -42,7 +42,7 @@ exports.AwsS3Object = ({ spec, config }) => {
   assert(config);
   const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
 
-  const s3 = new AWS.S3();
+  const s3 = new AWS.S3({ region: config.region });
 
   const findName = get("Key");
   const findId = findName;

@@ -16,7 +16,7 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const ec2 = new AWS.EC2();
+  const ec2 = new AWS.EC2({ region: config.region });
 
   const findName = findNameInTags;
   const findId = get("AllocationId");

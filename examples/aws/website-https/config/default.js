@@ -1,4 +1,6 @@
+const path = require("path");
+
 module.exports = () => ({
   DomainName: "grucloud.org",
-  websiteDir: "../../../docusaurus/build/",
+  websiteDir: path.resolve(__dirname, "../../../../docusaurus/build/"),
 });

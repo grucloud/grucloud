@@ -27,7 +27,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   assert(config);
   const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
 
-  const s3 = new AWS.S3();
+  const s3 = new AWS.S3({ region: config.region });
 
   const findName = get("Name");
   const findId = findName;
@@ -515,6 +515,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
           name: `s3 createBucket: ${Bucket}`,
           fn: () => s3.createBucket(otherProperties).promise(),
           shouldRetryOnException,
+          config: { retryCount: 600 },
         }),
       tap(({ Location }) => {
         logger.info(`create bucket result ${tos(Location)}`);

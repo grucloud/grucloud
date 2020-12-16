@@ -38,7 +38,7 @@ exports.AwsCertificate = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const acm = new AWS.ACM();
+  const acm = new AWS.ACM({ region: config.region });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#listCertificates-property
   const getList = async ({ params } = {}) =>

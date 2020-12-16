@@ -16,7 +16,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const ec2 = new AWS.EC2();
+  const ec2 = new AWS.EC2({ region: config.region });
 
   const findName = (item) => {
     const name = findNameInTags(item);

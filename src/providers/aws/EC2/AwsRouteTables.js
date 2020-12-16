@@ -20,7 +20,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
   const { stage } = config;
   assert(stage);
 
-  const ec2 = new AWS.EC2();
+  const ec2 = new AWS.EC2({ region: config.region });
 
   const findName = (item) => {
     const name = findNameInTags(item);

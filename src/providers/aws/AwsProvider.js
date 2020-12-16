@@ -27,7 +27,7 @@ const fnSpecs = () => [
 
 const validateConfig = async ({ region, zone }) => {
   logger.debug(`region: ${region}, zone: ${zone}`);
-  const ec2 = new AWS.EC2();
+  const ec2 = new AWS.EC2({ region });
 
   const { AvailabilityZones } = await ec2.describeAvailabilityZones().promise();
   const zones = map((x) => x.ZoneName)(AvailabilityZones);

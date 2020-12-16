@@ -34,7 +34,7 @@ exports.AwsDistribution = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const cloudfront = new AWS.CloudFront();
+  const cloudfront = new AWS.CloudFront({ region: config.region });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#listDistributions-property
   const getList = async ({ params } = {}) =>

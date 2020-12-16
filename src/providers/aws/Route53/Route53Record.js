@@ -41,6 +41,7 @@ const {
   mapPoolSize,
 } = require("../../Common");
 const { shouldRetryOnException } = require("../AwsCommon");
+const { filterEmptyResourceRecords } = require("./Route53Utils");
 
 const findName = pipe([
   tap((live) => {
@@ -85,7 +86,7 @@ exports.Route53Record = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const route53 = new AWS.Route53();
+  const route53 = new AWS.Route53({ region: config.region });
 
   const findRecord = ({ name, type }) =>
     and([eq(get("Name"), name), eq(get("Type"), type)]);
@@ -290,7 +291,10 @@ exports.Route53Record = ({ spec, config }) => {
                     Changes: [
                       {
                         Action: "DELETE",
-                        ResourceRecordSet: omit(["Tags"])(live),
+                        ResourceRecordSet: pipe([
+                          omit(["Tags"]),
+                          filterEmptyResourceRecords,
+                        ])(live),
                       },
                     ],
                   },
@@ -347,7 +351,7 @@ exports.Route53Record = ({ spec, config }) => {
     ])();
 
   const configDefault = async ({ name, properties, dependencies }) => {
-    return defaultsDeep({ Name: name, ResourceRecords: [] })(properties);
+    return defaultsDeep({ Name: name })(properties);
   };
 
   return {
@@ -377,7 +381,11 @@ exports.compareRoute53Record = async ({ target, live, dependencies }) =>
       assert(target, "target");
       assert(live.ResourceRecords, "live.ResourceRecords");
     }),
-    () => detailedDiff(omit(["Tags"])(live), target),
+    () =>
+      detailedDiff(
+        omit(["Tags"])(live),
+        defaultsDeep({ ResourceRecords: [] })(target)
+      ),
     tap((diff) => {
       logger.debug(`compareHostedZone diff:${tos(diff)}`);
     }),

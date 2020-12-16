@@ -67,7 +67,9 @@ exports.isOurMinion = ({ resource, config }) => {
       () => false,
     ]),
     tap((minion) => {
-      logger.debug(`isOurMinion ${minion} ${tos(resource)}`);
+      logger.debug(
+        `isOurMinion ${minion}, ${tos({ stage, providerName, resource })}`
+      );
     }),
   ])(resource.Tags || []);
 };

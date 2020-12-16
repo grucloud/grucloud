@@ -39,6 +39,8 @@ const {
 } = require("../../Common");
 const { buildTags, shouldRetryOnException } = require("../AwsCommon");
 
+const { filterEmptyResourceRecords } = require("./Route53Utils");
+
 const getNewCallerReference = () => `grucloud-${new Date()}`;
 
 //Check for the final dot
@@ -55,8 +57,8 @@ exports.AwsHostedZone = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const route53 = new AWS.Route53();
-  const route53domains = new AWS.Route53Domains();
+  const route53 = new AWS.Route53({ region: config.region });
+  const route53domains = new AWS.Route53Domains({ region: "us-east-1" });
 
   const findId = get("Id");
 
@@ -137,13 +139,13 @@ exports.AwsHostedZone = ({ spec, config }) => {
     get("DelegationSet.Id"),
     (DelegationSetId) => DelegationSetId.replace("/delegationset/", ""),
     tap((DelegationSetId) => {
-      logger.debug(`create DelegationSet: ${DelegationSetId}`);
+      logger.info(`create DelegationSet: ${DelegationSetId}`);
     }),
   ]);
 
   const findOrCreateReusableDelegationSet = pipe([
     tap(() => {
-      logger.info(`findOrCreateReusableDelegationSet`);
+      logger.debug(`findOrCreateReusableDelegationSet`);
     }),
     getList,
     get("items"),
@@ -153,7 +155,9 @@ exports.AwsHostedZone = ({ spec, config }) => {
     find(eq(get("Key"), "DelegationSetId")),
     get("Value"),
     tap((DelegationSetId) => {
-      logger.debug(`findOrCreateReusableDelegationSet ${DelegationSetId}`);
+      logger.debug(
+        `findOrCreateReusableDelegationSet DelegationSetId: ${DelegationSetId}`
+      );
     }),
     switchCase([
       (DelegationSetId) => DelegationSetId,
@@ -312,12 +316,6 @@ exports.AwsHostedZone = ({ spec, config }) => {
         logger.info(`destroy done, ${tos({ name, id })}`);
       }),
     ])();
-
-  const filterEmptyResourceRecords = switchCase([
-    pipe([get("ResourceRecords"), isEmpty]),
-    omit(["ResourceRecords"]),
-    (ResourceRecordSet) => ResourceRecordSet,
-  ]);
 
   const update = async ({ name, live, diff }) =>
     pipe([

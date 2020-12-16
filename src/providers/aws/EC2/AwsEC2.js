@@ -18,7 +18,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
   assert(config);
   const clientConfig = { ...config, retryDelay: 5000, repeatCount: 1 };
 
-  const ec2 = new AWS.EC2();
+  const ec2 = new AWS.EC2({ region: config.region });
 
   const findName = findNameInTags;
 

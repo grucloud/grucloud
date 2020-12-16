@@ -39,6 +39,7 @@ const createResources = async ({ provider }) => {
 
   const files = await getFiles(websiteDir);
   const bucketName = `${DomainName}-${stage}`;
+
   const websiteBucket = await provider.makeS3Bucket({
     name: bucketName,
     properties: () => ({

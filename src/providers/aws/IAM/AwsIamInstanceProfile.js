@@ -14,7 +14,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const iam = new AWS.IAM();
+  const iam = new AWS.IAM({ region: config.region });
 
   const findName = (item) => {
     assert(item.InstanceProfileName);

@@ -17,7 +17,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const iam = new AWS.IAM();
+  const iam = new AWS.IAM({ region: config.region });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listGroups-property
   const getList = async ({ params } = {}) =>
