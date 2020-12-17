@@ -1,8 +1,7 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
-const { get, pipe, filter, map } = require("rubico");
-const { isEmpty } = require("rubico/x");
-const { defaultsDeep } = require("rubico/x");
+const { tap, get, pipe, filter, map } = require("rubico");
+const { isEmpty, defaultsDeep } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "AwsRtb" });
 const { tos } = require("../../../tos");
@@ -116,36 +115,34 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#disassociateRouteTable-property
-  const destroy = async ({ id, name }) => {
-    logger.debug(`destroy ${tos({ name, id })}`);
-
-    if (isEmpty(id)) {
-      throw Error(`destroy invalid id`);
-    }
-
-    const rtLive = await getById({ id });
-    if (!rtLive) {
-      throw Error(`Cannot get route tables: ${id}`);
-    }
-
-    await pipe([
-      filter((association) => !association.Main),
-      async (associations) =>
-        await map(async (association) => {
-          logger.debug(`destroy disassociate ${tos({ association })}`);
-          await ec2
-            .disassociateRouteTable({
-              AssociationId: association.RouteTableAssociationId,
-            })
-            .promise();
-        })(associations),
-    ])(rtLive.Associations);
-
-    logger.debug(`destroying ${tos({ RouteTableId: id })}`);
-    await ec2().deleteRouteTable({ RouteTableId: id }).promise();
-    logger.debug(`destroyed ${tos({ name, id })}`);
-    return;
-  };
+  const destroy = ({ id, name }) =>
+    pipe([
+      tap(() => {
+        logger.info(`destroy route table ${tos({ name, id })}`);
+      }),
+      () => getById({ id }),
+      tap.if(isEmpty, () => {
+        throw Error(`Cannot get route tables: ${id}`);
+      }),
+      get("Associations"),
+      filter(not(get("Main"))),
+      map(async (association) => {
+        logger.debug(`destroy disassociate ${tos({ association })}`);
+        //TODO tryCatch
+        await ec2()
+          .disassociateRouteTable({
+            AssociationId: association.RouteTableAssociationId,
+          })
+          .promise();
+      }),
+      tap(() => {
+        logger.debug(`destroying ${tos({ RouteTableId: id })}`);
+      }),
+      () => ec2().deleteRouteTable({ RouteTableId: id }).promise(),
+      tap(() => {
+        logger.debug(`destroyed ${tos({ name, id })}`);
+      }),
+    ])();
 
   const configDefault = async ({ name, properties }) =>
     defaultsDeep({})(properties);
