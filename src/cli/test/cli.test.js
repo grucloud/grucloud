@@ -242,11 +242,11 @@ describe("cli error", function () {
           `missing resultCreate.plans[0].resource in ${tos(resultQuery)}`
         );
         assert(
-          resultQuery.resultCreate.plans[0].error,
-          `missing resultCreate.plans[0].error in ${tos(resultQuery)}`
+          resultQuery.lives.error,
+          `resultQuery.lives.error in ${tos(resultQuery)}`
         );
         assert.equal(
-          resultQuery.resultCreate.plans[0].error.message,
+          resultQuery.lives.results[0].error.message,
           "Network Error"
         );
       },
@@ -261,10 +261,7 @@ describe("cli error", function () {
         assert.equal(code, 422);
         const { resultQuery } = error.results[0];
         assert(resultQuery.error);
-        assert.equal(
-          resultQuery.resultCreate.plans[0].error.code,
-          "ECONNABORTED"
-        );
+        assert.equal(resultQuery.lives.results[0].error.code, "ECONNABORTED");
       },
     });
     assert.deepEqual(result, 422);
@@ -291,7 +288,7 @@ describe("cli error", function () {
         const { resultQuery } = error.results[0];
         assert(resultQuery.error);
         assert.equal(
-          resultQuery.resultCreate.plans[0].error.message,
+          resultQuery.lives.results[0].error.message,
           "Network Error"
         );
       },
@@ -306,10 +303,7 @@ describe("cli error", function () {
         assert.equal(code, 422);
         const { resultQuery } = error.results[0];
         assert(resultQuery.error);
-        assert.equal(
-          resultQuery.resultCreate.plans[0].error.code,
-          "ECONNABORTED"
-        );
+        assert.equal(resultQuery.lives.results[0].error.code, "ECONNABORTED");
       },
     });
     assert.deepEqual(result, 422);

@@ -7,13 +7,14 @@ const {
   flatten,
   pluck,
   forEach,
-
+  find,
   defaultsDeep,
 } = require("rubico/x");
 const {
   pipe,
   tap,
   map,
+  flatMap,
   filter,
   tryCatch,
   switchCase,
@@ -22,6 +23,8 @@ const {
   any,
   reduce,
   fork,
+  eq,
+  not,
 } = require("rubico");
 const logger = require("../logger")({ prefix: "Core" });
 const { tos } = require("../tos");
@@ -125,35 +128,61 @@ const ResourceMaker = ({
   logger.debug(`ResourceMaker: ${tos({ type, resourceName })}`);
 
   const client = createClient({ provider, spec, config });
-  let parent;
+  const usedBySet = new Set();
   const getLive = async ({ deep } = {}) => {
     logger.info(`getLive ${type}/${resourceName}`);
     const live = await client.getByName({
       provider,
       name: resourceName,
       dependencies,
+      resolveConfig,
       deep,
     });
     logger.debug(`getLive ${type}/${resourceName} result: ${tos(live)}`);
     return live;
   };
 
-  const planUpdate = async ({ resource, live }) => {
-    logger.info(
-      `planUpdate resource: ${tos(resource.toJSON())}, live: ${tos(live)}`
+  const findLive = ({ lives }) =>
+    pipe([
+      tap((results) => {
+        logger.debug(`findLive ${results}`);
+      }),
+      filter(not(get("error"))),
+      find(({ client }) => client.spec.type === type),
+      switchCase([
+        (result) => result,
+        pipe([
+          tap(({ client, results }) => {
+            assert(client);
+          }),
+          ({ client, results }) =>
+            find((item) => resourceName === client.findName(item))(
+              results.items
+            ),
+        ]),
+        (result) => {
+          logger.debug(`findLive cannot find type ${type}`);
+        },
+      ]),
+
+      tap((live) => {
+        logger.debug(`findLive ${tos(live)}`);
+      }),
+    ])(lives.results);
+
+  const planUpdate = async ({ resource, target, live }) => {
+    logger.debug(
+      `planUpdate resource: ${tos(resource.toJSON())}, target: ${tos(
+        target
+      )}, live: ${tos(live)}`
     );
 
-    const resolvedDependencies = await resolveDependencies({
-      resourceName,
-      dependencies,
-    });
-    const target = await resource.resolveConfig({ live, resolvedDependencies });
-    logger.debug(`planUpdate target: ${tos(target)}`);
-
     if (isEmpty(target)) {
+      //TODO do we need this ?
       return;
     }
     const diff = await spec.compare({
+      usedBySet,
       target,
       live,
       dependencies: resource.dependencies,
@@ -173,7 +202,7 @@ const ResourceMaker = ({
     }
   };
 
-  const resolveDependencies = ({ dependencies, dependenciesMustBeUp }) =>
+  const resolveDependencies = ({ lives, dependencies, dependenciesMustBeUp }) =>
     pipe([
       tap(() => {
         logger.debug(
@@ -190,6 +219,7 @@ const ResourceMaker = ({
           return tryCatch(
             () =>
               resolveDependencies({
+                lives,
                 dependencies: dependency,
                 dependenciesMustBeUp,
               }),
@@ -204,7 +234,11 @@ const ResourceMaker = ({
         }
         return tryCatch(
           async (dependency) => {
-            const live = await dependency.getLive();
+            const live = await switchCase([
+              not(isEmpty),
+              (lives) => dependency.findLive({ lives }),
+              () => dependency.getLive(),
+            ])(lives);
 
             if (dependenciesMustBeUp && !live) {
               throw {
@@ -212,10 +246,13 @@ const ResourceMaker = ({
               };
             }
             const resolvedDependencies = await dependency.resolveDependencies({
+              //TODO live ??
+              lives,
               dependenciesMustBeUp,
             });
             const config = await dependency.resolveConfig({
-              live,
+              //TODO live ??
+              lives,
               resolvedDependencies,
             });
             return { resource: dependency, live, config };
@@ -251,25 +288,25 @@ const ResourceMaker = ({
       }),
     ])(dependencies);
 
-  const resolveConfig = async ({ live, resolvedDependencies } = {}) =>
+  const resolveConfig = async ({ live, lives, resolvedDependencies } = {}) =>
     pipe([
       tap(() => {
         logger.debug(
           `resolveConfig ${type}/${resourceName}, ${tos({
             live,
-            resolvedDependencies,
           })}`
         );
         assert(client.configDefault);
         assert(spec.propertiesDefault);
       }),
       switchCase([
-        () => resolvedDependencies,
-        () => resolvedDependencies,
+        (resolvedDependencies) => resolvedDependencies,
+        (resolvedDependencies) => resolvedDependencies,
         () =>
           resolveDependencies({
             resourceName,
             dependencies,
+            lives,
           }),
       ]),
       async (resolvedDependencies) => {
@@ -348,7 +385,7 @@ const ResourceMaker = ({
     return instance;
   };
 
-  const update = async ({ payload, diff, live }) => {
+  const update = async ({ payload, diff, live, resolvedDependencies }) => {
     logger.info(`update ${tos({ resourceName, type, payload })}`);
     if (!(await getLive())) {
       throw Error(`Resource ${type}/${resourceName} does not exist`);
@@ -362,6 +399,7 @@ const ResourceMaker = ({
           name: resourceName,
           payload,
           dependencies,
+          resolvedDependencies,
           diff,
           live,
           id: client.findId(live),
@@ -399,30 +437,26 @@ const ResourceMaker = ({
     return instance;
   };
 
-  const planUpsert = async ({ resource }) =>
+  const planUpsert = async ({ resource, lives }) =>
     pipe([
       tap(() => {
         logger.info(`planUpsert resource: ${resource.toString()}`);
+        assert(lives);
       }),
-      () => resource.getLive(),
+      fork({
+        live: () => resource.findLive({ lives }),
+        target: pipe([() => resource.resolveConfig({ lives })]),
+      }),
       switchCase([
-        isEmpty,
-        pipe([
-          () =>
-            resolveDependencies({
-              resourceName,
-              dependencies,
-              dependenciesMustBeUp: false,
-            }),
-          async (resolvedDependencies) => [
-            {
-              action: "CREATE",
-              resource: resource.toJSON(),
-              config: await resource.resolveConfig({ resolvedDependencies }),
-            },
-          ],
-        ]),
-        (live) => planUpdate({ live, resource }),
+        pipe([get("live"), isEmpty]),
+        ({ target }) => [
+          {
+            action: "CREATE",
+            resource: resource.toJSON(),
+            config: target,
+          },
+        ],
+        ({ live, target }) => planUpdate({ live, target, resource }),
       ]),
     ])();
 
@@ -444,15 +478,17 @@ const ResourceMaker = ({
       name: resourceName,
     });
 
-  const addParent = (parentToSet) => {
-    parent = parentToSet;
+  const addUsedBy = (usedBy) => {
+    usedBySet.add(usedBy);
   };
+
   const resourceMaker = {
     type,
     provider,
     name: resourceName,
     dependencies,
-    getParent: () => parent,
+    addUsedBy,
+    usedBy: () => usedBySet,
     spec,
     client,
     toJSON,
@@ -462,9 +498,14 @@ const ResourceMaker = ({
     update,
     planUpsert,
     getLive,
-    addParent,
-    resolveDependencies: ({ dependenciesMustBeUp }) =>
-      resolveDependencies({ resourceName, dependencies, dependenciesMustBeUp }),
+    findLive,
+    resolveDependencies: ({ lives, dependenciesMustBeUp }) =>
+      resolveDependencies({
+        resourceName,
+        dependencies,
+        lives,
+        dependenciesMustBeUp,
+      }),
   };
   forEach((dependency) => {
     if (isString(dependency)) {
@@ -473,14 +514,14 @@ const ResourceMaker = ({
     if (!dependency) {
       throw { code: 422, message: "missing dependency" };
     }
-    if (!dependency.addParent) {
+    if (!dependency.addUsedBy) {
       forEach((item) => {
-        if (item.addParent) {
-          item.addParent(resourceMaker);
+        if (item.addUsedBy) {
+          item.addUsedBy(resourceMaker);
         }
       })(dependency);
     } else {
-      dependency.addParent(resourceMaker);
+      dependency.addUsedBy(resourceMaker);
     }
   })(dependencies);
   return resourceMaker;
@@ -538,6 +579,14 @@ function CoreProvider({
       providerConfig
     )}`
   );
+
+  const liveToUri = ({ client, live }) =>
+    toUri({
+      providerName,
+      type: client.spec.type,
+      name: client.findName(live),
+      id: client.findId(live),
+    });
 
   const hookMap = new Map();
   const hookAdd = (name, hook) => {
@@ -890,16 +939,27 @@ function CoreProvider({
           nextState: "RUNNING",
         })
       ),
-      fork({
-        resultCreate: () =>
-          planUpsert({
+      assign({
+        lives: () =>
+          findLives({
             onStateChange,
+            options: commandOptions,
           }),
-        resultDestroy: () =>
+      }),
+      assign({
+        resultDestroy: ({ lives }) =>
           planFindDestroy({
             onStateChange,
             direction: PlanDirection.UP,
             options: commandOptions,
+            lives,
+          }),
+      }),
+      assign({
+        resultCreate: ({ lives }) =>
+          planUpsert({
+            onStateChange,
+            lives,
           }),
       }),
       (result) => ({
@@ -1296,17 +1356,17 @@ function CoreProvider({
         }))(resources),
       })),
       spinnersStartProvider({ onStateChange }),
+      spinnersStartClient({
+        onStateChange,
+        title: TitlePlanningDestroy,
+        clients,
+      }),
       (resourcesPerType) =>
         spinnersStartResources({
           onStateChange,
           title: TitleQuery,
           resourcesPerType,
         })(),
-      spinnersStartClient({
-        onStateChange,
-        title: TitlePlanningDestroy,
-        clients: filterReadWriteClient(options)(clients),
-      }),
     ])([...mapTypeToResources.values()]);
 
   const spinnersStartListLives = ({ onStateChange, options }) =>
@@ -1484,7 +1544,7 @@ function CoreProvider({
       }),
     ])();
 
-  const planUpsert = async ({ onStateChange = noop }) => {
+  const planUpsert = async ({ onStateChange = noop, lives }) => {
     logger.info(`planUpsert: #resources ${getTargetResources().length}`);
     return pipe([
       filter((resource) => !resource.spec.listOnly),
@@ -1516,7 +1576,7 @@ function CoreProvider({
               }),
               nextState: "RUNNING",
             });
-            const actions = await resource.planUpsert({ resource });
+            const actions = await resource.planUpsert({ resource, lives });
             onStateChange({
               context: contextFromResource({
                 operation: TitleQuery,
@@ -1696,19 +1756,23 @@ function CoreProvider({
       )
     );
 
-  const planFindDestroy = async ({
-    options,
-    direction = PlanDirection.DOWN,
+  const findLives = async ({
+    options = {},
     onStateChange = identity,
+    readWrite,
   }) =>
     pipe([
-      tap((x) => {
-        logger.info(`planFindDestroy ${tos({ options, direction })}`);
+      tap((clients) => {
+        logger.info(`findLives ${tos({ options })}`);
         assert(onStateChange);
         assert(options);
       }),
-      filterReadWriteClient(options),
-      tap(() =>
+      switchCase([
+        () => readWrite,
+        filterReadWriteClient(options),
+        (clients) => clients,
+      ]),
+      tap((clients) =>
         onStateChange({
           context: contextFromProvider(),
           nextState: "RUNNING",
@@ -1716,17 +1780,53 @@ function CoreProvider({
       ),
       tap(() =>
         onStateChange({
-          context: contextFromPlanner({ title: TitleDestroying }),
+          context: contextFromPlanner({ title: TitlePlanningDestroy }),
           nextState: "RUNNING",
         })
       ),
-      tap((x) => {
-        logger.debug(`planFindDestroy ${tos(options)}`);
-      }),
       getClients({ onStateChange, title: TitleDestroying, deep: false }),
-      tap((x) => {
-        logger.debug(`planFindDestroy`);
+      (results) => {
+        return { error: hasResultError(results), results };
+      },
+      tap((result) =>
+        onStateChange({
+          context: contextFromPlanner({ title: TitleDestroying }),
+          nextState: nextStateOnError(result.error),
+          result,
+        })
+      ),
+      switchCase([
+        get("error"),
+        (result) => result,
+        assign({
+          liveMap: ({ results }) =>
+            pipe([
+              flatMap(({ client, results: { items } }) =>
+                map((live) => liveToUri({ client, live }))(items)
+              ),
+            ])(results),
+        }),
+      ]),
+      tap((result) => {
+        logger.info(`findLives result: ${tos(result)}`);
       }),
+    ])(clients);
+
+  const planFindDestroy = async ({
+    options = {},
+    direction = PlanDirection.DOWN,
+    onStateChange = identity,
+    lives,
+  }) =>
+    pipe([
+      tap((xxx) => {
+        logger.info(`planFindDestroy ${tos({ options, direction })}`);
+        assert(onStateChange);
+        assert(options);
+        assert(lives);
+        assert(lives.results);
+      }),
+      filter(not(get("error"))),
       map(
         assign({
           plans: ({ client, results }) =>
@@ -1745,12 +1845,7 @@ function CoreProvider({
                   type: client.spec.type,
                   name: client.findName(live),
                   id: client.findId(live),
-                  uri: toUri({
-                    providerName,
-                    type: client.spec.type,
-                    name: client.findName(live),
-                    id: client.findId(live),
-                  }),
+                  uri: liveToUri({ client, live }),
                 },
                 action: "DESTROY",
                 config: live,
@@ -1767,22 +1862,9 @@ function CoreProvider({
           filter((result) => !isEmpty(result.plans || [])),
           reduce((acc, result) => [...acc, ...result.plans], []),
         ])(results);
-        return { error: hasResultError(results), results, plans };
+        return { error: lives.error, results, plans };
       },
-      tap((results) => {
-        logger.debug(`planFindDestroy`);
-      }),
-      tap((result) =>
-        onStateChange({
-          context: contextFromPlanner({ title: TitleDestroying }),
-          nextState: nextStateOnError(result.error),
-          result,
-        })
-      ),
-      tap((x) => {
-        logger.info(`planFindDestroy result: ${tos(x)}`);
-      }),
-    ])(clients);
+    ])(lives?.results);
 
   const onStateChangeResource = ({ operation, onStateChange }) => {
     return ({ resource, error, ...other }) => {
@@ -1860,7 +1942,7 @@ function CoreProvider({
           })
         ),
       ]),
-      () => ({ error: false }),
+      () => ({ error: false, plans }),
     ])();
   };
 
@@ -1874,42 +1956,65 @@ function CoreProvider({
     name,
     config,
     resourcesPerType = [],
-  }) => {
-    assert(client);
-    assert(config);
-
-    logger.debug(
-      `destroyByClient: ${tos({
-        type: client.spec.type,
-        name,
-        config,
-        resourcesPerType,
-      })}`
-    );
-
-    const id = client.findId(config);
-    assert(id, `destroyByClient missing id in config: ${tos(config)}`);
-    const result = await client.destroy({ id, name, resourcesPerType });
-
-    assert(client.isDownById, "client.isDownById");
-    await retryCall({
-      name: `destroy ${name}, isDownById`,
-      fn: () => client.isDownById({ id, name, resourcesPerType }),
-      config: client.config || providerConfig,
-    });
-
-    logger.debug(
-      `destroyByClient: DONE ${tos({ type: client.spec.type, name, result })}`
-    );
-    return result;
-  };
+  }) =>
+    pipe([
+      tap((x) => {
+        logger.debug(
+          `destroyByClient: ${tos({
+            type: client.spec.type,
+            name,
+            config,
+            resourcesPerType,
+          })}`
+        );
+        assert(client);
+        assert(client.isDownById, "client.isDownById");
+        assert(config);
+      }),
+      () => client.findId(config),
+      tap((id) => {
+        assert(id, `destroyByClient missing id in config: ${tos(config)}`);
+      }),
+      (id) =>
+        pipe([
+          find(eq(get("name"), name)),
+          tap((resource) => {
+            //assert(resource, `no resource for id ${id}`);
+          }),
+          tap((resource) =>
+            retryCall({
+              name: `destroy ${client.spec.type}/${id}/${name}`,
+              fn: () => client.destroy({ id, name, resource }),
+              isExpectedResult: () => true,
+              //TODO isExpectedException: client.isExpectedExceptionDelete
+              shouldRetryOnException: client.shouldRetryOnExceptionDelete,
+              config: provider.config(),
+            })
+          ),
+          tap((resource) =>
+            retryCall({
+              name: `destroy type: ${client.spec.type}, name: ${name}, isDownById`,
+              fn: () => client.isDownById({ id, name, resource }),
+              config: client.config || providerConfig,
+            })
+          ),
+        ])(resourcesPerType),
+      tap(() => {
+        logger.info(
+          `destroyByClient: DONE ${JSON.stringify({
+            type: client.spec.type,
+            name,
+          })}`
+        );
+      }),
+    ])();
 
   const destroyById = async ({ type, config, name }) => {
     logger.debug(`destroyById: ${tos({ type, name })}`);
     const client = clientByType(type);
     assert(client, `Cannot find endpoint type ${type}}`);
 
-    return await destroyByClient({
+    return destroyByClient({
       client,
       name,
       config,
@@ -1973,21 +2078,29 @@ function CoreProvider({
     return plannerResult;
   };
 
-  const destroyAll = pipe([
-    tap(() => {
-      logger.info(`destroyAll`);
-    }),
-    ({ onStateChange = identity, all = false, types = [] } = {}) =>
-      planFindDestroy({ options: { all, types }, onStateChange }),
-    ({ plans }) => planDestroy({ plans, direction: PlanDirection.DOWN }),
-    tap(({ error, results }) =>
-      logger.info(
-        `destroyAll DONE, ${error && `error: ${error}`}, #results ${
-          results.length
-        }`
-      )
-    ),
-  ]);
+  const destroyAll = ({ options } = {}) =>
+    pipe([
+      tap(({ options }) => {
+        logger.info(`destroyAll ${JSON.stringify(options)}`);
+      }),
+      assign({
+        lives: ({ options }) =>
+          findLives({
+            options,
+            readWrite: true,
+          }),
+      }),
+      ({ options, lives }) => planFindDestroy({ options, lives }),
+      ({ plans }) => planDestroy({ plans, direction: PlanDirection.DOWN }),
+      tap(({ error, results, plans }) => {
+        logger.info(
+          `destroyAll DONE, ${error && `error: ${error}`}, #results ${
+            results.length
+          }`
+        );
+        assert(plans);
+      }),
+    ])({ options });
 
   checkEnv(mandatoryEnvs);
   checkConfig(config, mandatoryConfigKeys);
@@ -2082,6 +2195,7 @@ function CoreProvider({
     spinnersStartHook,
     spinnersStopProvider,
     planDestroy,
+    findLives,
     listLives,
     listTargets,
     listConfig,

@@ -1,52 +1,59 @@
+const assert = require("assert");
 const AWS = require("aws-sdk");
-const { map, transform, get, tap, pipe, filter } = require("rubico");
+const { map, transform, get, tap, pipe, filter, eq, not } = require("rubico");
 const { defaultsDeep, isEmpty, first, pluck, flatten } = require("rubico/x");
 
-const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "AwsEc2" });
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { retryCall } = require("../../Retry");
-
 const { tos } = require("../../../tos");
-const StateTerminated = ["terminated"];
-const { getByIdCore, findNameInTags, buildTags } = require("../AwsCommon");
+const {
+  Ec2New,
+  getByIdCore,
+  findNameInTags,
+  buildTags,
+} = require("../AwsCommon");
 const { getField } = require("../../ProviderCommon");
 const { CheckAwsTags } = require("../AwsTagCheck");
+
+const StateRunning = "running";
+const StateTerminated = "terminated";
 
 module.exports = AwsEC2 = ({ spec, config }) => {
   assert(spec);
   assert(config);
   const clientConfig = { ...config, retryDelay: 5000, repeatCount: 1 };
 
-  const ec2 = new AWS.EC2();
+  const ec2 = Ec2New(config);
 
   const findName = findNameInTags;
 
   const findId = get("InstanceId");
 
+  const getStateName = get("State.Name");
+  const isInstanceUp = eq(getStateName, StateRunning);
+  const isInstanceDown = eq(getStateName, StateTerminated);
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
 
   const getList = pipe([
     tap(({ params } = {}) => {
-      logger.debug(`getList ${tos(params)}`);
+      logger.info(`getList ec2 ${JSON.stringify(params)}`);
     }),
-    ({ params } = {}) => ec2.describeInstances(params).promise(),
+    ({ params } = {}) => ec2().describeInstances(params).promise(),
     get("Reservations"),
-    tap((obj) => {
-      logger.debug(`getList ${tos(obj)}`);
-    }),
     pluck("Instances"),
     flatten,
+    filter(not(isInstanceDown)),
     tap((obj) => {
-      logger.debug(`getList ${tos(obj)}`);
-    }),
-    filter((instance) => !StateTerminated.includes(instance.State.Name)),
-    tap((obj) => {
-      logger.debug(`getList ${tos(obj)}`);
+      logger.debug(`getList ec2 result: ${tos(obj)}`);
     }),
     (items) => ({
       total: items.length,
       items,
+    }),
+    tap((result) => {
+      logger.info(`getList #ec2 ${result.total}`);
     }),
   ]);
 
@@ -58,24 +65,10 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     }),
   ]);
 
-  const getStateName = (instance) => {
-    const { InstanceId, State } = instance;
-    assert(InstanceId, "InstanceId");
-    assert(State, "State");
-    const state = State.Name;
-    logger.debug(`InstanceId ${InstanceId}, stateName ${state} `);
-    return state;
-  };
-
-  const isInstanceUp = (instance) => {
-    return ["running"].includes(getStateName(instance));
-  };
-
-  const isInstanceDown = (instance) => {
-    return StateTerminated.includes(getStateName(instance));
-  };
-
-  const isUpById = isUpByIdCore({ isInstanceUp, getById });
+  const isUpById = isUpByIdCore({
+    isInstanceUp,
+    getById,
+  });
 
   const isDownById = isDownByIdCore({
     isInstanceDown,
@@ -87,16 +80,15 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     assert(name, "name");
     assert(payload, "payload");
     logger.debug(`create ${tos({ name, payload })}`);
-    const data = await ec2.runInstances(payload).promise();
+    const data = await ec2().runInstances(payload).promise();
     logger.debug(`create result ${tos(data)}`);
     const instance = data.Instances[0];
     const { InstanceId } = instance;
 
     const instanceUp = await retryCall({
-      name: `isUpById: ${name} id: ${InstanceId}`,
+      name: `ec2 isUpById: ${name} id: ${InstanceId}`,
       fn: () => isUpById({ name, id: InstanceId }),
-      isExpectedResult: (result) => result,
-      ...clientConfig,
+      config: clientConfig,
     });
 
     assert(instanceUp, "instanceUp");
@@ -122,7 +114,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
         AllocationId,
         InstanceId,
       };
-      await ec2.associateAddress(paramsAssociate).promise();
+      await ec2().associateAddress(paramsAssociate).promise();
       logger.debug(`create, eip associated`);
     }
 
@@ -130,16 +122,16 @@ module.exports = AwsEC2 = ({ spec, config }) => {
   };
 
   const destroy = async ({ id, name }) => {
-    logger.debug(`destroy ${tos({ name, id })}`);
+    logger.info(`destroy ec2  ${tos({ name, id })}`);
     assert(!isEmpty(id), `destroy invalid id`);
 
-    const result = await ec2
+    const result = await ec2()
       .terminateInstances({
         InstanceIds: [id],
       })
       .promise();
 
-    const { Addresses } = await ec2
+    const { Addresses } = await ec2()
       .describeAddresses({
         Filters: [
           {
@@ -152,7 +144,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
 
     const address = Addresses[0];
     if (address) {
-      await ec2.disassociateAddress({
+      await ec2().disassociateAddress({
         AssociationId: address.AssociationId,
       });
     }
@@ -160,16 +152,15 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     logger.debug(`destroy in progress, ${tos({ name, id })}`);
 
     await retryCall({
-      name: `isDownById: ${name} id: ${id}`,
+      name: `ec2 isDownById: ${name} id: ${id}`,
       fn: () => isDownById({ id }),
       config,
     });
 
-    logger.debug(`destroy done, ${tos({ name, id, result })}`);
+    logger.info(`destroy ec2 done, ${tos({ name, id, result })}`);
     return result;
   };
   const configDefault = async ({ name, properties, dependencies }) => {
-    logger.debug(`configDefault ${tos({ dependencies })}`);
     const {
       keyPair,
       subnet,

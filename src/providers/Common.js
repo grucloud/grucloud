@@ -7,7 +7,7 @@ const { tos } = require("../tos");
 
 exports.mapPoolSize = 20;
 exports.TitleDeploying = "Deploying";
-exports.TitleDestroying = "Destroying";
+exports.TitleDestroying = "Planning Destroy";
 exports.TitlePlanningDestroy = "Planning Destroy";
 exports.TitleQuery = "Planning Deploy";
 

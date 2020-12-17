@@ -18,6 +18,7 @@ module.exports = (config) => [
   },
   {
     type: "Object",
+    dependsOn: ["Bucket"],
     Client: ({ spec }) =>
       GcpObject({
         spec,

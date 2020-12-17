@@ -852,10 +852,19 @@ exports.planDestroy = async ({
                         pipe([
                           assignStart({ onStateChange }),
                           assign({
-                            result: ({ provider }) =>
+                            lives: ({ provider }) =>
+                              provider.findLives({
+                                options: commandOptions,
+                                onStateChange,
+                                readWrite: true,
+                              }),
+                          }),
+                          assign({
+                            result: ({ lives, provider }) =>
                               provider.planFindDestroy({
                                 options: commandOptions,
                                 onStateChange,
+                                lives,
                               }),
                           }),
                         ])({ provider }),

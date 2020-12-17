@@ -1,11 +1,12 @@
 const assert = require("assert");
-const { pipe, tap, map, get } = require("rubico");
+const { pipe, tap, map, get, eq, assign } = require("rubico");
 
 const { defaultsDeep } = require("rubico/x");
 const logger = require("../../../../logger")({ prefix: "GcpServiceAccount" });
 const { tos } = require("../../../../tos");
 const GoogleClient = require("../../GoogleClient");
 const { createAxiosMakerGoogle } = require("../../GoogleCommon");
+const { retryCallOnError } = require("../../../Retry");
 
 const findName = (item) => {
   const name = item.email.split("@")[0];
@@ -43,7 +44,13 @@ exports.GcpServiceAccount = ({ spec, config }) => {
   });
 
   const fetchIamPolicy = pipe([
-    ({ id }) => axios.post(`${id}:getIamPolicy`),
+    ({ name }) =>
+      retryCallOnError({
+        name: `fetchIamPolicy ${name}`,
+        fn: pipe([() => axios.post(`${name}:getIamPolicy`)]),
+        isExpectedException: eq(get("response.status"), 404),
+        config: { retryCount: 20, retryDelay: 5e3 },
+      }),
     get("data"),
   ]);
 
@@ -58,27 +65,28 @@ exports.GcpServiceAccount = ({ spec, config }) => {
   const findId = get("uniqueId");
   const findTargetId = findId;
 
-  const onResponseGet = pipe([
-    tap((xxx) => {
-      //logger.debug("onResponseGet");
-    }),
-    async ({ data, id }) => ({
-      ...data,
-      iamPolicy: await fetchIamPolicy({ id }),
-    }),
-    tap((xxx) => {
-      //logger.debug("onResponseGet");
-    }),
-  ]);
+  const onResponseGet = ({ data }) =>
+    pipe([
+      assign({
+        iamPolicy: () => fetchIamPolicy({ name: data.name }),
+      }),
+      tap((xxx) => {
+        logger.debug("onResponseGet");
+      }),
+    ])(data);
 
   const onResponseList = ({ accounts = [] }) =>
     pipe([
-      map(async (account) => ({
-        ...account,
-        iamPolicy: await fetchIamPolicy({ id: account.name }),
-      })),
+      tap((accounts) => {
+        logger.debug("onResponseList");
+      }),
+      map(
+        assign({
+          iamPolicy: (account) => fetchIamPolicy({ name: account.name }),
+        })
+      ),
       tap((xxx) => {
-        //logger.debug("onResponseList");
+        logger.debug("onResponseList");
       }),
       (accounts) => ({ total: accounts.length, items: accounts }),
     ])(accounts);

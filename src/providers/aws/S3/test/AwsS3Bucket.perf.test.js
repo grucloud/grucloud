@@ -47,7 +47,7 @@ describe.skip("AwsS3BucketPerf", async function () {
       assert(!error, "planQueryAndApply failed");
     }
     {
-      const { error } = await provider.destroyAll({ types });
+      const { error } = await provider.destroyAll({ options: { types } });
       assert(!error, "destroyAll");
     }
   });

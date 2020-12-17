@@ -8,7 +8,11 @@ const { tos } = require("../../../tos");
 const { retryCall } = require("../../Retry");
 const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
-const { findNameInTags, shouldRetryOnException } = require("../AwsCommon");
+const {
+  Ec2New,
+  findNameInTags,
+  shouldRetryOnException,
+} = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
 const { CheckAwsTags } = require("../AwsTagCheck");
 
@@ -16,14 +20,14 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const ec2 = new AWS.EC2();
+  const ec2 = Ec2New(config);
 
   const findName = findNameInTags;
   const findId = get("AllocationId");
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeAddresses-property
   const getList = async ({ params } = {}) => {
     logger.debug(`getList ${tos(params)}`);
-    const { Addresses } = await ec2.describeAddresses(params).promise();
+    const { Addresses } = await ec2().describeAddresses(params).promise();
     logger.debug(`getList ${tos(Addresses)}`);
 
     return {
@@ -43,11 +47,11 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
     //assert(payload);
 
     logger.debug(`create elastic ip ${tos({ name, payload })}`);
-    const { AllocationId } = await ec2.allocateAddress(payload).promise();
+    const { AllocationId } = await ec2().allocateAddress(payload).promise();
     logger.info(`created elastic ip ${AllocationId}`);
 
     await retryCall({
-      name: `isUpById: ${name} id: ${AllocationId}`,
+      name: `eip isUpById: ${name} id: ${AllocationId}`,
       fn: () => isUpById({ id: AllocationId }),
       config,
     });
@@ -81,7 +85,7 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
 
     assert(eipLive, `Cannot get elastic ip: ${id}`);
 
-    const result = await ec2.releaseAddress({ AllocationId: id }).promise();
+    const result = await ec2().releaseAddress({ AllocationId: id }).promise();
     logger.debug(`destroy vpc IN PROGRESS, ${tos({ name, id, result })}`);
     return result;
   };

@@ -15,7 +15,13 @@ const moment = require("moment");
 const logger = require("../../../logger")({ prefix: "IamPolicy" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
-const { buildTags, findNameInDescription } = require("../AwsCommon");
+const {
+  IAMNew,
+  buildTags,
+  findNameInDescription,
+  shouldRetryOnException,
+  shouldRetryOnExceptionDelete,
+} = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
@@ -23,7 +29,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const iam = new AWS.IAM();
+  const iam = IAMNew(config);
 
   const findName = (item) =>
     findNameInDescription({ Description: item.Description });
@@ -39,10 +45,10 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {
-        logger.debug(`getList ${params}`);
+        logger.debug(`getList`);
       }),
       () =>
-        iam
+        iam()
           .listPolicies({ ...params, Scope: "Local", MaxItems: 1e3 })
           .promise(),
       tap(({ Policies }) => {
@@ -59,7 +65,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
           tap((policy) => {
             logger.debug(`getList policy: ${tos(policy)}`);
           }),
-          (policy) => iam.getPolicy({ PolicyArn: policy.Arn }).promise(),
+          (policy) => iam().getPolicy({ PolicyArn: policy.Arn }).promise(),
           get("Policy"),
           tap((policy) => {
             logger.debug(policy);
@@ -82,7 +88,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       logger.debug(`getById ${id}`);
     }),
     tryCatch(
-      ({ id }) => iam.getPolicy({ PolicyArn: id }).promise(),
+      ({ id }) => iam().getPolicy({ PolicyArn: id }).promise(),
       switchCase([
         (error) => error.code !== "NoSuchEntity",
         (error) => {
@@ -116,7 +122,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       PolicyDocument: JSON.stringify(payload.PolicyDocument),
     };
 
-    const { Policy } = await iam.createPolicy(createParams).promise();
+    const { Policy } = await iam().createPolicy(createParams).promise();
     const { iamUser, iamRole, iamGroup } = dependencies;
 
     if (iamUser) {
@@ -124,10 +130,10 @@ exports.AwsIamPolicy = ({ spec, config }) => {
         PolicyArn: Policy.Arn,
         UserName: iamUser.name,
       };
-      await iam.attachUserPolicy(attachUserPolicyParams).promise();
+      await iam().attachUserPolicy(attachUserPolicyParams).promise();
     }
     if (iamRole) {
-      await iam
+      await iam()
         .attachRolePolicy({
           PolicyArn: Policy.Arn,
           RoleName: iamRole.name,
@@ -135,7 +141,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
         .promise();
     }
     if (iamGroup) {
-      await iam
+      await iam()
         .attachGroupPolicy({
           PolicyArn: Policy.Arn,
           GroupName: iamGroup.name,
@@ -156,7 +162,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
         assert(!isEmpty(id), `destroy invalid id`);
       }),
       () =>
-        iam
+        iam()
           .listEntitiesForPolicy({
             PolicyArn: id,
           })
@@ -171,7 +177,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
             logger.debug(`destroy detachUserPolicy ${tos(policyUsers)}`);
           }),
           map((policyUsers) =>
-            iam
+            iam()
               .detachUserPolicy({
                 PolicyArn: id,
                 UserName: policyUsers.UserName,
@@ -185,7 +191,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
             logger.debug(`destroy detachGroupPolicy ${tos(policyGroups)}`);
           }),
           map((policyGroup) =>
-            iam
+            iam()
               .detachGroupPolicy({
                 PolicyArn: id,
                 GroupName: policyGroup.GroupName,
@@ -199,7 +205,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
             logger.debug(`destroy detachRolePolicy ${tos(policyRoles)}`);
           }),
           map((policyRole) =>
-            iam
+            iam()
               .detachRolePolicy({
                 PolicyArn: id,
                 RoleName: policyRole.RoleName,
@@ -209,14 +215,14 @@ exports.AwsIamPolicy = ({ spec, config }) => {
         ]),
       }),
       () =>
-        iam
+        iam()
           .deletePolicy({
             PolicyArn: id,
           })
           .promise(),
       () =>
         retryCall({
-          name: `isDownById: ${name} id: ${id}`,
+          name: `iam policy isDownById: ${name} id: ${id}`,
           fn: () => isDownById({ id }),
           config,
         }),
@@ -225,17 +231,8 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) => {
-    logger.debug(`configDefault ${tos({ dependencies })}`);
-    return defaultsDeep({ PolicyName: name, Path: "/" })(properties);
-  };
-
-  const shouldRetryOnException = (error) => {
-    logger.debug(`shouldRetryOnException ${tos(error)}`);
-    const retry = error.code === "DeleteConflict";
-    logger.debug(`shouldRetryOnException retry: ${retry}`);
-    return retry;
-  };
+  const configDefault = async ({ name, properties, dependencies }) =>
+    defaultsDeep({ PolicyName: name, Path: "/" })(properties);
 
   return {
     type: "IamPolicy",
@@ -251,6 +248,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    shouldRetryOnExceptionDelete,
   };
 };
 

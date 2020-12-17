@@ -57,40 +57,44 @@ const testListByType = async ({ provider, livesAll }) => {
   assert.equal(liveByType.length, 1);
   assert.equal(liveByType[0].type, type);
 };
-
-const testDestroyByName = async ({ provider, livesAll }) => {
+// TODO remove livesAll
+const testDestroyByName = async ({ provider, livesAll, lives }) => {
   const { name } = livesAll[0].resources[0];
   assert(name);
-  const plan = await provider.planFindDestroy({
+  const { plans } = await provider.planFindDestroy({
+    lives,
     options: {
       name,
     },
   });
-  assert.equal(plan.plans.length, 1, tos(plan.plans));
-  assert.equal(plan.plans[0].resource.name, name);
+  assert.equal(plans.length, 1, tos(plans));
+  assert.equal(plans[0].resource.name, name);
 };
 
-const testDestroyById = async ({ provider, livesAll }) => {
+const testDestroyById = async ({ provider, livesAll, lives }) => {
   const { id } = livesAll[0].resources[0];
   assert(id);
-  const plan = await provider.planFindDestroy({
+  const { error, plans } = await provider.planFindDestroy({
+    lives,
     options: {
       id,
     },
   });
-  assert.equal(plan.plans.length, 1);
-  assert.equal(plan.plans[0].resource.id, id);
+  assert(!error);
+  assert.equal(plans.length, 1);
+  assert.equal(plans[0].resource.id, id);
 };
 
-const testDestroyByType = async ({ provider, livesAll }) => {
+const testDestroyByType = async ({ provider, livesAll, lives }) => {
   const { type } = livesAll[0];
-  const plan = await provider.planFindDestroy({
+  const { plans } = await provider.planFindDestroy({
+    lives,
     options: {
       types: [type],
     },
   });
-  assert(plan.plans.length >= 1);
-  assert.equal(plan.plans[0].resource.type, type);
+  assert(plans.length >= 1);
+  assert.equal(plans[0].resource.type, type);
 };
 
 const testPlanDestroy = async ({ provider, types = [], full = false }) => {
@@ -103,13 +107,15 @@ const testPlanDestroy = async ({ provider, types = [], full = false }) => {
       types,
     });
     assert(!isEmpty(livesAll));
-
-    await testDestroyByName({ provider, livesAll });
-    await testDestroyById({ provider, livesAll });
-    await testDestroyByType({ provider, livesAll });
+    const lives = await provider.findLives({});
+    await testDestroyByName({ provider, livesAll, lives });
+    await testDestroyById({ provider, livesAll, lives });
+    await testDestroyByType({ provider, livesAll, lives });
   }
   {
-    const { error, results } = await provider.destroyAll({ types });
+    const { error, results } = await provider.destroyAll({
+      options: { types },
+    });
     assert(results);
     assert(!error, "testPlanDestroy destroyAll failed");
   }
@@ -131,7 +137,7 @@ exports.testPlanDestroy = testPlanDestroy;
 exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
   await provider.start();
   {
-    const { error } = await provider.destroyAll({ types });
+    const { error } = await provider.destroyAll({ options: { types } });
     assert(!error, "testPlanDeploy destroyAll failed");
   }
   {

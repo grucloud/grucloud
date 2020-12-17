@@ -212,6 +212,42 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Aws Certificate Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/certificate",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Aws Certificate Apply",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/certificate",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["apply", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Aws Certificate Destroy",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/certificate",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["destroy", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Aws Website Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/website-https",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Aws Website Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/website-https",
@@ -235,6 +271,15 @@
       "cwd": "${workspaceFolder}/examples/aws/website-https",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["run", "--onDeployed"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Aws S3 Simple Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/s3-simple",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["plan"]
     },
     {
       "type": "node",

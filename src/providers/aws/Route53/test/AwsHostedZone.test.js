@@ -8,7 +8,7 @@ describe("AwsHostedZone", async function () {
   let config;
   let provider;
   let hostedZone;
-
+  let recordA;
   const types = ["HostedZone"];
   const domainName = "grucloud.org";
   const subDomainName = `sub.${domainName}`;
@@ -31,29 +31,35 @@ describe("AwsHostedZone", async function () {
     hostedZone = await provider.makeHostedZone({
       name: `${subDomainName}.`,
       dependencies: { domain },
+      properties: () => ({}),
+    });
+
+    recordA = await provider.makeRoute53Record({
+      name: `${subDomainName}.`,
+      dependencies: { hostedZone },
       properties: () => ({
-        RecordSet: [
+        ResourceRecords: [
           {
-            Name: `${subDomainName}.`,
-            ResourceRecords: [
-              {
-                Value: "192.0.2.44",
-              },
-            ],
-            TTL: 60,
-            Type: "A",
-          },
-          {
-            Name: `yyy.${subDomainName}.`,
-            ResourceRecords: [
-              {
-                Value: "ns-1139.awsdns-14.org.",
-              },
-            ],
-            TTL: 60,
-            Type: "NS",
+            Value: "192.0.2.44",
           },
         ],
+        TTL: 60,
+        Type: "A",
+      }),
+    });
+
+    recordNS = await provider.makeRoute53Record({
+      name: `validation.${subDomainName}.`,
+      dependencies: { hostedZone },
+      properties: () => ({
+        Name: `1234567890.${subDomainName}.`,
+        ResourceRecords: [
+          {
+            Value: "ns-1139.awsdns-14.org.",
+          },
+        ],
+        TTL: 60,
+        Type: "NS",
       }),
     });
 
@@ -68,20 +74,21 @@ describe("AwsHostedZone", async function () {
 
     hostedZone = await provider.makeHostedZone({
       name: `${subDomainName}.`,
+      dependencies: { domain },
+      properties: () => ({}),
+    });
+
+    recordA = await provider.makeRoute53Record({
+      name: `${subDomainName}.`,
+      dependencies: { hostedZone },
       properties: () => ({
-        RecordSet: [
+        ResourceRecords: [
           {
-            Name: `_0bc9df9e6752c379559a2f41be63ff04.${subDomainName}.`,
-            ResourceRecords: [
-              {
-                Value:
-                  "_ebff683f9ce743915b12f5a2105c9108.wggjkglgrm.acm-validations.aws.",
-              },
-            ],
-            TTL: 60,
-            Type: "CNAME",
+            Value: "192.0.2.45",
           },
         ],
+        TTL: 60,
+        Type: "A",
       }),
     });
     return provider;
@@ -105,7 +112,7 @@ describe("AwsHostedZone", async function () {
     await testPlanDeploy({
       provider,
       types,
-      planResult: { create: 2, destroy: 0 },
+      planResult: { create: 3, destroy: 0 },
     });
 
     const hostedZoneLive = await hostedZone.getLive();
@@ -116,18 +123,22 @@ describe("AwsHostedZone", async function () {
 
     const plan = await providerNext.planQuery();
     //assert.equal(plan.resultDestroy.plans.length, 1);
-    assert.equal(plan.resultCreate.plans.length, 1);
-    const update = plan.resultCreate.plans[0];
-    assert.equal(update.action, "UPDATE");
-    assert.equal(update.diff.additions[0].Type, "CNAME");
-    assert.equal(update.diff.deletions[0].Type, "A");
+    assert.equal(plan.resultCreate.plans.length, 2);
+    const updateHostedZone = plan.resultCreate.plans[0];
+    assert.equal(updateHostedZone.action, "UPDATE");
+    assert.equal(updateHostedZone.diff.deletions.length, 1);
+
+    const updateRecord = plan.resultCreate.plans[1];
+    assert.equal(updateRecord.action, "UPDATE");
+    assert(updateRecord.diff.updated.ResourceRecords);
+
     const {
       error,
       resultCreate,
       resultDestroy,
     } = await providerNext.planApply({ plan });
     assert(!error);
-    assert.equal(resultCreate.results.length, 1);
+    assert.equal(resultCreate.results.length, 2);
     //assert.equal(resultDestroy.results.length, 1);
 
     await testPlanDestroy({ provider, types });

@@ -7,26 +7,21 @@ const logger = require("../../../logger")({ prefix: "IamInstanceProfile" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
-const { shouldRetryOnException } = require("../AwsCommon");
+const {
+  IAMNew,
+  shouldRetryOnException,
+  shouldRetryOnExceptionDelete,
+} = require("../AwsCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamInstanceProfile = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const iam = new AWS.IAM();
+  const iam = IAMNew(config);
 
-  const findName = (item) => {
-    assert(item.InstanceProfileName);
-    return item.InstanceProfileName;
-  };
-
-  const findId = (item) => {
-    assert(item);
-    const id = item.InstanceProfileName;
-    assert(id);
-    return id;
-  };
+  const findName = get("InstanceProfileName");
+  const findId = findName;
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listInstanceProfiles-property
   const getList = async ({ params } = {}) =>
@@ -34,7 +29,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       tap(() => {
         logger.debug(`getList`);
       }),
-      () => iam.listInstanceProfiles(params).promise(),
+      () => iam().listInstanceProfiles(params).promise(),
       tap((instanceProfiles) => {
         logger.debug(`getList: ${tos(instanceProfiles)}`);
       }),
@@ -50,12 +45,9 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
             Roles: await map(async (role) => ({
               ...role,
               Tags: (
-                await iam.listRoleTags({ RoleName: role.RoleName }).promise()
+                await iam().listRoleTags({ RoleName: role.RoleName }).promise()
               ).Tags,
             }))(instanceProfile.Roles),
-          }),
-          tap((role) => {
-            logger.debug(role);
           }),
         ])
       ),
@@ -77,7 +69,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     tryCatch(
       ({ id }) =>
         pipe([
-          () => iam.getInstanceProfile({ InstanceProfileName: id }).promise(),
+          () => iam().getInstanceProfile({ InstanceProfileName: id }).promise(),
           tap((obj) => {
             logger.debug(`getById ${obj}`);
           }),
@@ -110,7 +102,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
 
     const createParams = defaultsDeep({})(payload);
 
-    const { InstanceProfile } = await iam
+    const { InstanceProfile } = await iam()
       .createInstanceProfile(createParams)
       .promise();
 
@@ -121,7 +113,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     assert(Array.isArray(iamRoles), "iamRoles must be an array");
 
     await forEach((iamRole) =>
-      iam
+      iam()
         .addRoleToInstanceProfile({
           InstanceProfileName: name,
           RoleName: iamRole.name,
@@ -137,7 +129,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
           return true;
         }
       },
-      retryDelay: 2e3,
+      config: { retryDelay: 2e3 },
     });
     return instanceUp;
   };
@@ -152,7 +144,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       () => getById({ id }),
       tap((instanceProfile) =>
         forEach((role) =>
-          iam
+          iam()
             .removeRoleFromInstanceProfile({
               InstanceProfileName: id,
               RoleName: role.RoleName,
@@ -161,7 +153,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
         )(instanceProfile.Roles)
       ),
       tap(() =>
-        iam
+        iam()
           .deleteInstanceProfile({
             InstanceProfileName: id,
           })
@@ -169,7 +161,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       ),
       tap(() =>
         retryCall({
-          name: `isDownById: ${name} id: ${id}`,
+          name: `iam instance profile isDownById: ${name} id: ${id}`,
           fn: () => isDownById({ id }),
           config,
         })
@@ -179,10 +171,8 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) => {
-    logger.debug(`configDefault ${tos({ dependencies })}`);
-    return defaultsDeep({ InstanceProfileName: name })(properties);
-  };
+  const configDefault = async ({ name, properties, dependencies }) =>
+    defaultsDeep({ InstanceProfileName: name })(properties);
 
   return {
     type: "IamInstanceProfile",
@@ -198,6 +188,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    shouldRetryOnExceptionDelete,
   };
 };
 

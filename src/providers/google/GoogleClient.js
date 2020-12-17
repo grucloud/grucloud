@@ -20,6 +20,7 @@ module.exports = GoogleClient = ({
   findTargetId = (item) => item.targetId,
   configDefault,
   isUpByIdFactory,
+  onResponseGet,
   onResponseList = onResponseListDefault,
   cannotBeDeleted = () => false,
   onCreateExpectedException = (error) => {
@@ -61,6 +62,7 @@ module.exports = GoogleClient = ({
     pathCreate,
     findTargetId,
     isUpByIdFactory,
+    onResponseGet,
     onResponseList,
     configDefault,
     findTargetId,

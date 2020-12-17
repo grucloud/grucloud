@@ -41,6 +41,8 @@ module.exports = ({ resources, provider }) => {
   assert(hostedZone);
   assert(distribution);
   assert(DomainName);
+  assert(certificate);
+
   const domainName = makeDomainName({
     DomainName,
     stage,
@@ -126,8 +128,15 @@ module.exports = ({ resources, provider }) => {
         },
         {
           name: `ssl certificate ready`,
-          command: async ({ sslCertificateLive }) => {
-            assert.equal(sslCertificateLive.Status, "ISSUED");
+          command: async () => {
+            await retryCall({
+              name: `getting certificate status`,
+              fn: () => certificate.getLive(),
+              isExpectedResult: (sslCertificateLive) => {
+                return sslCertificateLive.Status == "ISSUED";
+              },
+              config: { retryCount: 500, retryDelay: 5e3 },
+            });
           },
         },
         {

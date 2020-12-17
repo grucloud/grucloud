@@ -2,7 +2,6 @@ const assert = require("assert");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
-const { notAvailable } = require("../../../ProviderCommon");
 const { CheckAwsTags } = require("../../AwsTagCheck");
 
 describe("AwsEC2", async function () {
@@ -10,7 +9,7 @@ describe("AwsEC2", async function () {
   let provider;
   let server;
   let keyPair;
-  const types = ["Instance"];
+  const types = ["EC2"];
   const keyPairName = "kp";
   const serverName = "web-server";
 
@@ -47,7 +46,7 @@ describe("AwsEC2", async function () {
     assert.equal(config.MinCount, 1);
     assert.equal(config.KeyName, keyPair.name);
   });
-  it.skip("ec2 apply plan", async function () {
+  it("ec2 apply plan", async function () {
     await testPlanDeploy({ provider, types });
 
     const serverLive = await server.getLive();

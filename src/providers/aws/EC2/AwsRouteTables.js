@@ -1,15 +1,18 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
-const { get, pipe, filter, map } = require("rubico");
-const { isEmpty } = require("rubico/x");
-const { defaultsDeep } = require("rubico/x");
+const { tap, get, pipe, filter, map, not, eq } = require("rubico");
+const { isEmpty, defaultsDeep } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "AwsRtb" });
 const { tos } = require("../../../tos");
 const { retryCall } = require("../../Retry");
 const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
-const { findNameInTags, shouldRetryOnException } = require("../AwsCommon");
+const {
+  Ec2New,
+  findNameInTags,
+  shouldRetryOnException,
+} = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
 const { CheckAwsTags } = require("../AwsTagCheck");
 
@@ -20,7 +23,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
   const { stage } = config;
   assert(stage);
 
-  const ec2 = new AWS.EC2();
+  const ec2 = Ec2New(config);
 
   const findName = (item) => {
     const name = findNameInTags(item);
@@ -35,7 +38,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeRouteTables-property
   const getList = async ({ params } = {}) => {
     logger.debug(`list ${tos(params)}`);
-    const { RouteTables } = await ec2.describeRouteTables(params).promise();
+    const { RouteTables } = await ec2().describeRouteTables(params).promise();
     logger.debug(`list ${tos(RouteTables)}`);
 
     return {
@@ -67,7 +70,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     logger.debug(`create ${tos({ name, paramCreate })}`);
     const {
       RouteTable: { RouteTableId },
-    } = await ec2.createRouteTable(paramCreate).promise();
+    } = await ec2().createRouteTable(paramCreate).promise();
     assert(RouteTableId);
     logger.info(`created ${RouteTableId}`);
 
@@ -90,12 +93,12 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     };
     logger.debug(`create, associating with subnet ${tos({ subnetLive })}`);
     //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#associateRouteTable-property
-    await ec2.associateRouteTable(paramsAttach).promise();
+    await ec2().associateRouteTable(paramsAttach).promise();
 
     logger.debug(`associated`);
 
     const rt = await retryCall({
-      name: `isUpById: ${name} id: ${RouteTableId}`,
+      name: `rt isUpById: ${name} id: ${RouteTableId}`,
       fn: () => isUpById({ id: RouteTableId }),
       config,
     });
@@ -112,36 +115,34 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#disassociateRouteTable-property
-  const destroy = async ({ id, name }) => {
-    logger.debug(`destroy ${tos({ name, id })}`);
-
-    if (isEmpty(id)) {
-      throw Error(`destroy invalid id`);
-    }
-
-    const rtLive = await getById({ id });
-    if (!rtLive) {
-      throw Error(`Cannot get route tables: ${id}`);
-    }
-
-    await pipe([
-      filter((association) => !association.Main),
-      async (associations) =>
-        await map(async (association) => {
-          logger.debug(`destroy disassociate ${tos({ association })}`);
-          await ec2
-            .disassociateRouteTable({
-              AssociationId: association.RouteTableAssociationId,
-            })
-            .promise();
-        })(associations),
-    ])(rtLive.Associations);
-
-    logger.debug(`destroying ${tos({ RouteTableId: id })}`);
-    await ec2.deleteRouteTable({ RouteTableId: id }).promise();
-    logger.debug(`destroyed ${tos({ name, id })}`);
-    return;
-  };
+  const destroy = ({ id, name }) =>
+    pipe([
+      tap(() => {
+        logger.info(`destroy route table ${tos({ name, id })}`);
+      }),
+      () => getById({ id }),
+      tap.if(isEmpty, () => {
+        throw Error(`Cannot get route tables: ${id}`);
+      }),
+      get("Associations"),
+      filter(not(get("Main"))),
+      map(async (association) => {
+        logger.debug(`destroy disassociate ${tos({ association })}`);
+        //TODO tryCatch
+        await ec2()
+          .disassociateRouteTable({
+            AssociationId: association.RouteTableAssociationId,
+          })
+          .promise();
+      }),
+      tap(() => {
+        logger.debug(`destroying ${tos({ RouteTableId: id })}`);
+      }),
+      () => ec2().deleteRouteTable({ RouteTableId: id }).promise(),
+      tap(() => {
+        logger.debug(`destroyed ${tos({ name, id })}`);
+      }),
+    ])();
 
   const configDefault = async ({ name, properties }) =>
     defaultsDeep({})(properties);

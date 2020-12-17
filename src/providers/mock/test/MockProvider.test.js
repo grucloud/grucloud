@@ -9,7 +9,7 @@ const displayResource = (resource, depth = 0) => {
   console.log(
     "  ".repeat(depth),
     resource.toJSON && resource.toJSON(),
-    resource.getParent && resource.getParent()?.name
+    resource.usedBy && [...resource.usedBy().keys()].join("\n")
   );
   resource.dependencies &&
     forEach((dep) => {

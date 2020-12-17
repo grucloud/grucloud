@@ -5,7 +5,6 @@
 - add project name as aws tags
 - PROMPT='%4~ %# '
 - iam deal with deleted user
-- check for duplicated name, eg: ig, use id for OnStateChange
 
 ## Web site
 
@@ -37,7 +36,6 @@
 ## TODO Aws:
 
 - Add Route53 domain doc
-- multi provider stuck on us-east-1
 
 - invalidate cloufront cache
 - CF priceClass 100

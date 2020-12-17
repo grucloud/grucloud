@@ -5,9 +5,9 @@ const { AzureProvider } = require("@grucloud/core");
 const { ScalewayProvider } = require("@grucloud/core");
 const { MockProvider } = require("@grucloud/core");
 
-//const AwsStackWebSite = require("../aws/website-https/iac");
-//const AwsHooksWebSite = require("../aws/website-https/hooks");
-//const AwsConfigWebSite = require("../aws/website-https/config/default");
+const AwsStackWebSite = require("../aws/website-https/iac");
+const AwsHooksWebSite = require("../aws/website-https/hooks");
+const AwsConfigWebSite = require("../aws/website-https/config/default");
 
 const AwsStackEC2 = require("../aws/ec2/iac");
 const AwsHooksEC2 = require("../aws/ec2/hooks");
@@ -50,18 +50,6 @@ const createAws = async ({ config }) => {
     name: "kp",
   });
 
-  // Aws stack website https
-  /*
-  const website = await AwsStackWebSite.createResources({
-    provider,
-    resources: {},
-  });
-
-  provider.hookAdd(
-    "website",
-    AwsHooksWebSite({ resources: website, provider })
-  );
-*/
   // Aws stack ec2
   const ec2 = await AwsStackEC2.createResources({
     provider,
@@ -98,6 +86,32 @@ const createAws = async ({ config }) => {
   provider.hookAdd(
     "iamUser",
     AwsHooksIamUser({ provider, resources: iamUser })
+  );
+
+  return provider;
+};
+
+const createAwsUsEast1 = async ({ config }) => {
+  const provider = AwsProvider({
+    name: "aws-us-east",
+    config: {
+      ...config.aws,
+      stage: config.stage,
+      ...AwsConfigWebSite(),
+      region: "us-east-1",
+      zone: "us-east-1a",
+    },
+  });
+
+  // Aws stack website https
+  const website = await AwsStackWebSite.createResources({
+    provider,
+    resources: {},
+  });
+
+  provider.hookAdd(
+    "website",
+    AwsHooksWebSite({ resources: website, provider })
   );
 
   return provider;
@@ -184,6 +198,8 @@ exports.createStack = async ({ config }) => {
     providers: [
       await createMock({ config }),
       await createAws({ config }),
+      //await createAwsUsEast1({ config }),
+
       //await createAzure({ config }),
       //await createGoogle({ config }),
       //await createScaleway({ config }),

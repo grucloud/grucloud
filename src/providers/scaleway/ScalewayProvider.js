@@ -57,6 +57,7 @@ const fnSpecs = (config) => {
       type: "Bootscript",
       listOnly: true,
       listHide: true,
+      isOurMinion,
     },
     {
       Client: ({ spec }) =>
@@ -72,6 +73,7 @@ const fnSpecs = (config) => {
       type: "Image",
       listOnly: true,
       listHide: true,
+      isOurMinion,
     },
     {
       Client: ({ spec }) =>

@@ -158,21 +158,18 @@ exports.Planner = ({
   const itemToKey = (item) => {
     assert(item, "item");
     assert(item.resource, "item.resource");
-    const key = item.resource.id || item.resource.name;
-    assert(key, `mising key for item ${tos(item)}`);
-    return `${item.resource.provider}::${item.resource.type}::${key}`;
+    assert(item.resource.uri, "item.resource.uri");
+    return item.resource.uri;
   };
 
-  const findDependsOn = (item, dependencyTree) => {
-    if (!item.resource.name) {
-      logger.error(`resource has no name, item ${tos(item)}`);
-      return [];
-    }
-    const spec = dependencyTree.find(
-      (spec) => spec.name === item.resource.name
-    );
-    return spec ? spec.dependsOn : [];
-  };
+  const findDependsOn = (item, dependencyTree) =>
+    pipe([
+      tap(() => {
+        assert(item.resource.uri);
+      }),
+      find(eq(get("uri"), item.resource.uri)),
+      get("dependsOn", []),
+    ])(dependencyTree);
 
   plans.map((item) => {
     const key = itemToKey(item);
@@ -301,7 +298,7 @@ exports.Planner = ({
     logger.debug(`Planner run`);
     if (isEmpty(plans)) {
       logger.debug(`Planner run: empty plan `);
-      return { error: false, results: [] };
+      return { error: false, results: [], plans: [] };
     }
 
     const resourcesUri = plans.map((plan) => plan.resource.uri);
@@ -341,6 +338,7 @@ exports.Planner = ({
     return {
       error,
       results,
+      plans,
     };
   };
   return {
