@@ -167,13 +167,14 @@ const createResources = async ({ provider }) => {
   const recordCloudFront = await provider.makeRoute53Record({
     name: hostedZoneName,
     dependencies: { hostedZone, distribution },
+    //TODO this code should be handled by Route53Record
     properties: ({ dependencies: { distribution } }) => {
       return {
         Name: hostedZoneName,
         Type: "A",
         AliasTarget: {
           HostedZoneId: "Z2FDTNDATAQYW2",
-          DNSName: distribution?.live?.DomainName,
+          DNSName: `${distribution?.live?.DomainName}.`,
           EvaluateTargetHealth: false,
         },
       };

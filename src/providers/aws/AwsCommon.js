@@ -9,7 +9,9 @@ exports.KeyName = KeyName;
 
 exports.shouldRetryOnException = (error) => {
   logger.error(`aws shouldRetryOnException ${tos(error)}`);
-  return ![400].includes(error.statusCode);
+  error.stack && logger.error(error.stack);
+
+  return ![400, 404].includes(error.statusCode);
 };
 
 exports.buildTags = ({

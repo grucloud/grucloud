@@ -298,7 +298,7 @@ exports.Planner = ({
     logger.debug(`Planner run`);
     if (isEmpty(plans)) {
       logger.debug(`Planner run: empty plan `);
-      return { error: false, results: [] };
+      return { error: false, results: [], plans: [] };
     }
 
     const resourcesUri = plans.map((plan) => plan.resource.uri);
@@ -338,6 +338,7 @@ exports.Planner = ({
     return {
       error,
       results,
+      plans,
     };
   };
   return {

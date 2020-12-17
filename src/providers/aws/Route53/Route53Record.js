@@ -43,6 +43,8 @@ const {
 const { shouldRetryOnException } = require("../AwsCommon");
 const { filterEmptyResourceRecords } = require("./Route53Utils");
 
+const liveToResourceSet = pipe([omit(["Tags"]), filterEmptyResourceRecords]);
+
 const findName = pipe([
   tap((live) => {
     logger.debug(`findName live ${tos(live)}`);
@@ -291,10 +293,7 @@ exports.Route53Record = ({ spec, config }) => {
                     Changes: [
                       {
                         Action: "DELETE",
-                        ResourceRecordSet: pipe([
-                          omit(["Tags"]),
-                          filterEmptyResourceRecords,
-                        ])(live),
+                        ResourceRecordSet: liveToResourceSet(live),
                       },
                     ],
                   },
@@ -320,31 +319,41 @@ exports.Route53Record = ({ spec, config }) => {
     pipe([
       tap(() => {
         logger.info(
-          `update ${name}, payload: ${tos(payload)}, live: ${tos(live)}`
+          `update ${name}, payload: ${tos(payload)}, live: ${tos(
+            live
+          )}, diff:  ${tos(diff)}`
         );
         assert(name, "name");
         assert(live, "live");
         assert(diff, "diff");
         assert(hostedZone, "missing the hostedZone dependency.");
+        assert(hostedZone.live.Id, "hostedZone.live.Id");
       }),
-      () =>
-        route53
-          .changeResourceRecordSets({
-            HostedZoneId: hostedZone.live.Id,
-            ChangeBatch: {
-              Changes: [
-                {
-                  Action: "DELETE",
-                  ResourceRecordSet: omit(["Tags"])(live),
-                },
-                {
-                  Action: "CREATE",
-                  ResourceRecordSet: payload,
-                },
-              ],
-            },
-          })
-          .promise(),
+      () => ({ createSet: payload, deleteSet: liveToResourceSet(live) }),
+      switchCase([
+        ({ createSet, deleteSet }) => isDeepEqual(createSet, deleteSet),
+        () => {
+          logger.info(`update route53 ${name}, same create and delete`);
+        },
+        ({ createSet, deleteSet }) =>
+          route53
+            .changeResourceRecordSets({
+              HostedZoneId: hostedZone.live.Id,
+              ChangeBatch: {
+                Changes: [
+                  {
+                    Action: "DELETE",
+                    ResourceRecordSet: deleteSet,
+                  },
+                  {
+                    Action: "CREATE",
+                    ResourceRecordSet: createSet,
+                  },
+                ],
+              },
+            })
+            .promise(),
+      ]),
       tap((result) => {
         logger.info(`record updated: ${name}`);
       }),

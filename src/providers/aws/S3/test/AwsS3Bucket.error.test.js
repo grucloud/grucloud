@@ -37,9 +37,9 @@ describe("AwsS3BucketErrors", async function () {
       });
       assert(false, "should not be here");
     } catch ({ error }) {
-      const plan = error.results[0].resultQuery.resultCreate.plans[0];
+      const plan = error.results[0].result.resultCreate.results[0];
       assert.equal(plan.error.code, "Forbidden");
-      assert.equal(plan.resource.name, "bucket");
+      assert.equal(plan.item.resource.name, "bucket");
     }
   });
 
@@ -105,8 +105,10 @@ describe("AwsS3BucketErrors", async function () {
       }),
     });
     const resultDestroy = await provider.destroyAll({
-      types,
-      all: true,
+      options: {
+        types,
+        all: true,
+      },
     });
     assert(!resultDestroy.error, "should not have failed");
 
@@ -129,7 +131,9 @@ describe("AwsS3BucketErrors", async function () {
     );
     {
       const resultDestroy = await provider.destroyAll({
-        types,
+        options: {
+          types,
+        },
       });
     }
   });

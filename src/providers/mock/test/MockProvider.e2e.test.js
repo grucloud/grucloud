@@ -50,7 +50,7 @@ describe("MockProvider e2e", async function () {
       assert(isPlanEmpty(plan));
     }
     {
-      const planDestroyed = await provider.planFindDestroy(
+      const planDestroyed = await provider.destroyAll(
         { options: { all: true } },
         1
       );
@@ -189,10 +189,7 @@ describe("MockProvider e2e", async function () {
       assert(configs);
     }
     {
-      const { plans } = await provider.planFindDestroy(
-        { options: { all: true } },
-        -1
-      );
+      const { plans } = await provider.destroyAll({ options: { all: true } });
 
       assert.equal(plans.length, 8);
     }

@@ -1,6 +1,7 @@
 const AWS = require("aws-sdk");
 const assert = require("assert");
 const {
+  eq,
   map,
   filter,
   not,
@@ -740,15 +741,15 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       async () => {
         do {
           var isTruncated = await pipe([
-            async () => await s3.listObjectVersions({ Bucket }).promise(),
+            () => s3.listObjectVersions({ Bucket }).promise(),
             tap((result) => {
               logger.debug(`listObjectVersions: ${tos({ result })}`);
             }),
             tap(
               switchCase([
                 (object) => !isEmpty(object.Versions),
-                async (object) =>
-                  await s3
+                (object) =>
+                  s3
                     .deleteObjects({
                       Bucket,
                       Delete: {
@@ -791,9 +792,19 @@ exports.AwsS3Bucket = ({ spec, config }) => {
           ])();
         } while (isTruncated);
       },
-      async () => await s3.deleteBucket({ Bucket }).promise(),
+      tryCatch(
+        () => s3.deleteBucket({ Bucket }).promise(),
+        switchCase([
+          eq(get("code"), "NoSuchBucket"),
+          () => null,
+          (error) => {
+            logger.error(`destroy s3 bucket ${Bucket}, error: ${tos(error)}`);
+            throw error;
+          },
+        ])
+      ),
       tap(() => {
-        logger.info(`destroyed, ${tos({ Bucket })}`);
+        logger.info(`destroyed s3 bucket ${tos({ Bucket })}`);
       }),
     ])();
   };
@@ -822,5 +833,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       logger.error(`shouldRetryOnException retry: ${retry}`);
       return retry;
     },
+    shouldRetryOnExceptionDelete: shouldRetryOnException,
   };
 };

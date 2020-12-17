@@ -108,7 +108,7 @@ describe("AwsHostedZone", async function () {
     assert.equal(config.Name, `${subDomainName}.`);
   });
 
-  it.only("hostedZone apply plan", async function () {
+  it("hostedZone apply plan", async function () {
     await testPlanDeploy({
       provider,
       types,

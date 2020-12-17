@@ -94,7 +94,13 @@ const createAws = async ({ config }) => {
 const createAwsUsEast1 = async ({ config }) => {
   const provider = AwsProvider({
     name: "aws-us-east",
-    config: { ...config.aws, stage: config.stage, ...AwsConfigWebSite() },
+    config: {
+      ...config.aws,
+      stage: config.stage,
+      ...AwsConfigWebSite(),
+      region: "us-east-1",
+      zone: "us-east-1a",
+    },
   });
 
   // Aws stack website https
@@ -192,7 +198,7 @@ exports.createStack = async ({ config }) => {
     providers: [
       await createMock({ config }),
       await createAws({ config }),
-      await createAwsUsEast1({ config }),
+      //await createAwsUsEast1({ config }),
 
       //await createAzure({ config }),
       //await createGoogle({ config }),

@@ -64,16 +64,20 @@ describe("GcpServiceAccount", async function () {
     });
     {
       const { error, results } = await providerEmpty.destroyAll({
-        all: false,
-        types,
+        options: {
+          all: false,
+          types,
+        },
       });
       assert(!error, "destroyAll failed");
       assert.equal(results.length, 0);
     }
     {
       const { error, results } = await provider.destroyAll({
-        all: false,
-        types,
+        options: {
+          all: false,
+          types,
+        },
       });
       assert(!error, "destroyAll failed");
       assert.equal(results.length, 1);

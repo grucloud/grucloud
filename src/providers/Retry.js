@@ -23,12 +23,13 @@ const retryCall = async ({
   isExpectedException = () => false,
   shouldRetryOnException = (error) => {
     logger.error(`shouldRetryOnException ${name}, error: ${tos(error)}`);
-    return true;
+    error.stack && logger.error(error.stack);
+    return !error.stack;
   },
   config: {
     repeatCount = 0,
     repeatDelay = 1e3,
-    retryCount = 30,
+    retryCount = 12 * 5,
     retryDelay = 5e3,
   } = {},
 }) => {
