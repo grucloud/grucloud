@@ -1,6 +1,8 @@
 const assert = require("assert");
-const CoreClient = require("../CoreClient");
+const { get } = require("rubico");
 const urljoin = require("url-join");
+
+const CoreClient = require("../CoreClient");
 const AxiosMaker = require("../AxiosMaker");
 const logger = require("../../logger")({ prefix: "ScalewayClient" });
 const { tos } = require("../../tos");
@@ -20,21 +22,7 @@ module.exports = ScalewayClient = ({
   assert(config);
   assert(process.env.SCW_SECRET_KEY);
 
-  const findName = (item) => {
-    assert(item);
-    logger.debug(`findName: ${tos(item)}`);
-    if (item.name) {
-      return item.name;
-    }
-    const tagName = item.tags.find((tag) => tag.includes("name:"));
-    if (tagName) {
-      const name = tagName.replace("name:", "");
-      logger.debug(`findName: is ${name} `);
-      return name;
-    } else {
-      logger.debug(`findName: cannot find name in ${tos(item)}`);
-    }
-  };
+  const findName = get("title");
 
   const core = CoreClient({
     type: "scaleway",
