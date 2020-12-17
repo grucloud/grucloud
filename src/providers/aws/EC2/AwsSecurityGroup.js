@@ -7,7 +7,6 @@ const { retryCall } = require("../../Retry");
 const { getField } = require("../../ProviderCommon");
 
 const {
-  Ec2New,
   getByNameCore,
   findField,
   isUpByIdCore,
