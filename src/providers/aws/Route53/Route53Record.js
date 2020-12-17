@@ -40,7 +40,7 @@ const {
   axiosErrorToJSON,
   mapPoolSize,
 } = require("../../Common");
-const { shouldRetryOnException } = require("../AwsCommon");
+const { Route53New, shouldRetryOnException } = require("../AwsCommon");
 const { filterEmptyResourceRecords } = require("./Route53Utils");
 
 const liveToResourceSet = pipe([omit(["Tags"]), filterEmptyResourceRecords]);
@@ -88,7 +88,7 @@ exports.Route53Record = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const route53 = new AWS.Route53({ region: config.region });
+  const route53 = Route53New(config);
 
   const findRecord = ({ name, type }) =>
     and([eq(get("Name"), name), eq(get("Type"), type)]);
@@ -104,7 +104,7 @@ exports.Route53Record = ({ spec, config }) => {
   const getList = async ({ resources = [] } = {}) =>
     pipe([
       tap(() => {
-        logger.debug(`getList #resources ${resources.length}`);
+        logger.info(`getList route53 #resources ${resources.length}`);
       }),
       map.pool(mapPoolSize, (resource) =>
         pipe([
@@ -122,7 +122,7 @@ exports.Route53Record = ({ spec, config }) => {
               (hostedZone) =>
                 pipe([
                   () =>
-                    route53
+                    route53()
                       .listResourceRecordSets({
                         HostedZoneId: hostedZone.Id,
                       })
@@ -153,12 +153,15 @@ exports.Route53Record = ({ spec, config }) => {
         ])(resource)
       ),
       filter(not(isEmpty)),
+      tap((records) => {
+        logger.debug(`getList route53 records result: ${tos(records)}`);
+      }),
       (records) => ({
         total: records.length,
         items: records,
       }),
       tap((records) => {
-        logger.debug(`getList route53 records result: ${tos(records)}`);
+        logger.info(`getList #route53 records result: ${records.total}`);
       }),
     ])(resources);
 
@@ -178,7 +181,7 @@ exports.Route53Record = ({ spec, config }) => {
           tryCatch(
             pipe([
               () =>
-                route53
+                route53()
                   .listResourceRecordSets({
                     HostedZoneId: hostedZone.Id,
                   })
@@ -249,7 +252,7 @@ exports.Route53Record = ({ spec, config }) => {
         ResourceRecordSet: payload,
       }),
       (Change) =>
-        route53
+        route53()
           .changeResourceRecordSets({
             HostedZoneId: hostedZone.live.Id,
             ChangeBatch: {
@@ -258,7 +261,7 @@ exports.Route53Record = ({ spec, config }) => {
           })
           .promise(),
       () =>
-        route53
+        route53()
           .changeTagsForResource({
             ResourceId: hostedZone.live.Id,
             AddTags: [{ Key: payload.Name, Value: name }],
@@ -286,7 +289,7 @@ exports.Route53Record = ({ spec, config }) => {
           switchCase([
             not(isEmpty),
             (live) =>
-              route53
+              route53()
                 .changeResourceRecordSets({
                   HostedZoneId: hostedZone.Id,
                   ChangeBatch: {
@@ -336,7 +339,7 @@ exports.Route53Record = ({ spec, config }) => {
           logger.info(`update route53 ${name}, same create and delete`);
         },
         ({ createSet, deleteSet }) =>
-          route53
+          route53()
             .changeResourceRecordSets({
               HostedZoneId: hostedZone.live.Id,
               ChangeBatch: {

@@ -2,7 +2,7 @@ const assert = require("assert");
 const AWS = require("aws-sdk");
 const { get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-const { getByIdCore, shouldRetryOnException } = require("../AwsCommon");
+const { Ec2New, getByIdCore, shouldRetryOnException } = require("../AwsCommon");
 const { retryCall } = require("../../Retry");
 const { getField } = require("../../ProviderCommon");
 

@@ -17,25 +17,12 @@ const {
   omit,
   flatten,
 } = require("rubico");
-const {
-  find,
-  pluck,
-  defaultsDeep,
-  isEmpty,
-  differenceWith,
-  isDeepEqual,
-} = require("rubico/x");
+const { find, pluck, defaultsDeep } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "Domain" });
 const { tos } = require("../../../tos");
-const {
-  getByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-  logError,
-  axiosErrorToJSON,
-} = require("../../Common");
-
+const { isUpByIdCore } = require("../../Common");
+const { Route53DomainNew } = require("../AwsCommon");
 const findName = get("DomainName");
 const findId = findName;
 
@@ -44,26 +31,27 @@ exports.AwsDomain = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const route53domains = new AWS.Route53Domains({ region: "us-east-1" });
-
+  const route53domains = Route53DomainNew(config);
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listDomains-property
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {
-        logger.debug(`getList ${tos(params)}`);
+        logger.debug(`getList domain`);
       }),
-      () => route53domains.listDomains(params).promise(),
+      () => route53domains().listDomains(params).promise(),
       get("Domains"),
-      map(
-        async ({ DomainName }) =>
-          await route53domains.getDomainDetail({ DomainName }).promise()
+      map(({ DomainName }) =>
+        route53domains().getDomainDetail({ DomainName }).promise()
       ),
+      tap((Domains) => {
+        logger.debug(`getList Domain result: ${tos(Domains)}`);
+      }),
       (Domains) => ({
         total: Domains.length,
         items: Domains,
       }),
-      tap((Domains) => {
-        logger.debug(`getList Domain result: ${tos(Domains)}`);
+      tap((result) => {
+        logger.info(`getList #domains  ${tos(result.total)}`);
       }),
     ])();
 
@@ -73,7 +61,8 @@ exports.AwsDomain = ({ spec, config }) => {
       logger.debug(`getById ${id}`);
     }),
     tryCatch(
-      ({ id }) => route53domains.getDomainDetail({ DomainName: id }).promise(),
+      ({ id }) =>
+        route53domains().getDomainDetail({ DomainName: id }).promise(),
       switchCase([
         (error) => error.code !== "NoSuchDomain",
         (error) => {

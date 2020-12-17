@@ -8,8 +8,10 @@ const logger = require("../../../logger")({ prefix: "IamRole" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const {
+  IAMNew,
   buildTags,
   findNameInTags,
+  shouldRetryOnExceptionDelete,
   shouldRetryOnException,
 } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
@@ -19,7 +21,7 @@ exports.AwsIamRole = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const iam = new AWS.IAM({ region: config.region });
+  const iam = IAMNew(config);
 
   const findName = get("RoleName");
   const findId = findName;
@@ -30,7 +32,7 @@ exports.AwsIamRole = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList role ${params}`);
       }),
-      () => iam.listRoles(params).promise(),
+      () => iam().listRoles(params).promise(),
       tap((roles) => {
         logger.debug(`getList: ${tos(roles)}`);
       }),
@@ -46,7 +48,7 @@ exports.AwsIamRole = ({ spec, config }) => {
             ...role,
             Policies: await pipe([
               () =>
-                iam
+                iam()
                   .listRolePolicies({
                     RoleName: role.RoleName,
                     MaxItems: 1e3,
@@ -59,7 +61,7 @@ exports.AwsIamRole = ({ spec, config }) => {
             ])(),
             AttachedPolicies: await pipe([
               () =>
-                iam
+                iam()
                   .listAttachedRolePolicies({
                     RoleName: role.RoleName,
                     MaxItems: 1e3,
@@ -75,7 +77,7 @@ exports.AwsIamRole = ({ spec, config }) => {
             ])(),
             InstanceProfiles: await pipe([
               () =>
-                iam
+                iam()
                   .listInstanceProfilesForRole({
                     RoleName: role.RoleName,
                     MaxItems: 1e3,
@@ -92,7 +94,7 @@ exports.AwsIamRole = ({ spec, config }) => {
               pluck("InstanceProfileName"),
             ])(),
             Tags: (
-              await iam.listRoleTags({ RoleName: role.RoleName }).promise()
+              await iam().listRoleTags({ RoleName: role.RoleName }).promise()
             ).Tags,
           }),
         ])
@@ -114,7 +116,7 @@ exports.AwsIamRole = ({ spec, config }) => {
       logger.info(`getById role ${id}`);
     }),
     tryCatch(
-      ({ id }) => iam.getRole({ RoleName: id }).promise(),
+      ({ id }) => iam().getRole({ RoleName: id }).promise(),
       switchCase([
         (error) => error.code !== "NoSuchEntity",
         (error) => {
@@ -140,7 +142,7 @@ exports.AwsIamRole = ({ spec, config }) => {
     assert(payload);
     logger.info(`create role ${tos({ name, payload })}`);
 
-    const { Role } = await iam
+    const { Role } = await iam()
       .createRole({
         ...payload,
         AssumeRolePolicyDocument: JSON.stringify(
@@ -154,8 +156,8 @@ exports.AwsIamRole = ({ spec, config }) => {
       RoleName: name,
       Tags: defaultsDeep(buildTags({ name, config }))(payload.Tags || []),
     };
-    await iam.tagRole(tagsParam).promise();
-    const { Tags } = await iam.listRoleTags({ RoleName: name }).promise();
+    await iam().tagRole(tagsParam).promise();
+    const { Tags } = await iam().listRoleTags({ RoleName: name }).promise();
     assert(findNameInTags({ Tags }), "no tags");
     return Role;
   };
@@ -169,12 +171,12 @@ exports.AwsIamRole = ({ spec, config }) => {
         assert(!isEmpty(id), `destroy invalid id`);
       }),
       () =>
-        iam
+        iam()
           .listInstanceProfilesForRole({ RoleName: id, MaxItems: 1e3 })
           .promise(),
       get("InstanceProfiles"),
       forEach((instanceProfile) => {
-        iam
+        iam()
           .removeRoleFromInstanceProfile({
             InstanceProfileName: instanceProfile.InstanceProfileName,
             RoleName: id,
@@ -182,20 +184,22 @@ exports.AwsIamRole = ({ spec, config }) => {
           .promise();
       }),
       () =>
-        iam.listAttachedRolePolicies({ RoleName: id, MaxItems: 1e3 }).promise(),
+        iam()
+          .listAttachedRolePolicies({ RoleName: id, MaxItems: 1e3 })
+          .promise(),
       get("AttachedPolicies"),
       forEach((policy) => {
-        iam
+        iam()
           .detachRolePolicy({
             PolicyArn: policy.PolicyArn,
             RoleName: id,
           })
           .promise();
       }),
-      () => iam.listRolePolicies({ RoleName: id, MaxItems: 1e3 }).promise(),
+      () => iam().listRolePolicies({ RoleName: id, MaxItems: 1e3 }).promise(),
       get("PolicyNames"),
       forEach((policyName) => {
-        iam
+        iam()
           .deleteRolePolicy({
             PolicyName: policyName,
             RoleName: id,
@@ -203,7 +207,7 @@ exports.AwsIamRole = ({ spec, config }) => {
           .promise();
       }),
       () =>
-        iam
+        iam()
           .deleteRole({
             RoleName: id,
           })
@@ -220,9 +224,8 @@ exports.AwsIamRole = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties }) => {
-    return defaultsDeep({ RoleName: name, Path: "/" })(properties);
-  };
+  const configDefault = async ({ name, properties }) =>
+    defaultsDeep({ RoleName: name, Path: "/" })(properties);
 
   const cannotBeDeleted = (item) => {
     return item.resource.Path.includes("/aws-service-role");
@@ -243,5 +246,6 @@ exports.AwsIamRole = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    shouldRetryOnExceptionDelete,
   };
 };

@@ -24,6 +24,7 @@ const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const {
+  ACMNew,
   buildTags,
   findNameInTags,
   shouldRetryOnException,
@@ -38,7 +39,7 @@ exports.AwsCertificate = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const acm = new AWS.ACM({ region: "us-east-1" });
+  const acm = ACMNew();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#listCertificates-property
   const getList = async ({ params } = {}) =>
@@ -46,12 +47,12 @@ exports.AwsCertificate = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList certificate ${tos(params)}`);
       }),
-      () => acm.listCertificates(params).promise(),
+      () => acm().listCertificates(params).promise(),
       get("CertificateSummaryList"),
       map(async (certificate) => ({
         ...(await pipe([
           () =>
-            acm
+            acm()
               .describeCertificate({
                 CertificateArn: certificate.CertificateArn,
               })
@@ -60,7 +61,7 @@ exports.AwsCertificate = ({ spec, config }) => {
         ])()),
         Tags: await pipe([
           () =>
-            acm
+            acm()
               .listTagsForCertificate({
                 CertificateArn: certificate.CertificateArn,
               })
@@ -86,7 +87,7 @@ exports.AwsCertificate = ({ spec, config }) => {
       logger.info(`getById ${id}`);
     }),
     tryCatch(
-      ({ id }) => acm.describeCertificate({ CertificateArn: id }).promise(),
+      ({ id }) => acm().describeCertificate({ CertificateArn: id }).promise(),
       switchCase([
         (error) => error.code !== "ResourceNotFoundException",
         (error) => {
@@ -127,7 +128,7 @@ exports.AwsCertificate = ({ spec, config }) => {
       tap((params) => {
         logger.debug(`create certificate: ${name}, params: ${tos(params)}`);
       }),
-      (params) => acm.requestCertificate(params).promise(),
+      (params) => acm().requestCertificate(params).promise(),
       tap(({ CertificateArn }) => {
         logger.debug(
           `created certificate: ${name}, result: ${tos(CertificateArn)}`
@@ -151,14 +152,14 @@ exports.AwsCertificate = ({ spec, config }) => {
         assert(!isEmpty(id), `destroy invalid id`);
       }),
       () =>
-        acm
+        acm()
           .deleteCertificate({
             CertificateArn: id,
           })
           .promise(),
       tap(() =>
         retryCall({
-          name: `isDownById: ${name} id: ${id}`,
+          name: `certificate isDownById: ${name} id: ${id}`,
           fn: () => isDownById({ id }),
           config,
         })

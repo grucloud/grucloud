@@ -222,13 +222,13 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
     tryCatch(
       pipe([
         tap(() => {
-          logger.info(`destroy id: ${id}, name: ${name}`);
+          logger.info(`destroy object id: ${id}, name: ${name}`);
         }),
         getBucket,
         (bucket) => objectPath(bucket.name, name),
         (path) =>
           retryCallOnError({
-            name: `destroy ${path}`,
+            name: `destroy object ${path}`,
             fn: () =>
               axios.request(path, {
                 method: "DELETE",
@@ -237,11 +237,11 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
           }),
         get("data"),
         tap(() => {
-          logger.info(`destroyed id: ${id}, name: ${name}`);
+          logger.info(`destroyed object id: ${id}, name: ${name}`);
         }),
       ]),
       (error) => {
-        logError(`delete ${bucket.name}/${name}`, error);
+        logError(`destroyed ${bucket.name}/${name}`, error);
         throw axiosErrorToJSON(error);
       }
     )(resource);

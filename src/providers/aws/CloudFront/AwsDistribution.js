@@ -23,7 +23,7 @@ const logger = require("../../../logger")({ prefix: "AwsDistribution" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
-const { buildTags, findNameInTags } = require("../AwsCommon");
+const { CloudFrontNew, buildTags, findNameInTags } = require("../AwsCommon");
 const { getField } = require("../../ProviderCommon");
 
 const findName = findNameInTags;
@@ -34,7 +34,7 @@ exports.AwsDistribution = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const cloudfront = new AWS.CloudFront({ region: config.region });
+  const cloudfront = CloudFrontNew(config);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#listDistributions-property
   const getList = async ({ params } = {}) =>
@@ -42,13 +42,15 @@ exports.AwsDistribution = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList distributions`);
       }),
-      () => cloudfront.listDistributions(params).promise(),
+      () => cloudfront().listDistributions(params).promise(),
       get("DistributionList.Items"),
       map(async (distribution) => ({
         ...distribution,
         ...(await pipe([
           () =>
-            cloudfront.getDistributionConfig({ Id: distribution.Id }).promise(),
+            cloudfront()
+              .getDistributionConfig({ Id: distribution.Id })
+              .promise(),
           get("DistributionConfig"),
         ])()),
         Tags: await pipe([
@@ -79,7 +81,7 @@ exports.AwsDistribution = ({ spec, config }) => {
       logger.info(`getById ${id}`);
     }),
     tryCatch(
-      ({ id }) => cloudfront.getDistribution({ Id: id }).promise(),
+      ({ id }) => cloudfront().getDistribution({ Id: id }).promise(),
       switchCase([
         (error) => error.code !== "NoSuchDistribution",
         (error) => {
@@ -112,7 +114,7 @@ exports.AwsDistribution = ({ spec, config }) => {
         logger.info(`create distribution: ${name}`);
         logger.debug(`create distribution: ${name}, ${tos(payload)}`);
       }),
-      () => cloudfront.createDistributionWithTags(payload).promise(),
+      () => cloudfront().createDistributionWithTags(payload).promise(),
       tap((result) => {
         logger.debug(`created distribution: ${name}, result: ${tos(result)}`);
       }),
@@ -136,7 +138,7 @@ exports.AwsDistribution = ({ spec, config }) => {
         assert(id, "id");
         assert(payload.DistributionConfigWithTags);
       }),
-      () => cloudfront.getDistributionConfig({ Id: id }).promise(),
+      () => cloudfront().getDistributionConfig({ Id: id }).promise(),
       (config) =>
         pipe([
           get("DistributionConfig"),
@@ -147,7 +149,7 @@ exports.AwsDistribution = ({ spec, config }) => {
               )
             ),
           (DistributionConfig) =>
-            cloudfront
+            cloudfront()
               .updateDistribution({
                 Id: id,
                 IfMatch: config.ETag,
@@ -209,7 +211,7 @@ exports.AwsDistribution = ({ spec, config }) => {
           },
         }),
       ({ ETag }) =>
-        cloudfront
+        cloudfront()
           .deleteDistribution({
             Id: id,
             IfMatch: ETag,
@@ -217,7 +219,7 @@ exports.AwsDistribution = ({ spec, config }) => {
           .promise(),
       tap(() =>
         retryCall({
-          name: `isDownById: ${name} id: ${id}`,
+          name: `distribution isDownById: ${name} id: ${id}`,
           fn: () => isDownById({ id }),
           config,
         })

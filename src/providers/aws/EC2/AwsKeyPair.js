@@ -6,6 +6,7 @@ const { defaultsDeep, pluck } = require("rubico/x");
 const logger = require("../../../logger")({ prefix: "AwsKp" });
 const { tos } = require("../../../tos");
 const { getByNameCore, findField } = require("../../Common");
+const { Ec2New } = require("../AwsCommon");
 
 module.exports = AwsClientKeyPair = ({ spec, config }) => {
   assert(spec);

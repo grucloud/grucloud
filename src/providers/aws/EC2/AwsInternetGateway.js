@@ -8,7 +8,11 @@ const { tos } = require("../../../tos");
 const { retryCall } = require("../../Retry");
 const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
-const { findNameInTags, shouldRetryOnException } = require("../AwsCommon");
+const {
+  Ec2New,
+  findNameInTags,
+  shouldRetryOnException,
+} = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
 const { CheckAwsTags } = require("../AwsTagCheck");
 

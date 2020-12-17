@@ -1,17 +1,68 @@
+process.env.AWS_SDK_LOAD_CONFIG = "true";
+const AWS = require("aws-sdk");
 const assert = require("assert");
 const { pipe, tryCatch, tap, switchCase, and, get } = require("rubico");
 const { first, find } = require("rubico/x");
-const logger = require("../../logger")({ prefix: "Aws" });
+const logger = require("../../logger")({ prefix: "AwsCommon" });
 const { tos } = require("../../tos");
 
 const KeyName = "Name";
 exports.KeyName = KeyName;
+
+exports.Ec2New = (config) => () =>
+  pipe([
+    tap((config) => AWS.config.update(config)),
+    (config) => new AWS.EC2({ region: config.region }),
+  ])(config);
+
+exports.IAMNew = (config) => () =>
+  pipe([
+    tap((config) => AWS.config.update(config)),
+    (config) => new AWS.IAM({ region: config.region }),
+  ])(config);
+
+exports.S3New = (config) => () =>
+  pipe([
+    tap((config) => AWS.config.update(config)),
+    (config) => new AWS.S3({ region: config.region }),
+  ])(config);
+
+exports.Route53New = (config) => () =>
+  pipe([
+    tap((config) => AWS.config.update(config)),
+    (config) => new AWS.Route53({ region: config.region }),
+  ])(config);
+
+exports.Route53DomainNew = (config) => () =>
+  pipe([
+    tap((config) => AWS.config.update({ region: "us-east-1" })),
+    (config) => new AWS.Route53Domains({ region: "us-east-1" }),
+  ])(config);
+
+exports.CloudFrontNew = (config) => () =>
+  pipe([
+    tap((config) => AWS.config.update(config)),
+    (config) => new AWS.CloudFront({ region: config.region }),
+  ])(config);
+
+exports.ACMNew = (config) => () =>
+  pipe([
+    tap((config) => AWS.config.update({ region: "us-east-1" })),
+    (config) => new AWS.ACM({ region: "us-east-1" }),
+  ])(config);
 
 exports.shouldRetryOnException = (error) => {
   logger.error(`aws shouldRetryOnException ${tos(error)}`);
   error.stack && logger.error(error.stack);
 
   return ![400, 404].includes(error.statusCode);
+};
+
+exports.shouldRetryOnExceptionDelete = (error) => {
+  logger.debug(`shouldRetryOnException ${tos(error)}`);
+  const retry = error.code === "DeleteConflict";
+  logger.debug(`shouldRetryOnException retry: ${retry}`);
+  return retry;
 };
 
 exports.buildTags = ({
@@ -108,11 +159,15 @@ exports.findNameInDescription = ({ Description = "" }) => {
 exports.getByIdCore = ({ fieldIds, getList }) =>
   tryCatch(
     pipe([
-      tap(({ id }) => logger.debug(`getById ${fieldIds} ${id}`)),
+      tap(({ id }) => {
+        logger.debug(`getById ${fieldIds} ${id}`);
+      }),
       ({ id }) => getList({ params: { [fieldIds]: [id] } }),
       get("items"),
       first,
-      tap((item) => logger.debug(`getById  ${fieldIds} result: ${tos(item)}`)),
+      tap((item) => {
+        logger.debug(`getById  ${fieldIds} result: ${tos(item)}`);
+      }),
     ]),
     (error) => {
       logger.debug(`getById  ${fieldIds} no result: ${error.message}`);

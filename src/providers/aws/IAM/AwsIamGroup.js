@@ -7,7 +7,11 @@ const logger = require("../../../logger")({ prefix: "IamGroup" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
-const { shouldRetryOnException } = require("../AwsCommon");
+const {
+  IAMNew,
+  shouldRetryOnException,
+  shouldRetryOnExceptionDelete,
+} = require("../AwsCommon");
 
 const findName = get("GroupName");
 const findId = findName;
@@ -17,7 +21,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const iam = new AWS.IAM({ region: config.region });
+  const iam = IAMNew(config);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listGroups-property
   const getList = async ({ params } = {}) =>
@@ -25,7 +29,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
       tap(() => {
         logger.debug(`getList ${tos(params)}`);
       }),
-      () => iam.listGroups(params).promise(),
+      () => iam().listGroups(params).promise(),
       tap((groups) => {
         logger.debug(`getList groups: ${tos(groups)}`);
       }),
@@ -46,7 +50,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
       logger.debug(`getById ${id}`);
     }),
     tryCatch(
-      ({ id }) => iam.getGroup({ GroupName: id }).promise(),
+      ({ id }) => iam().getGroup({ GroupName: id }).promise(),
       switchCase([
         (error) => error.code !== "NoSuchEntity",
         (error) => {
@@ -74,7 +78,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
 
     const createParams = defaultsDeep({})(payload);
 
-    const { Group } = await iam.createGroup(createParams).promise();
+    const { Group } = await iam().createGroup(createParams).promise();
     logger.debug(`create result ${tos(Group)}`);
     return Group;
   };
@@ -87,12 +91,12 @@ exports.AwsIamGroup = ({ spec, config }) => {
         assert(!isEmpty(id), `destroy invalid id`);
       }),
       () =>
-        iam
+        iam()
           .listAttachedGroupPolicies({ GroupName: id, MaxItems: 1e3 })
           .promise(),
       get("AttachedPolicies"),
-      forEach(async (policy) => {
-        await iam
+      forEach((policy) => {
+        iam()
           .detachGroupPolicy({
             PolicyArn: policy.PolicyArn,
             GroupName: id,
@@ -100,27 +104,25 @@ exports.AwsIamGroup = ({ spec, config }) => {
           .promise();
       }),
       () =>
-        iam
+        iam()
           .deleteGroup({
             GroupName: id,
           })
           .promise(),
       tap(() =>
         retryCall({
-          name: `isDownById: ${name} id: ${id}`,
+          name: `iam group isDownById: ${name} id: ${id}`,
           fn: () => isDownById({ id }),
           config,
         })
       ),
       tap(() => {
-        logger.debug(`destroy done, ${tos({ name, id })}`);
+        logger.debug(`destroyed iam group done, ${tos({ name, id })}`);
       }),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) => {
-    logger.debug(`configDefault ${tos({ dependencies })}`);
-    return defaultsDeep({ GroupName: name, Path: "/" })(properties);
-  };
+  const configDefault = async ({ name, properties, dependencies }) =>
+    defaultsDeep({ GroupName: name, Path: "/" })(properties);
 
   return {
     type: "IamGroup",
@@ -136,6 +138,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    shouldRetryOnExceptionDelete,
   };
 };
 

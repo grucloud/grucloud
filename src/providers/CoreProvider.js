@@ -2001,7 +2001,7 @@ function CoreProvider({
         ])(resourcesPerType),
       tap(() => {
         logger.info(
-          `destroyByClient: DONE ${tos({
+          `destroyByClient: DONE ${JSON.stringify({
             type: client.spec.type,
             name,
           })}`

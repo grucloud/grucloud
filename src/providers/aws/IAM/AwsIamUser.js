@@ -7,9 +7,11 @@ const logger = require("../../../logger")({ prefix: "IamUser" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const {
+  IAMNew,
   buildTags,
   findNameInTags,
   shouldRetryOnException,
+  shouldRetryOnExceptionDelete,
 } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 
@@ -18,7 +20,7 @@ exports.AwsIamUser = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const iam = new AWS.IAM({ region: config.region });
+  const iam = IAMNew(config);
 
   const findName = findNameInTags;
   const findId = get("UserName");
@@ -29,7 +31,7 @@ exports.AwsIamUser = ({ spec, config }) => {
       tap(() => {
         logger.debug(`getList iam user`);
       }),
-      () => iam.listUsers(params).promise(),
+      () => iam().listUsers(params).promise(),
       tap((users) => {
         logger.debug(`getList users: ${tos(users)}`);
       }),
@@ -44,7 +46,7 @@ exports.AwsIamUser = ({ spec, config }) => {
             ...user,
             AttachedPolicies: await pipe([
               () =>
-                iam
+                iam()
                   .listAttachedUserPolicies({
                     UserName: user.UserName,
                     MaxItems: 1e3,
@@ -55,7 +57,7 @@ exports.AwsIamUser = ({ spec, config }) => {
             ])(),
             Policies: await pipe([
               () =>
-                iam
+                iam()
                   .listUserPolicies({
                     UserName: user.UserName,
                     MaxItems: 1e3,
@@ -66,12 +68,12 @@ exports.AwsIamUser = ({ spec, config }) => {
             ])(),
             Groups: await pipe([
               () =>
-                iam.listGroupsForUser({ UserName: user.UserName }).promise(),
+                iam().listGroupsForUser({ UserName: user.UserName }).promise(),
               get("Groups"),
               pluck("GroupName"),
             ])(),
             Tags: (
-              await iam.listUserTags({ UserName: user.UserName }).promise()
+              await iam().listUserTags({ UserName: user.UserName }).promise()
             ).Tags,
           }),
           tap((user) => {
@@ -96,7 +98,7 @@ exports.AwsIamUser = ({ spec, config }) => {
       logger.debug(`getById ${id}`);
     }),
     tryCatch(
-      ({ id }) => iam.getUser({ UserName: id }).promise(),
+      ({ id }) => iam().getUser({ UserName: id }).promise(),
       switchCase([
         (error) => error.code !== "NoSuchEntity",
         (error) => {
@@ -126,11 +128,13 @@ exports.AwsIamUser = ({ spec, config }) => {
       payload
     );
 
-    const { User } = await iam.createUser(createParams).promise();
+    const { User } = await iam().createUser(createParams).promise();
     const { iamGroups } = dependencies;
     if (iamGroups) {
       await forEach((group) =>
-        iam.addUserToGroup({ GroupName: group.name, UserName: name }).promise()
+        iam()
+          .addUserToGroup({ GroupName: group.name, UserName: name })
+          .promise()
       )(iamGroups);
     }
 
@@ -145,13 +149,13 @@ exports.AwsIamUser = ({ spec, config }) => {
         logger.info(`destroy iam user ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
-      () => iam.listGroupsForUser({ UserName: id }).promise(),
+      () => iam().listGroupsForUser({ UserName: id }).promise(),
       get("Groups"),
       tap((Groups = []) => {
         logger.debug(`destroy iam user Groups: ${Groups.length}`);
       }),
       forEach((group) => {
-        iam
+        iam()
           .removeUserFromGroup({
             GroupName: group.GroupName,
             UserName: id,
@@ -159,7 +163,9 @@ exports.AwsIamUser = ({ spec, config }) => {
           .promise();
       }),
       () =>
-        iam.listAttachedUserPolicies({ UserName: id, MaxItems: 1e3 }).promise(),
+        iam()
+          .listAttachedUserPolicies({ UserName: id, MaxItems: 1e3 })
+          .promise(),
       get("AttachedPolicies"),
       tap((AttachedPolicies = []) => {
         logger.debug(
@@ -167,20 +173,20 @@ exports.AwsIamUser = ({ spec, config }) => {
         );
       }),
       forEach((policy) => {
-        iam
+        iam()
           .detachUserPolicy({
             PolicyArn: policy.PolicyArn,
             UserName: id,
           })
           .promise();
       }),
-      () => iam.listUserPolicies({ UserName: id, MaxItems: 1e3 }).promise(),
+      () => iam().listUserPolicies({ UserName: id, MaxItems: 1e3 }).promise(),
       get("PolicyNames"),
       tap((PolicyNames = []) => {
         logger.debug(`destroy iam user PolicyNames: ${PolicyNames.length}`);
       }),
       forEach((policyName) => {
-        iam
+        iam()
           .deleteUserPolicy({
             PolicyName: policyName,
             UserName: id,
@@ -188,14 +194,14 @@ exports.AwsIamUser = ({ spec, config }) => {
           .promise();
       }),
       () =>
-        iam
+        iam()
           .deleteUser({
             UserName: id,
           })
           .promise(),
       tap(() =>
         retryCall({
-          name: `isDownById: ${name} id: ${id}`,
+          name: `iam user isDownById: ${name} id: ${id}`,
           fn: () => isDownById({ id }),
           config,
         })
@@ -205,10 +211,8 @@ exports.AwsIamUser = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) => {
-    logger.debug(`configDefault ${tos({ dependencies })}`);
-    return defaultsDeep({ UserName: name, Path: "/" })(properties);
-  };
+  const configDefault = async ({ name, properties, dependencies }) =>
+    defaultsDeep({ UserName: name, Path: "/" })(properties);
 
   return {
     type: "IamUser",
@@ -224,5 +228,6 @@ exports.AwsIamUser = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    shouldRetryOnExceptionDelete,
   };
 };
