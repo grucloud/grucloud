@@ -72,17 +72,19 @@ exports.AwsProvider = ({ name = "aws", config }) => {
 
   let accountId;
 
+  const getRegion = (config) => config.region || AWS.config.region;
+
   const start = async () => {
     accountId = await fetchAccountId();
     await validateConfig({
-      region: config.region || AWS.config.region,
+      region: getRegion(config),
       zone: config.zone,
     });
   };
 
   const info = () => ({
     accountId,
-    region: AWS.config.region,
+    region: getRegion(config),
   });
 
   return CoreProvider({
@@ -91,7 +93,7 @@ exports.AwsProvider = ({ name = "aws", config }) => {
     config: {
       ...config,
       accountId: () => accountId,
-      region: AWS.config.region,
+      region: getRegion(config),
     },
     fnSpecs,
     start,
