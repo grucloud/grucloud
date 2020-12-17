@@ -182,8 +182,10 @@ exports.displayPlanDestroySummary = forEach(({ provider, result }) =>
 
 const groupByType = (init = {}) =>
   reduce((acc, item) => {
-    const { type } = item.resource;
-    if (acc[type]) {
+    const type = item.resource?.type;
+    if (!type) {
+      return acc;
+    } else if (acc[type]) {
       return {
         ...acc,
         [type]: [item, ...acc[type]],

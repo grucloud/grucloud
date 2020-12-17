@@ -405,10 +405,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
                   }),
                 }),
               }),
-              shouldRetryOnException: (error) => {
-                logger.error(`getByName shouldRetryOnException ${tos(error)}`);
-                return true;
-              },
+              shouldRetryOnException,
               config: { retryCount: 5, retryDelay: config.retryDelay },
             }),
         ]),
@@ -468,11 +465,8 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             name: Bucket,
           }),
       ]),
-      shouldRetryOnException: (error) => {
-        logger.error(`putTags shouldRetryOnException ${tos(error)}`);
-        return true;
-      },
-      cofnig: { retryCount: 5, retryDelay: config.retryDelay },
+      shouldRetryOnException,
+      config: { retryCount: 5, retryDelay: config.retryDelay },
     });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property
@@ -520,10 +514,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         retryCall({
           name: `s3 createBucket: ${Bucket}`,
           fn: () => s3.createBucket(otherProperties).promise(),
-          shouldRetryOnException: (error) => {
-            logger.error(`createBucket error ${tos(error)}`);
-            return true;
-          },
+          shouldRetryOnException,
         }),
       tap(({ Location }) => {
         logger.info(`create bucket result ${tos(Location)}`);
@@ -692,10 +683,8 @@ exports.AwsS3Bucket = ({ spec, config }) => {
               .promise();
           }
         },
-        shouldRetryOnException: (error) => {
-          logger.error(`s3 put shouldRetryOnException ${tos(error)}`);
-          return true;
-        },
+        isExpectedResult: () => true,
+        shouldRetryOnException,
         config: { retryCount: 10, retryDelay: 2e3 },
       });
     } catch (error) {

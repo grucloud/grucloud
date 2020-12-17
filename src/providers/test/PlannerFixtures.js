@@ -18,12 +18,22 @@ exports.azDependsOnType = [
 ];
 
 exports.azDependsOnInstance = [
-  { name: "rg" },
-  { name: "vnet", dependsOn: ["rg"] },
-  { name: "sg", dependsOn: ["rg"] },
+  { uri: "az::ResourceGroup::rg" },
   {
-    name: "network-interface",
-    dependsOn: ["rg", "vnet", "sg"],
+    uri: "az::VirtualNetwork::vnet",
+    dependsOn: [{ uri: "az::ResourceGroup::rg" }],
+  },
+  {
+    uri: "az::SecurityGroup::sg",
+    dependsOn: [{ uri: "az::ResourceGroup::rg" }],
+  },
+  {
+    uri: "az::NetworkInterface::network-interface",
+    dependsOn: [
+      { uri: "az::ResourceGroup::rg" },
+      { uri: "az::VirtualNetwork::vnet" },
+      { uri: "az::SecurityGroup::sg" },
+    ],
   },
 ];
 const azPlans = [
@@ -89,21 +99,57 @@ exports.awsDependsOnType = [
 ];
 
 exports.awsDependsOnInstance = [
-  { name: "vpc" },
-  { name: "ig", dependsOn: ["vpc"] },
-  { name: "subnet", dependsOn: ["vpc"] },
+  { uri: "aws::Vpc::vpc", name: "vpc", type: "Vpc" },
   {
+    uri: "aws::InternetGateway::ig",
+    name: "ig",
+    type: "InternetGateway",
+    dependsOn: [{ uri: "aws::Vpc::vpc", name: "vpc", type: "Vpc" }],
+  },
+  {
+    uri: "aws::Subnet::subnet",
+    name: "subnet",
+    type: "Subnet",
+    dependsOn: [{ uri: "aws::Vpc::vpc", name: "vpc", type: "Vpc" }],
+  },
+  {
+    uri: "aws::RouteTables::rt",
     name: "rt",
-    dependsOn: ["vpc", "subnet", "ig"],
+    type: "RouteTables",
+    dependsOn: [
+      { uri: "aws::Vpc::vpc", name: "vpc", type: "Vpc" },
+      { uri: "aws::Subnet::subnet", name: "subnet", type: "Subnet" },
+      { uri: "aws::InternetGateway::ig", name: "ig", type: "InternetGateway" },
+    ],
   },
-  { name: "sg", dependsOn: ["vpc"] },
   {
+    uri: "aws::SecurityGroup::sg",
+    name: "sg",
+    type: "SecurityGroup",
+    dependsOn: [{ uri: "aws::Vpc::vpc", name: "vpc", type: "Vpc" }],
+  },
+  {
+    uri: "aws::Instance::instance",
     name: "instance",
-    dependsOn: ["subnet", "sg", "eip"],
+    type: "Instance",
+    dependsOn: [
+      { uri: "aws::Subnet::subnet", name: "subnet", type: "Subnet" },
+      { uri: "aws::SecurityGroup::sg", name: "sg", type: "SecurityGroup" },
+      {
+        uri: "aws::ElasticIpAddress::eip",
+        name: "eip",
+        type: "ElasticIpAddress",
+      },
+    ],
   },
   {
+    uri: "aws::ElasticIpAddress::eip",
     name: "eip",
-    dependsOn: ["ig", "instance"],
+    type: "ElasticIpAddress",
+    dependsOn: [
+      { uri: "aws::InternetGateway::ig", name: "ig", type: "InternetGateway" },
+      { uri: "aws::Instance::instance", name: "instance", type: "Instance" },
+    ],
   },
 ];
 

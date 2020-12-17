@@ -63,7 +63,7 @@ const providersToString = map(({ provider, ...other }) => ({
 }));
 
 const throwIfError = tap((result) => {
-  if (result.error) {
+  if (result?.error) {
     throw {
       ...result,
       results: providersToString(result.results),
@@ -505,6 +505,8 @@ const planRunScript = async ({
 
 exports.planRunScript = planRunScript;
 
+const mapFunction = (sequencial) => (sequencial ? map.series : map);
+
 // Plan Apply
 
 const processNoPlan = () => {
@@ -565,7 +567,6 @@ exports.planApply = async ({
       ),
   ]);
 
-  const mapFunction = (sequencial) => (sequencial ? map.series : map);
   const doPlansDeploy = ({ commandOptions, infra }) =>
     pipe([
       tap((xx) => {
@@ -674,6 +675,7 @@ exports.planDestroy = async ({
 
   const processHasNoPlan = tap(() => {
     console.log("No resources to destroy");
+    return true;
   });
 
   const countDestroyed = reduce(
@@ -740,7 +742,7 @@ exports.planDestroy = async ({
     }),
   ]);
 
-  const doPlansDestroy = ({ commandOptions }) =>
+  const doPlansDestroy = ({ commandOptions, infra }) =>
     pipe([
       tap((x) => {
         logger.error(`doPlansDestroy`);
@@ -762,7 +764,8 @@ exports.planDestroy = async ({
                     })
                   )
                 ),
-                map(
+                (results) => results.reverse(),
+                mapFunction(infra.sequencial)(
                   pipe([
                     assignStart({ onStateChange }),
                     assign({
@@ -816,10 +819,10 @@ exports.planDestroy = async ({
 
   const processDestroyPlans = switchCase([
     (plans) => commandOptions.force || promptConfirmDestroy(plans),
-    doPlansDestroy({ commandOptions }),
-    tap(() => {
+    doPlansDestroy({ commandOptions, infra }),
+    () => {
       console.log("Abort destroying plan");
-    }),
+    },
   ]);
 
   return tryCatch(
@@ -892,14 +895,14 @@ exports.planDestroy = async ({
           }),
           switchCase([hasEmptyPlan, processHasNoPlan, processDestroyPlans]),
           throwIfError,
-          tap((x) => {
-            //console.log(JSON.stringify(x, null, 4));
-          }),
-          runAsyncCommandHook({
-            providers: infra.providers,
-            hookType: HookType.ON_DESTROYED,
-            commandTitle: `Running OnDestroyed`,
-          }),
+          tap.if(
+            not(isEmpty),
+            runAsyncCommandHook({
+              providers: infra.providers,
+              hookType: HookType.ON_DESTROYED,
+              commandTitle: `Running OnDestroyed`,
+            })
+          ),
           tap((x) => {
             //console.log(JSON.stringify(x, null, 4));
           }),

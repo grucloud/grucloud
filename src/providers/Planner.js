@@ -11,9 +11,18 @@ const {
   transform,
   flatMap,
   tryCatch,
+  eq,
+  get,
 } = require("rubico");
 
-const { isEmpty, isFunction, pluck, find } = require("rubico/x");
+const {
+  isEmpty,
+  isFunction,
+  pluck,
+  find,
+  forEach,
+  isString,
+} = require("rubico/x");
 const { logError, convertError } = require("./Common");
 
 const STATES = {
@@ -26,15 +35,19 @@ const STATES = {
 exports.mapToGraph = pipe([
   (mapResource) =>
     map((resource) => ({
-      name: resource.name,
+      ...resource.toJSON(),
       dependsOn: transform(
-        flatMap((resource) =>
-          resource.name
-            ? [resource.name]
-            : transform(
-                map((dep) => dep.name),
-                () => []
-              )(resource)
+        flatMap(
+          switchCase([
+            isString,
+            () => [],
+            (resource) => resource.name,
+            (resource) => [resource.toJSON()],
+            transform(
+              map((dep) => dep.toJSON()),
+              () => []
+            ),
+          ])
         ),
         () => []
       )(resource.dependencies),
@@ -58,37 +71,58 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
   assert(Array.isArray(plans));
   assert(Array.isArray(dependsOnType));
   assert(Array.isArray(dependsOnInstance));
-  if (down) {
-    return pipe([
-      pluck("resource"),
-      map(({ name, provider, type }) => ({
-        name,
-        dependsOn: pipe([
-          find((x) => x.providerName === provider && x.type === type),
-          tap((x) => {
-            assert(x);
-          }),
-          ({ dependsOn = [] }) => dependsOn,
-          flatMap((dependOn) =>
-            pipe([
-              filter(
-                ({ resource }) =>
-                  `${resource.provider}::${resource.type}` === dependOn
-              ),
-              pluck("resource.name"),
-            ])(plans)
-          ),
-        ])(dependsOnTypeReverse(dependsOnType)),
-      })),
-    ])(plans);
-  } else {
-    return map((spec) => ({
-      name: spec.name,
-      dependsOn: spec.dependsOn?.filter((dependOn) =>
-        plans.find((plan) => plan.resource.name === dependOn)
-      ),
-    }))(dependsOnInstance);
-  }
+  return switchCase([
+    () => down,
+    () =>
+      pipe([
+        pluck("resource"),
+        map(({ name, provider, type, uri }) => ({
+          name,
+          uri,
+          dependsOn: pipe([
+            find((x) => x.providerName === provider && x.type === type),
+            tap((x) => {
+              assert(x);
+            }),
+            ({ dependsOn = [] }) => dependsOn,
+            flatMap((dependOn) =>
+              pipe([
+                filter(
+                  ({ resource }) =>
+                    `${resource.provider}::${resource.type}` === dependOn
+                ),
+                pluck("resource"),
+              ])(plans)
+            ),
+          ])(dependsOnTypeReverse(dependsOnType)),
+        })),
+        tap((graph) => {
+          logger.info(`DependencyTree down: ${tos(graph)}`);
+        }),
+      ])(plans),
+    () =>
+      pipe([
+        forEach((spec) => {
+          assert(spec.uri);
+        }),
+        map((spec) => ({
+          name: spec.name,
+          type: spec.type,
+          uri: spec.uri,
+          dependsOn: pipe([
+            forEach((dependOn) => {
+              assert(dependOn.uri);
+            }),
+            filter((dependOn) =>
+              plans.find(({ resource }) => resource.uri === dependOn.uri)
+            ),
+          ])(spec.dependsOn),
+        })),
+        tap((graph) => {
+          logger.info(`DependencyTree up: ${tos(graph)}`);
+        }),
+      ])(dependsOnInstance),
+  ])();
 };
 
 exports.Planner = ({
@@ -206,18 +240,25 @@ exports.Planner = ({
   };
   const onEnd = async (item) => {
     await pipe([
-      tap(() => {
+      tap((values) => {
         logger.debug(`onEnd begin ${tos(itemToKey(item))}`);
       }),
       //Exclude the current resource
-      filter((x) => x.item.resource.name !== item.resource.name),
+      filter((x) => x.item.resource.uri !== item.resource.uri),
       // Find resources that depends on the one that just ended
-      filter(({ dependsOn = [] }) => dependsOn.includes(item.resource.name)),
+      filter(pipe([get("dependsOn"), find(eq(get("uri"), item.resource.uri))])),
+      //filter(({ dependsOn = [] }) => dependsOn.includes(item.resource.name)),
+      tap((values) => {
+        logger.debug(`onEnd  ${tos(values)}`);
+      }),
       map((entry) =>
         tryCatch(
           pipe([
+            tap((values) => {
+              logger.debug(`onEnd  ${tos(values)}`);
+            }),
             // Remove from the dependsOn array the one that just ended
-            filter((x) => x !== item.resource.name),
+            filter(({ uri }) => uri !== item.resource.uri),
             tap((dependsOn) => {
               entry.dependsOn = dependsOn;
             }),
@@ -263,11 +304,11 @@ exports.Planner = ({
       return { error: false, results: [] };
     }
 
-    const resourceTypes = plans.map((plan) => plan.resource.name);
-    logger.debug(`Planner resourceTypes ${resourceTypes}`);
+    const resourcesUri = plans.map((plan) => plan.resource.uri);
+    logger.debug(`Planner resourcesUri ${resourcesUri}`);
 
     const isDependsOnInPlan = (dependsOn = []) =>
-      dependsOn.find((dependOn) => resourceTypes.includes(dependOn));
+      dependsOn.find((dependOn) => resourcesUri.includes(dependOn.uri));
 
     await pipe([
       tap((x) => {
