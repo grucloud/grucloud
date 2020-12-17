@@ -1,6 +1,6 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
-const { tap, get, pipe, filter, map } = require("rubico");
+const { tap, get, pipe, filter, map, not, eq } = require("rubico");
 const { isEmpty, defaultsDeep } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "AwsRtb" });
