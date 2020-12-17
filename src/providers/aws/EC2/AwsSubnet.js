@@ -23,7 +23,7 @@ module.exports = AwsSubnet = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const ec2 = new AWS.EC2({ region: config.region });
+  const ec2 = Ec2New(config);
 
   const findName = switchCase([
     (item) => item.DefaultForAz,
@@ -46,7 +46,7 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     logger.debug(`create subnet ${tos({ name, payload })}`);
     const {
       Subnet: { SubnetId },
-    } = await ec2.createSubnet(payload).promise();
+    } = await ec2().createSubnet(payload).promise();
     logger.info(`create subnet ${SubnetId}`);
 
     await tagResource({
@@ -76,12 +76,12 @@ module.exports = AwsSubnet = ({ spec, config }) => {
       throw Error(`destroy subnet invalid id`);
     }
 
-    const result = await ec2.deleteSubnet({ SubnetId: id }).promise();
+    const result = await ec2().deleteSubnet({ SubnetId: id }).promise();
     return result;
   };
   const getList = async ({ params } = {}) => {
     logger.debug(`getList subnet ${tos(params)}`);
-    const { Subnets } = await ec2.describeSubnets(params).promise();
+    const { Subnets } = await ec2().describeSubnets(params).promise();
     logger.debug(`getList subnet ${tos(Subnets)}`);
 
     return {

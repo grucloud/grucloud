@@ -24,7 +24,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
   const { stage } = config;
   assert(stage);
 
-  const ec2 = new AWS.EC2({ region: config.region });
+  const ec2 = Ec2New(config);
 
   const findName = (item) => {
     const name = findNameInTags(item);
@@ -39,7 +39,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeRouteTables-property
   const getList = async ({ params } = {}) => {
     logger.debug(`list ${tos(params)}`);
-    const { RouteTables } = await ec2.describeRouteTables(params).promise();
+    const { RouteTables } = await ec2().describeRouteTables(params).promise();
     logger.debug(`list ${tos(RouteTables)}`);
 
     return {
@@ -71,7 +71,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     logger.debug(`create ${tos({ name, paramCreate })}`);
     const {
       RouteTable: { RouteTableId },
-    } = await ec2.createRouteTable(paramCreate).promise();
+    } = await ec2().createRouteTable(paramCreate).promise();
     assert(RouteTableId);
     logger.info(`created ${RouteTableId}`);
 
@@ -94,12 +94,12 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     };
     logger.debug(`create, associating with subnet ${tos({ subnetLive })}`);
     //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#associateRouteTable-property
-    await ec2.associateRouteTable(paramsAttach).promise();
+    await ec2().associateRouteTable(paramsAttach).promise();
 
     logger.debug(`associated`);
 
     const rt = await retryCall({
-      name: `isUpById: ${name} id: ${RouteTableId}`,
+      name: `rt isUpById: ${name} id: ${RouteTableId}`,
       fn: () => isUpById({ id: RouteTableId }),
       config,
     });
@@ -142,7 +142,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     ])(rtLive.Associations);
 
     logger.debug(`destroying ${tos({ RouteTableId: id })}`);
-    await ec2.deleteRouteTable({ RouteTableId: id }).promise();
+    await ec2().deleteRouteTable({ RouteTableId: id }).promise();
     logger.debug(`destroyed ${tos({ name, id })}`);
     return;
   };

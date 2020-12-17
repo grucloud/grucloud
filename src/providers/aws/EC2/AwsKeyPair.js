@@ -12,7 +12,7 @@ module.exports = AwsClientKeyPair = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const ec2 = new AWS.EC2({ region: config.region });
+  const ec2 = Ec2New(config);
 
   const findName = (item) => findField({ item, field: "KeyName" });
   const findId = (item) => findField({ item, field: "KeyPairId" });
@@ -22,7 +22,7 @@ module.exports = AwsClientKeyPair = ({ spec, config }) => {
 
   const getList = async ({ params } = {}) => {
     logger.debug(`list keypair params: ${tos(params)}`);
-    const { KeyPairs } = await ec2.describeKeyPairs(params).promise();
+    const { KeyPairs } = await ec2().describeKeyPairs(params).promise();
     logger.debug(`list keypair: ${tos(KeyPairs)}`);
 
     return {
@@ -36,7 +36,7 @@ module.exports = AwsClientKeyPair = ({ spec, config }) => {
       tap(() => {
         logger.debug(`validate ${name}`);
       }),
-      () => ec2.describeKeyPairs().promise(),
+      () => ec2().describeKeyPairs().promise(),
       get("KeyPairs"),
       pluck("KeyName"),
       tap.if(
@@ -54,7 +54,7 @@ module.exports = AwsClientKeyPair = ({ spec, config }) => {
       ),
     ])();
 
-  const configDefault = async ({ properties }) => defaultsDeep({})(properties);
+  const configDefault = ({ properties }) => defaultsDeep({})(properties);
 
   return {
     type: "KeyPair",

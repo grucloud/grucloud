@@ -6,7 +6,7 @@ const { map, pipe, get } = require("rubico");
 const logger = require("../../logger")({ prefix: "AwsProvider" });
 const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
-
+const { Ec2New } = require("./AwsCommon");
 const AwsS3 = require("./S3");
 const AwsEC2 = require("./EC2");
 const AwsIam = require("./IAM");
@@ -27,9 +27,11 @@ const fnSpecs = () => [
 
 const validateConfig = async ({ region, zone }) => {
   logger.debug(`region: ${region}, zone: ${zone}`);
-  const ec2 = new AWS.EC2({ region });
+  const ec2 = Ec2New({ region });
 
-  const { AvailabilityZones } = await ec2.describeAvailabilityZones().promise();
+  const {
+    AvailabilityZones,
+  } = await ec2().describeAvailabilityZones().promise();
   const zones = map((x) => x.ZoneName)(AvailabilityZones);
   if (zone && !zones.includes(zone)) {
     const message = `The configued zone '${zone}' is not part of region ${region}, available zones for this region: ${zones}`;

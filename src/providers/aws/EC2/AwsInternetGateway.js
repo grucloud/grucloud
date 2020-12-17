@@ -20,7 +20,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const ec2 = new AWS.EC2({ region: config.region });
+  const ec2 = Ec2New(config);
 
   const findName = (item) => {
     const name = findNameInTags(item);
@@ -35,7 +35,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInternetGateways-property
   const getList = async ({ params } = {}) => {
     logger.debug(`list ${tos(params)}`);
-    const { InternetGateways } = await ec2
+    const { InternetGateways } = await ec2()
       .describeInternetGateways(params)
       .promise();
     logger.debug(`list ${tos(InternetGateways)}`);
@@ -74,7 +74,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
     logger.debug(`create ${tos({ name, payload })}`);
     const {
       InternetGateway: { InternetGatewayId },
-    } = await ec2.createInternetGateway(payload).promise();
+    } = await ec2().createInternetGateway(payload).promise();
     assert(InternetGatewayId);
     logger.debug(`created ig ${InternetGatewayId}`);
 
@@ -94,11 +94,11 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
       VpcId: vpcLive.VpcId,
     };
     logger.debug(`create, ig attaching vpc ${tos({ vpcLive })}`);
-    await ec2.attachInternetGateway(paramsAttach).promise();
+    await ec2().attachInternetGateway(paramsAttach).promise();
     logger.debug(`create ig, vpc attached`);
 
     const igw = await retryCall({
-      name: `isUpById: ${name} id: ${InternetGatewayId}`,
+      name: `ig isUpById: ${name} id: ${InternetGatewayId}`,
       fn: () => isUpById({ id: InternetGatewayId }),
       config,
     });
@@ -133,9 +133,9 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
         VpcId: attachment.VpcId,
       };
       logger.debug(`destroy detaching vpc ${attachment.VpcId}`);
-      await ec2.detachInternetGateway(paramsDetach).promise();
+      await ec2().detachInternetGateway(paramsDetach).promise();
     }
-    await ec2.deleteInternetGateway({ InternetGatewayId: id }).promise();
+    await ec2().deleteInternetGateway({ InternetGatewayId: id }).promise();
     logger.debug(`destroyed, ${tos({ name, id })}`);
     return;
   };
