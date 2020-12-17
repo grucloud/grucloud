@@ -148,17 +148,18 @@ const ResourceMaker = ({
         logger.debug(`findLive ${results}`);
       }),
       filter(not(get("error"))),
-      find(({ client }) => client.spec.type === type),
+      find(eq(get("type"), type)),
       switchCase([
         (result) => result,
         pipe([
-          tap(({ client, results }) => {
-            assert(client);
+          tap(({ type, results }) => {
+            assert(type);
           }),
-          ({ client, results }) =>
-            find((item) => resourceName === client.findName(item))(
-              results.items
-            ),
+          ({ type, results }) =>
+            find(
+              (item) =>
+                resourceName === provider.clientByType(type).findName(item)
+            )(results.items),
         ]),
         (result) => {
           logger.debug(`findLive cannot find type ${type}`);
@@ -775,13 +776,7 @@ function CoreProvider({
   const clients = specs.map((spec) =>
     createClient({ mapTypeToResources, spec, config: providerConfig })
   );
-
-  const clientByType = (type) => {
-    assert(type);
-    const spec = specs.find((spec) => spec.type === type);
-    assert(spec, `type ${type} not found`);
-    return createClient({ mapTypeToResources, spec, config: providerConfig });
-  };
+  const clientByType = (type) => find(eq(get("spec.type"), type))(clients);
 
   const filterClient = async ({
     client,
@@ -1718,31 +1713,31 @@ function CoreProvider({
   const getClients = ({ onStateChange, deep, title }) =>
     map(
       tryCatch(
-        pipe([
-          tap((client) =>
-            onStateChange({
-              context: contextFromClient({ client, title }),
-              nextState: "RUNNING",
-            })
-          ),
-          (client) =>
-            assign({
-              results: ({ client }) =>
-                client.getList({
-                  deep,
-                  resources: provider.getResourcesByType(client.spec.type),
-                }),
-            })({ client }),
-          tap(({ client }) =>
-            onStateChange({
-              context: contextFromClient({ client, title }),
-              nextState: "DONE",
-            })
-          ),
-          tap((x) => {
-            logger.debug(`getClients done`);
-          }),
-        ]),
+        (client) =>
+          pipe([
+            tap(() =>
+              onStateChange({
+                context: contextFromClient({ client, title }),
+                nextState: "RUNNING",
+              })
+            ),
+            async () => ({
+              type: client.spec.type,
+              results: await client.getList({
+                deep,
+                resources: provider.getResourcesByType(client.spec.type),
+              }),
+            }),
+            tap(() =>
+              onStateChange({
+                context: contextFromClient({ client, title }),
+                nextState: "DONE",
+              })
+            ),
+            tap((x) => {
+              logger.debug(`getClients done`);
+            }),
+          ])(),
         (error, client) => {
           logger.error(`getClient error for client type ${client.spec.type}`);
           logger.error(tos(error));
@@ -1751,7 +1746,7 @@ function CoreProvider({
             nextState: "ERROR",
             error: convertError({ error }),
           });
-          return { error, client };
+          return { error, type: client.spec.type };
         }
       )
     );
@@ -1763,7 +1758,9 @@ function CoreProvider({
   }) =>
     pipe([
       tap((clients) => {
-        logger.info(`findLives ${tos({ options })}`);
+        logger.info(
+          `findLives #clients ${clients.length}, ${tos({ options })}`
+        );
         assert(onStateChange);
         assert(options);
       }),
@@ -1772,7 +1769,7 @@ function CoreProvider({
         filterReadWriteClient(options),
         (clients) => clients,
       ]),
-      tap((clients) =>
+      tap(() =>
         onStateChange({
           context: contextFromProvider(),
           nextState: "RUNNING",
@@ -1785,9 +1782,7 @@ function CoreProvider({
         })
       ),
       getClients({ onStateChange, title: TitleDestroying, deep: false }),
-      (results) => {
-        return { error: hasResultError(results), results };
-      },
+      (results) => ({ error: hasResultError(results), results }),
       tap((result) =>
         onStateChange({
           context: contextFromPlanner({ title: TitleDestroying }),
@@ -1801,8 +1796,10 @@ function CoreProvider({
         assign({
           liveMap: ({ results }) =>
             pipe([
-              flatMap(({ client, results: { items } }) =>
-                map((live) => liveToUri({ client, live }))(items)
+              flatMap(({ type, results: { items } }) =>
+                map((live) => liveToUri({ client: clientByType(type), live }))(
+                  items
+                )
               ),
             ])(results),
         }),
@@ -1829,34 +1826,37 @@ function CoreProvider({
       filter(not(get("error"))),
       map(
         assign({
-          plans: ({ client, results }) =>
+          plans: ({ type, results }) =>
             pipe([
-              filter((resource) =>
-                filterDestroyResources({
-                  client,
-                  resource,
-                  options,
-                  direction,
-                })
-              ),
-              map((live) => ({
-                resource: {
-                  provider: providerName,
-                  type: client.spec.type,
-                  name: client.findName(live),
-                  id: client.findId(live),
-                  uri: liveToUri({ client, live }),
-                },
-                action: "DESTROY",
-                config: live,
-              })),
-            ])(results?.items || []),
+              () => clientByType(type),
+              (client) =>
+                pipe([
+                  filter((resource) =>
+                    filterDestroyResources({
+                      client,
+                      resource,
+                      options,
+                      direction,
+                    })
+                  ),
+                  map((live) => ({
+                    resource: {
+                      provider: providerName,
+                      type: client.spec.type,
+                      name: client.findName(live),
+                      id: client.findId(live),
+                      uri: liveToUri({ client, live }),
+                    },
+                    action: "DESTROY",
+                    config: live,
+                  })),
+                ])(results?.items || []),
+            ])(),
         })
       ),
       tap((results) => {
         logger.debug(`planFindDestroy`);
       }),
-      map(({ client, ...other }) => ({ type: client.spec.type, ...other })),
       (results) => {
         const plans = pipe([
           filter((result) => !isEmpty(result.plans || [])),
