@@ -284,7 +284,7 @@ exports.AwsDistribution = ({ spec, config }) => {
     ]),
   };
 };
-//TODO omit with deep keys
+
 exports.compareDistribution = async ({ target, live, dependencies }) =>
   pipe([
     () =>

@@ -11,7 +11,7 @@ const { Ec2New } = require("../AwsCommon");
 module.exports = AwsClientKeyPair = ({ spec, config }) => {
   assert(spec);
   assert(config);
-
+  assert(config.region, "config.region");
   const ec2 = Ec2New(config);
 
   const findName = (item) => findField({ item, field: "KeyName" });
