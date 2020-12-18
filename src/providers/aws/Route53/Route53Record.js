@@ -130,7 +130,7 @@ exports.Route53Record = ({ spec, config }) => {
                   get("ResourceRecordSets"),
                   (ResourceRecordSets) =>
                     pipe([
-                      () => resource.resolveConfig(),
+                      () => resource.resolveConfig({ deep: false }),
                       (properties) =>
                         find(
                           findRecord({
@@ -192,7 +192,7 @@ exports.Route53Record = ({ spec, config }) => {
               }),
               (ResourceRecordSets) =>
                 pipe([
-                  () => resolveConfig(),
+                  () => resolveConfig({ deep: false }),
                   tap((properties) => {
                     logger.info(`getByName ${tos({ properties })}`);
                     assert(properties.Name);

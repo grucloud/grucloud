@@ -289,11 +289,17 @@ const ResourceMaker = ({
       }),
     ])(dependencies);
 
-  const resolveConfig = async ({ live, lives, resolvedDependencies } = {}) =>
+  const resolveConfig = async ({
+    live,
+    lives,
+    resolvedDependencies,
+    deep = true,
+  } = {}) =>
     pipe([
       tap(() => {
         logger.debug(
           `resolveConfig ${type}/${resourceName}, ${tos({
+            deep,
             live,
           })}`
         );
@@ -301,8 +307,10 @@ const ResourceMaker = ({
         assert(spec.propertiesDefault);
       }),
       switchCase([
-        (resolvedDependencies) => resolvedDependencies,
-        (resolvedDependencies) => resolvedDependencies,
+        () => !deep,
+        () => {},
+        () => !isEmpty(resolvedDependencies),
+        () => resolvedDependencies,
         () =>
           resolveDependencies({
             resourceName,
@@ -347,7 +355,7 @@ const ResourceMaker = ({
   const create = async ({ payload, resolvedDependencies }) => {
     logger.info(`create ${tos({ resourceName, type, payload })}`);
     // Is the resource already created ?
-    if (await getLive()) {
+    if (await getLive({ deep: false })) {
       throw Error(`Resource ${type}/${resourceName} already exists`);
     }
 
@@ -369,7 +377,7 @@ const ResourceMaker = ({
 
     const live = await retryCall({
       name: `create getLive ${type}/${resourceName}`,
-      fn: () => getLive(),
+      fn: () => getLive({ deep: false }),
       config: provider.config(),
     });
 
