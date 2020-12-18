@@ -75,7 +75,7 @@ const getHostedZone = ({ name, dependencies = {} }) =>
         };
       },
       pipe([
-        (hostedZone) => hostedZone.getLiveMemoize(),
+        (hostedZone) => hostedZone.getLive(),
         tap((live) => {
           logger.debug(`getHostedZone live ${tos(live)}`);
         }),

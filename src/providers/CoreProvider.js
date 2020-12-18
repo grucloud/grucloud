@@ -1,7 +1,8 @@
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
-const { memoize } = require("lodash");
+const memoize = require("promise-memoize");
+
 const {
   isEmpty,
   isString,
@@ -144,10 +145,10 @@ const ResourceMaker = ({
   };
 
   let getLiveMemoize;
-  const createGetLiveMemoize = () => {
+  const createMemoize = () => {
     getLiveMemoize = memoize(getLive);
   };
-  createGetLiveMemoize();
+  createMemoize();
 
   const findLive = ({ lives }) =>
     pipe([
@@ -511,7 +512,10 @@ const ResourceMaker = ({
     update,
     planUpsert,
     getLive,
-    getLiveMemoize: (params) => getLiveMemoize(params),
+    getLiveMemoize: pipe([
+      (params) => getLiveMemoize(params),
+      tap.if(isEmpty, () => createMemoize()),
+    ]),
     findLive,
     resolveDependencies: ({ lives, dependenciesMustBeUp }) =>
       resolveDependencies({
