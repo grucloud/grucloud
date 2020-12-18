@@ -130,7 +130,7 @@ const ResourceMaker = ({
   const client = createClient({ provider, spec, config });
   const usedBySet = new Set();
   const getLive = async ({ deep } = {}) => {
-    logger.info(`getLive ${type}/${resourceName}`);
+    logger.info(`getLive ${type}/${resourceName}, deep: ${deep}`);
     const live = await client.getByName({
       provider,
       name: resourceName,
@@ -206,8 +206,8 @@ const ResourceMaker = ({
   const resolveDependencies = ({ lives, dependencies, dependenciesMustBeUp }) =>
     pipe([
       tap(() => {
-        logger.debug(
-          `resolveDependencies for ${resourceName}: ${Object.keys(
+        logger.info(
+          `resolveDependencies for ${type}/${resourceName}: ${Object.keys(
             dependencies
           )}, dependenciesMustBeUp: ${dependenciesMustBeUp}`
         );
@@ -225,7 +225,11 @@ const ResourceMaker = ({
                 dependenciesMustBeUp,
               }),
             (error) => {
-              logger.error(`resolveDependencies: ${tos(error)}`);
+              logger.error(
+                `resolveDependencies: ${type}/${resourceName}, error: ${tos(
+                  error
+                )}`
+              );
               return {
                 dependency,
                 error,
@@ -234,30 +238,23 @@ const ResourceMaker = ({
           )();
         }
         return tryCatch(
-          async (dependency) => {
-            const live = await switchCase([
-              not(isEmpty),
-              (lives) => dependency.findLive({ lives }),
-              () => dependency.getLive(),
-            ])(lives);
-
-            if (dependenciesMustBeUp && !live) {
-              throw {
-                message: `${type}/${resourceName} dependency ${dependency.name} is not up`,
-              };
-            }
-            const resolvedDependencies = await dependency.resolveDependencies({
-              //TODO live ??
-              lives,
-              dependenciesMustBeUp,
-            });
-            const config = await dependency.resolveConfig({
-              //TODO live ??
-              lives,
-              resolvedDependencies,
-            });
-            return { resource: dependency, live, config };
-          },
+          (dependency) =>
+            pipe([
+              switchCase([
+                not(isEmpty),
+                (lives) => dependency.findLive({ lives }),
+                () => dependency.getLive(),
+              ]),
+              tap.if(
+                (live) => dependenciesMustBeUp && !live,
+                () => {
+                  throw {
+                    message: `${type}/${resourceName} dependency ${dependency.name} is not up`,
+                  };
+                }
+              ),
+              (live) => ({ resource: dependency, live }),
+            ])(lives),
           (error, dependency) => {
             logger.error(`resolveDependencies: ${tos(error)}`);
             return {

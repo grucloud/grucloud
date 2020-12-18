@@ -115,7 +115,7 @@ exports.AwsHostedZone = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#getHostedZone-property
   const getById = pipe([
     tap(({ id, name }) => {
-      logger.debug(`getById ${id}, name: ${name}`);
+      logger.info(`getById ${id}, name: ${name}`);
     }),
     tryCatch(
       ({ id }) => route53().getHostedZone({ Id: id }).promise(),
@@ -410,9 +410,10 @@ exports.compareHostedZone = async ({ usedBySet, target, live, dependencies }) =>
       targetRecordSet: async () =>
         map(
           tryCatch(
-            (resource) => resource.resolveConfig(),
+            (resource) => resource.resolveConfig({ deep: false }),
             (error) => {
-              logger.error(error);
+              logger.error("compareHostedZone error in resolveConfig");
+              logger.error(tos(error));
               return { error };
             }
           )
