@@ -268,20 +268,23 @@ exports.AwsDistribution = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException: pipe([
-      tap((error) => {
-        logger.info(`distribution shouldRetryOnException ${tos(error)}`);
-      }),
-      or([
-        not(eq(get("statusCode"), 400)),
-        eq(get("code"), "InvalidViewerCertificate"),
+    shouldRetryOnException: ({ name, error }) =>
+      pipe([
+        tap(() => {
+          logger.info(
+            `distribution shouldRetryOnException ${tos({ name, error })}`
+          );
+        }),
+        or([
+          not(eq(get("statusCode"), 400)),
+          eq(get("code"), "InvalidViewerCertificate"),
+        ]),
+        tap((result) => {
+          logger.info(
+            `distribution shouldRetryOnException result: ${tos(result)}`
+          );
+        })(error),
       ]),
-      tap((result) => {
-        logger.info(
-          `distribution shouldRetryOnException result: ${tos(result)}`
-        );
-      }),
-    ]),
   };
 };
 

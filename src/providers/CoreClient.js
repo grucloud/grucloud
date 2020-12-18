@@ -93,8 +93,8 @@ module.exports = CoreClient = ({
       (path) =>
         retryCallOnError({
           name: `getList type: ${spec.type}, path ${path}`,
-          fn: async () =>
-            await axios.request(path, {
+          fn: () =>
+            axios.request(path, {
               method: verbList,
             }),
           config,

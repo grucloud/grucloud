@@ -70,7 +70,7 @@ module.exports = ({ resources, provider }) => {
             await retryCallOnError({
               name: `get  ${bucketUrlIndex}`,
               fn: () => axios.get(bucketUrlIndex),
-              shouldRetryOnException: (error) => {
+              shouldRetryOnException: ({error}) => {
                 return [404].includes(error.response?.status);
               },
               config: { retryCount: 20, retryDelay: 5e3 },
@@ -83,7 +83,7 @@ module.exports = ({ resources, provider }) => {
             await retryCallOnError({
               name: `get  ${bucketStorageUrl}`,
               fn: () => axios.get(bucketStorageUrl),
-              shouldRetryOnException: (error) => {
+              shouldRetryOnException: ({error}) => {
                 return [404].includes(error.response?.status);
               },
               config: { retryCount: 20, retryDelay: 5e3 },
@@ -96,7 +96,7 @@ module.exports = ({ resources, provider }) => {
             await retryCallOnError({
               name: `get  ${bucketUrl404}`,
               fn: () => axios.get(bucketUrl404),
-              shouldRetryOnException: (error) => {
+              shouldRetryOnException: ({error}) => {
                 return [404].includes(error.response?.status);
               },
               config: { retryCount: 20, retryDelay: 5e3 },
@@ -153,7 +153,7 @@ module.exports = ({ resources, provider }) => {
             await retryCallOnError({
               name: `get  ${bucketUrl}`,
               fn: () => axios.get(bucketUrl),
-              shouldRetryOnException: (error) => {
+              shouldRetryOnException: ({error}) => {
                 return [404].includes(error.response?.status);
               },
               config: { retryCount: 20, retryDelay: 5e3 },

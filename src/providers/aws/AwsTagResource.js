@@ -71,8 +71,8 @@ exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
         throw { code: 422, message: "resource not tagged" };
       }
     },
-    shouldRetryOnException: (error) => {
-      logger.error(`AwsTag shouldRetryOnException ${tos(error)}`);
+    shouldRetryOnException: ({error}) => {
+      logger.error(`AwsTag shouldRetryOnException ${tos({name, error})}`);
       return true;
     },
     config: { retryCount: 5, retryDelay: config.retryDelay },

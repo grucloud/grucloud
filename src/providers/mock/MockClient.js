@@ -18,7 +18,7 @@ module.exports = MockClient = ({
   const { createAxios } = config;
   assert(createAxios);
 
-  const shouldRetryOnException = (error) => {
+  const shouldRetryOnException = ({error}) => {
     logger.debug("shouldRetryOnException");
     const { response } = error;
     if (!response) return false;

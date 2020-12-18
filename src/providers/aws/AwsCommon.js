@@ -51,15 +51,15 @@ exports.ACMNew = (config) => () =>
     (config) => new AWS.ACM({ region: "us-east-1" }),
   ])(config);
 
-exports.shouldRetryOnException = (error) => {
-  logger.error(`aws shouldRetryOnException ${tos(error)}`);
+exports.shouldRetryOnException = ({error, name}) => {
+  logger.error(`aws shouldRetryOnException ${tos({name, error})}`);
   error.stack && logger.error(error.stack);
 
   return ![400, 404].includes(error.statusCode);
 };
 
-exports.shouldRetryOnExceptionDelete = (error) => {
-  logger.debug(`shouldRetryOnException ${tos(error)}`);
+exports.shouldRetryOnExceptionDelete = ({error, name}) => {
+  logger.debug(`shouldRetryOnException ${tos({name, error})}`);
   const retry = error.code === "DeleteConflict";
   logger.debug(`shouldRetryOnException retry: ${retry}`);
   return retry;

@@ -14,8 +14,8 @@ exports.buildLabel = ({
   [stageTagKey]: stage,
 });
 
-exports.shouldRetryOnException = (error) => {
-  logger.error(`gcp shouldRetryOnException ${tos(error)}`);
+exports.shouldRetryOnException = ({ error, name }) => {
+  logger.error(`gcp shouldRetryOnException ${tos({ name, error })}`);
   const { response } = error;
   if (!response) return false;
   if (

@@ -265,7 +265,7 @@ const serviceEnable = async ({ accessToken, projectId, servicesApiMap }) => {
                     method: servicesApiMap[serviceId].method || "GET",
                   }),
                 config: { retryCount: 120, retryDelay: 10e3 },
-                shouldRetryOnException: (error) => {
+                shouldRetryOnException: ({error}) => {
                   return [403].includes(error.response?.status);
                 },
               }),

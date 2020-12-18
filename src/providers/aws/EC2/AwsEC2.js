@@ -219,8 +219,8 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException: (error) => {
-      logger.debug(`shouldRetryOnException ${tos(error)}`);
+    shouldRetryOnException: ({error, name}) => {
+      logger.debug(`shouldRetryOnException ${tos({name, error})}`);
       const retry = error.message.includes(
         "iamInstanceProfile.name is invalid"
       );
