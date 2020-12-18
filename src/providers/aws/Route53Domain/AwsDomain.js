@@ -58,24 +58,24 @@ exports.AwsDomain = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#getDomain-property
   const getById = pipe([
     tap(({ id }) => {
-      logger.debug(`getById ${id}`);
+      logger.debug(`getById domain ${id}`);
     }),
     tryCatch(
       ({ id }) =>
         route53domains().getDomainDetail({ DomainName: id }).promise(),
       switchCase([
-        (error) => error.code !== "NoSuchDomain",
-        (error) => {
-          logger.debug(`getById error: ${tos(error)}`);
-          throw error;
-        },
+        eq(get("code"), "NoSuchDomain"),
         (error, { id }) => {
           logger.debug(`getById ${id} NoSuchDomain`);
+        },
+        (error) => {
+          logger.debug(`getById domain error: ${tos(error)}`);
+          throw error;
         },
       ])
     ),
     tap((result) => {
-      logger.debug(`getById result: ${tos(result)}`);
+      logger.debug(`getById domain result: ${tos(result)}`);
     }),
   ]);
 
