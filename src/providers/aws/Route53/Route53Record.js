@@ -75,7 +75,7 @@ const getHostedZone = ({ name, dependencies = {} }) =>
         };
       },
       pipe([
-        (hostedZone) => hostedZone.getLive(),
+        (hostedZone) => hostedZone.getLiveMemoize(),
         tap((live) => {
           logger.debug(`getHostedZone live ${tos(live)}`);
         }),
@@ -106,7 +106,7 @@ exports.Route53Record = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList route53 #resources ${resources.length}`);
       }),
-      map.pool(mapPoolSize, (resource) =>
+      map.pool(1, (resource) =>
         pipe([
           tap((hostedZone) => {
             logger.debug(`getList resource ${resource.name}`);
@@ -160,8 +160,8 @@ exports.Route53Record = ({ spec, config }) => {
         total: records.length,
         items: records,
       }),
-      tap((records) => {
-        logger.info(`getList #route53 records result: ${records.total}`);
+      tap(({ total }) => {
+        logger.info(`getList #route53: ${total}`);
       }),
     ])(resources);
 

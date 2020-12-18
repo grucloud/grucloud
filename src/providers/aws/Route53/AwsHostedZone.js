@@ -50,6 +50,8 @@ const getNewCallerReference = () => `grucloud-${new Date()}`;
 
 //Check for the final dot
 const findName = get("Name");
+const findId = get("Id");
+
 const canDeleteRecord = (zoneName) =>
   not(
     and([
@@ -57,6 +59,7 @@ const canDeleteRecord = (zoneName) =>
       eq(get("Name"), zoneName),
     ])
   );
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsHostedZone = ({ spec, config }) => {
   assert(spec);
@@ -65,13 +68,11 @@ exports.AwsHostedZone = ({ spec, config }) => {
   const route53 = Route53New(config);
   const route53domains = Route53DomainNew(config);
 
-  const findId = get("Id");
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZones-property
   const getList = async () =>
     pipe([
       tap(() => {
-        logger.debug(`getList`);
+        logger.debug(`getList hostedZone`);
       }),
       () => route53().listHostedZones({}).promise(),
       get("HostedZones"),

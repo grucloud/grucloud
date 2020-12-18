@@ -1,6 +1,7 @@
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
+const { memoize } = require("lodash");
 const {
   isEmpty,
   isString,
@@ -129,7 +130,7 @@ const ResourceMaker = ({
 
   const client = createClient({ provider, spec, config });
   const usedBySet = new Set();
-  const getLive = async ({ deep } = {}) => {
+  const getLive = async ({ deep = true } = {}) => {
     logger.info(`getLive ${type}/${resourceName}, deep: ${deep}`);
     const live = await client.getByName({
       provider,
@@ -141,6 +142,12 @@ const ResourceMaker = ({
     logger.debug(`getLive ${type}/${resourceName} result: ${tos(live)}`);
     return live;
   };
+
+  let getLiveMemoize;
+  const createGetLiveMemoize = () => {
+    getLiveMemoize = memoize(getLive);
+  };
+  createGetLiveMemoize();
 
   const findLive = ({ lives }) =>
     pipe([
@@ -504,6 +511,7 @@ const ResourceMaker = ({
     update,
     planUpsert,
     getLive,
+    getLiveMemoize: (params) => getLiveMemoize(params),
     findLive,
     resolveDependencies: ({ lives, dependenciesMustBeUp }) =>
       resolveDependencies({
