@@ -1854,16 +1854,17 @@ function CoreProvider({
             ])(),
         })
       ),
+      filter(pipe([get("plans"), not(isEmpty)])),
       tap((results) => {
         logger.debug(`planFindDestroy`);
       }),
-      (results) => {
-        const plans = pipe([
-          filter((result) => !isEmpty(result.plans || [])),
-          reduce((acc, result) => [...acc, ...result.plans], []),
-        ])(results);
-        return { error: lives.error, results, plans };
-      },
+      (results) => ({
+        error: lives.error,
+        plans: pipe([pluck("plans"), flatten])(results),
+      }),
+      tap((results) => {
+        logger.debug(`planFindDestroy`);
+      }),
     ])(lives?.results);
 
   const onStateChangeResource = ({ operation, onStateChange }) => {
