@@ -43,9 +43,9 @@ const retryCall = async ({
           pipe([
             () => fn(),
             switchCase([
-              (result) => isExpectedResult(result),
+              isExpectedResult,
               (result) => {
-                logger.debug(`retryCall ${name}, success`);
+                logger.info(`retryCall ${name}, success`);
                 return result;
               },
               (result) => {

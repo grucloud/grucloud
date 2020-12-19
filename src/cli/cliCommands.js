@@ -54,7 +54,7 @@ const assignStart = ({ onStateChange }) =>
 
 const DisplayAndThrow = ({ name }) => (error) => {
   displayError({ name, error });
-  throw { code: 422, error };
+  throw { code: 422, error: { ...error, displayed: true } };
 };
 
 const providersToString = map(({ provider, ...other }) => ({
