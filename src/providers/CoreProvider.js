@@ -313,7 +313,7 @@ const ResourceMaker = ({
       }),
       switchCase([
         () => !deep,
-        () => {},
+        () => ({}),
         () => !isEmpty(resolvedDependencies),
         () => resolvedDependencies,
         () =>
