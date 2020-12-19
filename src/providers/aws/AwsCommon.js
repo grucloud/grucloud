@@ -17,13 +17,14 @@ const handler = ({ endpointName, endpoint }) => ({
         name: `${endpointName}.${name}`,
         fn: () => endpoint[name](...args).promise(),
         isExpectedResult: () => true,
-        shouldRetryOnException: pipe([
-          tap((error) => {
-            logger.error(`${name}: ${tos(error)}`);
-          }),
-          //TODO add network error
-          eq(get("code"), "Throttling"),
-        ]),
+        shouldRetryOnException: ({ error, name }) =>
+          pipe([
+            tap((error) => {
+              logger.error(`${name}: ${tos(error)}`);
+            }),
+            //TODO add network error
+            eq(get("code"), "Throttling"),
+          ])(error),
       });
   },
 });
