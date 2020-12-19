@@ -31,7 +31,7 @@ exports.AwsIamUser = ({ spec, config }) => {
       tap(() => {
         logger.debug(`getList iam user`);
       }),
-      () => iam().listUsers(params).promise(),
+      () => iam().listUsers(params),
       tap((users) => {
         logger.debug(`getList users: ${tos(users)}`);
       }),
@@ -46,35 +46,28 @@ exports.AwsIamUser = ({ spec, config }) => {
             ...user,
             AttachedPolicies: await pipe([
               () =>
-                iam()
-                  .listAttachedUserPolicies({
-                    UserName: user.UserName,
-                    MaxItems: 1e3,
-                  })
-                  .promise(),
+                iam().listAttachedUserPolicies({
+                  UserName: user.UserName,
+                  MaxItems: 1e3,
+                }),
               get("AttachedPolicies"),
               pluck("PolicyName"),
             ])(),
             Policies: await pipe([
               () =>
-                iam()
-                  .listUserPolicies({
-                    UserName: user.UserName,
-                    MaxItems: 1e3,
-                  })
-                  .promise(),
+                iam().listUserPolicies({
+                  UserName: user.UserName,
+                  MaxItems: 1e3,
+                }),
               get("Policies"),
               pluck("PolicyName"),
             ])(),
             Groups: await pipe([
-              () =>
-                iam().listGroupsForUser({ UserName: user.UserName }).promise(),
+              () => iam().listGroupsForUser({ UserName: user.UserName }),
               get("Groups"),
               pluck("GroupName"),
             ])(),
-            Tags: (
-              await iam().listUserTags({ UserName: user.UserName }).promise()
-            ).Tags,
+            Tags: (await iam().listUserTags({ UserName: user.UserName })).Tags,
           }),
           tap((user) => {
             logger.debug(user);
@@ -98,7 +91,7 @@ exports.AwsIamUser = ({ spec, config }) => {
       logger.debug(`getById ${id}`);
     }),
     tryCatch(
-      ({ id }) => iam().getUser({ UserName: id }).promise(),
+      ({ id }) => iam().getUser({ UserName: id }),
       switchCase([
         (error) => error.code !== "NoSuchEntity",
         (error) => {
@@ -128,13 +121,11 @@ exports.AwsIamUser = ({ spec, config }) => {
       payload
     );
 
-    const { User } = await iam().createUser(createParams).promise();
+    const { User } = await iam().createUser(createParams);
     const { iamGroups } = dependencies;
     if (iamGroups) {
       await forEach((group) =>
-        iam()
-          .addUserToGroup({ GroupName: group.name, UserName: name })
-          .promise()
+        iam().addUserToGroup({ GroupName: group.name, UserName: name })
       )(iamGroups);
     }
 
@@ -149,23 +140,18 @@ exports.AwsIamUser = ({ spec, config }) => {
         logger.info(`destroy iam user ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
-      () => iam().listGroupsForUser({ UserName: id }).promise(),
+      () => iam().listGroupsForUser({ UserName: id }),
       get("Groups"),
       tap((Groups = []) => {
         logger.debug(`destroy iam user Groups: ${Groups.length}`);
       }),
       forEach((group) => {
-        iam()
-          .removeUserFromGroup({
-            GroupName: group.GroupName,
-            UserName: id,
-          })
-          .promise();
+        iam().removeUserFromGroup({
+          GroupName: group.GroupName,
+          UserName: id,
+        });
       }),
-      () =>
-        iam()
-          .listAttachedUserPolicies({ UserName: id, MaxItems: 1e3 })
-          .promise(),
+      () => iam().listAttachedUserPolicies({ UserName: id, MaxItems: 1e3 }),
       get("AttachedPolicies"),
       tap((AttachedPolicies = []) => {
         logger.debug(
@@ -173,32 +159,26 @@ exports.AwsIamUser = ({ spec, config }) => {
         );
       }),
       forEach((policy) => {
-        iam()
-          .detachUserPolicy({
-            PolicyArn: policy.PolicyArn,
-            UserName: id,
-          })
-          .promise();
+        iam().detachUserPolicy({
+          PolicyArn: policy.PolicyArn,
+          UserName: id,
+        });
       }),
-      () => iam().listUserPolicies({ UserName: id, MaxItems: 1e3 }).promise(),
+      () => iam().listUserPolicies({ UserName: id, MaxItems: 1e3 }),
       get("PolicyNames"),
       tap((PolicyNames = []) => {
         logger.debug(`destroy iam user PolicyNames: ${PolicyNames.length}`);
       }),
       forEach((policyName) => {
-        iam()
-          .deleteUserPolicy({
-            PolicyName: policyName,
-            UserName: id,
-          })
-          .promise();
+        iam().deleteUserPolicy({
+          PolicyName: policyName,
+          UserName: id,
+        });
       }),
       () =>
-        iam()
-          .deleteUser({
-            UserName: id,
-          })
-          .promise(),
+        iam().deleteUser({
+          UserName: id,
+        }),
       tap(() =>
         retryCall({
           name: `iam user isDownById: ${name} id: ${id}`,

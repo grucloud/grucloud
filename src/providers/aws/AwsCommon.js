@@ -1,11 +1,11 @@
 process.env.AWS_SDK_LOAD_CONFIG = "true";
 const AWS = require("aws-sdk");
 const assert = require("assert");
-const { pipe, tryCatch, tap, switchCase, and, get } = require("rubico");
+const { pipe, tryCatch, tap, switchCase, and, get, eq } = require("rubico");
 const { first, find } = require("rubico/x");
 const logger = require("../../logger")({ prefix: "AwsCommon" });
 const { tos } = require("../../tos");
-
+const { retryCall } = require("../Retry");
 const KeyName = "Name";
 exports.KeyName = KeyName;
 
@@ -15,10 +15,29 @@ exports.Ec2New = (config) => () =>
     (config) => new AWS.EC2({ region: config.region }),
   ])(config);
 
+let handler = ({ endpointName, endpoint }) => ({
+  get: (target, name, receiver) => {
+    return (...args) =>
+      retryCall({
+        name: `${endpointName}.${name}`,
+        fn: () => endpoint[name](...args).promise(),
+        isExpectedResult: () => true,
+        shouldRetryOnException: pipe([
+          tap((error) => {
+            logger.error(`${name}: ${tos(error)}`);
+          }),
+          //TODO add network error
+          eq(get("code"), "Throttling"),
+        ]),
+      });
+  },
+});
+
 exports.IAMNew = (config) => () =>
   pipe([
     tap((config) => AWS.config.update(config)),
     (config) => new AWS.IAM({ region: config.region }),
+    (endpoint) => new Proxy({}, handler({ endpointName: "iam", endpoint })),
   ])(config);
 
 exports.S3New = (config) => () =>
@@ -51,15 +70,15 @@ exports.ACMNew = (config) => () =>
     (config) => new AWS.ACM({ region: "us-east-1" }),
   ])(config);
 
-exports.shouldRetryOnException = ({error, name}) => {
-  logger.error(`aws shouldRetryOnException ${tos({name, error})}`);
+exports.shouldRetryOnException = ({ error, name }) => {
+  logger.error(`aws shouldRetryOnException ${tos({ name, error })}`);
   error.stack && logger.error(error.stack);
 
   return ![400, 404].includes(error.statusCode);
 };
 
-exports.shouldRetryOnExceptionDelete = ({error, name}) => {
-  logger.debug(`shouldRetryOnException ${tos({name, error})}`);
+exports.shouldRetryOnExceptionDelete = ({ error, name }) => {
+  logger.debug(`shouldRetryOnException ${tos({ name, error })}`);
   const retry = error.code === "DeleteConflict";
   logger.debug(`shouldRetryOnException retry: ${retry}`);
   return retry;
