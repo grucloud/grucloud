@@ -6,16 +6,11 @@ const { first, find } = require("rubico/x");
 const logger = require("../../logger")({ prefix: "AwsCommon" });
 const { tos } = require("../../tos");
 const { retryCall } = require("../Retry");
+
 const KeyName = "Name";
 exports.KeyName = KeyName;
 
-exports.Ec2New = (config) => () =>
-  pipe([
-    tap((config) => AWS.config.update(config)),
-    (config) => new AWS.EC2({ region: config.region }),
-  ])(config);
-
-let handler = ({ endpointName, endpoint }) => ({
+const handler = ({ endpointName, endpoint }) => ({
   get: (target, name, receiver) => {
     return (...args) =>
       retryCall({
@@ -33,42 +28,33 @@ let handler = ({ endpointName, endpoint }) => ({
   },
 });
 
-exports.IAMNew = (config) => () =>
+const createEndpoint = ({ endpointName }) =>
   pipe([
     tap((config) => AWS.config.update(config)),
-    (config) => new AWS.IAM({ region: config.region }),
-    (endpoint) => new Proxy({}, handler({ endpointName: "iam", endpoint })),
-  ])(config);
+    (config) => new AWS[endpointName]({ region: config.region }),
+    (endpoint) => new Proxy({}, handler({ endpointName, endpoint })),
+  ]);
+
+exports.Ec2New = (config) => () =>
+  createEndpoint({ endpointName: "EC2" })(config);
+
+exports.IAMNew = (config) => () =>
+  createEndpoint({ endpointName: "IAM" })(config);
 
 exports.S3New = (config) => () =>
-  pipe([
-    tap((config) => AWS.config.update(config)),
-    (config) => new AWS.S3({ region: config.region }),
-  ])(config);
+  createEndpoint({ endpointName: "S3" })(config);
 
 exports.Route53New = (config) => () =>
-  pipe([
-    tap((config) => AWS.config.update(config)),
-    (config) => new AWS.Route53({ region: config.region }),
-  ])(config);
-
-exports.Route53DomainNew = (config) => () =>
-  pipe([
-    tap((config) => AWS.config.update({ region: "us-east-1" })),
-    (config) => new AWS.Route53Domains({ region: "us-east-1" }),
-  ])(config);
+  createEndpoint({ endpointName: "Route53" })(config);
 
 exports.CloudFrontNew = (config) => () =>
-  pipe([
-    tap((config) => AWS.config.update(config)),
-    (config) => new AWS.CloudFront({ region: config.region }),
-  ])(config);
+  createEndpoint({ endpointName: "CloudFront" })(config);
 
-exports.ACMNew = (config) => () =>
-  pipe([
-    tap((config) => AWS.config.update({ region: "us-east-1" })),
-    (config) => new AWS.ACM({ region: "us-east-1" }),
-  ])(config);
+exports.Route53DomainsNew = () => () =>
+  createEndpoint({ endpointName: "Route53Domains" })({ region: "us-east-1" });
+
+exports.ACMNew = () => () =>
+  createEndpoint({ endpointName: "ACM" })({ region: "us-east-1" });
 
 exports.shouldRetryOnException = ({ error, name }) => {
   logger.error(`aws shouldRetryOnException ${tos({ name, error })}`);

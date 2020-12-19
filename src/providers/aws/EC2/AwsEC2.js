@@ -40,7 +40,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     tap(({ params } = {}) => {
       logger.info(`getList ec2 ${JSON.stringify(params)}`);
     }),
-    ({ params } = {}) => ec2().describeInstances(params).promise(),
+    ({ params } = {}) => ec2().describeInstances(params),
     get("Reservations"),
     pluck("Instances"),
     flatten,
@@ -80,7 +80,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     assert(name, "name");
     assert(payload, "payload");
     logger.debug(`create ${tos({ name, payload })}`);
-    const data = await ec2().runInstances(payload).promise();
+    const data = await ec2().runInstances(payload);
     logger.debug(`create result ${tos(data)}`);
     const instance = data.Instances[0];
     const { InstanceId } = instance;
@@ -114,7 +114,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
         AllocationId,
         InstanceId,
       };
-      await ec2().associateAddress(paramsAssociate).promise();
+      await ec2().associateAddress(paramsAssociate);
       logger.debug(`create, eip associated`);
     }
 
@@ -125,23 +125,17 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     logger.info(`destroy ec2  ${tos({ name, id })}`);
     assert(!isEmpty(id), `destroy invalid id`);
 
-    const result = await ec2()
-      .terminateInstances({
-        InstanceIds: [id],
-      })
-      .promise();
-
-    const { Addresses } = await ec2()
-      .describeAddresses({
-        Filters: [
-          {
-            Name: "instance-id",
-            Values: [id],
-          },
-        ],
-      })
-      .promise();
-
+    const result = await ec2().terminateInstances({
+      InstanceIds: [id],
+    });
+    const { Addresses } = await ec2().describeAddresses({
+      Filters: [
+        {
+          Name: "instance-id",
+          Values: [id],
+        },
+      ],
+    });
     const address = Addresses[0];
     if (address) {
       await ec2().disassociateAddress({
@@ -219,8 +213,8 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException: ({error, name}) => {
-      logger.debug(`shouldRetryOnException ${tos({name, error})}`);
+    shouldRetryOnException: ({ error, name }) => {
+      logger.debug(`shouldRetryOnException ${tos({ name, error })}`);
       const retry = error.message.includes(
         "iamInstanceProfile.name is invalid"
       );

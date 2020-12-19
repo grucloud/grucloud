@@ -122,11 +122,9 @@ exports.Route53Record = ({ spec, config }) => {
               (hostedZone) =>
                 pipe([
                   () =>
-                    route53()
-                      .listResourceRecordSets({
-                        HostedZoneId: hostedZone.Id,
-                      })
-                      .promise(),
+                    route53().listResourceRecordSets({
+                      HostedZoneId: hostedZone.Id,
+                    }),
                   get("ResourceRecordSets"),
                   (ResourceRecordSets) =>
                     pipe([
@@ -181,11 +179,9 @@ exports.Route53Record = ({ spec, config }) => {
           tryCatch(
             pipe([
               () =>
-                route53()
-                  .listResourceRecordSets({
-                    HostedZoneId: hostedZone.Id,
-                  })
-                  .promise(),
+                route53().listResourceRecordSets({
+                  HostedZoneId: hostedZone.Id,
+                }),
               get("ResourceRecordSets"),
               tap((ResourceRecordSets) => {
                 logger.info(`getByName ${tos({ ResourceRecordSets })}`);
@@ -252,22 +248,18 @@ exports.Route53Record = ({ spec, config }) => {
         ResourceRecordSet: payload,
       }),
       (Change) =>
-        route53()
-          .changeResourceRecordSets({
-            HostedZoneId: hostedZone.live.Id,
-            ChangeBatch: {
-              Changes: [Change],
-            },
-          })
-          .promise(),
+        route53().changeResourceRecordSets({
+          HostedZoneId: hostedZone.live.Id,
+          ChangeBatch: {
+            Changes: [Change],
+          },
+        }),
       () =>
-        route53()
-          .changeTagsForResource({
-            ResourceId: hostedZone.live.Id,
-            AddTags: [{ Key: payload.Name, Value: name }],
-            ResourceType: "hostedzone",
-          })
-          .promise(),
+        route53().changeTagsForResource({
+          ResourceId: hostedZone.live.Id,
+          AddTags: [{ Key: payload.Name, Value: name }],
+          ResourceType: "hostedzone",
+        }),
       tap((result) => {
         logger.info(`record created: ${name}`);
       }),
@@ -289,19 +281,17 @@ exports.Route53Record = ({ spec, config }) => {
           switchCase([
             not(isEmpty),
             (live) =>
-              route53()
-                .changeResourceRecordSets({
-                  HostedZoneId: hostedZone.Id,
-                  ChangeBatch: {
-                    Changes: [
-                      {
-                        Action: "DELETE",
-                        ResourceRecordSet: liveToResourceSet(live),
-                      },
-                    ],
-                  },
-                })
-                .promise(),
+              route53().changeResourceRecordSets({
+                HostedZoneId: hostedZone.Id,
+                ChangeBatch: {
+                  Changes: [
+                    {
+                      Action: "DELETE",
+                      ResourceRecordSet: liveToResourceSet(live),
+                    },
+                  ],
+                },
+              }),
             () => {
               logger.error(`no live record for ${name}`);
             },
@@ -339,23 +329,21 @@ exports.Route53Record = ({ spec, config }) => {
           logger.info(`update route53 ${name}, same create and delete`);
         },
         ({ createSet, deleteSet }) =>
-          route53()
-            .changeResourceRecordSets({
-              HostedZoneId: hostedZone.live.Id,
-              ChangeBatch: {
-                Changes: [
-                  {
-                    Action: "DELETE",
-                    ResourceRecordSet: deleteSet,
-                  },
-                  {
-                    Action: "CREATE",
-                    ResourceRecordSet: createSet,
-                  },
-                ],
-              },
-            })
-            .promise(),
+          route53().changeResourceRecordSets({
+            HostedZoneId: hostedZone.live.Id,
+            ChangeBatch: {
+              Changes: [
+                {
+                  Action: "DELETE",
+                  ResourceRecordSet: deleteSet,
+                },
+                {
+                  Action: "CREATE",
+                  ResourceRecordSet: createSet,
+                },
+              ],
+            },
+          }),
       ]),
       tap((result) => {
         logger.info(`record updated: ${name}`);

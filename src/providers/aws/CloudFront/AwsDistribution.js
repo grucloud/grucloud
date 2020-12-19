@@ -42,24 +42,19 @@ exports.AwsDistribution = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList distributions`);
       }),
-      () => cloudfront().listDistributions(params).promise(),
+      () => cloudfront().listDistributions(params),
       get("DistributionList.Items"),
       map(async (distribution) => ({
         ...distribution,
         ...(await pipe([
-          () =>
-            cloudfront()
-              .getDistributionConfig({ Id: distribution.Id })
-              .promise(),
+          () => cloudfront().getDistributionConfig({ Id: distribution.Id }),
           get("DistributionConfig"),
         ])()),
         Tags: await pipe([
           (distribution) =>
-            cloudfront
-              .listTagsForResource({
-                Resource: distribution.ARN,
-              })
-              .promise(),
+            cloudfront.listTagsForResource({
+              Resource: distribution.ARN,
+            }),
           get("Tags.Items"),
         ])(distribution),
       })),
@@ -81,7 +76,7 @@ exports.AwsDistribution = ({ spec, config }) => {
       logger.info(`getById ${id}`);
     }),
     tryCatch(
-      ({ id }) => cloudfront().getDistribution({ Id: id }).promise(),
+      ({ id }) => cloudfront().getDistribution({ Id: id }),
       switchCase([
         (error) => error.code !== "NoSuchDistribution",
         (error) => {
@@ -114,7 +109,7 @@ exports.AwsDistribution = ({ spec, config }) => {
         logger.info(`create distribution: ${name}`);
         logger.debug(`create distribution: ${name}, ${tos(payload)}`);
       }),
-      () => cloudfront().createDistributionWithTags(payload).promise(),
+      () => cloudfront().createDistributionWithTags(payload),
       tap((result) => {
         logger.debug(`created distribution: ${name}, result: ${tos(result)}`);
       }),
@@ -138,7 +133,7 @@ exports.AwsDistribution = ({ spec, config }) => {
         assert(id, "id");
         assert(payload.DistributionConfigWithTags);
       }),
-      () => cloudfront().getDistributionConfig({ Id: id }).promise(),
+      () => cloudfront().getDistributionConfig({ Id: id }),
       (config) =>
         pipe([
           get("DistributionConfig"),
@@ -149,13 +144,11 @@ exports.AwsDistribution = ({ spec, config }) => {
               )
             ),
           (DistributionConfig) =>
-            cloudfront()
-              .updateDistribution({
-                Id: id,
-                IfMatch: config.ETag,
-                DistributionConfig,
-              })
-              .promise(),
+            cloudfront().updateDistribution({
+              Id: id,
+              IfMatch: config.ETag,
+              DistributionConfig,
+            }),
           tap((xxx) => {
             logger.debug(`updated distribution ${tos({ name, id })}`);
           }),
@@ -211,12 +204,10 @@ exports.AwsDistribution = ({ spec, config }) => {
           },
         }),
       ({ ETag }) =>
-        cloudfront()
-          .deleteDistribution({
-            Id: id,
-            IfMatch: ETag,
-          })
-          .promise(),
+        cloudfront().deleteDistribution({
+          Id: id,
+          IfMatch: ETag,
+        }),
       tap(() =>
         retryCall({
           name: `distribution isDownById: ${name} id: ${id}`,

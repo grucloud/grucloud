@@ -70,7 +70,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     };
 
     logger.debug(`create sg ${tos({ name, createParams, payload })}`);
-    const { GroupId } = await ec2().createSecurityGroup(createParams).promise();
+    const { GroupId } = await ec2().createSecurityGroup(createParams);
     logger.debug(`create GroupId ${tos(GroupId)}`);
 
     await retryCall({
@@ -93,7 +93,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     };
     logger.debug(`create ingressParam ${tos({ ingressParam })}`);
 
-    await ec2().authorizeSecurityGroupIngress(ingressParam).promise();
+    await ec2().authorizeSecurityGroupIngress(ingressParam);
 
     logger.debug(`create DONE`);
 
@@ -114,7 +114,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const destroy = async ({ id, name }) => {
     logger.debug(`destroy ${tos({ name, id })}`);
     assert(id);
-    const result = await ec2().deleteSecurityGroup({ GroupId: id }).promise();
+    const result = await ec2().deleteSecurityGroup({ GroupId: id });
     return result;
   };
 

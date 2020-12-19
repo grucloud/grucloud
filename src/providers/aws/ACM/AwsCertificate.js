@@ -47,25 +47,21 @@ exports.AwsCertificate = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList certificate ${tos(params)}`);
       }),
-      () => acm().listCertificates(params).promise(),
+      () => acm().listCertificates(params),
       get("CertificateSummaryList"),
       map(async (certificate) => ({
         ...(await pipe([
           () =>
-            acm()
-              .describeCertificate({
-                CertificateArn: certificate.CertificateArn,
-              })
-              .promise(),
+            acm().describeCertificate({
+              CertificateArn: certificate.CertificateArn,
+            }),
           get("Certificate"),
         ])()),
         Tags: await pipe([
           () =>
-            acm()
-              .listTagsForCertificate({
-                CertificateArn: certificate.CertificateArn,
-              })
-              .promise(),
+            acm().listTagsForCertificate({
+              CertificateArn: certificate.CertificateArn,
+            }),
           get("Tags"),
         ])(),
       })),
@@ -87,7 +83,7 @@ exports.AwsCertificate = ({ spec, config }) => {
       logger.info(`getById ${id}`);
     }),
     tryCatch(
-      ({ id }) => acm().describeCertificate({ CertificateArn: id }).promise(),
+      ({ id }) => acm().describeCertificate({ CertificateArn: id }),
       switchCase([
         (error) => error.code !== "ResourceNotFoundException",
         (error) => {
@@ -128,7 +124,7 @@ exports.AwsCertificate = ({ spec, config }) => {
       tap((params) => {
         logger.debug(`create certificate: ${name}, params: ${tos(params)}`);
       }),
-      (params) => acm().requestCertificate(params).promise(),
+      (params) => acm().requestCertificate(params),
       tap(({ CertificateArn }) => {
         logger.debug(
           `created certificate: ${name}, result: ${tos(CertificateArn)}`
@@ -152,11 +148,9 @@ exports.AwsCertificate = ({ spec, config }) => {
         assert(!isEmpty(id), `destroy invalid id`);
       }),
       () =>
-        acm()
-          .deleteCertificate({
-            CertificateArn: id,
-          })
-          .promise(),
+        acm().deleteCertificate({
+          CertificateArn: id,
+        }),
       tap(() =>
         retryCall({
           name: `certificate isDownById: ${name} id: ${id}`,

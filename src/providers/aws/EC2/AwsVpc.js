@@ -31,7 +31,7 @@ module.exports = AwsVpc = ({ spec, config }) => {
 
   const getList = async ({ params } = {}) => {
     logger.debug(`getList vpc ${tos(params)}`);
-    const { Vpcs } = await ec2().describeVpcs(params).promise();
+    const { Vpcs } = await ec2().describeVpcs(params);
     logger.debug(`getList ${tos(Vpcs)}`);
 
     return {
@@ -68,7 +68,7 @@ module.exports = AwsVpc = ({ spec, config }) => {
     logger.debug(`create vpc ${tos({ name, payload })}`);
     const {
       Vpc: { VpcId },
-    } = await ec2().createVpc(payload).promise();
+    } = await ec2().createVpc(payload);
     logger.info(`create vpc ${VpcId}`);
 
     await retryCall({
@@ -102,16 +102,14 @@ module.exports = AwsVpc = ({ spec, config }) => {
     await pipe([
       // Get the subnets belonging to this Vpc
       async () =>
-        await ec2()
-          .describeSubnets({
-            Filters: [
-              {
-                Name: "vpc-id",
-                Values: [VpcId],
-              },
-            ],
-          })
-          .promise(),
+        await ec2().describeSubnets({
+          Filters: [
+            {
+              Name: "vpc-id",
+              Values: [VpcId],
+            },
+          ],
+        }),
       // Loop through the subnets
       async ({ Subnets }) =>
         pipe([
@@ -122,9 +120,7 @@ module.exports = AwsVpc = ({ spec, config }) => {
                 logger.debug(
                   `destroy vpc, deleteSubnet SubnetId: ${subnet.SubnetId}`
                 );
-                await ec2()
-                  .deleteSubnet({ SubnetId: subnet.SubnetId })
-                  .promise();
+                await ec2().deleteSubnet({ SubnetId: subnet.SubnetId });
               }
               // remove the default subnet
               // deleteSubnet
@@ -137,17 +133,14 @@ module.exports = AwsVpc = ({ spec, config }) => {
     await pipe([
       // Get the security groups belonging to this Vpc
       async () =>
-        await ec2()
-          .describeSecurityGroups({
-            Filters: [
-              {
-                Name: "vpc-id",
-                Values: [VpcId],
-              },
-            ],
-          })
-          .promise(),
-
+        await ec2().describeSecurityGroups({
+          Filters: [
+            {
+              Name: "vpc-id",
+              Values: [VpcId],
+            },
+          ],
+        }),
       async ({ SecurityGroups }) =>
         pipe([
           // remove the default security groups
@@ -158,9 +151,9 @@ module.exports = AwsVpc = ({ spec, config }) => {
                 `destroy vpc, deleteSecurityGroup GroupId: ${securityGroup.GroupId}`
               );
               // deleteSecurityGroups
-              await ec2()
-                .deleteSecurityGroup({ GroupId: securityGroup.GroupId })
-                .promise();
+              await ec2().deleteSecurityGroup({
+                GroupId: securityGroup.GroupId,
+              });
             })(SecurityGroups),
         ])(SecurityGroups),
     ])();
@@ -170,16 +163,14 @@ module.exports = AwsVpc = ({ spec, config }) => {
     pipe([
       // Get the route tables belonging to this Vpc
       () =>
-        ec2()
-          .describeRouteTables({
-            Filters: [
-              {
-                Name: "vpc-id",
-                Values: [VpcId],
-              },
-            ],
-          })
-          .promise(),
+        ec2().describeRouteTables({
+          Filters: [
+            {
+              Name: "vpc-id",
+              Values: [VpcId],
+            },
+          ],
+        }),
       // Loop through the route tables
       tap(({ RouteTables }) => {
         logger.debug(`destroy vpc, RouteTables: ${tos(RouteTables)}`);
@@ -192,11 +183,9 @@ module.exports = AwsVpc = ({ spec, config }) => {
               logger.debug(
                 `destroy vpc, deleteRouteTable routeTable: ${tos(routeTable)})}`
               );
-              await ec2()
-                .deleteRouteTable({
-                  RouteTableId: routeTable.RouteTableId,
-                })
-                .promise();
+              await ec2().deleteRouteTable({
+                RouteTableId: routeTable.RouteTableId,
+              });
             })(RouteTables),
         ])(RouteTables);
       },
@@ -211,7 +200,7 @@ module.exports = AwsVpc = ({ spec, config }) => {
     await destroyRouteTables({ VpcId: id });
 
     logger.debug(`destroy vpc , deleting VpcId: ${id}`);
-    const result = await ec2().deleteVpc({ VpcId: id }).promise();
+    const result = await ec2().deleteVpc({ VpcId: id });
     return result;
   };
 
