@@ -1,6 +1,6 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
-const { get } = require("rubico");
+const { get, pipe, map, eq, tap } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { Ec2New, getByIdCore, shouldRetryOnException } = require("../AwsCommon");
 const { retryCall } = require("../../Retry");
@@ -27,25 +27,24 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const findId = get("GroupId");
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroups-property
-  const getList = async ({ params } = {}) => {
-    logger.debug(`list`);
-    const securityGroups = await new Promise((resolve, reject) => {
-      ec2().describeSecurityGroups(params, (error, response) => {
-        if (error) {
-          return reject(error.message);
-        } else {
-          logger.debug(`list ${tos(response)}`);
-          resolve(response.SecurityGroups);
-        }
-      });
-    });
-    logger.debug(`list ${tos(securityGroups)}`);
-
-    return {
-      total: securityGroups.length,
-      items: securityGroups,
-    };
-  };
+  const getList = ({ params } = {}) =>
+    pipe([
+      tap(() => {
+        logger.debug(`list sg ${JSON.stringify(params)}`);
+      }),
+      () => ec2().describeSecurityGroups(params),
+      get("SecurityGroups"),
+      tap((securityGroups) => {
+        logger.debug(`list sg result: ${tos(securityGroups)}`);
+      }),
+      (securityGroups) => ({
+        total: securityGroups.length,
+        items: securityGroups,
+      }),
+      tap(({ total }) => {
+        logger.info(`list #sg ${total}`);
+      }),
+    ])();
 
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
   const getById = getByIdCore({ fieldIds: "GroupIds", getList });
@@ -53,10 +52,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const isUpById = isUpByIdCore({ getById });
   const isDownById = isDownByIdCore({ getById });
 
-  const cannotBeDeleted = ({ resource }) => {
-    assert(resource.GroupName);
-    return resource.GroupName === "default";
-  };
+  const cannotBeDeleted = eq(get("resource.GroupName"), "default");
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
   const create = async ({ name, payload }) => {
@@ -70,12 +66,12 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     };
 
     logger.debug(`create sg ${tos({ name, createParams, payload })}`);
-    const { GroupId } = await ec2().createSecurityGroup(createParams).promise();
+    const { GroupId } = await ec2().createSecurityGroup(createParams);
     logger.debug(`create GroupId ${tos(GroupId)}`);
 
     await retryCall({
-      name: `isUpById: ${name} id: ${GroupId}`,
-      fn: () => isUpById({ id: GroupId }),
+      name: `sg isUpById: ${name} id: ${GroupId}`,
+      fn: () => isUpById({ id: GroupId, name }),
       config,
     });
 
@@ -93,7 +89,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
     };
     logger.debug(`create ingressParam ${tos({ ingressParam })}`);
 
-    await ec2().authorizeSecurityGroupIngress(ingressParam).promise();
+    await ec2().authorizeSecurityGroupIngress(ingressParam);
 
     logger.debug(`create DONE`);
 
@@ -110,13 +106,16 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
 
     return { GroupId };
   };
-
-  const destroy = async ({ id, name }) => {
-    logger.debug(`destroy ${tos({ name, id })}`);
-    assert(id);
-    const result = await ec2().deleteSecurityGroup({ GroupId: id }).promise();
-    return result;
-  };
+  const destroy = async ({ id, name }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`destroy sg ${tos({ name, id })}`);
+      }),
+      () => ec2().deleteSecurityGroup({ GroupId: id }),
+      tap(() => {
+        logger.debug(`destroyed sg ${tos({ name, id })}`);
+      }),
+    ])();
 
   const configDefault = async ({ name, properties, dependencies }) => {
     logger.debug(

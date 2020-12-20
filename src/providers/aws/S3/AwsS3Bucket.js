@@ -36,7 +36,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const getAccelerateConfiguration = ({ name, params }) =>
     tryCatch(
       pipe([
-        () => s3().getBucketAccelerateConfiguration(params).promise(),
+        () => s3().getBucketAccelerateConfiguration(params),
         tap((x) => {
           logger.debug(`getBucketAccelerateConfiguration ${name} ${tos(x)}`);
         }),
@@ -53,7 +53,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const getACL = ({ name, params }) =>
     tryCatch(
       pipe([
-        () => s3().getBucketAcl(params).promise(),
+        () => s3().getBucketAcl(params),
         (acl) => {
           logger.debug(`getBucketAcl ${name} ${tos(acl)}`);
           const grant = acl.Grants[0];
@@ -79,7 +79,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const getCORSConfiguration = ({ name, params }) =>
     tryCatch(
       pipe([
-        () => s3().getBucketCors(params).promise(),
+        () => s3().getBucketCors(params),
         tap((x) => {
           logger.debug(`getBucketCors ${name} ${tos(x)}`);
         }),
@@ -97,7 +97,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const getServerSideEncryptionConfiguration = ({ name, params }) =>
     tryCatch(
       pipe([
-        () => s3().getBucketEncryption(params).promise(),
+        () => s3().getBucketEncryption(params),
         tap((x) => {
           logger.debug(`getBucketEncryption ${name} ${tos(x)}`);
         }),
@@ -115,7 +115,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const getLifecycleConfiguration = ({ name, params }) =>
     tryCatch(
       pipe([
-        () => s3().getBucketLifecycleConfiguration(params).promise(),
+        () => s3().getBucketLifecycleConfiguration(params),
         tap((x) => {
           logger.debug(`getBucketLifecycleConfiguration ${name} ${tos(x)}`);
         }),
@@ -135,10 +135,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getBucketLocation-property
   const getLocationConstraint = ({ name, params }) =>
     tryCatch(
-      pipe([
-        () => s3().getBucketLocation(params).promise(),
-        get("LocationConstraint"),
-      ]),
+      pipe([() => s3().getBucketLocation(params), get("LocationConstraint")]),
       (error) => {
         logger.error(`getBucketLocation ${name}, error ${tos(error)}`);
         throw error;
@@ -148,7 +145,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const getBucketLoggingStatus = ({ name, params }) =>
     tryCatch(
       pipe([
-        () => s3().getBucketLogging(params).promise(),
+        () => s3().getBucketLogging(params),
         tap((x) => {
           logger.debug(`getBucketLogging ${name} ${tos(x)}`);
         }),
@@ -164,7 +161,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const getNotificationConfiguration = ({ name, params }) =>
     tryCatch(
       pipe([
-        () => s3().getBucketNotificationConfiguration(params).promise(),
+        () => s3().getBucketNotificationConfiguration(params),
         tap((x) => {
           logger.debug(`getBucketNotificationConfiguration ${name} ${tos(x)}`);
         }),
@@ -185,7 +182,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const getPolicy = ({ name, params }) =>
     tryCatch(
       pipe([
-        () => s3().getBucketPolicy(params).promise(),
+        () => s3().getBucketPolicy(params),
         tap((x) => {
           logger.debug(`getBucketPolicy ${name} ${tos(x)}`);
         }),
@@ -203,7 +200,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const getPolicyStatus = ({ name, params }) =>
     tryCatch(
       pipe([
-        () => s3().getBucketPolicyStatus(params).promise(),
+        () => s3().getBucketPolicyStatus(params),
         tap((x) => {
           logger.debug(`getBucketPolicyStatus ${name} ${tos(x)}`);
         }),
@@ -222,7 +219,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const getReplicationConfiguration = ({ name, params }) =>
     tryCatch(
       pipe([
-        () => s3().getBucketReplication(params).promise(),
+        () => s3().getBucketReplication(params),
         tap((x) => {
           logger.debug(`getBucketReplication ${name} ${tos(x)}`);
         }),
@@ -241,7 +238,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const getRequestPaymentConfiguration = ({ name, params }) =>
     tryCatch(
       pipe([
-        () => s3().getBucketRequestPayment(params).promise(),
+        () => s3().getBucketRequestPayment(params),
         switchCase([
           (data) => data.Payer === "BucketOwner",
           () => undefined,
@@ -257,7 +254,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const getVersioningConfiguration = ({ name, params }) =>
     tryCatch(
       pipe([
-        () => s3().getBucketVersioning(params).promise(),
+        () => s3().getBucketVersioning(params),
         switchCase([isEmpty, () => undefined, (data) => data]),
         tap((x) => {
           logger.debug(`getBucketVersioning ${name} ${tos(x)}`);
@@ -272,7 +269,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
   const getWebsiteConfiguration = ({ name, params }) =>
     tryCatch(
       pipe([
-        () => s3().getBucketWebsite(params).promise(),
+        () => s3().getBucketWebsite(params),
         switchCase([isEmpty, () => undefined, (data) => data]),
         tap((x) => {
           logger.debug(`getBucketWebsite ${name} ${tos(x)}`);
@@ -295,7 +292,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         tap((x) => {
           logger.debug(`getBucketTagging ${params.Bucket}`);
         }),
-        () => s3().getBucketTagging(params).promise(),
+        () => s3().getBucketTagging(params),
         get("TagSet"),
         tap((TagSet) => {
           logger.debug(
@@ -320,7 +317,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList s3Bucket deep:${deep}`);
       }),
-      () => s3().listBuckets().promise(),
+      () => s3().listBuckets(),
       get("Buckets"),
       tap((Buckets) => {
         logger.info(`getList s3Bucket `);
@@ -421,7 +418,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
   const headBucket = async ({ id }) => {
     try {
-      await s3().headBucket({ Bucket: id }).promise();
+      await s3().headBucket({ Bucket: id });
       //logger.debug(`headBucket ${id}: UP`);
       return true;
     } catch (error) {
@@ -453,8 +450,8 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       name: `tag ${Bucket}`,
       fn: pipe([
         // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketTagging-property
-        () => s3().putBucketTagging(paramsTag).promise(),
-        () => s3().getBucketTagging({ Bucket }).promise(),
+        () => s3().putBucketTagging(paramsTag),
+        () => s3().getBucketTagging({ Bucket }),
         get("TagSet"),
         tap((TagSet) => {
           logger.debug(`putTags Bucket: ${Bucket}, TagSet: ${tos(TagSet)}`);
@@ -514,7 +511,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       () =>
         retryCall({
           name: `s3 createBucket: ${Bucket}`,
-          fn: () => s3().createBucket(otherProperties).promise(),
+          fn: () => s3().createBucket(otherProperties),
           shouldRetryOnException,
           config: { retryCount: 600 },
         }),
@@ -537,12 +534,10 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         fn: async () => {
           // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAccelerateConfiguration-property
           if (AccelerateConfiguration) {
-            await s3()
-              .putBucketAccelerateConfiguration({
-                Bucket,
-                AccelerateConfiguration,
-              })
-              .promise();
+            await s3().putBucketAccelerateConfiguration({
+              Bucket,
+              AccelerateConfiguration,
+            });
           }
 
           // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAcl-property
@@ -561,19 +556,17 @@ exports.AwsS3Bucket = ({ spec, config }) => {
               shouldRetryOnException,
               fn: pipe([
                 () =>
-                  s3()
-                    .putBucketAcl({
-                      Bucket,
-                      ACL,
-                      AccessControlPolicy,
-                      GrantFullControl,
-                      GrantRead,
-                      GrantReadACP,
-                      GrantWrite,
-                      GrantWriteACP,
-                    })
-                    .promise(),
-                () => s3().getBucketAcl({ Bucket }).promise(),
+                  s3().putBucketAcl({
+                    Bucket,
+                    ACL,
+                    AccessControlPolicy,
+                    GrantFullControl,
+                    GrantRead,
+                    GrantReadACP,
+                    GrantWrite,
+                    GrantWriteACP,
+                  }),
+                () => s3().getBucketAcl({ Bucket }),
                 get("Grants"),
                 tap((Grants) => {
                   logger.debug(
@@ -604,85 +597,67 @@ exports.AwsS3Bucket = ({ spec, config }) => {
           }
           // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketCors-property
           if (CORSConfiguration) {
-            await s3().putBucketCors({ Bucket, CORSConfiguration }).promise();
+            await s3().putBucketCors({ Bucket, CORSConfiguration });
           }
           // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketEncryption-property
           if (ServerSideEncryptionConfiguration) {
-            await s3()
-              .putBucketEncryption({
-                Bucket,
-                ServerSideEncryptionConfiguration,
-              })
-              .promise();
+            await s3().putBucketEncryption({
+              Bucket,
+              ServerSideEncryptionConfiguration,
+            });
           }
 
           // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketLifecycleConfiguration-property
           if (LifecycleConfiguration) {
-            await s3()
-              .putBucketLifecycleConfiguration({
-                Bucket,
-                LifecycleConfiguration,
-              })
-              .promise();
+            await s3().putBucketLifecycleConfiguration({
+              Bucket,
+              LifecycleConfiguration,
+            });
           }
 
           // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketLogging-property
           if (BucketLoggingStatus) {
-            await s3()
-              .putBucketLogging({ Bucket, BucketLoggingStatus })
-              .promise();
+            await s3().putBucketLogging({ Bucket, BucketLoggingStatus });
           }
           //  https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketNotificationConfiguration-property
           if (NotificationConfiguration) {
-            await s3()
-              .putBucketNotificationConfiguration({
-                Bucket,
-                NotificationConfiguration,
-              })
-              .promise();
+            await s3().putBucketNotificationConfiguration({
+              Bucket,
+              NotificationConfiguration,
+            });
           }
 
           // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketPolicy-property
           if (Policy) {
-            await s3()
-              .putBucketPolicy({
-                Bucket,
-                Policy,
-              })
-              .promise();
+            await s3().putBucketPolicy({
+              Bucket,
+              Policy,
+            });
           }
           // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketReplication-property
           if (ReplicationConfiguration) {
-            await s3()
-              .putBucketReplication({
-                Bucket,
-                ReplicationConfiguration,
-              })
-              .promise();
+            await s3().putBucketReplication({
+              Bucket,
+              ReplicationConfiguration,
+            });
           }
           // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketRequestPayment-property
           if (RequestPaymentConfiguration) {
-            await s3()
-              .putBucketRequestPayment({
-                Bucket,
-                RequestPaymentConfiguration,
-              })
-              .promise();
+            await s3().putBucketRequestPayment({
+              Bucket,
+              RequestPaymentConfiguration,
+            });
           }
           // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketVersioning-property
           if (VersioningConfiguration) {
-            await s3()
-              .putBucketVersioning({ Bucket, VersioningConfiguration })
-              .promise();
+            await s3().putBucketVersioning({ Bucket, VersioningConfiguration });
           }
           // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketWebsite-property
           if (WebsiteConfiguration) {
             logger.debug(
               `putBucketWebsite ${Bucket}: ${tos(WebsiteConfiguration)}`
             );
-            await s3()
-              .putBucketWebsite({ Bucket, WebsiteConfiguration })
-              .promise();
+            await s3().putBucketWebsite({ Bucket, WebsiteConfiguration });
           }
         },
         isExpectedResult: () => true,
@@ -711,7 +686,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       async () => {
         do {
           var isTruncated = await pipe([
-            async () => await s3().listObjectsV2({ Bucket }).promise(),
+            async () => await s3().listObjectsV2({ Bucket }),
             ({ Contents }) => Contents,
             tap((Contents) => {
               logger.debug(`listObjects Contents: ${tos({ Contents })}`);
@@ -719,12 +694,10 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             tap(
               map.pool(mapPoolSize, async (content) => {
                 try {
-                  await s3()
-                    .deleteObject({
-                      Bucket,
-                      Key: content.Key,
-                    })
-                    .promise();
+                  await s3().deleteObject({
+                    Bucket,
+                    Key: content.Key,
+                  });
                 } catch (error) {
                   logger.error(`listObjects error: ${tos({ error })}`);
                   //
@@ -741,7 +714,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       async () => {
         do {
           var isTruncated = await pipe([
-            () => s3().listObjectVersions({ Bucket }).promise(),
+            () => s3().listObjectVersions({ Bucket }),
             tap((result) => {
               logger.debug(`listObjectVersions: ${tos({ result })}`);
             }),
@@ -749,17 +722,15 @@ exports.AwsS3Bucket = ({ spec, config }) => {
               switchCase([
                 (object) => !isEmpty(object.Versions),
                 (object) =>
-                  s3()
-                    .deleteObjects({
-                      Bucket,
-                      Delete: {
-                        Objects: object.Versions.map((version) => ({
-                          Key: version.Key,
-                          VersionId: version.VersionId,
-                        })),
-                      },
-                    })
-                    .promise(),
+                  s3().deleteObjects({
+                    Bucket,
+                    Delete: {
+                      Objects: object.Versions.map((version) => ({
+                        Key: version.Key,
+                        VersionId: version.VersionId,
+                      })),
+                    },
+                  }),
                 () => {
                   logger.debug(`listObjectVersions: not versions`);
                 },
@@ -768,18 +739,16 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             tap(
               switchCase([
                 (object) => !isEmpty(object.DeleteMarkers),
-                async (object) =>
-                  await s3()
-                    .deleteObjects({
-                      Bucket,
-                      Delete: {
-                        Objects: object.DeleteMarkers.map((version) => ({
-                          Key: version.Key,
-                          VersionId: version.VersionId,
-                        })),
-                      },
-                    })
-                    .promise(),
+                (object) =>
+                  s3().deleteObjects({
+                    Bucket,
+                    Delete: {
+                      Objects: object.DeleteMarkers.map((version) => ({
+                        Key: version.Key,
+                        VersionId: version.VersionId,
+                      })),
+                    },
+                  }),
                 () => {
                   logger.debug(`listObjectVersions: no DeleteMarkers `);
                 },
@@ -793,7 +762,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         } while (isTruncated);
       },
       tryCatch(
-        () => s3().deleteBucket({ Bucket }).promise(),
+        () => s3().deleteBucket({ Bucket }),
         switchCase([
           eq(get("code"), "NoSuchBucket"),
           () => null,
@@ -826,8 +795,8 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException: (error) => {
-      logger.error(`shouldRetryOnException ${tos(error)}`);
+    shouldRetryOnException: ({ error, name }) => {
+      logger.error(`shouldRetryOnException ${tos({ name, error })}`);
       const retry = error.code === "NoSuchBucket";
       logger.error(`shouldRetryOnException retry: ${retry}`);
       return retry;

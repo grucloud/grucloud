@@ -106,7 +106,7 @@ exports.Route53Record = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList route53 #resources ${resources.length}`);
       }),
-      map.pool(mapPoolSize, (resource) =>
+      map.pool(1, (resource) =>
         pipe([
           tap((hostedZone) => {
             logger.debug(`getList resource ${resource.name}`);
@@ -122,15 +122,13 @@ exports.Route53Record = ({ spec, config }) => {
               (hostedZone) =>
                 pipe([
                   () =>
-                    route53()
-                      .listResourceRecordSets({
-                        HostedZoneId: hostedZone.Id,
-                      })
-                      .promise(),
+                    route53().listResourceRecordSets({
+                      HostedZoneId: hostedZone.Id,
+                    }),
                   get("ResourceRecordSets"),
                   (ResourceRecordSets) =>
                     pipe([
-                      () => resource.resolveConfig(),
+                      () => resource.resolveConfig({ deep: false }),
                       (properties) =>
                         find(
                           findRecord({
@@ -160,8 +158,8 @@ exports.Route53Record = ({ spec, config }) => {
         total: records.length,
         items: records,
       }),
-      tap((records) => {
-        logger.info(`getList #route53 records result: ${records.total}`);
+      tap(({ total }) => {
+        logger.info(`getList #route53: ${total}`);
       }),
     ])(resources);
 
@@ -181,18 +179,16 @@ exports.Route53Record = ({ spec, config }) => {
           tryCatch(
             pipe([
               () =>
-                route53()
-                  .listResourceRecordSets({
-                    HostedZoneId: hostedZone.Id,
-                  })
-                  .promise(),
+                route53().listResourceRecordSets({
+                  HostedZoneId: hostedZone.Id,
+                }),
               get("ResourceRecordSets"),
               tap((ResourceRecordSets) => {
                 logger.info(`getByName ${tos({ ResourceRecordSets })}`);
               }),
               (ResourceRecordSets) =>
                 pipe([
-                  () => resolveConfig(),
+                  () => resolveConfig({ deep: false }),
                   tap((properties) => {
                     logger.info(`getByName ${tos({ properties })}`);
                     assert(properties.Name);
@@ -252,22 +248,18 @@ exports.Route53Record = ({ spec, config }) => {
         ResourceRecordSet: payload,
       }),
       (Change) =>
-        route53()
-          .changeResourceRecordSets({
-            HostedZoneId: hostedZone.live.Id,
-            ChangeBatch: {
-              Changes: [Change],
-            },
-          })
-          .promise(),
+        route53().changeResourceRecordSets({
+          HostedZoneId: hostedZone.live.Id,
+          ChangeBatch: {
+            Changes: [Change],
+          },
+        }),
       () =>
-        route53()
-          .changeTagsForResource({
-            ResourceId: hostedZone.live.Id,
-            AddTags: [{ Key: payload.Name, Value: name }],
-            ResourceType: "hostedzone",
-          })
-          .promise(),
+        route53().changeTagsForResource({
+          ResourceId: hostedZone.live.Id,
+          AddTags: [{ Key: payload.Name, Value: name }],
+          ResourceType: "hostedzone",
+        }),
       tap((result) => {
         logger.info(`record created: ${name}`);
       }),
@@ -289,19 +281,17 @@ exports.Route53Record = ({ spec, config }) => {
           switchCase([
             not(isEmpty),
             (live) =>
-              route53()
-                .changeResourceRecordSets({
-                  HostedZoneId: hostedZone.Id,
-                  ChangeBatch: {
-                    Changes: [
-                      {
-                        Action: "DELETE",
-                        ResourceRecordSet: liveToResourceSet(live),
-                      },
-                    ],
-                  },
-                })
-                .promise(),
+              route53().changeResourceRecordSets({
+                HostedZoneId: hostedZone.Id,
+                ChangeBatch: {
+                  Changes: [
+                    {
+                      Action: "DELETE",
+                      ResourceRecordSet: liveToResourceSet(live),
+                    },
+                  ],
+                },
+              }),
             () => {
               logger.error(`no live record for ${name}`);
             },
@@ -339,23 +329,21 @@ exports.Route53Record = ({ spec, config }) => {
           logger.info(`update route53 ${name}, same create and delete`);
         },
         ({ createSet, deleteSet }) =>
-          route53()
-            .changeResourceRecordSets({
-              HostedZoneId: hostedZone.live.Id,
-              ChangeBatch: {
-                Changes: [
-                  {
-                    Action: "DELETE",
-                    ResourceRecordSet: deleteSet,
-                  },
-                  {
-                    Action: "CREATE",
-                    ResourceRecordSet: createSet,
-                  },
-                ],
-              },
-            })
-            .promise(),
+          route53().changeResourceRecordSets({
+            HostedZoneId: hostedZone.live.Id,
+            ChangeBatch: {
+              Changes: [
+                {
+                  Action: "DELETE",
+                  ResourceRecordSet: deleteSet,
+                },
+                {
+                  Action: "CREATE",
+                  ResourceRecordSet: createSet,
+                },
+              ],
+            },
+          }),
       ]),
       tap((result) => {
         logger.info(`record updated: ${name}`);

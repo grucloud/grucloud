@@ -400,6 +400,15 @@
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/iam",
       "internalConsoleOptions": "openOnSessionStart",
+      "args": ["plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Aws IAM Apply",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/iam",
+      "internalConsoleOptions": "openOnSessionStart",
       "args": ["apply", "-f"]
     },
     {

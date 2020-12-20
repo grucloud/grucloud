@@ -35,9 +35,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInternetGateways-property
   const getList = async ({ params } = {}) => {
     logger.debug(`list ${tos(params)}`);
-    const { InternetGateways } = await ec2()
-      .describeInternetGateways(params)
-      .promise();
+    const { InternetGateways } = await ec2().describeInternetGateways(params);
     logger.debug(`list ${tos(InternetGateways)}`);
 
     return {
@@ -74,7 +72,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
     logger.debug(`create ${tos({ name, payload })}`);
     const {
       InternetGateway: { InternetGatewayId },
-    } = await ec2().createInternetGateway(payload).promise();
+    } = await ec2().createInternetGateway(payload);
     assert(InternetGatewayId);
     logger.debug(`created ig ${InternetGatewayId}`);
 
@@ -94,7 +92,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
       VpcId: vpcLive.VpcId,
     };
     logger.debug(`create, ig attaching vpc ${tos({ vpcLive })}`);
-    await ec2().attachInternetGateway(paramsAttach).promise();
+    await ec2().attachInternetGateway(paramsAttach);
     logger.debug(`create ig, vpc attached`);
 
     const igw = await retryCall({
@@ -133,9 +131,9 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
         VpcId: attachment.VpcId,
       };
       logger.debug(`destroy detaching vpc ${attachment.VpcId}`);
-      await ec2().detachInternetGateway(paramsDetach).promise();
+      await ec2().detachInternetGateway(paramsDetach);
     }
-    await ec2().deleteInternetGateway({ InternetGatewayId: id }).promise();
+    await ec2().deleteInternetGateway({ InternetGatewayId: id });
     logger.debug(`destroyed, ${tos({ name, id })}`);
     return;
   };

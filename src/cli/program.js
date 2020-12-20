@@ -2,6 +2,8 @@ require("dotenv").config();
 const { Command } = require("commander");
 const { pipe, tryCatch } = require("rubico");
 const { createInfra } = require("./infra");
+const YAML = require("./json2yaml");
+
 const collect = (value, previous = []) => previous.concat([value]);
 
 const optionFilteredByProvider = [
@@ -17,8 +19,9 @@ const optionFilteredByTypes = [
 ];
 
 const handleError = (error) => {
-  //console.error("ERROR:");
-  //console.error(error);
+  if (!error.error?.displayed) {
+    console.error(YAML.stringify(error));
+  }
   throw error;
 };
 

@@ -39,7 +39,7 @@ const {
 } = require("../../Common");
 const {
   Route53New,
-  Route53DomainNew,
+  Route53DomainsNew,
   buildTags,
   shouldRetryOnException,
 } = require("../AwsCommon");
@@ -49,7 +49,9 @@ const { filterEmptyResourceRecords } = require("./Route53Utils");
 const getNewCallerReference = () => `grucloud-${new Date()}`;
 
 //Check for the final dot
-const findName = (item) => item.Name;
+const findName = get("Name");
+const findId = get("Id");
+
 const canDeleteRecord = (zoneName) =>
   not(
     and([
@@ -57,52 +59,51 @@ const canDeleteRecord = (zoneName) =>
       eq(get("Name"), zoneName),
     ])
   );
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsHostedZone = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
   const route53 = Route53New(config);
-  const route53domains = Route53DomainNew(config);
-
-  const findId = get("Id");
+  const route53domains = Route53DomainsNew(config);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZones-property
-  const getList = async ({ params } = {}) =>
+  const getList = async () =>
     pipe([
       tap(() => {
-        logger.debug(`getList ${tos(params)}`);
+        logger.debug(`getList hostedZone`);
       }),
-      () => route53().listHostedZones(params).promise(),
+      () => route53().listHostedZones({}),
       get("HostedZones"),
-      map(async (hostedZone) => ({
-        ...hostedZone,
-        RecordSet: await pipe([
-          () =>
-            route53()
-              .listResourceRecordSets({
+      map(
+        assign({
+          RecordSet: pipe([
+            (hostedZone) =>
+              route53().listResourceRecordSets({
                 HostedZoneId: hostedZone.Id,
-              })
-              .promise(),
-          get("ResourceRecordSets"),
-        ])(),
-        Tags: await pipe([
-          () =>
-            route53()
-              .listTagsForResource({
+              }),
+            get("ResourceRecordSets"),
+          ]),
+          Tags: pipe([
+            (hostedZone) =>
+              route53().listTagsForResource({
                 ResourceId: hostedZone.Id,
                 ResourceType: "hostedzone",
-              })
-              .promise(),
-          get("ResourceTagSet.Tags"),
-        ])(),
-      })),
+              }),
+            get("ResourceTagSet.Tags"),
+          ]),
+        })
+      ),
+      tap((hostedZones) => {
+        logger.debug(`getList hostedZone result: ${tos(hostedZones)}`);
+      }),
       (hostedZones) => ({
         total: hostedZones.length,
         items: hostedZones,
       }),
-      tap((hostedZones) => {
-        logger.debug(`getList hostedZone result: ${tos(hostedZones)}`);
+      tap(({ total }) => {
+        logger.info(`getList #hostedZone: ${total}`);
       }),
     ])();
 
@@ -111,18 +112,18 @@ exports.AwsHostedZone = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#getHostedZone-property
   const getById = pipe([
     tap(({ id, name }) => {
-      logger.debug(`getById ${id}, name: ${name}`);
+      logger.info(`getById ${id}, name: ${name}`);
     }),
     tryCatch(
-      ({ id }) => route53().getHostedZone({ Id: id }).promise(),
+      ({ id }) => route53().getHostedZone({ Id: id }),
       switchCase([
-        (error) => error.code !== "NoSuchHostedZone",
+        eq(get("code"), "NoSuchHostedZone"),
+        (error, { id }) => {
+          logger.debug(`getById ${id} NoSuchHostedZone`);
+        },
         (error) => {
           logger.debug(`getById error: ${tos(error)}`);
           throw error;
-        },
-        (error, { id }) => {
-          logger.debug(`getById ${id} NoSuchHostedZone`);
         },
       ])
     ),
@@ -136,11 +137,9 @@ exports.AwsHostedZone = ({ spec, config }) => {
 
   const createReusableDelegationSet = pipe([
     () =>
-      route53()
-        .createReusableDelegationSet({
-          CallerReference: getNewCallerReference(),
-        })
-        .promise(),
+      route53().createReusableDelegationSet({
+        CallerReference: getNewCallerReference(),
+      }),
     get("DelegationSet.Id"),
     (DelegationSetId) => DelegationSetId.replace("/delegationset/", ""),
     tap((DelegationSetId) => {
@@ -160,7 +159,7 @@ exports.AwsHostedZone = ({ spec, config }) => {
     find(eq(get("Key"), "DelegationSetId")),
     get("Value"),
     tap((DelegationSetId) => {
-      logger.debug(
+      logger.info(
         `findOrCreateReusableDelegationSet DelegationSetId: ${DelegationSetId}`
       );
     }),
@@ -181,39 +180,31 @@ exports.AwsHostedZone = ({ spec, config }) => {
       tap(() => {
         assert(name);
         assert(payload);
-        logger.info(
-          `create hosted zone: ${name}, ${tos(payload)}, ${tos({
-            domain,
-          })}`
-        );
+        logger.info(`create hosted zone: ${name}, ${tos(payload)}`);
       }),
       findOrCreateReusableDelegationSet,
       (DelegationSetId) =>
         pipe([
           () =>
-            route53()
-              .createHostedZone({
-                Name: payload.Name,
-                CallerReference: getNewCallerReference(),
-                DelegationSetId,
-              })
-              .promise(),
+            route53().createHostedZone({
+              Name: payload.Name,
+              CallerReference: getNewCallerReference(),
+              DelegationSetId,
+            }),
           tap((result) => {
             logger.debug(
               `created hosted zone: ${name}, result: ${tos(result)}`
             );
           }),
           tap(({ HostedZone }) =>
-            route53()
-              .changeTagsForResource({
-                ResourceId: HostedZone.Id,
-                AddTags: [
-                  ...buildTags({ name, config }),
-                  { Key: "DelegationSetId", Value: DelegationSetId },
-                ],
-                ResourceType: "hostedzone",
-              })
-              .promise()
+            route53().changeTagsForResource({
+              ResourceId: HostedZone.Id,
+              AddTags: [
+                ...buildTags({ name, config }),
+                { Key: "DelegationSetId", Value: DelegationSetId },
+              ],
+              ResourceType: "hostedzone",
+            })
           ),
           tap(({ HostedZone }) =>
             pipe([
@@ -222,14 +213,12 @@ exports.AwsHostedZone = ({ spec, config }) => {
                 ResourceRecordSet,
               })),
               tap.if(not(isEmpty), (Changes) =>
-                route53()
-                  .changeResourceRecordSets({
-                    HostedZoneId: HostedZone.Id,
-                    ChangeBatch: {
-                      Changes,
-                    },
-                  })
-                  .promise()
+                route53().changeResourceRecordSets({
+                  HostedZoneId: HostedZone.Id,
+                  ChangeBatch: {
+                    Changes,
+                  },
+                })
               ),
             ])(payload.RecordSet)
           ),
@@ -240,21 +229,23 @@ exports.AwsHostedZone = ({ spec, config }) => {
                 differenceWith(
                   isDeepEqual,
                   DelegationSet.NameServers
-                )(domain.live.Nameservers)
+                )(domain.live.Nameservers.map(({ Name }) => Name))
               ),
             pipe([
               get("DelegationSet.NameServers"),
               tap((NameServers) => {
-                logger.debug(`updateDomainNameservers ${NameServers}`);
+                logger.debug(
+                  `updateDomainNameservers ${tos(NameServers)}, old: ${tos(
+                    domain.live.Nameservers
+                  )}`
+                );
               }),
               map((nameserver) => ({ Name: nameserver })),
               (Nameservers) =>
-                route53domains()
-                  .updateDomainNameservers({
-                    DomainName: domain.live.DomainName,
-                    Nameservers,
-                  })
-                  .promise(),
+                route53domains().updateDomainNameservers({
+                  DomainName: domain.live.DomainName,
+                  Nameservers,
+                }),
               tap(({ OperationId }) => {
                 logger.debug(`updateDomainNameservers ${tos({ OperationId })}`);
               }),
@@ -275,11 +266,9 @@ exports.AwsHostedZone = ({ spec, config }) => {
         assert(name, "destroy name");
       }),
       () =>
-        route53()
-          .listResourceRecordSets({
-            HostedZoneId: id,
-          })
-          .promise(),
+        route53().listResourceRecordSets({
+          HostedZoneId: id,
+        }),
       get("ResourceRecordSets"),
       tap((ResourceRecordSet) => {
         logger.debug(`destroy ${tos(ResourceRecordSet)}`);
@@ -295,21 +284,17 @@ exports.AwsHostedZone = ({ spec, config }) => {
       tap.if(
         (Changes) => !isEmpty(Changes),
         (Changes) =>
-          route53()
-            .changeResourceRecordSets({
-              HostedZoneId: id,
-              ChangeBatch: {
-                Changes,
-              },
-            })
-            .promise()
+          route53().changeResourceRecordSets({
+            HostedZoneId: id,
+            ChangeBatch: {
+              Changes,
+            },
+          })
       ),
       () =>
-        route53()
-          .deleteHostedZone({
-            Id: id,
-          })
-          .promise(),
+        route53().deleteHostedZone({
+          Id: id,
+        }),
       tap(() =>
         retryCall({
           name: `hostedZone isDownById: ${name} id: ${id}`,
@@ -347,14 +332,12 @@ exports.AwsHostedZone = ({ spec, config }) => {
               logger.debug(`update changes ${tos(Changes)}`);
             }),
             (Changes) =>
-              route53()
-                .changeResourceRecordSets({
-                  HostedZoneId: live.Id,
-                  ChangeBatch: {
-                    Changes,
-                  },
-                })
-                .promise(),
+              route53().changeResourceRecordSets({
+                HostedZoneId: live.Id,
+                ChangeBatch: {
+                  Changes,
+                },
+              }),
             tap(({ ChangeInfo }) => {
               logger.info(`updated ${name}, ChangeInfo: ${ChangeInfo}`);
             }),
@@ -406,9 +389,10 @@ exports.compareHostedZone = async ({ usedBySet, target, live, dependencies }) =>
       targetRecordSet: async () =>
         map(
           tryCatch(
-            (resource) => resource.resolveConfig(),
+            (resource) => resource.resolveConfig({ deep: false }),
             (error) => {
-              logger.error(error);
+              logger.error("compareHostedZone error in resolveConfig");
+              logger.error(tos(error));
               return { error };
             }
           )

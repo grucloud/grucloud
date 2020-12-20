@@ -353,7 +353,7 @@ describe("cli error", function () {
         onExit: ({ code, error }) => {
           assert.equal(code, 422);
           assert.equal(error.error.results[0].provider.type, "mock");
-          assert(error.error.results[0].result.results[0].type);
+          assert(error.error.results[0].result.plans);
           assert.equal(error.error.resultsDestroy[0].provider.type, "mock");
           error.error.resultsDestroy.forEach(({ result }) =>
             assert(result.error)

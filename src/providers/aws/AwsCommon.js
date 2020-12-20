@@ -1,65 +1,71 @@
 process.env.AWS_SDK_LOAD_CONFIG = "true";
 const AWS = require("aws-sdk");
 const assert = require("assert");
-const { pipe, tryCatch, tap, switchCase, and, get } = require("rubico");
+const { pipe, tryCatch, tap, switchCase, and, get, eq } = require("rubico");
 const { first, find } = require("rubico/x");
 const logger = require("../../logger")({ prefix: "AwsCommon" });
 const { tos } = require("../../tos");
+const { retryCall } = require("../Retry");
 
 const KeyName = "Name";
 exports.KeyName = KeyName;
 
-exports.Ec2New = (config) => () =>
+const handler = ({ endpointName, endpoint }) => ({
+  get: (target, name, receiver) => {
+    return (...args) =>
+      retryCall({
+        name: `${endpointName}.${name} ${JSON.stringify(args)}`,
+        fn: () => endpoint[name](...args).promise(),
+        isExpectedResult: () => true,
+        shouldRetryOnException: ({ error, name }) =>
+          pipe([
+            tap((error) => {
+              logger.error(`${name}: ${tos(error)}`);
+            }),
+            //TODO add network error
+            eq(get("code"), "Throttling"),
+          ])(error),
+      });
+  },
+});
+
+const createEndpoint = ({ endpointName }) =>
   pipe([
     tap((config) => AWS.config.update(config)),
-    (config) => new AWS.EC2({ region: config.region }),
-  ])(config);
+    (config) => new AWS[endpointName]({ region: config.region }),
+    (endpoint) => new Proxy({}, handler({ endpointName, endpoint })),
+  ]);
+
+exports.Ec2New = (config) => () =>
+  createEndpoint({ endpointName: "EC2" })(config);
 
 exports.IAMNew = (config) => () =>
-  pipe([
-    tap((config) => AWS.config.update(config)),
-    (config) => new AWS.IAM({ region: config.region }),
-  ])(config);
+  createEndpoint({ endpointName: "IAM" })(config);
 
 exports.S3New = (config) => () =>
-  pipe([
-    tap((config) => AWS.config.update(config)),
-    (config) => new AWS.S3({ region: config.region }),
-  ])(config);
+  createEndpoint({ endpointName: "S3" })(config);
 
 exports.Route53New = (config) => () =>
-  pipe([
-    tap((config) => AWS.config.update(config)),
-    (config) => new AWS.Route53({ region: config.region }),
-  ])(config);
-
-exports.Route53DomainNew = (config) => () =>
-  pipe([
-    tap((config) => AWS.config.update({ region: "us-east-1" })),
-    (config) => new AWS.Route53Domains({ region: "us-east-1" }),
-  ])(config);
+  createEndpoint({ endpointName: "Route53" })(config);
 
 exports.CloudFrontNew = (config) => () =>
-  pipe([
-    tap((config) => AWS.config.update(config)),
-    (config) => new AWS.CloudFront({ region: config.region }),
-  ])(config);
+  createEndpoint({ endpointName: "CloudFront" })(config);
 
-exports.ACMNew = (config) => () =>
-  pipe([
-    tap((config) => AWS.config.update({ region: "us-east-1" })),
-    (config) => new AWS.ACM({ region: "us-east-1" }),
-  ])(config);
+exports.Route53DomainsNew = () => () =>
+  createEndpoint({ endpointName: "Route53Domains" })({ region: "us-east-1" });
 
-exports.shouldRetryOnException = (error) => {
-  logger.error(`aws shouldRetryOnException ${tos(error)}`);
+exports.ACMNew = () => () =>
+  createEndpoint({ endpointName: "ACM" })({ region: "us-east-1" });
+
+exports.shouldRetryOnException = ({ error, name }) => {
+  logger.error(`aws shouldRetryOnException ${tos({ name, error })}`);
   error.stack && logger.error(error.stack);
 
   return ![400, 404].includes(error.statusCode);
 };
 
-exports.shouldRetryOnExceptionDelete = (error) => {
-  logger.debug(`shouldRetryOnException ${tos(error)}`);
+exports.shouldRetryOnExceptionDelete = ({ error, name }) => {
+  logger.debug(`shouldRetryOnException ${tos({ name, error })}`);
   const retry = error.code === "DeleteConflict";
   logger.debug(`shouldRetryOnException retry: ${retry}`);
   return retry;

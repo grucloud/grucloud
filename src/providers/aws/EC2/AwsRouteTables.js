@@ -38,7 +38,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeRouteTables-property
   const getList = async ({ params } = {}) => {
     logger.debug(`list ${tos(params)}`);
-    const { RouteTables } = await ec2().describeRouteTables(params).promise();
+    const { RouteTables } = await ec2().describeRouteTables(params);
     logger.debug(`list ${tos(RouteTables)}`);
 
     return {
@@ -70,7 +70,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     logger.debug(`create ${tos({ name, paramCreate })}`);
     const {
       RouteTable: { RouteTableId },
-    } = await ec2().createRouteTable(paramCreate).promise();
+    } = await ec2().createRouteTable(paramCreate);
     assert(RouteTableId);
     logger.info(`created ${RouteTableId}`);
 
@@ -93,7 +93,7 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     };
     logger.debug(`create, associating with subnet ${tos({ subnetLive })}`);
     //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#associateRouteTable-property
-    await ec2().associateRouteTable(paramsAttach).promise();
+    await ec2().associateRouteTable(paramsAttach);
 
     logger.debug(`associated`);
 
@@ -129,16 +129,14 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
       map(async (association) => {
         logger.debug(`destroy disassociate ${tos({ association })}`);
         //TODO tryCatch
-        await ec2()
-          .disassociateRouteTable({
-            AssociationId: association.RouteTableAssociationId,
-          })
-          .promise();
+        await ec2().disassociateRouteTable({
+          AssociationId: association.RouteTableAssociationId,
+        });
       }),
       tap(() => {
         logger.debug(`destroying ${tos({ RouteTableId: id })}`);
       }),
-      () => ec2().deleteRouteTable({ RouteTableId: id }).promise(),
+      () => ec2().deleteRouteTable({ RouteTableId: id }),
       tap(() => {
         logger.debug(`destroyed ${tos({ name, id })}`);
       }),

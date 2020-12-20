@@ -16,7 +16,7 @@ const {
 const { defaultsDeep, isEmpty, first, find } = require("rubico/x");
 const logger = require("../../../logger")({ prefix: "S3Object" });
 const { retryCall } = require("../../Retry");
-const { shouldRetryOnException } = require("../AwsCommon");
+const { S3New, shouldRetryOnException } = require("../AwsCommon");
 
 const { tos } = require("../../../tos");
 const { convertError, mapPoolSize, md5FileBase64 } = require("../../Common");
@@ -42,7 +42,7 @@ exports.AwsS3Object = ({ spec, config }) => {
   assert(config);
   const clientConfig = { ...config, retryDelay: 2000, repeatCount: 5 };
 
-  const s3 = new AWS.S3({ region: config.region });
+  const s3 = S3New(config);
 
   const findName = get("Key");
   const findId = findName;
@@ -100,20 +100,18 @@ exports.AwsS3Object = ({ spec, config }) => {
             fork({
               list: pipe([
                 ({ Bucket }) =>
-                  s3
-                    .listObjectsV2({
-                      Bucket,
-                      Prefix: name,
-                      MaxKeys: 1,
-                    })
-                    .promise(),
+                  s3().listObjectsV2({
+                    Bucket,
+                    Prefix: name,
+                    MaxKeys: 1,
+                  }),
                 get("Contents"),
                 first,
               ]),
-              content: pipe([(params) => s3.headObject(params).promise()]),
+              content: pipe([(params) => s3().headObject(params)]),
               Tags: pipe([
                 //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObjectTagging-property
-                (params) => s3.getObjectTagging(params).promise(),
+                (params) => s3().getObjectTagging(params),
                 get("TagSet"),
               ]),
             }),
@@ -158,7 +156,7 @@ exports.AwsS3Object = ({ spec, config }) => {
     assert(Bucket, "headObject Bucket");
     assert(Key, "headObject Key");
     try {
-      await s3.headObject({ Bucket, Key }).promise();
+      await s3().headObject({ Bucket, Key });
       return true;
     } catch (error) {
       if (error.statusCode === 404) {
@@ -177,7 +175,7 @@ exports.AwsS3Object = ({ spec, config }) => {
     assert(Bucket, "isUpById Bucket");
     assert(Key, "isUpById Key");
     const up = await headObject({ Bucket, Key });
-    logger.debug(`isUpById ${Bucket}/${Key} ${up ? "UP" : "DOWN"}`);
+    logger.info(`isUpById ${Bucket}/${Key} ${up ? "UP" : "DOWN"}`);
     return up;
   };
 
@@ -186,7 +184,7 @@ exports.AwsS3Object = ({ spec, config }) => {
     assert(resource, `isDownById: no resource for id ${id}`);
     const bucket = getBucket(resource);
     const up = await headObject({ Bucket: bucket.name, Key: id });
-    logger.debug(`isDownById ${bucket.name}/${id} ${up ? "UP" : "DOWN"}`);
+    logger.info(`isDownById ${bucket.name}/${id} ${up ? "UP" : "DOWN"}`);
     return !up;
   };
 
@@ -229,7 +227,7 @@ exports.AwsS3Object = ({ spec, config }) => {
                 md5hash: ContentMD5,
               },
             }),
-            (params) => s3.putObject(params).promise(),
+            (params) => s3().putObject(params),
             tap(() =>
               retryCall({
                 name: `s3 isUpById: ${bucket.name}/${name}`,
@@ -260,7 +258,7 @@ exports.AwsS3Object = ({ spec, config }) => {
         Bucket: bucket.name,
         Key: id,
       }),
-      (params) => s3.deleteObject(params).promise(),
+      (params) => s3().deleteObject(params),
       tap(() => {
         logger.info(`destroyed object ${id}`);
       }),

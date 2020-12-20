@@ -29,7 +29,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       tap(() => {
         logger.debug(`getList`);
       }),
-      () => iam().listInstanceProfiles(params).promise(),
+      () => iam().listInstanceProfiles(params),
       tap((instanceProfiles) => {
         logger.debug(`getList: ${tos(instanceProfiles)}`);
       }),
@@ -44,9 +44,8 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
             ...instanceProfile,
             Roles: await map(async (role) => ({
               ...role,
-              Tags: (
-                await iam().listRoleTags({ RoleName: role.RoleName }).promise()
-              ).Tags,
+              Tags: (await iam().listRoleTags({ RoleName: role.RoleName }))
+                .Tags,
             }))(instanceProfile.Roles),
           }),
         ])
@@ -69,7 +68,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     tryCatch(
       ({ id }) =>
         pipe([
-          () => iam().getInstanceProfile({ InstanceProfileName: id }).promise(),
+          () => iam().getInstanceProfile({ InstanceProfileName: id }),
           tap((obj) => {
             logger.debug(`getById ${obj}`);
           }),
@@ -102,10 +101,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
 
     const createParams = defaultsDeep({})(payload);
 
-    const { InstanceProfile } = await iam()
-      .createInstanceProfile(createParams)
-      .promise();
-
+    const { InstanceProfile } = await iam().createInstanceProfile(createParams);
     logger.debug(`create result ${tos(InstanceProfile)}`);
 
     const { iamRoles } = dependencies;
@@ -113,12 +109,10 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     assert(Array.isArray(iamRoles), "iamRoles must be an array");
 
     await forEach((iamRole) =>
-      iam()
-        .addRoleToInstanceProfile({
-          InstanceProfileName: name,
-          RoleName: iamRole.name,
-        })
-        .promise()
+      iam().addRoleToInstanceProfile({
+        InstanceProfileName: name,
+        RoleName: iamRole.name,
+      })
     )(iamRoles);
 
     const instanceUp = await retryCall({
@@ -144,20 +138,16 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       () => getById({ id }),
       tap((instanceProfile) =>
         forEach((role) =>
-          iam()
-            .removeRoleFromInstanceProfile({
-              InstanceProfileName: id,
-              RoleName: role.RoleName,
-            })
-            .promise()
+          iam().removeRoleFromInstanceProfile({
+            InstanceProfileName: id,
+            RoleName: role.RoleName,
+          })
         )(instanceProfile.Roles)
       ),
       tap(() =>
-        iam()
-          .deleteInstanceProfile({
-            InstanceProfileName: id,
-          })
-          .promise()
+        iam().deleteInstanceProfile({
+          InstanceProfileName: id,
+        })
       ),
       tap(() =>
         retryCall({

@@ -21,7 +21,7 @@ const retryCall = async ({
   fn,
   isExpectedResult = (result) => result,
   isExpectedException = () => false,
-  shouldRetryOnException = (error) => {
+  shouldRetryOnException = ({ error, name }) => {
     logger.error(`shouldRetryOnException ${name}, error: ${tos(error)}`);
     error.stack && logger.error(error.stack);
     return !error.stack;
@@ -43,9 +43,9 @@ const retryCall = async ({
           pipe([
             () => fn(),
             switchCase([
-              (result) => isExpectedResult(result),
+              isExpectedResult,
               (result) => {
-                logger.debug(`retryCall ${name}, success`);
+                logger.info(`retryCall ${name}, success`);
                 return result;
               },
               (result) => {
@@ -78,7 +78,7 @@ const retryCall = async ({
             return iif(
               () =>
                 i >= retryCount ||
-                (!shouldRetryOnException(error) && error.code != 503),
+                (!shouldRetryOnException({ error, name }) && error.code != 503),
               throwError(error),
               of(error).pipe(delay(retryDelay))
             );
@@ -97,8 +97,8 @@ const retryCall = async ({
 };
 exports.retryCall = retryCall;
 
-const shouldRetryOnExceptionDefault = (error) =>
-  ["ECONNABORTED", "ECONNRESET", "ENOTFOUND"].includes(error.code);
+const shouldRetryOnExceptionDefault = ({ error }) =>
+  ["ECONNABORTED", "ECONNRESET", "ENOTFOUND", "ENETDOWN"].includes(error.code);
 
 exports.retryCallOnError = ({
   name,

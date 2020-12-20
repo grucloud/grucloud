@@ -29,7 +29,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
       tap(() => {
         logger.debug(`getList ${tos(params)}`);
       }),
-      () => iam().listGroups(params).promise(),
+      () => iam().listGroups(params),
       tap((groups) => {
         logger.debug(`getList groups: ${tos(groups)}`);
       }),
@@ -50,7 +50,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
       logger.debug(`getById ${id}`);
     }),
     tryCatch(
-      ({ id }) => iam().getGroup({ GroupName: id }).promise(),
+      ({ id }) => iam().getGroup({ GroupName: id }),
       switchCase([
         (error) => error.code !== "NoSuchEntity",
         (error) => {
@@ -78,7 +78,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
 
     const createParams = defaultsDeep({})(payload);
 
-    const { Group } = await iam().createGroup(createParams).promise();
+    const { Group } = await iam().createGroup(createParams);
     logger.debug(`create result ${tos(Group)}`);
     return Group;
   };
@@ -90,25 +90,18 @@ exports.AwsIamGroup = ({ spec, config }) => {
         logger.debug(`destroy ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
-      () =>
-        iam()
-          .listAttachedGroupPolicies({ GroupName: id, MaxItems: 1e3 })
-          .promise(),
+      () => iam().listAttachedGroupPolicies({ GroupName: id, MaxItems: 1e3 }),
       get("AttachedPolicies"),
       forEach((policy) => {
-        iam()
-          .detachGroupPolicy({
-            PolicyArn: policy.PolicyArn,
-            GroupName: id,
-          })
-          .promise();
+        iam().detachGroupPolicy({
+          PolicyArn: policy.PolicyArn,
+          GroupName: id,
+        });
       }),
       () =>
-        iam()
-          .deleteGroup({
-            GroupName: id,
-          })
-          .promise(),
+        iam().deleteGroup({
+          GroupName: id,
+        }),
       tap(() =>
         retryCall({
           name: `iam group isDownById: ${name} id: ${id}`,

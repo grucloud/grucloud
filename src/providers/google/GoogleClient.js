@@ -27,8 +27,8 @@ module.exports = GoogleClient = ({
     logger.info(`onCreateExpectedException ${tos(error)}`);
     return error.response?.status === 409;
   },
-  shouldRetryOnException = (error) => {
-    logger.error(`shouldRetryOnException ${tos(error)}`);
+  shouldRetryOnException = ({ error, name }) => {
+    logger.error(`shouldRetryOnException ${tos({ name, error })}`);
     const { response } = error;
     if (!response) return false;
     if (

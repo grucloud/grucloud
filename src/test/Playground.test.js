@@ -1,6 +1,11 @@
 const assert = require("assert");
 const urljoin = require("url-join");
-const { defaultsDeep, isDeepEqual, unionWith } = require("rubico/x");
+const {
+  defaultsDeep,
+  isDeepEqual,
+  unionWith,
+  differenceWith,
+} = require("rubico/x");
 const { get, switchCase, all } = require("rubico");
 const { copyDeep } = require("rubico/monad/Struct");
 
@@ -18,6 +23,10 @@ describe("Playground", function () {
   it.skip("urljoin", async function () {
     const result = urljoin("", "/test");
     assert.equal(result, "/test");
+  });
+  it("differenceWith array", async function () {
+    const result = differenceWith(isDeepEqual, ["a", "b"])(["b", "a"]);
+    assert(isEmpty(result));
   });
   it("defaultsDeep", async function () {
     const result = defaultsDeep({ size: 10 })({ size: 20 });

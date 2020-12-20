@@ -29,9 +29,7 @@ const validateConfig = async ({ region, zone }) => {
   logger.debug(`region: ${region}, zone: ${zone}`);
   const ec2 = Ec2New({ region });
 
-  const {
-    AvailabilityZones,
-  } = await ec2().describeAvailabilityZones().promise();
+  const { AvailabilityZones } = await ec2().describeAvailabilityZones();
   const zones = map((x) => x.ZoneName)(AvailabilityZones);
   if (zone && !zones.includes(zone)) {
     const message = `The configued zone '${zone}' is not part of region ${region}, available zones for this region: ${zones}`;
@@ -39,6 +37,7 @@ const validateConfig = async ({ region, zone }) => {
   }
 };
 
+//TODO wrap for retry
 const fetchAccountId = pipe([
   () => new AWS.STS(),
   (sts) => sts.getCallerIdentity({}).promise(),

@@ -54,7 +54,7 @@ const assignStart = ({ onStateChange }) =>
 
 const DisplayAndThrow = ({ name }) => (error) => {
   displayError({ name, error });
-  throw { code: 422, error };
+  throw { code: 422, error: { ...error, displayed: true } };
 };
 
 const providersToString = map(({ provider, ...other }) => ({
@@ -171,11 +171,23 @@ const saveToJson = ({ command, commandOptions, programOptions, result }) => {
   );
 };
 
+const displayLiveError = (result) =>
+  pipe([
+    tap((results) => {
+      //logger.debug(results);
+    }),
+    filter(get("error")),
+    forEach(({ type, error }) => {
+      console.error(`${type}: ${error.message}`);
+      error.stack && console.error(error.stack);
+    }),
+  ])(result.results);
+
 const displayPlanQueryErrorResult = pipe([
   tap((result) => {
     logger.debug(result);
   }),
-  filter(({ error }) => error),
+  filter(get("error")),
   forEach(({ resource, error }) => {
     console.error(`Resource: ${resource.uri}`);
     console.log(YAML.stringify(convertError({ error })));
@@ -245,6 +257,7 @@ const displayErrorResults = ({ results = [], name }) => {
           console.log(YAML.stringify(convertError({ error, name })));
         }
         if (resultQuery) {
+          resultQuery.lives.error && displayLiveError(resultQuery.lives);
           displayPlanQueryErrorResult(resultQuery.resultCreate.plans);
           displayPlanQueryErrorResult(resultQuery.resultDestroy.plans);
         }
