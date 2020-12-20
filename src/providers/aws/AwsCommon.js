@@ -14,7 +14,7 @@ const handler = ({ endpointName, endpoint }) => ({
   get: (target, name, receiver) => {
     return (...args) =>
       retryCall({
-        name: `${endpointName}.${name}`,
+        name: `${endpointName}.${name} ${JSON.stringify(args)}`,
         fn: () => endpoint[name](...args).promise(),
         isExpectedResult: () => true,
         shouldRetryOnException: ({ error, name }) =>
