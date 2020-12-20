@@ -41,9 +41,9 @@ const {
   TitleQuery,
   TitleDeploying,
   TitleDestroying,
-  TitlePlanningDestroy,
   typeFromResources,
   planToResourcesPerType,
+  TitleListing,
 } = require("./Common");
 const { Planner, mapToGraph } = require("./Planner");
 
@@ -251,7 +251,14 @@ const ResourceMaker = ({
               switchCase([
                 not(isEmpty),
                 (lives) => dependency.findLive({ lives }),
-                () => dependency.getLive(),
+                () =>
+                  retryCall({
+                    name: `getLive ${type}/${resourceName} `,
+                    fn: () => dependency.getLive(),
+                    isExpectedResult: (result) => result,
+                    shouldRetryOnException: () => false,
+                    config: { repeatDelay: 1e3, repeatCount: 10 },
+                  }),
               ]),
               tap.if(
                 (live) => dependenciesMustBeUp && !live,
@@ -1370,7 +1377,7 @@ function CoreProvider({
       spinnersStartProvider({ onStateChange }),
       spinnersStartClient({
         onStateChange,
-        title: TitlePlanningDestroy,
+        title: TitleListing,
         clients,
       }),
       (resourcesPerType) =>
@@ -1465,7 +1472,7 @@ function CoreProvider({
       spinnersStartProvider({ onStateChange }),
       spinnersStartClient({
         onStateChange,
-        title: TitlePlanningDestroy,
+        title: TitleListing,
         clients: filterReadWriteClient(options)(clients),
       }),
     ])();
@@ -1625,10 +1632,10 @@ function CoreProvider({
       ),
       flatten,
       (plans) => ({ error: hasResultError(plans), plans }),
-      assign({
+      /*assign({
         targets: () =>
           map((resource) => resource.toJSON())(getTargetResources()),
-      }),
+      }),*/
       tap((result) => {
         logger.info(`planUpsert: result: ${tos(result)}`);
       }),
@@ -1794,15 +1801,15 @@ function CoreProvider({
       ),
       tap(() =>
         onStateChange({
-          context: contextFromPlanner({ title: TitlePlanningDestroy }),
+          context: contextFromPlanner({ title: TitleListing }),
           nextState: "RUNNING",
         })
       ),
-      getClients({ onStateChange, title: TitleDestroying, deep: false }),
+      getClients({ onStateChange, title: TitleListing, deep: false }),
       (results) => ({ error: hasResultError(results), results }),
       tap((result) =>
         onStateChange({
-          context: contextFromPlanner({ title: TitleDestroying }),
+          context: contextFromPlanner({ title: TitleListing }),
           nextState: nextStateOnError(result.error),
           result,
         })
