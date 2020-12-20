@@ -239,7 +239,6 @@ const ResourceMaker = ({
                 )}`
               );
               return {
-                dependency,
                 error,
               };
             }
@@ -257,7 +256,7 @@ const ResourceMaker = ({
                     fn: () => dependency.getLive(),
                     isExpectedResult: (result) => result,
                     shouldRetryOnException: () => false,
-                    config: { repeatDelay: 1e3, repeatCount: 10 },
+                    config: { retryDelay: 1e3, retryCount: 2 },
                   }),
               ]),
               tap.if(
@@ -268,7 +267,7 @@ const ResourceMaker = ({
                   };
                 }
               ),
-              (live) => ({ resource: dependency, live }),
+              (live) => ({ resource: dependency.toJSON(), live }),
             ])(lives),
           (error, dependency) => {
             logger.error(`resolveDependencies: ${tos(error)}`);

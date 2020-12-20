@@ -1,7 +1,17 @@
 const AWS = require("aws-sdk");
 const { isEmpty } = require("rubico/x");
 const assert = require("assert");
-const { get, map, tap, pipe, filter, switchCase } = require("rubico");
+const {
+  get,
+  map,
+  tap,
+  pipe,
+  filter,
+  switchCase,
+  eq,
+  not,
+  tryCatch,
+} = require("rubico");
 const logger = require("../../../logger")({ prefix: "AwsVpc" });
 const { tos } = require("../../../tos");
 const { retryCall } = require("../../Retry");
@@ -98,11 +108,11 @@ module.exports = AwsVpc = ({ spec, config }) => {
     return { VpcId };
   };
 
-  const destroySubnets = async ({ VpcId }) => {
-    await pipe([
+  const destroySubnets = async ({ VpcId }) =>
+    pipe([
       // Get the subnets belonging to this Vpc
-      async () =>
-        await ec2().describeSubnets({
+      () =>
+        ec2().describeSubnets({
           Filters: [
             {
               Name: "vpc-id",
@@ -114,8 +124,8 @@ module.exports = AwsVpc = ({ spec, config }) => {
       async ({ Subnets }) =>
         pipe([
           filter((subnet) => !subnet.DefaultForAz),
-          async (Subnets) =>
-            await map(
+          (Subnets) =>
+            map(
               async (subnet) => {
                 logger.debug(
                   `destroy vpc, deleteSubnet SubnetId: ${subnet.SubnetId}`
@@ -127,13 +137,15 @@ module.exports = AwsVpc = ({ spec, config }) => {
             )(Subnets),
         ])(Subnets),
     ])();
-  };
 
-  const destroySecurityGroup = async ({ VpcId }) => {
-    await pipe([
+  const destroySecurityGroup = async ({ VpcId }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`destroySecurityGroup: VpcId: ${VpcId}`);
+      }),
       // Get the security groups belonging to this Vpc
-      async () =>
-        await ec2().describeSecurityGroups({
+      () =>
+        ec2().describeSecurityGroups({
           Filters: [
             {
               Name: "vpc-id",
@@ -141,23 +153,36 @@ module.exports = AwsVpc = ({ spec, config }) => {
             },
           ],
         }),
-      async ({ SecurityGroups }) =>
-        pipe([
-          // remove the default security groups
-          filter((securityGroup) => securityGroup.GroupName !== "default"),
-          async (SecurityGroups) =>
-            await map(async (securityGroup) => {
-              logger.debug(
-                `destroy vpc, deleteSecurityGroup GroupId: ${securityGroup.GroupId}`
-              );
-              // deleteSecurityGroups
-              await ec2().deleteSecurityGroup({
-                GroupId: securityGroup.GroupId,
-              });
-            })(SecurityGroups),
-        ])(SecurityGroups),
+      get("SecurityGroups"),
+      pipe([
+        // remove the default security groups
+        filter(not(eq(get("GroupName"), "default"))),
+        map(
+          tryCatch(
+            pipe([
+              tap(({ GroupId }) => {
+                logger.debug(`destroySecurityGroup: GroupId: ${GroupId}`);
+              }),
+              ({ GroupId }) =>
+                ec2().deleteSecurityGroup({
+                  GroupId,
+                }),
+            ]),
+            (error, securityGroup) =>
+              pipe([
+                tap(() => {
+                  logger.error(
+                    `deleteSecurityGroup: ${tos(securityGroup)}, error ${tos(
+                      error
+                    )}`
+                  );
+                }),
+                () => ({ error, securityGroup }),
+              ])()
+          )
+        ),
+      ]),
     ])();
-  };
 
   const destroyRouteTables = async ({ VpcId }) =>
     pipe([
