@@ -41,6 +41,7 @@ module.exports = {
             ],
           },
           { Route53: ["aws/resources/Route53/Route53HostedZone"] },
+          { Route53Domain: ["aws/resources/Route53Domain/Route53Domain"] },
           { S3: ["aws/resources/S3/S3Bucket", "aws/resources/S3/S3Object"] },
         ],
       },
