@@ -175,7 +175,7 @@ exports.AwsS3Object = ({ spec, config }) => {
     assert(Bucket, "isUpById Bucket");
     assert(Key, "isUpById Key");
     const up = await headObject({ Bucket, Key });
-    logger.debug(`isUpById ${Bucket}/${Key} ${up ? "UP" : "DOWN"}`);
+    logger.info(`isUpById ${Bucket}/${Key} ${up ? "UP" : "DOWN"}`);
     return up;
   };
 
@@ -184,7 +184,7 @@ exports.AwsS3Object = ({ spec, config }) => {
     assert(resource, `isDownById: no resource for id ${id}`);
     const bucket = getBucket(resource);
     const up = await headObject({ Bucket: bucket.name, Key: id });
-    logger.debug(`isDownById ${bucket.name}/${id} ${up ? "UP" : "DOWN"}`);
+    logger.info(`isDownById ${bucket.name}/${id} ${up ? "UP" : "DOWN"}`);
     return !up;
   };
 
