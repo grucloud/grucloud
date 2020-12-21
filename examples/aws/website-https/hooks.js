@@ -30,7 +30,7 @@ const checkDig = async ({ nameServer, domain, type = "A", hostedZoneLive }) => {
         liveRecordSet: hostedZoneLive.RecordSet,
       });
     },
-    config: { retryCount: 20, retryDelay: 5e3 },
+    config: { retryCount: 200, retryDelay: 5e3 },
   });
 };
 
@@ -164,7 +164,7 @@ module.exports = ({ resources, provider }) => {
                 assert.equal(result.headers["content-type"], `text/html`);
                 return [200].includes(result.status);
               },
-              config: { retryCount: 60, retryDelay: 5e3 },
+              config: { retryCount: 100, retryDelay: 5e3 },
             });
           },
         },
