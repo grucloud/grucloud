@@ -113,7 +113,7 @@ exports.Route53Record = ({ spec, config }) => {
           }),
           () => getHostedZone(resource),
           tap((hostedZone) => {
-            //logger.debug(`getList hostedZone ${hostedZone}`);
+            logger.debug(`getList hostedZone ${hostedZone}`);
           }),
           switchCase([
             isEmpty,
@@ -121,14 +121,12 @@ exports.Route53Record = ({ spec, config }) => {
             tryCatch(
               (hostedZone) =>
                 pipe([
-                  () =>
-                    route53().listResourceRecordSets({
-                      HostedZoneId: hostedZone.Id,
-                    }),
-                  get("ResourceRecordSets"),
+                  tap((ResourceRecordSets) => {
+                    logger.debug(`getList ${tos({ ResourceRecordSets })}`);
+                  }),
                   (ResourceRecordSets) =>
                     pipe([
-                      () => resource.resolveConfig({ deep: false }),
+                      () => resource.resolveConfig(),
                       (properties) =>
                         find(
                           findRecord({
@@ -138,7 +136,7 @@ exports.Route53Record = ({ spec, config }) => {
                         )(ResourceRecordSets),
                     ])(),
                   assignTags({ Tags: hostedZone.Tags }),
-                ])(),
+                ])(hostedZone.RecordSet),
               (error, params) => ({
                 error: convertError({
                   error,
@@ -178,30 +176,23 @@ exports.Route53Record = ({ spec, config }) => {
         (hostedZone) =>
           tryCatch(
             pipe([
-              () =>
-                route53().listResourceRecordSets({
-                  HostedZoneId: hostedZone.Id,
-                }),
-              get("ResourceRecordSets"),
-              tap((ResourceRecordSets) => {
-                logger.info(`getByName ${tos({ ResourceRecordSets })}`);
+              () => resolveConfig(),
+              tap((properties) => {
+                logger.info(
+                  `getByName props: ${JSON.stringify(
+                    pluck(["Name", "Type"])(properties)
+                  )}`
+                );
+                assert(properties.Name);
+                assert(properties.Type);
               }),
-              (ResourceRecordSets) =>
-                pipe([
-                  () => resolveConfig({ deep: false }),
-                  tap((properties) => {
-                    logger.info(`getByName ${tos({ properties })}`);
-                    assert(properties.Name);
-                    assert(properties.Type);
-                  }),
-                  (properties) =>
-                    find(
-                      findRecord({
-                        name: properties.Name,
-                        type: properties.Type,
-                      })
-                    )(ResourceRecordSets),
-                ])(),
+              (properties) =>
+                find(
+                  findRecord({
+                    name: properties.Name,
+                    type: properties.Type,
+                  })
+                )(hostedZone.RecordSet),
               assignTags({ Tags: hostedZone.Tags }),
               tap((ResourceRecord) => {
                 logger.info(`getByName ${name} result: ${tos(ResourceRecord)}`);
