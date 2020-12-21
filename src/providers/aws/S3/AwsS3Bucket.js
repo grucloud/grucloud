@@ -5,6 +5,8 @@ const {
   map,
   filter,
   not,
+  or,
+  and,
   tap,
   pipe,
   switchCase,
@@ -416,22 +418,28 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
   const getById = async ({ id }) => await getByName({ name: id });
 
-  const headBucket = async ({ id }) => {
-    try {
-      await s3().headBucket({ Bucket: id });
-      //logger.debug(`headBucket ${id}: UP`);
-      return true;
-    } catch (error) {
-      if (error.statusCode === 404) {
-        //logger.debug(`headBucket ${id}:DOWN`);
-        return false;
-      }
-      logger.error(`headBucket ${id}`);
-      logger.error(error);
-
-      throw error;
-    }
-  };
+  const headBucket = async ({ id }) =>
+    tryCatch(
+      pipe([
+        tap(() => {
+          logger.debug(`headBucket: ${id}`);
+        }),
+        () => s3().headBucket({ Bucket: id }),
+        () => true,
+      ]),
+      switchCase([
+        or([
+          eq(get("statusCode"), 404),
+          and([eq(get("statusCode"), 400), eq(get("code"), "BadRequest")]),
+        ]),
+        () => false,
+        (error) => {
+          logger.error(`headBucket ${id}`);
+          logger.error(error);
+          throw error;
+        },
+      ])
+    )();
 
   const isUpById = async ({ id }) => {
     const up = await headBucket({ id });
@@ -686,7 +694,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       async () => {
         do {
           var isTruncated = await pipe([
-            async () => await s3().listObjectsV2({ Bucket }),
+            () => s3().listObjectsV2({ Bucket }),
             ({ Contents }) => Contents,
             tap((Contents) => {
               logger.debug(`listObjects Contents: ${tos({ Contents })}`);
