@@ -52,7 +52,7 @@ exports.AwsDistribution = ({ spec, config }) => {
         ])()),
         Tags: await pipe([
           (distribution) =>
-            cloudfront.listTagsForResource({
+            cloudfront().listTagsForResource({
               Resource: distribution.ARN,
             }),
           get("Tags.Items"),
@@ -204,9 +204,27 @@ exports.AwsDistribution = ({ spec, config }) => {
           },
         }),
       ({ ETag }) =>
-        cloudfront().deleteDistribution({
-          Id: id,
-          IfMatch: ETag,
+        retryCall({
+          name: `deleteDistribution: ${name} id: ${id}`,
+          fn: () =>
+            cloudfront().deleteDistribution({
+              Id: id,
+              IfMatch: ETag,
+            }),
+          isExpectedResult: () => true,
+          config,
+          shouldRetryOnException: ({ error, name }) =>
+            pipe([
+              () => {
+                logger.info(
+                  `deleteDistribution shouldRetryOnException ${tos({
+                    name,
+                    error,
+                  })}`
+                );
+              },
+              eq(get("code"), "DistributionNotDisabled"),
+            ])(error),
         }),
       tap(() =>
         retryCall({
