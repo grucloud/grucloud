@@ -624,11 +624,20 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Multi Plan",
+      "name": "Multi Info",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/multi/",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["info"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Multi Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/multi/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["plan"]
     },
     {
       "type": "node",

@@ -1714,19 +1714,12 @@ function CoreProvider({
       () => any((type) => new RegExp(type, "i").test(spec.type))(types),
       // PlanDirection
       () => {
+        logger.debug(
+          `planFindDestroy ${type}/${name}, direction: ${direction}, ${isNameInOurPlan}`
+        );
         if (direction == PlanDirection.UP) {
-          if (!isNameInOurPlan) {
-            logger.debug(
-              `planFindDestroy ${type}/${name} is not ${resourceNames()} and plan UP`
-            );
-            return true;
-          } else {
-            return false;
-          }
+          return false;
         } else {
-          logger.debug(
-            `planFindDestroy ${type}/${name} going down: ${isNameInOurPlan}`
-          );
           return isNameInOurPlan;
         }
       },
