@@ -164,7 +164,7 @@ module.exports = ({ resources, provider }) => {
                 assert.equal(result.headers["content-type"], `text/html`);
                 return [200].includes(result.status);
               },
-              config: { retryCount: 20, retryDelay: 5e3 },
+              config: { retryCount: 60, retryDelay: 5e3 },
             });
           },
         },
