@@ -212,6 +212,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Aws Certificate List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/certificate",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["list", "-o"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Aws Certificate Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/certificate",

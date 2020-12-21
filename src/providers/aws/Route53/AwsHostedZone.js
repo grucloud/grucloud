@@ -22,6 +22,7 @@ const {
   pluck,
   defaultsDeep,
   isEmpty,
+  includes,
   differenceWith,
   isDeepEqual,
   flatten,
@@ -136,11 +137,35 @@ exports.AwsHostedZone = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   const createReusableDelegationSet = pipe([
-    () =>
-      route53().createReusableDelegationSet({
-        CallerReference: getNewCallerReference(),
-      }),
-    get("DelegationSet.Id"),
+    () => route53().listReusableDelegationSets(),
+    get("DelegationSets"),
+    tap((ReusableDelegationSets) => {
+      logger.info(
+        `createReusableDelegationSet: #ReusableDelegationSets ${ReusableDelegationSets.length}`
+      );
+    }),
+    find(pipe([get("CallerReference"), includes("grucloud")])),
+    tap((ReusableDelegation) => {
+      logger.info(
+        `createReusableDelegationSet: ReusableDelegation: ${ReusableDelegation}`
+      );
+    }),
+    switchCase([
+      isEmpty,
+      pipe([
+        () =>
+          route53().createReusableDelegationSet({
+            CallerReference: getNewCallerReference(),
+          }),
+        get("DelegationSet.Id"),
+      ]),
+      get("Id"),
+    ]),
+    tap((DelegationSetId) => {
+      logger.info(
+        `createReusableDelegationSet: DelegationSetId: ${DelegationSetId}`
+      );
+    }),
     (DelegationSetId) => DelegationSetId.replace("/delegationset/", ""),
     tap((DelegationSetId) => {
       logger.info(`create DelegationSet: ${DelegationSetId}`);
@@ -389,7 +414,7 @@ exports.compareHostedZone = async ({ usedBySet, target, live, dependencies }) =>
       targetRecordSet: async () =>
         map(
           tryCatch(
-            (resource) => resource.resolveConfig({ deep: false }),
+            (resource) => resource.resolveConfig(),
             (error) => {
               logger.error("compareHostedZone error in resolveConfig");
               logger.error(tos(error));
