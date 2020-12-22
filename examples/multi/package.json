@@ -11,7 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "*",
-    "node-dig-dns": "^0.2.12"
+    "@grucloud/core": "*"
   }
 }

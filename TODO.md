@@ -2,7 +2,7 @@
 
 ## Common:
 
-- add project name as aws tags,
+- remove .DS_Store
 - gcp: projectName function to field
 - PROMPT='%4~ %# '
 - iam deal with deleted user

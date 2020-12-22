@@ -1,39 +1,34 @@
 const assert = require("assert");
-const dig = require("node-dig-dns");
+const { Resolver } = require("dns").promises;
 const { retryCallOnError, retryCall } = require("@grucloud/core").Retry;
 const Axios = require("axios");
-const { pipe, get } = require("rubico");
-const { first, find } = require("rubico/x");
+const { pipe, get, switchCase } = require("rubico");
+const { first, find, isEmpty } = require("rubico/x");
 const { makeDomainName } = require("./iac");
-const checkDigResult = ({ type, digResult, liveRecordSet }) => {
-  if (!digResult.answer) {
-    return false;
-  }
-  const entryAnswer = find((answer) => answer.type === type)(digResult.answer);
 
-  return !!entryAnswer?.value;
-};
-
-const checkDig = async ({ nameServer, domain, type = "A", hostedZoneLive }) => {
+const checkDig = async ({ nameServer, domain, type = "A" }) => {
   let commandParam = [domain, type];
+  const resolver = new Resolver();
+
   if (nameServer) {
-    commandParam = [`@${nameServer}`, ...commandParam];
+    const ipDns = await resolver.resolve4(nameServer);
+    resolver.setServers(ipDns);
   }
+
   await retryCall({
     name: `dig ${commandParam}`,
-    fn: () => dig(commandParam),
+    fn: switchCase([
+      () => type === "A",
+      () => resolver.resolve4(domain),
+      () => {
+        //TODO
+      },
+    ]),
     shouldRetryOnException: ({ error, name }) => {
-      //logger.error(`shouldRetryOnException ${name}, error: ${tos(error)}`);
-      //error.stack && logger.error(error.stack);
       return true;
     },
     isExpectedResult: (digResult) => {
-      //console.log(result.answer);
-      return checkDigResult({
-        type,
-        digResult,
-        liveRecordSet: hostedZoneLive.RecordSet,
-      });
+      return !isEmpty(digResult);
     },
     config: { retryCount: 200, retryDelay: 5e3 },
   });
@@ -144,16 +139,14 @@ module.exports = ({ resources, provider }) => {
             await checkDig({
               nameServer,
               domain: domainName,
-              hostedZoneLive,
             });
           },
         },
         {
           name: `dig default nameserver ${domainName}`,
-          command: async ({ hostedZoneLive }) => {
+          command: async ({}) => {
             await checkDig({
               domain: domainName,
-              hostedZoneLive,
             });
           },
         },
