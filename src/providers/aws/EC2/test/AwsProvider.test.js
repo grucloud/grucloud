@@ -115,14 +115,6 @@ describe("AwsProvider", async function () {
     assert.equal(config.MaxCount, 1);
     assert.equal(config.MinCount, 1);
     //assert.equal(config.KeyName, keyPair.name);
-    assert.equal(
-      config.NetworkInterfaces[0].SubnetId,
-      notAvailable(subnetName, "SubnetId")
-    );
-    assert.equal(
-      config.NetworkInterfaces[0].Groups[0],
-      notAvailable(securityGroupName, "GroupId")
-    );
   });
   it("aws info", async function () {
     const info = await provider.info();
