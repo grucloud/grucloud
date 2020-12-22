@@ -25,9 +25,6 @@ describe("AwsRouteTables", async function () {
 
     await provider.start();
 
-    const { results: lives } = await provider.listLives({ our: true });
-    assert.equal(lives.length, 0);
-
     vpc = await provider.makeVpc({
       name: "vpc",
       properties: () => ({

@@ -1,3 +1,5 @@
+const pkg = require("../package.json");
+
 module.exports = () => ({
   google: {
     projectName: () => "grucloud-e2e",
@@ -7,6 +9,7 @@ module.exports = () => ({
     domainName: "grucloud.org",
   },
   aws: {
+    projectName: pkg.name,
     region: "eu-west-2",
     zone: "eu-west-2a",
   },

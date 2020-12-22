@@ -2,7 +2,7 @@ process.env.AWS_SDK_LOAD_CONFIG = "true";
 const AWS = require("aws-sdk");
 const assert = require("assert");
 const { pipe, tryCatch, tap, switchCase, and, get, eq } = require("rubico");
-const { first, find } = require("rubico/x");
+const { first, find, isEmpty } = require("rubico/x");
 const logger = require("../../logger")({ prefix: "AwsCommon" });
 const { tos } = require("../../tos");
 const { retryCall } = require("../Retry");
@@ -71,20 +71,21 @@ exports.shouldRetryOnExceptionDelete = ({ error, name }) => {
   return retry;
 };
 
-exports.buildTags = ({
-  name,
-  config: {
+exports.buildTags = ({ name, config }) => {
+  const {
     managedByKey,
     managedByValue,
     stageTagKey,
     createdByProviderKey,
     stage,
     providerName,
-  },
-}) => {
+    projectName,
+  } = config;
+
   assert(name);
   assert(providerName);
   assert(stage);
+
   return [
     {
       Key: KeyName,
@@ -102,14 +103,20 @@ exports.buildTags = ({
       Key: stageTagKey,
       Value: stage,
     },
+    { Key: "projectName", Value: projectName },
   ];
 };
 
 exports.isOurMinion = ({ resource, config }) => {
-  const { createdByProviderKey, providerName, stageTagKey, stage } = config;
+  const {
+    createdByProviderKey,
+    providerName,
+    stageTagKey,
+    stage,
+    projectName,
+  } = config;
   return pipe([
     tap(() => {
-      assert(providerName);
       assert(createdByProviderKey);
       assert(resource);
       assert(stage);
@@ -117,33 +124,44 @@ exports.isOurMinion = ({ resource, config }) => {
     switchCase([
       and([
         find(
-          (tag) =>
-            tag.Key === createdByProviderKey && tag.Value === providerName
+          and([eq(get("Key"), "projectName"), eq(get("Value"), projectName)])
         ),
-        find((tag) => tag.Key === stageTagKey && tag.Value === stage),
+        find(and([eq(get("Key"), stageTagKey), eq(get("Value"), stage)])),
       ]),
       () => true,
       () => false,
     ]),
     tap((minion) => {
       logger.debug(
-        `isOurMinion ${minion}, ${tos({ stage, providerName, resource })}`
+        `isOurMinion ${minion}, ${tos({
+          stage,
+          projectName,
+          resource,
+        })}`
       );
     }),
   ])(resource.Tags || []);
 };
 
-exports.findNameInTags = (item) => {
-  assert(item);
-  assert(Array.isArray(item.Tags), `no Tags array in ${tos(item)}`);
-  const tag = item.Tags.find((tag) => tag.Key === KeyName);
-  if (tag?.Value) {
-    logger.debug(`findNameInTags ${tag.Value}`);
-    return tag.Value;
-  } else {
-    logger.debug(`findNameInTags: cannot find name`);
-  }
-};
+exports.findNameInTags = (item) =>
+  pipe([
+    tap(() => {
+      assert(item);
+      assert(Array.isArray(item.Tags), `no Tags array in ${tos(item)}`);
+    }),
+    find(eq(get("Key"), KeyName)),
+    get("Value"),
+    switchCase([
+      isEmpty,
+      () => {
+        logger.debug(`findNameInTags: cannot find name in ${tos(item)}`);
+      },
+      (Value) => {
+        logger.debug(`findNameInTags ${Value}`);
+        return Value;
+      },
+    ]),
+  ])(item?.Tags);
 
 exports.findNameInDescription = ({ Description = "" }) => {
   const tags = Description.split("tags:")[1];

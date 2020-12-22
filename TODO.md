@@ -2,7 +2,8 @@
 
 ## Common:
 
-- add project name as aws tags
+- add project name as aws tags,
+- gcp: projectName function to field
 - PROMPT='%4~ %# '
 - iam deal with deleted user
 

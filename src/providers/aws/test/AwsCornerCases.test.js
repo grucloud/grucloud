@@ -4,7 +4,11 @@ const { AwsProvider } = require("../AwsProvider");
 describe("AwsProvider Corner case", async function () {
   it("invalid zone", async function () {
     try {
-      const config = { region: "eu-west-2", zone: "us-central1-a" };
+      const config = {
+        region: "eu-west-2",
+        zone: "us-central1-a",
+        projectName: "test",
+      };
       const provider = AwsProvider({
         name: "aws",
         config,

@@ -46,6 +46,7 @@ const fetchAccountId = pipe([
 
 exports.AwsProvider = ({ name = "aws", config }) => {
   assert(config);
+  assert(config.projectName, "missing projectName in config");
 
   AWS.config.apiVersions = {
     ec2: "2016-11-15",
