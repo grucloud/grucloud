@@ -27,19 +27,19 @@ exports.AwsIamGroup = ({ spec, config }) => {
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {
-        logger.debug(`getList ${tos(params)}`);
+        logger.info(`getList group ${tos(params)}`);
       }),
       () => iam().listGroups(params),
+      get("Groups"),
       tap((groups) => {
         logger.debug(`getList groups: ${tos(groups)}`);
       }),
-      get("Groups"),
       (groups) => ({
         total: groups.length,
         items: groups,
       }),
-      tap((groups) => {
-        logger.debug(`getList results: ${tos(groups)}`);
+      tap(({ total }) => {
+        logger.info(`getList #groups: ${tos(total)}`);
       }),
     ])();
 
