@@ -109,7 +109,13 @@ exports.AwsDistribution = ({ spec, config }) => {
         logger.info(`create distribution: ${name}`);
         logger.debug(`create distribution: ${name}, ${tos(payload)}`);
       }),
-      () => cloudfront().createDistributionWithTags(payload),
+      () =>
+        cloudfront().createDistributionWithTags({
+          DistributionConfigWithTags: {
+            DistributionConfig: payload,
+            Tags: { Items: buildTags({ name, config }) },
+          },
+        }),
       tap((result) => {
         logger.debug(`created distribution: ${name}, result: ${tos(result)}`);
       }),
@@ -131,7 +137,6 @@ exports.AwsDistribution = ({ spec, config }) => {
       tap(() => {
         logger.info(`update distribution ${tos({ name, id })}`);
         assert(id, "id");
-        assert(payload.DistributionConfigWithTags);
       }),
       () => cloudfront().getDistributionConfig({ Id: id }),
       (config) =>
@@ -139,9 +144,7 @@ exports.AwsDistribution = ({ spec, config }) => {
           get("DistributionConfig"),
           (distributionConfig) =>
             defaultsDeep(distributionConfig)(
-              omit(["CallerReference", "Origin"])(
-                payload.DistributionConfigWithTags.DistributionConfig
-              )
+              omit(["CallerReference", "Origin"])(payload)
             ),
           (DistributionConfig) =>
             cloudfront().updateDistribution({
@@ -155,7 +158,7 @@ exports.AwsDistribution = ({ spec, config }) => {
         ])(config),
       () =>
         retryCall({
-          name: `is distribution  updated ? : ${name} id: ${id}`,
+          name: `distribution isUpById : ${name} id: ${id}`,
           fn: () => isUpById({ id }),
           config: { retryCount: 6 * 60, retryDelay: 10e3 },
         }),
@@ -176,30 +179,26 @@ exports.AwsDistribution = ({ spec, config }) => {
           id,
           name,
           payload: {
-            DistributionConfigWithTags: {
-              DistributionConfig: {
-                Enabled: false,
-                DefaultCacheBehavior: {
-                  ForwardedValues: {
-                    QueryString: false,
-                    Cookies: {
-                      Forward: "none",
-                    },
-                    Headers: {
-                      Quantity: 0,
-                      Items: [],
-                    },
-                    QueryStringCacheKeys: {
-                      Quantity: 0,
-                      Items: [],
-                    },
-                  },
-                  MinTTL: 60,
-                  DefaultTTL: 86400,
-                  MaxTTL: 31536000,
-                  CachePolicyId: "",
+            Enabled: false,
+            DefaultCacheBehavior: {
+              ForwardedValues: {
+                QueryString: false,
+                Cookies: {
+                  Forward: "none",
+                },
+                Headers: {
+                  Quantity: 0,
+                  Items: [],
+                },
+                QueryStringCacheKeys: {
+                  Quantity: 0,
+                  Items: [],
                 },
               },
+              MinTTL: 60,
+              DefaultTTL: 86400,
+              MaxTTL: 31536000,
+              CachePolicyId: "",
             },
           },
         }),
@@ -244,23 +243,18 @@ exports.AwsDistribution = ({ spec, config }) => {
     dependencies: { certificate },
   }) =>
     defaultsDeep({
-      DistributionConfigWithTags: {
-        DistributionConfig: {
-          CallerReference: `grucloud-${new Date()}`,
-          Enabled: true,
-          ...(certificate && {
-            ViewerCertificate: {
-              ACMCertificateArn: getField(certificate, "CertificateArn"),
-              SSLSupportMethod: "sni-only",
-              MinimumProtocolVersion: "TLSv1.2_2019",
-              Certificate: getField(certificate, "CertificateArn"),
-              CertificateSource: "acm",
-              CloudFrontDefaultCertificate: false,
-            },
-          }),
+      CallerReference: `grucloud-${new Date()}`,
+      Enabled: true,
+      ...(certificate && {
+        ViewerCertificate: {
+          ACMCertificateArn: getField(certificate, "CertificateArn"),
+          SSLSupportMethod: "sni-only",
+          MinimumProtocolVersion: "TLSv1.2_2019",
+          Certificate: getField(certificate, "CertificateArn"),
+          CertificateSource: "acm",
+          CloudFrontDefaultCertificate: false,
         },
-        Tags: { Items: buildTags({ name, config }) },
-      },
+      }),
     })(properties);
 
   return {
@@ -299,14 +293,7 @@ exports.AwsDistribution = ({ spec, config }) => {
 
 exports.compareDistribution = async ({ target, live, dependencies }) =>
   pipe([
-    () =>
-      pipe([
-        get("DistributionConfigWithTags.DistributionConfig"),
-        omit([
-          "CallerReference",
-          "ViewerCertificate.CloudFrontDefaultCertificate",
-        ]),
-      ])(target),
+    omit(["CallerReference", "ViewerCertificate.CloudFrontDefaultCertificate"]),
     tap((targetFiltered) => {
       logger.debug(`compareDistribution diff:${tos(targetFiltered)}`);
     }),
@@ -314,4 +301,4 @@ exports.compareDistribution = async ({ target, live, dependencies }) =>
     tap((diff) => {
       logger.debug(`compareDistribution diff:${tos(diff)}`);
     }),
-  ])();
+  ])(target);

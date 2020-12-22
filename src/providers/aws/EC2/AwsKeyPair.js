@@ -20,16 +20,24 @@ module.exports = AwsClientKeyPair = ({ spec, config }) => {
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
   const getById = ({ id }) => getByIdCore({ id, getList, findId });
 
-  const getList = async ({ params } = {}) => {
-    logger.debug(`list keypair params: ${tos(params)}`);
-    const { KeyPairs } = await ec2().describeKeyPairs(params);
-    logger.debug(`list keypair: ${tos(KeyPairs)}`);
-
-    return {
-      total: KeyPairs.length,
-      items: KeyPairs,
-    };
-  };
+  const getList = async ({ params } = {}) =>
+    pipe([
+      tap(() => {
+        logger.info(`getList keypair ${tos(params)}`);
+      }),
+      () => ec2().describeKeyPairs(params),
+      get("KeyPairs"),
+      tap((KeyPairs) => {
+        logger.debug(`getList keypair: ${tos(KeyPairs)}`);
+      }),
+      (KeyPairs) => ({
+        total: KeyPairs.length,
+        items: KeyPairs,
+      }),
+      tap(({ total }) => {
+        logger.info(`getList #keypair: ${total}`);
+      }),
+    ])();
 
   const validate = async ({ name }) =>
     pipe([

@@ -129,38 +129,35 @@ const createResources = async ({ provider }) => {
     dependencies: { websiteBucket, certificate },
     properties: ({}) => {
       return {
-        DistributionConfigWithTags: {
-          DistributionConfig: {
-            Comment: `${bucketName}.s3.amazonaws.com`,
-            Aliases: { Quantity: 1, Items: [domainName] },
-            DefaultRootObject: "index.html",
-            DefaultCacheBehavior: {
-              TargetOriginId: `S3-${bucketName}`,
-              ViewerProtocolPolicy: "redirect-to-https",
-              ForwardedValues: {
-                Cookies: {
-                  Forward: "none",
-                },
-                QueryString: false,
-              },
-              MinTTL: 600,
-              TrustedSigners: {
-                Enabled: false,
-                Quantity: 0,
-                Items: [],
-              },
+        PriceClass: "PriceClass_100",
+        Comment: `${bucketName}.s3.amazonaws.com`,
+        Aliases: { Quantity: 1, Items: [domainName] },
+        DefaultRootObject: "index.html",
+        DefaultCacheBehavior: {
+          TargetOriginId: `S3-${bucketName}`,
+          ViewerProtocolPolicy: "redirect-to-https",
+          ForwardedValues: {
+            Cookies: {
+              Forward: "none",
             },
-            Origins: {
-              Items: [
-                {
-                  DomainName: `${bucketName}.s3.amazonaws.com`,
-                  Id: `S3-${bucketName}`,
-                  S3OriginConfig: { OriginAccessIdentity: "" },
-                },
-              ],
-              Quantity: 1,
-            },
+            QueryString: false,
           },
+          MinTTL: 600,
+          TrustedSigners: {
+            Enabled: false,
+            Quantity: 0,
+            Items: [],
+          },
+        },
+        Origins: {
+          Items: [
+            {
+              DomainName: `${bucketName}.s3.amazonaws.com`,
+              Id: `S3-${bucketName}`,
+              S3OriginConfig: { OriginAccessIdentity: "" },
+            },
+          ],
+          Quantity: 1,
         },
       };
     },
