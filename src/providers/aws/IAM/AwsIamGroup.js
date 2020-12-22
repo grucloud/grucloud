@@ -71,23 +71,24 @@ exports.AwsIamGroup = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createGroup-property
-  const create = async ({ name, payload = {}, dependencies }) => {
-    assert(name);
-    assert(payload);
-    logger.debug(`create ${tos({ name, payload })}`);
 
-    const createParams = defaultsDeep({})(payload);
-
-    const { Group } = await iam().createGroup(createParams);
-    logger.debug(`create result ${tos(Group)}`);
-    return Group;
-  };
+  const create = async ({ name, payload = {}, dependencies }) =>
+    pipe([
+      tap(() => {
+        logger.info(`create iam group ${tos({ name, payload })}`);
+      }),
+      () => iam().createGroup(payload),
+      get("Group"),
+      tap((Group) => {
+        logger.info(`created iam group ${tos({ name, Group })}`);
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteGroup-property
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.debug(`destroy ${tos({ name, id })}`);
+        logger.info(`destroy iam group ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
       () => iam().listAttachedGroupPolicies({ GroupName: id, MaxItems: 1e3 }),
@@ -110,7 +111,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
         })
       ),
       tap(() => {
-        logger.debug(`destroyed iam group done, ${tos({ name, id })}`);
+        logger.info(`destroyed iam group, ${tos({ name, id })}`);
       }),
     ])();
 
