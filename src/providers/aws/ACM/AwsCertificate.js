@@ -9,6 +9,7 @@ const {
   switchCase,
   pick,
   filter,
+  eq,
 } = require("rubico");
 const {
   first,
@@ -85,13 +86,13 @@ exports.AwsCertificate = ({ spec, config }) => {
     tryCatch(
       ({ id }) => acm().describeCertificate({ CertificateArn: id }),
       switchCase([
-        (error) => error.code !== "ResourceNotFoundException",
+        eq(get("code"), "ResourceNotFoundException"),
+        (error, { id }) => {
+          logger.debug(`getById ${id} ResourceNotFoundException`);
+        },
         (error) => {
           logger.debug(`getById error: ${tos(error)}`);
           throw error;
-        },
-        (error, { id }) => {
-          logger.debug(`getById ${id} ResourceNotFoundException`);
         },
       ])
     ),
@@ -154,7 +155,7 @@ exports.AwsCertificate = ({ spec, config }) => {
       tap(() =>
         retryCall({
           name: `certificate isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id }),
+          fn: () => isDownById({ id, name }),
           config,
         })
       ),
@@ -185,5 +186,6 @@ exports.AwsCertificate = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    cannotBeDeleted: () => true,
   };
 };

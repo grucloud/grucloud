@@ -29,10 +29,11 @@ const buildTags = ({
     createdByProviderKey,
     providerName,
     stage,
+    projectName,
   },
   Tagging,
 }) =>
-  `${managedByKey}=${managedByValue}&${stageTagKey}=${stage}&${createdByProviderKey}=${providerName}${
+  `${managedByKey}=${managedByValue}&${stageTagKey}=${stage}&${createdByProviderKey}=${providerName}&projectName=${projectName}${
     Tagging ? `&${Tagging}` : ""
   }`;
 

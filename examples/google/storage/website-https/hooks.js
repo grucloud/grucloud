@@ -1,44 +1,36 @@
 const assert = require("assert");
-const dig = require("node-dig-dns");
+const { Resolver } = require("dns").promises;
+
 const { retryCallOnError, retryCall } = require("@grucloud/core").Retry;
 const Axios = require("axios");
 const { pipe, get } = require("rubico");
 const { first, find } = require("rubico/x");
 
-const checkDigResult = ({ type, digResult, liveRecordSet }) => {
-  if (!digResult.answer) {
-    return false;
-  }
-  const entryAnswer = find((answer) => answer.type === type)(digResult.answer);
-  const entryExpected = find((liveRecord) => liveRecord.type === type)(
-    liveRecordSet
-  );
-
-  return entryAnswer && entryAnswer.value === entryExpected.rrdatas[0];
-};
-
-const checkDig = async ({
-  nameServer,
-  domain,
-  type = "A",
-  dnsManagedZoneLive,
-}) => {
+const checkDig = async ({ nameServer, domain, type = "A" }) => {
   let commandParam = [domain, type];
+  const resolver = new Resolver();
+
   if (nameServer) {
-    commandParam = [`@${nameServer}`, ...commandParam];
+    const ipDns = await resolver.resolve4(nameServer);
+    resolver.setServers(ipDns);
   }
+
   await retryCall({
     name: `dig ${commandParam}`,
-    fn: () => dig(commandParam),
-    isExpectedResult: (digResult) => {
-      //console.log(result.answer);
-      return checkDigResult({
-        type,
-        digResult,
-        liveRecordSet: dnsManagedZoneLive.recordSet,
-      });
+    fn: switchCase([
+      () => type === "A",
+      () => resolver.resolve4(domain),
+      () => {
+        //TODO
+      },
+    ]),
+    shouldRetryOnException: ({ error, name }) => {
+      return true;
     },
-    config: { retryCount: 20, retryDelay: 5e3 },
+    isExpectedResult: (digResult) => {
+      return !isEmpty(digResult);
+    },
+    config: { retryCount: 200, retryDelay: 5e3 },
   });
 };
 
@@ -70,7 +62,7 @@ module.exports = ({ resources, provider }) => {
             await retryCallOnError({
               name: `get  ${bucketUrlIndex}`,
               fn: () => axios.get(bucketUrlIndex),
-              shouldRetryOnException: ({error}) => {
+              shouldRetryOnException: ({ error }) => {
                 return [404].includes(error.response?.status);
               },
               config: { retryCount: 20, retryDelay: 5e3 },
@@ -83,7 +75,7 @@ module.exports = ({ resources, provider }) => {
             await retryCallOnError({
               name: `get  ${bucketStorageUrl}`,
               fn: () => axios.get(bucketStorageUrl),
-              shouldRetryOnException: ({error}) => {
+              shouldRetryOnException: ({ error }) => {
                 return [404].includes(error.response?.status);
               },
               config: { retryCount: 20, retryDelay: 5e3 },
@@ -96,7 +88,7 @@ module.exports = ({ resources, provider }) => {
             await retryCallOnError({
               name: `get  ${bucketUrl404}`,
               fn: () => axios.get(bucketUrl404),
-              shouldRetryOnException: ({error}) => {
+              shouldRetryOnException: ({ error }) => {
                 return [404].includes(error.response?.status);
               },
               config: { retryCount: 20, retryDelay: 5e3 },
@@ -119,7 +111,6 @@ module.exports = ({ resources, provider }) => {
             await checkDig({
               nameServer,
               domain: resources.bucketPublic.name,
-              dnsManagedZoneLive,
             });
           },
         },
@@ -134,7 +125,6 @@ module.exports = ({ resources, provider }) => {
             await checkDig({
               nameServer,
               domain: resources.bucketPublic.name,
-              dnsManagedZoneLive,
             });
           },
         },
@@ -153,10 +143,10 @@ module.exports = ({ resources, provider }) => {
             await retryCallOnError({
               name: `get  ${bucketUrl}`,
               fn: () => axios.get(bucketUrl),
-              shouldRetryOnException: ({error}) => {
+              shouldRetryOnException: ({ error }) => {
                 return [404].includes(error.response?.status);
               },
-              config: { retryCount: 20, retryDelay: 5e3 },
+              config: { retryCount: 200, retryDelay: 5e3 },
             });
           },
         },

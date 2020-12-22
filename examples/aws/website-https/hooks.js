@@ -1,36 +1,36 @@
 const assert = require("assert");
-const dig = require("node-dig-dns");
+const { Resolver } = require("dns").promises;
 const { retryCallOnError, retryCall } = require("@grucloud/core").Retry;
 const Axios = require("axios");
-const { pipe, get } = require("rubico");
-const { first, find } = require("rubico/x");
+const { pipe, get, switchCase } = require("rubico");
+const { first, find, isEmpty } = require("rubico/x");
 const { makeDomainName } = require("./iac");
-const checkDigResult = ({ type, digResult, liveRecordSet }) => {
-  if (!digResult.answer) {
-    return false;
-  }
-  const entryAnswer = find((answer) => answer.type === type)(digResult.answer);
 
-  return !!entryAnswer?.value;
-};
-
-const checkDig = async ({ nameServer, domain, type = "A", hostedZoneLive }) => {
+const checkDig = async ({ nameServer, domain, type = "A" }) => {
   let commandParam = [domain, type];
+  const resolver = new Resolver();
+
   if (nameServer) {
-    commandParam = [`@${nameServer}`, ...commandParam];
+    const ipDns = await resolver.resolve4(nameServer);
+    resolver.setServers(ipDns);
   }
+
   await retryCall({
     name: `dig ${commandParam}`,
-    fn: () => dig(commandParam),
-    isExpectedResult: (digResult) => {
-      //console.log(result.answer);
-      return checkDigResult({
-        type,
-        digResult,
-        liveRecordSet: hostedZoneLive.RecordSet,
-      });
+    fn: switchCase([
+      () => type === "A",
+      () => resolver.resolve4(domain),
+      () => {
+        //TODO
+      },
+    ]),
+    shouldRetryOnException: ({ error, name }) => {
+      return true;
     },
-    config: { retryCount: 20, retryDelay: 5e3 },
+    isExpectedResult: (digResult) => {
+      return !isEmpty(digResult);
+    },
+    config: { retryCount: 200, retryDelay: 5e3 },
   });
 };
 
@@ -51,7 +51,7 @@ module.exports = ({ resources, provider }) => {
   const bucketUrl = `https://${domainName}`;
   const bucketStorageUrl = `http://${websiteBucket.name}.s3.amazonaws.com`;
   const bucketUrlIndex = `${bucketStorageUrl}/index.html`;
-  const bucketUrl404 = `${bucketStorageUrl}/404.html`;
+  //const bucketUrl404 = `${bucketStorageUrl}/404.html`;
 
   const axios = Axios.create({
     timeout: 15e3,
@@ -79,7 +79,7 @@ module.exports = ({ resources, provider }) => {
             await retryCallOnError({
               name: `get  ${bucketUrlIndex}`,
               fn: () => axios.get(bucketUrlIndex),
-              shouldRetryOnException: ({error}) =>
+              shouldRetryOnException: ({ error }) =>
                 [404].includes(error.response?.status),
               isExpectedResult: (result) => {
                 assert(result.headers["content-type"], `text/html`);
@@ -95,19 +95,7 @@ module.exports = ({ resources, provider }) => {
             await retryCallOnError({
               name: `get  ${bucketStorageUrl}`,
               fn: () => axios.get(bucketStorageUrl),
-              shouldRetryOnException: ({error}) =>
-                [404].includes(error.response?.status),
-              config: { retryCount: 20, retryDelay: 5e3 },
-            });
-          },
-        },
-        {
-          name: `get ${bucketUrl404}`,
-          command: async ({}) => {
-            await retryCallOnError({
-              name: `get  ${bucketUrl404}`,
-              fn: () => axios.get(bucketUrl404),
-              shouldRetryOnException: ({error}) =>
+              shouldRetryOnException: ({ error }) =>
                 [404].includes(error.response?.status),
               config: { retryCount: 20, retryDelay: 5e3 },
             });
@@ -119,7 +107,7 @@ module.exports = ({ resources, provider }) => {
             await retryCallOnError({
               name: `get  ${distrubutionUrl}`,
               fn: () => axios.get(distrubutionUrl),
-              shouldRetryOnException: ({error}) => {
+              shouldRetryOnException: ({ error }) => {
                 return [404].includes(error.response?.status);
               },
               config: { retryCount: 20, retryDelay: 5e3 },
@@ -151,16 +139,14 @@ module.exports = ({ resources, provider }) => {
             await checkDig({
               nameServer,
               domain: domainName,
-              hostedZoneLive,
             });
           },
         },
         {
           name: `dig default nameserver ${domainName}`,
-          command: async ({ hostedZoneLive }) => {
+          command: async ({}) => {
             await checkDig({
               domain: domainName,
-              hostedZoneLive,
             });
           },
         },
@@ -170,13 +156,13 @@ module.exports = ({ resources, provider }) => {
             await retryCallOnError({
               name: `get  ${bucketUrl}`,
               fn: () => axios.get(bucketUrl),
-              shouldRetryOnException: ({error}) =>
+              shouldRetryOnException: ({ error }) =>
                 [404].includes(error.response?.status),
               isExpectedResult: (result) => {
                 assert.equal(result.headers["content-type"], `text/html`);
                 return [200].includes(result.status);
               },
-              config: { retryCount: 20, retryDelay: 5e3 },
+              config: { retryCount: 200, retryDelay: 5e3 },
             });
           },
         },

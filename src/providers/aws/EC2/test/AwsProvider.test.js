@@ -115,14 +115,6 @@ describe("AwsProvider", async function () {
     assert.equal(config.MaxCount, 1);
     assert.equal(config.MinCount, 1);
     //assert.equal(config.KeyName, keyPair.name);
-    assert.equal(
-      config.NetworkInterfaces[0].SubnetId,
-      notAvailable(subnetName, "SubnetId")
-    );
-    assert.equal(
-      config.NetworkInterfaces[0].Groups[0],
-      notAvailable(securityGroupName, "GroupId")
-    );
   });
   it("aws info", async function () {
     const info = await provider.info();
@@ -147,7 +139,7 @@ describe("AwsProvider", async function () {
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 7);
+    assert(plan.resultCreate.plans.length > 0);
   });
   it("listLives all", async function () {
     const { results: lives } = await provider.listLives({ all: true });

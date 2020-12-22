@@ -9,7 +9,7 @@ describe("AwsSecurityGroup", async function () {
   let provider;
   let vpc;
   let sg;
-  const types = ["SecurityGroup"];
+  const types = ["SecurityGroup", "Vpc"];
   before(async function () {
     try {
       config = ConfigLoader({ path: "examples/multi" });
@@ -21,7 +21,7 @@ describe("AwsSecurityGroup", async function () {
     });
 
     await provider.start();
-
+    await provider.destroyAll({ options: { all: true, types } });
     vpc = await provider.makeVpc({
       name: "vpc",
       properties: () => ({
@@ -64,13 +64,13 @@ describe("AwsSecurityGroup", async function () {
     });
     await provider.start();
     const vpc = await provider.makeVpc({
-      name: "vpc",
+      name: "vpc-empty-ingress",
       properties: () => ({
-        CidrBlock: "11.1.0.1/16",
+        CidrBlock: "11.10.0.1/16",
       }),
     });
     await provider.makeSecurityGroup({
-      name: "sg",
+      name: "sg-empty-ingress",
       dependencies: { vpc },
       properties: () => ({
         create: {

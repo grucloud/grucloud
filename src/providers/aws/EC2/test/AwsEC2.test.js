@@ -46,7 +46,7 @@ describe("AwsEC2", async function () {
     assert.equal(config.MinCount, 1);
     assert.equal(config.KeyName, keyPair.name);
   });
-  it("ec2 apply plan", async function () {
+  it.skip("ec2 apply plan", async function () {
     await testPlanDeploy({ provider, types });
 
     const serverLive = await server.getLive();

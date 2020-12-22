@@ -15,6 +15,7 @@ exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
     region,
     stageTagKey,
     stage,
+    projectName,
   } = config;
   assert(region);
   assert(stage);
@@ -38,6 +39,7 @@ exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
       [createdByProviderKey]: providerName,
       [stageTagKey]: stage,
       id: resourceId,
+      projectName,
       arnId,
       fqn,
     },
@@ -71,8 +73,8 @@ exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
         throw { code: 422, message: "resource not tagged" };
       }
     },
-    shouldRetryOnException: ({error}) => {
-      logger.error(`AwsTag shouldRetryOnException ${tos({name, error})}`);
+    shouldRetryOnException: ({ error }) => {
+      logger.error(`AwsTag shouldRetryOnException ${tos({ name, error })}`);
       return true;
     },
     config: { retryCount: 5, retryDelay: config.retryDelay },
