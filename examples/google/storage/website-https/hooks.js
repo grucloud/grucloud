@@ -146,7 +146,7 @@ module.exports = ({ resources, provider }) => {
               shouldRetryOnException: ({ error }) => {
                 return [404].includes(error.response?.status);
               },
-              config: { retryCount: 20, retryDelay: 5e3 },
+              config: { retryCount: 200, retryDelay: 5e3 },
             });
           },
         },
