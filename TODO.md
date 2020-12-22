@@ -2,7 +2,6 @@
 
 ## Common:
 
-- remove .DS_Store
 - gcp: projectName function to field
 - PROMPT='%4~ %# '
 - iam deal with deleted user
@@ -36,10 +35,7 @@
 
 ## TODO Aws:
 
-- Add Route53 domain doc
-
 - invalidate cloufront cache
-- CF priceClass 100
 - CallerReference distribution
 - ssh should use use kp.pem instead of ssh-add
 - add example code in AwsGettingStarted

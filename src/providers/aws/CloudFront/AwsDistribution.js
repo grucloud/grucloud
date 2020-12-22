@@ -78,13 +78,13 @@ exports.AwsDistribution = ({ spec, config }) => {
     tryCatch(
       ({ id }) => cloudfront().getDistribution({ Id: id }),
       switchCase([
-        (error) => error.code !== "NoSuchDistribution",
+        eq(get("code"), "NoSuchDistribution"),
+        (error, { id }) => {
+          logger.debug(`getById ${id} NoSuchDistribution`);
+        },
         (error) => {
           logger.debug(`getById error: ${tos(error)}`);
           throw error;
-        },
-        (error, { id }) => {
-          logger.debug(`getById ${id} ResourceNotFoundException`);
         },
       ])
     ),

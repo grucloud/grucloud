@@ -1,6 +1,15 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
-const { map, pipe, tap, tryCatch, filter, get, switchCase } = require("rubico");
+const {
+  map,
+  pipe,
+  tap,
+  tryCatch,
+  filter,
+  get,
+  switchCase,
+  eq,
+} = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
 const moment = require("moment");
 
@@ -110,13 +119,13 @@ exports.AwsIamRole = ({ spec, config }) => {
     tryCatch(
       ({ id }) => iam().getRole({ RoleName: id }),
       switchCase([
-        (error) => error.code !== "NoSuchEntity",
+        eq(get("code"), "NoSuchEntity"),
+        (error, { id }) => {
+          logger.debug(`getById ${id} NoSuchEntity`);
+        },
         (error) => {
           logger.debug(`getById error: ${tos(error)}`);
           throw error;
-        },
-        (error, { id }) => {
-          logger.debug(`getById ${id} NoSuchEntity`);
         },
       ])
     ),

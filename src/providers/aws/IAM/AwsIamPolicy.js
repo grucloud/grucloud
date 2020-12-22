@@ -9,6 +9,7 @@ const {
   filter,
   switchCase,
   fork,
+  eq,
 } = require("rubico");
 const { defaultsDeep, isEmpty } = require("rubico/x");
 const moment = require("moment");
@@ -87,13 +88,13 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     tryCatch(
       ({ id }) => iam().getPolicy({ PolicyArn: id }),
       switchCase([
-        (error) => error.code !== "NoSuchEntity",
+        eq(get("code"), "NoSuchEntity"),
+        (error, { id }) => {
+          logger.debug(`getById ${id} NoSuchEntity`);
+        },
         (error) => {
           logger.debug(`getById error: ${tos(error)}`);
           throw error;
-        },
-        (error, { id }) => {
-          logger.debug(`getById ${id} NoSuchEntity`);
         },
       ])
     ),
