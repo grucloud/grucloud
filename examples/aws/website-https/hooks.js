@@ -22,6 +22,11 @@ const checkDig = async ({ nameServer, domain, type = "A", hostedZoneLive }) => {
   await retryCall({
     name: `dig ${commandParam}`,
     fn: () => dig(commandParam),
+    shouldRetryOnException: ({ error, name }) => {
+      //logger.error(`shouldRetryOnException ${name}, error: ${tos(error)}`);
+      //error.stack && logger.error(error.stack);
+      return true;
+    },
     isExpectedResult: (digResult) => {
       //console.log(result.answer);
       return checkDigResult({
