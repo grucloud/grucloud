@@ -1,5 +1,4 @@
 const assert = require("assert");
-const AWS = require("aws-sdk");
 const { tap, get, pipe, filter, map, not, eq } = require("rubico");
 const { isEmpty, defaultsDeep } = require("rubico/x");
 
@@ -10,7 +9,7 @@ const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const {
   Ec2New,
-  findNameInTags,
+  findNameInTagsOrId,
   shouldRetryOnException,
 } = require("../AwsCommon");
 const { tagResource } = require("../AwsTagResource");
@@ -20,32 +19,30 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const { stage } = config;
-  assert(stage);
-
   const ec2 = Ec2New(config);
 
-  const findName = (item) => {
-    const name = findNameInTags(item);
-    if (name) {
-      return name;
-    }
-    return findId(item);
-  };
-
   const findId = get("RouteTableId");
+  const findName = (item) => findNameInTagsOrId({ item, findId });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeRouteTables-property
-  const getList = async ({ params } = {}) => {
-    logger.debug(`list ${tos(params)}`);
-    const { RouteTables } = await ec2().describeRouteTables(params);
-    logger.debug(`list ${tos(RouteTables)}`);
-
-    return {
-      total: RouteTables.length,
-      items: RouteTables,
-    };
-  };
+  const getList = ({ params } = {}) =>
+    pipe([
+      tap(() => {
+        logger.info(`getList rt ${JSON.stringify(params)}`);
+      }),
+      () => ec2().describeRouteTables(params),
+      get("RouteTables"),
+      tap((items) => {
+        logger.debug(`getList rt result: ${tos(items)}`);
+      }),
+      (items) => ({
+        total: items.length,
+        items,
+      }),
+      tap(({ total }) => {
+        logger.info(`getList #rt ${total}`);
+      }),
+    ])();
 
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
   const getById = getByIdCore({ fieldIds: "RouteTableIds", getList });
@@ -56,63 +53,58 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createRouteTable-property
-  const create = async ({ name, payload, dependencies }) => {
-    assert(name);
-    const { vpc } = dependencies;
-
-    assert(vpc, "RouteTables is missing the dependency 'vpc'");
-    const vpcLive = await vpc.getLive();
-    assert(vpcLive.VpcId);
-
-    const paramCreate = {
-      VpcId: vpcLive.VpcId,
-    };
-    logger.debug(`create ${tos({ name, paramCreate })}`);
-    const {
-      RouteTable: { RouteTableId },
-    } = await ec2().createRouteTable(paramCreate);
-    assert(RouteTableId);
-    logger.info(`created ${RouteTableId}`);
-
-    await tagResource({
-      config,
-      name,
-      resourceType: "RouteTables",
-      resourceId: RouteTableId,
-    });
-
-    const { subnet } = dependencies;
-    assert(subnet, "RouteTables is missing the dependency 'subnet'");
-    const subnetLive = await subnet.getLive();
-    assert(subnetLive, "subnetLive");
-
-    assert(subnetLive.SubnetId, "SubnetId");
-    const paramsAttach = {
-      RouteTableId,
-      SubnetId: subnetLive.SubnetId,
-    };
-    logger.debug(`create, associating with subnet ${tos({ subnetLive })}`);
-    //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#associateRouteTable-property
-    await ec2().associateRouteTable(paramsAttach);
-
-    logger.debug(`associated`);
-
-    const rt = await retryCall({
-      name: `rt isUpById: ${name} id: ${RouteTableId}`,
-      fn: () => isUpById({ id: RouteTableId }),
-      config,
-    });
-
-    assert(
-      CheckAwsTags({
-        config,
-        tags: rt.Tags,
-        name: name,
+  const create = async ({ payload, name, dependencies: { vpc, subnet } }) =>
+    pipe([
+      tap(() => {
+        logger.info(`create rt ${tos({ name })}`);
+        assert(vpc, "RouteTables is missing the dependency 'vpc'");
+        assert(subnet, "RouteTables is missing the dependency 'subnet'");
       }),
-      `missing tag for ${name}`
-    );
-    return { id: RouteTableId };
-  };
+      () => vpc.getLive(),
+      ({ VpcId }) =>
+        ec2().createRouteTable({
+          VpcId,
+        }),
+      get("RouteTable.RouteTableId"),
+      tap((RouteTableId) =>
+        pipe([
+          () =>
+            tagResource({
+              config,
+              name,
+              resourceType: "RouteTables",
+              resourceId: RouteTableId,
+            }),
+          () => getById({ id: RouteTableId }),
+          (live) => {
+            assert(
+              CheckAwsTags({
+                config,
+                tags: live.Tags,
+                name,
+              }),
+              `missing tag for ${name}`
+            );
+          },
+          () => subnet.getLive(),
+          ({ SubnetId }) =>
+            ec2().associateRouteTable({
+              RouteTableId,
+              SubnetId,
+            }),
+          () =>
+            retryCall({
+              name: `rt isUpById: ${name} id: ${RouteTableId}`,
+              fn: () => isUpById({ id: RouteTableId }),
+              config,
+            }),
+        ])()
+      ),
+      tap((RouteTableId) => {
+        logger.info(`created rt ${tos({ name, RouteTableId })}`);
+      }),
+      (RouteTableId) => ({ id: RouteTableId }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#disassociateRouteTable-property
   const destroy = ({ id, name }) =>

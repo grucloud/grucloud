@@ -1,5 +1,4 @@
 const assert = require("assert");
-const AWS = require("aws-sdk");
 const { get, pipe, map, eq, tap } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { Ec2New, getByIdCore, shouldRetryOnException } = require("../AwsCommon");
@@ -55,57 +54,58 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const cannotBeDeleted = eq(get("resource.GroupName"), "default");
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
-  const create = async ({ name, payload }) => {
-    assert(name);
-    assert(payload);
 
-    const createParams = {
-      Description: managedByDescription,
-      GroupName: name,
-      ...payload.create,
-    };
-
-    logger.debug(`create sg ${tos({ name, createParams, payload })}`);
-    const { GroupId } = await ec2().createSecurityGroup(createParams);
-    logger.debug(`create GroupId ${tos(GroupId)}`);
-
-    await retryCall({
-      name: `sg isUpById: ${name} id: ${GroupId}`,
-      fn: () => isUpById({ id: GroupId, name }),
-      config,
-    });
-
-    await tagResource({
-      config,
-      name,
-      resourceType: "security-group",
-      resourceId: GroupId,
-    });
-
-    // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
-    const ingressParam = {
-      GroupId,
-      ...payload.ingress,
-    };
-    logger.debug(`create ingressParam ${tos({ ingressParam })}`);
-
-    await ec2().authorizeSecurityGroupIngress(ingressParam);
-
-    logger.debug(`create DONE`);
-
-    const sg = await getById({ id: GroupId });
-
-    assert(
-      CheckAwsTags({
-        config,
-        tags: sg.Tags,
-        name: name,
+  const create = async ({ payload, name }) =>
+    pipe([
+      tap(() => {
+        logger.info(`create sg ${tos({ name })}`);
       }),
-      `missing tag for ${name}`
-    );
+      () =>
+        ec2().createSecurityGroup({
+          Description: managedByDescription,
+          GroupName: name,
+          ...payload.create,
+        }),
+      get("GroupId"),
+      tap((GroupId) =>
+        pipe([
+          () =>
+            retryCall({
+              name: `sg isUpById: ${name} id: ${GroupId}`,
+              fn: () => isUpById({ id: GroupId, name }),
+              config,
+            }),
+          () =>
+            tagResource({
+              config,
+              name,
+              resourceType: "security",
+              resourceId: GroupId,
+            }),
+          () => getById({ id: GroupId }),
+          (live) => {
+            assert(
+              CheckAwsTags({
+                config,
+                tags: live.Tags,
+                name,
+              }),
+              `missing tag for ${name}`
+            );
+          },
+          () =>
+            ec2().authorizeSecurityGroupIngress({
+              GroupId,
+              ...payload.ingress,
+            }),
+        ])()
+      ),
+      tap((GroupId) => {
+        logger.info(`created sg ${tos({ name, GroupId })}`);
+      }),
+      (GroupId) => ({ id: GroupId }),
+    ])();
 
-    return { GroupId };
-  };
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {

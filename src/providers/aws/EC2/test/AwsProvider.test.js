@@ -139,7 +139,6 @@ describe("AwsProvider", async function () {
   it("plan", async function () {
     const plan = await provider.planQuery();
     assert.equal(plan.resultDestroy.plans.length, 0);
-    assert(plan.resultCreate.plans.length > 0);
   });
   it("listLives all", async function () {
     const { results: lives } = await provider.listLives({ all: true });

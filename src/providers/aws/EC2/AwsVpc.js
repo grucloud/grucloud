@@ -1,4 +1,3 @@
-const AWS = require("aws-sdk");
 const { isEmpty } = require("rubico/x");
 const assert = require("assert");
 const {
@@ -39,16 +38,24 @@ module.exports = AwsVpc = ({ spec, config }) => {
 
   const findId = get("VpcId");
 
-  const getList = async ({ params } = {}) => {
-    logger.debug(`getList vpc ${tos(params)}`);
-    const { Vpcs } = await ec2().describeVpcs(params);
-    logger.debug(`getList ${tos(Vpcs)}`);
-
-    return {
-      total: Vpcs.length,
-      items: Vpcs,
-    };
-  };
+  const getList = ({ params } = {}) =>
+    pipe([
+      tap(() => {
+        logger.info(`getList vpc ${JSON.stringify(params)}`);
+      }),
+      () => ec2().describeVpcs(params),
+      get("Vpcs"),
+      tap((items) => {
+        logger.debug(`getList vpc result: ${tos(items)}`);
+      }),
+      (items) => ({
+        total: items.length,
+        items,
+      }),
+      tap(({ total }) => {
+        logger.info(`getList #vpc ${total}`);
+      }),
+    ])();
 
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
 
@@ -72,41 +79,36 @@ module.exports = AwsVpc = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpc-property
-  const create = async ({ name, payload }) => {
-    assert(name);
-    assert(payload);
-    logger.debug(`create vpc ${tos({ name, payload })}`);
-    const {
-      Vpc: { VpcId },
-    } = await ec2().createVpc(payload);
-    logger.info(`create vpc ${VpcId}`);
 
-    await retryCall({
-      name: `isUpById: ${name} id: ${VpcId}`,
-      fn: () => isUpById({ id: VpcId }),
-      config,
-    });
-
-    await tagResource({
-      config,
-      name,
-      resourceType: "vpc",
-      resourceId: VpcId,
-    });
-
-    const vpc = await getById({ id: VpcId });
-
-    assert(
-      CheckAwsTags({
-        config,
-        tags: vpc.Tags,
-        name: name,
+  const create = async ({ payload, name }) =>
+    pipe([
+      tap(() => {
+        logger.info(`create vpc ${tos({ name })}`);
       }),
-      `missing tag for ${name}`
-    );
-
-    return { VpcId };
-  };
+      () => ec2().createVpc(payload),
+      get("Vpc.VpcId"),
+      tap((VpcId) =>
+        pipe([
+          () =>
+            retryCall({
+              name: `subnet isUpById: ${name} id: ${VpcId}`,
+              fn: () => isUpById({ id: VpcId, name }),
+              config,
+            }),
+          () =>
+            tagResource({
+              config,
+              name,
+              resourceType: "vpc",
+              resourceId: VpcId,
+            }),
+        ])()
+      ),
+      tap((SubnetId) => {
+        logger.info(`created subnet ${tos({ name, SubnetId })}`);
+      }),
+      (id) => ({ id }),
+    ])();
 
   const destroySubnets = async ({ VpcId }) =>
     pipe([
@@ -121,7 +123,7 @@ module.exports = AwsVpc = ({ spec, config }) => {
           ],
         }),
       // Loop through the subnets
-      async ({ Subnets }) =>
+      ({ Subnets }) =>
         pipe([
           filter((subnet) => !subnet.DefaultForAz),
           (Subnets) =>
@@ -216,20 +218,21 @@ module.exports = AwsVpc = ({ spec, config }) => {
       },
     ])();
 
-  const destroy = async ({ id, name }) => {
-    logger.debug(`destroy vpc ${tos({ name, id })}`);
-    assert(id, "destroy vpc invalid id");
+  const destroy = async ({ id, name }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`destroy vpc ${tos({ name, id })}`);
+      }),
+      () => destroySubnets({ VpcId: id }),
+      () => destroySecurityGroup({ VpcId: id }),
+      () => destroyRouteTables({ VpcId: id }),
+      () => ec2().deleteVpc({ VpcId: id }),
+      tap(() => {
+        logger.debug(`destroyed vpc ${tos({ name, id })}`);
+      }),
+    ])();
 
-    await destroySubnets({ VpcId: id });
-    await destroySecurityGroup({ VpcId: id });
-    await destroyRouteTables({ VpcId: id });
-
-    logger.debug(`destroy vpc , deleting VpcId: ${id}`);
-    const result = await ec2().deleteVpc({ VpcId: id });
-    return result;
-  };
-
-  const configDefault = async ({ properties }) => properties;
+  const configDefault = ({ properties }) => properties;
 
   return {
     type: "Vpc",

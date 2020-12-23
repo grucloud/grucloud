@@ -1,5 +1,4 @@
 const assert = require("assert");
-const AWS = require("aws-sdk");
 const { map, pipe, tap, tryCatch, get, switchCase, eq } = require("rubico");
 const { defaultsDeep, isEmpty, forEach } = require("rubico/x");
 
@@ -30,10 +29,10 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
         logger.debug(`getList`);
       }),
       () => iam().listInstanceProfiles(params),
+      get("InstanceProfiles"),
       tap((instanceProfiles) => {
         logger.debug(`getList: ${tos(instanceProfiles)}`);
       }),
-      get("InstanceProfiles"),
       map.pool(
         20,
         pipe([
@@ -50,12 +49,15 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
           }),
         ])
       ),
+      tap((instanceProfiles) => {
+        logger.debug(`getList instanceProfile: ${tos(instanceProfiles)}`);
+      }),
       (instanceProfiles) => ({
         total: instanceProfiles.length,
         items: instanceProfiles,
       }),
-      tap((instanceProfiles) => {
-        logger.debug(`getList results: ${tos(instanceProfiles)}`);
+      tap(({ total }) => {
+        logger.debug(`getList #instanceProfile: ${total}`);
       }),
     ])();
 
