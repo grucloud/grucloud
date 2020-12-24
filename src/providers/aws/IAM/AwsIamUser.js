@@ -1,5 +1,14 @@
 const assert = require("assert");
-const { map, pipe, tap, tryCatch, get, switchCase, eq } = require("rubico");
+const {
+  map,
+  pipe,
+  tap,
+  tryCatch,
+  get,
+  switchCase,
+  eq,
+  assign,
+} = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "IamUser" });
@@ -38,35 +47,35 @@ exports.AwsIamUser = ({ spec, config }) => {
       map.pool(
         20,
         pipe([
-          tap((user) => {
-            logger.debug(`getList user: ${tos(user)}`);
-          }), //TODO use assign
-          async (user) => ({
-            ...user,
-            AttachedPolicies: await pipe([
-              () =>
+          //TODO tryCatch
+          assign({
+            AttachedPolicies: pipe([
+              ({ UserName }) =>
                 iam().listAttachedUserPolicies({
-                  UserName: user.UserName,
+                  UserName,
                   MaxItems: 1e3,
                 }),
               get("AttachedPolicies"),
               pluck("PolicyName"),
-            ])(),
-            Policies: await pipe([
-              () =>
+            ]),
+            Policies: pipe([
+              ({ UserName }) =>
                 iam().listUserPolicies({
-                  UserName: user.UserName,
+                  UserName,
                   MaxItems: 1e3,
                 }),
               get("Policies"),
               pluck("PolicyName"),
-            ])(),
-            Groups: await pipe([
-              () => iam().listGroupsForUser({ UserName: user.UserName }),
+            ]),
+            Groups: pipe([
+              ({ UserName }) => iam().listGroupsForUser({ UserName }),
               get("Groups"),
               pluck("GroupName"),
-            ])(),
-            Tags: (await iam().listUserTags({ UserName: user.UserName })).Tags,
+            ]),
+            Tags: pipe([
+              ({ UserName }) => iam().listUserTags({ UserName }),
+              get("Tags"),
+            ]),
           }),
         ])
       ),

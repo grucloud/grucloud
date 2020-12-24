@@ -54,6 +54,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       map.pool(
         20,
         pipe([
+          //TODO tryCatch
           (policy) => iam().getPolicy({ PolicyArn: policy.Arn }),
           get("Policy"),
         ])
@@ -132,7 +133,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
             (Policy) =>
               iam().attachRolePolicy({
                 PolicyArn: Policy.Arn,
-                UserName: iamRole.name,
+                RoleName: iamRole.name,
               })
           ),
           tap.if(
@@ -140,7 +141,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
             (Policy) =>
               iam().attachGroupPolicy({
                 PolicyArn: Policy.Arn,
-                UserName: iamGroup.name,
+                GroupName: iamGroup.name,
               })
           ),
         ])

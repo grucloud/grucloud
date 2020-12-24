@@ -50,6 +50,7 @@ exports.AwsIamRole = ({ spec, config }) => {
       map.pool(
         20,
         pipe([
+          //TODO tryCatch
           assign({
             Policies: pipe([
               ({ RoleName }) =>

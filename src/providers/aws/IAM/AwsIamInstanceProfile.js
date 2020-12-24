@@ -47,6 +47,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       map.pool(
         20,
         pipe([
+          //TODO tryCatch
           assign({
             Roles: pipe([
               get("Roles"),

@@ -61,7 +61,7 @@ exports.shouldRetryOnException = ({ error, name }) => {
   logger.error(`aws shouldRetryOnException ${tos({ name, error })}`);
   error.stack && logger.error(error.stack);
 
-  return ![400, 404].includes(error.statusCode);
+  return ![400, 404, 409].includes(error.statusCode);
 };
 
 exports.shouldRetryOnExceptionDelete = ({ error, name }) => {
