@@ -8,6 +8,7 @@ const {
   get,
   switchCase,
   eq,
+  assign,
 } = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
 const moment = require("moment");
@@ -41,34 +42,30 @@ exports.AwsIamRole = ({ spec, config }) => {
         logger.info(`getList role ${params}`);
       }),
       () => iam().listRoles(params),
-      tap((roles) => {
-        logger.debug(`getList: ${tos(roles)}`);
-      }),
       get("Roles"),
       filter((role) => moment(role.CreateDate).isAfter("2020-09-11")),
+      tap((roles) => {
+        assert(roles);
+      }),
       map.pool(
         20,
         pipe([
-          tap((role) => {
-            logger.debug(`getList role: ${tos(role)}`);
-          }),
-          async (role) => ({
-            ...role,
-            Policies: await pipe([
-              () =>
+          assign({
+            Policies: pipe([
+              ({ RoleName }) =>
                 iam().listRolePolicies({
-                  RoleName: role.RoleName,
+                  RoleName,
                   MaxItems: 1e3,
                 }),
               tap((policies) => {
                 logger.debug(`getList listRolePolicies: ${tos(policies)}`);
               }),
               get("PolicyNames"),
-            ])(),
-            AttachedPolicies: await pipe([
-              () =>
+            ]),
+            AttachedPolicies: pipe([
+              ({ RoleName }) =>
                 iam().listAttachedRolePolicies({
-                  RoleName: role.RoleName,
+                  RoleName,
                   MaxItems: 1e3,
                 }),
               get("AttachedPolicies"),
@@ -78,11 +75,11 @@ exports.AwsIamRole = ({ spec, config }) => {
                   `getList listAttachedRolePolicies: ${tos(policies)}`
                 );
               }),
-            ])(),
-            InstanceProfiles: await pipe([
-              () =>
+            ]),
+            InstanceProfiles: pipe([
+              ({ RoleName }) =>
                 iam().listInstanceProfilesForRole({
-                  RoleName: role.RoleName,
+                  RoleName,
                   MaxItems: 1e3,
                 }),
               get("InstanceProfiles"),
@@ -94,18 +91,23 @@ exports.AwsIamRole = ({ spec, config }) => {
                 );
               }),
               pluck("InstanceProfileName"),
-            ])(),
-            Tags: (await iam().listRoleTags({ RoleName: role.RoleName })).Tags,
+            ]),
+            Tags: pipe([
+              ({ RoleName }) => iam().listRoleTags({ RoleName }),
+              get("Tags"),
+            ]),
           }),
         ])
       ),
+      tap((roles) => {
+        logger.debug(`getList iam role results: ${tos(roles)}`);
+      }),
       (roles) => ({
         total: roles.length,
         items: roles,
       }),
-      tap((roles) => {
-        logger.info(`getList #roles: ${roles.length}`);
-        logger.debug(`getList results: ${tos(roles)}`);
+      tap(({ total }) => {
+        logger.info(`getList #roles: ${total}`);
       }),
     ])();
 
@@ -137,31 +139,42 @@ exports.AwsIamRole = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createRole-property
-  const create = async ({ name, payload = {}, dependencies }) => {
-    assert(name);
-    assert(payload);
-    logger.info(`create role ${tos({ name, payload })}`);
 
-    const { Role } = await iam().createRole({
-      ...payload,
-      AssumeRolePolicyDocument: JSON.stringify(
-        payload.AssumeRolePolicyDocument
+  const create = async ({ name, payload = {}, dependencies }) =>
+    pipe([
+      tap(() => {
+        logger.info(`create role ${tos({ name, payload })}`);
+      }),
+      () => ({
+        ...payload,
+        AssumeRolePolicyDocument: JSON.stringify(
+          payload.AssumeRolePolicyDocument
+        ),
+      }),
+      (createParam) => iam().createRole(createParam),
+      get("Role"),
+      tap(
+        pipe([
+          () =>
+            iam().tagRole({
+              RoleName: name,
+              Tags: defaultsDeep(buildTags({ name, config }))(
+                payload.Tags || []
+              ),
+            }),
+          () => iam().listRoleTags({ RoleName: name }),
+          get("Tags"),
+          (Tags) => {
+            assert(findNameInTags({ Tags }), "no tags");
+          },
+        ])
       ),
-    });
-    logger.debug(`create result ${tos(Role)}`);
-
-    const tagsParam = {
-      RoleName: name,
-      Tags: defaultsDeep(buildTags({ name, config }))(payload.Tags || []),
-    };
-    await iam().tagRole(tagsParam);
-    const { Tags } = await iam().listRoleTags({ RoleName: name });
-    assert(findNameInTags({ Tags }), "no tags");
-    return Role;
-  };
+      tap((Role) => {
+        logger.info(`created role ${tos({ name, Role })}`);
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteRole-property
-
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
@@ -208,7 +221,7 @@ exports.AwsIamRole = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties }) =>
+  const configDefault = ({ name, properties }) =>
     defaultsDeep({ RoleName: name, Path: "/" })(properties);
 
   const cannotBeDeleted = (item) => {

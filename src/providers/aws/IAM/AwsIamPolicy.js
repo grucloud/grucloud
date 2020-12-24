@@ -34,18 +34,13 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   const findName = (item) =>
     findNameInDescription({ Description: item.Description });
 
-  const findId = (item) => {
-    assert(item);
-    const id = item.Arn;
-    assert(id);
-    return id;
-  };
+  const findId = get("Arn");
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listPolicies-property
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {
-        logger.debug(`getList`);
+        logger.debug(`getList iam policy`);
       }),
       () => iam().listPolicies({ ...params, Scope: "Local", MaxItems: 1e3 }),
       tap(({ Policies }) => {
@@ -59,22 +54,19 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       map.pool(
         20,
         pipe([
-          tap((policy) => {
-            logger.debug(`getList policy: ${tos(policy)}`);
-          }),
           (policy) => iam().getPolicy({ PolicyArn: policy.Arn }),
           get("Policy"),
-          tap((policy) => {
-            logger.debug(policy);
-          }),
         ])
       ),
-      tap((policy) => {
-        logger.debug(`getList policy: ${tos(policy)}`);
+      tap((policies) => {
+        logger.debug(`getList policy: ${tos(policies)}`);
       }),
       (policies) => ({
         total: policies.length,
         items: policies,
+      }),
+      tap(({ total }) => {
+        logger.debug(`getList #policies: ${total}`);
       }),
     ])();
 
@@ -106,53 +98,64 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createPolicy-property
-  const create = async ({ name, payload = {}, dependencies }) => {
-    assert(name);
-    assert(payload);
-    logger.debug(`create policy ${tos({ name, payload })}`);
-
-    const createParams = {
-      ...payload,
-      Description: `${payload.Description}, tags:${JSON.stringify(
-        buildTags({ name, config })
-      )}`,
-      PolicyDocument: JSON.stringify(payload.PolicyDocument),
-    };
-
-    const { Policy } = await iam().createPolicy(createParams);
-    const { iamUser, iamRole, iamGroup } = dependencies;
-
-    if (iamUser) {
-      const attachUserPolicyParams = {
-        PolicyArn: Policy.Arn,
-        UserName: iamUser.name,
-      };
-      await iam().attachUserPolicy(attachUserPolicyParams);
-    }
-    if (iamRole) {
-      await iam().attachRolePolicy({
-        PolicyArn: Policy.Arn,
-        RoleName: iamRole.name,
-      });
-    }
-    if (iamGroup) {
-      await iam().attachGroupPolicy({
-        PolicyArn: Policy.Arn,
-        GroupName: iamGroup.name,
-      });
-    }
-    logger.debug(`create result ${tos(Policy)}`);
-
-    return Policy;
-  };
+  const create = async ({
+    name,
+    payload = {},
+    dependencies: { iamUser, iamRole, iamGroup },
+  }) =>
+    pipe([
+      tap(() => {
+        logger.info(`create policy ${name}`);
+        logger.debug(`payload: ${tos(payload)}`);
+      }),
+      () => ({
+        ...payload,
+        Description: `${payload.Description}, tags:${JSON.stringify(
+          buildTags({ name, config })
+        )}`,
+        PolicyDocument: JSON.stringify(payload.PolicyDocument),
+      }),
+      (createParams) => iam().createPolicy(createParams),
+      get("Policy"),
+      tap(
+        pipe([
+          tap.if(
+            () => iamUser,
+            (Policy) =>
+              iam().attachUserPolicy({
+                PolicyArn: Policy.Arn,
+                UserName: iamUser.name,
+              })
+          ),
+          tap.if(
+            () => iamRole,
+            (Policy) =>
+              iam().attachRolePolicy({
+                PolicyArn: Policy.Arn,
+                UserName: iamRole.name,
+              })
+          ),
+          tap.if(
+            () => iamGroup,
+            (Policy) =>
+              iam().attachGroupPolicy({
+                PolicyArn: Policy.Arn,
+                UserName: iamGroup.name,
+              })
+          ),
+        ])
+      ),
+      tap((Policy) => {
+        logger.debug(`created iam policy result ${tos({ name, Policy })}`);
+        logger.info(`created iam policy ${name}`);
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deletePolicy-property
-
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.debug(`destroy ${tos({ name, id })}`);
-        assert(!isEmpty(id), `destroy invalid id`);
+        logger.info(`destroy iam policy ${tos({ name, id })}`);
       }),
       () =>
         iam().listEntitiesForPolicy({
@@ -210,7 +213,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
           config,
         }),
       tap(() => {
-        logger.debug(`destroy done ${tos({ name, id })}`);
+        logger.info(`destroy iam policy done ${tos({ name, id })}`);
       }),
     ])();
 

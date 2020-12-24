@@ -61,13 +61,8 @@ module.exports = AwsVpc = ({ spec, config }) => {
 
   const getById = getByIdCore({ fieldIds: "VpcIds", getList });
 
-  const getStateName = (instance) => instance.State;
-  const isInstanceUp = (instance) => {
-    return ["available"].includes(getStateName(instance));
-  };
-
   const isUpById = isUpByIdCore({
-    isInstanceUp,
+    isInstanceUp: eq(get("State"), "available"),
     getById,
   });
 
@@ -91,7 +86,7 @@ module.exports = AwsVpc = ({ spec, config }) => {
         pipe([
           () =>
             retryCall({
-              name: `subnet isUpById: ${name} id: ${VpcId}`,
+              name: `vpc isUpById: ${name} id: ${VpcId}`,
               fn: () => isUpById({ id: VpcId, name }),
               config,
             }),
@@ -104,13 +99,13 @@ module.exports = AwsVpc = ({ spec, config }) => {
             }),
         ])()
       ),
-      tap((SubnetId) => {
-        logger.info(`created subnet ${tos({ name, SubnetId })}`);
+      tap((VpcId) => {
+        logger.info(`created vpc ${tos({ name, VpcId })}`);
       }),
       (id) => ({ id }),
     ])();
 
-  const destroySubnets = async ({ VpcId }) =>
+  const destroySubnets = ({ VpcId }) =>
     pipe([
       // Get the subnets belonging to this Vpc
       () =>
@@ -122,22 +117,28 @@ module.exports = AwsVpc = ({ spec, config }) => {
             },
           ],
         }),
+      get("Subnets"),
       // Loop through the subnets
-      ({ Subnets }) =>
-        pipe([
-          filter((subnet) => !subnet.DefaultForAz),
-          (Subnets) =>
-            map(
-              async (subnet) => {
-                logger.debug(
-                  `destroy vpc, deleteSubnet SubnetId: ${subnet.SubnetId}`
+      filter(not(get("DefaultForAz"))),
+      map(
+        tryCatch(
+          pipe([
+            tap(({ SubnetId }) => {
+              logger.debug(`destroy vpc, deleteSubnet SubnetId: ${SubnetId}`);
+            }),
+            ({ SubnetId }) => ec2().deleteSubnet({ SubnetId }),
+          ]),
+          (error, subnet) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `deleteSubnet: ${tos(subnet)}, error ${tos(error)}`
                 );
-                await ec2().deleteSubnet({ SubnetId: subnet.SubnetId });
-              }
-              // remove the default subnet
-              // deleteSubnet
-            )(Subnets),
-        ])(Subnets),
+              }),
+              () => ({ error, subnet }),
+            ])()
+        )
+      ),
     ])();
 
   const destroySecurityGroup = async ({ VpcId }) =>
@@ -156,34 +157,32 @@ module.exports = AwsVpc = ({ spec, config }) => {
           ],
         }),
       get("SecurityGroups"),
-      pipe([
-        // remove the default security groups
-        filter(not(eq(get("GroupName"), "default"))),
-        map(
-          tryCatch(
-            pipe([
-              tap(({ GroupId }) => {
-                logger.debug(`destroySecurityGroup: GroupId: ${GroupId}`);
+      // remove the default security groups
+      filter(not(eq(get("GroupName"), "default"))),
+      map(
+        tryCatch(
+          pipe([
+            tap(({ GroupId }) => {
+              logger.debug(`destroySecurityGroup: GroupId: ${GroupId}`);
+            }),
+            ({ GroupId }) =>
+              ec2().deleteSecurityGroup({
+                GroupId,
               }),
-              ({ GroupId }) =>
-                ec2().deleteSecurityGroup({
-                  GroupId,
-                }),
-            ]),
-            (error, securityGroup) =>
-              pipe([
-                tap(() => {
-                  logger.error(
-                    `deleteSecurityGroup: ${tos(securityGroup)}, error ${tos(
-                      error
-                    )}`
-                  );
-                }),
-                () => ({ error, securityGroup }),
-              ])()
-          )
-        ),
-      ]),
+          ]),
+          (error, securityGroup) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `deleteSecurityGroup: ${tos(securityGroup)}, error ${tos(
+                    error
+                  )}`
+                );
+              }),
+              () => ({ error, securityGroup }),
+            ])()
+        )
+      ),
     ])();
 
   const destroyRouteTables = async ({ VpcId }) =>
@@ -198,24 +197,38 @@ module.exports = AwsVpc = ({ spec, config }) => {
             },
           ],
         }),
+      get("RouteTables"),
       // Loop through the route tables
-      tap(({ RouteTables }) => {
+      tap((RouteTables) => {
         logger.debug(`destroy vpc, RouteTables: ${tos(RouteTables)}`);
       }),
-      ({ RouteTables }) => {
-        pipe([
-          filter((routeTable) => isEmpty(routeTable.Associations)),
-          (RouteTables) =>
-            map(async (routeTable) => {
+      filter(pipe([get("Associations"), isEmpty])),
+      map(
+        tryCatch(
+          pipe([
+            tap(({ RouteTableId }) => {
               logger.debug(
-                `destroy vpc, deleteRouteTable routeTable: ${tos(routeTable)})}`
+                `destroy vpc, deleteRouteTable RouteTableId: ${tos(
+                  RouteTableId
+                )})}`
               );
-              await ec2().deleteRouteTable({
-                RouteTableId: routeTable.RouteTableId,
-              });
-            })(RouteTables),
-        ])(RouteTables);
-      },
+            }),
+            ({ RouteTableId }) =>
+              ec2().deleteRouteTable({
+                RouteTableId,
+              }),
+          ]),
+          (error, routeTable) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `deleteRouteTable: ${tos(routeTable)}, error ${tos(error)}`
+                );
+              }),
+              () => ({ error, routeTable }),
+            ])()
+        )
+      ),
     ])();
 
   const destroy = async ({ id, name }) =>
