@@ -9,7 +9,7 @@ const {
   eq,
   assign,
 } = require("rubico");
-const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
+const { defaultsDeep, isEmpty, forEach, pluck, find } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "IamUser" });
 const { retryCall } = require("../../Retry");
@@ -21,7 +21,12 @@ const {
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
 } = require("../AwsCommon");
-const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
+const {
+  mapPoolSize,
+  getByNameCore,
+  isUpByIdCore,
+  isDownByIdCore,
+} = require("../../Common");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamUser = ({ spec, config }) => {
@@ -45,9 +50,8 @@ exports.AwsIamUser = ({ spec, config }) => {
         logger.debug(`getList users: ${tos(users)}`);
       }),
       map.pool(
-        20,
-        pipe([
-          //TODO tryCatch
+        mapPoolSize,
+        tryCatch(
           assign({
             AttachedPolicies: pipe([
               ({ UserName }) =>
@@ -77,8 +81,18 @@ exports.AwsIamUser = ({ spec, config }) => {
               get("Tags"),
             ]),
           }),
-        ])
+          (error, user) =>
+            pipe([
+              tap(() => {
+                logger.error(`getList iam user error: ${tos({ error, user })}`);
+              }),
+              () => ({ error, user }),
+            ])()
+        )
       ),
+      tap.if(find(get("error")), (users) => {
+        throw users;
+      }),
       tap((users) => {
         logger.debug(`getList iam user results: ${tos(users)}`);
       }),

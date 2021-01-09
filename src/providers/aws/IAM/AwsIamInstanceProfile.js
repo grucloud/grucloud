@@ -11,12 +11,25 @@ const {
   and,
   assign,
 } = require("rubico");
-const { defaultsDeep, isEmpty, forEach, find, first } = require("rubico/x");
+const {
+  defaultsDeep,
+  isEmpty,
+  forEach,
+  find,
+  first,
+  flatten,
+  pluck,
+} = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "IamInstanceProfile" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
-const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
+const {
+  mapPoolSize,
+  getByNameCore,
+  isUpByIdCore,
+  isDownByIdCore,
+} = require("../../Common");
 const {
   IAMNew,
   shouldRetryOnException,
@@ -45,23 +58,40 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
         assert(instanceProfiles);
       }),
       map.pool(
-        20,
-        pipe([
-          //TODO tryCatch
-          assign({
-            Roles: pipe([
-              get("Roles"),
-              map(
+        mapPoolSize,
+        assign({
+          Roles: pipe([
+            get("Roles"),
+            map(
+              tryCatch(
                 assign({
                   Tags: pipe([
                     ({ RoleName }) => iam().listRoleTags({ RoleName }),
                     get("Tags"),
                   ]),
-                })
-              ),
-            ]),
-          }),
-        ])
+                }),
+                (error, instanceProfile) =>
+                  pipe([
+                    tap((instanceProfile) => {
+                      logger.error(
+                        `getList instance profile error: ${tos({
+                          error,
+                          instanceProfile,
+                        })}`
+                      );
+                    }),
+                    () => ({ error, instanceProfile }),
+                  ])()
+              )
+            ),
+          ]),
+        })
+      ),
+      tap.if(
+        pipe([pluck(["Roles"]), flatten, find(get("error"))]),
+        (instanceProfiles) => {
+          throw instanceProfiles;
+        }
       ),
       tap((instanceProfiles) => {
         logger.debug(`getList instanceProfiles: ${tos(instanceProfiles)}`);
@@ -85,9 +115,6 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       ({ id }) =>
         pipe([
           () => iam().getInstanceProfile({ InstanceProfileName: id }),
-          tap((obj) => {
-            logger.debug(`getById ${obj}`);
-          }),
           get("InstanceProfile"),
         ])(),
       switchCase([

@@ -10,7 +10,7 @@ const {
   eq,
   assign,
 } = require("rubico");
-const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
+const { defaultsDeep, isEmpty, forEach, pluck, find } = require("rubico/x");
 const moment = require("moment");
 
 const logger = require("../../../logger")({ prefix: "IamRole" });
@@ -23,7 +23,12 @@ const {
   shouldRetryOnExceptionDelete,
   shouldRetryOnException,
 } = require("../AwsCommon");
-const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
+const {
+  mapPoolSize,
+  getByNameCore,
+  isUpByIdCore,
+  isDownByIdCore,
+} = require("../../Common");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamRole = ({ spec, config }) => {
@@ -48,9 +53,8 @@ exports.AwsIamRole = ({ spec, config }) => {
         assert(roles);
       }),
       map.pool(
-        20,
-        pipe([
-          //TODO tryCatch
+        mapPoolSize,
+        tryCatch(
           assign({
             Policies: pipe([
               ({ RoleName }) =>
@@ -98,8 +102,23 @@ exports.AwsIamRole = ({ spec, config }) => {
               get("Tags"),
             ]),
           }),
-        ])
+          (error, role) =>
+            pipe([
+              tap((role) => {
+                logger.error(
+                  `getList role error: ${tos({
+                    error,
+                    role,
+                  })}`
+                );
+              }),
+              () => ({ error, role }),
+            ])()
+        )
       ),
+      tap.if(find(get("error")), (roles) => {
+        throw roles;
+      }),
       tap((roles) => {
         logger.debug(`getList iam role results: ${tos(roles)}`);
       }),

@@ -22,7 +22,12 @@ const {
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
 } = require("../AwsCommon");
-const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
+const {
+  mapPoolSize,
+  getByNameCore,
+  isUpByIdCore,
+  isDownByIdCore,
+} = require("../../Common");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamPolicy = ({ spec, config }) => {
@@ -52,12 +57,25 @@ exports.AwsIamPolicy = ({ spec, config }) => {
         logger.debug(`getList: ${policies.length}`);
       }),
       map.pool(
-        20,
-        pipe([
-          //TODO tryCatch
-          (policy) => iam().getPolicy({ PolicyArn: policy.Arn }),
-          get("Policy"),
-        ])
+        mapPoolSize,
+        tryCatch(
+          pipe([
+            (policy) => iam().getPolicy({ PolicyArn: policy.Arn }),
+            get("Policy"),
+          ]),
+          (error, policy) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `getList policy error: ${tos({
+                    error,
+                    policy,
+                  })}`
+                );
+              }),
+              () => ({ error, policy }),
+            ])()
+        )
       ),
       tap((policies) => {
         logger.debug(`getList policy: ${tos(policies)}`);
