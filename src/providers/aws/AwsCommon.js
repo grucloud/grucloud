@@ -61,7 +61,7 @@ exports.shouldRetryOnException = ({ error, name }) => {
   logger.error(`aws shouldRetryOnException ${tos({ name, error })}`);
   error.stack && logger.error(error.stack);
 
-  return ![400, 404].includes(error.statusCode);
+  return ![400, 404, 409].includes(error.statusCode);
 };
 
 exports.shouldRetryOnExceptionDelete = ({ error, name }) => {
@@ -143,7 +143,7 @@ exports.isOurMinion = ({ resource, config }) => {
   ])(resource.Tags || []);
 };
 
-exports.findNameInTags = (item) =>
+const findNameInTags = (item) =>
   pipe([
     tap(() => {
       assert(item);
@@ -162,6 +162,13 @@ exports.findNameInTags = (item) =>
       },
     ]),
   ])(item?.Tags);
+exports.findNameInTags = findNameInTags;
+
+exports.findNameInTagsOrId = ({ item, findId }) =>
+  pipe([
+    findNameInTags,
+    switchCase([isEmpty, () => findId(item), (name) => name]),
+  ])(item);
 
 exports.findNameInDescription = ({ Description = "" }) => {
   const tags = Description.split("tags:")[1];

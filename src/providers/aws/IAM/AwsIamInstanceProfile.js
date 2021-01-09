@@ -1,12 +1,35 @@
 const assert = require("assert");
-const AWS = require("aws-sdk");
-const { map, pipe, tap, tryCatch, get, switchCase } = require("rubico");
-const { defaultsDeep, isEmpty, forEach } = require("rubico/x");
+const {
+  map,
+  pipe,
+  tap,
+  tryCatch,
+  get,
+  switchCase,
+  eq,
+  not,
+  and,
+  assign,
+} = require("rubico");
+const {
+  defaultsDeep,
+  isEmpty,
+  forEach,
+  find,
+  first,
+  flatten,
+  pluck,
+} = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "IamInstanceProfile" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
-const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
+const {
+  mapPoolSize,
+  getByNameCore,
+  isUpByIdCore,
+  isDownByIdCore,
+} = require("../../Common");
 const {
   IAMNew,
   shouldRetryOnException,
@@ -27,35 +50,58 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {
-        logger.debug(`getList`);
+        logger.debug(`getList instance profile`);
       }),
       () => iam().listInstanceProfiles(params),
-      tap((instanceProfiles) => {
-        logger.debug(`getList: ${tos(instanceProfiles)}`);
-      }),
       get("InstanceProfiles"),
+      tap((instanceProfiles) => {
+        assert(instanceProfiles);
+      }),
       map.pool(
-        20,
-        pipe([
-          tap((instanceProfile) => {
-            logger.debug(`getList instanceProfile: ${tos(instanceProfile)}`);
-          }),
-          async (instanceProfile) => ({
-            ...instanceProfile,
-            Roles: await map(async (role) => ({
-              ...role,
-              Tags: (await iam().listRoleTags({ RoleName: role.RoleName }))
-                .Tags,
-            }))(instanceProfile.Roles),
-          }),
-        ])
+        mapPoolSize,
+        assign({
+          Roles: pipe([
+            get("Roles"),
+            map(
+              tryCatch(
+                assign({
+                  Tags: pipe([
+                    ({ RoleName }) => iam().listRoleTags({ RoleName }),
+                    get("Tags"),
+                  ]),
+                }),
+                (error, instanceProfile) =>
+                  pipe([
+                    tap((instanceProfile) => {
+                      logger.error(
+                        `getList instance profile error: ${tos({
+                          error,
+                          instanceProfile,
+                        })}`
+                      );
+                    }),
+                    () => ({ error, instanceProfile }),
+                  ])()
+              )
+            ),
+          ]),
+        })
       ),
+      tap.if(
+        pipe([pluck(["Roles"]), flatten, find(get("error"))]),
+        (instanceProfiles) => {
+          throw instanceProfiles;
+        }
+      ),
+      tap((instanceProfiles) => {
+        logger.debug(`getList instanceProfiles: ${tos(instanceProfiles)}`);
+      }),
       (instanceProfiles) => ({
         total: instanceProfiles.length,
         items: instanceProfiles,
       }),
-      tap((instanceProfiles) => {
-        logger.debug(`getList results: ${tos(instanceProfiles)}`);
+      tap(({ total }) => {
+        logger.debug(`getList #instanceProfile: ${total}`);
       }),
     ])();
 
@@ -69,19 +115,16 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       ({ id }) =>
         pipe([
           () => iam().getInstanceProfile({ InstanceProfileName: id }),
-          tap((obj) => {
-            logger.debug(`getById ${obj}`);
-          }),
           get("InstanceProfile"),
         ])(),
       switchCase([
-        (error) => error.code !== "NoSuchEntity",
+        eq(get("code"), "NoSuchEntity"),
+        (error, { id }) => {
+          logger.debug(`getById ${id} NoSuchEntity`);
+        },
         (error) => {
           logger.debug(`getById error: ${tos(error)}`);
           throw error;
-        },
-        (error, { id }) => {
-          logger.debug(`getById ${id} NoSuchEntity`);
         },
       ])
     ),
@@ -94,39 +137,38 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createInstanceProfile-property
-  const create = async ({ name, payload = {}, dependencies }) => {
-    assert(name);
-    assert(payload);
-    logger.debug(`create instance profile: ${tos({ name, payload })}`);
 
-    const createParams = defaultsDeep({})(payload);
-
-    const { InstanceProfile } = await iam().createInstanceProfile(createParams);
-    logger.debug(`create result ${tos(InstanceProfile)}`);
-
-    const { iamRoles } = dependencies;
-    assert(iamRoles, "missing dependency iamRoles");
-    assert(Array.isArray(iamRoles), "iamRoles must be an array");
-
-    await forEach((iamRole) =>
-      iam().addRoleToInstanceProfile({
-        InstanceProfileName: name,
-        RoleName: iamRole.name,
-      })
-    )(iamRoles);
-
-    const instanceUp = await retryCall({
-      name: `create instance profile, getById: ${name}`,
-      fn: () => getById({ id: name }),
-      isExpectedResult: (result) => {
-        if (result && !isEmpty(result.Roles)) {
-          return true;
-        }
-      },
-      config: { retryDelay: 2e3 },
-    });
-    return instanceUp;
-  };
+  const create = async ({ name, payload = {}, dependencies: { iamRoles } }) =>
+    pipe([
+      tap(() => {
+        logger.info(`create iam instance profile ${name}`);
+        logger.debug(`payload: ${tos(payload)}`);
+        assert(iamRoles, "missing dependency iamRoles");
+        assert(Array.isArray(iamRoles), "iamRoles must be an array");
+      }),
+      () => defaultsDeep({})(payload),
+      (createParams) => iam().createInstanceProfile(createParams),
+      get("InstanceProfile"),
+      tap(() =>
+        forEach((iamRole) =>
+          iam().addRoleToInstanceProfile({
+            InstanceProfileName: name,
+            RoleName: iamRole.name,
+          })
+        )(iamRoles)
+      ),
+      () =>
+        retryCall({
+          name: `create instance profile, getById: ${name}`,
+          fn: () => getById({ id: name }),
+          isExpectedResult: pipe([get("Roles"), not(isEmpty)]),
+          config: { retryDelay: 2e3 },
+        }),
+      tap((instance) => {
+        logger.info(`created iam instance profile  ${name}`);
+        logger.debug(`created iam instance profile ${tos({ name, instance })}`);
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteInstanceProfile-property
   const destroy = async ({ id, name }) =>
@@ -181,29 +223,24 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     shouldRetryOnExceptionDelete,
   };
 };
-
-exports.isOurMinionInstanceProfile = ({ resource, config }) => {
-  const { createdByProviderKey, providerName } = config;
-
-  assert(resource);
-  const { Roles = [] } = resource;
-  if (isEmpty(Roles)) {
-    return false;
-  }
-
-  let minion = false;
-  if (
-    Roles[0].Tags.find(
-      (tag) => tag.Key === createdByProviderKey && tag.Value === providerName
-    )
-  ) {
-    minion = true;
-  }
-  logger.debug(
-    `isOurMinion ${tos({
-      minion,
-      resource,
-    })}`
-  );
-  return minion;
-};
+exports.isOurMinionInstanceProfile = ({ resource, config: { projectName } }) =>
+  pipe([
+    get("Roles"),
+    first,
+    get("Tags"),
+    find(
+      and([
+        //
+        eq(get("Key"), "projectName"),
+        eq(get("Value"), projectName),
+      ])
+    ),
+    tap((minion) => {
+      logger.debug(
+        `isOurMinion ${minion} ${tos({
+          projectName,
+          resource,
+        })}`
+      );
+    }),
+  ])(resource);

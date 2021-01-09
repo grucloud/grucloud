@@ -1,6 +1,5 @@
 const assert = require("assert");
-const AWS = require("aws-sdk");
-const { get, pipe, filter, map } = require("rubico");
+const { get, pipe, tap, filter, map } = require("rubico");
 const { defaultsDeep, isEmpty } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "AwsEip" });
@@ -25,16 +24,25 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
   const findName = findNameInTags;
   const findId = get("AllocationId");
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeAddresses-property
-  const getList = async ({ params } = {}) => {
-    logger.debug(`getList ${tos(params)}`);
-    const { Addresses } = await ec2().describeAddresses(params);
-    logger.debug(`getList ${tos(Addresses)}`);
 
-    return {
-      total: Addresses.length,
-      items: Addresses,
-    };
-  };
+  const getList = ({ params } = {}) =>
+    pipe([
+      tap(() => {
+        logger.info(`getList eip ${JSON.stringify(params)}`);
+      }),
+      () => ec2().describeAddresses(params),
+      get("Addresses"),
+      tap((items) => {
+        logger.debug(`getList iep result: ${tos(items)}`);
+      }),
+      (items) => ({
+        total: items.length,
+        items,
+      }),
+      tap(({ total }) => {
+        logger.info(`getList #eip ${total}`);
+      }),
+    ])();
 
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
   const getById = getByIdCore({ fieldIds: "AllocationIds", getList });
@@ -42,53 +50,60 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#allocateAddress-property
-  const create = async ({ name, payload }) => {
-    assert(name);
-    //assert(payload);
 
-    logger.debug(`create elastic ip ${tos({ name, payload })}`);
-    const { AllocationId } = await ec2().allocateAddress(payload);
-    logger.info(`created elastic ip ${AllocationId}`);
-
-    await retryCall({
-      name: `eip isUpById: ${name} id: ${AllocationId}`,
-      fn: () => isUpById({ id: AllocationId }),
-      config,
-    });
-
-    await tagResource({
-      config,
-      name,
-      resourceType: "eip",
-      resourceId: AllocationId,
-    });
-    const eipLive = await getById({ id: AllocationId });
-
-    assert(
-      CheckAwsTags({
-        config,
-        tags: eipLive.Tags,
-        name,
+  const create = async ({ payload, name }) =>
+    pipe([
+      tap(() => {
+        logger.info(`create elastic ip address ${tos({ name })}`);
       }),
-      `missing tag for ${name}`
-    );
+      () => ec2().allocateAddress(payload),
+      get("AllocationId"),
+      tap((AllocationId) =>
+        pipe([
+          () =>
+            retryCall({
+              name: `eip isUpById: ${name} id: ${AllocationId}`,
+              fn: () => isUpById({ id: AllocationId }),
+              config,
+            }),
+          () =>
+            tagResource({
+              config,
+              name,
+              resourceType: "eip",
+              resourceId: AllocationId,
+            }),
+          () => getById({ id: AllocationId }),
+          (eipLive) => {
+            assert(
+              CheckAwsTags({
+                config,
+                tags: eipLive.Tags,
+                name,
+              }),
+              `missing tag for ${name}`
+            );
+          },
+        ])()
+      ),
+      tap(() => {
+        logger.info(`created elastic ip address ${tos({ name })}`);
+      }),
+      (AllocationId) => ({ id: AllocationId }),
+    ])();
 
-    return { id: AllocationId };
-  };
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#releaseAddress-property
-  const destroy = async ({ id, name }) => {
-    logger.debug(`destroy elastic ip address ${tos({ name, id })}`);
-
-    assert(!isEmpty(id), `destroy invalid id`);
-
-    const eipLive = await getById({ id });
-
-    assert(eipLive, `Cannot get elastic ip: ${id}`);
-
-    const result = await ec2().releaseAddress({ AllocationId: id });
-    logger.debug(`destroy vpc IN PROGRESS, ${tos({ name, id, result })}`);
-    return result;
-  };
+  const destroy = async ({ id, name }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`destroy elastic ip address ${tos({ name, id })}`);
+        assert(!isEmpty(id), `destroy invalid id`);
+      }),
+      () => ec2().releaseAddress({ AllocationId: id }),
+      tap(() => {
+        logger.debug(`destroyed elastic ip address ${tos({ name, id })}`);
+      }),
+    ])();
 
   const configDefault = async ({ properties }) =>
     defaultsDeep({ Domain: "Vpc" })(properties);

@@ -1,5 +1,4 @@
 const assert = require("assert");
-const AWS = require("aws-sdk");
 const { map, transform, get, tap, pipe, filter, eq, not } = require("rubico");
 const { defaultsDeep, isEmpty, first, pluck, flatten } = require("rubico/x");
 
@@ -36,26 +35,27 @@ module.exports = AwsEC2 = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
 
-  const getList = pipe([
-    tap(({ params } = {}) => {
-      logger.info(`getList ec2 ${JSON.stringify(params)}`);
-    }),
-    ({ params } = {}) => ec2().describeInstances(params),
-    get("Reservations"),
-    pluck("Instances"),
-    flatten,
-    filter(not(isInstanceDown)),
-    tap((obj) => {
-      logger.debug(`getList ec2 result: ${tos(obj)}`);
-    }),
-    (items) => ({
-      total: items.length,
-      items,
-    }),
-    tap((result) => {
-      logger.info(`getList #ec2 ${result.total}`);
-    }),
-  ]);
+  const getList = ({ params } = {}) =>
+    pipe([
+      tap(() => {
+        logger.info(`getList ec2 ${JSON.stringify(params)}`);
+      }),
+      () => ec2().describeInstances(params),
+      get("Reservations"),
+      pluck("Instances"),
+      flatten,
+      filter(not(isInstanceDown)),
+      tap((items) => {
+        logger.debug(`getList ec2 result: ${tos(items)}`);
+      }),
+      (items) => ({
+        total: items.length,
+        items,
+      }),
+      tap(({ total }) => {
+        logger.info(`getList #ec2 ${total}`);
+      }),
+    ])();
 
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
   const getById = pipe([
@@ -76,84 +76,98 @@ module.exports = AwsEC2 = ({ spec, config }) => {
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property
-  const create = async ({ name, payload, dependencies }) => {
-    assert(name, "name");
-    assert(payload, "payload");
-    logger.debug(`create ${tos({ name, payload })}`);
-    const data = await ec2().runInstances(payload);
-    logger.debug(`create result ${tos(data)}`);
-    const instance = data.Instances[0];
-    const { InstanceId } = instance;
-
-    const instanceUp = await retryCall({
-      name: `ec2 isUpById: ${name} id: ${InstanceId}`,
-      fn: () => isUpById({ name, id: InstanceId }),
-      config: clientConfig,
-    });
-
-    assert(instanceUp, "instanceUp");
-    assert(instanceUp.Tags, "instanceUp.Tags");
-
-    assert(
-      CheckAwsTags({
-        config,
-        tags: instanceUp.Tags,
-        name,
+  const create = async ({ name, payload, dependencies: { eip } }) =>
+    pipe([
+      tap(() => {
+        logger.info(`create ec2 ${tos({ name })}`);
+        logger.debug(`create ec2 ${tos({ name, payload })}`);
+        assert(name, "name");
+        assert(payload, "payload");
       }),
-      `missing tag for ${name}`
-    );
+      () => ec2().runInstances(payload),
+      get("Instances"),
+      first,
+      get("InstanceId"),
+      (id) =>
+        retryCall({
+          name: `ec2 isUpById: ${name} id: ${id}`,
+          fn: () => isUpById({ name, id }),
+          config: clientConfig,
+        }),
+      tap((instance) => {
+        assert(instance, "instanceUp");
+        assert(instance.Tags, "instanceUp.Tags");
+        assert(
+          CheckAwsTags({
+            config,
+            tags: instance.Tags,
+            name,
+          }),
+          `missing tag for ${name}`
+        );
+      }),
+      tap(({ InstanceId }) =>
+        tap.if(
+          () => eip,
+          pipe([
+            () => eip.getLive(),
+            tap((eipLive) => {
+              logger.debug(`create ec2, associating eip ${tos({ eipLive })}`);
+              assert(eipLive, "eipLive");
+            }),
+            get("AllocationId"),
+            tap((AllocationId) => {
+              assert(AllocationId, "AllocationId");
+            }),
+            (AllocationId) =>
+              ec2().associateAddress({
+                AllocationId,
+                InstanceId,
+              }),
+          ])
+        )()
+      ),
+      tap((instance) => {
+        logger.info(`created ec2 ${name}, ${instance.InstanceId}`);
+      }),
+    ])();
+  const destroy = async ({ id, name }) =>
+    pipe([
+      tap(() => {
+        logger.info(`destroy ec2  ${tos({ name, id })}`);
+        assert(!isEmpty(id), `destroy invalid id`);
+      }),
+      () =>
+        ec2().describeAddresses({
+          Filters: [
+            {
+              Name: "instance-id",
+              Values: [id],
+            },
+          ],
+        }),
+      get("Addresses"),
+      first,
+      tap.if(not(isEmpty), ({ AssociationId }) =>
+        ec2().disassociateAddress({
+          AssociationId,
+        })
+      ),
+      () =>
+        ec2().terminateInstances({
+          InstanceIds: [id],
+        }),
+      () =>
+        retryCall({
+          name: `ec2 isDownById: ${name} id: ${id}`,
+          fn: () => isDownById({ id }),
+          config,
+        }),
+      tap(() => {
+        logger.info(`destroyed ec2  ${tos({ name, id })}`);
+      }),
+    ])();
 
-    const { eip } = dependencies;
-    if (eip) {
-      const eipLive = await eip.getLive();
-      logger.debug(`create, associating eip ${tos({ eipLive })}`);
-      assert(eipLive, "eipLive");
-      const { AllocationId } = eipLive;
-      assert(AllocationId, "AllocationId");
-      const paramsAssociate = {
-        AllocationId,
-        InstanceId,
-      };
-      await ec2().associateAddress(paramsAssociate);
-      logger.debug(`create, eip associated`);
-    }
-
-    return instance;
-  };
-
-  const destroy = async ({ id, name }) => {
-    logger.info(`destroy ec2  ${tos({ name, id })}`);
-    assert(!isEmpty(id), `destroy invalid id`);
-
-    const result = await ec2().terminateInstances({
-      InstanceIds: [id],
-    });
-    const { Addresses } = await ec2().describeAddresses({
-      Filters: [
-        {
-          Name: "instance-id",
-          Values: [id],
-        },
-      ],
-    });
-    const address = Addresses[0];
-    if (address) {
-      await ec2().disassociateAddress({
-        AssociationId: address.AssociationId,
-      });
-    }
-
-    logger.debug(`destroy in progress, ${tos({ name, id })}`);
-
-    await retryCall({
-      name: `ec2 isDownById: ${name} id: ${id}`,
-      fn: () => isDownById({ id }),
-      config,
-    });
-
-    logger.info(`destroy ec2 done, ${tos({ name, id, result })}`);
-    return result;
-  };
   const configDefault = async ({ name, properties, dependencies }) => {
     const {
       keyPair,

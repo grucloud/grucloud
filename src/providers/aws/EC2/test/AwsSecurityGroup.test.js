@@ -63,6 +63,7 @@ describe("AwsSecurityGroup", async function () {
       config: config.aws,
     });
     await provider.start();
+
     const vpc = await provider.makeVpc({
       name: "vpc-empty-ingress",
       properties: () => ({
@@ -78,9 +79,13 @@ describe("AwsSecurityGroup", async function () {
         },
       }),
     });
+
+    await provider.destroyAll({ options: { types } });
+
     const { error, resultCreate } = await provider.planQueryAndApply();
     assert(error, "should have failed");
     assert(resultCreate.results[1].error.code, "InvalidParameterValue");
+    await provider.destroyAll({ options: { types } });
   });
   it("sg name", async function () {
     assert.equal(sg.name, "sg");

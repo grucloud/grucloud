@@ -883,7 +883,7 @@ function CoreProvider({
         logger.info(`listLives #clients: ${clients.length}`);
       }),
       map.pool(
-        20,
+        mapPoolSize,
         tryCatch(
           pipe([
             (client) =>
@@ -1016,7 +1016,7 @@ function CoreProvider({
           assign({ payload: (script) => script.init() }),
           ({ actions, payload }) =>
             map.pool(
-              10,
+              mapPoolSize,
               tryCatch(
                 pipe([
                   tap((action) => {

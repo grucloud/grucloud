@@ -1,5 +1,4 @@
-const AWS = require("aws-sdk");
-const { get, switchCase } = require("rubico");
+const { get, switchCase, pipe, tap } = require("rubico");
 const { isEmpty } = require("rubico/x");
 const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "AwsSn" });
@@ -40,72 +39,84 @@ module.exports = AwsSubnet = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSubnet-property
-  const create = async ({ name, payload }) => {
-    assert(name);
-    assert(payload);
-    logger.debug(`create subnet ${tos({ name, payload })}`);
-    const {
-      Subnet: { SubnetId },
-    } = await ec2().createSubnet(payload);
-    logger.info(`create subnet ${SubnetId}`);
 
-    await tagResource({
-      config,
-      name,
-      resourceType: "subnet",
-      resourceId: SubnetId,
-    });
-
-    const subnet = await getById({ id: SubnetId });
-
-    assert(
-      CheckAwsTags({
-        config,
-        tags: subnet.Tags,
-        name: name,
+  const create = async ({ payload, name }) =>
+    pipe([
+      tap(() => {
+        logger.info(`create subnet ${tos({ name })}`);
+        logger.debug(tos({ payload }));
       }),
-      `missing tag for ${name}`
-    );
+      () => ec2().createSubnet(payload),
+      get("Subnet.SubnetId"),
+      tap((SubnetId) =>
+        pipe([
+          () =>
+            tagResource({
+              config,
+              name,
+              resourceType: "subnet",
+              resourceId: SubnetId,
+            }),
+          () => getById({ id: SubnetId }),
+          tap((subnet) => {
+            assert(
+              CheckAwsTags({
+                config,
+                tags: subnet.Tags,
+                name: name,
+              }),
+              `missing tag for ${name}`
+            );
+          }),
+        ])()
+      ),
+      tap((SubnetId) => {
+        logger.info(`created subnet ${tos({ name, SubnetId })}`);
+      }),
+      (id) => ({ id }),
+    ])();
 
-    return { SubnetId };
-  };
-  const destroy = async ({ id, name }) => {
-    logger.debug(`destroy subnet ${tos({ name, id })}`);
+  const destroy = async ({ id, name }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`destroy subnet ${tos({ name, id })}`);
+      }),
+      () => ec2().deleteSubnet({ SubnetId: id }),
+      tap(() => {
+        logger.debug(`destroyed subnet ${tos({ name, id })}`);
+      }),
+    ])();
 
-    if (isEmpty(id)) {
-      throw Error(`destroy subnet invalid id`);
-    }
-
-    const result = await ec2().deleteSubnet({ SubnetId: id });
-    return result;
-  };
-  const getList = async ({ params } = {}) => {
-    logger.debug(`getList subnet ${tos(params)}`);
-    const { Subnets } = await ec2().describeSubnets(params);
-    logger.debug(`getList subnet ${tos(Subnets)}`);
-
-    return {
-      total: Subnets.length,
-      items: Subnets,
-    };
-  };
+  const getList = ({ params } = {}) =>
+    pipe([
+      tap(() => {
+        logger.info(`getList subnet ${JSON.stringify(params)}`);
+      }),
+      () => ec2().describeSubnets(params),
+      get("Subnets"),
+      tap((items) => {
+        logger.debug(`getList subnet result: ${tos(items)}`);
+      }),
+      (items) => ({
+        total: items.length,
+        items,
+      }),
+      tap(({ total }) => {
+        logger.info(`getList #subnet ${total}`);
+      }),
+    ])();
 
   const configDefault = async ({ name, properties, dependencies }) => {
-    logger.debug(`configDefault ${tos({ dependencies })}`);
     // Need vpc name here in parameter
     const { vpc } = dependencies;
     const config = {
       ...(vpc && { VpcId: getField(vpc, "VpcId") }),
       ...properties,
     };
-    logger.debug(`configDefault ${name} result: ${tos(config)}`);
     return config;
   };
 
-  const cannotBeDeleted = ({ resource }) => {
-    logger.debug(`cannotBeDeleted: DefaultForAz: ${resource.DefaultForAz}`);
-    return resource.DefaultForAz;
-  };
+  const cannotBeDeleted = get("resource.DefaultForAz");
 
   return {
     type: "Subnet",

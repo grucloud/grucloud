@@ -1,4 +1,3 @@
-const AWS = require("aws-sdk");
 const assert = require("assert");
 const {
   eq,

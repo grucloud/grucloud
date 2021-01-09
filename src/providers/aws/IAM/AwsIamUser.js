@@ -1,7 +1,15 @@
 const assert = require("assert");
-const AWS = require("aws-sdk");
-const { map, pipe, tap, tryCatch, get, switchCase } = require("rubico");
-const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
+const {
+  map,
+  pipe,
+  tap,
+  tryCatch,
+  get,
+  switchCase,
+  eq,
+  assign,
+} = require("rubico");
+const { defaultsDeep, isEmpty, forEach, pluck, find } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "IamUser" });
 const { retryCall } = require("../../Retry");
@@ -13,7 +21,12 @@ const {
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
 } = require("../AwsCommon");
-const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
+const {
+  mapPoolSize,
+  getByNameCore,
+  isUpByIdCore,
+  isDownByIdCore,
+} = require("../../Common");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamUser = ({ spec, config }) => {
@@ -32,55 +45,63 @@ exports.AwsIamUser = ({ spec, config }) => {
         logger.debug(`getList iam user`);
       }),
       () => iam().listUsers(params),
+      get("Users"),
       tap((users) => {
         logger.debug(`getList users: ${tos(users)}`);
       }),
-      get("Users"),
       map.pool(
-        20,
-        pipe([
-          tap((user) => {
-            logger.debug(`getList user: ${tos(user)}`);
-          }), //TODO use assign
-          async (user) => ({
-            ...user,
-            AttachedPolicies: await pipe([
-              () =>
+        mapPoolSize,
+        tryCatch(
+          assign({
+            AttachedPolicies: pipe([
+              ({ UserName }) =>
                 iam().listAttachedUserPolicies({
-                  UserName: user.UserName,
+                  UserName,
                   MaxItems: 1e3,
                 }),
               get("AttachedPolicies"),
               pluck("PolicyName"),
-            ])(),
-            Policies: await pipe([
-              () =>
+            ]),
+            Policies: pipe([
+              ({ UserName }) =>
                 iam().listUserPolicies({
-                  UserName: user.UserName,
+                  UserName,
                   MaxItems: 1e3,
                 }),
               get("Policies"),
               pluck("PolicyName"),
-            ])(),
-            Groups: await pipe([
-              () => iam().listGroupsForUser({ UserName: user.UserName }),
+            ]),
+            Groups: pipe([
+              ({ UserName }) => iam().listGroupsForUser({ UserName }),
               get("Groups"),
               pluck("GroupName"),
-            ])(),
-            Tags: (await iam().listUserTags({ UserName: user.UserName })).Tags,
+            ]),
+            Tags: pipe([
+              ({ UserName }) => iam().listUserTags({ UserName }),
+              get("Tags"),
+            ]),
           }),
-          tap((user) => {
-            logger.debug(user);
-          }),
-        ])
+          (error, user) =>
+            pipe([
+              tap(() => {
+                logger.error(`getList iam user error: ${tos({ error, user })}`);
+              }),
+              () => ({ error, user }),
+            ])()
+        )
       ),
+      tap.if(find(get("error")), (users) => {
+        throw users;
+      }),
+      tap((users) => {
+        logger.debug(`getList iam user results: ${tos(users)}`);
+      }),
       (users) => ({
         total: users.length,
         items: users,
       }),
-      tap((users) => {
-        logger.info(`getList #results: ${tos(users.total)}`);
-        logger.debug(`getList results: ${tos(users)}`);
+      tap(({ total }) => {
+        logger.info(`getList #iamuser: ${total}`);
       }),
     ])();
 
@@ -93,13 +114,13 @@ exports.AwsIamUser = ({ spec, config }) => {
     tryCatch(
       ({ id }) => iam().getUser({ UserName: id }),
       switchCase([
-        (error) => error.code !== "NoSuchEntity",
+        eq(get("code"), "NoSuchEntity"),
+        (error, { id }) => {
+          logger.debug(`getById ${id} NoSuchEntity`);
+        },
         (error) => {
           logger.debug(`getById error: ${tos(error)}`);
           throw error;
-        },
-        (error, { id }) => {
-          logger.debug(`getById ${id} NoSuchEntity`);
         },
       ])
     ),
@@ -112,26 +133,28 @@ exports.AwsIamUser = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createUser-property
-  const create = async ({ name, payload = {}, dependencies }) => {
-    assert(name);
-    assert(payload);
-    logger.debug(`create ${tos({ name, payload })}`);
 
-    const createParams = defaultsDeep({ Tags: buildTags({ name, config }) })(
-      payload
-    );
-
-    const { User } = await iam().createUser(createParams);
-    const { iamGroups } = dependencies;
-    if (iamGroups) {
-      await forEach((group) =>
-        iam().addUserToGroup({ GroupName: group.name, UserName: name })
-      )(iamGroups);
-    }
-
-    logger.debug(`create result ${tos(User)}`);
-    return User;
-  };
+  const create = async ({ name, payload = {}, dependencies: { iamGroups } }) =>
+    pipe([
+      tap(() => {
+        logger.info(`create iam user ${name}`);
+        logger.debug(`payload: ${tos(payload)}`);
+      }),
+      () => defaultsDeep({ Tags: buildTags({ name, config }) })(payload),
+      (createParams) => iam().createUser(createParams),
+      get("User"),
+      tap.if(
+        () => iamGroups,
+        () =>
+          forEach((group) =>
+            iam().addUserToGroup({ GroupName: group.name, UserName: name })
+          )(iamGroups)
+      ),
+      tap((User) => {
+        logger.debug(`created iam user result ${tos({ name, User })}`);
+        logger.info(`created iam user ${name}`);
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteUser-property
   const destroy = async ({ id, name }) =>
