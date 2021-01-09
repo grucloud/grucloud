@@ -83,6 +83,37 @@ exports.AwsIamGroup = ({ spec, config }) => {
       }),
     ])();
 
+  const removeUserFromGroup = ({ GroupName }) =>
+    pipe([
+      () =>
+        iam().getGroup({
+          GroupName,
+          MaxItems: 1e3,
+        }),
+      get("Users"),
+      tap((Users = []) => {
+        logger.info(`removeUserFromGroup #users ${Users.length}`);
+      }),
+      forEach(({ UserName }) =>
+        iam().removeUserFromGroup({
+          GroupName,
+          UserName,
+        })
+      ),
+    ]);
+
+  const detachGroupPolicy = ({ GroupName }) =>
+    pipe([
+      () => iam().listAttachedGroupPolicies({ GroupName, MaxItems: 1e3 }),
+      get("AttachedPolicies"),
+      forEach(({ PolicyArn }) => {
+        iam().detachGroupPolicy({
+          PolicyArn,
+          GroupName,
+        });
+      }),
+    ]);
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteGroup-property
   const destroy = async ({ id, name }) =>
     pipe([
@@ -90,14 +121,8 @@ exports.AwsIamGroup = ({ spec, config }) => {
         logger.info(`destroy iam group ${tos({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
-      () => iam().listAttachedGroupPolicies({ GroupName: id, MaxItems: 1e3 }),
-      get("AttachedPolicies"),
-      forEach((policy) => {
-        iam().detachGroupPolicy({
-          PolicyArn: policy.PolicyArn,
-          GroupName: id,
-        });
-      }),
+      detachGroupPolicy({ GroupName: id }),
+      removeUserFromGroup({ GroupName: id }),
       () =>
         iam().deleteGroup({
           GroupName: id,
