@@ -21,7 +21,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
   });
   const rt = await provider.makeRouteTables({
     name: "rt",
-    dependencies: { vpc, subnet },
+    dependencies: { vpc, subnet, ig },
     properties: () => ({}),
   });
 
@@ -51,6 +51,21 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
             ],
             ToPort: 22,
           },
+          {
+            FromPort: -1,
+            IpProtocol: "icmp",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+            ToPort: -1,
+          },
         ],
       },
     }),
@@ -73,7 +88,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     properties: () => ({
       VolumeSize: 50,
       InstanceType: "t2.micro",
-      ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
+      ImageId: "ami-00f6a0c18edb19300", // Ubuntu 20.04
     }),
   });
   return { vpc, ig, subnet, rt, sg, eip, server };

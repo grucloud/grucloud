@@ -1,5 +1,15 @@
 const assert = require("assert");
-const { tap, get, pipe, filter, map, not, eq } = require("rubico");
+const {
+  tap,
+  get,
+  pipe,
+  filter,
+  map,
+  not,
+  eq,
+  fork,
+  switchCase,
+} = require("rubico");
 const { isEmpty, defaultsDeep } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "AwsRtb" });
@@ -52,13 +62,55 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
   });
   const isDownById = isDownByIdCore({ getById });
 
+  const getSubnetId = ({ subnet, RouteTableId }) =>
+    switchCase([
+      () => subnet,
+      pipe([
+        () => subnet.getLive(),
+        get("SubnetId"),
+        tap((SubnetId) => {
+          logger.info(`associate rt to SubnetId: ${SubnetId}`);
+        }),
+        (SubnetId) =>
+          ec2().associateRouteTable({
+            RouteTableId,
+            SubnetId,
+          }),
+      ]),
+      () => undefined,
+    ]);
+
+  const getInternetGatewayId = ({ ig, RouteTableId }) =>
+    switchCase([
+      () => ig,
+      pipe([
+        () => ig.getLive(),
+        get("InternetGatewayId"),
+        tap((InternetGatewayId) => {
+          logger.info(
+            `associate rt to InternetGatewayId: ${InternetGatewayId}`
+          );
+        }),
+        (GatewayId) =>
+          ec2().createRoute({
+            DestinationCidrBlock: "0.0.0.0/0",
+            RouteTableId,
+            GatewayId,
+          }),
+      ]),
+      () => undefined,
+    ]);
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createRouteTable-property
-  const create = async ({ payload, name, dependencies: { vpc, subnet } }) =>
+  const create = async ({ payload, name, dependencies: { vpc, subnet, ig } }) =>
     pipe([
       tap(() => {
         logger.info(`create rt ${tos({ name })}`);
         assert(vpc, "RouteTables is missing the dependency 'vpc'");
-        assert(subnet, "RouteTables is missing the dependency 'subnet'");
+        assert(
+          subnet || ig,
+          "RouteTables needs the dependency 'subnet' or 'ig'"
+        );
       }),
       () => vpc.getLive(),
       ({ VpcId }) =>
@@ -86,12 +138,10 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
               `missing tag for ${name}`
             );
           },
-          () => subnet.getLive(),
-          ({ SubnetId }) =>
-            ec2().associateRouteTable({
-              RouteTableId,
-              SubnetId,
-            }),
+          fork({
+            GatewayId: getInternetGatewayId({ ig, RouteTableId }),
+            SubnetId: getSubnetId({ subnet, RouteTableId }),
+          }),
           () =>
             retryCall({
               name: `rt isUpById: ${name} id: ${RouteTableId}`,

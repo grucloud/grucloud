@@ -38,9 +38,13 @@ describe("AwsRouteTables", async function () {
         CidrBlock: "10.1.0.1/24",
       }),
     });
+    ig = await provider.makeInternetGateway({
+      name: "ig",
+      dependencies: { vpc },
+    });
     rt = await provider.makeRouteTables({
       name: resourceName,
-      dependencies: { vpc, subnet },
+      dependencies: { vpc, subnet, ig },
       properties: () => ({}),
     });
   });
