@@ -41,9 +41,14 @@ describe("AwsVpc", async function () {
         CidrBlock: "10.0.1.0/24",
       }),
     });
+    ig = await provider.makeInternetGateway({
+      name: "ig",
+      dependencies: { vpc },
+    });
+
     rt = await provider.makeRouteTables({
       name: "rt",
-      dependencies: { vpc, subnet },
+      dependencies: { vpc, subnet, ig },
       properties: () => ({}),
     });
     sg = await provider.makeSecurityGroup({

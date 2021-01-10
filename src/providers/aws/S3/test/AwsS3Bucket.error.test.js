@@ -3,8 +3,10 @@ const { ConfigLoader } = require("ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const cliCommands = require("../../../../cli/cliCommands");
 const { tos } = require("../../../../tos");
+const chance = require("chance")();
+
 const types = ["S3Bucket"];
-const bucketPrefix = "grucloud";
+const bucketPrefix = `grucloud-${chance.guid().slice(0, 8)}`;
 
 describe("AwsS3BucketErrors", async function () {
   let config;

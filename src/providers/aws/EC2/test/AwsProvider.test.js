@@ -61,7 +61,7 @@ describe("AwsProvider", async function () {
     });
     rt = await provider.makeRouteTables({
       name: "rt",
-      dependencies: { vpc, subnet },
+      dependencies: { vpc, subnet, ig },
       properties: () => ({}),
     });
     sg = await provider.makeSecurityGroup({

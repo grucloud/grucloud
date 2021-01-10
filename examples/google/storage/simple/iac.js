@@ -1,5 +1,4 @@
 const path = require("path");
-const chance = require("chance")();
 
 const { GoogleProvider } = require("@grucloud/core");
 

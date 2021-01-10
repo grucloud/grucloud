@@ -358,7 +358,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Aws EC2 Plan",
+      "name": "Aws EC2 VPC Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/ec2-vpc",
       "internalConsoleOptions": "openOnSessionStart",
@@ -367,7 +367,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Aws EC2 List",
+      "name": "Aws EC2 VPC List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/ec2-vpc",
       "internalConsoleOptions": "openOnSessionStart",
@@ -376,7 +376,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Aws EC2 Apply",
+      "name": "Aws EC2 VPC Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/ec2-vpc",
       "internalConsoleOptions": "openOnSessionStart",
@@ -386,7 +386,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Aws EC2 Destroy",
+      "name": "Aws EC2 VPC Destroy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/ec2-vpc",
       "console": "integratedTerminal",

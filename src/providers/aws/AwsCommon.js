@@ -1,7 +1,7 @@
 process.env.AWS_SDK_LOAD_CONFIG = "true";
 const AWS = require("aws-sdk");
 const assert = require("assert");
-const { pipe, tryCatch, tap, switchCase, and, get, eq } = require("rubico");
+const { pipe, tryCatch, tap, switchCase, and, get, eq, or } = require("rubico");
 const { first, find, isEmpty } = require("rubico/x");
 const logger = require("../../logger")({ prefix: "AwsCommon" });
 const { tos } = require("../../tos");
@@ -57,12 +57,18 @@ exports.Route53DomainsNew = () => () =>
 exports.ACMNew = () => () =>
   createEndpoint({ endpointName: "ACM" })({ region: "us-east-1" });
 
-exports.shouldRetryOnException = ({ error, name }) => {
-  logger.error(`aws shouldRetryOnException ${tos({ name, error })}`);
-  error.stack && logger.error(error.stack);
-
-  return ![400, 404, 409].includes(error.statusCode);
-};
+exports.shouldRetryOnException = ({ error, name }) =>
+  pipe([
+    tap(() => {
+      logger.error(`aws shouldRetryOnException ${tos({ name, error })}`);
+      error.stack && logger.error(error.stack);
+    }),
+    //TODO find out error code we can retry on
+    or([() => [503].includes(error.statusCode)]),
+    tap((retry) => {
+      logger.error(`aws shouldRetryOnException retry: ${retry}`);
+    }),
+  ])();
 
 exports.shouldRetryOnExceptionDelete = ({ error, name }) => {
   logger.debug(`shouldRetryOnException ${tos({ name, error })}`);
