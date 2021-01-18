@@ -139,5 +139,17 @@ exports.createProgram = ({ version, commands }) => {
     .option(...optionFilteredByProvider)
     .action(runCommand({ commandName: "output", program }));
 
+  program
+    .command("graph")
+    .description("Output dot file ")
+    .alias("g")
+    .option(
+      "-f, --file <file>",
+      "write result to the given file name",
+      "grucloud.dot"
+    )
+    .option("-t, --type <type>", "file type: png, svg", "svg")
+    .action(runCommand({ commandName: "graph", program }));
+
   return program;
 };

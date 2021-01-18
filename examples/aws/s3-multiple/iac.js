@@ -11,13 +11,12 @@ const createResources = async ({ provider }) => {
           (acc, value, index) => [...acc, `grucloud-bucket-${index}`],
           []
         ),
-    async (buckets) =>
-      await map(
-        async (bucket) =>
-          await provider.makeS3Bucket({
-            name: bucket,
-            properties: () => ({}),
-          })
+    (buckets) =>
+      map((bucket) =>
+        provider.makeS3Bucket({
+          name: bucket,
+          properties: () => ({}),
+        })
       )(buckets),
   ])(maxBuckets);
 

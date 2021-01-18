@@ -3,6 +3,9 @@ const plu = require("pluralize");
 const prompts = require("prompts");
 const colors = require("colors/safe");
 const fs = require("fs");
+const path = require("path");
+const shell = require("shelljs");
+
 const {
   map,
   pipe,
@@ -1135,7 +1138,7 @@ const DoCommand = ({ commandOptions, command }) =>
       results,
     }),
     switchCase([
-      ({ error }) => error,
+      get("error"),
       (result) => {
         throw result;
       },
@@ -1169,4 +1172,51 @@ exports.unInit = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     DoCommand({ commandOptions, programOptions, command: "unInit" }),
     DisplayAndThrow({ name: "UnInit" })
+  )(infra);
+
+exports.graph = async ({ infra, commandOptions = {}, programOptions = {} }) =>
+  tryCatch(
+    pipe([
+      tap((xxx) => {
+        logger.debug(`graph`);
+      }),
+      combineProviders,
+      ({ providers }) =>
+        filterProvidersByName({ commandOptions, providers })(providers),
+      map(
+        tryCatch(
+          (provider) => provider.graph({ options: commandOptions }),
+          (error, provider) => {
+            return { error, provider: provider.toString() };
+          }
+        )
+      ),
+      tap((result) => {
+        //logger.debug(`graph done`);
+      }),
+      (results) => `digraph graphname {\nrankdir=LR;\n${results.join("\n")}}`,
+      tap((result) => fs.writeFileSync(commandOptions.file, result)),
+      tap((result) => {
+        console.log(`dot file written to: ${commandOptions.file}`);
+      }),
+      tap((result) => {
+        const { type } = commandOptions;
+        const output = `${path.parse(commandOptions.file).name}.${type}`;
+        const command = `dot  -T${type} ${commandOptions.file} -o ${output}`;
+
+        const { stdout, stderr, code } = shell.exec(command, {
+          silent: true,
+        });
+        if (code !== 0) {
+          throw {
+            message: `command '${command}' failed`,
+            stdout,
+            stderr,
+            code,
+          };
+        }
+        console.log(`output saved to: ${output}`);
+      }),
+    ]),
+    DisplayAndThrow({ name: "graph" })
   )(infra);

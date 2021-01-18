@@ -62,3 +62,11 @@ Destroy the resources:
 ```
 gc destroy
 ```
+
+## Dependency Graph
+
+```sh
+gc graph
+```
+
+![Graph](grucloud.svg)

@@ -47,7 +47,7 @@ const createResources = async ({ provider }) => {
   //Server
   const server = await provider.makeServer({
     name: "web-server",
-    dependencies: { volume, sg: { sg }, ip },
+    dependencies: { volume, sg: [sg], ip },
     properties: () => ({
       diskSizeGb: "20",
       machineType: "f1-micro",

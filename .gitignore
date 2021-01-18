@@ -5,3 +5,4 @@ coverage
 *.log
 gc.result.json
 .DS_Store
+grucloud.dot

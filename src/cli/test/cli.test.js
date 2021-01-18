@@ -67,6 +67,9 @@ describe("cli", function () {
   it("info", async function () {
     await runProgram({ cmds: ["info"] });
   });
+  it("graph", async function () {
+    await runProgram({ cmds: ["graph"] });
+  });
   it("query plan", async function () {
     await runProgram({ cmds: ["plan"] });
   });

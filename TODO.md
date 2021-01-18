@@ -35,6 +35,7 @@
 
 ## TODO Aws:
 
+- security group update
 - invalidate cloufront cache
 - CallerReference distribution
 - ssh should use use kp.pem instead of ssh-add
@@ -54,6 +55,7 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## TODO Goggle
 
+- infer projectId from projectName
 - The field 'entity.managedZone.dnsName' cannot be modified.
 - gcp object path properties
 
