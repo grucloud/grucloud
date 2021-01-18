@@ -13,22 +13,33 @@ Add an A record to the hosted zone:
 
 ```js
 const domainName = "your.domain.name.com";
-hostedZone = await provider.makeHostedZone({
-  name: `${hostedZoneName}.`,
-  properties: () => ({
-    RecordSet: [
-      {
-        Name: `${hostedZoneName}.`,
-        ResourceRecords: [
-          {
-            Value: "192.0.2.44",
-          },
-        ],
-        TTL: 60,
-        Type: "A",
-      },
-    ],
-  }),
+
+const domain = await provider.useRoute53Domain({
+  name: domainName,
+});
+
+const hostedZoneName = `${domainName}.`;
+const hostedZone = await provider.makeHostedZone({
+  name: hostedZoneName,
+  dependencies: { domain },
+  properties: ({}) => ({}),
+});
+
+const recordA = await provider.makeRoute53Record({
+  name: `${hostedZoneName}-ipv4`,
+  dependencies: { hostedZone, eip },
+  properties: ({ dependencies: { eip } }) => {
+    return {
+      Name: hostedZoneName,
+      Type: "A",
+      ResourceRecords: [
+        {
+          Value: eip.live?.PublicIp,
+        },
+      ],
+      TTL: 60,
+    };
+  },
 });
 ```
 
@@ -39,29 +50,40 @@ Verify a certificate with DNS validation by adding a CNAME record.
 ```js
 const domainName = "your.domain.name.com";
 
-const certificate = await provider.makeCertificate({
+const domain = await provider.useRoute53Domain({
   name: domainName,
-  properties: () => ({}),
 });
 
 const hostedZone = await provider.makeHostedZone({
   name: `${domainName}.`,
-  dependencies: { certificate },
+  dependencies: { domain },
+  properties: ({}) => ({}),
+});
+
+const recordValidation = await provider.makeRoute53Record({
+  name: `validation-${domainName}.`,
+  dependencies: { hostedZone, certificate },
   properties: ({ dependencies: { certificate } }) => {
-    const record = certificate.live?.DomainValidationOptions[0].ResourceRecord;
+    const domainValidationOption =
+      certificate?.live?.DomainValidationOptions[0];
+    const record = domainValidationOption?.ResourceRecord;
+    if (domainValidationOption) {
+      assert(
+        record,
+        `missing record in DomainValidationOptions, certificate ${JSON.stringify(
+          certificate.live
+        )}`
+      );
+    }
     return {
-      RecordSet: [
+      Name: record?.Name,
+      ResourceRecords: [
         {
-          Name: record?.Name,
-          ResourceRecords: [
-            {
-              Value: record?.Value,
-            },
-          ],
-          TTL: 300,
-          Type: "CNAME",
+          Value: record?.Value,
         },
       ],
+      TTL: 300,
+      Type: "CNAME",
     };
   },
 });
@@ -70,6 +92,7 @@ const hostedZone = await provider.makeHostedZone({
 ## Source Code Examples
 
 - [https static website ](https://github.com/grucloud/grucloud/blob/main/examples/aws/website-https/iac.js)
+- [starhack.it](https://github.com/FredericHeem/starhackit/blob/master/deploy/grucloud-aws/iac.js)
 
 ## Properties
 
@@ -78,3 +101,4 @@ const hostedZone = await provider.makeHostedZone({
 ## Dependencies
 
 - [ACM Certificate](../ACM/AcmCertificate)
+- [Route53 Domain](../Route53Domain/Route53Domain)

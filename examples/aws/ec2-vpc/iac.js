@@ -82,7 +82,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     dependencies: {
       keyPair,
       subnet,
-      securityGroups: { sg },
+      securityGroups: [sg],
       eip,
     },
     properties: () => ({

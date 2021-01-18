@@ -81,3 +81,11 @@ To check that the deployment is successful, run the `run --onDeployed` command:
 ```
  gc run --onDeployed
 ```
+
+## Dependency Graph
+
+```sh
+gc graph
+```
+
+![Graph](grucloud.svg)

@@ -27,6 +27,7 @@ const {
   fork,
   eq,
   not,
+  transform,
 } = require("rubico");
 const logger = require("../logger")({ prefix: "Core" });
 const { tos } = require("../tos");
@@ -210,6 +211,16 @@ const ResourceMaker = ({
       ];
     }
   };
+  const getDependencyList = () =>
+    pipe([
+      transform(
+        map((dep) => dep),
+        () => []
+      ),
+      tap((result) => {
+        //logger.info(`getDependencyList `);
+      }),
+    ])(dependencies);
 
   const resolveDependencies = ({ lives, dependencies, dependenciesMustBeUp }) =>
     pipe([
@@ -523,6 +534,7 @@ const ResourceMaker = ({
       tap.if(isEmpty, () => createMemoize()),
     ]),
     findLive,
+    getDependencyList,
     resolveDependencies: ({ lives, dependenciesMustBeUp }) =>
       resolveDependencies({
         resourceName,
@@ -2193,6 +2205,29 @@ function CoreProvider({
     )();
   const toString = () => ({ name: providerName, type: toType() });
 
+  const graph = ({ options }) =>
+    pipe([
+      tap((xxx) => {
+        logger.debug(`graph`);
+      }),
+      () => getTargetResources(),
+      reduce(
+        (acc, resource) => `${acc}"${resource.type}::${resource.name}";\n`,
+        ""
+      ),
+      (result) =>
+        reduce(
+          (acc, resource) =>
+            `${acc}${map(
+              (deps) =>
+                `"${resource.type}::${resource.name}" -> "${deps.type}::${deps.name}";\n`
+            )(resource.getDependencyList()).join("\n")}`,
+          result
+        )(getTargetResources()),
+      (result) =>
+        `subgraph "cluster_${providerName}" {\nlabel="${providerName}";${result}}\n`,
+    ])();
+
   const provider = {
     toString,
     config: () => providerConfig,
@@ -2226,6 +2261,7 @@ function CoreProvider({
     runOnDeployed,
     runOnDestroyed,
     hookAdd,
+    graph,
     info: pipe([
       () => startBase(),
       () => ({
