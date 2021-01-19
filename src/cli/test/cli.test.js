@@ -68,7 +68,9 @@ describe("cli", function () {
     await runProgram({ cmds: ["info"] });
   });
   it("graph", async function () {
-    await runProgram({ cmds: ["graph"] });
+    if (!process.env.CONTINUOUS_INTEGRATION) {
+      await runProgram({ cmds: ["graph"] });
+    }
   });
   it("query plan", async function () {
     await runProgram({ cmds: ["plan"] });
