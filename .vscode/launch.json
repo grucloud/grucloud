@@ -203,6 +203,16 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Azure Graph",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/azure/",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["g"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Aws Website List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/website-https",

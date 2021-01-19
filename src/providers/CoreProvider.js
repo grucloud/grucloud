@@ -213,6 +213,7 @@ const ResourceMaker = ({
   };
   const getDependencyList = () =>
     pipe([
+      filter(not(isString)),
       transform(
         map((dep) => dep),
         () => []
