@@ -240,6 +240,27 @@ function Home() {
         </section>
         <section
           css={css`
+            padding: 1rem;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          `}
+        >
+          <div>
+            <h2>Visualize the resoures</h2>
+            <p>
+              The <em>gc graph</em> command displays a graph of the
+              infrastructure showing the dependencies between resources.
+            </p>
+            <img
+              src="https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2-vpc/grucloud.svg"
+              alt="graph"
+            ></img>
+          </div>
+        </section>
+        <section
+          css={css`
             background-color: #f7f8fa;
             padding: 1rem;
 
