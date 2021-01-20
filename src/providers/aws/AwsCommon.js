@@ -64,12 +64,16 @@ exports.shouldRetryOnException = ({ error, name }) =>
       error.stack && logger.error(error.stack);
     }),
     //TODO find out error code we can retry on
-    or([() => [503].includes(error.statusCode)]),
+    or([
+      () => [503].includes(error.statusCode),
+      eq(get("code"), "OperationAborted"),
+    ]),
     tap((retry) => {
       logger.error(`aws shouldRetryOnException retry: ${retry}`);
     }),
-  ])();
+  ])(error);
 
+//TODO use pipe
 exports.shouldRetryOnExceptionDelete = ({ error, name }) => {
   logger.debug(`shouldRetryOnException ${tos({ name, error })}`);
   const retry = error.code === "DeleteConflict";
