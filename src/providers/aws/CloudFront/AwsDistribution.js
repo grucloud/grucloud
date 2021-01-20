@@ -214,15 +214,20 @@ exports.AwsDistribution = ({ spec, config }) => {
           config,
           shouldRetryOnException: ({ error, name }) =>
             pipe([
-              () => {
+              tap(() => {
                 logger.info(
                   `deleteDistribution shouldRetryOnException ${tos({
                     name,
                     error,
                   })}`
                 );
-              },
+              }),
               eq(get("code"), "DistributionNotDisabled"),
+              tap((result) => {
+                logger.info(
+                  `deleteDistribution shouldRetryOnException result: ${result}`
+                );
+              }),
             ])(error),
         }),
       tap(() =>

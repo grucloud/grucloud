@@ -62,6 +62,10 @@ module.exports = ({ resources, config }) => {
         {
           name: "Ping VM",
           command: async ({ host }) => {
+            if (process.env.CONTINUOUS_INTEGRATION) {
+              // cannot ping from circleci container
+              return;
+            }
             const alive = await retryCall({
               name: `ping ${host}`,
               fn: async () => {

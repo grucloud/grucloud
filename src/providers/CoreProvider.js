@@ -213,6 +213,7 @@ const ResourceMaker = ({
   };
   const getDependencyList = () =>
     pipe([
+      filter(not(isString)),
       transform(
         map((dep) => dep),
         () => []
@@ -263,11 +264,11 @@ const ResourceMaker = ({
                 (lives) => dependency.findLive({ lives }),
                 () =>
                   retryCall({
-                    name: `getLive ${type}/${resourceName} `,
+                    name: `resolveDependencies getLive ${type}/${resourceName} `,
                     fn: () => dependency.getLive(),
                     isExpectedResult: (result) => result,
                     shouldRetryOnException: () => false,
-                    config: { retryDelay: 1e3, retryCount: 2 },
+                    config: { retryDelay: 1e3, retryCount: 10 },
                   }),
               ]),
               tap.if(
