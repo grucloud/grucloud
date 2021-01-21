@@ -28,7 +28,6 @@ const handleError = (error) => {
 exports.createProgram = ({ version, commands }) => {
   const program = new Command();
   program.storeOptionsAsProperties(false);
-  program.passCommandToAction(false);
   program.allowUnknownOption(); // For testing
   program.version(version);
   program.option("-i, --infra <file>", "infrastructure default is iac.js");
