@@ -14,7 +14,6 @@ const {
 } = require("rxjs/operators");
 const logger = require("../logger")({ prefix: "Retry" });
 const { tos } = require("../tos");
-const { logError } = require("./Common");
 
 const retryCall = async ({
   name = "",
