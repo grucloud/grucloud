@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { get, eq } = require("rubico");
+const { get, eq, switchCase } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const logger = require("../../../../logger")({ prefix: "GcpVmInstance" });
@@ -19,7 +19,7 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
 
   const configDefault = ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ properties, dependencies })}`);
-    const { ip, serviceAccount } = dependencies;
+    const { ip, serviceAccount, subNetwork } = dependencies;
     const {
       machineType,
       diskType,
@@ -39,6 +39,13 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
         ];
       }
     };
+
+    const buildSubNetwork = switchCase([
+      (subNetwork) => subNetwork,
+      (subNetwork) => subNetwork.resource.name,
+      () => "default",
+    ]);
+
     const config = defaultsDeep({
       kind: "compute#instance",
       name,
@@ -74,7 +81,7 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
           kind: "compute#networkInterface",
           subnetwork: `projects/${projectId(
             configProvider
-          )}/regions/${region}/subnetworks/default`,
+          )}/regions/${region}/subnetworks/${buildSubNetwork(subNetwork)}`,
           accessConfigs: [
             {
               ...(ip && { natIP: getField(ip, "address") }),

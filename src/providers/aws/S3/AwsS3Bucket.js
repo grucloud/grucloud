@@ -247,7 +247,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         ]),
       ]),
       (err) => {
-        logger.error(`getBucketTagging ${name}, error ${tos(err)}`);
+        logger.error(`getBucketRequestPayment ${name}, error ${tos(err)}`);
         throw err;
       }
     );
@@ -293,16 +293,44 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         tap((x) => {
           logger.debug(`getBucketTagging ${params.Bucket}`);
         }),
-        () => s3().getBucketTagging(params),
-        get("TagSet"),
-        tap((TagSet) => {
-          logger.debug(
-            `getBucketTagging ${params.Bucket} result: ${tos(TagSet)}`
-          );
-        }),
+        () =>
+          retryCall({
+            name: `getBucketTagging ${params.Bucket}`,
+            fn: pipe([
+              () => s3().getBucketTagging(params),
+              get("TagSet"),
+              tap((TagSet) => {
+                logger.debug(
+                  `getBucketTagging ${params.Bucket} result: ${tos(TagSet)}`
+                );
+              }),
+            ]),
+            shouldRetryOnException: ({ error, name }) =>
+              pipe([
+                tap(() => {
+                  logger.error(
+                    `getBucketTagging shouldRetryOnException ${tos({
+                      name,
+                      error,
+                    })}`
+                  );
+                  error.stack && logger.error(error.stack);
+                }),
+                or([
+                  () => [503].includes(error.statusCode),
+                  eq(get("code"), "NoSuchBucket"),
+                ]),
+                tap((retry) => {
+                  logger.error(
+                    `getBucketTagging shouldRetryOnException retry: ${retry}`
+                  );
+                }),
+              ])(error),
+            config: { retryCount: 5, retryDelay: config.retryDelay },
+          }),
       ]),
       switchCase([
-        (err) => err.code === "NoSuchTagSet",
+        eq(get("code"), "NoSuchTagSet"),
         () => undefined,
         (err) => {
           logger.error(`getBucketTagging ${params.Bucket}, error ${tos(err)}`);

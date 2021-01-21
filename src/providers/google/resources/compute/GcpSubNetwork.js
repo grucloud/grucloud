@@ -35,6 +35,6 @@ module.exports = GcpSubNetwork = ({ spec, config }) => {
     url: `/projects/${projectId(config)}/regions/${region}/subnetworks`,
     config,
     configDefault,
-    cannotBeDeleted: eq(get("resource.name", "default")),
+    cannotBeDeleted: eq(get("resource.name"), "default"),
   });
 };
