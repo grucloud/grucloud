@@ -26,3 +26,7 @@ const subNetwork = await provider.makeSubNetwork({
 ### Dependencies
 
 - [Network](./Network)
+
+### Used By
+
+- [VmInstance](./VmInstance)

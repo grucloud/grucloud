@@ -36,6 +36,8 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
   // Allocate a server
   const server = await provider.makeVmInstance({
     name: `db-${stage}`,
+    dependencies: { subNetwork },
+
     properties: () => ({
       diskSizeGb: "20",
       machineType: "f1-micro",

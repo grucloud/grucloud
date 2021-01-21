@@ -161,6 +161,35 @@ const server = await provider.makeVmInstance({
 });
 ```
 
+### VM Intance into a specific network
+
+```js
+// Vpc network
+const network = await provider.makeNetwork({
+  name: `vpc`,
+  properties: () => ({ autoCreateSubnetworks: false }),
+});
+
+// Subnetwork
+const subNetwork = await provider.makeSubNetwork({
+  name: `subnetwork`,
+  dependencies: { network },
+  properties: () => ({
+    ipCidrRange: "10.164.0.0/20",
+  }),
+});
+
+// Allocate a server
+const server = await provider.makeVmInstance({
+  name: `my-server`,
+  dependencies: { subNetwork },
+  properties: () => ({
+    sourceImage:
+      "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
+  }),
+});
+```
+
 ## Examples Code
 
 - [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/vm/iac.js#L9)
@@ -175,3 +204,4 @@ const server = await provider.makeVmInstance({
 
 - [Address](./Address)
 - [Service Account](../IAM/ServiceAccount)
+- [SubNetwork](./SubNetwork)
