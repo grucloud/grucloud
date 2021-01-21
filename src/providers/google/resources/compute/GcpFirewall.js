@@ -29,14 +29,12 @@ module.exports = GcpFirewall = ({ spec, config }) => {
     return config;
   };
 
-  const cannotBeDeleted = eq(get("name", "default"));
-
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
     url: `/projects/${projectId(config)}/global/firewalls`,
     config,
     configDefault,
-    cannotBeDeleted,
+    cannotBeDeleted: eq(get("name"), "default"),
   });
 };

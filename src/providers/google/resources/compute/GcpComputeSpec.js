@@ -109,7 +109,7 @@ module.exports = (config) => {
     },
     {
       type: "VmInstance",
-      dependsOn: ["ServiceAccount", "Address", "Network", "Firewall"],
+      dependsOn: ["ServiceAccount", "Address", "SubNetwork", "Firewall"],
       Client: ({ spec }) =>
         GoogleVmInstance({
           spec,
