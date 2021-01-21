@@ -106,5 +106,9 @@
       "text-summary"
     ],
     "all": true
+  },
+  "np": {
+    "yarn": false,
+    "branch": "main"
   }
 }
