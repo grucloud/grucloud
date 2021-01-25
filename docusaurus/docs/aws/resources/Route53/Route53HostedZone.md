@@ -5,11 +5,13 @@ title: Hosted Zone
 
 Provides a Route53 Hosted Zone.
 
+Add one or more records with the [Route53 Record](./Route53Record) resource.
+
 ## Examples
 
-### A Record
+### Simple HostedZone
 
-Add an A record to the hosted zone:
+Create a HostedZone with a Route53Domain as a dependency to update automatically the DNS servers.
 
 ```js
 const domainName = "your.domain.name.com";
@@ -24,69 +26,6 @@ const hostedZone = await provider.makeHostedZone({
   dependencies: { domain },
   properties: ({}) => ({}),
 });
-
-const recordA = await provider.makeRoute53Record({
-  name: `${hostedZoneName}-ipv4`,
-  dependencies: { hostedZone, eip },
-  properties: ({ dependencies: { eip } }) => {
-    return {
-      Name: hostedZoneName,
-      Type: "A",
-      ResourceRecords: [
-        {
-          Value: eip.live?.PublicIp,
-        },
-      ],
-      TTL: 60,
-    };
-  },
-});
-```
-
-### CNAME from a certificate
-
-Verify a certificate with DNS validation by adding a CNAME record.
-
-```js
-const domainName = "your.domain.name.com";
-
-const domain = await provider.useRoute53Domain({
-  name: domainName,
-});
-
-const hostedZone = await provider.makeHostedZone({
-  name: `${domainName}.`,
-  dependencies: { domain },
-  properties: ({}) => ({}),
-});
-
-const recordValidation = await provider.makeRoute53Record({
-  name: `validation-${domainName}.`,
-  dependencies: { hostedZone, certificate },
-  properties: ({ dependencies: { certificate } }) => {
-    const domainValidationOption =
-      certificate?.live?.DomainValidationOptions[0];
-    const record = domainValidationOption?.ResourceRecord;
-    if (domainValidationOption) {
-      assert(
-        record,
-        `missing record in DomainValidationOptions, certificate ${JSON.stringify(
-          certificate.live
-        )}`
-      );
-    }
-    return {
-      Name: record?.Name,
-      ResourceRecords: [
-        {
-          Value: record?.Value,
-        },
-      ],
-      TTL: 300,
-      Type: "CNAME",
-    };
-  },
-});
 ```
 
 ## Source Code Examples
@@ -100,5 +39,8 @@ const recordValidation = await provider.makeRoute53Record({
 
 ## Dependencies
 
-- [ACM Certificate](../ACM/AcmCertificate)
 - [Route53 Domain](../Route53Domain/Route53Domain)
+
+## Used By
+
+- [Route53 Record](./Route53Record)
