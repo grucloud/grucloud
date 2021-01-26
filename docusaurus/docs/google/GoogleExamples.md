@@ -9,13 +9,13 @@ title: Examples
 
 ![Virtual Machine](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/vm/grucloud.svg)
 
-### [Virtual Machine inside a VPC](https://github.com/grucloud/grucloud/tree/main/examples/google/vm)
+### [Virtual Machine inside a VPC](https://github.com/grucloud/grucloud/tree/main/examples/google/vm-network)
 
 ![Virtual Machine](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/vm-network/grucloud.svg)
 
 ## DNS
 
-### [DNS](https://github.com/grucloud/grucloud/tree/main/examples/google/dns/github-page)
+### [DNS GitHub Page](https://github.com/grucloud/grucloud/tree/main/examples/google/dns/github-page)
 
 ![Virtual Machine](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/dns/github-page/grucloud.svg)
 
