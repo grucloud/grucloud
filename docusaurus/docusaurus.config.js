@@ -41,7 +41,7 @@ module.exports = {
           items: [
             {
               label: "Twitter",
-              href: "https://twitter.com/grucloud",
+              href: "https://twitter.com/grucloud_iac",
             },
             {
               label: "Stack Overflow",
