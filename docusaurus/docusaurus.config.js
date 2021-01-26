@@ -49,7 +49,8 @@ module.exports = {
             },
             {
               label: "Discord",
-              href: "https://discordapp.com/invite/grucloud",
+              href:
+                "https://discord.com/channels/803645280359546920/803645355606147082",
             },
           ],
         },
