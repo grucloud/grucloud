@@ -10,11 +10,12 @@ module.exports = {
       "cli/PlanDestroy",
     ],
     Requirements: ["Requirements"],
-    "User Guide": ["DeveloperGuide"],
+
     "Amazon Web Service": [
       "aws/AwsRequirements",
       "aws/AwsGettingStarted",
       "aws/AwsConfig",
+      "aws/AwsExamples",
       {
         Resources: [
           { ACM: ["aws/resources/ACM/AcmCertificate"] },
@@ -40,7 +41,12 @@ module.exports = {
               "aws/resources/IAM/IamUser",
             ],
           },
-          { Route53: ["aws/resources/Route53/Route53HostedZone"] },
+          {
+            Route53: [
+              "aws/resources/Route53/Route53HostedZone",
+              "aws/resources/Route53/Route53Record",
+            ],
+          },
           { Route53Domain: ["aws/resources/Route53Domain/Route53Domain"] },
           { S3: ["aws/resources/S3/S3Bucket", "aws/resources/S3/S3Object"] },
         ],
@@ -60,11 +66,13 @@ module.exports = {
           "azure/resources/VirtualMachine",
         ],
       },
+      "azure/AzureExamples",
       "azure/AzureMisc",
     ],
     "Google Cloud Platform": [
       "google/GoogleRequirements",
       "google/GoogleGettingStarted",
+      "google/GoogleExamples",
       {
         Resources: [
           {
@@ -101,5 +109,6 @@ module.exports = {
       },
       "google/GoogleMisc",
     ],
+    "User Guide": ["DeveloperGuide"],
   },
 };
