@@ -66,11 +66,4 @@ Here the 4 main commands for a regular workflow:
 - [gc list](https://www.grucloud.com/docs/cli/List): List the live resources.
 - [gc destroy](https://www.grucloud.com/docs/cli/PlanDestroy): Destroy the resources.
 
-<iframe
-data-autoplay
-src="https://asciinema.org/a/VNjhjXHwRhGkuP6kcMBks3Kmo/embed?autoplay=true&amp;speed=6&amp;loop=true"
-id="asciicast-iframe-13761"
-name="asciicast-iframe-13761"
-scrolling="no"
-style={{ width: "900px", height: "720px" }}
-></iframe>
+<a href="https://asciinema.org/a/VNjhjXHwRhGkuP6kcMBks3Kmo?autoplay=1"><img src="https://asciinema.org/a/VNjhjXHwRhGkuP6kcMBks3Kmo.png" width="836"/></a>
