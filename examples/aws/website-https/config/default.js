@@ -4,5 +4,5 @@ const path = require("path");
 module.exports = () => ({
   projectName: pkg.name,
   DomainName: "grucloud.org",
-  websiteDir: path.resolve(__dirname, "../react-app/build/"),
+  websiteDir: path.resolve(__dirname, "../vue-app/dist/"),
 });
