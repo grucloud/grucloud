@@ -93,7 +93,7 @@ module.exports = ({ resources, config }) => {
                   password: process.env.MACHINE_ADMIN_PASSWORD,
                 });
               },
-              isExpectedResult = () => true,
+              isExpectedResult: () => true,
               shouldRetryOnException: () => true,
               config: { retryCount: 100, retryDelay: 5e3 },
             });
