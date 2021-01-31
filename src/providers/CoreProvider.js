@@ -1566,10 +1566,16 @@ function CoreProvider({
         logger.info(`Apply result: ${tos(result)}`);
       }),
       (result) => ({
+        lives: plan.lives,
         error: result.resultCreate.error || result.resultDestroy.error,
         resultCreate: result.resultCreate,
         resultDestroy: result.resultDestroy,
       }),
+      tap((result) =>
+        forEach((client) => {
+          client.onDeployed && client.onDeployed(result);
+        })(clients)
+      ),
       tap((result) => {
         logger.info(`Apply result: ${tos(result)}`);
       }),

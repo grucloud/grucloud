@@ -80,6 +80,10 @@ const distribution = await provider.makeCloudFrontDistribution({
 
 - [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#createDistributionWithTags-property)
 
+### Cache Invalidation
+
+When some S3 objects are updated during the _gc apply_ command, a [_createInvalidation_](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#createInvalidation-property) call is made to invalide the cache to make sure the new version is available to the node edges.
+
 ### Dependencies
 
 - [S3Bucket](../S3/S3Bucket)

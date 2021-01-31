@@ -10,6 +10,8 @@ const { retryCall } = require("../Retry");
 const KeyName = "Name";
 exports.KeyName = KeyName;
 
+exports.getNewCallerReference = () => `grucloud-${new Date()}`;
+
 const handler = ({ endpointName, endpoint }) => ({
   get: (target, name, receiver) => {
     return (...args) =>

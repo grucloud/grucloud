@@ -42,11 +42,10 @@ const {
   Route53DomainsNew,
   buildTags,
   shouldRetryOnException,
+  getNewCallerReference,
 } = require("../AwsCommon");
 
 const { filterEmptyResourceRecords } = require("./Route53Utils");
-
-const getNewCallerReference = () => `grucloud-${new Date()}`;
 
 //Check for the final dot
 const findName = get("Name");

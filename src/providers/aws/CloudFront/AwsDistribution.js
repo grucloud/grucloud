@@ -2,6 +2,7 @@ const assert = require("assert");
 const AWS = require("aws-sdk");
 const {
   map,
+  flatMap,
   pipe,
   tap,
   tryCatch,
@@ -16,16 +17,29 @@ const {
   omit,
   and,
 } = require("rubico");
-const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
+const {
+  find,
+  defaultsDeep,
+  isEmpty,
+  forEach,
+  pluck,
+  flatten,
+} = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
 const logger = require("../../../logger")({ prefix: "AwsDistribution" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
-const { CloudFrontNew, buildTags, findNameInTags } = require("../AwsCommon");
+const {
+  CloudFrontNew,
+  buildTags,
+  findNameInTags,
+  getNewCallerReference,
+} = require("../AwsCommon");
 const { getField } = require("../../ProviderCommon");
 
+const RESOURCE_TYPE = "CloudFrontDistribution";
 const findName = findNameInTags;
 const findId = get("Id");
 
@@ -248,7 +262,7 @@ exports.AwsDistribution = ({ spec, config }) => {
     dependencies: { certificate },
   }) =>
     defaultsDeep({
-      CallerReference: `grucloud-${new Date()}`,
+      CallerReference: getNewCallerReference(),
       Enabled: true,
       ...(certificate && {
         ViewerCertificate: {
@@ -262,8 +276,48 @@ exports.AwsDistribution = ({ spec, config }) => {
       }),
     })(properties);
 
+  const onDeployed = ({ resultCreate, lives }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`onDeployed ${tos({ resultCreate, lives })}`);
+      }),
+      () => find(eq(get("type"), RESOURCE_TYPE))(lives.results),
+      get("results.items"),
+      tap((distributions) => {
+        logger.info(`onDeployed ${tos({ distributions })}`);
+      }),
+      map((distribution) =>
+        pipe([
+          get("Origins.Items"),
+          flatMap(({ Id, OriginPath }) =>
+            findS3ObjectUpdated({ plans: resultCreate.plans, Id, OriginPath })
+          ),
+          tap((Items) => {
+            logger.info(`distribution Items ${tos({ Items })}`);
+          }),
+          (Items) => ({
+            DistributionId: distribution.Id,
+            InvalidationBatch: {
+              CallerReference: getNewCallerReference(),
+              Paths: {
+                Quantity: Items.length,
+                Items,
+              },
+            },
+          }),
+          tap((params) => {
+            logger.info(`createInvalidation params ${tos({ params })}`);
+          }),
+          (params) => cloudfront().createInvalidation(params),
+          tap((result) => {
+            logger.info(`createInvalidation done ${tos({ result })}`);
+          }),
+        ])(distribution)
+      ),
+    ])();
+
   return {
-    type: "CloudFrontDistribution",
+    type: RESOURCE_TYPE,
     spec,
     isUpById,
     isDownById,
@@ -276,6 +330,7 @@ exports.AwsDistribution = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    onDeployed,
     shouldRetryOnException: ({ name, error }) =>
       pipe([
         tap(() => {
@@ -307,3 +362,22 @@ exports.compareDistribution = async ({ target, live, dependencies }) =>
       logger.debug(`compareDistribution diff:${tos(diff)}`);
     }),
   ])(target);
+
+const findS3ObjectUpdated = ({ plans, Id, OriginPath }) =>
+  pipe([
+    tap(() => {
+      logger.debug(`findS3ObjectUpdated ${tos({ Id })}`);
+    }),
+    filter(
+      and([
+        eq(get("resource.type"), "S3Object"),
+        eq(get("action"), "UPDATE"),
+        eq((plan) => `S3-${plan.live.Bucket}`, Id),
+      ])
+    ),
+    pluck("live.Key"),
+    map((key) => `${OriginPath}/${key}`),
+    tap((results) => {
+      logger.debug(`findS3ObjectUpdated ${tos({ results })}`);
+    }),
+  ])(plans);
