@@ -16,8 +16,18 @@ jobs:
       - run: ssh-add secrets/kp.pem
       - run: ssh-add -l
       - run: sudo npm run link
+      - run: mkdir ~/junit
       - run: mkdir /home/circleci/.aws && touch /home/circleci/.aws/credentials && touch /home/circleci/.aws/config
-      - run: CONTINUOUS_INTEGRATION=1 STAGE=ci npm test
+      - run:
+          command: CONTINUOUS_INTEGRATION=1 STAGE=ci npm run test:ci
+          environment:
+            MOCHA_FILE: ~/junit/test-results.xml
+          when: always
+      - store_test_results:
+          path: ~/junit
+      - store_artifacts:
+          path: ~/junit
+
 orbs:
   node: circleci/node@4.1.0
 version: 2.1
