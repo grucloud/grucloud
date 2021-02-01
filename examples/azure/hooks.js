@@ -76,8 +76,7 @@ module.exports = ({ resources, config }) => {
                 return alive;
               },
               shouldRetryOnException: () => true,
-              retryCount: 20,
-              retryDelay: 2e3,
+              config: { retryCount: 20, retryDelay: 2e3 },
             });
             assert(alive, `cannot ping ${host}`);
           },
@@ -93,10 +92,10 @@ module.exports = ({ resources, config }) => {
                   username: process.env.MACHINE_ADMIN_USERNAME,
                   password: process.env.MACHINE_ADMIN_PASSWORD,
                 });
-                return true;
               },
+              isExpectedResult: () => true,
               shouldRetryOnException: () => true,
-              config: { retryCount: 30, retryDelay: 5e3 },
+              config: { retryCount: 100, retryDelay: 5e3 },
             });
           },
         },

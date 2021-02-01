@@ -65,5 +65,3 @@ Here the 4 main commands for a regular workflow:
 - [gc apply](https://www.grucloud.com/docs/cli/PlanApply): Deploy the resources.
 - [gc list](https://www.grucloud.com/docs/cli/List): List the live resources.
 - [gc destroy](https://www.grucloud.com/docs/cli/PlanDestroy): Destroy the resources.
-
-<a href="https://asciinema.org/a/VNjhjXHwRhGkuP6kcMBks3Kmo?autoplay=1"><img src="https://asciinema.org/a/VNjhjXHwRhGkuP6kcMBks3Kmo.png" width="836"/></a>

@@ -13,7 +13,7 @@ const server = await provider.makeEC2({
     InstanceType: "t2.micro",
     ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
   }),
-  dependencies: { keyPair, subnet, securityGroups: { sg }, iamInstanceProfile },
+  dependencies: { keyPair, subnet, securityGroups: [sg], iamInstanceProfile },
 });
 ```
 
