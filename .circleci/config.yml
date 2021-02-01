@@ -18,11 +18,7 @@ jobs:
       - run: sudo npm run link
       - run: mkdir ~/junit
       - run: mkdir /home/circleci/.aws && touch /home/circleci/.aws/credentials && touch /home/circleci/.aws/config
-      - run:
-          command: CONTINUOUS_INTEGRATION=1 STAGE=ci npm run test:ci
-          environment:
-            MOCHA_FILE: ~/junit/test-results.xml
-          when: always
+      - run: CONTINUOUS_INTEGRATION=1 STAGE=ci MOCHA_FILE=~/junit/test-results.xml npm run test:mock
       - store_test_results:
           path: ~/junit
       - store_artifacts:
