@@ -11,12 +11,18 @@ const AwsRouteTables = require("./AwsRouteTables");
 const AwsSubnet = require("./AwsSubnet");
 const AwsSecurityGroup = require("./AwsSecurityGroup");
 const AwsElasticIpAddress = require("./AwsElasticIpAddress");
+const AwsVolume = require("./AwsVolume");
 
 module.exports = [
   {
     type: "KeyPair",
     Client: ({ spec, config }) => AwsClientKeyPair({ spec, config }),
     listOnly: true,
+    isOurMinion,
+  },
+  {
+    type: "Volume",
+    Client: ({ spec, config }) => AwsVolume({ spec, config }),
     isOurMinion,
   },
   {
@@ -62,6 +68,7 @@ module.exports = [
       "ElasticIpAddress",
       "InternetGateway",
       "IamInstanceProfile",
+      "Volume",
     ],
     Client: ({ spec, config }) =>
       AwsEC2({
@@ -70,7 +77,6 @@ module.exports = [
       }),
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS.html#runInstances-property
     propertiesDefault: {
-      VolumeSize: 100,
       InstanceType: "t2.micro",
       MaxCount: 1,
       MinCount: 1,

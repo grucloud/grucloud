@@ -36,8 +36,7 @@
 ## TODO Aws:
 
 - security group update
-- invalidate cloufront cache
-- CallerReference distribution
+
 - ssh should use use kp.pem instead of ssh-add
 - add example code in AwsGettingStarted
 - aws.config.loadFromPath('./AwsConfig.json');

@@ -9,17 +9,23 @@ Provides an EC2 instance resource, a.k.a virtual machine.
 const server = await provider.makeEC2({
   name: "myserver",
   properties: () => ({
-    VolumeSize: 50,
     InstanceType: "t2.micro",
     ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
   }),
-  dependencies: { keyPair, subnet, securityGroups: [sg], iamInstanceProfile },
+  dependencies: {
+    keyPair,
+    subnet,
+    securityGroups: [sg],
+    iamInstanceProfile,
+    volumes: [volume],
+  },
 });
 ```
 
 ### Examples
 
 - [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/iac.js)
+- [attached an EBS volume](https://github.com/grucloud/grucloud/blob/main/examples/aws/volume/iac.js)
 - [example with IAM](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam/iac.js)
 - [full example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-vpc/iac.js)
 
@@ -33,6 +39,7 @@ const server = await provider.makeEC2({
 - [Subnet](./Subnet)
 - [KeyPair](./KeyPair)
 - [ElasticIpAddress](./ElasticIpAddress)
+- [Volume](./Volume)
 - [IamInstanceProfile](../IAM/iamInstanceProfile)
 
 ### AWS CLI

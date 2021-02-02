@@ -1,7 +1,7 @@
 const { get, switchCase, pipe, tap } = require("rubico");
 const { isEmpty } = require("rubico/x");
 const assert = require("assert");
-const logger = require("../../../logger")({ prefix: "AwsSn" });
+const logger = require("../../../logger")({ prefix: "AwsSubnet" });
 const { getField } = require("../../ProviderCommon");
 const { tos } = require("../../../tos");
 const {

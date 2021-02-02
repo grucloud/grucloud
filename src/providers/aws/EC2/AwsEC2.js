@@ -1,6 +1,23 @@
 const assert = require("assert");
-const { map, transform, get, tap, pipe, filter, eq, not } = require("rubico");
-const { defaultsDeep, isEmpty, first, pluck, flatten } = require("rubico/x");
+const {
+  map,
+  transform,
+  get,
+  tap,
+  pipe,
+  filter,
+  eq,
+  not,
+  tryCatch,
+} = require("rubico");
+const {
+  defaultsDeep,
+  isEmpty,
+  first,
+  pluck,
+  flatten,
+  forEach,
+} = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "AwsEc2" });
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
@@ -58,12 +75,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     ])();
 
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
-  const getById = pipe([
-    getByIdCore({ fieldIds: "InstanceIds", getList }),
-    tap((obj) => {
-      logger.debug(`getById ${tos(obj)}`);
-    }),
-  ]);
+  const getById = getByIdCore({ fieldIds: "InstanceIds", getList });
 
   const isUpById = isUpByIdCore({
     isInstanceUp,
@@ -75,8 +87,59 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     getById,
   });
 
+  const volumesAttach = ({ InstanceId, volumes = [] }) =>
+    pipe([
+      tap(() => {
+        logger.debug(
+          `volumesAttach InstanceId: ${InstanceId}, #volumes: ${volumes.length}`
+        );
+      }),
+      forEach(
+        tryCatch(
+          (volume) =>
+            ec2().attachVolume({
+              Device: volume.config.Device,
+              InstanceId,
+              VolumeId: volume.live.VolumeId,
+            }),
+          (error, volume) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `error attaching volume ${volume}, error: ${tos(error)}`
+                );
+              }),
+              () => ({ error, volume }),
+            ])()
+        )
+      ),
+      tap(() => {
+        logger.debug(`volumes attached InstanceId: ${InstanceId}`);
+      }),
+    ])(volumes);
+
+  const associateAddress = ({ InstanceId, eip }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`associateAddress InstanceId: ${InstanceId}`);
+        assert(eip.live.AllocationId);
+      }),
+      () =>
+        ec2().associateAddress({
+          AllocationId: eip.live.AllocationId,
+          InstanceId,
+        }),
+      tap(() => {
+        logger.debug(`eip address associated, InstanceId: ${InstanceId}`);
+      }),
+    ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property
-  const create = async ({ name, payload, dependencies: { eip } }) =>
+  const create = async ({
+    name,
+    payload,
+    resolvedDependencies: { volumes, eip },
+  }) =>
     pipe([
       tap(() => {
         logger.info(`create ec2 ${tos({ name })}`);
@@ -106,37 +169,18 @@ module.exports = AwsEC2 = ({ spec, config }) => {
           `missing tag for ${name}`
         );
       }),
-      tap(({ InstanceId }) =>
-        tap.if(
-          () => eip,
-          pipe([
-            () => eip.getLive(),
-            tap((eipLive) => {
-              logger.debug(`create ec2, associating eip ${tos({ eipLive })}`);
-              assert(eipLive, "eipLive");
-            }),
-            get("AllocationId"),
-            tap((AllocationId) => {
-              assert(AllocationId, "AllocationId");
-            }),
-            (AllocationId) =>
-              ec2().associateAddress({
-                AllocationId,
-                InstanceId,
-              }),
-          ])
-        )()
+      tap(({ InstanceId }) => volumesAttach({ InstanceId, volumes })),
+      tap.if(
+        () => eip,
+        ({ InstanceId }) => associateAddress({ InstanceId, eip })
       ),
-      tap((instance) => {
-        logger.info(`created ec2 ${name}, ${instance.InstanceId}`);
+      tap(({ InstanceId }) => {
+        logger.info(`created ec2 ${name}, InstanceId: ${InstanceId}`);
       }),
     ])();
-  const destroy = async ({ id, name }) =>
+
+  const disassociateAddress = ({ id }) =>
     pipe([
-      tap(() => {
-        logger.info(`destroy ec2  ${tos({ name, id })}`);
-        assert(!isEmpty(id), `destroy invalid id`);
-      }),
       () =>
         ec2().describeAddresses({
           Filters: [
@@ -153,6 +197,60 @@ module.exports = AwsEC2 = ({ spec, config }) => {
           AssociationId,
         })
       ),
+    ]);
+
+  const volumesDetach = ({ id }) =>
+    pipe([
+      () =>
+        ec2().describeVolumes({
+          Filters: [
+            {
+              Name: "attachment.instance-id",
+              Values: [id],
+            },
+            {
+              Name: "tag-key",
+              Values: [config.managedByKey],
+            },
+          ],
+        }),
+      get("Volumes"),
+      tap((volumes) => {
+        logger.info(`destroy ec2, detachVolume #volumes: ${volumes.length}`);
+      }),
+      map(
+        tryCatch(
+          ({ VolumeId }) => ec2().detachVolume({ VolumeId }),
+          (error, volume) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `error detaching volume ${volume}, error: ${JSON.stringify(
+                    error
+                  )}`
+                );
+              }),
+              () => ({ error, volume }),
+            ])()
+        )
+      ),
+      tap((result) => {
+        logger.info(`destroy ec2 volumes detached`);
+      }),
+    ]);
+
+  const destroy = async ({ id, name }) =>
+    pipe([
+      tap(() => {
+        logger.info(
+          `destroy ec2  ${tos({
+            name,
+            id,
+          })}`
+        );
+      }),
+      disassociateAddress({ id }),
+      volumesDetach({ id }),
       () =>
         ec2().terminateInstances({
           InstanceIds: [id],
@@ -175,7 +273,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
       securityGroups = {},
       iamInstanceProfile,
     } = dependencies;
-    const { VolumeSize, ...otherProperties } = properties;
+    const { ...otherProperties } = properties;
     const buildNetworkInterfaces = () => [
       {
         AssociatePublicIpAddress: true,
@@ -190,14 +288,6 @@ module.exports = AwsEC2 = ({ spec, config }) => {
       },
     ];
     return defaultsDeep({
-      BlockDeviceMappings: [
-        {
-          DeviceName: "/dev/sdh",
-          Ebs: {
-            VolumeSize: properties.VolumeSize,
-          },
-        },
-      ],
       ...(subnet && { NetworkInterfaces: buildNetworkInterfaces() }),
       ...(iamInstanceProfile && {
         IamInstanceProfile: {
