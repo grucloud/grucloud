@@ -35,9 +35,23 @@ describe("AwsVolume", async function () {
       }),
     });
 
+    const UserData = `
+    #!/bin/bash
+while ! ls ${Device} > /dev/null
+do 
+    sleep 1
+done
+
+if [ \`file -s ${Device} | cut -d ' ' -f 2\` = 'data' ]
+then
+    mkfs.xfs ${Device}
+fi
+
+`;
+
     server = await provider.makeEC2({
       name: serverName,
-      properties: () => ({}),
+      properties: () => ({ UserData }),
       dependencies: { volumes: [volume] },
     });
   });
@@ -62,6 +76,6 @@ describe("AwsVolume", async function () {
       })
     );
 
-    await testPlanDestroy({ provider, types });
+    //await testPlanDestroy({ provider, types });
   });
 });

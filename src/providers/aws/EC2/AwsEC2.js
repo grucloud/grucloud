@@ -273,7 +273,7 @@ module.exports = AwsEC2 = ({ spec, config }) => {
       securityGroups = {},
       iamInstanceProfile,
     } = dependencies;
-    const { ...otherProperties } = properties;
+    const { UserData, ...otherProperties } = properties;
     const buildNetworkInterfaces = () => [
       {
         AssociatePublicIpAddress: true,
@@ -288,6 +288,9 @@ module.exports = AwsEC2 = ({ spec, config }) => {
       },
     ];
     return defaultsDeep({
+      ...(UserData && {
+        UserData: Buffer.from(UserData, "utf-8").toString("base64"),
+      }),
       ...(subnet && { NetworkInterfaces: buildNetworkInterfaces() }),
       ...(iamInstanceProfile && {
         IamInstanceProfile: {
