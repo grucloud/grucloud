@@ -23,20 +23,59 @@ describe("AwsIamPolicy", async function () {
       this.skip();
     }
     provider = AwsProvider({
-      name: "aws",
       config: config.aws,
+    });
+
+    iamPolicyToUser = await provider.makeIamPolicy({
+      name: iamPolicyName,
+      properties: () => ({
+        PolicyName: iamPolicyName,
+        PolicyDocument: {
+          Version: "2012-10-17",
+          Statement: [
+            {
+              Action: ["ec2:Describe*"],
+              Effect: "Allow",
+              Resource: "*",
+            },
+          ],
+        },
+        Description: "Allow ec2:Describe",
+        Path: "/",
+      }),
     });
 
     iamUser = await provider.makeIamUser({
       name: iamUserName,
+      dependencies: { policies: [iamPolicyToUser] },
       properties: () => ({
         UserName: iamUserName,
         Path: "/",
       }),
     });
 
+    iamPolicyToRole = await provider.makeIamPolicy({
+      name: iamPolicyNameToRole,
+      properties: () => ({
+        PolicyDocument: {
+          Version: "2012-10-17",
+          Statement: [
+            {
+              Action: ["ec2:Describe*"],
+              Effect: "Allow",
+              Resource: "*",
+            },
+          ],
+        },
+        Description: "Allow ec2:Describe",
+        Path: "/",
+      }),
+    });
+
     iamRole = await provider.makeIamRole({
       name: iamRoleName,
+      dependencies: { policies: [iamPolicyToRole] },
+
       properties: () => ({
         Path: "/",
         AssumeRolePolicyDocument: {
@@ -54,44 +93,6 @@ describe("AwsIamPolicy", async function () {
         },
       }),
     });
-
-    iamPolicyToUser = await provider.makeIamPolicy({
-      name: iamPolicyName,
-      dependencies: { iamUser },
-      properties: () => ({
-        PolicyName: iamPolicyName,
-        PolicyDocument: {
-          Version: "2012-10-17",
-          Statement: [
-            {
-              Action: ["ec2:Describe*"],
-              Effect: "Allow",
-              Resource: "*",
-            },
-          ],
-        },
-        Description: "Allow ec2:Describe",
-        Path: "/",
-      }),
-    });
-    iamPolicyToRole = await provider.makeIamPolicy({
-      name: iamPolicyNameToRole,
-      dependencies: { iamRole },
-      properties: () => ({
-        PolicyDocument: {
-          Version: "2012-10-17",
-          Statement: [
-            {
-              Action: ["ec2:Describe*"],
-              Effect: "Allow",
-              Resource: "*",
-            },
-          ],
-        },
-        Description: "Allow ec2:Describe",
-        Path: "/",
-      }),
-    });
   });
   after(async () => {});
   it("iamPolicy resolveConfig", async function () {
@@ -99,7 +100,7 @@ describe("AwsIamPolicy", async function () {
     const config = await iamPolicyToUser.resolveConfig();
     //TODO
   });
-  it.skip("iamPolicy apply plan", async function () {
+  it.only("iamPolicy apply plan", async function () {
     await testPlanDeploy({
       provider,
       types,

@@ -134,7 +134,11 @@ exports.AwsIamUser = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createUser-property
 
-  const create = async ({ name, payload = {}, dependencies: { iamGroups } }) =>
+  const create = async ({
+    name,
+    payload = {},
+    resolvedDependencies: { iamGroups, policies },
+  }) =>
     pipe([
       tap(() => {
         logger.info(`create iam user ${name}`);
@@ -147,8 +151,24 @@ exports.AwsIamUser = ({ spec, config }) => {
         () => iamGroups,
         () =>
           forEach((group) =>
-            iam().addUserToGroup({ GroupName: group.name, UserName: name })
+            iam().addUserToGroup({
+              GroupName: group.live.GroupName,
+              UserName: name,
+            })
           )(iamGroups)
+      ),
+      tap.if(
+        () => policies,
+        () =>
+          forEach(
+            pipe([
+              (policy) =>
+                iam().attachUserPolicy({
+                  PolicyArn: policy.live.Arn,
+                  UserName: name,
+                }),
+            ])
+          )(policies)
       ),
       tap((User) => {
         logger.debug(`created iam user result ${tos({ name, User })}`);
@@ -161,7 +181,6 @@ exports.AwsIamUser = ({ spec, config }) => {
     pipe([
       tap(() => {
         logger.info(`destroy iam user ${tos({ name, id })}`);
-        assert(!isEmpty(id), `destroy invalid id`);
       }),
       () => iam().listGroupsForUser({ UserName: id }),
       get("Groups"),

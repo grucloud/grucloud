@@ -8,20 +8,8 @@ Provides an Iam Group.
 This example creates a group called Admin, creates a user and add it to the group, create a policy and attach it to the group.
 
 ```js
-const iamGroup = await provider.makeIamGroup({
-  name: "Admin",
-  properties: () => ({}),
-});
-
-const iamUser = await provider.makeIamUser({
-  name: "Alice",
-  dependencies: { iamGroups: [iamGroup] },
-  properties: () => ({}),
-});
-
-const iamPolicyToGroup = await provider.makeIamPolicy({
+const iamPolicy = await provider.makeIamPolicy({
   name: "policy-ec2-describe",
-  dependencies: { iamGroup },
   properties: () => ({
     PolicyDocument: {
       Version: "2012-10-17",
@@ -35,6 +23,18 @@ const iamPolicyToGroup = await provider.makeIamPolicy({
     },
     Description: "Allow ec2:Describe",
   }),
+});
+
+const iamGroup = await provider.makeIamGroup({
+  name: "Admin",
+  dependencies: { policies: [iamPolicy] },
+  properties: () => ({}),
+});
+
+const iamUser = await provider.makeIamUser({
+  name: "Alice",
+  dependencies: { iamGroups: [iamGroup] },
+  properties: () => ({}),
 });
 ```
 
@@ -51,6 +51,7 @@ const iamPolicyToGroup = await provider.makeIamPolicy({
 ### Used By
 
 - [IamPolicy](./IamPolicy)
+- [IamPolicyReadOnly](./IamPolicyReadOnly)
 - [IamUser](./IamUser)
 
 ### AWS CLI

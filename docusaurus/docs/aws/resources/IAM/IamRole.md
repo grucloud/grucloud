@@ -29,8 +29,28 @@ const iamRole = await provider.makeIamRole({
 ### Add a policy to a role
 
 ```js
+const iamPolicy = await provider.makeIamPolicy({
+  name: "my-policy",
+  properties: () => ({
+    PolicyDocument: {
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Action: ["ec2:Describe*"],
+          Effect: "Allow",
+          Resource: "*",
+        },
+      ],
+    },
+    Description: "Allow ec2:Describe",
+    Path: "/",
+  }),
+});
+
 const iamRole = await provider.makeIamRole({
   name: "my-role",
+  dependencies: { policies: [iamPolicy] },
+
   properties: () => ({
     AssumeRolePolicyDocument: {
       Version: "2012-10-17",
@@ -45,25 +65,6 @@ const iamRole = await provider.makeIamRole({
         },
       ],
     },
-  }),
-});
-
-const iamPolicy = await provider.makeIamPolicy({
-  name: "my-policy",
-  dependencies: { iamRole },
-  properties: () => ({
-    PolicyDocument: {
-      Version: "2012-10-17",
-      Statement: [
-        {
-          Action: ["ec2:Describe*"],
-          Effect: "Allow",
-          Resource: "*",
-        },
-      ],
-    },
-    Description: "Allow ec2:Describe",
-    Path: "/",
   }),
 });
 ```
@@ -112,6 +113,7 @@ const iamInstanceProfile = await provider.makeIamInstanceProfile({
 ### Used By
 
 - [IamPolicy](./IamPolicy)
+- [IamPolicyReadOnly](./IamPolicyReadOnly)
 
 ### AWS CLI
 

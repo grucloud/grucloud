@@ -160,7 +160,11 @@ exports.AwsIamRole = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createRole-property
 
-  const create = async ({ name, payload = {}, dependencies }) =>
+  const create = async ({
+    name,
+    payload = {},
+    resolvedDependencies: { policies },
+  }) =>
     pipe([
       tap(() => {
         logger.info(`create role ${tos({ name, payload })}`);
@@ -188,6 +192,19 @@ exports.AwsIamRole = ({ spec, config }) => {
             assert(findNameInTags({ Tags }), "no tags");
           },
         ])
+      ),
+      tap.if(
+        () => policies,
+        () =>
+          map(
+            pipe([
+              (policy) =>
+                iam().attachRolePolicy({
+                  PolicyArn: policy.live.Arn,
+                  RoleName: name,
+                }),
+            ])
+          )(policies)
       ),
       tap((Role) => {
         logger.info(`created role ${tos({ name, Role })}`);

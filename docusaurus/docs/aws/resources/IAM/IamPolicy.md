@@ -10,8 +10,28 @@ The examples below create a policy and add it to a role, a user or a group.
 ### Attach a policy to a role
 
 ```js
+const iamPolicy = await provider.makeIamPolicy({
+  name: "my-policy",
+  properties: () => ({
+    PolicyDocument: {
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Action: ["ec2:Describe*"],
+          Effect: "Allow",
+          Resource: "*",
+        },
+      ],
+    },
+    Description: "Allow ec2:Describe",
+    Path: "/",
+  }),
+});
+
 const iamRole = await provider.makeIamRole({
   name: "my-role",
+  dependencies: { policies: [iamPolicy] },
+
   properties: () => ({
     AssumeRolePolicyDocument: {
       Version: "2012-10-17",
@@ -28,38 +48,13 @@ const iamRole = await provider.makeIamRole({
     },
   }),
 });
-
-const iamPolicy = await provider.makeIamPolicy({
-  name: "my-policy",
-  dependencies: { iamRole },
-  properties: () => ({
-    PolicyDocument: {
-      Version: "2012-10-17",
-      Statement: [
-        {
-          Action: ["ec2:Describe*"],
-          Effect: "Allow",
-          Resource: "*",
-        },
-      ],
-    },
-    Description: "Allow ec2:Describe",
-    Path: "/",
-  }),
-});
 ```
 
 ### Attach a policy to a user
 
 ```js
-const iamUser = await provider.makeIamUser({
-  name: "Alice",
-  properties: () => ({}),
-});
-
 const iamPolicy = await provider.makeIamPolicy({
   name: "my-policy",
-  dependencies: { iamUser },
   properties: () => ({
     PolicyDocument: {
       Version: "2012-10-17",
@@ -74,20 +69,20 @@ const iamPolicy = await provider.makeIamPolicy({
     Description: "Allow ec2:Describe",
     Path: "/",
   }),
+});
+
+const iamUser = await provider.makeIamUser({
+  name: "Alice",
+  dependencies: { policies: [iamPolicy] },
+  properties: () => ({}),
 });
 ```
 
 ### Attach a policy to a group
 
 ```js
-const iamGroup = await provider.makeIamGroup({
-  name: "Admin",
-  properties: () => ({}),
-});
-
 const iamPolicy = await provider.makeIamPolicy({
   name: "policy-ec2-describe",
-  dependencies: { iamGroup },
   properties: () => ({
     PolicyDocument: {
       Version: "2012-10-17",
@@ -101,6 +96,12 @@ const iamPolicy = await provider.makeIamPolicy({
     },
     Description: "Allow ec2:Describe",
   }),
+});
+
+const iamGroup = await provider.makeIamGroup({
+  name: "Admin",
+  dependencies: { policies: [iamPolicy] },
+  properties: () => ({}),
 });
 ```
 
@@ -112,29 +113,8 @@ const iamPolicy = await provider.makeIamPolicy({
 
 - [properties list](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createPolicy-property)
 
-### Dependencies
+### Used By
 
 - [IamRole](./IamRole)
 - [IamUser](./IamUser)
 - [IamGroup](./IamGroup)
-
-### AWS CLI
-
-List all iam policies
-
-```
-aws iam list-policies --scope Local
-```
-
-Delete a policy:
-
-```
-aws iam delete-policy --policy-arn arn:aws:iam::840541460064:role/role-example
-
-```
-
-Detach a policy:
-
-```
-aws iam detach-user-policy --user-name alice --policy-arn arn:aws:iam::840541460064:policy/policy-example-3
-```

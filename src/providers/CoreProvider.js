@@ -114,7 +114,7 @@ const toUri = ({ providerName, type, name, id }) => {
 };
 
 const createClient = ({ spec, provider, config, mapTypeToResources }) =>
-  defaultsDeep({ cannotBeDeleted: () => false })(
+  defaultsDeep({ cannotBeDeleted: () => false, configDefault: () => ({}) })(
     spec.Client({ provider, spec, config, mapTypeToResources })
   );
 
@@ -140,6 +140,7 @@ const ResourceMaker = ({
       dependencies,
       resolveConfig,
       deep,
+      resources: provider.getResourcesByType(client.spec.type),
     });
     logger.debug(`getLive ${type}/${resourceName} result: ${tos(live)}`);
     return live;

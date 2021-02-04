@@ -38,6 +38,7 @@ module.exports = {
               "aws/resources/IAM/IamInstanceProfile",
               "aws/resources/IAM/IamGroup",
               "aws/resources/IAM/IamPolicy",
+              "aws/resources/IAM/IamPolicyReadOnly",
               "aws/resources/IAM/IamRole",
               "aws/resources/IAM/IamUser",
             ],

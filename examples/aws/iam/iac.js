@@ -21,19 +21,45 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     ],
   };
 
+  const iamPolicyToUser = await provider.makeIamPolicy({
+    name: policyNameToUser,
+    properties: () => ({
+      PolicyDocument,
+      Description: "Allow ec2:Describe",
+    }),
+  });
+
+  const iamPolicyToRole = await provider.makeIamPolicy({
+    name: policyNameToRole,
+    properties: () => ({
+      PolicyDocument,
+      Description: "Allow ec2:Describe",
+    }),
+  });
+
+  const iamPolicyToGroup = await provider.makeIamPolicy({
+    name: policyNameToGroup,
+    properties: () => ({
+      PolicyDocument,
+      Description: "Allow ec2:Describe",
+    }),
+  });
+
   const iamGroup = await provider.makeIamGroup({
     name: groupName,
+    dependencies: { policies: [iamPolicyToGroup] },
     properties: () => ({}),
   });
 
   const iamUser = await provider.makeIamUser({
     name: userName,
-    dependencies: { iamGroups: [iamGroup] },
+    dependencies: { iamGroups: [iamGroup], policies: [iamPolicyToUser] },
     properties: () => ({}),
   });
 
   const iamRole = await provider.makeIamRole({
     name: roleName,
+    dependencies: { policies: [iamPolicyToRole] },
     properties: () => ({
       Path: "/",
       AssumeRolePolicyDocument: {
@@ -67,35 +93,39 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
+  const iamPolicyEKSCluster = await provider.useIamPolicyReadOnly({
+    name: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+  });
+
+  const iamRoleEKS = await provider.makeIamRole({
+    name: "eks",
+    dependencies: { policies: [iamPolicyEKSCluster] },
+    properties: () => ({
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "eks.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+  });
+
   return {
     iamUser,
     iamGroup,
-    iamPolicytoUser: await provider.makeIamPolicy({
-      name: policyNameToUser,
-      dependencies: { iamUser },
-      properties: () => ({
-        PolicyDocument,
-        Description: "Allow ec2:Describe",
-      }),
-    }),
-    iamPolicyToRole: await provider.makeIamPolicy({
-      name: policyNameToRole,
-      dependencies: { iamRole },
-      properties: () => ({
-        PolicyDocument,
-        Description: "Allow ec2:Describe",
-      }),
-    }),
-    iamPolicyToGroup: await provider.makeIamPolicy({
-      name: policyNameToGroup,
-      dependencies: { iamGroup },
-      properties: () => ({
-        PolicyDocument,
-        Description: "Allow ec2:Describe",
-      }),
-    }),
+    iamPolicyToUser,
+    iamPolicyToRole,
+    iamPolicyToGroup,
     iamRole,
     iamInstanceProfile,
+    iamRoleEKS,
+    server,
   };
 };
 exports.createResources = createResources;
@@ -103,7 +133,6 @@ exports.createResources = createResources;
 exports.createStack = async ({ config }) => {
   // Create a AWS provider
   const provider = AwsProvider({ name: "aws", config });
-
   const keyPair = await provider.useKeyPair({
     name: "kp",
   });
