@@ -2,6 +2,10 @@
 
 ## Common:
 
+- ebs volume: use lsblk ?
+- file -s /dev/xvdf
+- mkfs -t ext4 /dev/xvdf
+- dh -hT
 - gcp: projectName function to field
 - PROMPT='%4~ %# '
 - iam deal with deleted user

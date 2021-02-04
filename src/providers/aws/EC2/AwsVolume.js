@@ -23,7 +23,7 @@ const {
   buildTags,
 } = require("../AwsCommon");
 
-module.exports = AwsSubnet = ({ spec, config }) => {
+exports.AwsVolume = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
@@ -127,3 +127,22 @@ module.exports = AwsSubnet = ({ spec, config }) => {
     shouldRetryOnException,
   };
 };
+
+exports.setupEbsVolume = ({
+  deviceMounted = "/dev/xvdf",
+  mountPoint = "/data",
+}) => `#!/bin/bash
+echo "Mounting ${deviceMounted}"
+while ! ls ${deviceMounted} > /dev/null
+do 
+  sleep 1
+done
+if [ \`file -s ${deviceMounted} | cut -d ' ' -f 2\` = 'data' ]
+then
+  echo "Formatting ${deviceMounted}"
+  mkfs.xfs ${deviceMounted}
+fi
+mkdir -p ${mountPoint}
+mount ${deviceMounted} ${mountPoint}
+echo ${deviceMounted} ${mountPoint} defaults,nofail 0 2 >> /etc/fstab
+`;

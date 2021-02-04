@@ -11,7 +11,7 @@ const AwsRouteTables = require("./AwsRouteTables");
 const AwsSubnet = require("./AwsSubnet");
 const AwsSecurityGroup = require("./AwsSecurityGroup");
 const AwsElasticIpAddress = require("./AwsElasticIpAddress");
-const AwsVolume = require("./AwsVolume");
+const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
 
 module.exports = [
   {
@@ -24,6 +24,7 @@ module.exports = [
     type: "Volume",
     Client: ({ spec, config }) => AwsVolume({ spec, config }),
     isOurMinion,
+    setupEbsVolume,
   },
   {
     type: "Vpc",

@@ -1,22 +1,26 @@
 const { AwsProvider } = require("@grucloud/core");
 
-const createResources = async ({ provider, resources: { keyPair } }) => {
-  const server = await provider.makeEC2({
-    name: "server-4-volume",
-    dependencies: { keyPair },
-    properties: () => ({
-      InstanceType: "t2.micro",
-      ImageId: "ami-00f6a0c18edb19300", // Ubuntu 18.04
-    }),
-  });
+const Device = "/dev/sdf";
+const deviceMounted = "/dev/xvdf";
+const mountPoint = "/data";
 
+const createResources = async ({ provider, resources: { keyPair } }) => {
   const volume = await provider.makeVolume({
     name: "volume",
-    dependencies: { ec2Instance: server },
     properties: () => ({
       Size: 2,
       VolumeType: "standard",
-      Device: "/dev/sdf",
+      Device,
+    }),
+  });
+
+  const server = await provider.makeEC2({
+    name: "server-4-volume",
+    dependencies: { keyPair, volumes: [volume] },
+    properties: () => ({
+      UserData: volume.spec.setupEbsVolume({ deviceMounted, mountPoint }),
+      InstanceType: "t2.micro",
+      ImageId: "ami-00f6a0c18edb19300", // Ubuntu 18.04
     }),
   });
 

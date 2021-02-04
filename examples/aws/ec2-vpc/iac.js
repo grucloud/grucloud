@@ -2,8 +2,9 @@ const { AwsProvider } = require("@grucloud/core");
 
 const createResources = async ({ provider, resources: { keyPair } }) => {
   const Device = "/dev/sdf";
-  const DeviceMounted = "/dev/xvdf";
+  const deviceMounted = "/dev/xvdf";
   const mountPoint = "/data";
+
   const vpc = await provider.makeVpc({
     name: "vpc",
     properties: () => ({
@@ -88,22 +89,6 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
-  const UserData = `#!/bin/bash
-echo "Mounting ${DeviceMounted}"
-while ! ls ${DeviceMounted} > /dev/null
-do 
-  sleep 1
-done
-if [ \`file -s ${DeviceMounted} | cut -d ' ' -f 2\` = 'data' ]
-then
-  echo "Formatting ${DeviceMounted}"
-  mkfs.xfs ${DeviceMounted}
-fi
-mkdir -p ${mountPoint}
-mount ${DeviceMounted} ${mountPoint}
-echo ${DeviceMounted} ${mountPoint} defaults,nofail 0 2 >> /etc/fstab
-`;
-
   // Allocate a server
   const server = await provider.makeEC2({
     name: "web-server",
@@ -115,7 +100,7 @@ echo ${DeviceMounted} ${mountPoint} defaults,nofail 0 2 >> /etc/fstab
       volumes: [volume],
     },
     properties: () => ({
-      UserData,
+      UserData: volume.spec.setupEbsVolume({ deviceMounted, mountPoint }),
       InstanceType: "t2.micro",
       ImageId: "ami-00f6a0c18edb19300", // Ubuntu 20.04
     }),

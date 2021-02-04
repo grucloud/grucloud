@@ -13,6 +13,8 @@ describe("AwsVolume", async function () {
   const serverName = "ec2-volume-test";
   const volumeName = "volume";
   const Device = "/dev/sdf";
+  const deviceMounted = "/dev/xvdf";
+  const mountPoint = "/data";
 
   before(async function () {
     try {
@@ -35,23 +37,11 @@ describe("AwsVolume", async function () {
       }),
     });
 
-    const UserData = `
-    #!/bin/bash
-while ! ls ${Device} > /dev/null
-do 
-    sleep 1
-done
-
-if [ \`file -s ${Device} | cut -d ' ' -f 2\` = 'data' ]
-then
-    mkfs.xfs ${Device}
-fi
-
-`;
-
     server = await provider.makeEC2({
       name: serverName,
-      properties: () => ({ UserData }),
+      properties: () => ({
+        UserData: volume.spec.setupEbsVolume({ deviceMounted, mountPoint }),
+      }),
       dependencies: { volumes: [volume] },
     });
   });
