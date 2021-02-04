@@ -40,7 +40,6 @@ const server = await provider.makeEC2({
   name: "web-iam",
   dependencies: { keyPair, iamInstanceProfile },
   properties: () => ({
-    VolumeSize: 50,
     InstanceType: "t2.micro",
     ImageId: "ami-00f6a0c18edb19300", // Ubuntu 18.04
   }),

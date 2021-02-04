@@ -1,6 +1,10 @@
 const { AwsProvider } = require("@grucloud/core");
 
 const createResources = async ({ provider, resources: { keyPair } }) => {
+  const Device = "/dev/sdf";
+  const deviceMounted = "/dev/xvdf";
+  const mountPoint = "/data";
+
   const vpc = await provider.makeVpc({
     name: "vpc",
     properties: () => ({
@@ -76,6 +80,15 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     properties: () => ({}),
   });
 
+  const volume = await provider.makeVolume({
+    name: "volume",
+    properties: () => ({
+      Size: 5,
+      VolumeType: "standard",
+      Device,
+    }),
+  });
+
   // Allocate a server
   const server = await provider.makeEC2({
     name: "web-server",
@@ -84,9 +97,10 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
       subnet,
       securityGroups: [sg],
       eip,
+      volumes: [volume],
     },
     properties: () => ({
-      VolumeSize: 50,
+      UserData: volume.spec.setupEbsVolume({ deviceMounted, mountPoint }),
       InstanceType: "t2.micro",
       ImageId: "ami-00f6a0c18edb19300", // Ubuntu 20.04
     }),

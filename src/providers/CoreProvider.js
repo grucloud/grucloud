@@ -236,6 +236,7 @@ const ResourceMaker = ({
         if (isString(dependency)) {
           return dependency;
         }
+        //TODO isArray
         if (!dependency.getLive) {
           return tryCatch(
             () =>
@@ -279,7 +280,11 @@ const ResourceMaker = ({
                   };
                 }
               ),
-              (live) => ({ resource: dependency.toJSON(), live }),
+              async (live) => ({
+                resource: dependency,
+                config: await dependency.resolveConfig({ deep: true, live }),
+                live,
+              }),
             ])(lives),
           (error, dependency) => {
             logger.error(`resolveDependencies: ${tos(error)}`);
@@ -1992,6 +1997,7 @@ function CoreProvider({
     name,
     config,
     resourcesPerType = [],
+    lives,
   }) =>
     pipe([
       tap((x) => {
@@ -2020,7 +2026,7 @@ function CoreProvider({
           tap((resource) =>
             retryCall({
               name: `destroy ${client.spec.type}/${id}/${name}`,
-              fn: () => client.destroy({ id, name, resource }),
+              fn: () => client.destroy({ id, name, resource, lives }),
               isExpectedResult: () => true,
               //TODO isExpectedException: client.isExpectedExceptionDelete
               shouldRetryOnException: client.shouldRetryOnExceptionDelete,
@@ -2045,8 +2051,8 @@ function CoreProvider({
       }),
     ])();
 
-  const destroyById = async ({ type, config, name }) => {
-    logger.debug(`destroyById: ${tos({ type, name })}`);
+  const destroyById = async ({ type, config, name, lives }) => {
+    logger.debug(`destroyById: ${tos({ type, name, lives })}`);
     const client = clientByType(type);
     assert(client, `Cannot find endpoint type ${type}}`);
 
@@ -2055,6 +2061,7 @@ function CoreProvider({
       name,
       config,
       resourcesPerType: provider.getResourcesByType(type),
+      lives,
     });
   };
 
@@ -2062,6 +2069,7 @@ function CoreProvider({
     plans,
     onStateChange = identity,
     direction = PlanDirection.DOWN,
+    lives,
   }) => {
     pipe([
       tap(() => {
@@ -2088,6 +2096,7 @@ function CoreProvider({
       dependsOnInstance: mapToGraph(mapNameToResource),
       executor: async ({ item }) =>
         destroyById({
+          lives,
           name: item.resource.name,
           type: item.resource.type,
           config: item.config,
@@ -2126,16 +2135,20 @@ function CoreProvider({
             readWrite: true,
           }),
       }),
-      ({ options, lives }) => planFindDestroy({ options, lives }),
-      ({ plans }) => planDestroy({ plans, direction: PlanDirection.DOWN }),
-      tap(({ error, results, plans }) => {
-        logger.info(
-          `destroyAll DONE, ${error && `error: ${error}`}, #results ${
-            results.length
-          }`
-        );
-        assert(plans);
-      }),
+      ({ options, lives }) =>
+        pipe([
+          () => planFindDestroy({ options, lives }),
+          ({ plans }) =>
+            planDestroy({ plans, direction: PlanDirection.DOWN, lives }),
+          tap(({ error, results, plans }) => {
+            logger.info(
+              `destroyAll DONE, ${error && `error: ${error}`}, #results ${
+                results.length
+              }`
+            );
+            assert(plans);
+          }),
+        ])(),
     ])({ options });
 
   checkEnv(mandatoryEnvs);

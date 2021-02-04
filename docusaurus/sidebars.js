@@ -30,6 +30,7 @@ module.exports = {
               "aws/resources/EC2/SecurityGroup",
               "aws/resources/EC2/EC2",
               "aws/resources/EC2/ElasticIpAddress",
+              "aws/resources/EC2/Volume",
             ],
           },
           {

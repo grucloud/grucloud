@@ -2,6 +2,7 @@ process.env.AWS_SDK_LOAD_CONFIG = "true";
 const AWS = require("aws-sdk");
 const assert = require("assert");
 const { map, pipe, get } = require("rubico");
+const { first, pluck } = require("rubico/x");
 
 const logger = require("../../logger")({ prefix: "AwsProvider" });
 const { tos } = require("../../tos");
@@ -24,13 +25,15 @@ const fnSpecs = () => [
   ...AwsCertificateManager,
   ...AwsCloudFront,
 ];
+const getAvailabilityZonesName = pipe([
+  ({ region }) => Ec2New({ region }),
+  (ec2) => ec2().describeAvailabilityZones(),
+  get("AvailabilityZones"),
+  pluck("ZoneName"),
+]);
 
-const validateConfig = async ({ region, zone }) => {
-  logger.debug(`region: ${region}, zone: ${zone}`);
-  const ec2 = Ec2New({ region });
-
-  const { AvailabilityZones } = await ec2().describeAvailabilityZones();
-  const zones = map((x) => x.ZoneName)(AvailabilityZones);
+const validateConfig = ({ region, zone, zones }) => {
+  logger.debug(`region: ${region}, zone: ${zone}, zones: ${zones}`);
   if (zone && !zones.includes(zone)) {
     const message = `The configued zone '${zone}' is not part of region ${region}, available zones for this region: ${zones}`;
     throw { code: 400, type: "configuration", message };
@@ -71,20 +74,26 @@ exports.AwsProvider = ({ name = "aws", config }) => {
   });
 
   let accountId;
-
+  let zone;
+  let zones;
   const getRegion = (config) => config.region || AWS.config.region;
-
+  const getZone = ({ zones }) => config.zone || first(zones);
+  const region = getRegion(config);
   const start = async () => {
     accountId = await fetchAccountId();
-    await validateConfig({
-      region: getRegion(config),
+    zones = await getAvailabilityZonesName({ region });
+    zone = getZone({ zones });
+    validateConfig({
+      region,
       zone: config.zone,
+      zones,
     });
   };
 
   const info = () => ({
     accountId,
-    region: getRegion(config),
+    region,
+    zone,
   });
 
   return CoreProvider({
@@ -94,6 +103,7 @@ exports.AwsProvider = ({ name = "aws", config }) => {
       ...config,
       accountId: () => accountId,
       region: getRegion(config),
+      zone: () => zone,
     },
     fnSpecs,
     start,

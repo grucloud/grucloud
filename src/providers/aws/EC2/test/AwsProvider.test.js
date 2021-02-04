@@ -103,13 +103,13 @@ describe("AwsProvider", async function () {
     server = await provider.makeEC2({
       name: serverName,
       properties: () => ({}),
-      dependencies: { keyPair, subnet, securityGroups: { sg }, eip },
+      dependencies: { keyPair, subnet, securityGroups: [sg], eip },
     });
   });
   after(async () => {});
   it("aws server resolveConfig", async function () {
     assert.equal(server.name, serverName);
-    const config = await server.resolveConfig();
+    const config = await server.resolveConfig({ deep: false });
     assert.equal(config.ImageId, "ami-0917237b4e71c5759");
     assert.equal(config.InstanceType, "t2.micro");
     assert.equal(config.MaxCount, 1);
@@ -129,7 +129,7 @@ describe("AwsProvider", async function () {
     assert.equal(dependencies.subnet.resource.name, subnetName);
     //assert(dependencies.subnet.live);
 
-    assert(dependencies.securityGroups.sg);
+    assert(dependencies.securityGroups);
     assert(dependencies.keyPair);
   });
   it("config", async function () {
