@@ -93,29 +93,6 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
-  const iamPolicyEKSCluster = await provider.useIamPolicyReadOnly({
-    name: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
-  });
-
-  const iamRoleEKS = await provider.makeIamRole({
-    name: "eks",
-    dependencies: { policies: [iamPolicyEKSCluster] },
-    properties: () => ({
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "eks.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-  });
-
   return {
     iamUser,
     iamGroup,
@@ -124,7 +101,6 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     iamPolicyToGroup,
     iamRole,
     iamInstanceProfile,
-    iamRoleEKS,
     server,
   };
 };

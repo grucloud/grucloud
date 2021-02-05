@@ -25,13 +25,13 @@ const createResources = async ({ provider, resources: {} }) => {
   });
 
   const vpc = await provider.makeVpc({
-    name: "vpc",
+    name: "vpc-eks",
     properties: () => ({
       CidrBlock: "10.1.0.0/16",
     }),
   });
   const ig = await provider.makeInternetGateway({
-    name: "ig",
+    name: "ig-eks",
     dependencies: { vpc },
   });
 
@@ -59,11 +59,11 @@ const createResources = async ({ provider, resources: {} }) => {
   });
 
   const eip = await provider.makeElasticIpAddress({
-    name: "myip",
+    name: "ip-eks",
   });
 
   const natGateway = await provider.makeNatGateway({
-    name: "nat-gateway",
+    name: "nat-gateway-eks",
     dependencies: { subnet: subnetPublic, eip },
     properties: () => ({}),
   });
@@ -75,7 +75,7 @@ const createResources = async ({ provider, resources: {} }) => {
   });
 
   const sg = await provider.makeSecurityGroup({
-    name: "security-group-public",
+    name: "security-group-public-eks",
     dependencies: { vpc, subnet: subnetPublic },
     properties: () => ({
       //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
