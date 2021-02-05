@@ -179,6 +179,31 @@ exports.isOurMinion = ({ resource, config }) => {
   ])(resource.Tags || []);
 };
 
+exports.isOurMinionObject = ({ resource, config }) => {
+  const { stage, projectName } = config;
+  return pipe([
+    tap(() => {
+      assert(resource);
+      assert(stage);
+      assert(projectName);
+    }),
+    switchCase([
+      and([eq(get("projectName"), projectName), eq(get("stage"), stage)]),
+      () => true,
+      () => false,
+    ]),
+    tap((minion) => {
+      logger.debug(
+        `isOurMinion ${minion}, ${tos({
+          stage,
+          projectName,
+          resource,
+        })}`
+      );
+    }),
+  ])(resource.tags || []);
+};
+
 const findNameInTags = (item) =>
   pipe([
     tap(() => {
