@@ -121,7 +121,28 @@ exports.buildTags = ({ name, config }) => {
     { Key: "projectName", Value: projectName },
   ];
 };
+exports.buildTagsObject = ({ name, config }) => {
+  const {
+    managedByKey,
+    managedByValue,
+    stageTagKey,
+    createdByProviderKey,
+    stage,
+    providerName,
+    projectName,
+  } = config;
 
+  assert(name);
+  assert(providerName);
+  assert(stage);
+  return {
+    [KeyName]: name,
+    [managedByKey]: managedByValue,
+    [createdByProviderKey]: providerName,
+    [stageTagKey]: stage,
+    projectName,
+  };
+};
 exports.isOurMinion = ({ resource, config }) => {
   const {
     createdByProviderKey,

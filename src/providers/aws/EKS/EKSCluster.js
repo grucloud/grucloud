@@ -24,19 +24,23 @@ const logger = require("../../../logger")({ prefix: "EKSCluster" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
-const { EKSNew, buildTags, shouldRetryOnException } = require("../AwsCommon");
+const {
+  EKSNew,
+  buildTagsObject,
+  shouldRetryOnException,
+} = require("../AwsCommon");
 
 const findName = get("name");
 const findId = findName;
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html
 exports.EKSCluster = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
   const eks = EKSNew(config);
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#listEKSClusters-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#listClusters-property
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {
@@ -65,7 +69,7 @@ exports.EKSCluster = ({ spec, config }) => {
 
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#getEKSCluster-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeCluster-property
   const getById = pipe([
     tap(({ id }) => {
       logger.info(`getById ${id}`);
@@ -93,21 +97,35 @@ exports.EKSCluster = ({ spec, config }) => {
   const isUpById = isUpByIdCore({ isInstanceUp, getById });
   const isDownById = isDownByIdCore({ getById });
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#requestEKSCluster-property
-  const create = async ({ name, payload = {} }) =>
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property
+  const create = async ({
+    name,
+    payload = {},
+    resolvedDependencies: { subnets, securityGroups, role },
+  }) =>
     pipe([
       tap(() => {
         assert(name);
         assert(payload);
         logger.info(`create cluster: ${name}, ${tos(payload)}`);
+        assert(Array.isArray(subnets), "subnets");
+        assert(Array.isArray(securityGroups), "securityGroups");
+        assert(role, "role");
+        assert(role.live.Arn, "role.live.Arn");
       }),
-      () => ({
-        ...payload,
-      }),
+      () =>
+        defaultsDeep({
+          resourcesVpcConfig: {
+            securityGroupIds: pluck("live.GroupId")(securityGroups),
+            subnetIds: pluck("live.SubnetId")(subnets),
+          },
+          roleArn: role.live.Arn,
+        })(payload),
       tap((params) => {
         logger.debug(`create cluster: ${name}, params: ${tos(params)}`);
       }),
       (params) => eks().createCluster(params),
+      get("cluster"),
       tap((result) => {
         logger.debug(`created cluster: ${name}, result: ${tos(result)}`);
       }),
@@ -121,7 +139,7 @@ exports.EKSCluster = ({ spec, config }) => {
       }),
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#deleteEKSCluster-property
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#deleteCluster-property
   const destroy = async ({ id }) =>
     pipe([
       tap(() => {
@@ -143,9 +161,8 @@ exports.EKSCluster = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) => {
-    return defaultsDeep({})(properties);
-  };
+  const configDefault = async ({ name, properties, dependencies }) =>
+    defaultsDeep({ name, tags: buildTagsObject({ config, name }) })(properties);
 
   return {
     type: "EKSCluster",

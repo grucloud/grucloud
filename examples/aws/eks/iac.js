@@ -5,7 +5,7 @@ const createResources = async ({ provider, resources: {} }) => {
     name: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
   });
 
-  const iamRole = await provider.makeIamRole({
+  const role = await provider.makeIamRole({
     name: "eks",
     dependencies: { policies: [iamPolicyEKSCluster] },
     properties: () => ({
@@ -120,14 +120,25 @@ const createResources = async ({ provider, resources: {} }) => {
     }),
   });
 
+  const cluster = await provider.makeEKSCluster({
+    name: "cluster",
+    dependencies: {
+      subnets: [subnetPublic, subnetPrivate],
+      securityGroups: [sg],
+      role,
+    },
+    properties: () => ({}),
+  });
+
   return {
-    iamRole,
+    role,
     vpc,
     ig,
     subnetPrivate,
     routeTablePrivate,
     routeTablePublic,
     sg,
+    cluster,
   };
 };
 
