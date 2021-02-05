@@ -59,7 +59,7 @@ const createResources = async ({ provider, resources: {} }) => {
   });
 
   const routeIg = await provider.makeRoute({
-    name: "route-ig",
+    name: "route-ig-eks",
     dependencies: { routeTable: routeTablePublic, ig },
   });
 
