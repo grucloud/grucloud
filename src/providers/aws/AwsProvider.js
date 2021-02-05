@@ -15,6 +15,7 @@ const AwsRoute53 = require("./Route53");
 const AwsRoute53Domain = require("./Route53Domain");
 const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
+const AwsEKS = require("./EKS");
 
 const fnSpecs = () => [
   ...AwsS3,
@@ -24,6 +25,7 @@ const fnSpecs = () => [
   ...AwsRoute53Domain,
   ...AwsCertificateManager,
   ...AwsCloudFront,
+  ...AwsEKS,
 ];
 const getAvailabilityZonesName = pipe([
   ({ region }) => Ec2New({ region }),
@@ -60,6 +62,7 @@ exports.AwsProvider = ({ name = "aws", config }) => {
     route53domains: "2014-05-15",
     acm: "2015-12-08",
     cloudfront: "2020-05-31",
+    eks: "2017-11-01",
   };
 
   const { AWSAccessKeyId, AWSSecretKey } = process.env;

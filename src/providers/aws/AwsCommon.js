@@ -59,6 +59,9 @@ exports.Route53DomainsNew = () => () =>
 exports.ACMNew = () => () =>
   createEndpoint({ endpointName: "ACM" })({ region: "us-east-1" });
 
+exports.EKSNew = (config) => () =>
+  createEndpoint({ endpointName: "EKS" })(config);
+
 exports.shouldRetryOnException = ({ error, name }) =>
   pipe([
     tap(() => {

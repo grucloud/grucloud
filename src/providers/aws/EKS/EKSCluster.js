@@ -1,0 +1,165 @@
+const assert = require("assert");
+const AWS = require("aws-sdk");
+const {
+  map,
+  pipe,
+  tap,
+  tryCatch,
+  get,
+  switchCase,
+  pick,
+  filter,
+  eq,
+} = require("rubico");
+const {
+  first,
+  defaultsDeep,
+  isEmpty,
+  forEach,
+  pluck,
+  flatten,
+} = require("rubico/x");
+
+const logger = require("../../../logger")({ prefix: "EKSCluster" });
+const { retryCall } = require("../../Retry");
+const { tos } = require("../../../tos");
+const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
+const { EKSNew, buildTags, shouldRetryOnException } = require("../AwsCommon");
+
+const findName = get("name");
+const findId = findName;
+
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
+exports.EKSCluster = ({ spec, config }) => {
+  assert(spec);
+  assert(config);
+
+  const eks = EKSNew(config);
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#listEKSClusters-property
+  const getList = async ({ params } = {}) =>
+    pipe([
+      tap(() => {
+        logger.info(`getList cluster ${tos(params)}`);
+      }),
+      () => eks().listClusters(params),
+      get("clusters"),
+      map(
+        pipe([
+          (name) =>
+            eks().describeCluster({
+              name,
+            }),
+          get("cluster"),
+        ])
+      ),
+      (clusters) => ({
+        total: clusters.length,
+        items: clusters,
+      }),
+      tap((clusters) => {
+        logger.info(`getList #clusters : ${clusters.length}`);
+        logger.debug(`getList clusters result: ${tos(clusters)}`);
+      }),
+    ])();
+
+  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#getEKSCluster-property
+  const getById = pipe([
+    tap(({ id }) => {
+      logger.info(`getById ${id}`);
+    }),
+    tryCatch(
+      ({ id }) => eks().describeCluster({ name: id }),
+      switchCase([
+        eq(get("code"), "ResourceNotFoundException"),
+        (error, { id }) => {
+          logger.debug(`getById ${id} ResourceNotFoundException`);
+        },
+        (error) => {
+          logger.debug(`getById error: ${tos(error)}`);
+          throw error;
+        },
+      ])
+    ),
+    tap((result) => {
+      logger.debug(`getById result: ${tos(result)}`);
+    }),
+  ]);
+
+  const isInstanceUp = eq(get("status"), "ACTIVE");
+
+  const isUpById = isUpByIdCore({ isInstanceUp, getById });
+  const isDownById = isDownByIdCore({ getById });
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#requestEKSCluster-property
+  const create = async ({ name, payload = {} }) =>
+    pipe([
+      tap(() => {
+        assert(name);
+        assert(payload);
+        logger.info(`create cluster: ${name}, ${tos(payload)}`);
+      }),
+      () => ({
+        ...payload,
+      }),
+      tap((params) => {
+        logger.debug(`create cluster: ${name}, params: ${tos(params)}`);
+      }),
+      (params) => eks().createCluster(params),
+      tap((result) => {
+        logger.debug(`created cluster: ${name}, result: ${tos(result)}`);
+      }),
+      ({ arn }) =>
+        retryCall({
+          name: `cluster isUpById: ${name} arn: ${arn}`,
+          fn: () => isUpById({ name, id: arn }),
+        }),
+      tap(() => {
+        logger.info(`cluster created: ${name}`);
+      }),
+    ])();
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#deleteEKSCluster-property
+  const destroy = async ({ id }) =>
+    pipe([
+      tap(() => {
+        logger.info(`destroy cluster ${tos({ id })}`);
+      }),
+      () =>
+        eks().deleteCluster({
+          name: id,
+        }),
+      tap(() =>
+        retryCall({
+          name: `cluster isDownById:  id: ${id}`,
+          fn: () => isDownById({ id }),
+          config,
+        })
+      ),
+      tap(() => {
+        logger.info(`cluster destroyed ${tos({ id })}`);
+      }),
+    ])();
+
+  const configDefault = async ({ name, properties, dependencies }) => {
+    return defaultsDeep({})(properties);
+  };
+
+  return {
+    type: "EKSCluster",
+    spec,
+    isUpById,
+    isDownById,
+    findId,
+    getByName,
+    getById,
+    findName,
+    create,
+    destroy,
+    getList,
+    configDefault,
+    shouldRetryOnException,
+  };
+};

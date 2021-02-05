@@ -2,7 +2,6 @@
 
 ## Common:
 
-- gc d -a : The volume 'vol-0685409f9129cf05b' does not exist.
 - ebs volume: use lsblk ?
 - file -s /dev/xvdf
 - mkfs -t ext4 /dev/xvdf

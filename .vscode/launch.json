@@ -350,6 +350,33 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Aws EKS List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/eks/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["list"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Aws EKS Apply",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/eks/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["apply", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Aws EKS Destroy",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/eks/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["d", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Aws Volume Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/volume/",
