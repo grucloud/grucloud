@@ -105,9 +105,9 @@ exports.Route53Record = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList route53 #resources ${resources.length}`);
       }),
-      map.pool(1, (resource) =>
+      map((resource) =>
         pipe([
-          tap((hostedZone) => {
+          tap(() => {
             logger.debug(`getList resource ${resource.name}`);
           }),
           () => getHostedZone(resource),

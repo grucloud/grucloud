@@ -12,8 +12,10 @@ describe("AwsVpc", async function () {
   let provider;
   let vpc;
   let subnet;
-  let rt;
+  let routeTable;
+  let routeIg;
   let sg;
+
   before(async function () {
     try {
       config = ConfigLoader({ path: "examples/multi" });
@@ -41,16 +43,22 @@ describe("AwsVpc", async function () {
         CidrBlock: "10.0.1.0/24",
       }),
     });
+
     ig = await provider.makeInternetGateway({
       name: "ig",
       dependencies: { vpc },
     });
 
-    rt = await provider.makeRouteTables({
-      name: "rt",
-      dependencies: { vpc, subnet, ig },
-      properties: () => ({}),
+    routeTable = await provider.makeRouteTables({
+      name: "route-table",
+      dependencies: { vpc, subnet },
     });
+
+    routeIg = await provider.makeRoute({
+      name: "route-ig",
+      dependencies: { routeTable, ig },
+    });
+
     sg = await provider.makeSecurityGroup({
       name: "sg",
       dependencies: { vpc },
@@ -118,7 +126,7 @@ describe("AwsVpc", async function () {
 
     await testPlanDestroy({ provider, full: false });
   });
-  it.skip("vpc destroy vpc", async function () {
+  it("vpc destroy vpc", async function () {
     await testPlanDeploy({ provider });
     const vpcLive = await vpc.getLive();
     const { VpcId } = vpcLive;

@@ -109,7 +109,7 @@ const nextStateOnError = (error) => (error ? "ERROR" : "DONE");
 
 const toUri = ({ providerName, type, name, id }) => {
   assert(type, "type");
-  assert(name || id);
+  assert(name || id, `missing name or id for ${providerName}::${type}`);
   return `${providerName}::${type}::${name || id}`;
 };
 
@@ -409,16 +409,6 @@ const ResourceMaker = ({
       fn: () => getLive({ deep: false }),
       config: provider.config(),
     });
-
-    if (
-      !client.spec.isOurMinion({
-        resource: live,
-        resourceNames: provider.resourceNames(),
-        config: provider.config(),
-      })
-    ) {
-      throw Error(`Resource ${type}/${resourceName} is not tagged correctly`);
-    }
 
     return instance;
   };

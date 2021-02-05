@@ -13,7 +13,8 @@ describe("AwsProvider", async function () {
   let config;
   let provider;
   let ig;
-  let rt;
+  let routeTable;
+  let routeIg;
   let server;
   let keyPair;
   let vpc;
@@ -48,10 +49,12 @@ describe("AwsProvider", async function () {
         CidrBlock: "10.1.0.1/16",
       }),
     });
+
     ig = await provider.makeInternetGateway({
       name: "ig",
       dependencies: { vpc },
     });
+
     subnet = await provider.makeSubnet({
       name: subnetName,
       dependencies: { vpc },
@@ -59,11 +62,17 @@ describe("AwsProvider", async function () {
         CidrBlock: "10.1.0.1/24",
       }),
     });
-    rt = await provider.makeRouteTables({
+
+    routeTable = await provider.makeRouteTables({
       name: "rt",
-      dependencies: { vpc, subnet, ig },
-      properties: () => ({}),
+      dependencies: { vpc, subnet },
     });
+
+    routeIg = await provider.makeRoute({
+      name: "routeIg",
+      dependencies: { routeTable, ig },
+    });
+
     sg = await provider.makeSecurityGroup({
       name: securityGroupName,
       dependencies: { vpc },
@@ -168,7 +177,7 @@ describe("AwsProvider", async function () {
       0
     );
   });
-  it.skip("aws apply plan", async function () {
+  it("aws apply plan", async function () {
     await testPlanDeploy({ provider, full: true });
 
     const serverLive = await server.getLive();
@@ -184,7 +193,7 @@ describe("AwsProvider", async function () {
     //Check dependencies
     const sgLive = await sg.getLive();
     const igLive = await ig.getLive();
-    const rtLive = await rt.getLive();
+    const rtLive = await routeTable.getLive();
     const subnetLive = await subnet.getLive();
     const vpcLive = await vpc.getLive();
     const eipLive = await eip.getLive();
@@ -193,10 +202,10 @@ describe("AwsProvider", async function () {
     assert.equal(rtLive.VpcId, vpcLive.VpcId);
     assert.equal(rtLive.Associations[0].SubnetId, subnetLive.SubnetId);
 
-    assert.equal(serverInstance.VpcId, vpcLive.VpcId);
-    assert.equal(serverInstance.PublicIpAddress, eipLive.PublicIp);
+    assert.equal(serverLive.VpcId, vpcLive.VpcId);
+    assert.equal(serverLive.PublicIpAddress, eipLive.PublicIp);
 
-    assert.equal(serverInstance.SecurityGroups[0].GroupId, sgLive.GroupId);
+    assert.equal(serverLive.SecurityGroups[0].GroupId, sgLive.GroupId);
     assert.equal(subnetLive.VpcId, vpcLive.VpcId);
     assert.equal(sgLive.VpcId, vpcLive.VpcId);
 

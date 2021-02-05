@@ -22,10 +22,8 @@ const {
   findNameInTagsOrId,
   shouldRetryOnException,
 } = require("../AwsCommon");
-const { tagResource } = require("../AwsTagResource");
-const { CheckAwsTags } = require("../AwsTagCheck");
 
-module.exports = AwsRouteTables = ({ spec, config }) => {
+exports.AwsRouteTables = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
@@ -62,70 +60,18 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
   });
   const isDownById = isDownByIdCore({ getById });
 
-  const associateRouteTableToSubnet = ({ subnet, RouteTableId }) =>
-    switchCase([
-      () => subnet,
-      pipe([
-        tap(() => {
-          assert(subnet.live.SubnetId, "subnet.live.SubnetId");
-        }),
-        () =>
-          ec2().associateRouteTable({
-            RouteTableId,
-            SubnetId: subnet.live.SubnetId,
-          }),
-      ]),
-      () => undefined,
-    ]);
-
-  const createRouteInternetGateway = ({ ig, RouteTableId }) =>
-    switchCase([
-      () => ig,
-      pipe([
-        tap(() => {
-          assert(ig.live.InternetGatewayId, "ig.live.InternetGatewayId");
-        }),
-        () =>
-          ec2().createRoute({
-            DestinationCidrBlock: "0.0.0.0/0",
-            RouteTableId,
-            GatewayId: ig.live.InternetGatewayId,
-          }),
-      ]),
-      () => undefined,
-    ]);
-
-  const createRouteNatGateway = ({ natGateway, RouteTableId }) =>
-    switchCase([
-      () => natGateway,
-      pipe([
-        tap(() => {
-          assert(natGateway.live.NatGatewayId, "natGateway.live.NatGatewayId");
-        }),
-        () =>
-          ec2().createRoute({
-            DestinationCidrBlock: "0.0.0.0/0",
-            RouteTableId,
-            NatGatewayId: natGateway.live.NatGatewayId,
-          }),
-      ]),
-      () => undefined,
-    ]);
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createRouteTable-property
   const create = async ({
     payload,
     name,
-    resolvedDependencies: { vpc, subnet, ig, natGateway },
+    resolvedDependencies: { vpc, subnet },
   }) =>
     pipe([
       tap(() => {
         logger.info(`create rt ${tos({ name })}`);
         assert(vpc, "RouteTables is missing the dependency 'vpc'");
-        assert(
-          subnet || ig || natGateway,
-          "RouteTables needs the dependency 'subnet', 'ig', or 'natGateway'"
-        );
+        assert(subnet, "RouteTables is missing the dependency 'subnet'");
+        assert(subnet.live.SubnetId, "subnet.live.SubnetId");
       }),
       () =>
         defaultsDeep({
@@ -133,23 +79,13 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
         })(payload),
       (params) => ec2().createRouteTable(params),
       get("RouteTable.RouteTableId"),
-      tap((RouteTableId) =>
-        pipe([
-          fork({
-            GatewayId: createRouteInternetGateway({ ig, RouteTableId }),
-            SubnetId: associateRouteTableToSubnet({ subnet, RouteTableId }),
-            NatGatewayId: createRouteNatGateway({ natGateway, RouteTableId }),
-          }),
-          () =>
-            retryCall({
-              name: `rt isUpById: ${name} id: ${RouteTableId}`,
-              fn: () => isUpById({ id: RouteTableId }),
-              config,
-            }),
-        ])()
-      ),
+      (RouteTableId) =>
+        ec2().associateRouteTable({
+          RouteTableId,
+          SubnetId: subnet.live.SubnetId,
+        }),
       tap((RouteTableId) => {
-        logger.info(`created rt ${tos({ name, RouteTableId })}`);
+        logger.info(`created rt ${JSON.stringify({ name, RouteTableId })}`);
       }),
       (RouteTableId) => ({ id: RouteTableId }),
     ])();
@@ -174,11 +110,11 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
         });
       }),
       tap(() => {
-        logger.debug(`destroying ${tos({ RouteTableId: id })}`);
+        logger.debug(`deleting rt ${JSON.stringify({ RouteTableId: id })}`);
       }),
       () => ec2().deleteRouteTable({ RouteTableId: id }),
       tap(() => {
-        logger.debug(`destroyed ${tos({ name, id })}`);
+        logger.info(`rt destroyed ${JSON.stringify({ name, id })}`);
       }),
     ])();
 

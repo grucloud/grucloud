@@ -9,8 +9,9 @@ describe("AwsRouteTables", async function () {
   let provider;
   let vpc;
   let subnet;
-  let rt;
-  const resourceName = "rt";
+  let routeTable;
+  let routeIg;
+  const resourceName = "route-table";
 
   before(async function () {
     try {
@@ -31,6 +32,7 @@ describe("AwsRouteTables", async function () {
         CidrBlock: "10.1.0.1/16",
       }),
     });
+
     subnet = await provider.makeSubnet({
       name: "subnet",
       dependencies: { vpc },
@@ -38,26 +40,32 @@ describe("AwsRouteTables", async function () {
         CidrBlock: "10.1.0.1/24",
       }),
     });
+
     ig = await provider.makeInternetGateway({
       name: "ig",
       dependencies: { vpc },
     });
-    rt = await provider.makeRouteTables({
+
+    routeTable = await provider.makeRouteTables({
       name: resourceName,
-      dependencies: { vpc, subnet, ig },
-      properties: () => ({}),
+      dependencies: { vpc, subnet },
+    });
+
+    routeIg = await provider.makeRoute({
+      name: "route-ig",
+      dependencies: { routeTable, ig },
     });
   });
   after(async () => {});
   it("rt name", async function () {
-    assert.equal(rt.name, resourceName);
+    assert.equal(routeTable.name, resourceName);
   });
   it.skip("rt getLive", async function () {
-    await rt.getLive();
+    await routeTable.getLive();
   });
-  it.skip("rt apply and destroy", async function () {
+  it("rt apply and destroy", async function () {
     await testPlanDeploy({ provider });
-    const rtLive = await rt.getLive();
+    const rtLive = await routeTable.getLive();
     const subnetLive = await subnet.getLive();
     const vpcLive = await vpc.getLive();
 

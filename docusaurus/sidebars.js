@@ -27,6 +27,7 @@ module.exports = {
               "aws/resources/EC2/InternetGateway",
               "aws/resources/EC2/NatGateway",
               "aws/resources/EC2/RouteTables",
+              "aws/resources/EC2/Route",
               "aws/resources/EC2/Subnet",
               "aws/resources/EC2/SecurityGroup",
               "aws/resources/EC2/EC2",

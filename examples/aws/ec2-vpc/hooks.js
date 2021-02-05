@@ -36,7 +36,7 @@ const testSsh = async ({ host, username = "ubuntu" }) =>
   });
 
 module.exports = ({
-  resources: { vpc, ig, subnet, rt, sg, eip, server },
+  resources: { vpc, ig, subnet, routeTable, sg, eip, server },
   provider,
 }) => {
   return {
@@ -47,7 +47,7 @@ module.exports = ({
 
         const sgLive = await sg.getLive();
         const igLive = await ig.getLive();
-        const rtLive = await rt.getLive();
+        const rtLive = await routeTable.getLive();
         const subnetLive = await subnet.getLive();
         const vpcLive = await vpc.getLive();
         const eipLive = await eip.getLive();

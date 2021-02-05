@@ -15,7 +15,7 @@ const {
 const { tagResource } = require("../AwsTagResource");
 const { CheckAwsTags } = require("../AwsTagCheck");
 
-module.exports = AwsInternetGateway = ({ spec, config }) => {
+exports.AwsInternetGateway = ({ spec, config }) => {
   assert(spec);
   assert(config);
 

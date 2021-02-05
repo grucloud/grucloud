@@ -12,25 +12,12 @@ const vpc = await provider.makeVpc({
     CidrBlock: "10.1.0.0/16",
   }),
 });
-const ig = await provider.makeInternetGateway({
-  name: "ig",
-  dependencies: { vpc },
-});
 
 const subnetPublic = await provider.makeSubnet({
   name: "public",
   dependencies: { vpc },
   properties: () => ({
     CidrBlock: "10.1.0.1/24",
-  }),
-});
-
-const subnetPrivate = await provider.makeSubnet({
-  name: "private",
-  dependencies: { vpc },
-  properties: () => ({
-    CidrBlock: "10.1.1.1/24",
-    AvailabilityZone: "eu-west-2b",
   }),
 });
 
@@ -41,13 +28,6 @@ const eip = await provider.makeElasticIpAddress({
 const natGateway = await provider.makeNatGateway({
   name: "nat-gateway",
   dependencies: { subnet: subnetPublic, eip },
-  properties: () => ({}),
-});
-
-const routeTablePrivate = await provider.makeRouteTables({
-  name: "route-table-private",
-  dependencies: { vpc, natGateway },
-  properties: () => ({}),
 });
 ```
 

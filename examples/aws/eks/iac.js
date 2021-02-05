@@ -36,15 +36,16 @@ const createResources = async ({ provider, resources: {} }) => {
   });
 
   const subnetPublic = await provider.makeSubnet({
-    name: "public",
+    name: "subnet-public",
     dependencies: { vpc },
     properties: () => ({
       CidrBlock: "10.1.0.1/24",
+      AvailabilityZone: "eu-west-2a",
     }),
   });
 
   const subnetPrivate = await provider.makeSubnet({
-    name: "private",
+    name: "subnet-private",
     dependencies: { vpc },
     properties: () => ({
       CidrBlock: "10.1.1.1/24",
@@ -54,8 +55,12 @@ const createResources = async ({ provider, resources: {} }) => {
 
   const routeTablePublic = await provider.makeRouteTables({
     name: "route-table-public",
-    dependencies: { vpc, ig },
-    properties: () => ({}),
+    dependencies: { vpc, subnet: subnetPublic },
+  });
+
+  const routeIg = await provider.makeRoute({
+    name: "route-ig",
+    dependencies: { routeTable: routeTablePublic, ig },
   });
 
   const eip = await provider.makeElasticIpAddress({
@@ -65,13 +70,16 @@ const createResources = async ({ provider, resources: {} }) => {
   const natGateway = await provider.makeNatGateway({
     name: "nat-gateway-eks",
     dependencies: { subnet: subnetPublic, eip },
-    properties: () => ({}),
   });
 
   const routeTablePrivate = await provider.makeRouteTables({
     name: "route-table-private",
-    dependencies: { vpc, natGateway },
-    properties: () => ({}),
+    dependencies: { vpc, subnet: subnetPrivate },
+  });
+
+  const routeNat = await provider.makeRoute({
+    name: "route-nat",
+    dependencies: { routeTable: routeTablePrivate, natGateway },
   });
 
   const sg = await provider.makeSecurityGroup({
@@ -127,7 +135,6 @@ const createResources = async ({ provider, resources: {} }) => {
       securityGroups: [sg],
       role,
     },
-    properties: () => ({}),
   });
 
   return {
@@ -136,7 +143,9 @@ const createResources = async ({ provider, resources: {} }) => {
     ig,
     subnetPrivate,
     routeTablePrivate,
+    routeIg,
     routeTablePublic,
+    routeNat,
     sg,
     cluster,
   };

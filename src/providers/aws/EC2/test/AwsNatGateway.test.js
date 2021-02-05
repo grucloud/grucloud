@@ -68,7 +68,7 @@ describe("AwsNatGateway", async function () {
     });
   });
 
-  it("ig apply and destroy", async function () {
+  it("nat apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
 
     const natGatewayLive = await natGateway.getLive();
