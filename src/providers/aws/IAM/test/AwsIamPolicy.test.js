@@ -23,41 +23,11 @@ describe("AwsIamPolicy", async function () {
       this.skip();
     }
     provider = AwsProvider({
-      name: "aws",
       config: config.aws,
-    });
-
-    iamUser = await provider.makeIamUser({
-      name: iamUserName,
-      properties: () => ({
-        UserName: iamUserName,
-        Path: "/",
-      }),
-    });
-
-    iamRole = await provider.makeIamRole({
-      name: iamRoleName,
-      properties: () => ({
-        Path: "/",
-        AssumeRolePolicyDocument: {
-          Version: "2012-10-17",
-          Statement: [
-            {
-              Action: "sts:AssumeRole",
-              Principal: {
-                Service: "ec2.amazonaws.com",
-              },
-              Effect: "Allow",
-              Sid: "",
-            },
-          ],
-        },
-      }),
     });
 
     iamPolicyToUser = await provider.makeIamPolicy({
       name: iamPolicyName,
-      dependencies: { iamUser },
       properties: () => ({
         PolicyName: iamPolicyName,
         PolicyDocument: {
@@ -74,9 +44,18 @@ describe("AwsIamPolicy", async function () {
         Path: "/",
       }),
     });
+
+    iamUser = await provider.makeIamUser({
+      name: iamUserName,
+      dependencies: { policies: [iamPolicyToUser] },
+      properties: () => ({
+        UserName: iamUserName,
+        Path: "/",
+      }),
+    });
+
     iamPolicyToRole = await provider.makeIamPolicy({
       name: iamPolicyNameToRole,
-      dependencies: { iamRole },
       properties: () => ({
         PolicyDocument: {
           Version: "2012-10-17",
@@ -90,6 +69,28 @@ describe("AwsIamPolicy", async function () {
         },
         Description: "Allow ec2:Describe",
         Path: "/",
+      }),
+    });
+
+    iamRole = await provider.makeIamRole({
+      name: iamRoleName,
+      dependencies: { policies: [iamPolicyToRole] },
+
+      properties: () => ({
+        Path: "/",
+        AssumeRolePolicyDocument: {
+          Version: "2012-10-17",
+          Statement: [
+            {
+              Action: "sts:AssumeRole",
+              Principal: {
+                Service: "ec2.amazonaws.com",
+              },
+              Effect: "Allow",
+              Sid: "",
+            },
+          ],
+        },
       }),
     });
   });

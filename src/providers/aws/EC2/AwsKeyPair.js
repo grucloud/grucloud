@@ -61,13 +61,10 @@ module.exports = AwsClientKeyPair = ({ spec, config }) => {
       ),
     ])();
 
-  const configDefault = ({ properties }) => defaultsDeep({})(properties);
-
   return {
     type: "KeyPair",
     spec,
     findName,
-    configDefault,
     findId,
     getByName,
     getById,

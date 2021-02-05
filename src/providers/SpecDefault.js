@@ -5,5 +5,6 @@ exports.SpecDefault = ({ providerName }) => ({
   compare: detailedDiff,
   providerName,
   listOnly: false,
+  isOurMinion: () => false,
   propertiesDefault: {},
 });

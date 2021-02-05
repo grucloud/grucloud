@@ -117,11 +117,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createPolicy-property
-  const create = async ({
-    name,
-    payload = {},
-    dependencies: { iamUser, iamRole, iamGroup },
-  }) =>
+  const create = async ({ name, payload = {} }) =>
     pipe([
       tap(() => {
         logger.info(`create policy ${name}`);
@@ -136,34 +132,6 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       }),
       (createParams) => iam().createPolicy(createParams),
       get("Policy"),
-      tap(
-        pipe([
-          tap.if(
-            () => iamUser,
-            (Policy) =>
-              iam().attachUserPolicy({
-                PolicyArn: Policy.Arn,
-                UserName: iamUser.name,
-              })
-          ),
-          tap.if(
-            () => iamRole,
-            (Policy) =>
-              iam().attachRolePolicy({
-                PolicyArn: Policy.Arn,
-                RoleName: iamRole.name,
-              })
-          ),
-          tap.if(
-            () => iamGroup,
-            (Policy) =>
-              iam().attachGroupPolicy({
-                PolicyArn: Policy.Arn,
-                GroupName: iamGroup.name,
-              })
-          ),
-        ])
-      ),
       tap((Policy) => {
         logger.debug(`created iam policy result ${tos({ name, Policy })}`);
         logger.info(`created iam policy ${name}`);

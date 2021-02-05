@@ -6,6 +6,7 @@ const {
   isOurMinionInstanceProfile,
 } = require("./AwsIamInstanceProfile");
 const { AwsIamPolicy, isOurMinionIamPolicy } = require("./AwsIamPolicy");
+const { AwsIamPolicyReadOnly } = require("./AwsIamPolicyReadOnly");
 
 const { isOurMinion } = require("../AwsCommon");
 
@@ -13,30 +14,35 @@ module.exports = [
   {
     type: "IamUser",
     dependsOn: ["IamPolicy", "IamGroup"],
-    Client: ({ spec, config }) => AwsIamUser({ spec, config }),
+    Client: AwsIamUser,
     isOurMinion,
   },
   {
     type: "IamGroup",
     dependsOn: ["IamPolicy"],
-    Client: ({ spec, config }) => AwsIamGroup({ spec, config }),
+    Client: AwsIamGroup,
     isOurMinion: isOurMinionIamGroup,
   },
   {
     type: "IamRole",
     dependsOn: ["IamPolicy"],
-    Client: ({ spec, config }) => AwsIamRole({ spec, config }),
+    Client: AwsIamRole,
     isOurMinion,
   },
   {
     type: "IamPolicy",
-    Client: ({ spec, config }) => AwsIamPolicy({ spec, config }),
+    Client: AwsIamPolicy,
     isOurMinion: isOurMinionIamPolicy,
+  },
+  {
+    type: "IamPolicyReadOnly",
+    Client: AwsIamPolicyReadOnly,
+    listOnly: true,
   },
   {
     type: "IamInstanceProfile",
     dependsOn: ["IamRole"],
-    Client: ({ spec, config }) => AwsIamInstanceProfile({ spec, config }),
+    Client: AwsIamInstanceProfile,
     isOurMinion: isOurMinionInstanceProfile,
   },
 ];

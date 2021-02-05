@@ -71,13 +71,33 @@ exports.AwsIamGroup = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createGroup-property
 
-  const create = async ({ name, payload = {}, dependencies }) =>
+  const create = async ({
+    name,
+    payload = {},
+    resolvedDependencies: { policies },
+  }) =>
     pipe([
       tap(() => {
         logger.info(`create iam group ${tos({ name, payload })}`);
       }),
       () => iam().createGroup(payload),
       get("Group"),
+      tap.if(
+        () => policies,
+        () =>
+          forEach(
+            pipe([
+              (policy) => ({
+                PolicyArn: policy.live.Arn,
+                GroupName: name,
+              }),
+              tap((params) => {
+                logger.info(`attachGroupPolicy ${tos({ params })}`);
+              }),
+              (params) => iam().attachGroupPolicy(params),
+            ])
+          )(policies)
+      ),
       tap((Group) => {
         logger.info(`created iam group ${tos({ name, Group })}`);
       }),
