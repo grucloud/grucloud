@@ -4,6 +4,7 @@ const assert = require("assert");
 
 const logger = require("../../../logger")({ prefix: "AwsNatGateway" });
 const { tos } = require("../../../tos");
+const { retryCall } = require("../../Retry");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const {
   Ec2New,
@@ -78,8 +79,13 @@ exports.AwsNatGateway = ({ spec, config }) => {
       (params) => ec2().createNatGateway(params),
       get("NatGateway"),
       tap((NatGateway) => {
-        logger.debug(`nat created ${tos(NatGateway)}`);
+        logger.info(`nat created ${tos(NatGateway)}`);
       }),
+      ({ NatGatewayId }) =>
+        retryCall({
+          name: `nat isUpById: ${name} id: ${NatGatewayId}`,
+          fn: () => isUpById({ name, id: NatGatewayId }),
+        }),
       ({ NatGatewayId }) => ({ id: NatGatewayId }),
     ])();
 
