@@ -1,0 +1,65 @@
+---
+id: NatGateway
+title: Nat Gateway
+---
+
+Provides an [Nat Gateway](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html)
+
+```js
+const vpc = await provider.makeVpc({
+  name: "vpc",
+  properties: () => ({
+    CidrBlock: "10.1.0.0/16",
+  }),
+});
+const ig = await provider.makeInternetGateway({
+  name: "ig",
+  dependencies: { vpc },
+});
+
+const subnetPublic = await provider.makeSubnet({
+  name: "public",
+  dependencies: { vpc },
+  properties: () => ({
+    CidrBlock: "10.1.0.1/24",
+  }),
+});
+
+const subnetPrivate = await provider.makeSubnet({
+  name: "private",
+  dependencies: { vpc },
+  properties: () => ({
+    CidrBlock: "10.1.1.1/24",
+    AvailabilityZone: "eu-west-2b",
+  }),
+});
+
+const eip = await provider.makeElasticIpAddress({
+  name: "myip",
+});
+
+const natGateway = await provider.makeNatGateway({
+  name: "nat-gateway",
+  dependencies: { subnet: subnetPublic, eip },
+  properties: () => ({}),
+});
+
+const routeTablePrivate = await provider.makeRouteTables({
+  name: "route-table-private",
+  dependencies: { vpc, natGateway },
+  properties: () => ({}),
+});
+```
+
+### Examples
+
+- [EKS](https://github.com/grucloud/grucloud/blob/main/examples/aws/eks/iac.js)
+
+### Dependencies
+
+- [ElasticIpAddress](./ElasticIpAddress)
+- [Subnet](./Subnet)
+
+### Used By
+
+- [RouteTables](./RouteTables)

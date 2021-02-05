@@ -15,7 +15,7 @@ const { isEmpty, defaultsDeep } = require("rubico/x");
 const logger = require("../../../logger")({ prefix: "AwsRtb" });
 const { tos } = require("../../../tos");
 const { retryCall } = require("../../Retry");
-const { getByIdCore } = require("../AwsCommon");
+const { getByIdCore, buildTags } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const {
   Ec2New,
@@ -62,85 +62,83 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
   });
   const isDownById = isDownByIdCore({ getById });
 
-  const getSubnetId = ({ subnet, RouteTableId }) =>
+  const associateRouteTableToSubnet = ({ subnet, RouteTableId }) =>
     switchCase([
       () => subnet,
       pipe([
-        () => subnet.getLive(),
-        get("SubnetId"),
-        tap((SubnetId) => {
-          logger.info(`associate rt to SubnetId: ${SubnetId}`);
+        tap(() => {
+          assert(subnet.live.SubnetId, "subnet.live.SubnetId");
         }),
-        (SubnetId) =>
+        () =>
           ec2().associateRouteTable({
             RouteTableId,
-            SubnetId,
+            SubnetId: subnet.live.SubnetId,
           }),
       ]),
       () => undefined,
     ]);
 
-  const getInternetGatewayId = ({ ig, RouteTableId }) =>
+  const createRouteInternetGateway = ({ ig, RouteTableId }) =>
     switchCase([
       () => ig,
       pipe([
-        () => ig.getLive(),
-        get("InternetGatewayId"),
-        tap((InternetGatewayId) => {
-          logger.info(
-            `associate rt to InternetGatewayId: ${InternetGatewayId}`
-          );
+        tap(() => {
+          assert(ig.live.InternetGatewayId, "ig.live.InternetGatewayId");
         }),
-        (GatewayId) =>
+        () =>
           ec2().createRoute({
             DestinationCidrBlock: "0.0.0.0/0",
             RouteTableId,
-            GatewayId,
+            GatewayId: ig.live.InternetGatewayId,
+          }),
+      ]),
+      () => undefined,
+    ]);
+
+  const createRouteNatGateway = ({ natGateway, RouteTableId }) =>
+    switchCase([
+      () => natGateway,
+      pipe([
+        tap(() => {
+          assert(natGateway.live.NatGatewayId, "natGateway.live.NatGatewayId");
+        }),
+        () =>
+          ec2().createRoute({
+            DestinationCidrBlock: "0.0.0.0/0",
+            RouteTableId,
+            NatGatewayId: natGateway.live.NatGatewayId,
           }),
       ]),
       () => undefined,
     ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createRouteTable-property
-  const create = async ({ payload, name, dependencies: { vpc, subnet, ig } }) =>
+  const create = async ({
+    payload,
+    name,
+    resolvedDependencies: { vpc, subnet, ig, natGateway },
+  }) =>
     pipe([
       tap(() => {
         logger.info(`create rt ${tos({ name })}`);
         assert(vpc, "RouteTables is missing the dependency 'vpc'");
         assert(
-          subnet || ig,
-          "RouteTables needs the dependency 'subnet' or 'ig'"
+          subnet || ig || natGateway,
+          "RouteTables needs the dependency 'subnet', 'ig', or 'natGateway'"
         );
       }),
-      () => vpc.getLive(),
-      ({ VpcId }) =>
-        ec2().createRouteTable({
-          VpcId,
-        }),
+      () =>
+        defaultsDeep({
+          VpcId: vpc.live.VpcId,
+        })(payload),
+      (params) => ec2().createRouteTable(params),
       get("RouteTable.RouteTableId"),
       tap((RouteTableId) =>
         pipe([
-          () =>
-            tagResource({
-              config,
-              name,
-              resourceType: "RouteTables",
-              resourceId: RouteTableId,
-            }),
-          () => getById({ id: RouteTableId }),
-          (live) => {
-            assert(
-              CheckAwsTags({
-                config,
-                tags: live.Tags,
-                name,
-              }),
-              `missing tag for ${name}`
-            );
-          },
           fork({
-            GatewayId: getInternetGatewayId({ ig, RouteTableId }),
-            SubnetId: getSubnetId({ subnet, RouteTableId }),
+            GatewayId: createRouteInternetGateway({ ig, RouteTableId }),
+            SubnetId: associateRouteTableToSubnet({ subnet, RouteTableId }),
+            NatGatewayId: createRouteNatGateway({ natGateway, RouteTableId }),
           }),
           () =>
             retryCall({
@@ -185,7 +183,14 @@ module.exports = AwsRouteTables = ({ spec, config }) => {
     ])();
 
   const configDefault = async ({ name, properties }) =>
-    defaultsDeep({})(properties);
+    defaultsDeep({
+      TagSpecifications: [
+        {
+          ResourceType: "route-table",
+          Tags: buildTags({ config, name }),
+        },
+      ],
+    })(properties);
 
   const cannotBeDeleted = ({ resource, name }) => {
     logger.debug(`cannotBeDeleted name: ${name} ${tos({ resource })}`);

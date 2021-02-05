@@ -191,6 +191,9 @@ module.exports = AwsEC2 = ({ spec, config }) => {
           ],
         }),
       get("Addresses"),
+      tap((Addresses) => {
+        logger.debug(`disassociateAddress ${tos({ Addresses })}`);
+      }),
       first,
       tap.if(not(isEmpty), ({ AssociationId }) =>
         ec2().disassociateAddress({

@@ -125,6 +125,9 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
       () => getById({ id }),
       get("Attachments"),
       first,
+      tap((Attachments) => {
+        logger.debug(`destroy ig ${tos({ Attachments })}`);
+      }),
       tap.if(not(isEmpty), ({ VpcId }) =>
         ec2().detachInternetGateway({
           InternetGatewayId: id,
