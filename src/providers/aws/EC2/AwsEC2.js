@@ -35,7 +35,7 @@ const { CheckAwsTags } = require("../AwsTagCheck");
 const StateRunning = "running";
 const StateTerminated = "terminated";
 
-module.exports = AwsEC2 = ({ spec, config }) => {
+exports.AwsEC2 = ({ spec, config }) => {
   assert(spec);
   assert(config);
   const clientConfig = { ...config, retryDelay: 5000, repeatCount: 1 };

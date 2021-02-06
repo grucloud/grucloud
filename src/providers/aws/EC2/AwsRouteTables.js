@@ -113,6 +113,13 @@ exports.AwsRouteTables = ({ spec, config }) => {
         logger.debug(`deleting rt ${JSON.stringify({ RouteTableId: id })}`);
       }),
       () => ec2().deleteRouteTable({ RouteTableId: id }),
+      tap(() =>
+        retryCall({
+          name: `destroy rt isDownById: ${name} id: ${id}`,
+          fn: () => isDownById({ id, name }),
+          config,
+        })
+      ),
       tap(() => {
         logger.info(`rt destroyed ${JSON.stringify({ name, id })}`);
       }),

@@ -388,28 +388,14 @@ const ResourceMaker = ({
       throw Error(`Resource ${type}/${resourceName} already exists`);
     }
 
-    // Create now
-    const instance = await retryCall({
-      name: `create ${type}/${resourceName}`,
-      fn: () =>
-        client.create({
-          name: resourceName,
-          payload,
-          dependencies,
-          resolvedDependencies,
-        }),
-      shouldRetryOnException: client.shouldRetryOnException,
-      config: provider.config(),
+    const instance = await client.create({
+      name: resourceName,
+      payload,
+      dependencies,
+      resolvedDependencies,
     });
 
     logger.info(`created:  ${type}/${resourceName}`);
-
-    const live = await retryCall({
-      name: `create getLive ${type}/${resourceName}`,
-      fn: () => getLive({ deep: false }),
-      config: provider.config(),
-    });
-
     return instance;
   };
 
@@ -2024,13 +2010,13 @@ function CoreProvider({
               config: provider.config(),
             })
           ),
-          tap((resource) =>
+          /*tap((resource) =>
             retryCall({
               name: `destroy type: ${client.spec.type}, name: ${name}, isDownById`,
               fn: () => client.isDownById({ id, name, resource }),
               config: client.config || providerConfig,
             })
-          ),
+          ),*/
         ])(resourcesPerType),
       tap(() => {
         logger.info(

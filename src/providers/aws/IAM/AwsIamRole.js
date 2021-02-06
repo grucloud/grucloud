@@ -215,7 +215,7 @@ exports.AwsIamRole = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy iam role ${tos({ name, id })}`);
+        logger.info(`destroy iam role ${JSON.stringify({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
       () => iam().listInstanceProfilesForRole({ RoleName: id, MaxItems: 1e3 }),
@@ -254,7 +254,7 @@ exports.AwsIamRole = ({ spec, config }) => {
         })
       ),
       tap(() => {
-        logger.info(`destroy iam role done, ${tos({ name, id })}`);
+        logger.info(`destroy iam role done, ${JSON.stringify({ name, id })}`);
       }),
     ])();
 

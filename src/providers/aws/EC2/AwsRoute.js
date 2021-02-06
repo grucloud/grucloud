@@ -23,9 +23,6 @@ const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const { Ec2New, shouldRetryOnException } = require("../AwsCommon");
 
 exports.AwsRoute = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
-
   const ec2 = Ec2New(config);
 
   const findId = get("name");
@@ -181,6 +178,9 @@ exports.AwsRoute = ({ spec, config }) => {
     pipe([
       tap(() => {
         logger.info(`destroy route ${JSON.stringify({ name, id })}`);
+      }),
+      () => ({
+        id,
       }),
     ])();
 

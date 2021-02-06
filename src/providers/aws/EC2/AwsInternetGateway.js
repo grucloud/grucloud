@@ -11,9 +11,8 @@ const {
   getByIdCore,
   findNameInTagsOrId,
   shouldRetryOnException,
+  buildTags,
 } = require("../AwsCommon");
-const { tagResource } = require("../AwsTagResource");
-const { CheckAwsTags } = require("../AwsTagCheck");
 
 exports.AwsInternetGateway = ({ spec, config }) => {
   assert(spec);
@@ -22,7 +21,6 @@ exports.AwsInternetGateway = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
   const findId = get("InternetGatewayId");
-
   const findName = (item) => findNameInTagsOrId({ item, findId });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInternetGateways-property
@@ -66,7 +64,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createInternetGateway-property
 
-  const create = async ({ payload, name, dependencies: { vpc } }) =>
+  const create = async ({ payload, name, resolvedDependencies: { vpc } }) =>
     pipe([
       tap(() => {
         logger.info(`create ig ${tos({ name })}`);
@@ -77,32 +75,13 @@ exports.AwsInternetGateway = ({ spec, config }) => {
       tap((InternetGatewayId) =>
         pipe([
           () =>
-            tagResource({
-              config,
-              name,
-              resourceType: "InternetGateway",
-              resourceId: InternetGatewayId,
-            }),
-          () => getById({ id: InternetGatewayId }),
-          (live) => {
-            assert(
-              CheckAwsTags({
-                config,
-                tags: live.Tags,
-                name,
-              }),
-              `missing tag for ${name}`
-            );
-          },
-          () => vpc.getLive(),
-          (vpcLive) =>
             ec2().attachInternetGateway({
               InternetGatewayId,
-              VpcId: vpcLive.VpcId,
+              VpcId: vpc.live.VpcId,
             }),
           () =>
             retryCall({
-              name: `ig isUpById: ${name} id: ${InternetGatewayId}`,
+              name: `ig create isUpById: ${name} id: ${InternetGatewayId}`,
               fn: () => isUpById({ id: InternetGatewayId }),
               config,
             }),
@@ -135,13 +114,26 @@ exports.AwsInternetGateway = ({ spec, config }) => {
         })
       ),
       () => ec2().deleteInternetGateway({ InternetGatewayId: id }),
+      () =>
+        retryCall({
+          name: `destroy ig isDownById: ${name} id: ${id}`,
+          fn: () => isDownById({ id }),
+          config,
+        }),
       tap(() => {
         logger.debug(`destroyed ig ${tos({ name, id })}`);
       }),
     ])();
 
   const configDefault = async ({ name, properties }) =>
-    defaultsDeep({})(properties);
+    defaultsDeep({
+      TagSpecifications: [
+        {
+          ResourceType: "internet-gateway",
+          Tags: buildTags({ config, name }),
+        },
+      ],
+    })(properties);
 
   const cannotBeDeleted = ({ resource, name }) => {
     logger.debug(`cannotBeDeleted name: ${name} ${tos({ resource })}`);

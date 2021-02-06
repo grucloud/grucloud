@@ -15,9 +15,6 @@ const {
 } = require("../AwsCommon");
 
 exports.AwsNatGateway = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
-
   const ec2 = Ec2New(config);
 
   const findId = get("NatGatewayId");
@@ -128,6 +125,13 @@ exports.AwsNatGateway = ({ spec, config }) => {
       }),
       () => disassociateAddress({ NatGatewayId: id }),
       () => ec2().deleteNatGateway({ NatGatewayId: id }),
+      tap(() =>
+        retryCall({
+          name: `destroy nat gateway isDownById: ${name} id: ${id}`,
+          fn: () => isDownById({ id, name }),
+          config,
+        })
+      ),
       tap(() => {
         logger.debug(`destroyed nat ${tos({ name, id })}`);
       }),

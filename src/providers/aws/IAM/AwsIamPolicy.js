@@ -142,7 +142,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy iam policy ${tos({ name, id })}`);
+        logger.info(`destroy iam policy ${JSON.stringify({ name, id })}`);
       }),
       () =>
         iam().listEntitiesForPolicy({
@@ -200,7 +200,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
           config,
         }),
       tap(() => {
-        logger.info(`destroy iam policy done ${tos({ name, id })}`);
+        logger.info(`destroy iam policy done ${JSON.stringify({ name, id })}`);
       }),
     ])();
 

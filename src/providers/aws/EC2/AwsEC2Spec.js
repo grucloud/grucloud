@@ -1,19 +1,15 @@
 const { isOurMinion } = require("../AwsCommon");
 
-const logger = require("../../../logger")({ prefix: "AWSEC2" });
-const { tos } = require("../../../tos");
-
-const AwsEC2 = require("./AwsEC2");
-const AwsClientKeyPair = require("./AwsKeyPair");
-const AwsVpc = require("./AwsVpc");
+const { AwsEC2 } = require("./AwsEC2");
+const { AwsClientKeyPair } = require("./AwsKeyPair");
+const { AwsVpc } = require("./AwsVpc");
 const { AwsInternetGateway } = require("./AwsInternetGateway");
 const { AwsNatGateway } = require("./AwsNatGateway");
 const { AwsRouteTables } = require("./AwsRouteTables");
 const { AwsRoute } = require("./AwsRoute");
-
-const AwsSubnet = require("./AwsSubnet");
-const AwsSecurityGroup = require("./AwsSecurityGroup");
-const AwsElasticIpAddress = require("./AwsElasticIpAddress");
+const { AwsSubnet } = require("./AwsSubnet");
+const { AwsSecurityGroup } = require("./AwsSecurityGroup");
+const { AwsElasticIpAddress } = require("./AwsElasticIpAddress");
 const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
 
 module.exports = [

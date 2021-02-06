@@ -12,13 +12,8 @@ const {
   findNameInTags,
   shouldRetryOnException,
 } = require("../AwsCommon");
-const { tagResource } = require("../AwsTagResource");
-const { CheckAwsTags } = require("../AwsTagCheck");
 
-module.exports = AwsElasticIpAddress = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
-
+exports.AwsElasticIpAddress = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
   const findName = findNameInTags;

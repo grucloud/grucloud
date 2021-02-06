@@ -185,7 +185,7 @@ exports.AwsDistribution = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy ${tos({ name, id })}`);
+        logger.info(`destroy distribution ${JSON.stringify({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
       () =>
@@ -252,7 +252,7 @@ exports.AwsDistribution = ({ spec, config }) => {
         })
       ),
       tap(() => {
-        logger.info(`distribution destroyed, ${tos({ name, id })}`);
+        logger.info(`distribution destroyed, ${JSON.stringify({ name, id })}`);
       }),
     ])();
 
@@ -295,23 +295,28 @@ exports.AwsDistribution = ({ spec, config }) => {
           tap((Items) => {
             logger.info(`distribution Items ${tos({ Items })}`);
           }),
-          (Items) => ({
-            DistributionId: distribution.Id,
-            InvalidationBatch: {
-              CallerReference: getNewCallerReference(),
-              Paths: {
-                Quantity: Items.length,
-                Items,
-              },
-            },
-          }),
-          tap((params) => {
-            logger.info(`createInvalidation params ${tos({ params })}`);
-          }),
-          (params) => cloudfront().createInvalidation(params),
-          tap((result) => {
-            logger.info(`createInvalidation done ${tos({ result })}`);
-          }),
+          tap.if(
+            not(isEmpty),
+            pipe([
+              (Items) => ({
+                DistributionId: distribution.Id,
+                InvalidationBatch: {
+                  CallerReference: getNewCallerReference(),
+                  Paths: {
+                    Quantity: Items.length,
+                    Items,
+                  },
+                },
+              }),
+              tap((params) => {
+                logger.info(`createInvalidation params ${tos({ params })}`);
+              }),
+              (params) => cloudfront().createInvalidation(params),
+              tap((result) => {
+                logger.info(`createInvalidation done ${tos({ result })}`);
+              }),
+            ])
+          ),
         ])(distribution)
       ),
     ])();

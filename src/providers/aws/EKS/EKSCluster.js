@@ -78,7 +78,7 @@ exports.EKSCluster = ({ spec, config }) => {
       logger.info(`getById cluster: ${id}`);
     }),
     tryCatch(
-      ({ id }) => eks().describeCluster({ name: id }),
+      pipe([({ id }) => eks().describeCluster({ name: id })], get("cluster")),
       switchCase([
         eq(get("code"), "ResourceNotFoundException"),
         (error, { id }) => {
@@ -91,7 +91,7 @@ exports.EKSCluster = ({ spec, config }) => {
       ])
     ),
     tap((result) => {
-      logger.debug(`getById result: ${tos(result)}`);
+      logger.debug(`getById cluster result: ${tos(result)}`);
     }),
   ]);
 

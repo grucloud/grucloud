@@ -86,14 +86,18 @@ exports.AwsVolume = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy detach Volume ${tos({ name, id })}`);
-      }),
-      tap((result) => {
-        logger.debug(`destroy deleting volume ${tos({ name, id })}`);
+        logger.info(`destroy volume ${JSON.stringify({ name, id })}`);
       }),
       () => ec2().deleteVolume({ VolumeId: id }),
+      tap(() =>
+        retryCall({
+          name: `destroy volume isDownById: ${name} id: ${id}`,
+          fn: () => isDownById({ id }),
+          config,
+        })
+      ),
       tap((result) => {
-        logger.debug(`destroyed volume ${tos({ name, id })}`);
+        logger.info(`volume destroyed ${JSON.stringify({ name, id })}`);
       }),
     ])();
 
