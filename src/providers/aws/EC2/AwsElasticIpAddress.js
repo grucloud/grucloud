@@ -5,7 +5,7 @@ const { defaultsDeep, isEmpty } = require("rubico/x");
 const logger = require("../../../logger")({ prefix: "AwsEip" });
 const { tos } = require("../../../tos");
 const { retryCall } = require("../../Retry");
-const { getByIdCore } = require("../AwsCommon");
+const { getByIdCore, buildTags } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const {
   Ec2New,
@@ -54,40 +54,20 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
   const create = async ({ payload, name }) =>
     pipe([
       tap(() => {
-        logger.info(`create elastic ip address ${tos({ name })}`);
+        logger.info(`create elastic ip address ${JSON.stringify({ name })}`);
+        logger.debug(`eip payload ${tos({ payload })}`);
       }),
       () => ec2().allocateAddress(payload),
       get("AllocationId"),
       tap((AllocationId) =>
-        pipe([
-          () =>
-            retryCall({
-              name: `eip isUpById: ${name} id: ${AllocationId}`,
-              fn: () => isUpById({ id: AllocationId }),
-              config,
-            }),
-          () =>
-            tagResource({
-              config,
-              name,
-              resourceType: "eip",
-              resourceId: AllocationId,
-            }),
-          () => getById({ id: AllocationId }),
-          (eipLive) => {
-            assert(
-              CheckAwsTags({
-                config,
-                tags: eipLive.Tags,
-                name,
-              }),
-              `missing tag for ${name}`
-            );
-          },
-        ])()
+        retryCall({
+          name: `eip isUpById: ${name} id: ${AllocationId}`,
+          fn: () => isUpById({ id: AllocationId }),
+          config,
+        })
       ),
       tap(() => {
-        logger.info(`created elastic ip address ${tos({ name })}`);
+        logger.info(`created elastic ip address ${JSON.stringify({ name })}`);
       }),
       (AllocationId) => ({ id: AllocationId }),
     ])();
@@ -100,13 +80,27 @@ module.exports = AwsElasticIpAddress = ({ spec, config }) => {
         assert(!isEmpty(id), `destroy invalid id`);
       }),
       () => ec2().releaseAddress({ AllocationId: id }),
+      () =>
+        retryCall({
+          name: `destroy eip isDownById: ${name} id: ${id}`,
+          fn: () => isDownById({ id }),
+          config,
+        }),
       tap(() => {
         logger.debug(`destroyed elastic ip address ${tos({ name, id })}`);
       }),
     ])();
 
-  const configDefault = async ({ properties }) =>
-    defaultsDeep({ Domain: "Vpc" })(properties);
+  const configDefault = async ({ name, properties }) =>
+    defaultsDeep({
+      Domain: "Vpc",
+      TagSpecifications: [
+        {
+          ResourceType: "elastic-ip",
+          Tags: buildTags({ config, name }),
+        },
+      ],
+    })(properties);
 
   return {
     type: "ElasticIpAddress",
