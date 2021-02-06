@@ -12,7 +12,7 @@ const {
 } = require("rubico");
 const { isEmpty, defaultsDeep } = require("rubico/x");
 
-const logger = require("../../../logger")({ prefix: "AwsRtb" });
+const logger = require("../../../logger")({ prefix: "AwsRouteTable" });
 const { tos } = require("../../../tos");
 const { retryCall } = require("../../Retry");
 const { getByIdCore, buildTags } = require("../AwsCommon");

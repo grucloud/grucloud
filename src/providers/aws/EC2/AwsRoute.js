@@ -16,7 +16,7 @@ const {
 } = require("rubico");
 const { isEmpty, defaultsDeep, find } = require("rubico/x");
 
-const logger = require("../../../logger")({ prefix: "AwsRtb" });
+const logger = require("../../../logger")({ prefix: "AwsRoute" });
 const { tos } = require("../../../tos");
 const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
@@ -101,11 +101,8 @@ exports.AwsRoute = ({ spec, config }) => {
   //TODO
   const getById = getByIdCore({ fieldIds: "RouteTableIds", getList });
 
-  const isUpById = isUpByIdCore({
-    getById,
-  });
-
-  const isDownById = isDownByIdCore({ getById });
+  const isUpById = () => true;
+  const isDownById = () => true;
 
   const createRouteInternetGateway = ({ ig, RouteTableId, payload }) =>
     switchCase([
