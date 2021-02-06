@@ -44,10 +44,13 @@ exports.EKSCluster = ({ spec, config }) => {
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {
-        logger.info(`getList cluster ${tos(params)}`);
+        logger.info(`getList cluster ${JSON.stringify({ params })}`);
       }),
       () => eks().listClusters(params),
       get("clusters"),
+      tap((clusters) => {
+        logger.info(`getList clusters: ${tos(clusters)}`);
+      }),
       map(
         pipe([
           (name) =>
@@ -72,7 +75,7 @@ exports.EKSCluster = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeCluster-property
   const getById = pipe([
     tap(({ id }) => {
-      logger.info(`getById ${id}`);
+      logger.info(`getById cluster: ${id}`);
     }),
     tryCatch(
       ({ id }) => eks().describeCluster({ name: id }),
@@ -129,10 +132,10 @@ exports.EKSCluster = ({ spec, config }) => {
       tap((result) => {
         logger.debug(`created cluster: ${name}, result: ${tos(result)}`);
       }),
-      ({ arn }) =>
+      () =>
         retryCall({
-          name: `cluster isUpById: ${name} arn: ${arn}`,
-          fn: () => isUpById({ name, id: arn }),
+          name: `cluster isUpById: ${name}`,
+          fn: () => isUpById({ name, id: name }),
         }),
       tap(() => {
         logger.info(`cluster created: ${name}`);
@@ -143,7 +146,7 @@ exports.EKSCluster = ({ spec, config }) => {
   const destroy = async ({ id }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy cluster ${tos({ id })}`);
+        logger.info(`destroy cluster ${JSON.stringify({ id })}`);
       }),
       () =>
         eks().deleteCluster({
@@ -157,7 +160,7 @@ exports.EKSCluster = ({ spec, config }) => {
         })
       ),
       tap(() => {
-        logger.info(`cluster destroyed ${tos({ id })}`);
+        logger.info(`cluster destroyed ${JSON.stringify({ id })}`);
       }),
     ])();
 
