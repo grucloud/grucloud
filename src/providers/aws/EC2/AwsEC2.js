@@ -134,6 +134,19 @@ exports.AwsEC2 = ({ spec, config }) => {
       }),
     ])();
 
+  const shouldRetryOnExceptionCreate = ({ error, name }) =>
+    pipe([
+      tap(() => {
+        logger.error(
+          `ec2 shouldRetryOnExceptionCreate ${tos({ name, error })}`
+        );
+      }),
+      () => error.message.includes("iamInstanceProfile.name is invalid"),
+      tap((retry) => {
+        logger.error(`ec2 shouldRetryOnExceptionCreate retry: ${retry}`);
+      }),
+    ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property
   const create = async ({
     name,
@@ -147,7 +160,13 @@ exports.AwsEC2 = ({ spec, config }) => {
         assert(name, "name");
         assert(payload, "payload");
       }),
-      () => ec2().runInstances(payload),
+      () =>
+        retryCall({
+          name: `ec2 runInstances: ${name}`,
+          fn: () => ec2().runInstances(payload),
+          shouldRetryOnException: shouldRetryOnExceptionCreate,
+          config,
+        }),
       get("Instances"),
       first,
       get("InstanceId"),
@@ -323,13 +342,5 @@ exports.AwsEC2 = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException: ({ error, name }) => {
-      logger.debug(`shouldRetryOnException ${tos({ name, error })}`);
-      const retry = error.message.includes(
-        "iamInstanceProfile.name is invalid"
-      );
-      logger.debug(`shouldRetryOnException retry: ${retry}`);
-      return retry;
-    },
   };
 };
