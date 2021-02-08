@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { get, pipe, map, eq, tap } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { get, pipe, map, eq, or, tap } = require("rubico");
+const { defaultsDeep, find } = require("rubico/x");
 const {
   Ec2New,
   getByIdCore,
@@ -52,7 +52,16 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
   const isUpById = isUpByIdCore({ getById });
   const isDownById = isDownByIdCore({ getById });
 
-  const cannotBeDeleted = eq(get("resource.GroupName"), "default");
+  const cannotBeDeleted = pipe([
+    get("resource"),
+    or([
+      eq(get("GroupName"), "default"),
+      pipe([
+        get("Tags"),
+        find(eq(get("Key"), "kubernetes.io/cluster/cluster")),
+      ]),
+    ]),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
 
