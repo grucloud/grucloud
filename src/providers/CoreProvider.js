@@ -2010,13 +2010,6 @@ function CoreProvider({
               config: provider.config(),
             })
           ),
-          /*tap((resource) =>
-            retryCall({
-              name: `destroy type: ${client.spec.type}, name: ${name}, isDownById`,
-              fn: () => client.isDownById({ id, name, resource }),
-              config: client.config || providerConfig,
-            })
-          ),*/
         ])(resourcesPerType),
       tap(() => {
         logger.info(

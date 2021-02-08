@@ -204,6 +204,13 @@ module.exports = CoreClient = ({
             },
           }),
         (result) => onResponseDelete(result.data),
+        tap(() =>
+          retryCall({
+            name: `destroy type: ${spec.type}, name: ${name}, isDownById`,
+            fn: () => isDownById({ id, name }),
+            config,
+          })
+        ),
         tap((data) => {
           logger.info(`destroy ${tos({ name, type, id, data })} destroyed`);
         }),
