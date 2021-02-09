@@ -10,6 +10,7 @@ describe("AwsRouteTables", async function () {
   let vpc;
   let subnet;
   let routeTable;
+
   let routeIg;
   const resourceName = "route-table";
 
@@ -57,13 +58,7 @@ describe("AwsRouteTables", async function () {
     });
   });
   after(async () => {});
-  it("rt name", async function () {
-    assert.equal(routeTable.name, resourceName);
-  });
-  it.skip("rt getLive", async function () {
-    await routeTable.getLive();
-  });
-  it("rt apply and destroy", async function () {
+  it.skip("rt apply and destroy", async function () {
     await testPlanDeploy({ provider });
     const rtLive = await routeTable.getLive();
     const subnetLive = await subnet.getLive();
@@ -73,7 +68,7 @@ describe("AwsRouteTables", async function () {
       CheckAwsTags({
         config: provider.config(),
         tags: rtLive.Tags,
-        name: rt.name,
+        name: routeTable.name,
       })
     );
 
@@ -81,14 +76,13 @@ describe("AwsRouteTables", async function () {
       results: [rts],
     } = await provider.listLives({ types: ["RouteTables"] });
     assert.equal(rts.type, "RouteTables");
-
-    const { data: routeTable } = rts.resources.find(
-      (resource) => resource.managedByUs
-    );
-    assert(routeTable);
-    assert.equal(routeTable.Associations[0].SubnetId, subnetLive.SubnetId);
-    assert.equal(routeTable.VpcId, vpcLive.VpcId);
-
+    {
+      const { data: routeTable } = rts.resources.find(
+        (resource) => resource.managedByUs
+      );
+      assert.equal(routeTable.Associations[0].SubnetId, subnetLive.SubnetId);
+      assert.equal(routeTable.VpcId, vpcLive.VpcId);
+    }
     await testPlanDestroy({ provider });
   });
 });

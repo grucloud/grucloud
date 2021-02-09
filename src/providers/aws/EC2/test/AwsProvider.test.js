@@ -5,7 +5,6 @@ const { pluck, size, flatten } = require("rubico/x");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
-const { notAvailable } = require("../../../ProviderCommon");
 const { CheckAwsTags } = require("../../AwsTagCheck");
 const cliCommands = require("../../../../cli/cliCommands");
 
