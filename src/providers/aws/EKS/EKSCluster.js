@@ -135,6 +135,7 @@ exports.EKSCluster = ({ spec, config }) => {
         retryCall({
           name: `cluster create isUpById: ${name}`,
           fn: () => isUpById({ name, id: name }),
+          config: { retryCount: 12 * 15, retryDelay: 5e3 },
         }),
       tap(() => {
         logger.info(`cluster created: ${name}`);

@@ -28,7 +28,7 @@ const retryCall = async ({
   config: {
     repeatCount = 0,
     repeatDelay = 1e3,
-    retryCount = 30 * 5,
+    retryCount = 12 * 5,
     retryDelay = 5e3,
   } = {},
 }) => {
