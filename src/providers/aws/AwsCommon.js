@@ -86,7 +86,7 @@ exports.shouldRetryOnExceptionDelete = ({ error, name }) => {
   return retry;
 };
 
-exports.buildTags = ({ name, config }) => {
+exports.buildTags = ({ name, config, UserTags = [] }) => {
   const {
     managedByKey,
     managedByValue,
@@ -102,6 +102,7 @@ exports.buildTags = ({ name, config }) => {
   assert(stage);
 
   return [
+    ...UserTags,
     {
       Key: KeyName,
       Value: name,

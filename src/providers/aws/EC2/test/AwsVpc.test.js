@@ -1,17 +1,20 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
+const { get, eq } = require("rubico");
+const { find } = require("rubico/x");
 const { ConfigLoader } = require("ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { CheckAwsTags } = require("../../AwsTagCheck");
-const logger = require("../../../../logger")({ prefix: "AwsVpc" });
-const { tos } = require("../../../../tos");
 
 describe("AwsVpc", async function () {
+  const vpcName = "vpc-test";
   const types = ["Vpc"];
   let config;
   let provider;
   let vpc;
+
+  const k8sClusterTagKey = `kubernetes.io/cluster/myClusterName`;
 
   before(async function () {
     try {
@@ -20,34 +23,24 @@ describe("AwsVpc", async function () {
       this.skip();
     }
     provider = AwsProvider({
-      name: "aws",
       config: config.aws,
     });
 
     await provider.start();
 
     vpc = await provider.makeVpc({
-      name: "vpc",
+      name: vpcName,
       properties: () => ({
         CidrBlock: "10.0.0.0/16",
+        Tags: [{ Key: k8sClusterTagKey, Value: "shared" }],
       }),
     });
   });
   after(async () => {});
   it("vpc name", async function () {
-    assert.equal(vpc.name, "vpc");
+    assert.equal(vpc.name, vpcName);
   });
-  it("vpc getLive", async function () {
-    const live = await vpc.getLive();
-  });
-  it("vpc listLives", async function () {
-    const {
-      results: [vpcs],
-    } = await provider.listLives({ types });
-    assert(vpcs);
-    const vpcDefault = vpcs.resources.find((vpc) => vpc.data.IsDefault);
-    assert(vpcDefault);
-  });
+
   it("vpc listLives canBeDeleted", async function () {
     const { results } = await provider.listLives({
       types,
@@ -60,6 +53,8 @@ describe("AwsVpc", async function () {
     await testPlanDeploy({ provider, types });
     const vpcLive = await vpc.getLive();
     const { VpcId } = vpcLive;
+    assert(vpcLive.Tags);
+    assert(find(eq(get("Key"), k8sClusterTagKey))(vpcLive.Tags));
 
     assert(
       CheckAwsTags({
@@ -69,6 +64,13 @@ describe("AwsVpc", async function () {
       })
     );
 
-    await testPlanDestroy({ provider, full: false });
+    const {
+      results: [vpcs],
+    } = await provider.listLives({ types });
+    assert(vpcs);
+    const vpcDefault = vpcs.resources.find((vpc) => vpc.data.IsDefault);
+    assert(vpcDefault);
+
+    await testPlanDestroy({ provider, types, full: false });
   });
 });

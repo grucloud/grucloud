@@ -561,6 +561,8 @@ const createResourceMakers = ({ specs, config, provider }) =>
       });
       provider.targetResourcesAdd(resource);
 
+      //TODO move it somewhere else to remove async.
+
       if (resource.client.validate) {
         await resource.client.validate({ name });
       }

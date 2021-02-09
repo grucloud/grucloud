@@ -238,15 +238,15 @@ exports.AwsVpc = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties }) =>
+  const configDefault = async ({ name, properties: { Tags, ...otherProps } }) =>
     defaultsDeep({
       TagSpecifications: [
         {
           ResourceType: "vpc",
-          Tags: buildTags({ config, name }),
+          Tags: buildTags({ config, name, UserTags: Tags }),
         },
       ],
-    })(properties);
+    })(otherProps);
 
   return {
     type: "Vpc",
