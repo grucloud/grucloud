@@ -52,7 +52,7 @@ describe("AwsSubnet", async function () {
     assert(config.CidrBlock);
   });
 
-  it.only("subnet apply and destroy", async function () {
+  it("subnet apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
 
     const subnetLive = await subnet.getLive();
