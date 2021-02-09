@@ -64,7 +64,12 @@ describe("AwsNatGateway", async function () {
 
     routeTable = await provider.makeRouteTables({
       name: "route-table-nat-gateway",
-      dependencies: { vpc, natGateway },
+      dependencies: { vpc, subnet },
+    });
+
+    routeNatGateway = await provider.makeRoute({
+      name: "route-nat-gateway",
+      dependencies: { routeTable, natGateway },
     });
   });
 
