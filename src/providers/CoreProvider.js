@@ -264,14 +264,7 @@ const ResourceMaker = ({
               switchCase([
                 not(isEmpty),
                 (lives) => dependency.findLive({ lives }),
-                () =>
-                  retryCall({
-                    name: `resolveDependencies getLive ${type}/${resourceName} `,
-                    fn: () => dependency.getLive(),
-                    isExpectedResult: (result) => result,
-                    shouldRetryOnException: () => false,
-                    config: { retryDelay: 1e3, retryCount: 10 },
-                  }),
+                () => dependency.getLive(),
               ]),
               tap.if(
                 (live) => dependenciesMustBeUp && !live,

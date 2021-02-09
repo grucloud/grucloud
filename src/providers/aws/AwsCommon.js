@@ -215,10 +215,12 @@ const findNameInTags = (item) =>
     switchCase([
       isEmpty,
       () => {
-        logger.debug(`findNameInTags: cannot find name in ${tos(item)}`);
+        logger.debug(
+          `findNameInTags: no name in tags: ${JSON.stringify(item.Tags)}`
+        );
       },
       (Value) => {
-        logger.debug(`findNameInTags ${Value}`);
+        logger.debug(`findNameInTags found name: ${Value}`);
         return Value;
       },
     ]),
