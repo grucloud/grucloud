@@ -80,7 +80,7 @@ exports.EKSCluster = ({ spec, config }) => {
       logger.info(`getById cluster: ${id}`);
     }),
     tryCatch(
-      pipe([({ id }) => eks().describeCluster({ name: id })], get("cluster")),
+      pipe([({ id }) => eks().describeCluster({ name: id }), get("cluster")]),
       switchCase([
         eq(get("code"), "ResourceNotFoundException"),
         (error, { id }) => {
@@ -135,7 +135,7 @@ exports.EKSCluster = ({ spec, config }) => {
         retryCall({
           name: `cluster create isUpById: ${name}`,
           fn: () => isUpById({ name, id: name }),
-          config: { retryCount: 12 * 15, retryDelay: 5e3 },
+          config: { retryCount: 12 * 20, retryDelay: 5e3 },
         }),
       tap(() => {
         logger.info(`cluster created: ${name}`);
