@@ -218,7 +218,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
 
   const update = create;
 
-  const destroy = ({ id, name, resource }) =>
+  const destroy = async ({ id, name, resource }) =>
     tryCatch(
       pipe([
         tap(() => {

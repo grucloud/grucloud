@@ -174,7 +174,7 @@ exports.AwsRoute = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#disassociateRouteTable-property
-  const destroy = ({ id, name }) =>
+  const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
         logger.info(`destroy route ${JSON.stringify({ name, id })}`);
