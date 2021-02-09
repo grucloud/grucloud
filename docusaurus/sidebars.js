@@ -35,6 +35,7 @@ module.exports = {
               "aws/resources/EC2/Volume",
             ],
           },
+          { EKS: ["aws/resources/EKS/EksCluster"] },
           {
             IAM: [
               "aws/resources/IAM/IamInstanceProfile",
