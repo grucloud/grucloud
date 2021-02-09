@@ -766,12 +766,18 @@ function CoreProvider({
         )}' already exists`,
       };
     }
+
     mapNameToResource.set(resourceKey(resource), resource);
 
     mapTypeToResources.set(resource.type, [
       ...getResourcesByType(resource.type),
       resource,
     ]);
+
+    tap.if(
+      (client) => client.hook,
+      (client) => hookAdd(client.spec.type, client.hook({ resource }))
+    )(resource.client);
   };
 
   const getTargetResources = () => [...mapNameToResource.values()];
@@ -787,6 +793,7 @@ function CoreProvider({
   const clients = specs.map((spec) =>
     createClient({ mapTypeToResources, spec, config: providerConfig })
   );
+
   const clientByType = (type) => find(eq(get("spec.type"), type))(clients);
 
   const filterClient = async ({

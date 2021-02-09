@@ -419,10 +419,10 @@ exports.planQuery = planQuery;
 const commandToFunction = (command) =>
   `run${command.charAt(0).toUpperCase()}${command.slice(1)}`;
 
-const runAsyncCommandHook = ({ hookType, commandTitle, providers }) =>
+const runAsyncCommandHook = ({ hookType, commandTitle, providers, result }) =>
   pipe([
     tap((xxx) => {
-      logger.debug(`runAsyncCommandHook hookType: ${hookType}`);
+      logger.debug(`runAsyncCommandHook hookType: ${hookType}, ${tos(result)}`);
       assert(Array.isArray(providers));
     }),
     assign({
@@ -669,11 +669,13 @@ exports.planApply = async ({
           switchCase([hasPlans, processDeployPlans, processNoPlan]),
           tap.if(
             (result) => result,
-            runAsyncCommandHook({
-              providers: infra.providers,
-              hookType: HookType.ON_DEPLOYED,
-              commandTitle: `Running OnDeployed`,
-            })
+            (result) =>
+              runAsyncCommandHook({
+                providers: infra.providers,
+                hookType: HookType.ON_DEPLOYED,
+                commandTitle: `Running OnDeployed`,
+                result,
+              })()
           ),
         ])(infra),
     ]),

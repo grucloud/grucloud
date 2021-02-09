@@ -1,5 +1,7 @@
 const assert = require("assert");
 const AWS = require("aws-sdk");
+const shell = require("shelljs");
+
 const {
   map,
   pipe,
@@ -129,12 +131,9 @@ exports.EKSCluster = ({ spec, config }) => {
       }),
       (params) => eks().createCluster(params),
       get("cluster"),
-      tap((result) => {
-        logger.debug(`created cluster: ${name}, result: ${tos(result)}`);
-      }),
       () =>
         retryCall({
-          name: `cluster isUpById: ${name}`,
+          name: `cluster create isUpById: ${name}`,
           fn: () => isUpById({ name, id: name }),
         }),
       tap(() => {
@@ -167,6 +166,40 @@ exports.EKSCluster = ({ spec, config }) => {
   const configDefault = async ({ name, properties, dependencies }) =>
     defaultsDeep({ name, tags: buildTagsObject({ config, name }) })(properties);
 
+  const hook = ({ resource }) => ({
+    name: "cluster",
+    onDeployed: {
+      init: () => {
+        logger.info(`cluster hook init ${resource.name}`);
+        return {};
+      },
+      actions: [
+        {
+          name: "Update kubeconfig",
+          command: async () => {
+            const command = `aws eks update-kubeconfig --name ${resource.name}`;
+            logger.info(`running ${command}`);
+            const { stdout, stderr, code } = shell.exec(command, {
+              silent: true,
+            });
+            if (code !== 0) {
+              throw {
+                message: `command '${command}' failed`,
+                stdout,
+                stderr,
+                code,
+              };
+            }
+          },
+        },
+      ],
+    },
+    onDestroyed: {
+      init: () => {},
+      actions: [],
+    },
+  });
+
   return {
     type: "EKSCluster",
     spec,
@@ -181,5 +214,6 @@ exports.EKSCluster = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    hook,
   };
 };
