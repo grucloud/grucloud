@@ -8,13 +8,10 @@ const logger = require("../../../../logger")({ prefix: "AwsVpc" });
 const { tos } = require("../../../../tos");
 
 describe("AwsVpc", async function () {
+  const types = ["Vpc"];
   let config;
   let provider;
   let vpc;
-  let subnet;
-  let routeTable;
-  let routeIg;
-  let sg;
 
   before(async function () {
     try {
@@ -35,58 +32,6 @@ describe("AwsVpc", async function () {
         CidrBlock: "10.0.0.0/16",
       }),
     });
-
-    subnet = await provider.makeSubnet({
-      name: "subnetName",
-      dependencies: { vpc },
-      properties: () => ({
-        CidrBlock: "10.0.1.0/24",
-      }),
-    });
-
-    ig = await provider.makeInternetGateway({
-      name: "ig",
-      dependencies: { vpc },
-    });
-
-    routeTable = await provider.makeRouteTables({
-      name: "route-table",
-      dependencies: { vpc, subnet },
-    });
-
-    routeIg = await provider.makeRoute({
-      name: "route-ig",
-      dependencies: { routeTable, ig },
-    });
-
-    sg = await provider.makeSecurityGroup({
-      name: "sg",
-      dependencies: { vpc },
-      properties: () => ({
-        create: {
-          Description: "Security Group Description",
-        },
-        ingress: {
-          IpPermissions: [
-            {
-              FromPort: 22,
-              IpProtocol: "tcp",
-              IpRanges: [
-                {
-                  CidrIp: "0.0.0.0/0",
-                },
-              ],
-              Ipv6Ranges: [
-                {
-                  CidrIpv6: "::/0",
-                },
-              ],
-              ToPort: 22,
-            },
-          ],
-        },
-      }),
-    });
   });
   after(async () => {});
   it("vpc name", async function () {
@@ -98,21 +43,21 @@ describe("AwsVpc", async function () {
   it("vpc listLives", async function () {
     const {
       results: [vpcs],
-    } = await provider.listLives({ types: ["Vpc"] });
+    } = await provider.listLives({ types });
     assert(vpcs);
     const vpcDefault = vpcs.resources.find((vpc) => vpc.data.IsDefault);
     assert(vpcDefault);
   });
   it("vpc listLives canBeDeleted", async function () {
     const { results } = await provider.listLives({
-      types: ["Vpc"],
+      types,
       canBeDeleted: true,
     });
     assert(isEmpty(results));
   });
 
   it.skip("vpc apply and destroy", async function () {
-    await testPlanDeploy({ provider });
+    await testPlanDeploy({ provider, types });
     const vpcLive = await vpc.getLive();
     const { VpcId } = vpcLive;
 
@@ -125,11 +70,5 @@ describe("AwsVpc", async function () {
     );
 
     await testPlanDestroy({ provider, full: false });
-  });
-  it("vpc destroy vpc", async function () {
-    await testPlanDeploy({ provider });
-    const vpcLive = await vpc.getLive();
-    const { VpcId } = vpcLive;
-    await vpc.client.destroy({ id: VpcId });
   });
 });
