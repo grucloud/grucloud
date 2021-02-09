@@ -7,8 +7,8 @@ const createResources = async ({ provider, resources: {} }) => {
     name: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
   });
 
-  const role = await provider.makeIamRole({
-    name: "eks",
+  const roleCluster = await provider.makeIamRole({
+    name: "role-cluster",
     dependencies: { policies: [iamPolicyEKSCluster] },
     properties: () => ({
       AssumeRolePolicyDocument: {
@@ -26,6 +26,35 @@ const createResources = async ({ provider, resources: {} }) => {
     }),
   });
 
+  const iamPolicyEKSWorkerNode = await provider.useIamPolicyReadOnly({
+    name: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+  });
+
+  const iamPolicyEC2ContainerRegistryReadOnly = await provider.useIamPolicyReadOnly(
+    {
+      name: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    }
+  );
+  const roleNodeGroup = await provider.makeIamRole({
+    name: "role-node-group",
+    dependencies: {
+      policies: [iamPolicyEKSWorkerNode, iamPolicyEC2ContainerRegistryReadOnly],
+    },
+    properties: () => ({
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "ec2.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+  });
   const vpc = await provider.makeVpc({
     name: "vpc-eks",
     properties: () => ({
@@ -139,7 +168,7 @@ const createResources = async ({ provider, resources: {} }) => {
     dependencies: {
       subnets: [subnetPublic, subnetPrivate],
       securityGroups: [sg],
-      role,
+      role: roleCluster,
     },
   });
 
@@ -148,12 +177,13 @@ const createResources = async ({ provider, resources: {} }) => {
     dependencies: {
       subnets: [subnetPrivate],
       cluster,
-      role,
+      role: roleNodeGroup,
     },
   });
 
   return {
-    role,
+    roleCluster,
+    roleNodeGroup,
     vpc,
     ig,
     subnetPrivate,

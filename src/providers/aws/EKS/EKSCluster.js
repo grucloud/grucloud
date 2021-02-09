@@ -1,5 +1,4 @@
 const assert = require("assert");
-const AWS = require("aws-sdk");
 const shell = require("shelljs");
 
 const {
@@ -180,6 +179,10 @@ exports.EKSCluster = ({ spec, config }) => {
           command: async () => {
             const command = `aws eks update-kubeconfig --name ${resource.name}`;
             logger.info(`running ${command}`);
+            if (process.env.CONTINUOUS_INTEGRATION) {
+              //aws cli not installed on circleci
+              return;
+            }
             const { stdout, stderr, code } = shell.exec(command, {
               silent: true,
             });

@@ -17,18 +17,22 @@ Visit the [Aws Requirements](./docusaurus/docs/aws/AwsRequirements.md) to prepar
 
 ### Examples
 
-- [EC2](./examples/aws/ec2), [EC2 with VPC](./examples/aws/ec2-vpc)
+- [EC2](./examples/aws/ec2), [EC2 with VPC](./examples/aws/ec2-vpc), [EBS Volume attached to EC2](./examples/aws/volumes)
 - [IAM](./examples/aws/iam)
 - [S3](./examples/aws/s3), [S3 Simple](./examples/aws/s3-simple), [S3 Multiple](./examples/aws/s3-multiple)
+- [HTTPS Website with CloudFront](./examples/aws/website-https)
+- [EKS: Elastic Kubernetes Service](./examples/aws/eks)
 
 ### Resources
 
 - ACM: [Certificate](./docusaurus/docs/aws/resources/ACM/AcmCertificate.md)
 - CloudFront: [Distribution](./docusaurus/docs/aws/resources/CloudFront/CloudFrontDistribution.md)
-- EC2: [EC2](./docusaurus/docs/aws/resources/EC2/EC2.md), [ElasticIpAddress](./docusaurus/docs/aws/resources/EC2/ElasticIpAddress.md), [InternetGateway](./docusaurus/docs/aws/resources/EC2/InternetGateway.md), [KeyPair](./docusaurus/docs/aws/resources/EC2/KeyPair.md), [RouteTables](./docusaurus/docs/aws/resources/EC2/RouteTables.md), [SecurityGroup](./docusaurus/docs/aws/resources/EC2/SecurityGroup.md), [Subnet](./docusaurus/docs/aws/resources/EC2/Subnet.md), [Vpc](./docusaurus/docs/aws/resources/EC2/Vpc.md)
+- EC2: [EC2](./docusaurus/docs/aws/resources/EC2/EC2.md), [ElasticIpAddress](./docusaurus/docs/aws/resources/EC2/ElasticIpAddress.md), [InternetGateway](./docusaurus/docs/aws/resources/EC2/InternetGateway.md), [KeyPair](./docusaurus/docs/aws/resources/EC2/KeyPair.md), [NatGateway](./docusaurus/docs/aws/resources/EC2/NatGateway.md), [RouteTables](./docusaurus/docs/aws/resources/EC2/RouteTables.md), [Route](./docusaurus/docs/aws/resources/EC2/Route.md), [SecurityGroup](./docusaurus/docs/aws/resources/EC2/SecurityGroup.md), [Subnet](./docusaurus/docs/aws/resources/EC2/Subnet.md), [Volume](./docusaurus/docs/aws/resources/EC2/Volume.md), [Vpc](./docusaurus/docs/aws/resources/EC2/Vpc.md)
 - IAM: [IamInstanceProfile](./docusaurus/docs/aws/resources/IAM/IamInstanceProfile.md), [IamGroup](./docusaurus/docs/aws/resources/IAM/IamGroup.md), [IamPolicy](./docusaurus/docs/aws/resources/IAM/IamPolicy.md), [IamRole](./docusaurus/docs/aws/resources/IAM/IamRole.md), [IamUser](./docusaurus/docs/aws/resources/IAM/IamUser.md)
-- Route53: [HostedZone](./docusaurus/docs/aws/resources/Route53/Route53HostedZone.md)
+- Route53: [HostedZone](./docusaurus/docs/aws/resources/Route53/Route53HostedZone.md), [Route53Record](./docusaurus/docs/aws/resources/Route53/Route53Record.md)
+- Route53Domain: [Route53Domain](./docusaurus/docs/aws/resources/Route53Domain/Route53Domain.md)
 - S3: [S3Bucket](./docusaurus/docs/aws/resources/S3/S3Bucket.md), [S3Object](./docusaurus/docs/aws/resources/S3/S3Object.md)
+- EKS: [Cluster](./docusaurus/docs/aws/resources/EKS/EksCluster.md), [NodeGroup](./docusaurus/docs/aws/resources/EKS/EksNodeGroup.md)
 
 ## Google Cloud
 
