@@ -66,6 +66,6 @@ describe("AwsVolume", async function () {
       })
     );
 
-    //await testPlanDestroy({ provider, types });
+    await testPlanDestroy({ provider, types });
   });
 });
