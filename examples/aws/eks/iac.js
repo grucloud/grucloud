@@ -1,6 +1,8 @@
 const { AwsProvider } = require("@grucloud/core");
 
 const createResources = async ({ provider, resources: {} }) => {
+  const clusterName = "cluster";
+
   const iamPolicyEKSCluster = await provider.useIamPolicyReadOnly({
     name: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
   });
@@ -28,8 +30,10 @@ const createResources = async ({ provider, resources: {} }) => {
     name: "vpc-eks",
     properties: () => ({
       CidrBlock: "10.1.0.0/16",
+      Tags: [{ Key: `kubernetes.io/cluster/${clusterName}`, Value: "shared" }],
     }),
   });
+
   const ig = await provider.makeInternetGateway({
     name: "ig-eks",
     dependencies: { vpc },
@@ -41,6 +45,7 @@ const createResources = async ({ provider, resources: {} }) => {
     properties: () => ({
       CidrBlock: "10.1.0.1/24",
       AvailabilityZone: "eu-west-2a",
+      Tags: [{ Key: "kubernetes.io/role/elb", Value: "1" }],
     }),
   });
 
@@ -50,6 +55,7 @@ const createResources = async ({ provider, resources: {} }) => {
     properties: () => ({
       CidrBlock: "10.1.1.1/24",
       AvailabilityZone: "eu-west-2b",
+      Tags: [{ Key: "kubernetes.io/role/internal-elb", Value: "1" }],
     }),
   });
 
@@ -129,10 +135,19 @@ const createResources = async ({ provider, resources: {} }) => {
   });
 
   const cluster = await provider.makeEKSCluster({
-    name: "cluster",
+    name: clusterName,
     dependencies: {
       subnets: [subnetPublic, subnetPrivate],
       securityGroups: [sg],
+      role,
+    },
+  });
+
+  const nodeGroup = await provider.makeEKSNodeGroup({
+    name: "node-group",
+    dependencies: {
+      subnets: [subnetPrivate],
+      cluster,
       role,
     },
   });
@@ -148,6 +163,7 @@ const createResources = async ({ provider, resources: {} }) => {
     routeNat,
     sg,
     cluster,
+    nodeGroup,
   };
 };
 

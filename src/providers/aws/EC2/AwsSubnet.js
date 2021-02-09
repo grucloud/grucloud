@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { get, switchCase, pipe, tap } = require("rubico");
-const { isEmpty } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 
 const { retryCall } = require("../../Retry");
 const logger = require("../../../logger")({ prefix: "AwsSubnet" });
@@ -20,9 +20,6 @@ const {
 } = require("../AwsCommon");
 
 exports.AwsSubnet = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
-
   const ec2 = Ec2New(config);
 
   const findName = switchCase([
@@ -51,7 +48,7 @@ exports.AwsSubnet = ({ spec, config }) => {
       get("Subnet.SubnetId"),
       tap((SubnetId) =>
         retryCall({
-          name: `destroy subnet isDownById: ${name} SubnetId: ${SubnetId}`,
+          name: `create subnet isDownById: ${name} SubnetId: ${SubnetId}`,
           fn: () => isUpById({ id: SubnetId }),
           config,
         })
@@ -99,20 +96,20 @@ exports.AwsSubnet = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) => {
-    // Need vpc name here in parameter
-    const { vpc } = dependencies;
-    return {
+  const configDefault = async ({
+    name,
+    properties: { Tags, ...otherProps },
+    dependencies: { vpc },
+  }) =>
+    defaultsDeep({
       ...(vpc && { VpcId: getField(vpc, "VpcId") }),
       TagSpecifications: [
         {
           ResourceType: "subnet",
-          Tags: buildTags({ config, name }),
+          Tags: buildTags({ config, name, UserTags: Tags }),
         },
       ],
-      ...properties,
-    };
-  };
+    })(otherProps);
 
   const cannotBeDeleted = get("resource.DefaultForAz");
 
