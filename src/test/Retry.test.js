@@ -93,4 +93,22 @@ describe("Retry", function () {
       assert.equal(error.code, 1);
     }
   });
+  it("retryCall timeout", async function () {
+    const seq = [{ return: 1 }, { return: 1 }, { return: 1 }];
+
+    const fn = createMock({ seq });
+
+    try {
+      await retryCall({
+        name: "retryCall timeout",
+        fn: async () => fn({}),
+        shouldRetryOnException: () => false,
+        isExpectedResult: (result) => result === 42,
+        config: { retryCount: 1, retryDelay },
+      });
+      assert(false, "should not be here");
+    } catch (error) {
+      assert.equal(error.type, "timeout");
+    }
+  });
 });

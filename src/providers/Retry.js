@@ -78,7 +78,7 @@ const retryCall = async ({
               () =>
                 i >= retryCount ||
                 (!shouldRetryOnException({ error, name }) && error.code != 503),
-              throwError(error),
+              throwError(i >= retryCount ? { type: "timeout", name } : error),
               of(error).pipe(delay(retryDelay))
             );
           })
