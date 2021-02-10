@@ -166,7 +166,7 @@ describe("AwsSecurityGroup", async function () {
     const config = await sg.resolveConfig();
     assert.equal(config.ingress.IpPermissions[0].FromPort, 22);
   });
-  it.only("sg apply and destroy", async function () {
+  it("sg apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
 
     const sgLive = await sg.getLive();
