@@ -230,7 +230,7 @@ const ResourceMaker = ({
         logger.info(
           `resolveDependencies for ${type}/${resourceName}: ${Object.keys(
             dependencies
-          )}, dependenciesMustBeUp: ${dependenciesMustBeUp}`
+          )}, dependenciesMustBeUp: ${dependenciesMustBeUp}, has lives: ${!!lives}`
         );
       }),
       map(async (dependency) => {
@@ -264,7 +264,7 @@ const ResourceMaker = ({
               switchCase([
                 not(isEmpty),
                 (lives) => dependency.findLive({ lives }),
-                () => dependency.getLive(),
+                () => dependency.getLive({ deep: false }),
               ]),
               tap.if(
                 (live) => dependenciesMustBeUp && !live,
@@ -418,7 +418,7 @@ const ResourceMaker = ({
     logger.info(`updated:  ${type}/${resourceName}`);
 
     const liveInstance = await retryCall({
-      name: `create getLive ${type}/${resourceName}`,
+      name: `update getLive ${type}/${resourceName}`,
       fn: async () => {
         const live = await getLive();
         if (!live) {

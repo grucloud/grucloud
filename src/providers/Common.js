@@ -129,13 +129,19 @@ exports.findField = ({ item, field }) => {
   }
 };
 
-exports.getByNameCore = async ({ name, findName, getList, resources }) => {
+exports.getByNameCore = async ({
+  name,
+  findName,
+  getList,
+  resources,
+  deep = true,
+}) => {
   logger.info(`getByName ${name}`);
   assert(name, "name");
   assert(findName, "findName");
   assert(getList, "getList");
 
-  const { items } = await getList({ deep: true, resources });
+  const { items } = await getList({ deep, resources });
   const instance = items.find((item) => findName(item) === name);
   logger.info(`getByName ${name}: ${instance ? "UP" : "DOWN"}`);
   logger.debug(`getByName ${name}: ${tos({ instance })}`);
