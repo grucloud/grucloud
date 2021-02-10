@@ -9,6 +9,7 @@ const {
   eq,
   not,
   tryCatch,
+  assign,
 } = require("rubico");
 const { isEmpty, defaultsDeep } = require("rubico/x");
 const logger = require("../../../logger")({ prefix: "AwsVpc" });
@@ -34,13 +35,37 @@ exports.AwsVpc = ({ spec, config }) => {
 
   const findId = get("VpcId");
 
-  const getList = ({ params } = {}) =>
+  const getList = ({ params, deep } = {}) =>
     pipe([
       tap(() => {
-        logger.info(`getList vpc ${JSON.stringify(params)}`);
+        logger.info(`getList vpc ${JSON.stringify({ params, deep })}`);
       }),
       () => ec2().describeVpcs(params),
       get("Vpcs"),
+      switchCase([
+        () => deep,
+        map(
+          assign({
+            DnsSupport: pipe([
+              ({ VpcId }) =>
+                ec2().describeVpcAttribute({
+                  VpcId,
+                  Attribute: "enableDnsSupport",
+                }),
+              get("EnableDnsSupport.Value"),
+            ]),
+            DnsHostnames: pipe([
+              ({ VpcId }) =>
+                ec2().describeVpcAttribute({
+                  VpcId,
+                  Attribute: "enableDnsHostnames",
+                }),
+              get("EnableDnsHostnames.Value"),
+            ]),
+          })
+        ),
+        (items) => items,
+      ]),
       tap((items) => {
         logger.debug(`getList vpc result: ${tos(items)}`);
       }),
