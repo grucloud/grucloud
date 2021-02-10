@@ -31,6 +31,7 @@ describe("AwsVpc", async function () {
     vpc = await provider.makeVpc({
       name: vpcName,
       properties: () => ({
+        DnsHostnames: true,
         CidrBlock: "10.0.0.0/16",
         Tags: [{ Key: k8sClusterTagKey, Value: "shared" }],
       }),
@@ -49,11 +50,13 @@ describe("AwsVpc", async function () {
     assert(isEmpty(results));
   });
 
-  it.skip("vpc apply and destroy", async function () {
+  it("vpc apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
-    const vpcLive = await vpc.getLive();
+    const vpcLive = await vpc.getLive({ deep: true });
     const { VpcId } = vpcLive;
     assert(vpcLive.Tags);
+    //assert(vpcLive.DnsHostnames);
+
     assert(find(eq(get("Key"), k8sClusterTagKey))(vpcLive.Tags));
 
     assert(

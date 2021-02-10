@@ -97,12 +97,12 @@ exports.AwsVpc = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpc-property
 
-  const create = async ({ payload, name }) =>
+  const create = async ({ payload: { DnsHostnames, ...vpcPayload }, name }) =>
     pipe([
       tap(() => {
         logger.info(`create vpc ${JSON.stringify({ name })}`);
       }),
-      () => ec2().createVpc(payload),
+      () => ec2().createVpc(vpcPayload),
       get("Vpc.VpcId"),
       tap((VpcId) =>
         retryCall({
@@ -110,6 +110,21 @@ exports.AwsVpc = ({ spec, config }) => {
           fn: () => isUpById({ id: VpcId, name }),
           config,
         })
+      ),
+      tap.if(
+        () => DnsHostnames,
+        pipe([
+          tap(() => {
+            logger.info(`create vpc modifyVpcAttribute EnableDnsHostnames`);
+          }),
+          (VpcId) =>
+            ec2().modifyVpcAttribute({
+              EnableDnsHostnames: {
+                Value: true,
+              },
+              VpcId,
+            }),
+        ])
       ),
       tap((VpcId) => {
         logger.info(`created vpc ${JSON.stringify({ name, VpcId })}`);

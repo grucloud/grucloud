@@ -67,6 +67,7 @@ const createResources = async ({ provider, resources: {} }) => {
   const vpc = await provider.makeVpc({
     name: "vpc-eks",
     properties: () => ({
+      DnsHostnames: true,
       CidrBlock: "10.1.0.0/16",
       Tags: [{ Key: `kubernetes.io/cluster/${clusterName}`, Value: "shared" }],
     }),
