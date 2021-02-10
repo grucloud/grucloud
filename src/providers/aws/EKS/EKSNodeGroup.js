@@ -25,7 +25,7 @@ const {
 const logger = require("../../../logger")({ prefix: "EKSNodeGroup" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
-const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
+const { getByNameCore } = require("../../Common");
 const {
   EKSNew,
   buildTagsObject,
@@ -92,13 +92,18 @@ exports.EKSNodeGroup = ({ spec, config }) => {
           () => eks().describeNodegroup({ clusterName, nodegroupName }),
           get("nodegroup"),
         ]),
-        tap.if(not(eq(get("code"), "ResourceNotFoundException")), (error) => {
-          logger.error(`getById describeNodegroup error: ${tos(error)}`);
-          throw error;
-        })
+        switchCase([
+          eq(get("code"), "ResourceNotFoundException"),
+          () => undefined,
+          (error) => {
+            logger.error(`getById describeNodegroup error: ${tos(error)}`);
+            throw error;
+          },
+        ])
       ),
       tap((result) => {
-        logger.debug(`getById  nodeGroup result: ${tos(result)}`);
+        logger.info(`getById nodeGroup: has result: ${!!result}`);
+        logger.debug(`getById nodeGroup result: ${tos(result)}`);
       }),
     ])();
 
@@ -108,6 +113,9 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   const isDownById = pipe([
     getById,
     switchCase([isEmpty, () => true, () => false]),
+    tap((result) => {
+      logger.info(`nodeGroup isDownById: ${result}`);
+    }),
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createNodegroup-property
