@@ -36,7 +36,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
 
   const sg = await provider.makeSecurityGroup({
     name: "securityGroup",
-    dependencies: { vpc, subnet },
+    dependencies: { vpc },
     properties: () => ({
       //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
       create: {
