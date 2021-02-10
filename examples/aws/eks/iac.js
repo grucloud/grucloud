@@ -74,7 +74,10 @@ const createResources = async ({ provider, resources: {} }) => {
     properties: () => ({
       CidrBlock: "10.1.0.1/24",
       AvailabilityZone: "eu-west-2a",
-      Tags: [{ Key: "kubernetes.io/role/elb", Value: "1" }],
+      Tags: [
+        { Key: `kubernetes.io/cluster/${clusterName}`, Value: "shared" },
+        { Key: "kubernetes.io/role/elb", Value: "1" },
+      ],
     }),
   });
 
@@ -84,7 +87,10 @@ const createResources = async ({ provider, resources: {} }) => {
     properties: () => ({
       CidrBlock: "10.1.1.1/24",
       AvailabilityZone: "eu-west-2b",
-      Tags: [{ Key: "kubernetes.io/role/internal-elb", Value: "1" }],
+      Tags: [
+        { Key: `kubernetes.io/cluster/${clusterName}`, Value: "shared" },
+        { Key: "kubernetes.io/role/internal-elb", Value: "1" },
+      ],
     }),
   });
 
