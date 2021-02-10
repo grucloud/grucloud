@@ -166,7 +166,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
               clusterName: resource.dependencies.cluster.name,
               nodegroupName: id,
             }),
-          config,
+          config: { retryCount: 12 * 10, retryDelay: 5e3 },
         })
       ),
       tap(() => {
