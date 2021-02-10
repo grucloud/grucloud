@@ -80,6 +80,54 @@ describe("AwsSecurityGroup", async function () {
         },
       }),
     });
+
+    const securityGroupNodes = await provider.makeSecurityGroup({
+      name: "security-group-nodes",
+      dependencies: { vpc, securityGroup: sg },
+      properties: ({ dependencies: { securityGroup } }) => ({
+        Tags: [{ Key: `kubernetes.io/cluster/${clusterName}`, Value: "owned" }],
+        //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
+        create: {
+          Description: "SG for the EKS Nodes",
+        },
+        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
+        ingress: {
+          IpPermissions: [
+            {
+              FromPort: 0,
+              IpProtocol: "-1",
+              IpRanges: [
+                {
+                  CidrIp: "0.0.0.0/0",
+                },
+              ],
+              Ipv6Ranges: [
+                {
+                  CidrIpv6: "::/0",
+                },
+              ],
+              ToPort: 65535,
+            },
+            {
+              FromPort: 1025,
+              IpProtocol: "tcp",
+              IpRanges: [
+                {
+                  CidrIp: "0.0.0.0/0",
+                },
+              ],
+              Ipv6Ranges: [
+                {
+                  CidrIpv6: "::/0",
+                },
+              ],
+              UserIdGroupPairs: [{ GroupId: securityGroup.live?.GroupId }],
+              ToPort: 65535,
+            },
+          ],
+        },
+      }),
+    });
   });
   after(async () => {});
   it("empty ingress", async function () {
@@ -118,12 +166,12 @@ describe("AwsSecurityGroup", async function () {
     const config = await sg.resolveConfig();
     assert.equal(config.ingress.IpPermissions[0].FromPort, 22);
   });
-  it.skip("sg apply and destroy", async function () {
+  it.only("sg apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
 
     const sgLive = await sg.getLive();
     const vpcLive = await vpc.getLive();
-    assert.equal(sgLive.IpPermissions.length, 2);
+    assert.equal(sgLive.IpPermissions.length, 1);
     assert.equal(sgLive.IpPermissionsEgress.length, 2);
     assert.equal(sgLive.VpcId, vpcLive.VpcId);
     assert(find(eq(get("Key"), k8sSecurityGroupTagKey))(sgLive.Tags));

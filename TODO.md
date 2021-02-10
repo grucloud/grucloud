@@ -39,6 +39,10 @@
 
 ## TODO Aws:
 
+- Vps set dns
+
+- VpcEndpoint
+- https://medium.com/dev-genius/create-an-amazon-eks-cluster-with-managed-node-group-using-terraform-a3b50d276b13
 - security group update
 
 - ssh should use use kp.pem instead of ssh-add

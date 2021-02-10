@@ -13,6 +13,7 @@ const {
   tryCatch,
   eq,
   get,
+  omit,
 } = require("rubico");
 
 const {
@@ -67,6 +68,78 @@ const dependsOnTypeReverse = (dependsOnType) =>
     ])(dependsOnType),
   }))(dependsOnType);
 
+const findDependsOnType = ({ provider, type, plans, dependsOnType }) =>
+  pipe([
+    find((x) => x.providerName === provider && x.type === type),
+    tap((x) => {
+      assert(x);
+    }),
+    ({ dependsOn = [] }) => dependsOn,
+    flatMap((dependOn) =>
+      pipe([
+        filter(
+          ({ resource }) =>
+            `${resource.provider}::${resource.type}` === dependOn
+        ),
+        pluck("resource"),
+      ])(plans)
+    ),
+    tap((dependsOn) => {
+      logger.debug(
+        `findDependsOnType: result ${tos({ provider, type, dependsOn })}`
+      );
+    }),
+  ])(dependsOnTypeReverse(dependsOnType));
+
+const dependsOnInstanceReverse = (dependsOnInstance) =>
+  map(({ uri, type, provider }) => ({
+    uri,
+    providerName: provider,
+    type,
+    dependsOn: pipe([
+      tap((xxx) => {
+        logger.debug(`dependsOnInstanceReverse:  ${tos(xxx)}`);
+      }),
+      map((resource) =>
+        pipe([
+          get("dependsOn"),
+          find(eq(get("uri"), uri)),
+          switchCase([isEmpty, () => undefined, () => resource]),
+        ])(resource)
+      ),
+      tap((xxx) => {
+        logger.debug(`dependsOnInstanceReverse:  ${tos(xxx)}`);
+      }),
+      filter((x) => x),
+      tap((xxx) => {
+        logger.debug(`dependsOnInstanceReverse:  ${tos(xxx)}`);
+      }),
+    ])(dependsOnInstance),
+  }))(dependsOnInstance);
+
+const findDependsOnInstance = ({ uri, plans, dependsOnInstance }) =>
+  pipe([
+    tap(() => {
+      logger.debug(`findDependsOnInstance: ${tos({ uri, dependsOnInstance })}`);
+      assert(uri);
+    }),
+    dependsOnInstanceReverse,
+    tap((xxx) => {
+      logger.debug(`findDependsOnInstance: reversed ${tos(xxx)}`);
+    }),
+    find(eq(get("uri"), uri)),
+    tap((x) => {
+      assert(x);
+    }),
+    get("dependsOn"),
+    flatMap(({ uri }) =>
+      pipe([filter(eq(get("resource.uri"), uri)), pluck("resource")])(plans)
+    ),
+    tap((dependsOn) => {
+      logger.debug(`findDependsOnInstance: result ${tos({ uri, dependsOn })}`);
+    }),
+  ])(dependsOnInstance);
+
 const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
   assert(Array.isArray(plans));
   assert(Array.isArray(dependsOnType));
@@ -79,22 +152,22 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
         map(({ name, provider, type, uri }) => ({
           name,
           uri,
-          dependsOn: pipe([
-            find((x) => x.providerName === provider && x.type === type),
-            tap((x) => {
-              assert(x);
-            }),
-            ({ dependsOn = [] }) => dependsOn,
-            flatMap((dependOn) =>
-              pipe([
-                filter(
-                  ({ resource }) =>
-                    `${resource.provider}::${resource.type}` === dependOn
-                ),
-                pluck("resource"),
-              ])(plans)
-            ),
-          ])(dependsOnTypeReverse(dependsOnType)),
+          dependsOn: switchCase([
+            isEmpty,
+            () =>
+              findDependsOnType({
+                provider,
+                type,
+                plans,
+                dependsOnType,
+              }),
+            () =>
+              findDependsOnInstance({
+                uri,
+                plans,
+                dependsOnInstance,
+              }),
+          ])(dependsOnInstance),
         })),
         tap((graph) => {
           logger.info(`DependencyTree down: ${tos(graph)}`);
@@ -308,27 +381,33 @@ exports.Planner = ({
       dependsOn.find((dependOn) => resourcesUri.includes(dependOn.uri));
 
     await pipe([
-      tap((x) => {
-        logger.debug(`Planner run #resource ${x.length}`);
-      }),
-      filter(({ dependsOn }) => !isDependsOnInPlan(dependsOn)),
-      tap((x) => {
-        logger.debug(`Planner run: start ${x.length} resource(s) in parallel`);
-        assert(
-          x.length > 0,
-          `all resources has dependsOn, plan: ${tos(plans)}`
-        );
-      }),
-      map(
-        tryCatch(
-          (entry) => runItem(entry, onEnd),
-          (error) => {
-            logger.error(`Planner error ${tos(error)}`);
-            return { error };
-          }
-        )
-      ),
-    ])(statusValues());
+      () => statusValues(),
+      (statuses) =>
+        pipe([
+          tap((x) => {
+            logger.debug(`Planner run #resource ${x.length}`);
+          }),
+          filter(({ dependsOn }) => !isDependsOnInPlan(dependsOn)),
+          tap((x) => {
+            logger.debug(
+              `Planner run: start ${x.length} resource(s) in parallel`
+            );
+            assert(
+              x.length > 0,
+              `all resources has dependsOn, plan: ${tos({ statuses, plans })}`
+            );
+          }),
+          map(
+            tryCatch(
+              (entry) => runItem(entry, onEnd),
+              (error) => {
+                logger.error(`Planner error ${tos(error)}`);
+                return { error };
+              }
+            )
+          ),
+        ])(statuses),
+    ])();
 
     const error = any((entry) => entry.state === STATES.ERROR)(statusValues());
 
