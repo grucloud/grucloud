@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
-const { EKSNodeGroup } = require("../EksNodeGroup");
+const { EKSNodeGroup } = require("../EKSNodeGroup");
 
 describe("EKSNodeGroup", async function () {
   let config;
