@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { get, pipe, map, eq, or, tap } = require("rubico");
+const { get, pipe, map, eq, or, tap, fork } = require("rubico");
 const { defaultsDeep, find } = require("rubico/x");
 const {
   Ec2New,
@@ -81,15 +81,28 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
         pipe([
           () =>
             retryCall({
-              name: `sg isUpById: ${name} id: ${GroupId}`,
+              name: `sg create isUpById: ${name} id: ${GroupId}`,
               fn: () => isUpById({ id: GroupId, name }),
               config,
             }),
-          () =>
-            ec2().authorizeSecurityGroupIngress({
-              GroupId,
-              ...payload.ingress,
-            }),
+          fork({
+            ingress: tap.if(
+              () => payload.ingress,
+              () =>
+                ec2().authorizeSecurityGroupIngress({
+                  GroupId,
+                  ...payload.ingress,
+                })
+            ),
+            egress: tap.if(
+              () => payload.egress,
+              () =>
+                ec2().authorizeSecurityGroupEgress({
+                  GroupId,
+                  ...payload.egress,
+                })
+            ),
+          }),
         ])()
       ),
       tap((GroupId) => {
@@ -116,16 +129,20 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) => {
+  const configDefault = async ({
+    name,
+    properties: { Tags, ...otherProps },
+    dependencies,
+  }) => {
     const { vpc } = dependencies;
     assert(vpc, "missing vpc dependency");
-    return defaultsDeep(properties)({
+    return defaultsDeep(otherProps)({
       create: {
         ...(vpc && { VpcId: getField(vpc, "VpcId") }),
         TagSpecifications: [
           {
             ResourceType: "security-group",
-            Tags: buildTags({ config, name }),
+            Tags: buildTags({ config, name, UserTags: Tags }),
           },
         ],
       },

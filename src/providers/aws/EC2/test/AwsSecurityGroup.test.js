@@ -1,4 +1,6 @@
 const assert = require("assert");
+const { get, eq } = require("rubico");
+const { find } = require("rubico/x");
 const { ConfigLoader } = require("ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
@@ -9,6 +11,8 @@ describe("AwsSecurityGroup", async function () {
   let provider;
   let vpc;
   let sg;
+  const clusterName = "cluster";
+  const k8sSecurityGroupTagKey = `kubernetes.io/cluster/${clusterName}`;
   const types = ["SecurityGroup", "Vpc"];
   before(async function () {
     try {
@@ -32,6 +36,7 @@ describe("AwsSecurityGroup", async function () {
       name: "sg",
       dependencies: { vpc },
       properties: () => ({
+        Tags: [{ Key: k8sSecurityGroupTagKey, Value: "owned" }],
         create: {
           Description: "Security Group Description",
         },
@@ -51,6 +56,25 @@ describe("AwsSecurityGroup", async function () {
                 },
               ],
               ToPort: 22,
+            },
+          ],
+        },
+        egress: {
+          IpPermissions: [
+            {
+              FromPort: 1024,
+              IpProtocol: "tcp",
+              IpRanges: [
+                {
+                  CidrIp: "0.0.0.0/0",
+                },
+              ],
+              Ipv6Ranges: [
+                {
+                  CidrIpv6: "::/0",
+                },
+              ],
+              ToPort: 65535,
             },
           ],
         },
@@ -99,7 +123,10 @@ describe("AwsSecurityGroup", async function () {
 
     const sgLive = await sg.getLive();
     const vpcLive = await vpc.getLive();
+    assert.equal(sgLive.IpPermissions.length, 2);
+    assert.equal(sgLive.IpPermissionsEgress.length, 2);
     assert.equal(sgLive.VpcId, vpcLive.VpcId);
+    assert(find(eq(get("Key"), k8sSecurityGroupTagKey))(sgLive.Tags));
 
     assert(
       CheckAwsTags({

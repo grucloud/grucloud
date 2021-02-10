@@ -35,10 +35,19 @@ const createResources = async ({ provider, resources: {} }) => {
       name: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
     }
   );
+
+  const iamPolicyEKS_CNI = await provider.useIamPolicyReadOnly({
+    name: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+  });
+
   const roleNodeGroup = await provider.makeIamRole({
     name: "role-node-group",
     dependencies: {
-      policies: [iamPolicyEKSWorkerNode, iamPolicyEC2ContainerRegistryReadOnly],
+      policies: [
+        iamPolicyEKSWorkerNode,
+        iamPolicyEC2ContainerRegistryReadOnly,
+        iamPolicyEKS_CNI,
+      ],
     },
     properties: () => ({
       AssumeRolePolicyDocument: {
@@ -123,19 +132,19 @@ const createResources = async ({ provider, resources: {} }) => {
     dependencies: { routeTable: routeTablePrivate, natGateway },
   });
 
-  const sg = await provider.makeSecurityGroup({
-    name: "security-group-public-eks",
+  const securityGroupCluster = await provider.makeSecurityGroup({
+    name: "security-group-cluster",
     dependencies: { vpc },
     properties: () => ({
       //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
       create: {
-        Description: "SG for public subnet",
+        Description: "SG for the EKS Cluster",
       },
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
       ingress: {
         IpPermissions: [
           {
-            FromPort: 22,
+            FromPort: 443,
             IpProtocol: "tcp",
             IpRanges: [
               {
@@ -147,11 +156,15 @@ const createResources = async ({ provider, resources: {} }) => {
                 CidrIpv6: "::/0",
               },
             ],
-            ToPort: 22,
+            ToPort: 443,
           },
+        ],
+      },
+      egress: {
+        IpPermissions: [
           {
-            FromPort: -1,
-            IpProtocol: "icmp",
+            FromPort: 1024,
+            IpProtocol: "tcp",
             IpRanges: [
               {
                 CidrIp: "0.0.0.0/0",
@@ -162,7 +175,54 @@ const createResources = async ({ provider, resources: {} }) => {
                 CidrIpv6: "::/0",
               },
             ],
-            ToPort: -1,
+            ToPort: 65535,
+          },
+        ],
+      },
+    }),
+  });
+  const securityGroupNodes = await provider.makeSecurityGroup({
+    name: "security-group-nodes",
+    dependencies: { vpc, securityGroup: securityGroupCluster },
+    properties: ({ dependencies: { securityGroup } }) => ({
+      Tags: [{ Key: `kubernetes.io/cluster/${clusterName}`, Value: "owned" }],
+      //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
+      create: {
+        Description: "SG for the EKS Nodes",
+      },
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
+      ingress: {
+        IpPermissions: [
+          {
+            FromPort: 0,
+            IpProtocol: "-1",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+            ToPort: 65535,
+          },
+          {
+            FromPort: 1025,
+            IpProtocol: "tcp",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+            UserIdGroupPairs: [{ GroupId: securityGroup.live?.GroupId }],
+            ToPort: 65535,
           },
         ],
       },
@@ -173,7 +233,7 @@ const createResources = async ({ provider, resources: {} }) => {
     name: clusterName,
     dependencies: {
       subnets: [subnetPublic, subnetPrivate],
-      securityGroups: [sg],
+      securityGroups: [securityGroupCluster, securityGroupNodes],
       role: roleCluster,
     },
   });
@@ -197,7 +257,7 @@ const createResources = async ({ provider, resources: {} }) => {
     routeIg,
     routeTablePublic,
     routeNat,
-    sg,
+    securityGroupCluster,
     cluster,
     nodeGroup,
   };
