@@ -30,7 +30,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
   const getList = ({ params } = {}) =>
     pipe([
       tap(() => {
-        logger.debug(`list sg ${JSON.stringify(params)}`);
+        logger.info(`list sg ${JSON.stringify(params)}`);
       }),
       () => ec2().describeSecurityGroups(params),
       get("SecurityGroups"),
@@ -56,10 +56,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     get("resource"),
     or([
       eq(get("GroupName"), "default"),
-      pipe([
-        get("Tags"),
-        find(eq(get("Key"), "kubernetes.io/cluster/cluster")),
-      ]),
+      pipe([get("Tags"), find(eq(get("Key"), "aws:eks:cluster-name"))]),
     ]),
   ]);
 
