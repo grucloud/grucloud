@@ -90,7 +90,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
       tryCatch(
         pipe([
           () => eks().describeNodegroup({ clusterName, nodegroupName }),
-          get("nodeGroup"),
+          get("nodegroup"),
         ]),
         tap.if(not(eq(get("code"), "ResourceNotFoundException")), (error) => {
           logger.error(`getById describeNodegroup error: ${tos(error)}`);
@@ -161,7 +161,11 @@ exports.EKSNodeGroup = ({ spec, config }) => {
       tap(() =>
         retryCall({
           name: `destroy nodeGroup isDownById: ${id}`,
-          fn: () => isDownById({ id }),
+          fn: () =>
+            isDownById({
+              clusterName: resource.dependencies.cluster.name,
+              nodegroupName: id,
+            }),
           config,
         })
       ),
