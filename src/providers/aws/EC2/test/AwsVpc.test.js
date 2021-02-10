@@ -1,5 +1,4 @@
 const assert = require("assert");
-const AWS = require("aws-sdk");
 const { get, eq } = require("rubico");
 const { find } = require("rubico/x");
 const { ConfigLoader } = require("ConfigLoader");
