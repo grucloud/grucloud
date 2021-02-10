@@ -108,9 +108,22 @@ exports.AwsInternetGateway = ({ spec, config }) => {
         logger.debug(`destroy ig ${tos({ Attachments })}`);
       }),
       tap.if(not(isEmpty), ({ VpcId }) =>
-        ec2().detachInternetGateway({
-          InternetGatewayId: id,
-          VpcId,
+        retryCall({
+          name: `destroy ig detachInternetGateway: ${name} VpcId: ${VpcId}`,
+          fn: () =>
+            ec2().detachInternetGateway({
+              InternetGatewayId: id,
+              VpcId,
+            }),
+          shouldRetryOnException: ({ error, name }) =>
+            pipe([
+              tap((error) => {
+                // "Network vpc-xxxxxxx has some mapped public address(es). Please unmap those public address(es) before detaching the gateway."
+                logger.error(`detachInternetGateway ${name}: ${tos(error)}`);
+              }),
+              eq(get("code"), "DependencyViolation"),
+            ])(error),
+          config: { retryCount: 5, retryDelay: 1e3 },
         })
       ),
       () => ec2().deleteInternetGateway({ InternetGatewayId: id }),

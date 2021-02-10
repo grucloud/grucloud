@@ -71,7 +71,9 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.debug(`destroy elastic ip address ${tos({ name, id })}`);
+        logger.info(
+          `destroy elastic ip address ${JSON.stringify({ name, id })}`
+        );
         assert(!isEmpty(id), `destroy invalid id`);
       }),
       () => ec2().releaseAddress({ AllocationId: id }),
@@ -82,7 +84,9 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
           config,
         }),
       tap(() => {
-        logger.debug(`destroyed elastic ip address ${tos({ name, id })}`);
+        logger.info(
+          `destroyed elastic ip address ${JSON.stringify({ name, id })}`
+        );
       }),
     ])();
 
