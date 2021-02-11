@@ -2,7 +2,6 @@
 
 ## Common:
 
-- gc d -a : The volume 'vol-0685409f9129cf05b' does not exist.
 - ebs volume: use lsblk ?
 - file -s /dev/xvdf
 - mkfs -t ext4 /dev/xvdf
@@ -40,6 +39,10 @@
 
 ## TODO Aws:
 
+- Vps set dns
+
+- VpcEndpoint
+- https://medium.com/dev-genius/create-an-amazon-eks-cluster-with-managed-node-group-using-terraform-a3b50d276b13
 - security group update
 
 - ssh should use use kp.pem instead of ssh-add

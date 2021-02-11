@@ -174,17 +174,21 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy iam instance profile ${tos({ name, id })}`);
-        assert(!isEmpty(id), `destroy invalid id`);
+        logger.info(
+          `destroy iam instance profile ${JSON.stringify({ name, id })}`
+        );
       }),
       () => getById({ id }),
-      tap((instanceProfile) =>
-        forEach((role) =>
-          iam().removeRoleFromInstanceProfile({
-            InstanceProfileName: id,
-            RoleName: role.RoleName,
-          })
-        )(instanceProfile.Roles)
+      tap(
+        pipe([
+          get("Roles"),
+          forEach(({ RoleName }) =>
+            iam().removeRoleFromInstanceProfile({
+              InstanceProfileName: id,
+              RoleName,
+            })
+          ),
+        ])
       ),
       tap(() =>
         iam().deleteInstanceProfile({
@@ -199,7 +203,9 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
         })
       ),
       tap(() => {
-        logger.info(`destroy iam instance profile done, ${tos({ name, id })}`);
+        logger.info(
+          `destroy iam instance profile done, ${JSON.stringify({ name, id })}`
+        );
       }),
     ])();
 

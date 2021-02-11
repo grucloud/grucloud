@@ -16,14 +16,7 @@ const ip = await provider.makeElasticIpAddress({
 - [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/iac.js)
 - [example with internet gateway and routing table](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-vpc/iac.js)
 
-### Dependencies
+### Used By
 
 - [EC2](./EC2)
-
-### AWS CLI
-
-List the elastic ip addresses:
-
-```
-aws ec2 describe-addresses
-```
+- [NatGateway](./EC2)

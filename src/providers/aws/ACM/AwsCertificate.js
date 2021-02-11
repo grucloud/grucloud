@@ -1,5 +1,4 @@
 const assert = require("assert");
-const AWS = require("aws-sdk");
 const {
   map,
   pipe,
@@ -145,7 +144,7 @@ exports.AwsCertificate = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy ${tos({ name, id })}`);
+        logger.info(`destroy ${JSON.stringify({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
       () =>
@@ -154,23 +153,22 @@ exports.AwsCertificate = ({ spec, config }) => {
         }),
       tap(() =>
         retryCall({
-          name: `certificate isDownById: ${name} id: ${id}`,
+          name: `certificate destroy isDownById: ${name} id: ${id}`,
           fn: () => isDownById({ id, name }),
           config,
         })
       ),
       tap(() => {
-        logger.info(`certificate destroyed ${tos({ name, id })}`);
+        logger.info(`certificate destroyed ${JSON.stringify({ name, id })}`);
       }),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) => {
-    return defaultsDeep({
+  const configDefault = async ({ name, properties, dependencies }) =>
+    defaultsDeep({
       DomainName: name,
       ValidationMethod: "DNS",
       Tags: [],
     })(properties);
-  };
 
   return {
     type: "Certificate",

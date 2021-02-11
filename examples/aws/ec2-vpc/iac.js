@@ -23,15 +23,20 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
       CidrBlock: "10.1.0.1/24",
     }),
   });
-  const rt = await provider.makeRouteTables({
-    name: "rt",
-    dependencies: { vpc, subnet, ig },
+  const routeTable = await provider.makeRouteTables({
+    name: "route-table",
+    dependencies: { vpc, subnet },
     properties: () => ({}),
+  });
+
+  const routeIg = await provider.makeRoute({
+    name: "route-ig",
+    dependencies: { routeTable, ig },
   });
 
   const sg = await provider.makeSecurityGroup({
     name: "securityGroup",
-    dependencies: { vpc, subnet },
+    dependencies: { vpc },
     properties: () => ({
       //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
       create: {
@@ -105,7 +110,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
       ImageId: "ami-00f6a0c18edb19300", // Ubuntu 20.04
     }),
   });
-  return { vpc, ig, subnet, rt, sg, eip, server };
+  return { vpc, ig, subnet, routeTable, routeIg, sg, eip, server };
 };
 
 exports.createResources = createResources;

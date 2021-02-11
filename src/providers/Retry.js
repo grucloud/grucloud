@@ -73,19 +73,19 @@ const retryCall = async ({
         errors.pipe(
           concatMap((error, i) => {
             logger.info(`retryCall ${name}, attempt ${i}/${retryCount}`);
-
+            const hasMaxCount = i >= retryCount;
             return iif(
               () =>
-                i >= retryCount ||
+                hasMaxCount ||
                 (!shouldRetryOnException({ error, name }) && error.code != 503),
-              throwError(error),
+              throwError({ hasMaxCount, error }),
               of(error).pipe(delay(retryDelay))
             );
           })
         )
       ),
-      catchError((error) => {
-        if (error.code == 503) {
+      catchError(({ hasMaxCount, error }) => {
+        if (!hasMaxCount && error.code == 503) {
           return of(error.result);
         } else {
           return throwError(error);

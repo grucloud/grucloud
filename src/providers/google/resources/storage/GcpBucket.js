@@ -139,7 +139,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
       }),
     ])();
 
-  const destroy = ({ id: bucketName }) =>
+  const destroy = async ({ id: bucketName }) =>
     pipe([
       tap(() => {
         assert(bucketName, `destroy invalid id`);

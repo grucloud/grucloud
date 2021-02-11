@@ -1,6 +1,8 @@
-const { get, switchCase, pipe, tap } = require("rubico");
-const { isEmpty } = require("rubico/x");
 const assert = require("assert");
+const { get, switchCase, pipe, tap } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
+
+const { retryCall } = require("../../Retry");
 const logger = require("../../../logger")({ prefix: "AwsSubnet" });
 const { getField } = require("../../ProviderCommon");
 const { tos } = require("../../../tos");
@@ -14,18 +16,14 @@ const {
   Ec2New,
   findNameInTags,
   shouldRetryOnException,
+  buildTags,
 } = require("../AwsCommon");
-const { tagResource } = require("../AwsTagResource");
-const { CheckAwsTags } = require("../AwsTagCheck");
 
-module.exports = AwsSubnet = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
-
+exports.AwsSubnet = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
   const findName = switchCase([
-    (item) => item.DefaultForAz,
+    get("DefaultForAz"),
     () => "default",
     findNameInTags,
   ]);
@@ -43,35 +41,20 @@ module.exports = AwsSubnet = ({ spec, config }) => {
   const create = async ({ payload, name }) =>
     pipe([
       tap(() => {
-        logger.info(`create subnet ${tos({ name })}`);
+        logger.info(`create subnet ${JSON.stringify({ name })}`);
         logger.debug(tos({ payload }));
       }),
       () => ec2().createSubnet(payload),
       get("Subnet.SubnetId"),
       tap((SubnetId) =>
-        pipe([
-          () =>
-            tagResource({
-              config,
-              name,
-              resourceType: "subnet",
-              resourceId: SubnetId,
-            }),
-          () => getById({ id: SubnetId }),
-          tap((subnet) => {
-            assert(
-              CheckAwsTags({
-                config,
-                tags: subnet.Tags,
-                name: name,
-              }),
-              `missing tag for ${name}`
-            );
-          }),
-        ])()
+        retryCall({
+          name: `create subnet isDownById: ${name} SubnetId: ${SubnetId}`,
+          fn: () => isUpById({ id: SubnetId }),
+          config,
+        })
       ),
       tap((SubnetId) => {
-        logger.info(`created subnet ${tos({ name, SubnetId })}`);
+        logger.info(`created subnet ${JSON.stringify({ name, SubnetId })}`);
       }),
       (id) => ({ id }),
     ])();
@@ -79,11 +62,18 @@ module.exports = AwsSubnet = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.debug(`destroy subnet ${tos({ name, id })}`);
+        logger.info(`destroy subnet ${JSON.stringify({ name, id })}`);
       }),
       () => ec2().deleteSubnet({ SubnetId: id }),
+      tap(() =>
+        retryCall({
+          name: `destroy subnet isDownById: ${name} id: ${id}`,
+          fn: () => isDownById({ id }),
+          config,
+        })
+      ),
       tap(() => {
-        logger.debug(`destroyed subnet ${tos({ name, id })}`);
+        logger.info(`destroyed subnet ${JSON.stringify({ name, id })}`);
       }),
     ])();
 
@@ -106,15 +96,20 @@ module.exports = AwsSubnet = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) => {
-    // Need vpc name here in parameter
-    const { vpc } = dependencies;
-    const config = {
+  const configDefault = async ({
+    name,
+    properties: { Tags, ...otherProps },
+    dependencies: { vpc },
+  }) =>
+    defaultsDeep({
       ...(vpc && { VpcId: getField(vpc, "VpcId") }),
-      ...properties,
-    };
-    return config;
-  };
+      TagSpecifications: [
+        {
+          ResourceType: "subnet",
+          Tags: buildTags({ config, name, UserTags: Tags }),
+        },
+      ],
+    })(otherProps);
 
   const cannotBeDeleted = get("resource.DefaultForAz");
 

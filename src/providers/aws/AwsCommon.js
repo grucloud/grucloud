@@ -59,6 +59,9 @@ exports.Route53DomainsNew = () => () =>
 exports.ACMNew = () => () =>
   createEndpoint({ endpointName: "ACM" })({ region: "us-east-1" });
 
+exports.EKSNew = (config) => () =>
+  createEndpoint({ endpointName: "EKS" })(config);
+
 exports.shouldRetryOnException = ({ error, name }) =>
   pipe([
     tap(() => {
@@ -83,7 +86,7 @@ exports.shouldRetryOnExceptionDelete = ({ error, name }) => {
   return retry;
 };
 
-exports.buildTags = ({ name, config }) => {
+exports.buildTags = ({ name, config, UserTags = [] }) => {
   const {
     managedByKey,
     managedByValue,
@@ -99,6 +102,7 @@ exports.buildTags = ({ name, config }) => {
   assert(stage);
 
   return [
+    ...UserTags,
     {
       Key: KeyName,
       Value: name,
@@ -118,7 +122,28 @@ exports.buildTags = ({ name, config }) => {
     { Key: "projectName", Value: projectName },
   ];
 };
+exports.buildTagsObject = ({ name, config }) => {
+  const {
+    managedByKey,
+    managedByValue,
+    stageTagKey,
+    createdByProviderKey,
+    stage,
+    providerName,
+    projectName,
+  } = config;
 
+  assert(name);
+  assert(providerName);
+  assert(stage);
+  return {
+    [KeyName]: name,
+    [managedByKey]: managedByValue,
+    [createdByProviderKey]: providerName,
+    [stageTagKey]: stage,
+    projectName,
+  };
+};
 exports.isOurMinion = ({ resource, config }) => {
   const {
     createdByProviderKey,
@@ -155,6 +180,31 @@ exports.isOurMinion = ({ resource, config }) => {
   ])(resource.Tags || []);
 };
 
+exports.isOurMinionObject = ({ resource, config }) => {
+  const { stage, projectName } = config;
+  return pipe([
+    tap(() => {
+      assert(resource);
+      assert(stage);
+      assert(projectName);
+    }),
+    switchCase([
+      and([eq(get("projectName"), projectName), eq(get("stage"), stage)]),
+      () => true,
+      () => false,
+    ]),
+    tap((minion) => {
+      logger.debug(
+        `isOurMinion ${minion}, ${tos({
+          stage,
+          projectName,
+          resource,
+        })}`
+      );
+    }),
+  ])(resource.tags || []);
+};
+
 const findNameInTags = (item) =>
   pipe([
     tap(() => {
@@ -166,10 +216,12 @@ const findNameInTags = (item) =>
     switchCase([
       isEmpty,
       () => {
-        logger.debug(`findNameInTags: cannot find name in ${tos(item)}`);
+        logger.debug(
+          `findNameInTags: no name in tags: ${JSON.stringify(item.Tags)}`
+        );
       },
       (Value) => {
-        logger.debug(`findNameInTags ${Value}`);
+        logger.debug(`findNameInTags found name: ${Value}`);
         return Value;
       },
     ]),

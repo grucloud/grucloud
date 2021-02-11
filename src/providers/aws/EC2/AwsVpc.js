@@ -1,4 +1,3 @@
-const { isEmpty } = require("rubico/x");
 const assert = require("assert");
 const {
   get,
@@ -10,24 +9,22 @@ const {
   eq,
   not,
   tryCatch,
+  assign,
 } = require("rubico");
+const { isEmpty, defaultsDeep } = require("rubico/x");
 const logger = require("../../../logger")({ prefix: "AwsVpc" });
 const { tos } = require("../../../tos");
 const { retryCall } = require("../../Retry");
-const { getByIdCore } = require("../AwsCommon");
 const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const {
   Ec2New,
+  getByIdCore,
+  buildTags,
   findNameInTags,
   shouldRetryOnException,
 } = require("../AwsCommon");
-const { tagResource } = require("../AwsTagResource");
-const { CheckAwsTags } = require("../AwsTagCheck");
 
-module.exports = AwsVpc = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
-
+exports.AwsVpc = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
   const findName = switchCase([
@@ -38,13 +35,37 @@ module.exports = AwsVpc = ({ spec, config }) => {
 
   const findId = get("VpcId");
 
-  const getList = ({ params } = {}) =>
+  const getList = ({ params, deep } = {}) =>
     pipe([
       tap(() => {
-        logger.info(`getList vpc ${JSON.stringify(params)}`);
+        logger.info(`getList vpc ${JSON.stringify({ params, deep })}`);
       }),
       () => ec2().describeVpcs(params),
       get("Vpcs"),
+      switchCase([
+        () => deep,
+        map(
+          assign({
+            DnsSupport: pipe([
+              ({ VpcId }) =>
+                ec2().describeVpcAttribute({
+                  VpcId,
+                  Attribute: "enableDnsSupport",
+                }),
+              get("EnableDnsSupport.Value"),
+            ]),
+            DnsHostnames: pipe([
+              ({ VpcId }) =>
+                ec2().describeVpcAttribute({
+                  VpcId,
+                  Attribute: "enableDnsHostnames",
+                }),
+              get("EnableDnsHostnames.Value"),
+            ]),
+          })
+        ),
+        (items) => items,
+      ]),
       tap((items) => {
         logger.debug(`getList vpc result: ${tos(items)}`);
       }),
@@ -57,7 +78,8 @@ module.exports = AwsVpc = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = ({ name }) =>
+    getByNameCore({ name, getList, findName, deep: false });
 
   const getById = getByIdCore({ fieldIds: "VpcIds", getList });
 
@@ -75,32 +97,37 @@ module.exports = AwsVpc = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpc-property
 
-  const create = async ({ payload, name }) =>
+  const create = async ({ payload: { DnsHostnames, ...vpcPayload }, name }) =>
     pipe([
       tap(() => {
-        logger.info(`create vpc ${tos({ name })}`);
+        logger.info(`create vpc ${JSON.stringify({ name })}`);
       }),
-      () => ec2().createVpc(payload),
+      () => ec2().createVpc(vpcPayload),
       get("Vpc.VpcId"),
       tap((VpcId) =>
+        retryCall({
+          name: `vpc isUpById: ${name} id: ${VpcId}`,
+          fn: () => isUpById({ id: VpcId, name }),
+          config,
+        })
+      ),
+      tap.if(
+        () => DnsHostnames,
         pipe([
-          () =>
-            retryCall({
-              name: `vpc isUpById: ${name} id: ${VpcId}`,
-              fn: () => isUpById({ id: VpcId, name }),
-              config,
+          tap(() => {
+            logger.info(`create vpc modifyVpcAttribute EnableDnsHostnames`);
+          }),
+          (VpcId) =>
+            ec2().modifyVpcAttribute({
+              EnableDnsHostnames: {
+                Value: true,
+              },
+              VpcId,
             }),
-          () =>
-            tagResource({
-              config,
-              name,
-              resourceType: "vpc",
-              resourceId: VpcId,
-            }),
-        ])()
+        ])
       ),
       tap((VpcId) => {
-        logger.info(`created vpc ${tos({ name, VpcId })}`);
+        logger.info(`created vpc ${JSON.stringify({ name, VpcId })}`);
       }),
       (id) => ({ id }),
     ])();
@@ -234,18 +261,33 @@ module.exports = AwsVpc = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.debug(`destroy vpc ${tos({ name, id })}`);
+        logger.info(`destroy vpc ${JSON.stringify({ name, id })}`);
       }),
       () => destroySubnets({ VpcId: id }),
       () => destroySecurityGroup({ VpcId: id }),
       () => destroyRouteTables({ VpcId: id }),
       () => ec2().deleteVpc({ VpcId: id }),
+      tap(() =>
+        retryCall({
+          name: `destroy vpc isDownById: ${name} id: ${id}`,
+          fn: () => isDownById({ id }),
+          config,
+        })
+      ),
       tap(() => {
-        logger.debug(`destroyed vpc ${tos({ name, id })}`);
+        logger.info(`destroyed vpc ${JSON.stringify({ name, id })}`);
       }),
     ])();
 
-  const configDefault = ({ properties }) => properties;
+  const configDefault = async ({ name, properties: { Tags, ...otherProps } }) =>
+    defaultsDeep({
+      TagSpecifications: [
+        {
+          ResourceType: "vpc",
+          Tags: buildTags({ config, name, UserTags: Tags }),
+        },
+      ],
+    })(otherProps);
 
   return {
     type: "Vpc",

@@ -180,7 +180,7 @@ exports.AwsIamUser = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy iam user ${tos({ name, id })}`);
+        logger.info(`destroy iam user ${JSON.stringify({ name, id })}`);
       }),
       () => iam().listGroupsForUser({ UserName: id }),
       get("Groups"),
@@ -229,7 +229,7 @@ exports.AwsIamUser = ({ spec, config }) => {
         })
       ),
       tap(() => {
-        logger.info(`destroy iam user done, ${tos({ name, id })}`);
+        logger.info(`destroy iam user done, ${JSON.stringify({ name, id })}`);
       }),
     ])();
 

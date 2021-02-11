@@ -227,7 +227,13 @@ exports.AwsS3Object = ({ spec, config }) => {
                 md5hash: ContentMD5,
               },
             }),
-            (params) => s3().putObject(params),
+            (params) =>
+              retryCall({
+                name: `s3 putObject: ${name}`,
+                fn: () => s3().putObject(params),
+                shouldRetryOnException,
+                config,
+              }),
             tap(() =>
               retryCall({
                 name: `s3 isUpById: ${bucket.name}/${name}`,

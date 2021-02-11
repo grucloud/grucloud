@@ -1,64 +1,75 @@
 const { isOurMinion } = require("../AwsCommon");
 
-const logger = require("../../../logger")({ prefix: "AWSEC2" });
-const { tos } = require("../../../tos");
-
-const AwsEC2 = require("./AwsEC2");
-const AwsClientKeyPair = require("./AwsKeyPair");
-const AwsVpc = require("./AwsVpc");
-const AwsInternetGateway = require("./AwsInternetGateway");
-const AwsRouteTables = require("./AwsRouteTables");
-const AwsSubnet = require("./AwsSubnet");
-const AwsSecurityGroup = require("./AwsSecurityGroup");
-const AwsElasticIpAddress = require("./AwsElasticIpAddress");
+const { AwsEC2 } = require("./AwsEC2");
+const { AwsClientKeyPair } = require("./AwsKeyPair");
+const { AwsVpc } = require("./AwsVpc");
+const { AwsInternetGateway } = require("./AwsInternetGateway");
+const { AwsNatGateway } = require("./AwsNatGateway");
+const { AwsRouteTables } = require("./AwsRouteTables");
+const { AwsRoute } = require("./AwsRoute");
+const { AwsSubnet } = require("./AwsSubnet");
+const { AwsSecurityGroup } = require("./AwsSecurityGroup");
+const { AwsElasticIpAddress } = require("./AwsElasticIpAddress");
 const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
 
 module.exports = [
   {
     type: "KeyPair",
-    Client: ({ spec, config }) => AwsClientKeyPair({ spec, config }),
+    Client: AwsClientKeyPair,
     listOnly: true,
     isOurMinion,
   },
   {
     type: "Volume",
-    Client: ({ spec, config }) => AwsVolume({ spec, config }),
+    Client: AwsVolume,
     isOurMinion,
     setupEbsVolume,
   },
   {
     type: "Vpc",
-    Client: ({ spec, config }) => AwsVpc({ spec, config }),
+    Client: AwsVpc,
     isOurMinion,
   },
   {
     type: "InternetGateway",
     dependsOn: ["Vpc"],
-    Client: ({ spec, config }) => AwsInternetGateway({ spec, config }),
+    Client: AwsInternetGateway,
+    isOurMinion,
+  },
+  {
+    type: "NatGateway",
+    dependsOn: ["ElasticIpAddress", "Subnet"],
+    Client: AwsNatGateway,
     isOurMinion,
   },
   {
     type: "Subnet",
     dependsOn: ["Vpc"],
-    Client: ({ spec, config }) => AwsSubnet({ spec, config }),
+    Client: AwsSubnet,
     isOurMinion,
   },
   {
     type: "RouteTables",
-    dependsOn: ["Vpc", "Subnet", "InternetGateway"],
-    Client: ({ spec, config }) => AwsRouteTables({ spec, config }),
+    dependsOn: ["Vpc", "Subnet"],
+    Client: AwsRouteTables,
+    isOurMinion,
+  },
+  {
+    type: "Route",
+    dependsOn: ["RouteTables", "InternetGateway", "NatGateway"],
+    Client: AwsRoute,
     isOurMinion,
   },
   {
     type: "SecurityGroup",
-    dependsOn: ["Vpc", "InternetGateway"],
-    Client: ({ spec, config }) => AwsSecurityGroup({ spec, config }),
+    dependsOn: ["Vpc"],
+    Client: AwsSecurityGroup,
     isOurMinion,
   },
   {
     type: "ElasticIpAddress",
-    dependsOn: ["InternetGateway", "RouteTables"],
-    Client: ({ spec, config }) => AwsElasticIpAddress({ spec, config }),
+    dependsOn: ["InternetGateway"],
+    Client: AwsElasticIpAddress,
     isOurMinion,
   },
   {
@@ -67,15 +78,10 @@ module.exports = [
       "SecurityGroup",
       "Subnet",
       "ElasticIpAddress",
-      "InternetGateway",
       "IamInstanceProfile",
       "Volume",
     ],
-    Client: ({ spec, config }) =>
-      AwsEC2({
-        spec,
-        config,
-      }),
+    Client: AwsEC2,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS.html#runInstances-property
     propertiesDefault: {
       InstanceType: "t2.micro",

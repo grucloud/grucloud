@@ -109,7 +109,7 @@ const nextStateOnError = (error) => (error ? "ERROR" : "DONE");
 
 const toUri = ({ providerName, type, name, id }) => {
   assert(type, "type");
-  assert(name || id);
+  assert(name || id, `missing name or id for ${providerName}::${type}`);
   return `${providerName}::${type}::${name || id}`;
 };
 
@@ -230,7 +230,7 @@ const ResourceMaker = ({
         logger.info(
           `resolveDependencies for ${type}/${resourceName}: ${Object.keys(
             dependencies
-          )}, dependenciesMustBeUp: ${dependenciesMustBeUp}`
+          )}, dependenciesMustBeUp: ${dependenciesMustBeUp}, has lives: ${!!lives}`
         );
       }),
       map(async (dependency) => {
@@ -264,14 +264,7 @@ const ResourceMaker = ({
               switchCase([
                 not(isEmpty),
                 (lives) => dependency.findLive({ lives }),
-                () =>
-                  retryCall({
-                    name: `resolveDependencies getLive ${type}/${resourceName} `,
-                    fn: () => dependency.getLive(),
-                    isExpectedResult: (result) => result,
-                    shouldRetryOnException: () => false,
-                    config: { retryDelay: 1e3, retryCount: 10 },
-                  }),
+                () => dependency.getLive({ deep: false }),
               ]),
               tap.if(
                 (live) => dependenciesMustBeUp && !live,
@@ -388,38 +381,14 @@ const ResourceMaker = ({
       throw Error(`Resource ${type}/${resourceName} already exists`);
     }
 
-    // Create now
-    const instance = await retryCall({
-      name: `create ${type}/${resourceName}`,
-      fn: () =>
-        client.create({
-          name: resourceName,
-          payload,
-          dependencies,
-          resolvedDependencies,
-        }),
-      shouldRetryOnException: client.shouldRetryOnException,
-      config: provider.config(),
+    const instance = await client.create({
+      name: resourceName,
+      payload,
+      dependencies,
+      resolvedDependencies,
     });
 
     logger.info(`created:  ${type}/${resourceName}`);
-
-    const live = await retryCall({
-      name: `create getLive ${type}/${resourceName}`,
-      fn: () => getLive({ deep: false }),
-      config: provider.config(),
-    });
-
-    if (
-      !client.spec.isOurMinion({
-        resource: live,
-        resourceNames: provider.resourceNames(),
-        config: provider.config(),
-      })
-    ) {
-      throw Error(`Resource ${type}/${resourceName} is not tagged correctly`);
-    }
-
     return instance;
   };
 
@@ -449,7 +418,7 @@ const ResourceMaker = ({
     logger.info(`updated:  ${type}/${resourceName}`);
 
     const liveInstance = await retryCall({
-      name: `create getLive ${type}/${resourceName}`,
+      name: `update getLive ${type}/${resourceName}`,
       fn: async () => {
         const live = await getLive();
         if (!live) {
@@ -591,6 +560,8 @@ const createResourceMakers = ({ specs, config, provider }) =>
         config,
       });
       provider.targetResourcesAdd(resource);
+
+      //TODO move it somewhere else to remove async.
 
       if (resource.client.validate) {
         await resource.client.validate({ name });
@@ -797,12 +768,18 @@ function CoreProvider({
         )}' already exists`,
       };
     }
+
     mapNameToResource.set(resourceKey(resource), resource);
 
     mapTypeToResources.set(resource.type, [
       ...getResourcesByType(resource.type),
       resource,
     ]);
+
+    tap.if(
+      (client) => client.hook,
+      (client) => hookAdd(client.spec.type, client.hook({ resource }))
+    )(resource.client);
   };
 
   const getTargetResources = () => [...mapNameToResource.values()];
@@ -818,6 +795,7 @@ function CoreProvider({
   const clients = specs.map((spec) =>
     createClient({ mapTypeToResources, spec, config: providerConfig })
   );
+
   const clientByType = (type) => find(eq(get("spec.type"), type))(clients);
 
   const filterClient = async ({
@@ -2032,13 +2010,6 @@ function CoreProvider({
               //TODO isExpectedException: client.isExpectedExceptionDelete
               shouldRetryOnException: client.shouldRetryOnExceptionDelete,
               config: provider.config(),
-            })
-          ),
-          tap((resource) =>
-            retryCall({
-              name: `destroy type: ${client.spec.type}, name: ${name}, isDownById`,
-              fn: () => client.isDownById({ id, name, resource }),
-              config: client.config || providerConfig,
             })
           ),
         ])(resourcesPerType),

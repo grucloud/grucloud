@@ -138,7 +138,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy iam group ${tos({ name, id })}`);
+        logger.info(`destroy iam group ${JSON.stringify({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
       }),
       detachGroupPolicy({ GroupName: id }),
@@ -155,7 +155,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
         })
       ),
       tap(() => {
-        logger.info(`destroyed iam group, ${tos({ name, id })}`);
+        logger.info(`destroyed iam group, ${JSON.stringify({ name, id })}`);
       }),
     ])();
 

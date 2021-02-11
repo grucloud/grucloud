@@ -11,18 +11,16 @@ const {
   getByIdCore,
   findNameInTagsOrId,
   shouldRetryOnException,
+  buildTags,
 } = require("../AwsCommon");
-const { tagResource } = require("../AwsTagResource");
-const { CheckAwsTags } = require("../AwsTagCheck");
 
-module.exports = AwsInternetGateway = ({ spec, config }) => {
+exports.AwsInternetGateway = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
   const ec2 = Ec2New(config);
 
   const findId = get("InternetGatewayId");
-
   const findName = (item) => findNameInTagsOrId({ item, findId });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInternetGateways-property
@@ -66,7 +64,7 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createInternetGateway-property
 
-  const create = async ({ payload, name, dependencies: { vpc } }) =>
+  const create = async ({ payload, name, resolvedDependencies: { vpc } }) =>
     pipe([
       tap(() => {
         logger.info(`create ig ${tos({ name })}`);
@@ -77,32 +75,13 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
       tap((InternetGatewayId) =>
         pipe([
           () =>
-            tagResource({
-              config,
-              name,
-              resourceType: "InternetGateway",
-              resourceId: InternetGatewayId,
-            }),
-          () => getById({ id: InternetGatewayId }),
-          (live) => {
-            assert(
-              CheckAwsTags({
-                config,
-                tags: live.Tags,
-                name,
-              }),
-              `missing tag for ${name}`
-            );
-          },
-          () => vpc.getLive(),
-          (vpcLive) =>
             ec2().attachInternetGateway({
               InternetGatewayId,
-              VpcId: vpcLive.VpcId,
+              VpcId: vpc.live.VpcId,
             }),
           () =>
             retryCall({
-              name: `ig isUpById: ${name} id: ${InternetGatewayId}`,
+              name: `ig create isUpById: ${name} id: ${InternetGatewayId}`,
               fn: () => isUpById({ id: InternetGatewayId }),
               config,
             }),
@@ -125,20 +104,49 @@ module.exports = AwsInternetGateway = ({ spec, config }) => {
       () => getById({ id }),
       get("Attachments"),
       first,
+      tap((Attachments) => {
+        logger.debug(`destroy ig ${tos({ Attachments })}`);
+      }),
       tap.if(not(isEmpty), ({ VpcId }) =>
-        ec2().detachInternetGateway({
-          InternetGatewayId: id,
-          VpcId,
+        retryCall({
+          name: `destroy ig detachInternetGateway: ${name} VpcId: ${VpcId}`,
+          fn: () =>
+            ec2().detachInternetGateway({
+              InternetGatewayId: id,
+              VpcId,
+            }),
+          shouldRetryOnException: ({ error, name }) =>
+            pipe([
+              tap((error) => {
+                // "Network vpc-xxxxxxx has some mapped public address(es). Please unmap those public address(es) before detaching the gateway."
+                logger.error(`detachInternetGateway ${name}: ${tos(error)}`);
+              }),
+              eq(get("code"), "DependencyViolation"),
+            ])(error),
+          config: { retryCount: 5, retryDelay: 1e3 },
         })
       ),
       () => ec2().deleteInternetGateway({ InternetGatewayId: id }),
+      () =>
+        retryCall({
+          name: `destroy ig isDownById: ${name} id: ${id}`,
+          fn: () => isDownById({ id }),
+          config,
+        }),
       tap(() => {
         logger.debug(`destroyed ig ${tos({ name, id })}`);
       }),
     ])();
 
   const configDefault = async ({ name, properties }) =>
-    defaultsDeep({})(properties);
+    defaultsDeep({
+      TagSpecifications: [
+        {
+          ResourceType: "internet-gateway",
+          Tags: buildTags({ config, name }),
+        },
+      ],
+    })(properties);
 
   const cannotBeDeleted = ({ resource, name }) => {
     logger.debug(`cannotBeDeleted name: ${name} ${tos({ resource })}`);

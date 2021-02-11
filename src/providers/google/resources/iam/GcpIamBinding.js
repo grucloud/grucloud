@@ -176,7 +176,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
       }),
     ])();
 
-  const destroy = ({ id }) =>
+  const destroy = async ({ id }) =>
     pipe([
       tap(() => {
         logger.debug(`destroy ${id}`);

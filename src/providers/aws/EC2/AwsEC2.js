@@ -35,7 +35,7 @@ const { CheckAwsTags } = require("../AwsTagCheck");
 const StateRunning = "running";
 const StateTerminated = "terminated";
 
-module.exports = AwsEC2 = ({ spec, config }) => {
+exports.AwsEC2 = ({ spec, config }) => {
   assert(spec);
   assert(config);
   const clientConfig = { ...config, retryDelay: 5000, repeatCount: 1 };
@@ -134,6 +134,19 @@ module.exports = AwsEC2 = ({ spec, config }) => {
       }),
     ])();
 
+  const shouldRetryOnExceptionCreate = ({ error, name }) =>
+    pipe([
+      tap(() => {
+        logger.error(
+          `ec2 shouldRetryOnExceptionCreate ${tos({ name, error })}`
+        );
+      }),
+      () => error.message.includes("iamInstanceProfile.name is invalid"),
+      tap((retry) => {
+        logger.error(`ec2 shouldRetryOnExceptionCreate retry: ${retry}`);
+      }),
+    ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property
   const create = async ({
     name,
@@ -147,7 +160,13 @@ module.exports = AwsEC2 = ({ spec, config }) => {
         assert(name, "name");
         assert(payload, "payload");
       }),
-      () => ec2().runInstances(payload),
+      () =>
+        retryCall({
+          name: `ec2 runInstances: ${name}`,
+          fn: () => ec2().runInstances(payload),
+          shouldRetryOnException: shouldRetryOnExceptionCreate,
+          config,
+        }),
       get("Instances"),
       first,
       get("InstanceId"),
@@ -191,6 +210,9 @@ module.exports = AwsEC2 = ({ spec, config }) => {
           ],
         }),
       get("Addresses"),
+      tap((Addresses) => {
+        logger.debug(`disassociateAddress ${tos({ Addresses })}`);
+      }),
       first,
       tap.if(not(isEmpty), ({ AssociationId }) =>
         ec2().disassociateAddress({
@@ -320,13 +342,5 @@ module.exports = AwsEC2 = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    shouldRetryOnException: ({ error, name }) => {
-      logger.debug(`shouldRetryOnException ${tos({ name, error })}`);
-      const retry = error.message.includes(
-        "iamInstanceProfile.name is invalid"
-      );
-      logger.debug(`shouldRetryOnException retry: ${retry}`);
-      return retry;
-    },
   };
 };

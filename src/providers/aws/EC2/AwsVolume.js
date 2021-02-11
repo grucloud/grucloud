@@ -8,7 +8,7 @@ const {
   omit,
   not,
 } = require("rubico");
-const { isEmpty, defaultsDeep } = require("rubico/x");
+const { isEmpty, defaultsDeep, first } = require("rubico/x");
 const assert = require("assert");
 const logger = require("../../../logger")({ prefix: "AwsVolume" });
 const { retryCall } = require("../../Retry");
@@ -86,14 +86,18 @@ exports.AwsVolume = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.debug(`destroy detach Volume ${tos({ name, id })}`);
-      }),
-      tap((result) => {
-        logger.debug(`destroy deleting volume ${tos({ name, id })}`);
+        logger.info(`destroy volume ${JSON.stringify({ name, id })}`);
       }),
       () => ec2().deleteVolume({ VolumeId: id }),
+      tap(() =>
+        retryCall({
+          name: `destroy volume isDownById: ${name} id: ${id}`,
+          fn: () => isDownById({ id }),
+          config,
+        })
+      ),
       tap((result) => {
-        logger.debug(`destroyed volume ${tos({ name, id })}`);
+        logger.info(`volume destroyed ${JSON.stringify({ name, id })}`);
       }),
     ])();
 
@@ -111,6 +115,12 @@ exports.AwsVolume = ({ spec, config }) => {
       ],
     })(properties);
 
+  const cannotBeDeleted = pipe([
+    get("resource.Attachments"),
+    first,
+    get("DeleteOnTermination"),
+  ]);
+
   return {
     type: "Volume",
     spec,
@@ -125,6 +135,7 @@ exports.AwsVolume = ({ spec, config }) => {
     destroy,
     configDefault,
     shouldRetryOnException,
+    cannotBeDeleted,
   };
 };
 

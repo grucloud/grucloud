@@ -7,7 +7,7 @@ const { tos } = require("../../../tos");
 const { getByNameCore, findField } = require("../../Common");
 const { Ec2New } = require("../AwsCommon");
 
-module.exports = AwsClientKeyPair = ({ spec, config }) => {
+exports.AwsClientKeyPair = ({ spec, config }) => {
   assert(spec);
   assert(config);
   assert(config.region, "config.region");

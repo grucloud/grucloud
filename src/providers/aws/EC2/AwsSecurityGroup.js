@@ -1,7 +1,12 @@
 const assert = require("assert");
-const { get, pipe, map, eq, tap } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
-const { Ec2New, getByIdCore, shouldRetryOnException } = require("../AwsCommon");
+const { get, pipe, map, eq, or, tap, fork } = require("rubico");
+const { defaultsDeep, find } = require("rubico/x");
+const {
+  Ec2New,
+  getByIdCore,
+  shouldRetryOnException,
+  buildTags,
+} = require("../AwsCommon");
 const { retryCall } = require("../../Retry");
 const { getField } = require("../../ProviderCommon");
 
@@ -12,13 +17,9 @@ const {
   isDownByIdCore,
 } = require("../../Common");
 const logger = require("../../../logger")({ prefix: "AwsSg" });
-const { tagResource } = require("../AwsTagResource");
-const { CheckAwsTags } = require("../AwsTagCheck");
 const { tos } = require("../../../tos");
 
-module.exports = AwsSecurityGroup = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
+exports.AwsSecurityGroup = ({ spec, config }) => {
   const { managedByDescription } = config;
   const ec2 = Ec2New(config);
 
@@ -29,7 +30,7 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const getList = ({ params } = {}) =>
     pipe([
       tap(() => {
-        logger.debug(`list sg ${JSON.stringify(params)}`);
+        logger.info(`list sg ${JSON.stringify(params)}`);
       }),
       () => ec2().describeSecurityGroups(params),
       get("SecurityGroups"),
@@ -51,7 +52,13 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const isUpById = isUpByIdCore({ getById });
   const isDownById = isDownByIdCore({ getById });
 
-  const cannotBeDeleted = eq(get("resource.GroupName"), "default");
+  const cannotBeDeleted = pipe([
+    get("resource"),
+    or([
+      eq(get("GroupName"), "default"),
+      pipe([get("Tags"), find(eq(get("Key"), "aws:eks:cluster-name"))]),
+    ]),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
 
@@ -71,33 +78,28 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
         pipe([
           () =>
             retryCall({
-              name: `sg isUpById: ${name} id: ${GroupId}`,
+              name: `sg create isUpById: ${name} id: ${GroupId}`,
               fn: () => isUpById({ id: GroupId, name }),
               config,
             }),
-          () =>
-            tagResource({
-              config,
-              name,
-              resourceType: "security",
-              resourceId: GroupId,
-            }),
-          () => getById({ id: GroupId }),
-          (live) => {
-            assert(
-              CheckAwsTags({
-                config,
-                tags: live.Tags,
-                name,
-              }),
-              `missing tag for ${name}`
-            );
-          },
-          () =>
-            ec2().authorizeSecurityGroupIngress({
-              GroupId,
-              ...payload.ingress,
-            }),
+          fork({
+            ingress: tap.if(
+              () => payload.ingress,
+              () =>
+                ec2().authorizeSecurityGroupIngress({
+                  GroupId,
+                  ...payload.ingress,
+                })
+            ),
+            egress: tap.if(
+              () => payload.egress,
+              () =>
+                ec2().authorizeSecurityGroupEgress({
+                  GroupId,
+                  ...payload.egress,
+                })
+            ),
+          }),
         ])()
       ),
       tap((GroupId) => {
@@ -109,32 +111,39 @@ module.exports = AwsSecurityGroup = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.debug(`destroy sg ${tos({ name, id })}`);
+        logger.debug(`destroy sg ${JSON.stringify({ name, id })}`);
       }),
       () => ec2().deleteSecurityGroup({ GroupId: id }),
+      tap(() =>
+        retryCall({
+          name: `destroy sg isDownById: ${name} id: ${id}`,
+          fn: () => isDownById({ id }),
+          config,
+        })
+      ),
       tap(() => {
-        logger.debug(`destroyed sg ${tos({ name, id })}`);
+        logger.debug(`destroyed sg ${JSON.stringify({ name, id })}`);
       }),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) => {
-    logger.debug(
-      `configDefault ${tos({
-        name,
-        properties,
-        dependencies,
-      })}`
-    );
+  const configDefault = async ({
+    name,
+    properties: { Tags, ...otherProps },
+    dependencies,
+  }) => {
     const { vpc } = dependencies;
     assert(vpc, "missing vpc dependency");
-
-    const config = defaultsDeep(properties)({
+    return defaultsDeep(otherProps)({
       create: {
         ...(vpc && { VpcId: getField(vpc, "VpcId") }),
+        TagSpecifications: [
+          {
+            ResourceType: "security-group",
+            Tags: buildTags({ config, name, UserTags: Tags }),
+          },
+        ],
       },
     });
-    logger.debug(`configDefault ${name} result: ${tos(config)}`);
-    return config;
   };
 
   return {
