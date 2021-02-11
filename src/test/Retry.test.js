@@ -41,15 +41,18 @@ describe("Retry", function () {
   });
   it("retryCall expect true fails", async function () {
     const seq = [{ return: false }, { return: false }];
-
     const fn = createMock({ seq });
-    const result = await retryCall({
-      name: "retryCall expect true fails",
-      fn: async () => fn({}),
 
-      config: { retryCount: 1, retryDelay },
-    });
-    assert(!result);
+    try {
+      await retryCall({
+        name: "retryCall expect true fails",
+        fn: async () => fn({}),
+        config: { retryCount: 1, retryDelay },
+      });
+      assert(false, "should not be here");
+    } catch (error) {
+      assert.equal(error.code, 503);
+    }
   });
   it("retryCall expect 42 success", async function () {
     const seq = [{ return: 42 }, { return: 1 }, { return: 42 }, { return: 42 }];
@@ -62,18 +65,6 @@ describe("Retry", function () {
       config: { retryCount: 2, retryDelay },
     });
     assert.equal(result, 42);
-  });
-  it("retryCall expect 42 fails", async function () {
-    const seq = [{ return: 1 }, { return: 1 }, { return: 1 }];
-
-    const fn = createMock({ seq });
-    const result = await retryCall({
-      name: "retryCall expect 42 success",
-      fn: async () => fn({}),
-      isExpectedResult: (result) => result === 42,
-      config: { retryCount: 1, retryDelay },
-    });
-    assert.equal(result, 1);
   });
 
   it("retryCall throw error", async function () {
@@ -108,7 +99,7 @@ describe("Retry", function () {
       });
       assert(false, "should not be here");
     } catch (error) {
-      assert.equal(error.type, "timeout");
+      assert.equal(error.code, 503);
     }
   });
 });

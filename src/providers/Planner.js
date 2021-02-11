@@ -129,10 +129,11 @@ const findDependsOnInstance = ({ uri, plans, dependsOnInstance }) =>
     }),
     find(eq(get("uri"), uri)),
     tap((x) => {
-      assert(x);
+      //assert(x);
     }),
     get("dependsOn"),
-    flatMap(({ uri }) =>
+    pluck("uri"),
+    flatMap((uri) =>
       pipe([filter(eq(get("resource.uri"), uri)), pluck("resource")])(plans)
     ),
     tap((dependsOn) => {
