@@ -23,6 +23,7 @@ const {
   find,
   forEach,
   isString,
+  uniq,
 } = require("rubico/x");
 const { logError, convertError } = require("./Common");
 
@@ -153,22 +154,19 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
         map(({ name, provider, type, uri }) => ({
           name,
           uri,
-          dependsOn: switchCase([
-            isEmpty,
-            () =>
-              findDependsOnType({
-                provider,
-                type,
-                plans,
-                dependsOnType,
-              }),
-            () =>
-              findDependsOnInstance({
-                uri,
-                plans,
-                dependsOnInstance,
-              }),
-          ])(dependsOnInstance),
+          dependsOn: uniq([
+            ...findDependsOnType({
+              provider,
+              type,
+              plans,
+              dependsOnType,
+            }),
+            ...findDependsOnInstance({
+              uri,
+              plans,
+              dependsOnInstance,
+            }),
+          ]),
         })),
         tap((graph) => {
           logger.info(`DependencyTree down: ${tos(graph)}`);

@@ -62,7 +62,7 @@ module.exports = [
   },
   {
     type: "SecurityGroup",
-    dependsOn: ["Vpc", "InternetGateway"],
+    dependsOn: ["Vpc"],
     Client: AwsSecurityGroup,
     isOurMinion,
   },
@@ -78,7 +78,6 @@ module.exports = [
       "SecurityGroup",
       "Subnet",
       "ElasticIpAddress",
-      "InternetGateway",
       "IamInstanceProfile",
       "Volume",
     ],
