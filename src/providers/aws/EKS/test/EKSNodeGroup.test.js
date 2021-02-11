@@ -13,7 +13,7 @@ describe("EKSNodeGroup", async function () {
     }
   });
   after(async () => {});
-  it("getById invalid clusterName", async function () {
+  it.skip("getById invalid clusterName", async function () {
     const nodeGroup = EKSNodeGroup({ config });
     const result = await nodeGroup.getById({
       clusterName: "aaa",
