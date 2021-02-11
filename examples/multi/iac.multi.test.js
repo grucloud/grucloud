@@ -50,5 +50,5 @@ describe("Multi Example", async function () {
       infra,
       commandOptions: {},
     });
-  }).timeout(25 * 60e3);
+  }).timeout(35 * 60e3);
 });
