@@ -13,7 +13,7 @@
     "test:gcp": "NODE_PATH=src mocha 'src/providers/google/**/**.test.js'",
     "test:aws": "NODE_PATH=src mocha 'src/providers/aws/**/**.test.js'",
     "test:scw": "NODE_PATH=src mocha 'src/providers/scaleway/**/**.test.js'",
-    "test:mock": "NODE_PATH=src mocha 'src/cli/test/*.test.js' 'src/test/*.test.js'  'src/mockServer/*.test.js' 'src/providers/mock/test/**/*.test.js' --reporter=mocha-junit-reporter",
+    "test:mock": "NODE_PATH=src mocha 'src/cli/test/*.test.js' 'src/test/*.test.js'  'src/mockServer/*.test.js' 'src/providers/mock/test/**/*.test.js'",
     "test:ci": "NODE_PATH=src mocha 'examples/multi/*.test.js' 'src/**/*.test.js' --reporter=mocha-junit-reporter",
     "test:mocha": "NODE_PATH=src mocha 'examples/multi/*.test.js' 'src/**/*.test.js'",
     "test:coverage": "NODE_PATH=src nyc mocha 'examples/multi/*.test.js' 'src/**/*.test.js'",

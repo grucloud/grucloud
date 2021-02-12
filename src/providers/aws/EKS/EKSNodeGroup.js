@@ -25,12 +25,8 @@ const {
 const logger = require("../../../logger")({ prefix: "EKSNodeGroup" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
-const { getByNameCore } = require("../../Common");
-const {
-  EKSNew,
-  buildTagsObject,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+const { getByNameCore, buildTagsObject } = require("../../Common");
+const { EKSNew, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("../../ProviderCommon");
 
 const findName = get("nodegroupName");

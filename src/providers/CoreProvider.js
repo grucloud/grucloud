@@ -11,6 +11,7 @@ const {
   forEach,
   find,
   defaultsDeep,
+  isDeepEqual,
 } = require("rubico/x");
 const {
   pipe,
@@ -107,26 +108,42 @@ const hasResultError = any(({ error }) => error);
 
 const nextStateOnError = (error) => (error ? "ERROR" : "DONE");
 
-const toUri = ({ providerName, type, name, id }) => {
-  assert(type, "type");
-  assert(name || id, `missing name or id for ${providerName}::${type}`);
-  return `${providerName}::${type}::${name || id}`;
-};
-const createClient = ({ spec, provider, config, mapTypeToResources }) =>
+const createClient = ({
+  spec,
+  provider,
+  config,
+  mapTypeToResources,
+  resourceName,
+}) =>
   pipe([
     () => spec.Client({ provider, spec, config, mapTypeToResources }),
     tap((client) => {
       assert(client.spec);
       assert(client.findName);
       assert(client.getByName);
-      assert(client.create);
-      assert(client.destroy);
     }),
-    defaultsDeep({ cannotBeDeleted: () => false, configDefault: () => ({}) }),
+    defaultsDeep({
+      resourceKey: (resource) => {
+        assert(resource.type);
+        assert(resource.name);
+        //TODO
+        return `${resource.spec?.providerName || resource.provider}::${
+          resource.type
+        }::${resource.name}`;
+      },
+      nameToUri: ({ name, id }) =>
+        `${spec.providerName}::${spec.type}::${name || id}`,
+      toUri: () => `${spec.providerName}::${spec.type}::${resourceName}`,
+      displayName: get("name"),
+      findMeta: () => undefined,
+      cannotBeDeleted: () => false,
+      configDefault: () => ({}),
+    }),
   ])();
 
 const ResourceMaker = ({
   name: resourceName,
+  meta = {},
   key,
   dependencies = {},
   transformConfig,
@@ -134,16 +151,16 @@ const ResourceMaker = ({
   spec,
   provider,
   config,
-  meta,
 }) => {
   const { type } = spec;
-  logger.debug(`ResourceMaker: ${tos({ key, type, resourceName })}`);
+  assert(resourceName, "missing 'name' property");
+  logger.debug(`ResourceMaker: ${tos({ key, type, resourceName, meta })}`);
 
-  const client = createClient({ provider, spec, config });
+  const client = createClient({ provider, spec, config, resourceName });
   const usedBySet = new Set();
 
   const getLive = async ({ deep = true } = {}) => {
-    logger.info(`getLive ${type}/${resourceName}, deep: ${deep}`);
+    logger.info(`getLive ${client.toUri()}, deep: ${deep}`);
     const live = await client.getByName({
       provider,
       meta,
@@ -154,7 +171,7 @@ const ResourceMaker = ({
       deep,
       resources: provider.getResourcesByType(type),
     });
-    logger.debug(`getLive ${type}/${resourceName} result: ${tos(live)}`); //TODO KEY
+    logger.debug(`getLive ${client.toUri()} result: ${tos(live)}`); //TODO KEY
     return live;
   };
 
@@ -178,9 +195,11 @@ const ResourceMaker = ({
             assert(type);
           }),
           ({ type, results }) =>
-            find(
-              (item) =>
-                resourceName === provider.clientByType(type).findName(item) //TODO KEY
+            find((item) =>
+              isDeepEqual(
+                resourceName,
+                provider.clientByType(type).findName(item)
+              )
             )(results.items),
         ]),
         (result) => {
@@ -240,7 +259,7 @@ const ResourceMaker = ({
     pipe([
       tap(() => {
         logger.info(
-          `resolveDependencies for ${type}/${resourceName}: ${Object.keys(
+          `resolveDependencies for ${client.toUri()}: ${Object.keys(
             //TODO KEY
             dependencies
           )}, dependenciesMustBeUp: ${dependenciesMustBeUp}, has lives: ${!!lives}`
@@ -261,7 +280,7 @@ const ResourceMaker = ({
               }),
             (error) => {
               logger.error(
-                `resolveDependencies: ${type}/${resourceName}, error: ${tos(
+                `resolveDependencies: ${client.toUri()}, error: ${tos(
                   //TODO KEY
                   error
                 )}`
@@ -284,7 +303,9 @@ const ResourceMaker = ({
                 (live) => dependenciesMustBeUp && !live,
                 () => {
                   throw {
-                    message: `${type}/${resourceName} dependency ${dependency.name} is not up`, //TODO KEY
+                    message: `${client.toUri()} dependency ${
+                      dependency.name
+                    } is not up`,
                   };
                 }
               ),
@@ -305,12 +326,12 @@ const ResourceMaker = ({
       }),
       tap((result) => {
         logger.debug(
-          `resolveDependencies for ${resourceName}, result: ${tos(result)}`
+          `resolveDependencies for ${client.toUri()}, result: ${tos(result)}`
         );
       }),
       tap.if(any(get("error")), (resolvedDependencies) => {
         logger.error(
-          `resolveDependencies ${type}/${resourceName} error in resolveDependencies`
+          `resolveDependencies ${client.toUri()} error in resolveDependencies`
         );
 
         throw {
@@ -320,7 +341,7 @@ const ResourceMaker = ({
       }),
       tap((result) => {
         logger.debug(
-          `resolveDependencies for ${resourceName}, result: ${tos(result)}`
+          `resolveDependencies for ${client.toUri()}, result: ${tos(result)}`
         );
       }),
     ])(dependencies);
@@ -334,7 +355,7 @@ const ResourceMaker = ({
     pipe([
       tap(() => {
         logger.debug(
-          `resolveConfig ${type}/${resourceName}, ${tos({
+          `resolveConfig ${client.toUri()}, ${tos({
             deep,
             live,
           })}`
@@ -357,6 +378,7 @@ const ResourceMaker = ({
       async (resolvedDependencies) => {
         const config = await client.configDefault({
           name: resourceName,
+          meta,
           properties: defaultsDeep(spec.propertiesDefault)(
             properties({ dependencies: resolvedDependencies })
           ),
@@ -392,7 +414,7 @@ const ResourceMaker = ({
     logger.info(`create ${tos({ resourceName, type, payload })}`);
     // Is the resource already created ?
     if (await getLive({ deep: false })) {
-      throw Error(`Resource ${type}/${resourceName} already exists`);
+      throw Error(`Resource ${client.toUri()} already exists`);
     }
 
     const instance = await client.create({
@@ -403,19 +425,19 @@ const ResourceMaker = ({
       resolvedDependencies,
     });
 
-    logger.info(`created:  ${type}/${resourceName}`);
+    logger.info(`created: ${client.toUri()}`);
     return instance;
   };
 
   const update = async ({ payload, diff, live, resolvedDependencies }) => {
     logger.info(`update ${tos({ resourceName, type, payload })}`);
     if (!(await getLive())) {
-      throw Error(`Resource ${type}/${resourceName} does not exist`);
+      throw Error(`Resource ${client.toUri()} does not exist`);
     }
 
     // Create now
     const instance = await retryCall({
-      name: `update ${type}/${resourceName}`,
+      name: `update ${client.toUri()}`,
       fn: () =>
         client.update({
           name: resourceName,
@@ -430,15 +452,16 @@ const ResourceMaker = ({
       config: provider.config(),
     });
 
-    logger.info(`updated:  ${type}/${resourceName}`);
+    logger.info(`updated: ${client.toUri()}`);
 
+    //TODO use isExpected Result
     const liveInstance = await retryCall({
-      name: `update getLive ${type}/${resourceName}`,
+      name: `update getLive ${client.toUri()}`,
       fn: async () => {
         const live = await getLive();
         if (!live) {
           throw Error(
-            `Resource ${type}/${resourceName} not there after being created`
+            `Resource ${client.toUri()} not there after being created`
           );
         }
         return live;
@@ -453,7 +476,7 @@ const ResourceMaker = ({
         config: provider.config(),
       })
     ) {
-      throw Error(`Resource ${type}/${resourceName} is not tagged correctly`);
+      throw Error(`Resource ${client.toUri()} is not tagged correctly`);
     }
 
     return instance;
@@ -486,26 +509,24 @@ const ResourceMaker = ({
     provider: provider.name,
     type,
     name: resourceName,
-    uri: toUri({
-      providerName: provider.name,
-      type,
+    meta,
+    displayName: client.displayName({ name: resourceName, meta }),
+    uri: client.resourceKey({
+      provider: provider.name,
       name: resourceName,
+      type,
+      meta,
+      key,
     }),
   });
 
-  const toString = () =>
-    toUri({
-      providerName: provider.name,
-      type,
-      name: resourceName,
-    });
+  const toString = () => client.nameToUri({ name: resourceName, meta });
 
   const addUsedBy = (usedBy) => {
     usedBySet.add(usedBy);
   };
 
   const resourceMaker = {
-    meta,
     type,
     provider,
     name: resourceName,
@@ -613,11 +634,11 @@ function CoreProvider({
     )}`
   );
 
+  //TODO KEY
   const liveToUri = ({ client, live }) =>
-    toUri({
-      providerName,
-      type: client.spec.type,
+    client.nameToUri({
       name: client.findName(live),
+      meta: client.findMeta(live),
       id: client.findId(live),
     });
 
@@ -767,28 +788,22 @@ function CoreProvider({
   // Target Resources
   const mapNameToResource = new Map();
   const mapTypeToResources = new Map();
-  const resourceKey = (resource) => {
-    assert(resource.type);
-    assert(resource.name);
-    return `${resource.spec?.providerName || resource.provider}::${
-      resource.type
-    }::${resource.name}`;
-  };
+
   const targetResourcesAdd = (resource) => {
     assert(resource.name);
     assert(resource.type);
     assert(resource.spec.providerName);
-
-    if (mapNameToResource.has(resourceKey(resource))) {
+    const { client } = resource;
+    if (mapNameToResource.has(client.resourceKey(resource.toJSON()))) {
       throw {
         code: 400,
         message: `resource '${JSON.stringify(
-          resourceKey(resource)
+          client.resourceKey(resource.toJSON())
         )}' already exists`,
       };
     }
 
-    mapNameToResource.set(resourceKey(resource), resource);
+    mapNameToResource.set(client.resourceKey(resource.toJSON()), resource);
 
     mapTypeToResources.set(resource.type, [
       ...getResourcesByType(resource.type),
@@ -805,7 +820,7 @@ function CoreProvider({
   const resourceNames = () => pluck(["name"])([...mapNameToResource.values()]);
 
   const getResource = (resource) =>
-    mapNameToResource.get(resourceKey(resource));
+    mapNameToResource.get(clientByType(resource.type).resourceKey(resource));
 
   const specs = fnSpecs(providerConfig).map((spec) =>
     defaultsDeep(SpecDefault({ config: providerConfig, providerName }))(spec)
@@ -846,6 +861,10 @@ function CoreProvider({
       get("items"),
       map((item) => ({
         name: client.findName(item),
+        displayName: client.displayName({
+          name: client.findName(item),
+          meta: client.findMeta(item),
+        }),
         id: client.findId(item),
         managedByUs: client.spec.isOurMinion({
           resource: item,
@@ -859,7 +878,7 @@ function CoreProvider({
           resource: item,
           name: client.findName(item),
           resourceNames: resourceNames(),
-          config,
+          config: provider.config(),
         }),
       })),
       filter((item) => (our ? item.managedByUs : true)),
@@ -1678,7 +1697,9 @@ function CoreProvider({
     const { type } = spec;
     const name = client.findName(resource);
     const id = client.findId(resource);
-    const isNameInOurPlan = resourceNames().includes(name);
+    const isNameInOurPlan = find((item) => isDeepEqual(item, name))(
+      resourceNames()
+    );
 
     assert(direction);
     logger.debug(
@@ -1880,6 +1901,10 @@ function CoreProvider({
                       provider: providerName,
                       type: client.spec.type,
                       name: client.findName(live),
+                      displayName: client.displayName({
+                        name: client.findName(live),
+                        meta: client.findMeta(live),
+                      }),
                       id: client.findId(live),
                       uri: liveToUri({ client, live }),
                     },

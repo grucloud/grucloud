@@ -1070,9 +1070,6 @@ const OutputDoOk = ({ commandOptions, programOptions }) =>
     tap((providers) => {
       logger.debug(`output #providers ${providers.length}`);
     }),
-    forEach((provider) => {
-      logger.debug(`provider ${provider.name}: ${provider.resourceNames()}`);
-    }),
     filter((provider) =>
       provider.getResource({
         provider: provider.name,

@@ -7,6 +7,8 @@ describe("K8sDeployment", async function () {
   let config;
   let provider;
   let deployment;
+  let deploymentNamespace;
+  const myNamespace = "test";
   const resourceName = "app-deployment";
   const labelApp = "app";
 
@@ -62,6 +64,11 @@ describe("K8sDeployment", async function () {
     deployment = await provider.makeDeployment({
       name: resourceName,
       meta: { namespace: "default" },
+      properties: () => deploymentContent({ labelApp }),
+    });
+    deploymentNamespace = await provider.makeDeployment({
+      name: "deploymentNamespace",
+      meta: { namespace: myNamespace },
       properties: () => deploymentContent({ labelApp }),
     });
   });

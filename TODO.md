@@ -2,6 +2,8 @@
 
 ## Common:
 
+- client.toUri => toString
+
 - ebs volume: use lsblk ?
 - file -s /dev/xvdf
 - mkfs -t ext4 /dev/xvdf

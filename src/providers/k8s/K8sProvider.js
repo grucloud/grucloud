@@ -10,11 +10,16 @@ const logger = require("../../logger")({ prefix: "K8sProvider" });
 const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
 const { K8sDeployment } = require("./K8sDeployment");
+const { isOurMinionObject } = require("../Common");
+
+const isOurMinion = ({ resource, config }) =>
+  isOurMinionObject({ tags: resource.metadata.annotations, config });
 
 const fnSpecs = () => [
   {
     type: "Deployment",
     Client: K8sDeployment,
+    isOurMinion,
   },
 ];
 

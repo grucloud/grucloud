@@ -1,5 +1,4 @@
 const assert = require("assert");
-const path = require("path");
 const urljoin = require("url-join");
 
 const {
@@ -24,7 +23,6 @@ const {
 } = require("rubico/x");
 const { retryCall, retryCallOnError } = require("../Retry");
 
-const CoreClient = require("../CoreClient");
 const logger = require("../../logger")({ prefix: "K8sClient" });
 const { createAxiosMakerK8s, getServerUrl } = require("./K8sCommon");
 const { tos } = require("../../tos");
@@ -58,17 +56,41 @@ module.exports = K8sClient = ({
   assert(pathDelete);
 
   const { kubeConfig } = config;
-  const { type } = spec;
+  const { type, providerName } = spec;
+
+  assert(providerName);
+
+  const resourceKey = (resource) => {
+    assert(resource.provider);
+    assert(resource.type);
+    assert(resource.name);
+
+    return `${resource.provider}::${resource.type}::${get(
+      "namespace",
+      "default"
+    )(resource.meta)}::${resource.name}`;
+  };
+
+  const nameToUri = ({ name, meta }) =>
+    `${providerName}::${type}::${meta.namespace}::${name}`;
+
+  const displayName = ({ name, meta: { namespace = "default" } }) =>
+    `${namespace}::${name}`;
+
   const findName = pipe([
-    tap((item) => {
-      logger.debug(`findName: item: ${tos(item)}`);
-    }),
-    get("metadata"),
-    pick(["name", "namespace"]),
+    get("metadata.name"),
     tap((name) => {
-      logger.debug(`findName: result: ${tos(name)}`);
+      assert(name);
     }),
   ]);
+
+  const findMeta = pipe([
+    get("metadata"),
+    tap((metadata) => {
+      assert(metadata);
+    }),
+  ]);
+
   const findId = findName;
 
   const axios = () => createAxiosMakerK8s({ config });
@@ -100,7 +122,7 @@ module.exports = K8sClient = ({
       pipe([
         tap(() => {
           logger.info(`getByName ${JSON.stringify({ type, name, namespace })}`);
-          assert(!isEmpty(name), `getById ${type}: invalid name`);
+          assert(!isEmpty(name), `getByName ${type}: invalid name`);
         }),
         () => pathGet({ name, namespace }),
         (path) =>
@@ -194,12 +216,16 @@ module.exports = K8sClient = ({
 
   return {
     spec,
+    displayName,
     findName,
+    findMeta,
     getByName,
     findId,
     getList,
     create,
     destroy,
     configDefault,
+    resourceKey,
+    nameToUri,
   };
 };

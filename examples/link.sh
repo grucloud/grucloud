@@ -21,6 +21,7 @@
 (cd mock/mock && npm run link)
 (cd mock/mock-simple && npm run link)
 (cd multi/ && npm run link)
+(cd k8s/stateless && npm run link)
 (cd scaleway/ && npm run link)
 
 

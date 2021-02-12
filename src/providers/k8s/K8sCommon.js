@@ -9,33 +9,18 @@ const { tos } = require("../../tos");
 const AxiosMaker = require("../AxiosMaker");
 
 exports.shouldRetryOnException = ({ error, name }) => {
-  logger.error(`gcp shouldRetryOnException ${tos({ name, error })}`);
-  const { response } = error;
-  if (!response) return false;
-  if (
-    response.status === 400 &&
-    response.data?.error?.errors?.find(
-      (error) => error.reason === "resourceNotReady"
-    )
-  ) {
-    logger.info("shouldRetryOnException retrying");
-    return true;
-  }
-  logger.info("shouldRetryOnException NOT retrying");
-
+  //TODO
+  logger.error(`k8s shouldRetryOnException ${tos({ name, error })}`);
   return false;
 };
 
 exports.getServerUrl = (kubeConfig) =>
   pipe([
     tap((kubeConfig) => {
-      logger.debug("getServerUrl");
+      //logger.debug("getServerUrl");
     }),
     get("clusters"),
     find(eq(get("name"), kubeConfig["current-context"])),
-    tap((xxx) => {
-      logger.debug("getServerUrl");
-    }),
     get("cluster.server"),
     tap.if(isEmpty, () => {
       throw Error(`missing clusters[0].server ${tos({ kubeConfig })}`);

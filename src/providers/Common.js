@@ -1,9 +1,20 @@
 const assert = require("assert");
 const md5File = require("md5-file");
-const { pipe, tap, omit, get, map } = require("rubico");
-const { isEmpty, groupBy, values, first, pluck } = require("rubico/x");
+const { pipe, tap, omit, get, map, switchCase, and, eq } = require("rubico");
+const {
+  find,
+  isEmpty,
+  groupBy,
+  values,
+  first,
+  pluck,
+  isDeepEqual,
+} = require("rubico/x");
 const logger = require("../logger")({ prefix: "Common" });
 const { tos } = require("../tos");
+
+const KeyName = "Name";
+exports.KeyName = KeyName;
 
 exports.mapPoolSize = 20;
 exports.TitleDeploying = "Deploying";
@@ -135,25 +146,31 @@ exports.getByNameCore = async ({
   getList,
   resources,
   deep = true,
-}) => {
-  logger.info(`getByName ${name}`);
-  assert(name, "name");
-  assert(findName, "findName");
-  assert(getList, "getList");
+  //TODO meta ?
+}) =>
+  pipe([
+    tap(() => {
+      logger.info(`getByName ${name}`);
+      assert(name, "name");
+      assert(findName, "findName");
+      assert(getList, "getList");
+    }),
+    () => getList({ deep, resources }),
+    get("items"),
+    find((item) => isDeepEqual(name, findName(item))), //TODO check on meta
+    tap((instance) => {
+      logger.info(`getByName ${name}: ${instance ? "UP" : "DOWN"}`);
+      logger.debug(`getByName ${name}: ${tos({ instance })}`);
+    }),
+  ])();
 
-  const { items } = await getList({ deep, resources });
-  const instance = items.find((item) => findName(item) === name);
-  logger.info(`getByName ${name}: ${instance ? "UP" : "DOWN"}`);
-  logger.debug(`getByName ${name}: ${tos({ instance })}`);
-
-  return instance;
-};
+//TODO merge with getByNameCore
 const getByIdCore = async ({ type, name, id, findId, getList }) => {
   logger.info(`getById ${JSON.stringify({ type, name, id })}`);
   assert(id, "getByIdCore id");
   assert(findId, "getByIdCore findId");
   assert(getList, "getByIdCore getList");
-
+  //TODO KEY
   const { items } = await getList();
   const instance = items.find((item) => findId(item) === id);
   logger.debug(`getById ${id}: ${tos({ instance })}`);
@@ -254,3 +271,50 @@ exports.md5FileBase64 = pipe([
   (source) => md5File(source),
   (md5) => new Buffer.from(md5, "hex").toString("base64"),
 ]);
+
+exports.buildTagsObject = ({ name, config }) => {
+  const {
+    managedByKey,
+    managedByValue,
+    stageTagKey,
+    createdByProviderKey,
+    stage,
+    providerName,
+    projectName,
+  } = config;
+
+  assert(name);
+  assert(providerName);
+  assert(stage);
+  return {
+    [KeyName]: name,
+    [managedByKey]: managedByValue,
+    [createdByProviderKey]: providerName,
+    [stageTagKey]: stage,
+    projectName,
+  };
+};
+
+exports.isOurMinionObject = ({ tags, config }) => {
+  const { stage, projectName } = config;
+  return pipe([
+    tap(() => {
+      assert(stage);
+      assert(projectName);
+    }),
+    switchCase([
+      and([eq(get("projectName"), projectName), eq(get("stage"), stage)]),
+      () => true,
+      () => false,
+    ]),
+    tap((minion) => {
+      logger.debug(
+        `isOurMinion ${minion}, ${tos({
+          stage,
+          projectName,
+          tags,
+        })}`
+      );
+    }),
+  ])(tags);
+};

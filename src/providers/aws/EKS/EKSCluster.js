@@ -24,12 +24,13 @@ const {
 const logger = require("../../../logger")({ prefix: "EKSCluster" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
-const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const {
-  EKSNew,
+  getByNameCore,
+  isUpByIdCore,
+  isDownByIdCore,
   buildTagsObject,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+} = require("../../Common");
+const { EKSNew, shouldRetryOnException } = require("../AwsCommon");
 
 const findName = get("name");
 const findId = findName;

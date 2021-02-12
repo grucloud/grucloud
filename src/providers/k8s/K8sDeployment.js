@@ -11,27 +11,22 @@ const {
   filter,
   eq,
 } = require("rubico");
-const {
-  first,
-  defaultsDeep,
-  isEmpty,
-  forEach,
-  pluck,
-  flatten,
-} = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
 
 const logger = require("../../logger")({ prefix: "K8sDeployment" });
 const { tos } = require("../../tos");
-
+const { buildTagsObject } = require("../Common");
 const K8sClient = require("./K8sClient");
 
 exports.K8sDeployment = ({ spec, config }) => {
-  const configDefault = async ({ name, properties, dependencies }) =>
+  const configDefault = async ({ name, meta, properties, dependencies }) =>
     defaultsDeep({
       apiVersion: "apps/v1",
       kind: "Deployment",
       metadata: {
         name,
+        namespace: meta.namespace,
+        annotations: buildTagsObject({ name, config }),
       },
     })(properties);
 

@@ -35,16 +35,8 @@ const { buildLabel } = require("../../GoogleCommon");
 const logger = require("../../../../logger")({ prefix: "GcpObject" });
 const { tos } = require("../../../../tos");
 
-const findName = (item) => {
-  assert(item, "findName");
-  assert(item.name, "name");
-  return item.name;
-};
-
-const findId = (item) => {
-  assert(item.id, "findId item.id");
-  return item.id;
-};
+const findName = get("name");
+const findId = get("id");
 
 const objectPath = (bucketName, name) => {
   assert(name);

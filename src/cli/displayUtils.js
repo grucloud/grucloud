@@ -1,9 +1,18 @@
 const assert = require("assert");
-const emoji = require("node-emoji");
 const Table = require("cli-table3");
 const colors = require("colors/safe");
 const YAML = require("./json2yaml");
-const { switchCase, pipe, tap, map, reduce, filter, not } = require("rubico");
+const {
+  switchCase,
+  pipe,
+  tap,
+  map,
+  reduce,
+  filter,
+  not,
+  get,
+  eq,
+} = require("rubico");
 const { isEmpty, forEach, pluck, size } = require("rubico/x");
 
 const { planToResourcesPerType } = require("../providers/Common");
@@ -16,6 +25,7 @@ const displayResource = (item) =>
 const displayManagedByUs = (resource) =>
   resource.managedByUs ? colors.green("Yes") : colors.red("NO");
 
+// TODO
 const displayItem = (table, item) =>
   switchCase([
     () => item.error,
@@ -53,13 +63,13 @@ exports.displayListSummary = pipe([
       tap((results) => {
         //console.log(`Provider: ${provider.name}`);
       }),
-      filter(({ error }) => !error),
+      filter(not(get("error"))),
       forEach(({ type, resources }) => {
         table.push([
           {
             content: type,
           },
-          { content: pluck("name")(resources).join("\n") },
+          { content: pluck("displayName")(resources).join("\n") },
         ]);
       }),
       tap(() => {
@@ -99,7 +109,7 @@ const displayResourcePerType = ({
           },
           {
             content: pipe([
-              pluck("name"),
+              pluck("displayName"),
               (names) => names.join(", "),
               (names) => colors[colorName](names),
             ])(resourcesPerType.resources),
@@ -213,16 +223,18 @@ const tablePlanPerType = {
   columns: ["Name", "Action", "Data"],
   colWidths: ({ resources, columns }) => {
     const nameLength =
-      computeLength({ field: "resource.name", maxLength: 40 })(resources) + 2;
+      computeLength({ field: "resource.displayName", maxLength: 40 })(
+        resources
+      ) + 2;
     const actionLength = 10;
     const dataLength = columns - nameLength - actionLength - 10;
     return [nameLength, actionLength, dataLength];
   },
   fields: [
-    (item) => item.resource.name,
-    (item) => item.action,
+    get("resource.displayName"),
+    get("action"),
     switchCase([
-      (item) => item.action === "UPDATE",
+      eq(get("action"), "UPDATE"),
       (item) => {
         const table = new Table({
           style: { head: [], border: [] },
@@ -319,9 +331,9 @@ const tablePerTypeDefinitions = [
     },
     columns: ["Email", "Data", "Our"],
     fields: [
-      (resource) => resource.data.email,
-      (resource) => YAML.stringify(resource.data),
-      (resource) => displayManagedByUs(resource),
+      get("data.email"),
+      pipe([get("data"), YAML.stringify]),
+      displayManagedByUs,
     ],
   },
 ];
@@ -330,15 +342,15 @@ const tablePerTypeDefault = {
   columns: ["Name", "Data", "Our"],
   colWidths: ({ resources, columns }) => {
     const nameLength =
-      computeLength({ field: "name", maxLength: 40 })(resources) + 2;
+      computeLength({ field: "displayName", maxLength: 40 })(resources) + 2;
     const managedByUs = 6;
     const dataLength = columns - nameLength - managedByUs - 10;
     return [nameLength, dataLength, managedByUs];
   },
   fields: [
-    (resource) => resource.name,
-    (resource) => YAML.stringify(resource.data),
-    (resource) => displayManagedByUs(resource),
+    get("displayName"),
+    pipe([get("data"), YAML.stringify]),
+    displayManagedByUs,
   ],
 };
 
