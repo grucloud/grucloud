@@ -60,6 +60,7 @@
     "duration": "^0.2.2",
     "expand-tilde": "^2.0.2",
     "google-auth-library": "6.1.4",
+    "js-yaml": "^4.0.0",
     "lodash": "^4.17.20",
     "md5-file": "^5.0.0",
     "moment": "^2.29.1",

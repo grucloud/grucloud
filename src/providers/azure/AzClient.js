@@ -28,14 +28,14 @@ module.exports = AzClient = ({
   assert(config);
   assert(config.bearerToken);
 
-  const pathGet = (id) => path.join(`/${id}`, queryParameters());
+  const pathGet = ({ id }) => path.join(`/${id}`, queryParameters());
   const pathCreate = ({ dependencies, name }) =>
     path.join(
       pathBase,
       pathSuffix ? `${pathSuffix({ dependencies })}/${name}` : "",
       queryParameters()
     );
-  const pathDelete = (id) => path.join(`/${id}`, queryParameters());
+  const pathDelete = ({ id }) => path.join(`/${id}`, queryParameters());
   const pathList = () =>
     path.join(
       pathBase,

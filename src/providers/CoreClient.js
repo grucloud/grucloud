@@ -20,9 +20,9 @@ module.exports = CoreClient = ({
   type,
   config,
   axios,
-  pathGet = (id) => `/${id}`,
+  pathGet = ({ id }) => `/${id}`,
   pathCreate = () => `/`,
-  pathDelete = (id) => `/${id}`,
+  pathDelete = ({ id }) => `/${id}`,
   pathList = () => `/`,
   verbGet = "GET",
   verbList = "GET",
@@ -62,7 +62,7 @@ module.exports = CoreClient = ({
           assert(!isEmpty(id), `getById ${type}: invalid id`);
           assert(!spec.listOnly);
         }),
-        () => pathGet(id),
+        () => pathGet({ id }),
         (path) =>
           retryCallOnError({
             name: `getById type ${spec.type}, name: ${name}, path: ${path}`,
@@ -89,6 +89,9 @@ module.exports = CoreClient = ({
 
   const getList = tryCatch(
     pipe([
+      tap((params) => {
+        logger.debug(`getList ${spec.type}, params: ${tos(params)}`);
+      }),
       () => pathList(),
       (path) =>
         retryCallOnError({
@@ -190,7 +193,7 @@ module.exports = CoreClient = ({
           assert(!spec.listOnly);
           assert(!isEmpty(id), `destroy ${type}: invalid id`);
         }),
-        () => pathDelete(id),
+        () => pathDelete({ id }),
         (path) =>
           retryCallOnError({
             name: `destroy type ${spec.type}, path: ${path}`,

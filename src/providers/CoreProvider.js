@@ -112,37 +112,49 @@ const toUri = ({ providerName, type, name, id }) => {
   assert(name || id, `missing name or id for ${providerName}::${type}`);
   return `${providerName}::${type}::${name || id}`;
 };
-
 const createClient = ({ spec, provider, config, mapTypeToResources }) =>
-  defaultsDeep({ cannotBeDeleted: () => false, configDefault: () => ({}) })(
-    spec.Client({ provider, spec, config, mapTypeToResources })
-  );
+  pipe([
+    () => spec.Client({ provider, spec, config, mapTypeToResources }),
+    tap((client) => {
+      assert(client.spec);
+      assert(client.findName);
+      assert(client.getByName);
+      assert(client.create);
+      assert(client.destroy);
+    }),
+    defaultsDeep({ cannotBeDeleted: () => false, configDefault: () => ({}) }),
+  ])();
 
 const ResourceMaker = ({
   name: resourceName,
+  key,
   dependencies = {},
   transformConfig,
   properties = () => ({}),
   spec,
   provider,
   config,
+  meta,
 }) => {
   const { type } = spec;
-  logger.debug(`ResourceMaker: ${tos({ type, resourceName })}`);
+  logger.debug(`ResourceMaker: ${tos({ key, type, resourceName })}`);
 
   const client = createClient({ provider, spec, config });
   const usedBySet = new Set();
+
   const getLive = async ({ deep = true } = {}) => {
     logger.info(`getLive ${type}/${resourceName}, deep: ${deep}`);
     const live = await client.getByName({
       provider,
+      meta,
+      key,
       name: resourceName,
       dependencies,
       resolveConfig,
       deep,
-      resources: provider.getResourcesByType(client.spec.type),
+      resources: provider.getResourcesByType(type),
     });
-    logger.debug(`getLive ${type}/${resourceName} result: ${tos(live)}`);
+    logger.debug(`getLive ${type}/${resourceName} result: ${tos(live)}`); //TODO KEY
     return live;
   };
 
@@ -168,7 +180,7 @@ const ResourceMaker = ({
           ({ type, results }) =>
             find(
               (item) =>
-                resourceName === provider.clientByType(type).findName(item)
+                resourceName === provider.clientByType(type).findName(item) //TODO KEY
             )(results.items),
         ]),
         (result) => {
@@ -229,6 +241,7 @@ const ResourceMaker = ({
       tap(() => {
         logger.info(
           `resolveDependencies for ${type}/${resourceName}: ${Object.keys(
+            //TODO KEY
             dependencies
           )}, dependenciesMustBeUp: ${dependenciesMustBeUp}, has lives: ${!!lives}`
         );
@@ -249,6 +262,7 @@ const ResourceMaker = ({
             (error) => {
               logger.error(
                 `resolveDependencies: ${type}/${resourceName}, error: ${tos(
+                  //TODO KEY
                   error
                 )}`
               );
@@ -270,7 +284,7 @@ const ResourceMaker = ({
                 (live) => dependenciesMustBeUp && !live,
                 () => {
                   throw {
-                    message: `${type}/${resourceName} dependency ${dependency.name} is not up`,
+                    message: `${type}/${resourceName} dependency ${dependency.name} is not up`, //TODO KEY
                   };
                 }
               ),
@@ -382,6 +396,7 @@ const ResourceMaker = ({
     }
 
     const instance = await client.create({
+      meta,
       name: resourceName,
       payload,
       dependencies,
@@ -490,9 +505,11 @@ const ResourceMaker = ({
   };
 
   const resourceMaker = {
+    meta,
     type,
     provider,
     name: resourceName,
+    meta,
     dependencies,
     addUsedBy,
     usedBy: () => usedBySet,
@@ -546,11 +563,13 @@ const createResourceMakers = ({ specs, config, provider }) =>
     assert(spec.type);
     acc[factoryName(spec)] = async ({
       name,
+      meta = {},
       dependencies,
       properties,
       transformConfig,
     }) => {
       const resource = ResourceMaker({
+        meta,
         name,
         transformConfig,
         properties,
@@ -1659,9 +1678,7 @@ function CoreProvider({
     const { type } = spec;
     const name = client.findName(resource);
     const id = client.findId(resource);
-    const isNameInOurPlan = resourceNames().includes(
-      fromTagName(name, providerConfig.tag)
-    );
+    const isNameInOurPlan = resourceNames().includes(name);
 
     assert(direction);
     logger.debug(

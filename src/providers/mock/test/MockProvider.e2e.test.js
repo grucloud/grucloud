@@ -10,7 +10,7 @@ const {
 
 //const { tos } = require("../../../tos");
 
-describe("MockProvider e2e", async function () {
+describe.only("MockProvider e2e", async function () {
   let stack;
   let provider;
   let config;
