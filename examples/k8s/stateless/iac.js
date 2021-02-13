@@ -7,7 +7,7 @@ const deploymentNginx = ({ labelApp, version = "1.14.2" }) => ({
     },
   },
   spec: {
-    replicas: 3,
+    replicas: 1,
     selector: {
       matchLabels: {
         app: labelApp,

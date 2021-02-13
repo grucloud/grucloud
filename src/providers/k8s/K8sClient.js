@@ -25,7 +25,11 @@ const {
 const { retryCall, retryCallOnError } = require("../Retry");
 
 const logger = require("../../logger")({ prefix: "K8sClient" });
-const { createAxiosMakerK8s, getServerUrl } = require("./K8sCommon");
+const {
+  createAxiosMakerK8s,
+  getServerUrl,
+  getNamespace,
+} = require("./K8sCommon");
 const { tos } = require("../../tos");
 
 const {
@@ -44,6 +48,7 @@ module.exports = K8sClient = ({
   pathGet,
   pathCreate,
   pathDelete,
+  pathUpdate,
   resourceKey,
   displayName,
   cannotBeDeleted = () => false,
@@ -57,6 +62,7 @@ module.exports = K8sClient = ({
   assert(pathGet);
   assert(pathCreate);
   assert(pathDelete);
+  //assert(pathUpdate);
 
   const { kubeConfig } = config;
   const { type, providerName } = spec;
@@ -103,59 +109,64 @@ module.exports = K8sClient = ({
       throw axiosErrorToJSON(error);
     }
   );
-  const getByName = async ({ name, meta: { namespace = "default" } = {} }) =>
+
+  const getByKey = ({ name, namespace }) =>
     tryCatch(
       pipe([
         tap(() => {
-          logger.info(`getByName ${JSON.stringify({ type, name, namespace })}`);
-          assert(!isEmpty(name), `getByName ${type}: invalid name`);
+          logger.info(`getByKey ${JSON.stringify({ name, namespace })}`);
+          assert(name);
+          //assert(namespace);
         }),
         () => pathGet({ name, namespace }),
         (path) =>
           retryCallOnError({
-            name: `getByName type ${type}, name: ${name}, path: ${path}`,
+            name: `getByKey type ${type}, name: ${name}, path: ${path}`,
             fn: () => axios().get(urljoin(getServerUrl(kubeConfig()), path)),
             config,
           }),
         get("data"),
         tap((data) => {
-          logger.debug(`getByName result ${name}: ${tos(data)}`);
+          logger.debug(`getByKey result ${name}: ${tos(data)}`);
         }),
       ]),
       switchCase([
-        (error) => error.response?.status !== 404,
+        eq(get("response.status"), 404),
+        () => {},
         (error) => {
-          logError("getByName", error);
+          logError("getByKey", error);
           throw axiosErrorToJSON(error);
         },
-        () => {},
       ])
     )();
 
-  const create = async ({
-    name,
-    meta: { namespace = "default" },
-    payload,
-    dependencies,
-  }) =>
+  const getByName = ({ name, dependencies }) =>
+    getByKey({ name, namespace: getNamespace(dependencies.namespace) });
+
+  const getById = ({ live }) =>
+    getByKey({
+      name: findName(live),
+      namespace: get("namespace")(findMeta(live)),
+    });
+
+  const isDownById = isDownByIdCore({ getById });
+
+  const create = async ({ name, payload, dependencies }) =>
     tryCatch(
       pipe([
         tap(() => {
-          logger.info(
-            `create ${type}/${namespace}::${name}, payload: ${tos(payload)}`
-          );
+          logger.info(`create ${type}::${name}, payload: ${tos(payload)}`);
           assert(name);
           assert(payload);
         }),
-        () => pathCreate({ name, namespace }),
+        () =>
+          pathCreate({ name, namespace: getNamespace(dependencies.namespace) }),
         tap((path) => {
           logger.info(`create ${type}/${name}, path: ${path}`);
         }),
         (path) =>
           retryCallOnError({
-            name: `create ${type}/${name}`,
-            //isExpectedException, //TODO
-            //shouldRetryOnException,
+            name: `create ${type}/${name} path: ${path}`,
             fn: () =>
               axios().post(urljoin(getServerUrl(kubeConfig()), path), payload),
             config: { ...config, repeatCount: 0 },
@@ -171,6 +182,38 @@ module.exports = K8sClient = ({
       ]),
       (error) => {
         logError(`create ${type}/${name}`, error);
+        throw axiosErrorToJSON(error);
+      }
+    )();
+
+  const update = async ({ name, payload, dependencies, live, diff }) =>
+    tryCatch(
+      pipe([
+        tap(() => {
+          logger.info(`update ${type}/${name}, diff: ${tos(diff)}`);
+          assert(name);
+          assert(payload);
+        }),
+        () =>
+          pathUpdate({ name, namespace: getNamespace(dependencies.namespace) }),
+        tap((path) => {
+          logger.info(`update ${type}/${name}, path: ${path}`);
+        }),
+        (path) =>
+          retryCallOnError({
+            name: `update ${type}/${name}`,
+            fn: () =>
+              axios().put(urljoin(getServerUrl(kubeConfig()), path), payload),
+            config: { ...config, repeatCount: 0 },
+          }),
+        tap((result) => {
+          logger.info(`updated ${type}/${name}, status: ${result.status}`);
+          logger.debug(`updated ${type}/${name} data: ${tos(result.data)}`);
+        }),
+        get("data"),
+      ]),
+      (error) => {
+        logError(`update ${type}/${name}`, error);
         throw axiosErrorToJSON(error);
       }
     )();
@@ -193,12 +236,18 @@ module.exports = K8sClient = ({
             name: `destroy type ${type}, path: ${path}`,
             fn: () => axios().delete(urljoin(getServerUrl(kubeConfig()), path)),
             config,
-            isExpectedException: () => false,
           }),
         get("data"),
         tap((data) => {
           logger.info(`destroy ${JSON.stringify({ type, data })} destroyed`);
         }),
+        tap(() =>
+          retryCall({
+            name: `destroy ${type}, name: ${findName(live)}, isDownById`,
+            fn: () => isDownById({ live }),
+            config: { retryCall: 1e3, retryCall: 5 * 60e3 },
+          })
+        ),
       ]),
       (error) => {
         logError(`delete ${type} ${tos({ live })}`, error);
@@ -217,6 +266,7 @@ module.exports = K8sClient = ({
     findId,
     getList,
     create,
+    update,
     destroy,
     cannotBeDeleted: or([cannotBeDeletedDefault, cannotBeDeleted]),
     configDefault,

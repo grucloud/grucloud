@@ -12,6 +12,7 @@ const CoreProvider = require("../CoreProvider");
 const { K8sNamespace } = require("./K8sNamespace");
 const { K8sDeployment } = require("./K8sDeployment");
 const { isOurMinionObject } = require("../Common");
+const { compare } = require("./K8sCommon");
 
 const isOurMinion = ({ resource, config }) =>
   isOurMinionObject({ tags: resource.metadata.annotations, config });
@@ -22,6 +23,7 @@ const fnSpecs = () => [
     dependsOn: ["Namespace"],
     Client: K8sDeployment,
     isOurMinion,
+    compare,
   },
   {
     type: "Namespace",

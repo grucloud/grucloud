@@ -1,11 +1,29 @@
 const assert = require("assert");
-const { pipe, get, tap, eq } = require("rubico");
-const { find, first, isEmpty } = require("rubico/x");
+const { pipe, get, tap, eq, switchCase, assign, or } = require("rubico");
+const { find, first, isEmpty, differenceWith, isEqual } = require("rubico/x");
 const fs = require("fs");
 const https = require("https");
+const { detailedDiff } = require("deep-object-diff");
 const logger = require("../../logger")({ prefix: "K8sCommon" });
 const { tos } = require("../../tos");
 const AxiosMaker = require("../AxiosMaker");
+
+exports.getNamespace = pipe([
+  switchCase([isEmpty, () => `default`, get("name")]),
+]);
+
+exports.compare = async ({ target, live }) =>
+  pipe([
+    tap(() => {
+      logger.debug(`compare ${tos({ target, live })}`);
+      assert(target);
+      assert(live);
+    }),
+    () => detailedDiff(live.spec, target.spec),
+    tap((diff) => {
+      logger.debug(`compare ${tos(diff)}`);
+    }),
+  ])();
 
 exports.resourceKey = pipe([
   tap((resource) => {

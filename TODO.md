@@ -2,7 +2,7 @@
 
 ## Common:
 
-- client.toUri => toString
+- const getById = getByIdCore({ fieldIds: "AllocationIds", getList });
 
 - ebs volume: use lsblk ?
 - file -s /dev/xvdf

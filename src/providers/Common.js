@@ -197,9 +197,9 @@ exports.isDownByIdCore = ({
   getById,
   getList,
   findId,
-}) => async ({ id }) => {
+}) => async ({ id, live }) => {
   logger.debug(`isDownById ${id}`);
-  assert(id, "isDownByIdCore id");
+  assert(id || live, "isDownByIdCore id");
   assert(getById, "isDownByIdCore getById");
 
   let down = false;
@@ -212,6 +212,7 @@ exports.isDownByIdCore = ({
     getList,
     findId,
     deep: false,
+    live,
   });
   if (instance) {
     if (isInstanceDown) {
