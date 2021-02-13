@@ -80,7 +80,7 @@ describe.skip("K8sDeployment", async function () {
   });
   after(async () => {});
 
-  it.only("k8s deployment apply and destroy", async function () {
+  it("k8s deployment apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
     const deploymentLive = await deployment.getLive();
 
