@@ -52,8 +52,9 @@ module.exports = K8sClient = ({
   pathUpdate,
   resourceKey,
   displayName,
+  isUpByIdFactory = ({ getById }) => isUpByIdCore({ getById }),
+  isDownByIdFactory = ({ getById }) => isDownByIdCore({ getById }),
   cannotBeDeleted = () => false,
-  isInstanceUp,
 }) => {
   assert(spec);
   assert(spec.type);
@@ -62,9 +63,6 @@ module.exports = K8sClient = ({
   assert(config.kubeConfig);
   assert(pathList);
   assert(pathGet);
-  assert(pathCreate);
-  assert(pathDelete);
-  //assert(pathUpdate);
 
   const { kubeConfig } = config;
   const { type, providerName } = spec;
@@ -159,8 +157,8 @@ module.exports = K8sClient = ({
       suffix: "status",
     });
 
-  const isUpById = isUpByIdCore({ isInstanceUp, getById });
-  const isDownById = isDownByIdCore({ getById });
+  const isUpById = isUpByIdFactory({ getById });
+  const isDownById = isDownByIdFactory({ getById });
 
   const create = async ({ name, payload, dependencies }) =>
     tryCatch(
@@ -272,7 +270,13 @@ module.exports = K8sClient = ({
       }
     )();
 
-  const cannotBeDeletedDefault = ({ name }) => name.startsWith("kube");
+  const cannotBeDeletedDefault = pipe([
+    get("resource.metadata"),
+    or([
+      ({ name = "" }) => name.startsWith("kube"),
+      ({ namespace = "" }) => namespace.startsWith("kube"),
+    ]),
+  ]);
 
   return {
     spec,

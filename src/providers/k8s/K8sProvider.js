@@ -9,6 +9,7 @@ const yaml = require("js-yaml");
 const logger = require("../../logger")({ prefix: "K8sProvider" });
 const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
+const { K8sReplicaSet } = require("./K8sReplicaSet");
 const { K8sNamespace } = require("./K8sNamespace");
 const { K8sDeployment } = require("./K8sDeployment");
 const { K8sConfigMap } = require("./K8sConfigMap");
@@ -33,6 +34,11 @@ const fnSpecs = () => [
     Client: K8sConfigMap,
     isOurMinion,
     compare,
+  },
+  {
+    type: "ReplicaSet",
+    Client: K8sReplicaSet,
+    listOnly: true,
   },
   {
     type: "Namespace",

@@ -31,14 +31,6 @@ exports.K8sConfigMap = ({ spec, config }) => {
   const pathUpdate = pathGet;
   const pathDelete = pathGet;
 
-  const cannotBeDeleted = pipe([
-    get("resource.metadata"),
-    or([
-      ({ name }) => name.startsWith("kube"),
-      ({ namespace }) => namespace.startsWith("kube"),
-    ]),
-  ]);
-
   return K8sClient({
     spec,
     config,
@@ -50,6 +42,5 @@ exports.K8sConfigMap = ({ spec, config }) => {
     configDefault,
     resourceKey,
     displayName,
-    cannotBeDeleted,
   });
 };

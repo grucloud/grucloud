@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, get, tap, eq, switchCase, assign, or } = require("rubico");
-const { find, first, isEmpty, differenceWith, isEqual } = require("rubico/x");
+const { find, first, isEmpty } = require("rubico/x");
 const fs = require("fs");
 const https = require("https");
 const { detailedDiff } = require("deep-object-diff");
@@ -11,6 +11,7 @@ const AxiosMaker = require("../AxiosMaker");
 const getNamespace = pipe([
   switchCase([isEmpty, () => `default`, get("name")]),
 ]);
+
 exports.getNamespace = getNamespace;
 
 exports.compare = async ({ target, live }) =>
