@@ -197,9 +197,7 @@ module.exports = K8sClient = ({
           }),
         get("data"),
         tap((data) => {
-          logger.info(
-            `destroy ${JSON.stringify({ name, type, data })} destroyed`
-          );
+          logger.info(`destroy ${JSON.stringify({ type, data })} destroyed`);
         }),
       ]),
       (error) => {
