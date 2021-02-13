@@ -127,19 +127,6 @@ exports.convertError = ({ error, name, procedure, params }) => {
   }
 };
 
-exports.findField = ({ item, field }) => {
-  assert(item, "findField item");
-  assert(field, "findField field");
-  //logger.debug(`findName: ${tos(item)}`);
-  const name = item[field];
-  if (name) {
-    logger.debug(`findField: ${name}`);
-    return name;
-  } else {
-    logger.debug(`findFields: cannot find name`);
-  }
-};
-
 exports.getByNameCore = async ({
   name,
   findName,

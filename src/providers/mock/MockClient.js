@@ -2,7 +2,7 @@ const assert = require("assert");
 const CoreClient = require("../CoreClient");
 const logger = require("../../logger")({ prefix: "MockClient" });
 const { tos } = require("../../tos");
-const { findField } = require("../Common");
+const { get } = require("rubico");
 
 module.exports = MockClient = ({
   spec,
@@ -18,7 +18,7 @@ module.exports = MockClient = ({
   const { createAxios } = config;
   assert(createAxios);
 
-  const shouldRetryOnException = ({error}) => {
+  const shouldRetryOnException = ({ error }) => {
     logger.debug("shouldRetryOnException");
     const { response } = error;
     if (!response) return false;
@@ -34,7 +34,8 @@ module.exports = MockClient = ({
     return false;
   };
 
-  const findName = (item) => findField({ item, field: "name" });
+  const findName = get("name");
+
   const core = CoreClient({
     type: "mock",
     spec,

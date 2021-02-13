@@ -29,7 +29,6 @@ const { tos } = require("../../tos");
 
 const {
   getByNameCore,
-  findField,
   isUpByIdCore,
   isDownByIdCore,
   logError,

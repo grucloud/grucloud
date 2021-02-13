@@ -8,7 +8,6 @@ const identity = (x) => x;
 const { retryCall, retryCallOnError } = require("./Retry");
 const {
   getByNameCore,
-  findField,
   isUpByIdCore,
   isDownByIdCore,
   logError,
@@ -32,7 +31,7 @@ module.exports = CoreClient = ({
     name,
     ...properties,
   }),
-  findName = (item) => findField({ item, field: "name" }),
+  findName = get("name"),
   findId = (item) => {
     return item.id;
   },

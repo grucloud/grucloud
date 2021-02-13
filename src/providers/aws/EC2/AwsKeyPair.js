@@ -4,7 +4,7 @@ const { defaultsDeep, pluck } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "AwsKp" });
 const { tos } = require("../../../tos");
-const { getByNameCore, findField } = require("../../Common");
+const { getByNameCore } = require("../../Common");
 const { Ec2New } = require("../AwsCommon");
 
 exports.AwsClientKeyPair = ({ spec, config }) => {
@@ -13,8 +13,8 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
   assert(config.region, "config.region");
   const ec2 = Ec2New(config);
 
-  const findName = (item) => findField({ item, field: "KeyName" });
-  const findId = (item) => findField({ item, field: "KeyPairId" });
+  const findName = get("KeyName");
+  const findId = get("KeyPairId");
 
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
   const getById = ({ id }) => getByIdCore({ id, getList, findId });
