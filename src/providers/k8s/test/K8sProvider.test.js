@@ -69,20 +69,18 @@ describe("K8sDeployment", async function () {
 
     deployment = await provider.makeDeployment({
       name: resourceName,
-      meta: { namespace: "default" },
       properties: () => deploymentContent({ labelApp }),
     });
 
     deploymentNamespace = await provider.makeDeployment({
       name: "deployment-namespace",
-      meta: { namespace: myNamespace },
       dependencies: { namespace },
       properties: () => deploymentContent({ labelApp }),
     });
   });
   after(async () => {});
 
-  it("k8s deployment apply and destroy", async function () {
+  it.only("k8s deployment apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
     const deploymentLive = await deployment.getLive();
 

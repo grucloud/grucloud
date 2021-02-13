@@ -15,7 +15,7 @@ exports.K8sDeployment = ({ spec, config }) => {
       kind: "Deployment",
       metadata: {
         name,
-        namespace: getNamespace(dependencies.namespace.resource),
+        namespace: getNamespace(dependencies.namespace?.resource),
         annotations: buildTagsObject({ name, config }),
       },
     })(properties);
