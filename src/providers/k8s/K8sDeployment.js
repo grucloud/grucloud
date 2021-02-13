@@ -1,22 +1,12 @@
-const assert = require("assert");
-
-const {
-  map,
-  pipe,
-  tap,
-  tryCatch,
-  get,
-  switchCase,
-  pick,
-  filter,
-  eq,
-} = require("rubico");
+const { eq, tap, pipe, get } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 
 const logger = require("../../logger")({ prefix: "K8sDeployment" });
 const { tos } = require("../../tos");
 const { buildTagsObject } = require("../Common");
 const K8sClient = require("./K8sClient");
+
+const { resourceKey, displayName } = require("./K8sCommon");
 
 exports.K8sDeployment = ({ spec, config }) => {
   const configDefault = async ({ name, meta, properties, dependencies }) =>
@@ -29,8 +19,6 @@ exports.K8sDeployment = ({ spec, config }) => {
         annotations: buildTagsObject({ name, config }),
       },
     })(properties);
-
-  assert(config.kubeConfig);
 
   const pathGet = ({ name, namespace }) =>
     `/apis/apps/v1/namespaces/${namespace}/deployments/${name}`;
@@ -48,5 +36,7 @@ exports.K8sDeployment = ({ spec, config }) => {
     pathCreate,
     pathDelete,
     configDefault,
+    resourceKey,
+    displayName,
   });
 };

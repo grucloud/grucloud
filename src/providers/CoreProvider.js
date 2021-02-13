@@ -123,16 +123,14 @@ const createClient = ({
       assert(client.getByName);
     }),
     defaultsDeep({
-      resourceKey: (resource) => {
-        assert(resource.type);
-        assert(resource.name);
-        //TODO
-        return `${resource.spec?.providerName || resource.provider}::${
-          resource.type
-        }::${resource.name}`;
-      },
-      nameToUri: ({ name, id }) =>
-        `${spec.providerName}::${spec.type}::${name || id}`,
+      resourceKey: pipe([
+        tap((resource) => {
+          assert(resource.provider);
+          assert(resource.type);
+          assert(resource.name || resource.id);
+        }),
+        ({ provider, type, name, id }) => `${provider}::${type}::${name || id}`,
+      ]),
       toUri: () => `${spec.providerName}::${spec.type}::${resourceName}`,
       displayName: get("name"),
       findMeta: () => undefined,
@@ -505,22 +503,22 @@ const ResourceMaker = ({
       ]),
     ])();
 
+  const toString = () =>
+    client.resourceKey({
+      provider: provider.name,
+      type,
+      name: resourceName,
+      meta,
+    });
+
   const toJSON = () => ({
     provider: provider.name,
     type,
     name: resourceName,
     meta,
     displayName: client.displayName({ name: resourceName, meta }),
-    uri: client.resourceKey({
-      provider: provider.name,
-      name: resourceName,
-      type,
-      meta,
-      key,
-    }),
+    uri: toString(),
   });
-
-  const toString = () => client.nameToUri({ name: resourceName, meta });
 
   const addUsedBy = (usedBy) => {
     usedBySet.add(usedBy);
@@ -634,9 +632,10 @@ function CoreProvider({
     )}`
   );
 
-  //TODO KEY
   const liveToUri = ({ client, live }) =>
-    client.nameToUri({
+    client.resourceKey({
+      provider: providerName,
+      type: client.spec.type,
       name: client.findName(live),
       meta: client.findMeta(live),
       id: client.findId(live),
@@ -794,6 +793,7 @@ function CoreProvider({
     assert(resource.type);
     assert(resource.spec.providerName);
     const { client } = resource;
+    // TODO resource.toString ?
     if (mapNameToResource.has(client.resourceKey(resource.toJSON()))) {
       throw {
         code: 400,
@@ -802,6 +802,7 @@ function CoreProvider({
         )}' already exists`,
       };
     }
+    // TODO resource.toString ?
 
     mapNameToResource.set(client.resourceKey(resource.toJSON()), resource);
 
@@ -865,6 +866,7 @@ function CoreProvider({
           name: client.findName(item),
           meta: client.findMeta(item),
         }),
+        meta: client.findMeta(item),
         id: client.findId(item),
         managedByUs: client.spec.isOurMinion({
           resource: item,
@@ -1797,7 +1799,7 @@ function CoreProvider({
           ])(),
         (error, client) => {
           logger.error(`getClient error for client type ${client.spec.type}`);
-          logger.error(tos(error));
+          logger.error(tos(convertError({ error })));
           onStateChange({
             context: contextFromClient({ client, title }),
             nextState: "ERROR",
@@ -1901,6 +1903,7 @@ function CoreProvider({
                       provider: providerName,
                       type: client.spec.type,
                       name: client.findName(live),
+                      meta: client.findMeta(live),
                       displayName: client.displayName({
                         name: client.findName(live),
                         meta: client.findMeta(live),
@@ -2016,6 +2019,7 @@ function CoreProvider({
   const destroyByClient = async ({
     client,
     name,
+    meta,
     config,
     resourcesPerType = [],
     lives,
@@ -2026,12 +2030,12 @@ function CoreProvider({
           `destroyByClient: ${tos({
             type: client.spec.type,
             name,
+            meta,
             config,
             resourcesPerType,
           })}`
         );
         assert(client);
-        assert(client.isDownById, "client.isDownById");
         assert(config);
       }),
       () => client.findId(config),
@@ -2047,7 +2051,15 @@ function CoreProvider({
           tap((resource) =>
             retryCall({
               name: `destroy ${client.spec.type}/${id}/${name}`,
-              fn: () => client.destroy({ id, name, resource, lives }),
+              fn: () =>
+                client.destroy({
+                  live: config,
+                  id,
+                  name,
+                  meta,
+                  resource,
+                  lives,
+                }),
               isExpectedResult: () => true,
               //TODO isExpectedException: client.isExpectedExceptionDelete
               shouldRetryOnException: client.shouldRetryOnExceptionDelete,
@@ -2065,7 +2077,7 @@ function CoreProvider({
       }),
     ])();
 
-  const destroyById = async ({ type, config, name, lives }) => {
+  const destroyById = async ({ type, config, name, meta, lives }) => {
     logger.debug(`destroyById: ${tos({ type, name, lives })}`);
     const client = clientByType(type);
     assert(client, `Cannot find endpoint type ${type}}`);
@@ -2073,7 +2085,8 @@ function CoreProvider({
     return destroyByClient({
       client,
       name,
-      config,
+      meta,
+      config, //TODO use live
       resourcesPerType: provider.getResourcesByType(type),
       lives,
     });
@@ -2112,8 +2125,9 @@ function CoreProvider({
         destroyById({
           lives,
           name: item.resource.name,
+          meta: item.resource.meta, //TODO remove
           type: item.resource.type,
-          config: item.config,
+          config: item.config, //TODO use live
         }),
       down: true,
       onStateChange: onStateChangeResource({

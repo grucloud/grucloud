@@ -39,18 +39,26 @@ const deploymentNginx = ({ labelApp, version = "1.14.2" }) => ({
 exports.createStack = async ({ config }) => {
   const provider = K8sProvider({ config });
 
-  const myNamespace = "test";
-  const resourceName = "app-deployment";
+  const namespaceName = "test";
+  const deploymentName = "app-deployment";
   const labelApp = "app";
 
+  const namespace = await provider.makeNamespace({
+    name: namespaceName,
+  });
+
   const deployment = await provider.makeDeployment({
-    name: resourceName,
-    meta: { namespace: myNamespace },
+    name: deploymentName,
+    dependencies: { namespace },
     properties: () => deploymentNginx({ labelApp }),
   });
 
   return {
     provider,
-    resources: { deployment },
+    resources: {
+      //
+      namespace,
+      deployment,
+    },
   };
 };

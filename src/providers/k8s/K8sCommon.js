@@ -1,5 +1,4 @@
 const assert = require("assert");
-const urljoin = require("url-join");
 const { pipe, get, tap, eq } = require("rubico");
 const { find, first, isEmpty } = require("rubico/x");
 const fs = require("fs");
@@ -7,6 +6,19 @@ const https = require("https");
 const logger = require("../../logger")({ prefix: "K8sCommon" });
 const { tos } = require("../../tos");
 const AxiosMaker = require("../AxiosMaker");
+
+exports.resourceKey = pipe([
+  tap((resource) => {
+    assert(resource.provider);
+    assert(resource.type);
+    assert(resource.name || resource.id);
+  }),
+  ({ provider, type, meta, name, id }) =>
+    `${provider}::${type}::${get("namespace", "default")(meta)}::${name || id}`,
+]);
+
+exports.displayName = ({ name, meta: { namespace = "default" } }) =>
+  `${namespace}::${name}`;
 
 exports.shouldRetryOnException = ({ error, name }) => {
   //TODO

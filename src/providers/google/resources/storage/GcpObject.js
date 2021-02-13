@@ -210,30 +210,28 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
 
   const update = create;
 
-  const destroy = async ({ id, name, resource }) =>
+  const destroy = async ({ resource }) =>
     tryCatch(
       pipe([
         tap(() => {
-          logger.info(`destroy object id: ${id}, name: ${name}`);
+          assert(resource);
+          logger.info(`destroy object name: ${resource.toString()}`);
         }),
         getBucket,
-        (bucket) => objectPath(bucket.name, name),
+        (bucket) => objectPath(bucket.name, resource.name),
         (path) =>
           retryCallOnError({
             name: `destroy object ${path}`,
-            fn: () =>
-              axios.request(path, {
-                method: "DELETE",
-              }),
+            fn: () => axios.delete(path),
             config: configProvider,
           }),
         get("data"),
         tap(() => {
-          logger.info(`destroyed object id: ${id}, name: ${name}`);
+          logger.info(`destroyed object ${resource.toString()}`);
         }),
       ]),
-      (error) => {
-        logError(`destroyed ${bucket.name}/${name}`, error);
+      (error, resource) => {
+        logError(`destroyed ${resource.toString()}`, error);
         throw axiosErrorToJSON(error);
       }
     )(resource);

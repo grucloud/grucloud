@@ -9,6 +9,7 @@ const yaml = require("js-yaml");
 const logger = require("../../logger")({ prefix: "K8sProvider" });
 const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
+const { K8sNamespace } = require("./K8sNamespace");
 const { K8sDeployment } = require("./K8sDeployment");
 const { isOurMinionObject } = require("../Common");
 
@@ -18,7 +19,13 @@ const isOurMinion = ({ resource, config }) =>
 const fnSpecs = () => [
   {
     type: "Deployment",
+    dependsOn: ["Namespace"],
     Client: K8sDeployment,
+    isOurMinion,
+  },
+  {
+    type: "Namespace",
+    Client: K8sNamespace,
     isOurMinion,
   },
 ];

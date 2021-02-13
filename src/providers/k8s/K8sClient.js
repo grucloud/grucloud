@@ -11,6 +11,7 @@ const {
   pick,
   filter,
   eq,
+  or,
 } = require("rubico");
 const {
   first,
@@ -43,6 +44,9 @@ module.exports = K8sClient = ({
   pathGet,
   pathCreate,
   pathDelete,
+  resourceKey,
+  displayName,
+  cannotBeDeleted = () => false,
 }) => {
   assert(spec);
   assert(spec.type);
@@ -58,23 +62,6 @@ module.exports = K8sClient = ({
   const { type, providerName } = spec;
 
   assert(providerName);
-
-  const resourceKey = (resource) => {
-    assert(resource.provider);
-    assert(resource.type);
-    assert(resource.name);
-
-    return `${resource.provider}::${resource.type}::${get(
-      "namespace",
-      "default"
-    )(resource.meta)}::${resource.name}`;
-  };
-
-  const nameToUri = ({ name, meta }) =>
-    `${providerName}::${type}::${meta.namespace}::${name}`;
-
-  const displayName = ({ name, meta: { namespace = "default" } }) =>
-    `${namespace}::${name}`;
 
   const findName = pipe([
     get("metadata.name"),
@@ -145,7 +132,12 @@ module.exports = K8sClient = ({
       ])
     )();
 
-  const create = async ({ name, meta: { namespace }, payload, dependencies }) =>
+  const create = async ({
+    name,
+    meta: { namespace = "default" },
+    payload,
+    dependencies,
+  }) =>
     tryCatch(
       pipe([
         tap(() => {
@@ -155,7 +147,7 @@ module.exports = K8sClient = ({
           assert(name);
           assert(payload);
         }),
-        () => pathCreate({ namespace }),
+        () => pathCreate({ name, namespace }),
         tap((path) => {
           logger.info(`create ${type}/${name}, path: ${path}`);
         }),
@@ -175,6 +167,7 @@ module.exports = K8sClient = ({
             )}`
           );
         }),
+        get("data"),
       ]),
       (error) => {
         logError(`create ${type}/${name}`, error);
@@ -182,36 +175,40 @@ module.exports = K8sClient = ({
       }
     )();
 
-  const destroy = async ({ name, meta: { namespace } }) =>
+  const destroy = async ({ live }) =>
     tryCatch(
       pipe([
         tap(() => {
-          logger.info(`destroy ${JSON.stringify({ type, name, namespace })}`);
-          assert(!isEmpty(name), `destroy ${type}: invalid name`);
-          assert(!isEmpty(namespace), `destroy ${type}: invalid namespace`);
+          assert(!isEmpty(live), `destroy invalid live`);
+          logger.info(`destroy ${JSON.stringify({ live })}`);
         }),
-        () => pathDelete({ name, namespace }),
+        () => ({ name: findName(live), namespace: findMeta(live).namespace }),
+        //TODO use resource.dependencies.namespace
+        tap((params) => {
+          logger.info(`destroy k8s ${JSON.stringify({ params })}`);
+        }),
+        (params) => pathDelete(params),
         (path) =>
           retryCallOnError({
             name: `destroy type ${type}, path: ${path}`,
             fn: () => axios().delete(urljoin(getServerUrl(kubeConfig()), path)),
             config,
-            isExpectedException: (error) => {
-              return [404].includes(error.response?.status);
-            },
+            isExpectedException: () => false,
           }),
         get("data"),
         tap((data) => {
           logger.info(
-            `destroy ${JSON.stringify({ name, type, id, data })} destroyed`
+            `destroy ${JSON.stringify({ name, type, data })} destroyed`
           );
         }),
       ]),
       (error) => {
-        logError(`delete ${type}/${name}`, error);
+        logError(`delete ${type} ${tos({ live })}`, error);
         throw axiosErrorToJSON(error);
       }
     )();
+
+  const cannotBeDeletedDefault = ({ name }) => name.startsWith("kube-");
 
   return {
     spec,
@@ -223,8 +220,8 @@ module.exports = K8sClient = ({
     getList,
     create,
     destroy,
+    cannotBeDeleted: or([cannotBeDeletedDefault, cannotBeDeleted]),
     configDefault,
     resourceKey,
-    nameToUri,
   };
 };

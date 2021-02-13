@@ -14,14 +14,16 @@ const {
 } = require("rxjs/operators");
 const logger = require("../logger")({ prefix: "Retry" });
 const { tos } = require("../tos");
-
+const { convertError } = require("./Common");
 const retryCall = async ({
   name = "",
   fn,
   isExpectedResult = (result) => result,
   isExpectedException = () => false,
   shouldRetryOnException = ({ error, name }) => {
-    logger.error(`shouldRetryOnException ${name}, error: ${tos(error)}`);
+    logger.error(
+      `shouldRetryOnException ${name}, error: ${tos(convertError({ error }))}`
+    );
     error.stack && logger.error(error.stack);
     return !error.stack;
   },

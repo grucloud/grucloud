@@ -6,8 +6,10 @@ const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 describe("K8sDeployment", async function () {
   let config;
   let provider;
+  let namespace;
   let deployment;
   let deploymentNamespace;
+
   const myNamespace = "test";
   const resourceName = "app-deployment";
   const labelApp = "app";
@@ -61,14 +63,20 @@ describe("K8sDeployment", async function () {
       },
     });
 
+    namespace = await provider.makeNamespace({
+      name: myNamespace,
+    });
+
     deployment = await provider.makeDeployment({
       name: resourceName,
       meta: { namespace: "default" },
       properties: () => deploymentContent({ labelApp }),
     });
+
     deploymentNamespace = await provider.makeDeployment({
-      name: "deploymentNamespace",
+      name: "deployment-namespace",
       meta: { namespace: myNamespace },
+      dependencies: { namespace },
       properties: () => deploymentContent({ labelApp }),
     });
   });

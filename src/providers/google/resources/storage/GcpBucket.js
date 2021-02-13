@@ -61,10 +61,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
       (item) =>
         retryCallOnError({
           name: `getIam ${item.name}`,
-          fn: () =>
-            axios.request(`/${item.name}/iam`, {
-              method: "GET",
-            }),
+          fn: () => axios.get(`/${item.name}/iam`),
           config: configProvider,
         }),
       get("data"),
@@ -104,11 +101,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
           () =>
             retryCallOnError({
               name: `setIam`,
-              fn: () =>
-                axios.request(`/${name}/iam`, {
-                  method: "PUT",
-                  data: payload.iam,
-                }),
+              fn: () => axios.put(`/${name}/iam`, { data: payload.iam }),
               config: configProvider,
             }),
           () => {},
@@ -121,8 +114,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
       tap(() => {
         logger.info(`getList bucket, deep: ${deep}`);
       }),
-      () => client.getList(),
-      //
+      () => client.getList({ deep }),
       tap((result) => {
         logger.debug(`getList #items ${result.items.length}`);
       }),
@@ -147,37 +139,27 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
       }),
       () =>
         retryCallOnError({
-          name: `list object to destroy`,
-          fn: () =>
-            axios.request(`/${bucketName}/o`, {
-              method: "GET",
-            }),
+          name: `list object to destroy on bucket ${bucketName}`,
+          fn: () => axios.get(`/${bucketName}/o`),
           config: configProvider,
         }),
       get("data.items"),
       tap((items = []) => {
         logger.debug(`destroy objects in bucket: ${items.length}`);
       }),
-      tap(
-        async (items = []) =>
-          await map.pool(mapPoolSize, (item) =>
-            retryCallOnError({
-              name: `destroy objects in ${bucketName}`,
-              fn: () =>
-                axios.request(item.selfLink, {
-                  method: "DELETE",
-                }),
-              config: configProvider,
-            })
-          )(items)
+      tap((items = []) =>
+        map.pool(mapPoolSize, (item) =>
+          retryCallOnError({
+            name: `destroy objects in ${bucketName}`,
+            fn: () => axios.delete(item.selfLink),
+            config: configProvider,
+          })
+        )(items)
       ),
       () =>
         retryCallOnError({
           name: `destroy ${bucketName}`,
-          fn: async () =>
-            await axios.request(`/${bucketName}`, {
-              method: "DELETE",
-            }),
+          fn: () => axios.delete(`/${bucketName}`),
           config: configProvider,
           //TODO may not need that
           isExpectedException: (error) => {

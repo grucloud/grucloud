@@ -30,7 +30,7 @@ exports.runAsyncCommand = async ({ text, command }) => {
           context,
           previousState,
           nextState,
-          other,
+          //other,
         },
         null,
         4

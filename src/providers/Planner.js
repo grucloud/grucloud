@@ -299,7 +299,7 @@ exports.Planner = ({
         resource: entry.item.resource,
         previousState: entry.state,
         nextState: STATES.ERROR,
-        error,
+        error: entry.error,
       });
       entry.state = STATES.ERROR;
     }

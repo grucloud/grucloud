@@ -422,7 +422,7 @@ const commandToFunction = (command) =>
 const runAsyncCommandHook = ({ hookType, commandTitle, providers, result }) =>
   pipe([
     tap((xxx) => {
-      logger.debug(`runAsyncCommandHook hookType: ${hookType}, ${tos(result)}`);
+      logger.debug(`runAsyncCommandHook hookType: ${hookType}`);
       assert(Array.isArray(providers));
     }),
     assign({
