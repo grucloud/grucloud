@@ -7,7 +7,7 @@ const deploymentNginx = ({ labelApp, version = "1.14.2" }) => ({
     },
   },
   spec: {
-    replicas: 1,
+    replicas: 2,
     selector: {
       matchLabels: {
         app: labelApp,
@@ -39,8 +39,8 @@ const deploymentNginx = ({ labelApp, version = "1.14.2" }) => ({
 exports.createStack = async ({ config }) => {
   const provider = K8sProvider({ config });
 
-  const namespaceName = "test";
-  const deploymentName = "app-deployment";
+  const namespaceName = "stateless";
+  const deploymentName = "nginx-deployment";
   const labelApp = "app";
 
   const namespace = await provider.makeNamespace({

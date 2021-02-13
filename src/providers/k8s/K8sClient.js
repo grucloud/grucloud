@@ -46,12 +46,14 @@ module.exports = K8sClient = ({
   configDefault,
   pathList,
   pathGet,
+  pathGetStatus,
   pathCreate,
   pathDelete,
   pathUpdate,
   resourceKey,
   displayName,
   cannotBeDeleted = () => false,
+  isInstanceUp,
 }) => {
   assert(spec);
   assert(spec.type);
@@ -92,16 +94,17 @@ module.exports = K8sClient = ({
       tap((params) => {
         logger.debug(`getList k8s, params: ${tos(params)}`);
       }),
-      () => pathList(),
-      (path) =>
+      pathList,
+      (path) => urljoin(getServerUrl(kubeConfig()), path),
+      (fullPath) =>
         retryCallOnError({
-          name: `getList type: ${type}, path ${path}`,
-          fn: () => axios().get(urljoin(getServerUrl(kubeConfig()), path)),
+          name: `getList type: ${type}, path ${fullPath}`,
+          fn: () => axios().get(fullPath),
           config,
         }),
       get("data"),
       tap((data) => {
-        logger.info(`getList ${JSON.stringify({ data })}`);
+        logger.info(`getList k8s ${JSON.stringify({ data })}`);
       }),
     ]),
     (error) => {
@@ -110,7 +113,7 @@ module.exports = K8sClient = ({
     }
   );
 
-  const getByKey = ({ name, namespace }) =>
+  const getByKey = ({ name, namespace, resolvePath }) =>
     tryCatch(
       pipe([
         tap(() => {
@@ -118,11 +121,12 @@ module.exports = K8sClient = ({
           assert(name);
           //assert(namespace);
         }),
-        () => pathGet({ name, namespace }),
-        (path) =>
+        () => resolvePath({ name, namespace }),
+        (path) => urljoin(getServerUrl(kubeConfig()), path),
+        (fullPath) =>
           retryCallOnError({
-            name: `getByKey type ${type}, name: ${name}, path: ${path}`,
-            fn: () => axios().get(urljoin(getServerUrl(kubeConfig()), path)),
+            name: `getByKey type ${type}, name: ${name}, path: ${fullPath}`,
+            fn: () => axios().get(fullPath),
             config,
           }),
         get("data"),
@@ -141,14 +145,21 @@ module.exports = K8sClient = ({
     )();
 
   const getByName = ({ name, dependencies }) =>
-    getByKey({ name, namespace: getNamespace(dependencies.namespace) });
+    getByKey({
+      resolvePath: pathGet,
+      name,
+      namespace: getNamespace(dependencies.namespace),
+    });
 
   const getById = ({ live }) =>
     getByKey({
+      resolvePath: pathGetStatus || pathGet,
       name: findName(live),
       namespace: get("namespace")(findMeta(live)),
+      suffix: "status",
     });
 
+  const isUpById = isUpByIdCore({ isInstanceUp, getById });
   const isDownById = isDownByIdCore({ getById });
 
   const create = async ({ name, payload, dependencies }) =>
@@ -164,21 +175,27 @@ module.exports = K8sClient = ({
         tap((path) => {
           logger.info(`create ${type}/${name}, path: ${path}`);
         }),
-        (path) =>
+        (path) => urljoin(getServerUrl(kubeConfig()), path),
+        (fullPath) =>
           retryCallOnError({
-            name: `create ${type}/${name} path: ${path}`,
-            fn: () =>
-              axios().post(urljoin(getServerUrl(kubeConfig()), path), payload),
+            name: `create ${type}/${name} path: ${fullPath}`,
+            fn: () => axios().post(fullPath, payload),
             config: { ...config, repeatCount: 0 },
           }),
         tap((result) => {
-          logger.info(
-            `created ${type}/${name}, status: ${result.status}, data: ${tos(
-              result.data
-            )}`
-          );
+          logger.info(`created ${type}/${name}, status: ${result.status}`);
         }),
         get("data"),
+        tap((live) =>
+          retryCall({
+            name: `create ${type}, name: ${name}, isUpById`,
+            fn: () => isUpById({ live }),
+            config: { retryDelay: 5e3, retryCount: 5 * 12e3 },
+          })
+        ),
+        tap((live) => {
+          logger.debug(`created ${type}/${name}, live: ${tos(live)}`);
+        }),
       ]),
       (error) => {
         logError(`create ${type}/${name}`, error);
@@ -199,11 +216,11 @@ module.exports = K8sClient = ({
         tap((path) => {
           logger.info(`update ${type}/${name}, path: ${path}`);
         }),
-        (path) =>
+        (path) => urljoin(getServerUrl(kubeConfig()), path),
+        (fullPath) =>
           retryCallOnError({
-            name: `update ${type}/${name}`,
-            fn: () =>
-              axios().put(urljoin(getServerUrl(kubeConfig()), path), payload),
+            name: `update ${type}/${name} path: ${fullPath}`,
+            fn: () => axios().put(fullPath, payload),
             config: { ...config, repeatCount: 0 },
           }),
         tap((result) => {
@@ -226,15 +243,15 @@ module.exports = K8sClient = ({
           logger.info(`destroy ${JSON.stringify({ live })}`);
         }),
         () => ({ name: findName(live), namespace: findMeta(live).namespace }),
-        //TODO use resource.dependencies.namespace
         tap((params) => {
           logger.info(`destroy k8s ${JSON.stringify({ params })}`);
         }),
-        (params) => pathDelete(params),
-        (path) =>
+        pathDelete,
+        (path) => urljoin(getServerUrl(kubeConfig()), path),
+        (fullPath) =>
           retryCallOnError({
-            name: `destroy type ${type}, path: ${path}`,
-            fn: () => axios().delete(urljoin(getServerUrl(kubeConfig()), path)),
+            name: `destroy type ${type}, path: ${fullPath}`,
+            fn: () => axios().delete(fullPath),
             config,
           }),
         get("data"),
@@ -245,7 +262,7 @@ module.exports = K8sClient = ({
           retryCall({
             name: `destroy ${type}, name: ${findName(live)}, isDownById`,
             fn: () => isDownById({ live }),
-            config: { retryCall: 1e3, retryCall: 5 * 60e3 },
+            config: { retryDelay: 5e3, retryCount: 5 * 12e3 },
           })
         ),
       ]),
@@ -255,7 +272,7 @@ module.exports = K8sClient = ({
       }
     )();
 
-  const cannotBeDeletedDefault = ({ name }) => name.startsWith("kube-");
+  const cannotBeDeletedDefault = ({ name }) => name.startsWith("kube");
 
   return {
     spec,

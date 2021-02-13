@@ -3,13 +3,12 @@ const { ConfigLoader } = require("ConfigLoader");
 const { K8sProvider } = require("../K8sProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
-describe.skip("K8sDeployment", async function () {
+describe("K8sDeployment", async function () {
   let config;
   let provider;
   let namespace;
   let deployment;
-  let deploymentNamespace;
-
+  let configMap;
   const myNamespace = "test";
   const resourceName = "app-deployment";
   const labelApp = "app";
@@ -27,7 +26,9 @@ describe.skip("K8sDeployment", async function () {
 
     await provider.start();
 
-    const deploymentContent = ({ name, labelApp }) => ({
+    const configMapContent = ({}) => ({ data: { myKey: "myValue" } });
+
+    const deploymentContent = ({ configMap, name, labelApp }) => ({
       metadata: {
         labels: {
           app: labelApp,
@@ -67,20 +68,21 @@ describe.skip("K8sDeployment", async function () {
       name: myNamespace,
     });
 
-    deployment = await provider.makeDeployment({
-      name: resourceName,
-      properties: () => deploymentContent({ labelApp }),
+    configMap = await provider.makeConfigMap({
+      name: "config-map",
+      properties: () => configMapContent({}),
     });
 
-    deploymentNamespace = await provider.makeDeployment({
-      name: "deployment-namespace",
-      dependencies: { namespace },
-      properties: () => deploymentContent({ labelApp }),
+    deployment = await provider.makeDeployment({
+      name: resourceName,
+      dependencies: { namespace, configMap },
+      properties: ({ dependencies: { configMap } }) =>
+        deploymentContent({ labelApp, configMap }),
     });
   });
   after(async () => {});
 
-  it("k8s deployment apply and destroy", async function () {
+  it.only("k8s deployment apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
     const deploymentLive = await deployment.getLive();
 

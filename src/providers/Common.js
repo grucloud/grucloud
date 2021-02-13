@@ -171,12 +171,13 @@ exports.isUpByIdCore = ({ isInstanceUp, getById }) => async ({
   id,
   name,
   type,
+  live,
 }) => {
   logger.debug(`isUpById ${JSON.stringify({ type, name, id })}`);
-  assert(id, "isUpByIdCore id");
+  assert(id || live, "isUpByIdCore id");
   assert(getById, "isUpByIdCore getById");
   let up = false;
-  const instance = await getById({ type, name, id, deep: false });
+  const instance = await getById({ type, name, id, deep: false, live });
   if (instance) {
     if (isInstanceUp) {
       up = isInstanceUp(instance);

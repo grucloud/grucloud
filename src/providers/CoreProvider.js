@@ -474,6 +474,7 @@ const ResourceMaker = ({
       type,
       name: resourceName,
       meta,
+      dependencies,
     });
 
   const toJSON = () => ({
@@ -481,7 +482,7 @@ const ResourceMaker = ({
     type,
     name: resourceName,
     meta,
-    displayName: client.displayName({ name: resourceName, meta }),
+    displayName: client.displayName({ name: resourceName, meta, dependencies }),
     uri: toString(),
   });
 
@@ -757,36 +758,30 @@ function CoreProvider({
     assert(resource.name);
     assert(resource.type);
     assert(resource.spec.providerName);
-    const { client } = resource;
-    // TODO resource.toString ?
-    if (mapNameToResource.has(client.resourceKey(resource.toJSON()))) {
+
+    const resourceKey = resource.toString();
+    if (mapNameToResource.has(resourceKey)) {
       throw {
         code: 400,
-        message: `resource '${JSON.stringify(
-          client.resourceKey(resource.toJSON())
-        )}' already exists`,
+        message: `resource '${resourceKey}' already exists`,
       };
     }
-    // TODO resource.toString ?
-
-    mapNameToResource.set(client.resourceKey(resource.toJSON()), resource);
+    mapNameToResource.set(resourceKey, resource);
 
     mapTypeToResources.set(resource.type, [
       ...getResourcesByType(resource.type),
       resource,
     ]);
 
-    tap.if(
-      (client) => client.hook,
-      (client) => hookAdd(client.spec.type, client.hook({ resource }))
+    tap.if(get("hook"), (client) =>
+      hookAdd(client.spec.type, client.hook({ resource }))
     )(resource.client);
   };
 
   const getTargetResources = () => [...mapNameToResource.values()];
   const resourceNames = () => pluck(["name"])([...mapNameToResource.values()]);
 
-  const getResource = (resource) =>
-    mapNameToResource.get(clientByType(resource.type).resourceKey(resource));
+  const getResource = ({ uri }) => mapNameToResource.get(uri);
 
   const specs = fnSpecs(providerConfig).map((spec) =>
     defaultsDeep(SpecDefault({ config: providerConfig, providerName }))(spec)

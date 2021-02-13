@@ -8,9 +8,10 @@ const logger = require("../../logger")({ prefix: "K8sCommon" });
 const { tos } = require("../../tos");
 const AxiosMaker = require("../AxiosMaker");
 
-exports.getNamespace = pipe([
+const getNamespace = pipe([
   switchCase([isEmpty, () => `default`, get("name")]),
 ]);
+exports.getNamespace = getNamespace;
 
 exports.compare = async ({ target, live }) =>
   pipe([
@@ -31,15 +32,16 @@ exports.resourceKey = pipe([
     assert(resource.type);
     assert(resource.name || resource.id);
   }),
-  ({ provider, type, meta, name, id }) =>
-    `${provider}::${type}::${get("namespace", "default")(meta)}::${name || id}`,
+  ({ provider, type, dependencies, name, id }) =>
+    `${provider}::${type}::${getNamespace(dependencies?.namespace)}::${
+      name || id
+    }`,
 ]);
 
-exports.displayName = ({ name, meta: { namespace = "default" } }) =>
-  `${namespace}::${name}`;
+exports.displayName = ({ name, dependencies }) =>
+  `${getNamespace(dependencies?.namespace)}::${name}`;
 
 exports.shouldRetryOnException = ({ error, name }) => {
-  //TODO
   logger.error(`k8s shouldRetryOnException ${tos({ name, error })}`);
   return false;
 };

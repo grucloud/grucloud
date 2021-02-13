@@ -11,6 +11,8 @@ const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
 const { K8sNamespace } = require("./K8sNamespace");
 const { K8sDeployment } = require("./K8sDeployment");
+const { K8sConfigMap } = require("./K8sConfigMap");
+
 const { isOurMinionObject } = require("../Common");
 const { compare } = require("./K8sCommon");
 
@@ -20,8 +22,15 @@ const isOurMinion = ({ resource, config }) =>
 const fnSpecs = () => [
   {
     type: "Deployment",
-    dependsOn: ["Namespace"],
+    dependsOn: ["Namespace", "ConfigMap"],
     Client: K8sDeployment,
+    isOurMinion,
+    compare,
+  },
+  {
+    type: "ConfigMap",
+    dependsOn: ["Namespace"],
+    Client: K8sConfigMap,
     isOurMinion,
     compare,
   },
