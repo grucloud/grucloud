@@ -108,13 +108,7 @@ const hasResultError = any(({ error }) => error);
 
 const nextStateOnError = (error) => (error ? "ERROR" : "DONE");
 
-const createClient = ({
-  spec,
-  provider,
-  config,
-  mapTypeToResources,
-  resourceName,
-}) =>
+const createClient = ({ spec, provider, config, mapTypeToResources }) =>
   pipe([
     () => spec.Client({ provider, spec, config, mapTypeToResources }),
     tap((client) => {
@@ -131,7 +125,6 @@ const createClient = ({
         }),
         ({ provider, type, name, id }) => `${provider}::${type}::${name || id}`,
       ]),
-      toUri: () => `${spec.providerName}::${spec.type}::${resourceName}`,
       displayName: get("name"),
       findMeta: () => undefined,
       cannotBeDeleted: () => false,
@@ -142,7 +135,6 @@ const createClient = ({
 const ResourceMaker = ({
   name: resourceName,
   meta = {},
-  key,
   dependencies = {},
   transformConfig,
   properties = () => ({}),
@@ -152,24 +144,23 @@ const ResourceMaker = ({
 }) => {
   const { type } = spec;
   assert(resourceName, "missing 'name' property");
-  logger.debug(`ResourceMaker: ${tos({ key, type, resourceName, meta })}`);
+  logger.debug(`ResourceMaker: ${tos({ type, resourceName, meta })}`);
 
-  const client = createClient({ provider, spec, config, resourceName });
+  const client = createClient({ provider, spec, config });
   const usedBySet = new Set();
 
   const getLive = async ({ deep = true } = {}) => {
-    logger.info(`getLive ${client.toUri()}, deep: ${deep}`);
+    logger.info(`getLive ${toString()}, deep: ${deep}`);
     const live = await client.getByName({
       provider,
       meta,
-      key,
       name: resourceName,
       dependencies,
       resolveConfig,
       deep,
       resources: provider.getResourcesByType(type),
     });
-    logger.debug(`getLive ${client.toUri()} result: ${tos(live)}`); //TODO KEY
+    logger.debug(`getLive ${toString()} result: ${tos(live)}`); //TODO KEY
     return live;
   };
 
@@ -257,7 +248,7 @@ const ResourceMaker = ({
     pipe([
       tap(() => {
         logger.info(
-          `resolveDependencies for ${client.toUri()}: ${Object.keys(
+          `resolveDependencies for ${toString()}: ${Object.keys(
             //TODO KEY
             dependencies
           )}, dependenciesMustBeUp: ${dependenciesMustBeUp}, has lives: ${!!lives}`
@@ -278,7 +269,7 @@ const ResourceMaker = ({
               }),
             (error) => {
               logger.error(
-                `resolveDependencies: ${client.toUri()}, error: ${tos(
+                `resolveDependencies: ${toString()}, error: ${tos(
                   //TODO KEY
                   error
                 )}`
@@ -301,7 +292,7 @@ const ResourceMaker = ({
                 (live) => dependenciesMustBeUp && !live,
                 () => {
                   throw {
-                    message: `${client.toUri()} dependency ${
+                    message: `${toString()} dependency ${
                       dependency.name
                     } is not up`,
                   };
@@ -324,12 +315,12 @@ const ResourceMaker = ({
       }),
       tap((result) => {
         logger.debug(
-          `resolveDependencies for ${client.toUri()}, result: ${tos(result)}`
+          `resolveDependencies for ${toString()}, result: ${tos(result)}`
         );
       }),
       tap.if(any(get("error")), (resolvedDependencies) => {
         logger.error(
-          `resolveDependencies ${client.toUri()} error in resolveDependencies`
+          `resolveDependencies ${toString()} error in resolveDependencies`
         );
 
         throw {
@@ -339,7 +330,7 @@ const ResourceMaker = ({
       }),
       tap((result) => {
         logger.debug(
-          `resolveDependencies for ${client.toUri()}, result: ${tos(result)}`
+          `resolveDependencies for ${toString()}, result: ${tos(result)}`
         );
       }),
     ])(dependencies);
@@ -353,7 +344,7 @@ const ResourceMaker = ({
     pipe([
       tap(() => {
         logger.debug(
-          `resolveConfig ${client.toUri()}, ${tos({
+          `resolveConfig ${toString()}, ${tos({
             deep,
             live,
           })}`
@@ -412,7 +403,7 @@ const ResourceMaker = ({
     logger.info(`create ${tos({ resourceName, type, payload })}`);
     // Is the resource already created ?
     if (await getLive({ deep: false })) {
-      throw Error(`Resource ${client.toUri()} already exists`);
+      throw Error(`Resource ${toString()} already exists`);
     }
 
     const instance = await client.create({
@@ -423,19 +414,19 @@ const ResourceMaker = ({
       resolvedDependencies,
     });
 
-    logger.info(`created: ${client.toUri()}`);
+    logger.info(`created: ${toString()}`);
     return instance;
   };
 
   const update = async ({ payload, diff, live, resolvedDependencies }) => {
     logger.info(`update ${tos({ resourceName, type, payload })}`);
     if (!(await getLive())) {
-      throw Error(`Resource ${client.toUri()} does not exist`);
+      throw Error(`Resource ${toString()} does not exist`);
     }
 
     // Create now
     const instance = await retryCall({
-      name: `update ${client.toUri()}`,
+      name: `update ${toString()}`,
       fn: () =>
         client.update({
           name: resourceName,
@@ -450,33 +441,7 @@ const ResourceMaker = ({
       config: provider.config(),
     });
 
-    logger.info(`updated: ${client.toUri()}`);
-
-    //TODO use isExpected Result
-    const liveInstance = await retryCall({
-      name: `update getLive ${client.toUri()}`,
-      fn: async () => {
-        const live = await getLive();
-        if (!live) {
-          throw Error(
-            `Resource ${client.toUri()} not there after being created`
-          );
-        }
-        return live;
-      },
-      config: provider.config(),
-    });
-
-    if (
-      !client.spec.isOurMinion({
-        resource: liveInstance,
-        resourceNames: provider.resourceNames(),
-        config: provider.config(),
-      })
-    ) {
-      throw Error(`Resource ${client.toUri()} is not tagged correctly`);
-    }
-
+    logger.info(`updated: ${toString()}`);
     return instance;
   };
 
