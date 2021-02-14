@@ -276,7 +276,7 @@ exports.Planner = ({
       entry.state = STATES.RUNNING;
       const result = await executor({ item: entry.item });
       //assert(result, "no result");
-      ["CREATE", "DESTROY"].includes(entry.item.action);
+      //["CREATE", "DESTROY"].includes(entry.item.action);
       if (entry.item.action === "CREATE") {
         const { input, output } = result;
         assert(input, "no input");
@@ -335,9 +335,6 @@ exports.Planner = ({
               logger.debug(
                 `onEnd  ${tos({ name: entry.item.resource.name, dependsOn })}`
               );
-            }),
-            tap((xxx) => {
-              logger.debug(`onEnd  ${tos(xxx)}`);
             }),
             switchCase([
               isEmpty,

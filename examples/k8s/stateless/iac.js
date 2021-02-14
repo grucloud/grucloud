@@ -1,6 +1,8 @@
 const { K8sProvider } = require("@grucloud/core");
 
-const deploymentNginx = ({ labelApp, version = "1.14.2" }) => ({
+const configMapContent = ({}) => ({ data: { myKey: "myValue" } });
+
+const deploymentNginx = ({ labelApp, configMap, version = "1.14.2" }) => ({
   metadata: {
     labels: {
       app: labelApp,
@@ -29,6 +31,17 @@ const deploymentNginx = ({ labelApp, version = "1.14.2" }) => ({
                 containerPort: 80,
               },
             ],
+            env: [
+              {
+                name: "MY_VAR",
+                valueFrom: {
+                  configMapKeyRef: {
+                    name: configMap.resource.name,
+                    key: "my-key",
+                  },
+                },
+              },
+            ],
           },
         ],
       },
@@ -47,17 +60,23 @@ exports.createStack = async ({ config }) => {
     name: namespaceName,
   });
 
+  const configMap = await provider.makeConfigMap({
+    name: "config-map",
+    properties: () => configMapContent({}),
+  });
+
   const deployment = await provider.makeDeployment({
     name: deploymentName,
-    dependencies: { namespace },
-    properties: () => deploymentNginx({ labelApp }),
+    dependencies: { namespace, configMap },
+    properties: ({ dependencies: { configMap } }) =>
+      deploymentNginx({ labelApp, configMap }),
   });
 
   return {
     provider,
     resources: {
-      //
       namespace,
+      configMap,
       deployment,
     },
   };

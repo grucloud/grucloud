@@ -10,6 +10,7 @@ const logger = require("../../logger")({ prefix: "K8sProvider" });
 const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
 const { K8sReplicaSet } = require("./K8sReplicaSet");
+const { K8sPod } = require("./K8sPod");
 const { K8sNamespace } = require("./K8sNamespace");
 const { K8sDeployment } = require("./K8sDeployment");
 const { K8sConfigMap } = require("./K8sConfigMap");
@@ -36,8 +37,15 @@ const fnSpecs = () => [
     compare,
   },
   {
+    type: "Pod",
+    Client: K8sPod,
+    isOurMinion,
+    listOnly: true,
+  },
+  {
     type: "ReplicaSet",
     Client: K8sReplicaSet,
+    isOurMinion,
     listOnly: true,
   },
   {
