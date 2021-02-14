@@ -79,6 +79,7 @@ exports.K8sDeployment = ({ spec, config }) => {
       }),
     ])(namespace);
 
+  const isUpByIdFactory = () => isUpById;
   const isUpById = ({ live: { metadata } }) =>
     pipe([
       tap(() => {
@@ -95,6 +96,8 @@ exports.K8sDeployment = ({ spec, config }) => {
       }),
     ])(metadata);
 
+  const isDownByIdFactory = () => isDownById;
+
   const isDownById = ({ live: { metadata } }) =>
     pipe([
       tap(() => {
@@ -109,9 +112,6 @@ exports.K8sDeployment = ({ spec, config }) => {
         logger.debug(`deployment isDownById ${isDown}`);
       }),
     ])(metadata);
-
-  const isUpByIdFactory = () => isUpById;
-  const isDownByIdFactory = () => isDownById;
 
   return K8sClient({
     spec,

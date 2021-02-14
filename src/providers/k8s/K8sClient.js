@@ -174,7 +174,6 @@ module.exports = K8sClient = ({
       resolvePath: pathGetStatus || pathGet,
       name: findName(live),
       namespace: get("namespace")(findMeta(live)),
-      suffix: "status",
     });
 
   const isUpById = isUpByIdFactory({ getById });
@@ -308,6 +307,7 @@ module.exports = K8sClient = ({
     getByName,
     findId,
     getList,
+    getById,
     create,
     update,
     destroy,

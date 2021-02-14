@@ -1,5 +1,5 @@
 const { eq, tap, pipe, get, fork, and, or } = require("rubico");
-const { defaultsDeep, isEmpty } = require("rubico/x");
+const { defaultsDeep, first } = require("rubico/x");
 
 const logger = require("../../logger")({ prefix: "K8sIngress" });
 const { tos } = require("../../tos");
@@ -30,7 +30,24 @@ exports.K8sIngress = ({ spec, config }) => {
   const pathUpdate = pathGet;
   const pathDelete = pathGet;
 
-  return K8sClient({
+  const isUpByIdFactory = ({ getById }) => ({ live }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`ingress isUpById: ${tos(live)}`);
+      }),
+      () => getById({ live }),
+      tap((newLive) => {
+        logger.debug(`ingress newLive: ${tos(newLive)}`);
+      }),
+      get("status.loadBalancer.ingress"),
+      first,
+      get("ip"),
+      tap((isUp) => {
+        logger.debug(`ingress isUp: ${isUp}`);
+      }),
+    ])(live);
+
+  const k8sClient = K8sClient({
     spec,
     config,
     pathGet,
@@ -39,5 +56,8 @@ exports.K8sIngress = ({ spec, config }) => {
     pathUpdate,
     pathDelete,
     configDefault,
+    isUpByIdFactory,
   });
+
+  return k8sClient;
 };

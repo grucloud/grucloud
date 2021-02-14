@@ -165,12 +165,6 @@ const ResourceMaker = ({
     return live;
   };
 
-  let getLiveMemoize;
-  const createMemoize = () => {
-    getLiveMemoize = memoize(getLive);
-  };
-  createMemoize();
-
   const findLive = ({ lives }) =>
     pipe([
       tap((results) => {
@@ -512,10 +506,6 @@ const ResourceMaker = ({
     update,
     planUpsert,
     getLive,
-    getLiveMemoize: pipe([
-      (params) => getLiveMemoize(params),
-      tap.if(isEmpty, () => createMemoize()),
-    ]),
     findLive,
     getDependencyList,
     resolveDependencies: ({ lives, dependenciesMustBeUp }) =>
