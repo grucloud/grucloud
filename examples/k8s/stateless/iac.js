@@ -151,6 +151,7 @@ exports.createStack = async ({ config }) => {
     provider,
     resources: {
       namespace,
+      ingress,
       configMap,
       storageClass,
       persistentVolumeClaim,
