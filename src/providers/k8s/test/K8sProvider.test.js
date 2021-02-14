@@ -13,8 +13,9 @@ describe("K8sProvider", async function () {
   let persistentVolumeClaim;
   let serviceWeb;
   const myNamespace = "test";
-  const resourceName = "app-deployment";
-  const labelApp = "app";
+  const serviceWebName = "web-service";
+  const deploymentWebName = "web-deployment";
+  const labelApp = "web";
   const storageClassName = "my-storage-class";
 
   const types = ["Deployment", "StorageClass", "ConfigMap"];
@@ -49,7 +50,7 @@ describe("K8sProvider", async function () {
     });
 
     serviceWeb = await provider.makeService({
-      name: "web-service",
+      name: serviceWebName,
       properties: () => ({
         spec: {
           selector: {
@@ -60,6 +61,35 @@ describe("K8sProvider", async function () {
               protocol: "TCP",
               port: 80,
               targetPort: 80,
+            },
+          ],
+        },
+      }),
+    });
+
+    ingress = await provider.makeIngress({
+      name: "ingress",
+      dependencies: { namespace, serviceWeb },
+      properties: () => ({
+        spec: {
+          rules: [
+            {
+              http: {
+                paths: [
+                  {
+                    path: "/",
+                    pathType: "Prefix",
+                    backend: {
+                      service: {
+                        name: serviceWebName,
+                        port: {
+                          number: 80,
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
             },
           ],
         },
@@ -119,7 +149,7 @@ describe("K8sProvider", async function () {
     });
 
     deployment = await provider.makeDeployment({
-      name: resourceName,
+      name: deploymentWebName,
       dependencies: { namespace, configMap },
       properties: ({ dependencies: { configMap } }) =>
         deploymentContent({ labelApp, configMap }),

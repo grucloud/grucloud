@@ -5,6 +5,11 @@ const logger = require("../../logger")({ prefix: "K8sNamespace" });
 const { tos } = require("../../tos");
 const { buildTagsObject } = require("../Common");
 const K8sClient = require("./K8sClient");
+const {
+  displayNameDefault,
+  displayNameResourceDefault,
+  resourceKeyDefault,
+} = require("./K8sCommon");
 
 exports.K8sNamespace = ({ spec, config }) => {
   const configDefault = async ({ name, properties, dependencies }) =>
@@ -33,5 +38,8 @@ exports.K8sNamespace = ({ spec, config }) => {
     pathDelete,
     configDefault,
     cannotBeDeleted,
+    displayName: displayNameDefault,
+    displayNameResource: displayNameResourceDefault,
+    resourceKey: resourceKeyDefault,
   });
 };

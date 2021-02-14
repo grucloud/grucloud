@@ -5,7 +5,7 @@ const logger = require("../../logger")({ prefix: "K8sReplicaSet" });
 const { tos } = require("../../tos");
 const K8sClient = require("./K8sClient");
 
-const { resourceKey, displayName } = require("./K8sCommon");
+const { getNamespace } = require("./K8sCommon");
 
 exports.K8sReplicaSet = ({ spec, config }) => {
   const pathGet = ({ name, namespace }) =>
@@ -20,7 +20,5 @@ exports.K8sReplicaSet = ({ spec, config }) => {
     pathGet,
     pathGetStatus,
     pathList,
-    resourceKey,
-    displayName,
   });
 };

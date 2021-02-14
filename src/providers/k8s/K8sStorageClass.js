@@ -4,6 +4,11 @@ const logger = require("../../logger")({ prefix: "K8sStorageClass" });
 const { tos } = require("../../tos");
 const { buildTagsObject } = require("../Common");
 const K8sClient = require("./K8sClient");
+const {
+  displayNameDefault,
+  displayNameResourceDefault,
+  resourceKeyDefault,
+} = require("./K8sCommon");
 
 // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#storageclass-v1-storage-k8s-io
 
@@ -36,5 +41,8 @@ exports.K8sStorageClass = ({ spec, config }) => {
     pathUpdate,
     pathDelete,
     configDefault,
+    displayName: displayNameDefault,
+    displayNameResource: displayNameResourceDefault,
+    resourceKey: resourceKeyDefault,
   });
 };

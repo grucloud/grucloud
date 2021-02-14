@@ -37,7 +37,7 @@ const deploymentNginx = ({ labelApp, configMap, version = "1.14.2" }) => ({
                 valueFrom: {
                   configMapKeyRef: {
                     name: configMap.resource.name,
-                    key: "my-key",
+                    key: "myKey",
                   },
                 },
               },
@@ -51,9 +51,10 @@ const deploymentNginx = ({ labelApp, configMap, version = "1.14.2" }) => ({
 
 exports.createStack = async ({ config }) => {
   const provider = K8sProvider({ config });
+  const namespaceName = "stateless";
 
   const storageClassName = "my-storage-class";
-  const namespaceName = "stateless";
+  const serviceWebName = "web-service";
   const deploymentName = "nginx-deployment";
   const labelApp = "app";
 
@@ -92,7 +93,7 @@ exports.createStack = async ({ config }) => {
   });
 
   const serviceWeb = await provider.makeService({
-    name: "web-service",
+    name: serviceWebName,
     dependencies: { namespace },
     properties: () => ({
       spec: {
@@ -104,6 +105,35 @@ exports.createStack = async ({ config }) => {
             protocol: "TCP",
             port: 80,
             targetPort: 80,
+          },
+        ],
+      },
+    }),
+  });
+
+  const ingress = await provider.makeIngress({
+    name: "ingress",
+    dependencies: { namespace, serviceWeb },
+    properties: () => ({
+      spec: {
+        rules: [
+          {
+            http: {
+              paths: [
+                {
+                  path: "/",
+                  pathType: "Prefix",
+                  backend: {
+                    service: {
+                      name: serviceWebName,
+                      port: {
+                        number: 80,
+                      },
+                    },
+                  },
+                },
+              ],
+            },
           },
         ],
       },

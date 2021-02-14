@@ -4,7 +4,7 @@ const logger = require("../../logger")({ prefix: "K8sPersistentVolumeClaim" });
 const { tos } = require("../../tos");
 const { buildTagsObject } = require("../Common");
 const K8sClient = require("./K8sClient");
-const { resourceKey, displayName, getNamespace } = require("./K8sCommon");
+const { getNamespace } = require("./K8sCommon");
 
 // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#persistentvolumeclaim-v1-core
 
@@ -37,7 +37,5 @@ exports.K8sPersistentVolumeClaim = ({ spec, config }) => {
     pathUpdate,
     pathDelete,
     configDefault,
-    resourceKey,
-    displayName,
   });
 };

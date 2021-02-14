@@ -2,7 +2,7 @@ const logger = require("../../logger")({ prefix: "K8sPod" });
 const { tos } = require("../../tos");
 const K8sClient = require("./K8sClient");
 
-const { resourceKey, displayName } = require("./K8sCommon");
+const { getNamespace } = require("./K8sCommon");
 
 exports.K8sPod = ({ spec, config }) => {
   // TODO may not need it
@@ -18,7 +18,5 @@ exports.K8sPod = ({ spec, config }) => {
     pathGet,
     pathGetStatus,
     pathList,
-    resourceKey,
-    displayName,
   });
 };

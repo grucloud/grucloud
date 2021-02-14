@@ -9,8 +9,6 @@ const K8sClient = require("./K8sClient");
 const { retryCallOnError } = require("../Retry");
 
 const {
-  resourceKey,
-  displayName,
   getNamespace,
   getServerUrl,
   createAxiosMakerK8s,
@@ -125,8 +123,6 @@ exports.K8sDeployment = ({ spec, config }) => {
     pathUpdate,
     pathDelete,
     configDefault,
-    resourceKey,
-    displayName,
     isUpByIdFactory,
     isDownByIdFactory,
   });

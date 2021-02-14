@@ -31,7 +31,16 @@ exports.compare = async ({ target, live }) =>
     }),
   ])();
 
-exports.resourceKey = pipe([
+exports.resourceKeyDefault = pipe([
+  tap((resource) => {
+    assert(resource.provider);
+    assert(resource.type);
+    assert(resource.name || resource.id);
+  }),
+  ({ provider, type, name, id }) => `${provider}::${type}::${name || id}`,
+]);
+
+exports.resourceKeyNamespace = pipe([
   tap((resource) => {
     assert(resource.provider);
     assert(resource.type);
@@ -43,10 +52,16 @@ exports.resourceKey = pipe([
     }`,
 ]);
 
-exports.displayNameResource = ({ name, dependencies }) =>
+exports.displayNameResourceDefault = ({ name }) => name;
+exports.displayNameResourceNamespace = ({ name, dependencies }) =>
   `${getNamespace(dependencies?.namespace)}::${name}`;
 
-exports.displayName = ({ name, meta }) => `${meta.namespace}::${name}`;
+exports.displayNameDefault = ({ name }) => name;
+exports.displayNameNamespace = ({ name, meta }) => {
+  assert(meta.namespace);
+  assert(name);
+  return `${meta.namespace}::${name}`;
+};
 
 exports.shouldRetryOnException = ({ error, name }) => {
   logger.error(`k8s shouldRetryOnException ${tos({ name, error })}`);

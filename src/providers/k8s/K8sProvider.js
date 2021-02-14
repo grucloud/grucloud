@@ -6,9 +6,13 @@ const os = require("os");
 const path = require("path");
 const fs = require("fs").promises;
 const yaml = require("js-yaml");
+
 const logger = require("../../logger")({ prefix: "K8sProvider" });
 const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
+const { isOurMinionObject } = require("../Common");
+const { compare } = require("./K8sCommon");
+
 const { K8sReplicaSet } = require("./K8sReplicaSet");
 const { K8sService } = require("./K8sService");
 const { K8sStorageClass } = require("./K8sStorageClass");
@@ -17,14 +21,23 @@ const { K8sPod } = require("./K8sPod");
 const { K8sNamespace } = require("./K8sNamespace");
 const { K8sDeployment } = require("./K8sDeployment");
 const { K8sConfigMap } = require("./K8sConfigMap");
-
-const { isOurMinionObject } = require("../Common");
-const { compare } = require("./K8sCommon");
+const { K8sIngress } = require("./K8sIngress");
 
 const isOurMinion = ({ resource, config }) =>
   isOurMinionObject({ tags: resource.metadata.annotations, config });
 
 const fnSpecs = () => [
+  {
+    type: "Namespace",
+    Client: K8sNamespace,
+    isOurMinion,
+  },
+  {
+    type: "Ingress",
+    Client: K8sIngress,
+    isOurMinion,
+    compare,
+  },
   {
     type: "StorageClass",
     Client: K8sStorageClass,
@@ -69,11 +82,6 @@ const fnSpecs = () => [
     Client: K8sReplicaSet,
     isOurMinion,
     listOnly: true,
-  },
-  {
-    type: "Namespace",
-    Client: K8sNamespace,
-    isOurMinion,
   },
 ];
 

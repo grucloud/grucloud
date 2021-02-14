@@ -12,6 +12,8 @@ const {
   filter,
   eq,
   or,
+  omit,
+  assign,
 } = require("rubico");
 const {
   first,
@@ -29,7 +31,9 @@ const {
   createAxiosMakerK8s,
   getServerUrl,
   getNamespace,
-  displayNameResource,
+  displayNameResourceNamespace,
+  displayNameNamespace,
+  resourceKeyNamespace,
 } = require("./K8sCommon");
 const { tos } = require("../../tos");
 
@@ -51,8 +55,9 @@ module.exports = K8sClient = ({
   pathCreate,
   pathDelete,
   pathUpdate,
-  resourceKey,
-  displayName = get("name"),
+  resourceKey = resourceKeyNamespace,
+  displayNameResource = displayNameResourceNamespace,
+  displayName = displayNameNamespace,
   isUpByIdFactory = ({ getById }) => isUpByIdCore({ getById }),
   isDownByIdFactory = ({ getById }) => isDownByIdCore({ getById }),
   cannotBeDeleted = () => false,
@@ -88,6 +93,19 @@ module.exports = K8sClient = ({
 
   const axios = () => createAxiosMakerK8s({ config });
 
+  const filterList = (data) =>
+    pipe([
+      get("items"),
+      map(omit(["metadata.managedFields"])),
+      tap((items) => {
+        logger.debug(`filterList items ${tos(items)}`);
+      }),
+      (items) => assign({ items: () => items })(data),
+      tap((result) => {
+        //logger.debug(`filterList result ${tos(result)}`);
+      }),
+    ])(data);
+
   const getList = tryCatch(
     pipe([
       tap((params) => {
@@ -102,6 +120,7 @@ module.exports = K8sClient = ({
           config,
         }),
       get("data"),
+      filterList,
       tap((data) => {
         logger.info(`getList k8s ${JSON.stringify({ data })}`);
       }),
@@ -283,6 +302,7 @@ module.exports = K8sClient = ({
     spec,
     displayName,
     displayNameResource,
+    resourceKey,
     findName,
     findMeta,
     getByName,
@@ -293,6 +313,5 @@ module.exports = K8sClient = ({
     destroy,
     cannotBeDeleted: or([cannotBeDeletedDefault, cannotBeDeleted]),
     configDefault,
-    resourceKey,
   };
 };

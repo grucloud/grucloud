@@ -32,6 +32,12 @@
 
 ## Cli
 
+## Kubernetes
+
+- minikube addons enable ingress
+
+- kubectl cluster-info
+
 ## Azure
 
 - check resource group name
