@@ -1070,34 +1070,27 @@ const OutputDoOk = ({ commandOptions, programOptions }) =>
     tap((providers) => {
       logger.debug(`output #providers ${providers.length}`);
     }),
-    filter((provider) =>
+    map((provider) =>
       provider.getResource({
-        provider: provider.name,
-        type: commandOptions.type,
-        name: commandOptions.name,
+        uri: `${provider.name}::${commandOptions.type}::${commandOptions.name}`,
       })
     ),
+    filter((resource) => resource),
     switchCase([
-      (providers) => isEmpty(providers),
+      isEmpty,
       () => {
         throw {
           message: `Cannot find resource: '${commandOptions.type}::${commandOptions.name}'`,
         };
       },
-      (providers) => size(providers) > 1,
+      (resources) => size(resources) > 1,
       () => {
         throw {
           message: `resource: '${commandOptions.name}' found in multiple providers, use the --provider option`,
         };
       },
-      (providers) => first(providers),
+      first,
     ]),
-    (provider) =>
-      provider.getResource({
-        provider: provider.name,
-        type: commandOptions.type,
-        name: commandOptions.name,
-      }),
     (resource) => resource.getLive(),
     tap((live) => {
       logger.debug(`output live: ${live}`);
