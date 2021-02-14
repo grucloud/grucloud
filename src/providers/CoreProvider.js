@@ -781,7 +781,13 @@ function CoreProvider({
   const getTargetResources = () => [...mapNameToResource.values()];
   const resourceNames = () => pluck(["name"])([...mapNameToResource.values()]);
 
-  const getResource = ({ uri }) => mapNameToResource.get(uri);
+  const getResource = pipe([
+    get("uri"),
+    tap((uri) => {
+      assert(uri, "getResource no uri");
+    }),
+    (uri) => mapNameToResource.get(uri),
+  ]);
 
   const specs = fnSpecs(providerConfig).map((spec) =>
     defaultsDeep(SpecDefault({ config: providerConfig, providerName }))(spec)
