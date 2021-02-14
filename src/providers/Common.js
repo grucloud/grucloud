@@ -298,7 +298,7 @@ exports.isOurMinionObject = ({ tags, config }) => {
     ]),
     tap((minion) => {
       logger.debug(
-        `isOurMinion ${minion}, ${tos({
+        `isOurMinionObject ${minion}, ${tos({
           stage,
           projectName,
           tags,

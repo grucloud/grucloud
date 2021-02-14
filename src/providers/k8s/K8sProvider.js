@@ -10,6 +10,8 @@ const logger = require("../../logger")({ prefix: "K8sProvider" });
 const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
 const { K8sReplicaSet } = require("./K8sReplicaSet");
+const { K8sStorageClass } = require("./K8sStorageClass");
+const { K8sPersistentVolumeClaim } = require("./K8sPersistentVolumeClaim");
 const { K8sPod } = require("./K8sPod");
 const { K8sNamespace } = require("./K8sNamespace");
 const { K8sDeployment } = require("./K8sDeployment");
@@ -22,6 +24,19 @@ const isOurMinion = ({ resource, config }) =>
   isOurMinionObject({ tags: resource.metadata.annotations, config });
 
 const fnSpecs = () => [
+  {
+    type: "StorageClass",
+    Client: K8sStorageClass,
+    isOurMinion,
+    compare,
+  },
+  {
+    type: "PersistentVolumeClaim",
+    Client: K8sPersistentVolumeClaim,
+    dependsOn: ["StorageClass"],
+    isOurMinion,
+    compare,
+  },
   {
     type: "Deployment",
     dependsOn: ["Namespace", "ConfigMap"],

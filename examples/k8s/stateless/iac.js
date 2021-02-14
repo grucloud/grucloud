@@ -52,6 +52,7 @@ const deploymentNginx = ({ labelApp, configMap, version = "1.14.2" }) => ({
 exports.createStack = async ({ config }) => {
   const provider = K8sProvider({ config });
 
+  const storageClassName = "my-storage-class";
   const namespaceName = "stateless";
   const deploymentName = "nginx-deployment";
   const labelApp = "app";
@@ -65,9 +66,33 @@ exports.createStack = async ({ config }) => {
     properties: () => configMapContent({}),
   });
 
+  const storageClass = await provider.makeStorageClass({
+    name: storageClassName,
+    properties: () => ({
+      provisioner: "kubernetes.io/no-provisioner",
+      volumeBindingMode: "WaitForFirstConsumer",
+    }),
+  });
+
+  const persistentVolumeClaim = await provider.makePersistentVolumeClaim({
+    name: "persistent-volume-claim",
+    dependencies: { storageClass },
+    properties: () => ({
+      spec: {
+        accessModes: ["ReadWriteOnce"],
+        storageClassName: storageClassName,
+        resources: {
+          requests: {
+            storage: "1Gi",
+          },
+        },
+      },
+    }),
+  });
+
   const deployment = await provider.makeDeployment({
     name: deploymentName,
-    dependencies: { namespace, configMap },
+    dependencies: { namespace, configMap, persistentVolumeClaim },
     properties: ({ dependencies: { configMap } }) =>
       deploymentNginx({ labelApp, configMap }),
   });
@@ -77,6 +102,8 @@ exports.createStack = async ({ config }) => {
     resources: {
       namespace,
       configMap,
+      storageClass,
+      persistentVolumeClaim,
       deployment,
     },
   };

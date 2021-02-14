@@ -3,17 +3,20 @@ const { ConfigLoader } = require("ConfigLoader");
 const { K8sProvider } = require("../K8sProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
-describe.skip("K8sProvider", async function () {
+describe("K8sProvider", async function () {
   let config;
   let provider;
   let namespace;
   let deployment;
   let configMap;
+  let storageClass;
+  let persistentVolumeClaim;
   const myNamespace = "test";
   const resourceName = "app-deployment";
   const labelApp = "app";
+  const storageClassName = "my-storage-class";
 
-  const types = ["Deployment"];
+  const types = ["Deployment", "StorageClass", "ConfigMap"];
   before(async function () {
     try {
       config = ConfigLoader({ path: "examples/multi" });
@@ -26,7 +29,38 @@ describe.skip("K8sProvider", async function () {
 
     await provider.start();
 
-    const configMapContent = ({}) => ({ data: { myKey: "myValue" } });
+    namespace = await provider.makeNamespace({
+      name: myNamespace,
+    });
+
+    configMap = await provider.makeConfigMap({
+      name: "config-map",
+      properties: () => ({ data: { myKey: "myValue" } }),
+    });
+
+    storageClass = await provider.makeConfigMap({
+      name: storageClassName,
+      properties: () => ({
+        provisioner: "kubernetes.io/no-provisioner",
+        volumeBindingMode: "WaitForFirstConsumer",
+      }),
+    });
+
+    persistentVolumeClaim = await provider.makePersistentVolumeClaim({
+      name: "persistent-volume-claim",
+      dependencies: { storageClass },
+      properties: () => ({
+        spec: {
+          accessModes: ["ReadWriteOnce"],
+          storageClassName: storageClassName,
+          resources: {
+            requests: {
+              storage: "1Gi",
+            },
+          },
+        },
+      }),
+    });
 
     const deploymentContent = ({ configMap, name, labelApp }) => ({
       metadata: {
@@ -64,15 +98,6 @@ describe.skip("K8sProvider", async function () {
       },
     });
 
-    namespace = await provider.makeNamespace({
-      name: myNamespace,
-    });
-
-    configMap = await provider.makeConfigMap({
-      name: "config-map",
-      properties: () => configMapContent({}),
-    });
-
     deployment = await provider.makeDeployment({
       name: resourceName,
       dependencies: { namespace, configMap },
@@ -82,7 +107,7 @@ describe.skip("K8sProvider", async function () {
   });
   after(async () => {});
 
-  it("k8s deployment apply and destroy", async function () {
+  it.only("k8s deployment apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
     const deploymentLive = await deployment.getLive();
 
