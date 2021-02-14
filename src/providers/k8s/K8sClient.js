@@ -29,6 +29,7 @@ const {
   createAxiosMakerK8s,
   getServerUrl,
   getNamespace,
+  displayNameResource,
 } = require("./K8sCommon");
 const { tos } = require("../../tos");
 
@@ -51,7 +52,7 @@ module.exports = K8sClient = ({
   pathDelete,
   pathUpdate,
   resourceKey,
-  displayName,
+  displayName = get("name"),
   isUpByIdFactory = ({ getById }) => isUpByIdCore({ getById }),
   isDownByIdFactory = ({ getById }) => isDownByIdCore({ getById }),
   cannotBeDeleted = () => false,
@@ -281,6 +282,7 @@ module.exports = K8sClient = ({
   return {
     spec,
     displayName,
+    displayNameResource,
     findName,
     findMeta,
     getByName,

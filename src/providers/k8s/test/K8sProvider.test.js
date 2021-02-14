@@ -11,6 +11,7 @@ describe("K8sProvider", async function () {
   let configMap;
   let storageClass;
   let persistentVolumeClaim;
+  let serviceWeb;
   const myNamespace = "test";
   const resourceName = "app-deployment";
   const labelApp = "app";
@@ -35,6 +36,7 @@ describe("K8sProvider", async function () {
 
     configMap = await provider.makeConfigMap({
       name: "config-map",
+      dependencies: { namespace },
       properties: () => ({ data: { myKey: "myValue" } }),
     });
 
@@ -43,6 +45,24 @@ describe("K8sProvider", async function () {
       properties: () => ({
         provisioner: "kubernetes.io/no-provisioner",
         volumeBindingMode: "WaitForFirstConsumer",
+      }),
+    });
+
+    serviceWeb = await provider.makeService({
+      name: "web-service",
+      properties: () => ({
+        spec: {
+          selector: {
+            app: labelApp,
+          },
+          ports: [
+            {
+              protocol: "TCP",
+              port: 80,
+              targetPort: 80,
+            },
+          ],
+        },
       }),
     });
 

@@ -5,8 +5,6 @@ const { tos } = require("../../tos");
 const { buildTagsObject } = require("../Common");
 const K8sClient = require("./K8sClient");
 
-const { resourceKey, displayName, getNamespace } = require("./K8sCommon");
-
 // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#storageclass-v1-storage-k8s-io
 
 exports.K8sStorageClass = ({ spec, config }) => {
@@ -16,7 +14,6 @@ exports.K8sStorageClass = ({ spec, config }) => {
       kind: "StorageClass",
       metadata: {
         name,
-        namespace: getNamespace(dependencies.namespace?.resource),
         annotations: buildTagsObject({ name, config }),
       },
     })(properties);
@@ -39,7 +36,5 @@ exports.K8sStorageClass = ({ spec, config }) => {
     pathUpdate,
     pathDelete,
     configDefault,
-    resourceKey,
-    displayName,
   });
 };

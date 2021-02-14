@@ -10,6 +10,10 @@ const AxiosMaker = require("../AxiosMaker");
 
 const getNamespace = pipe([
   switchCase([isEmpty, () => `default`, get("name")]),
+  tap((namespaceName) => {
+    //logger.debug(`getNamespace namespaceName: ${namespaceName}`);
+    assert(namespaceName);
+  }),
 ]);
 
 exports.getNamespace = getNamespace;
@@ -39,8 +43,10 @@ exports.resourceKey = pipe([
     }`,
 ]);
 
-exports.displayName = ({ name, dependencies }) =>
+exports.displayNameResource = ({ name, dependencies }) =>
   `${getNamespace(dependencies?.namespace)}::${name}`;
+
+exports.displayName = ({ name, meta }) => `${meta.namespace}::${name}`;
 
 exports.shouldRetryOnException = ({ error, name }) => {
   logger.error(`k8s shouldRetryOnException ${tos({ name, error })}`);

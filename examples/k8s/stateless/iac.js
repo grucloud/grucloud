@@ -63,6 +63,7 @@ exports.createStack = async ({ config }) => {
 
   const configMap = await provider.makeConfigMap({
     name: "config-map",
+    dependencies: { namespace },
     properties: () => configMapContent({}),
   });
 
@@ -76,7 +77,7 @@ exports.createStack = async ({ config }) => {
 
   const persistentVolumeClaim = await provider.makePersistentVolumeClaim({
     name: "persistent-volume-claim",
-    dependencies: { storageClass },
+    dependencies: { namespace, storageClass },
     properties: () => ({
       spec: {
         accessModes: ["ReadWriteOnce"],
@@ -86,6 +87,25 @@ exports.createStack = async ({ config }) => {
             storage: "1Gi",
           },
         },
+      },
+    }),
+  });
+
+  const serviceWeb = await provider.makeService({
+    name: "web-service",
+    dependencies: { namespace },
+    properties: () => ({
+      spec: {
+        selector: {
+          app: labelApp,
+        },
+        ports: [
+          {
+            protocol: "TCP",
+            port: 80,
+            targetPort: 80,
+          },
+        ],
       },
     }),
   });

@@ -10,6 +10,7 @@ const logger = require("../../logger")({ prefix: "K8sProvider" });
 const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
 const { K8sReplicaSet } = require("./K8sReplicaSet");
+const { K8sService } = require("./K8sService");
 const { K8sStorageClass } = require("./K8sStorageClass");
 const { K8sPersistentVolumeClaim } = require("./K8sPersistentVolumeClaim");
 const { K8sPod } = require("./K8sPod");
@@ -27,6 +28,12 @@ const fnSpecs = () => [
   {
     type: "StorageClass",
     Client: K8sStorageClass,
+    isOurMinion,
+    compare,
+  },
+  {
+    type: "Service",
+    Client: K8sService,
     isOurMinion,
     compare,
   },

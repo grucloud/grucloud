@@ -126,6 +126,7 @@ const createClient = ({ spec, provider, config, mapTypeToResources }) =>
         ({ provider, type, name, id }) => `${provider}::${type}::${name || id}`,
       ]),
       displayName: get("name"),
+      displayNameResource: get("name"),
       findMeta: () => undefined,
       cannotBeDeleted: () => false,
       configDefault: () => ({}),
@@ -482,7 +483,11 @@ const ResourceMaker = ({
     type,
     name: resourceName,
     meta,
-    displayName: client.displayName({ name: resourceName, meta, dependencies }),
+    displayName: client.displayNameResource({
+      name: resourceName,
+      meta,
+      dependencies,
+    }),
     uri: toString(),
   });
 

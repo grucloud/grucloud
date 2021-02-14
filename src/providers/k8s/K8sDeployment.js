@@ -47,13 +47,13 @@ exports.K8sDeployment = ({ spec, config }) => {
   const isInstanceUp = (item) =>
     pipe([
       tap(() => {
-        logger.debug(`isInstanceUp item: ${tos(item)}`);
+        //logger.debug(`isInstanceUp item: ${tos(item)}`);
       }),
       get("status"),
       tap((status) => {
         logger.debug(`isInstanceUp status: ${tos(status)}`);
       }),
-      and([pipe([get("unavailableReplicas"), isEmpty]), get("readyReplicas")]),
+      and([pipe([get("unavailableReplicas"), isEmpty]), get("replicas")]),
       tap((isUp) => {
         logger.debug(`isInstanceUp isUp: ${isUp}`);
       }),
