@@ -2,35 +2,96 @@ const { K8sProvider } = require("@grucloud/core");
 
 const configMapContent = ({}) => ({ data: { myKey: "myValue" } });
 
-const deploymentNginx = ({ labelApp, configMap, version = "1.14.2" }) => ({
+const deploymentUiContent = ({
+  label,
+  configMap,
+  image = "ngnix",
+  version = "latest",
+  port = "80",
+}) => ({
   metadata: {
     labels: {
-      app: labelApp,
+      app: label,
     },
   },
   spec: {
-    replicas: 2,
+    replicas: 1,
     selector: {
       matchLabels: {
-        app: labelApp,
+        app: label,
       },
     },
     template: {
       metadata: {
         labels: {
-          app: labelApp,
+          app: label,
         },
       },
       spec: {
         containers: [
           {
-            name: "nginx",
-            image: `nginx:${version}`,
+            name: "ui",
+            image: `${image}:${version}`,
             ports: [
               {
-                containerPort: 80,
+                containerPort: port,
               },
             ],
+            env: [
+              {
+                name: "MY_VAR",
+                valueFrom: {
+                  configMapKeyRef: {
+                    name: configMap.resource.name,
+                    key: "myKey",
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  },
+});
+
+const deploymentRestServerContent = ({
+  label = "rest-server",
+  configMap,
+  image,
+  version = "latest",
+  port = "3000",
+}) => ({
+  metadata: {
+    labels: {
+      app: label,
+    },
+  },
+  spec: {
+    replicas: 1,
+    selector: {
+      matchLabels: {
+        app: label,
+      },
+    },
+    template: {
+      metadata: {
+        labels: {
+          app: label,
+        },
+      },
+      spec: {
+        containers: [
+          {
+            name: "rest-server",
+            image: `${image}:${version}`,
+            ports: [
+              {
+                containerPort: port,
+              },
+            ],
+            command: ["/bin/sh"],
+            args: ["scripts/initialise.sh"],
             env: [
               {
                 name: "MY_VAR",
@@ -52,11 +113,23 @@ const deploymentNginx = ({ labelApp, configMap, version = "1.14.2" }) => ({
 exports.createStack = async ({ config }) => {
   const provider = K8sProvider({ config });
   const namespaceName = "stateless";
-
   const storageClassName = "my-storage-class";
-  const serviceWebName = "web-service";
-  const deploymentName = "nginx-deployment";
-  const labelApp = "app";
+
+  const ui = {
+    container: { image: "fredericheem/ui", version: "latest" },
+    serviceName: "web-service",
+    deploymentName: "web-deployment",
+    label: "ui",
+    port: 80,
+  };
+
+  const restServer = {
+    container: { image: "fredericheem/api", version: "latest" },
+    serviceName: "rest-service",
+    deploymentName: "rest-deployment",
+    label: "rest",
+    port: 3000,
+  };
 
   const namespace = await provider.makeNamespace({
     name: namespaceName,
@@ -92,19 +165,38 @@ exports.createStack = async ({ config }) => {
     }),
   });
 
-  const serviceWeb = await provider.makeService({
-    name: serviceWebName,
+  const serviceUi = await provider.makeService({
+    name: ui.serviceName,
     dependencies: { namespace },
     properties: () => ({
       spec: {
         selector: {
-          app: labelApp,
+          app: ui.label,
         },
         ports: [
           {
             protocol: "TCP",
-            port: 80,
-            targetPort: 80,
+            port: ui.port,
+            targetPort: ui.port,
+          },
+        ],
+      },
+    }),
+  });
+
+  const serviceRestServer = await provider.makeService({
+    name: restServer.serviceName,
+    dependencies: { namespace },
+    properties: () => ({
+      spec: {
+        selector: {
+          app: restServer.label,
+        },
+        ports: [
+          {
+            protocol: "TCP",
+            port: restServer.port,
+            targetPort: restServer.port,
           },
         ],
       },
@@ -113,7 +205,7 @@ exports.createStack = async ({ config }) => {
 
   const ingress = await provider.makeIngress({
     name: "ingress",
-    dependencies: { namespace, serviceWeb },
+    dependencies: { namespace, serviceUi, serviceRestServer },
     properties: () => ({
       spec: {
         rules: [
@@ -125,9 +217,21 @@ exports.createStack = async ({ config }) => {
                   pathType: "Prefix",
                   backend: {
                     service: {
-                      name: serviceWebName,
+                      name: ui.serviceName,
                       port: {
-                        number: 80,
+                        number: ui.port,
+                      },
+                    },
+                  },
+                },
+                {
+                  path: "/api",
+                  pathType: "Prefix",
+                  backend: {
+                    service: {
+                      name: restServer.serviceName,
+                      port: {
+                        number: restServer.port,
                       },
                     },
                   },
@@ -140,11 +244,30 @@ exports.createStack = async ({ config }) => {
     }),
   });
 
-  const deployment = await provider.makeDeployment({
-    name: deploymentName,
+  const deploymentUi = await provider.makeDeployment({
+    name: ui.deploymentName,
+    dependencies: { namespace, configMap },
+    properties: ({ dependencies: { configMap } }) =>
+      deploymentUiContent({
+        label: ui.label,
+        configMap,
+        image: ui.container.image,
+        version: ui.container.version,
+        port: ui.port,
+      }),
+  });
+
+  const deploymentRestServer = await provider.makeDeployment({
+    name: restServer.deploymentName,
     dependencies: { namespace, configMap, persistentVolumeClaim },
     properties: ({ dependencies: { configMap } }) =>
-      deploymentNginx({ labelApp, configMap }),
+      deploymentRestServerContent({
+        label: restServer.label,
+        configMap,
+        image: restServer.container.image,
+        version: restServer.container.version,
+        port: restServer.port,
+      }),
   });
 
   return {
@@ -155,7 +278,8 @@ exports.createStack = async ({ config }) => {
       configMap,
       storageClass,
       persistentVolumeClaim,
-      deployment,
+      deploymentUi,
+      deploymentRestServer,
     },
   };
 };
