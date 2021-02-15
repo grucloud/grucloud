@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, get, tap, eq, switchCase, assign, or } = require("rubico");
+const { pipe, get, tap, eq, switchCase, assign, or, pick } = require("rubico");
 const { find, first, isEmpty } = require("rubico/x");
 const fs = require("fs");
 const https = require("https");
@@ -18,6 +18,8 @@ const getNamespace = pipe([
 
 exports.getNamespace = getNamespace;
 
+const pickCompare = pick(["spec", "data"]);
+
 exports.compare = async ({ target, live }) =>
   pipe([
     tap(() => {
@@ -25,9 +27,9 @@ exports.compare = async ({ target, live }) =>
       assert(target);
       assert(live);
     }),
-    () => detailedDiff(live.spec, target.spec),
+    () => detailedDiff(pickCompare(live), pickCompare(target)),
     tap((diff) => {
-      logger.debug(`compare ${tos(diff)}`);
+      logger.debug(`k8s compare ${tos(diff)}`);
     }),
   ])();
 

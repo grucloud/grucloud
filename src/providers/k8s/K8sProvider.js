@@ -16,12 +16,14 @@ const { compare } = require("./K8sCommon");
 const { K8sReplicaSet } = require("./K8sReplicaSet");
 const { K8sService } = require("./K8sService");
 const { K8sStorageClass } = require("./K8sStorageClass");
+const { K8sPersistentVolume } = require("./K8sPersistentVolume");
 const { K8sPersistentVolumeClaim } = require("./K8sPersistentVolumeClaim");
 const { K8sPod } = require("./K8sPod");
 const { K8sNamespace } = require("./K8sNamespace");
 const { K8sDeployment } = require("./K8sDeployment");
 const { K8sConfigMap } = require("./K8sConfigMap");
 const { K8sIngress } = require("./K8sIngress");
+const { K8sStatefulSet } = require("./K8sStatefulSet");
 
 const isOurMinion = ({ resource, config }) =>
   isOurMinionObject({ tags: resource.metadata.annotations, config });
@@ -34,6 +36,7 @@ const fnSpecs = () => [
   },
   {
     type: "Ingress",
+    dependsOn: ["Namespace", "Service"],
     Client: K8sIngress,
     isOurMinion,
     compare,
@@ -46,14 +49,22 @@ const fnSpecs = () => [
   },
   {
     type: "Service",
+    dependsOn: ["Namespace"],
     Client: K8sService,
+    isOurMinion,
+    compare,
+  },
+  {
+    type: "PersistentVolume",
+    Client: K8sPersistentVolume,
+    dependsOn: ["Namespace", "StorageClass"],
     isOurMinion,
     compare,
   },
   {
     type: "PersistentVolumeClaim",
     Client: K8sPersistentVolumeClaim,
-    dependsOn: ["StorageClass"],
+    dependsOn: ["Namespace", "StorageClass", "PersistentVolume"],
     isOurMinion,
     compare,
   },
@@ -61,6 +72,13 @@ const fnSpecs = () => [
     type: "Deployment",
     dependsOn: ["Namespace", "ConfigMap"],
     Client: K8sDeployment,
+    isOurMinion,
+    compare,
+  },
+  {
+    type: "StatefulSet",
+    dependsOn: ["Namespace", "ConfigMap"],
+    Client: K8sStatefulSet,
     isOurMinion,
     compare,
   },
@@ -73,12 +91,14 @@ const fnSpecs = () => [
   },
   {
     type: "Pod",
+    dependsOn: ["Namespace", "ConfigMap"],
     Client: K8sPod,
     isOurMinion,
     listOnly: true,
   },
   {
     type: "ReplicaSet",
+    dependsOn: ["Namespace", "ConfigMap"],
     Client: K8sReplicaSet,
     isOurMinion,
     listOnly: true,

@@ -47,7 +47,7 @@ exports.K8sIngress = ({ spec, config }) => {
       }),
     ])(live);
 
-  const k8sClient = K8sClient({
+  return K8sClient({
     spec,
     config,
     pathGet,
@@ -58,6 +58,4 @@ exports.K8sIngress = ({ spec, config }) => {
     configDefault,
     isUpByIdFactory,
   });
-
-  return k8sClient;
 };

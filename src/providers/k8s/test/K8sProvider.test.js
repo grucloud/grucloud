@@ -8,8 +8,10 @@ describe("K8sProvider", async function () {
   let provider;
   let namespace;
   let deployment;
+  let statefulSetPostgres;
   let configMap;
   let storageClass;
+  let persistentVolume;
   let persistentVolumeClaim;
   let serviceWeb;
   const myNamespace = "test";
@@ -17,8 +19,25 @@ describe("K8sProvider", async function () {
   const deploymentWebName = "web-deployment";
   const labelApp = "web";
   const storageClassName = "my-storage-class";
+  const pvc = { name: "pvc-db" };
+  const pv = { name: "pv-db" };
 
-  const types = ["Deployment", "StorageClass", "ConfigMap"];
+  const postgres = {
+    statefulSetName: "postgres-statefulset",
+    label: "db",
+  };
+
+  const types = [
+    "Deployment",
+    "StorageClass",
+    "ConfigMap",
+    "PersistentVolume",
+    "PersistentVolumeClaim",
+    "StorageClass",
+    "Service",
+    "Ingress",
+  ];
+
   before(async function () {
     try {
       config = ConfigLoader({ path: "examples/multi" });
@@ -38,10 +57,16 @@ describe("K8sProvider", async function () {
     configMap = await provider.makeConfigMap({
       name: "config-map",
       dependencies: { namespace },
-      properties: () => ({ data: { myKey: "myValue" } }),
+      properties: () => ({
+        data: {
+          POSTGRES_USER: "dbuser",
+          POSTGRES_PASSWORD: "peggy went to the market",
+          POSTGRES_DB: "main",
+        },
+      }),
     });
 
-    storageClass = await provider.makeConfigMap({
+    storageClass = await provider.makeStorageClass({
       name: storageClassName,
       properties: () => ({
         provisioner: "kubernetes.io/no-provisioner",
@@ -96,13 +121,30 @@ describe("K8sProvider", async function () {
       }),
     });
 
-    persistentVolumeClaim = await provider.makePersistentVolumeClaim({
-      name: "persistent-volume-claim",
-      dependencies: { storageClass },
+    persistentVolume = await provider.makePersistentVolume({
+      name: pv.name,
+      dependencies: { namespace },
       properties: () => ({
         spec: {
           accessModes: ["ReadWriteOnce"],
-          storageClassName: storageClassName,
+          capacity: {
+            storage: "2Gi",
+          },
+          hostPath: {
+            path: "/data/pv0001/",
+          },
+        },
+      }),
+    });
+
+    /*
+    persistentVolumeClaim = await provider.makePersistentVolumeClaim({
+      name: pvc.name,
+      dependencies: { namespace, storageClass },
+      properties: () => ({
+        spec: {
+          accessModes: ["ReadWriteOnce"],
+          storageClassName: "",
           resources: {
             requests: {
               storage: "1Gi",
@@ -111,7 +153,7 @@ describe("K8sProvider", async function () {
         },
       }),
     });
-
+*/
     const deploymentContent = ({ configMap, name, labelApp }) => ({
       metadata: {
         labels: {
@@ -153,6 +195,106 @@ describe("K8sProvider", async function () {
       dependencies: { namespace, configMap },
       properties: ({ dependencies: { configMap } }) =>
         deploymentContent({ labelApp, configMap }),
+    });
+
+    const statefulPostgresContent = ({ configMap, name, label, pvName }) => ({
+      metadata: {
+        labels: {
+          app: label,
+        },
+      },
+      spec: {
+        serviceName: "postgres",
+        replicas: 1,
+        selector: {
+          matchLabels: {
+            app: label,
+          },
+        },
+        template: {
+          metadata: {
+            labels: {
+              app: label,
+            },
+          },
+          spec: {
+            containers: [
+              {
+                name: "postgres",
+                image: "postgres:10-alpine",
+                ports: [
+                  {
+                    containerPort: 5432,
+                    name: "postgres",
+                  },
+                ],
+                volumeMounts: [
+                  {
+                    name: pvName,
+                    mountPath: "/var/lib/postgresql",
+                  },
+                ],
+                env: [
+                  {
+                    name: "POSTGRES_USER",
+                    valueFrom: {
+                      configMapKeyRef: {
+                        name: configMap.resource.name,
+                        key: "POSTGRES_USER",
+                      },
+                    },
+                  },
+
+                  {
+                    name: "POSTGRES_PASSWORD",
+                    valueFrom: {
+                      configMapKeyRef: {
+                        name: configMap.resource.name,
+                        key: "POSTGRES_PASSWORD",
+                      },
+                    },
+                  },
+                  {
+                    name: "POSTGRES_DB",
+                    valueFrom: {
+                      configMapKeyRef: {
+                        name: configMap.resource.name,
+                        key: "POSTGRES_DB",
+                      },
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        volumeClaimTemplates: [
+          {
+            metadata: {
+              name: pvName,
+            },
+            spec: {
+              accessModes: ["ReadWriteOnce"],
+              resources: {
+                requests: {
+                  storage: "1Gi",
+                },
+              },
+            },
+          },
+        ],
+      },
+    });
+
+    statefulSetPostgres = await provider.makeStatefulSet({
+      name: postgres.statefulSetName,
+      dependencies: { namespace, configMap, persistentVolume },
+      properties: ({ dependencies: { configMap } }) =>
+        statefulPostgresContent({
+          label: postgres.label,
+          configMap,
+          pvName: pv.name,
+        }),
     });
   });
   after(async () => {});
