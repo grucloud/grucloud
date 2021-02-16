@@ -299,13 +299,13 @@ describe.skip("K8sProvider", async function () {
   });
   after(async () => {});
 
-  it.only("k8s deployment apply and destroy", async function () {
+  it("k8s deployment apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
     const deploymentLive = await deployment.getLive();
 
     const {
       results: [deployments],
-    } = await provider.listLives({ types });
+    } = await provider.listLives({ options: { types } });
     const resource = deployments.resources[0].data;
     //assert.equal(deployments.type, "ElasticIpAddress");
     //assert.equal(resource.Domain, "vpc");

@@ -63,6 +63,16 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "K8s Stateless List Only Pod",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/stateless",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["list", "-t", "Pod"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "K8s Stateless Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/k8s/stateless",
@@ -404,7 +414,7 @@
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/eks/",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["list"]
+      "args": ["list", "-t", "Net"]
     },
     {
       "type": "node",

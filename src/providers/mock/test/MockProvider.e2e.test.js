@@ -28,19 +28,22 @@ describe("MockProvider e2e", async function () {
 
   it("plan destroy", async function () {
     {
-      const { results: liveResources } = await provider.listLives({
-        all: true,
-      });
-      assert.equal(liveResources.length, 4);
-    }
-
-    {
       const plan = await provider.planQuery();
       assert(plan.resultDestroy);
       const { results, error } = await provider.planApply({ plan });
       //assert(results);
       assert(!error);
     }
+
+    {
+      const { results: liveResources } = await provider.listLives({
+        options: {
+          all: true,
+        },
+      });
+      assert.equal(liveResources.length, 5);
+    }
+
     {
       const listTargets = await provider.listTargets();
       assert.equal(listTargets.length, 4);
@@ -65,7 +68,9 @@ describe("MockProvider e2e", async function () {
       }
       {
         const { results: liveResources } = await provider.listLives({
-          our: true,
+          options: {
+            our: true,
+          },
         });
         assert.equal(liveResources.length, 0);
       }
@@ -95,20 +100,26 @@ describe("MockProvider e2e", async function () {
         );
       }
       {
-        const { results: lives } = await provider.listLives({ our: true });
+        const { results: lives } = await provider.listLives({
+          options: { our: true },
+        });
         assert.equal(lives.length, plan.resultCreate.plans.length);
       }
       {
         const { results: lives } = await provider.listLives({
-          provider: "mock",
+          options: {
+            provider: "mock",
+          },
         });
         assert(lives.length > 0);
       }
       {
         const { results: lives } = await provider.listLives({
-          provider: "idonotexist",
+          options: {
+            provider: "idonotexist",
+          },
         });
-        assert(lives.length === 0);
+        assert.equal(lives.length, 0);
       }
       {
         const { error } = await provider.destroyAll();
@@ -132,7 +143,7 @@ describe("MockProvider e2e", async function () {
 
     {
       const { results: liveResources } = await provider.listLives({
-        all: true,
+        options: { all: true },
       });
       assert.equal(liveResources.length, 4);
     }
@@ -142,19 +153,21 @@ describe("MockProvider e2e", async function () {
     }
     {
       const { results: liveResources } = await provider.listLives({
-        our: true,
+        options: {
+          our: true,
+        },
       });
       assert.equal(liveResources.length, 0);
     }
     {
       const { results: liveResources } = await provider.listLives({
-        types: ["Server", "Ip"],
+        options: { types: ["Server", "Ip"] },
       });
       assert.equal(liveResources.length, 2);
     }
     {
       const { results: liveResources } = await provider.listLives({
-        types: ["Serv"],
+        options: { types: ["Serv"] },
       });
       assert.equal(liveResources.length, 1);
     }
@@ -181,7 +194,9 @@ describe("MockProvider e2e", async function () {
       assert.equal(listLives.length, 5);
     }
     {
-      const { results: listLives } = await provider.listLives({ all: true });
+      const { results: listLives } = await provider.listLives({
+        options: { all: true },
+      });
       assert.equal(listLives.length, 5);
     }
     {

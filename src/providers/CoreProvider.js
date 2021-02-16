@@ -12,6 +12,7 @@ const {
   find,
   defaultsDeep,
   isDeepEqual,
+  includes,
 } = require("rubico/x");
 const {
   pipe,
@@ -28,6 +29,8 @@ const {
   fork,
   eq,
   not,
+  and,
+  or,
   transform,
 } = require("rubico");
 const logger = require("../logger")({ prefix: "Core" });
@@ -48,6 +51,7 @@ const {
   TitleListing,
 } = require("./Common");
 const { Planner, mapToGraph } = require("./Planner");
+const { Lister } = require("./Lister");
 
 const configProviderDefault = {
   tag: "ManagedByGru",
@@ -73,38 +77,7 @@ const noop = ({}) => {};
 
 const isValidPlan = (plan) => !isEmpty(plan.plans) && !plan.error;
 
-const filterByType = ({ types }) =>
-  filter((client) =>
-    !isEmpty(types)
-      ? any((type) => new RegExp(type, "i").test(client.spec.type))(types)
-      : true
-  );
-
-const filterReadClient = ({ types, all }) =>
-  pipe([
-    filterByType({ types }),
-    filter((client) => all || !client.spec.listHide),
-    tap((clients) => {
-      logger.debug(`filterReadClient #client ${clients.length}`);
-    }),
-  ]);
-
-const filterReadWriteClient = ({ types } = {}) =>
-  pipe([
-    tap((clients) => {
-      logger.debug(
-        `filterReadWriteClient types: ${types}, #clients ${clients.length}`
-      );
-    }),
-    filterByType({ types }),
-    filter((client) => !client.spec.singleton),
-    filter((client) => !client.spec.listOnly),
-    tap((clients) => {
-      logger.debug(`filterReadWriteClient result #clients ${clients.length}`);
-    }),
-  ]);
-
-const hasResultError = any(({ error }) => error);
+const hasResultError = any(get("error"));
 
 const nextStateOnError = (error) => (error ? "ERROR" : "DONE");
 
@@ -634,6 +607,7 @@ function CoreProvider({
     assert(operation);
     assert(resource);
     const { type, id } = resource;
+    assert(type);
     const uri = `${providerName}::${operation}::${type}`;
     const displayText = (state) => {
       if (!state) {
@@ -696,6 +670,7 @@ function CoreProvider({
   };
 
   const contextFromClient = ({ client, title }) => {
+    assert(client, "client");
     const { type } = client.spec;
     assert(type, "client.spec.type");
     assert(title, "title");
@@ -714,7 +689,9 @@ function CoreProvider({
       displayText: () => type,
       onDone: ({ spinnerMap, spinnies }) => {
         const context = spinnerMap.get(uri);
-        assert(context, `no context for ${uri}`);
+        if (!context) {
+          assert(context, `no context for ${uri}`);
+        }
         const { state } = context;
         assert(state);
         const completed = state.completed + 1;
@@ -794,16 +771,80 @@ function CoreProvider({
 
   const clientByType = (type) => find(eq(get("spec.type"), type))(clients);
 
+  const isTypeMatch = ({ type, typeToMatch }) =>
+    new RegExp(`^${type}`, "i").test(typeToMatch);
+
+  const findDependentType = pipe([
+    tap((types) => {
+      //logger.debug(`findDependentType ${types}`);
+    }),
+    flatMap(
+      pipe([
+        (type) =>
+          filter((client) =>
+            isTypeMatch({ type, typeToMatch: client.spec.type })
+          )(clients),
+        pluck("spec.listDependsOn"),
+        flatten,
+      ])
+    ),
+    tap((types) => {
+      //logger.debug(`findDependentType ${types}`);
+    }),
+  ]);
+
+  const isTypesMatch = ({ typeToMatch }) =>
+    switchCase([
+      isEmpty,
+      () => true,
+      any((type) => isTypeMatch({ type, typeToMatch })),
+    ]);
+
+  const filterByType = ({ types }) =>
+    filter((client) =>
+      switchCase([
+        or([isEmpty, pipe([findDependentType, includes(client.spec.type)])]),
+        () => true,
+        isTypesMatch({ typeToMatch: client.spec.type }),
+      ])(types)
+    );
+
+  const filterReadClient = ({ types, all } = {}) =>
+    pipe([
+      tap((clients) => {
+        logger.debug(
+          `filterReadClient types: ${types}, #clients ${clients.length}`
+        );
+      }),
+      filterByType({ types }),
+      filter((client) => all || !client.spec.listHide),
+      tap((clients) => {
+        logger.debug(`filterReadClient #clients ${clients.length}`);
+      }),
+    ]);
+
+  const filterReadWriteClient = ({ types } = {}) =>
+    pipe([
+      tap((clients) => {
+        logger.debug(
+          `filterReadWriteClient types: ${types}, #clients ${clients.length}`
+        );
+      }),
+      filterByType({ types }),
+      filter((client) => !client.spec.singleton),
+      filter((client) => !client.spec.listOnly),
+      tap((clients) => {
+        logger.debug(`filterReadWriteClient result #clients ${clients.length}`);
+      }),
+    ]);
+
   const filterClient = async ({
+    result,
     client,
-    our,
-    name,
-    id,
-    canBeDeleted,
-    providerName,
+    options: { our, name, id, canBeDeleted, provider: c },
   }) =>
     pipe([
-      tap(() => {
+      tap((result) => {
         logger.info(
           `filterClient ${tos({
             our,
@@ -814,12 +855,8 @@ function CoreProvider({
             type: client.spec.type,
           })}`
         );
+        assert(result.items);
       }),
-      () =>
-        client.getList({
-          deep: true,
-          resources: getResourcesByType(client.spec.type),
-        }),
       get("items"),
       map((item) => ({
         name: client.findName(item),
@@ -856,63 +893,72 @@ function CoreProvider({
         resources,
       }),
       tap((x) => {
-        //console.log(x);
+        assert(x);
       }),
-    ])();
+    ])(result);
 
   const listLives = async ({
     onStateChange = identity,
-    all = false,
-    our = false,
-    types = [],
-    name,
-    id,
-    provider: providerName,
-    canBeDeleted = false,
+    options = {},
+    title = TitleQuery,
   } = {}) =>
     pipe([
-      tap(() =>
-        logger.info(
-          `listLives filters: ${JSON.stringify({ all, our, types, name, id })}`
-        )
+      tap((clients) =>
+        logger.info(`listLives filters: ${JSON.stringify({ options, title })}`)
       ),
-      filterReadClient({ types, all }),
-      tap((clients) => {
-        logger.info(`listLives #clients: ${clients.length}`);
-      }),
-      map.pool(
-        mapPoolSize,
-        tryCatch(
-          pipe([
-            (client) =>
-              filterClient({
-                client,
-                onStateChange,
-                our,
-                name,
-                id,
-                canBeDeleted,
-                providerName,
-              }),
-            tap((xx) => {
-              logger.debug(`listLives filterClient done`);
+      filterReadClient(options),
+      map((client) => ({
+        type: client.spec.type,
+        executor: pipe([
+          ({ lives }) =>
+            client.getList({
+              lives,
+              deep: true,
+              resources: provider.getResourcesByType(client.spec.type),
             }),
-          ]),
-          pipe([
-            /*tap((error, client) => {
-              logger.debug(`listLives filterClient error`);
-            }),*/
-            (error, client) => ({
-              error: convertError({ error }),
+          (result) =>
+            filterClient({
+              result,
               client,
+              onStateChange,
+              options,
+              providerName,
             }),
-          ])
-        )
-      ),
-      filter((live) => (live.resources ? !isEmpty(live.resources) : true)),
-      (list) => ({
-        error: hasResultError(list),
-        results: list,
+        ]),
+        dependsOn: client.spec.listDependsOn,
+      })),
+      (inputs) =>
+        Lister({
+          inputs,
+          onStateChange: ({ type, error, ...other }) => {
+            assert(type);
+            onStateChange({
+              context: contextFromClient({ client: clientByType(type), title }),
+              error,
+              ...other,
+            });
+          },
+        }),
+      (lister) => lister.run(),
+      tap((result) => {
+        logger.info(`listLives result: ${tos(result)}`);
+      }),
+      assign({
+        results: pipe([
+          get("results"),
+          filter(
+            or([
+              and([
+                pipe([
+                  get("type"),
+                  (type) => isTypesMatch({ typeToMatch: type })(options.types),
+                ]),
+                pipe([get("resources"), not(isEmpty)]),
+              ]),
+              pipe([get("error"), not(isEmpty)]),
+            ])
+          ),
+        ]),
       }),
       tap((result) => {
         logger.info(`listLives result: ${tos(result)}`);
@@ -1278,7 +1324,6 @@ function CoreProvider({
       pipe([
         tap(() => {
           assert(title, "title");
-          assert(clients, "clients");
           assert(Array.isArray(clients), "clients must be an array");
           logger.info(
             `spinnersStartClient ${title}, ${JSON.stringify(clients)}`
@@ -1303,30 +1348,20 @@ function CoreProvider({
           ])(clients),
       ])
     );
-  const spinnersStopClient = ({ onStateChange, title, clients }) =>
+  const spinnersStopClient = ({ onStateChange, title, clients, result }) =>
     tap(
       pipe([
         tap(() => {
           assert(title, "title");
-          assert(clients, "clients");
           assert(Array.isArray(clients), "clients must be an array");
           logger.info(
-            `spinnersStopClient ${title}, ${JSON.stringify(clients)}`
+            `spinnersStopClient ${title}, #clients ${clients.length}`
           );
         }),
-        () =>
-          pipe([
-            map((client) =>
-              onStateChange({
-                context: contextFromClient({ client, title }),
-                nextState: "DONE",
-              })
-            ),
-          ])(clients),
         tap(() =>
           onStateChange({
             context: contextFromPlanner({ title }),
-            nextState: "DONE",
+            nextState: nextStateOnError(result.error),
           })
         ),
       ])
@@ -1361,8 +1396,7 @@ function CoreProvider({
       tap(() => {
         logger.debug("spinnersStartQuery");
       }),
-      map(filter((resource) => !resource.spec.listOnly)),
-      filter((resources) => !isEmpty(resources)),
+      filter(not(get("spec.listOnly"))),
       map((resources) => ({
         provider: providerName,
         type: typeFromResources(resources),
@@ -1400,7 +1434,7 @@ function CoreProvider({
       ])
     )();
 
-  const spinnersStopListLives = ({ onStateChange, options }) =>
+  const spinnersStopListLives = ({ onStateChange, options, result }) =>
     tap(
       pipe([
         tap(() => {
@@ -1410,8 +1444,9 @@ function CoreProvider({
           onStateChange,
           title: TitleQuery,
           clients: filterReadClient(options)(clients),
+          result,
         }),
-        () => spinnersStopProvider({ onStateChange }),
+        () => spinnersStopProvider({ onStateChange, error: result.error }),
       ])
     )();
 
@@ -1569,7 +1604,7 @@ function CoreProvider({
   const planUpsert = async ({ onStateChange = noop, lives }) => {
     logger.info(`planUpsert: #resources ${getTargetResources().length}`);
     return pipe([
-      filter((resource) => !resource.spec.listOnly),
+      filter(not(get("spec.listOnly"))),
       tap(() =>
         onStateChange({
           context: contextFromPlanner({ title: TitleQuery }),
@@ -1715,7 +1750,7 @@ function CoreProvider({
       },
       // Delete by type
       () => !isEmpty(types),
-      () => any((type) => new RegExp(type, "i").test(spec.type))(types),
+      () => any((type) => isTypeMatch({ type, typeToMatch: spec.type }))(types),
       // PlanDirection
       () => {
         logger.debug(

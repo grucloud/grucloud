@@ -2,6 +2,8 @@
 
 ## Common:
 
+- gc d : EC2 │ web, web-iam, , web-server
+  empty name !
 - const getById = getByIdCore({ fieldIds: "AllocationIds", getList });
 
 - ebs volume: use lsblk ?
@@ -37,6 +39,8 @@
 - minikube addons enable ingress
 
 - kubectl cluster-info
+
+- gc d: PersistentVolume 0/1 Request failed with status code 404
 
 ## Azure
 

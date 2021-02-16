@@ -95,18 +95,17 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
       tap((result) => {
         logger.debug(`created bucket ${name}`);
       }),
-      tap(
-        switchCase([
-          () => payload.iam,
-          () =>
-            retryCallOnError({
-              name: `setIam`,
-              fn: () => axios.put(`/${name}/iam`, { data: payload.iam }),
-              config: configProvider,
-            }),
-          () => {},
-        ])
-      ),
+      // TODO get a 400 now: A policy to update must be provided.
+      // https://cloud.google.com/storage/docs/json_api/v1/buckets/setIamPolicy
+      // tap.if(
+      //   () => payload.iam,
+      //   () =>
+      //     retryCallOnError({
+      //       name: `setIam ${name}`,
+      //       fn: () => axios.put(`/${name}/iam`, { data: payload.iam }),
+      //       config: configProvider,
+      //     })
+      // ),
     ])();
 
   const getList = async ({ deep }) =>
@@ -121,7 +120,8 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
       switchCase([
         () => deep,
         pipe([
-          ({ items }) => map.pool(mapPoolSize, getIam)(items),
+          get("items"),
+          map.pool(mapPoolSize, getIam),
           (items) => ({ items, total: items.length }),
         ]),
         (result) => result,
@@ -135,7 +135,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
     pipe([
       tap(() => {
         assert(bucketName, `destroy invalid id`);
-        logger.debug(`destroy bucket ${bucketName}`);
+        logger.info(`destroy bucket ${bucketName}`);
       }),
       () =>
         retryCallOnError({
@@ -168,7 +168,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
         }),
       get("data"),
       tap((xx) => {
-        logger.debug(`destroy done: ${bucketName}`);
+        logger.info(`destroy bucket done: ${bucketName}`);
       }),
     ])();
 

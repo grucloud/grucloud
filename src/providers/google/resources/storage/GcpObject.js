@@ -196,10 +196,10 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
         retryCallOnError({
           name: `upload ${name} content`,
           fn: async () =>
-            await axiosUpload.request(sessionUri, {
-              method: "PUT",
-              data: payload.content || (await fs.readFile(payload.source)),
-            }),
+            axiosUpload.put(
+              sessionUri,
+              payload.content || (await fs.readFile(payload.source))
+            ),
           config: configProvider,
         }),
       get("data"),

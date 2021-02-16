@@ -109,7 +109,7 @@ module.exports = K8sClient = ({
   const getList = tryCatch(
     pipe([
       tap((params) => {
-        logger.debug(`getList k8s, params: ${tos(params)}`);
+        logger.debug(`getList k8s ${type}, params: ${tos(params)}`);
       }),
       pathList,
       (path) => urljoin(getServerUrl(kubeConfig()), path),
@@ -122,6 +122,7 @@ module.exports = K8sClient = ({
       get("data"),
       filterList,
       tap((data) => {
+        //TODO add total ?
         logger.info(`getList k8s ${JSON.stringify({ data })}`);
       }),
     ]),

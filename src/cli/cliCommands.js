@@ -991,15 +991,19 @@ const listDoOk = ({ commandOptions, programOptions }) =>
                 assignStart({ onStateChange }),
                 assign({
                   result: ({ provider }) =>
-                    provider.listLives({ onStateChange, ...commandOptions }),
+                    provider.listLives({
+                      onStateChange,
+                      options: commandOptions,
+                    }),
                 }),
               ])({ provider })
             ),
             tap(
-              map.series(({ provider }) =>
+              map.series(({ provider, result }) =>
                 provider.spinnersStopListLives({
                   onStateChange,
                   options: commandOptions,
+                  result,
                 })
               )
             ),
@@ -1010,8 +1014,8 @@ const listDoOk = ({ commandOptions, programOptions }) =>
         tap((xx) => {
           logger.debug(`listLives`);
         }),
-        filter(({ result }) => !result.error),
-        map(({ provider, result }) =>
+        filter(not(get("resut.error"))),
+        forEach(({ provider, result }) =>
           displayLive({
             providerName: provider.name,
             targets: result.results,
@@ -1029,9 +1033,8 @@ const listDoOk = ({ commandOptions, programOptions }) =>
           }),
           displayListSummary,
           pluck("result"),
-          filter(({ error }) => !error),
+          filter(not(get("error"))),
           pluck("results"),
-
           tap((xx) => {
             // logger.debug(`listLives`);
           }),

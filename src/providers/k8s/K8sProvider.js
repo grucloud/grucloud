@@ -65,6 +65,7 @@ const fnSpecs = () => [
     type: "PersistentVolumeClaim",
     Client: K8sPersistentVolumeClaim,
     dependsOn: ["Namespace", "StorageClass", "PersistentVolume"],
+    listDependsOn: ["PersistentVolume"],
     isOurMinion,
     compare,
   },
@@ -92,6 +93,7 @@ const fnSpecs = () => [
   {
     type: "Pod",
     dependsOn: ["Namespace", "ConfigMap"],
+    listDependsOn: ["ReplicaSet", "StatefulSet"],
     Client: K8sPod,
     isOurMinion,
     listOnly: true,

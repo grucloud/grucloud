@@ -51,7 +51,7 @@ exports.planToResourcesPerType = ({ providerName, plans }) =>
   ])(plans);
 
 exports.axiosErrorToJSON = (error) => ({
-  isAxiosError: true,
+  isAxiosError: error.isAxiosError,
   message: error.message,
   name: error.name,
   config: error.config,

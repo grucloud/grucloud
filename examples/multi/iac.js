@@ -212,7 +212,8 @@ exports.createStack = async ({ config }) => {
       await createAwsUsEast1({ config }),
 
       await createAzure({ config }),
-      await createGoogle({ config }),
+      // TODO puck back gcp when it is no longer buggy
+      //await createGoogle({ config }),
       //await createScaleway({ config }),
     ],
   };

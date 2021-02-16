@@ -52,7 +52,7 @@ describe("AwsElasticIpAddress", async function () {
 
     const {
       results: [eips],
-    } = await provider.listLives({ types: ["ElasticIpAddress"] });
+    } = await provider.listLives({ options: { types: ["ElasticIpAddress"] } });
     const resource = eips.resources[0].data;
     assert.equal(eips.type, "ElasticIpAddress");
     assert.equal(resource.Domain, "vpc");

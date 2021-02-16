@@ -31,7 +31,9 @@ const testListByName = async ({ provider, livesAll }) => {
   )[0];
   assert(name);
   const { results: liveByName } = await provider.listLives({
-    name,
+    options: {
+      name,
+    },
   });
   assert(liveByName.length >= 1);
   assert.equal(liveByName[0].resources[0].name, name);
@@ -42,7 +44,9 @@ const testListById = async ({ provider, livesAll }) => {
   const { id } = livesAll[0].resources[0];
   assert(id);
   const { results: live } = await provider.listLives({
-    id,
+    options: {
+      id,
+    },
   });
   assert(live.length >= 1);
   assert.equal(live[0].resources[0].id, id);
@@ -52,9 +56,9 @@ const testListByType = async ({ provider, livesAll }) => {
   //Filter By Type
   const { type } = livesAll[0];
   const { results: liveByType } = await provider.listLives({
-    types: [type],
+    options: { types: [type] },
   });
-  assert.equal(liveByType.length, 1);
+  assert.equal(liveByType.length, 1, tos(liveByType));
   assert.equal(liveByType[0].type, type);
 };
 // TODO remove livesAll
@@ -102,9 +106,11 @@ const testPlanDestroy = async ({ provider, types = [], full = false }) => {
 
   if (full) {
     const { results: livesAll } = await provider.listLives({
-      our: true,
-      canBeDeleted: true,
-      types,
+      options: {
+        our: true,
+        canBeDeleted: true,
+        types,
+      },
     });
     assert(!isEmpty(livesAll));
     const lives = await provider.findLives({});
@@ -124,8 +130,10 @@ const testPlanDestroy = async ({ provider, types = [], full = false }) => {
     assert(!isPlanEmpty(plan), "plan must no be empty after a destroy");
   }
   const { results: lives } = await provider.listLives({
-    our: true,
-    types,
+    options: {
+      our: true,
+      types,
+    },
   });
 
   assert(isEmpty(lives), tos(lives));
@@ -142,8 +150,7 @@ exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
   }
   {
     const { results: lives } = await provider.listLives({
-      our: true,
-      types,
+      options: { our: true, types },
     });
 
     assert(isEmpty(lives), `shoud be empty after destroy, lives:${tos(lives)}`);
@@ -159,8 +166,7 @@ exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
   }
   {
     const { results: lives } = await provider.listLives({
-      our: true,
-      types,
+      options: { our: true, types },
     });
 
     assert(!isEmpty(lives), `shoud not be empty after an apply`);

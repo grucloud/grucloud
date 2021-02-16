@@ -13,7 +13,7 @@ const {
   get,
   eq,
 } = require("rubico");
-const { isEmpty, forEach, pluck, size } = require("rubico/x");
+const { isEmpty, forEach, pluck, size, find } = require("rubico/x");
 
 const { planToResourcesPerType } = require("../providers/Common");
 
@@ -362,13 +362,11 @@ const displayLiveItem = ({ table, resource, tableDefinitions }) => {
 
 const displayTablePerType = ({
   providerName,
-  resourcesByType: { type, resources },
+  resourcesByType: { type, resources = [], error },
 }) => {
   assert(type);
-  assert(resources);
   const tableDefinitions =
-    tablePerTypeDefinitions.find((def) => def.type === type) ||
-    tablePerTypeDefault;
+    find(eq(get("type")))(tablePerTypeDefinitions) || tablePerTypeDefault;
 
   const table = new Table({
     colWidths: tableDefinitions.colWidths({
@@ -386,7 +384,18 @@ const displayTablePerType = ({
       ),
     },
   ]);
+
   table.push(tableDefinitions.columns.map((item) => colors.red(item)));
+
+  error &&
+    table.push([
+      {
+        colSpan: 3,
+        content: colors.red(
+          `Error: ${error.name}: ${error.message}\n${error.stack}`
+        ),
+      },
+    ]);
 
   resources.forEach((resource) =>
     displayLiveItem({ table, resource, tableDefinitions })

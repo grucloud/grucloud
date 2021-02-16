@@ -149,7 +149,9 @@ describe("AwsProvider", async function () {
     assert.equal(plan.resultDestroy.plans.length, 0);
   });
   it("listLives all", async function () {
-    const { results: lives } = await provider.listLives({ all: true });
+    const { results: lives } = await provider.listLives({
+      options: { all: true },
+    });
     assert(lives);
   });
   it("listLives our", async function () {
