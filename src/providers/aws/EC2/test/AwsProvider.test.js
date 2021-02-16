@@ -176,7 +176,7 @@ describe("AwsProvider", async function () {
       0
     );
   });
-  it("aws apply plan", async function () {
+  it.skip("aws apply plan", async function () {
     await testPlanDeploy({ provider, full: true });
 
     const serverLive = await server.getLive();

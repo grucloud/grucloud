@@ -49,7 +49,7 @@ describe("AwsVpc", async function () {
     assert(isEmpty(results));
   });
 
-  it("vpc apply and destroy", async function () {
+  it.only("vpc apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
     const vpcLive = await vpc.getLive({ deep: true });
     const { VpcId } = vpcLive;
