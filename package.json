@@ -68,7 +68,6 @@
     "np": "^7.2.0",
     "ping": "^0.4.0",
     "pluralize": "^8.0.0",
-    "promise-memoize": "^1.2.1",
     "prompts": "^2.4.0",
     "querystring": "^0.2.0",
     "remedial": "^1.0.8",
