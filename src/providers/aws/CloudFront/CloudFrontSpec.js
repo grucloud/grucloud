@@ -5,7 +5,7 @@ module.exports = [
   {
     type: "CloudFrontDistribution",
     dependsOn: ["Certificate", "S3Bucket"],
-    Client: ({ spec, config }) => AwsDistribution({ spec, config }),
+    Client: AwsDistribution,
     isOurMinion,
     compare: compareDistribution,
   },

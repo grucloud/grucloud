@@ -236,7 +236,7 @@ exports.isOurMinionInstanceProfile = ({ resource, config: { projectName } }) =>
     get("Tags"),
     find(
       and([
-        //
+        //TODO use common function
         eq(get("Key"), "projectName"),
         eq(get("Value"), projectName),
       ])

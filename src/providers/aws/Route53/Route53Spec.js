@@ -5,14 +5,14 @@ const { Route53Record, compareRoute53Record } = require("./Route53Record");
 module.exports = [
   {
     type: "HostedZone",
-    Client: ({ spec, config }) => AwsHostedZone({ spec, config }),
+    Client: AwsHostedZone,
     isOurMinion,
     compare: compareHostedZone,
   },
   {
     type: "Route53Record",
     dependsOn: ["HostedZone", "Certificate"],
-    Client: ({ spec, config }) => Route53Record({ spec, config }),
+    Client: Route53Record,
     isOurMinion,
     compare: compareRoute53Record,
   },
