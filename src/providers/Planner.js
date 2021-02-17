@@ -13,7 +13,7 @@ const {
   tryCatch,
   eq,
   get,
-  omit,
+  and,
 } = require("rubico");
 
 const {
@@ -71,11 +71,16 @@ const dependsOnTypeReverse = (dependsOnType) =>
 
 const findDependsOnType = ({ provider, type, plans, dependsOnType }) =>
   pipe([
-    find((x) => x.providerName === provider && x.type === type),
+    tap(() => {
+      assert(provider);
+      assert(type);
+      assert(Array.isArray(plans));
+    }),
+    find(and([eq(get("providerName"), provider), eq(get("type"), type)])),
     tap((x) => {
       assert(x);
     }),
-    ({ dependsOn = [] }) => dependsOn,
+    get("dependsOn"),
     flatMap((dependOn) =>
       pipe([
         filter(
@@ -86,9 +91,7 @@ const findDependsOnType = ({ provider, type, plans, dependsOnType }) =>
       ])(plans)
     ),
     tap((dependsOn) => {
-      logger.debug(
-        `findDependsOnType: result ${tos({ provider, type, dependsOn })}`
-      );
+      logger.debug(`findDependsOnType: result ${tos({ type, dependsOn })}`);
     }),
   ])(dependsOnTypeReverse(dependsOnType));
 
@@ -151,12 +154,12 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
     () =>
       pipe([
         pluck("resource"),
-        map(({ name, provider, type, uri }) => ({
+        map(({ name, providerName, type, uri }) => ({
           name,
           uri,
           dependsOn: uniq([
             ...findDependsOnType({
-              provider,
+              provider: providerName,
               type,
               plans,
               dependsOnType,

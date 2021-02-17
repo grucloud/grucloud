@@ -17,7 +17,7 @@ describe("displayUtils", function () {
         {
           action: "CREATE",
           resource: { name: "volume", type: "Volume" },
-          config: {},
+          targert: {},
         },
       ],
       destroy: [],

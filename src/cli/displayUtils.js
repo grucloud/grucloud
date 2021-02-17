@@ -20,7 +20,7 @@ const { planToResourcesPerType } = require("../providers/Common");
 const hasPlan = (plan) => !isEmpty(plan.newOrUpdate) || !isEmpty(plan.destroy);
 
 const displayResource = (item) =>
-  item.config != null ? YAML.stringify(item.config) : undefined;
+  item.live != null ? YAML.stringify(item.live) : undefined;
 
 const displayManagedByUs = (resource) =>
   resource.managedByUs ? colors.green("Yes") : colors.red("NO");
@@ -235,7 +235,9 @@ const tablePlanPerType = {
     get("action"),
     switchCase([
       eq(get("action"), "UPDATE"),
-      (item) => {
+      ({ target, live }) => {
+        assert(target);
+        assert(live);
         const table = new Table({
           style: { head: [], border: [] },
         });
@@ -243,25 +245,22 @@ const tablePlanPerType = {
           {
             content: colors.yellow(`NEW`),
           },
-        ]);
-        table.push([
           {
-            content: YAML.stringify(item.config),
+            content: YAML.stringify(target),
           },
-        ]);
-        table.push([
           {
             content: colors.yellow(`LIVE`),
           },
-        ]);
-        table.push([
           {
-            content: YAML.stringify(item.live),
+            content: YAML.stringify(live),
           },
         ]);
         return table.toString();
       },
-      (item) => YAML.stringify(item.config),
+      eq(get("action"), "CREATE"),
+      ({ target }) => YAML.stringify(target),
+      eq(get("action"), "DESTROY"),
+      ({ live }) => YAML.stringify(live),
     ]),
   ],
 };
@@ -332,7 +331,7 @@ const tablePerTypeDefinitions = [
     columns: ["Email", "Data", "Our"],
     fields: [
       get("data.email"),
-      pipe([get("data"), YAML.stringify]),
+      pipe([get("live"), YAML.stringify]),
       displayManagedByUs,
     ],
   },
@@ -349,7 +348,7 @@ const tablePerTypeDefault = {
   },
   fields: [
     get("displayName"),
-    pipe([get("data"), YAML.stringify]),
+    pipe([get("live"), YAML.stringify]),
     displayManagedByUs,
   ],
 };

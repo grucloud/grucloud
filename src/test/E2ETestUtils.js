@@ -62,8 +62,8 @@ const testListByType = async ({ provider, livesAll }) => {
   assert.equal(liveByType[0].type, type);
 };
 // TODO remove livesAll
-const testDestroyByName = async ({ provider, livesAll, lives }) => {
-  const { name } = livesAll[0].resources[0];
+const testDestroyByName = async ({ provider, lives }) => {
+  const { name } = lives.results[0].resources[0];
   assert(name);
   const { plans } = await provider.planFindDestroy({
     lives,
@@ -75,8 +75,8 @@ const testDestroyByName = async ({ provider, livesAll, lives }) => {
   assert.equal(plans[0].resource.name, name);
 };
 
-const testDestroyById = async ({ provider, livesAll, lives }) => {
-  const { id } = livesAll[0].resources[0];
+const testDestroyById = async ({ provider, lives }) => {
+  const { id } = lives.results[0].resources[0];
   assert(id);
   const { error, plans } = await provider.planFindDestroy({
     lives,
@@ -89,8 +89,8 @@ const testDestroyById = async ({ provider, livesAll, lives }) => {
   assert.equal(plans[0].resource.id, id);
 };
 
-const testDestroyByType = async ({ provider, livesAll, lives }) => {
-  const { type } = livesAll[0];
+const testDestroyByType = async ({ provider, lives }) => {
+  const { type } = lives.results[0];
   const { plans } = await provider.planFindDestroy({
     lives,
     options: {
@@ -105,18 +105,17 @@ const testPlanDestroy = async ({ provider, types = [], full = false }) => {
   logger.debug(`testPlanDestroy ${provider.name}`);
 
   if (full) {
-    const { results: livesAll } = await provider.listLives({
+    const lives = await provider.listLives({
       options: {
         our: true,
         canBeDeleted: true,
         types,
       },
     });
-    assert(!isEmpty(livesAll));
-    const lives = await provider.findLives({});
-    await testDestroyByName({ provider, livesAll, lives });
-    await testDestroyById({ provider, livesAll, lives });
-    await testDestroyByType({ provider, livesAll, lives });
+    assert(!isEmpty(lives));
+    await testDestroyByName({ provider, lives });
+    await testDestroyById({ provider, lives });
+    await testDestroyByType({ provider, lives });
   }
   {
     const { error, results } = await provider.destroyAll({
@@ -129,15 +128,17 @@ const testPlanDestroy = async ({ provider, types = [], full = false }) => {
     const plan = await provider.planQuery();
     assert(!isPlanEmpty(plan), "plan must no be empty after a destroy");
   }
-  const { results: lives } = await provider.listLives({
-    options: {
-      our: true,
-      types,
-    },
-  });
+  {
+    const { results: lives } = await provider.listLives({
+      options: {
+        our: true,
+        types,
+      },
+    });
 
-  assert(isEmpty(lives), tos(lives));
-  logger.debug(`testPlanDestroy ${provider.name} DONE`);
+    assert(isEmpty(lives), tos(lives));
+    logger.debug(`testPlanDestroy ${provider.name} DONE`);
+  }
 };
 
 exports.testPlanDestroy = testPlanDestroy;

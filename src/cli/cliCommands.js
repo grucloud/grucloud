@@ -122,8 +122,8 @@ const filterProvidersByName = ({
     ),
   ]);
 
-const formatResource = ({ provider, type, name, id } = {}) =>
-  `${provider}/${type}/${name || id}`;
+const formatResource = ({ providerName, type, name, id } = {}) =>
+  `${providerName}/${type}/${name || id}`;
 
 const countDeployResources = pipe([
   tap((xx) => {
@@ -756,7 +756,8 @@ exports.planDestroy = async ({
 
   const displayDestroyErrors = pipe([
     tap((x) => {
-      logger.error(`displayDestroyErrors ${tos(x)}`);
+      //TODO
+      //logger.error(`displayDestroyErrors ${tos(x)}`);
     }),
   ]);
 
@@ -766,8 +767,8 @@ exports.planDestroy = async ({
         logger.error(`doPlansDestroy`);
       }),
       assign({
-        resultsDestroy: async (result) =>
-          await runAsyncCommand({
+        resultsDestroy: (result) =>
+          runAsyncCommand({
             text: displayCommandHeader({
               providers: pluck("provider")(result.results),
               verb: "Destroying",
@@ -805,7 +806,7 @@ exports.planDestroy = async ({
               ])(result.results),
           }),
       }),
-
+      //TODO assign
       (result) => ({
         ...result,
         error:
@@ -871,7 +872,7 @@ exports.planDestroy = async ({
                           assignStart({ onStateChange }),
                           assign({
                             lives: ({ provider }) =>
-                              provider.findLives({
+                              provider.listLives({
                                 options: commandOptions,
                                 onStateChange,
                                 readWrite: true,

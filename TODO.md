@@ -2,6 +2,10 @@
 
 ## Common:
 
+- gc a : KeyPair 0/1
+  IamPolicyReadOnly 0/4
+  in grey
+- destroy: use live instead of id
 - gc d : EC2 │ web, web-iam, , web-server
   empty name !
 - const getById = getByIdCore({ fieldIds: "AllocationIds", getList });
@@ -51,7 +55,7 @@
 
 ## TODO Aws:
 
-- Vps set dns
+- CloudFrontDistribution 0/1 The specified SSL certificate doesn't exist, isn't in us-east-1 region, isn't valid, or doesn't include a valid certificate chain
 
 - VpcEndpoint
 - https://medium.com/dev-genius/create-an-amazon-eks-cluster-with-managed-node-group-using-terraform-a3b50d276b13
