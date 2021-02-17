@@ -71,7 +71,8 @@ module.exports = CoreClient = ({
               }),
             config,
           }),
-        (result) => onResponseGet({ id, data: result.data }),
+        get("data"),
+        (data) => onResponseGet({ id, data }),
         tap((data) => {
           logger.debug(`getById result: ${tos(data)}`);
         }),
@@ -89,7 +90,7 @@ module.exports = CoreClient = ({
   const getList = tryCatch(
     pipe([
       tap((params) => {
-        logger.debug(`getList ${spec.type}, params: ${tos(params)}`);
+        logger.debug(`getList ${spec.type}`);
       }),
       () => pathList(),
       (path) =>
@@ -101,7 +102,14 @@ module.exports = CoreClient = ({
             }),
           config,
         }),
-      (result) => onResponseList(result.data),
+      get("data"),
+      tap((data) => {
+        logger.debug(`getList ${spec.type}, ${tos(data)}`);
+      }),
+      onResponseList,
+      tap(({ total }) => {
+        logger.info(`getList ${spec.type}, #items: ${total}`);
+      }),
     ]),
     (error) => {
       logError(`getList ${spec.type}`, error);
@@ -196,16 +204,15 @@ module.exports = CoreClient = ({
         (path) =>
           retryCallOnError({
             name: `destroy type ${spec.type}, path: ${path}`,
-            fn: async () =>
-              await axios.request(path, {
-                method: "DELETE",
-              }),
+            fn: () => axios.delete(path),
+            isExpectedResult: () => true,
             config: { ...config, repeatCount: 0 },
             isExpectedException: (error) => {
               return [404].includes(error.response?.status);
             },
           }),
-        (result) => onResponseDelete(result.data),
+        get("data"),
+        onResponseDelete,
         tap(() =>
           retryCall({
             name: `destroy type: ${spec.type}, name: ${name}, isDownById`,
