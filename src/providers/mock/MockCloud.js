@@ -9,7 +9,7 @@ const mockCloudInitStatesDefault = [
     "Ip",
     [
       [
-        "51.15.246.48",
+        "47FF72A9-0665-4EA8-A7D2-9EAA3D749213",
         {
           id: "47FF72A9-0665-4EA8-A7D2-9EAA3D749213",
           name: "ip1",
@@ -17,7 +17,7 @@ const mockCloudInitStatesDefault = [
         },
       ],
       [
-        "51.15.246.50",
+        "57890757-7E7C-4E35-A9B5-201FE1FBD2E0",
         {
           id: "57890757-7E7C-4E35-A9B5-201FE1FBD2E0",
           name: "ip2",
@@ -127,7 +127,7 @@ module.exports = MockCloud = (initStates = []) => {
       resource.set(id, newPayload);
       return newPayload;
     } else {
-      throw Error(`onDestroyAll cannot find ${tos({ type })}`);
+      throw Error(`onCreate cannot find ${tos({ type })}`);
     }
   };
 
