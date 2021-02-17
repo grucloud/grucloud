@@ -98,6 +98,7 @@ exports.buildTags = ({ name, config, UserTags = [] }) => {
   assert(name);
   assert(providerName);
   assert(stage);
+  assert(projectName);
 
   return [
     ...UserTags,
