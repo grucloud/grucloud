@@ -123,7 +123,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
               }),
               eq(get("code"), "DependencyViolation"),
             ])(error),
-          config: { retryCount: 5, retryDelay: 1e3 },
+          config: { retryCount: 10, retryDelay: 5e3 },
         })
       ),
       () => ec2().deleteInternetGateway({ InternetGatewayId: id }),
