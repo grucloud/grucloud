@@ -96,23 +96,19 @@ exports.AwsInternetGateway = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#detachInternetGateway-property
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteInternetGateway-property
 
-  const destroy = async ({ id, name }) =>
+  const detachInternetGateway = ({ InternetGatewayId, VpcId }) =>
     pipe([
-      tap(() => {
-        logger.debug(`destroy ig ${tos({ name, id })}`);
+      () => ec2().describeAddresses({}),
+      get("Addresses"),
+      tap((Addresses) => {
+        logger.debug(`destroy ig describeAddresses ${tos({ Addresses })}`);
       }),
-      () => getById({ id }),
-      get("Attachments"),
-      first,
-      tap((Attachments) => {
-        logger.debug(`destroy ig ${tos({ Attachments })}`);
-      }),
-      tap.if(not(isEmpty), ({ VpcId }) =>
+      () =>
         retryCall({
-          name: `destroy ig detachInternetGateway: ${name} VpcId: ${VpcId}`,
+          name: `destroy ig detachInternetGateway ${InternetGatewayId}, VpcId: ${VpcId}`,
           fn: () =>
             ec2().detachInternetGateway({
-              InternetGatewayId: id,
+              InternetGatewayId,
               VpcId,
             }),
           shouldRetryOnException: ({ error, name }) =>
@@ -124,7 +120,22 @@ exports.AwsInternetGateway = ({ spec, config }) => {
               eq(get("code"), "DependencyViolation"),
             ])(error),
           config: { retryCount: 10, retryDelay: 5e3 },
-        })
+        }),
+    ])();
+
+  const destroy = async ({ id, name }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`destroy ig ${tos({ name, id })}`);
+      }),
+      () => getById({ id }),
+      get("Attachments"),
+      first, //TODO forEach
+      tap((Attachments) => {
+        logger.debug(`destroy ig ${tos({ Attachments })}`);
+      }),
+      tap.if(not(isEmpty), ({ VpcId }) =>
+        detachInternetGateway({ InternetGatewayId: id, VpcId })
       ),
       () => ec2().deleteInternetGateway({ InternetGatewayId: id }),
       () =>
