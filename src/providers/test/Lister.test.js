@@ -7,10 +7,9 @@ describe("Lister", function () {
     .stub()
     .returns(Promise.resolve({ total: 0, items: [] }));
 
-  const onStateChange = (stateChanges) => ({ resource, nextState }) => {
-    assert(resource);
+  const onStateChange = (stateChanges) => ({ type, nextState, ...other }) => {
     if (nextState === "RUNNING") {
-      resource && stateChanges.push(resource);
+      type && stateChanges.push(type);
     }
   };
 
