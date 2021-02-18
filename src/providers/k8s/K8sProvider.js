@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { map, pipe, get, tap, tryCatch, switchCase } = require("rubico");
+const { map, pipe, get, tap, tryCatch, switchCase, or } = require("rubico");
 const { defaultsDeep, first, pluck } = require("rubico/x");
 const shell = require("shelljs");
 const os = require("os");
@@ -18,7 +18,7 @@ const { K8sService } = require("./K8sService");
 const { K8sStorageClass } = require("./K8sStorageClass");
 const { K8sPersistentVolume } = require("./K8sPersistentVolume");
 const { K8sPersistentVolumeClaim } = require("./K8sPersistentVolumeClaim");
-const { K8sPod } = require("./K8sPod");
+const { K8sPod, isOurMinionPod } = require("./K8sPod");
 const { K8sNamespace } = require("./K8sNamespace");
 const { K8sDeployment } = require("./K8sDeployment");
 const { K8sConfigMap } = require("./K8sConfigMap");
@@ -95,7 +95,7 @@ const fnSpecs = () => [
     dependsOn: ["Namespace", "ConfigMap"],
     listDependsOn: ["ReplicaSet", "StatefulSet"],
     Client: K8sPod,
-    isOurMinion,
+    isOurMinion: isOurMinionPod,
     listOnly: true,
   },
   {

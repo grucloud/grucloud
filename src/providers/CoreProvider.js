@@ -881,6 +881,7 @@ function CoreProvider({
     result,
     client,
     options: { our, name, id, canBeDeleted, provider: providerName },
+    lives,
   }) =>
     pipe([
       tap((result) => {
@@ -908,6 +909,7 @@ function CoreProvider({
         id: client.findId(live),
         managedByUs: client.spec.isOurMinion({
           resource: live,
+          lives,
           resourceNames: resourceNames(),
           config: provider.config(),
         }),
@@ -954,21 +956,23 @@ function CoreProvider({
       ]),
       map((client) => ({
         type: client.spec.type,
-        executor: pipe([
-          ({ lives }) =>
-            client.getList({
-              lives,
-              deep: true,
-              resources: provider.getResourcesByType(client.spec.type),
-            }),
-          (result) =>
-            filterClient({
-              result,
-              client,
-              onStateChange,
-              options,
-            }),
-        ]),
+        executor: ({ lives }) =>
+          pipe([
+            () =>
+              client.getList({
+                lives,
+                deep: true,
+                resources: provider.getResourcesByType(client.spec.type),
+              }),
+            (result) =>
+              filterClient({
+                result,
+                client,
+                onStateChange,
+                options,
+                lives,
+              }),
+          ])(),
         dependsOn: client.spec.listDependsOn,
       })),
       (inputs) =>
