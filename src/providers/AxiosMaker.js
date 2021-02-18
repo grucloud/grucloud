@@ -4,6 +4,7 @@ const { tos } = require("../tos");
 
 module.exports = AxiosMaker = ({
   baseURL,
+  httpsAgent,
   onHeaders = noop,
   contentType = "application/json",
 }) => {
@@ -11,6 +12,7 @@ module.exports = AxiosMaker = ({
     baseURL,
     timeout: 15e3,
     withCredentials: true,
+    httpsAgent,
   });
 
   axios.interceptors.request.use(
@@ -46,7 +48,7 @@ module.exports = AxiosMaker = ({
         logger.info(`axios ${method} ${baseURL}${url}`);
         logger.info(`axios ${error}`);
       } else {
-        logger.error(`axios error config: ${tos(error.config)}`);
+        logger.error(`axios error config url: ${tos(error.config.url)}`);
         logger.error(`axios error ${error}`);
         error.response &&
           logger.error(`axios error response:: ${tos(error.response.data)}`);

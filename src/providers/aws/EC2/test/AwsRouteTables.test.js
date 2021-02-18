@@ -74,7 +74,7 @@ describe("AwsRouteTables", async function () {
 
     const {
       results: [rts],
-    } = await provider.listLives({ types: ["RouteTables"] });
+    } = await provider.listLives({ options: { types: ["RouteTables"] } });
     assert.equal(rts.type, "RouteTables");
     {
       const { data: routeTable } = rts.resources.find(

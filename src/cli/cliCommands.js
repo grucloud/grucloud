@@ -122,8 +122,8 @@ const filterProvidersByName = ({
     ),
   ]);
 
-const formatResource = ({ provider, type, name, id } = {}) =>
-  `${provider}/${type}/${name || id}`;
+const formatResource = ({ providerName, type, name, id } = {}) =>
+  `${providerName}/${type}/${name || id}`;
 
 const countDeployResources = pipe([
   tap((xx) => {
@@ -422,7 +422,7 @@ const commandToFunction = (command) =>
 const runAsyncCommandHook = ({ hookType, commandTitle, providers, result }) =>
   pipe([
     tap((xxx) => {
-      logger.debug(`runAsyncCommandHook hookType: ${hookType}, ${tos(result)}`);
+      logger.debug(`runAsyncCommandHook hookType: ${hookType}`);
       assert(Array.isArray(providers));
     }),
     assign({
@@ -756,7 +756,8 @@ exports.planDestroy = async ({
 
   const displayDestroyErrors = pipe([
     tap((x) => {
-      logger.error(`displayDestroyErrors ${tos(x)}`);
+      //TODO
+      //logger.error(`displayDestroyErrors ${tos(x)}`);
     }),
   ]);
 
@@ -766,8 +767,8 @@ exports.planDestroy = async ({
         logger.error(`doPlansDestroy`);
       }),
       assign({
-        resultsDestroy: async (result) =>
-          await runAsyncCommand({
+        resultsDestroy: (result) =>
+          runAsyncCommand({
             text: displayCommandHeader({
               providers: pluck("provider")(result.results),
               verb: "Destroying",
@@ -805,7 +806,7 @@ exports.planDestroy = async ({
               ])(result.results),
           }),
       }),
-
+      //TODO assign
       (result) => ({
         ...result,
         error:
@@ -871,7 +872,7 @@ exports.planDestroy = async ({
                           assignStart({ onStateChange }),
                           assign({
                             lives: ({ provider }) =>
-                              provider.findLives({
+                              provider.listLives({
                                 options: commandOptions,
                                 onStateChange,
                                 readWrite: true,
@@ -991,15 +992,19 @@ const listDoOk = ({ commandOptions, programOptions }) =>
                 assignStart({ onStateChange }),
                 assign({
                   result: ({ provider }) =>
-                    provider.listLives({ onStateChange, ...commandOptions }),
+                    provider.listLives({
+                      onStateChange,
+                      options: commandOptions,
+                    }),
                 }),
               ])({ provider })
             ),
             tap(
-              map.series(({ provider }) =>
+              map.series(({ provider, result }) =>
                 provider.spinnersStopListLives({
                   onStateChange,
                   options: commandOptions,
+                  result,
                 })
               )
             ),
@@ -1010,8 +1015,8 @@ const listDoOk = ({ commandOptions, programOptions }) =>
         tap((xx) => {
           logger.debug(`listLives`);
         }),
-        filter(({ result }) => !result.error),
-        map(({ provider, result }) =>
+        filter(not(get("resut.error"))),
+        forEach(({ provider, result }) =>
           displayLive({
             providerName: provider.name,
             targets: result.results,
@@ -1029,9 +1034,8 @@ const listDoOk = ({ commandOptions, programOptions }) =>
           }),
           displayListSummary,
           pluck("result"),
-          filter(({ error }) => !error),
+          filter(not(get("error"))),
           pluck("results"),
-
           tap((xx) => {
             // logger.debug(`listLives`);
           }),
@@ -1070,37 +1074,27 @@ const OutputDoOk = ({ commandOptions, programOptions }) =>
     tap((providers) => {
       logger.debug(`output #providers ${providers.length}`);
     }),
-    forEach((provider) => {
-      logger.debug(`provider ${provider.name}: ${provider.resourceNames()}`);
-    }),
-    filter((provider) =>
+    map((provider) =>
       provider.getResource({
-        provider: provider.name,
-        type: commandOptions.type,
-        name: commandOptions.name,
+        uri: `${provider.name}::${commandOptions.type}::${commandOptions.name}`,
       })
     ),
+    filter((resource) => resource),
     switchCase([
-      (providers) => isEmpty(providers),
+      isEmpty,
       () => {
         throw {
           message: `Cannot find resource: '${commandOptions.type}::${commandOptions.name}'`,
         };
       },
-      (providers) => size(providers) > 1,
+      (resources) => size(resources) > 1,
       () => {
         throw {
           message: `resource: '${commandOptions.name}' found in multiple providers, use the --provider option`,
         };
       },
-      (providers) => first(providers),
+      first,
     ]),
-    (provider) =>
-      provider.getResource({
-        provider: provider.name,
-        type: commandOptions.type,
-        name: commandOptions.name,
-      }),
     (resource) => resource.getLive(),
     tap((live) => {
       logger.debug(`output live: ${live}`);

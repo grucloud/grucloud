@@ -16,6 +16,7 @@ module.exports = () => ({
   azure: {
     location: "uksouth",
   },
+  k8s: { projectName: pkg.name },
   scaleway: {
     zone: "fr-par-1",
   },

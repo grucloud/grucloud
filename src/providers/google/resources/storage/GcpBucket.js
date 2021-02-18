@@ -61,10 +61,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
       (item) =>
         retryCallOnError({
           name: `getIam ${item.name}`,
-          fn: () =>
-            axios.request(`/${item.name}/iam`, {
-              method: "GET",
-            }),
+          fn: () => axios.get(`/${item.name}/iam`),
           config: configProvider,
         }),
       get("data"),
@@ -98,22 +95,17 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
       tap((result) => {
         logger.debug(`created bucket ${name}`);
       }),
-      tap(
-        switchCase([
-          () => payload.iam,
-          () =>
-            retryCallOnError({
-              name: `setIam`,
-              fn: () =>
-                axios.request(`/${name}/iam`, {
-                  method: "PUT",
-                  data: payload.iam,
-                }),
-              config: configProvider,
-            }),
-          () => {},
-        ])
-      ),
+      // TODO get a 400 now: A policy to update must be provided.
+      // https://cloud.google.com/storage/docs/json_api/v1/buckets/setIamPolicy
+      // tap.if(
+      //   () => payload.iam,
+      //   () =>
+      //     retryCallOnError({
+      //       name: `setIam ${name}`,
+      //       fn: () => axios.put(`/${name}/iam`, { data: payload.iam }),
+      //       config: configProvider,
+      //     })
+      // ),
     ])();
 
   const getList = async ({ deep }) =>
@@ -121,15 +113,15 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
       tap(() => {
         logger.info(`getList bucket, deep: ${deep}`);
       }),
-      () => client.getList(),
-      //
+      () => client.getList({ deep }),
       tap((result) => {
         logger.debug(`getList #items ${result.items.length}`);
       }),
       switchCase([
         () => deep,
         pipe([
-          ({ items }) => map.pool(mapPoolSize, getIam)(items),
+          get("items"),
+          map.pool(mapPoolSize, getIam),
           (items) => ({ items, total: items.length }),
         ]),
         (result) => result,
@@ -143,41 +135,31 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
     pipe([
       tap(() => {
         assert(bucketName, `destroy invalid id`);
-        logger.debug(`destroy bucket ${bucketName}`);
+        logger.info(`destroy bucket ${bucketName}`);
       }),
       () =>
         retryCallOnError({
-          name: `list object to destroy`,
-          fn: () =>
-            axios.request(`/${bucketName}/o`, {
-              method: "GET",
-            }),
+          name: `list object to destroy on bucket ${bucketName}`,
+          fn: () => axios.get(`/${bucketName}/o`),
           config: configProvider,
         }),
       get("data.items"),
       tap((items = []) => {
         logger.debug(`destroy objects in bucket: ${items.length}`);
       }),
-      tap(
-        async (items = []) =>
-          await map.pool(mapPoolSize, (item) =>
-            retryCallOnError({
-              name: `destroy objects in ${bucketName}`,
-              fn: () =>
-                axios.request(item.selfLink, {
-                  method: "DELETE",
-                }),
-              config: configProvider,
-            })
-          )(items)
+      tap((items = []) =>
+        map.pool(mapPoolSize, (item) =>
+          retryCallOnError({
+            name: `destroy objects in ${bucketName}`,
+            fn: () => axios.delete(item.selfLink),
+            config: configProvider,
+          })
+        )(items)
       ),
       () =>
         retryCallOnError({
           name: `destroy ${bucketName}`,
-          fn: async () =>
-            await axios.request(`/${bucketName}`, {
-              method: "DELETE",
-            }),
+          fn: () => axios.delete(`/${bucketName}`),
           config: configProvider,
           //TODO may not need that
           isExpectedException: (error) => {
@@ -186,7 +168,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
         }),
       get("data"),
       tap((xx) => {
-        logger.debug(`destroy done: ${bucketName}`);
+        logger.info(`destroy bucket done: ${bucketName}`);
       }),
     ])();
 

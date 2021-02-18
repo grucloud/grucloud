@@ -3,6 +3,11 @@ const { GoogleProvider } = require("../../GoogleProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const chance = require("chance")();
 
+const {
+  testPlanDeploy,
+  testPlanDestroy,
+} = require("../../../../test/E2ETestUtils");
+
 describe("GcpIamBinding", async function () {
   let config;
   let provider;
@@ -73,6 +78,8 @@ describe("GcpIamBinding", async function () {
       const planCreate = plan.resultCreate.plans[1];
       assert.equal(planCreate.action, "UPDATE");
     }
+
+    await testPlanDestroy({ provider, types });
   });
 
   it("iamBindingEmail", async function () {

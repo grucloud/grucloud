@@ -48,12 +48,12 @@ module.exports = ({ resources: { eip, server }, provider }) => {
 
         const {
           results: [vpcs],
-        } = await provider.listLives({ types: ["Vpc"] });
+        } = await provider.listLives({ options: { types: ["Vpc"] } });
         assert(vpcs);
-        const vpcDefault = vpcs.resources.find((vpc) => vpc.data.IsDefault);
+        const vpcDefault = vpcs.resources.find((vpc) => vpc.live.IsDefault);
         assert(vpcDefault);
 
-        assert.equal(serverLive.VpcId, vpcDefault.data.VpcId);
+        assert.equal(serverLive.VpcId, vpcDefault.live.VpcId);
 
         const host = eipLive.PublicIp;
         return {

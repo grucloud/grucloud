@@ -1,5 +1,14 @@
 const assert = require("assert");
-const { pipe, tap, map, get, filter, tryCatch, switchCase } = require("rubico");
+const {
+  pipe,
+  tap,
+  map,
+  get,
+  filter,
+  tryCatch,
+  switchCase,
+  not,
+} = require("rubico");
 
 const {
   first,
@@ -23,23 +32,24 @@ const {
 const findName = get("role");
 const findId = findName;
 
-const isOurMinionIamBinding = ({ resource, resourceNames }) => {
-  assert(resource, "resource");
-  assert(resourceNames, "resourceNames");
-  const isOur = resourceNames.includes(findName(resource));
-  logger.debug(`isOurMinionIamBinding: ${isOur}`);
-  return isOur;
-};
+const isOurMinionIamBinding = ({ name, resource, resourceNames }) =>
+  pipe([
+    tap(() => {
+      assert(resource, "resource");
+      assert(Array.isArray(resourceNames), "resourceNames");
+    }),
+    find((item) => isDeepEqual(item, findName(resource))),
+    tap((isOur) => {
+      logger.debug(`isOurMinionIamBinding: ${name}: ${isOur}`);
+    }),
+  ])(resourceNames);
 
-const cannotBeDeleted = ({ resource, resourceNames }) =>
-  !isOurMinionIamBinding({ resource, resourceNames });
+const cannotBeDeleted = not(isOurMinionIamBinding);
 
 exports.isOurMinionIamBinding = isOurMinionIamBinding;
 
 // https://cloud.google.com/iam/docs/granting-changing-revoking-access#iam-modify-policy-role-rests
 exports.GcpIamBinding = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
   const { projectId } = config;
 
   const axios = createAxiosMakerGoogle({
@@ -58,7 +68,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
           ),
         })(properties),
       tap((xx) => {
-        logger.debug(`configDefault`);
+        //logger.debug(`configDefault`);
       }),
     ])();
 

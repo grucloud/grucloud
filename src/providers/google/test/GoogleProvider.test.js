@@ -103,5 +103,5 @@ describe("GoogleProvider", async function () {
     );
 
     await testPlanDestroy({ provider, types, full: true });
-  });
+  }).timeout(7 * 60e3);
 });

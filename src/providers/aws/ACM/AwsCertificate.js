@@ -36,9 +36,6 @@ const findId = get("CertificateArn");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
 exports.AwsCertificate = ({ spec, config }) => {
-  assert(spec);
-  assert(config);
-
   const acm = ACMNew();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#listCertificates-property
@@ -49,29 +46,31 @@ exports.AwsCertificate = ({ spec, config }) => {
       }),
       () => acm().listCertificates(params),
       get("CertificateSummaryList"),
-      map(async (certificate) => ({
+      map(async ({ CertificateArn }) => ({
         ...(await pipe([
           () =>
             acm().describeCertificate({
-              CertificateArn: certificate.CertificateArn,
+              CertificateArn,
             }),
           get("Certificate"),
         ])()),
         Tags: await pipe([
           () =>
             acm().listTagsForCertificate({
-              CertificateArn: certificate.CertificateArn,
+              CertificateArn,
             }),
           get("Tags"),
         ])(),
       })),
+      tap((certificates) => {
+        logger.debug(`getList certificates result: ${tos(certificates)}`);
+      }),
       (certificates) => ({
         total: certificates.length,
         items: certificates,
       }),
-      tap((certificates) => {
-        logger.info(`getList #certificates : ${certificates.length}`);
-        logger.debug(`getList certificates result: ${tos(certificates)}`);
+      tap(({ total }) => {
+        logger.info(`getList #certificates : ${total}`);
       }),
     ])();
 

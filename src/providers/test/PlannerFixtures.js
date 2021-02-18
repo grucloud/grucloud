@@ -41,7 +41,7 @@ const azPlans = [
     resource: {
       name: "rg",
       type: "ResourceGroup",
-      provider: "azure",
+      providerName: "azure",
       uri: "azure::ResourceGroup::rg",
     },
   },
@@ -49,7 +49,7 @@ const azPlans = [
     resource: {
       name: "vnet",
       type: "VirtualNetwork",
-      provider: "azure",
+      providerName: "azure",
       uri: "azure::VirtualNetwork::vnet",
     },
   },
@@ -57,7 +57,7 @@ const azPlans = [
     resource: {
       name: "sg",
       type: "SecurityGroup",
-      provider: "azure",
+      providerName: "azure",
       uri: "azure::SecurityGroup::sg",
     },
   },
@@ -65,7 +65,7 @@ const azPlans = [
     resource: {
       name: "network-interface",
       type: "NetworkInterface",
-      provider: "azure",
+      providerName: "azure",
       uri: "azure::NetworkInterface::network-interface",
     },
   },
@@ -158,7 +158,7 @@ const awsPlans = [
     resource: {
       name: "vpc",
       type: "Vpc",
-      provider: "aws",
+      providerName: "aws",
       uri: "aws::Vpc::vpc",
     },
   },
@@ -166,7 +166,7 @@ const awsPlans = [
     resource: {
       name: "subnet",
       type: "Subnet",
-      provider: "aws",
+      providerName: "aws",
       uri: "aws::Subnet::subnet",
     },
   },
@@ -174,7 +174,7 @@ const awsPlans = [
     resource: {
       name: "rt",
       type: "RouteTables",
-      provider: "aws",
+      providerName: "aws",
       uri: "aws::RouteTables::rt",
     },
   },
@@ -182,7 +182,7 @@ const awsPlans = [
     resource: {
       name: "sg",
       type: "SecurityGroup",
-      provider: "aws",
+      providerName: "aws",
       uri: "aws::SecurityGroup::sg",
     },
   },
@@ -190,7 +190,7 @@ const awsPlans = [
     resource: {
       name: "instance",
       type: "Instance",
-      provider: "aws",
+      providerName: "aws",
       uri: "aws::Instance::instance",
     },
   },

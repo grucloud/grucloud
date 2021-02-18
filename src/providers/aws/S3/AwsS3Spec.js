@@ -5,13 +5,13 @@ const { isOurMinion } = require("../AwsCommon");
 module.exports = [
   {
     type: "S3Bucket",
-    Client: ({ spec, config }) => AwsS3Bucket({ spec, config }),
+    Client: AwsS3Bucket,
     isOurMinion,
   },
   {
     type: "S3Object",
     dependsOn: ["S3Bucket"],
-    Client: ({ spec, config }) => AwsS3Object({ spec, config }),
+    Client: AwsS3Object,
     compare: compareS3Object,
     isOurMinion,
   },

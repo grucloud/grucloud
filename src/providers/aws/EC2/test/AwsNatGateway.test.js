@@ -16,6 +16,7 @@ describe("AwsNatGateway", async function () {
   const types = [
     "Vpc",
     "Subnet",
+    "RouteTable",
     "RouteTables",
     "NatGateway",
     "InternetGateway",
@@ -73,7 +74,7 @@ describe("AwsNatGateway", async function () {
     });
   });
 
-  it("nat apply and destroy", async function () {
+  it.skip("nat apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
 
     const natGatewayLive = await natGateway.getLive();

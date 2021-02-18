@@ -8,7 +8,6 @@ const identity = (x) => x;
 const { retryCall, retryCallOnError } = require("./Retry");
 const {
   getByNameCore,
-  findField,
   isUpByIdCore,
   isDownByIdCore,
   logError,
@@ -20,9 +19,9 @@ module.exports = CoreClient = ({
   type,
   config,
   axios,
-  pathGet = (id) => `/${id}`,
+  pathGet = ({ id }) => `/${id}`,
   pathCreate = () => `/`,
-  pathDelete = (id) => `/${id}`,
+  pathDelete = ({ id }) => `/${id}`,
   pathList = () => `/`,
   verbGet = "GET",
   verbList = "GET",
@@ -32,7 +31,7 @@ module.exports = CoreClient = ({
     name,
     ...properties,
   }),
-  findName = (item) => findField({ item, field: "name" }),
+  findName = get("name"),
   findId = (item) => {
     return item.id;
   },
@@ -62,7 +61,7 @@ module.exports = CoreClient = ({
           assert(!isEmpty(id), `getById ${type}: invalid id`);
           assert(!spec.listOnly);
         }),
-        () => pathGet(id),
+        () => pathGet({ id }),
         (path) =>
           retryCallOnError({
             name: `getById type ${spec.type}, name: ${name}, path: ${path}`,
@@ -72,7 +71,8 @@ module.exports = CoreClient = ({
               }),
             config,
           }),
-        (result) => onResponseGet({ id, data: result.data }),
+        get("data"),
+        (data) => onResponseGet({ id, data }),
         tap((data) => {
           logger.debug(`getById result: ${tos(data)}`);
         }),
@@ -89,6 +89,9 @@ module.exports = CoreClient = ({
 
   const getList = tryCatch(
     pipe([
+      tap((params) => {
+        logger.debug(`getList ${spec.type}`);
+      }),
       () => pathList(),
       (path) =>
         retryCallOnError({
@@ -99,7 +102,14 @@ module.exports = CoreClient = ({
             }),
           config,
         }),
-      (result) => onResponseList(result.data),
+      get("data"),
+      tap((data) => {
+        logger.debug(`getList ${spec.type}, ${tos(data)}`);
+      }),
+      onResponseList,
+      tap(({ total }) => {
+        logger.info(`getList ${spec.type}, #items: ${total}`);
+      }),
     ]),
     (error) => {
       logError(`getList ${spec.type}`, error);
@@ -190,20 +200,19 @@ module.exports = CoreClient = ({
           assert(!spec.listOnly);
           assert(!isEmpty(id), `destroy ${type}: invalid id`);
         }),
-        () => pathDelete(id),
+        () => pathDelete({ id }),
         (path) =>
           retryCallOnError({
             name: `destroy type ${spec.type}, path: ${path}`,
-            fn: async () =>
-              await axios.request(path, {
-                method: "DELETE",
-              }),
+            fn: () => axios.delete(path),
+            isExpectedResult: () => true,
             config: { ...config, repeatCount: 0 },
             isExpectedException: (error) => {
               return [404].includes(error.response?.status);
             },
           }),
-        (result) => onResponseDelete(result.data),
+        get("data"),
+        onResponseDelete,
         tap(() =>
           retryCall({
             name: `destroy type: ${spec.type}, name: ${name}, isDownById`,

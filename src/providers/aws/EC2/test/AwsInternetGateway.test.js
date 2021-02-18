@@ -18,7 +18,6 @@ describe("AwsInternetGateway", async function () {
       this.skip();
     }
     provider = AwsProvider({
-      name: "aws",
       config: config.aws,
     });
 
@@ -55,15 +54,15 @@ describe("AwsInternetGateway", async function () {
 
     const {
       results: [igs],
-    } = await provider.listLives({ types });
+    } = await provider.listLives({ options: { types } });
     assert.equal(igs.type, "InternetGateway");
     const myIg = igs.resources.find(
-      (resource) => resource.data.Attachments[0].VpcId === vpcLive.VpcId
+      (resource) => resource.live.Attachments[0].VpcId === vpcLive.VpcId
     );
     assert(myIg);
-    assert.equal(myIg.data.Attachments[0].State, "available");
+    assert.equal(myIg.live.Attachments[0].State, "available");
 
-    assert(myIg.data.InternetGatewayId);
+    assert(myIg.live.InternetGatewayId);
     //assert(resource.PublicIp);
     await testPlanDestroy({ provider, types });
   });

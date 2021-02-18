@@ -1,31 +1,30 @@
 const assert = require("assert");
-const { pipe, tap, map, get, eq, assign } = require("rubico");
+const { pipe, tap, map, get, eq, assign, not } = require("rubico");
+const { defaultsDeep, first } = require("rubico/x");
 
-const { defaultsDeep } = require("rubico/x");
 const logger = require("../../../../logger")({ prefix: "GcpServiceAccount" });
 const { tos } = require("../../../../tos");
 const GoogleClient = require("../../GoogleClient");
 const { createAxiosMakerGoogle } = require("../../GoogleCommon");
 const { retryCallOnError } = require("../../../Retry");
 
-const findName = (item) => {
-  const name = item.email.split("@")[0];
-  return name;
-};
+const findName = pipe([
+  get("email"), //
+  (email) => email.split("@"),
+  first,
+]);
 
-const isOurMinionServiceAccount = ({
-  name,
-  config,
-  resource,
-  resourceNames,
-}) => {
-  assert(config, "config");
-  assert(resource, "resource");
-  assert(resourceNames, "resourceNames");
-  const isOur = resource.description === config.managedByDescription;
-  logger.debug(`isOurMinionServiceAccount: name: ${name} ${isOur}`);
-  return isOur;
-};
+const isOurMinionServiceAccount = ({ name, config, resource }) =>
+  pipe([
+    tap(() => {
+      assert(config.managedByDescription, config);
+      assert(resource, "resource");
+    }),
+    eq(get("description"), config.managedByDescription),
+    tap((isOur) => {
+      logger.info(`isOurMinionServiceAccount: name: ${name} ${isOur}`);
+    }),
+  ])(resource);
 
 exports.isOurMinionServiceAccount = isOurMinionServiceAccount;
 // https://cloud.google.com/iam/docs/reference/rest/v1/projects.serviceAccounts
@@ -91,8 +90,7 @@ exports.GcpServiceAccount = ({ spec, config }) => {
       (accounts) => ({ total: accounts.length, items: accounts }),
     ])(accounts);
 
-  const cannotBeDeleted = ({ name, config, resource, resourceNames }) =>
-    !isOurMinionServiceAccount({ name, config, resource, resourceNames });
+  const cannotBeDeleted = not(isOurMinionServiceAccount);
 
   return GoogleClient({
     spec,

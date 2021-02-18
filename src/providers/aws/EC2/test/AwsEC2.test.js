@@ -61,7 +61,7 @@ describe("AwsEC2", async function () {
 
     const {
       results: [vpcs],
-    } = await provider.listLives({ types: ["Vpc"] });
+    } = await provider.listLives({ options: { types: ["Vpc"] } });
     assert(vpcs);
     const vpcDefault = vpcs.resources.find((vpc) => vpc.data.IsDefault);
     assert(vpcDefault);

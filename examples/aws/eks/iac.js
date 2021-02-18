@@ -120,8 +120,7 @@ const createResources = async ({ provider, resources: {} }) => {
 
   const natGateway = await provider.makeNatGateway({
     name: "nat-gateway-eks",
-    //TODO remove ig dependencies
-    dependencies: { subnet: subnetPublic, eip, ig },
+    dependencies: { subnet: subnetPublic, eip },
   });
 
   const routeTablePrivate = await provider.makeRouteTables({

@@ -13,7 +13,7 @@ const {
   tryCatch,
   eq,
   get,
-  omit,
+  and,
 } = require("rubico");
 
 const {
@@ -71,24 +71,27 @@ const dependsOnTypeReverse = (dependsOnType) =>
 
 const findDependsOnType = ({ provider, type, plans, dependsOnType }) =>
   pipe([
-    find((x) => x.providerName === provider && x.type === type),
+    tap(() => {
+      assert(provider);
+      assert(type);
+      assert(Array.isArray(plans));
+    }),
+    find(and([eq(get("providerName"), provider), eq(get("type"), type)])),
     tap((x) => {
       assert(x);
     }),
-    ({ dependsOn = [] }) => dependsOn,
+    get("dependsOn"),
     flatMap((dependOn) =>
       pipe([
         filter(
           ({ resource }) =>
-            `${resource.provider}::${resource.type}` === dependOn
+            `${resource.providerName}::${resource.type}` === dependOn
         ),
         pluck("resource"),
       ])(plans)
     ),
     tap((dependsOn) => {
-      logger.debug(
-        `findDependsOnType: result ${tos({ provider, type, dependsOn })}`
-      );
+      logger.debug(`findDependsOnType: result ${tos({ type, dependsOn })}`);
     }),
   ])(dependsOnTypeReverse(dependsOnType));
 
@@ -151,12 +154,12 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
     () =>
       pipe([
         pluck("resource"),
-        map(({ name, provider, type, uri }) => ({
+        map(({ name, providerName, type, uri }) => ({
           name,
           uri,
           dependsOn: uniq([
             ...findDependsOnType({
-              provider,
+              provider: providerName,
               type,
               plans,
               dependsOnType,
@@ -276,7 +279,7 @@ exports.Planner = ({
       entry.state = STATES.RUNNING;
       const result = await executor({ item: entry.item });
       //assert(result, "no result");
-      ["CREATE", "DESTROY"].includes(entry.item.action);
+      //["CREATE", "DESTROY"].includes(entry.item.action);
       if (entry.item.action === "CREATE") {
         const { input, output } = result;
         assert(input, "no input");
@@ -299,7 +302,7 @@ exports.Planner = ({
         resource: entry.item.resource,
         previousState: entry.state,
         nextState: STATES.ERROR,
-        error,
+        error: entry.error,
       });
       entry.state = STATES.ERROR;
     }
@@ -335,9 +338,6 @@ exports.Planner = ({
               logger.debug(
                 `onEnd  ${tos({ name: entry.item.resource.name, dependsOn })}`
               );
-            }),
-            tap((xxx) => {
-              logger.debug(`onEnd  ${tos(xxx)}`);
             }),
             switchCase([
               isEmpty,

@@ -1,17 +1,7 @@
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
-const memoize = require("promise-memoize");
 
-const {
-  isEmpty,
-  isString,
-  flatten,
-  pluck,
-  forEach,
-  find,
-  defaultsDeep,
-} = require("rubico/x");
 const {
   pipe,
   tap,
@@ -27,8 +17,24 @@ const {
   fork,
   eq,
   not,
+  and,
+  or,
   transform,
+  omit,
 } = require("rubico");
+
+const {
+  isEmpty,
+  isString,
+  flatten,
+  pluck,
+  forEach,
+  find,
+  defaultsDeep,
+  isDeepEqual,
+  includes,
+} = require("rubico/x");
+
 const logger = require("../logger")({ prefix: "Core" });
 const { tos } = require("../tos");
 const { checkConfig, checkEnv } = require("../Utils");
@@ -39,14 +45,15 @@ const {
   mapPoolSize,
   convertError,
   HookType,
+  TitleListing,
   TitleQuery,
   TitleDeploying,
   TitleDestroying,
   typeFromResources,
   planToResourcesPerType,
-  TitleListing,
 } = require("./Common");
 const { Planner, mapToGraph } = require("./Planner");
+const { Lister } = require("./Lister");
 
 const configProviderDefault = {
   tag: "ManagedByGru",
@@ -72,54 +79,41 @@ const noop = ({}) => {};
 
 const isValidPlan = (plan) => !isEmpty(plan.plans) && !plan.error;
 
-const filterByType = ({ types }) =>
-  filter((client) =>
-    !isEmpty(types)
-      ? any((type) => new RegExp(type, "i").test(client.spec.type))(types)
-      : true
-  );
-
-const filterReadClient = ({ types, all }) =>
-  pipe([
-    filterByType({ types }),
-    filter((client) => all || !client.spec.listHide),
-    tap((clients) => {
-      logger.debug(`filterReadClient #client ${clients.length}`);
-    }),
-  ]);
-
-const filterReadWriteClient = ({ types } = {}) =>
-  pipe([
-    tap((clients) => {
-      logger.debug(
-        `filterReadWriteClient types: ${types}, #clients ${clients.length}`
-      );
-    }),
-    filterByType({ types }),
-    filter((client) => !client.spec.singleton),
-    filter((client) => !client.spec.listOnly),
-    tap((clients) => {
-      logger.debug(`filterReadWriteClient result #clients ${clients.length}`);
-    }),
-  ]);
-
-const hasResultError = any(({ error }) => error);
+const hasResultError = any(get("error"));
 
 const nextStateOnError = (error) => (error ? "ERROR" : "DONE");
 
-const toUri = ({ providerName, type, name, id }) => {
-  assert(type, "type");
-  assert(name || id, `missing name or id for ${providerName}::${type}`);
-  return `${providerName}::${type}::${name || id}`;
-};
-
 const createClient = ({ spec, provider, config, mapTypeToResources }) =>
-  defaultsDeep({ cannotBeDeleted: () => false, configDefault: () => ({}) })(
-    spec.Client({ provider, spec, config, mapTypeToResources })
-  );
+  pipe([
+    () => spec.Client({ provider, spec, config, mapTypeToResources }),
+    tap((client) => {
+      assert(client.spec);
+      assert(client.findName);
+      assert(client.getByName);
+    }),
+    defaultsDeep({
+      resourceKey: pipe([
+        tap((resource) => {
+          assert(resource.provider);
+          assert(resource.type);
+          assert(
+            resource.name || resource.id,
+            `no name or id in resource ${tos(resource)}`
+          );
+        }),
+        ({ provider, type, name, id }) => `${provider}::${type}::${name || id}`,
+      ]),
+      displayName: get("name"),
+      displayNameResource: get("name"),
+      findMeta: () => undefined,
+      cannotBeDeleted: () => false,
+      configDefault: () => ({}),
+    }),
+  ])();
 
 const ResourceMaker = ({
   name: resourceName,
+  meta = {},
   dependencies = {},
   transformConfig,
   properties = () => ({}),
@@ -128,58 +122,68 @@ const ResourceMaker = ({
   config,
 }) => {
   const { type } = spec;
-  logger.debug(`ResourceMaker: ${tos({ type, resourceName })}`);
+  assert(resourceName, "missing 'name' property");
+  logger.debug(`ResourceMaker: ${tos({ type, resourceName, meta })}`);
 
   const client = createClient({ provider, spec, config });
   const usedBySet = new Set();
-  const getLive = async ({ deep = true } = {}) => {
-    logger.info(`getLive ${type}/${resourceName}, deep: ${deep}`);
-    const live = await client.getByName({
-      provider,
-      name: resourceName,
-      dependencies,
-      resolveConfig,
-      deep,
-      resources: provider.getResourcesByType(client.spec.type),
-    });
-    logger.debug(`getLive ${type}/${resourceName} result: ${tos(live)}`);
-    return live;
-  };
 
-  let getLiveMemoize;
-  const createMemoize = () => {
-    getLiveMemoize = memoize(getLive);
-  };
-  createMemoize();
+  const getLive = async ({ deep = true } = {}) =>
+    pipe([
+      tap(() => {
+        logger.info(`getLive ${toString()}, deep: ${deep}`);
+      }),
+      () =>
+        client.getByName({
+          provider,
+          meta,
+          name: resourceName,
+          dependencies,
+          resolveConfig,
+          deep,
+          resources: provider.getResourcesByType(type),
+        }),
+      tap((live) => {
+        logger.debug(`getLive ${toString()} result: ${tos(live)}`);
+      }),
+    ])();
 
   const findLive = ({ lives }) =>
     pipe([
+      () => lives,
+      get("results"),
       tap((results) => {
         logger.debug(`findLive ${results}`);
       }),
       filter(not(get("error"))),
       find(eq(get("type"), type)),
       switchCase([
-        (result) => result,
+        not(isEmpty),
         pipe([
-          tap(({ type, results }) => {
+          tap(({ type, resources }) => {
             assert(type);
+            assert(resources);
           }),
-          ({ type, results }) =>
-            find(
-              (item) =>
-                resourceName === provider.clientByType(type).findName(item)
-            )(results.items),
+          ({ type, resources }) =>
+            pipe([
+              () => resources,
+              find(({ live }) =>
+                isDeepEqual(
+                  resourceName,
+                  provider.clientByType(type).findName(live)
+                )
+              ),
+            ])(),
         ]),
         (result) => {
           logger.debug(`findLive cannot find type ${type}`);
         },
       ]),
-
+      get("live"),
       tap((live) => {
-        logger.debug(`findLive ${tos(live)}`);
+        logger.debug(`findLive ${tos({ type, live })}`);
       }),
-    ])(lives.results);
+    ])();
 
   const planUpdate = async ({ resource, target, live }) => {
     logger.debug(
@@ -205,7 +209,7 @@ const ResourceMaker = ({
         {
           action: "UPDATE",
           resource: resource.toJSON(),
-          config: target,
+          target: target,
           live,
           diff,
         },
@@ -224,11 +228,15 @@ const ResourceMaker = ({
       }),
     ])(dependencies);
 
-  const resolveDependencies = ({ lives, dependencies, dependenciesMustBeUp }) =>
+  const resolveDependencies = ({
+    lives,
+    dependencies,
+    dependenciesMustBeUp = false,
+  }) =>
     pipe([
       tap(() => {
         logger.info(
-          `resolveDependencies for ${type}/${resourceName}: ${Object.keys(
+          `resolveDependencies for ${toString()}: ${Object.keys(
             dependencies
           )}, dependenciesMustBeUp: ${dependenciesMustBeUp}, has lives: ${!!lives}`
         );
@@ -248,7 +256,7 @@ const ResourceMaker = ({
               }),
             (error) => {
               logger.error(
-                `resolveDependencies: ${type}/${resourceName}, error: ${tos(
+                `resolveDependencies: ${toString()}, dep ${dependency.toString()}, error: ${tos(
                   error
                 )}`
               );
@@ -261,25 +269,37 @@ const ResourceMaker = ({
         return tryCatch(
           (dependency) =>
             pipe([
+              () => lives,
               switchCase([
                 not(isEmpty),
                 (lives) => dependency.findLive({ lives }),
                 () => dependency.getLive({ deep: false }),
               ]),
+              tap((live) => {
+                logger.debug(
+                  `resolveDependencies ${toString()}, dep ${dependency.toString()}, live: ${live}`
+                );
+              }),
               tap.if(
                 (live) => dependenciesMustBeUp && !live,
                 () => {
                   throw {
-                    message: `${type}/${resourceName} dependency ${dependency.name} is not up`,
+                    message: `${toString()} dependency ${
+                      dependency.name
+                    } is not up`,
                   };
                 }
               ),
               async (live) => ({
                 resource: dependency,
-                config: await dependency.resolveConfig({ deep: true, live }),
+                config: await dependency.resolveConfig({
+                  deep: true,
+                  live,
+                  lives,
+                }),
                 live,
               }),
-            ])(lives),
+            ])(),
           (error, dependency) => {
             logger.error(`resolveDependencies: ${tos(error)}`);
             return {
@@ -291,12 +311,12 @@ const ResourceMaker = ({
       }),
       tap((result) => {
         logger.debug(
-          `resolveDependencies for ${resourceName}, result: ${tos(result)}`
+          `resolveDependencies for ${toString()}, result: ${tos(result)}`
         );
       }),
       tap.if(any(get("error")), (resolvedDependencies) => {
         logger.error(
-          `resolveDependencies ${type}/${resourceName} error in resolveDependencies`
+          `resolveDependencies ${toString()} error in resolveDependencies`
         );
 
         throw {
@@ -306,7 +326,7 @@ const ResourceMaker = ({
       }),
       tap((result) => {
         logger.debug(
-          `resolveDependencies for ${resourceName}, result: ${tos(result)}`
+          `resolveDependencies for ${toString()}, result: ${tos(result)}`
         );
       }),
     ])(dependencies);
@@ -320,7 +340,7 @@ const ResourceMaker = ({
     pipe([
       tap(() => {
         logger.debug(
-          `resolveConfig ${type}/${resourceName}, ${tos({
+          `resolveConfig ${toString()}, ${tos({
             deep,
             live,
           })}`
@@ -343,6 +363,7 @@ const ResourceMaker = ({
       async (resolvedDependencies) => {
         const config = await client.configDefault({
           name: resourceName,
+          meta,
           properties: defaultsDeep(spec.propertiesDefault)(
             properties({ dependencies: resolvedDependencies })
           ),
@@ -374,33 +395,40 @@ const ResourceMaker = ({
       },
     ])();
 
-  const create = async ({ payload, resolvedDependencies }) => {
-    logger.info(`create ${tos({ resourceName, type, payload })}`);
-    // Is the resource already created ?
-    if (await getLive({ deep: false })) {
-      throw Error(`Resource ${type}/${resourceName} already exists`);
-    }
-
-    const instance = await client.create({
-      name: resourceName,
-      payload,
-      dependencies,
-      resolvedDependencies,
-    });
-
-    logger.info(`created:  ${type}/${resourceName}`);
-    return instance;
-  };
+  const create = async ({ payload, resolvedDependencies }) =>
+    pipe([
+      tap(() => {
+        logger.info(`create ${tos({ resourceName, type })}`);
+        logger.debug(`create ${tos({ payload })}`);
+      }),
+      tap.if(
+        () => getLive({ deep: false }),
+        () => {
+          throw Error(`Resource ${toString()} already exists`);
+        }
+      ),
+      () =>
+        client.create({
+          meta,
+          name: resourceName,
+          payload,
+          dependencies,
+          resolvedDependencies,
+        }),
+      tap(() => {
+        logger.info(`created: ${toString()}`);
+      }),
+    ])();
 
   const update = async ({ payload, diff, live, resolvedDependencies }) => {
     logger.info(`update ${tos({ resourceName, type, payload })}`);
     if (!(await getLive())) {
-      throw Error(`Resource ${type}/${resourceName} does not exist`);
+      throw Error(`Resource ${toString()} does not exist`);
     }
 
-    // Create now
+    // Update now
     const instance = await retryCall({
-      name: `update ${type}/${resourceName}`,
+      name: `update ${toString()}`,
       fn: () =>
         client.update({
           name: resourceName,
@@ -415,40 +443,19 @@ const ResourceMaker = ({
       config: provider.config(),
     });
 
-    logger.info(`updated:  ${type}/${resourceName}`);
-
-    const liveInstance = await retryCall({
-      name: `update getLive ${type}/${resourceName}`,
-      fn: async () => {
-        const live = await getLive();
-        if (!live) {
-          throw Error(
-            `Resource ${type}/${resourceName} not there after being created`
-          );
-        }
-        return live;
-      },
-      config: provider.config(),
-    });
-
-    if (
-      !client.spec.isOurMinion({
-        resource: liveInstance,
-        resourceNames: provider.resourceNames(),
-        config: provider.config(),
-      })
-    ) {
-      throw Error(`Resource ${type}/${resourceName} is not tagged correctly`);
-    }
-
+    logger.info(`updated: ${toString()}`);
     return instance;
   };
 
   const planUpsert = async ({ resource, lives }) =>
     pipe([
       tap(() => {
-        logger.info(`planUpsert resource: ${resource.toString()}`);
         assert(lives);
+        logger.info(
+          `planUpsert resource: ${resource.toString()}, #lives: ${
+            lives.results.length
+          }`
+        );
       }),
       fork({
         live: () => resource.findLive({ lives }),
@@ -456,34 +463,39 @@ const ResourceMaker = ({
       }),
       switchCase([
         pipe([get("live"), isEmpty]),
-        ({ target }) => [
+        ({ target, live }) => [
           {
             action: "CREATE",
             resource: resource.toJSON(),
-            config: target,
+            target,
+            live,
           },
         ],
         ({ live, target }) => planUpdate({ live, target, resource }),
       ]),
     ])();
 
+  const toString = () =>
+    client.resourceKey({
+      provider: provider.name,
+      type,
+      name: resourceName,
+      meta,
+      dependencies,
+    });
+
   const toJSON = () => ({
     provider: provider.name,
     type,
     name: resourceName,
-    uri: toUri({
-      providerName: provider.name,
-      type,
+    meta,
+    displayName: client.displayNameResource({
       name: resourceName,
+      meta,
+      dependencies,
     }),
+    uri: toString(),
   });
-
-  const toString = () =>
-    toUri({
-      providerName: provider.name,
-      type,
-      name: resourceName,
-    });
 
   const addUsedBy = (usedBy) => {
     usedBySet.add(usedBy);
@@ -493,6 +505,7 @@ const ResourceMaker = ({
     type,
     provider,
     name: resourceName,
+    meta,
     dependencies,
     addUsedBy,
     usedBy: () => usedBySet,
@@ -505,10 +518,6 @@ const ResourceMaker = ({
     update,
     planUpsert,
     getLive,
-    getLiveMemoize: pipe([
-      (params) => getLiveMemoize(params),
-      tap.if(isEmpty, () => createMemoize()),
-    ]),
     findLive,
     getDependencyList,
     resolveDependencies: ({ lives, dependenciesMustBeUp }) =>
@@ -546,11 +555,13 @@ const createResourceMakers = ({ specs, config, provider }) =>
     assert(spec.type);
     acc[factoryName(spec)] = async ({
       name,
+      meta = {},
       dependencies,
       properties,
       transformConfig,
     }) => {
       const resource = ResourceMaker({
+        meta,
         name,
         transformConfig,
         properties,
@@ -595,10 +606,11 @@ function CoreProvider({
   );
 
   const liveToUri = ({ client, live }) =>
-    toUri({
-      providerName,
+    client.resourceKey({
+      provider: providerName,
       type: client.spec.type,
       name: client.findName(live),
+      meta: client.findMeta(live),
       id: client.findId(live),
     });
 
@@ -634,6 +646,7 @@ function CoreProvider({
     assert(operation);
     assert(resource);
     const { type, id } = resource;
+    assert(type);
     const uri = `${providerName}::${operation}::${type}`;
     const displayText = (state) => {
       if (!state) {
@@ -696,6 +709,7 @@ function CoreProvider({
   };
 
   const contextFromClient = ({ client, title }) => {
+    assert(client, "client");
     const { type } = client.spec;
     assert(type, "client.spec.type");
     assert(title, "title");
@@ -714,7 +728,9 @@ function CoreProvider({
       displayText: () => type,
       onDone: ({ spinnerMap, spinnies }) => {
         const context = spinnerMap.get(uri);
-        assert(context, `no context for ${uri}`);
+        if (!context) {
+          assert(context, `no context for ${uri}`);
+        }
         const { state } = context;
         assert(state);
         const completed = state.completed + 1;
@@ -748,45 +764,41 @@ function CoreProvider({
   // Target Resources
   const mapNameToResource = new Map();
   const mapTypeToResources = new Map();
-  const resourceKey = (resource) => {
-    assert(resource.type);
-    assert(resource.name);
-    return `${resource.spec?.providerName || resource.provider}::${
-      resource.type
-    }::${resource.name}`;
-  };
+
   const targetResourcesAdd = (resource) => {
     assert(resource.name);
     assert(resource.type);
     assert(resource.spec.providerName);
 
-    if (mapNameToResource.has(resourceKey(resource))) {
+    const resourceKey = resource.toString();
+    if (mapNameToResource.has(resourceKey)) {
       throw {
         code: 400,
-        message: `resource '${JSON.stringify(
-          resourceKey(resource)
-        )}' already exists`,
+        message: `resource '${resourceKey}' already exists`,
       };
     }
-
-    mapNameToResource.set(resourceKey(resource), resource);
+    mapNameToResource.set(resourceKey, resource);
 
     mapTypeToResources.set(resource.type, [
       ...getResourcesByType(resource.type),
       resource,
     ]);
 
-    tap.if(
-      (client) => client.hook,
-      (client) => hookAdd(client.spec.type, client.hook({ resource }))
+    tap.if(get("hook"), (client) =>
+      hookAdd(client.spec.type, client.hook({ resource }))
     )(resource.client);
   };
 
   const getTargetResources = () => [...mapNameToResource.values()];
   const resourceNames = () => pluck(["name"])([...mapNameToResource.values()]);
 
-  const getResource = (resource) =>
-    mapNameToResource.get(resourceKey(resource));
+  const getResource = pipe([
+    get("uri"),
+    tap((uri) => {
+      assert(uri, "getResource no uri");
+    }),
+    (uri) => mapNameToResource.get(uri),
+  ]);
 
   const specs = fnSpecs(providerConfig).map((spec) =>
     defaultsDeep(SpecDefault({ config: providerConfig, providerName }))(spec)
@@ -798,16 +810,81 @@ function CoreProvider({
 
   const clientByType = (type) => find(eq(get("spec.type"), type))(clients);
 
+  const isTypeMatch = ({ type, typeToMatch }) =>
+    new RegExp(`^${type}`, "i").test(typeToMatch);
+
+  const findDependentType = pipe([
+    tap((types) => {
+      //logger.debug(`findDependentType ${types}`);
+    }),
+    flatMap(
+      pipe([
+        (type) =>
+          filter((client) =>
+            isTypeMatch({ type, typeToMatch: client.spec.type })
+          )(clients),
+        pluck("spec.listDependsOn"),
+        flatten,
+      ])
+    ),
+    tap((types) => {
+      //logger.debug(`findDependentType ${types}`);
+    }),
+  ]);
+
+  const isTypesMatch = ({ typeToMatch }) =>
+    switchCase([
+      isEmpty,
+      () => true,
+      any((type) => isTypeMatch({ type, typeToMatch })),
+    ]);
+
+  const filterByType = ({ types }) =>
+    filter((client) =>
+      switchCase([
+        or([isEmpty, pipe([findDependentType, includes(client.spec.type)])]),
+        () => true,
+        isTypesMatch({ typeToMatch: client.spec.type }),
+      ])(types)
+    );
+
+  const filterReadClient = ({ types, all } = {}) =>
+    pipe([
+      tap((clients) => {
+        logger.debug(
+          `filterReadClient types: ${types}, #clients ${clients.length}`
+        );
+      }),
+      filterByType({ types }),
+      filter((client) => all || !client.spec.listHide),
+      tap((clients) => {
+        logger.debug(`filterReadClient #clients ${clients.length}`);
+      }),
+    ]);
+
+  const filterReadWriteClient = ({ types } = {}) =>
+    pipe([
+      tap((clients) => {
+        logger.debug(
+          `filterReadWriteClient types: ${types}, #clients ${clients.length}`
+        );
+      }),
+      filterByType({ types }),
+      filter((client) => !client.spec.singleton),
+      filter((client) => !client.spec.listOnly),
+      tap((clients) => {
+        logger.debug(`filterReadWriteClient result #clients ${clients.length}`);
+      }),
+    ]);
+
   const filterClient = async ({
+    result,
     client,
-    our,
-    name,
-    id,
-    canBeDeleted,
-    providerName,
+    options: { our, name, id, canBeDeleted, provider: providerName },
+    lives,
   }) =>
     pipe([
-      tap(() => {
+      tap((result) => {
         logger.info(
           `filterClient ${tos({
             our,
@@ -818,29 +895,32 @@ function CoreProvider({
             type: client.spec.type,
           })}`
         );
+        assert(result.items);
       }),
-      () =>
-        client.getList({
-          deep: true,
-          resources: getResourcesByType(client.spec.type),
-        }),
       get("items"),
-      map((item) => ({
-        name: client.findName(item),
-        id: client.findId(item),
+      map((live) => ({
+        uri: liveToUri({ client, live }),
+        name: client.findName(live),
+        displayName: client.displayName({
+          name: client.findName(live),
+          meta: client.findMeta(live),
+        }),
+        meta: client.findMeta(live),
+        id: client.findId(live),
         managedByUs: client.spec.isOurMinion({
-          resource: item,
+          resource: live,
+          lives,
           resourceNames: resourceNames(),
           config: provider.config(),
         }),
         providerName: client.spec.providerName,
         type: client.spec.type,
-        data: item,
+        live,
         cannotBeDeleted: client.cannotBeDeleted({
-          resource: item,
-          name: client.findName(item),
+          resource: live,
+          name: client.findName(live),
           resourceNames: resourceNames(),
-          config,
+          config: provider.config(),
         }),
       })),
       filter((item) => (our ? item.managedByUs : true)),
@@ -855,63 +935,78 @@ function CoreProvider({
         resources,
       }),
       tap((x) => {
-        //console.log(x);
+        assert(x);
       }),
-    ])();
+    ])(result);
 
   const listLives = async ({
     onStateChange = identity,
-    all = false,
-    our = false,
-    types = [],
-    name,
-    id,
-    provider: providerName,
-    canBeDeleted = false,
+    options = {},
+    title = TitleListing,
+    readWrite = false,
   } = {}) =>
     pipe([
-      tap(() =>
-        logger.info(
-          `listLives filters: ${JSON.stringify({ all, our, types, name, id })}`
-        )
+      tap((clients) =>
+        logger.info(`listLives filters: ${JSON.stringify({ options })}`)
       ),
-      filterReadClient({ types, all }),
-      tap((clients) => {
-        logger.info(`listLives #clients: ${clients.length}`);
-      }),
-      map.pool(
-        mapPoolSize,
-        tryCatch(
+      switchCase([
+        () => readWrite,
+        filterReadWriteClient(options),
+        filterReadClient(options),
+      ]),
+      map((client) => ({
+        type: client.spec.type,
+        executor: ({ lives }) =>
           pipe([
-            (client) =>
+            () =>
+              client.getList({
+                lives,
+                deep: true,
+                resources: provider.getResourcesByType(client.spec.type),
+              }),
+            (result) =>
               filterClient({
+                result,
                 client,
                 onStateChange,
-                our,
-                name,
-                id,
-                canBeDeleted,
-                providerName,
+                options,
+                lives,
               }),
-            tap((xx) => {
-              logger.debug(`listLives filterClient done`);
-            }),
-          ]),
-          pipe([
-            /*tap((error, client) => {
-              logger.debug(`listLives filterClient error`);
-            }),*/
-            (error, client) => ({
-              error: convertError({ error }),
-              client,
-            }),
-          ])
-        )
-      ),
-      filter((live) => (live.resources ? !isEmpty(live.resources) : true)),
-      (list) => ({
-        error: hasResultError(list),
-        results: list,
+          ])(),
+        dependsOn: client.spec.listDependsOn,
+      })),
+      (inputs) =>
+        Lister({
+          inputs,
+          onStateChange: ({ type, error, ...other }) => {
+            assert(type);
+            onStateChange({
+              context: contextFromClient({ client: clientByType(type), title }),
+              error,
+              ...other,
+            });
+          },
+        }),
+      (lister) => lister.run(),
+      tap((result) => {
+        logger.info(`listLives result: ${tos(result)}`);
+      }),
+      assign({
+        results: pipe([
+          get("results"),
+          filter(
+            or([
+              and([
+                pipe([
+                  get("type"),
+                  (type) => isTypesMatch({ typeToMatch: type })(options.types),
+                ]),
+                pipe([get("resources"), not(isEmpty)]),
+              ]),
+              pipe([get("error"), not(isEmpty)]),
+            ])
+          ),
+        ]),
       }),
       tap((result) => {
         logger.info(`listLives result: ${tos(result)}`);
@@ -956,7 +1051,7 @@ function CoreProvider({
       ),
       assign({
         lives: () =>
-          findLives({
+          listLives({
             onStateChange,
             options: commandOptions,
           }),
@@ -1277,7 +1372,6 @@ function CoreProvider({
       pipe([
         tap(() => {
           assert(title, "title");
-          assert(clients, "clients");
           assert(Array.isArray(clients), "clients must be an array");
           logger.info(
             `spinnersStartClient ${title}, ${JSON.stringify(clients)}`
@@ -1302,30 +1396,20 @@ function CoreProvider({
           ])(clients),
       ])
     );
-  const spinnersStopClient = ({ onStateChange, title, clients }) =>
+  const spinnersStopClient = ({ onStateChange, title, clients, result }) =>
     tap(
       pipe([
         tap(() => {
           assert(title, "title");
-          assert(clients, "clients");
           assert(Array.isArray(clients), "clients must be an array");
           logger.info(
-            `spinnersStopClient ${title}, ${JSON.stringify(clients)}`
+            `spinnersStopClient ${title}, #clients ${clients.length}`
           );
         }),
-        () =>
-          pipe([
-            map((client) =>
-              onStateChange({
-                context: contextFromClient({ client, title }),
-                nextState: "DONE",
-              })
-            ),
-          ])(clients),
         tap(() =>
           onStateChange({
             context: contextFromPlanner({ title }),
-            nextState: "DONE",
+            nextState: nextStateOnError(result.error),
           })
         ),
       ])
@@ -1360,8 +1444,7 @@ function CoreProvider({
       tap(() => {
         logger.debug("spinnersStartQuery");
       }),
-      map(filter((resource) => !resource.spec.listOnly)),
-      filter((resources) => !isEmpty(resources)),
+      filter(not(get("spec.listOnly"))),
       map((resources) => ({
         provider: providerName,
         type: typeFromResources(resources),
@@ -1393,13 +1476,13 @@ function CoreProvider({
         spinnersStartProvider({ onStateChange }),
         spinnersStartClient({
           onStateChange,
-          title: TitleQuery,
+          title: TitleListing,
           clients: filterReadClient(options)(clients),
         }),
       ])
     )();
 
-  const spinnersStopListLives = ({ onStateChange, options }) =>
+  const spinnersStopListLives = ({ onStateChange, options, result }) =>
     tap(
       pipe([
         tap(() => {
@@ -1407,10 +1490,11 @@ function CoreProvider({
         }),
         spinnersStopClient({
           onStateChange,
-          title: TitleQuery,
+          title: TitleListing,
           clients: filterReadClient(options)(clients),
+          result,
         }),
-        () => spinnersStopProvider({ onStateChange }),
+        () => spinnersStopProvider({ onStateChange, error: result.error }),
       ])
     )();
 
@@ -1565,10 +1649,14 @@ function CoreProvider({
       }),
     ])();
 
-  const planUpsert = async ({ onStateChange = noop, lives }) => {
-    logger.info(`planUpsert: #resources ${getTargetResources().length}`);
-    return pipe([
-      filter((resource) => !resource.spec.listOnly),
+  const planUpsert = async ({ onStateChange = noop, lives }) =>
+    pipe([
+      () => getTargetResources(),
+      tap((result) => {
+        logger.info(`planUpsert: #resources ${getTargetResources().length}`);
+        assert(lives);
+      }),
+      filter(not(get("spec.listOnly"))),
       tap(() =>
         onStateChange({
           context: contextFromPlanner({ title: TitleQuery }),
@@ -1641,8 +1729,7 @@ function CoreProvider({
       tap((result) => {
         logger.info(`planUpsert: result: ${tos(result)}`);
       }),
-    ])(getTargetResources());
-  };
+    ])();
 
   const filterDestroyResources = ({
     client,
@@ -1657,10 +1744,9 @@ function CoreProvider({
   }) => {
     const { spec } = client;
     const { type } = spec;
-    const name = client.findName(resource);
-    const id = client.findId(resource);
-    const isNameInOurPlan = resourceNames().includes(
-      fromTagName(name, providerConfig.tag)
+    const { name, id, cannotBeDeleted, managedByUs } = resource;
+    const isNameInOurPlan = find((item) => isDeepEqual(item, name))(
+      resourceNames()
     );
 
     assert(direction);
@@ -1676,13 +1762,7 @@ function CoreProvider({
     );
     return switchCase([
       // Resource that cannot be deleted
-      () =>
-        client.cannotBeDeleted({
-          resource,
-          name,
-          resourceNames: resourceNames(),
-          config: providerConfig,
-        }),
+      () => cannotBeDeleted,
       () => {
         logger.debug(
           `planFindDestroy ${type}/${name}, default resource cannot be deleted`
@@ -1702,19 +1782,14 @@ function CoreProvider({
       () => !isEmpty(nameToDelete),
       () => name === nameToDelete,
       // Not our minion
-      () =>
-        !spec.isOurMinion({
-          resource,
-          resourceNames: resourceNames(),
-          config: provider.config(),
-        }),
+      () => !managedByUs,
       () => {
         logger.debug(`planFindDestroy ${type}/${name}, not our minion`);
         return false;
       },
       // Delete by type
       () => !isEmpty(types),
-      () => any((type) => new RegExp(type, "i").test(spec.type))(types),
+      () => any((type) => isTypeMatch({ type, typeToMatch: spec.type }))(types),
       // PlanDirection
       () => {
         logger.debug(
@@ -1728,106 +1803,6 @@ function CoreProvider({
       },
     ])();
   };
-
-  const getClients = ({ onStateChange, deep, title }) =>
-    map(
-      tryCatch(
-        (client) =>
-          pipe([
-            tap(() =>
-              onStateChange({
-                context: contextFromClient({ client, title }),
-                nextState: "RUNNING",
-              })
-            ),
-            async () => ({
-              type: client.spec.type,
-              results: await client.getList({
-                deep,
-                resources: provider.getResourcesByType(client.spec.type),
-              }),
-            }),
-            tap(() =>
-              onStateChange({
-                context: contextFromClient({ client, title }),
-                nextState: "DONE",
-              })
-            ),
-            tap((x) => {
-              logger.debug(`getClients done`);
-            }),
-          ])(),
-        (error, client) => {
-          logger.error(`getClient error for client type ${client.spec.type}`);
-          logger.error(tos(error));
-          onStateChange({
-            context: contextFromClient({ client, title }),
-            nextState: "ERROR",
-            error: convertError({ error }),
-          });
-          return { error, type: client.spec.type };
-        }
-      )
-    );
-
-  const findLives = async ({
-    options = {},
-    onStateChange = identity,
-    readWrite,
-  }) =>
-    pipe([
-      tap((clients) => {
-        logger.info(
-          `findLives #clients ${clients.length}, ${tos({ options })}`
-        );
-        assert(onStateChange);
-        assert(options);
-      }),
-      switchCase([
-        () => readWrite,
-        filterReadWriteClient(options),
-        (clients) => clients,
-      ]),
-      tap(() =>
-        onStateChange({
-          context: contextFromProvider(),
-          nextState: "RUNNING",
-        })
-      ),
-      tap(() =>
-        onStateChange({
-          context: contextFromPlanner({ title: TitleListing }),
-          nextState: "RUNNING",
-        })
-      ),
-      getClients({ onStateChange, title: TitleListing, deep: false }),
-      (results) => ({ error: hasResultError(results), results }),
-      tap((result) =>
-        onStateChange({
-          context: contextFromPlanner({ title: TitleListing }),
-          nextState: nextStateOnError(result.error),
-          result,
-        })
-      ),
-      switchCase([
-        get("error"),
-        (result) => result,
-        assign({
-          liveMap: ({ results }) =>
-            pipe([
-              flatMap(({ type, results: { items } }) =>
-                map((live) => liveToUri({ client: clientByType(type), live }))(
-                  items
-                )
-              ),
-            ])(results),
-        }),
-      ]),
-      tap((result) => {
-        logger.info(`findLives result: ${tos(result)}`);
-      }),
-    ])(clients);
-
   const planFindDestroy = async ({
     options = {},
     direction = PlanDirection.DOWN,
@@ -1835,7 +1810,8 @@ function CoreProvider({
     lives,
   }) =>
     pipe([
-      tap((xxx) => {
+      get("results"),
+      tap((results) => {
         logger.info(`planFindDestroy ${tos({ options, direction })}`);
         assert(onStateChange);
         assert(options);
@@ -1845,8 +1821,12 @@ function CoreProvider({
       filter(not(get("error"))),
       map(
         assign({
-          plans: ({ type, results }) =>
+          plans: ({ type, resources }) =>
             pipe([
+              tap(() => {
+                assert(type);
+                assert(resources);
+              }),
               () => clientByType(type),
               (client) =>
                 pipe([
@@ -1858,18 +1838,12 @@ function CoreProvider({
                       direction,
                     })
                   ),
-                  map((live) => ({
-                    resource: {
-                      provider: providerName,
-                      type: client.spec.type,
-                      name: client.findName(live),
-                      id: client.findId(live),
-                      uri: liveToUri({ client, live }),
-                    },
+                  map((resource) => ({
+                    resource: omit(["live"])(resource),
                     action: "DESTROY",
-                    config: live,
+                    live: resource.live,
                   })),
-                ])(results?.items || []),
+                ])(resources),
             ])(),
         })
       ),
@@ -1884,7 +1858,7 @@ function CoreProvider({
       tap((results) => {
         logger.debug(`planFindDestroy`);
       }),
-    ])(lives?.results);
+    ])(lives);
 
   const onStateChangeResource = ({ operation, onStateChange }) => {
     return ({ resource, error, ...other }) => {
@@ -1974,9 +1948,9 @@ function CoreProvider({
   const destroyByClient = async ({
     client,
     name,
-    config,
+    meta,
     resourcesPerType = [],
-    lives,
+    live,
   }) =>
     pipe([
       tap((x) => {
@@ -1984,17 +1958,18 @@ function CoreProvider({
           `destroyByClient: ${tos({
             type: client.spec.type,
             name,
-            config,
+            meta,
+            live,
             resourcesPerType,
           })}`
         );
         assert(client);
-        assert(client.isDownById, "client.isDownById");
-        assert(config);
+        assert(live);
+        assert(name);
       }),
-      () => client.findId(config),
+      () => client.findId(live),
       tap((id) => {
-        assert(id, `destroyByClient missing id in config: ${tos(config)}`);
+        assert(id, `destroyByClient missing id in live: ${tos(live)}`);
       }),
       (id) =>
         pipe([
@@ -2005,7 +1980,14 @@ function CoreProvider({
           tap((resource) =>
             retryCall({
               name: `destroy ${client.spec.type}/${id}/${name}`,
-              fn: () => client.destroy({ id, name, resource, lives }),
+              fn: () =>
+                client.destroy({
+                  live,
+                  id, // TODO remove id, only use live
+                  name,
+                  meta,
+                  resource,
+                }),
               isExpectedResult: () => true,
               //TODO isExpectedException: client.isExpectedExceptionDelete
               shouldRetryOnException: client.shouldRetryOnExceptionDelete,
@@ -2023,17 +2005,17 @@ function CoreProvider({
       }),
     ])();
 
-  const destroyById = async ({ type, config, name, lives }) => {
-    logger.debug(`destroyById: ${tos({ type, name, lives })}`);
+  const destroyById = async ({ type, live, name, meta }) => {
+    logger.debug(`destroyById: ${tos({ type, live })}`);
     const client = clientByType(type);
     assert(client, `Cannot find endpoint type ${type}}`);
-
+    assert(live);
     return destroyByClient({
       client,
       name,
-      config,
+      meta,
+      live,
       resourcesPerType: provider.getResourcesByType(type),
-      lives,
     });
   };
 
@@ -2068,10 +2050,10 @@ function CoreProvider({
       dependsOnInstance: mapToGraph(mapNameToResource),
       executor: async ({ item }) =>
         destroyById({
-          lives,
           name: item.resource.name,
+          meta: item.resource.meta, //TODO remove
           type: item.resource.type,
-          config: item.config,
+          live: item.live,
         }),
       down: true,
       onStateChange: onStateChangeResource({
@@ -2102,7 +2084,7 @@ function CoreProvider({
       }),
       assign({
         lives: ({ options }) =>
-          findLives({
+          listLives({
             options,
             readWrite: true,
           }),
@@ -2239,7 +2221,6 @@ function CoreProvider({
     spinnersStartHook,
     spinnersStopProvider,
     planDestroy,
-    findLives,
     listLives,
     listTargets,
     listConfig,

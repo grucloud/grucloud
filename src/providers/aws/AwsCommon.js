@@ -6,9 +6,7 @@ const { first, find, isEmpty } = require("rubico/x");
 const logger = require("../../logger")({ prefix: "AwsCommon" });
 const { tos } = require("../../tos");
 const { retryCall } = require("../Retry");
-
-const KeyName = "Name";
-exports.KeyName = KeyName;
+const { KeyName } = require("../Common");
 
 exports.getNewCallerReference = () => `grucloud-${new Date()}`;
 
@@ -100,6 +98,7 @@ exports.buildTags = ({ name, config, UserTags = [] }) => {
   assert(name);
   assert(providerName);
   assert(stage);
+  assert(projectName);
 
   return [
     ...UserTags,
@@ -122,28 +121,7 @@ exports.buildTags = ({ name, config, UserTags = [] }) => {
     { Key: "projectName", Value: projectName },
   ];
 };
-exports.buildTagsObject = ({ name, config }) => {
-  const {
-    managedByKey,
-    managedByValue,
-    stageTagKey,
-    createdByProviderKey,
-    stage,
-    providerName,
-    projectName,
-  } = config;
 
-  assert(name);
-  assert(providerName);
-  assert(stage);
-  return {
-    [KeyName]: name,
-    [managedByKey]: managedByValue,
-    [createdByProviderKey]: providerName,
-    [stageTagKey]: stage,
-    projectName,
-  };
-};
 exports.isOurMinion = ({ resource, config }) => {
   const {
     createdByProviderKey,
@@ -178,31 +156,6 @@ exports.isOurMinion = ({ resource, config }) => {
       );
     }),
   ])(resource.Tags || []);
-};
-
-exports.isOurMinionObject = ({ resource, config }) => {
-  const { stage, projectName } = config;
-  return pipe([
-    tap(() => {
-      assert(resource);
-      assert(stage);
-      assert(projectName);
-    }),
-    switchCase([
-      and([eq(get("projectName"), projectName), eq(get("stage"), stage)]),
-      () => true,
-      () => false,
-    ]),
-    tap((minion) => {
-      logger.debug(
-        `isOurMinion ${minion}, ${tos({
-          stage,
-          projectName,
-          resource,
-        })}`
-      );
-    }),
-  ])(resource.tags || []);
 };
 
 const findNameInTags = (item) =>

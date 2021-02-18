@@ -35,16 +35,8 @@ const { buildLabel } = require("../../GoogleCommon");
 const logger = require("../../../../logger")({ prefix: "GcpObject" });
 const { tos } = require("../../../../tos");
 
-const findName = (item) => {
-  assert(item, "findName");
-  assert(item.name, "name");
-  return item.name;
-};
-
-const findId = (item) => {
-  assert(item.id, "findId item.id");
-  return item.id;
-};
+const findName = get("name");
+const findId = get("id");
 
 const objectPath = (bucketName, name) => {
   assert(name);
@@ -204,10 +196,10 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
         retryCallOnError({
           name: `upload ${name} content`,
           fn: async () =>
-            await axiosUpload.request(sessionUri, {
-              method: "PUT",
-              data: payload.content || (await fs.readFile(payload.source)),
-            }),
+            axiosUpload.put(
+              sessionUri,
+              payload.content || (await fs.readFile(payload.source))
+            ),
           config: configProvider,
         }),
       get("data"),
@@ -218,30 +210,28 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
 
   const update = create;
 
-  const destroy = async ({ id, name, resource }) =>
+  const destroy = async ({ resource }) =>
     tryCatch(
       pipe([
         tap(() => {
-          logger.info(`destroy object id: ${id}, name: ${name}`);
+          assert(resource);
+          logger.info(`destroy object name: ${resource.toString()}`);
         }),
         getBucket,
-        (bucket) => objectPath(bucket.name, name),
+        (bucket) => objectPath(bucket.name, resource.name),
         (path) =>
           retryCallOnError({
             name: `destroy object ${path}`,
-            fn: () =>
-              axios.request(path, {
-                method: "DELETE",
-              }),
+            fn: () => axios.delete(path),
             config: configProvider,
           }),
         get("data"),
         tap(() => {
-          logger.info(`destroyed object id: ${id}, name: ${name}`);
+          logger.info(`destroyed object ${resource.toString()}`);
         }),
       ]),
-      (error) => {
-        logError(`destroyed ${bucket.name}/${name}`, error);
+      (error, resource) => {
+        logError(`destroyed ${resource.toString()}`, error);
         throw axiosErrorToJSON(error);
       }
     )(resource);

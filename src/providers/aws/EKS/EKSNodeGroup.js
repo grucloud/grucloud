@@ -25,12 +25,8 @@ const {
 const logger = require("../../../logger")({ prefix: "EKSNodeGroup" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
-const { getByNameCore } = require("../../Common");
-const {
-  EKSNew,
-  buildTagsObject,
-  shouldRetryOnException,
-} = require("../AwsCommon");
+const { getByNameCore, buildTagsObject } = require("../../Common");
+const { EKSNew, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("../../ProviderCommon");
 
 const findName = get("nodegroupName");
@@ -44,7 +40,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   const getList = async ({ resources = [] } = {}) =>
     pipe([
       tap(() => {
-        logger.info(`getList nodeGroup `);
+        logger.info(`getList nodeGroup`);
       }),
       () => eks().listClusters(),
       get("clusters"),
@@ -155,31 +151,41 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#deleteNodegroup-property
-  const destroy = async ({ id, resource }) =>
+  const destroy = async ({ live }) =>
     pipe([
-      tap(() => {
-        logger.info(`destroy nodeGroup ${JSON.stringify({ id })}`);
-        assert(resource.dependencies.cluster.name);
+      () => ({
+        nodegroupName: live.nodegroupName,
+        clusterName: live.clusterName,
       }),
-      () =>
-        eks().deleteNodegroup({
-          clusterName: resource.dependencies.cluster.name,
-          nodegroupName: id,
-        }),
-      tap(() =>
-        retryCall({
-          name: `destroy nodeGroup isDownById: ${id}`,
-          fn: () =>
-            isDownById({
-              clusterName: resource.dependencies.cluster.name,
-              nodegroupName: id,
+      ({ clusterName, nodegroupName }) =>
+        pipe([
+          tap(() => {
+            logger.info(`destroy nodeGroup: ${clusterName}`);
+            logger.debug(`destroy ${JSON.stringify({ live })}`);
+            assert(live);
+            assert(nodegroupName);
+            assert(clusterName);
+          }),
+          () =>
+            eks().deleteNodegroup({
+              clusterName,
+              nodegroupName,
             }),
-          config: { retryCount: 12 * 10, retryDelay: 5e3 },
-        })
-      ),
-      tap(() => {
-        logger.info(`nodeGroup destroyed ${JSON.stringify({ id })}`);
-      }),
+          tap(() =>
+            retryCall({
+              name: `destroy nodeGroup isDownById: ${nodegroupName}`,
+              fn: () =>
+                isDownById({
+                  clusterName,
+                  nodegroupName,
+                }),
+              config: { retryCount: 12 * 10, retryDelay: 5e3 },
+            })
+          ),
+          tap(() => {
+            logger.info(`nodeGroup destroyed ${nodegroupName}`);
+          }),
+        ])(),
     ])();
 
   const configDefault = async ({

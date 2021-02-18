@@ -10,20 +10,17 @@ const {
 const { retryCall } = require("../../Retry");
 const { getField } = require("../../ProviderCommon");
 
-const {
-  getByNameCore,
-  findField,
-  isUpByIdCore,
-  isDownByIdCore,
-} = require("../../Common");
+const { getByNameCore, isUpByIdCore, isDownByIdCore } = require("../../Common");
 const logger = require("../../../logger")({ prefix: "AwsSg" });
 const { tos } = require("../../../tos");
 
 exports.AwsSecurityGroup = ({ spec, config }) => {
   const { managedByDescription } = config;
+  assert(managedByDescription);
+
   const ec2 = Ec2New(config);
 
-  const findName = (item) => findField({ item, field: "GroupName" });
+  const findName = get("GroupName");
   const findId = get("GroupId");
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroups-property
