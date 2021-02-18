@@ -74,7 +74,7 @@ describe("AwsSubnet", async function () {
     } = await provider.listLives({ options: { types: ["Subnet"] } });
     assert(subnets);
     const subnetDefault = subnets.resources.find(
-      (subnet) => subnet.data.DefaultForAz
+      (subnet) => subnet.live.DefaultForAz
     );
     assert(subnetDefault);
 
