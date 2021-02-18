@@ -1,5 +1,16 @@
 const assert = require("assert");
-const { pipe, get, tap, eq, switchCase, assign, or, pick } = require("rubico");
+const {
+  pipe,
+  get,
+  tap,
+  eq,
+  switchCase,
+  assign,
+  or,
+  pick,
+  and,
+  not,
+} = require("rubico");
 const { find, first, isEmpty } = require("rubico/x");
 const fs = require("fs");
 const https = require("https");
@@ -7,6 +18,7 @@ const { detailedDiff } = require("deep-object-diff");
 const logger = require("../../logger")({ prefix: "K8sCommon" });
 const { tos } = require("../../tos");
 const AxiosMaker = require("../AxiosMaker");
+const { isOurMinionObject } = require("../Common");
 
 const getNamespace = pipe([
   switchCase([isEmpty, () => `default`, get("name")]),
@@ -122,4 +134,30 @@ exports.createAxiosMakerK8s = ({ config, contentType }) =>
           };
         },
       }),
+  ])();
+
+exports.isOurMinion = ({ resource, lives, config }) =>
+  or([
+    () => isOurMinionObject({ tags: resource.metadata.annotations, config }),
+    pipe([
+      tap(() => {
+        assert(lives);
+        logger.info(`isOurMinionPod ${JSON.stringify({ resource })}`);
+      }),
+      () => first(resource.metadata.ownerReferences),
+      switchCase([
+        not(isEmpty),
+        ({ kind, uid }) =>
+          pipe([
+            find(eq(get("type"), kind)),
+            get("resources"),
+            find(eq(get("live.metadata.uid"), uid)),
+            get("managedByUs"),
+            tap((result) => {
+              logger.info(`isOurMinionPod ${resource.toString()}: ${result}`);
+            }),
+          ])(lives),
+        () => false,
+      ]),
+    ]),
   ])();

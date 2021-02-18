@@ -10,23 +10,22 @@ const yaml = require("js-yaml");
 const logger = require("../../logger")({ prefix: "K8sProvider" });
 const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
-const { isOurMinionObject } = require("../Common");
-const { compare } = require("./K8sCommon");
+const { compare, isOurMinion } = require("./K8sCommon");
 
 const { K8sReplicaSet } = require("./K8sReplicaSet");
 const { K8sService } = require("./K8sService");
 const { K8sStorageClass } = require("./K8sStorageClass");
 const { K8sPersistentVolume } = require("./K8sPersistentVolume");
-const { K8sPersistentVolumeClaim } = require("./K8sPersistentVolumeClaim");
-const { K8sPod, isOurMinionPod } = require("./K8sPod");
+const {
+  K8sPersistentVolumeClaim,
+  isOurMinionPersistentVolumeClaim,
+} = require("./K8sPersistentVolumeClaim");
+const { K8sPod } = require("./K8sPod");
 const { K8sNamespace } = require("./K8sNamespace");
 const { K8sDeployment } = require("./K8sDeployment");
 const { K8sConfigMap } = require("./K8sConfigMap");
 const { K8sIngress } = require("./K8sIngress");
 const { K8sStatefulSet } = require("./K8sStatefulSet");
-
-const isOurMinion = ({ resource, config }) =>
-  isOurMinionObject({ tags: resource.metadata.annotations, config });
 
 const fnSpecs = () => [
   {
@@ -66,7 +65,7 @@ const fnSpecs = () => [
     Client: K8sPersistentVolumeClaim,
     dependsOn: ["Namespace", "StorageClass", "PersistentVolume"],
     listDependsOn: ["PersistentVolume"],
-    isOurMinion,
+    isOurMinion: isOurMinionPersistentVolumeClaim,
     compare,
   },
   {
@@ -95,7 +94,7 @@ const fnSpecs = () => [
     dependsOn: ["Namespace", "ConfigMap"],
     listDependsOn: ["ReplicaSet", "StatefulSet"],
     Client: K8sPod,
-    isOurMinion: isOurMinionPod,
+    isOurMinion,
     listOnly: true,
   },
   {
