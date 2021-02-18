@@ -1,7 +1,13 @@
 const assert = require("assert");
 const { eq, tap, pipe, get, fork, and, filter, switchCase } = require("rubico");
-const { first, defaultsDeep, isEmpty, find } = require("rubico/x");
-const urljoin = require("url-join");
+const {
+  first,
+  defaultsDeep,
+  isEmpty,
+  find,
+  pluck,
+  includes,
+} = require("rubico/x");
 
 const logger = require("../../logger")({ prefix: "K8sStatefulSet" });
 const { tos } = require("../../tos");
@@ -9,18 +15,12 @@ const { buildTagsObject, isUpByIdCore } = require("../Common");
 const K8sClient = require("./K8sClient");
 const { retryCallOnError } = require("../Retry");
 
-const {
-  getNamespace,
-  getServerUrl,
-  createAxiosMakerK8s,
-} = require("./K8sCommon");
+const { getNamespace } = require("./K8sCommon");
 
 // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#statefulset-v1-apps
 
 exports.K8sStatefulSet = ({ spec, config }) => {
   const { kubeConfig } = config;
-
-  const axios = () => createAxiosMakerK8s({ config });
 
   const configDefault = async ({ name, properties, dependencies }) =>
     defaultsDeep({
@@ -56,7 +56,7 @@ exports.K8sStatefulSet = ({ spec, config }) => {
       getById,
     });
 
-  return K8sClient({
+  const k8sClient = K8sClient({
     spec,
     config,
     pathGet,
@@ -68,4 +68,38 @@ exports.K8sStatefulSet = ({ spec, config }) => {
     configDefault,
     isUpByIdFactory,
   });
+
+  //TODO
+  /*
+  const findVolumeClaim = ({ live, lives }) =>
+    pipe([
+      () => get("spec.volumeClaimTemplates")(live),
+      pluck("metadata.name"),
+      (volumeClaims) =>
+        pipe([
+          () => lives.results,
+          find(eq(get("type"), "PersistentVolumeClaim")),
+          get("resources"),
+          filter(
+            pipe([
+              get("live.spec.volumeName"),
+              (volumeName) => includes(volumeName)(volumeClaims),
+            ])
+          ),
+          tap((resources) => {
+            logger.info(`findVolumeClaim ${resources}`);
+          }),
+        ])(),
+    ])();
+*/
+
+  const destroy = async ({ live, lives }) =>
+    pipe([
+      //() => findVolumeClaim({ live, lives }),
+      tap((xxx) => {
+        logger.info(`destroy statefulset`);
+      }),
+      () => k8sClient.destroy({ live }),
+    ])();
+  return { ...k8sClient, destroy };
 };

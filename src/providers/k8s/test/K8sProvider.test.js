@@ -36,6 +36,7 @@ describe.skip("K8sProvider", async function () {
     "StorageClass",
     "Service",
     "Ingress",
+    "StatefulSet",
   ];
 
   before(async function () {
