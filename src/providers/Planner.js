@@ -85,7 +85,7 @@ const findDependsOnType = ({ provider, type, plans, dependsOnType }) =>
       pipe([
         filter(
           ({ resource }) =>
-            `${resource.provider}::${resource.type}` === dependOn
+            `${resource.providerName}::${resource.type}` === dependOn
         ),
         pluck("resource"),
       ])(plans)
