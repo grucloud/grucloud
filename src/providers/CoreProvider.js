@@ -24,6 +24,7 @@ const {
 } = require("rubico");
 
 const {
+  first,
   isEmpty,
   isString,
   flatten,
@@ -898,6 +899,7 @@ function CoreProvider({
         assert(result.items);
       }),
       get("items"),
+      filter(not(get("error"))),
       map((live) => ({
         uri: liveToUri({ client, live }),
         name: client.findName(live),
@@ -947,7 +949,9 @@ function CoreProvider({
   } = {}) =>
     pipe([
       tap((clients) =>
-        logger.info(`listLives filters: ${JSON.stringify({ options })}`)
+        logger.info(
+          `listLives  ${JSON.stringify({ title, readWrite, options })}`
+        )
       ),
       switchCase([
         () => readWrite,
@@ -1441,10 +1445,11 @@ function CoreProvider({
 
   const spinnersStartQuery = ({ onStateChange, options }) =>
     pipe([
-      tap(() => {
+      () => [...mapTypeToResources.values()],
+      tap((resourcesPerType) => {
         logger.debug("spinnersStartQuery");
       }),
-      filter(not(get("spec.listOnly"))),
+      filter(pipe([first, not(get("spec.listOnly"))])),
       map((resources) => ({
         provider: providerName,
         type: typeFromResources(resources),
@@ -1465,7 +1470,7 @@ function CoreProvider({
           title: TitleQuery,
           resourcesPerType,
         })(),
-    ])([...mapTypeToResources.values()]);
+    ])();
 
   const spinnersStartListLives = ({ onStateChange, options }) =>
     tap(
