@@ -125,7 +125,7 @@ describe.skip("K8sStatefulSet", async function () {
   });
   after(async () => {});
 
-  it.only("k8s statefulset apply and destroy", async function () {
+  it("k8s statefulset apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
 
     await testPlanDestroy({ provider, types });
