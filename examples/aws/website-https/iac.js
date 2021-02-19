@@ -43,7 +43,6 @@ const createResources = async ({ provider }) => {
   assert(DomainName);
   assert(websiteDir);
   assert(stage);
-
   const files = await getFiles(websiteDir);
   const bucketName = `${DomainName}-${stage}`;
 
@@ -191,6 +190,7 @@ const createResources = async ({ provider }) => {
     recordCloudFront,
     distribution,
     hostedZone,
+    recordValidation,
   };
 };
 
@@ -198,8 +198,8 @@ exports.createResources = createResources;
 
 exports.createStack = async ({ name = "aws", config }) => {
   const provider = AwsProvider({
-    name: "aws-us-east",
-    config: { ...config, region: "us-east-1" },
+    name,
+    config,
   });
 
   const resources = await createResources({
