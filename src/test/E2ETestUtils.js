@@ -146,8 +146,8 @@ exports.testPlanDestroy = testPlanDestroy;
 exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
   await provider.start();
   {
-    const { error } = await provider.destroyAll({ options: { types } });
-    assert(!error, "testPlanDeploy destroyAll failed");
+    const result = await provider.destroyAll({ options: { types } });
+    assert(!result.error, `testPlanDeploy destroyAll failed: ${tos(result)}`);
   }
   {
     const { results: lives } = await provider.listLives({

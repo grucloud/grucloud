@@ -103,6 +103,16 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "K8s Stateless Destroy StatefulSet",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/stateless",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["destroy", "-f", "-t", "StatefulSet"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "K8s Stateless Destroy All",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/k8s/stateless",
@@ -414,7 +424,7 @@
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/eks/",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["list", "-t", "Net"]
+      "args": ["list"]
     },
     {
       "type": "node",
@@ -524,7 +534,7 @@
       "cwd": "${workspaceFolder}/examples/aws/ec2-vpc",
       "console": "integratedTerminal",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["destroy", "-a"]
+      "args": ["destroy", "-f"]
     },
     {
       "type": "node",

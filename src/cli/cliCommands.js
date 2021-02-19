@@ -763,8 +763,10 @@ exports.planDestroy = async ({
 
   const doPlansDestroy = ({ commandOptions, infra }) =>
     pipe([
-      tap((x) => {
-        logger.error(`doPlansDestroy`);
+      tap(({ plans, results }) => {
+        logger.debug(`doPlansDestroy`);
+        assert(plans);
+        assert(results);
       }),
       assign({
         resultsDestroy: (result) =>
@@ -775,6 +777,8 @@ exports.planDestroy = async ({
             }),
             command: ({ onStateChange }) =>
               pipe([
+                () => result,
+                get("results"),
                 tap(
                   map.series(({ provider, result }) =>
                     provider.spinnersStartDestroy({
@@ -788,10 +792,11 @@ exports.planDestroy = async ({
                   pipe([
                     assignStart({ onStateChange }),
                     assign({
-                      result: async ({ provider, result }) =>
+                      result: async ({ provider, result, lives }) =>
                         provider.planDestroy({
                           plans: result.plans,
                           onStateChange,
+                          lives,
                         }),
                     }),
                     tap(({ provider, result }) =>
@@ -803,7 +808,7 @@ exports.planDestroy = async ({
                   ])
                 ),
                 providersToString,
-              ])(result.results),
+              ])(),
           }),
       }),
       //TODO assign
@@ -821,15 +826,8 @@ exports.planDestroy = async ({
           result,
         })
       ),
-      tap((x) => {
-        logger.error(`doPlansDestroy`);
-      }),
       tap(
-        switchCase([
-          ({ error }) => !error,
-          displayDestroySuccess,
-          displayDestroyErrors,
-        ])
+        switchCase([get("error"), displayDestroyErrors, displayDestroySuccess])
       ),
       tap((result) => {
         logger.debug("doPlansDestroy finished");

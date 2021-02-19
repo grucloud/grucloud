@@ -1745,9 +1745,6 @@ function CoreProvider({
     const { spec } = client;
     const { type } = spec;
     const { name, id, cannotBeDeleted, managedByUs } = resource;
-    const isNameInOurPlan = find((item) => isDeepEqual(item, name))(
-      resourceNames()
-    );
 
     assert(direction);
     logger.debug(
@@ -1757,7 +1754,7 @@ function CoreProvider({
         types,
         id,
         resource,
-        isNameInOurPlan,
+        managedByUs,
       })}`
     );
     return switchCase([
@@ -1791,16 +1788,9 @@ function CoreProvider({
       () => !isEmpty(types),
       () => any((type) => isTypeMatch({ type, typeToMatch: spec.type }))(types),
       // PlanDirection
-      () => {
-        logger.debug(
-          `planFindDestroy ${type}/${name}, direction: ${direction}, ${isNameInOurPlan}`
-        );
-        if (direction == PlanDirection.UP) {
-          return false;
-        } else {
-          return isNameInOurPlan;
-        }
-      },
+      () => direction == PlanDirection.UP,
+      () => false,
+      () => true,
     ])();
   };
   const planFindDestroy = async ({
@@ -1810,7 +1800,7 @@ function CoreProvider({
     lives,
   }) =>
     pipe([
-      get("results"),
+      () => lives.results,
       tap((results) => {
         logger.info(`planFindDestroy ${tos({ options, direction })}`);
         assert(onStateChange);
@@ -1858,7 +1848,7 @@ function CoreProvider({
       tap((results) => {
         logger.debug(`planFindDestroy`);
       }),
-    ])(lives);
+    ])();
 
   const onStateChangeResource = ({ operation, onStateChange }) => {
     return ({ resource, error, ...other }) => {
@@ -1951,6 +1941,7 @@ function CoreProvider({
     meta,
     resourcesPerType = [],
     live,
+    lives,
   }) =>
     pipe([
       tap((x) => {
@@ -1965,6 +1956,7 @@ function CoreProvider({
         );
         assert(client);
         assert(live);
+        assert(lives);
         assert(name);
       }),
       () => client.findId(live),
@@ -1987,6 +1979,7 @@ function CoreProvider({
                   name,
                   meta,
                   resource,
+                  lives,
                 }),
               isExpectedResult: () => true,
               //TODO isExpectedException: client.isExpectedExceptionDelete
@@ -2005,16 +1998,19 @@ function CoreProvider({
       }),
     ])();
 
-  const destroyById = async ({ type, live, name, meta }) => {
+  const destroyById = async ({ type, live, lives, name, meta }) => {
     logger.debug(`destroyById: ${tos({ type, live })}`);
     const client = clientByType(type);
     assert(client, `Cannot find endpoint type ${type}}`);
     assert(live);
+    assert(lives);
+
     return destroyByClient({
       client,
       name,
       meta,
       live,
+      lives,
       resourcesPerType: provider.getResourcesByType(type),
     });
   };
@@ -2029,6 +2025,7 @@ function CoreProvider({
       tap(() => {
         assert(Array.isArray(plans), "plans must be an array");
         logger.info(`planDestroy ${tos({ plans, direction })}`);
+        assert(lives);
       }),
       tap(() =>
         onStateChange({
@@ -2054,6 +2051,7 @@ function CoreProvider({
           meta: item.resource.meta, //TODO remove
           type: item.resource.type,
           live: item.live,
+          lives,
         }),
       down: true,
       onStateChange: onStateChangeResource({
