@@ -43,7 +43,7 @@ exports.IAMNew = (config) => () =>
   createEndpoint({ endpointName: "IAM" })(config);
 
 exports.S3New = (config) => () =>
-  createEndpoint({ endpointName: "S3" })(config);
+  createEndpoint({ endpointName: "S3" })({ region: "us-east-1" });
 
 exports.Route53New = (config) => () =>
   createEndpoint({ endpointName: "Route53" })(config);

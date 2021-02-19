@@ -8,6 +8,7 @@ const {
   filter,
   eq,
   not,
+  and,
   tryCatch,
 } = require("rubico");
 const {
@@ -17,6 +18,7 @@ const {
   pluck,
   flatten,
   forEach,
+  find,
 } = require("rubico/x");
 
 const logger = require("../../../logger")({ prefix: "AwsEc2" });
@@ -329,6 +331,21 @@ exports.AwsEC2 = ({ spec, config }) => {
     })(otherProperties);
   };
 
+  const cannotBeDeleted = ({ resource }) =>
+    pipe([
+      () => resource,
+      get("Tags"),
+      tap((tags) => {
+        logger.info(`cannotBeDeleted  ${tos({ tags })}`);
+      }),
+      find(
+        and([
+          eq(get("Key"), "kubernetes.io/cluster/cluster"),
+          eq(get("Value"), "owned"),
+        ])
+      ),
+    ])();
+
   return {
     type: "EC2",
     spec,
@@ -342,5 +359,6 @@ exports.AwsEC2 = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    cannotBeDeleted,
   };
 };

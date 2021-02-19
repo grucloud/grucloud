@@ -46,20 +46,12 @@ const MockHooks = require("../mock/mock/hooks");
 
 const createAws = async ({ config }) => {
   const provider = AwsProvider({
-    config: { ...config.aws, stage: config.stage },
+    config: { ...AwsConfigWebSite(), ...config.aws, stage: config.stage },
   });
 
   const keyPair = await provider.useKeyPair({
     name: "kp",
   });
-
-  // Aws stack eks
-  const eks = await AwsStackEKS.createResources({
-    provider,
-    resources: {},
-  });
-
-  provider.hookAdd("eks", AwsHooksEKS({ resources: eks, provider }));
 
   // Aws stack ec2
   const ec2 = await AwsStackEC2.createResources({
@@ -99,20 +91,13 @@ const createAws = async ({ config }) => {
     AwsHooksIamUser({ provider, resources: iamUser })
   );
 
-  return provider;
-};
-
-const createAwsUsEast1 = async ({ config }) => {
-  const provider = AwsProvider({
-    name: "aws-us-east",
-    config: {
-      ...config.aws,
-      stage: config.stage,
-      ...AwsConfigWebSite(),
-      region: "us-east-1",
-      zone: "us-east-1a",
-    },
+  // Aws stack eks
+  const eks = await AwsStackEKS.createResources({
+    provider,
+    resources: {},
   });
+
+  provider.hookAdd("eks", AwsHooksEKS({ resources: eks, provider }));
 
   // Aws stack website https
   const website = await AwsStackWebSite.createResources({
@@ -207,12 +192,10 @@ const createMock = async ({ config }) => {
 exports.createStack = async ({ config }) => {
   return {
     providers: [
-      await createMock({ config }),
+      //await createMock({ config }),
       await createAws({ config }),
-      await createAwsUsEast1({ config }),
-
-      await createAzure({ config }),
-      // TODO puck back gcp when it is no longer buggy
+      //await createAwsUsEast1({ config }),
+      //await createAzure({ config }),
       //await createGoogle({ config }),
       //await createScaleway({ config }),
     ],

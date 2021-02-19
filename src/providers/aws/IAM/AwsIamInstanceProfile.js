@@ -171,42 +171,39 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteInstanceProfile-property
-  const destroy = async ({ id, name }) =>
+  const destroy = async ({ live }) =>
     pipe([
-      tap(() => {
-        logger.info(
-          `destroy iam instance profile ${JSON.stringify({ name, id })}`
-        );
-      }),
-      () => getById({ id }),
-      tap(
+      () => findId(live),
+      (InstanceProfileName) =>
         pipe([
-          get("Roles"),
-          forEach(({ RoleName }) =>
-            iam().removeRoleFromInstanceProfile({
-              InstanceProfileName: id,
-              RoleName,
+          tap(() => {
+            logger.info(`destroy iam instance profile ${InstanceProfileName}`);
+          }),
+          tap(
+            pipe([
+              () => live.Roles,
+              forEach(({ RoleName }) =>
+                iam().removeRoleFromInstanceProfile({
+                  InstanceProfileName,
+                  RoleName,
+                })
+              ),
+            ])
+          ),
+          tap(() => iam().deleteInstanceProfile({ InstanceProfileName })),
+          tap(() =>
+            retryCall({
+              name: `iam instance profile isDownById id: ${InstanceProfileName}`,
+              fn: () => isDownById({ id: InstanceProfileName }),
+              config,
             })
           ),
-        ])
-      ),
-      tap(() =>
-        iam().deleteInstanceProfile({
-          InstanceProfileName: id,
-        })
-      ),
-      tap(() =>
-        retryCall({
-          name: `iam instance profile isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id }),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.info(
-          `destroy iam instance profile done, ${JSON.stringify({ name, id })}`
-        );
-      }),
+          tap(() => {
+            logger.info(
+              `destroy iam instance profile done, ${InstanceProfileName}`
+            );
+          }),
+        ])(),
     ])();
 
   const configDefault = async ({ name, properties, dependencies }) =>

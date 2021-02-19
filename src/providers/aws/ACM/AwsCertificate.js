@@ -82,7 +82,11 @@ exports.AwsCertificate = ({ spec, config }) => {
       logger.info(`getById ${id}`);
     }),
     tryCatch(
-      ({ id }) => acm().describeCertificate({ CertificateArn: id }),
+      ({ id }) =>
+        pipe([
+          () => acm().describeCertificate({ CertificateArn: id }),
+          get("Certificate"),
+        ]),
       switchCase([
         eq(get("code"), "ResourceNotFoundException"),
         (error, { id }) => {
@@ -100,7 +104,7 @@ exports.AwsCertificate = ({ spec, config }) => {
   ]);
 
   const isInstanceUp = pipe([
-    get("Certificate.DomainValidationOptions"),
+    get("DomainValidationOptions"),
     first,
     get("ResourceRecord"),
   ]);
@@ -140,27 +144,32 @@ exports.AwsCertificate = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#deleteCertificate-property
-  const destroy = async ({ id, name }) =>
+  const destroy = async ({ live }) =>
     pipe([
-      tap(() => {
-        logger.info(`destroy ${JSON.stringify({ name, id })}`);
-        assert(!isEmpty(id), `destroy invalid id`);
-      }),
-      () =>
-        acm().deleteCertificate({
-          CertificateArn: id,
-        }),
-      tap(() =>
-        retryCall({
-          name: `certificate destroy isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id, name }),
-          config,
-        })
-      ),
-      tap(() => {
-        logger.info(`certificate destroyed ${JSON.stringify({ name, id })}`);
-      }),
-    ])();
+      () => ({ id: findId(live), name: findName(live) }),
+      ({ id, name }) =>
+        pipe([
+          tap(() => {
+            logger.info(`destroy ${JSON.stringify({ name, id })}`);
+          }),
+          () =>
+            acm().deleteCertificate({
+              CertificateArn: id,
+            }),
+          tap(() =>
+            retryCall({
+              name: `certificate destroy isDownById: ${name} id: ${id}`,
+              fn: () => isDownById({ id, name }),
+              config,
+            })
+          ),
+          tap(() => {
+            logger.info(
+              `certificate destroyed ${JSON.stringify({ name, id })}`
+            );
+          }),
+        ])(),
+    ]);
 
   const configDefault = async ({ name, properties, dependencies }) =>
     defaultsDeep({
