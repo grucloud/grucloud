@@ -46,9 +46,11 @@ describe("Multi Example", async function () {
       infra,
       commandOptions: {},
     });
-    await cliCommands.list({
+    // TODO list should be empty
+    const result = await cliCommands.list({
       infra,
-      commandOptions: {},
+      commandOptions: { our: true },
     });
+    assert(result);
   }).timeout(35 * 60e3);
 });
