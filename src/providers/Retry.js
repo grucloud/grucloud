@@ -109,6 +109,7 @@ exports.retryCallOnError = ({
   shouldRetryOnException = () => false,
   isExpectedResult = (result) => {
     assert(result.status, `no status in result`);
+    logger.debug(`${name} status: ${result.status}`);
     return [200, 201, 202, 204].includes(result.status);
   },
 }) =>
