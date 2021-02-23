@@ -2,9 +2,6 @@
 
 ## Common:
 
-- gc a : KeyPair 0/1
-  IamPolicyReadOnly 0/4
-  in grey
 - destroy: use live instead of id
 - gc d : EC2 │ web, web-iam, , web-server
   empty name !

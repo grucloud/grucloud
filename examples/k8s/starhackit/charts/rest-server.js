@@ -11,7 +11,7 @@ const buildPostgresUrl = ({
 
 exports.createChartRestServer = async ({
   provider,
-  resources: { namespace },
+  resources: { namespace, postgresService, redisService },
   config,
 }) => {
   const { restServer, postgres, redis } = config;
@@ -22,6 +22,8 @@ exports.createChartRestServer = async ({
   assert(restServer.label);
   assert(restServer.port);
 
+  assert(postgresService);
+  assert(redisService);
   assert(namespace);
 
   const configMapName = "rest-server-config-map";
@@ -130,6 +132,8 @@ exports.createChartRestServer = async ({
     dependencies: {
       namespace,
       configMap,
+      postgresService,
+      redisService,
     },
     properties: ({ dependencies: { configMap } }) =>
       deploymentRestServerContent({

@@ -29,7 +29,11 @@ exports.createStack = async ({ config }) => {
 
   const restServerChart = await createChartRestServer({
     provider,
-    resources: { namespace },
+    resources: {
+      namespace,
+      postgresService: postgresChart.service,
+      redisService: redisChart.service,
+    },
     config,
   });
 
