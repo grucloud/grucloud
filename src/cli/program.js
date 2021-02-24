@@ -49,8 +49,13 @@ exports.createProgram = ({ version, commands }) => {
       pipe([
         infraOptions,
         createInfra,
-        (infra) =>
-          commands[commandName]({ infra, commandOptions, programOptions }),
+        ({ infra, config }) =>
+          commands[commandName]({
+            infra,
+            config,
+            commandOptions,
+            programOptions,
+          }),
       ]),
       handleError
     )(programOptions);

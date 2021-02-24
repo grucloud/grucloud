@@ -2182,6 +2182,10 @@ function CoreProvider({
     )();
   const toString = () => ({ name: providerName, type: toType() });
 
+  const color = "#383838";
+  const colorLigher = "#707070";
+  const fontName = "Helvetica";
+
   const graph = ({ options }) =>
     pipe([
       tap((xxx) => {
@@ -2189,7 +2193,12 @@ function CoreProvider({
       }),
       () => getTargetResources(),
       reduce(
-        (acc, resource) => `${acc}"${resource.type}::${resource.name}";\n`,
+        (acc, resource) =>
+          `${acc}"${resource.type}::${resource.name}" [label=<
+          <table color='${color}' border="0">
+             <tr><td align="text"><FONT color='${colorLigher}' POINT-SIZE="10"><B>${resource.type}</B></FONT><br align="left" /></td></tr>
+             <tr><td align="text"><FONT color='${color}' POINT-SIZE="13">${resource.name}</FONT><br align="left" /></td></tr>
+          </table>>];\n`,
         ""
       ),
       (result) =>
@@ -2197,12 +2206,18 @@ function CoreProvider({
           (acc, resource) =>
             `${acc}${map(
               (deps) =>
-                `"${resource.type}::${resource.name}" -> "${deps.type}::${deps.name}";\n`
+                `"${resource.type}::${resource.name}" -> "${deps.type}::${deps.name}" [color="${color}"];\n`
             )(resource.getDependencyList()).join("\n")}`,
           result
         )(getTargetResources()),
       (result) =>
-        `subgraph "cluster_${providerName}" {\nlabel="${providerName}";${result}}\n`,
+        `subgraph "cluster_${providerName}" {
+fontname=${fontName}
+color="${color}"
+label=<<FONT color='${color}' POINT-SIZE="20"><B>${providerName}</B></FONT>>;
+node [shape=box fontname=${fontName} color="${color}"]
+${result}}
+`,
     ])();
 
   const provider = {

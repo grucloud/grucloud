@@ -1168,11 +1168,16 @@ exports.unInit = async ({ infra, commandOptions = {}, programOptions = {} }) =>
     DisplayAndThrow({ name: "UnInit" })
   )(infra);
 
-exports.graph = async ({ infra, commandOptions = {}, programOptions = {} }) =>
+exports.graph = async ({
+  infra,
+  config,
+  commandOptions = {},
+  programOptions = {},
+}) =>
   tryCatch(
     pipe([
       tap((xxx) => {
-        logger.debug(`graph`);
+        logger.debug(`graph`, config);
       }),
       combineProviders,
       ({ providers }) =>
@@ -1188,7 +1193,11 @@ exports.graph = async ({ infra, commandOptions = {}, programOptions = {} }) =>
       tap((result) => {
         //logger.debug(`graph done`);
       }),
-      (results) => `digraph graphname {\nrankdir=LR;\n${results.join("\n")}}`,
+      // TODO add title from config.projectName
+      (results) => `digraph graphname {
+rankdir=LR;
+${results.join("\n")}
+}`,
       tap((result) => fs.writeFileSync(commandOptions.file, result)),
       tap((result) => {
         console.log(`dot file written to: ${commandOptions.file}`);
