@@ -26,7 +26,7 @@ exports.createChartRestServer = async ({
   assert(redisService);
   assert(namespace);
 
-  const configMapName = "rest-server-config-map";
+  const configMapName = "rest-server";
 
   const configMap = await provider.makeConfigMap({
     name: configMapName,
@@ -44,25 +44,6 @@ exports.createChartRestServer = async ({
             url: `redis://${redis.serviceName}:6379`,
           },
         }),
-      },
-    }),
-  });
-
-  const service = await provider.makeService({
-    name: restServer.serviceName,
-    dependencies: { namespace },
-    properties: () => ({
-      spec: {
-        selector: {
-          app: restServer.label,
-        },
-        ports: [
-          {
-            protocol: "TCP",
-            port: restServer.port,
-            targetPort: restServer.port,
-          },
-        ],
       },
     }),
   });
@@ -143,6 +124,25 @@ exports.createChartRestServer = async ({
         version: restServer.container.version,
         port: restServer.port,
       }),
+  });
+
+  const service = await provider.makeService({
+    name: restServer.serviceName,
+    dependencies: { namespace, deployment },
+    properties: () => ({
+      spec: {
+        selector: {
+          app: restServer.label,
+        },
+        ports: [
+          {
+            protocol: "TCP",
+            port: restServer.port,
+            targetPort: restServer.port,
+          },
+        ],
+      },
+    }),
   });
 
   return {

@@ -12,28 +12,9 @@ exports.createChartWebServer = async ({
 
   assert(namespace);
 
-  const service = await provider.makeService({
-    name: ui.serviceName,
-    dependencies: { namespace },
-    properties: () => ({
-      spec: {
-        selector: {
-          app: ui.label,
-        },
-        ports: [
-          {
-            protocol: "TCP",
-            port: ui.port,
-            targetPort: ui.containerPort,
-          },
-        ],
-      },
-    }),
-  });
-
   const deploymentUiContent = ({
     label,
-    image = "ngnix",
+    image,
     version = "latest",
     containerPort = "3000",
   }) => ({
@@ -83,6 +64,26 @@ exports.createChartWebServer = async ({
         containerPort: ui.containerPort,
       }),
   });
+
+  const service = await provider.makeService({
+    name: ui.serviceName,
+    dependencies: { namespace, deployment },
+    properties: () => ({
+      spec: {
+        selector: {
+          app: ui.label,
+        },
+        ports: [
+          {
+            protocol: "TCP",
+            port: ui.port,
+            targetPort: ui.containerPort,
+          },
+        ],
+      },
+    }),
+  });
+
   return {
     service,
     deployment,

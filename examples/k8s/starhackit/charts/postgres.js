@@ -17,7 +17,7 @@ exports.createChartPostgres = async ({
 
   assert(namespace);
 
-  const configMapName = "postgres-config-map";
+  const configMapName = "postgres";
   const configMap = await provider.makeConfigMap({
     name: configMapName,
     dependencies: { namespace },
@@ -38,26 +38,6 @@ exports.createChartPostgres = async ({
         hostPath: {
           path: "/data/pv0001/",
         },
-      },
-    }),
-  });
-
-  const service = await provider.makeService({
-    name: postgres.serviceName,
-    dependencies: { namespace },
-    properties: () => ({
-      spec: {
-        selector: {
-          app: postgres.label,
-        },
-        clusterIP: "None", // Headless service
-        ports: [
-          {
-            protocol: "TCP",
-            port: postgres.port,
-            targetPort: postgres.port,
-          },
-        ],
       },
     }),
   });
@@ -159,6 +139,26 @@ exports.createChartPostgres = async ({
         label: postgres.label,
         pvName: pv.name,
       }),
+  });
+
+  const service = await provider.makeService({
+    name: postgres.serviceName,
+    dependencies: { namespace, statefulSet },
+    properties: () => ({
+      spec: {
+        selector: {
+          app: postgres.label,
+        },
+        clusterIP: "None", // Headless service
+        ports: [
+          {
+            protocol: "TCP",
+            port: postgres.port,
+            targetPort: postgres.port,
+          },
+        ],
+      },
+    }),
   });
 
   return {
