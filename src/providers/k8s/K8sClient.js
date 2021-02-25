@@ -128,7 +128,7 @@ module.exports = K8sClient = ({
     ]),
     (error) => {
       logError(`getList ${type}`, error);
-      throw axiosErrorToJSON(error);
+      return { type, error: axiosErrorToJSON(error) };
     }
   );
 

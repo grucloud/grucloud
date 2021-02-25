@@ -164,6 +164,8 @@ const findNameInTags = (item) =>
       assert(item);
       assert(Array.isArray(item.Tags), `no Tags array in ${tos(item)}`);
     }),
+    () => item,
+    get("Tags"),
     find(eq(get("Key"), KeyName)),
     get("Value"),
     switchCase([
@@ -178,7 +180,8 @@ const findNameInTags = (item) =>
         return Value;
       },
     ]),
-  ])(item?.Tags);
+  ])();
+
 exports.findNameInTags = findNameInTags;
 
 exports.findNameInTagsOrId = ({ item, findId }) =>
