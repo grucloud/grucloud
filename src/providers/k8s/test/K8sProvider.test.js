@@ -3,7 +3,7 @@ const { ConfigLoader } = require("ConfigLoader");
 const { K8sProvider } = require("../K8sProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
-describe.skip("K8sProvider", async function () {
+describe.only("K8sProvider", async function () {
   let config;
   let provider;
   let namespace;
@@ -21,22 +21,22 @@ describe.skip("K8sProvider", async function () {
   const storageClassName = "my-storage-class";
   const pvc = { name: "pvc-db" };
   const pv = { name: "pv-db" };
-
+  const serviceAccountName = "sa-test";
   const postgres = {
     statefulSetName: "postgres-statefulset",
     label: "db",
   };
 
   const types = [
-    "Deployment",
-    "StorageClass",
     "ConfigMap",
+    "Deployment",
+    "Ingress",
     "PersistentVolume",
     "PersistentVolumeClaim",
-    "StorageClass",
-    "Service",
-    "Ingress",
+    "ServiceAccount",
     "StatefulSet",
+    "Service",
+    "StorageClass",
   ];
 
   before(async function () {
@@ -53,6 +53,12 @@ describe.skip("K8sProvider", async function () {
 
     namespace = await provider.makeNamespace({
       name: myNamespace,
+    });
+
+    serviceAccount = await provider.makeServiceAccount({
+      name: serviceAccountName,
+      dependencies: { namespace },
+      properties: () => ({}),
     });
 
     configMap = await provider.makeConfigMap({

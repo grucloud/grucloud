@@ -11,6 +11,8 @@ exports.createStack = async ({ config }) => {
 
   assert(config.namespaceName);
 
+  const serviceAccountName = "service-account-aws";
+
   const namespace = await provider.makeNamespace({
     name: config.namespaceName,
   });
@@ -61,11 +63,18 @@ exports.createStack = async ({ config }) => {
     }),
   });
 
+  const serviceAccount = await provider.makeServiceAccount({
+    name: serviceAccountName,
+    dependencies: { namespace },
+    properties: () => ({}),
+  });
+
   return {
     provider,
     resources: {
       ingress,
       namespace,
+      serviceAccount,
       storageClass,
     },
   };

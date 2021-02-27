@@ -39,7 +39,6 @@
 
 ## Kubernetes
 
-- ServiceAccount
 - Secret
 
 - minikube addons enable ingress
@@ -55,7 +54,6 @@
 
 ## TODO Aws:
 
-- IamRole display correctly AssumeRolePolicyDocument
 - https://docs.aws.amazon.com/eks/latest/userguide/load-balancing.html
 
 - https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/

@@ -26,11 +26,17 @@ const { K8sDeployment } = require("./K8sDeployment");
 const { K8sConfigMap } = require("./K8sConfigMap");
 const { K8sIngress } = require("./K8sIngress");
 const { K8sStatefulSet } = require("./K8sStatefulSet");
+const { K8sServiceAccount } = require("./K8sServiceAccount");
 
 const fnSpecs = () => [
   {
     type: "Namespace",
     Client: K8sNamespace,
+    isOurMinion,
+  },
+  {
+    type: "ServiceAccount",
+    Client: K8sServiceAccount,
     isOurMinion,
   },
   {
