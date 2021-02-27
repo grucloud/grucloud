@@ -285,9 +285,7 @@ const ResourceMaker = ({
                 (live) => dependenciesMustBeUp && !live,
                 () => {
                   throw {
-                    message: `${toString()} dependency ${
-                      dependency.name
-                    } is not up`,
+                    message: `${toString()} dependency ${dependency.toString()} is not up`,
                   };
                 }
               ),
