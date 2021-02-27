@@ -12,7 +12,7 @@ const {
 } = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck, find } = require("rubico/x");
 const moment = require("moment");
-
+const querystring = require("querystring");
 const logger = require("../../../logger")({ prefix: "IamRole" });
 const { retryCall } = require("../../Retry");
 const { tos } = require("../../../tos");
@@ -56,6 +56,11 @@ exports.AwsIamRole = ({ spec, config }) => {
         mapPoolSize,
         tryCatch(
           assign({
+            AssumeRolePolicyDocument: pipe([
+              ({ AssumeRolePolicyDocument }) =>
+                querystring.unescape(AssumeRolePolicyDocument),
+              JSON.parse,
+            ]),
             Policies: pipe([
               ({ RoleName }) =>
                 iam().listRolePolicies({
@@ -104,7 +109,7 @@ exports.AwsIamRole = ({ spec, config }) => {
           }),
           (error, role) =>
             pipe([
-              tap((role) => {
+              tap(() => {
                 logger.error(
                   `getList role error: ${tos({
                     error,
