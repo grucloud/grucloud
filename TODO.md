@@ -39,6 +39,9 @@
 
 ## Kubernetes
 
+- ServiceAccount
+- Secret
+
 - minikube addons enable ingress
 
 - kubectl cluster-info
@@ -51,6 +54,12 @@
 - doc
 
 ## TODO Aws:
+
+- IamRole display correctly AssumeRolePolicyDocument
+- https://docs.aws.amazon.com/eks/latest/userguide/load-balancing.html
+
+- https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/
+- aws load balancer ingress https://github.com/stacksimplify/aws-eks-kubernetes-masterclass/blob/f46e2b15533a96b7641662656cf5deebb63d5dae/11-DevOps-with-AWS-Developer-Tools/Application-Manifests/kube-manifests/03-DEVOPS-Nginx-ALB-IngressService.yml
 
 - CloudFrontDistribution 0/1 The specified SSL certificate doesn't exist, isn't in us-east-1 region, isn't valid, or doesn't include a valid certificate chain
 

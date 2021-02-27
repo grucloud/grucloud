@@ -46,7 +46,7 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.830.0",
+    "aws-sdk": "^2.852.0",
     "axios": "^0.21.1",
     "axios-mock-adapter": "^1.19.0",
     "bluebird": "^3.7.2",
