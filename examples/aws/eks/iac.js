@@ -264,16 +264,50 @@ const createResources = async ({ provider, resources: {} }) => {
   });
 
   const iamLoadBalancerPolicy = await provider.makeIamPolicy({
-    name: "AWSLoadBalancerControllerIAMPolicyy",
+    name: "AWSLoadBalancerControllerIAMPolicy",
     properties: () => ({
       PolicyDocument: loadBalancerPolicy,
       Description: "Load Balancer Policy",
     }),
   });
 
+  const roleLoadBalancer = await provider.makeIamRole({
+    name: "role-load-balancer",
+    dependencies: {
+      iamOpenIdConnectProvider,
+      policies: [iamLoadBalancerPolicy],
+    },
+    properties: ({ dependencies: { iamOpenIdConnectProvider } }) => ({
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Federated: get(
+                "live.Arn",
+                "iamOpenIdConnectProvider.Arn not yet known"
+              )(iamOpenIdConnectProvider),
+            },
+            Action: "sts:AssumeRoleWithWebIdentity",
+            Condition: {
+              StringEquals: {
+                [`${get(
+                  "live.Url",
+                  "iamOpenIdConnectProvider.Url not yet known"
+                )(iamOpenIdConnectProvider)}:aud`]: "sts.amazonaws.com",
+              },
+            },
+          },
+        ],
+      },
+    }),
+  });
+
   return {
     roleCluster,
     roleNodeGroup,
+    roleLoadBalancer,
     vpc,
     ig,
     subnetPrivate,
