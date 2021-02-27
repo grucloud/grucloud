@@ -1,6 +1,7 @@
 const { AwsProvider } = require("@grucloud/core");
 const { get } = require("rubico");
 const loadBalancerPolicy = require("./load-balancer-policy.json");
+const podPolicy = require("./pod-policy.json");
 
 const createResources = async ({ provider, resources: {} }) => {
   const clusterName = "cluster";
@@ -263,6 +264,33 @@ const createResources = async ({ provider, resources: {} }) => {
     }),
   });
 
+  const iamPodPolicy = await provider.makeIamPolicy({
+    name: "PodPolicy",
+    properties: () => ({
+      PolicyDocument: podPolicy,
+      Description: "Pod Policy",
+    }),
+  });
+
+  const rolePod = await provider.makeIamRole({
+    name: "role-pod",
+    dependencies: { policies: [iamPodPolicy] },
+    properties: () => ({
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "ec2.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+  });
+
   const iamLoadBalancerPolicy = await provider.makeIamPolicy({
     name: "AWSLoadBalancerControllerIAMPolicy",
     properties: () => ({
@@ -308,6 +336,7 @@ const createResources = async ({ provider, resources: {} }) => {
     roleCluster,
     roleNodeGroup,
     roleLoadBalancer,
+    rolePod,
     vpc,
     ig,
     subnetPrivate,

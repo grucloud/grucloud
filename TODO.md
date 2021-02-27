@@ -54,6 +54,7 @@
 
 ## TODO Aws:
 
+- https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
 - https://docs.aws.amazon.com/eks/latest/userguide/load-balancing.html
 
 - https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/
