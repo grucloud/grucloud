@@ -27,6 +27,7 @@ const { K8sConfigMap } = require("./K8sConfigMap");
 const { K8sIngress } = require("./K8sIngress");
 const { K8sStatefulSet } = require("./K8sStatefulSet");
 const { K8sServiceAccount } = require("./K8sServiceAccount");
+const { K8sSecret } = require("./K8sSecret");
 
 const fnSpecs = () => [
   {
@@ -37,6 +38,11 @@ const fnSpecs = () => [
   {
     type: "ServiceAccount",
     Client: K8sServiceAccount,
+    isOurMinion,
+  },
+  {
+    type: "Secret",
+    Client: K8sSecret,
     isOurMinion,
   },
   {

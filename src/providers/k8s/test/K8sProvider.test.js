@@ -8,20 +8,20 @@ describe.only("K8sProvider", async function () {
   let provider;
   let namespace;
   let deployment;
-  let statefulSetPostgres;
   let configMap;
   let storageClass;
   let persistentVolume;
-  let persistentVolumeClaim;
   let serviceWeb;
+  let serviceAccount;
+  let secret;
   const myNamespace = "test";
   const serviceWebName = "web-service";
   const deploymentWebName = "web-deployment";
   const labelApp = "web";
   const storageClassName = "my-storage-class";
-  const pvc = { name: "pvc-db" };
   const pv = { name: "pv-db" };
   const serviceAccountName = "sa-test";
+  const secretName = "pg-secret";
   const postgres = {
     statefulSetName: "postgres-statefulset",
     label: "db",
@@ -33,9 +33,10 @@ describe.only("K8sProvider", async function () {
     "Ingress",
     "PersistentVolume",
     "PersistentVolumeClaim",
+    "Secret",
+    "Service",
     "ServiceAccount",
     "StatefulSet",
-    "Service",
     "StorageClass",
   ];
 
@@ -53,6 +54,12 @@ describe.only("K8sProvider", async function () {
 
     namespace = await provider.makeNamespace({
       name: myNamespace,
+    });
+
+    secret = await provider.makeServiceAccount({
+      name: secretName,
+      dependencies: { namespace },
+      properties: () => ({}),
     });
 
     serviceAccount = await provider.makeServiceAccount({
