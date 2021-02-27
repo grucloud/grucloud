@@ -10,6 +10,7 @@ const {
   not,
   and,
   tryCatch,
+  switchCase,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -44,7 +45,32 @@ exports.AwsEC2 = ({ spec, config }) => {
 
   const ec2 = Ec2New(config);
 
-  const findName = findNameInTags;
+  const findValue = ({ key }) =>
+    pipe([find(eq(get("Key"), key)), get("Value")]);
+
+  const findEksName = pipe([
+    get("Tags"),
+    (Tags) =>
+      pipe([
+        findValue({ key: "eks:cluster-name" }),
+        switchCase([
+          isEmpty,
+          () => undefined,
+          (clusterName) =>
+            `${clusterName}::${findValue({
+              key: "eks:nodegroup-name",
+            })(Tags)}::${findValue({
+              key: "aws:ec2:fleet-id",
+            })(Tags)}`,
+        ]),
+      ])(Tags),
+  ]);
+
+  const findName = (item) =>
+    pipe([
+      findNameInTags,
+      switchCase([isEmpty, () => findEksName(item), (name) => name]),
+    ])(item);
 
   const findId = get("InstanceId");
 

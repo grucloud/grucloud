@@ -52,7 +52,11 @@ const requireConfig = ({ fileName, stage }) => {
   return config;
 };
 
-exports.createInfra = ({ infraFileName, configFileName, stage = "dev" }) => {
+exports.createInfra = async ({
+  infraFileName,
+  configFileName,
+  stage = "dev",
+}) => {
   const infraFileNameFull = resolveFilename({
     fileName: infraFileName,
     defaultName: "iac.js",
@@ -61,9 +65,13 @@ exports.createInfra = ({ infraFileName, configFileName, stage = "dev" }) => {
   checkFileExist({ fileName: infraFileNameFull });
 
   const config = requireConfig({ fileName: configFileName, stage });
-  return creatInfraFromFile({
-    infraFileName: infraFileNameFull,
+  return {
     config,
     stage,
-  });
+    infra: await creatInfraFromFile({
+      infraFileName: infraFileNameFull,
+      config,
+      stage,
+    }),
+  };
 };

@@ -2,26 +2,26 @@ const pkg = require("../package.json");
 
 module.exports = () => ({
   projectName: pkg.name,
-  namespaceName: "stateless",
+  namespaceName: "default",
   ui: {
-    container: { image: "fredericheem/ui", version: "v10.12.0" },
-    serviceName: "web-service",
-    deploymentName: "web-deployment",
+    container: { image: "fredericheem/ui", version: "v10.14.0" },
+    serviceName: "web",
+    deploymentName: "web",
     label: "ui",
     port: 80,
     containerPort: 3000,
   },
   restServer: {
-    container: { image: "fredericheem/api", version: "v10.11.0" },
-    serviceName: "rest-service",
-    deploymentName: "rest-deployment",
+    container: { image: "fredericheem/api", version: "v10.14.0" },
+    serviceName: "rest",
+    deploymentName: "rest",
     label: "rest",
     port: 9000,
   },
   pv: { name: "pv-db" },
   postgres: {
-    statefulSetName: "postgres-statefulset",
-    serviceName: "postgres-service",
+    statefulSetName: "postgres",
+    serviceName: "postgres",
     label: "db",
     port: 5432,
     env: {
@@ -32,8 +32,8 @@ module.exports = () => ({
   },
   redis: {
     container: { image: "redis", version: "latest" },
-    serviceName: "redis-service",
-    statefulSetName: "redis-deployment",
+    serviceName: "redis",
+    statefulSetName: "redis",
     label: "redis",
     port: 6379,
   },

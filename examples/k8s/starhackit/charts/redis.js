@@ -12,26 +12,6 @@ exports.createChartRedis = async ({
 
   assert(namespace);
 
-  const service = await provider.makeService({
-    name: redis.serviceName,
-    dependencies: { namespace },
-    properties: () => ({
-      spec: {
-        selector: {
-          app: redis.label,
-        },
-        clusterIP: "None", // Headless service
-        ports: [
-          {
-            protocol: "TCP",
-            port: redis.port,
-            targetPort: redis.port,
-          },
-        ],
-      },
-    }),
-  });
-
   const statefulRedisContent = ({ label, image, version, port }) => ({
     metadata: {
       labels: {
@@ -81,6 +61,27 @@ exports.createChartRedis = async ({
         port: redis.port,
       }),
   });
+
+  const service = await provider.makeService({
+    name: redis.serviceName,
+    dependencies: { namespace, statefulSet },
+    properties: () => ({
+      spec: {
+        selector: {
+          app: redis.label,
+        },
+        clusterIP: "None", // Headless service
+        ports: [
+          {
+            protocol: "TCP",
+            port: redis.port,
+            targetPort: redis.port,
+          },
+        ],
+      },
+    }),
+  });
+
   return {
     service,
     statefulSet,

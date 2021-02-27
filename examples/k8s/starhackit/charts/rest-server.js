@@ -11,7 +11,7 @@ const buildPostgresUrl = ({
 
 exports.createChartRestServer = async ({
   provider,
-  resources: { namespace },
+  resources: { namespace, postgresService, redisService },
   config,
 }) => {
   const { restServer, postgres, redis } = config;
@@ -22,9 +22,11 @@ exports.createChartRestServer = async ({
   assert(restServer.label);
   assert(restServer.port);
 
+  assert(postgresService);
+  assert(redisService);
   assert(namespace);
 
-  const configMapName = "rest-server-config-map";
+  const configMapName = "rest-server";
 
   const configMap = await provider.makeConfigMap({
     name: configMapName,
@@ -42,25 +44,6 @@ exports.createChartRestServer = async ({
             url: `redis://${redis.serviceName}:6379`,
           },
         }),
-      },
-    }),
-  });
-
-  const service = await provider.makeService({
-    name: restServer.serviceName,
-    dependencies: { namespace },
-    properties: () => ({
-      spec: {
-        selector: {
-          app: restServer.label,
-        },
-        ports: [
-          {
-            protocol: "TCP",
-            port: restServer.port,
-            targetPort: restServer.port,
-          },
-        ],
       },
     }),
   });
@@ -130,6 +113,8 @@ exports.createChartRestServer = async ({
     dependencies: {
       namespace,
       configMap,
+      postgresService,
+      redisService,
     },
     properties: ({ dependencies: { configMap } }) =>
       deploymentRestServerContent({
@@ -139,6 +124,25 @@ exports.createChartRestServer = async ({
         version: restServer.container.version,
         port: restServer.port,
       }),
+  });
+
+  const service = await provider.makeService({
+    name: restServer.serviceName,
+    dependencies: { namespace, deployment },
+    properties: () => ({
+      spec: {
+        selector: {
+          app: restServer.label,
+        },
+        ports: [
+          {
+            protocol: "TCP",
+            port: restServer.port,
+            targetPort: restServer.port,
+          },
+        ],
+      },
+    }),
   });
 
   return {

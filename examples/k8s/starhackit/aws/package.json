@@ -1,7 +1,7 @@
 {
-  "name": "grucloud-k8s-stateless",
+  "name": "grucloud-k8s-aws-starhackit",
   "version": "1.0.0",
-  "description": "kubernetes for stateless app",
+  "description": "deploying starhackit on AWS EKS",
   "main": "index.js",
   "scripts": {
     "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",

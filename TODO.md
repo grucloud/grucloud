@@ -2,9 +2,7 @@
 
 ## Common:
 
-- gc a : KeyPair 0/1
-  IamPolicyReadOnly 0/4
-  in grey
+- add projectName and use it as the title of the graph
 - destroy: use live instead of id
 - gc d : EC2 │ web, web-iam, , web-server
   empty name !
@@ -31,6 +29,7 @@
 - https://www.youtube.com/user/binarythistle
 - https://www.youtube.com/c/HoussemDellai/about
 - https://www.youtube.com/channel/UCs6i6bHcsnu-lXwNL1th35A/about
+- https://www.youtube.com/channel/UC33pBiUW51-InqrLd0BmhMQ/about
 
 - licences github
 - https://alternativeto.net/Manage/AddItem.aspx
@@ -43,8 +42,6 @@
 - minikube addons enable ingress
 
 - kubectl cluster-info
-
-- gc d: PersistentVolume 0/1 Request failed with status code 404
 
 ## Azure
 

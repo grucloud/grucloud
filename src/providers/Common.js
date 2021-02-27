@@ -1,6 +1,16 @@
 const assert = require("assert");
 const md5File = require("md5-file");
-const { pipe, tap, omit, get, map, switchCase, and, eq } = require("rubico");
+const {
+  pipe,
+  tap,
+  omit,
+  get,
+  map,
+  switchCase,
+  and,
+  eq,
+  pick,
+} = require("rubico");
 const {
   find,
   isEmpty,
@@ -54,7 +64,7 @@ exports.axiosErrorToJSON = (error) => ({
   isAxiosError: error.isAxiosError,
   message: error.message,
   name: error.name,
-  config: error.config,
+  config: pick(["url", "method", "baseURL"])(error.config),
   code: error.code,
   stack: error.stack,
   response: {
@@ -241,6 +251,8 @@ const errorToString = (error) => {
 
 exports.logError = (prefix, error) => {
   logger.error(`${prefix} error:${errorToString(error)}`);
+  error.stack && logger.error(error.stack);
+
   if (error.response) {
     if (error.response.data) {
       logger.error(`data: ${tos(error.response.data)}`);
