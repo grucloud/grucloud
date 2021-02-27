@@ -1,7 +1,10 @@
 const { AwsProvider } = require("@grucloud/core");
+const { get } = require("rubico");
+const loadBalancerPolicy = require("./load-balancer-policy.json");
 
 const createResources = async ({ provider, resources: {} }) => {
   const clusterName = "cluster";
+  const iamOpenIdConnectProviderName = "oicp-eks";
 
   const iamPolicyEKSCluster = await provider.useIamPolicyReadOnly({
     name: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
@@ -248,6 +251,26 @@ const createResources = async ({ provider, resources: {} }) => {
     },
   });
 
+  const iamOpenIdConnectProvider = await provider.makeIamOpenIDConnectProvider({
+    name: iamOpenIdConnectProviderName,
+    dependencies: { cluster },
+    properties: ({ dependencies: { cluster } }) => ({
+      Url: get(
+        "live.identity.oidc.issuer",
+        "oidc.issuer not available yet"
+      )(cluster),
+      ClientIDList: ["sts.amazonaws.com"],
+    }),
+  });
+
+  const iamLoadBalancerPolicy = await provider.makeIamPolicy({
+    name: "AWSLoadBalancerControllerIAMPolicyy",
+    properties: () => ({
+      PolicyDocument: loadBalancerPolicy,
+      Description: "Load Balancer Policy",
+    }),
+  });
+
   return {
     roleCluster,
     roleNodeGroup,
@@ -261,6 +284,7 @@ const createResources = async ({ provider, resources: {} }) => {
     securityGroupCluster,
     cluster,
     nodeGroup,
+    iamOpenIdConnectProvider,
   };
 };
 

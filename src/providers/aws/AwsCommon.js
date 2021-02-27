@@ -162,7 +162,6 @@ const findNameInTags = (item) =>
   pipe([
     tap(() => {
       assert(item);
-      assert(Array.isArray(item.Tags), `no Tags array in ${tos(item)}`);
     }),
     () => item,
     get("Tags"),

@@ -60,6 +60,7 @@ describe("AwsIamRole", async function () {
 
     const iamRoleLive = await iamRole.getLive();
     assert(iamRoleLive);
+    assert(iamRoleLive.AssumeRolePolicyDocument.Version);
     await testPlanDestroy({ provider, types });
   });
 });
