@@ -9,9 +9,5 @@ exports.createStack = async ({ config }) => {
     resources: eksStack.resources,
   });
 
-  return {
-    sequencial: true,
-    providers: [eksStack.provider, k8sStack.provider],
-    resources: {},
-  };
+  return [eksStack, k8sStack];
 };
