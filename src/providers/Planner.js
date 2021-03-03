@@ -378,11 +378,9 @@ exports.Planner = ({
       return { error: false, results: [], plans: [] };
     }
 
-    const resourcesUri = plans.map((plan) => plan.resource.uri);
-    logger.debug(`Planner resourcesUri ${resourcesUri}`);
-
-    const isDependsOnInPlan = (dependsOn = []) =>
-      dependsOn.find((dependOn) => resourcesUri.includes(dependOn.uri));
+    const isDependsOnInPlan = find((dependOn) =>
+      find(eq(get("resource.uri"), dependOn.uri))(plans)
+    );
 
     await pipe([
       () => statusValues(),
