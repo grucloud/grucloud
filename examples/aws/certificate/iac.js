@@ -1,6 +1,6 @@
 const assert = require("assert");
-
 const { AwsProvider } = require("@grucloud/core");
+const hooks = require("./hooks");
 
 const makeDomainName = ({ DomainName, stage }) =>
   `${stage == "production" ? "" : `${stage}.`}${DomainName}`;
@@ -33,7 +33,6 @@ const createResources = async ({ provider }) => {
   const hostedZone = await provider.makeHostedZone({
     name: `${domainName}.`,
     dependencies: { domain },
-    properties: ({}) => ({}),
   });
 
   const recordValidation = await provider.makeRoute53Record({
@@ -71,19 +70,17 @@ exports.createResources = createResources;
 
 exports.createStack = async ({ name = "aws", config }) => {
   const provider = AwsProvider({
-    name: "aws-us-east",
-    config: { ...config, region: "us-east-1" },
+    name,
+    config,
   });
 
   const resources = await createResources({
     provider,
-    config,
   });
-
-  provider.register({ resources });
 
   return {
     provider,
     resources,
+    hooks,
   };
 };
