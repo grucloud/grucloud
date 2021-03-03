@@ -72,19 +72,6 @@ exports.axiosErrorToJSON = (error) => ({
     data: error.response?.data,
   },
 });
-exports.combineProviders = (infra) =>
-  pipe([
-    () => (infra.provider ? [infra.provider] : []),
-    (providers) =>
-      infra.providers ? [...providers, ...infra.providers] : providers,
-    tap((providers) => {
-      if (isEmpty(providers)) {
-        throw { code: 400, message: `no providers provided` };
-      }
-    }),
-    (providers) => ({ ...infra, providers }),
-    omit(["provider"]),
-  ])();
 
 const safeJsonParse = (json) => {
   try {

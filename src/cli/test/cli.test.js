@@ -208,7 +208,7 @@ describe("cli error", function () {
             422,
             `invalid code error code for command ${command}`
           );
-          assert(error.error.message, `no message in command: ${command}`);
+          assert(error.message, `no message in command: ${command}`);
         },
       })
     )(commandsAll);
@@ -220,8 +220,7 @@ describe("cli error", function () {
       configFile: configFile404,
       onExit: ({ code, error: { error } }) => {
         assert.equal(code, 422);
-        assert(error.results[0].resultQuery.error);
-        assert.equal(error.results[0].provider.type, "mock");
+        assert(error.resultQuery.error);
       },
     });
     assert.deepEqual(result, 422);
@@ -232,7 +231,7 @@ describe("cli error", function () {
       configFile: configFileNetworkError,
       onExit: ({ code, error: { error } }) => {
         assert.equal(code, 422);
-        const { resultQuery } = error.results[0];
+        const { resultQuery } = error;
         assert(resultQuery.error);
         assert(
           resultQuery.resultCreate,
@@ -264,7 +263,7 @@ describe("cli error", function () {
       configFile: configFileTimeout,
       onExit: ({ code, error: { error } }) => {
         assert.equal(code, 422);
-        const { resultQuery } = error.results[0];
+        const { resultQuery } = error;
         assert(resultQuery.error);
         assert.equal(resultQuery.lives.results[0].error.code, "ECONNABORTED");
       },
@@ -278,8 +277,7 @@ describe("cli error", function () {
       configFile: configFile404,
       onExit: ({ code, error: { error } }) => {
         assert.equal(code, 422);
-        assert(error.results[0].resultQuery.error);
-        assert.equal(error.results[0].provider.type, "mock");
+        assert(error.resultQuery.error);
       },
     });
     assert.deepEqual(result, 422);
@@ -290,7 +288,7 @@ describe("cli error", function () {
       configFile: configFileNetworkError,
       onExit: ({ code, error: { error } }) => {
         assert.equal(code, 422);
-        const { resultQuery } = error.results[0];
+        const { resultQuery } = error;
         assert(resultQuery.error);
         assert.equal(
           resultQuery.lives.results[0].error.message,
@@ -306,7 +304,7 @@ describe("cli error", function () {
       configFile: configFileTimeout,
       onExit: ({ code, error: { error } }) => {
         assert.equal(code, 422);
-        const { resultQuery } = error.results[0];
+        const { resultQuery } = error;
         assert(resultQuery.error);
         assert.equal(resultQuery.lives.results[0].error.code, "ECONNABORTED");
       },
@@ -319,7 +317,7 @@ describe("cli error", function () {
       configFile: configFile500,
       onExit: ({ code, error: { error } }) => {
         assert.equal(code, 422);
-        const { result } = error.results[0];
+        const { result } = error;
         assert(result.error);
         assert.equal(result.resultCreate.results[0].error.Status, 500);
       },
@@ -344,7 +342,6 @@ describe("cli error", function () {
         configFile: configFile404,
         onExit: ({ code, error: { error } }) => {
           assert.equal(code, 422);
-          assert.equal(error.results[0].provider.type, "mock");
         },
       })
     )(commandsReadOnly);
@@ -357,11 +354,9 @@ describe("cli error", function () {
         configFile: configFile500,
         onExit: ({ code, error }) => {
           assert.equal(code, 422);
-          assert.equal(error.error.results[0].provider.type, "mock");
-          assert(error.error.results[0].result.plans);
-          assert.equal(error.error.resultsDestroy[0].provider.type, "mock");
-          error.error.resultsDestroy.forEach(({ result }) =>
-            assert(result.error)
+          assert(error.error.result.plans);
+          error.error.resultDestroy.resultsDestroy.result.results.forEach(
+            (error) => assert(error)
           );
         },
       })
@@ -375,7 +370,7 @@ describe("cli error", function () {
         configFile: configFileNetworkError,
         onExit: ({ code, error }) => {
           assert.equal(code, 422, `command ${command}`);
-          assert(error.error.results[0], `command ${command}`);
+          assert(error.error, `command ${command}`);
         },
       })
     )([...commandsReadOnly, ...commandsWrite]);
@@ -422,7 +417,7 @@ describe("cli error", function () {
         configFile: configFileTimeout,
         onExit: ({ code, error }) => {
           assert.equal(code, 422);
-          assert(error.error.results[0]);
+          assert(error.error);
 
           /*assert.equal(
             error.results[0].result.results[0].error.Code,
@@ -449,11 +444,11 @@ describe("cli error", function () {
       configFile: configFileGetId500,
       onExit: ({ code, error: { error } }) => {
         assert.equal(code, 422);
-        const { result } = error.results[0];
+        const { result } = error;
         assert(result.error);
-        assert(result.resultCreate.results[0]);
+        assert(result.resultCreate);
         assert(
-          result.resultCreate.results[0].error,
+          result.resultCreate.error,
           `result.resultCreate.results: ${tos(result.resultCreate.results)}`
         );
         assert.equal(result.resultCreate.results[0].error.Status, 500);

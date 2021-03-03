@@ -54,6 +54,8 @@
 
 ## TODO Aws:
 
+- gc d -a : resource sg-08c62cd971a2e1d43 has a dependent object
+  sg depends on sg so hard to find out the dependencies, add a retry on DependencyViolation as a kludge
 - https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
 - https://docs.aws.amazon.com/eks/latest/userguide/load-balancing.html
 

@@ -1,7 +1,35 @@
 const Spinnies = require("spinnies");
 const assert = require("assert");
+const plu = require("pluralize");
+
+const {
+  map,
+  pipe,
+  switchCase,
+  reduce,
+  tap,
+  assign,
+  all,
+  filter,
+  not,
+  any,
+  or,
+  tryCatch,
+  get,
+  omit,
+} = require("rubico");
+const {
+  pluck,
+  isEmpty,
+  flatten,
+  forEach,
+  uniq,
+  size,
+  first,
+} = require("rubico/x");
 const logger = require("../logger")({ prefix: "CliUtils" });
 const { tos } = require("../tos");
+const { ProviderGru } = require("../providers/ProviderGru");
 
 const frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 
@@ -176,3 +204,85 @@ exports.runAsyncCommand = async ({ text, command }) => {
     throw error;
   }
 };
+
+const displayProviderList = pipe([
+  tap((xx) => {
+    logger.debug("displayProviderList");
+  }),
+  pluck("name"),
+  tap((list) => {
+    assert(list[0]);
+  }),
+  (list) => list.join(","),
+]);
+exports.displayProviderList = displayProviderList;
+
+const filterProvidersByName = ({
+  commandOptions: { provider: providerOptions = [] },
+  providers,
+}) =>
+  pipe([
+    tap((xx) => {
+      logger.debug(`filterProvidersByName ${providerOptions}`);
+      assert(providers && !isEmpty(providers), "no providers");
+      assert(providers[0].name, "not an array of providers");
+    }),
+    filter(
+      or([
+        () => isEmpty(providerOptions),
+        (provider) =>
+          any((providerName) =>
+            new RegExp(`${providerName}`, "i").test(provider.name)
+          )(providerOptions),
+      ])
+    ),
+    tap(
+      switchCase([
+        isEmpty,
+        () => {
+          const message = `No provider matches: '${providerOptions}', ${plu(
+            "provider",
+            providers.length,
+            true
+          )} available: ${displayProviderList(providers)}`;
+          throw { message, code: 422 };
+        },
+        tap((xx) => {
+          logger.debug(`filterProvidersByName ${xx.length}`);
+        }),
+      ])
+    ),
+  ]);
+
+const combineProviders = (infra) =>
+  pipe([
+    () => (infra.provider ? [infra.provider] : []),
+    (providers) =>
+      infra.providers ? [...providers, ...infra.providers] : providers,
+    tap((providers) => {
+      if (isEmpty(providers)) {
+        throw { code: 400, message: `no providers provided` };
+      }
+    }),
+    (providers) => ({ ...infra, providers }),
+    omit(["provider"]),
+  ])();
+
+exports.setupProviders = ({ commandOptions = {} } = {}) =>
+  pipe([
+    tap((input) => {
+      logger.debug("setupProviders");
+    }),
+    combineProviders,
+    assign({
+      providers: ({ providers }) =>
+        filterProvidersByName({ commandOptions, providers })(providers),
+    }),
+    assign({
+      providersGru: ({ providers, resources }) =>
+        ProviderGru({ commandOptions, providers, resources }),
+    }),
+    tap((xx) => {
+      logger.debug("setupProviders");
+    }),
+  ]);

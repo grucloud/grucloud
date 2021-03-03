@@ -16,7 +16,7 @@ const {
 } = require("rubico");
 
 const { isEmpty, isFunction, forEach, includes } = require("rubico/x");
-const { logError, convertError } = require("./Common");
+const { logError } = require("./Common");
 
 const STATES = {
   WAITING: "WAITING",
@@ -35,12 +35,14 @@ exports.Lister = ({ inputs, onStateChange }) => {
 
   const statusValues = () => [...statusMap.values()];
 
-  const runItem = async ({ entry: { type, executor }, onEnd }) =>
+  const runItem = async ({ entry: { type, providerName, executor }, onEnd }) =>
     pipe([
       tap(() => {
         assert(onEnd);
         assert(type);
         assert(executor);
+        assert(providerName);
+
         logger.debug(`runItem begin ${type}`);
       }),
       tryCatch(
@@ -70,11 +72,12 @@ exports.Lister = ({ inputs, onStateChange }) => {
             nextState: STATES.ERROR,
             error,
           });
-          return { type, error };
+          return { type, providerName, error };
         }
       ),
       tap((result) => {
         logger.debug(`runItem set result ${type}: ${tos(result)}`);
+        //TODO providerName + type as key
         resultMap.set(type, result);
       }),
       () => onEnd({ type }),
@@ -155,10 +158,7 @@ exports.Lister = ({ inputs, onStateChange }) => {
     }),
     forEach((entry) => runItem({ entry, onEnd })),
     () => [...resultMap.values()],
-    (results) => ({
-      results,
-      error: any(get("error"))(results),
-    }),
+    (results) => ({ error: any(get("error"))(results), results }),
     tap(({ error, results }) => {
       logger.debug(`Lister ${error && "error"}, result: ${tos(results)}`);
     }),

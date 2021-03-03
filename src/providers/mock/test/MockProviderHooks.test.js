@@ -9,6 +9,7 @@ const cliCommands = require("../../../cli/cliCommands");
 const { tos } = require("../../../tos");
 const logger = require("logger")({ prefix: "MockProviderTest" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
+const { setupProviders } = require("../../../cli/cliUtils");
 
 describe("MockProviderHooks", async function () {
   it("exception on hook.js", async function () {
@@ -42,7 +43,7 @@ describe("MockProviderHooks", async function () {
         init: onDestroyed.init,
       },
     });
-    const infra = { provider };
+    const infra = setupProviders()({ provider });
 
     await cliCommands.planApply({
       infra,
@@ -74,7 +75,7 @@ describe("MockProviderHooks", async function () {
         init: onDestroyed.init,
       },
     });
-    const infra = { provider };
+    const infra = setupProviders()({ provider });
 
     try {
       await cliCommands.planApply({
@@ -95,10 +96,7 @@ describe("MockProviderHooks", async function () {
       });
       assert(false, "should not be here");
     } catch (error) {
-      assert.equal(
-        error.error.results[0].lives.results[0].error.response.status,
-        404
-      );
+      assert.equal(error.error.lives.results[0].error.response.status, 404);
     }
 
     assert(!onDestroyed.init.called);
@@ -120,7 +118,7 @@ describe("MockProviderHooks", async function () {
       },
     });
 
-    const infra = { provider };
+    const infra = setupProviders()({ provider });
     try {
       await cliCommands.planApply({
         infra,
@@ -133,7 +131,7 @@ describe("MockProviderHooks", async function () {
 
       const { resultsHook } = error;
       assert(resultsHook.error);
-      assert(resultsHook.results[0].result.results[0].error);
+      assert(resultsHook.result.results[0].error);
     }
     try {
       await cliCommands.planDestroy({
@@ -146,7 +144,7 @@ describe("MockProviderHooks", async function () {
       const { resultsHook } = error;
       assert(resultsHook);
       assert(resultsHook.error);
-      assert(resultsHook.results[0].result.results[0].error);
+      assert(resultsHook.result.results[0].error);
     }
   });
   it("run --onDeployed init throw ", async function () {
@@ -161,7 +159,7 @@ describe("MockProviderHooks", async function () {
       },
     });
 
-    const infra = { provider };
+    const infra = setupProviders()({ provider });
     try {
       await cliCommands.planRunScript({
         infra,
@@ -171,7 +169,7 @@ describe("MockProviderHooks", async function () {
     } catch ({ error }) {
       const { resultsHook } = error;
       assert(resultsHook.error);
-      assert(resultsHook.results[0].result.results[0].error);
+      assert(resultsHook.result.results[0].error);
     }
   });
 
@@ -213,7 +211,7 @@ describe("MockProviderHooks", async function () {
       },
     });
 
-    const infra = { provider };
+    const infra = setupProviders()({ provider });
     try {
       await cliCommands.planApply({
         infra,
@@ -224,10 +222,9 @@ describe("MockProviderHooks", async function () {
       const { error } = ex;
       const { resultsHook } = error;
       assert(resultsHook.error);
-      const result = resultsHook.results[0].result;
+      const result = resultsHook.result;
       assert(result.error);
-      assert(result.results[0].results[1].error);
-      assert.equal(result.results[0].results[1].error.message, message);
+      assert(result.results[0].results[0].results[1].error);
     }
     try {
       await cliCommands.planDestroy({
@@ -236,12 +233,15 @@ describe("MockProviderHooks", async function () {
       });
       assert(false, "should not be here");
     } catch ({ error }) {
-      assert(error.results);
+      assert(error.error);
       const { resultsHook } = error;
       assert(resultsHook.error);
-      const result = resultsHook.results[0].result;
+      const result = resultsHook.result;
       assert(result.error);
-      assert.equal(result.results[0].results[1].error.message, message);
+      assert.equal(
+        result.results[0].results[0].results[1].error.message,
+        message
+      );
     }
   });
 });

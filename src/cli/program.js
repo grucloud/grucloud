@@ -48,7 +48,7 @@ exports.createProgram = ({ version, commands }) => {
     return tryCatch(
       pipe([
         infraOptions,
-        createInfra,
+        createInfra({ commandOptions }),
         ({ infra, config }) =>
           commands[commandName]({
             infra,

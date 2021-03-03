@@ -3,6 +3,7 @@ const Promise = require("bluebird");
 
 module.exports = ({ resources }) => {
   return {
+    name: "hooks extra",
     onDeployed: {
       init: async () => {
         //console.log("onDeployed");
