@@ -77,24 +77,26 @@ const { displayLive } = require("../cli/displayUtils");
 const noop = ({}) => {};
 const identity = (x) => x;
 
-exports.ProviderGru = ({ providers, resources, commandOptions }) => {
-  assert(Array.isArray(providers));
+exports.ProviderGru = ({ stacks, commandOptions }) => {
+  assert(Array.isArray(stacks));
 
-  if (resources && providers[0]) {
-    providers[0].register({ resources });
-  }
+  const getProviders = () => pipe([map(get("provider"))])(stacks);
+
+  forEach(({ provider, resources, hooks }) =>
+    provider.register({ resources, hooks })
+  )(stacks);
 
   const getClients = () =>
     reduce(
       (acc, provider) => [...acc, ...provider.getClients()],
       []
-    )(providers);
+    )(getProviders());
 
   const getResourcesByType = ({ type }) =>
     reduce(
       (acc, provider) => [...acc, ...provider.getResourcesByType({ type })],
       []
-    )(providers);
+    )(getProviders());
 
   const getProvider = ({ providerName }) =>
     pipe([
@@ -102,22 +104,22 @@ exports.ProviderGru = ({ providers, resources, commandOptions }) => {
       tap.if(isEmpty, () => {
         assert(`no provider with name: '${providerName}'`);
       }),
-    ])(providers);
+    ])(getProviders());
 
   const getTargetResources = () =>
     reduce(
       (acc, provider) => [...acc, ...provider.getTargetResources()],
       []
-    )(providers);
+    )(getProviders());
 
   const getSpecs = () =>
-    reduce((acc, provider) => [...acc, ...provider.specs], [])(providers);
+    reduce((acc, provider) => [...acc, ...provider.specs], [])(getProviders());
 
   const getMapNameToResource = () =>
     reduce(
       (acc, provider) => new Map([...acc, ...provider.mapNameToResource]),
       new Map()
-    )(providers);
+    )(getProviders());
 
   const getResource = pipe([
     get("uri"),
@@ -126,59 +128,6 @@ exports.ProviderGru = ({ providers, resources, commandOptions }) => {
     }),
     (uri) => getMapNameToResource().get(uri),
   ]);
-
-  const hookMap = new Map();
-  const hookAdd = (name, hook) => {
-    assert(name);
-    const defaultHook = {
-      name,
-      onDeployed: {
-        init: () => {},
-        actions: [],
-      },
-      onDestroyed: {
-        init: () => {},
-        actions: [],
-      },
-    };
-    const newHook = defaultsDeep(defaultHook)(hook);
-    hookMap.set(name, newHook);
-  };
-
-  const hookFilenameDefault = ({ dirname = process.cwd() }) =>
-    path.resolve(dirname, "hooks.js");
-
-  const getHookFactory = tryCatch(require, (error) => {
-    logger.error(`getHookFactory ${tos(error)}`);
-    throw error;
-  });
-
-  const registerHook = ({ resources, dirname }) =>
-    pipe([
-      hookFilenameDefault,
-      tap((filename) => {
-        logger.debug(`register hook '${filename}'`);
-      }),
-      switchCase([
-        (fileName) => fs.existsSync(fileName),
-        pipe([
-          getHookFactory,
-          (hookFactory) => {
-            const hooks = hookFactory({
-              resources,
-              config: providerConfig,
-              provider,
-            });
-            hookAdd("default", hooks);
-          },
-        ]),
-        tap((filename) => {
-          logger.error(`hook '${filename}' does not exist`);
-        }),
-      ]),
-    ])({
-      dirname,
-    });
 
   const filterClient = async ({
     result,
@@ -252,7 +201,7 @@ exports.ProviderGru = ({ providers, resources, commandOptions }) => {
       tap(() => {
         logger.info(`start`);
       }),
-      () => providers,
+      () => getProviders(),
       map(
         tryCatch(
           (provider) => provider.start({ onStateChange }),
@@ -476,20 +425,20 @@ exports.ProviderGru = ({ providers, resources, commandOptions }) => {
           map((provider) => ({
             providerName: provider.name,
             plans: filter(eq(get("providerName"), provider.name))(plans),
-          }))(providers),
+          }))(getProviders()),
       }),
       tap((results) => {
         logger.debug(`planFindDestroy`);
       }),
     ])();
 
-  const providersRunning = ({ providers, onStateChange }) =>
+  const providersRunning = ({ onStateChange }) =>
     forEach((provider) =>
       onStateChange({
         context: contextFromProvider({ providerName: provider.name }),
         nextState: "RUNNING",
       })
-    )(providers);
+    )(getProviders());
 
   const planQuery = async ({
     onStateChange = identity,
@@ -499,7 +448,7 @@ exports.ProviderGru = ({ providers, resources, commandOptions }) => {
       tap(() => {
         logger.info(`planQuery begins`);
       }),
-      tap(() => providersRunning({ providers, onStateChange })),
+      tap(() => providersRunning({ onStateChange })),
       assign({
         lives: () =>
           listLives({
@@ -581,7 +530,7 @@ exports.ProviderGru = ({ providers, resources, commandOptions }) => {
         assert(plan);
         logger.info(`Apply Plan ${tos(plan)}`);
       }),
-      tap(() => providersRunning({ providers, onStateChange })),
+      tap(() => providersRunning({ onStateChange })),
       assign({
         resultDestroy: switchCase([
           () => isValidPlan(plan.resultDestroy),
@@ -635,7 +584,7 @@ exports.ProviderGru = ({ providers, resources, commandOptions }) => {
         logger.info(`planUpsert`);
         assert(lives);
       }),
-      () => providers,
+      () => getProviders(),
       forEach((provider) =>
         onStateChange({
           context: contextFromPlanner({
@@ -903,7 +852,7 @@ exports.ProviderGru = ({ providers, resources, commandOptions }) => {
         assert(lives);
         assert(lives.results);
       }),
-      tap(() => providersRunning({ providers, onStateChange })),
+      tap(() => providersRunning({ onStateChange })),
       tap(() =>
         forEach(({ providerName }) =>
           onStateChange({
@@ -953,17 +902,17 @@ exports.ProviderGru = ({ providers, resources, commandOptions }) => {
 
   const destroyAll = ({ options } = {}) =>
     pipe([
-      tap(({ options }) => {
+      tap(() => {
         logger.info(`destroyAll ${JSON.stringify(options)}`);
       }),
       assign({
-        lives: ({ options }) =>
+        lives: () =>
           listLives({
             options,
             readWrite: true,
           }),
       }),
-      ({ options, lives }) =>
+      ({ lives }) =>
         pipe([
           () => planFindDestroy({ options, lives }),
           ({ plans }) =>
@@ -977,7 +926,7 @@ exports.ProviderGru = ({ providers, resources, commandOptions }) => {
             assert(plans);
           }),
         ])(),
-    ])({ options });
+    ])({});
 
   const displayLives = ({ error, results }) =>
     pipe([
@@ -1013,7 +962,6 @@ exports.ProviderGru = ({ providers, resources, commandOptions }) => {
     planQueryAndApply,
     displayLives,
     getProvider,
-    getProviders: () => providers,
-    registerHook,
+    getProviders,
   };
 };

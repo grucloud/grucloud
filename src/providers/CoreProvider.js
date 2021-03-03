@@ -34,6 +34,7 @@ const {
   defaultsDeep,
   isDeepEqual,
   includes,
+  isFunction,
 } = require("rubico/x");
 
 const logger = require("../logger")({ prefix: "CoreProvider" });
@@ -1378,40 +1379,23 @@ function CoreProvider({
   checkConfig(config, mandatoryConfigKeys);
 
   const toType = () => type || providerName;
-  const hookFilenameDefault = ({ dirname = process.cwd() }) =>
-    path.resolve(dirname, "hooks.js");
 
-  const getHookFactory = tryCatch(require, (error) => {
-    logger.error(`getHookFactory ${tos(error)}`);
-    throw error;
-  });
-
-  const register = ({ resources, dirname }) =>
-    pipe([
-      hookFilenameDefault,
-      tap((filename) => {
-        logger.info(`register hook '${filename}'`);
-      }),
-      switchCase([
-        (fileName) => fs.existsSync(fileName),
-        pipe([
-          getHookFactory,
-          (hookFactory) => {
-            const hooks = hookFactory({
-              resources,
-              config: providerConfig,
-              provider,
-            });
-            hookAdd("default", hooks);
-          },
-        ]),
-        tap((filename) => {
-          logger.error(`hook '${filename}' does not exist`);
-        }),
-      ]),
-    ])({
-      dirname,
-    });
+  const register = ({ resources, hooks }) =>
+    tap.if(
+      () => isFunction(hooks),
+      pipe([
+        () =>
+          hooks({
+            resources,
+            config: providerConfig, //TODO provider.config()
+            provider,
+          }),
+        (instance) => {
+          //TODO check for duplicate
+          hookAdd(get(instance.name, "default"), instance);
+        },
+      ])
+    )();
 
   const getResourcesByType = ({ type }) => mapTypeToResources.get(type) || [];
 

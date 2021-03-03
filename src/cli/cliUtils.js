@@ -217,70 +217,44 @@ const displayProviderList = pipe([
 ]);
 exports.displayProviderList = displayProviderList;
 
-const filterProvidersByName = ({
+const filterProvider = ({
   commandOptions: { provider: providerOptions = [] },
-  providers,
-}) =>
+}) => ({ provider }) =>
   pipe([
-    tap((xx) => {
-      logger.debug(`filterProvidersByName ${providerOptions}`);
-      assert(providers && !isEmpty(providers), "no providers");
-      assert(providers[0].name, "not an array of providers");
+    tap(() => {
+      assert(provider);
     }),
-    filter(
-      or([
-        () => isEmpty(providerOptions),
-        (provider) =>
-          any((providerName) =>
-            new RegExp(`${providerName}`, "i").test(provider.name)
-          )(providerOptions),
-      ])
-    ),
-    tap(
-      switchCase([
-        isEmpty,
-        () => {
-          const message = `No provider matches: '${providerOptions}', ${plu(
-            "provider",
-            providers.length,
-            true
-          )} available: ${displayProviderList(providers)}`;
-          throw { message, code: 422 };
-        },
-        tap((xx) => {
-          logger.debug(`filterProvidersByName ${xx.length}`);
-        }),
-      ])
-    ),
-  ]);
-
-const combineProviders = (infra) =>
-  pipe([
-    () => (infra.provider ? [infra.provider] : []),
-    (providers) =>
-      infra.providers ? [...providers, ...infra.providers] : providers,
-    tap((providers) => {
-      if (isEmpty(providers)) {
-        throw { code: 400, message: `no providers provided` };
-      }
+    () => provider,
+    or([
+      () => isEmpty(providerOptions),
+      (provider) =>
+        any((providerName) =>
+          new RegExp(`${providerName}`, "i").test(provider.name)
+        )(providerOptions),
+    ]),
+    tap((keep) => {
+      logger.debug(
+        `filterProvider ${provider.name}: ${providerOptions}, keep: ${keep}`
+      );
     }),
-    (providers) => ({ ...infra, providers }),
-    omit(["provider"]),
   ])();
+
+exports.filterProvider = filterProvider;
 
 exports.setupProviders = ({ commandOptions = {} } = {}) =>
   pipe([
     tap((input) => {
       logger.debug("setupProviders");
+      assert(input);
     }),
-    combineProviders,
-    assign({
-      providers: ({ providers }) =>
-        filterProvidersByName({ commandOptions, providers })(providers),
+    switchCase([Array.isArray, (infra) => infra, (infra) => [infra]]),
+    filter(not(isEmpty)),
+    filter(filterProvider({ commandOptions })),
+    tap.if(isEmpty, () => {
+      throw { code: 422, message: `no provider provided` };
     }),
-    assign({
-      providersGru: ({ providers, resources }) =>
-        ProviderGru({ commandOptions, providers, resources }),
+    (stacks) => ({
+      providersGru: ProviderGru({ commandOptions, stacks }),
     }),
     tap((xx) => {
       logger.debug("setupProviders");

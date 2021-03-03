@@ -55,8 +55,10 @@ describe("MockProvider errors", async function () {
     });
     await provider1.makeIp({ name: "myip" });
     await provider2.makeIp({ name: "myip" });
-    const providerGru = ProviderGru({ providers: [provider1, provider2] });
-    const result = await providerGru.planQuery();
+    const providersGru = ProviderGru({
+      stacks: [{ provider: provider1 }, { provider: provider2 }],
+    });
+    const result = await providersGru.planQuery();
     assert(!result.error);
   });
 
@@ -88,8 +90,8 @@ describe("MockProvider errors", async function () {
         name: "ip",
         properties: () => ({}),
       });
-      const providerGru = ProviderGru({ providers: [provider] });
-      const { error } = await providerGru.planQuery();
+      const providersGru = ProviderGru({ stacks: [{ provider }] });
+      const { error } = await providersGru.planQuery();
       assert(!error);
     }
     {
@@ -98,9 +100,9 @@ describe("MockProvider errors", async function () {
         config,
         mockCloud,
       });
-      const providerGru = ProviderGru({ providers: [provider] });
+      const providersGru = ProviderGru({ stacks: [{ provider }] });
 
-      const { error } = await providerGru.planQueryAndApply();
+      const { error } = await providersGru.planQueryAndApply();
       assert(!error);
     }
   });

@@ -19,7 +19,7 @@ describe("MockProviderCli", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
     const provider = MockProvider({ config });
     const resources = await createResources({ provider });
-    const infra = { provider };
+    const infra = setupProviders()({ provider });
     const errorMessage = "stub-error";
 
     provider.init = sinon
@@ -99,7 +99,7 @@ describe("MockProviderCli", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
     const provider = MockProvider({ config });
     const resources = await createResources({ provider });
-    const infra = setupProviders()({ provider });
+    const infra = setupProviders()({ provider, resources });
 
     {
       const info = await cliCommands.info({

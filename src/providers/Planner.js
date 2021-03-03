@@ -14,6 +14,7 @@ const {
   eq,
   get,
   and,
+  not,
 } = require("rubico");
 
 const {
@@ -64,19 +65,23 @@ const dependsOnTypeReverse = (dependsOnType) =>
     providerName: spec.providerName,
     type: spec.type,
     dependsOn: pipe([
+      () => dependsOnType,
       filter(({ dependsOn = [] }) => dependsOn.includes(spec.type)),
       map(({ providerName, type }) => `${providerName}::${type}`),
-    ])(dependsOnType),
+    ])(),
   }))(dependsOnType);
 
-const findDependsOnType = ({ provider, type, plans, dependsOnType }) =>
+const findDependsOnType = ({ providerName, type, plans, dependsOnType }) =>
   pipe([
     tap(() => {
-      assert(provider);
+      assert(providerName);
       assert(type);
       assert(Array.isArray(plans));
+      assert(Array.isArray(dependsOnType));
     }),
-    find(and([eq(get("providerName"), provider), eq(get("type"), type)])),
+    () => dependsOnType,
+    dependsOnTypeReverse,
+    find(and([eq(get("providerName"), providerName), eq(get("type"), type)])),
     tap((x) => {
       assert(x);
     }),
@@ -91,19 +96,17 @@ const findDependsOnType = ({ provider, type, plans, dependsOnType }) =>
       ])(plans)
     ),
     tap((dependsOn) => {
-      logger.debug(`findDependsOnType: result ${tos({ type, dependsOn })}`);
+      logger.debug(`findDependsOnType ${JSON.stringify({ type, dependsOn })}`);
     }),
-  ])(dependsOnTypeReverse(dependsOnType));
+  ])();
 
 const dependsOnInstanceReverse = (dependsOnInstance) =>
-  map(({ uri, type, provider }) => ({
+  map(({ uri, type, providerName }) => ({
     uri,
-    providerName: provider,
+    providerName,
     type,
     dependsOn: pipe([
-      tap((xxx) => {
-        logger.debug(`dependsOnInstanceReverse:  ${tos(xxx)}`);
-      }),
+      () => dependsOnInstance,
       map((resource) =>
         pipe([
           get("dependsOn"),
@@ -111,25 +114,24 @@ const dependsOnInstanceReverse = (dependsOnInstance) =>
           switchCase([isEmpty, () => undefined, () => resource]),
         ])(resource)
       ),
+      filter(not(isEmpty)),
       tap((xxx) => {
-        logger.debug(`dependsOnInstanceReverse:  ${tos(xxx)}`);
+        assert(xxx);
       }),
-      filter((x) => x),
-      tap((xxx) => {
-        logger.debug(`dependsOnInstanceReverse:  ${tos(xxx)}`);
-      }),
-    ])(dependsOnInstance),
+    ])(),
   }))(dependsOnInstance);
 
 const findDependsOnInstance = ({ uri, plans, dependsOnInstance }) =>
   pipe([
     tap(() => {
-      logger.debug(`findDependsOnInstance: ${tos({ uri, dependsOnInstance })}`);
       assert(uri);
+      assert(Array.isArray(plans));
+      assert(dependsOnInstance);
     }),
+    () => dependsOnInstance,
     dependsOnInstanceReverse,
     tap((xxx) => {
-      logger.debug(`findDependsOnInstance: reversed ${tos(xxx)}`);
+      assert(xxx);
     }),
     find(eq(get("uri"), uri)),
     tap((x) => {
@@ -141,9 +143,11 @@ const findDependsOnInstance = ({ uri, plans, dependsOnInstance }) =>
       pipe([filter(eq(get("resource.uri"), uri)), pluck("resource")])(plans)
     ),
     tap((dependsOn) => {
-      logger.debug(`findDependsOnInstance: result ${tos({ uri, dependsOn })}`);
+      logger.debug(
+        `findDependsOnInstance: ${JSON.stringify({ uri, dependsOn })}`
+      );
     }),
-  ])(dependsOnInstance);
+  ])();
 
 const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
   assert(Array.isArray(plans));
@@ -151,15 +155,17 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
   assert(Array.isArray(dependsOnInstance));
   return switchCase([
     () => down,
+    // DOWN
     () =>
       pipe([
+        () => plans,
         pluck("resource"),
         map(({ name, providerName, type, uri }) => ({
           name,
           uri,
           dependsOn: uniq([
             ...findDependsOnType({
-              provider: providerName,
+              providerName,
               type,
               plans,
               dependsOnType,
@@ -174,9 +180,11 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
         tap((graph) => {
           logger.info(`DependencyTree down: ${tos(graph)}`);
         }),
-      ])(plans),
+      ])(),
+    // UP
     () =>
       pipe([
+        () => dependsOnInstance,
         forEach((spec) => {
           assert(spec.uri);
         }),
@@ -185,18 +193,19 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
           type: spec.type,
           uri: spec.uri,
           dependsOn: pipe([
+            () => spec.dependsOn,
             forEach((dependOn) => {
               assert(dependOn.uri);
             }),
             filter((dependOn) =>
-              plans.find(({ resource }) => resource.uri === dependOn.uri)
+              find(eq(get("resource.uri"), dependOn.uri))(plans)
             ),
-          ])(spec.dependsOn),
+          ])(),
         })),
         tap((graph) => {
           logger.info(`DependencyTree up: ${tos(graph)}`);
         }),
-      ])(dependsOnInstance),
+      ])(),
   ])();
 };
 
@@ -213,19 +222,15 @@ exports.Planner = ({
   assert(Array.isArray(dependsOnInstance));
   assert(isFunction(executor));
   assert(isFunction(onStateChange));
+
+  logger.debug(`Planner #plans: ${plans.length} ${tos({ plans })} `);
+
   const dependencyTree = DependencyTree({
     plans,
-    dependsOnType: map(({ providerName, type, dependsOn }) => ({
-      providerName,
-      type,
-      dependsOn,
-    }))(dependsOnType),
+    dependsOnType,
     dependsOnInstance,
     down,
   });
-  logger.debug(
-    `Planner #plans: ${plans.length} ${tos({ plans, dependencyTree })} `
-  );
 
   const statusMap = new Map();
   const statusValues = () => [...statusMap.values()];

@@ -261,6 +261,7 @@ const doPlanQuery = ({ commandOptions, programOptions }) =>
     tap((input) => {
       logger.debug("doPlanQuery");
       assert(input.providersGru);
+      assert(input.providersGru.getProviders().length > 0);
     }),
     ({ providersGru }) =>
       runAsyncCommand({
@@ -1006,11 +1007,14 @@ const displayListSummaryResults = ({ providers, types, resources }) => {
 
 const listDoOk = ({ commandOptions, programOptions }) =>
   pipe([
-    ({ providers, providersGru }) =>
+    ({ providersGru }) =>
       pipe([
         () =>
           runAsyncCommand({
-            text: displayCommandHeader({ providers, verb: "Listing" }),
+            text: displayCommandHeader({
+              providers: providersGru.getProviders(),
+              verb: "Listing",
+            }),
             command: ({ onStateChange }) =>
               pipe([
                 tap(() =>
@@ -1019,7 +1023,7 @@ const listDoOk = ({ commandOptions, programOptions }) =>
                       onStateChange,
                       options: commandOptions,
                     })
-                  )(providers)
+                  )(providersGru.getProviders())
                 ),
                 assign({
                   resultStart: () =>
@@ -1041,7 +1045,7 @@ const listDoOk = ({ commandOptions, programOptions }) =>
                       options: commandOptions,
                       result,
                     })
-                  )(providers)
+                  )(providersGru.getProviders())
                 ),
               ])({}),
           }),
@@ -1104,7 +1108,7 @@ const OutputDoOk = ({ commandOptions, programOptions }) =>
         `output ${JSON.stringify({ commandOptions, programOptions })}`
       );
     }),
-    get("providers"),
+    ({ providersGru }) => providersGru.getProviders(),
     tap((providers) => {
       logger.debug(`output #providers ${providers.length}`);
     }),
@@ -1156,7 +1160,7 @@ const DoCommand = ({ commandOptions, command }) =>
     tap((xxx) => {
       logger.debug(`DoCommand ${command}`);
     }),
-    get("providers"),
+    ({ providersGru }) => providersGru.getProviders(),
     map(
       tryCatch(
         (provider) => provider[command]({ options: commandOptions }),
@@ -1218,9 +1222,9 @@ exports.graph = async ({
     pipe([
       tap((input) => {
         logger.debug(`graph`, config);
-        assert(input.providers);
+        assert(input.providersGru);
       }),
-      get("providers"),
+      ({ providersGru }) => providersGru.getProviders(),
       map(
         tryCatch(
           (provider) => provider.graph({ options: commandOptions }),
@@ -1230,7 +1234,7 @@ exports.graph = async ({
         )
       ),
       tap((result) => {
-        //logger.debug(`graph done`);
+        logger.debug(`graph done`);
       }),
       // TODO add title from config.projectName
       (results) => `digraph graphname {

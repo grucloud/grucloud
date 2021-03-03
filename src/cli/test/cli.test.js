@@ -168,8 +168,8 @@ describe("cli", function () {
         "list",
       ],
       onExit: ({ code, error }) => {
-        assert.equal(error.code, 400);
-        assert.equal(error.message, "no providers provided");
+        assert.equal(error.code, 422);
+        assert.equal(error.message, "no provider provided");
       },
     });
   });

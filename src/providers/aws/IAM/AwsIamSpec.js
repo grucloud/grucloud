@@ -16,7 +16,6 @@ const { isOurMinion } = require("../AwsCommon");
 module.exports = [
   {
     type: "IamOpenIDConnectProvider",
-    dependsOn: ["EKSCluster"],
     Client: AwsIamOpenIDConnectProvider,
     isOurMinion,
   },

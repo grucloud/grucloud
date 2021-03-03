@@ -110,7 +110,7 @@ const createAws = async ({ config }) => {
     AwsHooksWebSite({ resources: website, provider })
   );
 
-  return provider;
+  return { provider };
 };
 
 const createGoogle = async ({ config }) => {
@@ -158,7 +158,7 @@ const createGoogle = async ({ config }) => {
     });
     provider.hookAdd("iam", GoogleHooksIamBinding({ resources, provider }));
   }
-  return provider;
+  return { provider };
 };
 
 const createAzure = async ({ config }) => {
@@ -167,7 +167,7 @@ const createAzure = async ({ config }) => {
   });
   const resources = await AzureStack.createResources({ provider });
   provider.hookAdd("azure", AzureHooks({ resources, provider }));
-  return provider;
+  return { provider, resources };
 };
 
 const createScaleway = async ({ config }) => {
@@ -176,7 +176,7 @@ const createScaleway = async ({ config }) => {
   });
   const resources = ScalewayStack.createResources({ provider });
   provider.hookAdd("scaleway", ScalewayHooks({ resources, provider }));
-  return provider;
+  return { provider, resources };
 };
 
 const createMock = async ({ config }) => {
@@ -184,20 +184,18 @@ const createMock = async ({ config }) => {
     config: { stage: config.stage },
   });
 
-  const mock = await MockStack.createResources({ provider });
-  provider.hookAdd("mock", MockHooks({ resources: mock }));
-  return provider;
+  const resources = await MockStack.createResources({ provider });
+  provider.hookAdd("mock", MockHooks({ resources }));
+  return { provider, resources };
 };
 
 exports.createStack = async ({ config }) => {
-  return {
-    providers: [
-      //await createMock({ config }),
-      await createAws({ config }),
-      //await createAwsUsEast1({ config }),
-      //await createAzure({ config }),
-      //await createGoogle({ config }),
-      //await createScaleway({ config }),
-    ],
-  };
+  return [
+    //await createMock({ config }),
+    await createAws({ config }),
+    //await createAwsUsEast1({ config }),
+    //await createAzure({ config }),
+    //await createGoogle({ config }),
+    //await createScaleway({ config }),
+  ];
 };
