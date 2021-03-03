@@ -1392,7 +1392,7 @@ function CoreProvider({
           }),
         (instance) => {
           //TODO check for duplicate
-          hookAdd(get(instance.name, "default"), instance);
+          hookAdd(get("name", "default")(instance), instance);
         },
       ])
     )();
