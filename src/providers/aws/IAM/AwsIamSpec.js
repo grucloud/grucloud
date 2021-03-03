@@ -33,7 +33,7 @@ module.exports = [
   },
   {
     type: "IamRole",
-    dependsOn: ["IamPolicy", "IamOpenIDConnectProvider"],
+    dependsOn: ["IamPolicy"],
     Client: AwsIamRole,
     isOurMinion,
   },
