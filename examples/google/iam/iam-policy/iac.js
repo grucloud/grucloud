@@ -1,5 +1,6 @@
 const assert = require("assert");
 const { GoogleProvider } = require("@grucloud/core");
+const hooks = require("./hooks");
 
 //TODO do we use a name ?
 //TODO how do we prevent being created twice
@@ -48,5 +49,6 @@ exports.createStack = async ({ config }) => {
   return {
     provider,
     resources,
+    hooks,
   };
 };

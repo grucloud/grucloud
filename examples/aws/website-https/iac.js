@@ -1,5 +1,7 @@
 const assert = require("assert");
 const path = require("path");
+const hooks = require("./hooks");
+
 const { map, pipe, tap, filter, flatMap } = require("rubico");
 const { flatten, includes } = require("rubico/x");
 
@@ -212,5 +214,6 @@ exports.createStack = async ({ name = "aws", config }) => {
   return {
     provider,
     resources,
+    hooks,
   };
 };

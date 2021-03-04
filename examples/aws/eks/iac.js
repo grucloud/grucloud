@@ -2,6 +2,7 @@ const { AwsProvider } = require("@grucloud/core");
 const { get } = require("rubico");
 const loadBalancerPolicy = require("./load-balancer-policy.json");
 const podPolicy = require("./pod-policy.json");
+const hooks = require("./hooks");
 
 const createResources = async ({ provider, resources: {} }) => {
   const clusterName = "cluster";
@@ -356,5 +357,5 @@ exports.createResources = createResources;
 exports.createStack = async ({ name = "aws", config }) => {
   const provider = AwsProvider({ name, config });
   const resources = await createResources({ provider, resources: {} });
-  return { provider, resources };
+  return { provider, resources, hooks };
 };
