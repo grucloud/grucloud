@@ -92,7 +92,6 @@ const countDeployResources = pipe([
 
 const hasPlans = pipe([
   tap((input) => {
-    logger.debug(`hasPlans`);
     assert(input);
     assert(input.resultCreate);
     assert(input.resultCreate.plans);

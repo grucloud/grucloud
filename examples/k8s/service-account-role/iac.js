@@ -77,5 +77,5 @@ exports.createStack = async ({ config }) => {
     config,
     resources: awsStack.resources,
   });
-  return { providers: [awsStack.provider, k8sStack.provider] };
+  return [awsStack, k8sStack];
 };
