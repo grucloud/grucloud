@@ -49,7 +49,7 @@ describe("GcpServiceAccount", async function () {
     assert.equal(config.serviceAccount.displayName, serviceAccountDisplayName);
   });
 
-  it.only("serviceAccount apply and destroy", async function () {
+  it("serviceAccount apply and destroy", async function () {
     await testPlanDeploy({
       provider,
       types,
@@ -82,7 +82,6 @@ describe("GcpServiceAccount", async function () {
         },
       });
       assert(!error, "destroyAll failed");
-      assert.equal(results.length, 1);
     }
   });
 });
