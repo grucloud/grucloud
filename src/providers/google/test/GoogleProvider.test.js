@@ -80,10 +80,6 @@ describe("GoogleProvider", async function () {
     );
     assert.equal(config.disks[0].initializeParams.diskSizeGb, "20");
     assert.equal(config.name, "web-server");
-    assert.equal(
-      config.networkInterfaces[0].accessConfigs[0].natIP,
-      notAvailable(ipName, "address")
-    );
   });
 
   it("gcp apply and destroy", async function () {
