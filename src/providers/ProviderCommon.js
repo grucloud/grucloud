@@ -166,7 +166,7 @@ exports.filterReadWriteClient = ({ types } = {}) =>
 exports.contextFromResource = ({ operation, resource }) => {
   assert(operation);
   assert(resource);
-  const { type, id, providerName } = resource;
+  const { type, providerName } = resource;
   assert(type);
   assert(
     providerName,

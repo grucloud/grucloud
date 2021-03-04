@@ -1335,6 +1335,8 @@ ${result}}
     config: () => providerConfig,
     name: providerName,
     type: toType,
+    spinnersStopProvider,
+    spinnersStartHook,
     spinnersStartQuery,
     spinnersStartDeploy,
     spinnersStartListLives,
