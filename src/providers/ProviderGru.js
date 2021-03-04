@@ -57,6 +57,7 @@ const {
   hasResultError,
   PlanDirection,
   isTypesMatch,
+  isTypeMatch,
   isValidPlan,
   filterReadClient,
   filterReadWriteClient,
@@ -909,20 +910,26 @@ exports.ProviderGru = ({ stacks }) => {
             readWrite: true,
           }),
       }),
-      ({ lives }) =>
-        pipe([
-          () => planFindDestroy({ options, lives }),
-          ({ plans }) =>
-            planDestroy({ plans, direction: PlanDirection.DOWN, lives }),
-          tap(({ error, results, plans }) => {
-            logger.info(
-              `destroyAll DONE, ${error && `error: ${error}`}, #results ${
-                results.length
-              }`
-            );
-            assert(plans);
+      assign({
+        findDestroy: ({ lives }) => planFindDestroy({ options, lives }),
+      }),
+      tap((xxx) => {
+        assert(xxx);
+      }),
+      assign({
+        destroy: ({ lives, findDestroy }) =>
+          planDestroy({
+            plans: findDestroy.plans,
+            resultProviders: findDestroy.resultProviders,
+            options,
+            direction: PlanDirection.DOWN,
+            lives,
           }),
-        ])(),
+      }),
+      assign({ error: any(get("error")) }),
+      tap((result) => {
+        logger.info(`destroyAll ${tos(result)}`);
+      }),
     ])({});
 
   const displayLives = ({ error, results }) =>

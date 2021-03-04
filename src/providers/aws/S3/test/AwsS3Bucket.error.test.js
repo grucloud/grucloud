@@ -32,17 +32,11 @@ describe("AwsS3BucketErrors", async function () {
       properties: () => ({}),
     });
 
-    try {
-      await cliCommands.planApply({
-        infra: { provider },
-        commandOptions: { force: true },
-      });
-      assert(false, "should not be here");
-    } catch ({ error }) {
-      const plan = error.results[0].result.resultCreate.results[0];
-      assert.equal(plan.error.code, "Forbidden");
-      assert.equal(plan.item.resource.name, "bucket");
-    }
+    const result = await provider.planQueryAndApply({});
+    assert(result.error);
+    const plan = result.resultCreate.results[0];
+    assert.equal(plan.error.code, "Forbidden");
+    assert.equal(plan.item.resource.name, "bucket");
   });
 
   it("s3Bucket acl error", async function () {
@@ -131,12 +125,5 @@ describe("AwsS3BucketErrors", async function () {
       "InvalidRequest",
       `not ''InvalidRequest'' in ${tos(resultCreate)}`
     );
-    {
-      const resultDestroy = await provider.destroyAll({
-        options: {
-          types,
-        },
-      });
-    }
   });
 });

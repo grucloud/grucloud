@@ -118,10 +118,9 @@ const testPlanDestroy = async ({ provider, types = [], full = false }) => {
     await testDestroyByType({ provider, lives });
   }
   {
-    const { error, results } = await provider.destroyAll({
+    const { error } = await provider.destroyAll({
       options: { types },
     });
-    assert(results);
     assert(!error, "testPlanDestroy destroyAll failed");
   }
   {

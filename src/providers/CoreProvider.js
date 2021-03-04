@@ -1,6 +1,4 @@
 const assert = require("assert");
-const fs = require("fs");
-const path = require("path");
 
 const {
   pipe,
@@ -39,6 +37,7 @@ const {
 
 const logger = require("../logger")({ prefix: "CoreProvider" });
 const { tos } = require("../tos");
+const { ProviderGru } = require("./ProviderGru");
 const { checkConfig, checkEnv } = require("../Utils");
 const { SpecDefault } = require("./SpecDefault");
 const { retryCall } = require("./Retry");
@@ -693,152 +692,6 @@ function CoreProvider({
 
   const clientByType = ({ type }) => find(eq(get("spec.type"), type))(clients);
 
-  //TODO remove
-  const filterClient = async ({
-    result,
-    client,
-    options: { our, name, id, canBeDeleted, provider: providerName },
-    lives,
-  }) =>
-    switchCase([
-      get("error"),
-      () => result,
-      pipe([
-        tap((result) => {
-          logger.info(
-            `filterClient ${tos({
-              our,
-              name,
-              id,
-              canBeDeleted,
-              providerName,
-              type: client.spec.type,
-            })}`
-          );
-        }),
-        get("items"),
-        filter(not(get("error"))),
-        map((live) => ({
-          uri: liveToUri({ client, live }),
-          name: client.findName(live),
-          displayName: client.displayName({
-            name: client.findName(live),
-            meta: client.findMeta(live),
-          }),
-          meta: client.findMeta(live),
-          id: client.findId(live),
-          managedByUs: client.spec.isOurMinion({
-            resource: live,
-            lives,
-            resourceNames: resourceNames(),
-            config: provider.config(),
-          }),
-          providerName: client.spec.providerName,
-          type: client.spec.type,
-          live,
-          cannotBeDeleted: client.cannotBeDeleted({
-            resource: live,
-            name: client.findName(live),
-            resourceNames: resourceNames(),
-            config: provider.config(),
-          }),
-        })),
-        filter((item) => (our ? item.managedByUs : true)),
-        filter((item) => (name ? item.name === name : true)),
-        filter((item) => (id ? item.id === id : true)),
-        filter((item) =>
-          providerName ? item.providerName === providerName : true
-        ),
-        filter((item) => (canBeDeleted ? !item.cannotBeDeleted : true)),
-        (resources) => ({
-          type: client.spec.type,
-          resources,
-        }),
-        tap((x) => {
-          assert(x);
-        }),
-      ]),
-    ])(result);
-  const listLives = async ({
-    onStateChange = identity,
-    options = {},
-    title = TitleListing,
-    readWrite = false,
-  } = {}) =>
-    pipe([
-      tap((clients) =>
-        logger.info(
-          `listLives  ${JSON.stringify({ title, readWrite, options })}`
-        )
-      ),
-      switchCase([
-        () => readWrite,
-        filterReadWriteClient(options),
-        filterReadClient(options),
-      ]),
-      map((client) => ({
-        type: client.spec.type,
-        providerName,
-        executor: ({ lives }) =>
-          pipe([
-            () =>
-              client.getList({
-                lives,
-                deep: true,
-                resources: provider.getResourcesByType(client.spec.type),
-              }),
-            (result) =>
-              filterClient({
-                result,
-                client,
-                onStateChange,
-                options,
-                lives,
-              }),
-          ])(),
-        dependsOn: client.spec.listDependsOn,
-      })),
-      (inputs) =>
-        Lister({
-          inputs,
-          onStateChange: ({ type, error, ...other }) => {
-            assert(type);
-            onStateChange({
-              context: contextFromClient({
-                client: clientByType({ type }),
-                title,
-              }),
-              error,
-              ...other,
-            });
-          },
-        }),
-      (lister) => lister.run(),
-      tap((result) => {
-        logger.info(`listLives result: ${tos(result)}`);
-      }),
-      assign({
-        results: pipe([
-          get("results"),
-          filter(
-            or([
-              and([
-                pipe([
-                  get("type"),
-                  (type) => isTypesMatch({ typeToMatch: type })(options.types),
-                ]),
-                pipe([get("resources"), not(isEmpty)]),
-              ]),
-              pipe([get("error"), not(isEmpty)]),
-            ])
-          ),
-        ]),
-      }),
-      tap((result) => {
-        logger.info(`listLives result: ${tos(result)}`);
-      }),
-    ])(clients);
-
   const listTargets = () =>
     pipe([
       map(async (resource) => ({
@@ -1430,6 +1283,7 @@ function CoreProvider({
         throw error;
       }
     )();
+
   const toString = () => ({ name: providerName, type: toType() });
 
   const color = "#383838";
@@ -1470,6 +1324,12 @@ ${result}}
 `,
     ])();
 
+  const createGruDelegation = ({ method, provider, params }) =>
+    pipe([
+      () => ProviderGru({ stacks: [{ provider }] }),
+      (providerGru) => providerGru[method](...params),
+    ])();
+
   const provider = {
     toString,
     config: () => providerConfig,
@@ -1481,9 +1341,16 @@ ${result}}
     spinnersStopListLives,
     spinnersStartDestroyQuery,
     spinnersStartDestroy,
-    spinnersStartHook,
-    spinnersStopProvider,
-    listLives,
+    destroyAll: (...params) =>
+      createGruDelegation({ provider, method: "destroyAll", params }),
+    planQueryAndApply: (...params) =>
+      createGruDelegation({ provider, method: "planQueryAndApply", params }),
+    listLives: (...params) =>
+      createGruDelegation({ provider, method: "listLives", params }),
+    planQuery: (...params) =>
+      createGruDelegation({ provider, method: "planQuery", params }),
+    planApply: (...params) =>
+      createGruDelegation({ provider, method: "planApply", params }),
     listTargets,
     listConfig,
     targetResourcesAdd,
