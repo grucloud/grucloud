@@ -1343,6 +1343,8 @@ ${result}}
     spinnersStopListLives,
     spinnersStartDestroyQuery,
     spinnersStartDestroy,
+    planFindDestroy: (...params) =>
+      createGruDelegation({ provider, method: "planFindDestroy", params }),
     destroyAll: (...params) =>
       createGruDelegation({ provider, method: "destroyAll", params }),
     planQueryAndApply: (...params) =>
