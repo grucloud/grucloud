@@ -6,7 +6,6 @@ const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { CheckAwsTags } = require("../../AwsTagCheck");
-const cliCommands = require("../../../../cli/cliCommands");
 
 describe("AwsProvider", async function () {
   let config;
@@ -144,40 +143,7 @@ describe("AwsProvider", async function () {
     const config = await server.resolveConfig();
     assert.equal(config.ImageId, "ami-0917237b4e71c5759");
   });
-  it("plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-  });
-  it("listLives all", async function () {
-    const { results: lives } = await provider.listLives({
-      options: { all: true },
-    });
-    assert(lives);
-  });
-  it("listLives our", async function () {
-    const { results } = await cliCommands.list({
-      infra: { provider },
-      commandOptions: { our: true },
-    });
 
-    assert.equal(
-      pipe([
-        tap((x) => {
-          //console.log(x);
-        }),
-        pluck("result.results"),
-        flatten,
-        tap((x) => {
-          //console.log(x);
-        }),
-        pluck("resources"),
-        flatten,
-        filter(({ managedByUs }) => !managedByUs),
-        size,
-      ])(results),
-      0
-    );
-  });
   it.skip("aws apply plan", async function () {
     await testPlanDeploy({ provider, full: true });
 

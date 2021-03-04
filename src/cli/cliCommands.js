@@ -291,13 +291,13 @@ const doPlanQuery = ({ commandOptions, programOptions }) =>
           ])({}),
       }),
     tap((result) => {
-      logger.debug("planQuery displayPlan");
+      assert(result);
     }),
     assign({ error: any(get("error")) }),
     tap(
       pipe([
-        tap((xx) => {
-          logger.debug("planQuery displayPlan");
+        tap((result) => {
+          assert(result);
         }),
         get("resultQuery.mapProvider"),
         tap(
@@ -311,8 +311,8 @@ const doPlanQuery = ({ commandOptions, programOptions }) =>
             ),
           ])
         ),
-        tap((xx) => {
-          logger.debug("planQuery displayPlan");
+        tap((result) => {
+          assert(result);
         }),
         displayPlanSummary,
       ])
@@ -340,12 +340,9 @@ const planQuery = async ({ infra, commandOptions = {}, programOptions = {} }) =>
       tap(
         pipe([
           tap((result) => {
-            logger.debug("planQuery");
+            assert(result.resultQuery);
           }),
           get("resultQuery"),
-          tap((resultQuery) => {
-            assert(resultQuery);
-          }),
           switchCase([
             hasPlans,
             pipe([countDeployResources, displayQueryPlanSummary]),
