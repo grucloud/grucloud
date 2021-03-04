@@ -77,7 +77,7 @@ const { displayLive } = require("../cli/displayUtils");
 const noop = ({}) => {};
 const identity = (x) => x;
 
-exports.ProviderGru = ({ stacks, commandOptions }) => {
+exports.ProviderGru = ({ stacks }) => {
   assert(Array.isArray(stacks));
 
   const getProviders = () => pipe([map(get("provider"))])(stacks);
@@ -281,7 +281,7 @@ exports.ProviderGru = ({ stacks, commandOptions }) => {
         }),
       (lister) => lister.run(),
       tap((result) => {
-        logger.info(`listLives result: ${tos(result)}`);
+        assert(result);
       }),
       assign({
         results: pipe([
@@ -371,18 +371,17 @@ exports.ProviderGru = ({ stacks, commandOptions }) => {
   const planFindDestroy = async ({
     options = {},
     direction = PlanDirection.DOWN,
-    onStateChange = identity,
     lives,
   }) =>
     pipe([
-      () => lives.results,
-      tap((results) => {
-        logger.info(`planFindDestroy ${tos({ options, direction })}`);
-        assert(onStateChange);
-        assert(options);
+      tap(() => {
+        logger.info(
+          `planFindDestroy ${JSON.stringify({ options, direction })}`
+        );
         assert(lives);
         assert(lives.results);
       }),
+      () => lives.results,
       filter(not(get("error"))),
       map(
         assign({
@@ -415,7 +414,7 @@ exports.ProviderGru = ({ stacks, commandOptions }) => {
       ),
       filter(pipe([get("plans"), not(isEmpty)])),
       tap((results) => {
-        logger.debug(`planFindDestroy`);
+        assert(results);
       }),
       (results) => ({
         plans: pipe([pluck("plans"), flatten])(results),
@@ -459,7 +458,6 @@ exports.ProviderGru = ({ stacks, commandOptions }) => {
       assign({
         resultDestroy: ({ lives }) =>
           planFindDestroy({
-            onStateChange,
             direction: PlanDirection.UP,
             options: commandOptions,
             lives,
@@ -473,7 +471,7 @@ exports.ProviderGru = ({ stacks, commandOptions }) => {
           }),
       }),
       tap((result) => {
-        logger.info(`planQuery result: ${tos(result)}`);
+        //logger.info(`planQuery result: ${tos(result)}`);
       }),
       assign({ error: any(get("error")) }),
       assign({
@@ -487,7 +485,7 @@ exports.ProviderGru = ({ stacks, commandOptions }) => {
             pipe([
               () => [...mapProvider.keys()],
               tap((result) => {
-                logger.info(`planQuery result: ${tos(result)}`);
+                assert(result);
               }),
               map((providerName) => ({
                 providerName,
@@ -509,7 +507,7 @@ exports.ProviderGru = ({ stacks, commandOptions }) => {
         ]),
       }),
       tap((result) => {
-        logger.info(`planQuery result: ${tos(result)}`);
+        //logger.info(`planQuery result: ${tos(result)}`);
       }),
       tap(({ mapProvider }) =>
         forEach(({ plans, providerName }) =>
@@ -559,7 +557,7 @@ exports.ProviderGru = ({ stacks, commandOptions }) => {
         ]),
       }),
       tap((result) => {
-        logger.info(`Apply result: ${tos(result)}`);
+        assert(result);
       }),
       (result) => ({
         lives: plan.lives,
@@ -649,13 +647,13 @@ exports.ProviderGru = ({ stacks, commandOptions }) => {
       filter(not(isEmpty)),
       flatten,
       tap((result) => {
-        logger.info(`planUpsert: result: ${tos(result)}`);
+        assert(result);
       }),
       tap(
         pipe([
           groupBy("providerName"),
           tap((result) => {
-            logger.info(`planUpsert: result: ${tos(result)}`);
+            assert(result);
           }),
           forEach((plans, providerName) => {
             onStateChange({
@@ -665,7 +663,6 @@ exports.ProviderGru = ({ stacks, commandOptions }) => {
           }),
         ])
       ),
-
       (plans) => ({ error: hasResultError(plans), plans }),
       tap((result) => {
         logger.info(`planUpsert: result: ${tos(result)}`);
@@ -816,7 +813,7 @@ exports.ProviderGru = ({ stacks, commandOptions }) => {
     ])();
 
   const destroyById = async ({ type, live, lives, name, meta }) => {
-    logger.debug(`destroyById: ${tos({ type, live })}`);
+    logger.debug(`destroyById: ${JSON.stringify({ type })}`);
     const client = clientByType({ type })(getClients());
     assert(client.spec);
     assert(client, `Cannot find endpoint type ${type}}`);

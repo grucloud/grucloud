@@ -16,6 +16,7 @@ describe("MockProviderHooks", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
     const provider = MockProvider({ config });
     const resources = await createResources({ provider });
+    // TODO check this, dirname is obsolete
     try {
       provider.register({
         dirname: path.resolve(__dirname, "fixtures"),
