@@ -12,22 +12,6 @@ const toJSON = (x) => JSON.stringify(x, null, 4);
 const { setupProviders } = require("../../../cli/cliUtils");
 
 describe("MockProviderHooks", async function () {
-  it("exception on hook.js", async function () {
-    const config = ConfigLoader({ baseDir: __dirname });
-    const provider = MockProvider({ config });
-    const resources = await createResources({ provider });
-    // TODO check this, dirname is obsolete
-    try {
-      provider.register({
-        dirname: path.resolve(__dirname, "fixtures"),
-        resources,
-      });
-      assert(false, "should not be here");
-    } catch (error) {
-      assert.equal(error.message, "Bang");
-    }
-  });
-
   it("onDeployed", async function () {
     const onDeployed = { init: sinon.spy() };
     const onDestroyed = { init: sinon.spy() };

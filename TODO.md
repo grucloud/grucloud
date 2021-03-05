@@ -8,6 +8,9 @@
   client.onDeployed && client.onDeployed(result);
   })(clients)
   ),_/
+
+  - case where provider does have any resources
+
 - add projectName and use it as the title of the graph
 - destroy: use live instead of id
 - gc d : EC2 │ web, web-iam, , web-server

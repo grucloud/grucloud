@@ -119,7 +119,7 @@ exports.createProgram = ({ version, commands }) => {
 
   program
     .command("list")
-    .description("List the resources")
+    .description("List the live resources")
     .alias("l")
     .option("-a, --all", "List also read-only resources")
     .option("-n, --name <value>", "List by name")

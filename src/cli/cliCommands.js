@@ -1083,7 +1083,7 @@ const listDoOk = ({ commandOptions, programOptions }) =>
     tap((results) => {
       logger.debug(`listLives`);
     }),
-    (results) => ({ error: any(get("error"))(results), results }),
+    assign({ error: any(get("error")) }),
     tap((result) =>
       saveToJson({ command: "list", commandOptions, programOptions, result })
     ),

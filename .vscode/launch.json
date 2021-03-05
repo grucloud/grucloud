@@ -183,6 +183,16 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Mock Multi List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/mock/mock-multi",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["list"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Mock Plan",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/mock",
