@@ -584,19 +584,17 @@ const doPlansDeploy = ({ commandOptions, programOptions, providersGru }) => (
               ])
             ),
             //TODO result => resultApply
-            assign({
-              result: () =>
-                providersGru.planApply({
-                  onStateChange,
-                  plan: result,
-                }),
-            }),
+            () =>
+              providersGru.planApply({
+                onStateChange,
+                plan: result,
+              }),
             tap((xxx) => {
               assert(xxx);
             }),
             tap(
               pipe([
-                get("result.results"),
+                get("results"),
                 filter(not(get("error"))),
                 forEach(({ providerName, error }) =>
                   providersGru
@@ -610,13 +608,6 @@ const doPlansDeploy = ({ commandOptions, programOptions, providersGru }) => (
             ),
           ])(),
       }),
-    tap((result) => {
-      logger.debug("doPlansDeploy");
-    }),
-    //assign({ error: any(get("error")) }),
-    tap((result) => {
-      logger.debug("doPlansDeploy");
-    }),
     tap((result) =>
       saveToJson({ command: "apply", commandOptions, programOptions, result })
     ),

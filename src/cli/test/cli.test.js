@@ -317,10 +317,9 @@ describe("cli error", function () {
       configFile: configFile500,
       onExit: ({ code, error: { error } }) => {
         assert.equal(code, 422);
-        const { result } = error;
-        assert(result.error);
+        assert(error.error);
         assert.equal(
-          result.results[0].resultCreate.results[0].error.Status,
+          error.results[0].resultCreate.results[0].error.Status,
           500
         );
       },
@@ -449,9 +448,8 @@ describe("cli error", function () {
       configFile: configFileGetId500,
       onExit: ({ code, error: { error } }) => {
         assert.equal(code, 422);
-        const { result } = error;
-        assert(result.error);
-        const resultCreate = result.results[0].resultCreate;
+        assert(error.error);
+        const resultCreate = error.results[0].resultCreate;
         assert(resultCreate);
         assert(resultCreate.error);
         //TODO Sometimes it fails.
