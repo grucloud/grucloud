@@ -2003,7 +2003,6 @@ function CoreProvider({
         destroy: ({ lives, destroyPlans }) =>
           planDestroy({
             plans: destroyPlans,
-            resultProviders: findDestroy.resultProviders,
             options,
             direction: PlanDirection.DOWN,
             lives,
