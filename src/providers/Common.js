@@ -42,11 +42,12 @@ exports.typeFromResources = typeFromResources;
 
 exports.planToResourcesPerType = ({ providerName, plans }) =>
   pipe([
-    tap((plans) => {
+    tap(() => {
       logger.debug("planToResourcesPerType");
       assert(providerName);
-      assert(plans);
+      assert(Array.isArray(plans));
     }),
+    () => plans,
     pluck("resource"),
     groupBy("type"),
     values,
@@ -58,7 +59,7 @@ exports.planToResourcesPerType = ({ providerName, plans }) =>
     tap((obj) => {
       logger.debug("planToResourcesPerType");
     }),
-  ])(plans);
+  ])();
 
 exports.axiosErrorToJSON = (error) => ({
   isAxiosError: error.isAxiosError,

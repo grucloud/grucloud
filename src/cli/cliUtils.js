@@ -1,6 +1,5 @@
 const Spinnies = require("spinnies");
 const assert = require("assert");
-const plu = require("pluralize");
 
 const {
   map,
@@ -213,7 +212,7 @@ const displayProviderList = pipe([
   tap((list) => {
     assert(list[0]);
   }),
-  (list) => list.join(","),
+  (list) => list.join(", "),
 ]);
 exports.displayProviderList = displayProviderList;
 

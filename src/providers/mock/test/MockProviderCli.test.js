@@ -130,13 +130,17 @@ describe("MockProviderCli", async function () {
       });
       assert(!output);
     }
-    const { result, error } = await cliCommands.planDestroy({
-      infra,
-      commandOptions: { force: true, name: "volume" },
-    });
-    assert(!error);
-    assert.equal(result.plans[0].resource.name, "volume");
-
+    {
+      const result = await cliCommands.planDestroy({
+        infra,
+        commandOptions: { force: true, name: "volume" },
+      });
+      assert(!result.error);
+      assert.equal(
+        result.resultQueryDestroy.results[0].destroyPlans[0].resource.name,
+        "volume"
+      );
+    }
     const resultDestroy = await cliCommands.planDestroy({
       infra,
       commandOptions: { force: true },

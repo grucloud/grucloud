@@ -81,7 +81,11 @@ describe("MockProviderHooks", async function () {
       });
       assert(false, "should not be here");
     } catch (error) {
-      assert.equal(error.error.lives.results[0].error.response.status, 404);
+      assert.equal(
+        error.error.resultQueryDestroy.results[0].lives.results[0].error
+          .response.status,
+        404
+      );
     }
 
     assert(!onDestroyed.init.called);

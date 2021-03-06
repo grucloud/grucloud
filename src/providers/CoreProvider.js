@@ -53,12 +53,14 @@ const {
   planToResourcesPerType,
 } = require("./Common");
 const { Lister } = require("./Lister");
-
+const { Planner, mapToGraph } = require("./Planner");
 const {
-  liveToUri,
-  isTypesMatch,
-  isValidPlan,
   nextStateOnError,
+  hasResultError,
+  PlanDirection,
+  isTypesMatch,
+  isTypeMatch,
+  isValidPlan,
   filterReadClient,
   filterReadWriteClient,
   contextFromClient,
@@ -66,8 +68,11 @@ const {
   contextFromProviderInit,
   contextFromResourceType,
   contextFromPlanner,
+  contextFromResource,
   contextFromHook,
   contextFromHookAction,
+  liveToUri,
+  providerRunning,
 } = require("./ProviderCommon");
 
 const configProviderDefault = {
@@ -637,6 +642,8 @@ function CoreProvider({
 
   // Target Resources
   const mapNameToResource = new Map();
+  const getMapNameToResource = () => mapNameToResource;
+
   const mapTypeToResources = new Map();
 
   const targetResourcesAdd = (resource) => {
@@ -666,7 +673,6 @@ function CoreProvider({
   const getTargetResources = () => [...mapNameToResource.values()];
   const resourceNames = () => pluck(["name"])([...mapNameToResource.values()]);
 
-  // TODO remove
   const getResource = pipe([
     get("uri"),
     tap((uri) => {
@@ -678,6 +684,7 @@ function CoreProvider({
   const specs = fnSpecs(providerConfig).map((spec) =>
     defaultsDeep(SpecDefault({ config: providerConfig, providerName }))(spec)
   );
+  const getSpecs = () => specs;
 
   const clients = specs.map((spec) =>
     createClient({
@@ -1139,18 +1146,22 @@ function CoreProvider({
       pipe([
         tap(() => {
           logger.debug("spinnersStartDeploy");
+          assert(plan);
         }),
         spinnersStartProvider({ onStateChange }),
         tap(
           switchCase([
             () => isValidPlan(plan.resultCreate),
             pipe([
+              tap(() => {
+                assert(Array.isArray(plan.resultCreate));
+              }),
               spinnersStartResources({
                 onStateChange,
                 title: TitleDeploying,
                 resourcesPerType: planToResourcesPerType({
                   providerName,
-                  plans: plan.resultCreate.plans,
+                  plans: plan.resultCreate,
                 }),
               }),
             ]),
@@ -1168,7 +1179,7 @@ function CoreProvider({
                 title: TitleDestroying,
                 resourcesPerType: planToResourcesPerType({
                   providerName,
-                  plans: plan.resultDestroy.plans,
+                  plans: plan.resultDestroy,
                 }),
               }),
             ]),
@@ -1240,7 +1251,7 @@ function CoreProvider({
         () =>
           hooks({
             resources,
-            config: providerConfig, //TODO provider.config()
+            config: providerConfig,
             provider,
           }),
         (instance) => {
@@ -1284,6 +1295,726 @@ function CoreProvider({
       }
     )();
 
+  const filterClient = async ({
+    result,
+    client,
+    options: { our, name, id, canBeDeleted, provider: providerName },
+    lives,
+  }) =>
+    switchCase([
+      get("error"),
+      () => result,
+      pipe([
+        tap((result) => {
+          logger.info(
+            `filterClient ${tos({
+              our,
+              name,
+              id,
+              canBeDeleted,
+              providerName,
+              type: client.spec.type,
+            })}`
+          );
+        }),
+        get("items"),
+        filter(not(get("error"))),
+        map((live) => ({
+          uri: liveToUri({ client, live }),
+          name: client.findName(live),
+          displayName: client.displayName({
+            name: client.findName(live),
+            meta: client.findMeta(live),
+          }),
+          meta: client.findMeta(live),
+          id: client.findId(live),
+          managedByUs: client.spec.isOurMinion({
+            resource: live,
+            lives,
+            resourceNames: resourceNames(),
+            config: providerConfig,
+          }),
+          providerName: client.spec.providerName,
+          type: client.spec.type,
+          live,
+          cannotBeDeleted: client.cannotBeDeleted({
+            resource: live,
+            name: client.findName(live),
+            resourceNames: resourceNames(),
+            config: providerConfig,
+          }),
+        })),
+        filter((item) => (our ? item.managedByUs : true)),
+        filter((item) => (name ? item.name === name : true)),
+        filter((item) => (id ? item.id === id : true)),
+        filter((item) =>
+          providerName ? item.providerName === providerName : true
+        ),
+        filter((item) => (canBeDeleted ? !item.cannotBeDeleted : true)),
+        (resources) => ({
+          type: client.spec.type,
+          resources,
+          providerName: client.providerName,
+        }),
+        tap((x) => {
+          assert(x);
+        }),
+      ]),
+    ])(result);
+
+  const listLives = async ({
+    onStateChange = identity,
+    options = {},
+    title = TitleListing,
+    readWrite = false,
+  } = {}) =>
+    pipe([
+      () => getClients(),
+      tap((clients) => {
+        logger.info(
+          `listLives #clients: ${clients.length}, ${JSON.stringify({
+            title,
+            readWrite,
+            options,
+          })}`
+        );
+      }),
+      switchCase([
+        () => readWrite,
+        filterReadWriteClient(options),
+        filterReadClient(options),
+      ]),
+      tap((clients) => {
+        logger.info(`listLives ${clients.length}`);
+      }),
+      map((client) => ({
+        type: client.spec.type,
+        providerName: client.spec.providerName,
+        key: `${client.spec.providerName}::${client.spec.type}`,
+        executor: ({ lives }) =>
+          pipe([
+            () =>
+              client.getList({
+                lives,
+                deep: true,
+                resources: getResourcesByType({ type: client.spec.type }),
+              }),
+            (result) =>
+              filterClient({
+                result,
+                client,
+                onStateChange,
+                options,
+                lives,
+              }),
+          ])(),
+        dependsOn: client.spec.listDependsOn,
+      })),
+      (inputs) =>
+        Lister({
+          inputs,
+          onStateChange: ({ type, error, ...other }) => {
+            assert(type);
+            onStateChange({
+              context: contextFromClient({
+                client: clientByType({ type }),
+                title,
+              }),
+              error,
+              ...other,
+            });
+          },
+        }),
+      (lister) => lister.run(),
+      tap((result) => {
+        assert(result);
+      }),
+      assign({
+        results: pipe([
+          get("results"),
+          filter(
+            or([
+              and([
+                pipe([
+                  get("type"),
+                  (type) => isTypesMatch({ typeToMatch: type })(options.types),
+                ]),
+                pipe([get("resources"), not(isEmpty)]),
+              ]),
+              pipe([get("error"), not(isEmpty)]),
+            ])
+          ),
+        ]),
+      }),
+      assign({ providerName: () => providerName }),
+      tap((result) => {
+        logger.info(`listLives result: ${tos(result)}`);
+      }),
+    ])();
+
+  const filterDestroyResources = ({
+    client,
+    resource,
+    options: {
+      all = false,
+      name: nameToDelete = "",
+      id: idToDelete = "",
+      types = [],
+    } = {},
+    direction,
+  }) => {
+    const { spec } = client;
+    const { type } = spec;
+    const { name, id, cannotBeDeleted, managedByUs } = resource;
+
+    assert(direction);
+    logger.debug(
+      `filterDestroyResources ${tos({
+        name,
+        all,
+        types,
+        id,
+        resource,
+        managedByUs,
+      })}`
+    );
+    return switchCase([
+      // Resource that cannot be deleted
+      () => cannotBeDeleted,
+      () => {
+        logger.debug(
+          `filterDestroyResources ${type}/${name}, default resource cannot be deleted`
+        );
+        return false;
+      },
+      // Delete all resources
+      () => all,
+      () => {
+        logger.debug(`filterDestroyResources ${type}/${name}, delete all`);
+        return true;
+      },
+      // Delete by id
+      () => !isEmpty(idToDelete),
+      () => id === idToDelete,
+      // Delete by name
+      () => !isEmpty(nameToDelete),
+      () => name === nameToDelete,
+      // Not our minion
+      () => !managedByUs,
+      () => {
+        logger.debug(`filterDestroyResources ${type}/${name}, not our minion`);
+        return false;
+      },
+      // Delete by type
+      () => !isEmpty(types),
+      () => any((type) => isTypeMatch({ type, typeToMatch: spec.type }))(types),
+      // PlanDirection
+      () => direction == PlanDirection.UP,
+      () => false,
+      () => true,
+    ])();
+  };
+
+  const planFindDestroy = async ({
+    options = {},
+    direction = PlanDirection.DOWN,
+    lives,
+  }) =>
+    pipe([
+      tap(() => {
+        logger.info(
+          `planFindDestroy ${JSON.stringify({ options, direction })}`
+        );
+        assert(lives);
+        assert(Array.isArray(lives.results));
+      }),
+      () => lives.results,
+      filter(not(get("error"))),
+      flatMap(({ type, resources }) =>
+        pipe([
+          tap(() => {
+            assert(type);
+            assert(Array.isArray(resources));
+          }),
+          () => clientByType({ type }),
+          (client) =>
+            pipe([
+              filter((resource) =>
+                filterDestroyResources({
+                  client,
+                  resource,
+                  options,
+                  direction,
+                })
+              ),
+              map((resource) => ({
+                resource: omit(["live"])(resource),
+                action: "DESTROY",
+                live: resource.live,
+                providerName: resource.providerName,
+              })),
+            ])(resources),
+        ])()
+      ),
+      tap((results) => {
+        assert(results);
+      }),
+      filter(not(isEmpty)),
+      tap((results) => {
+        logger.debug(`planFindDestroy`);
+      }),
+    ])();
+
+  const planQueryDestroy = async ({ options = {} }) =>
+    pipe([
+      tap(() => {
+        logger.info(
+          `planQueryDestroy ${JSON.stringify({ providerName, options })}`
+        );
+      }),
+      () => ({ providerName }),
+      assign({
+        lives: () =>
+          listLives({
+            options,
+            readWrite: true,
+          }),
+      }),
+      assign({
+        destroyPlans: ({ lives }) => planFindDestroy({ options, lives }),
+      }),
+      assign({ error: any(get("error")) }),
+      tap((result) => {
+        logger.debug(`planQueryDestroy done`);
+      }),
+    ])();
+
+  const planUpsert = async ({ onStateChange = noop, lives }) =>
+    pipe([
+      tap(() => {
+        logger.info(`planUpsert`);
+        assert(lives);
+      }),
+      tap(() =>
+        onStateChange({
+          context: contextFromPlanner({
+            providerName: providerName,
+            title: TitleQuery,
+          }),
+          nextState: "RUNNING",
+        })
+      ),
+      () => getTargetResources(),
+      filter(not(get("spec.listOnly"))),
+      tap(
+        map((resource) =>
+          onStateChange({
+            context: contextFromResource({
+              operation: TitleQuery,
+              resource: resource.toJSON(),
+            }),
+            nextState: "RUNNING",
+          })
+        )
+      ),
+      map.pool(
+        mapPoolSize,
+        tryCatch(
+          async (resource) => {
+            onStateChange({
+              context: contextFromResource({
+                operation: TitleQuery,
+                resource: resource.toJSON(),
+              }),
+              nextState: "RUNNING",
+            });
+            const actions = await resource.planUpsert({ resource, lives });
+            onStateChange({
+              context: contextFromResource({
+                operation: TitleQuery,
+                resource: resource.toJSON(),
+              }),
+              nextState: "DONE",
+            });
+            return actions;
+          },
+          (error, resource) => {
+            logger.error(`error query resource ${resource.toString()}`);
+            logger.error(JSON.stringify(error, null, 4));
+            logger.error(error.toString());
+            error.stack && logger.error(error.stack);
+
+            onStateChange({
+              context: contextFromResource({
+                operation: TitleQuery,
+                resource: resource.toJSON(),
+              }),
+              nextState: "ERROR",
+              error,
+            });
+            return [{ error, resource: resource.toJSON() }];
+          }
+        )
+      ),
+      filter(not(isEmpty)),
+      flatten,
+      tap((result) => {
+        assert(result);
+      }),
+      tap((plans) =>
+        onStateChange({
+          context: contextFromPlanner({ providerName, title: TitleQuery }),
+          nextState: nextStateOnError(hasResultError(plans)),
+        })
+      ),
+      tap((result) => {
+        logger.info(`planUpsert: result: ${tos(result)}`);
+      }),
+    ])();
+
+  const planQuery = async ({
+    onStateChange = identity,
+    commandOptions = {},
+  } = {}) =>
+    pipe([
+      tap(() => {
+        logger.info(`planQuery begins ${providerName}`);
+      }),
+      providerRunning({ onStateChange, providerName }),
+      () => ({ providerName }),
+      assign({
+        lives: () =>
+          listLives({
+            onStateChange,
+            options: commandOptions,
+          }),
+      }),
+      assign({
+        resultDestroy: ({ lives }) =>
+          planFindDestroy({
+            direction: PlanDirection.UP,
+            options: commandOptions,
+            lives,
+          }),
+      }),
+      assign({
+        resultCreate: ({ lives }) =>
+          planUpsert({
+            onStateChange,
+            lives,
+          }),
+      }),
+      tap((result) => {
+        assert(result);
+      }),
+      assign({ error: any(get("error")) }),
+      tap((result) => {
+        assert(result);
+      }),
+      tap(({ error }) =>
+        onStateChange({
+          context: contextFromProvider({ providerName }),
+          nextState: nextStateOnError(error),
+        })
+      ),
+      tap((result) => {
+        logger.debug(`planQuery result ${providerName}: ${tos(result)}`);
+      }),
+    ])({});
+
+  const planApply = async ({ plan, onStateChange = identity }) =>
+    pipe([
+      tap(() => {
+        assert(plan);
+        logger.info(`Apply Plan ${tos(plan)}`);
+      }),
+      providerRunning({ onStateChange, providerName }),
+      assign({
+        resultDestroy: switchCase([
+          () => isValidPlan(plan.resultDestroy),
+          () =>
+            planDestroy({
+              plans: plan.resultDestroy,
+              onStateChange,
+              direction: PlanDirection.UP,
+              title: TitleDestroying,
+            }),
+          () => ({ error: false, results: [], plans: [] }),
+        ]),
+      }),
+      assign({
+        resultCreate: switchCase([
+          () => isValidPlan(plan.resultCreate),
+          pipe([
+            () =>
+              upsertResources({
+                plans: plan.resultCreate,
+                onStateChange,
+                title: TitleDeploying,
+              }),
+          ]),
+          () => ({ error: false, plans: [] }),
+        ]),
+      }),
+      tap((result) => {
+        assert(result);
+      }),
+      (result) => ({
+        providerName,
+        lives: plan.lives, // TODO do we need live here
+        error: result.resultCreate.error || result.resultDestroy.error,
+        resultCreate: result.resultCreate,
+        resultDestroy: result.resultDestroy,
+      }),
+      tap((result) =>
+        forEach((client) => {
+          client.onDeployed && client.onDeployed(result);
+        })(getClients())
+      ),
+      tap((result) => {
+        logger.info(`Apply result: ${tos(result)}`);
+      }),
+    ])();
+
+  const onStateChangeResource = ({ operation, onStateChange }) => {
+    return ({ resource, error, ...other }) => {
+      logger.debug(
+        `onStateChangeResource resource:${tos(resource)}, ${tos(other)}`
+      );
+
+      assert(resource, "no resource");
+      assert(resource.type, "no resource.type");
+
+      onStateChange({
+        context: contextFromResource({ operation, resource }),
+        error,
+        ...other,
+      });
+    };
+  };
+  const upsertResources = async ({ plans, onStateChange, title }) => {
+    assert(onStateChange);
+    assert(title);
+    assert(Array.isArray(plans));
+
+    const executor = async ({ item }) => {
+      const { resource, live, action, diff } = item;
+      const engine = getResource(resource);
+      assert(engine, `Cannot find resource ${tos(resource)}`);
+      const resolvedDependencies = await engine.resolveDependencies({
+        dependenciesMustBeUp: true,
+      });
+      const input = await engine.resolveConfig({
+        live,
+        resolvedDependencies,
+      });
+      return switchCase([
+        () => action === "UPDATE",
+        async () => ({
+          input,
+          output: await engine.update({
+            payload: input,
+            live,
+            diff,
+            resolvedDependencies,
+          }),
+        }),
+        () => action === "CREATE",
+        async () => ({
+          input,
+          output: await engine.create({
+            payload: input,
+            resolvedDependencies,
+          }),
+        }),
+        () => assert("action is not handled"),
+      ])();
+    };
+
+    return switchCase([
+      () => !isEmpty(plans),
+      pipe([
+        () =>
+          Planner({
+            plans,
+            dependsOnType: getSpecs(),
+            dependsOnInstance: mapToGraph(getMapNameToResource()),
+            executor,
+            onStateChange: onStateChangeResource({
+              operation: TitleDeploying,
+              onStateChange,
+            }),
+          }),
+        (planner) => planner.run(),
+        tap((result) =>
+          onStateChange({
+            context: contextFromPlanner({ providerName, title }),
+            nextState: nextStateOnError(result.error),
+          })
+        ),
+      ]),
+      () => ({ error: false, plans }),
+    ])();
+  };
+
+  const destroyByClient = async ({
+    client,
+    name,
+    meta,
+    resourcesPerType = [],
+    live,
+    lives,
+  }) =>
+    pipe([
+      tap((x) => {
+        logger.debug(
+          `destroyByClient: ${tos({
+            type: client.spec.type,
+            name,
+            meta,
+            live,
+            resourcesPerType,
+          })}`
+        );
+        assert(client);
+        assert(live);
+        assert(lives);
+        assert(name);
+      }),
+      () => client.findId(live),
+      tap((id) => {
+        assert(id, `destroyByClient missing id in live: ${tos(live)}`);
+      }),
+      (id) =>
+        pipe([
+          find(eq(get("name"), name)),
+          tap((resource) => {
+            //assert(resource, `no resource for id ${id}`);
+          }),
+          tap((resource) =>
+            retryCall({
+              name: `destroy ${client.spec.type}/${id}/${name}`,
+              fn: () =>
+                client.destroy({
+                  live,
+                  id, // TODO remove id, only use live
+                  name,
+                  meta,
+                  resource,
+                  lives,
+                }),
+              isExpectedResult: () => true,
+              //TODO isExpectedException: client.isExpectedExceptionDelete
+              shouldRetryOnException: client.shouldRetryOnExceptionDelete,
+              config: provider.config(),
+            })
+          ),
+        ])(resourcesPerType),
+      tap(() => {
+        logger.info(
+          `destroyByClient: DONE ${JSON.stringify({
+            type: client.spec.type,
+            name,
+          })}`
+        );
+      }),
+    ])();
+
+  const destroyById = async ({ type, live, lives, name, meta }) => {
+    logger.debug(`destroyById: ${JSON.stringify({ type, name })}`);
+    const client = clientByType({ type });
+    assert(client, `Cannot find endpoint type ${type}}`);
+    assert(client.spec);
+    assert(live);
+    assert(lives);
+
+    return destroyByClient({
+      client,
+      name,
+      meta,
+      live,
+      lives,
+      resourcesPerType: getResourcesByType({ type }),
+    });
+  };
+
+  const planDestroy = async ({
+    plans,
+    onStateChange = identity,
+    direction = PlanDirection.DOWN,
+    lives,
+  }) =>
+    pipe([
+      tap(() => {
+        assert(Array.isArray(plans), "plans must be an array");
+        logger.info(`planDestroy ${tos({ plans, direction })}`);
+        assert(lives);
+        assert(lives.results);
+      }),
+      providerRunning({ onStateChange, providerName }),
+      tap(() =>
+        onStateChange({
+          context: contextFromPlanner({
+            providerName,
+            title: TitleDestroying,
+          }),
+          nextState: "RUNNING",
+        })
+      ),
+      () =>
+        Planner({
+          plans: plans,
+          dependsOnType: getSpecs(),
+          dependsOnInstance: mapToGraph(getMapNameToResource()),
+          executor: ({ item }) =>
+            destroyById({
+              providerName: item.providerName,
+              name: item.resource.name,
+              meta: item.resource.meta,
+              type: item.resource.type,
+              live: item.live,
+              lives,
+            }),
+          down: true,
+          onStateChange: onStateChangeResource({
+            operation: TitleDestroying,
+            onStateChange,
+          }),
+        }),
+      (planner) => planner.run(),
+      tap(({ error }) =>
+        onStateChange({
+          context: contextFromPlanner({ providerName, title: TitleDestroying }),
+          nextState: nextStateOnError(error),
+        })
+      ),
+    ])();
+
+  const destroyAll = ({ options } = {}) =>
+    pipe([
+      tap(() => {
+        logger.info(`destroyAll ${JSON.stringify(options)}`);
+      }),
+      () => planQueryDestroy({ options }),
+      tap((xxx) => {
+        assert(xxx);
+      }),
+      assign({
+        destroy: ({ lives, destroyPlans }) =>
+          planDestroy({
+            plans: destroyPlans,
+            resultProviders: findDestroy.resultProviders,
+            options,
+            direction: PlanDirection.DOWN,
+            lives,
+          }),
+      }),
+      assign({ error: any(get("error")) }),
+      tap((result) => {
+        logger.info(`destroyAll ${tos(result)}`);
+      }),
+    ])({});
+
   const toString = () => ({ name: providerName, type: toType() });
 
   const color = "#383838";
@@ -1324,11 +2055,11 @@ ${result}}
 `,
     ])();
 
-  const createGruDelegation = ({ method, provider, params }) =>
-    pipe([
-      () => ProviderGru({ stacks: [{ provider }] }),
-      (providerGru) => providerGru[method](...params),
-    ])();
+  const planQueryAndApply = async ({ onStateChange = identity } = {}) => {
+    const plan = await planQuery({ onStateChange });
+    if (plan.error) return { error: true, plan };
+    return await planApply({ plan, onStateChange });
+  };
 
   const provider = {
     toString,
@@ -1343,18 +2074,13 @@ ${result}}
     spinnersStopListLives,
     spinnersStartDestroyQuery,
     spinnersStartDestroy,
-    planFindDestroy: (...params) =>
-      createGruDelegation({ provider, method: "planFindDestroy", params }),
-    destroyAll: (...params) =>
-      createGruDelegation({ provider, method: "destroyAll", params }),
-    planQueryAndApply: (...params) =>
-      createGruDelegation({ provider, method: "planQueryAndApply", params }),
-    listLives: (...params) =>
-      createGruDelegation({ provider, method: "listLives", params }),
-    planQuery: (...params) =>
-      createGruDelegation({ provider, method: "planQuery", params }),
-    planApply: (...params) =>
-      createGruDelegation({ provider, method: "planApply", params }),
+    planQueryDestroy,
+    planDestroy,
+    destroyAll,
+    planQueryAndApply,
+    listLives,
+    planQuery,
+    planApply,
     listTargets,
     listConfig,
     targetResourcesAdd,

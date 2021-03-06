@@ -22,6 +22,7 @@ const {
   get,
 } = require("rubico");
 const {
+  find,
   pluck,
   isEmpty,
   flatten,
@@ -43,37 +44,39 @@ const {
 } = require("./displayUtils");
 const { convertError, HookType } = require("../providers/Common");
 const { tos } = require("../tos");
-// Common
 
 const DisplayAndThrow = ({ name }) => (error) => {
   displayError({ name, error });
   throw { code: 422, error: { ...error, displayed: true } };
 };
 
-const throwIfError = tap((result) => {
-  if (result?.error) {
-    throw {
-      ...result,
-    };
-  }
+const throwIfError = tap.if(get("error"), (result) => {
+  throw result;
 });
 
-const formatResource = ({ providerName, type, name, id } = {}) =>
-  `${providerName}/${type}/${name || id}`;
+const formatResource = ({ providerName, type, name, id }) =>
+  pipe([
+    tap(() => {
+      assert(providerName);
+      assert(type);
+      assert(name || id);
+    }),
+    () => `${providerName}/${type}/${name || id}`,
+  ])();
 
 const countDeployResources = pipe([
-  tap((input) => {
-    assert(input);
-    assert(input.mapProvider);
+  tap((results) => {
+    assert(Array.isArray(results));
   }),
-  get("mapProvider"),
   reduce(
     (acc, value) => {
-      assert(value.resultCreate, "resultCreate");
-      assert(value.resultDestroy, "resultDestroy");
+      assert(Array.isArray(value.resultCreate), "resultCreate");
+      assert(Array.isArray(value.resultDestroy), "resultDestroy");
+
       const createCount = value.resultCreate.length;
       const destroyCount = value.resultDestroy.length;
       const providerActive = createCount > 0 || destroyCount > 0 ? 1 : 0;
+      //TODO count types for destroy
       return {
         providers: acc.providers + providerActive,
         types:
@@ -93,19 +96,28 @@ const countDeployResources = pipe([
 const hasPlans = pipe([
   tap((input) => {
     assert(input);
-    assert(input.resultCreate);
-    assert(input.resultCreate.plans);
-    assert(input.resultDestroy);
-    assert(input.resultDestroy.plans);
+    assert(input.results);
   }),
-  ({ resultCreate, resultDestroy }) =>
-    resultCreate.plans.length > 0 || resultDestroy.plans.length > 0,
+  get("results"),
+  filter(not(get("error"))),
+  find(
+    or([
+      pipe([get("resultCreate"), not(isEmpty)]),
+      pipe([get("resultDestroy"), not(isEmpty)]),
+    ])
+  ),
+  not(isEmpty),
   tap((hasPlan) => {
     logger.debug(`hasPlans ${hasPlan}`);
   }),
 ]);
 
-const saveToJson = ({ command, commandOptions, programOptions, result }) => {
+const saveToJson = ({
+  command,
+  commandOptions,
+  programOptions = {},
+  result,
+}) => {
   if (!programOptions.json) {
     return;
   }
@@ -118,6 +130,7 @@ const saveToJson = ({ command, commandOptions, programOptions, result }) => {
 const displayLiveError = (result) =>
   pipe([
     tap((results) => {
+      //TODO
       //logger.debug(results);
     }),
     filter(get("error")),
@@ -140,7 +153,7 @@ const displayPlanQueryErrorResult = pipe([
 
 const displayPlanApplyErrorResult = pipe([
   tap((xx) => {
-    logger.debug(tos(xx));
+    //logger.debug(tos(xx));
   }),
   filter(({ error }) => error),
   forEach(({ error, item: { resource } }) => {
@@ -294,27 +307,28 @@ const doPlanQuery = ({ commandOptions, programOptions }) =>
       assert(result);
     }),
     assign({ error: any(get("error")) }),
+    //TODO create own function
     tap(
       pipe([
         tap((result) => {
           assert(result);
         }),
-        get("resultQuery.mapProvider"),
-        tap(
-          pipe([
-            forEach(({ providerName, resultCreate, resultDestroy }) =>
-              displayPlan({
-                providerName,
-                newOrUpdate: resultCreate,
-                destroy: resultDestroy,
-              })
-            ),
-          ])
-        ),
+        get("resultQuery.results"),
         tap((result) => {
           assert(result);
         }),
+        filter(not(get("error"))),
+        forEach(({ providerName, resultCreate, resultDestroy }) =>
+          displayPlan({
+            providerName,
+            newOrUpdate: resultCreate,
+            destroy: resultDestroy,
+          })
+        ),
         displayPlanSummary,
+        tap((result) => {
+          assert(result);
+        }),
       ])
     ),
   ]);
@@ -345,7 +359,11 @@ const planQuery = async ({ infra, commandOptions = {}, programOptions = {} }) =>
           get("resultQuery"),
           switchCase([
             hasPlans,
-            pipe([countDeployResources, displayQueryPlanSummary]),
+            pipe([
+              get("results"),
+              countDeployResources,
+              displayQueryPlanSummary,
+            ]),
             displayQueryNoPlan,
           ]),
         ])
@@ -498,6 +516,7 @@ exports.planApply = async ({
       tap((result) => {
         logger.debug("promptConfirmDeploy");
       }),
+      get("results"),
       countDeployResources,
       ({ providers, types, create, destroy }) =>
         prompts({
@@ -516,16 +535,16 @@ exports.planApply = async ({
           }?`,
           initial: false,
         }),
-      tap((result) => {
-        logger.debug("promptConfirmDeploy");
+      get("confirmDeploy"),
+      tap((confirmDeploy) => {
+        logger.debug(`promptConfirmDeploy ${confirmDeploy}`);
       }),
-      ({ confirmDeploy }) => confirmDeploy,
     ])(allPlans);
 
   const displayDeploySuccess = pipe([
-    tap((input) => {
+    tap((results) => {
       logger.debug("displayDeploySuccess");
-      assert(input.mapProvider);
+      assert(Array.isArray(results));
     }),
     countDeployResources,
     ({ providers, types, create, destroy }) =>
@@ -539,13 +558,14 @@ exports.planApply = async ({
         )}`
       ),
   ]);
-
-  const doPlansDeploy = ({ commandOptions, providersGru }) =>
+  //TODO result => planInfo
+  const doPlansDeploy = ({ commandOptions, providersGru }) => (result) =>
     pipe([
-      tap((result) => {
-        logger.debug("doPlansDeploy ", providersGru.sequencial);
+      tap(() => {
+        logger.debug("doPlansDeploy ");
       }),
-      (result) =>
+      () => result,
+      ({ results }) =>
         runAsyncCommand({
           text: displayCommandHeader({
             providers: providersGru.getProviders(),
@@ -553,29 +573,26 @@ exports.planApply = async ({
           }),
           command: ({ onStateChange }) =>
             pipe([
-              () => result,
               tap(
                 pipe([
-                  get("mapProvider"),
-                  map.series(({ providerName, plans }) =>
+                  () => results,
+                  map.series((plan) =>
                     providersGru
-                      .getProvider({ providerName })
+                      .getProvider({ providerName: plan.providerName })
                       .spinnersStartDeploy({
                         onStateChange,
-                        plan: result,
+                        plan,
                       })
                   ),
                 ])
               ),
-              tap((xx) => {
-                logger.debug("doPlansDeploy Spinners started");
-              }),
               assign({
                 resultStart: () =>
                   providersGru.start({
                     onStateChange,
                   }),
               }),
+              //TODO result => resultApply
               assign({
                 result: () =>
                   providersGru.planApply({
@@ -583,23 +600,22 @@ exports.planApply = async ({
                     plan: result,
                   }),
               }),
-              /*mapFunction(providersGru.sequencial)(
+              tap((xxx) => {
+                assert(xxx);
+              }),
+              tap(
                 pipe([
-                  assign({
-                    result: ({ provider, resultQuery }) =>
-                      provider.planApply({
-                        plan: resultQuery,
+                  get("result.results"),
+                  forEach(({ providerName, error }) =>
+                    providersGru
+                      .getProvider({ providerName })
+                      .spinnersStopProvider({
                         onStateChange,
-                      }),
-                  }),
-                  tap(({ provider, result }) =>
-                    provider.spinnersStopProvider({
-                      onStateChange,
-                      error: result.error,
-                    })
+                        error,
+                      })
                   ),
                 ])
-              ),*/
+              ),
             ])(),
         }),
 
@@ -611,19 +627,11 @@ exports.planApply = async ({
         saveToJson({ command: "apply", commandOptions, programOptions, result })
       ),
       throwIfError,
-      tap((result) => {
+      tap((xxx) => {
         logger.debug("doPlansDeploy");
       }),
-      tap(
-        pipe([
-          tap((result) => {
-            logger.debug("doPlansDeploy");
-          }),
-
-          displayDeploySuccess,
-        ])
-      ),
-    ]);
+      tap(() => displayDeploySuccess(result.results)),
+    ])();
 
   const processDeployPlans = ({ providersGru }) =>
     switchCase([
@@ -667,20 +675,21 @@ exports.planApply = async ({
 
 // Plan Destroy
 
-const processHasNoPlan = tap(() => {
+const processHasNoPlan = () => {
   console.log("No resources to destroy");
-});
+};
 
 const countDestroyed = reduce(
   (acc, value) => {
     assert(value, "value.result");
-    assert(value.plans, "value.plans");
-    const resourceCount = value.plans.length;
+    const plans = value.destroyPlans;
+    assert(Array.isArray(plans), "plans");
+
+    const resourceCount = plans.length;
     const providerActive = resourceCount > 0 ? 1 : 0;
     return {
       providers: acc.providers + providerActive,
-      types:
-        acc.types + pipe([pluck("resource.type"), uniq, size])(value.plans),
+      types: acc.types + pipe([pluck("resource.type"), uniq, size])(plans),
       resources: acc.resources + resourceCount,
     };
   },
@@ -691,9 +700,9 @@ const displayDestroySuccess = pipe([
   tap((x) => {
     logger.debug(`displayDestroySuccess`);
   }),
-  get("resultProviders"),
-  tap((resultProviders) => {
-    assert(resultProviders);
+  get("resultQueryDestroy.results"),
+  tap((results) => {
+    assert(results);
   }),
   countDestroyed,
   tap((stats) => {
@@ -711,9 +720,9 @@ const displayDestroySuccess = pipe([
 
 const promptConfirmDestroy = (result) =>
   pipe([
-    () => result.resultProviders,
-    tap((resultProviders) => {
-      assert(resultProviders);
+    () => result,
+    tap((result) => {
+      assert(result);
       logger.debug(`promptConfirmDestroy`);
     }),
     countDestroyed,
@@ -731,6 +740,9 @@ const promptConfirmDestroy = (result) =>
         initial: false,
       }),
     get("confirmDestroy"),
+    tap((confirmDestroy) => {
+      logger.debug(`promptConfirmDestroy ${confirmDestroy}`);
+    }),
   ])();
 
 const displayDestroyErrors = pipe([
@@ -745,52 +757,53 @@ exports.planDestroy = async ({
   commandOptions = {},
   programOptions = {},
 }) => {
-  const doPlansDestroy = ({ commandOptions, providersGru, lives }) =>
+  const doPlansDestroy = ({
+    commandOptions,
+    providersGru,
+    resultQueryDestroy,
+  }) =>
     pipe([
-      tap(({ plans, resultProviders }) => {
+      tap(() => {
         logger.debug(`doPlansDestroy`);
-        assert(plans);
-        assert(resultProviders);
+        assert(resultQueryDestroy);
       }),
+      () => ({ resultQueryDestroy }),
+      //TODO Do not use assign here
       assign({
-        resultsDestroy: (result) =>
+        resultsDestroy: () =>
           runAsyncCommand({
             text: displayCommandHeader({
-              providers: providersGru.getProviders(),
+              providers: providersGru.getProviders(), //TODO pick provider names from  resultQueryDestroy.results
               verb: "Destroying",
             }),
             command: ({ onStateChange }) =>
               pipe([
-                () => result,
                 tap(
                   pipe([
-                    get("resultProviders"),
-                    map.series(({ providerName, plans }) =>
+                    () => resultQueryDestroy.results,
+                    map.series(({ providerName, destroyPlans }) =>
                       providersGru
                         .getProvider({ providerName })
                         .spinnersStartDestroy({
                           onStateChange,
-                          plans,
+                          plans: destroyPlans,
                         })
                     ),
                   ])
                 ),
+                //TODO do we need start here ?
                 assign({
                   resultStart: () =>
                     providersGru.start({
                       onStateChange,
                     }),
                 }),
-                tap((xxx) => {
-                  assert(xxx);
-                }),
+                //TODO change name
                 assign({
-                  result: ({ plans, resultProviders }) =>
+                  result: () =>
                     providersGru.planDestroy({
                       onStateChange,
-                      lives,
-                      plans: plans.reverse(),
-                      resultProviders,
+                      plan: resultQueryDestroy,
                     }),
                 }),
               ])(),
@@ -817,23 +830,24 @@ exports.planDestroy = async ({
       tap((result) => {
         logger.debug(`doPlansDestroy finished, error: ${result.error}`);
       }),
-    ]);
+    ])();
 
-  const processDestroyPlans = ({ providersGru, lives }) =>
+  const processDestroyPlans = ({ providersGru, resultQueryDestroy }) =>
     pipe([
-      tap((input) => {
-        assert(input.plans);
+      tap(() => {
+        assert(Array.isArray(resultQueryDestroy.results));
         logger.debug("processDestroyPlans");
       }),
-      //get("plans"),
+      () => resultQueryDestroy.results,
       switchCase([
         (plans) => commandOptions.force || promptConfirmDestroy(plans),
-        doPlansDestroy({ commandOptions, providersGru, lives }),
+        () =>
+          doPlansDestroy({ commandOptions, providersGru, resultQueryDestroy }),
         tap(() => {
           console.log("Abort destroying plan");
         }),
       ]),
-    ]);
+    ])();
 
   return tryCatch(
     pipe([
@@ -862,19 +876,10 @@ exports.planDestroy = async ({
                       }),
                   }),
                   assign({
-                    lives: () =>
-                      providersGru.listLives({
+                    resultQueryDestroy: () =>
+                      providersGru.planQueryDestroy({
                         onStateChange,
                         options: commandOptions,
-                        readWrite: true,
-                      }),
-                  }),
-                  assign({
-                    result: ({ lives }) =>
-                      providersGru.planFindDestroy({
-                        onStateChange,
-                        options: commandOptions,
-                        lives,
                       }),
                   }),
                   tap((xxx) => {
@@ -883,9 +888,9 @@ exports.planDestroy = async ({
                   assign({ error: any(get("error")) }),
                   tap(
                     pipe([
-                      get("result.resultProviders"),
-                      tap((xxx) => {
-                        //console.log(JSON.stringify(xxx, null, 4));
+                      get("resultQueryDestroy.results"),
+                      tap((results) => {
+                        assert(results);
                       }),
                       forEach(
                         pipe([
@@ -907,12 +912,12 @@ exports.planDestroy = async ({
           }),
           tap(
             pipe([
-              get("result.resultProviders"),
-              forEach(({ providerName, plans }) =>
+              get("resultQueryDestroy.results"),
+              forEach(({ providerName, destroyPlans }) =>
                 displayPlan({
                   providerName: providerName,
                   newOrUpdate: [],
-                  destroy: plans,
+                  destroy: destroyPlans,
                 })
               ),
               displayPlanDestroySummary,
@@ -922,17 +927,15 @@ exports.planDestroy = async ({
             assert(xxx);
           }),
           assign({
-            resultDestroy: ({ lives, result }) =>
+            resultDestroy: ({ resultQueryDestroy }) =>
               pipe([
-                () => result,
+                () => resultQueryDestroy.results,
                 switchCase([
-                  pipe([get("plans"), isEmpty]),
+                  find(pipe([get("destroyPlans"), isEmpty])),
                   processHasNoPlan,
-                  processDestroyPlans({ providersGru, lives }),
+                  () =>
+                    processDestroyPlans({ providersGru, resultQueryDestroy }),
                 ]),
-                tap((xxx) => {
-                  assert(xxx);
-                }),
               ])(),
           }),
           assign({ error: any(get("error")) }),
@@ -940,6 +943,7 @@ exports.planDestroy = async ({
             assert(xxx);
           }),
           throwIfError,
+          //TODO run inside provider
           tap.if(
             not(isEmpty),
             runAsyncCommandHook({
@@ -958,31 +962,20 @@ exports.planDestroy = async ({
 };
 
 const countResources = pipe([
-  tap((xx) => {
-    logger.debug(`countResources`);
+  tap((perProviders) => {
+    assert(Array.isArray(perProviders));
   }),
   reduce(
-    (acc, { providerName, type, resources }) =>
-      pipe([
-        tap(() => {
-          assert(providerName);
-          assert(type);
-          assert(Array.isArray(resources));
-        }),
-        tap(() => {
-          acc.providerSet.add(providerName);
-          acc.typeSet.add(type);
-          acc.resources = acc.resources + resources.length;
-        }),
-        () => acc,
-      ])(),
-    { providerSet: new Set(), typeSet: new Set(), resources: 0 }
+    (acc, { results }) => ({
+      providers: acc.providers + 1,
+      types: reduce((acc) => acc + 1, acc.types)(results),
+      resources: reduce(
+        (acc, value) => acc + value.resources.length,
+        acc.resources
+      )(results),
+    }),
+    { providers: 0, types: 0, resources: 0 }
   ),
-  ({ providerSet, typeSet, resources }) => ({
-    providers: providerSet.size,
-    types: typeSet.size,
-    resources,
-  }),
   tap((result) => {
     logger.info(`countResources ${JSON.stringify(result)}`);
   }),
@@ -1046,12 +1039,8 @@ const listDoOk = ({ commandOptions, programOptions }) =>
                 ),
               ])({}),
           }),
-        tap((xx) => {
-          logger.debug(`listLives`);
-        }),
         tap(({ result }) => providersGru.displayLives(result)),
       ])(),
-
     tap(
       pipe([
         tap((xxx) => {
@@ -1061,27 +1050,17 @@ const listDoOk = ({ commandOptions, programOptions }) =>
           pipe([get("result.results"), isEmpty]),
           displayNoList,
           pipe([
-            tap((xx) => {
-              logger.debug(`listLives`);
-            }),
             tap(displayListSummary),
-            tap((xx) => {
-              logger.debug(`listLives`);
-            }),
             get("result.results"),
             filter(not(get("error"))),
-            tap((xx) => {
-              logger.debug(`listLives`);
-            }),
             countResources,
             displayListSummaryResults,
           ]),
         ]),
       ])
     ),
-
-    tap((results) => {
-      logger.debug(`listLives`);
+    tap((xxx) => {
+      assert(xxx);
     }),
     assign({ error: any(get("error")) }),
     tap((result) =>

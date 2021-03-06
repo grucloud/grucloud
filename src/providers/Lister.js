@@ -30,20 +30,22 @@ exports.Lister = ({ inputs, onStateChange }) => {
   assert(isFunction(onStateChange));
   const resultMap = new Map();
   const statusMap = new Map(
-    map((input) => [input.type, { ...input, state: STATES.WAITING }])(inputs)
+    map((input) => [input.key, { ...input, state: STATES.WAITING }])(inputs)
   );
 
   const statusValues = () => [...statusMap.values()];
 
-  const runItem = async ({ entry: { type, providerName, executor }, onEnd }) =>
+  const runItem = async ({
+    entry: { providerName, key, type, executor },
+    onEnd,
+  }) =>
     pipe([
       tap(() => {
         assert(onEnd);
+        assert(key);
         assert(type);
         assert(executor);
-        assert(providerName);
-
-        logger.debug(`runItem begin ${type}`);
+        assert(providerName), logger.debug(`runItem begin ${key}`);
       }),
       tryCatch(
         pipe([
@@ -57,7 +59,9 @@ exports.Lister = ({ inputs, onStateChange }) => {
           () => executor({ lives: [...resultMap.values()] }),
           tap(() =>
             onStateChange({
+              key,
               type,
+              providerName,
               previousState: STATES.RUNNING,
               nextState: STATES.DONE,
             })
@@ -68,32 +72,32 @@ exports.Lister = ({ inputs, onStateChange }) => {
           logError("runItem", error);
           onStateChange({
             type,
+            providerName,
             previousState: STATES.RUNNING,
             nextState: STATES.ERROR,
             error,
           });
-          return { type, providerName, error };
+          return { providerName, type, error };
         }
       ),
       tap((result) => {
-        logger.debug(`runItem set result ${type}: ${tos(result)}`);
-        //TODO providerName + type as key
-        resultMap.set(type, result);
+        logger.debug(`runItem set result ${key}: ${tos(result)}`);
+        resultMap.set(key, result);
       }),
-      () => onEnd({ type }),
+      () => onEnd({ key, type }),
       tap(() => {
         logger.debug(`runItem end ${type}`);
       }),
     ])();
 
-  const onEnd = async ({ type }) =>
+  const onEnd = async ({ key, type }) =>
     pipe([
       () => statusValues(),
       tap((values) => {
-        logger.debug(`onEnd begin ${type}`);
+        logger.debug(`onEnd begin ${key}`);
       }),
       //Exclude the current resource
-      filter(not(eq(get("type"), type))),
+      filter(not(eq(get("key"), key))),
       // Find resources that depends on the one that just ended
       filter(pipe([get("dependsOn"), includes(type)])),
       tap((values) => {
@@ -104,7 +108,7 @@ exports.Lister = ({ inputs, onStateChange }) => {
           pipe([
             get("dependsOn"),
             tap((dependsOn) => {
-              logger.debug(`onEnd ${type}, ${entry.type}: ${tos(dependsOn)}`);
+              logger.debug(`onEnd ${key}, ${entry.type}: ${tos(dependsOn)}`);
             }),
             // Remove from the dependsOn array the one that just ended
             filter(not(includes(type))),
@@ -132,7 +136,7 @@ exports.Lister = ({ inputs, onStateChange }) => {
           ]),
           (error) => {
             logger.error(`Lister onEnd  ${tos({ error, entry })}`);
-            return { error, ...entry };
+            return { error, entry };
           }
         )(entry)
       ),

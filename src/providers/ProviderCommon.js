@@ -53,7 +53,7 @@ exports.notAvailable = notAvailable;
 exports.hasResultError = any(get("error"));
 exports.nextStateOnError = (error) => (error ? "ERROR" : "DONE");
 
-exports.isValidPlan = (plan) => !isEmpty(plan.plans) && !plan.error;
+exports.isValidPlan = not(isEmpty);
 
 exports.getField = ({ resource, live }, field) =>
   get(field, notAvailable(resource.name, field))(live);
@@ -252,13 +252,22 @@ exports.contextFromClient = ({ client, title }) => {
   };
 };
 
-exports.contextFromProvider = ({ providerName }) => {
+const contextFromProvider = ({ providerName }) => {
   assert(providerName);
   return {
     uri: providerName,
     displayText: () => providerName,
   };
 };
+exports.contextFromProvider = contextFromProvider;
+
+exports.providerRunning = ({ onStateChange, providerName }) =>
+  tap(() =>
+    onStateChange({
+      context: contextFromProvider({ providerName }),
+      nextState: "RUNNING",
+    })
+  );
 
 exports.contextFromProviderInit = ({ providerName }) => {
   assert(providerName);
@@ -322,71 +331,3 @@ exports.contextFromHookAction = ({
     displayText: () => name,
   };
 };
-//TODO
-exports.filterClient = async ({
-  result,
-  client,
-  options: { our, name, id, canBeDeleted, provider: providerName },
-  lives,
-  getProvider,
-}) =>
-  switchCase([
-    get("error"),
-    () => result,
-    pipe([
-      tap((result) => {
-        logger.info(
-          `filterClient ${tos({
-            our,
-            name,
-            id,
-            canBeDeleted,
-            providerName,
-            type: client.spec.type,
-          })}`
-        );
-      }),
-      get("items"),
-      filter(not(get("error"))),
-      map((live) => ({
-        uri: liveToUri({ client, live }),
-        name: client.findName(live),
-        displayName: client.displayName({
-          name: client.findName(live),
-          meta: client.findMeta(live),
-        }),
-        meta: client.findMeta(live),
-        id: client.findId(live),
-        managedByUs: client.spec.isOurMinion({
-          resource: live,
-          lives,
-          resourceNames: getProvider(client).resourceNames(),
-          config: getProvider(client).config(),
-        }),
-        providerName: client.spec.providerName,
-        type: client.spec.type,
-        live,
-        cannotBeDeleted: client.cannotBeDeleted({
-          resource: live,
-          name: client.findName(live),
-          resourceNames: getProvider(client).resourceNames(),
-          config: getProvider(client).config(),
-        }),
-      })),
-      filter((item) => (our ? item.managedByUs : true)),
-      filter((item) => (name ? item.name === name : true)),
-      filter((item) => (id ? item.id === id : true)),
-      filter((item) =>
-        providerName ? item.providerName === providerName : true
-      ),
-      filter((item) => (canBeDeleted ? !item.cannotBeDeleted : true)),
-      (resources) => ({
-        type: client.spec.type,
-        resources,
-        providerName: client.providerName,
-      }),
-      tap((x) => {
-        assert(x);
-      }),
-    ]),
-  ])(result);

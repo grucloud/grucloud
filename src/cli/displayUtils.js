@@ -47,10 +47,11 @@ exports.displayListSummary = pipe([
     assert(input.result.results);
   }),
   get("result.results"),
-  groupBy("providerName"),
-  map.entries(([providerName, results]) =>
+  map(({ providerName, results }) =>
     pipe([
       tap(() => {
+        assert(providerName);
+        assert(Array.isArray(results));
         console.log(`Provider: ${providerName}`);
       }),
       () =>
@@ -180,11 +181,11 @@ exports.displayPlanSummary = pipe([
   ),
 ]);
 
-exports.displayPlanDestroySummary = forEach(({ providerName, plans }) =>
+exports.displayPlanDestroySummary = forEach(({ providerName, destroyPlans }) =>
   pipe([
     tap(() => {
       assert(providerName);
-      assert(Array.isArray(plans));
+      assert(Array.isArray(destroyPlans));
     }),
     () =>
       new Table({
@@ -198,7 +199,7 @@ exports.displayPlanDestroySummary = forEach(({ providerName, plans }) =>
       displayResourcePerType({
         table,
         providerName,
-        plans,
+        plans: destroyPlans,
         title: `Destroy summary for provider ${providerName}`,
         colorName: "brightRed",
       })
@@ -285,10 +286,10 @@ const tablePlanPerType = {
 };
 
 exports.displayPlan = async (plan) => {
-  assert(Array.isArray(plan.destroy, "Array.isArray(plan.destroy"));
   if (!hasPlan(plan)) {
     return plan;
   }
+  assert(Array.isArray(plan.destroy, "Array.isArray(plan.destroy"));
 
   assert(plan.providerName);
   pipe([

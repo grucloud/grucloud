@@ -9,7 +9,7 @@ const cliCommands = require("../../../cli/cliCommands");
 const logger = require("logger")({ prefix: "MockProviderTest" });
 const { setupProviders } = require("../../../cli/cliUtils");
 
-describe.skip("MockProviderMulti", async function () {
+describe("MockProviderMulti", async function () {
   let provider1;
   let volume1;
   let provider2;
