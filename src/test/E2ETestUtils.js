@@ -6,8 +6,8 @@ const { tos } = require("../tos");
 
 const isPlanEmpty = switchCase([
   and([
-    (plan) => isEmpty(plan.resultDestroy.plans),
-    (plan) => isEmpty(plan.resultCreate.plans),
+    (plan) => isEmpty(plan.resultDestroy),
+    (plan) => isEmpty(plan.resultCreate),
   ]),
   () => true,
   () => false,
