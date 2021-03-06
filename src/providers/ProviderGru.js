@@ -76,6 +76,16 @@ const { displayLive } = require("../cli/displayUtils");
 const noop = ({}) => {};
 const identity = (x) => x;
 
+const runnerParams = ({ provider, isProviderUp }) => ({
+  key: provider.name,
+  meta: { providerName: provider.name },
+  dependsOn: reduce(
+    (acc, deps) => [...acc, deps.name],
+    []
+  )(provider.dependencies),
+  isUp: isProviderUp,
+});
+
 exports.ProviderGru = ({ stacks }) => {
   assert(Array.isArray(stacks));
 
@@ -121,33 +131,18 @@ exports.ProviderGru = ({ stacks }) => {
       }),
       () => stacks,
       map(({ provider, isProviderUp }) => ({
-        key: provider.name,
-        meta: { providerName: provider.name },
-        dependsOn: reduce(
-          (acc, deps) => [...acc, deps.name],
-          []
-        )(provider.dependencies),
-        isUp: isProviderUp,
+        ...runnerParams({ provider, isProviderUp }),
         executor: ({ lives }) =>
           pipe([
-            tap((result) => {
-              logger.info(`listLives`);
-            }),
-            () => provider.listLives({ lives }),
-            tap((result) => {
-              logger.info(`listLives done`);
-            }),
+            () => provider.start({ onStateChange }),
+            () => provider.listLives({ lives, options }),
           ])(),
       })),
       (inputs) =>
         Lister({
           inputs,
-          onStateChange: ({ key, result, nextState }) =>
+          onStateChange: ({ key, error, result, nextState }) =>
             pipe([
-              () => {
-                assert(key);
-                assert(nextState);
-              },
               tap.if(
                 () => includes(nextState)(["DONE", "ERROR"]),
                 pipe([
@@ -155,7 +150,7 @@ exports.ProviderGru = ({ stacks }) => {
                   (provider) =>
                     provider.spinnersStopListLives({
                       onStateChange,
-                      error: result.error,
+                      error: result?.error || error,
                     }),
                 ])
               ),
@@ -178,25 +173,34 @@ exports.ProviderGru = ({ stacks }) => {
       }),
     ])();
 
-  const planQuery = (params) =>
+  const planQuery = ({ onStateChange = identity } = {}) =>
     pipe([
       tap(() => {
-        logger.info(`planQuery `);
+        logger.info(`planQuery`);
       }),
-      () => getProviders(),
-      map(
-        tryCatch(
-          (provider) => provider.planQuery(params),
-          (error, provider) => {
-            logger.error(`planQuery ${tos(error)}`);
-            return {
-              error: convertError({ error, name: "Query" }),
-              providerName: provider.name,
-            };
-          }
-        )
-      ),
-      (results) => ({ error: any(get("error"))(results), results }),
+      () => stacks,
+      map(({ provider, isProviderUp }) => ({
+        ...runnerParams({ provider, isProviderUp }),
+        executor: ({ lives }) =>
+          pipe([
+            () => provider.start({ onStateChange }),
+            () => provider.planQuery({ onStateChange, lives }),
+          ])(),
+      })),
+      (inputs) =>
+        Lister({
+          inputs,
+          onStateChange: ({ key, result, nextState }) =>
+            pipe([
+              tap.if(
+                () => includes(nextState)(["DONE", "ERROR"]),
+                pipe([
+                  () => getProvider({ providerName: key }),
+                  (provider) => {},
+                ])
+              ),
+            ])(),
+        }),
       tap((result) => {
         logger.info(`planQuery result: ${tos(result)}`);
       }),
@@ -209,6 +213,7 @@ exports.ProviderGru = ({ stacks }) => {
         assert(Array.isArray(plan.results));
       }),
       () => plan.results,
+      filter(not(get("error"))),
       map(
         tryCatch(
           (planPerProvider) =>
@@ -230,25 +235,37 @@ exports.ProviderGru = ({ stacks }) => {
       }),
     ])();
 
-  const planQueryDestroy = async (params) =>
+  const planQueryDestroy = async ({ onStateChange, options }) =>
     pipe([
       tap(() => {
         logger.info(`planQueryDestroy`);
+        assert(onStateChange);
       }),
-      () => getProviders(),
-      map(
-        tryCatch(
-          (provider) => provider.planQueryDestroy(params),
-          (error, provider) => {
-            logger.error(`planQueryDestroy ${tos(error)}`);
-            return {
-              error: convertError({ error, name: "planQueryDestroy" }),
-              providerName: provider.name,
-            };
-          }
-        )
-      ),
-      (results) => ({ error: any(get("error"))(results), results }),
+      () => stacks,
+      map(({ provider, isProviderUp }) => ({
+        ...runnerParams({ provider, isProviderUp }),
+        executor: ({ lives }) =>
+          pipe([
+            () => provider.start({ onStateChange }),
+            () => provider.planQueryDestroy({ onStateChange, options, lives }),
+          ])(),
+      })),
+      (inputs) =>
+        Lister({
+          inputs,
+          onStateChange: ({ key, result, nextState }) =>
+            pipe([
+              tap.if(
+                () => includes(nextState)(["DONE", "ERROR"]),
+                pipe([
+                  () => getProvider({ providerName: key }),
+                  (provider) => {
+                    logger.debug(`provider ${provider.name} ended`);
+                  },
+                ])
+              ),
+            ])(),
+        }),
       tap((result) => {
         logger.info(`planQueryDestroy result: ${tos(result)}`);
       }),
@@ -261,6 +278,7 @@ exports.ProviderGru = ({ stacks }) => {
         assert(plan);
       }),
       () => plan.results,
+      filter(not(get("error"))),
       map(
         tryCatch(
           ({ destroyPlans, lives, providerName }) =>

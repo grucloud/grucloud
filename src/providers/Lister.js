@@ -89,12 +89,12 @@ exports.Lister = ({ inputs, onStateChange }) => {
             () =>
               resultMap.set(entry.key, {
                 ...entry.meta,
-                error: `Dependency ${key} provider is not up`,
+                error: `Dependency ${key} is not up`,
+                errorClass: "Dependency",
               }),
           ])(entry)
         ),
       ]),
-      ,
     ])();
 
   return pipe([

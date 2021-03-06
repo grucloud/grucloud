@@ -1682,6 +1682,7 @@ function CoreProvider({
   const planQuery = async ({
     onStateChange = identity,
     commandOptions = {},
+    lives, //TODO
   } = {}) =>
     pipe([
       tap(() => {

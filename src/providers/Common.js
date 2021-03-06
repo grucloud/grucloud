@@ -45,7 +45,6 @@ exports.planToResourcesPerType = ({ providerName, plans }) =>
     tap(() => {
       logger.debug("planToResourcesPerType");
       assert(providerName);
-      assert(Array.isArray(plans));
     }),
     () => plans,
     pluck("resource"),

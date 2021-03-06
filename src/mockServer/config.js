@@ -7,5 +7,5 @@ module.exports = () => ({
       objects: [{ name: "myserver" }],
     },
   ],
-  delay: { min: 1000, max: 2000 },
+  delay: { min: 10, max: 200 },
 });
