@@ -12,10 +12,10 @@ const { getNamespace } = require("./K8sCommon");
 const apiVersionDefault = "networking.k8s.io/v1";
 
 exports.K8sIngress = ({ spec, config }) => {
-  const apiVersion = () => get("ingress.apiVersion", apiVersionDefault)(config);
+  const apiVersion = get("ingress.apiVersion", apiVersionDefault)(config);
   const configDefault = async ({ name, properties, dependencies }) =>
     defaultsDeep({
-      apiVersion: apiVersion(),
+      apiVersion,
       kind: "Ingress",
       metadata: {
         name,
@@ -25,10 +25,10 @@ exports.K8sIngress = ({ spec, config }) => {
     })(properties);
 
   const pathGet = ({ name, namespace }) =>
-    `/apis/${apiVersion()}/namespaces/${namespace}/ingresses/${name}`;
-  const pathList = () => `/apis/${apiVersion()}/ingresses`;
+    `/apis/${apiVersion}/namespaces/${namespace}/ingresses/${name}`;
+  const pathList = () => `/apis/${apiVersion}/ingresses`;
   const pathCreate = ({ namespace }) =>
-    `/apis/${apiVersion()}/namespaces/${namespace}/ingresses`;
+    `/apis/${apiVersion}/namespaces/${namespace}/ingresses`;
 
   const pathUpdate = pathGet;
   const pathDelete = pathGet;

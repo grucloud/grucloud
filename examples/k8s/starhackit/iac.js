@@ -44,7 +44,7 @@ exports.createStack = async ({ config, resources, dependencies }) => {
     resources: { namespace },
     config,
   });
-
+  /*
   const ingress = await createIngress({
     provider,
     config,
@@ -54,7 +54,7 @@ exports.createStack = async ({ config, resources, dependencies }) => {
       serviceRestServer: restServerChart.service,
     },
   });
-
+*/
   const storageClass = await provider.makeStorageClass({
     name: config.storageClassName,
     properties: () => ({
@@ -72,10 +72,11 @@ exports.createStack = async ({ config, resources, dependencies }) => {
   return {
     provider,
     resources: {
-      ingress,
       namespace,
       serviceAccount,
       storageClass,
+      restServerChart,
+      webServerChart,
     },
   };
 };
