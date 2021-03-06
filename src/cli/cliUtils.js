@@ -1,7 +1,34 @@
 const Spinnies = require("spinnies");
 const assert = require("assert");
+
+const {
+  map,
+  pipe,
+  switchCase,
+  reduce,
+  tap,
+  assign,
+  all,
+  filter,
+  not,
+  any,
+  or,
+  tryCatch,
+  get,
+  omit,
+} = require("rubico");
+const {
+  pluck,
+  isEmpty,
+  flatten,
+  forEach,
+  uniq,
+  size,
+  first,
+} = require("rubico/x");
 const logger = require("../logger")({ prefix: "CliUtils" });
 const { tos } = require("../tos");
+const { ProviderGru } = require("../providers/ProviderGru");
 
 const frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 
@@ -176,3 +203,59 @@ exports.runAsyncCommand = async ({ text, command }) => {
     throw error;
   }
 };
+
+const displayProviderList = pipe([
+  tap((xx) => {
+    logger.debug("displayProviderList");
+  }),
+  pluck("name"),
+  tap((list) => {
+    assert(list[0]);
+  }),
+  (list) => list.join(", "),
+]);
+exports.displayProviderList = displayProviderList;
+
+const filterProvider = ({
+  commandOptions: { provider: providerOptions = [] },
+}) => ({ provider }) =>
+  pipe([
+    tap(() => {
+      assert(provider);
+    }),
+    () => provider,
+    or([
+      () => isEmpty(providerOptions),
+      (provider) =>
+        any((providerName) =>
+          new RegExp(`${providerName}`, "i").test(provider.name)
+        )(providerOptions),
+    ]),
+    tap((keep) => {
+      logger.debug(
+        `filterProvider ${provider.name}: ${providerOptions}, keep: ${keep}`
+      );
+    }),
+  ])();
+
+exports.filterProvider = filterProvider;
+
+exports.setupProviders = ({ commandOptions = {} } = {}) =>
+  pipe([
+    tap((input) => {
+      logger.debug("setupProviders");
+      assert(input);
+    }),
+    switchCase([Array.isArray, (infra) => infra, (infra) => [infra]]),
+    filter(not(isEmpty)),
+    filter(filterProvider({ commandOptions })),
+    tap.if(isEmpty, () => {
+      throw { code: 422, message: `no provider provided` };
+    }),
+    (stacks) => ({
+      providersGru: ProviderGru({ commandOptions, stacks }),
+    }),
+    tap((xx) => {
+      logger.debug("setupProviders");
+    }),
+  ]);

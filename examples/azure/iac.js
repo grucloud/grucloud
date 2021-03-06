@@ -1,5 +1,7 @@
 const assert = require("assert");
 const { AzureProvider } = require("@grucloud/core");
+const hooks = require("./hooks");
+
 const createResources = async ({ provider }) => {
   const { stage } = provider.config();
   assert(stage);
@@ -146,5 +148,6 @@ exports.createStack = async ({ config }) => {
   return {
     provider,
     resources,
+    hooks,
   };
 };

@@ -3,12 +3,11 @@ const { createStack: createStackK8s } = require("../iac");
 const { createStack: createStackEks } = require("../../../aws/eks/iac");
 
 exports.createStack = async ({ config }) => {
-  const k8sStack = await createStackK8s({ config });
   const eksStack = await createStackEks({ config });
+  const k8sStack = await createStackK8s({
+    config,
+    resources: eksStack.resources,
+  });
 
-  return {
-    sequencial: true,
-    providers: [eksStack.provider, k8sStack.provider],
-    resources: {},
-  };
+  return [eksStack, k8sStack];
 };

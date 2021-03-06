@@ -1,12 +1,32 @@
 const assert = require("assert");
 const path = require("path");
 const fs = require("fs");
+const {
+  map,
+  pipe,
+  switchCase,
+  reduce,
+  tap,
+  assign,
+  all,
+  filter,
+  not,
+  any,
+  or,
+  tryCatch,
+  get,
+} = require("rubico");
 const { ConfigLoader } = require("../ConfigLoader");
-const { switchCase, pipe, tap } = require("rubico");
-const { forEach } = require("rubico/x");
+const logger = require("../logger")({ prefix: "Infra" });
 
-const { combineProviders } = require("../providers/Common");
-const creatInfraFromFile = async ({ infraFileName, config, stage }) => {
+const { setupProviders } = require("./cliUtils");
+
+const creatInfraFromFile = async ({
+  commandOptions,
+  infraFileName,
+  config,
+  stage,
+}) => {
   const InfraCode = require(infraFileName);
   if (!InfraCode.createStack) {
     throw { code: 400, message: `no createStack provided` };
@@ -17,16 +37,7 @@ const creatInfraFromFile = async ({ infraFileName, config, stage }) => {
     throw { code: 400, message: `no infra provided` };
   }
 
-  const { resources, provider } = infra;
-
-  //assert(resources, "createStack must export resources");
-  return pipe([
-    tap.if(
-      () => provider && resources,
-      () => provider.register({ resources })
-    ),
-    combineProviders,
-  ])(infra);
+  return setupProviders({ commandOptions })(infra);
 };
 
 const resolveFilename = ({ fileName, defaultName }) =>
@@ -52,7 +63,7 @@ const requireConfig = ({ fileName, stage }) => {
   return config;
 };
 
-exports.createInfra = async ({
+exports.createInfra = ({ commandOptions }) => async ({
   infraFileName,
   configFileName,
   stage = "dev",
@@ -69,6 +80,7 @@ exports.createInfra = async ({
     config,
     stage,
     infra: await creatInfraFromFile({
+      commandOptions,
       infraFileName: infraFileNameFull,
       config,
       stage,

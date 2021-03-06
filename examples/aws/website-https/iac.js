@@ -1,40 +1,11 @@
 const assert = require("assert");
 const path = require("path");
-const { map, pipe, tap, filter, flatMap } = require("rubico");
-const { flatten, includes } = require("rubico/x");
-
-const { resolve } = require("path");
-const { readdir } = require("fs").promises;
+const { map } = require("rubico");
 const mime = require("mime-types");
 
 const { AwsProvider } = require("@grucloud/core");
-
-async function getFiles(dir) {
-  const dirResolved = resolve(dir);
-  const files = await getFilesWalk({ dir, dirResolved });
-  return files;
-}
-
-const exludesFiles = [".DS_Store"];
-
-const getFilesWalk = ({ dir, dirResolved }) =>
-  pipe([
-    () => readdir(dir, { withFileTypes: true }),
-    filter(({ name }) => !includes(name)(exludesFiles)),
-    map((dirent) => {
-      const res = resolve(dir, dirent.name);
-      return dirent.isDirectory()
-        ? getFilesWalk({ dir: res, dirResolved })
-        : res;
-    }),
-    (files) => files.flat(),
-    map((file) => file.replace(`${dirResolved}/`, "")),
-  ])();
-
-const makeDomainName = ({ DomainName, stage }) =>
-  `${stage == "production" ? "" : `${stage}.`}${DomainName}`;
-
-exports.makeDomainName = makeDomainName;
+const hooks = require("./hooks");
+const { makeDomainName, getFiles } = require("./dumpster");
 
 const createResources = async ({ provider }) => {
   const config = provider.config();
@@ -207,10 +178,9 @@ exports.createStack = async ({ name = "aws", config }) => {
     config,
   });
 
-  provider.register({ resources });
-
   return {
     provider,
     resources,
+    hooks,
   };
 };

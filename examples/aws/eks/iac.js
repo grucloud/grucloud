@@ -1,6 +1,8 @@
 const { AwsProvider } = require("@grucloud/core");
 const { get } = require("rubico");
 const loadBalancerPolicy = require("./load-balancer-policy.json");
+const podPolicy = require("./pod-policy.json");
+const hooks = require("./hooks");
 
 const createResources = async ({ provider, resources: {} }) => {
   const clusterName = "cluster";
@@ -263,17 +265,79 @@ const createResources = async ({ provider, resources: {} }) => {
     }),
   });
 
+  const iamPodPolicy = await provider.makeIamPolicy({
+    name: "PodPolicy",
+    properties: () => ({
+      PolicyDocument: podPolicy,
+      Description: "Pod Policy",
+    }),
+  });
+
+  const rolePod = await provider.makeIamRole({
+    name: "role-pod",
+    dependencies: { policies: [iamPodPolicy] },
+    properties: () => ({
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Service: "ec2.amazonaws.com",
+            },
+            Action: "sts:AssumeRole",
+          },
+        ],
+      },
+    }),
+  });
+
   const iamLoadBalancerPolicy = await provider.makeIamPolicy({
-    name: "AWSLoadBalancerControllerIAMPolicyy",
+    name: "AWSLoadBalancerControllerIAMPolicy",
     properties: () => ({
       PolicyDocument: loadBalancerPolicy,
       Description: "Load Balancer Policy",
     }),
   });
 
+  const roleLoadBalancer = await provider.makeIamRole({
+    name: "role-load-balancer",
+    dependencies: {
+      iamOpenIdConnectProvider,
+      policies: [iamLoadBalancerPolicy],
+    },
+    properties: ({ dependencies: { iamOpenIdConnectProvider } }) => ({
+      AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: {
+              Federated: get(
+                "live.Arn",
+                "iamOpenIdConnectProvider.Arn not yet known"
+              )(iamOpenIdConnectProvider),
+            },
+            Action: "sts:AssumeRoleWithWebIdentity",
+            Condition: {
+              StringEquals: {
+                [`${get(
+                  "live.Url",
+                  "iamOpenIdConnectProvider.Url not yet known"
+                )(iamOpenIdConnectProvider)}:aud`]: "sts.amazonaws.com",
+              },
+            },
+          },
+        ],
+      },
+    }),
+  });
+
   return {
     roleCluster,
     roleNodeGroup,
+    roleLoadBalancer,
+    rolePod,
     vpc,
     ig,
     subnetPrivate,
@@ -293,5 +357,5 @@ exports.createResources = createResources;
 exports.createStack = async ({ name = "aws", config }) => {
   const provider = AwsProvider({ name, config });
   const resources = await createResources({ provider, resources: {} });
-  return { provider, resources };
+  return { provider, resources, hooks };
 };

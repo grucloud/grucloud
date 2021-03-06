@@ -13,7 +13,7 @@ const {
   get,
   eq,
 } = require("rubico");
-const { isEmpty, forEach, pluck, size, find } = require("rubico/x");
+const { isEmpty, forEach, pluck, size, find, groupBy } = require("rubico/x");
 
 const { planToResourcesPerType } = require("../providers/Common");
 
@@ -42,41 +42,54 @@ const displayItem = (table, item) =>
   ])();
 
 exports.displayListSummary = pipe([
-  tap((result) => {
+  tap((input) => {
     console.log("List Summary:");
+    assert(input.result.results);
   }),
-  forEach(({ provider, result }) => {
-    const table = new Table({
-      colWidths: tableSummaryDefs.colWidths({
-        columns: process.stdout.columns || 80,
-      }),
-      style: { head: [], border: [] },
-    });
-    table.push([
-      {
-        colSpan: 2,
-        content: colors.yellow(`${provider.name}`),
-      },
-    ]);
-
-    return pipe([
-      tap((results) => {
-        //console.log(`Provider: ${provider.name}`);
-      }),
-      filter(not(get("error"))),
-      forEach(({ type, resources }) => {
-        table.push([
-          {
-            content: type,
-          },
-          { content: pluck("displayName")(resources).join("\n") },
-        ]);
-      }),
+  get("result.results"),
+  map(({ providerName, results }) =>
+    pipe([
       tap(() => {
-        console.log(table.toString());
+        assert(providerName);
+        assert(Array.isArray(results));
+        console.log(`Provider: ${providerName}`);
       }),
-    ])(result.results);
-  }),
+      () =>
+        new Table({
+          colWidths: tableSummaryDefs.colWidths({
+            columns: process.stdout.columns || 80,
+          }),
+          style: { head: [], border: [] },
+        }),
+      (table) =>
+        pipe([
+          tap(() => {
+            table.push([
+              {
+                colSpan: 2,
+                content: colors.yellow(`${providerName}`),
+              },
+            ]);
+          }),
+          () => results,
+          filter(not(get("error"))),
+          forEach(({ type, resources }) => {
+            assert(type);
+            assert(Array.isArray(resources));
+
+            table.push([
+              {
+                content: type,
+              },
+              { content: pluck("displayName")(resources).join("\n") },
+            ]);
+          }),
+          tap(() => {
+            console.log(table.toString());
+          }),
+        ])(),
+    ])()
+  ),
 ]);
 
 const displayResourcePerType = ({
@@ -120,8 +133,13 @@ const displayResourcePerType = ({
   )(plans);
 
 exports.displayPlanSummary = pipe([
-  map(({ provider, resultQuery }) =>
+  map(({ providerName, resultCreate, resultDestroy }) =>
     pipe([
+      tap(() => {
+        assert(providerName);
+        assert(resultCreate);
+        assert(resultDestroy);
+      }),
       () =>
         new Table({
           colWidths: tableSummaryDefs.colWidths({
@@ -134,17 +152,15 @@ exports.displayPlanSummary = pipe([
         table.push([
           {
             colSpan: 2,
-            content: colors.yellow(
-              `Plan summary for provider ${provider.name}`
-            ),
+            content: colors.yellow(`Plan summary for provider ${providerName}`),
           },
         ])
       ),
       tap((table) =>
         displayResourcePerType({
           table,
-          providerName: provider.name,
-          plans: resultQuery.resultCreate.plans,
+          providerName,
+          plans: resultCreate,
           title: "DEPLOY RESOURCES",
           colorName: "brightGreen",
         })
@@ -152,8 +168,8 @@ exports.displayPlanSummary = pipe([
       tap((table) =>
         displayResourcePerType({
           table,
-          providerName: provider.name,
-          plans: resultQuery.resultDestroy.plans,
+          providerName,
+          plans: resultDestroy,
           title: "DESTROY RESOURCES",
           colorName: "brightRed",
         })
@@ -165,8 +181,12 @@ exports.displayPlanSummary = pipe([
   ),
 ]);
 
-exports.displayPlanDestroySummary = forEach(({ provider, result }) =>
+exports.displayPlanDestroySummary = forEach(({ providerName, destroyPlans }) =>
   pipe([
+    tap(() => {
+      assert(providerName);
+      assert(Array.isArray(destroyPlans));
+    }),
     () =>
       new Table({
         colWidths: tableSummaryDefs.colWidths({
@@ -178,9 +198,9 @@ exports.displayPlanDestroySummary = forEach(({ provider, result }) =>
     tap((table) =>
       displayResourcePerType({
         table,
-        providerName: provider.name,
-        plans: result.plans,
-        title: `Destroy summary for provider ${provider.name}`,
+        providerName,
+        plans: destroyPlans,
+        title: `Destroy summary for provider ${providerName}`,
         colorName: "brightRed",
       })
     ),
@@ -266,10 +286,10 @@ const tablePlanPerType = {
 };
 
 exports.displayPlan = async (plan) => {
-  assert(Array.isArray(plan.destroy, "Array.isArray(plan.destroy"));
   if (!hasPlan(plan)) {
     return plan;
   }
+  assert(Array.isArray(plan.destroy, "Array.isArray(plan.destroy"));
 
   assert(plan.providerName);
   pipe([
@@ -363,6 +383,7 @@ const displayTablePerType = ({
   providerName,
   resourcesByType: { type, resources = [], error },
 }) => {
+  assert(providerName);
   assert(type);
   const tableDefinitions =
     find(eq(get("type")))(tablePerTypeDefinitions) || tablePerTypeDefault;
@@ -404,10 +425,11 @@ const displayTablePerType = ({
   console.log("\n");
 };
 
-exports.displayLive = async ({ providerName, targets }) => {
+exports.displayLive = async ({ providerName, resources }) => {
   assert(providerName);
-  assert(targets);
-  targets.forEach((resourcesByType) =>
+  assert(resources);
+
+  resources.forEach((resourcesByType) =>
     displayTablePerType({ providerName, resourcesByType })
   );
 };

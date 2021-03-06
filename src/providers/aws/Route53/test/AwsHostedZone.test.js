@@ -122,13 +122,13 @@ describe("AwsHostedZone", async function () {
     const providerNext = await createProviderNext({ config });
 
     const plan = await providerNext.planQuery();
-    //assert.equal(plan.resultDestroy.plans.length, 1);
-    assert.equal(plan.resultCreate.plans.length, 2);
-    const updateHostedZone = plan.resultCreate.plans[0];
+    //assert.equal(plan.resultDestroy.length, 1);
+    assert.equal(plan.resultCreate.length, 2);
+    const updateHostedZone = plan.resultCreate[0];
     assert.equal(updateHostedZone.action, "UPDATE");
     assert.equal(updateHostedZone.diff.deletions.length, 1);
 
-    const updateRecord = plan.resultCreate.plans[1];
+    const updateRecord = plan.resultCreate[1];
     assert.equal(updateRecord.action, "UPDATE");
     assert(updateRecord.diff.updated.ResourceRecords);
 

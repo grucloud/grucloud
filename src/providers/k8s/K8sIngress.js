@@ -12,7 +12,7 @@ const { getNamespace } = require("./K8sCommon");
 exports.K8sIngress = ({ spec, config }) => {
   const configDefault = async ({ name, properties, dependencies }) =>
     defaultsDeep({
-      apiVersion: "networking.k8s.io/v1",
+      apiVersion: "networking.k8s.io/v1beta1",
       kind: "Ingress",
       metadata: {
         name,
@@ -22,10 +22,10 @@ exports.K8sIngress = ({ spec, config }) => {
     })(properties);
 
   const pathGet = ({ name, namespace }) =>
-    `/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses/${name}`;
-  const pathList = () => `/apis/networking.k8s.io/v1/ingresses`;
+    `/apis/networking.k8s.io/v1beta1/namespaces/${namespace}/ingresses/${name}`;
+  const pathList = () => `/apis/networking.k8s.io/v1beta1/ingresses`;
   const pathCreate = ({ namespace }) =>
-    `/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`;
+    `/apis/networking.k8s.io/v1beta1/namespaces/${namespace}/ingresses`;
 
   const pathUpdate = pathGet;
   const pathDelete = pathGet;

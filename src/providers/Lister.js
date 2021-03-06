@@ -16,7 +16,7 @@ const {
 } = require("rubico");
 
 const { isEmpty, isFunction, forEach, includes } = require("rubico/x");
-const { logError, convertError } = require("./Common");
+const { logError } = require("./Common");
 
 const STATES = {
   WAITING: "WAITING",
@@ -29,70 +29,53 @@ exports.Lister = ({ inputs, onStateChange }) => {
   assert(Array.isArray(inputs));
   assert(isFunction(onStateChange));
   const resultMap = new Map();
-  const statusMap = new Map(
-    map((input) => [input.type, { ...input, state: STATES.WAITING }])(inputs)
-  );
+  const inputMap = new Map(map((input) => [input.key, input])(inputs));
 
-  const statusValues = () => [...statusMap.values()];
+  assert.equal(inputs.length, inputMap.size);
 
-  const runItem = async ({ entry: { type, executor }, onEnd }) =>
+  const inputValues = () => [...inputMap.values()];
+
+  const runItem = async ({ entry: { meta, key, executor }, onEnd }) =>
     pipe([
       tap(() => {
         assert(onEnd);
-        assert(type);
+        assert(key);
         assert(executor);
-        logger.debug(`runItem begin ${type}`);
+        logger.debug(`runItem begin ${key}`);
       }),
       tryCatch(
         pipe([
-          tap(() =>
-            onStateChange({
-              type,
-              previousState: STATES.WAITING,
-              nextState: STATES.RUNNING,
-            })
-          ),
+          tap(() => onStateChange({ key, meta, nextState: STATES.RUNNING })),
           () => executor({ lives: [...resultMap.values()] }),
-          tap(() =>
-            onStateChange({
-              type,
-              previousState: STATES.RUNNING,
-              nextState: STATES.DONE,
-            })
-          ),
+          tap(() => onStateChange({ key, meta, nextState: STATES.DONE })),
         ]),
         (error) => {
-          logger.error(`runItem error with: ${type}`);
+          logger.error(`runItem error with key: ${key}`);
           logError("runItem", error);
-          onStateChange({
-            type,
-            previousState: STATES.RUNNING,
-            nextState: STATES.ERROR,
-            error,
-          });
-          return { type, error };
+          onStateChange({ key, meta, nextState: STATES.ERROR, error });
+          return { meta, key, error };
         }
       ),
       tap((result) => {
-        logger.debug(`runItem set result ${type}: ${tos(result)}`);
-        resultMap.set(type, result);
+        logger.debug(`runItem set result ${key}: ${tos(result)}`);
+        resultMap.set(key, result);
       }),
-      () => onEnd({ type }),
+      () => onEnd({ key }),
       tap(() => {
-        logger.debug(`runItem end ${type}`);
+        logger.debug(`runItem end ${key}`);
       }),
     ])();
 
-  const onEnd = async ({ type }) =>
+  const onEnd = async ({ key }) =>
     pipe([
-      () => statusValues(),
+      () => inputValues(),
       tap((values) => {
-        logger.debug(`onEnd begin ${type}`);
+        logger.debug(`onEnd begin ${key}`);
       }),
       //Exclude the current resource
-      filter(not(eq(get("type"), type))),
+      filter(not(eq(get("key"), key))),
       // Find resources that depends on the one that just ended
-      filter(pipe([get("dependsOn"), includes(type)])),
+      filter(pipe([get("dependsOn"), includes(key)])),
       tap((values) => {
         logger.debug(`onEnd  ${tos(values)}`);
       }),
@@ -101,17 +84,12 @@ exports.Lister = ({ inputs, onStateChange }) => {
           pipe([
             get("dependsOn"),
             tap((dependsOn) => {
-              logger.debug(`onEnd ${type}, ${entry.type}: ${tos(dependsOn)}`);
+              logger.debug(`onEnd ${key}, ${entry.key}: ${tos(dependsOn)}`);
             }),
             // Remove from the dependsOn array the one that just ended
-            filter(not(includes(type))),
+            filter(not(includes(key))),
             tap((updatedDependsOn) => {
               entry.dependsOn = updatedDependsOn;
-            }),
-            tap((updatedDependsOn) => {
-              logger.debug(
-                `onEnd ${tos({ type: entry.type, updatedDependsOn })}`
-              );
             }),
             switchCase([
               isEmpty,
@@ -124,12 +102,10 @@ exports.Lister = ({ inputs, onStateChange }) => {
               ),
               (updatedDependsOn) => updatedDependsOn,
             ]),
-            (updatedDependsOn) =>
-              assign({ dependsOn: () => updatedDependsOn })(entry),
           ]),
           (error) => {
             logger.error(`Lister onEnd  ${tos({ error, entry })}`);
-            return { error, ...entry };
+            return { error, entry };
           }
         )(entry)
       ),
@@ -142,7 +118,7 @@ exports.Lister = ({ inputs, onStateChange }) => {
     tap(() => {
       logger.debug(`run`);
     }),
-    () => statusValues(),
+    () => inputValues(),
     tap((statuses) => {
       logger.debug(`Lister run #resource ${statuses.length}`);
     }),
@@ -155,10 +131,7 @@ exports.Lister = ({ inputs, onStateChange }) => {
     }),
     forEach((entry) => runItem({ entry, onEnd })),
     () => [...resultMap.values()],
-    (results) => ({
-      results,
-      error: any(get("error"))(results),
-    }),
+    (results) => ({ error: any(get("error"))(results), results }),
     tap(({ error, results }) => {
       logger.debug(`Lister ${error && "error"}, result: ${tos(results)}`);
     }),

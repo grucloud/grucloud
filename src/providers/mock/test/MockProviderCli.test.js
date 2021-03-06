@@ -8,6 +8,7 @@ const sinon = require("sinon");
 
 const { MockProvider } = require("../MockProvider");
 const cliCommands = require("../../../cli/cliCommands");
+const { setupProviders } = require("../../../cli/cliUtils");
 
 const logger = require("logger")({ prefix: "MockProviderTest" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
@@ -18,7 +19,7 @@ describe("MockProviderCli", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
     const provider = MockProvider({ config });
     const resources = await createResources({ provider });
-    const infra = { provider };
+    const infra = setupProviders()({ provider });
     const errorMessage = "stub-error";
 
     provider.init = sinon
@@ -59,13 +60,13 @@ describe("MockProviderCli", async function () {
   it("start error", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
     const provider = MockProvider({ config });
-    const resources = await createResources({ provider });
-    const infra = { provider };
     const errorMessage = "stub-error";
 
     provider.start = sinon
       .stub()
       .returns(Promise.reject({ message: errorMessage }));
+    const resources = await createResources({ provider });
+    const infra = setupProviders()({ provider });
 
     await pipe([
       map(
@@ -83,10 +84,10 @@ describe("MockProviderCli", async function () {
       forEach((ex) => {
         assert.equal(ex.code, 422);
         assert(ex.error);
-        assert(ex.error.message);
+        assert(ex.error.error);
+        //assert(ex.error.result.resultStart);
       }),
     ])([
-      //{ command: "info" },
       { command: "list" },
       { command: "planQuery" },
       { command: "planApply" },
@@ -98,7 +99,7 @@ describe("MockProviderCli", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
     const provider = MockProvider({ config });
     const resources = await createResources({ provider });
-    const infra = { provider };
+    const infra = setupProviders()({ provider, resources });
 
     {
       const info = await cliCommands.info({
@@ -129,12 +130,17 @@ describe("MockProviderCli", async function () {
       });
       assert(!output);
     }
-    const { plans, results } = await cliCommands.planDestroy({
-      infra,
-      commandOptions: { force: true, name: "volume" },
-    });
-    assert.equal(plans[0].resource.name, "volume");
-
+    {
+      const result = await cliCommands.planDestroy({
+        infra,
+        commandOptions: { force: true, name: "volume" },
+      });
+      assert(!result.error);
+      assert.equal(
+        result.resultQueryDestroy.results[0].destroyPlans[0].resource.name,
+        "volume"
+      );
+    }
     const resultDestroy = await cliCommands.planDestroy({
       infra,
       commandOptions: { force: true },
@@ -165,13 +171,18 @@ describe("MockProviderCli", async function () {
     });
 
     prompts.inject([true]);
-    await cliCommands.planDestroy({
-      infra,
-    });
-
-    await cliCommands.list({
-      infra,
-      commandOptions: { our: true },
-    });
+    {
+      const result = await cliCommands.planDestroy({
+        infra,
+      });
+      assert(result);
+    }
+    {
+      const result = await cliCommands.list({
+        infra,
+        commandOptions: { our: true },
+      });
+      assert(result);
+    }
   });
 });

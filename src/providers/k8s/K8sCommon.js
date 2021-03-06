@@ -47,21 +47,22 @@ exports.compare = async ({ target, live }) =>
 
 exports.resourceKeyDefault = pipe([
   tap((resource) => {
-    assert(resource.provider);
+    assert(resource.providerName);
     assert(resource.type);
     assert(resource.name || resource.id);
   }),
-  ({ provider, type, name, id }) => `${provider}::${type}::${name || id}`,
+  ({ providerName, type, name, id }) =>
+    `${providerName}::${type}::${name || id}`,
 ]);
 
 exports.resourceKeyNamespace = pipe([
   tap((resource) => {
-    assert(resource.provider);
+    assert(resource.providerName);
     assert(resource.type);
     assert(resource.name || resource.id);
   }),
-  ({ provider, type, dependencies, name, id }) =>
-    `${provider}::${type}::${getNamespace(dependencies?.namespace)}::${
+  ({ providerName, type, dependencies, name, id }) =>
+    `${providerName}::${type}::${getNamespace(dependencies?.namespace)}::${
       name || id
     }`,
 ]);

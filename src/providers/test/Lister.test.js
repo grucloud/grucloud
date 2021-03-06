@@ -17,10 +17,14 @@ describe("Lister", function () {
     const stateChanges = [];
     const inputs = [
       {
+        providerName: "k8s",
+        key: "k8s::Volume",
         type: "Volume",
         executor: executorOk,
       },
       {
+        providerName: "k8s",
+        key: "k8s::VolumeClaim",
         type: "VolumeClaim",
         executor: executorOk,
         dependsOn: ["Volume"],

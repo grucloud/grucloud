@@ -6,6 +6,7 @@ const { readdir } = require("fs").promises;
 const mime = require("mime-types");
 
 const { GoogleProvider } = require("@grucloud/core");
+const hooks = require("./hooks");
 
 async function getFiles(dir) {
   const dirResolved = resolve(dir);
@@ -129,5 +130,6 @@ exports.createStack = async ({ config }) => {
   return {
     provider,
     resources: { bucketPublic, dnsManagedZone, sslCertificate },
+    hooks,
   };
 };

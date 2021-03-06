@@ -3,6 +3,7 @@ const logger = require("logger")({ prefix: "CoreProvider" });
 const { MockProvider } = require("../MockProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { createAxiosMock } = require("../MockAxios");
+const { ProviderGru } = require("../../ProviderGru");
 
 const { tos } = require("../../../tos");
 
@@ -54,21 +55,11 @@ describe("MockProvider errors", async function () {
     });
     await provider1.makeIp({ name: "myip" });
     await provider2.makeIp({ name: "myip" });
-
-    const plan1 = await provider1.planQuery();
-    const plan2 = await provider2.planQuery();
-    {
-      const { error } = await provider1.planApply({
-        plan: plan1,
-      });
-      assert(!error);
-    }
-    {
-      const { error } = await provider2.planApply({
-        plan: plan2,
-      });
-      assert(error);
-    }
+    const providersGru = ProviderGru({
+      stacks: [{ provider: provider1 }, { provider: provider2 }],
+    });
+    const result = await providersGru.planQuery();
+    assert(!result.error);
   });
 
   it("empty create plan, non empty destroy plan", async function () {
@@ -99,8 +90,8 @@ describe("MockProvider errors", async function () {
         name: "ip",
         properties: () => ({}),
       });
-
-      const { error } = await provider.planQueryAndApply();
+      const providersGru = ProviderGru({ stacks: [{ provider }] });
+      const { error } = await providersGru.planQuery();
       assert(!error);
     }
     {
@@ -109,8 +100,9 @@ describe("MockProvider errors", async function () {
         config,
         mockCloud,
       });
+      const providersGru = ProviderGru({ stacks: [{ provider }] });
 
-      const { error } = await provider.planQueryAndApply();
+      const { error } = await providersGru.planQueryAndApply();
       assert(!error);
     }
   });

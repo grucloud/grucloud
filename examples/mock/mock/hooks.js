@@ -9,6 +9,7 @@ const testPing = ({ host }) =>
 
 module.exports = ({ resources }) => {
   return {
+    name: "mock",
     onDeployed: {
       init: async () => {
         //console.log("onDeployed");

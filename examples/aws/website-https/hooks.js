@@ -4,7 +4,7 @@ const { retryCallOnError, retryCall } = require("@grucloud/core").Retry;
 const Axios = require("axios");
 const { pipe, get, switchCase } = require("rubico");
 const { first, find, isEmpty } = require("rubico/x");
-const { makeDomainName } = require("./iac");
+const { makeDomainName } = require("./dumpster");
 
 const checkDig = async ({ nameServer, domain, type = "A" }) => {
   let commandParam = [domain, type];

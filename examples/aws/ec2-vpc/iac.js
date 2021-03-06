@@ -1,4 +1,5 @@
 const { AwsProvider } = require("@grucloud/core");
+const hooks = require("./hooks");
 
 const createResources = async ({ provider, resources: { keyPair } }) => {
   const Device = "/dev/sdf";
@@ -122,6 +123,8 @@ exports.createStack = async ({ name = "aws", config }) => {
   const keyPair = await provider.useKeyPair({
     name: "kp",
   });
+
   const resources = await createResources({ provider, resources: { keyPair } });
-  return { provider, resources };
+
+  return { provider, resources, hooks };
 };

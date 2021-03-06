@@ -6,8 +6,8 @@ const { tos } = require("../tos");
 
 const isPlanEmpty = switchCase([
   and([
-    (plan) => isEmpty(plan.resultDestroy.plans),
-    (plan) => isEmpty(plan.resultCreate.plans),
+    (plan) => isEmpty(plan.resultDestroy),
+    (plan) => isEmpty(plan.resultCreate),
   ]),
   () => true,
   () => false,
@@ -61,11 +61,11 @@ const testListByType = async ({ provider, livesAll }) => {
   assert.equal(liveByType.length, 1, tos(liveByType));
   assert.equal(liveByType[0].type, type);
 };
-// TODO remove livesAll
+
 const testDestroyByName = async ({ provider, lives }) => {
   const { name } = lives.results[0].resources[0];
   assert(name);
-  const { plans } = await provider.planFindDestroy({
+  const plans = await provider.planFindDestroy({
     lives,
     options: {
       name,
@@ -78,20 +78,19 @@ const testDestroyByName = async ({ provider, lives }) => {
 const testDestroyById = async ({ provider, lives }) => {
   const { id } = lives.results[0].resources[0];
   assert(id);
-  const { error, plans } = await provider.planFindDestroy({
+  const plans = await provider.planFindDestroy({
     lives,
     options: {
       id,
     },
   });
-  assert(!error);
   assert.equal(plans.length, 1);
   assert.equal(plans[0].resource.id, id);
 };
 
 const testDestroyByType = async ({ provider, lives }) => {
   const { type } = lives.results[0];
-  const { plans } = await provider.planFindDestroy({
+  const plans = await provider.planFindDestroy({
     lives,
     options: {
       types: [type],
@@ -118,10 +117,9 @@ const testPlanDestroy = async ({ provider, types = [], full = false }) => {
     await testDestroyByType({ provider, lives });
   }
   {
-    const { error, results } = await provider.destroyAll({
+    const { error } = await provider.destroyAll({
       options: { types },
     });
-    assert(results);
     assert(!error, "testPlanDestroy destroyAll failed");
   }
   {

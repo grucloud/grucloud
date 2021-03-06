@@ -620,8 +620,11 @@ exports.AwsS3Bucket = ({ spec, config }) => {
                   () => ACL === "public-read",
                   (Grants) => {
                     if (Grants.length != 2) {
-                      const message = `no ACL yet for ${Bucket}`;
+                      const message = `no ACL yet for ${Bucket}, ${tos({
+                        Grants,
+                      })}`;
                       logger.error(message);
+                      // TODO retry on this error
                       throw Error(message);
                     }
                   },

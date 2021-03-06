@@ -1,4 +1,5 @@
 const { AwsProvider } = require("@grucloud/core");
+const hooks = require("./hooks");
 
 const Device = "/dev/sdf";
 const deviceMounted = "/dev/xvdf";
@@ -42,5 +43,6 @@ exports.createStack = async ({ config }) => {
   return {
     provider,
     resources,
+    hooks,
   };
 };

@@ -289,7 +289,7 @@ exports.AwsDistribution = ({ spec, config }) => {
         pipe([
           get("Origins.Items"),
           flatMap(({ Id, OriginPath }) =>
-            findS3ObjectUpdated({ plans: resultCreate.plans, Id, OriginPath })
+            findS3ObjectUpdated({ plans: resultCreate, Id, OriginPath })
           ),
           tap((Items) => {
             logger.info(`distribution Items ${tos({ Items })}`);

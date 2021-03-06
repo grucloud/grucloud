@@ -42,11 +42,12 @@ exports.typeFromResources = typeFromResources;
 
 exports.planToResourcesPerType = ({ providerName, plans }) =>
   pipe([
-    tap((plans) => {
+    tap(() => {
       logger.debug("planToResourcesPerType");
       assert(providerName);
-      assert(plans);
+      assert(Array.isArray(plans));
     }),
+    () => plans,
     pluck("resource"),
     groupBy("type"),
     values,
@@ -58,7 +59,7 @@ exports.planToResourcesPerType = ({ providerName, plans }) =>
     tap((obj) => {
       logger.debug("planToResourcesPerType");
     }),
-  ])(plans);
+  ])();
 
 exports.axiosErrorToJSON = (error) => ({
   isAxiosError: error.isAxiosError,
@@ -72,19 +73,6 @@ exports.axiosErrorToJSON = (error) => ({
     data: error.response?.data,
   },
 });
-exports.combineProviders = (infra) =>
-  pipe([
-    () => (infra.provider ? [infra.provider] : []),
-    (providers) =>
-      infra.providers ? [...providers, ...infra.providers] : providers,
-    tap((providers) => {
-      if (isEmpty(providers)) {
-        throw { code: 400, message: `no providers provided` };
-      }
-    }),
-    (providers) => ({ ...infra, providers }),
-    omit(["provider"]),
-  ])();
 
 const safeJsonParse = (json) => {
   try {

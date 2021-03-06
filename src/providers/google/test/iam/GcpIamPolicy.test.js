@@ -69,9 +69,9 @@ describe.skip("GcpIamPolicy", async function () {
   });
   it("plan", async function () {
     const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 2);
-    const planUpdate = plan.resultCreate.plans[1];
+    assert.equal(plan.resultDestroy.length, 0);
+    assert.equal(plan.resultCreate.length, 2);
+    const planUpdate = plan.resultCreate[1];
     assert.equal(planUpdate.action, "UPDATE");
     assert(planUpdate.config);
     assert(planUpdate.config.policy.etag);

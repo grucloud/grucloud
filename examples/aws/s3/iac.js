@@ -1,5 +1,6 @@
 const { AwsProvider } = require("@grucloud/core");
 const path = require("path");
+const hooks = require("./hooks");
 
 const createResources = async ({ provider }) => {
   const bucketPrefix = "grucloud";
@@ -253,5 +254,5 @@ exports.createResources = createResources;
 exports.createStack = async ({ name = "aws", config }) => {
   const provider = AwsProvider({ name, config });
   const resources = await createResources({ provider });
-  return { provider, resources };
+  return { provider, resources, hooks };
 };

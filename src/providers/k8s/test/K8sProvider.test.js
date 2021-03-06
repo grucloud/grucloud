@@ -8,35 +8,36 @@ describe.skip("K8sProvider", async function () {
   let provider;
   let namespace;
   let deployment;
-  let statefulSetPostgres;
   let configMap;
   let storageClass;
   let persistentVolume;
-  let persistentVolumeClaim;
   let serviceWeb;
+  let serviceAccount;
+  let secret;
   const myNamespace = "test";
   const serviceWebName = "web-service";
   const deploymentWebName = "web-deployment";
   const labelApp = "web";
   const storageClassName = "my-storage-class";
-  const pvc = { name: "pvc-db" };
   const pv = { name: "pv-db" };
-
+  const serviceAccountName = "sa-test";
+  const secretName = "pg-secret";
   const postgres = {
     statefulSetName: "postgres-statefulset",
     label: "db",
   };
 
   const types = [
-    "Deployment",
-    "StorageClass",
     "ConfigMap",
+    "Deployment",
+    "Ingress",
     "PersistentVolume",
     "PersistentVolumeClaim",
-    "StorageClass",
+    "Secret",
     "Service",
-    "Ingress",
+    "ServiceAccount",
     "StatefulSet",
+    "StorageClass",
   ];
 
   before(async function () {
@@ -53,6 +54,18 @@ describe.skip("K8sProvider", async function () {
 
     namespace = await provider.makeNamespace({
       name: myNamespace,
+    });
+
+    secret = await provider.makeServiceAccount({
+      name: secretName,
+      dependencies: { namespace },
+      properties: () => ({}),
+    });
+
+    serviceAccount = await provider.makeServiceAccount({
+      name: serviceAccountName,
+      dependencies: { namespace },
+      properties: () => ({}),
     });
 
     configMap = await provider.makeConfigMap({
