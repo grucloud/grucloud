@@ -6,8 +6,8 @@ const { createChartPostgres } = require("./charts/postgres");
 const { createChartRedis } = require("./charts/redis");
 const { createIngress } = require("./ingress");
 
-exports.createStack = async ({ config, resources }) => {
-  const provider = K8sProvider({ config });
+exports.createStack = async ({ config, resources, dependencies }) => {
+  const provider = K8sProvider({ config, dependencies });
 
   assert(config.namespaceName);
 

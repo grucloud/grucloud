@@ -51,6 +51,7 @@ exports.createStack = async ({ config }) => {
 
   const provider2 = MockProvider({
     name: "mock-2",
+    dependencies: { provider1 },
     config: {
       ...config,
       createAxios,
@@ -63,6 +64,7 @@ exports.createStack = async ({ config }) => {
     {
       provider: provider1,
       resources: resources1,
+      isProviderUp: () => resources1.volume.getLive(),
     },
     {
       provider: provider2,

@@ -33,6 +33,7 @@ describe("MockProviderMulti", async function () {
     provider2 = MockProvider({
       name: "provider2",
       config,
+      dependencies: { provider1 },
     });
 
     volume2 = await provider2.makeVolume({
@@ -48,6 +49,13 @@ describe("MockProviderMulti", async function () {
       { provider: provider1 },
       { provider: provider2 },
     ]);
+    {
+      const result = await cliCommands.planQuery({
+        infra,
+        commandOptions: { force: true },
+      });
+      assert(!result.error);
+    }
     await cliCommands.planApply({
       infra,
       commandOptions: { force: true },

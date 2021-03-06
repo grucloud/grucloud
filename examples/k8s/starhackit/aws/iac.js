@@ -7,6 +7,7 @@ exports.createStack = async ({ config }) => {
   const k8sStack = await createStackK8s({
     config,
     resources: eksStack.resources,
+    dependencies: { eks: eksStack.provider },
   });
 
   return [eksStack, k8sStack];

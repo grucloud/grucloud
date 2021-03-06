@@ -291,7 +291,7 @@ const fnSpecs = (config) => {
   ];
 };
 
-exports.AzureProvider = ({ name = "azure", config }) => {
+exports.AzureProvider = ({ name = "azure", config, ...other }) => {
   const mandatoryEnvs = ["TENANT_ID", "SUBSCRIPTION_ID", "APP_ID", "PASSWORD"];
   checkEnv(mandatoryEnvs);
 
@@ -320,6 +320,7 @@ exports.AzureProvider = ({ name = "azure", config }) => {
   });
 
   const core = CoreProvider({
+    ...other,
     type: "azure",
     name,
     mandatoryConfigKeys: ["location"],

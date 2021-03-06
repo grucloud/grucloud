@@ -34,6 +34,7 @@ const {
   groupBy,
   values,
 } = require("rubico/x");
+const { Lister } = require("./Lister");
 
 const logger = require("../logger")({ prefix: "ProviderGru" });
 const { tos } = require("../tos");
@@ -113,22 +114,53 @@ exports.ProviderGru = ({ stacks }) => {
       }),
     ])();
 
-  const listLives = async (params) =>
+  const listLives = async ({ onStateChange, options }) =>
     pipe([
       tap(() => {
         logger.info(`listLives`);
       }),
-      () => getProviders(),
-      map(
-        tryCatch(
-          (provider) => provider.listLives(params),
-          (error, provider) => {
-            logger.error(`listLives ${tos(error)}`);
-            return { error, providerName: provider.name };
-          }
-        )
-      ),
-      (results) => ({ error: any(get("error"))(results), results }),
+      () => stacks,
+      map(({ provider, isProviderUp }) => ({
+        key: provider.name,
+        meta: { providerName: provider.name },
+        dependsOn: reduce(
+          (acc, deps) => [...acc, deps.name],
+          []
+        )(provider.dependencies),
+        isUp: isProviderUp,
+        executor: ({ lives }) =>
+          pipe([
+            tap((result) => {
+              logger.info(`listLives`);
+            }),
+            () => provider.listLives({ lives }),
+            tap((result) => {
+              logger.info(`listLives done`);
+            }),
+          ])(),
+      })),
+      (inputs) =>
+        Lister({
+          inputs,
+          onStateChange: ({ key, result, nextState }) =>
+            pipe([
+              () => {
+                assert(key);
+                assert(nextState);
+              },
+              tap.if(
+                () => includes(nextState)(["DONE", "ERROR"]),
+                pipe([
+                  () => getProvider({ providerName: key }),
+                  (provider) =>
+                    provider.spinnersStopListLives({
+                      onStateChange,
+                      error: result.error,
+                    }),
+                ])
+              ),
+            ])(),
+        }),
       tap((result) => {
         logger.info(`listLives result: ${tos(result)}`);
       }),

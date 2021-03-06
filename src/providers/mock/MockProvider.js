@@ -128,7 +128,7 @@ const fnSpecs = (config) => {
 };
 const providerType = "mock";
 
-exports.MockProvider = ({ name = providerType, config }) => {
+exports.MockProvider = ({ name = providerType, config, ...other }) => {
   assert(config);
 
   const configDefault = {
@@ -154,5 +154,6 @@ exports.MockProvider = ({ name = providerType, config }) => {
     fnSpecs,
     start,
     info,
+    ...other,
   });
 };

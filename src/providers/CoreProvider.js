@@ -602,6 +602,7 @@ const createResourceMakers = ({ specs, config, provider }) =>
 
 function CoreProvider({
   name: providerName,
+  dependencies = {},
   type,
   mandatoryEnvs = [],
   mandatoryConfigKeys = [],
@@ -1038,7 +1039,7 @@ function CoreProvider({
           ])(clients),
       ])
     );
-  const spinnersStopClient = ({ onStateChange, title, clients, result }) =>
+  const spinnersStopClient = ({ onStateChange, title, clients, error }) =>
     tap(
       pipe([
         tap(() => {
@@ -1051,7 +1052,7 @@ function CoreProvider({
         tap(() =>
           onStateChange({
             context: contextFromPlanner({ providerName, title }),
-            nextState: nextStateOnError(result.error),
+            nextState: nextStateOnError(error),
           })
         ),
       ])
@@ -1125,7 +1126,7 @@ function CoreProvider({
       ])
     )();
 
-  const spinnersStopListLives = ({ onStateChange, options, result }) =>
+  const spinnersStopListLives = ({ onStateChange, options, error }) =>
     tap(
       pipe([
         tap(() => {
@@ -1135,9 +1136,9 @@ function CoreProvider({
           onStateChange,
           title: TitleListing,
           clients: filterReadClient(options)(clients),
-          result,
+          error,
         }),
-        () => spinnersStopProvider({ onStateChange, error: result.error }),
+        () => spinnersStopProvider({ onStateChange, error }),
       ])
     )();
 
@@ -2070,6 +2071,7 @@ ${result}}
     toString,
     config: () => providerConfig,
     name: providerName,
+    dependencies,
     type: toType,
     spinnersStopProvider,
     spinnersStartHook,

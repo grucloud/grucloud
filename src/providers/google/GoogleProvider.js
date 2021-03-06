@@ -997,7 +997,7 @@ const unInit = async ({
   console.log(`Project is now un-initialized`);
 };
 
-exports.GoogleProvider = ({ name = "google", config: configUser }) => {
+exports.GoogleProvider = ({ name = "google", config: configUser, ...other }) => {
   assert(configUser.projectName, "missing projectName");
 
   const projectName = configUser.projectName(configUser);
@@ -1054,6 +1054,7 @@ exports.GoogleProvider = ({ name = "google", config: configUser }) => {
   };
 
   const core = CoreProvider({
+    ...other,
     type: "google",
     name,
     config: defaultsDeep({

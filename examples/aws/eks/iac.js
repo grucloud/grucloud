@@ -357,5 +357,10 @@ exports.createResources = createResources;
 exports.createStack = async ({ name = "aws", config }) => {
   const provider = AwsProvider({ name, config });
   const resources = await createResources({ provider, resources: {} });
-  return { provider, resources, hooks };
+  return {
+    provider,
+    resources,
+    hooks,
+    isProviderUp: () => resources.cluster.getLive(),
+  };
 };

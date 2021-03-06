@@ -210,7 +210,7 @@ const displayErrorResults = ({ results = [], name }) => {
       tap((results) => {
         logger.debug(`displayErrorResults ${tos(results)}`);
       }),
-      //filter(({ result }) => result?.error),
+      filter(get("error")),
       forEach(({ result, error, resultQuery }) => {
         if (error) {
           console.log(YAML.stringify(convertError({ error, name })));
@@ -249,11 +249,13 @@ const displayError = ({ name, error }) => {
   assert(error);
   assert(name);
   console.error(`ERROR running command '${name}'`);
+  displayErrorResults({ name, results: error.result?.results });
+
   displayErrorResults({ name, results: error.resultQuery });
   displayErrorResults({ name, results: error.resultsDestroy });
   displayErrorHooks({ name, resultsHook: error.resultsHook });
 
-  const results = error.resultsDestroy || error.results || error.resultsHook;
+  const results = error.resultsDestroy || error.result || error.resultsHook;
 
   if (!results) {
     console.log(YAML.stringify(convertError({ error })));
@@ -1028,15 +1030,6 @@ const listDoOk = ({ commandOptions, programOptions }) =>
                       options: commandOptions,
                     }),
                 }),
-                tap(({ result }) =>
-                  map.series((provider) =>
-                    provider.spinnersStopListLives({
-                      onStateChange,
-                      options: commandOptions,
-                      result,
-                    })
-                  )(providersGru.getProviders())
-                ),
               ])({}),
           }),
         tap(({ result }) => {

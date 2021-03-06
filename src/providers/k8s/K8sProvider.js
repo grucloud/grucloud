@@ -170,7 +170,7 @@ const getAuthToken = ({ kubeConfig }) =>
 
 const providerType = "k8s";
 
-exports.K8sProvider = ({ name = providerType, config = {} }) => {
+exports.K8sProvider = ({ name = providerType, config = {}, ...other }) => {
   const info = () => ({});
 
   let accessToken;
@@ -192,6 +192,7 @@ exports.K8sProvider = ({ name = providerType, config = {} }) => {
   ]);
 
   return CoreProvider({
+    ...other,
     type: providerType,
     name,
     config: defaultsDeep({

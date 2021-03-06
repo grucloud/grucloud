@@ -47,11 +47,10 @@ exports.displayListSummary = pipe([
     assert(input.result.results);
   }),
   get("result.results"),
-  map(({ providerName, results }) =>
+  map(({ providerName, error, results }) =>
     pipe([
       tap(() => {
         assert(providerName);
-        assert(Array.isArray(results));
         console.log(`Provider: ${providerName}`);
       }),
       () =>
@@ -71,6 +70,16 @@ exports.displayListSummary = pipe([
               },
             ]);
           }),
+          tap.if(
+            () => error,
+            () =>
+              table.push([
+                {
+                  colSpan: 2,
+                  content: colors.red(error),
+                },
+              ])
+          ),
           () => results,
           filter(not(get("error"))),
           forEach(({ type, resources }) => {
@@ -412,7 +421,7 @@ const displayTablePerType = ({
       {
         colSpan: 3,
         content: colors.red(
-          `Error: ${error.name}: ${error.message}\n${error.stack}`
+          `Error: ${error.name}: code ${error.code}, message: ${error.message}\n${error.stack}`
         ),
       },
     ]);
@@ -425,9 +434,9 @@ const displayTablePerType = ({
   console.log("\n");
 };
 
-exports.displayLive = async ({ providerName, resources }) => {
+exports.displayLive = async ({ providerName, resources = [] }) => {
   assert(providerName);
-  assert(resources);
+  assert(Array.isArray(resources));
 
   resources.forEach((resourcesByType) =>
     displayTablePerType({ providerName, resourcesByType })
