@@ -17,25 +17,22 @@ describe("Lister", function () {
     const stateChanges = [];
     const inputs = [
       {
-        providerName: "k8s",
+        meta: { type: "Volume", providerName: "k8s" },
         key: "k8s::Volume",
-        type: "Volume",
         executor: executorOk,
       },
       {
-        providerName: "k8s",
+        meta: { type: "Volume", providerName: "k8s" },
         key: "k8s::VolumeClaim",
-        type: "VolumeClaim",
         executor: executorOk,
-        dependsOn: ["Volume"],
+        dependsOn: ["k8s::Volume"],
       },
     ];
-    const lister = Lister({
+    const { error, results } = await Lister({
       inputs,
       onStateChange: onStateChange(stateChanges),
     });
 
-    const { error, results } = await lister.run();
     assert(!error);
     assert(results);
   });

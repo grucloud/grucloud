@@ -1432,7 +1432,6 @@ function CoreProvider({
             });
           },
         }),
-      (lister) => lister.run(),
       tap((result) => {
         assert(result);
       }),
