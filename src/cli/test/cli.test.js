@@ -359,7 +359,7 @@ describe("cli error", function () {
           assert.equal(code, 422);
           //TODO
           /*
-          assert(error.error.resultDestroy.plans);
+          assert(error.error.resultDestroy);
           error.error.resultDestroy.resultsDestroy.result.results.forEach(
             (error) => assert(error)
           );*/

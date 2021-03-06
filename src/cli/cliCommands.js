@@ -217,8 +217,8 @@ const displayErrorResults = ({ results = [], name }) => {
         }
         if (resultQuery) {
           resultQuery.lives.error && displayLiveError(resultQuery.lives);
-          displayPlanQueryErrorResult(resultQuery.resultCreate.plans);
-          displayPlanQueryErrorResult(resultQuery.resultDestroy.plans);
+          displayPlanQueryErrorResult(resultQuery.resultCreate);
+          displayPlanQueryErrorResult(resultQuery.resultDestroy);
         }
 
         if (result?.resultCreate?.results) {
@@ -1039,7 +1039,9 @@ const listDoOk = ({ commandOptions, programOptions }) =>
                 ),
               ])({}),
           }),
-        tap(({ result }) => providersGru.displayLives(result)),
+        tap(({ result }) => {
+          providersGru.displayLives(result);
+        }),
       ])(),
     tap(
       pipe([

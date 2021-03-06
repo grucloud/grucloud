@@ -104,8 +104,8 @@ describe("GcpBucket", async function () {
         }),
       });
       const plan = await provider.planQuery();
-      assert.equal(plan.resultCreate.plans.length, 1);
-      assert.equal(plan.resultCreate.plans[0].action, "UPDATE");
+      assert.equal(plan.resultCreate.length, 1);
+      assert.equal(plan.resultCreate[0].action, "UPDATE");
 
       const { error } = await provider.planApply({ plan });
       assert(!error);

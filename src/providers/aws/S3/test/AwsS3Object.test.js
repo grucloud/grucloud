@@ -79,9 +79,9 @@ describe("AwsS3Object", async function () {
 
     const providerNext = await createStackNext({ config });
     const plan = await providerNext.planQuery();
-    assert.equal(plan.resultDestroy.plans.length, 0);
-    assert.equal(plan.resultCreate.plans.length, 1);
-    const update = plan.resultCreate.plans[0];
+    assert.equal(plan.resultDestroy.length, 0);
+    assert.equal(plan.resultCreate.length, 1);
+    const update = plan.resultCreate[0];
     assert.equal(update.action, "UPDATE");
 
     await testPlanDestroy({ provider, types });

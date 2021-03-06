@@ -122,7 +122,7 @@ describe("AwsHostedZone", async function () {
     const providerNext = await createProviderNext({ config });
 
     const plan = await providerNext.planQuery();
-    //assert.equal(plan.resultDestroy.plans.length, 1);
+    //assert.equal(plan.resultDestroy.length, 1);
     assert.equal(plan.resultCreate.length, 2);
     const updateHostedZone = plan.resultCreate[0];
     assert.equal(updateHostedZone.action, "UPDATE");
