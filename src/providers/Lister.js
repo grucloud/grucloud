@@ -7,7 +7,6 @@ const {
   pipe,
   tap,
   any,
-  switchCase,
   tryCatch,
   eq,
   get,
@@ -28,12 +27,6 @@ exports.Lister = ({ inputs, onStateChange }) => {
   assert(Array.isArray(inputs));
   assert(isFunction(onStateChange));
   const resultMap = new Map();
-  const inputMap = new Map(map((input) => [input.key, input])(inputs));
-
-  // Ensure keys are unnique
-  assert.equal(inputs.length, inputMap.size, "duplicated keys");
-
-  const inputValues = () => [...inputMap.values()];
 
   const runItem = async ({ entry: { meta, key, executor }, onEnd }) =>
     pipe([
@@ -61,47 +54,31 @@ exports.Lister = ({ inputs, onStateChange }) => {
       (result) => onEnd({ key, result }),
     ])();
 
-  const onEnd = async ({ key }) =>
+  const onEnd = async ({ key, result }) =>
     pipe([
-      () => inputValues(),
+      () => inputs,
       //Exclude the current resource
       filter(not(eq(get("key"), key))),
       // Find resources that depends on the one that just ended
       filter(pipe([get("dependsOn"), includes(key)])),
       map((entry) =>
-        tryCatch(
-          pipe([
-            get("dependsOn"),
-            // Remove from the dependsOn array the one that just ended
-            filter(not(includes(key))),
-            tap((updatedDependsOn) => {
-              entry.dependsOn = updatedDependsOn;
-            }),
-            switchCase([
-              isEmpty,
-              tryCatch(
-                () => runItem({ entry, onEnd }),
-                (error) => {
-                  logger.error(`Lister onEnd  ${tos({ error, entry })}`);
-                  return { error, entry };
-                }
-              ),
-              (updatedDependsOn) => updatedDependsOn,
-            ]),
-          ]),
-          (error) => {
-            logger.error(`Lister onEnd  ${tos({ error, entry })}`);
-            return { error, entry };
-          }
-        )(entry)
+        pipe([
+          get("dependsOn"),
+          // Remove from the dependsOn array the one that just ended
+          filter(not(includes(key))),
+          tap((updatedDependsOn) => {
+            entry.dependsOn = updatedDependsOn;
+          }),
+          tap.if(isEmpty, () => runItem({ entry, onEnd })),
+        ])(entry)
       ),
     ])();
 
   const run = pipe([
-    () => inputValues(),
+    () => inputs,
     filter(pipe([get("dependsOn"), isEmpty])),
     tap((x) => {
-      logger.debug(`Lister run: start ${x.length}/${inputValues().length}`);
+      logger.debug(`Lister run: start ${x.length}/${inputs.length}`);
     }),
     tap.if(isEmpty, () => {
       //assert(false, `all resources has dependsOn, plan: ${tos({ inputs })}`);
