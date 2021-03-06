@@ -1388,9 +1388,15 @@ function CoreProvider({
         logger.info(`listLives ${clients.length}`);
       }),
       map((client) => ({
-        type: client.spec.type,
-        providerName: client.spec.providerName,
+        meta: {
+          type: client.spec.type,
+          providerName: client.spec.providerName,
+        },
         key: `${client.spec.providerName}::${client.spec.type}`,
+        dependsOn: map(
+          (dependOn) => `${client.spec.providerName}::${dependOn}`
+        )(client.spec.listDependsOn),
+
         executor: ({ lives }) =>
           pipe([
             () =>
@@ -1408,16 +1414,17 @@ function CoreProvider({
                 lives,
               }),
           ])(),
-        dependsOn: client.spec.listDependsOn,
       })),
       (inputs) =>
         Lister({
           inputs,
-          onStateChange: ({ type, error, ...other }) => {
-            assert(type);
+          onStateChange: ({ key, meta, error, ...other }) => {
+            assert(key);
+            assert(meta.type);
+            assert(meta.providerName);
             onStateChange({
               context: contextFromClient({
-                client: clientByType({ type }),
+                client: clientByType({ type: meta.type }),
                 title,
               }),
               error,
@@ -2075,6 +2082,7 @@ ${result}}
     spinnersStartDestroy,
     planQueryDestroy,
     planDestroy,
+    planFindDestroy,
     destroyAll,
     planQueryAndApply,
     listLives,

@@ -35,9 +35,6 @@ const {
   values,
 } = require("rubico/x");
 
-const { retryCall } = require("./Retry");
-const { Planner, mapToGraph } = require("./Planner");
-const { Lister } = require("./Lister");
 const logger = require("../logger")({ prefix: "ProviderGru" });
 const { tos } = require("../tos");
 const {
@@ -87,19 +84,6 @@ exports.ProviderGru = ({ stacks }) => {
     provider.register({ resources, hooks })
   )(stacks);
 
-  const getClients = () =>
-    reduce(
-      (acc, provider) => [...acc, ...provider.getClients()],
-      []
-    )(getProviders());
-
-  //TODO add providers
-  const getResourcesByType = ({ type }) =>
-    reduce(
-      (acc, provider) => [...acc, ...provider.getResourcesByType({ type })],
-      []
-    )(getProviders());
-
   const getProvider = ({ providerName }) =>
     pipe([
       find(eq(get("name"), providerName)),
@@ -107,21 +91,6 @@ exports.ProviderGru = ({ stacks }) => {
         assert(`no provider with name: '${providerName}'`);
       }),
     ])(getProviders());
-
-  const getTargetResources = () =>
-    reduce(
-      (acc, provider) => [...acc, ...provider.getTargetResources()],
-      []
-    )(getProviders());
-
-  const getSpecs = () =>
-    reduce((acc, provider) => [...acc, ...provider.specs], [])(getProviders());
-
-  const getMapNameToResource = () =>
-    reduce(
-      (acc, provider) => new Map([...acc, ...provider.mapNameToResource]),
-      new Map()
-    )(getProviders());
 
   const start = ({ onStateChange }) =>
     pipe([
