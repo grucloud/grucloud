@@ -137,7 +137,7 @@ describe("MockProviderCli", async function () {
       });
       assert(!result.error);
       assert.equal(
-        result.resultQueryDestroy.results[0].destroyPlans[0].resource.name,
+        result.resultQueryDestroy.results[0].plans[0].resource.name,
         "volume"
       );
     }

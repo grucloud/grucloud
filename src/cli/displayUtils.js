@@ -190,45 +190,44 @@ exports.displayPlanSummary = pipe([
   ),
 ]);
 
-exports.displayPlanDestroySummary = forEach(
-  ({ providerName, error, destroyPlans }) =>
-    pipe([
-      tap(() => {
-        assert(providerName);
-      }),
-      () =>
-        new Table({
-          colWidths: tableSummaryDefs.colWidths({
-            columns: process.stdout.columns || 80,
-          }),
-          wordWrap: true,
-          style: { head: [], border: [] },
+exports.displayPlanDestroySummary = forEach(({ providerName, error, plans }) =>
+  pipe([
+    tap(() => {
+      assert(providerName);
+    }),
+    () =>
+      new Table({
+        colWidths: tableSummaryDefs.colWidths({
+          columns: process.stdout.columns || 80,
         }),
-      tap.if(
-        () => error,
-        (table) =>
-          table.push([
-            {
-              colSpan: 2,
-              content: colors.red(error),
-            },
-          ])
-      ),
-      tap.if(
-        () => !isEmpty(destroyPlans),
-        (table) =>
-          displayResourcePerType({
-            table,
-            providerName,
-            plans: destroyPlans,
-            title: `Destroy summary for provider ${providerName}`,
-            colorName: "brightRed",
-          })
-      ),
-      tap((table) => {
-        console.log(table.toString());
+        wordWrap: true,
+        style: { head: [], border: [] },
       }),
-    ])()
+    tap.if(
+      () => error,
+      (table) =>
+        table.push([
+          {
+            colSpan: 2,
+            content: colors.red(error),
+          },
+        ])
+    ),
+    tap.if(
+      () => !isEmpty(plans),
+      (table) =>
+        displayResourcePerType({
+          table,
+          providerName,
+          plans: plans,
+          title: `Destroy summary for provider ${providerName}`,
+          colorName: "brightRed",
+        })
+    ),
+    tap((table) => {
+      console.log(table.toString());
+    }),
+  ])()
 );
 
 const groupByType = (init = {}) =>

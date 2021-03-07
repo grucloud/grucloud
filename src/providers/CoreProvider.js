@@ -856,6 +856,9 @@ function CoreProvider({
             logger.info(
               `runHook hookType: ${hookType}, #hooks ${hooks.length}`
             );
+            assert(onStateChange);
+            assert(hookType);
+            assert(onHook);
           }),
           map((hook) =>
             pipe([
@@ -1190,6 +1193,10 @@ function CoreProvider({
             },
           ])
         ),
+        spinnersStartHooks({
+          onStateChange,
+          hookType: HookType.ON_DEPLOYED,
+        }),
       ])
     )();
 
@@ -1224,6 +1231,10 @@ function CoreProvider({
           providerName,
           plans,
         }),
+      }),
+      spinnersStartHooks({
+        onStateChange,
+        hookType: HookType.ON_DESTROYED,
       }),
     ])();
   };
@@ -1590,7 +1601,7 @@ function CoreProvider({
           }),
       }),
       assign({
-        destroyPlans: ({ lives }) => planFindDestroy({ options, lives }),
+        plans: ({ lives }) => planFindDestroy({ options, lives }),
       }),
       assign({ error: any(get("error")) }),
       tap((result) => {
@@ -1778,6 +1789,7 @@ function CoreProvider({
       }),
       tap((result) =>
         forEach((client) => {
+          //TODO Refactor and test
           client.onDeployed && client.onDeployed(result);
         })(getClients())
       ),
@@ -1992,6 +2004,9 @@ function CoreProvider({
           }),
         }),
       (planner) => planner.run(),
+      tap((xxx) => {
+        assert(xxx);
+      }),
       tap(({ error }) =>
         onStateChange({
           context: contextFromPlanner({ providerName, title: TitleDestroying }),
@@ -2010,10 +2025,10 @@ function CoreProvider({
         assert(xxx);
       }),
       assign({
-        destroy: ({ lives, destroyPlans }) =>
+        destroy: ({ lives, plans }) =>
           planDestroy({
             onStateChange,
-            plans: destroyPlans,
+            plans: plans,
             options,
             direction: PlanDirection.DOWN,
             lives,

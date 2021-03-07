@@ -408,7 +408,7 @@ describe("cli error", function () {
         cmds: command.split(" "),
         configFile: configFileTimeoutOnce,
         onExit: ({ code, error }) => {
-          assert.equal(code, 0);
+          assert.equal(code, 0, `error for command: ${command}`);
           assert(!error);
         },
       })

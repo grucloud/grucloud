@@ -233,6 +233,14 @@ exports.ProviderGru = ({ stacks }) => {
                       plan: planPerProvider,
                       onStateChange,
                     }),
+                  assign({
+                    resultHooks: () =>
+                      provider.runOnDeployed({ onStateChange }),
+                  }),
+                  assign({ error: any(get("error")) }),
+                  tap((xxx) => {
+                    assert(xxx);
+                  }),
                 ])(),
             ])(),
           (error, { providerName }) => {
@@ -296,7 +304,7 @@ exports.ProviderGru = ({ stacks }) => {
       }),
       () => plan.results,
       filter(not(get("error"))),
-      map(({ providerName, lives, destroyPlans }) =>
+      map(({ providerName, lives, plans }) =>
         pipe([
           () => getStack({ providerName }),
           ({ provider, isProviderUp }) => ({
@@ -312,13 +320,22 @@ exports.ProviderGru = ({ stacks }) => {
             executor: ({}) =>
               pipe([
                 () => provider.start({ onStateChange }),
-                () =>
-                  provider.planDestroy({
-                    plans: destroyPlans,
-                    lives: lives,
-                    onStateChange,
-                    options,
-                  }),
+                assign({
+                  resultDestroy: () =>
+                    provider.planDestroy({
+                      plans: plans,
+                      lives: lives,
+                      onStateChange,
+                      options,
+                    }),
+                }),
+                assign({
+                  resultHooks: () => provider.runOnDestroyed({ onStateChange }),
+                }),
+                assign({ error: any(get("error")) }),
+                tap((xxx) => {
+                  assert(xxx);
+                }),
               ])(),
           }),
         ])()
