@@ -406,46 +406,14 @@ const runAsyncCommandHook = ({ hookType, commandTitle, providersGru }) =>
                   })
                 )(providersGru.getProviders())
               ),
-              //TODO remove
-              assign({
-                resultStart: () =>
-                  providersGru.start({
-                    onStateChange,
-                  }),
-              }),
-              assign({
-                result: () =>
-                  pipe([
-                    map((provider) =>
-                      pipe([
-                        () => provider[commandToFunction(hookType)],
-                        tap((fun) => {
-                          assert(fun, `no provider hook for ${hookType}`);
-                        }),
-                        (fun) => fun({ onStateChange }),
-                        tap(({ error }) =>
-                          provider.spinnersStopProvider({
-                            onStateChange,
-                            error,
-                          })
-                        ),
-                      ])()
-                    ),
-                    (results) => ({
-                      error: any(get("error"))(results),
-                      results,
-                    }),
-                  ])(providersGru.getProviders()),
-              }),
-              assign({ error: any(get("error")) }),
-              tap((xxx) => {
-                assert(xxx);
-              }),
+              () =>
+                providersGru.runCommand({
+                  onStateChange,
+                  functionName: commandToFunction(hookType),
+                }),
             ])({}),
         }),
     }),
-    //TODO
-    assign({ error: ({ error, resultsHook }) => error || resultsHook.error }),
     tap((xxx) => {
       logger.debug(`runAsyncCommandHook hookType: ${hookType} DONE`);
     }),

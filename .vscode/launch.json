@@ -243,6 +243,16 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Mock Multi onDeployed",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/mock/mock-multi",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["run", "--onDeployed"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Mock Multi Destroy",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/mock-multi",
