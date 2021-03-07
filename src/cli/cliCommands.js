@@ -669,7 +669,10 @@ const planApply = async ({ infra, commandOptions = {}, programOptions = {} }) =>
           }),
           tap.if(
             and([
-              eq(get("resultQuery.errorClass"), "Dependency"),
+              pipe([
+                get("resultQuery.results"),
+                find(eq(get("errorClass"), "Dependency")),
+              ]),
               not(get("resultDeploy.error")),
             ]),
             pipe([

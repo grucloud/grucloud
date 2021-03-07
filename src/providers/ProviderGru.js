@@ -18,6 +18,7 @@ const {
   or,
   transform,
   omit,
+  pick,
 } = require("rubico");
 
 const {
@@ -76,24 +77,57 @@ const { displayLive } = require("../cli/displayUtils");
 const noop = ({}) => {};
 const identity = (x) => x;
 
+const dependenciesTodependsOn = reduce((acc, deps) => [...acc, deps.name], []);
+
 const runnerParams = ({ provider, isProviderUp }) => ({
   key: provider.name,
   meta: { providerName: provider.name },
-  dependsOn: reduce(
-    (acc, deps) => [...acc, deps.name],
-    []
-  )(provider.dependencies),
+  dependsOn: dependenciesTodependsOn(provider.dependencies),
   isUp: isProviderUp,
 });
+
+const buildDependsOnReverse = (stacks) =>
+  pipe([
+    map(
+      pipe([
+        get("provider"),
+        ({ name, dependencies }) => ({
+          name,
+          dependsOn: dependenciesTodependsOn(dependencies),
+        }),
+      ])
+    ),
+    (specDependsOn) =>
+      map(({ name }) => ({
+        name,
+        dependsOn: pipe([
+          filter(pipe([get("dependsOn"), includes(name)])),
+          map(get("name")),
+        ])(specDependsOn),
+      }))(specDependsOn),
+    tap((specDependsOn) => {
+      logger.info(`buildDependsOnReverse: ${tos(specDependsOn)}`);
+    }),
+  ])(stacks);
 
 exports.ProviderGru = ({ stacks }) => {
   assert(Array.isArray(stacks));
 
   const getProviders = () => pipe([map(get("provider"))])(stacks);
+  const dependsOnReverse = buildDependsOnReverse(stacks);
 
   forEach(({ provider, resources, hooks }) =>
     provider.register({ resources, hooks })
   )(stacks);
+
+  const getStack = ({ providerName }) =>
+    pipe([
+      () => stacks,
+      find(eq(get("provider.name"), providerName)),
+      tap.if(isEmpty, () => {
+        assert(`no provider with name: '${providerName}'`);
+      }),
+    ])();
 
   const getProvider = ({ providerName }) =>
     pipe([
@@ -271,7 +305,7 @@ exports.ProviderGru = ({ stacks }) => {
       }),
     ])();
 
-  const planDestroy = async ({ plan, onStateChange = identity }) =>
+  const planDestroy = async ({ plan, onStateChange = identity, options }) =>
     pipe([
       tap(() => {
         logger.info(`planDestroy`);
@@ -279,23 +313,49 @@ exports.ProviderGru = ({ stacks }) => {
       }),
       () => plan.results,
       filter(not(get("error"))),
-      map(
-        tryCatch(
-          ({ destroyPlans, lives, providerName }) =>
-            getProvider({
-              providerName,
-            }).planDestroy({ plans: destroyPlans, lives, onStateChange }),
-          (error, planPerProvider) => {
-            logger.error(`planDestroy ${tos(error)}`);
-            assert(planPerProvider.providerName);
-            return {
-              error: convertError({ error, name: "planDestroy" }),
-              providerName: planPerProvider.providerName,
-            };
-          }
-        )
+      map(({ providerName, lives, destroyPlans }) =>
+        pipe([
+          () => getStack({ providerName }),
+          ({ provider, isProviderUp }) => ({
+            key: providerName,
+            meta: { providerName },
+            dependsOn: pipe([
+              () => stacks,
+              buildDependsOnReverse,
+              find(eq(get("name"), providerName)),
+              get("dependsOn"),
+            ])(),
+            isUp: isProviderUp,
+            executor: ({}) =>
+              pipe([
+                //() => provider.start({ onStateChange }),
+                () =>
+                  provider.planDestroy({
+                    plans: destroyPlans,
+                    lives: lives,
+                    onStateChange,
+                    options,
+                  }),
+              ])(),
+          }),
+        ])()
       ),
-      (results) => ({ error: any(get("error"))(results), results }),
+      (inputs) =>
+        Lister({
+          inputs,
+          onStateChange: ({ key, result, nextState }) =>
+            pipe([
+              tap.if(
+                () => includes(nextState)(["DONE", "ERROR"]),
+                pipe([
+                  () => getProvider({ providerName: key }),
+                  (provider) => {
+                    logger.debug(`provider ${provider.name} ended`);
+                  },
+                ])
+              ),
+            ])(),
+        }),
       tap((result) => {
         logger.debug(`planDestroy result: ${tos(result)}`);
       }),
