@@ -39,42 +39,10 @@ const { Lister } = require("./Lister");
 
 const logger = require("../logger")({ prefix: "ProviderGru" });
 const { tos } = require("../tos");
-const {
-  mapPoolSize,
-  convertError,
-  HookType,
-  TitleListing,
-  TitleQuery,
-  TitleDeploying,
-  TitleDestroying,
-  typeFromResources,
-  planToResourcesPerType,
-} = require("./Common");
-
-const {
-  nextStateOnError,
-  hasResultError,
-  PlanDirection,
-  isTypesMatch,
-  isTypeMatch,
-  isValidPlan,
-  filterReadClient,
-  filterReadWriteClient,
-  contextFromClient,
-  contextFromProvider,
-  contextFromProviderInit,
-  contextFromResourceType,
-  contextFromPlanner,
-  contextFromResource,
-  contextFromHook,
-  contextFromHookAction,
-  clientByType,
-  liveToUri,
-} = require("./ProviderCommon");
+const { convertError } = require("./Common");
 
 const { displayLive } = require("../cli/displayUtils");
 
-const noop = ({}) => {};
 const identity = (x) => x;
 
 const dependenciesTodependsOn = reduce((acc, deps) => [...acc, deps.name], []);
@@ -114,7 +82,6 @@ exports.ProviderGru = ({ stacks }) => {
   assert(Array.isArray(stacks));
 
   const getProviders = () => pipe([map(get("provider"))])(stacks);
-  const dependsOnReverse = buildDependsOnReverse(stacks);
 
   forEach(({ provider, resources, hooks }) =>
     provider.register({ resources, hooks })
@@ -137,6 +104,7 @@ exports.ProviderGru = ({ stacks }) => {
       }),
     ])(getProviders());
 
+  //TODO remove it
   const start = ({ onStateChange }) =>
     pipe([
       tap(() => {
@@ -161,7 +129,8 @@ exports.ProviderGru = ({ stacks }) => {
   const listLives = async ({ onStateChange, options }) =>
     pipe([
       tap(() => {
-        logger.info(`listLives`);
+        logger.info(`listLives ${JSON.stringify(options)}`);
+        assert(onStateChange);
       }),
       () => stacks,
       map(({ provider, isProviderUp }) => ({
@@ -169,7 +138,7 @@ exports.ProviderGru = ({ stacks }) => {
         executor: ({ lives }) =>
           pipe([
             () => provider.start({ onStateChange }),
-            () => provider.listLives({ lives, options }),
+            () => provider.listLives({ onStateChange, lives, options }),
           ])(),
       })),
       (inputs) =>
@@ -251,14 +220,26 @@ exports.ProviderGru = ({ stacks }) => {
       map(
         tryCatch(
           (planPerProvider) =>
-            getProvider({
-              providerName: planPerProvider.providerName,
-            }).planApply({ plan: planPerProvider, onStateChange }),
-          (error, planPerProvider) => {
+            pipe([
+              () =>
+                getProvider({
+                  providerName: planPerProvider.providerName,
+                }),
+              (provider) =>
+                pipe([
+                  () => provider.start({ onStateChange }),
+                  () =>
+                    provider.planApply({
+                      plan: planPerProvider,
+                      onStateChange,
+                    }),
+                ])(),
+            ])(),
+          (error, { providerName }) => {
             logger.error(`planApply ${tos(error)}`);
             return {
               error: convertError({ error, name: "Apply" }),
-              providerName: planPerProvider.providerName,
+              providerName,
             };
           }
         )
@@ -287,15 +268,17 @@ exports.ProviderGru = ({ stacks }) => {
       (inputs) =>
         Lister({
           inputs,
-          onStateChange: ({ key, result, nextState }) =>
+          onStateChange: ({ key, error, result, nextState }) =>
             pipe([
               tap.if(
                 () => includes(nextState)(["DONE", "ERROR"]),
                 pipe([
                   () => getProvider({ providerName: key }),
-                  (provider) => {
-                    logger.debug(`provider ${provider.name} ended`);
-                  },
+                  (provider) =>
+                    provider.spinnersStopProvider({
+                      onStateChange,
+                      error: result?.error || error,
+                    }),
                 ])
               ),
             ])(),
@@ -328,7 +311,7 @@ exports.ProviderGru = ({ stacks }) => {
             isUp: isProviderUp,
             executor: ({}) =>
               pipe([
-                //() => provider.start({ onStateChange }),
+                () => provider.start({ onStateChange }),
                 () =>
                   provider.planDestroy({
                     plans: destroyPlans,
@@ -343,15 +326,17 @@ exports.ProviderGru = ({ stacks }) => {
       (inputs) =>
         Lister({
           inputs,
-          onStateChange: ({ key, result, nextState }) =>
+          onStateChange: ({ key, error, result, nextState }) =>
             pipe([
               tap.if(
                 () => includes(nextState)(["DONE", "ERROR"]),
                 pipe([
                   () => getProvider({ providerName: key }),
-                  (provider) => {
-                    logger.debug(`provider ${provider.name} ended`);
-                  },
+                  (provider) =>
+                    provider.spinnersStopProvider({
+                      onStateChange,
+                      error: result?.error || error,
+                    }),
                 ])
               ),
             ])(),
@@ -364,6 +349,7 @@ exports.ProviderGru = ({ stacks }) => {
   const destroyAll = () =>
     pipe([
       tap(() => {
+        //TODO
         logger.info(`planQuery `);
         assert(false);
       }),

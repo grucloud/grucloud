@@ -324,6 +324,7 @@
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/mock",
       "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
       "args": ["destroy", "-f"]
     },
     {

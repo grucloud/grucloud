@@ -1120,6 +1120,7 @@ function CoreProvider({
         spinnersStartProvider({ onStateChange }),
         spinnersStartClient({
           onStateChange,
+          planQueryDestroy,
           title: TitleListing,
           clients: filterReadClient(options)(clients),
         }),
@@ -1572,7 +1573,7 @@ function CoreProvider({
       }),
     ])();
 
-  const planQueryDestroy = async ({ options = {} }) =>
+  const planQueryDestroy = async ({ onStateChange, options = {} }) =>
     pipe([
       tap(() => {
         logger.info(
@@ -1584,6 +1585,7 @@ function CoreProvider({
         lives: () =>
           listLives({
             options,
+            onStateChange,
             readWrite: true,
           }),
       }),
@@ -1998,18 +2000,19 @@ function CoreProvider({
       ),
     ])();
 
-  const destroyAll = ({ options } = {}) =>
+  const destroyAll = ({ onStateChange = identity, options } = {}) =>
     pipe([
       tap(() => {
         logger.info(`destroyAll ${JSON.stringify(options)}`);
       }),
-      () => planQueryDestroy({ options }),
+      () => planQueryDestroy({ onStateChange, options }),
       tap((xxx) => {
         assert(xxx);
       }),
       assign({
         destroy: ({ lives, destroyPlans }) =>
           planDestroy({
+            onStateChange,
             plans: destroyPlans,
             options,
             direction: PlanDirection.DOWN,

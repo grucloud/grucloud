@@ -807,13 +807,6 @@ exports.planDestroy = async ({
                     ),
                   ])
                 ),
-                //TODO do we need start here ?
-                assign({
-                  resultStart: () =>
-                    providersGru.start({
-                      onStateChange,
-                    }),
-                }),
                 //TODO change name
                 assign({
                   result: () =>
@@ -829,9 +822,6 @@ exports.planDestroy = async ({
         assert(xxx);
       }),
       assign({ error: pipe([get("resultsDestroy"), any(get("error"))]) }),
-      tap((xxx) => {
-        assert(xxx);
-      }),
       tap((result) =>
         saveToJson({
           command: "destroy",
@@ -873,7 +863,7 @@ exports.planDestroy = async ({
             runAsyncCommand({
               text: displayCommandHeader({
                 providers: providersGru.getProviders(),
-                verb: "Find",
+                verb: "Find Deletable",
               }),
               command: ({ onStateChange }) =>
                 pipe([
@@ -896,25 +886,6 @@ exports.planDestroy = async ({
                     assert(xxx);
                   }),
                   assign({ error: any(get("error")) }),
-                  tap(
-                    pipe([
-                      get("resultQueryDestroy.results"),
-                      tap((results) => {
-                        assert(results);
-                      }),
-                      forEach(
-                        pipe([
-                          ({ providerName, error }) =>
-                            providersGru
-                              .getProvider({ providerName })
-                              .spinnersStopProvider({
-                                onStateChange,
-                                error,
-                              }),
-                        ])
-                      ),
-                    ])
-                  ),
                 ])({}),
             }),
           tap((xxx) => {
@@ -1025,12 +996,6 @@ const listDoOk = ({ commandOptions, programOptions }) =>
                     })
                   )(providersGru.getProviders())
                 ),
-                assign({
-                  resultStart: () =>
-                    providersGru.start({
-                      onStateChange,
-                    }),
-                }),
                 assign({
                   result: () =>
                     providersGru.listLives({
