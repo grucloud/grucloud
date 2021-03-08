@@ -2,14 +2,7 @@
 
 ## Common:
 
-- //TODO
-  /_) =>
-  forEach((client) => {
-  client.onDeployed && client.onDeployed(result);
-  })(clients)
-  ),_/
-
-  - case where provider does have any resources
+- case where provider does have any resources
 
 - add projectName and use it as the title of the graph
 - destroy: use live instead of id
@@ -103,9 +96,6 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 - isExpectedException: (error) => {
   return error.response?.status === 409;
   },
-- refactor: client.getList({
-  resources: provider.getResourcesByType(client.spec.type),
-
 - service account managedByUs false despite description: Managee By GruCloud
 - vm instance: network interface from vpc network
 - validate config: check project and region
@@ -118,8 +108,8 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## Nice to have
 
+- https://kubedex.com/
 - https://www.cncf.io/
 - https://jonathan.bergknoff.com/journal/terraform-pain-points/
 - terraform workspace new staging
 - terraform workspace select (staging/production)
-- https://cloudcraft.co/

@@ -6,8 +6,8 @@ const { createChartPostgres } = require("./charts/postgres");
 const { createChartRedis } = require("./charts/redis");
 const { createIngress } = require("./ingress");
 
-exports.createStack = async ({ config, resources }) => {
-  const provider = K8sProvider({ config });
+exports.createStack = async ({ config, resources, dependencies }) => {
+  const provider = K8sProvider({ config, dependencies });
 
   assert(config.namespaceName);
 
@@ -44,7 +44,7 @@ exports.createStack = async ({ config, resources }) => {
     resources: { namespace },
     config,
   });
-
+  /*
   const ingress = await createIngress({
     provider,
     config,
@@ -54,7 +54,7 @@ exports.createStack = async ({ config, resources }) => {
       serviceRestServer: restServerChart.service,
     },
   });
-
+*/
   const storageClass = await provider.makeStorageClass({
     name: config.storageClassName,
     properties: () => ({
@@ -72,10 +72,11 @@ exports.createStack = async ({ config, resources }) => {
   return {
     provider,
     resources: {
-      ingress,
       namespace,
       serviceAccount,
       storageClass,
+      restServerChart,
+      webServerChart,
     },
   };
 };

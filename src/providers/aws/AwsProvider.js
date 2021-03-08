@@ -49,7 +49,7 @@ const fetchAccountId = pipe([
   get("Account"),
 ]);
 
-exports.AwsProvider = ({ name = "aws", config }) => {
+exports.AwsProvider = ({ name = "aws", config, ...other }) => {
   assert(config);
   assert(config.projectName, "missing projectName in config");
 
@@ -100,6 +100,7 @@ exports.AwsProvider = ({ name = "aws", config }) => {
   });
 
   return CoreProvider({
+    ...other,
     type: "aws",
     name,
     config: {

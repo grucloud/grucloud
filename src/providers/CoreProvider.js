@@ -602,6 +602,7 @@ const createResourceMakers = ({ specs, config, provider }) =>
 
 function CoreProvider({
   name: providerName,
+  dependencies = {},
   type,
   mandatoryEnvs = [],
   mandatoryConfigKeys = [],
@@ -855,6 +856,9 @@ function CoreProvider({
             logger.info(
               `runHook hookType: ${hookType}, #hooks ${hooks.length}`
             );
+            assert(onStateChange);
+            assert(hookType);
+            assert(onHook);
           }),
           map((hook) =>
             pipe([
@@ -1038,7 +1042,7 @@ function CoreProvider({
           ])(clients),
       ])
     );
-  const spinnersStopClient = ({ onStateChange, title, clients, result }) =>
+  const spinnersStopClient = ({ onStateChange, title, clients, error }) =>
     tap(
       pipe([
         tap(() => {
@@ -1051,7 +1055,7 @@ function CoreProvider({
         tap(() =>
           onStateChange({
             context: contextFromPlanner({ providerName, title }),
-            nextState: nextStateOnError(result.error),
+            nextState: nextStateOnError(error),
           })
         ),
       ])
@@ -1119,13 +1123,14 @@ function CoreProvider({
         spinnersStartProvider({ onStateChange }),
         spinnersStartClient({
           onStateChange,
+          planQueryDestroy,
           title: TitleListing,
           clients: filterReadClient(options)(clients),
         }),
       ])
     )();
 
-  const spinnersStopListLives = ({ onStateChange, options, result }) =>
+  const spinnersStopListLives = ({ onStateChange, options, error }) =>
     tap(
       pipe([
         tap(() => {
@@ -1135,9 +1140,9 @@ function CoreProvider({
           onStateChange,
           title: TitleListing,
           clients: filterReadClient(options)(clients),
-          result,
+          error,
         }),
-        () => spinnersStopProvider({ onStateChange, error: result.error }),
+        () => spinnersStopProvider({ onStateChange, error }),
       ])
     )();
 
@@ -1188,6 +1193,10 @@ function CoreProvider({
             },
           ])
         ),
+        spinnersStartHooks({
+          onStateChange,
+          hookType: HookType.ON_DEPLOYED,
+        }),
       ])
     )();
 
@@ -1222,6 +1231,10 @@ function CoreProvider({
           providerName,
           plans,
         }),
+      }),
+      spinnersStartHooks({
+        onStateChange,
+        hookType: HookType.ON_DESTROYED,
       }),
     ])();
   };
@@ -1432,7 +1445,6 @@ function CoreProvider({
             });
           },
         }),
-      (lister) => lister.run(),
       tap((result) => {
         assert(result);
       }),
@@ -1476,12 +1488,11 @@ function CoreProvider({
 
     assert(direction);
     logger.debug(
-      `filterDestroyResources ${tos({
+      `filterDestroyResources ${JSON.stringify({
         name,
         all,
         types,
         id,
-        resource,
         managedByUs,
       })}`
     );
@@ -1572,7 +1583,7 @@ function CoreProvider({
       }),
     ])();
 
-  const planQueryDestroy = async ({ options = {} }) =>
+  const planQueryDestroy = async ({ onStateChange, options = {} }) =>
     pipe([
       tap(() => {
         logger.info(
@@ -1584,11 +1595,12 @@ function CoreProvider({
         lives: () =>
           listLives({
             options,
+            onStateChange,
             readWrite: true,
           }),
       }),
       assign({
-        destroyPlans: ({ lives }) => planFindDestroy({ options, lives }),
+        plans: ({ lives }) => planFindDestroy({ options, lives }),
       }),
       assign({ error: any(get("error")) }),
       tap((result) => {
@@ -1682,6 +1694,7 @@ function CoreProvider({
   const planQuery = async ({
     onStateChange = identity,
     commandOptions = {},
+    lives, //TODO
   } = {}) =>
     pipe([
       tap(() => {
@@ -1775,6 +1788,7 @@ function CoreProvider({
       }),
       tap((result) =>
         forEach((client) => {
+          //TODO Refactor and
           client.onDeployed && client.onDeployed(result);
         })(getClients())
       ),
@@ -1989,6 +2003,9 @@ function CoreProvider({
           }),
         }),
       (planner) => planner.run(),
+      tap((xxx) => {
+        assert(xxx);
+      }),
       tap(({ error }) =>
         onStateChange({
           context: contextFromPlanner({ providerName, title: TitleDestroying }),
@@ -1997,19 +2014,20 @@ function CoreProvider({
       ),
     ])();
 
-  const destroyAll = ({ options } = {}) =>
+  const destroyAll = ({ onStateChange = identity, options } = {}) =>
     pipe([
       tap(() => {
         logger.info(`destroyAll ${JSON.stringify(options)}`);
       }),
-      () => planQueryDestroy({ options }),
+      () => planQueryDestroy({ onStateChange, options }),
       tap((xxx) => {
         assert(xxx);
       }),
       assign({
-        destroy: ({ lives, destroyPlans }) =>
+        destroy: ({ lives, plans }) =>
           planDestroy({
-            plans: destroyPlans,
+            onStateChange,
+            plans: plans,
             options,
             direction: PlanDirection.DOWN,
             lives,
@@ -2071,6 +2089,7 @@ ${result}}
     toString,
     config: () => providerConfig,
     name: providerName,
+    dependencies,
     type: toType,
     spinnersStopProvider,
     spinnersStartHook,

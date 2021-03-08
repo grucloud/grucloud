@@ -76,7 +76,7 @@ describe("MockProviderCli", async function () {
               infra,
               commandOptions: options,
             });
-            assert(`should not be here for command ${command}`);
+            assert(false, `should not be here for command ${command}`);
           },
           (ex) => ex
         )
@@ -137,7 +137,7 @@ describe("MockProviderCli", async function () {
       });
       assert(!result.error);
       assert.equal(
-        result.resultQueryDestroy.results[0].destroyPlans[0].resource.name,
+        result.resultQueryDestroy.results[0].plans[0].resource.name,
         "volume"
       );
     }

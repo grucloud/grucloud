@@ -2,7 +2,7 @@ const Axios = require("axios");
 const assert = require("assert");
 const urljoin = require("url-join");
 const { MockProvider } = require("@grucloud/core");
-//const hooks = require("./hooks");
+const hooks = require("./hooks");
 
 const BASE_URL = "http://localhost:8089";
 
@@ -51,6 +51,7 @@ exports.createStack = async ({ config }) => {
 
   const provider2 = MockProvider({
     name: "mock-2",
+    dependencies: { provider1 },
     config: {
       ...config,
       createAxios,
@@ -63,6 +64,8 @@ exports.createStack = async ({ config }) => {
     {
       provider: provider1,
       resources: resources1,
+      hooks,
+      isProviderUp: () => resources1.volume.getLive(),
     },
     {
       provider: provider2,

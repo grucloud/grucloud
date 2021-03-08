@@ -103,6 +103,26 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "K8s EKS Apply",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/starhackit/aws",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["apply", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "K8s EKS Destroy",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/starhackit/aws",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["destroy", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "K8s Starhackit List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/k8s/starhackit",
@@ -193,12 +213,22 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Mock Multi Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/mock/mock-multi",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Mock Multi Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/mock-multi",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["apply"]
+      "args": ["apply", "-f"]
     },
     {
       "type": "node",
@@ -209,6 +239,16 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["apply", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Mock Multi onDeployed",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/mock/mock-multi",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["run", "--onDeployed"]
     },
     {
       "type": "node",
@@ -294,6 +334,7 @@
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/mock",
       "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
       "args": ["destroy", "-f"]
     },
     {

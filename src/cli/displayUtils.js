@@ -47,11 +47,10 @@ exports.displayListSummary = pipe([
     assert(input.result.results);
   }),
   get("result.results"),
-  map(({ providerName, results }) =>
+  map(({ providerName, error, results }) =>
     pipe([
       tap(() => {
         assert(providerName);
-        assert(Array.isArray(results));
         console.log(`Provider: ${providerName}`);
       }),
       () =>
@@ -71,6 +70,16 @@ exports.displayListSummary = pipe([
               },
             ]);
           }),
+          tap.if(
+            () => error,
+            () =>
+              table.push([
+                {
+                  colSpan: 2,
+                  content: colors.red(error),
+                },
+              ])
+          ),
           () => results,
           filter(not(get("error"))),
           forEach(({ type, resources }) => {
@@ -181,11 +190,10 @@ exports.displayPlanSummary = pipe([
   ),
 ]);
 
-exports.displayPlanDestroySummary = forEach(({ providerName, destroyPlans }) =>
+exports.displayPlanDestroySummary = forEach(({ providerName, error, plans }) =>
   pipe([
     tap(() => {
       assert(providerName);
-      assert(Array.isArray(destroyPlans));
     }),
     () =>
       new Table({
@@ -195,14 +203,26 @@ exports.displayPlanDestroySummary = forEach(({ providerName, destroyPlans }) =>
         wordWrap: true,
         style: { head: [], border: [] },
       }),
-    tap((table) =>
-      displayResourcePerType({
-        table,
-        providerName,
-        plans: destroyPlans,
-        title: `Destroy summary for provider ${providerName}`,
-        colorName: "brightRed",
-      })
+    tap.if(
+      () => error,
+      (table) =>
+        table.push([
+          {
+            colSpan: 2,
+            content: colors.red(error),
+          },
+        ])
+    ),
+    tap.if(
+      () => !isEmpty(plans),
+      (table) =>
+        displayResourcePerType({
+          table,
+          providerName,
+          plans: plans,
+          title: `Destroy summary for provider ${providerName}`,
+          colorName: "brightRed",
+        })
     ),
     tap((table) => {
       console.log(table.toString());
@@ -412,7 +432,7 @@ const displayTablePerType = ({
       {
         colSpan: 3,
         content: colors.red(
-          `Error: ${error.name}: ${error.message}\n${error.stack}`
+          `Error: ${error.name}: code ${error.code}, message: ${error.message}\n${error.stack}`
         ),
       },
     ]);
@@ -425,9 +445,9 @@ const displayTablePerType = ({
   console.log("\n");
 };
 
-exports.displayLive = async ({ providerName, resources }) => {
+exports.displayLive = async ({ providerName, resources = [] }) => {
   assert(providerName);
-  assert(resources);
+  assert(Array.isArray(resources));
 
   resources.forEach((resourcesByType) =>
     displayTablePerType({ providerName, resourcesByType })
