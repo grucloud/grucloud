@@ -57,12 +57,13 @@
 ## TODO Aws:
 
 - s3 exmaple: gc d tries to delete roles
+- gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404: 404 should be ok
 
 - gc d -a : resource sg-08c62cd971a2e1d43 has a dependent object
   sg depends on sg so hard to find out the dependencies, add a retry on DependencyViolation as a kludge
 - https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
 - https://docs.aws.amazon.com/eks/latest/userguide/load-balancing.html
-
+- https://medium.com/cloudzone/aws-alb-ingress-controller-guide-ec16233f5903
 - https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/
 - aws load balancer ingress https://github.com/stacksimplify/aws-eks-kubernetes-masterclass/blob/f46e2b15533a96b7641662656cf5deebb63d5dae/11-DevOps-with-AWS-Developer-Tools/Application-Manifests/kube-manifests/03-DEVOPS-Nginx-ALB-IngressService.yml
 

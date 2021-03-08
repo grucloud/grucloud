@@ -13,7 +13,6 @@ const logger = require("../../logger")({ prefix: "K8sStatefulSet" });
 const { tos } = require("../../tos");
 const { buildTagsObject, isUpByIdCore } = require("../Common");
 const K8sClient = require("./K8sClient");
-const { retryCallOnError } = require("../Retry");
 
 const { getNamespace } = require("./K8sCommon");
 
@@ -70,29 +69,6 @@ exports.K8sStatefulSet = ({ spec, config }) => {
   });
 
   //TODO
-  /*
-  const findVolumeClaim = ({ live, lives }) =>
-    pipe([
-      () => get("spec.volumeClaimTemplates")(live),
-      pluck("metadata.name"),
-      (volumeClaims) =>
-        pipe([
-          () => lives.results,
-          find(eq(get("type"), "PersistentVolumeClaim")),
-          get("resources"),
-          filter(
-            pipe([
-              get("live.spec.volumeName"),
-              (volumeName) => includes(volumeName)(volumeClaims),
-            ])
-          ),
-          tap((resources) => {
-            logger.info(`findVolumeClaim ${resources}`);
-          }),
-        ])(),
-    ])();
-*/
-
   const destroy = async ({ live, lives }) =>
     pipe([
       //() => findVolumeClaim({ live, lives }),

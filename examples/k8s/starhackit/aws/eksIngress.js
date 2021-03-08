@@ -21,6 +21,7 @@ exports.createIngress = async ({
     properties: () => ({
       metadata: {
         annotations: {
+          "kubernetes.io/ingress.class": "alb",
           "nginx.ingress.kubernetes.io/use-regex": "true",
         },
       },

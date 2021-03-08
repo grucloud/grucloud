@@ -12,6 +12,7 @@ const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
 const { compare, isOurMinion } = require("./K8sCommon");
 
+const { K8sClusterRole } = require("./K8sClusterRole");
 const { K8sReplicaSet } = require("./K8sReplicaSet");
 const { K8sService } = require("./K8sService");
 const { K8sStorageClass } = require("./K8sStorageClass");
@@ -33,6 +34,11 @@ const fnSpecs = () => [
   {
     type: "Namespace",
     Client: K8sNamespace,
+    isOurMinion,
+  },
+  {
+    type: "ClusterRole",
+    Client: K8sClusterRole,
     isOurMinion,
   },
   {
