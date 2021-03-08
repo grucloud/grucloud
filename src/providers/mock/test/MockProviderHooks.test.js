@@ -157,9 +157,8 @@ describe("MockProviderHooks", async function () {
       });
       assert(false, "should not be here");
     } catch ({ error }) {
-      const { resultsHook } = error;
-      assert(resultsHook.error);
-      assert(resultsHook.result.results[0].error);
+      assert(error.error);
+      assert(error.results[0].error);
     }
   });
 

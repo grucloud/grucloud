@@ -1488,12 +1488,11 @@ function CoreProvider({
 
     assert(direction);
     logger.debug(
-      `filterDestroyResources ${tos({
+      `filterDestroyResources ${JSON.stringify({
         name,
         all,
         types,
         id,
-        resource,
         managedByUs,
       })}`
     );
@@ -1789,7 +1788,7 @@ function CoreProvider({
       }),
       tap((result) =>
         forEach((client) => {
-          //TODO Refactor and test
+          //TODO Refactor and
           client.onDeployed && client.onDeployed(result);
         })(getClients())
       ),

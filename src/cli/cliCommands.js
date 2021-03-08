@@ -389,31 +389,29 @@ const runAsyncCommandHook = ({ hookType, commandTitle, providersGru }) =>
       logger.debug(`runAsyncCommandHook hookType: ${hookType}`);
       assert(providersGru);
     }),
-    assign({
-      resultsHook: () =>
-        runAsyncCommand({
-          text: displayCommandHeader({
-            providers: providersGru.getProviders(),
-            verb: commandTitle,
-          }),
-          command: ({ onStateChange }) =>
-            pipe([
-              tap(() =>
-                map((provider) =>
-                  provider.spinnersStartHook({
-                    onStateChange,
-                    hookType,
-                  })
-                )(providersGru.getProviders())
-              ),
-              () =>
-                providersGru.runCommand({
-                  onStateChange,
-                  functionName: commandToFunction(hookType),
-                }),
-            ])({}),
+    () =>
+      runAsyncCommand({
+        text: displayCommandHeader({
+          providers: providersGru.getProviders(),
+          verb: commandTitle,
         }),
-    }),
+        command: ({ onStateChange }) =>
+          pipe([
+            tap(() =>
+              map((provider) =>
+                provider.spinnersStartHook({
+                  onStateChange,
+                  hookType,
+                })
+              )(providersGru.getProviders())
+            ),
+            () =>
+              providersGru.runCommand({
+                onStateChange,
+                functionName: commandToFunction(hookType),
+              }),
+          ])({}),
+      }),
     tap((xxx) => {
       logger.debug(`runAsyncCommandHook hookType: ${hookType} DONE`);
     }),
