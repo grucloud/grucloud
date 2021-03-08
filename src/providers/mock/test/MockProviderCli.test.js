@@ -8,7 +8,6 @@ const sinon = require("sinon");
 
 const { MockProvider } = require("../MockProvider");
 const cliCommands = require("../../../cli/cliCommands");
-const { setupProviders } = require("../../../cli/cliUtils");
 
 const logger = require("logger")({ prefix: "MockProviderTest" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
@@ -19,7 +18,7 @@ describe("MockProviderCli", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
     const provider = MockProvider({ config });
     const resources = await createResources({ provider });
-    const infra = setupProviders()({ provider });
+    const infra = { provider };
     const errorMessage = "stub-error";
 
     provider.init = sinon
@@ -66,7 +65,7 @@ describe("MockProviderCli", async function () {
       .stub()
       .returns(Promise.reject({ message: errorMessage }));
     const resources = await createResources({ provider });
-    const infra = setupProviders()({ provider });
+    const infra = { provider };
 
     await pipe([
       map(
@@ -99,7 +98,7 @@ describe("MockProviderCli", async function () {
     const config = ConfigLoader({ baseDir: __dirname });
     const provider = MockProvider({ config });
     const resources = await createResources({ provider });
-    const infra = setupProviders()({ provider, resources });
+    const infra = { provider, resources };
 
     {
       const info = await cliCommands.info({

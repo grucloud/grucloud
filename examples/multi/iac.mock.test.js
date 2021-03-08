@@ -4,7 +4,6 @@ const { ConfigLoader } = require("ConfigLoader");
 const MockStack1 = require("../mock/mock/iac");
 const MockStack2 = require("../mock/mock-simple/iac");
 const cliCommands = require("../../src/cli/cliCommands");
-const { setupProviders } = require("../../src/cli/cliUtils");
 
 describe("Mock Multi", async function () {
   let config;
@@ -17,8 +16,8 @@ describe("Mock Multi", async function () {
     }
   });
   it("run mocks example", async function () {
-    const stack1 = setupProviders()(await MockStack1.createStack({ config }));
-    const stack2 = setupProviders()(await MockStack2.createStack({ config }));
+    const stack1 = await MockStack1.createStack({ config });
+    const stack2 = await MockStack2.createStack({ config });
 
     await cliCommands.planApply({
       infra: stack2,

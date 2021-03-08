@@ -7,9 +7,11 @@ const { MockProvider } = require("../MockProvider");
 const cliCommands = require("../../../cli/cliCommands");
 
 const logger = require("logger")({ prefix: "MockProviderTest" });
-const { setupProviders } = require("../../../cli/cliUtils");
 
 describe("MockProviderMulti", async function () {
+  const providerName1 = "provider1";
+  const providerName2 = "provider2";
+
   let provider1;
   let volume1;
   let provider2;
@@ -19,7 +21,7 @@ describe("MockProviderMulti", async function () {
 
   before(async () => {
     provider1 = MockProvider({
-      name: "provider1",
+      name: providerName1,
       config,
     });
 
@@ -31,7 +33,7 @@ describe("MockProviderMulti", async function () {
     });
 
     provider2 = MockProvider({
-      name: "provider2",
+      name: providerName2,
       config,
       dependencies: { provider1 },
     });
@@ -45,10 +47,16 @@ describe("MockProviderMulti", async function () {
   });
 
   it("multi  apply", async function () {
-    const infra = setupProviders()([
-      { provider: provider1 },
-      { provider: provider2 },
-    ]);
+    const infra = [{ provider: provider1 }, { provider: provider2 }];
+    {
+      const result = await cliCommands.list({
+        infra,
+        commandOptions: { provider: [providerName2] },
+      });
+      assert(!result.error);
+      const mapProvider = groupBy("providerName")(result.result.results);
+      assert.equal(mapProvider.size, 1);
+    }
     {
       const result = await cliCommands.planQuery({
         infra,
@@ -56,10 +64,12 @@ describe("MockProviderMulti", async function () {
       });
       assert(!result.error);
     }
-    await cliCommands.planApply({
-      infra,
-      commandOptions: { force: true },
-    });
+    {
+      await cliCommands.planApply({
+        infra,
+        commandOptions: { force: true },
+      });
+    }
     {
       const result = await cliCommands.list({
         infra,

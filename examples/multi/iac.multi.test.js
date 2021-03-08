@@ -2,7 +2,6 @@ const assert = require("assert");
 const { ConfigLoader } = require("ConfigLoader");
 const cliCommands = require("../../src/cli/cliCommands");
 const { createStack } = require("./iac");
-const { setupProviders } = require("../../src/cli/cliUtils");
 
 describe("Multi Example", async function () {
   let config;
@@ -15,7 +14,7 @@ describe("Multi Example", async function () {
     }
   });
   it("run multi example", async function () {
-    const infra = setupProviders()(await createStack({ config }));
+    const infra = await createStack({ config });
 
     await cliCommands.planDestroy({
       infra,

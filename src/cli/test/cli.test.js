@@ -169,7 +169,7 @@ describe("cli", function () {
       ],
       onExit: ({ code, error }) => {
         assert.equal(error.code, 422);
-        assert.equal(error.message, "no provider provided");
+        assert.equal(error.error.message, "no provider provided");
       },
     });
   });
@@ -208,7 +208,7 @@ describe("cli error", function () {
             422,
             `invalid code error code for command ${command}`
           );
-          assert(error.message, `no message in command: ${command}`);
+          assert(error.error.message, `no message in command: ${command}`);
         },
       })
     )(commandsAll);
