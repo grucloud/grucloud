@@ -113,12 +113,12 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "K8s EKS Destroy",
+      "name": "K8s EKS Destroy All",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/k8s/starhackit/aws",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["destroy", "-f"]
+      "args": ["destroy", "-f", "-a"]
     },
     {
       "type": "node",
@@ -133,13 +133,14 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "K8s Starhackit List Only Pod",
+      "name": "Minikube Starhackit Destroy all",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/starhackit",
+      "cwd": "${workspaceFolder}/examples/k8s/starhackit/minikube",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["list", "-t", "Pod"]
+      "args": ["destroy", "-f", "-a"]
     },
+    
     {
       "type": "node",
       "request": "launch",

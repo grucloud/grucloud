@@ -1,5 +1,5 @@
 {
-  "name": "grucloud-k8s-starhackit",
+  "name": "grucloud-k8s-starhackit-base",
   "version": "1.0.0",
   "description": "deploying starhackit on kubernetes",
   "main": "index.js",

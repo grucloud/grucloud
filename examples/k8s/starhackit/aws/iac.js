@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { createStack: createStackK8s } = require("../iac");
+const { createStack: createStackK8s } = require("../base/k8sStackBase");
 const { createStack: createStackEks } = require("../../../aws/eks/iac");
 const { createIngress } = require("./eksIngress");
 const { createClusterRole } = require("./clusterRole");

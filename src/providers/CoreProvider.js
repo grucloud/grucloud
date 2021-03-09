@@ -1344,7 +1344,10 @@ function CoreProvider({
           managedByUs: client.spec.isOurMinion({
             resource: live,
             lives,
+            //TODO remove resourceNames
+
             resourceNames: resourceNames(),
+            resources: getResourcesByType({ type: client.spec.type }),
             config: providerConfig,
           }),
           providerName: client.spec.providerName,
@@ -1353,7 +1356,9 @@ function CoreProvider({
           cannotBeDeleted: client.cannotBeDeleted({
             resource: live,
             name: client.findName(live),
+            //TODO remove resourceNames
             resourceNames: resourceNames(),
+            resources: getResourcesByType({ type: client.spec.type }),
             config: providerConfig,
           }),
         })),
