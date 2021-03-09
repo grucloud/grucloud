@@ -44,6 +44,22 @@ module.exports = ({ resources: { ingress }, provider }) => {
             });
           },
         },
+        {
+          name: "Check api version",
+          command: async ({ ingressIp }) => {
+            const url = `http://${ingressIp}/api/v1/version`;
+            await retryCallOnError({
+              name: `get  ${ingressIp}`,
+              fn: () => axios.get(url),
+              shouldRetryOnException: ({ error }) =>
+                [502].includes(error.response?.status),
+              isExpectedResult: (result) => {
+                return [200].includes(result.status);
+              },
+              config: { retryCount: 20, retryDelay: 5e3 },
+            });
+          },
+        },
       ],
     },
 
