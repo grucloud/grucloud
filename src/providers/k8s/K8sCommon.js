@@ -94,6 +94,7 @@ exports.getServerUrl = (kubeConfig) =>
   pipe([
     tap((kubeConfig) => {
       //logger.debug("getServerUrl");
+      assert(kubeConfig);
     }),
     get("clusters"),
     find(eq(get("name"), kubeConfig["current-context"])),

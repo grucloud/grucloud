@@ -1,9 +1,8 @@
-const assert = require("assert");
-const { createStack: createStackEks } = require("../base/k8sStackBase");
+const { createStack: createStackK8s } = require("../base/k8sStackBase");
 const { createIngress } = require("./ingress");
 
 exports.createStack = async ({ config }) => {
-  const stack = await createStackEks({
+  const stack = await createStackK8s({
     config,
   });
   const { provider, resources } = stack;

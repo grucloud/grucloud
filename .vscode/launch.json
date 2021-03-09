@@ -140,7 +140,16 @@
       "console": "integratedTerminal",
       "args": ["destroy", "-f", "-a"]
     },
-    
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Minikube Starhackit Outout ingress",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/starhackit/minikube",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["output", "-n", "default::ingress", "-t", "Ingress", "-f", "status.loadBalancer.ingress.ip"]
+    },
     {
       "type": "node",
       "request": "launch",
