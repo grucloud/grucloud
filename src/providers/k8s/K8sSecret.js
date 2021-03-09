@@ -30,7 +30,7 @@ exports.K8sSecret = ({ spec, config }) => {
   const pathUpdate = pathGet;
   const pathDelete = pathGet;
 
-  const cannotBeDeleted = eq(get("name"), "default");
+  const cannotBeDeleted = ({ name }) => name.startsWith("default");
 
   return K8sClient({
     spec,
