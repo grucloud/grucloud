@@ -218,7 +218,10 @@ exports.K8sProvider = ({ name = providerType, config = {}, ...other }) => {
     name,
     config: defaultsDeep({
       accessToken: () => accessToken,
-      kubeConfig: () => kubeConfig,
+      kubeConfig: () => {
+        assert(kubeConfig, "kubeConfig not set, provider not started");
+        return kubeConfig;
+      },
     })(config),
     fnSpecs,
     start,
