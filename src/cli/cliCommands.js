@@ -1003,10 +1003,16 @@ const OutputDoOk = ({ commandOptions, programOptions }) =>
     tap((providers) => {
       logger.debug(`output #providers ${providers.length}`);
     }),
+    // TODO try catch
+    // TODO use Lister
     map((provider) =>
-      provider.getResource({
-        uri: `${provider.name}::${commandOptions.type}::${commandOptions.name}`,
-      })
+      pipe([
+        () => provider.start(),
+        () =>
+          provider.getResource({
+            uri: `${provider.name}::${commandOptions.type}::${commandOptions.name}`,
+          }),
+      ])()
     ),
     filter((resource) => resource),
     switchCase([
