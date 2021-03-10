@@ -24,7 +24,6 @@ const {
   createResourceNamespaceless,
   createResourceNamespace,
 } = require("./K8sDumpster");
-const { K8sReplicaSet } = require("./K8sReplicaSet");
 const { K8sStorageClass } = require("./K8sStorageClass");
 const { K8sPersistentVolume } = require("./K8sPersistentVolume");
 const {
@@ -172,7 +171,14 @@ const fnSpecs = () => [
   {
     type: "ReplicaSet",
     dependsOn: ["Namespace", "ConfigMap"],
-    Client: K8sReplicaSet,
+    Client: createResourceNamespace({
+      baseUrl: ({ namespace }) =>
+        `/apis/apps/v1/namespaces/${namespace}/replicasets`,
+      pathList: () => "/apis/apps/v1/replicasets",
+      configKey: "replicaSet",
+      apiVersion: "v1",
+      kind: "ReplicaSet",
+    }),
     isOurMinion,
     listOnly: true,
   },
