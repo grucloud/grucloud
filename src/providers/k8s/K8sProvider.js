@@ -57,6 +57,20 @@ const fnSpecs = () => [
     }),
     isOurMinion,
   },
+  // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#mutatingwebhookconfiguration-v1-admissionregistration-k8s-io
+  {
+    type: "MutatingWebhookConfiguration",
+    Client: createResourceNamespaceless({
+      baseUrl: ({ apiVersion }) =>
+        `/apis/${apiVersion}/mutatingwebhookconfigurations`,
+      configKey: "mutatingWebhookConfiguration",
+      apiVersion: "admissionregistration.k8s.io/v1beta1",
+      kind: "MutatingWebhookConfiguration",
+      cannotBeDeleted: ({ name, resources }) =>
+        pipe([() => resources, not(find(eq(get("name"), name)))])(),
+    }),
+    isOurMinion,
+  },
   {
     type: "ClusterRole",
     Client: createResourceNamespaceless({

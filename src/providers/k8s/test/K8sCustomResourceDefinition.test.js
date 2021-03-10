@@ -3,16 +3,23 @@ const { ConfigLoader } = require("ConfigLoader");
 const { K8sProvider } = require("../K8sProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
-describe("K8sCustomResourceDefinition", async function () {
+describe.only("K8sCustomResourceDefinition", async function () {
   let config;
   let provider;
   let namespace;
   const myNamespace = "test-crd";
-  let customResourceDefinition;
 
+  let customResourceDefinition;
   const customResourceDefinitionName = "targetgroupbindings.elbv2.k8s.aws";
 
-  const types = ["Namespace", "CustomResourceDefinition"];
+  let mutatingWebhookConfiguration;
+  const mutatingWebhookConfigurationName = "aws-load-balancer-webhook";
+
+  const types = [
+    "Namespace",
+    "CustomResourceDefinition",
+    "MutatingWebhookConfiguration",
+  ];
 
   before(async function () {
     try {
@@ -29,6 +36,76 @@ describe("K8sCustomResourceDefinition", async function () {
       name: myNamespace,
     });
 
+    mutatingWebhookConfiguration = await provider.makeMutatingWebhookConfiguration(
+      {
+        name: mutatingWebhookConfigurationName,
+        properties: () => ({
+          metadata: {
+            annotations: {
+              "cert-manager.io/inject-ca-from":
+                "kube-system/aws-load-balancer-serving-cert",
+            },
+            creationTimestamp: null,
+            labels: {
+              "app.kubernetes.io/name": "aws-load-balancer-controller",
+            },
+          },
+          webhooks: [
+            {
+              clientConfig: {
+                caBundle: "Cg==",
+                service: {
+                  name: "aws-load-balancer-webhook-service",
+                  namespace: "kube-system",
+                  path: "/mutate-v1-pod",
+                },
+              },
+              failurePolicy: "Fail",
+              name: "mpod.elbv2.k8s.aws",
+              namespaceSelector: {
+                matchExpressions: [
+                  {
+                    key: "elbv2.k8s.aws/pod-readiness-gate-inject",
+                    operator: "In",
+                    values: ["enabled"],
+                  },
+                ],
+              },
+              rules: [
+                {
+                  apiGroups: [""],
+                  apiVersions: ["v1"],
+                  operations: ["CREATE"],
+                  resources: ["pods"],
+                },
+              ],
+              sideEffects: "None",
+            },
+            {
+              clientConfig: {
+                caBundle: "Cg==",
+                service: {
+                  name: "aws-load-balancer-webhook-service",
+                  namespace: "kube-system",
+                  path: "/mutate-elbv2-k8s-aws-v1beta1-targetgroupbinding",
+                },
+              },
+              failurePolicy: "Fail",
+              name: "mtargetgroupbinding.elbv2.k8s.aws",
+              rules: [
+                {
+                  apiGroups: ["elbv2.k8s.aws"],
+                  apiVersions: ["v1beta1"],
+                  operations: ["CREATE", "UPDATE"],
+                  resources: ["targetgroupbindings"],
+                },
+              ],
+              sideEffects: "None",
+            },
+          ],
+        }),
+      }
+    );
     customResourceDefinition = await provider.makeCustomResourceDefinition({
       name: customResourceDefinitionName,
       properties: ({}) => ({
