@@ -3,7 +3,7 @@ const { ConfigLoader } = require("ConfigLoader");
 const { K8sProvider } = require("../K8sProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
-describe.only("K8sCustomResourceDefinition", async function () {
+describe("K8sCustomResourceDefinition", async function () {
   let config;
   let provider;
   let namespace;

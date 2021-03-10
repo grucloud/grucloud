@@ -1,4 +1,4 @@
-const { eq, tap, pipe, get, fork, and, filter, switchCase } = require("rubico");
+const { eq, tap, pipe, get, fork, and, filter, not } = require("rubico");
 const { first, defaultsDeep, isEmpty, find } = require("rubico/x");
 const urljoin = require("url-join");
 
@@ -14,21 +14,6 @@ exports.K8sDeployment = ({ spec, config }) => {
   const { kubeConfig } = config;
 
   const axios = () => createAxiosMakerK8s({ config });
-
-  const isInstanceUp = (item) =>
-    pipe([
-      tap(() => {
-        //logger.debug(`isInstanceUp item: ${tos(item)}`);
-      }),
-      get("status"),
-      tap((status) => {
-        logger.debug(`isInstanceUp status: ${tos(status)}`);
-      }),
-      and([pipe([get("unavailableReplicas"), isEmpty]), get("replicas")]),
-      tap((isUp) => {
-        logger.debug(`isInstanceUp isUp: ${isUp}`);
-      }),
-    ])(item);
 
   const getReplicationSet = ({ namespace, uid, name }) =>
     pipe([
@@ -52,22 +37,47 @@ exports.K8sDeployment = ({ spec, config }) => {
       }),
     ])(namespace);
 
+  const getPods = ({ namespace, labels }) =>
+    pipe([
+      () =>
+        `/api/v1/namespaces/${namespace}/pods?labelSelector=app%3D${labels.app}`,
+      (path) => urljoin(getServerUrl(kubeConfig()), path),
+      (fullPath) =>
+        retryCallOnError({
+          name: `get pods path: ${fullPath}`,
+          fn: () => axios().get(fullPath),
+          config,
+        }),
+      get("data.items"),
+      tap((data) => {
+        logger.debug(`#pods ${data.length}`);
+      }),
+    ])();
+
   const isUpByIdFactory = () => isUpById;
+
+  // is up if the first pod is in the RUNNING phase
   const isUpById = ({ live: { metadata } }) =>
     pipe([
       tap(() => {
         logger.debug(`deployment isUpById: ${tos(metadata)}`);
       }),
-      getReplicationSet,
-      tap((rsets) => {
-        logger.debug(`isUpById replicasets:${rsets.length}`);
+      () => metadata,
+      getPods,
+      first,
+
+      tap((pod) => {
+        logger.debug(`deployment pod  ${tos(pod)}`);
       }),
-      first, //TODO find the latest
-      switchCase([isEmpty, () => false, isInstanceUp]),
+      get("status.phase"),
+      tap((phase) => {
+        logger.debug(`deployment pod phase  ${phase}`);
+      }),
+      (phase) => eq(phase, "Running")(),
       tap((isUp) => {
         logger.debug(`deployment isUpById  ${isUp}`);
       }),
-    ])(metadata);
+    ])();
 
   const isDownByIdFactory = () => isDownById;
 
