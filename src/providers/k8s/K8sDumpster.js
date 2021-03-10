@@ -68,10 +68,9 @@ exports.createResourceNamespace = ({
       },
     })(properties);
 
-  const pathGet = ({ name, namespace, apiVersion }) =>
+  const pathGet = ({ name, namespace }) =>
     `${baseUrl({ namespace, apiVersion })}/${name}`;
-  const pathCreate = ({ namespace, apiVersion }) =>
-    baseUrl({ namespace, apiVersion });
+  const pathCreate = ({ namespace }) => baseUrl({ namespace, apiVersion });
 
   const pathUpdate = pathGet;
   const pathDelete = pathGet;
@@ -86,7 +85,7 @@ exports.createResourceNamespace = ({
     spec,
     config,
     pathGet,
-    pathList,
+    pathList: () => pathList({ apiVersion }),
     pathCreate,
     pathUpdate,
     pathDelete,

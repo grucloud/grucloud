@@ -30,7 +30,6 @@ const {
   isOurMinionPersistentVolumeClaim,
 } = require("./K8sPersistentVolumeClaim");
 const { K8sDeployment } = require("./K8sDeployment");
-const { K8sIngress } = require("./K8sIngress");
 
 const fnSpecs = () => [
   {
@@ -84,7 +83,19 @@ const fnSpecs = () => [
   {
     type: "Ingress",
     dependsOn: ["Namespace", "Service"],
-    Client: K8sIngress,
+    Client: createResourceNamespace({
+      baseUrl: ({ namespace, apiVersion }) =>
+        `/apis/${apiVersion}/namespaces/${namespace}/ingresses`,
+      pathList: ({ apiVersion }) => `/apis/${apiVersion}/ingresses`,
+      configKey: "ingress",
+      apiVersion: "networking.k8s.io/v1",
+      kind: "Ingress",
+      isInstanceUp: pipe([
+        get("status.loadBalancer.ingress"),
+        first,
+        get("ip"),
+      ]),
+    }),
     isOurMinion,
     compare,
   },
