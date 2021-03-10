@@ -91,11 +91,15 @@ const fnSpecs = () => [
       configKey: "ingress",
       apiVersion: "networking.k8s.io/v1",
       kind: "Ingress",
-      isInstanceUp: pipe([
-        get("status.loadBalancer.ingress"),
-        first,
-        get("ip"),
-      ]),
+      isUpByIdFactory: ({ getById }) =>
+        isUpByIdCore({
+          isInstanceUp: pipe([
+            get("status.loadBalancer.ingress"),
+            first,
+            get("ip"),
+          ]),
+          getById,
+        }),
     }),
     isOurMinion,
     compare,

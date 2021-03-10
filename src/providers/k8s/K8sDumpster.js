@@ -56,7 +56,8 @@ exports.createResourceNamespace = ({
   apiVersion: apiVersionDefault,
   kind,
   cannotBeDeleted,
-  isInstanceUp = not(isEmpty),
+  isUpByIdFactory,
+  isDownByIdFactory,
 }) => ({ spec, config }) => {
   const apiVersion = get(`${configKey}.apiVersion`, apiVersionDefault)(config);
   const configDefault = async ({ name, properties, dependencies }) =>
@@ -77,12 +78,6 @@ exports.createResourceNamespace = ({
   const pathUpdate = pathGet;
   const pathDelete = pathGet;
 
-  const isUpByIdFactory = ({ getById }) =>
-    isUpByIdCore({
-      isInstanceUp,
-      getById,
-    });
-
   return K8sClient({
     spec,
     config,
@@ -94,6 +89,7 @@ exports.createResourceNamespace = ({
     configDefault,
     cannotBeDeleted,
     isUpByIdFactory,
+    isDownByIdFactory,
     displayName: displayNameDefault,
     displayNameResource: displayNameResourceDefault,
     resourceKey: resourceKeyDefault,
