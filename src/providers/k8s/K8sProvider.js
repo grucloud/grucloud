@@ -43,6 +43,20 @@ const fnSpecs = () => [
     }),
     isOurMinion,
   },
+  // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#customresourcedefinition-v1beta1-apiextensions-k8s-io
+  {
+    type: "CustomResourceDefinition",
+    Client: createResourceNamespaceless({
+      baseUrl: ({ apiVersion }) =>
+        `/apis/${apiVersion}/customresourcedefinitions`,
+      configKey: "customResourceDefinition",
+      apiVersion: "apiextensions.k8s.io/v1beta1",
+      kind: "CustomResourceDefinition",
+      cannotBeDeleted: ({ name, resources }) =>
+        pipe([() => resources, not(find(eq(get("name"), name)))])(),
+    }),
+    isOurMinion,
+  },
   {
     type: "ClusterRole",
     Client: createResourceNamespaceless({
