@@ -20,12 +20,13 @@ const logger = require("../../logger")({ prefix: "K8sProvider" });
 const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
 const { compare, isOurMinion } = require("./K8sCommon");
+const { isUpByIdCore } = require("../Common");
+
 const {
   createResourceNamespaceless,
   createResourceNamespace,
 } = require("./K8sDumpster");
 const { K8sStorageClass } = require("./K8sStorageClass");
-const { K8sPersistentVolume } = require("./K8sPersistentVolume");
 const {
   isOurMinionPersistentVolumeClaim,
 } = require("./K8sPersistentVolumeClaim");
@@ -120,8 +121,18 @@ const fnSpecs = () => [
   },
   {
     type: "PersistentVolume",
-    Client: K8sPersistentVolume,
     dependsOn: ["Namespace", "StorageClass"],
+    Client: createResourceNamespaceless({
+      baseUrl: "/api/v1/persistentvolumes",
+      configKey: "persistentVolume",
+      apiVersion: "v1",
+      kind: "PersistentVolume",
+      isUpByIdFactory: ({ getById }) =>
+        isUpByIdCore({
+          isInstanceUp: eq(get("status.phase"), "Available"),
+          getById,
+        }),
+    }),
     isOurMinion,
     compare,
   },

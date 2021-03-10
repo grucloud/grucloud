@@ -69,13 +69,13 @@ exports.K8sDeployment = ({ spec, config }) => {
         }),
       get("data.items"),
       tap((data) => {
-        logger.debug(`replicasets all ${tos(data)}`);
+        //logger.debug(`replicasets all ${tos(data)}`);
       }),
       filter(
         pipe([get("metadata.ownerReferences"), find(eq(get("uid"), uid))])
       ),
       tap((data) => {
-        logger.debug(`replicasets for deployment ${name}: ${tos(data)}`);
+        //logger.debug(`replicasets for deployment ${name}: ${tos(data)}`);
       }),
     ])(namespace);
 

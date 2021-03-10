@@ -15,6 +15,7 @@ exports.createResourceNamespaceless = ({
   apiVersion,
   kind,
   cannotBeDeleted,
+  isUpByIdFactory,
 }) => ({ spec, config }) => {
   const configDefault = async ({ name, properties, dependencies }) =>
     defaultsDeep({
@@ -45,6 +46,7 @@ exports.createResourceNamespaceless = ({
     displayNameResource: displayNameResourceDefault,
     resourceKey: resourceKeyDefault,
     cannotBeDeleted,
+    isUpByIdFactory,
   });
 };
 exports.createResourceNamespace = ({
