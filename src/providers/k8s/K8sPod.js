@@ -38,29 +38,3 @@ exports.K8sPod = ({ spec, config }) => {
     pathList,
   });
 };
-
-exports.isOurMinionPod = ({ resource, lives, config }) =>
-  or([
-    () => isOurMinionObject({ tags: resource.tags, config }),
-    pipe([
-      tap(() => {
-        assert(lives);
-        logger.info(`isOurMinionPod ${JSON.stringify({ resource })}`);
-      }),
-      () => first(resource.metadata.ownerReferences),
-      switchCase([
-        not(isEmpty),
-        ({ kind, uid }) =>
-          pipe([
-            find(eq(get("type"), kind)),
-            get("resources"),
-            find(eq(get("live.metadata.uid"), uid)),
-            get("managedByUs"),
-            tap((result) => {
-              logger.info(`isOurMinionPod ${resource.toString()}: ${result}`);
-            }),
-          ])(lives),
-        () => false,
-      ]),
-    ]),
-  ])();

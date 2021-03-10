@@ -29,10 +29,8 @@ const { K8sPersistentVolume } = require("./K8sPersistentVolume");
 const {
   isOurMinionPersistentVolumeClaim,
 } = require("./K8sPersistentVolumeClaim");
-const { K8sPod } = require("./K8sPod");
 const { K8sDeployment } = require("./K8sDeployment");
 const { K8sIngress } = require("./K8sIngress");
-const { K8sStatefulSet } = require("./K8sStatefulSet");
 
 const fnSpecs = () => [
   {
@@ -141,7 +139,14 @@ const fnSpecs = () => [
   {
     type: "StatefulSet",
     dependsOn: ["Namespace", "ConfigMap"],
-    Client: K8sStatefulSet,
+    Client: createResourceNamespace({
+      baseUrl: ({ namespace }) =>
+        `/apis/apps/v1/namespaces/${namespace}/statefulsets`,
+      pathList: () => "/apis/apps/v1/statefulsets",
+      configKey: "statefulSets",
+      apiVersion: "apps/v1",
+      kind: "StatefulSet",
+    }),
     isOurMinion,
     compare,
   },
@@ -164,7 +169,13 @@ const fnSpecs = () => [
     type: "Pod",
     dependsOn: ["Namespace", "ConfigMap"],
     listDependsOn: ["ReplicaSet", "StatefulSet"],
-    Client: K8sPod,
+    Client: createResourceNamespace({
+      baseUrl: ({ namespace }) => `/api/v1/namespaces/${namespace}/pods`,
+      pathList: () => "/api/v1/pods",
+      configKey: "pod",
+      apiVersion: "v1",
+      kind: "Pod",
+    }),
     isOurMinion,
     listOnly: true,
   },
