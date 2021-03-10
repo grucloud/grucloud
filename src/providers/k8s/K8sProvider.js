@@ -50,7 +50,7 @@ const fnSpecs = () => [
       baseUrl: ({ apiVersion }) =>
         `/apis/${apiVersion}/customresourcedefinitions`,
       configKey: "customResourceDefinition",
-      apiVersion: "apiextensions.k8s.io/v1beta1",
+      apiVersion: "apiextensions.k8s.io/v1",
       kind: "CustomResourceDefinition",
       cannotBeDeleted: ({ name, resources }) =>
         pipe([() => resources, not(find(eq(get("name"), name)))])(),
@@ -64,8 +64,22 @@ const fnSpecs = () => [
       baseUrl: ({ apiVersion }) =>
         `/apis/${apiVersion}/mutatingwebhookconfigurations`,
       configKey: "mutatingWebhookConfiguration",
-      apiVersion: "admissionregistration.k8s.io/v1beta1",
+      apiVersion: "admissionregistration.k8s.io/v1",
       kind: "MutatingWebhookConfiguration",
+      cannotBeDeleted: ({ name, resources }) =>
+        pipe([() => resources, not(find(eq(get("name"), name)))])(),
+    }),
+    isOurMinion,
+  },
+  //https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#validatingwebhookconfiguration-v1-admissionregistration-k8s-io
+  {
+    type: "ValidatingWebhookConfiguration",
+    Client: createResourceNamespaceless({
+      baseUrl: ({ apiVersion }) =>
+        `/apis/${apiVersion}/validatingwebhookconfigurations`,
+      configKey: "validatingWebhookConfiguration",
+      apiVersion: "admissionregistration.k8s.io/v1",
+      kind: "ValidatingWebhookConfiguration",
       cannotBeDeleted: ({ name, resources }) =>
         pipe([() => resources, not(find(eq(get("name"), name)))])(),
     }),

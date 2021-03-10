@@ -23,6 +23,7 @@ const {
   forEach,
   pluck,
   flatten,
+  includes,
 } = require("rubico/x");
 const { retryCall, retryCallOnError } = require("../Retry");
 
@@ -189,7 +190,13 @@ module.exports = K8sClient = ({
           assert(payload);
         }),
         () =>
-          pathCreate({ name, namespace: getNamespace(dependencies.namespace) }),
+          pathCreate({
+            name,
+            apiVersion: payload.apiVersion,
+            namespace:
+              payload.metadata.namespace ||
+              getNamespace(dependencies.namespace),
+          }),
         tap((path) => {
           logger.info(`create ${type}/${name}, path: ${path}`);
         }),
@@ -199,6 +206,17 @@ module.exports = K8sClient = ({
             name: `create ${type}/${name} path: ${fullPath}`,
             fn: () => axios().post(fullPath, payload),
             config: { ...config, repeatCount: 0 },
+            shouldRetryOnException: ({ error }) =>
+              pipe([
+                () => error,
+                get("response.status"),
+                (status) => includes(status)([404]),
+                tap((retry) => {
+                  logger.info(
+                    `shouldRetryOnException create ${type}/${name}, status: ${error.status}, retry: ${retry}`
+                  );
+                }),
+              ])(),
           }),
         tap((result) => {
           logger.info(`created ${type}/${name}, status: ${result.status}`);

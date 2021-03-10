@@ -61,10 +61,10 @@ exports.createResourceNamespace = ({
   isUpByIdFactory,
   isDownByIdFactory,
 }) => ({ spec, config }) => {
-  const apiVersion = get(`${configKey}.apiVersion`, apiVersionDefault)(config);
+  //const apiVersion = get(`${configKey}.apiVersion`, apiVersionDefault)(config);
   const configDefault = async ({ name, properties, dependencies }) =>
     defaultsDeep({
-      apiVersion,
+      apiVersion: apiVersionDefault,
       kind,
       metadata: {
         name,
@@ -73,9 +73,11 @@ exports.createResourceNamespace = ({
       },
     })(properties);
 
-  const pathGet = ({ name, namespace }) =>
+  const pathGet = ({ name, namespace, apiVersion = apiVersionDefault }) =>
     `${baseUrl({ namespace, apiVersion })}/${name}`;
-  const pathCreate = ({ namespace }) => baseUrl({ namespace, apiVersion });
+
+  const pathCreate = ({ namespace, apiVersion = apiVersionDefault }) =>
+    baseUrl({ namespace, apiVersion });
 
   const pathUpdate = pathGet;
   const pathDelete = pathGet;
@@ -84,7 +86,7 @@ exports.createResourceNamespace = ({
     spec,
     config,
     pathGet,
-    pathList: () => pathList({ apiVersion }),
+    pathList: () => pathList({ apiVersion: apiVersionDefault }),
     pathCreate,
     pathUpdate,
     pathDelete,
