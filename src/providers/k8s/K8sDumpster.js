@@ -1,7 +1,7 @@
 const { get, not } = require("rubico");
 const { defaultsDeep, isEmpty } = require("rubico/x");
 const K8sClient = require("./K8sClient");
-const { buildTagsObject, isUpByIdCore } = require("../Common");
+const { buildTagsObject } = require("../Common");
 const {
   displayNameDefault,
   displayNameResourceDefault,
@@ -12,14 +12,16 @@ const {
 exports.createResourceNamespaceless = ({
   baseUrl,
   configKey,
-  apiVersion,
+  apiVersion: apiVersionDefault,
   kind,
   cannotBeDeleted,
   isUpByIdFactory,
 }) => ({ spec, config }) => {
+  const apiVersion = get(`${configKey}.apiVersion`, apiVersionDefault)(config);
+
   const configDefault = async ({ name, properties, dependencies }) =>
     defaultsDeep({
-      apiVersion: get(`${configKey}.apiVersion`, apiVersion)(config),
+      apiVersion,
       kind,
       metadata: {
         name,
@@ -27,11 +29,11 @@ exports.createResourceNamespaceless = ({
       },
     })(properties);
 
-  const pathGet = ({ name }) => `${baseUrl}/${name}`;
-  const pathList = () => baseUrl;
-  const pathCreate = () => baseUrl;
-  const pathUpdate = ({ name }) => `${baseUrl}/${name}`;
-  const pathDelete = ({ name }) => `${baseUrl}/${name}`;
+  const pathGet = ({ name }) => `${baseUrl({ apiVersion })}/${name}`;
+  const pathList = () => baseUrl({ apiVersion });
+  const pathCreate = () => baseUrl({ apiVersion });
+  const pathUpdate = ({ name }) => `${baseUrl({ apiVersion })}/${name}`;
+  const pathDelete = ({ name }) => `${baseUrl({ apiVersion })}/${name}`;
 
   return K8sClient({
     spec,

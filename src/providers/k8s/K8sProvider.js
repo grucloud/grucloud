@@ -35,7 +35,7 @@ const fnSpecs = () => [
   {
     type: "Namespace",
     Client: createResourceNamespaceless({
-      baseUrl: "/api/v1/namespaces",
+      baseUrl: ({ apiVersion }) => `/api/${apiVersion}/namespaces`,
       configKey: "namespace",
       apiVersion: "v1",
       kind: "Namespace",
@@ -46,7 +46,7 @@ const fnSpecs = () => [
   {
     type: "ClusterRole",
     Client: createResourceNamespaceless({
-      baseUrl: "/apis/rbac.authorization.k8s.io/v1/clusterroles",
+      baseUrl: ({ apiVersion }) => `/apis/${apiVersion}/clusterroles`,
       configKey: "clusterRole",
       apiVersion: "rbac.authorization.k8s.io/v1",
       kind: "ClusterRole",
@@ -55,11 +55,24 @@ const fnSpecs = () => [
     }),
     isOurMinion,
   },
+  // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#rolebinding-v1-rbac-authorization-k8s-io
+  {
+    type: "ClusterRoleBinding",
+    Client: createResourceNamespaceless({
+      baseUrl: ({ apiVersion }) => `/apis/${apiVersion}/clusterrolebindings`,
+      configKey: "clusterRoleBinding",
+      apiVersion: "rbac.authorization.k8s.io/v1",
+      kind: "ClusterRoleBinding",
+      cannotBeDeleted: ({ name, resources }) =>
+        pipe([() => resources, not(find(eq(get("name"), name)))])(),
+    }),
+    isOurMinion,
+  },
   {
     type: "ServiceAccount",
     Client: createResourceNamespace({
-      baseUrl: ({ namespace }) =>
-        `/api/v1/namespaces/${namespace}/serviceaccounts`,
+      baseUrl: ({ namespace, apiVersion }) =>
+        `/api/${apiVersion}/namespaces/${namespace}/serviceaccounts`,
       pathList: () => "/api/v1/serviceaccounts",
       configKey: "serviceAccount",
       apiVersion: "v1",
@@ -71,7 +84,8 @@ const fnSpecs = () => [
   {
     type: "Secret",
     Client: createResourceNamespace({
-      baseUrl: ({ namespace }) => `/api/v1/namespaces/${namespace}/secrets`,
+      baseUrl: ({ namespace, apiVersion }) =>
+        `/api/${apiVersion}/namespaces/${namespace}/secrets`,
       pathList: () => "/api/v1/secrets",
       configKey: "secret",
       apiVersion: "v1",
@@ -106,7 +120,7 @@ const fnSpecs = () => [
   {
     type: "StorageClass",
     Client: createResourceNamespaceless({
-      baseUrl: "/apis/storage.k8s.io/v1/storageclasses",
+      baseUrl: ({ apiVersion }) => `/apis/${apiVersion}/storageclasses`,
       configKey: "storageClass",
       apiVersion: "storage.k8s.io/v1",
       kind: "StorageClass",
@@ -118,7 +132,8 @@ const fnSpecs = () => [
     type: "Service",
     dependsOn: ["Namespace"],
     Client: createResourceNamespace({
-      baseUrl: ({ namespace }) => `/api/v1/namespaces/${namespace}/services`,
+      baseUrl: ({ namespace, apiVersion }) =>
+        `/api/${apiVersion}/namespaces/${namespace}/services`,
       pathList: () => "/api/v1/services",
       configKey: "service",
       apiVersion: "v1",
@@ -131,7 +146,7 @@ const fnSpecs = () => [
     type: "PersistentVolume",
     dependsOn: ["Namespace", "StorageClass"],
     Client: createResourceNamespaceless({
-      baseUrl: "/api/v1/persistentvolumes",
+      baseUrl: ({ apiVersion }) => `/api/${apiVersion}/persistentvolumes`,
       configKey: "persistentVolume",
       apiVersion: "v1",
       kind: "PersistentVolume",
@@ -147,8 +162,8 @@ const fnSpecs = () => [
   {
     type: "PersistentVolumeClaim",
     Client: createResourceNamespace({
-      baseUrl: ({ namespace }) =>
-        `/api/v1/namespaces/${namespace}/persistentvolumeclaims`,
+      baseUrl: ({ namespace, apiVersion }) =>
+        `/api/${apiVersion}/namespaces/${namespace}/persistentvolumeclaims`,
       pathList: () => "/api/v1/persistentvolumeclaims",
       configKey: "secret",
       apiVersion: "v1",
@@ -170,8 +185,8 @@ const fnSpecs = () => [
     type: "StatefulSet",
     dependsOn: ["Namespace", "ConfigMap"],
     Client: createResourceNamespace({
-      baseUrl: ({ namespace }) =>
-        `/apis/apps/v1/namespaces/${namespace}/statefulsets`,
+      baseUrl: ({ namespace, apiVersion }) =>
+        `/apis/${apiVersion}/namespaces/${namespace}/statefulsets`,
       pathList: () => "/apis/apps/v1/statefulsets",
       configKey: "statefulSets",
       apiVersion: "apps/v1",
@@ -184,7 +199,8 @@ const fnSpecs = () => [
     type: "ConfigMap",
     dependsOn: ["Namespace"],
     Client: createResourceNamespace({
-      baseUrl: ({ namespace }) => `/api/v1/namespaces/${namespace}/configmaps`,
+      baseUrl: ({ namespace, apiVersion }) =>
+        `/api/${apiVersion}/namespaces/${namespace}/configmaps`,
       pathList: () => "/api/v1/configmaps",
       configKey: "configMap",
       apiVersion: "v1",
@@ -200,7 +216,8 @@ const fnSpecs = () => [
     dependsOn: ["Namespace", "ConfigMap"],
     listDependsOn: ["ReplicaSet", "StatefulSet"],
     Client: createResourceNamespace({
-      baseUrl: ({ namespace }) => `/api/v1/namespaces/${namespace}/pods`,
+      baseUrl: ({ namespace, apiVersion }) =>
+        `/api/${apiVersion}/namespaces/${namespace}/pods`,
       pathList: () => "/api/v1/pods",
       configKey: "pod",
       apiVersion: "v1",
@@ -213,11 +230,11 @@ const fnSpecs = () => [
     type: "ReplicaSet",
     dependsOn: ["Namespace", "ConfigMap"],
     Client: createResourceNamespace({
-      baseUrl: ({ namespace }) =>
-        `/apis/apps/v1/namespaces/${namespace}/replicasets`,
+      baseUrl: ({ apiVersion, namespace }) =>
+        `/apis/${apiVersion}/namespaces/${namespace}/replicasets`,
       pathList: () => "/apis/apps/v1/replicasets",
       configKey: "replicaSet",
-      apiVersion: "v1",
+      apiVersion: "apps/v1",
       kind: "ReplicaSet",
     }),
     isOurMinion,
