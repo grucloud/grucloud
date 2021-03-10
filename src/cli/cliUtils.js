@@ -243,11 +243,12 @@ exports.filterProvider = filterProvider;
 exports.setupProviders = ({ commandOptions = {} } = {}) =>
   pipe([
     tap((input) => {
-      logger.debug("setupProviders");
+      logger.debug(`setupProviders ${JSON.stringify(commandOptions)}`);
       assert(input);
     }),
     switchCase([Array.isArray, (infra) => infra, (infra) => [infra]]),
     filter(not(isEmpty)),
+    //TODO infra validation, has provider ?
     filter(filterProvider({ commandOptions })),
     tap.if(isEmpty, () => {
       throw { code: 422, message: `no provider provided` };
@@ -256,6 +257,6 @@ exports.setupProviders = ({ commandOptions = {} } = {}) =>
       providersGru: ProviderGru({ commandOptions, stacks }),
     }),
     tap((xx) => {
-      logger.debug("setupProviders");
+      //logger.debug("setupProviders");
     }),
   ]);

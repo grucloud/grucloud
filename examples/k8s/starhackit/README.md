@@ -1,11 +1,9 @@
 ## Starhackit on Kubernetes
 
-This infrastructure deploys [starhackit](https://github.com/FredericHeem/starhackit), a full stack application based on React, Node and SQL.
+These infrastructure code deploy [starhackit](https://github.com/FredericHeem/starhackit), a full stack application based on React, Node and SQL.
 
-## Dependency Graph
+At the moment, it can be deployed on various providers such as [AWS EKS](./aws) and [minikube](./minikube).
 
-```sh
-gc graph
-```
+All infrastructures uses a shared code to create the deployments, stateful sets, config maps and so on in [k8sStackBase.js](./base/k8sStackBase.js).
 
-![Graph](grucloud.svg)
+Each of them have their own ingresses and additional resources.

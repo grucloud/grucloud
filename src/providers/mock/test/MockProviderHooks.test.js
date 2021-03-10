@@ -9,7 +9,6 @@ const cliCommands = require("../../../cli/cliCommands");
 const { tos } = require("../../../tos");
 const logger = require("logger")({ prefix: "MockProviderTest" });
 const toJSON = (x) => JSON.stringify(x, null, 4);
-const { setupProviders } = require("../../../cli/cliUtils");
 
 describe("MockProviderHooks", async function () {
   it("onDeployed", async function () {
@@ -28,7 +27,7 @@ describe("MockProviderHooks", async function () {
         init: onDestroyed.init,
       },
     });
-    const infra = setupProviders()({ provider });
+    const infra = { provider };
 
     await cliCommands.planApply({
       infra,
@@ -60,7 +59,7 @@ describe("MockProviderHooks", async function () {
         init: onDestroyed.init,
       },
     });
-    const infra = setupProviders()({ provider });
+    const infra = { provider };
 
     try {
       await cliCommands.planApply({
@@ -107,7 +106,7 @@ describe("MockProviderHooks", async function () {
       },
     });
 
-    const infra = setupProviders()({ provider });
+    const infra = { provider };
     try {
       const result = await cliCommands.planApply({
         infra,
@@ -149,7 +148,7 @@ describe("MockProviderHooks", async function () {
       },
     });
 
-    const infra = setupProviders()({ provider });
+    const infra = { provider };
     try {
       await cliCommands.planRunScript({
         infra,
@@ -200,7 +199,7 @@ describe("MockProviderHooks", async function () {
       },
     });
 
-    const infra = setupProviders()({ provider });
+    const infra = { provider };
     try {
       await cliCommands.planApply({
         infra,

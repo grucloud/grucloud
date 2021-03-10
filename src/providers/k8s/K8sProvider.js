@@ -1,6 +1,15 @@
 const assert = require("assert");
-const { map, pipe, get, tap, tryCatch, switchCase, or } = require("rubico");
-const { defaultsDeep, first, pluck } = require("rubico/x");
+const {
+  map,
+  pipe,
+  get,
+  tap,
+  tryCatch,
+  switchCase,
+  eq,
+  not,
+} = require("rubico");
+const { defaultsDeep, first, find } = require("rubico/x");
 const shell = require("shelljs");
 const os = require("os");
 const path = require("path");
@@ -11,7 +20,7 @@ const logger = require("../../logger")({ prefix: "K8sProvider" });
 const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
 const { compare, isOurMinion } = require("./K8sCommon");
-
+const { createResourceNamespaceless } = require("./K8sDumpster");
 const { K8sReplicaSet } = require("./K8sReplicaSet");
 const { K8sService } = require("./K8sService");
 const { K8sStorageClass } = require("./K8sStorageClass");
@@ -33,6 +42,18 @@ const fnSpecs = () => [
   {
     type: "Namespace",
     Client: K8sNamespace,
+    isOurMinion,
+  },
+  {
+    type: "ClusterRole",
+    Client: createResourceNamespaceless({
+      baseUrl: "/apis/rbac.authorization.k8s.io/v1/clusterroles",
+      configKey: "clusterRole",
+      apiVersion: "rbac.authorization.k8s.io/v1",
+      kind: "ClusterRole",
+      cannotBeDeleted: ({ name, resources }) =>
+        pipe([() => resources, not(find(eq(get("name"), name)))])(),
+    }),
     isOurMinion,
   },
   {
@@ -197,7 +218,10 @@ exports.K8sProvider = ({ name = providerType, config = {}, ...other }) => {
     name,
     config: defaultsDeep({
       accessToken: () => accessToken,
-      kubeConfig: () => kubeConfig,
+      kubeConfig: () => {
+        assert(kubeConfig, "kubeConfig not set, provider not started");
+        return kubeConfig;
+      },
     })(config),
     fnSpecs,
     start,

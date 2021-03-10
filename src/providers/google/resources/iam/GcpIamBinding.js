@@ -32,6 +32,8 @@ const {
 const findName = get("role");
 const findId = findName;
 
+// TODO use resources instead of resourceNames
+
 const isOurMinionIamBinding = ({ name, resource, resourceNames }) =>
   pipe([
     tap(() => {

@@ -14,7 +14,9 @@ describe.skip("K8sProvider", async function () {
   let serviceWeb;
   let serviceAccount;
   let secret;
+  let clusterRole;
   const myNamespace = "test";
+  const clusterRoleName = "cluster-role";
   const serviceWebName = "web-service";
   const deploymentWebName = "web-deployment";
   const labelApp = "web";
@@ -38,6 +40,7 @@ describe.skip("K8sProvider", async function () {
     "ServiceAccount",
     "StatefulSet",
     "StorageClass",
+    "ClusterRole",
   ];
 
   before(async function () {
@@ -54,6 +57,38 @@ describe.skip("K8sProvider", async function () {
 
     namespace = await provider.makeNamespace({
       name: myNamespace,
+    });
+    clusterRole = await provider.makeClusterRole({
+      name: clusterRoleName,
+      properties: () => ({
+        apiVersion: "rbac.authorization.k8s.io/v1",
+        kind: "ClusterRole",
+        metadata: {
+          labels: {
+            "app.kubernetes.io/name": "alb-ingress-controller",
+          },
+        },
+        rules: [
+          {
+            apiGroups: ["", "extensions"],
+            resources: [
+              "configmaps",
+              "endpoints",
+              "events",
+              "ingresses",
+              "ingresses/status",
+              "services",
+              "pods/status",
+            ],
+            verbs: ["create", "get", "list", "update", "watch", "patch"],
+          },
+          {
+            apiGroups: ["", "extensions"],
+            resources: ["nodes", "pods", "secrets", "services", "namespaces"],
+            verbs: ["get", "list", "watch"],
+          },
+        ],
+      }),
     });
 
     secret = await provider.makeServiceAccount({
@@ -151,23 +186,6 @@ describe.skip("K8sProvider", async function () {
       }),
     });
 
-    /*
-    persistentVolumeClaim = await provider.makePersistentVolumeClaim({
-      name: pvc.name,
-      dependencies: { namespace, storageClass },
-      properties: () => ({
-        spec: {
-          accessModes: ["ReadWriteOnce"],
-          storageClassName: "",
-          resources: {
-            requests: {
-              storage: "1Gi",
-            },
-          },
-        },
-      }),
-    });
-*/
     const deploymentContent = ({ configMap, name, labelApp }) => ({
       metadata: {
         labels: {
@@ -314,17 +332,12 @@ describe.skip("K8sProvider", async function () {
   after(async () => {});
 
   it("k8s deployment apply and destroy", async function () {
-    await testPlanDeploy({ provider, types });
-    const deploymentLive = await deployment.getLive();
+    try {
+      await testPlanDeploy({ provider, types });
 
-    const {
-      results: [deployments],
-    } = await provider.listLives({ options: { types } });
-    const resource = deployments.resources[0].data;
-    //assert.equal(deployments.type, "ElasticIpAddress");
-    //assert.equal(resource.Domain, "vpc");
-    //assert(resource.PublicIp);
-
-    await testPlanDestroy({ provider, types });
+      await testPlanDestroy({ provider, types });
+    } catch (error) {
+      throw error;
+    }
   });
 });

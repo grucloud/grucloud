@@ -45,12 +45,23 @@ const { displayLive } = require("../cli/displayUtils");
 
 const identity = (x) => x;
 
-const dependenciesTodependsOn = reduce((acc, deps) => [...acc, deps.name], []);
+const dependenciesTodependsOn = ({ dependencies, stacks }) =>
+  pipe([
+    tap(() => {
+      assert(Array.isArray(stacks));
+    }),
+    () => dependencies,
+    reduce((acc, deps) => [...acc, deps.name], []),
+    filter((name) => find(eq(get("provider.name")), name)(stacks)),
+  ])();
 
-const runnerParams = ({ provider, isProviderUp }) => ({
+const runnerParams = ({ provider, isProviderUp, stacks }) => ({
   key: provider.name,
   meta: { providerName: provider.name },
-  dependsOn: dependenciesTodependsOn(provider.dependencies),
+  dependsOn: dependenciesTodependsOn({
+    dependencies: provider.dependencies,
+    stacks,
+  }),
   isUp: isProviderUp,
 });
 
@@ -61,7 +72,7 @@ const buildDependsOnReverse = (stacks) =>
         get("provider"),
         ({ name, dependencies }) => ({
           name,
-          dependsOn: dependenciesTodependsOn(dependencies),
+          dependsOn: dependenciesTodependsOn({ dependencies, stacks }),
         }),
       ])
     ),
@@ -154,7 +165,7 @@ exports.ProviderGru = ({ stacks }) => {
       }),
       () => stacks,
       map(({ provider, isProviderUp }) => ({
-        ...runnerParams({ provider, isProviderUp }),
+        ...runnerParams({ provider, isProviderUp, stacks }),
         executor: ({ lives }) =>
           pipe([
             () => provider.start({ onStateChange }),
@@ -203,7 +214,7 @@ exports.ProviderGru = ({ stacks }) => {
       }),
       () => stacks,
       map(({ provider, isProviderUp }) => ({
-        ...runnerParams({ provider, isProviderUp }),
+        ...runnerParams({ provider, isProviderUp, stacks }),
         executor: ({ lives }) =>
           pipe([
             () => provider.start({ onStateChange }),
@@ -288,7 +299,7 @@ exports.ProviderGru = ({ stacks }) => {
       }),
       () => stacks,
       map(({ provider, isProviderUp }) => ({
-        ...runnerParams({ provider, isProviderUp }),
+        ...runnerParams({ provider, isProviderUp, stacks }),
         executor: ({ lives }) =>
           pipe([
             () => provider.start({ onStateChange }),
@@ -379,7 +390,7 @@ exports.ProviderGru = ({ stacks }) => {
       }),
       () => stacks,
       map(({ provider, isProviderUp }) => ({
-        ...runnerParams({ provider, isProviderUp }),
+        ...runnerParams({ provider, isProviderUp, stacks }),
         executor: ({ lives }) =>
           pipe([
             tap(() => {

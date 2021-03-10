@@ -72,11 +72,18 @@ exports.displayNameResourceNamespace = ({ name, dependencies }) =>
   `${getNamespace(dependencies?.namespace)}::${name}`;
 
 exports.displayNameDefault = ({ name }) => name;
-exports.displayNameNamespace = ({ name, meta }) => {
-  assert(meta.namespace);
-  assert(name);
-  return `${meta.namespace}::${name}`;
-};
+exports.displayNameNamespace = ({ name, meta }) =>
+  pipe([
+    tap(() => {
+      assert(meta);
+      assert(name);
+    }),
+    switchCase([
+      () => isEmpty(meta.namespace),
+      () => name,
+      () => `${meta.namespace}::${name}`,
+    ]),
+  ])();
 
 exports.shouldRetryOnException = ({ error, name }) => {
   logger.error(`k8s shouldRetryOnException ${tos({ name, error })}`);
@@ -87,6 +94,7 @@ exports.getServerUrl = (kubeConfig) =>
   pipe([
     tap((kubeConfig) => {
       //logger.debug("getServerUrl");
+      assert(kubeConfig);
     }),
     get("clusters"),
     find(eq(get("name"), kubeConfig["current-context"])),

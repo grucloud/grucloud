@@ -19,8 +19,6 @@ const {
 const { ConfigLoader } = require("../ConfigLoader");
 const logger = require("../logger")({ prefix: "Infra" });
 
-const { setupProviders } = require("./cliUtils");
-
 const creatInfraFromFile = async ({
   commandOptions,
   infraFileName,
@@ -37,7 +35,7 @@ const creatInfraFromFile = async ({
     throw { code: 400, message: `no infra provided` };
   }
 
-  return setupProviders({ commandOptions })(infra);
+  return infra;
 };
 
 const resolveFilename = ({ fileName, defaultName }) =>

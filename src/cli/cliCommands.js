@@ -36,13 +36,16 @@ const {
 
 const logger = require("../logger")({ prefix: "CliCommands" });
 const YAML = require("./json2yaml");
-const { runAsyncCommand, displayProviderList } = require("./cliUtils");
+const {
+  runAsyncCommand,
+  displayProviderList,
+  setupProviders,
+} = require("./cliUtils");
 const {
   displayPlan,
   displayPlanSummary,
   displayPlanDestroySummary,
   displayListSummary,
-  displayLive,
 } = require("./displayUtils");
 const { convertError, HookType } = require("../providers/Common");
 const { tos } = require("../tos");
@@ -278,7 +281,7 @@ const displayCommandHeader = ({ providers, verb }) =>
   )}: ${displayProviderList(providers)}`;
 
 // Plan Query
-const doPlanQuery = ({ commandOptions, programOptions }) =>
+const doPlanQuery = ({ commandOptions }) =>
   pipe([
     tap((input) => {
       logger.debug("doPlanQuery");
@@ -351,6 +354,8 @@ const displayQueryPlanSummary = ({ providers, create, destroy }) =>
 const planQuery = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     pipe([
+      () => infra,
+      setupProviders({ commandOptions }),
       doPlanQuery({ commandOptions, programOptions }),
       tap((result) =>
         saveToJson({ command: "plan", commandOptions, programOptions, result })
@@ -376,7 +381,7 @@ const planQuery = async ({ infra, commandOptions = {}, programOptions = {} }) =>
       ),
     ]),
     DisplayAndThrow({ name: "Plan" })
-  )(infra);
+  )();
 
 exports.planQuery = planQuery;
 
@@ -426,8 +431,12 @@ const planRunScript = async ({
 }) =>
   tryCatch(
     pipe([
-      tap((input) => {
+      tap(() => {
         logger.debug("planRunScript");
+      }),
+      () => infra,
+      setupProviders({ commandOptions }),
+      tap((input) => {
         assert(input.providersGru);
       }),
       ({ providersGru }) =>
@@ -464,7 +473,7 @@ const planRunScript = async ({
       throwIfError,
     ]),
     DisplayAndThrow({ name: "Run Script" })
-  )(infra);
+  )();
 
 exports.planRunScript = planRunScript;
 
@@ -595,6 +604,7 @@ const planApply = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
     pipe([
       () => infra,
+      setupProviders({ commandOptions }),
       ({ providersGru }) =>
         pipe([
           //TODO clean up providersGru
@@ -804,6 +814,8 @@ exports.planDestroy = async ({
 
   return tryCatch(
     pipe([
+      () => infra,
+      setupProviders({ commandOptions }),
       ({ providersGru }) =>
         pipe([
           () =>
@@ -874,7 +886,7 @@ exports.planDestroy = async ({
         ])(),
     ]),
     DisplayAndThrow({ name: "Plan Destroy" })
-  )(infra);
+  )();
 };
 
 const countResources = pipe([
@@ -913,6 +925,7 @@ const displayListSummaryResults = ({ providers, types, resources }) => {
 
 const listDoOk = ({ commandOptions, programOptions }) =>
   pipe([
+    setupProviders({ commandOptions }),
     ({ providersGru }) =>
       pipe([
         () =>
@@ -983,18 +996,23 @@ exports.list = async ({ infra, commandOptions = {}, programOptions = {} }) =>
 const OutputDoOk = ({ commandOptions, programOptions }) =>
   pipe([
     tap(() => {
-      logger.info(
-        `output ${JSON.stringify({ commandOptions, programOptions })}`
-      );
+      logger.info(`output`);
     }),
+    setupProviders({ commandOptions }),
     ({ providersGru }) => providersGru.getProviders(),
     tap((providers) => {
       logger.debug(`output #providers ${providers.length}`);
     }),
+    // TODO try catch
+    // TODO use Lister
     map((provider) =>
-      provider.getResource({
-        uri: `${provider.name}::${commandOptions.type}::${commandOptions.name}`,
-      })
+      pipe([
+        () => provider.start(),
+        () =>
+          provider.getResource({
+            uri: `${provider.name}::${commandOptions.type}::${commandOptions.name}`,
+          }),
+      ])()
     ),
     filter((resource) => resource),
     switchCase([
@@ -1039,6 +1057,7 @@ const DoCommand = ({ commandOptions, command }) =>
     tap((xxx) => {
       logger.debug(`DoCommand ${command}`);
     }),
+    setupProviders({ commandOptions }),
     ({ providersGru }) => providersGru.getProviders(),
     map(
       tryCatch(
@@ -1091,14 +1110,11 @@ exports.unInit = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   )(infra);
 
 //TODO move to ProviderGru
-exports.graph = async ({
-  infra,
-  config,
-  commandOptions = {},
-  programOptions = {},
-}) =>
+exports.graph = async ({ infra, config, commandOptions = {} }) =>
   tryCatch(
     pipe([
+      () => infra,
+      setupProviders({ commandOptions }),
       tap((input) => {
         logger.debug(`graph`, config);
         assert(input.providersGru);
@@ -1144,4 +1160,4 @@ ${results.join("\n")}
       }),
     ]),
     DisplayAndThrow({ name: "graph" })
-  )(infra);
+  )();

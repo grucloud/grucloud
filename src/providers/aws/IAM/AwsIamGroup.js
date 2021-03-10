@@ -179,7 +179,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
     shouldRetryOnExceptionDelete,
   };
 };
-
+// TODO use resources instead of resourceNames
 exports.isOurMinionIamGroup = ({ resource, resourceNames }) => {
   assert(resource);
   assert(resourceNames, "resourceNames");
