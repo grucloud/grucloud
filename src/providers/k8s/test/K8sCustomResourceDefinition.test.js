@@ -354,8 +354,12 @@ describe.only("K8sCustomResourceDefinition", async function () {
   after(async () => {});
 
   it("k8s crd apply and destroy", async function () {
-    await testPlanDeploy({ provider, types });
+    try {
+      await testPlanDeploy({ provider, types });
 
-    await testPlanDestroy({ provider, types });
+      await testPlanDestroy({ provider, types });
+    } catch (error) {
+      throw error;
+    }
   });
 });

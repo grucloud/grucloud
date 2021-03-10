@@ -6,33 +6,47 @@ const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 describe.skip("K8sProvider", async function () {
   let config;
   let provider;
+
   let namespace;
+  const myNamespace = "test";
+
   let deployment;
+  const deploymentWebName = "web-deployment";
+
   let configMap;
+
   let storageClass;
+  const storageClassName = "my-storage-class";
+
   let persistentVolume;
   let serviceWeb;
-  let serviceAccount;
-  let secret;
-  let clusterRole;
-  let clusterRoleBinding;
-
-  const myNamespace = "test";
-  const clusterRoleName = "cluster-role";
-  const clusterRoleBindingName = "cluster-binding-role";
   const serviceWebName = "web-service";
-  const deploymentWebName = "web-deployment";
-  const labelApp = "web";
-  const storageClassName = "my-storage-class";
-  const pv = { name: "pv-db" };
+
+  let serviceAccount;
   const serviceAccountName = "sa-test";
+
+  let secret;
   const secretName = "pg-secret";
+
+  let clusterRole;
+  const clusterRoleName = "cluster-role";
+
+  let clusterRoleBinding;
+  const clusterRoleBindingName = "cluster-binding-role";
+
+  let role;
+  let roleName = "aws-load-balancer-controller-leader-election-role";
+
+  const labelApp = "web";
+  const pv = { name: "pv-db" };
+
   const postgres = {
     statefulSetName: "postgres-statefulset",
     label: "db",
   };
 
   const types = [
+    "Namespace",
     "ConfigMap",
     "Deployment",
     "Ingress",
@@ -45,6 +59,10 @@ describe.skip("K8sProvider", async function () {
     "StorageClass",
     "ClusterRole",
     "ClusterRoleBinding",
+    "CustomResourceDefinition",
+    "MutatingWebhookConfiguration",
+    "Role",
+    "RoleBinding",
   ];
 
   before(async function () {
@@ -124,6 +142,11 @@ describe.skip("K8sProvider", async function () {
           },
         ],
       }),
+    });
+
+    role = await provider.makeClusterRole({
+      name: roleName,
+      properties: () => ({}),
     });
 
     secret = await provider.makeSecret({
