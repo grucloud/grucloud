@@ -15,8 +15,11 @@ describe.skip("K8sProvider", async function () {
   let serviceAccount;
   let secret;
   let clusterRole;
+  let clusterRoleBinding;
+
   const myNamespace = "test";
   const clusterRoleName = "cluster-role";
+  const clusterRoleBindingName = "cluster-binding-role";
   const serviceWebName = "web-service";
   const deploymentWebName = "web-deployment";
   const labelApp = "web";
@@ -41,6 +44,7 @@ describe.skip("K8sProvider", async function () {
     "StatefulSet",
     "StorageClass",
     "ClusterRole",
+    "ClusterRoleBinding",
   ];
 
   before(async function () {
@@ -58,6 +62,13 @@ describe.skip("K8sProvider", async function () {
     namespace = await provider.makeNamespace({
       name: myNamespace,
     });
+
+    serviceAccount = await provider.makeServiceAccount({
+      name: serviceAccountName,
+      dependencies: { namespace },
+      properties: () => ({}),
+    });
+
     clusterRole = await provider.makeClusterRole({
       name: clusterRoleName,
       properties: () => ({
@@ -91,14 +102,32 @@ describe.skip("K8sProvider", async function () {
       }),
     });
 
-    secret = await provider.makeServiceAccount({
-      name: secretName,
-      dependencies: { namespace },
-      properties: () => ({}),
+    clusterRoleBinding = await provider.makeClusterRole({
+      name: clusterRoleBindingName,
+      dependencies: { clusterRole, serviceAccount },
+      properties: () => ({
+        metadata: {
+          labels: {
+            "app.kubernetes.io/name": "alb-ingress-controller",
+          },
+        },
+        roleRef: {
+          apiGroup: "rbac.authorization.k8s.io",
+          kind: "ClusterRole",
+          name: clusterRole.name,
+        },
+        subjects: [
+          {
+            kind: "ServiceAccount",
+            name: serviceAccount.name,
+            namespace: "kube-system",
+          },
+        ],
+      }),
     });
 
-    serviceAccount = await provider.makeServiceAccount({
-      name: serviceAccountName,
+    secret = await provider.makeSecret({
+      name: secretName,
       dependencies: { namespace },
       properties: () => ({}),
     });
@@ -331,7 +360,7 @@ describe.skip("K8sProvider", async function () {
   });
   after(async () => {});
 
-  it("k8s deployment apply and destroy", async function () {
+  it.only("k8s deployment apply and destroy", async function () {
     try {
       await testPlanDeploy({ provider, types });
 
