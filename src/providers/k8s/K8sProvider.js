@@ -21,7 +21,7 @@ const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
 const { compare, isOurMinion } = require("./K8sCommon");
 const { isUpByIdCore } = require("../Common");
-
+const { K8sUtils } = require("./K8sUtils");
 const {
   createResourceNamespaceless,
   createResourceNamespace,
@@ -29,7 +29,6 @@ const {
 const {
   isOurMinionPersistentVolumeClaim,
 } = require("./K8sPersistentVolumeClaim");
-const { K8sDeployment } = require("./K8sDeployment");
 
 const fnSpecs = () => [
   {
@@ -249,21 +248,32 @@ const fnSpecs = () => [
   {
     type: "Deployment",
     dependsOn: ["Namespace", "ConfigMap"],
-    Client: K8sDeployment,
+    Client: ({ config, spec }) =>
+      createResourceNamespace({
+        baseUrl: ({ namespace, apiVersion }) =>
+          `/apis/${apiVersion}/namespaces/${namespace}/deployments`,
+        pathList: ({ apiVersion }) => `/apis/${apiVersion}/deployments`,
+        configKey: "deployment",
+        apiVersion: "apps/v1",
+        kind: "Deployment",
+        isUpByIdFactory: K8sUtils({ config }).isUpByPod,
+      })({ config, spec }),
     isOurMinion,
     compare,
   },
   {
     type: "StatefulSet",
     dependsOn: ["Namespace", "ConfigMap"],
-    Client: createResourceNamespace({
-      baseUrl: ({ namespace, apiVersion }) =>
-        `/apis/${apiVersion}/namespaces/${namespace}/statefulsets`,
-      pathList: ({ apiVersion }) => `/apis/${apiVersion}/statefulsets`,
-      configKey: "statefulSets",
-      apiVersion: "apps/v1",
-      kind: "StatefulSet",
-    }),
+    Client: ({ config, spec }) =>
+      createResourceNamespace({
+        baseUrl: ({ namespace, apiVersion }) =>
+          `/apis/${apiVersion}/namespaces/${namespace}/statefulsets`,
+        pathList: ({ apiVersion }) => `/apis/${apiVersion}/statefulsets`,
+        configKey: "statefulSets",
+        apiVersion: "apps/v1",
+        kind: "StatefulSet",
+        isUpByIdFactory: K8sUtils({ config }).isUpByPod,
+      })({ config, spec }),
     isOurMinion,
     compare,
   },
