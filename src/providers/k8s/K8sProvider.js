@@ -26,7 +26,6 @@ const {
   createResourceNamespaceless,
   createResourceNamespace,
 } = require("./K8sDumpster");
-const { K8sStorageClass } = require("./K8sStorageClass");
 const {
   isOurMinionPersistentVolumeClaim,
 } = require("./K8sPersistentVolumeClaim");
@@ -106,7 +105,12 @@ const fnSpecs = () => [
   },
   {
     type: "StorageClass",
-    Client: K8sStorageClass,
+    Client: createResourceNamespaceless({
+      baseUrl: "/apis/storage.k8s.io/v1/storageclasses",
+      configKey: "storageClass",
+      apiVersion: "storage.k8s.io/v1",
+      kind: "StorageClass",
+    }),
     isOurMinion,
     compare,
   },

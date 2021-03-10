@@ -1,23 +1,9 @@
 const assert = require("assert");
-const {
-  pipe,
-  get,
-  tap,
-  eq,
-  switchCase,
-  assign,
-  or,
-  pick,
-  and,
-  not,
-} = require("rubico");
+const { pipe, get, tap, eq, or } = require("rubico");
 const { find, first, isEmpty } = require("rubico/x");
 
 const logger = require("../../logger")({ prefix: "K8sPersistentVolumeClaim" });
 const { tos } = require("../../tos");
-const { buildTagsObject } = require("../Common");
-const K8sClient = require("./K8sClient");
-const { getNamespace } = require("./K8sCommon");
 const { isOurMinionObject } = require("../Common");
 
 // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#persistentvolumeclaim-v1-core
