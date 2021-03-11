@@ -871,10 +871,10 @@ exports.planDestroy = async ({
               pipe([
                 () => resultQueryDestroy.results,
                 switchCase([
-                  find(pipe([get("plans"), isEmpty])),
-                  processHasNoPlan,
+                  find(pipe([get("plans"), not(isEmpty)])),
                   () =>
                     processDestroyPlans({ providersGru, resultQueryDestroy }),
+                  processHasNoPlan,
                 ]),
               ])(),
           }),
