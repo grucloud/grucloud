@@ -39,7 +39,6 @@ const {
 const { tos } = require("../../tos");
 
 const {
-  getByNameCore,
   isUpByIdCore,
   isDownByIdCore,
   logError,
@@ -97,9 +96,9 @@ module.exports = K8sClient = ({
   const filterList = (data) =>
     pipe([
       get("items"),
-      map(omit(["metadata.managedFields"])),
+      map(omit(["metadata.managedFields", "spec.versions[0].schema"])),
       tap((items) => {
-        logger.debug(`filterList items ${tos(items)}`);
+        //logger.debug(`filterList items ${tos(items)}`);
       }),
       (items) => assign({ items: () => items })(data),
       tap((result) => {
@@ -118,9 +117,20 @@ module.exports = K8sClient = ({
         retryCallOnError({
           name: `getList type: ${type}, path ${fullPath}`,
           fn: () => axios().get(fullPath),
+          isExpectedException: pipe([
+            tap((ex) => {
+              logger.info(`getList  type: ${type}, ex: ${ex}`);
+            }),
+            eq(get("response.status"), 404),
+            tap((result) => {
+              logger.info(
+                `getList type: ${type} isExpectedException ${result}`
+              );
+            }),
+          ]),
           config,
         }),
-      get("data"),
+      get("data", []),
       filterList,
       tap((data) => {
         logger.info(`getList k8s ${type}, #items ${data.length}`);
@@ -275,7 +285,6 @@ module.exports = K8sClient = ({
       pipe([
         tap(() => {
           assert(!isEmpty(live), `destroy invalid live`);
-          logger.info(`destroy ${JSON.stringify({ live })}`);
         }),
         () => ({ name: findName(live), namespace: findMeta(live).namespace }),
         tap((params) => {
@@ -307,14 +316,6 @@ module.exports = K8sClient = ({
       }
     )();
 
-  const cannotBeDeletedDefault = pipe([
-    get("resource.metadata"),
-    or([
-      ({ name = "" }) => name.startsWith("kube"),
-      ({ namespace = "" }) => namespace.startsWith("kube"),
-    ]),
-  ]);
-
   return {
     spec,
     displayName,
@@ -329,7 +330,7 @@ module.exports = K8sClient = ({
     create,
     update,
     destroy,
-    cannotBeDeleted: or([cannotBeDeletedDefault, cannotBeDeleted]),
+    cannotBeDeleted,
     configDefault,
   };
 };
