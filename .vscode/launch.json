@@ -83,6 +83,16 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "K8s AWS Load Balancer Destroy",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/aws-load-balancer",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["destroy", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "K8s Cert Manager Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/k8s/cert-manager",

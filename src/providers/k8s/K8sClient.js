@@ -110,7 +110,7 @@ module.exports = K8sClient = ({
   const getList = tryCatch(
     pipe([
       tap((params) => {
-        logger.debug(`getList k8s ${type}, params: ${tos(params)}`);
+        logger.debug(`getList k8s ${type}`);
       }),
       pathList,
       (path) => urljoin(getServerUrl(kubeConfig()), path),
@@ -123,8 +123,7 @@ module.exports = K8sClient = ({
       get("data"),
       filterList,
       tap((data) => {
-        //TODO add total ?
-        logger.info(`getList k8s ${JSON.stringify({ data })}`);
+        logger.info(`getList k8s ${type}, #items ${data.length}`);
       }),
     ]),
     (error) => {
@@ -151,7 +150,7 @@ module.exports = K8sClient = ({
           }),
         get("data"),
         tap((data) => {
-          logger.debug(`getByKey result ${name}: ${tos(data)}`);
+          //ogger.debug(`getByKey result ${name}: ${tos(data)}`);
         }),
       ]),
       switchCase([
@@ -230,7 +229,7 @@ module.exports = K8sClient = ({
           })
         ),
         tap((live) => {
-          logger.debug(`created ${type}/${name}, live: ${tos(live)}`);
+          //logger.debug(`created ${type}/${name}, live: ${tos(live)}`);
         }),
       ]),
       (error) => {

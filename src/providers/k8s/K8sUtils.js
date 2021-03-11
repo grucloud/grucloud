@@ -1,5 +1,16 @@
-const { eq, tap, pipe, get, fork, and, filter, not } = require("rubico");
-const { first, defaultsDeep, isEmpty, find } = require("rubico/x");
+const {
+  map,
+  eq,
+  tap,
+  pipe,
+  get,
+  fork,
+  and,
+  filter,
+  not,
+  tryCatch,
+} = require("rubico");
+const { first, defaultsDeep, isEmpty, find, last } = require("rubico/x");
 const assert = require("assert");
 const urljoin = require("url-join");
 
@@ -8,6 +19,11 @@ const { tos } = require("../../tos");
 const { retryCallOnError } = require("../Retry");
 
 const { getServerUrl, createAxiosMakerK8s } = require("./K8sCommon");
+
+const toApiVersion = ({ group, versions }) =>
+  `${group}/${pipe([() => versions, last, get("name")])()}`;
+
+exports.toApiVersion = toApiVersion;
 
 exports.K8sUtils = ({ config }) => {
   const { kubeConfig } = config;
@@ -19,10 +35,11 @@ exports.K8sUtils = ({ config }) => {
       tap(() => {
         assert(namespace);
         assert(labels);
-        assert(labels.app);
       }),
-      () =>
-        `/api/v1/namespaces/${namespace}/pods?labelSelector=app%3D${labels.app}`,
+      () => labels,
+      map.entries(([key, value]) => [`labelSelector=${key}%3D${value}`]),
+      (queries) => Object.keys(queries).join("&"),
+      (query) => `/api/v1/namespaces/${namespace}/pods?${query}`,
       (path) => urljoin(getServerUrl(kubeConfig()), path),
       (fullPath) =>
         retryCallOnError({
@@ -40,7 +57,7 @@ exports.K8sUtils = ({ config }) => {
   const isUpByPod = () => ({ live: { metadata } }) =>
     pipe([
       tap(() => {
-        logger.debug(`isUpById`);
+        logger.debug(`isUpByPod`);
         assert(metadata);
       }),
       () => metadata,
@@ -51,13 +68,40 @@ exports.K8sUtils = ({ config }) => {
       }),
       get("status.phase"),
       tap((phase) => {
-        logger.debug(`deployment pod phase ${phase}`);
+        logger.debug(`isUpByPod pod phase ${phase}`);
       }),
       (phase) => eq(phase, "Running")(),
       tap((isUp) => {
-        logger.debug(`isUpById ${isUp}`);
+        logger.debug(`isUpByPod ${isUp}`);
       }),
     ])();
 
-  return { isUpByPod };
+  const isUpByCrd = () => ({ live: { metadata, spec } }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`isUpByCrd ${spec.names.plural}`);
+        assert(metadata);
+        assert(spec);
+      }),
+      () => `/apis/${toApiVersion(spec)}/${spec.names.plural}`,
+      (path) => urljoin(getServerUrl(kubeConfig()), path),
+      tryCatch(
+        pipe([
+          (path) => axios().get(path),
+          eq(get("statusText"), "OK"),
+          tap((status) => {
+            logger.error(`isUpByCrd ${spec.names.plural} status ${status}`);
+          }),
+        ]),
+        (error, path) =>
+          pipe([
+            tap(() => {
+              logger.error(`isUpByCrd ${path}, ${error}`);
+            }),
+            () => false,
+          ])()
+      ),
+    ])();
+
+  return { isUpByPod, isUpByCrd };
 };

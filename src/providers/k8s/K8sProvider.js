@@ -22,7 +22,7 @@ const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
 const { compare, isOurMinion } = require("./K8sCommon");
 const { isUpByIdCore } = require("../Common");
-const { K8sUtils } = require("./K8sUtils");
+const { K8sUtils, toApiVersion } = require("./K8sUtils");
 const {
   createResourceNamespaceless,
   createResourceNamespace,
@@ -46,15 +46,17 @@ const fnSpecs = () => [
   // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#customresourcedefinition-v1beta1-apiextensions-k8s-io
   {
     type: "CustomResourceDefinition",
-    Client: createResourceNamespaceless({
-      baseUrl: ({ apiVersion }) =>
-        `/apis/${apiVersion}/customresourcedefinitions`,
-      configKey: "customResourceDefinition",
-      apiVersion: "apiextensions.k8s.io/v1",
-      kind: "CustomResourceDefinition",
-      cannotBeDeleted: ({ name, resources }) =>
-        pipe([() => resources, not(find(eq(get("name"), name)))])(),
-    }),
+    Client: ({ config, spec }) =>
+      createResourceNamespaceless({
+        baseUrl: ({ apiVersion }) =>
+          `/apis/${apiVersion}/customresourcedefinitions`,
+        configKey: "customResourceDefinition",
+        apiVersion: "apiextensions.k8s.io/v1",
+        kind: "CustomResourceDefinition",
+        cannotBeDeleted: ({ name, resources }) =>
+          pipe([() => resources, not(find(eq(get("name"), name)))])(),
+        isUpByIdFactory: K8sUtils({ config }).isUpByCrd,
+      })({ config, spec }),
     isOurMinion,
   },
   // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#mutatingwebhookconfiguration-v1-admissionregistration-k8s-io
@@ -402,8 +404,6 @@ exports.K8sProvider = ({
       accessToken = token;
     },
   ]);
-  const toApiVersion = ({ group, versions }) =>
-    `${group}/${pipe([() => versions, last, get("name")])()}`;
 
   const manifestToSpec = (manifests = []) =>
     pipe([

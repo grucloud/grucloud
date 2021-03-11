@@ -1,7 +1,8 @@
+const assert = require("assert");
 const fs = require("fs").promises;
 const path = require("path");
 const yaml = require("js-yaml");
-const { pipe } = require("rubico");
+const { pipe, tap } = require("rubico");
 const { K8sProvider } = require("@grucloud/core");
 const { createResources } = require("./resources");
 const hooks = require("./hooks");
@@ -17,7 +18,10 @@ exports.createStack = async ({ config }) => {
   return {
     provider,
     resources,
-    isProviderUp: () => resources.certManagerDeployment.getLive(),
+    isProviderUp: pipe([
+      () =>
+        resources.certificaterequestsCertManagerIoCustomResourceDefinition.getLive(),
+    ]),
     manifests: await decodeManifest(),
     hooks,
   };
