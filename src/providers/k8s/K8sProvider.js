@@ -8,6 +8,7 @@ const {
   switchCase,
   eq,
   not,
+  or,
   filter,
 } = require("rubico");
 const { defaultsDeep, first, find, last } = require("rubico/x");
@@ -31,6 +32,15 @@ const {
   isOurMinionPersistentVolumeClaim,
 } = require("./K8sPersistentVolumeClaim");
 
+const cannotBeDeletedDefault = ({ name, resources }) =>
+  pipe([
+    () => resources,
+    not(find(eq(get("name"), name))),
+    tap((result) => {
+      logger.debug(`cannotBeDeletedDefault ${name}: ${result}`);
+    }),
+  ])();
+
 const fnSpecs = () => [
   {
     type: "Namespace",
@@ -39,7 +49,13 @@ const fnSpecs = () => [
       configKey: "namespace",
       apiVersion: "v1",
       kind: "Namespace",
-      cannotBeDeleted: eq(get("name"), "default"),
+      cannotBeDeleted: pipe([
+        get("resource.metadata.name", ""),
+        or([
+          (name) => name.startsWith("default"),
+          (name) => name.startsWith("kube"),
+        ]),
+      ]),
     }),
     isOurMinion,
   },
@@ -53,8 +69,7 @@ const fnSpecs = () => [
         configKey: "customResourceDefinition",
         apiVersion: "apiextensions.k8s.io/v1",
         kind: "CustomResourceDefinition",
-        cannotBeDeleted: ({ name, resources }) =>
-          pipe([() => resources, not(find(eq(get("name"), name)))])(),
+        cannotBeDeleted: cannotBeDeletedDefault,
         isUpByIdFactory: K8sUtils({ config }).isUpByCrd,
       })({ config, spec }),
     isOurMinion,
@@ -68,8 +83,7 @@ const fnSpecs = () => [
       configKey: "mutatingWebhookConfiguration",
       apiVersion: "admissionregistration.k8s.io/v1",
       kind: "MutatingWebhookConfiguration",
-      cannotBeDeleted: ({ name, resources }) =>
-        pipe([() => resources, not(find(eq(get("name"), name)))])(),
+      cannotBeDeleted: cannotBeDeletedDefault,
     }),
     isOurMinion,
   },
@@ -82,8 +96,7 @@ const fnSpecs = () => [
       configKey: "validatingWebhookConfiguration",
       apiVersion: "admissionregistration.k8s.io/v1",
       kind: "ValidatingWebhookConfiguration",
-      cannotBeDeleted: ({ name, resources }) =>
-        pipe([() => resources, not(find(eq(get("name"), name)))])(),
+      cannotBeDeleted: cannotBeDeletedDefault,
     }),
     isOurMinion,
   },
@@ -95,21 +108,20 @@ const fnSpecs = () => [
       configKey: "clusterRole",
       apiVersion: "rbac.authorization.k8s.io/v1",
       kind: "ClusterRole",
-      cannotBeDeleted: ({ name, resources }) =>
-        pipe([() => resources, not(find(eq(get("name"), name)))])(),
+      cannotBeDeleted: cannotBeDeletedDefault,
     }),
     isOurMinion,
   },
   // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#clusterrolebinding-v1-rbac-authorization-k8s-io
   {
     type: "ClusterRoleBinding",
+    dependsOn: ["ClusterRole", "ServiceAccount"],
     Client: createResourceNamespaceless({
       baseUrl: ({ apiVersion }) => `/apis/${apiVersion}/clusterrolebindings`,
       configKey: "clusterRoleBinding",
       apiVersion: "rbac.authorization.k8s.io/v1",
       kind: "ClusterRoleBinding",
-      cannotBeDeleted: ({ name, resources }) =>
-        pipe([() => resources, not(find(eq(get("name"), name)))])(),
+      cannotBeDeleted: cannotBeDeletedDefault,
     }),
     isOurMinion,
   },
@@ -123,13 +135,14 @@ const fnSpecs = () => [
       configKey: "role",
       apiVersion: "rbac.authorization.k8s.io/v1beta1",
       kind: "Role",
-      cannotBeDeleted: ({ name }) => name.startsWith("default"),
+      cannotBeDeleted: cannotBeDeletedDefault,
     }),
     isOurMinion,
   },
   // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#rolebinding-v1beta1-rbac-authorization-k8s-io
   {
     type: "RoleBinding",
+    dependsOn: ["Namespace", "Role", "ServiceAccount"],
     Client: createResourceNamespace({
       baseUrl: ({ namespace, apiVersion }) =>
         `/apis/${apiVersion}/namespaces/${namespace}/rolebindings`,
@@ -137,7 +150,7 @@ const fnSpecs = () => [
       configKey: "roleBinding",
       apiVersion: "rbac.authorization.k8s.io/v1beta1",
       kind: "RoleBinding",
-      cannotBeDeleted: ({ name }) => name.startsWith("default"),
+      cannotBeDeleted: cannotBeDeletedDefault,
     }),
     isOurMinion,
   },
@@ -151,7 +164,7 @@ const fnSpecs = () => [
       configKey: "serviceAccount",
       apiVersion: "v1",
       kind: "ServiceAccount",
-      cannotBeDeleted: ({ name }) => name.startsWith("default"),
+      cannotBeDeleted: cannotBeDeletedDefault,
     }),
     isOurMinion,
   },
@@ -164,7 +177,7 @@ const fnSpecs = () => [
       configKey: "secret",
       apiVersion: "v1",
       kind: "Secret",
-      cannotBeDeleted: ({ name }) => name.startsWith("default"),
+      cannotBeDeleted: cannotBeDeletedDefault,
     }),
     isOurMinion,
   },
@@ -178,6 +191,7 @@ const fnSpecs = () => [
       configKey: "ingress",
       apiVersion: "networking.k8s.io/v1",
       kind: "Ingress",
+      cannotBeDeleted: cannotBeDeletedDefault,
       isUpByIdFactory: ({ getById }) =>
         isUpByIdCore({
           isInstanceUp: pipe([
@@ -212,6 +226,7 @@ const fnSpecs = () => [
       configKey: "service",
       apiVersion: "v1",
       kind: "Service",
+      cannotBeDeleted: cannotBeDeletedDefault,
     }),
     isOurMinion,
     compare,
@@ -250,7 +265,7 @@ const fnSpecs = () => [
   },
   {
     type: "Deployment",
-    dependsOn: ["Namespace", "ConfigMap"],
+    dependsOn: ["Namespace", "ConfigMap", "Secret"],
     Client: ({ config, spec }) =>
       createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -259,6 +274,7 @@ const fnSpecs = () => [
         configKey: "deployment",
         apiVersion: "apps/v1",
         kind: "Deployment",
+        cannotBeDeleted: cannotBeDeletedDefault,
         isUpByIdFactory: K8sUtils({ config }).isUpByPod,
       })({ config, spec }),
     isOurMinion,
@@ -266,7 +282,7 @@ const fnSpecs = () => [
   },
   {
     type: "StatefulSet",
-    dependsOn: ["Namespace", "ConfigMap"],
+    dependsOn: ["Namespace", "ConfigMap", "Secret"],
     Client: ({ config, spec }) =>
       createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -275,6 +291,7 @@ const fnSpecs = () => [
         configKey: "statefulSets",
         apiVersion: "apps/v1",
         kind: "StatefulSet",
+        cannotBeDeleted: cannotBeDeletedDefault,
         isUpByIdFactory: K8sUtils({ config }).isUpByPod,
       })({ config, spec }),
     isOurMinion,
@@ -290,15 +307,14 @@ const fnSpecs = () => [
       configKey: "configMap",
       apiVersion: "v1",
       kind: "ConfigMap",
-      //TODO only delete our own
-      cannotBeDeleted: ({ name }) => name.startsWith("default"),
+      cannotBeDeleted: cannotBeDeletedDefault,
     }),
     isOurMinion,
     compare,
   },
   {
     type: "Pod",
-    dependsOn: ["Namespace", "ConfigMap"],
+    dependsOn: ["Namespace", "ConfigMap", "Secret"],
     listDependsOn: ["ReplicaSet", "StatefulSet"],
     Client: createResourceNamespace({
       baseUrl: ({ namespace, apiVersion }) =>
@@ -313,7 +329,7 @@ const fnSpecs = () => [
   },
   {
     type: "ReplicaSet",
-    dependsOn: ["Namespace", "ConfigMap"],
+    dependsOn: ["Namespace", "ConfigMap", "Secret"],
     Client: createResourceNamespace({
       baseUrl: ({ apiVersion, namespace }) =>
         `/apis/${apiVersion}/namespaces/${namespace}/replicasets`,
