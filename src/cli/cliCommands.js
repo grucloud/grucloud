@@ -633,7 +633,7 @@ const planApply = async ({ infra, commandOptions = {}, programOptions = {} }) =>
           tap((result) => {
             assert(result);
           }),
-          tap.if(
+          switchCase([
             and([
               pipe([
                 get("resultQuery.results"),
@@ -646,8 +646,9 @@ const planApply = async ({ infra, commandOptions = {}, programOptions = {} }) =>
                 logger.info("finishing deployment");
               }),
               () => planApply({ infra, commandOptions, programOptions }),
-            ])
-          ),
+            ]),
+            (result) => result,
+          ]),
           throwIfError,
         ])(),
     ]),
