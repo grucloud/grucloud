@@ -209,7 +209,7 @@ module.exports = K8sClient = ({
               pipe([
                 () => error,
                 get("response.status"),
-                (status) => includes(status)([404]),
+                (status) => includes(status)([404, 500]),
                 tap((retry) => {
                   logger.info(
                     `shouldRetryOnException create ${type}/${name}, status: ${error.status}, retry: ${retry}`
