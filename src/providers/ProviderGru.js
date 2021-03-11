@@ -52,7 +52,7 @@ const dependenciesTodependsOn = ({ dependencies, stacks }) =>
     }),
     () => dependencies,
     reduce((acc, deps) => [...acc, deps.name], []),
-    filter((name) => find(eq(get("provider.name")), name)(stacks)),
+    filter((name) => find(eq(get("provider.name"), name))(stacks)),
   ])();
 
 const runnerParams = ({ provider, isProviderUp, stacks }) => ({
