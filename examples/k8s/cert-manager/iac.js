@@ -4,6 +4,7 @@ const yaml = require("js-yaml");
 const { pipe } = require("rubico");
 const { K8sProvider } = require("@grucloud/core");
 const { createResources } = require("./resources");
+const hooks = require("./hooks");
 
 const decodeManifest = pipe([
   () => fs.readFile(path.join(__dirname, "./cert-manager.yaml")),
@@ -18,5 +19,6 @@ exports.createStack = async ({ config }) => {
     resources,
     isProviderUp: () => resources.certManagerDeployment.getLive(),
     manifests: await decodeManifest(),
+    hooks,
   };
 };
