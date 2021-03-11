@@ -249,7 +249,7 @@ exports.ProviderGru = ({ stacks }) => {
         assert(Array.isArray(plan.results));
       }),
       () => plan.results,
-      filter(not(get("error"))),
+      //filter(not(get("error"))),
       map(
         tryCatch(
           (planPerProvider) =>
@@ -312,7 +312,7 @@ exports.ProviderGru = ({ stacks }) => {
           onStateChange: onStateChangeDefault({ onStateChange }),
         }),
       tap((result) => {
-        logger.info(`planQueryDestroy result: ${tos(result)}`);
+        logger.info(`planQueryDestroy done`);
       }),
     ])();
 
@@ -366,7 +366,7 @@ exports.ProviderGru = ({ stacks }) => {
           onStateChange: onStateChangeDefault({ onStateChange }),
         }),
       tap((result) => {
-        logger.debug(`planDestroy result: ${tos(result)}`);
+        logger.debug(`planDestroy done`);
       }),
     ])();
 

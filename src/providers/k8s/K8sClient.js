@@ -96,7 +96,7 @@ module.exports = K8sClient = ({
   const filterList = (data) =>
     pipe([
       get("items"),
-      map(omit(["metadata.managedFields", "spec.versions[0].schema"])),
+      map(omit(["metadata.managedFields"])),
       tap((items) => {
         //logger.debug(`filterList items ${tos(items)}`);
       }),

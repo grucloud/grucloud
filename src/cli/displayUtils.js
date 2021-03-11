@@ -432,9 +432,7 @@ const displayTablePerType = ({
       {
         colSpan: 3,
         //TODO yamlimify
-        content: colors.red(
-          `Error: ${error.name}: method: ${error.config?.method}, url ${error.config?.url}, message: ${error.message}\n${error.stack}`
-        ),
+        content: colors.red(YAML.stringify(error)),
       },
     ]);
 

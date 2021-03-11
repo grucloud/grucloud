@@ -1376,8 +1376,8 @@ function CoreProvider({
           resources,
           providerName: client.providerName,
         }),
-        tap((x) => {
-          assert(x);
+        tap((xxx) => {
+          assert(xxx);
         }),
       ]),
     ])(result);
@@ -1697,7 +1697,7 @@ function CoreProvider({
         })
       ),
       tap((result) => {
-        logger.info(`planUpsert: result: ${tos(result)}`);
+        logger.info(`planUpsert done`);
       }),
     ])();
 
@@ -1748,7 +1748,7 @@ function CoreProvider({
         })
       ),
       tap((result) => {
-        logger.debug(`planQuery result ${providerName}: ${tos(result)}`);
+        //logger.debug(`planQuery result ${providerName}: ${tos(result)}`);
       }),
     ])({});
 
@@ -1756,7 +1756,7 @@ function CoreProvider({
     pipe([
       tap(() => {
         assert(plan);
-        logger.info(`Apply Plan ${tos(plan)}`);
+        logger.info(`Apply Plan ${providerName}`);
       }),
       providerRunning({ onStateChange, providerName }),
       assign({
@@ -1803,7 +1803,7 @@ function CoreProvider({
         })(getClients())
       ),
       tap((result) => {
-        logger.info(`Apply result: ${tos(result)}`);
+        logger.info(`Apply done`);
       }),
     ])();
 
@@ -2045,7 +2045,7 @@ function CoreProvider({
       }),
       assign({ error: any(get("error")) }),
       tap((result) => {
-        logger.info(`destroyAll ${tos(result)}`);
+        //logger.info(`destroyAll ${tos(result)}`);
       }),
     ])({});
 
