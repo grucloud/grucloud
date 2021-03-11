@@ -1311,7 +1311,7 @@ function CoreProvider({
   const filterClient = async ({
     result,
     client,
-    options: { our, name, id, canBeDeleted, provider: providerName },
+    options: { our, name, id, canBeDeleted, provider: providerNames },
     lives,
   }) =>
     switchCase([
@@ -1366,7 +1366,9 @@ function CoreProvider({
         filter((item) => (name ? item.name === name : true)),
         filter((item) => (id ? item.id === id : true)),
         filter((item) =>
-          providerName ? item.providerName === providerName : true
+          providerName && !isEmpty(providerNames)
+            ? includes(item.providerName)(providerNames)
+            : true
         ),
         filter((item) => (canBeDeleted ? !item.cannotBeDeleted : true)),
         (resources) => ({
@@ -1603,6 +1605,9 @@ function CoreProvider({
             onStateChange,
             readWrite: true,
           }),
+      }),
+      tap((result) => {
+        assert(result);
       }),
       assign({
         plans: ({ lives }) => planFindDestroy({ options, lives }),
