@@ -8,8 +8,9 @@ const {
   switchCase,
   eq,
   not,
+  filter,
 } = require("rubico");
-const { defaultsDeep, first, find } = require("rubico/x");
+const { defaultsDeep, first, find, last } = require("rubico/x");
 const shell = require("shelljs");
 const os = require("os");
 const path = require("path");
@@ -376,7 +377,12 @@ const getAuthToken = ({ kubeConfig }) =>
 
 const providerType = "k8s";
 
-exports.K8sProvider = ({ name = providerType, config = {}, ...other }) => {
+exports.K8sProvider = ({
+  name = providerType,
+  manifests = [],
+  config = {},
+  ...other
+}) => {
   const info = () => ({});
 
   let accessToken;
@@ -396,7 +402,60 @@ exports.K8sProvider = ({ name = providerType, config = {}, ...other }) => {
       accessToken = token;
     },
   ]);
+  const toApiVersion = ({ group, versions }) =>
+    `${group}/${pipe([() => versions, last, get("name")])()}`;
 
+  const manifestToSpec = (manifests = []) =>
+    pipe([
+      tap(() => {
+        logger.info(`manifestToSpec ${manifests.length}`);
+      }),
+      () => manifests,
+      filter(eq(get("kind"), "CustomResourceDefinition")),
+      tap((xxx) => {
+        logger.info("manifestToSpec ");
+      }),
+      map(get("spec")),
+      tap((xxx) => {
+        logger.info("manifestToSpec ");
+      }),
+      map(({ names, scope, versions, group }) =>
+        switchCase([
+          () => scope === "Namespaced",
+          () => ({
+            type: names.kind,
+            dependsOn: ["CustomResourceDefinition"],
+            Client: createResourceNamespace({
+              baseUrl: ({ namespace, apiVersion }) =>
+                `/apis/${apiVersion}/namespaces/${namespace}/${names.plural}`,
+              pathList: ({ apiVersion }) =>
+                `/apis/${apiVersion}/${names.plural}`,
+              configKey: names.singular,
+              apiVersion: toApiVersion({ group, versions }),
+              kind: names.kind,
+            }),
+            isOurMinion,
+            compare,
+          }),
+          () => ({
+            type: names.kind,
+            dependsOn: ["CustomResourceDefinition"],
+            Client: createResourceNamespaceless({
+              baseUrl: ({ apiVersion }) =>
+                `/apis/${apiVersion}/${names.plural}`,
+              configKey: names.singular,
+              apiVersion: toApiVersion({ group, versions }),
+              kind: names.kind,
+            }),
+            isOurMinion,
+            compare,
+          }),
+        ])()
+      ),
+      tap((xxx) => {
+        logger.info("manifestToSpec ");
+      }),
+    ])();
   return CoreProvider({
     ...other,
     type: providerType,
@@ -408,7 +467,7 @@ exports.K8sProvider = ({ name = providerType, config = {}, ...other }) => {
         return kubeConfig;
       },
     })(config),
-    fnSpecs,
+    fnSpecs: () => [...fnSpecs(), ...manifestToSpec(manifests)],
     start,
     info,
   });

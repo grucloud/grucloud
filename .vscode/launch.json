@@ -63,6 +63,26 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "K8s AWS Load Balancer List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/aws-load-balancer",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["list"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "K8s AWS Load Balancer Apply",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/aws-load-balancer",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["apply", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "K8s Cert Manager Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/k8s/cert-manager",

@@ -23,6 +23,7 @@
 (cd mock/mock-simple && npm run link)
 (cd multi/ && npm run link)
 (cd k8s/cert-manager && npm run link)
+(cd k8s/aws-load-balancer && npm run link)
 (cd k8s/starhackit/aws && npm run link)
 (cd k8s/starhackit/minikube && npm run link)
 (cd k8s/starhackit/base && npm run link)

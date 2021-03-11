@@ -29,11 +29,16 @@ exports.createResourceNamespaceless = ({
       },
     })(properties);
 
-  const pathGet = ({ name }) => `${baseUrl({ apiVersion })}/${name}`;
-  const pathList = () => baseUrl({ apiVersion });
-  const pathCreate = () => baseUrl({ apiVersion });
-  const pathUpdate = ({ name }) => `${baseUrl({ apiVersion })}/${name}`;
-  const pathDelete = ({ name }) => `${baseUrl({ apiVersion })}/${name}`;
+  const pathGet = ({ name, apiVersion = apiVersionDefault }) =>
+    `${baseUrl({ apiVersion })}/${name}`;
+  const pathList = ({ apiVersion = apiVersionDefault }) =>
+    baseUrl({ apiVersion });
+  const pathCreate = ({ apiVersion = apiVersionDefault }) =>
+    baseUrl({ apiVersion });
+  const pathUpdate = ({ name, apiVersion = apiVersionDefault }) =>
+    `${baseUrl({ apiVersion })}/${name}`;
+  const pathDelete = ({ name, apiVersion = apiVersionDefault }) =>
+    `${baseUrl({ apiVersion })}/${name}`;
 
   return K8sClient({
     spec,

@@ -431,8 +431,9 @@ const displayTablePerType = ({
     table.push([
       {
         colSpan: 3,
+        //TODO yamlimify
         content: colors.red(
-          `Error: ${error.name}: code ${error.code}, message: ${error.message}\n${error.stack}`
+          `Error: ${error.name}: method: ${error.config?.method}, url ${error.config?.url}, message: ${error.message}\n${error.stack}`
         ),
       },
     ]);
