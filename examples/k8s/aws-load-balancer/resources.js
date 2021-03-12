@@ -577,7 +577,7 @@ exports.createResources = async ({ provider }) => {
             containers: [
               {
                 args: [
-                  "--cluster-name=your-cluster-name",
+                  `--cluster-name=${provider.config().cluster?.name}`,
                   "--ingress-class=alb",
                 ],
                 image: "amazon/aws-alb-ingress-controller:v2.1.2",
