@@ -19,6 +19,7 @@ exports.createStack = async ({ config }) => {
   const awsLoadBalancerResources = await AwsLoadBalancerStack.createResources({
     provider,
     config,
+    resources: eksStack.resources,
   });
 
   const baseStackResources = await BaseStack.createResources({

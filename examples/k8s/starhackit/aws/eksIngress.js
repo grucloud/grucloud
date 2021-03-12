@@ -23,7 +23,8 @@ exports.createIngress = async ({
       metadata: {
         annotations: {
           "kubernetes.io/ingress.class": "alb",
-          "nginx.ingress.kubernetes.io/use-regex": "true",
+          "alb.ingress.kubernetes.io/scheme": "internet-facing",
+          "alb.ingress.kubernetes.io/target-type": "ip",
         },
       },
       spec: {

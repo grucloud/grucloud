@@ -7,13 +7,18 @@ const { K8sProvider } = require("@grucloud/core");
 const LoadBalancerResources = require("./resources");
 const CertManager = require("../cert-manager/iac");
 
-const createResources = async ({ provider }) => {
+const createResources = async ({ provider, resources }) => {
   const certResources = await CertManager.createResources({ provider });
-  const resources = await LoadBalancerResources.createResources({ provider });
-  return { ...certResources, ...resources };
+  const loadBalancerResources = await LoadBalancerResources.createResources({
+    provider,
+    resources,
+  });
+  return { ...certResources, ...loadBalancerResources };
 };
 
-exports.createResources = createResources;
+exports.createResources = ({ provider, resources }) => {
+  return createResources({ provider, resources });
+};
 
 const loadManifest = pipe([
   () =>
