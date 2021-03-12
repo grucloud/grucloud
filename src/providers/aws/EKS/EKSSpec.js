@@ -1,6 +1,6 @@
 const { isOurMinionObject } = require("../../Common");
 const { EKSCluster } = require("./EKSCluster");
-const { EKSNodeGroup } = require("./EKSNodeGroup");
+const { EKSNodeGroup, compareNodeGroup } = require("./EKSNodeGroup");
 
 const isOurMinion = ({ resource, config }) =>
   isOurMinionObject({ tags: resource.tags, config });
@@ -17,5 +17,6 @@ module.exports = [
     dependsOn: ["EKSCluster", "Subnet", "IamRole"],
     Client: EKSNodeGroup,
     isOurMinion,
+    compare: compareNodeGroup,
   },
 ];

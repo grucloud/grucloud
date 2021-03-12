@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { detailedDiff } = require("deep-object-diff");
 
 const {
   map,
@@ -150,6 +151,25 @@ exports.EKSNodeGroup = ({ spec, config }) => {
       }),
     ])();
 
+  const update = async ({ name, payload, resolvedDependencies, live, diff }) =>
+    tryCatch(
+      pipe([
+        tap(() => {
+          logger.info(`update ${name}, diff: ${tos(diff)}`);
+          assert(name);
+          assert(payload);
+        }),
+        () => destroy({ live }),
+        () => create({ name, payload, resolvedDependencies }),
+        tap((result) => {
+          logger.info(`updated ${name}, status: ${result}`);
+        }),
+      ]),
+      (error) => {
+        throw error(error);
+      }
+    )();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#deleteNodegroup-property
   const destroy = async ({ live }) =>
     pipe([
@@ -201,7 +221,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
       amiType: "AL2_x86_64",
       capacityType: "ON_DEMAND",
       diskSize: 20,
-      instanceTypes: ["t2.micro"],
+      instanceTypes: ["t2.medium"], // See https://github.com/awslabs/amazon-eks-ami/blob/master/files/eni-max-pods.txt
       scalingConfig: {
         minSize: 1,
         maxSize: 1,
@@ -219,6 +239,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     getByName,
     getById,
     findName,
+    update,
     create,
     destroy,
     getList,
@@ -226,3 +247,24 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     shouldRetryOnException,
   };
 };
+
+const pickCompare = pick([
+  "amiType",
+  "capacityType",
+  "diskSize",
+  "instanceTypes",
+  "scalingConfig",
+]);
+
+exports.compareNodeGroup = async ({ target, live }) =>
+  pipe([
+    tap(() => {
+      logger.debug(`compareNodeGroup ${tos({ target, live })}`);
+      assert(target);
+      assert(live);
+    }),
+    () => detailedDiff(pickCompare(live), pickCompare(target)),
+    tap((diff) => {
+      logger.debug(`compareNodeGroup diff: ${tos(diff)}`);
+    }),
+  ])();
