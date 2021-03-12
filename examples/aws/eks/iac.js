@@ -14,9 +14,17 @@ const createResources = async ({ provider, resources: {} }) => {
     name: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
   });
 
+  const iamPolicyEKSVPCResourceController = await provider.useIamPolicyReadOnly(
+    {
+      name: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
+    }
+  );
+
   const roleCluster = await provider.makeIamRole({
     name: "role-cluster",
-    dependencies: { policies: [iamPolicyEKSCluster] },
+    dependencies: {
+      policies: [iamPolicyEKSCluster, iamPolicyEKSVPCResourceController],
+    },
     properties: () => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
