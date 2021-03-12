@@ -1,31 +1,57 @@
 const assert = require("assert");
-const { createStack: createStackK8s } = require("../base/k8sStackBase");
-const { createStack: createStackEks } = require("../../../aws/eks/iac");
+const { K8sProvider } = require("@grucloud/core");
+const BaseStack = require("../base/k8sStackBase");
+const AwsLoadBalancerStack = require("../../aws-load-balancer/iac");
+
+const EKSStack = require("../../../aws/eks/iac");
 const { createIngress } = require("./eksIngress");
 const { createClusterRole } = require("./clusterRole");
 
 exports.createStack = async ({ config }) => {
-  const eksStack = await createStackEks({ config });
-  const k8sStack = await createStackK8s({
+  const eksStack = await EKSStack.createStack({ config });
+
+  const provider = K8sProvider({
     config,
-    resources: eksStack.resources,
+    manifests: await AwsLoadBalancerStack.loadManifest(),
     dependencies: { eks: eksStack.provider },
   });
 
+  const awsLoadBalancerResources = await AwsLoadBalancerStack.createResources({
+    provider,
+    config,
+  });
+
+  const baseStackResources = await BaseStack.createResources({
+    provider,
+    config,
+    resources: eksStack.resources,
+  });
+
   const albClusterRole = await createClusterRole({
-    provider: k8sStack.provider,
+    provider,
     config,
   });
 
   const ingress = await createIngress({
-    provider: k8sStack.provider,
+    provider,
     config,
     resources: {
-      namespace: k8sStack.resources.namespace,
-      serviceWebServer: k8sStack.resources.webServerChart.service,
-      serviceRestServer: k8sStack.resources.restServerChart.service,
+      namespace: baseStackResources.namespace,
+      serviceWebServer: baseStackResources.webServerChart.service,
+      serviceRestServer: baseStackResources.restServerChart.service,
     },
   });
 
-  return [eksStack, k8sStack];
+  return [
+    eksStack,
+    {
+      provider,
+      resources: {
+        baseStackResources,
+        awsLoadBalancerResources,
+        albClusterRole,
+        ingress,
+      },
+    },
+  ];
 };

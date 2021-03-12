@@ -249,7 +249,7 @@ exports.ProviderGru = ({ stacks }) => {
         assert(Array.isArray(plan.results));
       }),
       () => plan.results,
-      //filter(not(get("error"))),
+      filter(not(get("error"))),
       map(
         tryCatch(
           (planPerProvider) =>

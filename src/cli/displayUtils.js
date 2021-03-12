@@ -142,6 +142,7 @@ const displayResourcePerType = ({
   )(plans);
 
 exports.displayPlanSummary = pipe([
+  filter(not(get("error"))),
   map(({ providerName, resultCreate, resultDestroy }) =>
     pipe([
       tap(() => {

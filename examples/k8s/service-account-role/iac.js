@@ -34,11 +34,19 @@ const createAwsStack = async ({ config }) => {
       },
     }),
   });
-  return { provider, resources: { rolePod } };
+  return {
+    provider,
+    resources: { rolePod },
+    isProviderUp: () => rolePod.getLive(),
+  };
 };
 
-const createK8sStack = async ({ config, resources: { rolePod } }) => {
-  const provider = K8sProvider({ config });
+const createK8sStack = async ({
+  config,
+  resources: { rolePod },
+  dependencies,
+}) => {
+  const provider = K8sProvider({ config, dependencies });
 
   assert(config.namespaceName);
   assert(rolePod);
@@ -76,6 +84,7 @@ exports.createStack = async ({ config }) => {
   const k8sStack = await createK8sStack({
     config,
     resources: awsStack.resources,
+    dependencies: { aws: awsStack.provider },
   });
   return [awsStack, k8sStack];
 };

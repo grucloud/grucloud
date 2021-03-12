@@ -40,7 +40,7 @@ exports.HookType = {
 const typeFromResources = pipe([first, get("type")]);
 exports.typeFromResources = typeFromResources;
 
-exports.planToResourcesPerType = ({ providerName, plans }) =>
+exports.planToResourcesPerType = ({ providerName, plans = [] }) =>
   pipe([
     tap(() => {
       logger.debug("planToResourcesPerType");

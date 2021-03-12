@@ -546,7 +546,7 @@ const doPlansDeploy = ({ commandOptions, programOptions, providersGru }) => (
             tap(
               pipe([
                 () => results,
-                //filter(not(get("error"))),
+                filter(not(get("error"))),
                 map.series((plan) =>
                   providersGru
                     .getProvider({ providerName: plan.providerName })
@@ -569,7 +569,7 @@ const doPlansDeploy = ({ commandOptions, programOptions, providersGru }) => (
             tap(
               pipe([
                 get("results"),
-                //filter(not(get("error"))),
+                filter(not(get("error"))),
                 forEach(({ providerName, error }) =>
                   providersGru
                     .getProvider({ providerName })

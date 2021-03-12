@@ -1282,6 +1282,12 @@ function CoreProvider({
         tap(() => {
           logger.debug(`start`);
         }),
+        tap(() =>
+          onStateChange({
+            context: contextFromProviderInit({ providerName }),
+            nextState: "RUNNING",
+          })
+        ),
         () => start(),
         tap(() =>
           onStateChange({
