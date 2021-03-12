@@ -276,27 +276,11 @@ const tablePlanPerType = {
     get("action"),
     switchCase([
       eq(get("action"), "UPDATE"),
-      ({ target, live }) => {
+      ({ target, live, diff }) => {
         assert(target);
         assert(live);
-        const table = new Table({
-          style: { head: [], border: [] },
-        });
-        table.push([
-          {
-            content: colors.yellow(`NEW`),
-          },
-          {
-            content: YAML.stringify(target),
-          },
-          {
-            content: colors.yellow(`LIVE`),
-          },
-          {
-            content: YAML.stringify(live),
-          },
-        ]);
-        return table.toString();
+        assert(diff);
+        return YAML.stringify(diff);
       },
       eq(get("action"), "CREATE"),
       ({ target }) => YAML.stringify(target),
