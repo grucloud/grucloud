@@ -156,6 +156,7 @@ const ResourceMaker = ({
           resolveConfig,
           deep,
           resources: provider.getResourcesByType({ type }),
+          properties,
         }),
       tap((live) => {
         logger.debug(`getLive ${toString()} result: ${tos(live)}`);

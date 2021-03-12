@@ -19,6 +19,7 @@ exports.createIngress = async ({
       serviceRestServer,
     },
     properties: () => ({
+      apiVersion: "networking.k8s.io/v1beta1",
       metadata: {
         annotations: {
           "kubernetes.io/ingress.class": "alb",

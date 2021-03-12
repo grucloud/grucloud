@@ -3,7 +3,27 @@ const pkg = require("../package.json");
 module.exports = () => ({
   projectName: pkg.name,
   namespaceName: "default",
+  cluster: { name: "cluster" },
   ingress: { apiVersion: "networking.k8s.io/v1beta1" },
+  vpc: {
+    subnetsPrivate: [
+      {
+        name: "subnet-private-1",
+        CidrBlock: "10.1.1.1/24",
+        AvailabilityZone: "eu-west-2a",
+      },
+      {
+        name: "subnet-private-2",
+        CidrBlock: "10.1.2.1/24",
+        AvailabilityZone: "eu-west-2b",
+      },
+      {
+        name: "subnet-private-3",
+        CidrBlock: "10.1.3.1/24",
+        AvailabilityZone: "eu-west-2c",
+      },
+    ],
+  },
   clusterRole: {
     name: "alb-cluster-role",
   },

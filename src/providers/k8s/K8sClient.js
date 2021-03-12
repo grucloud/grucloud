@@ -173,12 +173,18 @@ module.exports = K8sClient = ({
       ])
     )();
 
-  const getByName = ({ name, dependencies }) =>
-    getByKey({
-      resolvePath: pathGet,
-      name,
-      namespace: getNamespace(dependencies.namespace),
-    });
+  const getByName = ({ name, dependencies, properties = ({}) => ({}) }) =>
+    pipe([
+      () => properties({ dependencies: {} }),
+      (props) =>
+        getByKey({
+          resolvePath: pathGet,
+          name,
+          namespace:
+            get("metadata.namespace")(props) ||
+            getNamespace(dependencies.namespace),
+        }),
+    ])();
 
   const getById = ({ live }) =>
     getByKey({
@@ -257,7 +263,12 @@ module.exports = K8sClient = ({
           assert(payload);
         }),
         () =>
-          pathUpdate({ name, namespace: getNamespace(dependencies.namespace) }),
+          pathUpdate({
+            name,
+            namespace:
+              payload.metadata.namespace ||
+              getNamespace(dependencies.namespace),
+          }),
         tap((path) => {
           logger.info(`update ${type}/${name}, path: ${path}`);
         }),

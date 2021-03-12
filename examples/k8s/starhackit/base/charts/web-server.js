@@ -56,7 +56,7 @@ exports.createChartWebServer = async ({
   const deployment = await provider.makeDeployment({
     name: ui.deploymentName,
     dependencies: { namespace },
-    properties: ({ dependencies }) =>
+    properties: () =>
       deploymentUiContent({
         label: ui.label,
         image: ui.container.image,
