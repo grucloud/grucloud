@@ -51,7 +51,7 @@ const fetchThumbprint = ({ Url }) =>
         });
       }),
     tap((peerCertificate) => {
-      logger.debug(`peerCertificate ${JSON.stringify(peerCertificate)}`);
+      //logger.debug(`peerCertificate ${JSON.stringify(peerCertificate)}`);
     }),
     get("fingerprint"),
     (fingerprint) => fingerprint.replace(/:/g, ""),
