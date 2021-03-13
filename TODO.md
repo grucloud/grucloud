@@ -52,6 +52,10 @@
 
 ## TODO Aws:
 
+- multi-provider aws, k8s, ipProviderUp is down, gc d -f fails
+- https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
+- https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html
+
 - s3 exmaple: gc d tries to delete roles
 - gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404: 404 should be ok
 

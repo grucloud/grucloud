@@ -134,6 +134,7 @@ exports.createChartRestServer = async ({
         selector: {
           app: restServer.label,
         },
+        type: "NodePort",
         ports: [
           {
             protocol: "TCP",

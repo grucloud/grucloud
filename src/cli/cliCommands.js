@@ -762,6 +762,7 @@ exports.planDestroy = async ({
               tap(
                 pipe([
                   () => resultQueryDestroy.results,
+                  filter(not(get("error"))),
                   map.series(({ providerName, plans }) =>
                     providersGru
                       .getProvider({ providerName })

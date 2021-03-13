@@ -302,7 +302,9 @@ module.exports = K8sClient = ({
           logger.info(`destroy k8s ${JSON.stringify({ params })}`);
         }),
         pathDelete,
-        (path) => urljoin(getServerUrl(kubeConfig()), path),
+        //TODO check gracePeriodSeconds
+        (path) =>
+          urljoin(getServerUrl(kubeConfig()), path, "?gracePeriodSeconds=10"),
         (fullPath) =>
           retryCallOnError({
             name: `destroy type ${type}, path: ${fullPath}`,

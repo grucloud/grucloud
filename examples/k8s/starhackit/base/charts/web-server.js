@@ -73,6 +73,7 @@ exports.createChartWebServer = async ({
         selector: {
           app: ui.label,
         },
+        type: "NodePort",
         ports: [
           {
             protocol: "TCP",
