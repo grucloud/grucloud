@@ -35,7 +35,7 @@ exports.createIngress = async ({
             http: {
               paths: [
                 {
-                  path: "/api/.*",
+                  path: "/api/*",
                   pathType: "Prefix",
                   backend: {
                     serviceName: restServer.serviceName,
@@ -49,7 +49,7 @@ exports.createIngress = async ({
             http: {
               paths: [
                 {
-                  path: "/.*",
+                  path: "/*",
                   pathType: "Prefix",
                   backend: {
                     serviceName: ui.serviceName,
