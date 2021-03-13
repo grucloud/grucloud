@@ -219,7 +219,12 @@ const ResourceMaker = ({
     });
     logger.info(`planUpdate diff ${tos(diff)}`);
     // TODO unify
-    if (diff.needUpdate || !isEmpty(diff.added) || !isEmpty(diff.updated)) {
+    if (
+      diff.needUpdate ||
+      !isEmpty(diff.added) ||
+      !isEmpty(diff.updated) ||
+      !isEmpty(diff.deleted)
+    ) {
       return [
         {
           action: "UPDATE",

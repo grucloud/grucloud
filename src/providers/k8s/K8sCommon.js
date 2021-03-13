@@ -10,6 +10,7 @@ const {
   pick,
   and,
   not,
+  omit,
 } = require("rubico");
 const { find, first, isEmpty } = require("rubico/x");
 const fs = require("fs");
@@ -30,7 +31,12 @@ const getNamespace = pipe([
 
 exports.getNamespace = getNamespace;
 
-const pickCompare = pick(["spec", "data"]);
+const pickCompare = pick([
+  "metadata.annotations",
+  "metadata.labels",
+  "spec",
+  "data",
+]);
 
 exports.compare = async ({ target, live }) =>
   pipe([
@@ -40,6 +46,7 @@ exports.compare = async ({ target, live }) =>
       assert(live);
     }),
     () => detailedDiff(pickCompare(live), pickCompare(target)),
+    omit(["deleted.spec"]),
     tap((diff) => {
       logger.debug(`k8s compare ${tos(diff)}`);
     }),
