@@ -183,6 +183,16 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "K8s EKS Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/starhackit/aws",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "K8s EKS Apply",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/k8s/starhackit/aws",

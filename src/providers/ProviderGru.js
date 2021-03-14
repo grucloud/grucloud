@@ -215,10 +215,17 @@ exports.ProviderGru = ({ stacks }) => {
       () => stacks,
       map(({ provider, isProviderUp }) => ({
         ...runnerParams({ provider, isProviderUp, stacks }),
-        executor: ({ lives }) =>
+        executor: ({ results }) =>
           pipe([
+            tap(() => {
+              assert(results);
+            }),
             () => provider.start({ onStateChange }),
-            () => provider.planQuery({ onStateChange, lives }),
+            () =>
+              provider.planQuery({
+                onStateChange,
+                lives: pluck("lives")(results),
+              }),
           ])(),
       })),
       (inputs) =>

@@ -165,10 +165,14 @@ const ResourceMaker = ({
 
   const findLive = ({ lives }) =>
     pipe([
+      tap(() => {
+        assert(Array.isArray(lives));
+      }),
       () => lives,
+      find(eq(get("providerName"), provider.name)),
       get("results"),
       tap((results) => {
-        logger.debug(`findLive ${results}`);
+        assert(Array.isArray(results));
       }),
       filter(not(get("error"))),
       find(eq(get("type"), type)),
@@ -472,12 +476,8 @@ const ResourceMaker = ({
   const planUpsert = async ({ resource, lives }) =>
     pipe([
       tap(() => {
-        assert(lives);
-        logger.info(
-          `planUpsert resource: ${resource.toString()}, #lives: ${
-            lives.results.length
-          }`
-        );
+        assert(Array.isArray(lives));
+        logger.info(`planUpsert resource: ${resource.toString()}`);
       }),
       fork({
         live: () => resource.findLive({ lives }),
@@ -1355,7 +1355,9 @@ function CoreProvider({
           id: client.findId(live),
           managedByUs: client.spec.isOurMinion({
             resource: live,
-            lives,
+            lives: find(eq(get("providerName"), client.spec.providerName))(
+              lives
+            ),
             //TODO remove resourceNames
 
             resourceNames: resourceNames(),
@@ -1399,12 +1401,14 @@ function CoreProvider({
     options = {},
     title = TitleListing,
     readWrite = false,
+    lives,
   } = {}) =>
     pipe([
       () => getClients(),
       tap((clients) => {
         logger.info(
           `listLives #clients: ${clients.length}, ${JSON.stringify({
+            providerName,
             title,
             readWrite,
             options,
@@ -1429,7 +1433,7 @@ function CoreProvider({
           (dependOn) => `${client.spec.providerName}::${dependOn}`
         )(client.spec.listDependsOn),
 
-        executor: ({ lives }) =>
+        executor: ({ results }) =>
           pipe([
             () =>
               client.getList({
@@ -1443,7 +1447,7 @@ function CoreProvider({
                 client,
                 onStateChange,
                 options,
-                lives,
+                lives: results,
               }),
           ])(),
       })),
@@ -1562,10 +1566,14 @@ function CoreProvider({
         logger.info(
           `planFindDestroy ${JSON.stringify({ options, direction })}`
         );
-        assert(lives);
-        assert(Array.isArray(lives.results));
+        assert(Array.isArray(lives));
       }),
-      () => lives.results,
+      () => lives,
+      find(eq(get("providerName"), providerName)),
+      tap((livesPerProvider) => {
+        assert(livesPerProvider);
+      }),
+      get("results"),
       filter(not(get("error"))),
       flatMap(({ type, resources }) =>
         pipe([
@@ -1622,7 +1630,7 @@ function CoreProvider({
         assert(result);
       }),
       assign({
-        plans: ({ lives }) => planFindDestroy({ options, lives }),
+        plans: ({ lives }) => planFindDestroy({ options, lives: [lives] }),
       }),
       assign({ error: any(get("error")) }),
       tap((result) => {
@@ -1634,7 +1642,7 @@ function CoreProvider({
     pipe([
       tap(() => {
         logger.info(`planUpsert`);
-        assert(lives);
+        assert(Array.isArray(lives));
       }),
       tap(() =>
         onStateChange({
@@ -1716,11 +1724,12 @@ function CoreProvider({
   const planQuery = async ({
     onStateChange = identity,
     commandOptions = {},
-    lives, //TODO
+    lives: livesAll,
   } = {}) =>
     pipe([
       tap(() => {
         logger.info(`planQuery begins ${providerName}`);
+        assert(Array.isArray(livesAll));
       }),
       providerRunning({ onStateChange, providerName }),
       () => ({ providerName }),
@@ -1729,6 +1738,7 @@ function CoreProvider({
           listLives({
             onStateChange,
             options: commandOptions,
+            lives: livesAll,
           }),
       }),
       assign({
@@ -1736,14 +1746,14 @@ function CoreProvider({
           planFindDestroy({
             direction: PlanDirection.UP,
             options: commandOptions,
-            lives,
+            lives: [...livesAll, lives],
           }),
       }),
       assign({
         resultCreate: ({ lives }) =>
           planUpsert({
             onStateChange,
-            lives,
+            lives: [...livesAll, lives],
           }),
       }),
       tap((result) => {
@@ -1835,7 +1845,7 @@ function CoreProvider({
       });
     };
   };
-  const upsertResources = async ({ plans, onStateChange, title }) => {
+  const upsertResources = async ({ plans, onStateChange, title, lives }) => {
     assert(onStateChange);
     assert(title);
     assert(Array.isArray(plans));
@@ -1845,6 +1855,7 @@ function CoreProvider({
       const engine = getResource(resource);
       assert(engine, `Cannot find resource ${tos(resource)}`);
       const resolvedDependencies = await engine.resolveDependencies({
+        lives,
         dependenciesMustBeUp: true,
       });
       const input = await engine.resolveConfig({

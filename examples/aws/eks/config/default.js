@@ -2,6 +2,8 @@ const pkg = require("../package.json");
 //TODO use variable for region
 module.exports = () => ({
   projectName: pkg.name,
+  rootDomainName: "grucloud.org",
+  domainName: "eks-module-test.grucloud.org",
   vpc: {
     CidrBlock: "192.168.0.0/16",
     subnetsPublic: [

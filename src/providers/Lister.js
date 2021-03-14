@@ -42,7 +42,7 @@ exports.Lister = ({ inputs, onStateChange }) => {
       tryCatch(
         pipe([
           tap(() => onStateChange({ key, meta, nextState: STATES.RUNNING })),
-          () => executor({ lives: [...resultMap.values()] }),
+          () => executor({ results: [...resultMap.values()] }),
           tap((result) =>
             onStateChange({ key, meta, result, nextState: STATES.DONE })
           ),
