@@ -197,7 +197,7 @@ const fnSpecs = () => [
           isInstanceUp: pipe([
             get("status.loadBalancer.ingress"),
             first,
-            get("ip"),
+            not(isEmpty),
           ]),
           getById,
         }),
