@@ -381,7 +381,17 @@ const tablePerTypeDefault = {
 const displayLiveItem = ({ table, resource, tableDefinitions }) => {
   assert(resource);
   assert(tableDefinitions);
-  table.push(tableDefinitions.fields.map((field) => field(resource)));
+  switchCase([
+    () => resource.error,
+    () =>
+      table.push([
+        {
+          colSpan: 3,
+          content: colors.red(YAML.stringify(resource)),
+        },
+      ]),
+    () => table.push(tableDefinitions.fields.map((field) => field(resource))),
+  ])();
 };
 
 const displayTablePerType = ({
@@ -401,32 +411,38 @@ const displayTablePerType = ({
     style: { head: [], border: [] },
   });
 
-  table.push([
-    {
-      colSpan: 3,
-      content: colors.yellow(
-        `${resources.length} ${type} from ${providerName}`
-      ),
+  pipe([
+    () =>
+      table.push([
+        {
+          colSpan: 3,
+          content: colors.yellow(
+            `${resources.length} ${type} from ${providerName}`
+          ),
+        },
+      ]),
+    () => table.push(tableDefinitions.columns.map((item) => colors.red(item))),
+    switchCase([
+      () => error,
+      () =>
+        table.push([
+          {
+            colSpan: 3,
+            content: colors.red(YAML.stringify(error)),
+          },
+        ]),
+      pipe([
+        () => resources,
+        forEach((resource) =>
+          displayLiveItem({ table, resource, tableDefinitions })
+        ),
+      ]),
+    ]),
+    () => {
+      console.log(table.toString());
+      console.log("\n");
     },
-  ]);
-
-  table.push(tableDefinitions.columns.map((item) => colors.red(item)));
-
-  error &&
-    table.push([
-      {
-        colSpan: 3,
-        //TODO yamlimify
-        content: colors.red(YAML.stringify(error)),
-      },
-    ]);
-
-  resources.forEach((resource) =>
-    displayLiveItem({ table, resource, tableDefinitions })
-  );
-
-  console.log(table.toString());
-  console.log("\n");
+  ])();
 };
 
 exports.displayLive = async ({ providerName, resources = [] }) => {
