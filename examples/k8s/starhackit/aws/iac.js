@@ -28,6 +28,7 @@ exports.createStack = async ({ config }) => {
     resources: eksStack.resources,
   });
 
+  //TODO remove ?
   const albClusterRole = await createClusterRole({
     provider,
     config,
@@ -37,6 +38,7 @@ exports.createStack = async ({ config }) => {
     provider,
     config,
     resources: {
+      certificate: eksStack.resources.certificate,
       namespace: baseStackResources.namespace,
       serviceWebServer: baseStackResources.webServerChart.service,
       serviceRestServer: baseStackResources.restServerChart.service,

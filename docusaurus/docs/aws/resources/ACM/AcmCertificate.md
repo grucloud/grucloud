@@ -19,11 +19,20 @@ const certificate = await provider.makeCertificate({
   properties: () => ({}),
 });
 
+const domain = await provider.useRoute53Domain({
+  name: domainName,
+});
 const hostedZone = await provider.makeHostedZone({
   name: `${domainName}.`,
-  dependencies: { certificate },
+  dependencies: { domain },
+});
+
+const recordValidation = await provider.makeRoute53Record({
+  name: `certificate-validation-${domainName}.`,
+  dependencies: { hostedZone, certificate },
   properties: ({ dependencies: { certificate } }) => {
-    const domainValidationOption = certificate.live?.DomainValidationOptions[0];
+    const domainValidationOption =
+      certificate?.live?.DomainValidationOptions[0];
     const record = domainValidationOption?.ResourceRecord;
     if (domainValidationOption) {
       assert(
@@ -34,18 +43,14 @@ const hostedZone = await provider.makeHostedZone({
       );
     }
     return {
-      RecordSet: [
+      Name: record?.Name,
+      ResourceRecords: [
         {
-          Name: record?.Name,
-          ResourceRecords: [
-            {
-              Value: record?.Value,
-            },
-          ],
-          TTL: 300,
-          Type: "CNAME",
+          Value: record?.Value,
         },
       ],
+      TTL: 300,
+      Type: "CNAME",
     };
   },
 });

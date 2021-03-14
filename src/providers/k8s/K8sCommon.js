@@ -31,12 +31,11 @@ const getNamespace = pipe([
 
 exports.getNamespace = getNamespace;
 
-const pickCompare = pick([
-  "metadata.annotations",
-  "metadata.labels",
-  "spec",
-  "data",
-]);
+const pickCompare = ({ metadata, spec, data }) => ({
+  metadata: pick(["annotations", "labels"])(metadata),
+  spec,
+  data,
+});
 
 exports.compare = async ({ target, live }) =>
   pipe([
@@ -157,7 +156,7 @@ exports.isOurMinion = ({ resource, lives, config }) =>
     () => isOurMinionObject({ tags: resource.metadata.annotations, config }),
     pipe([
       tap(() => {
-        assert(lives);
+        //assert(lives);
         logger.info(`isOurMinion ${JSON.stringify({ resource })}`);
       }),
       () => first(resource.metadata.ownerReferences),

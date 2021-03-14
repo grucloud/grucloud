@@ -380,6 +380,57 @@ const createResources = async ({ provider, resources: {} }) => {
       },
     }),
   });
+  assert(config.rootDomainName);
+  assert(config.domainName);
+
+  const domain = await provider.useRoute53Domain({
+    name: config.rootDomainName,
+  });
+
+  const makeDomainName = ({ domainName, stage }) =>
+    `${stage == "production" ? "" : `${stage}.`}${domainName}`;
+
+  const domainName = makeDomainName({
+    domainName: config.domainName,
+    stage: config.stage,
+  });
+
+  const certificate = await provider.makeCertificate({
+    name: domainName,
+  });
+
+  const hostedZone = await provider.makeHostedZone({
+    name: `${domainName}.`,
+    dependencies: { domain },
+  });
+
+  const certificateRecordValidation = await provider.makeRoute53Record({
+    name: `certificate-validation-${domainName}.`,
+    dependencies: { hostedZone, certificate },
+    properties: ({ dependencies: { certificate } }) => {
+      const domainValidationOption =
+        certificate?.live?.DomainValidationOptions[0];
+      const record = domainValidationOption?.ResourceRecord;
+      if (domainValidationOption) {
+        assert(
+          record,
+          `missing record in DomainValidationOptions, certificate ${JSON.stringify(
+            certificate.live
+          )}`
+        );
+      }
+      return {
+        Name: record?.Name,
+        ResourceRecords: [
+          {
+            Value: record?.Value,
+          },
+        ],
+        TTL: 300,
+        Type: "CNAME",
+      };
+    },
+  });
 
   return {
     roleCluster,
@@ -394,6 +445,8 @@ const createResources = async ({ provider, resources: {} }) => {
     cluster,
     nodeGroup,
     iamOpenIdConnectProvider,
+    certificate,
+    certificateRecordValidation,
   };
 };
 

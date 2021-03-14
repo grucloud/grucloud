@@ -3,6 +3,8 @@ const pkg = require("../package.json");
 module.exports = () => ({
   projectName: pkg.name,
   namespaceName: "default",
+  rootDomainName: "grucloud.org",
+  domainName: "starhackit.grucloud.org",
   cluster: { name: "cluster" },
   ingress: { apiVersion: "networking.k8s.io/v1beta1" },
   vpc: {
