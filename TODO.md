@@ -41,10 +41,6 @@
 
 ## Kubernetes
 
-- Secret
-
-- minikube addons enable ingress
-
 - kubectl cluster-info
 
 ## Azure

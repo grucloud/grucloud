@@ -1,7 +1,13 @@
-const { get } = require("rubico");
-
+const { get, not } = require("rubico");
+const { defaultsDeep, isEmpty } = require("rubico/x");
 const K8sClient = require("./K8sClient");
-const { buildTagsObject } = require("../Common");
+const { buildTagsObject, isUpByIdCore } = require("../Common");
+const {
+  displayNameDefault,
+  displayNameResourceDefault,
+  resourceKeyDefault,
+  getNamespace,
+} = require("./K8sCommon");
 
 exports.createResourceNamespaceless = ({
   baseUrl,
@@ -9,6 +15,7 @@ exports.createResourceNamespaceless = ({
   apiVersion,
   kind,
   cannotBeDeleted,
+  isUpByIdFactory,
 }) => ({ spec, config }) => {
   const configDefault = async ({ name, properties, dependencies }) =>
     defaultsDeep({
@@ -35,6 +42,56 @@ exports.createResourceNamespaceless = ({
     pathUpdate,
     pathDelete,
     configDefault,
+    displayName: displayNameDefault,
+    displayNameResource: displayNameResourceDefault,
+    resourceKey: resourceKeyDefault,
     cannotBeDeleted,
+    isUpByIdFactory,
+  });
+};
+exports.createResourceNamespace = ({
+  baseUrl,
+  pathList,
+  configKey,
+  apiVersion: apiVersionDefault,
+  kind,
+  cannotBeDeleted,
+  isUpByIdFactory,
+  isDownByIdFactory,
+}) => ({ spec, config }) => {
+  const apiVersion = get(`${configKey}.apiVersion`, apiVersionDefault)(config);
+  const configDefault = async ({ name, properties, dependencies }) =>
+    defaultsDeep({
+      apiVersion,
+      kind,
+      metadata: {
+        name,
+        annotations: buildTagsObject({ name, config }),
+        namespace: getNamespace(dependencies.namespace?.resource),
+      },
+    })(properties);
+
+  const pathGet = ({ name, namespace }) =>
+    `${baseUrl({ namespace, apiVersion })}/${name}`;
+  const pathCreate = ({ namespace }) => baseUrl({ namespace, apiVersion });
+
+  const pathUpdate = pathGet;
+  const pathDelete = pathGet;
+
+  return K8sClient({
+    spec,
+    config,
+    pathGet,
+    pathList: () => pathList({ apiVersion }),
+    pathCreate,
+    pathUpdate,
+    pathDelete,
+    configDefault,
+    cannotBeDeleted,
+    isUpByIdFactory,
+    isDownByIdFactory,
+    displayName: displayNameDefault,
+    displayNameResource: displayNameResourceDefault,
+    resourceKey: resourceKeyDefault,
   });
 };

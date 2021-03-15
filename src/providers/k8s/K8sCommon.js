@@ -151,7 +151,7 @@ exports.isOurMinion = ({ resource, lives, config }) =>
     pipe([
       tap(() => {
         assert(lives);
-        logger.info(`isOurMinionPod ${JSON.stringify({ resource })}`);
+        logger.info(`isOurMinion ${JSON.stringify({ resource })}`);
       }),
       () => first(resource.metadata.ownerReferences),
       switchCase([
@@ -163,7 +163,7 @@ exports.isOurMinion = ({ resource, lives, config }) =>
             find(eq(get("live.metadata.uid"), uid)),
             get("managedByUs"),
             tap((result) => {
-              logger.info(`isOurMinionPod ${resource.toString()}: ${result}`);
+              logger.info(`isOurMinion ${resource.toString()}: ${result}`);
             }),
           ])(lives),
         () => false,

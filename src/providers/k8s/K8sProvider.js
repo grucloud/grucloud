@@ -20,28 +20,27 @@ const logger = require("../../logger")({ prefix: "K8sProvider" });
 const { tos } = require("../../tos");
 const CoreProvider = require("../CoreProvider");
 const { compare, isOurMinion } = require("./K8sCommon");
-const { createResourceNamespaceless } = require("./K8sDumpster");
-const { K8sReplicaSet } = require("./K8sReplicaSet");
-const { K8sService } = require("./K8sService");
-const { K8sStorageClass } = require("./K8sStorageClass");
-const { K8sPersistentVolume } = require("./K8sPersistentVolume");
+const { isUpByIdCore } = require("../Common");
+
 const {
-  K8sPersistentVolumeClaim,
+  createResourceNamespaceless,
+  createResourceNamespace,
+} = require("./K8sDumpster");
+const {
   isOurMinionPersistentVolumeClaim,
 } = require("./K8sPersistentVolumeClaim");
-const { K8sPod } = require("./K8sPod");
-const { K8sNamespace } = require("./K8sNamespace");
 const { K8sDeployment } = require("./K8sDeployment");
-const { K8sConfigMap } = require("./K8sConfigMap");
-const { K8sIngress } = require("./K8sIngress");
-const { K8sStatefulSet } = require("./K8sStatefulSet");
-const { K8sServiceAccount } = require("./K8sServiceAccount");
-const { K8sSecret } = require("./K8sSecret");
 
 const fnSpecs = () => [
   {
     type: "Namespace",
-    Client: K8sNamespace,
+    Client: createResourceNamespaceless({
+      baseUrl: "/api/v1/namespaces",
+      configKey: "namespace",
+      apiVersion: "v1",
+      kind: "Namespace",
+      cannotBeDeleted: eq(get("name"), "default"),
+    }),
     isOurMinion,
   },
   {
@@ -58,44 +57,103 @@ const fnSpecs = () => [
   },
   {
     type: "ServiceAccount",
-    Client: K8sServiceAccount,
+    Client: createResourceNamespace({
+      baseUrl: ({ namespace }) =>
+        `/api/v1/namespaces/${namespace}/serviceaccounts`,
+      pathList: () => "/api/v1/serviceaccounts",
+      configKey: "serviceAccount",
+      apiVersion: "v1",
+      kind: "ServiceAccount",
+      cannotBeDeleted: ({ name }) => name.startsWith("default"),
+    }),
     isOurMinion,
   },
   {
     type: "Secret",
-    Client: K8sSecret,
+    Client: createResourceNamespace({
+      baseUrl: ({ namespace }) => `/api/v1/namespaces/${namespace}/secrets`,
+      pathList: () => "/api/v1/secrets",
+      configKey: "secret",
+      apiVersion: "v1",
+      kind: "Secret",
+      cannotBeDeleted: ({ name }) => name.startsWith("default"),
+    }),
     isOurMinion,
   },
   {
     type: "Ingress",
     dependsOn: ["Namespace", "Service"],
-    Client: K8sIngress,
+    Client: createResourceNamespace({
+      baseUrl: ({ namespace, apiVersion }) =>
+        `/apis/${apiVersion}/namespaces/${namespace}/ingresses`,
+      pathList: ({ apiVersion }) => `/apis/${apiVersion}/ingresses`,
+      configKey: "ingress",
+      apiVersion: "networking.k8s.io/v1",
+      kind: "Ingress",
+      isUpByIdFactory: ({ getById }) =>
+        isUpByIdCore({
+          isInstanceUp: pipe([
+            get("status.loadBalancer.ingress"),
+            first,
+            get("ip"),
+          ]),
+          getById,
+        }),
+    }),
     isOurMinion,
     compare,
   },
   {
     type: "StorageClass",
-    Client: K8sStorageClass,
+    Client: createResourceNamespaceless({
+      baseUrl: "/apis/storage.k8s.io/v1/storageclasses",
+      configKey: "storageClass",
+      apiVersion: "storage.k8s.io/v1",
+      kind: "StorageClass",
+    }),
     isOurMinion,
     compare,
   },
   {
     type: "Service",
     dependsOn: ["Namespace"],
-    Client: K8sService,
+    Client: createResourceNamespace({
+      baseUrl: ({ namespace }) => `/api/v1/namespaces/${namespace}/services`,
+      pathList: () => "/api/v1/services",
+      configKey: "service",
+      apiVersion: "v1",
+      kind: "Service",
+    }),
     isOurMinion,
     compare,
   },
   {
     type: "PersistentVolume",
-    Client: K8sPersistentVolume,
     dependsOn: ["Namespace", "StorageClass"],
+    Client: createResourceNamespaceless({
+      baseUrl: "/api/v1/persistentvolumes",
+      configKey: "persistentVolume",
+      apiVersion: "v1",
+      kind: "PersistentVolume",
+      isUpByIdFactory: ({ getById }) =>
+        isUpByIdCore({
+          isInstanceUp: eq(get("status.phase"), "Available"),
+          getById,
+        }),
+    }),
     isOurMinion,
     compare,
   },
   {
     type: "PersistentVolumeClaim",
-    Client: K8sPersistentVolumeClaim,
+    Client: createResourceNamespace({
+      baseUrl: ({ namespace }) =>
+        `/api/v1/namespaces/${namespace}/persistentvolumeclaims`,
+      pathList: () => "/api/v1/persistentvolumeclaims",
+      configKey: "secret",
+      apiVersion: "v1",
+      kind: "PersistentVolumeClaim",
+    }),
     dependsOn: ["Namespace", "StorageClass", "PersistentVolume"],
     listDependsOn: ["PersistentVolume"],
     isOurMinion: isOurMinionPersistentVolumeClaim,
@@ -111,14 +169,29 @@ const fnSpecs = () => [
   {
     type: "StatefulSet",
     dependsOn: ["Namespace", "ConfigMap"],
-    Client: K8sStatefulSet,
+    Client: createResourceNamespace({
+      baseUrl: ({ namespace }) =>
+        `/apis/apps/v1/namespaces/${namespace}/statefulsets`,
+      pathList: () => "/apis/apps/v1/statefulsets",
+      configKey: "statefulSets",
+      apiVersion: "apps/v1",
+      kind: "StatefulSet",
+    }),
     isOurMinion,
     compare,
   },
   {
     type: "ConfigMap",
     dependsOn: ["Namespace"],
-    Client: K8sConfigMap,
+    Client: createResourceNamespace({
+      baseUrl: ({ namespace }) => `/api/v1/namespaces/${namespace}/configmaps`,
+      pathList: () => "/api/v1/configmaps",
+      configKey: "configMap",
+      apiVersion: "v1",
+      kind: "ConfigMap",
+      //TODO only delete our own
+      cannotBeDeleted: ({ name }) => name.startsWith("default"),
+    }),
     isOurMinion,
     compare,
   },
@@ -126,14 +199,27 @@ const fnSpecs = () => [
     type: "Pod",
     dependsOn: ["Namespace", "ConfigMap"],
     listDependsOn: ["ReplicaSet", "StatefulSet"],
-    Client: K8sPod,
+    Client: createResourceNamespace({
+      baseUrl: ({ namespace }) => `/api/v1/namespaces/${namespace}/pods`,
+      pathList: () => "/api/v1/pods",
+      configKey: "pod",
+      apiVersion: "v1",
+      kind: "Pod",
+    }),
     isOurMinion,
     listOnly: true,
   },
   {
     type: "ReplicaSet",
     dependsOn: ["Namespace", "ConfigMap"],
-    Client: K8sReplicaSet,
+    Client: createResourceNamespace({
+      baseUrl: ({ namespace }) =>
+        `/apis/apps/v1/namespaces/${namespace}/replicasets`,
+      pathList: () => "/apis/apps/v1/replicasets",
+      configKey: "replicaSet",
+      apiVersion: "v1",
+      kind: "ReplicaSet",
+    }),
     isOurMinion,
     listOnly: true,
   },

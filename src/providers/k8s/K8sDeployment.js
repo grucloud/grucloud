@@ -4,43 +4,16 @@ const urljoin = require("url-join");
 
 const logger = require("../../logger")({ prefix: "K8sDeployment" });
 const { tos } = require("../../tos");
-const { buildTagsObject } = require("../Common");
-const K8sClient = require("./K8sClient");
 const { retryCallOnError } = require("../Retry");
 
-const {
-  getNamespace,
-  getServerUrl,
-  createAxiosMakerK8s,
-} = require("./K8sCommon");
+const { getServerUrl, createAxiosMakerK8s } = require("./K8sCommon");
+
+const { createResourceNamespace } = require("./K8sDumpster");
 
 exports.K8sDeployment = ({ spec, config }) => {
   const { kubeConfig } = config;
 
   const axios = () => createAxiosMakerK8s({ config });
-
-  const configDefault = async ({ name, properties, dependencies }) =>
-    defaultsDeep({
-      apiVersion: "apps/v1",
-      kind: "Deployment",
-      metadata: {
-        name,
-        namespace: getNamespace(dependencies.namespace?.resource),
-        annotations: buildTagsObject({ name, config }),
-      },
-    })(properties);
-
-  const pathGet = ({ name, namespace }) =>
-    `/apis/apps/v1/namespaces/${namespace}/deployments/${name}`;
-  const pathGetStatus = ({ name, namespace }) =>
-    `/apis/apps/v1/namespaces/${namespace}/deployments/${name}/status`;
-  const pathList = () => `/apis/apps/v1/deployments`;
-  //https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#create-deployment-v1-apps
-  const pathCreate = ({ namespace }) =>
-    `/apis/apps/v1/namespaces/${namespace}/deployments`;
-
-  const pathUpdate = pathGet;
-  const pathDelete = pathGet;
 
   const isInstanceUp = (item) =>
     pipe([
@@ -69,13 +42,13 @@ exports.K8sDeployment = ({ spec, config }) => {
         }),
       get("data.items"),
       tap((data) => {
-        logger.debug(`replicasets all ${tos(data)}`);
+        //logger.debug(`replicasets all ${tos(data)}`);
       }),
       filter(
         pipe([get("metadata.ownerReferences"), find(eq(get("uid"), uid))])
       ),
       tap((data) => {
-        logger.debug(`replicasets for deployment ${name}: ${tos(data)}`);
+        //logger.debug(`replicasets for deployment ${name}: ${tos(data)}`);
       }),
     ])(namespace);
 
@@ -113,17 +86,15 @@ exports.K8sDeployment = ({ spec, config }) => {
       }),
     ])(metadata);
 
-  return K8sClient({
-    spec,
-    config,
-    pathGet,
-    pathGetStatus,
-    pathList,
-    pathCreate,
-    pathUpdate,
-    pathDelete,
-    configDefault,
+  return createResourceNamespace({
+    baseUrl: ({ namespace }) =>
+      `/apis/apps/v1/namespaces/${namespace}/deployments`,
+    pathList: () => `/apis/apps/v1/deployments`,
+    configKey: "deployment",
+    apiVersion: "apps/v1",
+    kind: "Deployment",
+    cannotBeDeleted: ({ name }) => name.startsWith("default"),
     isUpByIdFactory,
     isDownByIdFactory,
-  });
+  })({ spec, config });
 };
