@@ -105,9 +105,9 @@ exports.AwsDistribution = ({ spec, config }) => {
       logger.debug(`getById result: ${tos(result)}`);
     }),
   ]);
-
+  const isInstanceUp = eq(get("Distribution.Status"), "Deployed");
   const isUpById = isUpByIdCore({
-    isInstanceUp: eq(get("Distribution.Status"), "Deployed"),
+    isInstanceUp,
     getById,
   });
 
@@ -278,9 +278,11 @@ exports.AwsDistribution = ({ spec, config }) => {
   const onDeployed = ({ resultCreate, lives }) =>
     pipe([
       tap(() => {
-        logger.debug(`onDeployed ${tos({ resultCreate, lives })}`);
+        logger.debug(`onDeployed ${tos({ resultCreate })}`);
+        assert(resultCreate);
+        assert(Array.isArray(lives));
       }),
-      () => find(eq(get("type"), RESOURCE_TYPE))(lives.results),
+      () => find(eq(get("type"), RESOURCE_TYPE))(lives),
       get("results.items"),
       tap((distributions) => {
         logger.info(`onDeployed ${tos({ distributions })}`);
@@ -323,6 +325,7 @@ exports.AwsDistribution = ({ spec, config }) => {
   return {
     type: RESOURCE_TYPE,
     spec,
+    isInstanceUp,
     isUpById,
     isDownById,
     findId,

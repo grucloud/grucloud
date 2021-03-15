@@ -52,7 +52,7 @@ exports.K8sUtils = ({ config }) => {
         logger.debug(`#pods ${data.length}`);
       }),
     ])();
-
+  //TODO relace with isInstanceUp
   // is up if the first pod is in the Running phase
   const isUpByPod = () => ({ live: { metadata } }) =>
     pipe([

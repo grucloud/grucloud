@@ -16,6 +16,7 @@ const fnSpecs = (config) => {
   const { location, managedByKey, managedByValue, stageTagKey, stage } = config;
   const subscriptionId = process.env.SUBSCRIPTION_ID;
 
+  //TODO move isInstanceUp and  isUpByIdFactory in AzClient
   const getStateName = (instance) => {
     const { provisioningState } = instance.properties;
     assert(provisioningState);
@@ -55,6 +56,7 @@ const fnSpecs = (config) => {
           pathSuffix: () => "",
           queryParameters: () => "?api-version=2019-10-01",
           isUpByIdFactory,
+          isInstanceUp,
           config,
           configDefault: ({ properties }) =>
             defaultsDeep({
@@ -83,6 +85,7 @@ const fnSpecs = (config) => {
           pathSuffixList: () => `/providers/Microsoft.Network/virtualNetworks`,
           queryParameters: () => "?api-version=2020-05-01",
           isUpByIdFactory,
+          isInstanceUp,
           config,
           configDefault: ({ properties }) =>
             defaultsDeep({
@@ -111,6 +114,7 @@ const fnSpecs = (config) => {
             `/providers/Microsoft.Network/networkSecurityGroups`,
           queryParameters: () => "?api-version=2020-05-01",
           isUpByIdFactory,
+          isInstanceUp,
           config,
           configDefault: ({ properties }) =>
             defaultsDeep({
@@ -140,6 +144,7 @@ const fnSpecs = (config) => {
             `/providers/Microsoft.Network/publicIPAddresses`,
           queryParameters: () => "?api-version=2020-05-01",
           isUpByIdFactory,
+          isInstanceUp,
           config,
           configDefault: ({ properties, dependencies }) => {
             return defaultsDeep({
@@ -165,7 +170,6 @@ const fnSpecs = (config) => {
       Client: ({ spec }) =>
         AzClient({
           spec,
-
           pathBase: `/subscriptions/${subscriptionId}`,
           pathSuffix: ({ dependencies: { resourceGroup } }) => {
             assert(resourceGroup, "missing resourceGroup dependency");
@@ -174,6 +178,7 @@ const fnSpecs = (config) => {
           pathSuffixList: () =>
             `/providers/Microsoft.Network/networkInterfaces`,
           queryParameters: () => "?api-version=2020-05-01",
+          isInstanceUp,
           config,
           configDefault: async ({ properties, dependencies }) => {
             const {
@@ -264,6 +269,7 @@ const fnSpecs = (config) => {
           pathSuffixList: () => `/providers/Microsoft.Compute/virtualMachines`,
           queryParameters: () => "?api-version=2019-12-01",
           isUpByIdFactory,
+          isInstanceUp,
           config,
           configDefault: ({ properties, dependencies }) => {
             const { networkInterface } = dependencies;

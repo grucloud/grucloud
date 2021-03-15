@@ -1,5 +1,7 @@
 const assert = require("assert");
-const { get } = require("rubico");
+const { get, pipe } = require("rubico");
+const { first } = require("rubico/x");
+
 const { AwsProvider } = require("@grucloud/core");
 const { K8sProvider } = require("@grucloud/core");
 
@@ -37,7 +39,7 @@ const createAwsStack = async ({ config }) => {
   return {
     provider,
     resources: { rolePod },
-    isProviderUp: () => rolePod.getLive(),
+    isProviderUp: () => true,
   };
 };
 
@@ -47,7 +49,8 @@ const createK8sStack = async ({
   dependencies,
 }) => {
   const provider = K8sProvider({ config, dependencies });
-
+  const { ui } = config;
+  assert(ui);
   assert(config.namespaceName);
   assert(rolePod);
 
@@ -70,11 +73,48 @@ const createK8sStack = async ({
     }),
   });
 
+  const ingress = await provider.makeIngress({
+    name: "ingress",
+    dependencies: {
+      namespace,
+    },
+    properties: () => ({
+      metadata: {
+        annotations: {
+          "nginx.ingress.kubernetes.io/use-regex": "true",
+        },
+      },
+      spec: {
+        rules: [
+          {
+            http: {
+              paths: [
+                {
+                  path: "/.*",
+                  pathType: "Prefix",
+                  backend: {
+                    service: {
+                      name: ui.serviceName,
+                      port: {
+                        number: ui.port,
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    }),
+  });
+
   return {
     provider,
     resources: {
       namespace,
       serviceAccount,
+      ingress,
     },
   };
 };
@@ -86,5 +126,55 @@ exports.createStack = async ({ config }) => {
     resources: awsStack.resources,
     dependencies: { aws: awsStack.provider },
   });
+
+  const { domainName } = config;
+  assert(domainName);
+
+  const hostedZone = await awsStack.provider.makeHostedZone({
+    name: `${domainName}.`,
+  });
+  const { ingress } = k8sStack.resources;
+
+  const loadBalancerRecord = await awsStack.provider.makeRoute53Record({
+    name: `record-alias-load-balancer-${domainName}.`,
+    dependencies: { hostedZone, ingress },
+    properties: ({ dependencies: { ingress } }) => {
+      const loadBalancer = pipe([
+        get("live.status.loadBalancer.ingress"),
+        first,
+      ])(ingress);
+      if (!loadBalancer) {
+        return {
+          message: "loadBalancer not up yet",
+          Type: "A",
+          Name: `${domainName}.`,
+        };
+      }
+      const { hostname, ip } = loadBalancer;
+      assert(hostname || ip);
+      if (hostname) {
+        return {
+          Name: `${domainName}.`,
+          Type: "A",
+          AliasTarget: {
+            HostedZoneId: "Z2FDTNDATAQYW2",
+            DNSName: hostname,
+            EvaluateTargetHealth: false,
+          },
+        };
+      }
+      return {
+        Name: `${domainName}.`,
+        ResourceRecords: [
+          {
+            Value: ip,
+          },
+        ],
+        TTL: 300,
+        Type: "A",
+      };
+    },
+  });
+
   return [awsStack, k8sStack];
 };

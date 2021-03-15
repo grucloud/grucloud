@@ -54,8 +54,8 @@ exports.CloudFrontNew = (config) => () =>
 exports.Route53DomainsNew = () => () =>
   createEndpoint({ endpointName: "Route53Domains" })({ region: "us-east-1" });
 
-exports.ACMNew = () => () =>
-  createEndpoint({ endpointName: "ACM" })({ region: "us-east-1" });
+exports.ACMNew = (config) => () =>
+  createEndpoint({ endpointName: "ACM" })(config);
 
 exports.EKSNew = (config) => () =>
   createEndpoint({ endpointName: "EKS" })(config);

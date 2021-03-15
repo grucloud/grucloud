@@ -9,8 +9,8 @@ const { makeDomainName, getFiles } = require("./dumpster");
 
 const createResources = async ({ provider }) => {
   const config = provider.config();
-  const { DomainName, websiteDir, stage } = config;
-
+  const { rootDomainName, DomainName, websiteDir, stage } = config;
+  assert(rootDomainName);
   assert(DomainName);
   assert(websiteDir);
   assert(stage);
@@ -51,13 +51,14 @@ const createResources = async ({ provider }) => {
 
   const certificate = await provider.makeCertificate({
     name: `certificate-${DomainName}-${stage}`,
+    config: { region: "us-east-1" },
     properties: () => ({
       DomainName: domainName,
     }),
   });
 
   const domain = await provider.useRoute53Domain({
-    name: domainName,
+    name: rootDomainName,
   });
 
   const hostedZone = await provider.makeHostedZone({

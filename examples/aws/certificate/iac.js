@@ -21,6 +21,7 @@ const createResources = async ({ provider }) => {
 
   const certificate = await provider.makeCertificate({
     name: `certificate-${DomainName}-${stage}`,
+    config: { region: "us-east-1" },
     properties: () => ({
       DomainName: domainName,
     }),

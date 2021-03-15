@@ -5,6 +5,7 @@ const { AzureProvider } = require("@grucloud/core");
 const { ScalewayProvider } = require("@grucloud/core");
 const { MockProvider } = require("@grucloud/core");
 
+//TODO hooks are already included now
 const AwsStackEKS = require("../aws/eks/iac");
 const AwsHooksEKS = require("../aws/eks/hooks");
 

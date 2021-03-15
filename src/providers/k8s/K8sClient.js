@@ -58,6 +58,7 @@ module.exports = K8sClient = ({
   resourceKey = resourceKeyNamespace,
   displayNameResource = displayNameResourceNamespace,
   displayName = displayNameNamespace,
+  isInstanceUp,
   isUpByIdFactory = ({ getById }) => isUpByIdCore({ getById }),
   isDownByIdFactory = ({ getById }) => isDownByIdCore({ getById }),
   cannotBeDeleted = () => false,
@@ -345,5 +346,6 @@ module.exports = K8sClient = ({
     destroy,
     cannotBeDeleted,
     configDefault,
+    isInstanceUp,
   };
 };

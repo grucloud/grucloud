@@ -103,7 +103,7 @@ exports.Route53Record = ({ spec, config }) => {
   const getList = async ({ resources = [] } = {}) =>
     pipe([
       tap(() => {
-        logger.info(`getList route53 #resources ${resources.length}`);
+        logger.info(`getList route53 record #resources ${resources.length}`);
       }),
       map((resource) =>
         pipe([
@@ -112,7 +112,7 @@ exports.Route53Record = ({ spec, config }) => {
           }),
           () => getHostedZone(resource),
           tap((hostedZone) => {
-            logger.debug(`getList hostedZone ${hostedZone}`);
+            logger.debug(`getList route53 record, hostedZone: ${hostedZone}`);
           }),
           switchCase([
             isEmpty,
@@ -125,7 +125,17 @@ exports.Route53Record = ({ spec, config }) => {
                   }),
                   (ResourceRecordSets) =>
                     pipe([
-                      () => resource.resolveConfig(),
+                      () => resource.resolveConfig({ deep: false }),
+                      tap((properties) => {
+                        assert(
+                          properties.Name,
+                          "Route53Record is missing 'Name'"
+                        );
+                        assert(
+                          properties.Type,
+                          "Route53Record is missing 'Type'"
+                        );
+                      }),
                       (properties) =>
                         find(
                           findRecord({
@@ -227,6 +237,7 @@ exports.Route53Record = ({ spec, config }) => {
       tap(() => {
         assert(name);
         assert(payload);
+        assert(!payload.message);
         logger.info(
           `create record: ${name}, ${tos(payload)}, ${tos({
             hostedZone,
@@ -256,10 +267,10 @@ exports.Route53Record = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#deleteHostedZone-property
-  const destroy = async ({ id, name, resource }) =>
+  const destroy = async ({ id, name, live, resource }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy Route53Record ${tos({ name, id })}`);
+        logger.info(`destroy Route53Record ${tos({ name, id, live })}`);
         assert(!isEmpty(id), `destroy invalid id`);
         assert(name, "destroy name");
         assert(resource, "resource");
@@ -267,7 +278,7 @@ exports.Route53Record = ({ spec, config }) => {
       getHostedZone,
       (hostedZone) =>
         pipe([
-          () => resource.getLive(),
+          () => live,
           switchCase([
             not(isEmpty),
             (live) =>
@@ -377,6 +388,6 @@ exports.compareRoute53Record = async ({ target, live, dependencies }) =>
         defaultsDeep({ ResourceRecords: [] })(target)
       ),
     tap((diff) => {
-      logger.debug(`compareHostedZone diff:${tos(diff)}`);
+      logger.debug(`compareRoute53Record diff:${tos(diff)}`);
     }),
   ])();

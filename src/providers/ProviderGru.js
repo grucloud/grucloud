@@ -212,86 +212,128 @@ exports.ProviderGru = ({ stacks }) => {
       tap(() => {
         logger.info(`planQuery`);
       }),
-      () => stacks,
-      map(({ provider, isProviderUp }) => ({
-        ...runnerParams({ provider, isProviderUp, stacks }),
-        executor: ({ results }) =>
-          pipe([
-            tap(() => {
-              assert(results);
-            }),
-            () => provider.start({ onStateChange }),
-            () =>
-              provider.planQuery({
-                onStateChange,
-                lives: pluck("lives")(results),
-              }),
-          ])(),
-      })),
-      (inputs) =>
-        Lister({
-          inputs,
-          onStateChange: ({ key, result, nextState }) =>
-            pipe([
-              tap.if(
-                () => includes(nextState)(["DONE", "ERROR"]),
-                pipe([
-                  () => getProvider({ providerName: key }),
-                  (provider) => {
-                    //TODO
-                  },
-                ])
-              ),
-            ])(),
-        }),
-      tap((result) => {
-        logger.info(`planQuery result: ${tos(result)}`);
+      () => listLives({ onStateChange }),
+      tap((lives) => {
+        logger.info(`planQuery`);
+        assert(Array.isArray(lives.results));
       }),
+      (lives) =>
+        pipe([
+          () => stacks,
+          map(({ provider, isProviderUp }) => ({
+            ...runnerParams({ provider, isProviderUp, stacks }),
+            executor: ({ results }) =>
+              pipe([
+                tap(() => {
+                  assert(results);
+                }),
+                () =>
+                  provider.planQuery({
+                    onStateChange,
+                    lives: lives.results,
+                  }),
+              ])(),
+          })),
+          (inputs) =>
+            Lister({
+              inputs,
+              onStateChange: ({ key, result, nextState }) =>
+                pipe([
+                  tap.if(
+                    () => includes(nextState)(["DONE", "ERROR"]),
+                    pipe([
+                      () => getProvider({ providerName: key }),
+                      (provider) => {
+                        //TODO
+                      },
+                    ])
+                  ),
+                ])(),
+            }),
+          tap((result) => {
+            logger.info(`planQuery result: ${tos(result)}`);
+          }),
+          assign({ lives: () => lives.results }),
+        ])(),
     ])();
 
   const planApply = ({ plan, onStateChange }) =>
     pipe([
       tap(() => {
         logger.info(`planApply`);
+        assert(Array.isArray(plan.lives));
         assert(Array.isArray(plan.results));
       }),
       () => plan.results,
       filter(not(get("error"))),
-      map(
-        tryCatch(
-          (planPerProvider) =>
-            pipe([
-              () =>
-                getProvider({
-                  providerName: planPerProvider.providerName,
-                }),
-              (provider) =>
+      (results) => ({ results }),
+      assign({
+        start: pipe([
+          get("results"),
+          map(
+            tryCatch(
+              (planPerProvider) =>
                 pipe([
-                  () => provider.start({ onStateChange }),
                   () =>
-                    provider.planApply({
-                      plan: planPerProvider,
-                      onStateChange,
+                    getProvider({
+                      providerName: planPerProvider.providerName,
                     }),
-                  assign({
-                    resultHooks: () =>
-                      provider.runOnDeployed({ onStateChange }),
-                  }),
-                  assign({ error: any(get("error")) }),
-                  tap((xxx) => {
-                    assert(xxx);
-                  }),
+                  (provider) =>
+                    pipe([
+                      () => provider.start({ onStateChange }),
+                      tap((xxx) => {
+                        assert(xxx);
+                      }),
+                    ])(),
                 ])(),
-            ])(),
-          (error, { providerName }) => {
-            logger.error(`planApply ${tos(error)}`);
-            return {
-              error: convertError({ error, name: "Apply" }),
-              providerName,
-            };
-          }
-        )
-      ),
+              (error, { providerName }) => {
+                logger.error(`planApply start error ${tos(error)}`);
+                return {
+                  error: convertError({ error, name: "Apply" }),
+                  providerName,
+                };
+              }
+            )
+          ),
+        ]),
+      }),
+
+      ({ results }) =>
+        map(
+          tryCatch(
+            (planPerProvider) =>
+              pipe([
+                () =>
+                  getProvider({
+                    providerName: planPerProvider.providerName,
+                  }),
+                (provider) =>
+                  pipe([
+                    () =>
+                      provider.planApply({
+                        plan: planPerProvider,
+                        onStateChange,
+                        lives: plan.lives,
+                      }),
+                    assign({
+                      resultHooks: () =>
+                        provider.runOnDeployed({ onStateChange }),
+                    }),
+                    assign({ error: any(get("error")) }),
+                    tap((xxx) => {
+                      assert(xxx);
+                    }),
+                  ])(),
+              ])(),
+            (error, { providerName }) => {
+              logger.error(`planApply ${tos(error)}`);
+              return {
+                error: convertError({ error, name: "Apply" }),
+                providerName,
+              };
+            }
+          )
+        )(results),
       (results) => ({ error: any(get("error"))(results), results }),
       tap((result) => {
         logger.info(`planApply done`);

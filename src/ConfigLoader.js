@@ -112,7 +112,7 @@ exports.ConfigLoader = ({
   const defaultConfig = configFromDefault({ configDir });
   const stageConfig = configFromStage({ configDir, stage }) || {};
   const merged = defaultsDeep(defaultConfig)(stageConfig);
-  logger.info(`config: ${tos(merged)}`);
+  //logger.info(`config: ${tos(merged)}`);
 
   return merged;
 };

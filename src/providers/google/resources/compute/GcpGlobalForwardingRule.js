@@ -23,9 +23,11 @@ exports.GcpGlobalForwardingRule = ({ spec, config }) => {
     })(properties);
   };
 
+  const isInstanceUp = get("IPAddress");
+
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
-      isInstanceUp: get("IPAddress"),
+      isInstanceUp,
       getById,
     });
 
@@ -35,6 +37,7 @@ exports.GcpGlobalForwardingRule = ({ spec, config }) => {
     url: `/projects/${projectId(config)}/global/forwardingRules`,
     config,
     configDefault,
+    isInstanceUp,
     isUpByIdFactory,
   });
 };

@@ -26,9 +26,9 @@ const {
   forEach,
   isString,
   uniq,
+  isDeepEqual,
 } = require("rubico/x");
 const { logError, convertError } = require("./Common");
-const isDeepEqual = require("rubico/x/isDeepEqual");
 
 const STATES = {
   WAITING: "WAITING",

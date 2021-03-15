@@ -85,7 +85,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
         items: policies,
       }),
       tap(({ total }) => {
-        logger.debug(`getList #policies: ${total}`);
+        logger.info(`getList #policies: ${total}`);
       }),
     ])();
 

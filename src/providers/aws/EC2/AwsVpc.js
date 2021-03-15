@@ -83,8 +83,10 @@ exports.AwsVpc = ({ spec, config }) => {
 
   const getById = getByIdCore({ fieldIds: "VpcIds", getList });
 
+  const isInstanceUp = eq(get("State"), "available");
+
   const isUpById = isUpByIdCore({
-    isInstanceUp: eq(get("State"), "available"),
+    isInstanceUp,
     getById,
   });
 
@@ -293,6 +295,7 @@ exports.AwsVpc = ({ spec, config }) => {
     type: "Vpc",
     spec,
     findId,
+    isInstanceUp,
     isUpById,
     isDownById,
     getByName,

@@ -192,15 +192,15 @@ const fnSpecs = () => [
       apiVersion: "networking.k8s.io/v1",
       kind: "Ingress",
       cannotBeDeleted: cannotBeDeletedDefault,
-      isUpByIdFactory: ({ getById }) =>
-        isUpByIdCore({
-          isInstanceUp: pipe([
-            get("status.loadBalancer.ingress"),
-            first,
-            not(isEmpty),
-          ]),
-          getById,
+      isInstanceUp: pipe([
+        get("status"),
+        tap((status) => {
+          logger.debug(`isInstanceUp ingress status: ${tos(status)}`);
         }),
+        get("loadBalancer.ingress"),
+        first,
+        not(isEmpty),
+      ]),
     }),
     isOurMinion,
     compare,
@@ -239,11 +239,7 @@ const fnSpecs = () => [
       configKey: "persistentVolume",
       apiVersion: "v1",
       kind: "PersistentVolume",
-      isUpByIdFactory: ({ getById }) =>
-        isUpByIdCore({
-          isInstanceUp: eq(get("status.phase"), "Available"),
-          getById,
-        }),
+      isInstanceUp: eq(get("status.phase"), "Available"),
     }),
     isOurMinion,
     compare,
@@ -408,7 +404,7 @@ exports.K8sProvider = ({
 
   const start = pipe([
     tap(() => {
-      logger.info("start ");
+      logger.info("start k8s");
     }),
     () => readKubeConfig({ kubeConfigFile: config.kubeConfigFile }),
     tap((newKubeConfig) => {

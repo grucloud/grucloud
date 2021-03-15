@@ -233,6 +233,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   return {
     type: "EKSNodeGroup",
     spec,
+    isInstanceUp,
     isUpById,
     isDownById,
     findId,

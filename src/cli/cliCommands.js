@@ -304,7 +304,6 @@ const doPlanQuery = ({ commandOptions }) =>
                 })
               )(providersGru.getProviders())
             ),
-
             assign({
               resultQuery: () =>
                 providersGru.planQuery({ onStateChange, commandOptions }),
@@ -585,7 +584,7 @@ const doPlansDeploy = ({ commandOptions, programOptions, providersGru }) => (
     tap((result) =>
       saveToJson({ command: "apply", commandOptions, programOptions, result })
     ),
-    throwIfError,
+    //throwIfError,
     tap((xxx) => {
       logger.debug("doPlansDeploy");
     }),
@@ -633,12 +632,24 @@ const planApply = async ({ infra, commandOptions = {}, programOptions = {} }) =>
             assert(result);
           }),
           switchCase([
-            and([
+            or([
               pipe([
-                get("resultQuery.results"),
-                find(eq(get("errorClass"), "Dependency")),
+                get("resultDeploy.results"),
+                pluck("resultCreate"),
+                pluck("results"),
+                flatten,
+                find(eq(get("error.errorClass"), "Dependency")),
+                tap((hasError) => {
+                  logger.info(`has dependency error: ${hasError}`);
+                }),
               ]),
-              not(get("resultDeploy.error")),
+              and([
+                pipe([
+                  get("resultQuery.results"),
+                  find(eq(get("errorClass"), "Dependency")),
+                ]),
+                not(get("resultDeploy.error")),
+              ]),
             ]),
             pipe([
               tap(() => {

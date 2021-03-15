@@ -176,6 +176,7 @@ exports.isUpByIdCore = ({ isInstanceUp, getById }) => async ({
   let up = false;
   const instance = await getById({ type, name, id, deep: false, live });
   if (instance) {
+    //TODO use default isInstanceUp
     if (isInstanceUp) {
       up = isInstanceUp(instance);
     } else {
