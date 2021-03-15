@@ -28,12 +28,10 @@ exports.createIngress = async ({
         annotations: {
           "kubernetes.io/ingress.class": "alb",
           "alb.ingress.kubernetes.io/scheme": "internet-facing",
-          /*"alb.ingress.kubernetes.io/listen-ports":
+          "alb.ingress.kubernetes.io/listen-ports":
             '[{"HTTPS":443}, {"HTTP":80}]',
           "alb.ingress.kubernetes.io/certificate-arn":
             certificate?.live?.CertificateArn,
-          "external-dns.alpha.kubernetes.io/hostname":
-            "dev.starhackit.grucloud.org",*/ //TODO
         },
       },
       spec: {
