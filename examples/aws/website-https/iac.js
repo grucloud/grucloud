@@ -57,7 +57,7 @@ const createResources = async ({ provider }) => {
   });
 
   const domain = await provider.useRoute53Domain({
-    name: DomainName,
+    name: domainName,
   });
 
   const hostedZone = await provider.makeHostedZone({

@@ -32,6 +32,30 @@ const {
   isDownByIdCore,
 } = require("../../Common");
 
+const formatThumbPrint = pipe([
+  get("fingerprint"),
+  (fingerprint) => fingerprint.replace(/:/g, ""),
+  (fingerprint) => fingerprint.toLowerCase(),
+]);
+
+const getLastCertificate = (certificate) => {
+  let list = new Set();
+  let certs = [];
+  do {
+    list.add(certificate);
+    certs.push(certificate);
+    logger.debug(`issuer: ${JSON.stringify(certificate.issuer)}`);
+    logger.debug(`subject: ${JSON.stringify(certificate.subject)}`);
+    logger.debug(`fingerprint: ${formatThumbPrint(certificate)}`);
+    certificate = certificate.issuerCertificate;
+  } while (
+    certificate &&
+    typeof certificate === "object" &&
+    !list.has(certificate)
+  );
+  const last = certs[certs.length - 2];
+  return last;
+};
 // https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
 const fetchThumbprint = ({ Url }) =>
   pipe([
@@ -47,14 +71,14 @@ const fetchThumbprint = ({ Url }) =>
     (tlsOptions) =>
       new Promise((resolve, reject) => {
         const tlsStream = tls.connect(tlsOptions, () => {
-          resolve(tlsStream.getPeerCertificate());
+          resolve(tlsStream.getPeerCertificate(true));
         });
       }),
     tap((peerCertificate) => {
-      logger.debug(`peerCertificate ${peerCertificate}`);
+      logger.debug(`peerCertificate `);
     }),
-    get("fingerprint"),
-    (fingerprint) => fingerprint.replace(/:/g, ""),
+    getLastCertificate,
+    formatThumbPrint,
     tap((fingerprint) => {
       logger.debug(`fingerprint ${fingerprint}`);
     }),

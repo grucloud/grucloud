@@ -78,5 +78,12 @@ describe("MockProviderMulti", async function () {
       const mapProvider = groupBy("providerName")(result.result.results);
       assert.equal(mapProvider.size, 2);
     }
+    {
+      const result = await cliCommands.planDestroy({
+        infra,
+        commandOptions: { force: true },
+      });
+      assert(!result.error);
+    }
   });
 });

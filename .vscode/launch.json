@@ -4,6 +4,16 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "k8s manifest 2 code",
+      "program": "${workspaceFolder}/tools/k8s-manifest2code.js",
+      "cwd": "${workspaceFolder}/examples/k8s/cert-manager",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["-i", "cert-manager.yaml"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Mock Server",
       "program": "${workspaceFolder}/src/mockServer/MockServerRun",
       "cwd": "${workspaceFolder}/",
@@ -49,6 +59,76 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["--infra", "MockStack.js", "destroy"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "K8s AWS Load Balancer List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/aws-load-balancer",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["list"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "K8s AWS Load Balancer plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/aws-load-balancer",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "K8s AWS Load Balancer Apply",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/aws-load-balancer",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["apply", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "K8s AWS Load Balancer Destroy",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/aws-load-balancer",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["destroy", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "K8s AWS Load Balancer Destroy only K8s",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/aws-load-balancer",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["destroy", "-f", "-p", "k8s"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "K8s Cert Manager Apply",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/cert-manager",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["apply", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "K8s Cert Manager Destroy",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/cert-manager",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["destroy", "-f"]
     },
     {
       "type": "node",
@@ -99,6 +179,16 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["list"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "K8s EKS Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/starhackit/aws",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["plan"]
     },
     {
       "type": "node",

@@ -142,6 +142,7 @@ const displayResourcePerType = ({
   )(plans);
 
 exports.displayPlanSummary = pipe([
+  filter(not(get("error"))),
   map(({ providerName, resultCreate, resultDestroy }) =>
     pipe([
       tap(() => {
@@ -275,27 +276,11 @@ const tablePlanPerType = {
     get("action"),
     switchCase([
       eq(get("action"), "UPDATE"),
-      ({ target, live }) => {
+      ({ target, live, diff }) => {
         assert(target);
         assert(live);
-        const table = new Table({
-          style: { head: [], border: [] },
-        });
-        table.push([
-          {
-            content: colors.yellow(`NEW`),
-          },
-          {
-            content: YAML.stringify(target),
-          },
-          {
-            content: colors.yellow(`LIVE`),
-          },
-          {
-            content: YAML.stringify(live),
-          },
-        ]);
-        return table.toString();
+        assert(diff);
+        return YAML.stringify(diff);
       },
       eq(get("action"), "CREATE"),
       ({ target }) => YAML.stringify(target),
@@ -396,7 +381,17 @@ const tablePerTypeDefault = {
 const displayLiveItem = ({ table, resource, tableDefinitions }) => {
   assert(resource);
   assert(tableDefinitions);
-  table.push(tableDefinitions.fields.map((field) => field(resource)));
+  switchCase([
+    () => resource.error,
+    () =>
+      table.push([
+        {
+          colSpan: 3,
+          content: colors.red(YAML.stringify(resource)),
+        },
+      ]),
+    () => table.push(tableDefinitions.fields.map((field) => field(resource))),
+  ])();
 };
 
 const displayTablePerType = ({
@@ -416,33 +411,38 @@ const displayTablePerType = ({
     style: { head: [], border: [] },
   });
 
-  table.push([
-    {
-      colSpan: 3,
-      content: colors.yellow(
-        `${resources.length} ${type} from ${providerName}`
-      ),
-    },
-  ]);
-
-  table.push(tableDefinitions.columns.map((item) => colors.red(item)));
-
-  error &&
-    table.push([
-      {
-        colSpan: 3,
-        content: colors.red(
-          `Error: ${error.name}: code ${error.code}, message: ${error.message}\n${error.stack}`
+  pipe([
+    () =>
+      table.push([
+        {
+          colSpan: 3,
+          content: colors.yellow(
+            `${resources.length} ${type} from ${providerName}`
+          ),
+        },
+      ]),
+    () => table.push(tableDefinitions.columns.map((item) => colors.red(item))),
+    switchCase([
+      () => error,
+      () =>
+        table.push([
+          {
+            colSpan: 3,
+            content: colors.red(YAML.stringify(error)),
+          },
+        ]),
+      pipe([
+        () => resources,
+        forEach((resource) =>
+          displayLiveItem({ table, resource, tableDefinitions })
         ),
-      },
-    ]);
-
-  resources.forEach((resource) =>
-    displayLiveItem({ table, resource, tableDefinitions })
-  );
-
-  console.log(table.toString());
-  console.log("\n");
+      ]),
+    ]),
+    () => {
+      console.log(table.toString());
+      console.log("\n");
+    },
+  ])();
 };
 
 exports.displayLive = async ({ providerName, resources = [] }) => {

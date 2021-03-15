@@ -5,9 +5,8 @@ const { createChartRestServer } = require("./charts/rest-server");
 const { createChartPostgres } = require("./charts/postgres");
 const { createChartRedis } = require("./charts/redis");
 const hooks = require("./hooks");
-exports.createStack = async ({ config, resources, dependencies }) => {
-  const provider = K8sProvider({ config, dependencies });
 
+const createResources = async ({ provider, config }) => {
   assert(config.namespaceName);
 
   const serviceAccountName = "service-account-aws";
@@ -51,13 +50,21 @@ exports.createStack = async ({ config, resources, dependencies }) => {
   });
 
   return {
+    namespace,
+    serviceAccount,
+    restServerChart,
+    webServerChart,
+  };
+};
+
+exports.createResources = createResources;
+
+exports.createStack = async ({ config, dependencies }) => {
+  const provider = K8sProvider({ config, dependencies });
+
+  return {
     provider,
-    resources: {
-      namespace,
-      serviceAccount,
-      restServerChart,
-      webServerChart,
-    },
+    resources: await createResources({ provider, config }),
     hooks,
   };
 };

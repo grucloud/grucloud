@@ -1,0 +1,18 @@
+{
+  "name": "grucloud-k8s-cert-manager",
+  "version": "1.0.0",
+  "description": "grucloud module for the k8s cert-manager",
+  "main": "index.js",
+  "scripts": {
+    "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
+    "link": "npm link @grucloud/core",
+    "gen-code": "node ../../../tools/k8s-manifest2code.js --input cert-manager.yaml",
+    "download-manifest": "curl -L -o cert-manager.yaml https://github.com/jetstack/cert-manager/releases/download/v1.0.2/cert-manager.yaml"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "*",
+    "rubico": "^1.6.21"
+  }
+}

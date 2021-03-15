@@ -156,6 +156,7 @@ const ResourceMaker = ({
           resolveConfig,
           deep,
           resources: provider.getResourcesByType({ type }),
+          properties,
         }),
       tap((live) => {
         logger.debug(`getLive ${toString()} result: ${tos(live)}`);
@@ -164,10 +165,14 @@ const ResourceMaker = ({
 
   const findLive = ({ lives }) =>
     pipe([
+      tap(() => {
+        assert(Array.isArray(lives));
+      }),
       () => lives,
+      find(eq(get("providerName"), provider.name)),
       get("results"),
       tap((results) => {
-        logger.debug(`findLive ${results}`);
+        assert(Array.isArray(results));
       }),
       filter(not(get("error"))),
       find(eq(get("type"), type)),
@@ -218,7 +223,12 @@ const ResourceMaker = ({
     });
     logger.info(`planUpdate diff ${tos(diff)}`);
     // TODO unify
-    if (diff.needUpdate || !isEmpty(diff.added) || !isEmpty(diff.updated)) {
+    if (
+      diff.needUpdate ||
+      !isEmpty(diff.added) ||
+      !isEmpty(diff.updated) ||
+      !isEmpty(diff.deleted)
+    ) {
       return [
         {
           action: "UPDATE",
@@ -466,12 +476,8 @@ const ResourceMaker = ({
   const planUpsert = async ({ resource, lives }) =>
     pipe([
       tap(() => {
-        assert(lives);
-        logger.info(
-          `planUpsert resource: ${resource.toString()}, #lives: ${
-            lives.results.length
-          }`
-        );
+        assert(Array.isArray(lives));
+        logger.info(`planUpsert resource: ${resource.toString()}`);
       }),
       fork({
         live: () => resource.findLive({ lives }),
@@ -1282,6 +1288,12 @@ function CoreProvider({
         tap(() => {
           logger.debug(`start`);
         }),
+        tap(() =>
+          onStateChange({
+            context: contextFromProviderInit({ providerName }),
+            nextState: "RUNNING",
+          })
+        ),
         () => start(),
         tap(() =>
           onStateChange({
@@ -1311,7 +1323,7 @@ function CoreProvider({
   const filterClient = async ({
     result,
     client,
-    options: { our, name, id, canBeDeleted, provider: providerName },
+    options: { our, name, id, canBeDeleted, provider: providerNames },
     lives,
   }) =>
     switchCase([
@@ -1343,7 +1355,9 @@ function CoreProvider({
           id: client.findId(live),
           managedByUs: client.spec.isOurMinion({
             resource: live,
-            lives,
+            lives: find(eq(get("providerName"), client.spec.providerName))(
+              lives
+            ),
             //TODO remove resourceNames
 
             resourceNames: resourceNames(),
@@ -1366,7 +1380,9 @@ function CoreProvider({
         filter((item) => (name ? item.name === name : true)),
         filter((item) => (id ? item.id === id : true)),
         filter((item) =>
-          providerName ? item.providerName === providerName : true
+          providerName && !isEmpty(providerNames)
+            ? includes(item.providerName)(providerNames)
+            : true
         ),
         filter((item) => (canBeDeleted ? !item.cannotBeDeleted : true)),
         (resources) => ({
@@ -1374,8 +1390,8 @@ function CoreProvider({
           resources,
           providerName: client.providerName,
         }),
-        tap((x) => {
-          assert(x);
+        tap((xxx) => {
+          assert(xxx);
         }),
       ]),
     ])(result);
@@ -1385,12 +1401,14 @@ function CoreProvider({
     options = {},
     title = TitleListing,
     readWrite = false,
+    lives,
   } = {}) =>
     pipe([
       () => getClients(),
       tap((clients) => {
         logger.info(
           `listLives #clients: ${clients.length}, ${JSON.stringify({
+            providerName,
             title,
             readWrite,
             options,
@@ -1415,7 +1433,7 @@ function CoreProvider({
           (dependOn) => `${client.spec.providerName}::${dependOn}`
         )(client.spec.listDependsOn),
 
-        executor: ({ lives }) =>
+        executor: ({ results }) =>
           pipe([
             () =>
               client.getList({
@@ -1429,7 +1447,7 @@ function CoreProvider({
                 client,
                 onStateChange,
                 options,
-                lives,
+                lives: results,
               }),
           ])(),
       })),
@@ -1548,10 +1566,14 @@ function CoreProvider({
         logger.info(
           `planFindDestroy ${JSON.stringify({ options, direction })}`
         );
-        assert(lives);
-        assert(Array.isArray(lives.results));
+        assert(Array.isArray(lives));
       }),
-      () => lives.results,
+      () => lives,
+      find(eq(get("providerName"), providerName)),
+      tap((livesPerProvider) => {
+        assert(livesPerProvider);
+      }),
+      get("results"),
       filter(not(get("error"))),
       flatMap(({ type, resources }) =>
         pipe([
@@ -1604,8 +1626,11 @@ function CoreProvider({
             readWrite: true,
           }),
       }),
+      tap((result) => {
+        assert(result);
+      }),
       assign({
-        plans: ({ lives }) => planFindDestroy({ options, lives }),
+        plans: ({ lives }) => planFindDestroy({ options, lives: [lives] }),
       }),
       assign({ error: any(get("error")) }),
       tap((result) => {
@@ -1617,7 +1642,7 @@ function CoreProvider({
     pipe([
       tap(() => {
         logger.info(`planUpsert`);
-        assert(lives);
+        assert(Array.isArray(lives));
       }),
       tap(() =>
         onStateChange({
@@ -1692,18 +1717,19 @@ function CoreProvider({
         })
       ),
       tap((result) => {
-        logger.info(`planUpsert: result: ${tos(result)}`);
+        logger.info(`planUpsert done`);
       }),
     ])();
 
   const planQuery = async ({
     onStateChange = identity,
     commandOptions = {},
-    lives, //TODO
+    lives: livesAll,
   } = {}) =>
     pipe([
       tap(() => {
         logger.info(`planQuery begins ${providerName}`);
+        assert(Array.isArray(livesAll));
       }),
       providerRunning({ onStateChange, providerName }),
       () => ({ providerName }),
@@ -1712,6 +1738,7 @@ function CoreProvider({
           listLives({
             onStateChange,
             options: commandOptions,
+            lives: livesAll,
           }),
       }),
       assign({
@@ -1719,14 +1746,14 @@ function CoreProvider({
           planFindDestroy({
             direction: PlanDirection.UP,
             options: commandOptions,
-            lives,
+            lives: [...livesAll, lives],
           }),
       }),
       assign({
         resultCreate: ({ lives }) =>
           planUpsert({
             onStateChange,
-            lives,
+            lives: [...livesAll, lives],
           }),
       }),
       tap((result) => {
@@ -1743,7 +1770,7 @@ function CoreProvider({
         })
       ),
       tap((result) => {
-        logger.debug(`planQuery result ${providerName}: ${tos(result)}`);
+        //logger.debug(`planQuery result ${providerName}: ${tos(result)}`);
       }),
     ])({});
 
@@ -1751,7 +1778,7 @@ function CoreProvider({
     pipe([
       tap(() => {
         assert(plan);
-        logger.info(`Apply Plan ${tos(plan)}`);
+        logger.info(`Apply Plan ${providerName}`);
       }),
       providerRunning({ onStateChange, providerName }),
       assign({
@@ -1798,7 +1825,7 @@ function CoreProvider({
         })(getClients())
       ),
       tap((result) => {
-        logger.info(`Apply result: ${tos(result)}`);
+        logger.info(`Apply done`);
       }),
     ])();
 
@@ -1818,7 +1845,7 @@ function CoreProvider({
       });
     };
   };
-  const upsertResources = async ({ plans, onStateChange, title }) => {
+  const upsertResources = async ({ plans, onStateChange, title, lives }) => {
     assert(onStateChange);
     assert(title);
     assert(Array.isArray(plans));
@@ -1828,6 +1855,7 @@ function CoreProvider({
       const engine = getResource(resource);
       assert(engine, `Cannot find resource ${tos(resource)}`);
       const resolvedDependencies = await engine.resolveDependencies({
+        lives,
         dependenciesMustBeUp: true,
       });
       const input = await engine.resolveConfig({
@@ -2040,7 +2068,7 @@ function CoreProvider({
       }),
       assign({ error: any(get("error")) }),
       tap((result) => {
-        logger.info(`destroyAll ${tos(result)}`);
+        //logger.info(`destroyAll ${tos(result)}`);
       }),
     ])({});
 

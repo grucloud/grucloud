@@ -86,7 +86,7 @@ exports.AwsCertificate = ({ spec, config }) => {
         pipe([
           () => acm().describeCertificate({ CertificateArn: id }),
           get("Certificate"),
-        ]),
+        ])(),
       switchCase([
         eq(get("code"), "ResourceNotFoundException"),
         (error, { id }) => {

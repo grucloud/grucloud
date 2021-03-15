@@ -29,7 +29,7 @@ module.exports = AxiosMaker = ({
       };
     },
     function (error) {
-      logger.debug(`axios request error ${error}`);
+      logger.debug(`axios request error ${error}, ${error.config.url}`);
       return Promise.reject(error);
     }
   );

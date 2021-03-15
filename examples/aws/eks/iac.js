@@ -1,10 +1,14 @@
+const assert = require("assert");
 const { AwsProvider } = require("@grucloud/core");
-const { get } = require("rubico");
+const { get, map, pipe, assign } = require("rubico");
+const { pluck } = require("rubico/x");
+
 const loadBalancerPolicy = require("./load-balancer-policy.json");
 const podPolicy = require("./pod-policy.json");
 const hooks = require("./hooks");
 
 const createResources = async ({ provider, resources: {} }) => {
+  const config = provider.config();
   const clusterName = "cluster";
   const iamOpenIdConnectProviderName = "oicp-eks";
 
@@ -12,9 +16,17 @@ const createResources = async ({ provider, resources: {} }) => {
     name: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
   });
 
+  const iamPolicyEKSVPCResourceController = await provider.useIamPolicyReadOnly(
+    {
+      name: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
+    }
+  );
+
   const roleCluster = await provider.makeIamRole({
     name: "role-cluster",
-    dependencies: { policies: [iamPolicyEKSCluster] },
+    dependencies: {
+      policies: [iamPolicyEKSCluster, iamPolicyEKSVPCResourceController],
+    },
     properties: () => ({
       AssumeRolePolicyDocument: {
         Version: "2012-10-17",
@@ -69,11 +81,12 @@ const createResources = async ({ provider, resources: {} }) => {
       },
     }),
   });
+
   const vpc = await provider.makeVpc({
     name: "vpc-eks",
     properties: () => ({
       DnsHostnames: true,
-      CidrBlock: "10.1.0.0/16",
+      CidrBlock: config.vpc.CidrBlock,
       Tags: [{ Key: `kubernetes.io/cluster/${clusterName}`, Value: "shared" }],
     }),
   });
@@ -83,60 +96,95 @@ const createResources = async ({ provider, resources: {} }) => {
     dependencies: { vpc },
   });
 
-  const subnetPublic = await provider.makeSubnet({
-    name: "subnet-public",
-    dependencies: { vpc },
-    properties: () => ({
-      CidrBlock: "10.1.0.1/24",
-      AvailabilityZone: "eu-west-2a",
-      Tags: [
-        { Key: `kubernetes.io/cluster/${clusterName}`, Value: "shared" },
-        { Key: "kubernetes.io/role/elb", Value: "1" },
-      ],
-    }),
-  });
-
-  const subnetPrivate = await provider.makeSubnet({
-    name: "subnet-private",
-    dependencies: { vpc },
-    properties: () => ({
-      CidrBlock: "10.1.1.1/24",
-      AvailabilityZone: "eu-west-2b",
-      Tags: [
-        { Key: `kubernetes.io/cluster/${clusterName}`, Value: "shared" },
-        { Key: "kubernetes.io/role/internal-elb", Value: "1" },
-      ],
-    }),
-  });
-
-  const routeTablePublic = await provider.makeRouteTables({
-    name: "route-table-public",
-    dependencies: { vpc, subnet: subnetPublic },
-  });
-
-  const routeIg = await provider.makeRoute({
-    name: "route-ig-eks",
-    dependencies: { routeTable: routeTablePublic, ig },
-  });
-
   const eip = await provider.makeElasticIpAddress({
     name: "ip-eks",
   });
 
+  //Public subnets
+  assert(config.vpc.subnetsPublic);
+
+  const publics = await map(({ name, CidrBlock, AvailabilityZone }) =>
+    pipe([
+      assign({
+        subnet: () =>
+          provider.makeSubnet({
+            name,
+            dependencies: { vpc },
+            properties: () => ({
+              CidrBlock,
+              AvailabilityZone,
+              Tags: [
+                {
+                  Key: `kubernetes.io/cluster/${clusterName}`,
+                  Value: "shared",
+                },
+                { Key: "kubernetes.io/role/elb", Value: "1" },
+              ],
+            }),
+          }),
+      }),
+      assign({
+        routeTable: ({ subnet }) =>
+          provider.makeRouteTables({
+            name: `route-table-${subnet.name}`,
+            dependencies: { vpc, subnet },
+          }),
+      }),
+      assign({
+        routeIg: ({ routeTable }) =>
+          provider.makeRoute({
+            name: `route-igw-${routeTable.name}`,
+            dependencies: { routeTable, ig },
+          }),
+      }),
+    ])()
+  )(config.vpc.subnetsPublic);
+
+  const subnet = publics[0].subnet;
   const natGateway = await provider.makeNatGateway({
-    name: "nat-gateway-eks",
-    dependencies: { subnet: subnetPublic, eip },
+    name: `nat-gateway-${subnet.name}`,
+    dependencies: { subnet, eip },
   });
 
-  const routeTablePrivate = await provider.makeRouteTables({
-    name: "route-table-private",
-    dependencies: { vpc, subnet: subnetPrivate },
-  });
+  //Private
+  assert(config.vpc.subnetsPrivate);
 
-  const routeNat = await provider.makeRoute({
-    name: "route-nat",
-    dependencies: { routeTable: routeTablePrivate, natGateway },
-  });
+  const privates = await map(({ name, CidrBlock, AvailabilityZone }) =>
+    pipe([
+      assign({
+        subnet: () =>
+          provider.makeSubnet({
+            name,
+            dependencies: { vpc },
+            properties: () => ({
+              CidrBlock,
+              AvailabilityZone,
+              Tags: [
+                {
+                  Key: `kubernetes.io/cluster/${clusterName}`,
+                  Value: "shared",
+                },
+                { Key: "kubernetes.io/role/internal-elb", Value: "1" },
+              ],
+            }),
+          }),
+      }),
+      assign({
+        routeTable: ({ subnet }) =>
+          provider.makeRouteTables({
+            name: `route-table-${subnet.name}`,
+            dependencies: { vpc, subnet },
+          }),
+      }),
+      assign({
+        routeNat: ({ routeTable }) =>
+          provider.makeRoute({
+            name: `route-nat-${routeTable.name}`,
+            dependencies: { routeTable, natGateway },
+          }),
+      }),
+    ])()
+  )(config.vpc.subnetsPrivate);
 
   const securityGroupCluster = await provider.makeSecurityGroup({
     name: "security-group-cluster",
@@ -238,16 +286,16 @@ const createResources = async ({ provider, resources: {} }) => {
   const cluster = await provider.makeEKSCluster({
     name: clusterName,
     dependencies: {
-      subnets: [subnetPublic, subnetPrivate],
+      subnets: [...pluck("subnet")(publics), ...pluck("subnet")(privates)],
       securityGroups: [securityGroupCluster, securityGroupNodes],
       role: roleCluster,
     },
   });
 
   const nodeGroup = await provider.makeEKSNodeGroup({
-    name: "node-group",
+    name: "node-group-public",
     dependencies: {
-      subnets: [subnetPrivate],
+      subnets: pluck("subnet")(privates),
       cluster,
       role: roleNodeGroup,
     },
@@ -332,6 +380,57 @@ const createResources = async ({ provider, resources: {} }) => {
       },
     }),
   });
+  assert(config.rootDomainName);
+  assert(config.domainName);
+
+  const domain = await provider.useRoute53Domain({
+    name: config.rootDomainName,
+  });
+
+  const makeDomainName = ({ domainName, stage }) =>
+    `${stage == "production" ? "" : `${stage}.`}${domainName}`;
+
+  const domainName = makeDomainName({
+    domainName: config.domainName,
+    stage: config.stage,
+  });
+
+  const certificate = await provider.makeCertificate({
+    name: domainName,
+  });
+
+  const hostedZone = await provider.makeHostedZone({
+    name: `${domainName}.`,
+    dependencies: { domain },
+  });
+
+  const certificateRecordValidation = await provider.makeRoute53Record({
+    name: `certificate-validation-${domainName}.`,
+    dependencies: { hostedZone, certificate },
+    properties: ({ dependencies: { certificate } }) => {
+      const domainValidationOption =
+        certificate?.live?.DomainValidationOptions[0];
+      const record = domainValidationOption?.ResourceRecord;
+      if (domainValidationOption) {
+        assert(
+          record,
+          `missing record in DomainValidationOptions, certificate ${JSON.stringify(
+            certificate.live
+          )}`
+        );
+      }
+      return {
+        Name: record?.Name,
+        ResourceRecords: [
+          {
+            Value: record?.Value,
+          },
+        ],
+        TTL: 300,
+        Type: "CNAME",
+      };
+    },
+  });
 
   return {
     roleCluster,
@@ -340,15 +439,14 @@ const createResources = async ({ provider, resources: {} }) => {
     rolePod,
     vpc,
     ig,
-    subnetPrivate,
-    routeTablePrivate,
-    routeIg,
-    routeTablePublic,
-    routeNat,
+    privates,
+    publics,
     securityGroupCluster,
     cluster,
     nodeGroup,
     iamOpenIdConnectProvider,
+    certificate,
+    certificateRecordValidation,
   };
 };
 

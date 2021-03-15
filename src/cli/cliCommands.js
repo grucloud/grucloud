@@ -105,7 +105,7 @@ const hasPlans = pipe([
     assert(input.results);
   }),
   get("results"),
-  filter(not(get("error"))),
+  //filter(not(get("error"))),
   find(
     or([
       pipe([get("resultCreate"), not(isEmpty)]),
@@ -325,7 +325,6 @@ const doPlanQuery = ({ commandOptions }) =>
         tap((result) => {
           assert(result);
         }),
-        filter(not(get("error"))),
         forEach(({ providerName, resultCreate, resultDestroy }) =>
           displayPlan({
             providerName,
@@ -633,7 +632,7 @@ const planApply = async ({ infra, commandOptions = {}, programOptions = {} }) =>
           tap((result) => {
             assert(result);
           }),
-          tap.if(
+          switchCase([
             and([
               pipe([
                 get("resultQuery.results"),
@@ -646,8 +645,9 @@ const planApply = async ({ infra, commandOptions = {}, programOptions = {} }) =>
                 logger.info("finishing deployment");
               }),
               () => planApply({ infra, commandOptions, programOptions }),
-            ])
-          ),
+            ]),
+            (result) => result,
+          ]),
           throwIfError,
         ])(),
     ]),
@@ -762,6 +762,7 @@ exports.planDestroy = async ({
               tap(
                 pipe([
                   () => resultQueryDestroy.results,
+                  filter(not(get("error"))),
                   map.series(({ providerName, plans }) =>
                     providersGru
                       .getProvider({ providerName })
@@ -871,10 +872,10 @@ exports.planDestroy = async ({
               pipe([
                 () => resultQueryDestroy.results,
                 switchCase([
-                  find(pipe([get("plans"), isEmpty])),
-                  processHasNoPlan,
+                  find(pipe([get("plans"), not(isEmpty)])),
                   () =>
                     processDestroyPlans({ providersGru, resultQueryDestroy }),
+                  processHasNoPlan,
                 ]),
               ])(),
           }),

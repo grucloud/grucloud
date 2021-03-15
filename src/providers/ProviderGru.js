@@ -52,7 +52,7 @@ const dependenciesTodependsOn = ({ dependencies, stacks }) =>
     }),
     () => dependencies,
     reduce((acc, deps) => [...acc, deps.name], []),
-    filter((name) => find(eq(get("provider.name")), name)(stacks)),
+    filter((name) => find(eq(get("provider.name"), name))(stacks)),
   ])();
 
 const runnerParams = ({ provider, isProviderUp, stacks }) => ({
@@ -215,10 +215,17 @@ exports.ProviderGru = ({ stacks }) => {
       () => stacks,
       map(({ provider, isProviderUp }) => ({
         ...runnerParams({ provider, isProviderUp, stacks }),
-        executor: ({ lives }) =>
+        executor: ({ results }) =>
           pipe([
+            tap(() => {
+              assert(results);
+            }),
             () => provider.start({ onStateChange }),
-            () => provider.planQuery({ onStateChange, lives }),
+            () =>
+              provider.planQuery({
+                onStateChange,
+                lives: pluck("lives")(results),
+              }),
           ])(),
       })),
       (inputs) =>
@@ -312,7 +319,7 @@ exports.ProviderGru = ({ stacks }) => {
           onStateChange: onStateChangeDefault({ onStateChange }),
         }),
       tap((result) => {
-        logger.info(`planQueryDestroy result: ${tos(result)}`);
+        logger.info(`planQueryDestroy done`);
       }),
     ])();
 
@@ -366,7 +373,7 @@ exports.ProviderGru = ({ stacks }) => {
           onStateChange: onStateChangeDefault({ onStateChange }),
         }),
       tap((result) => {
-        logger.debug(`planDestroy result: ${tos(result)}`);
+        logger.debug(`planDestroy done`);
       }),
     ])();
 

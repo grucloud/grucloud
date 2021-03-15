@@ -23,6 +23,7 @@ const {
   forEach,
   pluck,
   flatten,
+  includes,
 } = require("rubico/x");
 const { retryCall, retryCallOnError } = require("../Retry");
 
@@ -38,7 +39,6 @@ const {
 const { tos } = require("../../tos");
 
 const {
-  getByNameCore,
   isUpByIdCore,
   isDownByIdCore,
   logError,
@@ -98,7 +98,7 @@ module.exports = K8sClient = ({
       get("items"),
       map(omit(["metadata.managedFields"])),
       tap((items) => {
-        logger.debug(`filterList items ${tos(items)}`);
+        //logger.debug(`filterList items ${tos(items)}`);
       }),
       (items) => assign({ items: () => items })(data),
       tap((result) => {
@@ -109,7 +109,7 @@ module.exports = K8sClient = ({
   const getList = tryCatch(
     pipe([
       tap((params) => {
-        logger.debug(`getList k8s ${type}, params: ${tos(params)}`);
+        logger.debug(`getList k8s ${type}`);
       }),
       pathList,
       (path) => urljoin(getServerUrl(kubeConfig()), path),
@@ -117,13 +117,23 @@ module.exports = K8sClient = ({
         retryCallOnError({
           name: `getList type: ${type}, path ${fullPath}`,
           fn: () => axios().get(fullPath),
+          isExpectedException: pipe([
+            tap((ex) => {
+              logger.info(`getList  type: ${type}, ex: ${ex}`);
+            }),
+            eq(get("response.status"), 404),
+            tap((result) => {
+              logger.info(
+                `getList type: ${type} isExpectedException ${result}`
+              );
+            }),
+          ]),
           config,
         }),
-      get("data"),
+      get("data", []),
       filterList,
       tap((data) => {
-        //TODO add total ?
-        logger.info(`getList k8s ${JSON.stringify({ data })}`);
+        logger.info(`getList k8s ${type}, #items ${data.length}`);
       }),
     ]),
     (error) => {
@@ -150,7 +160,7 @@ module.exports = K8sClient = ({
           }),
         get("data"),
         tap((data) => {
-          logger.debug(`getByKey result ${name}: ${tos(data)}`);
+          //ogger.debug(`getByKey result ${name}: ${tos(data)}`);
         }),
       ]),
       switchCase([
@@ -163,12 +173,18 @@ module.exports = K8sClient = ({
       ])
     )();
 
-  const getByName = ({ name, dependencies }) =>
-    getByKey({
-      resolvePath: pathGet,
-      name,
-      namespace: getNamespace(dependencies.namespace),
-    });
+  const getByName = ({ name, dependencies, properties = ({}) => ({}) }) =>
+    pipe([
+      () => properties({ dependencies: {} }),
+      (props) =>
+        getByKey({
+          resolvePath: pathGet,
+          name,
+          namespace:
+            get("metadata.namespace")(props) ||
+            getNamespace(dependencies.namespace),
+        }),
+    ])();
 
   const getById = ({ live }) =>
     getByKey({
@@ -189,7 +205,13 @@ module.exports = K8sClient = ({
           assert(payload);
         }),
         () =>
-          pathCreate({ name, namespace: getNamespace(dependencies.namespace) }),
+          pathCreate({
+            name,
+            apiVersion: payload.apiVersion,
+            namespace:
+              payload.metadata.namespace ||
+              getNamespace(dependencies.namespace),
+          }),
         tap((path) => {
           logger.info(`create ${type}/${name}, path: ${path}`);
         }),
@@ -199,6 +221,17 @@ module.exports = K8sClient = ({
             name: `create ${type}/${name} path: ${fullPath}`,
             fn: () => axios().post(fullPath, payload),
             config: { ...config, repeatCount: 0 },
+            shouldRetryOnException: ({ error }) =>
+              pipe([
+                () => error,
+                get("response.status"),
+                (status) => includes(status)([404, 500]),
+                tap((retry) => {
+                  logger.info(
+                    `shouldRetryOnException create ${type}/${name}, status: ${error.status}, retry: ${retry}`
+                  );
+                }),
+              ])(),
           }),
         tap((result) => {
           logger.info(`created ${type}/${name}, status: ${result.status}`);
@@ -212,7 +245,7 @@ module.exports = K8sClient = ({
           })
         ),
         tap((live) => {
-          logger.debug(`created ${type}/${name}, live: ${tos(live)}`);
+          //logger.debug(`created ${type}/${name}, live: ${tos(live)}`);
         }),
       ]),
       (error) => {
@@ -230,7 +263,12 @@ module.exports = K8sClient = ({
           assert(payload);
         }),
         () =>
-          pathUpdate({ name, namespace: getNamespace(dependencies.namespace) }),
+          pathUpdate({
+            name,
+            namespace:
+              payload.metadata.namespace ||
+              getNamespace(dependencies.namespace),
+          }),
         tap((path) => {
           logger.info(`update ${type}/${name}, path: ${path}`);
         }),
@@ -258,14 +296,15 @@ module.exports = K8sClient = ({
       pipe([
         tap(() => {
           assert(!isEmpty(live), `destroy invalid live`);
-          logger.info(`destroy ${JSON.stringify({ live })}`);
         }),
         () => ({ name: findName(live), namespace: findMeta(live).namespace }),
         tap((params) => {
           logger.info(`destroy k8s ${JSON.stringify({ params })}`);
         }),
         pathDelete,
-        (path) => urljoin(getServerUrl(kubeConfig()), path),
+        //TODO check gracePeriodSeconds
+        (path) =>
+          urljoin(getServerUrl(kubeConfig()), path, "?gracePeriodSeconds=10"),
         (fullPath) =>
           retryCallOnError({
             name: `destroy type ${type}, path: ${fullPath}`,
@@ -290,14 +329,6 @@ module.exports = K8sClient = ({
       }
     )();
 
-  const cannotBeDeletedDefault = pipe([
-    get("resource.metadata"),
-    or([
-      ({ name = "" }) => name.startsWith("kube"),
-      ({ namespace = "" }) => namespace.startsWith("kube"),
-    ]),
-  ]);
-
   return {
     spec,
     displayName,
@@ -312,7 +343,7 @@ module.exports = K8sClient = ({
     create,
     update,
     destroy,
-    cannotBeDeleted: or([cannotBeDeletedDefault, cannotBeDeleted]),
+    cannotBeDeleted,
     configDefault,
   };
 };

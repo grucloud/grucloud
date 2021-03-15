@@ -40,7 +40,7 @@ exports.HookType = {
 const typeFromResources = pipe([first, get("type")]);
 exports.typeFromResources = typeFromResources;
 
-exports.planToResourcesPerType = ({ providerName, plans }) =>
+exports.planToResourcesPerType = ({ providerName, plans = [] }) =>
   pipe([
     tap(() => {
       logger.debug("planToResourcesPerType");
@@ -284,14 +284,19 @@ exports.buildTagsObject = ({ name, config }) => {
 };
 
 exports.isOurMinionObject = ({ tags, config }) => {
-  const { stage, projectName } = config;
+  const { stage, projectName, providerName, createdByProviderKey } = config;
   return pipe([
     tap(() => {
       assert(stage);
       assert(projectName);
+      assert(providerName);
     }),
     switchCase([
-      and([eq(get("projectName"), projectName), eq(get("stage"), stage)]),
+      and([
+        eq(get("projectName"), projectName),
+        eq(get("stage"), stage),
+        eq(get(createdByProviderKey), providerName),
+      ]),
       () => true,
       () => false,
     ]),

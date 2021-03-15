@@ -1,7 +1,7 @@
 const { get, not } = require("rubico");
 const { defaultsDeep, isEmpty } = require("rubico/x");
 const K8sClient = require("./K8sClient");
-const { buildTagsObject, isUpByIdCore } = require("../Common");
+const { buildTagsObject } = require("../Common");
 const {
   displayNameDefault,
   displayNameResourceDefault,
@@ -12,14 +12,19 @@ const {
 exports.createResourceNamespaceless = ({
   baseUrl,
   configKey,
-  apiVersion,
+  apiVersion: apiVersionDefault,
   kind,
   cannotBeDeleted,
   isUpByIdFactory,
 }) => ({ spec, config }) => {
+  //TODOs
+  //const getApiVersion = () =>
+  //  get(`${configKey}.apiVersion`, apiVersion)(config);
+  const apiVersion = get(`${configKey}.apiVersion`, apiVersionDefault)(config);
+
   const configDefault = async ({ name, properties, dependencies }) =>
     defaultsDeep({
-      apiVersion: get(`${configKey}.apiVersion`, apiVersion)(config),
+      apiVersion,
       kind,
       metadata: {
         name,
@@ -27,11 +32,16 @@ exports.createResourceNamespaceless = ({
       },
     })(properties);
 
-  const pathGet = ({ name }) => `${baseUrl}/${name}`;
-  const pathList = () => baseUrl;
-  const pathCreate = () => baseUrl;
-  const pathUpdate = ({ name }) => `${baseUrl}/${name}`;
-  const pathDelete = ({ name }) => `${baseUrl}/${name}`;
+  const pathGet = ({ name, apiVersion = apiVersionDefault }) =>
+    `${baseUrl({ apiVersion })}/${name}`;
+  const pathList = ({ apiVersion = apiVersionDefault }) =>
+    baseUrl({ apiVersion });
+  const pathCreate = ({ apiVersion = apiVersionDefault }) =>
+    baseUrl({ apiVersion });
+  const pathUpdate = ({ name, apiVersion = apiVersionDefault }) =>
+    `${baseUrl({ apiVersion })}/${name}`;
+  const pathDelete = ({ name, apiVersion = apiVersionDefault }) =>
+    `${baseUrl({ apiVersion })}/${name}`;
 
   return K8sClient({
     spec,
@@ -53,16 +63,17 @@ exports.createResourceNamespace = ({
   baseUrl,
   pathList,
   configKey,
-  apiVersion: apiVersionDefault,
+  apiVersion,
   kind,
   cannotBeDeleted,
   isUpByIdFactory,
   isDownByIdFactory,
 }) => ({ spec, config }) => {
-  const apiVersion = get(`${configKey}.apiVersion`, apiVersionDefault)(config);
+  const getApiVersion = () =>
+    get(`${configKey}.apiVersion`, apiVersion)(config);
   const configDefault = async ({ name, properties, dependencies }) =>
     defaultsDeep({
-      apiVersion,
+      apiVersion: getApiVersion(),
       kind,
       metadata: {
         name,
@@ -71,9 +82,11 @@ exports.createResourceNamespace = ({
       },
     })(properties);
 
-  const pathGet = ({ name, namespace }) =>
+  const pathGet = ({ name, namespace, apiVersion = getApiVersion() }) =>
     `${baseUrl({ namespace, apiVersion })}/${name}`;
-  const pathCreate = ({ namespace }) => baseUrl({ namespace, apiVersion });
+
+  const pathCreate = ({ namespace, apiVersion = getApiVersion() }) =>
+    baseUrl({ namespace, apiVersion });
 
   const pathUpdate = pathGet;
   const pathDelete = pathGet;
@@ -82,7 +95,7 @@ exports.createResourceNamespace = ({
     spec,
     config,
     pathGet,
-    pathList: () => pathList({ apiVersion }),
+    pathList: () => pathList({ apiVersion: getApiVersion() }),
     pathCreate,
     pathUpdate,
     pathDelete,

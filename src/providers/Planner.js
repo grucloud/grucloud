@@ -15,6 +15,7 @@ const {
   get,
   and,
   not,
+  pick,
 } = require("rubico");
 
 const {
@@ -27,6 +28,7 @@ const {
   uniq,
 } = require("rubico/x");
 const { logError, convertError } = require("./Common");
+const isDeepEqual = require("rubico/x/isDeepEqual");
 
 const STATES = {
   WAITING: "WAITING",
@@ -60,6 +62,15 @@ exports.mapToGraph = pipe([
   }),
 ]);
 
+const dependsOnTypeForward = (dependsOnType) =>
+  map((spec) => ({
+    providerName: spec.providerName,
+    type: spec.type,
+    dependsOn: map((type) => ({ type, providerName: spec.providerName }))(
+      spec.dependsOn
+    ),
+  }))(dependsOnType);
+
 const dependsOnTypeReverse = (dependsOnType) =>
   map((spec) => ({
     providerName: spec.providerName,
@@ -67,7 +78,7 @@ const dependsOnTypeReverse = (dependsOnType) =>
     dependsOn: pipe([
       () => dependsOnType,
       filter(({ dependsOn = [] }) => dependsOn.includes(spec.type)),
-      map(({ providerName, type }) => `${providerName}::${type}`),
+      map(pick(["providerName", "type"])),
     ])(),
   }))(dependsOnType);
 
@@ -80,17 +91,23 @@ const findDependsOnType = ({ providerName, type, plans, dependsOnType }) =>
       assert(Array.isArray(dependsOnType));
     }),
     () => dependsOnType,
-    dependsOnTypeReverse,
     find(and([eq(get("providerName"), providerName), eq(get("type"), type)])),
     tap((x) => {
       assert(x);
     }),
-    get("dependsOn"),
+    get("dependsOn", []),
     flatMap((dependOn) =>
       pipe([
+        tap((x) => {
+          assert(dependOn.providerName);
+          assert(dependOn.type);
+        }),
         filter(
-          ({ resource }) =>
-            `${resource.providerName}::${resource.type}` === dependOn
+          pipe([
+            get("resource"),
+            pick(["providerName", "type"]),
+            (resource) => isDeepEqual(resource, dependOn),
+          ])
         ),
         pluck("resource"),
       ])(plans)
@@ -129,7 +146,6 @@ const findDependsOnInstance = ({ uri, plans, dependsOnInstance }) =>
       assert(dependsOnInstance);
     }),
     () => dependsOnInstance,
-    dependsOnInstanceReverse,
     tap((xxx) => {
       assert(xxx);
     }),
@@ -168,12 +184,12 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
               providerName,
               type,
               plans,
-              dependsOnType,
+              dependsOnType: dependsOnTypeReverse(dependsOnType),
             }),
             ...findDependsOnInstance({
               uri,
               plans,
-              dependsOnInstance,
+              dependsOnInstance: dependsOnInstanceReverse(dependsOnInstance),
             }),
           ]),
         })),
@@ -184,23 +200,24 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
     // UP
     () =>
       pipe([
-        () => dependsOnInstance,
-        forEach((spec) => {
-          assert(spec.uri);
-        }),
-        map((spec) => ({
-          name: spec.name,
-          type: spec.type,
-          uri: spec.uri,
-          dependsOn: pipe([
-            () => spec.dependsOn,
-            forEach((dependOn) => {
-              assert(dependOn.uri);
+        () => plans,
+        pluck("resource"),
+        map(({ name, providerName, type, uri }) => ({
+          name,
+          uri,
+          dependsOn: uniq([
+            ...findDependsOnType({
+              providerName,
+              type,
+              plans,
+              dependsOnType: dependsOnTypeForward(dependsOnType),
             }),
-            filter((dependOn) =>
-              find(eq(get("resource.uri"), dependOn.uri))(plans)
-            ),
-          ])(),
+            ...findDependsOnInstance({
+              uri,
+              plans,
+              dependsOnInstance,
+            }),
+          ]),
         })),
         tap((graph) => {
           logger.info(`DependencyTree up: ${tos(graph)}`);

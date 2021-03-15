@@ -42,7 +42,7 @@ exports.Lister = ({ inputs, onStateChange }) => {
       tryCatch(
         pipe([
           tap(() => onStateChange({ key, meta, nextState: STATES.RUNNING })),
-          () => executor({ lives: [...resultMap.values()] }),
+          () => executor({ results: [...resultMap.values()] }),
           tap((result) =>
             onStateChange({ key, meta, result, nextState: STATES.DONE })
           ),
@@ -67,6 +67,9 @@ exports.Lister = ({ inputs, onStateChange }) => {
       filter(not(eq(get("key"), key))),
       // Find resources that depends on the one that just ended
       filter(pipe([get("dependsOn"), includes(key)])),
+      tap((results) => {
+        logger.debug(`Lister onEnd ${key}, #${results.length}`);
+      }),
       switchCase([
         () => isUp(),
         map((entry) =>
@@ -83,7 +86,7 @@ exports.Lister = ({ inputs, onStateChange }) => {
         map((entry) =>
           pipe([
             tap(() => {
-              logger.debug(`Lister`, entry);
+              logger.debug(`Lister is not up`, entry);
               assert(entry.key);
             }),
             () =>
@@ -95,6 +98,9 @@ exports.Lister = ({ inputs, onStateChange }) => {
           ])(entry)
         ),
       ]),
+      tap((result) => {
+        logger.debug(`Lister end`);
+      }),
     ])();
 
   return pipe([
