@@ -16,7 +16,6 @@ exports.createResourceNamespaceless = ({
   kind,
   cannotBeDeleted,
   isInstanceUp,
-  isUpByIdFactory,
 }) => ({ spec, config }) => {
   //TODOs
   //const getApiVersion = () =>
@@ -44,11 +43,12 @@ exports.createResourceNamespaceless = ({
   const pathDelete = ({ name, apiVersion = apiVersionDefault }) =>
     `${baseUrl({ apiVersion })}/${name}`;
 
-  const isUpByIdFactoryDefault = ({ getById }) =>
+  const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
       isInstanceUp,
       getById,
     });
+
   return K8sClient({
     spec,
     config,
@@ -63,7 +63,7 @@ exports.createResourceNamespaceless = ({
     resourceKey: resourceKeyDefault,
     cannotBeDeleted,
     isInstanceUp,
-    isUpByIdFactory: isUpByIdFactory || isUpByIdFactoryDefault,
+    isUpByIdFactory,
   });
 };
 exports.createResourceNamespace = ({
@@ -73,9 +73,7 @@ exports.createResourceNamespace = ({
   apiVersion,
   kind,
   cannotBeDeleted,
-  isUpByIdFactory,
   isInstanceUp,
-  isDownByIdFactory,
 }) => ({ spec, config }) => {
   const getApiVersion = () =>
     get(`${configKey}.apiVersion`, apiVersion)(config);
@@ -99,7 +97,7 @@ exports.createResourceNamespace = ({
   const pathUpdate = pathGet;
   const pathDelete = pathGet;
 
-  const isUpByIdFactoryDefault = ({ getById }) =>
+  const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
       isInstanceUp,
       getById,
@@ -116,8 +114,7 @@ exports.createResourceNamespace = ({
     configDefault,
     cannotBeDeleted,
     isInstanceUp,
-    isUpByIdFactory: isUpByIdFactory || isUpByIdFactoryDefault,
-    isDownByIdFactory,
+    isUpByIdFactory,
     displayName: displayNameDefault,
     displayNameResource: displayNameResourceDefault,
     resourceKey: resourceKeyDefault,
