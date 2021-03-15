@@ -350,11 +350,21 @@ const ResourceMaker = ({
         logger.error(
           `resolveDependencies ${toString()} error in resolveDependencies`
         );
+        const results = filter(get("error"))(resolvedDependencies);
 
         throw {
-          message: "error resolving dependencies",
+          message: pipe([
+            pluck("error"),
+            reduce((acc, value) => [...acc, value.message], []),
+            (messages) => messages.join("\n"),
+            tap((message) => {
+              logger.debug(
+                `resolveDependencies ${toString()}, error message: ${message}`
+              );
+            }),
+          ])(results),
           errorClass: "Dependency",
-          results: filter(get("error"))(resolvedDependencies),
+          results,
         };
       }),
       tap((result) => {
