@@ -2112,10 +2112,10 @@ function CoreProvider({
   const colorLigher = "#707070";
   const fontName = "Helvetica";
 
-  const graph = ({ options }) =>
+  const buildSubGraph = ({ options }) =>
     pipe([
       tap((xxx) => {
-        logger.debug(`graph`);
+        logger.debug(`buildGraphNode`);
       }),
       () => getTargetResources(),
       reduce(
@@ -2128,15 +2128,6 @@ function CoreProvider({
         ""
       ),
       (result) =>
-        reduce(
-          (acc, resource) =>
-            `${acc}${map(
-              (deps) =>
-                `"${resource.type}::${resource.name}" -> "${deps.type}::${deps.name}" [color="${color}"];\n`
-            )(resource.getDependencyList()).join("\n")}`,
-          result
-        )(getTargetResources()),
-      (result) =>
         `subgraph "cluster_${providerName}" {
 fontname=${fontName}
 color="${color}"
@@ -2144,6 +2135,22 @@ label=<<FONT color='${color}' POINT-SIZE="20"><B>${providerName}</B></FONT>>;
 node [shape=box fontname=${fontName} color="${color}"]
 ${result}}
 `,
+    ])();
+
+  const buildGraphAssociation = ({ options }) =>
+    pipe([
+      () => getTargetResources(),
+      reduce(
+        (acc, resource) =>
+          `${acc}${map(
+            (deps) =>
+              `"${resource.type}::${resource.name}" -> "${deps.type}::${deps.name}" [color="${color}"];\n`
+          )(resource.getDependencyList()).join("\n")}`,
+        ""
+      ),
+      tap((result) => {
+        logger.debug(`buildGraphAssociation ${result}`);
+      }),
     ])();
 
   const planQueryAndApply = async ({ onStateChange = identity } = {}) => {
@@ -2187,7 +2194,8 @@ ${result}}
     runOnDeployed,
     runOnDestroyed,
     hookAdd,
-    graph,
+    buildSubGraph,
+    buildGraphAssociation,
     info: pipe([
       () => startBase(),
       () => ({

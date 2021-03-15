@@ -469,6 +469,55 @@ exports.ProviderGru = ({ stacks }) => {
     return await planApply({ plan, onStateChange });
   };
 
+  const buildSubGraph = ({ options }) =>
+    pipe([
+      () => getProviders(),
+      map(
+        tryCatch(
+          (provider) => provider.buildSubGraph({ options }),
+          (error, provider) => {
+            return { error, provider: provider.toString() };
+          }
+        )
+      ),
+      (results) => results.join("\n"),
+      tap((result) => {
+        logger.info(`buildSubGraph ${result}`);
+      }),
+    ])();
+
+  const buildGraphAssociation = ({ options }) =>
+    pipe([
+      () => getProviders(),
+      map(
+        tryCatch(
+          (provider) => provider.buildGraphAssociation({ options }),
+          (error, provider) => {
+            return { error, provider: provider.toString() };
+          }
+        )
+      ),
+      (results) => results.join("\n"),
+      tap((result) => {
+        logger.info(`buildGraphAssociation ${result}`);
+      }),
+    ])();
+
+  const buildGraph = ({ options }) =>
+    pipe([
+      tap(() => {
+        logger.info(`buildGraph ${tos(options)}`);
+      }),
+      () => `digraph graphname {
+  rankdir=LR; 
+  ${buildSubGraph({ options })}
+  ${buildGraphAssociation({ options })}
+}`,
+      tap((result) => {
+        logger.info(`buildGraph done`);
+      }),
+    ])();
+
   return {
     start,
     listLives,
@@ -482,5 +531,6 @@ exports.ProviderGru = ({ stacks }) => {
     getProvider,
     getProviders,
     runCommand,
+    buildGraph,
   };
 };

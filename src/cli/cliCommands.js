@@ -1121,7 +1121,9 @@ exports.unInit = async ({ infra, commandOptions = {}, programOptions = {} }) =>
     DisplayAndThrow({ name: "UnInit" })
   )(infra);
 
-//TODO move to ProviderGru
+const graphOutputFileName = (commandOptions) =>
+  `${path.parse(commandOptions.file).name}.${commandOptions.type}`;
+
 exports.graph = async ({ infra, config, commandOptions = {} }) =>
   tryCatch(
     pipe([
@@ -1131,30 +1133,19 @@ exports.graph = async ({ infra, config, commandOptions = {} }) =>
         logger.debug(`graph`, config);
         assert(input.providersGru);
       }),
-      ({ providersGru }) => providersGru.getProviders(),
-      map(
-        tryCatch(
-          (provider) => provider.graph({ options: commandOptions }),
-          (error, provider) => {
-            return { error, provider: provider.toString() };
-          }
-        )
-      ),
+      ({ providersGru }) =>
+        providersGru.buildGraph({ options: commandOptions }),
       tap((result) => {
         logger.debug(`graph done`);
       }),
       // TODO add title from config.projectName
-      (results) => `digraph graphname {
-rankdir=LR;
-${results.join("\n")}
-}`,
       tap((result) => fs.writeFileSync(commandOptions.file, result)),
       tap((result) => {
         console.log(`dot file written to: ${commandOptions.file}`);
       }),
       tap((result) => {
         const { type } = commandOptions;
-        const output = `${path.parse(commandOptions.file).name}.${type}`;
+        const output = graphOutputFileName(commandOptions);
         const command = `dot  -T${type} ${commandOptions.file} -o ${output}`;
 
         const { stdout, stderr, code } = shell.exec(command, {
@@ -1169,6 +1160,11 @@ ${results.join("\n")}
           };
         }
         console.log(`output saved to: ${output}`);
+      }),
+      tap(() => {
+        shell.exec(`open ${graphOutputFileName(commandOptions)}`, {
+          silent: true,
+        });
       }),
     ]),
     DisplayAndThrow({ name: "graph" })

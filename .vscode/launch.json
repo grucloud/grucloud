@@ -173,6 +173,16 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "K8s Service Account Graph",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/service-account-role",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["graph"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "K8s EKS List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/k8s/starhackit/aws",
