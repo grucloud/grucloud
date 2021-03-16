@@ -39,6 +39,18 @@ exports.AwsIamRole = ({ spec, config }) => {
 
   const findName = get("RoleName");
   const findId = findName;
+  const listAttachedRolePolicies = pipe([
+    ({ RoleName }) =>
+      iam().listAttachedRolePolicies({
+        RoleName,
+        MaxItems: 1e3,
+      }),
+    get("AttachedPolicies"),
+    pluck("PolicyName"),
+    tap((policies) => {
+      logger.debug(`getList listAttachedRolePolicies: ${tos(policies)}`);
+    }),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listRoles-property
   const getList = async ({ params } = {}) =>
@@ -72,20 +84,7 @@ exports.AwsIamRole = ({ spec, config }) => {
               }),
               get("PolicyNames"),
             ]),
-            AttachedPolicies: pipe([
-              ({ RoleName }) =>
-                iam().listAttachedRolePolicies({
-                  RoleName,
-                  MaxItems: 1e3,
-                }),
-              get("AttachedPolicies"),
-              pluck("PolicyName"),
-              tap((policies) => {
-                logger.debug(
-                  `getList listAttachedRolePolicies: ${tos(policies)}`
-                );
-              }),
-            ]),
+            AttachedPolicies: listAttachedRolePolicies,
             InstanceProfiles: pipe([
               ({ RoleName }) =>
                 iam().listInstanceProfilesForRole({
@@ -198,6 +197,7 @@ exports.AwsIamRole = ({ spec, config }) => {
           },
         ])
       ),
+      //TODO check error
       tap.if(
         () => policies,
         () =>
@@ -209,7 +209,18 @@ exports.AwsIamRole = ({ spec, config }) => {
                   RoleName: name,
                 }),
             ])
-          )(policies)
+          )(policies),
+        () =>
+          listAttachedRolePolicies({
+            RoleName: name,
+          }),
+        tap.if(
+          (attachedRolePolicies) =>
+            attachedRolePolicies.length != policies.length,
+          () => {
+            throw Error(`attachRolePolicy fails`);
+          }
+        )
       ),
       tap((Role) => {
         logger.info(`created role ${tos({ name, Role })}`);
