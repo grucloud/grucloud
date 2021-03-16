@@ -1,4 +1,7 @@
 const assert = require("assert");
+const { pipe, get } = require("rubico");
+const { first } = require("rubico/x");
+
 const { K8sProvider } = require("@grucloud/core");
 const BaseStack = require("../base/k8sStackBase");
 const AwsLoadBalancerStack = require("../../aws-load-balancer/iac");
@@ -44,6 +47,37 @@ exports.createStack = async ({ config }) => {
       serviceRestServer: baseStackResources.restServerChart.service,
     },
   });
+  const { hostedZone } = eksStack.resources;
+  assert(hostedZone);
+
+  const loadBalancerRecord = await eksStack.provider.makeRoute53Record({
+    name: `dns-record-alias-load-balancer-${hostedZone.name}.`,
+    dependencies: { hostedZone, ingress },
+    properties: ({ dependencies }) => {
+      const loadBalancer = pipe([
+        get("live.status.loadBalancer.ingress"),
+        first,
+      ])(dependencies.ingress);
+      if (!loadBalancer) {
+        return {
+          message: "loadBalancer not up yet",
+          Type: "A",
+          Name: hostedZone.name,
+        };
+      }
+      const { hostname } = loadBalancer;
+      assert(hostname);
+      return {
+        Name: hostedZone.name,
+        Type: "A",
+        AliasTarget: {
+          HostedZoneId: "ZHURV8PSTC4K8",
+          DNSName: hostname,
+          EvaluateTargetHealth: false,
+        },
+      };
+    },
+  });
 
   return [
     eksStack,
@@ -54,6 +88,7 @@ exports.createStack = async ({ config }) => {
         awsLoadBalancerResources,
         albClusterRole,
         ingress,
+        loadBalancerRecord,
       },
     },
   ];

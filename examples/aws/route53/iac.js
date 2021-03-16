@@ -25,10 +25,10 @@ const createResources = async ({ provider }) => {
   });
 
   const recordA = await provider.makeRoute53Record({
-    name: `a.${domainName}.`,
+    name: `a.sub.${domainName}.`,
     dependencies: { hostedZone },
     properties: () => ({
-      Name: `${domainName}.`,
+      Name: `sub.${domainName}.`,
       ResourceRecords: [
         {
           Value: "192.0.2.45",

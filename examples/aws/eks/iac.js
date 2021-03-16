@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { AwsProvider } = require("@grucloud/core");
-const { get, map, pipe, assign } = require("rubico");
+const { get, map, pipe, assign, tap } = require("rubico");
 const { pluck } = require("rubico/x");
 
 const loadBalancerPolicy = require("./load-balancer-policy.json");
@@ -447,6 +447,7 @@ const createResources = async ({ provider, resources: {} }) => {
     iamOpenIdConnectProvider,
     certificate,
     certificateRecordValidation,
+    hostedZone,
   };
 };
 
@@ -459,6 +460,11 @@ exports.createStack = async ({ name = "aws", config }) => {
     provider,
     resources,
     hooks,
-    isProviderUp: () => resources.cluster.getLive(),
+    isProviderUp: pipe([
+      tap(() => {
+        assert(true);
+      }),
+      () => resources.cluster.getLive(),
+    ]),
   };
 };
