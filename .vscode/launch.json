@@ -799,6 +799,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Aws Route53 List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/route53",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["list"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Aws IAM Init",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/iam",
