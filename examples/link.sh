@@ -2,6 +2,7 @@
 (cd aws/ec2 && npm run link)
 (cd aws/ec2-vpc && npm run link)
 (cd aws/volume && npm run link)
+(cd aws/route53 && npm run link)
 (cd aws/s3 && npm run link)
 (cd aws/s3-multiple && npm run link)
 (cd aws/s3-simple && npm run link)

@@ -1,0 +1,17 @@
+{
+  "name": "grucloud-aws-route53",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "e2e": "gc d -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
+    "link": "npm link @grucloud/core",
+    "deploy:ci": "STAGE=ci gc apply -f"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "*",
+    "mime-types": "^2.1.27"
+  }
+}
