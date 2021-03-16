@@ -300,7 +300,14 @@ const ResourceMaker = ({
               () => lives,
               switchCase([
                 not(isEmpty),
-                (lives) => dependency.findLive({ lives }),
+                pipe([
+                  (lives) => dependency.findLive({ lives }),
+                  switchCase([
+                    isEmpty,
+                    () => dependency.getLive({ deep: false }),
+                    (live) => live,
+                  ]),
+                ]),
                 () => dependency.getLive({ deep: false }),
               ]),
               tap((live) => {
@@ -1887,8 +1894,7 @@ function CoreProvider({
       const engine = getResource(resource);
       assert(engine, `Cannot find resource ${tos(resource)}`);
       const resolvedDependencies = await engine.resolveDependencies({
-        //lives,
-        //TODO fix resolveDependencies where it should retrieve the live data is not in lives
+        lives,
         dependenciesMustBeUp: true,
       });
       const input = await engine.resolveConfig({
