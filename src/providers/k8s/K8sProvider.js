@@ -261,7 +261,13 @@ const fnSpecs = () => [
   },
   {
     type: "Deployment",
-    dependsOn: ["Namespace", "ConfigMap", "Secret", "ServiceAccount"],
+    dependsOn: [
+      "Namespace",
+      "ConfigMap",
+      "Secret",
+      "ServiceAccount",
+      "CustomResourceDefinition",
+    ],
     Client: ({ config, spec }) =>
       createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
