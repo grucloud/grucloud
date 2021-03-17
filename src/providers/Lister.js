@@ -123,7 +123,7 @@ exports.Lister = ({ inputs, onStateChange }) => {
       logger.debug(`Lister run: start ${x.length}/${inputs.length}`);
     }),
     tap.if(isEmpty, () => {
-      assert(false, `all resources has dependsOn, plan: ${tos({ inputs })}`);
+      //assert(false, `all resources has dependsOn, plan: ${tos({ inputs })}`);
     }),
     forEach((entry) => runItem({ entry, onEnd })),
     () => [...resultMap.values()],
