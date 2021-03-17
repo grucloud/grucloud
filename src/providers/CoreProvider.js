@@ -168,6 +168,9 @@ const ResourceMaker = ({
       tap(() => {
         assert(Array.isArray(lives));
       }),
+      forEach(({ results }) => {
+        assert(results);
+      }),
       () => lives,
       find(eq(get("providerName"), provider.name)),
       get("results"),
@@ -202,11 +205,11 @@ const ResourceMaker = ({
       ]),
       get("live"),
       tap((live) => {
-        logger.debug(`findLive ${tos({ type, live })}`);
+        logger.debug(`findLive ${tos({ type, hadLive: !!live })}`);
       }),
     ])();
 
-  const planUpdate = async ({ resource, target, live }) => {
+  const planUpdate = async ({ resource, target, live, lives }) => {
     logger.debug(
       `planUpdate resource: ${tos(resource.toJSON())}, target: ${tos(
         target
@@ -222,6 +225,7 @@ const ResourceMaker = ({
       target,
       live,
       dependencies: resource.dependencies,
+      lives,
     });
     logger.info(`planUpdate diff ${tos(diff)}`);
     // TODO unify
@@ -267,6 +271,9 @@ const ResourceMaker = ({
             dependencies
           )}, dependenciesMustBeUp: ${dependenciesMustBeUp}, has lives: ${!!lives}`
         );
+        if (!lives) {
+          assert(true);
+        }
         //assert(Array.isArray(lives));
       }),
       map(async (dependency) => {
@@ -454,12 +461,13 @@ const ResourceMaker = ({
         logger.info(`create ${tos({ resourceName, type })}`);
         logger.debug(`create ${tos({ payload })}`);
       }),
-      tap.if(
+      //TODO
+      /*tap.if(
         () => getLive({ deep: false }),
         () => {
           throw Error(`Resource ${toString()} already exists`);
         }
-      ),
+      ),*/
       () =>
         client.create({
           meta,
@@ -524,7 +532,7 @@ const ResourceMaker = ({
             providerName: resource.toJSON().providerName,
           },
         ],
-        ({ live, target }) => planUpdate({ live, target, resource }),
+        ({ live, target }) => planUpdate({ live, target, resource, lives }),
       ]),
     ])();
 
@@ -1444,7 +1452,7 @@ function CoreProvider({
     options = {},
     title = TitleListing,
     readWrite = false,
-    lives,
+    lives, //TODO
   } = {}) =>
     pipe([
       () => getClients(),
@@ -1455,6 +1463,7 @@ function CoreProvider({
             title,
             readWrite,
             options,
+            hasLives: !!lives,
           })}`
         );
       }),
@@ -1480,7 +1489,7 @@ function CoreProvider({
           pipe([
             () =>
               client.getList({
-                lives,
+                lives: [{ providerName: client.spec.providerName, results }],
                 deep: true,
                 resources: getResourcesByType({ type: client.spec.type }),
               }),
@@ -1661,6 +1670,7 @@ function CoreProvider({
         );
       }),
       () => ({ providerName }),
+      //TODO move out of planQueryDestroy
       assign({
         lives: () =>
           listLives({
@@ -1673,6 +1683,7 @@ function CoreProvider({
         assert(result);
       }),
       assign({
+        //TODO
         plans: ({ lives }) => planFindDestroy({ options, lives: [lives] }),
       }),
       assign({ error: any(get("error")) }),
@@ -1900,7 +1911,7 @@ function CoreProvider({
       const input = await engine.resolveConfig({
         live,
         resolvedDependencies,
-        deep: true, //TODO check
+        lives,
       });
       return switchCase([
         () => action === "UPDATE",

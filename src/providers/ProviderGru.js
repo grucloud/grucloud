@@ -166,10 +166,11 @@ exports.ProviderGru = ({ stacks }) => {
       () => stacks,
       map(({ provider, isProviderUp }) => ({
         ...runnerParams({ provider, isProviderUp, stacks }),
-        executor: ({ lives }) =>
+        executor: ({ results }) =>
           pipe([
             () => provider.start({ onStateChange }),
-            () => provider.listLives({ onStateChange, lives, options }),
+            () =>
+              provider.listLives({ onStateChange, lives: results, options }),
           ])(),
       })),
       (inputs) =>
@@ -349,10 +350,15 @@ exports.ProviderGru = ({ stacks }) => {
       () => stacks,
       map(({ provider, isProviderUp }) => ({
         ...runnerParams({ provider, isProviderUp, stacks }),
-        executor: ({ lives }) =>
+        executor: ({ results }) =>
           pipe([
             () => provider.start({ onStateChange }),
-            () => provider.planQueryDestroy({ onStateChange, options, lives }),
+            () =>
+              provider.planQueryDestroy({
+                onStateChange,
+                options,
+                lives: results,
+              }),
           ])(),
       })),
       (inputs) =>
@@ -385,7 +391,7 @@ exports.ProviderGru = ({ stacks }) => {
               find(eq(get("name"), providerName)),
               get("dependsOn"),
             ])(),
-            isUp: isProviderUp,
+            isUp: () => true,
             executor: ({}) =>
               pipe([
                 () => provider.start({ onStateChange }),
@@ -440,13 +446,18 @@ exports.ProviderGru = ({ stacks }) => {
       () => stacks,
       map(({ provider, isProviderUp }) => ({
         ...runnerParams({ provider, isProviderUp, stacks }),
-        executor: ({ lives }) =>
+        executor: ({ results }) =>
           pipe([
             tap(() => {
               assert(provider[functionName]);
             }),
             () => provider.start({ onStateChange }),
-            () => provider[functionName]({ onStateChange, options, lives }),
+            () =>
+              provider[functionName]({
+                onStateChange,
+                options,
+                lives: results,
+              }),
             assign({ providerName: () => provider.name }),
             tap((xxx) => {
               assert(xxx);
