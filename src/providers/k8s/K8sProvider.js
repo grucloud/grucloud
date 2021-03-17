@@ -261,7 +261,7 @@ const fnSpecs = () => [
   },
   {
     type: "Deployment",
-    dependsOn: ["Namespace", "ConfigMap", "Secret"],
+    dependsOn: ["Namespace", "ConfigMap", "Secret", "ServiceAccount"],
     Client: ({ config, spec }) =>
       createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -278,7 +278,7 @@ const fnSpecs = () => [
   },
   {
     type: "StatefulSet",
-    dependsOn: ["Namespace", "ConfigMap", "Secret"],
+    dependsOn: ["Namespace", "ConfigMap", "Secret", "ServiceAccount"],
     Client: ({ config, spec }) =>
       createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -310,7 +310,7 @@ const fnSpecs = () => [
   },
   {
     type: "Pod",
-    dependsOn: ["Namespace", "ConfigMap", "Secret"],
+    dependsOn: ["Namespace", "ConfigMap", "Secret", "ServiceAccount"],
     listDependsOn: ["ReplicaSet", "StatefulSet"],
     Client: createResourceNamespace({
       baseUrl: ({ namespace, apiVersion }) =>
@@ -424,13 +424,7 @@ exports.K8sProvider = ({
       }),
       () => manifests,
       filter(eq(get("kind"), "CustomResourceDefinition")),
-      tap((xxx) => {
-        logger.info("manifestToSpec ");
-      }),
       map(get("spec")),
-      tap((xxx) => {
-        logger.info("manifestToSpec ");
-      }),
       map(({ names, scope, versions, group }) =>
         switchCase([
           () => scope === "Namespaced",
