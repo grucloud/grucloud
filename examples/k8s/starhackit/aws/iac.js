@@ -54,19 +54,18 @@ exports.createStack = async ({ config }) => {
     name: `dns-record-alias-load-balancer-${hostedZone.name}.`,
     dependencies: { hostedZone, ingress },
     properties: ({ dependencies }) => {
-      const loadBalancer = pipe([
+      const hostname = pipe([
         get("live.status.loadBalancer.ingress"),
         first,
+        get("hostname"),
       ])(dependencies.ingress);
-      if (!loadBalancer) {
+      if (!hostname) {
         return {
           message: "loadBalancer not up yet",
           Type: "A",
           Name: hostedZone.name,
         };
       }
-      const { hostname } = loadBalancer;
-      assert(hostname);
       return {
         Name: hostedZone.name,
         Type: "A",
