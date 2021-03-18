@@ -1,6 +1,7 @@
 const assert = require("assert");
 const { GoogleProvider } = require("../GoogleProvider");
 const { ConfigLoader } = require("ConfigLoader");
+const cliCommands = require("../../../cli/cliCommands");
 
 const {
   testPlanDeploy,
@@ -26,7 +27,6 @@ describe("GcpServiceAccount", async function () {
       name: "google",
       config: config.google,
     });
-    await provider.start();
 
     serviceAccount = await provider.makeServiceAccount({
       name: serviceAccountName,
@@ -62,26 +62,19 @@ describe("GcpServiceAccount", async function () {
     const providerEmpty = GoogleProvider({
       config: config.google,
     });
-
-    await providerEmpty.start();
     {
-      const result = await providerEmpty.destroyAll({
-        options: {
-          all: false,
-          types,
-        },
+      const result = await cliCommands.planDestroy({
+        infra: { provider: providerEmpty },
+        commandOptions: { force: true, types },
       });
       assert(!result.error, "destroyAll failed");
-      //assert.equal(results.length, 0);
     }
     {
-      const { error, results } = await provider.destroyAll({
-        options: {
-          all: false,
-          types,
-        },
+      const result = await cliCommands.planDestroy({
+        infra: { provider },
+        commandOptions: { force: true, types, all: false },
       });
-      assert(!error, "destroyAll failed");
+      assert(!result.error, "destroyAll failed");
     }
   });
 });

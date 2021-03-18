@@ -3,6 +3,7 @@ const { switchCase, and } = require("rubico");
 const { isEmpty } = require("rubico/x");
 const logger = require("../logger")({ prefix: "TestUtils" });
 const { tos } = require("../tos");
+const cliCommands = require("../cli/cliCommands");
 
 const isPlanEmpty = switchCase([
   and([
@@ -30,6 +31,7 @@ const testListByName = async ({ provider, livesAll }) => {
     (resources) => resources.name
   )[0];
   assert(name);
+  //TODO
   const { results: liveByName } = await provider.listLives({
     options: {
       name,
@@ -65,6 +67,7 @@ const testListByType = async ({ provider, livesAll }) => {
 const testDestroyByName = async ({ provider, lives }) => {
   const { name } = lives.results[0].resources[0];
   assert(name);
+  //TODO
   const plans = await provider.planFindDestroy({
     lives,
     options: {
@@ -102,6 +105,7 @@ const testDestroyByType = async ({ provider, lives }) => {
 
 const testPlanDestroy = async ({ provider, types = [], full = false }) => {
   logger.debug(`testPlanDestroy ${provider.name}`);
+  const infra = { provider };
 
   if (full) {
     const lives = await provider.listLives({
@@ -117,67 +121,86 @@ const testPlanDestroy = async ({ provider, types = [], full = false }) => {
     await testDestroyByType({ provider, lives });
   }
   {
-    const { error } = await provider.destroyAll({
-      options: { types },
+    const result = await cliCommands.planDestroy({
+      infra,
+      commandOptions: { force: true, types },
     });
-    assert(!error, "testPlanDestroy destroyAll failed");
+    assert(!result.error);
   }
   {
-    const plan = await provider.planQuery();
-    assert(!isPlanEmpty(plan), "plan must no be empty after a destroy");
+    const result = await cliCommands.planQuery({
+      infra,
+      commandOptions: {},
+    });
+    assert(!result.error);
+    // assert(!isPlanEmpty(plan), "plan must not be empty after destroyAll");
   }
   {
-    const { results: lives } = await provider.listLives({
-      options: {
-        our: true,
-        types,
-      },
+    const result = await cliCommands.list({
+      infra,
+      commandOptions: { our: true, types },
     });
+    assert(!result.error);
+    //TODO check no live
+  }
 
-    assert(isEmpty(lives), tos(lives));
-    logger.debug(`testPlanDestroy ${provider.name} DONE`);
-  }
+  logger.debug(`testPlanDestroy ${provider.name} DONE`);
 };
 
 exports.testPlanDestroy = testPlanDestroy;
 
 exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
-  await provider.start();
+  const infra = { provider };
   {
-    const result = await provider.destroyAll({ options: { types } });
-    assert(!result.error, `testPlanDeploy destroyAll failed: ${tos(result)}`);
-  }
-  {
-    const { results: lives } = await provider.listLives({
-      options: { our: true, types },
+    const result = await cliCommands.planDestroy({
+      infra,
+      commandOptions: { force: true, types },
     });
-
-    assert(isEmpty(lives), `shoud be empty after destroy, lives:${tos(lives)}`);
+    assert(!result.error);
   }
   {
-    const plan = await provider.planQuery();
-    assert(!plan.error, tos(plan));
-    assert(!isPlanEmpty(plan), "plan must not be empty after destroyAll");
-    const resultApply = await provider.planApply({ plan });
-    const { error, resultCreate } = resultApply;
-    assert(resultCreate);
-    assert(!error, `planApply failed: ${tos(resultApply)}`);
-  }
-  {
-    const { results: lives } = await provider.listLives({
-      options: { our: true, types },
+    const result = await cliCommands.list({
+      infra,
+      commandOptions: { our: true, types },
     });
-
-    assert(!isEmpty(lives), `shoud not be empty after an apply`);
+    assert(!result.error);
+    //TODO check no live
   }
   {
-    const plan = await provider.planQuery();
-    assert(!plan.error, tos(plan));
-    assert(
+    const result = await cliCommands.planQuery({
+      infra,
+      commandOptions: {},
+    });
+    assert(!result.error);
+    // assert(!isPlanEmpty(plan), "plan must not be empty after destroyAll");
+  }
+  const resultApply = await cliCommands.planApply({
+    infra,
+    commandOptions: { force: true },
+  });
+
+  assert(!resultApply.error);
+  // assert(!isPlanEmpty(plan), "plan must not be empty after destroyAll");
+  {
+    const result = await cliCommands.list({
+      infra,
+      commandOptions: { our: true, types },
+    });
+    assert(!result.error);
+    //TODO check no live
+  }
+  {
+    const result = await cliCommands.planQuery({
+      infra,
+      commandOptions: { force: true },
+    });
+    assert(!result.error);
+    /*assert(
       isPlanEmpty(plan),
       `plan must be empty after a deploy: ${tos(plan)}`
-    );
+    );*/
   }
+
   if (full) {
     await testList({ provider });
     {
@@ -185,4 +208,5 @@ exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
       // must be our minion
     }
   }
+  return resultApply;
 };

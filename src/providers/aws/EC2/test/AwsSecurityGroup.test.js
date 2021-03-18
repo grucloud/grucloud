@@ -24,8 +24,6 @@ describe("AwsSecurityGroup", async function () {
       config: config.aws,
     });
 
-    await provider.start();
-    await provider.destroyAll({ options: { all: true, types } });
     vpc = await provider.makeVpc({
       name: "vpc",
       properties: () => ({
@@ -151,13 +149,18 @@ describe("AwsSecurityGroup", async function () {
         },
       }),
     });
+    try {
+      await testPlanDeploy({ provider, types });
+      assert(!error, "should have failed");
+    } catch (exception) {
+      assert(
+        exception.error.resultDeploy.results[0].resultCreate.results[1].error
+          .code,
+        "InvalidParameterValue"
+      );
+    }
 
-    await provider.destroyAll({ options: { types } });
-
-    const { error, resultCreate } = await provider.planQueryAndApply();
-    assert(error, "should have failed");
-    assert(resultCreate.results[1].error.code, "InvalidParameterValue");
-    await provider.destroyAll({ options: { types } });
+    await testPlanDestroy({ provider, types });
   });
   it("sg name", async function () {
     assert.equal(sg.name, "sg");
@@ -184,6 +187,6 @@ describe("AwsSecurityGroup", async function () {
       })
     );
 
-    await testPlanDestroy({ provider, full: false, types });
+    await testPlanDestroy({ provider, types });
   });
 });

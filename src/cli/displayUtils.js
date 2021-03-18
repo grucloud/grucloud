@@ -44,9 +44,8 @@ const displayItem = (table, item) =>
 exports.displayListSummary = pipe([
   tap((input) => {
     console.log("List Summary:");
-    assert(input.result.results);
+    assert(input);
   }),
-  get("result.results"),
   map(({ providerName, error, results }) =>
     pipe([
       tap(() => {

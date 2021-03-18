@@ -3,6 +3,7 @@ const assert = require("assert");
 const chance = require("chance")();
 const { GoogleProvider } = require("../GoogleProvider");
 const { ConfigLoader } = require("ConfigLoader");
+const cliCommands = require("../../../cli/cliCommands");
 
 const {
   testPlanDeploy,
@@ -85,7 +86,6 @@ describe("GcpBucket", async function () {
       const provider = GoogleProvider({
         config: config.google,
       });
-      await provider.start();
 
       const bucket = await provider.makeBucket({
         name: bucketName,
@@ -103,12 +103,22 @@ describe("GcpBucket", async function () {
           ),
         }),
       });
-      const plan = await provider.planQuery();
-      assert.equal(plan.resultCreate.length, 1);
-      assert.equal(plan.resultCreate[0].action, "UPDATE");
+      {
+        const { error, resultQuery } = await cliCommands.planQuery({
+          infra: { provider },
+          commandOptions: { force: true },
+        });
+        assert(!error);
+        const plan = resultQuery.results[0];
+        assert.equal(plan.resultCreate.length, 1);
+        assert.equal(plan.resultCreate[0].action, "UPDATE");
+      }
 
-      const { error } = await provider.planApply({ plan });
-      assert(!error);
+      const resultApply = await cliCommands.planApply({
+        infra: { provider },
+        commandOptions: { force: true },
+      });
+      assert(!resultApply.error);
     }
     await testPlanDestroy({ provider, types });
   });

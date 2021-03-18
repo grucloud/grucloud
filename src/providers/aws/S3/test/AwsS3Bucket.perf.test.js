@@ -2,8 +2,9 @@ const assert = require("assert");
 const { map, pipe } = require("rubico");
 const { ConfigLoader } = require("ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
+const cliCommands = require("../../../../cli/cliCommands");
 
-describe.skip("AwsS3BucketPerf", async function () {
+describe("AwsS3BucketPerf", async function () {
   let config;
   const types = ["S3Bucket"];
   before(async function () {
@@ -42,13 +43,16 @@ describe.skip("AwsS3BucketPerf", async function () {
         )(buckets),
     ])(maxBuckets);
 
-    {
-      const { error } = await provider.planQueryAndApply();
-      assert(!error, "planQueryAndApply failed");
-    }
-    {
-      const { error } = await provider.destroyAll({ options: { types } });
-      assert(!error, "destroyAll");
-    }
+    const resultApply = await cliCommands.planApply({
+      infra: { provider },
+      commandOptions: { force: true },
+    });
+    assert(!resultApply.error);
+
+    const resultDestroy = await cliCommands.planDestroy({
+      infra: { provider },
+      commandOptions: { force: true, options: { types } },
+    });
+    assert(!resultDestroy.error);
   });
 });

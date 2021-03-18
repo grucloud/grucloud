@@ -57,12 +57,6 @@ describe("ScalewayProvider", async function () {
     //console.log(JSON.stringify(configs, null, 4));
     assert(configs);
   });
-
-  it("list lives", async function () {
-    const { results: lives } = await provider.listLives();
-    //console.log(JSON.stringify(result, null, 4));
-    assert(lives);
-  });
   it("list targets", async function () {
     const result = await provider.listTargets();
     assert(result);

@@ -3,6 +3,7 @@ const { ConfigLoader } = require("ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { CheckAwsTags } = require("../../AwsTagCheck");
+const cliCommands = require("../../../../cli/cliCommands");
 
 describe("AwsRouteTables", async function () {
   let config;
@@ -72,6 +73,13 @@ describe("AwsRouteTables", async function () {
       })
     );
 
+    const result = await cliCommands.list({
+      infra: { provider },
+      commandOptions: { our: true, types: ["RouteTables"] },
+    });
+    assert(!result.error);
+    assert(result.results);
+    /*
     const {
       results: [rts],
     } = await provider.listLives({ options: { types: ["RouteTables"] } });
@@ -82,7 +90,7 @@ describe("AwsRouteTables", async function () {
       );
       assert.equal(routeTable.Associations[0].SubnetId, subnetLive.SubnetId);
       assert.equal(routeTable.VpcId, vpcLive.VpcId);
-    }
+    }*/
     await testPlanDestroy({ provider });
   });
 });

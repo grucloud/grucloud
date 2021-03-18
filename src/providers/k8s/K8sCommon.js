@@ -156,7 +156,7 @@ exports.isOurMinion = ({ resource, lives, config }) =>
     () => isOurMinionObject({ tags: resource.metadata.annotations, config }),
     pipe([
       tap(() => {
-        //assert(lives);
+        assert(lives);
         logger.info(`isOurMinion ${JSON.stringify({ resource })}`);
       }),
       () => first(resource.metadata.ownerReferences),
@@ -164,14 +164,18 @@ exports.isOurMinion = ({ resource, lives, config }) =>
         not(isEmpty),
         ({ kind, uid }) =>
           pipe([
-            find(eq(get("type"), kind)),
+            () =>
+              lives.getByType({
+                providerName: config.providerName,
+                type: kind,
+              }),
             get("resources"),
             find(eq(get("live.metadata.uid"), uid)),
             get("managedByUs"),
             tap((result) => {
               logger.info(`isOurMinion ${resource.toString()}: ${result}`);
             }),
-          ])(lives),
+          ])(),
         () => false,
       ]),
     ]),

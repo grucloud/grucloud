@@ -1,10 +1,11 @@
 const assert = require("assert");
-const { get, eq } = require("rubico");
+const { get, eq, pipe } = require("rubico");
 const { find } = require("rubico/x");
 const { ConfigLoader } = require("ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { CheckAwsTags } = require("../../AwsTagCheck");
+const cliCommands = require("../../../../cli/cliCommands");
 
 describe("AwsSubnet", async function () {
   const types = ["Vpc", "Subnet"];
@@ -69,6 +70,14 @@ describe("AwsSubnet", async function () {
       })
     );
 
+    const result = await cliCommands.list({
+      infra: { provider },
+      commandOptions: { our: true, types: ["Subnet"] },
+    });
+    assert(!result.error);
+    assert(result.results);
+    //TODO
+    /*
     const {
       results: [subnets],
     } = await provider.listLives({ options: { types: ["Subnet"] } });
@@ -77,7 +86,7 @@ describe("AwsSubnet", async function () {
       (subnet) => subnet.live.DefaultForAz
     );
     assert(subnetDefault);
-
-    await testPlanDestroy({ provider, types, full: false });
+*/
+    await testPlanDestroy({ provider, types });
   });
 });

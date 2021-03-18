@@ -47,10 +47,6 @@ describe("AwsIamRole", async function () {
     assert.equal(iamRole.name, iamRoleName);
     const config = await iamRole.resolveConfig();
   });
-  it("iamRole listLives all", async function () {
-    const { results: lives } = await provider.listLives({ options: { types } });
-    assert(lives);
-  });
   it.skip("iamRole apply plan", async function () {
     await testPlanDeploy({
       provider,

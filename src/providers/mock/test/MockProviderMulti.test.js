@@ -54,7 +54,7 @@ describe("MockProviderMulti", async function () {
         commandOptions: { provider: [providerName2] },
       });
       assert(!result.error);
-      const mapProvider = groupBy("providerName")(result.result.results);
+      const mapProvider = groupBy("providerName")(result.results);
       assert.equal(mapProvider.size, 1);
     }
     {
@@ -75,7 +75,7 @@ describe("MockProviderMulti", async function () {
         infra,
       });
       assert(!result.error);
-      const mapProvider = groupBy("providerName")(result.result.results);
+      const mapProvider = groupBy("providerName")(result.results);
       assert.equal(mapProvider.size, 2);
     }
     {

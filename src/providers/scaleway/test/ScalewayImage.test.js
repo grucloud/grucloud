@@ -47,11 +47,6 @@ describe("ScalewayImage", async function () {
     // Image is a readonly resource,
     assert(!instance);
   });
-  it("plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.length, 0);
-    assert.equal(plan.resultCreate.length, 0);
-  });
   it.skip("apply and destroy", async function () {
     await testPlanDeploy({ provider });
     //await testPlanDestroy({ provider });

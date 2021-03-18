@@ -80,11 +80,8 @@ describe("MockProviderHooks", async function () {
       });
       assert(false, "should not be here");
     } catch (error) {
-      assert.equal(
-        error.error.resultQueryDestroy.results[0].lives.results[0].error
-          .response.status,
-        404
-      );
+      const lives = error.error.lives.toJSON();
+      assert.equal(lives[0].results[0].error.response.status, 404);
     }
 
     assert(!onDestroyed.init.called);
@@ -118,7 +115,7 @@ describe("MockProviderHooks", async function () {
       const { error } = exception;
       assert(error.error);
 
-      const { resultHooks } = error.results[0];
+      const { resultHooks } = error.resultDeploy.results[0];
       assert(resultHooks.error);
       assert(resultHooks.results[0].error);
     }
@@ -208,7 +205,7 @@ describe("MockProviderHooks", async function () {
       assert(false, "should not be here");
     } catch (ex) {
       const { error } = ex;
-      const resultHooks = error.results[0].resultHooks;
+      const { resultHooks } = error.resultDeploy.results[0];
       assert(resultHooks.error);
       assert(resultHooks.results[0].error);
     }

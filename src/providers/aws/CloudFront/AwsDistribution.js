@@ -280,12 +280,17 @@ exports.AwsDistribution = ({ spec, config }) => {
       tap(() => {
         logger.debug(`onDeployed ${tos({ resultCreate })}`);
         assert(resultCreate);
-        assert(Array.isArray(lives));
+        assert(lives);
       }),
-      () => find(eq(get("type"), RESOURCE_TYPE))(lives),
-      get("results.items"),
+      () =>
+        lives.getByType({
+          providerName: config.providerName,
+          type: RESOURCE_TYPE,
+        }),
+      get("resources"),
       tap((distributions) => {
         logger.info(`onDeployed ${tos({ distributions })}`);
+        assert(Array.isArray(distributions));
       }),
       map((distribution) =>
         pipe([

@@ -3,6 +3,7 @@ const path = require("path");
 const { ConfigLoader } = require("ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
+const cliCommands = require("../../../../cli/cliCommands");
 
 const bucketName = "grucloud-s3bucket-test-update";
 const types = ["S3Bucket", "S3Object"];
@@ -12,8 +13,6 @@ const createStack = async ({ config }) => {
     name: "aws",
     config: config.aws,
   });
-
-  await provider.start();
 
   const s3Bucket = await provider.makeS3Bucket({
     name: bucketName,
@@ -38,8 +37,6 @@ const createStackNext = async ({ config }) => {
     name: "aws",
     config: config.aws,
   });
-
-  await provider.start();
 
   const s3Bucket = await provider.makeS3Bucket({
     name: bucketName,
@@ -78,11 +75,20 @@ describe("AwsS3Object", async function () {
     await testPlanDeploy({ provider, types });
 
     const providerNext = await createStackNext({ config });
-    const plan = await providerNext.planQuery();
-    assert.equal(plan.resultDestroy.length, 0);
-    assert.equal(plan.resultCreate.length, 1);
-    const update = plan.resultCreate[0];
-    assert.equal(update.action, "UPDATE");
+
+    {
+      const result = await cliCommands.planQuery({
+        infra: { provider: providerNext },
+        commandOptions: {},
+      });
+
+      assert(!result.error);
+      const plan = result.resultQuery.results[0];
+      assert.equal(plan.resultDestroy.length, 0);
+      assert.equal(plan.resultCreate.length, 1);
+      const update = plan.resultCreate[0];
+      assert.equal(update.action, "UPDATE");
+    }
 
     await testPlanDestroy({ provider, types });
   });

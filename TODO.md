@@ -51,6 +51,7 @@
 - doc
 
 ## TODO Aws:
+- delete load balancers in vpc
 - minikite gc d -a: ✖ PersistentVolume 0/2           Request failed with status code 404 
 - multi-provider aws, k8s, ipProviderUp is down, gc d -f fails
 - https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html

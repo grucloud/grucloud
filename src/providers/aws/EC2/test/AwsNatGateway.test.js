@@ -32,8 +32,6 @@ describe("AwsNatGateway", async function () {
       config: config.aws,
     });
 
-    await provider.start();
-
     vpc = await provider.makeVpc({
       name: "vpc",
       properties: () => ({

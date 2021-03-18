@@ -83,7 +83,7 @@ describe("GoogleProvider", async function () {
   });
 
   it("gcp apply and destroy", async function () {
-    await testPlanDeploy({ provider, types, full: true });
+    await testPlanDeploy({ provider, types, full: false });
 
     const serverLive = await server.getLive();
     const { status, labels } = serverLive;
@@ -98,6 +98,6 @@ describe("GoogleProvider", async function () {
       ipLive.address
     );
 
-    await testPlanDestroy({ provider, types, full: true });
+    await testPlanDestroy({ provider, types, full: false });
   }).timeout(7 * 60e3);
 });

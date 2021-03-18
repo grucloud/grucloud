@@ -35,8 +35,6 @@ describe("AwsProvider", async function () {
       config: config.aws,
     });
 
-    await provider.start();
-
     keyPair = await provider.useKeyPair({
       name: keyPairName,
     });
@@ -139,7 +137,7 @@ describe("AwsProvider", async function () {
     assert(dependencies.securityGroups);
     assert(dependencies.keyPair);
   });
-  it("config", async function () {
+  it.skip("config", async function () {
     const config = await server.resolveConfig();
     assert.equal(config.ImageId, "ami-0917237b4e71c5759");
   });
