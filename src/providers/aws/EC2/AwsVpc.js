@@ -78,8 +78,8 @@ exports.AwsVpc = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) =>
-    getByNameCore({ name, getList, findName, deep: false });
+  const getByName = ({ name, lives }) =>
+    getByNameCore({ name, getList, findName, deep: false, lives });
 
   const getById = getByIdCore({ fieldIds: "VpcIds", getList });
 

@@ -13,7 +13,7 @@ describe("AwsSubnet", async function () {
   let provider;
   let vpc;
   let subnet;
-  const subnetName = "subnet";
+  const subnetName = "subnet-test";
   const k8sSubnetTagKey = "kubernetes.io/role/elb";
 
   before(async function () {
@@ -30,16 +30,16 @@ describe("AwsSubnet", async function () {
     await provider.start();
 
     vpc = await provider.makeVpc({
-      name: "vpc",
+      name: "vpc-test-subnet",
       properties: () => ({
-        CidrBlock: "10.1.0.1/16",
+        CidrBlock: "192.168.1.1/16",
       }),
     });
     subnet = await provider.makeSubnet({
       name: subnetName,
       dependencies: { vpc },
       properties: () => ({
-        CidrBlock: "10.1.0.1/24",
+        CidrBlock: "192.168.1.1/24",
         Tags: [{ Key: k8sSubnetTagKey, Value: "1" }],
       }),
     });

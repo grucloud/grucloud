@@ -44,7 +44,7 @@ describe("GcpSubNetwork", async function () {
     });
   });
   after(async () => {});
-  it("subNetwork config", async function () {
+  it.skip("subNetwork config", async function () {
     const config = await subNetwork.resolveConfig();
     assert(config);
     assert.equal(config.name, subNetworkName);

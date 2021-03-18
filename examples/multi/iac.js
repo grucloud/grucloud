@@ -101,6 +101,8 @@ const createAws = async ({ config }) => {
   provider.hookAdd("eks", AwsHooksEKS({ resources: eks, provider }));
 
   // Aws stack website https
+  /*
+  TODO
   const website = await AwsStackWebSite.createResources({
     provider,
     resources: {},
@@ -110,7 +112,7 @@ const createAws = async ({ config }) => {
     "website",
     AwsHooksWebSite({ resources: website, provider })
   );
-
+*/
   return { provider };
 };
 
@@ -195,8 +197,8 @@ exports.createStack = async ({ config }) => {
     //await createMock({ config }),
     await createAws({ config }),
     //await createAwsUsEast1({ config }),
-    //await createAzure({ config }),
-    //await createGoogle({ config }),
+    await createAzure({ config }),
+    await createGoogle({ config }),
     //await createScaleway({ config }),
   ];
 };

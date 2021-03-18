@@ -142,7 +142,7 @@ const ResourceMaker = ({
   });
   const usedBySet = new Set();
 
-  const getLive = async ({ deep = true } = {}) =>
+  const getLive = async ({ deep = true, lives } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getLive ${toString()}, deep: ${deep}`);
@@ -157,6 +157,7 @@ const ResourceMaker = ({
           deep,
           resources: provider.getResourcesByType({ type }),
           properties,
+          lives,
         }),
       tap((live) => {
         logger.debug(`getLive ${toString()} result: ${tos(live)}`);
@@ -168,7 +169,6 @@ const ResourceMaker = ({
       tap(() => {
         assert(lives);
       }),
-      () => lives.toJSON(),
       () => lives.getByType({ providerName: provider.name, type }),
       switchCase([
         not(isEmpty),
@@ -200,7 +200,9 @@ const ResourceMaker = ({
       ]),
       get("live"),
       tap((live) => {
-        logger.debug(`findLive ${tos({ type, hadLive: !!live })}`);
+        logger.debug(
+          `findLive ${tos({ type, resourceName, hasLive: !!live })}`
+        );
       }),
     ])();
 
@@ -298,17 +300,18 @@ const ResourceMaker = ({
         return tryCatch(
           (dependency) =>
             pipe([
-              () => dependency.findLive({ lives }),
-              switchCase([
-                isEmpty,
-                () => dependency.getLive({ deep: false }), //TODO lives add to the list
-                (live) => live,
-              ]),
               tap((live) => {
                 logger.debug(
-                  `resolveDependencies ${toString()}, dep ${dependency.toString()}, live: ${live}`
+                  `resolveDependencies ${toString()}, dep ${dependency.toString()}, has live: ${isEmpty(
+                    lives
+                  )}`
                 );
               }),
+              switchCase([
+                () => isEmpty(lives),
+                () => dependency.getLive({ deep: true }),
+                () => dependency.findLive({ lives }),
+              ]),
               tap.if(
                 (live) => {
                   if (dependenciesMustBeUp) {
@@ -424,6 +427,7 @@ const ResourceMaker = ({
                 resources: provider.getResourcesByType({
                   type: client.spec.type,
                 }),
+                lives,
               }),
             ({ items }) =>
               transformConfig({
@@ -442,11 +446,14 @@ const ResourceMaker = ({
       },
     ])();
 
-  const create = async ({ payload, resolvedDependencies }) =>
+  const create = async ({ payload, resolvedDependencies, lives }) =>
     pipe([
       tap(() => {
         logger.info(`create ${tos({ resourceName, type })}`);
         logger.debug(`create ${tos({ payload })}`);
+        assert(payload);
+        assert(resolvedDependencies);
+        assert(lives);
       }),
       //TODO
       /*tap.if(
@@ -463,12 +470,20 @@ const ResourceMaker = ({
           dependencies,
           resolvedDependencies,
         }),
-      tap(() => {
+      () => getLive({ deep: true, lives }),
+      tap((live) => {
         logger.info(`created: ${toString()}`);
+        logger.info(`created: live: ${tos(live)}`);
       }),
     ])();
 
-  const update = async ({ payload, diff, live, resolvedDependencies }) => {
+  const update = async ({
+    payload,
+    diff,
+    live,
+    lives,
+    resolvedDependencies,
+  }) => {
     logger.info(`update ${tos({ resourceName, type, payload })}`);
     if (!(await getLive())) {
       throw Error(`Resource ${toString()} does not exist`);
@@ -485,6 +500,7 @@ const ResourceMaker = ({
           resolvedDependencies,
           diff,
           live,
+          lives,
           id: client.findId(live),
         }),
       shouldRetryOnException: client.shouldRetryOnException,
@@ -1444,7 +1460,6 @@ function CoreProvider({
             options,
           })}`
         );
-        assert(lives);
       }),
       switchCase([
         () => readWrite,
@@ -1903,16 +1918,27 @@ function CoreProvider({
             live,
             diff,
             resolvedDependencies,
+            lives,
           }),
         }),
         () => action === "CREATE",
-        async () => ({
-          input,
-          output: await engine.create({
-            payload: input,
-            resolvedDependencies,
+        pipe([
+          async () => ({
+            input,
+            output: await engine.create({
+              payload: input,
+              resolvedDependencies,
+              lives,
+            }),
           }),
-        }),
+          tap(({ output }) => {
+            lives.addResource({
+              providerName,
+              type: engine.type,
+              live: output,
+            });
+          }),
+        ]),
         () => assert("action is not handled"),
       ])();
     };
@@ -2078,6 +2104,7 @@ function CoreProvider({
       ),
     ])();
 
+  //TODO still used ?
   const destroyAll = ({ onStateChange = identity, options, lives } = {}) =>
     pipe([
       tap(() => {

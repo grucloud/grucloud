@@ -92,8 +92,8 @@ exports.AwsRoute = ({ spec, config }) => {
       }),
     ])(resources);
 
-  const getByName = ({ name, resources }) =>
-    getByNameCore({ name, getList, findName, resources });
+  const getByName = ({ name, lives, resources }) =>
+    getByNameCore({ name, getList, findName, lives, resources });
 
   //TODO
   const getById = getByIdCore({ fieldIds: "RouteTableIds", getList });

@@ -532,7 +532,6 @@ const doPlansDeploy = ({ commandOptions, programOptions, providersGru }) => ({
     tap(() => {
       logger.debug("doPlansDeploy ");
       assert(resultQuery);
-      assert(lives);
     }),
     () => resultQuery,
     ({ results }) =>

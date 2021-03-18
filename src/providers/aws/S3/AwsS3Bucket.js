@@ -391,6 +391,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
             retryCall({
               name: `get s3 properties ${name}`,
               fn: fork({
+                Name: () => name,
                 ...(getTags && { Tags: getBucketTagging(params) }),
                 ...(deep && {
                   AccelerateConfiguration: getAccelerateConfiguration({

@@ -164,20 +164,77 @@ exports.ProviderGru = ({ stacks }) => {
 
     let error;
 
+    const toJSON = () =>
+      pipe([
+        () => mapPerProvider,
+        tap((results) => {
+          logger.debug(`toJSON `);
+        }),
+        map.entries(([providerName, mapPerType]) => [
+          providerName,
+          {
+            providerName,
+            kind: "livesPerType",
+            error: any(get("error"))([...mapPerType.values()]),
+            results: [...mapPerType.values()],
+          },
+        ]),
+        (resultMap) => [...resultMap.values()],
+        tap((results) => {
+          logger.debug(`toJSON `);
+        }),
+      ])();
+
     return {
       get error() {
         return error;
       },
-      hasError: () => error,
-      addResources: ({ providerName, type, resources, error: latestError }) => {
+      addResource: ({ providerName, type, live }) => {
+        assert(providerName);
+        assert(type);
+
+        if (!live) {
+          logger.debug(`live addResource no live for ${type}`);
+          return;
+        }
+
+        const mapPerType = mapPerProvider.get(providerName) || new Map();
+
+        logger.debug(
+          `live addResource ${JSON.stringify({ providerName, type })}`
+        );
+
+        const resources = mapPerType.get(type) || { type, resources: [] };
+        mapPerType.set(type, {
+          type,
+          providerName,
+          resources: [...resources.resources, { live }],
+        });
+
+        mapPerProvider.set(providerName, mapPerType);
+        //logger.debug(`live addResource all: ${tos(toJSON())}`);
+      },
+      addResources: ({
+        providerName,
+        type,
+        resources = [],
+        error: latestError,
+      }) => {
         assert(providerName);
         assert(type);
         assert(resources || latestError);
-        const livesPerProvider = mapPerProvider.get(providerName) || [];
-        mapPerProvider.set(providerName, [
-          ...livesPerProvider,
-          { type, resources, error: latestError },
-        ]);
+        logger.debug(
+          `live addResources ${JSON.stringify({
+            providerName,
+            type,
+            resourceCount: resources.length,
+          })}`
+        );
+
+        const mapPerType = mapPerProvider.get(providerName) || new Map();
+        mapPerType.set(type, { type, resources, error: latestError });
+        mapPerProvider.set(providerName, mapPerType);
+
         if (latestError) {
           error = true;
         }
@@ -186,27 +243,15 @@ exports.ProviderGru = ({ stacks }) => {
         logger.debug("live toString TODO");
         return `lives, #provider ${mapPerProvider.size}`;
       },
-      toJSON: () =>
-        pipe([
-          () => mapPerProvider,
-          map.entries(([providerName, results]) => [
-            providerName,
-            {
-              providerName,
-              kind: "livesPerType",
-              error: any(get("error"))(results),
-              results,
-            },
-          ]),
-          (resultMap) => [...resultMap.values()],
-        ])(),
+      toJSON,
       getByProvider: ({ providerName }) => {
-        return mapPerProvider.get(providerName) || [];
+        const mapPerType = mapPerProvider.get(providerName) || new Map();
+        return [...mapPerType.values()];
       },
       getByType: ({ providerName, type }) =>
         pipe([
-          () => mapPerProvider.get(providerName) || [],
-          find(eq(get("type"), type)),
+          () => mapPerProvider.get(providerName) || new Map(),
+          (mapPerType) => mapPerType.get(type),
           tap.if(isEmpty, () => {
             logger.error(
               `cannot find type ${type} on provider ${providerName}`
@@ -217,7 +262,7 @@ exports.ProviderGru = ({ stacks }) => {
               `getByType ${JSON.stringify({
                 providerName,
                 type,
-                count: pipe([get("resource"), size])(results),
+                count: pipe([get("resources"), size])(results),
               })}`
             );
           }),
