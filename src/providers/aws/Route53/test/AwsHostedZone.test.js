@@ -3,6 +3,7 @@ const { find } = require("rubico/x");
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
+const cliCommands = require("../../../../cli/cliCommands");
 
 describe("AwsHostedZone", async function () {
   let config;
@@ -121,7 +122,12 @@ describe("AwsHostedZone", async function () {
 
     const providerNext = await createProviderNext({ config });
 
-    const plan = await providerNext.planQuery();
+    const { error, resultQuery } = await cliCommands.planQuery({
+      infra: { provider: providerNext },
+      commandOptions: { force: true, types },
+    });
+    assert(!error);
+    const plan = resultQuery.results[0];
     //assert.equal(plan.resultDestroy.length, 1);
     assert.equal(plan.resultCreate.length, 2);
     const updateHostedZone = plan.resultCreate[0];
@@ -132,14 +138,12 @@ describe("AwsHostedZone", async function () {
     assert.equal(updateRecord.action, "UPDATE");
     assert(updateRecord.diff.updated.ResourceRecords);
 
-    const {
-      error,
-      resultCreate,
-      resultDestroy,
-    } = await providerNext.planApply({ plan });
-    assert(!error);
-    assert.equal(resultCreate.results.length, 2);
-    //assert.equal(resultDestroy.results.length, 1);
+    const result = await cliCommands.planApply({
+      infra: { provider: providerNext },
+      commandOptions: { force: true },
+    });
+    assert(!result.error);
+    assert.equal(result.resultDeploy.results[0].resultCreate.results.length, 2);
 
     await testPlanDestroy({ provider, types });
   });

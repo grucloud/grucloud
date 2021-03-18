@@ -25,22 +25,6 @@ const displayResource = (item) =>
 const displayManagedByUs = (resource) =>
   resource.managedByUs ? colors.green("Yes") : colors.red("NO");
 
-// TODO
-const displayItem = (table, item) =>
-  switchCase([
-    () => item.error,
-    () => {
-      table.push(["Error", item.action, "", item.error.message]);
-    },
-    () =>
-      table.push([
-        item.resource?.name,
-        item.action,
-        item.resource?.type,
-        displayResource(item),
-      ]),
-  ])();
-
 exports.displayListSummary = pipe([
   tap((input) => {
     console.log("List Summary:");
@@ -81,17 +65,23 @@ exports.displayListSummary = pipe([
           ),
           () => results,
           filter(not(get("error"))),
-          forEach(({ type, resources }) => {
-            assert(type);
-            assert(Array.isArray(resources));
-
-            table.push([
-              {
-                content: type,
-              },
-              { content: pluck("displayName")(resources).join("\n") },
-            ]);
-          }),
+          forEach(({ type, resources }) =>
+            pipe([
+              tap(() => {
+                assert(type);
+                assert(Array.isArray(resources));
+              }),
+              () => pluck("displayName")(resources).join("\n"),
+              tap.if(not(isEmpty), (content) =>
+                table.push([
+                  {
+                    content: type,
+                  },
+                  { content },
+                ])
+              ),
+            ])()
+          ),
           tap(() => {
             console.log(table.toString());
           }),
@@ -409,42 +399,45 @@ const displayTablePerType = ({
     }),
     style: { head: [], border: [] },
   });
-
-  pipe([
-    () =>
-      table.push([
-        {
-          colSpan: 3,
-          content: colors.yellow(
-            `${resources.length} ${type} from ${providerName}`
-          ),
-        },
-      ]),
-    () => table.push(tableDefinitions.columns.map((item) => colors.red(item))),
-    switchCase([
-      () => error,
+  tap.if(
+    () => !isEmpty(resources) || error,
+    pipe([
       () =>
         table.push([
           {
             colSpan: 3,
-            content: colors.red(YAML.stringify(error)),
+            content: colors.yellow(
+              `${resources.length} ${type} from ${providerName}`
+            ),
           },
         ]),
-      pipe([
-        () => resources,
-        forEach((resource) =>
-          displayLiveItem({ table, resource, tableDefinitions })
-        ),
+      () =>
+        table.push(tableDefinitions.columns.map((item) => colors.red(item))),
+      switchCase([
+        () => error,
+        () =>
+          table.push([
+            {
+              colSpan: 3,
+              content: colors.red(YAML.stringify(error)),
+            },
+          ]),
+        pipe([
+          () => resources,
+          forEach((resource) =>
+            displayLiveItem({ table, resource, tableDefinitions })
+          ),
+        ]),
       ]),
-    ]),
-    () => {
-      console.log(table.toString());
-      console.log("\n");
-    },
-  ])();
+      () => {
+        console.log(table.toString());
+        console.log("\n");
+      },
+    ])
+  )();
 };
 
-exports.displayLive = async ({ providerName, resources = [] }) => {
+exports.displayLive = async ({ providerName, error, resources = [] }) => {
   assert(providerName);
   assert(Array.isArray(resources));
 

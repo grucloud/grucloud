@@ -173,6 +173,7 @@ const ResourceMaker = ({
       switchCase([
         not(isEmpty),
         pipe([
+          filter(not(get("error"))),
           tap(({ type, resources }) => {
             assert(type);
             assert(resources);

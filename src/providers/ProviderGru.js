@@ -195,7 +195,7 @@ exports.ProviderGru = ({ stacks }) => {
               providerName,
               kind: "livesPerType",
               error: any(get("error"))(results),
-              results: filter(pipe([get("resources"), not(isEmpty)]))(results),
+              results,
             },
           ]),
           (resultMap) => [...resultMap.values()],
@@ -206,7 +206,6 @@ exports.ProviderGru = ({ stacks }) => {
       getByType: ({ providerName, type }) =>
         pipe([
           () => mapPerProvider.get(providerName) || [],
-          filter(not(get("error"))),
           find(eq(get("type"), type)),
           tap.if(isEmpty, () => {
             logger.error(
