@@ -126,7 +126,7 @@ describe("AwsProvider", async function () {
     assert(info.accountId);
     assert(info.region);
   });
-  it("server resolveDependencies", async function () {
+  it.skip("server resolveDependencies", async function () {
     const dependencies = await server.resolveDependencies({
       dependenciesMustBeUp: false,
     });

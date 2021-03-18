@@ -149,6 +149,8 @@ describe("AwsSecurityGroup", async function () {
         },
       }),
     });
+    await testPlanDestroy({ provider, types });
+
     try {
       await testPlanDeploy({ provider, types });
       assert(!error, "should have failed");
@@ -165,7 +167,7 @@ describe("AwsSecurityGroup", async function () {
   it("sg name", async function () {
     assert.equal(sg.name, "sg");
   });
-  it("sg resolveConfig", async function () {
+  it.skip("sg resolveConfig", async function () {
     const config = await sg.resolveConfig();
     assert.equal(config.ingress.IpPermissions[0].FromPort, 22);
   });
