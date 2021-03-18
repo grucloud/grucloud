@@ -104,11 +104,13 @@ const findDependentType = ({ clients }) =>
     }),
   ]);
 
-const filterByType = ({ types }) =>
+const filterByType = ({ types, targetTypes }) =>
   pipe([
     (clients) =>
       filter((client) =>
         pipe([
+          () => types,
+          switchCase([isEmpty, () => targetTypes, (types) => types]),
           tap(() => {
             assert(client);
             assert(client.spec);
@@ -116,7 +118,7 @@ const filterByType = ({ types }) =>
           }),
           switchCase([
             or([
-              isEmpty,
+              isEmpty, //TOD never empty
               pipe([
                 findDependentType({ clients }),
                 tap(() => {
@@ -130,34 +132,42 @@ const filterByType = ({ types }) =>
             () => true,
             isTypesMatch({ typeToMatch: client.spec.type }),
           ]),
-        ])(types)
+        ])()
       )(clients),
+    tap((clients) => {
+      logger.debug(`filterByType #clients ${clients}`);
+    }),
   ]);
 
-exports.filterReadClient = ({ types, all } = {}) =>
+exports.filterReadClient = ({ options: { types, all } = {}, targetTypes }) =>
   pipe([
     tap((clients) => {
+      assert(targetTypes);
       logger.debug(
-        `filterReadClient types: ${types}, #clients ${clients.length}`
+        `filterReadClient types: ${types}, #clients ${clients.length}, #targets: ${targetTypes.length}`
       );
     }),
-    filterByType({ types }),
-    filter((client) => all || !client.spec.listHide),
+    filter(not(get("spec.listHide"))),
+    switchCase([
+      () => all,
+      (clients) => clients,
+      filterByType({ types, targetTypes }),
+    ]),
     tap((clients) => {
       logger.debug(`filterReadClient #clients ${clients.length}`);
     }),
   ]);
 
-exports.filterReadWriteClient = ({ types } = {}) =>
+exports.filterReadWriteClient = ({ options: { types } = {}, targetTypes }) =>
   pipe([
     tap((clients) => {
+      assert(targetTypes);
       logger.debug(
         `filterReadWriteClient types: ${types}, #clients ${clients.length}`
       );
     }),
-    filterByType({ types }),
-    filter((client) => !client.spec.singleton),
-    filter((client) => !client.spec.listOnly),
+    filterByType({ types, targetTypes }),
+    filter(and([not(get("spec.singleton")), not(get("spec.listOnly"))])),
     tap((clients) => {
       logger.debug(`filterReadWriteClient result #clients ${clients.length}`);
     }),

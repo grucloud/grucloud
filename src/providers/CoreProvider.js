@@ -706,6 +706,8 @@ function CoreProvider({
 
   const mapTypeToResources = new Map();
 
+  const getTargetTypes = () => [...mapTypeToResources.keys()];
+
   const targetResourcesAdd = (resource) => {
     assert(resource.name);
     assert(resource.type);
@@ -1158,7 +1160,9 @@ function CoreProvider({
       spinnersStartClient({
         onStateChange,
         title: TitleListing,
-        clients,
+        clients: filterReadClient({ options, targetTypes: getTargetTypes() })(
+          clients
+        ),
       }),
       (resourcesPerType) =>
         spinnersStartResources({
@@ -1179,7 +1183,9 @@ function CoreProvider({
           onStateChange,
           planQueryDestroy,
           title: TitleListing,
-          clients: filterReadClient(options)(clients),
+          clients: filterReadClient({ options, targetTypes: getTargetTypes() })(
+            clients
+          ),
         }),
       ])
     )();
@@ -1193,7 +1199,9 @@ function CoreProvider({
         spinnersStopClient({
           onStateChange,
           title: TitleListing,
-          clients: filterReadClient(options)(clients),
+          clients: filterReadClient({ options, targetTypes: getTargetTypes() })(
+            clients
+          ),
           error,
         }),
         //TODO
@@ -1264,7 +1272,10 @@ function CoreProvider({
       spinnersStartClient({
         onStateChange,
         title: TitleListing,
-        clients: filterReadWriteClient(options)(clients),
+        clients: filterReadWriteClient({
+          options,
+          targetTypes: getTargetTypes(),
+        })(clients),
       }),
     ])();
 
@@ -1463,11 +1474,11 @@ function CoreProvider({
       }),
       switchCase([
         () => readWrite,
-        filterReadWriteClient(options),
-        filterReadClient(options),
+        filterReadWriteClient({ options, targetTypes: getTargetTypes() }),
+        filterReadClient({ options, targetTypes: getTargetTypes() }),
       ]),
       tap((clients) => {
-        logger.info(`listLives ${clients.length}`);
+        logger.info(`listLives #clients ${clients.length}`);
       }),
       map((client) => ({
         meta: {
