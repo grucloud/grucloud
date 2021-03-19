@@ -278,7 +278,7 @@ exports.AwsDistribution = ({ spec, config }) => {
   const onDeployed = ({ resultCreate, lives }) =>
     pipe([
       tap(() => {
-        logger.debug(`onDeployed ${tos({ resultCreate })}`);
+        logger.info(`onDeployed ${tos({ resultCreate })}`);
         assert(resultCreate);
         assert(lives);
       }),
@@ -287,13 +287,13 @@ exports.AwsDistribution = ({ spec, config }) => {
           providerName: config.providerName,
           type: RESOURCE_TYPE,
         }),
-      get("resources"),
+      get("resources", []),
       tap((distributions) => {
         logger.info(`onDeployed ${tos({ distributions })}`);
-        assert(Array.isArray(distributions));
       }),
       map((distribution) =>
         pipe([
+          () => distribution,
           get("Origins.Items"),
           flatMap(({ Id, OriginPath }) =>
             findS3ObjectUpdated({ plans: resultCreate, Id, OriginPath })
@@ -323,7 +323,7 @@ exports.AwsDistribution = ({ spec, config }) => {
               }),
             ])
           ),
-        ])(distribution)
+        ])()
       ),
     ])();
 
