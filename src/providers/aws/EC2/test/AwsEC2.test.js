@@ -57,17 +57,7 @@ describe("AwsEC2", async function () {
         name: server.name,
       })
     );
-    /*
-    TODO
-    const {
-      results: [vpcs],
-    } = await provider.listLives({ options: { types: ["Vpc"] } });
-    assert(vpcs);
-    const vpcDefault = vpcs.resources.find((vpc) => vpc.data.IsDefault);
-    assert(vpcDefault);
 
-    assert.equal(serverLive.VpcId, vpcDefault.data.VpcId);
-*/
     await testPlanDestroy({ provider, types });
   });
 });
