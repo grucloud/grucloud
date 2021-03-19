@@ -565,20 +565,6 @@ const doPlansDeploy = ({ commandOptions, programOptions, providersGru }) => ({
             tap((xxx) => {
               assert(xxx);
             }),
-            tap(
-              pipe([
-                get("results"),
-                filter(not(get("error"))),
-                forEach(({ providerName, error }) =>
-                  providersGru
-                    .getProvider({ providerName })
-                    .spinnersStopProvider({
-                      onStateChange,
-                      error,
-                    })
-                ),
-              ])
-            ),
           ])(),
       }),
     tap((result) =>
