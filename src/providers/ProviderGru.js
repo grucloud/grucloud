@@ -270,7 +270,12 @@ exports.ProviderGru = ({ stacks }) => {
     };
   };
 
-  const listLives = async ({ onStateChange, options, readWrite }) =>
+  const listLives = async ({
+    onStateChange,
+    onProviderEnd = () => {},
+    options,
+    readWrite,
+  }) =>
     pipe([
       tap(() => {
         logger.info(`listLives ${JSON.stringify({ options, readWrite })}`);
@@ -283,14 +288,25 @@ exports.ProviderGru = ({ stacks }) => {
           map(({ provider }) =>
             pipe([
               () => provider.start({ onStateChange }),
-              tap(() =>
+              () =>
                 provider.listLives({
                   onStateChange,
                   options,
                   readWrite,
                   lives,
+                }),
+              tap((result) => {
+                logger.info(`listLives result: ${tos(result)}`);
+              }),
+              tap(({ error }) =>
+                provider.spinnersStopListLives({
+                  onStateChange,
+                  error,
                 })
               ),
+              tap(({ error }) => {
+                onProviderEnd({ provider, error });
+              }),
             ])()
           ),
           tap(() => {
@@ -368,7 +384,12 @@ exports.ProviderGru = ({ stacks }) => {
         ])(),
     ])();
 
-  const planApply = ({ plan, lives, onStateChange }) =>
+  const planApply = ({
+    plan,
+    lives,
+    onStateChange,
+    onProviderEnd = () => {},
+  }) =>
     pipe([
       tap(() => {
         logger.info(`planApply`);
@@ -440,6 +461,9 @@ exports.ProviderGru = ({ stacks }) => {
                     assign({ error: any(get("error")) }),
                     tap((xxx) => {
                       assert(xxx);
+                    }),
+                    tap(({ error }) => {
+                      onProviderEnd({ provider, error });
                     }),
                   ])(),
               ])(),
@@ -522,11 +546,14 @@ exports.ProviderGru = ({ stacks }) => {
                   options,
                   lives,
                 }),
+              tap(({ error }) => {
+                provider.spinnersStopProvider({
+                  onStateChange,
+                  error,
+                });
+              }),
             ])()
           ),
-          tap((results) => {
-            logger.info(`planQueryDestroy done`);
-          }),
           (results) => ({ error: any(get("error"))(results), results }),
           (resultQueryDestroy) => ({ lives, resultQueryDestroy }),
           assign({ error: any(get("error")) }),

@@ -561,6 +561,11 @@ const doPlansDeploy = ({ commandOptions, programOptions, providersGru }) => ({
                 onStateChange,
                 plan: resultQuery,
                 lives,
+                onProviderEnd: ({ provider, error }) =>
+                  provider.spinnersStopProvider({
+                    onStateChange,
+                    error,
+                  }),
               }),
             tap((xxx) => {
               assert(xxx);
@@ -992,6 +997,11 @@ const listDoOk = ({ commandOptions, programOptions }) =>
                 () =>
                   providersGru.listLives({
                     onStateChange,
+                    onProviderEnd: ({ provider, error }) =>
+                      provider.spinnersStopProvider({
+                        onStateChange,
+                        error,
+                      }),
                     options: commandOptions,
                   }),
               ])({}),
