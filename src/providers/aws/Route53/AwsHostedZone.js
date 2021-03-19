@@ -408,7 +408,7 @@ exports.compareHostedZone = async ({
 }) =>
   pipe([
     tap(() => {
-      logger.debug(`compareHostedZone ${tos({ target, live, dependencies })}`);
+      //logger.debug(`compareHostedZone ${tos({ target, live, dependencies })}`);
       assert(target.RecordSet, "target.recordSet");
       assert(live.RecordSet, "live.recordSet");
       assert(usedBySet, "usedBySet");

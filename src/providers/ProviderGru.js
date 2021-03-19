@@ -357,16 +357,13 @@ exports.ProviderGru = ({ stacks }) => {
                   ),
                 ])(),
             }),
-          tap((result) => {
-            logger.info(`planQuery result: ${tos(result)}`);
-          }),
           (result) => ({
             lives,
             resultQuery: result,
           }),
           assign({ error: any(get("error")) }),
           tap((result) => {
-            logger.info(`planQuery result: ${tos(result)}`);
+            logger.info(`planQuery done`);
           }),
         ])(),
     ])();

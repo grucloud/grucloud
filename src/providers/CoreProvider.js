@@ -346,9 +346,9 @@ const ResourceMaker = ({
         )(dependency);
       }),
       tap((result) => {
-        logger.debug(
+        /*logger.debug(
           `resolveDependencies for ${toString()}, result: ${tos(result)}`
-        );
+        );*/
       }),
       tap.if(any(get("error")), (resolvedDependencies) => {
         logger.error(
@@ -372,9 +372,9 @@ const ResourceMaker = ({
         };
       }),
       tap((result) => {
-        logger.debug(
+        /*logger.debug(
           `resolveDependencies for ${toString()}, result: ${tos(result)}`
-        );
+        );*/
       }),
     ])(dependencies);
 
@@ -389,7 +389,7 @@ const ResourceMaker = ({
         logger.debug(
           `resolveConfig ${toString()}, ${tos({
             deep,
-            live,
+            hasLive: !!live, //TODO
           })}`
         );
         assert(client.configDefault);
@@ -441,7 +441,6 @@ const ResourceMaker = ({
           () => config,
         ])();
 
-        logger.info(`resolveConfig: final: ${tos(finalConfig)}`);
         return finalConfig;
       },
     ])();
@@ -473,7 +472,7 @@ const ResourceMaker = ({
       () => getLive({ deep: true, lives }),
       tap((live) => {
         logger.info(`created: ${toString()}`);
-        logger.info(`created: live: ${tos(live)}`);
+        logger.debug(`created: live: ${tos(live)}`);
       }),
     ])();
 
@@ -1032,6 +1031,9 @@ function CoreProvider({
             "resourcesPerType must be an array"
           );
           logger.info(
+            `spinnersStartResources ${title}, #resourcesPerType ${resourcesPerType.length}`
+          );
+          logger.debug(
             `spinnersStartResources ${title}, ${tos(resourcesPerType)}`
           );
         }),
@@ -1072,7 +1074,7 @@ function CoreProvider({
           assert(title, "title");
           assert(Array.isArray(clients), "clients must be an array");
           logger.info(
-            `spinnersStartClient ${title}, ${JSON.stringify(clients)}`
+            `spinnersStartClient ${title}, #client ${clients.length}`
           );
         }),
         tap(() =>
@@ -1392,7 +1394,7 @@ function CoreProvider({
       pipe([
         tap((result) => {
           logger.info(
-            `filterClient ${tos({
+            `filterClient ${JSON.stringify({
               our,
               name,
               id,
@@ -1557,7 +1559,8 @@ function CoreProvider({
       }),
       assign({ providerName: () => providerName }),
       tap((result) => {
-        logger.info(`listLives result: ${tos(result)}`);
+        logger.info(`listLives done`);
+        //logger.debug(`listLives result: ${tos(result)}`);
       }),
     ])();
 
@@ -2070,7 +2073,8 @@ function CoreProvider({
     pipe([
       tap(() => {
         assert(Array.isArray(plans), "plans must be an array");
-        logger.info(`planDestroy ${tos({ plans, direction })}`);
+        logger.info(`planDestroy #plans ${plans.length}`);
+        logger.debug(`planDestroy ${tos({ plans, direction })}`);
         assert(lives);
       }),
       providerRunning({ onStateChange, providerName }),

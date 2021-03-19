@@ -148,10 +148,9 @@ exports.isOurMinion = ({ resource, config }) => {
     ]),
     tap((minion) => {
       logger.debug(
-        `isOurMinion ${minion}, ${tos({
+        `isOurMinion ${minion}, ${JSON.stringify({
           stage,
           projectName,
-          resource,
         })}`
       );
     }),

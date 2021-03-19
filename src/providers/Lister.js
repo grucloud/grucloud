@@ -129,7 +129,8 @@ exports.Lister = ({ inputs, onStateChange }) => {
     () => [...resultMap.values()],
     (results) => ({ error: any(get("error"))(results), results }),
     tap(({ error, results }) => {
-      logger.debug(`Lister ${error && "error"}, result: ${tos(results)}`);
+      logger.info(`Lister ${error && "error"}`);
+      //logger.debug(`Lister ${error && "error"}, result: ${tos(results)}`);
     }),
   ])();
 };

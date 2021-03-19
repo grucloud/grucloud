@@ -278,7 +278,8 @@ exports.AwsDistribution = ({ spec, config }) => {
   const onDeployed = ({ resultCreate, lives }) =>
     pipe([
       tap(() => {
-        logger.info(`onDeployed ${tos({ resultCreate })}`);
+        logger.info(`onDeployed`);
+        logger.debug(`onDeployed ${tos({ resultCreate })}`);
         assert(resultCreate);
         assert(lives);
       }),

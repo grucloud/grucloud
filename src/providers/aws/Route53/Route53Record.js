@@ -186,7 +186,8 @@ exports.Route53Record = ({ spec, config }) => {
         assert(name);
         assert(payload);
         assert(!payload.message);
-        logger.info(
+        logger.info(`create record: ${name}`);
+        logger.debug(
           `create record: ${name}, ${tos(payload)}, ${tos({
             hostedZone,
           })}`

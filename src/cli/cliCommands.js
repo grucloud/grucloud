@@ -214,7 +214,7 @@ const displayErrorResults = ({ results = [], name }) => {
     pipe([
       //TODO
       tap((results) => {
-        logger.debug(`displayErrorResults ${tos(results)}`);
+        //logger.debug(`displayErrorResults ${tos(results)}`);
       }),
       filter(get("error")),
       forEach(({ result, error, resultQuery }) => {
