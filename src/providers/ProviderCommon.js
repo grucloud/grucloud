@@ -87,7 +87,9 @@ exports.isTypeMatch = isTypeMatch;
 const findDependentType = ({ clients }) =>
   pipe([
     tap((types) => {
-      //logger.debug(`findDependentType ${types}`);
+      logger.info(
+        `findDependentType #clients ${clients.length}, types: ${types}`
+      );
     }),
     flatMap(
       pipe([
@@ -95,17 +97,25 @@ const findDependentType = ({ clients }) =>
           filter((client) =>
             isTypeMatch({ type, typeToMatch: client.spec.type })
           )(clients),
-        pluck("spec.listDependsOn"),
+        tap((xxx) => {
+          //logger.debug(`findDependentType`);
+        }),
+        pluck("spec.dependsOn"),
         flatten,
       ])
     ),
     tap((types) => {
-      logger.debug(`findDependentType ${types}`);
+      logger.info(`findDependentType result: ${types}`);
     }),
   ]);
 
-const filterByType = ({ types, targetTypes }) =>
+const filterByType = ({ types = [], targetTypes }) =>
   pipe([
+    tap((clients) => {
+      logger.info(
+        `filterByType inputs #clients ${clients.length}, #targetTypes ${targetTypes.length}, #types ${types.length}`
+      );
+    }),
     (clients) =>
       filter((client) =>
         pipe([
@@ -135,7 +145,7 @@ const filterByType = ({ types, targetTypes }) =>
         ])()
       )(clients),
     tap((clients) => {
-      logger.debug(`filterByType #clients ${clients}`);
+      logger.info(`filterByType result #clients ${clients.length}`);
     }),
   ]);
 
@@ -143,7 +153,7 @@ exports.filterReadClient = ({ options: { types, all } = {}, targetTypes }) =>
   pipe([
     tap((clients) => {
       assert(targetTypes);
-      logger.debug(
+      logger.info(
         `filterReadClient types: ${types}, #clients ${clients.length}, #targets: ${targetTypes.length}`
       );
     }),
@@ -154,7 +164,9 @@ exports.filterReadClient = ({ options: { types, all } = {}, targetTypes }) =>
       filterByType({ types, targetTypes }),
     ]),
     tap((clients) => {
-      logger.debug(`filterReadClient #clients ${clients.length}`);
+      logger.info(
+        `filterReadClient types: ${types}, targetTypes: ${targetTypes} #clients ${clients.length}`
+      );
     }),
   ]);
 
@@ -162,14 +174,16 @@ exports.filterReadWriteClient = ({ options: { types } = {}, targetTypes }) =>
   pipe([
     tap((clients) => {
       assert(targetTypes);
-      logger.debug(
+      logger.info(
         `filterReadWriteClient types: ${types}, #clients ${clients.length}`
       );
     }),
     filterByType({ types, targetTypes }),
     filter(and([not(get("spec.singleton")), not(get("spec.listOnly"))])),
     tap((clients) => {
-      logger.debug(`filterReadWriteClient result #clients ${clients.length}`);
+      logger.info(
+        `filterReadWriteClient ${types}, result #clients ${clients.length}`
+      );
     }),
   ]);
 
