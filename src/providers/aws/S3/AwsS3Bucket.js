@@ -44,9 +44,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         switchCase([isEmpty, () => undefined, (data) => data]),
       ]),
       (error) => {
-        logger.error(
-          `getBucketAccelerateConfiguration ${name}, error ${tos(error)}`
-        );
         throw error;
       }
     );
@@ -72,7 +69,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         },
       ]),
       (error) => {
-        logger.error(`getBucketAcl ${name}, error ${tos(error)}`);
         throw error;
       }
     );
@@ -89,7 +85,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         (error) => error.code === "NoSuchCORSConfiguration",
         () => undefined,
         (error) => {
-          logger.error(`getBucketCors ${name}, error ${tos(error)}`);
           throw error;
         },
       ])
@@ -107,7 +102,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         (err) => err.code === "ServerSideEncryptionConfigurationNotFoundError",
         () => undefined,
         (err) => {
-          logger.error(`getBucketEncryption ${name}, error ${tos(err)}`);
           throw err;
         },
       ])
@@ -126,9 +120,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         (err) => err.code === "NoSuchLifecycleConfiguration",
         () => undefined,
         (err) => {
-          logger.error(
-            `getBucketLifecycleConfiguration ${name}, error ${tos(err)}`
-          );
           throw err;
         },
       ])
@@ -138,7 +129,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     tryCatch(
       pipe([() => s3().getBucketLocation(params), get("LocationConstraint")]),
       (error) => {
-        logger.error(`getBucketLocation ${name}, error ${tos(error)}`);
         throw error;
       }
     );
@@ -153,7 +143,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         switchCase([isEmpty, () => undefined, (data) => data]),
       ]),
       (error) => {
-        logger.error(`getBucketLogging ${name}, error ${tos(error)}`);
         throw error;
       }
     );
@@ -173,9 +162,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         ]),
       ]),
       (error) => {
-        logger.error(
-          `getBucketNotificationConfiguration ${name}, error ${tos(error)}`
-        );
         throw error;
       }
     );
@@ -192,7 +178,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         (err) => err.code === "NoSuchBucketPolicy",
         () => undefined,
         (err) => {
-          logger.error(`getBucketPolicy ${name}, error ${tos(err)}`);
           throw err;
         },
       ])
@@ -211,7 +196,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         (err) => err.code === "NoSuchBucketPolicy",
         () => undefined,
         (err) => {
-          logger.error(`getBucketPolicyStatus ${name}, error ${tos(err)}`);
           throw err;
         },
       ])
@@ -230,7 +214,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         (err) => err.code === "ReplicationConfigurationNotFoundError",
         () => undefined,
         (err) => {
-          logger.error(`getBucketReplication ${name}, error ${tos(err)}`);
           throw err;
         },
       ])
@@ -247,7 +230,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         ]),
       ]),
       (err) => {
-        logger.error(`getBucketRequestPayment ${name}, error ${tos(err)}`);
         throw err;
       }
     );
@@ -262,7 +244,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         }),
       ]),
       (err) => {
-        logger.error(`getBucketVersioning ${name}, error ${tos(err)}`);
         throw err;
       }
     );
@@ -280,7 +261,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         (err) => err.code === "NoSuchWebsiteConfiguration",
         () => undefined,
         (err) => {
-          logger.error(`getBucketWebsite ${name}, error ${tos(err)}`);
           throw err;
         },
       ])
@@ -333,7 +313,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
         eq(get("code"), "NoSuchTagSet"),
         () => undefined,
         (err) => {
-          logger.error(`getBucketTagging ${params.Bucket}, error ${tos(err)}`);
           throw err;
         },
       ])
