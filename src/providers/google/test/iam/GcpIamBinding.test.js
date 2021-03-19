@@ -28,8 +28,6 @@ describe("GcpIamBinding", async function () {
       config: config.google,
     });
 
-    await provider.start();
-
     const saName = `sa-${chance.guid().slice(0, 15)}`;
     serviceAccount = await provider.makeServiceAccount({
       name: saName,
@@ -80,7 +78,7 @@ describe("GcpIamBinding", async function () {
       {
         const { error, resultQuery } = await cliCommands.planQuery({
           infra: { provider },
-          commandOptions: { force: true, types },
+          commandOptions: { force: true },
         });
         assert(!error, "planQuery failed");
         const plan = resultQuery.results[0];
