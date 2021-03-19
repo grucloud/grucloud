@@ -2119,33 +2119,6 @@ function CoreProvider({
       ),
     ])();
 
-  //TODO still used ?
-  const destroyAll = ({ onStateChange = identity, options, lives } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`destroyAll ${JSON.stringify(options)}`);
-        assert(lives);
-      }),
-      () => planQueryDestroy({ options, lives }),
-      tap((xxx) => {
-        assert(xxx);
-      }),
-      assign({
-        destroy: ({ plans }) =>
-          planDestroy({
-            onStateChange,
-            plans,
-            options,
-            direction: PlanDirection.DOWN,
-            lives,
-          }),
-      }),
-      assign({ error: any(get("error")) }),
-      tap((result) => {
-        //logger.info(`destroyAll ${tos(result)}`);
-      }),
-    ])({});
-
   const toString = () => ({ name: providerName, type: toType() });
 
   const color = "#383838";
@@ -2210,7 +2183,6 @@ ${result}}
     planQueryDestroy,
     planDestroy,
     planFindDestroy,
-    destroyAll,
     listLives,
     planQuery,
     planApply,

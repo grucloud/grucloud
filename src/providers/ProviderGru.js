@@ -623,15 +623,6 @@ exports.ProviderGru = ({ stacks }) => {
       }),
     ])();
 
-  const destroyAll = () =>
-    pipe([
-      tap(() => {
-        //TODO
-        logger.info(`planQuery `);
-        assert(false);
-      }),
-    ])();
-
   //TODO do not use lister
   const runCommand = ({
     onStateChange = identity,
@@ -739,7 +730,6 @@ exports.ProviderGru = ({ stacks }) => {
     planApply,
     planQueryDestroy,
     planDestroy,
-    destroyAll,
     planQueryAndApply,
     displayLives,
     getProvider,
