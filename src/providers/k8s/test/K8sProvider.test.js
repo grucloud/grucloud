@@ -3,7 +3,7 @@ const { ConfigLoader } = require("ConfigLoader");
 const { K8sProvider } = require("../K8sProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
-describe.skip("K8sProvider", async function () {
+describe("K8sProvider", async function () {
   let config;
   let provider;
 
@@ -14,7 +14,7 @@ describe.skip("K8sProvider", async function () {
   const deploymentWebName = "web-deployment";
 
   let configMap;
-
+  const configMapName = "postgres-config-map";
   let storageClass;
   const storageClassName = "my-storage-class";
 
@@ -156,7 +156,7 @@ describe.skip("K8sProvider", async function () {
     });
 
     configMap = await provider.makeConfigMap({
-      name: "config-map",
+      name: configMapName,
       dependencies: { namespace },
       properties: () => ({
         data: {
@@ -281,7 +281,7 @@ describe.skip("K8sProvider", async function () {
         deploymentContent({ labelApp, configMap }),
     });
 
-    const statefulPostgresContent = ({ configMap, name, label, pvName }) => ({
+    const statefulPostgresContent = ({ label, pvName }) => ({
       metadata: {
         labels: {
           app: label,
@@ -323,7 +323,7 @@ describe.skip("K8sProvider", async function () {
                     name: "POSTGRES_USER",
                     valueFrom: {
                       configMapKeyRef: {
-                        name: configMap.resource.name,
+                        name: configMapName,
                         key: "POSTGRES_USER",
                       },
                     },
@@ -333,7 +333,7 @@ describe.skip("K8sProvider", async function () {
                     name: "POSTGRES_PASSWORD",
                     valueFrom: {
                       configMapKeyRef: {
-                        name: configMap.resource.name,
+                        name: configMapName,
                         key: "POSTGRES_PASSWORD",
                       },
                     },
@@ -342,7 +342,7 @@ describe.skip("K8sProvider", async function () {
                     name: "POSTGRES_DB",
                     valueFrom: {
                       configMapKeyRef: {
-                        name: configMap.resource.name,
+                        name: configMapName,
                         key: "POSTGRES_DB",
                       },
                     },
@@ -383,7 +383,7 @@ describe.skip("K8sProvider", async function () {
   });
   after(async () => {});
 
-  it.only("k8s deployment apply and destroy", async function () {
+  it("k8s deployment apply and destroy", async function () {
     try {
       await testPlanDeploy({ provider, types });
 
