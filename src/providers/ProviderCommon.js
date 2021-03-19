@@ -170,15 +170,22 @@ exports.filterReadClient = ({ options: { types, all } = {}, targetTypes }) =>
     }),
   ]);
 
-exports.filterReadWriteClient = ({ options: { types } = {}, targetTypes }) =>
+exports.filterReadWriteClient = ({
+  options: { types, all } = {},
+  targetTypes,
+}) =>
   pipe([
     tap((clients) => {
       assert(targetTypes);
       logger.info(
-        `filterReadWriteClient types: ${types}, #clients ${clients.length}`
+        `filterReadWriteClient types: ${types}, all: ${all}, #clients ${clients.length}`
       );
     }),
-    filterByType({ types, targetTypes }),
+    switchCase([
+      () => all,
+      (clients) => clients,
+      filterByType({ types, targetTypes }),
+    ]),
     filter(and([not(get("spec.singleton")), not(get("spec.listOnly"))])),
     tap((clients) => {
       logger.info(
