@@ -7,35 +7,26 @@ const cliCommands = require("../../../../cli/cliCommands");
 
 describe("AwsHostedZone", async function () {
   let config;
-  let provider;
-  let hostedZone;
-  let recordA;
   const types = ["HostedZone"];
   const domainName = "grucloud.org";
   const subDomainName = `sub.${domainName}`;
-  const configUsEast = (config) => ({
-    ...config.aws,
-    region: "us-east-1",
-    zone: "us-east-1a",
-  });
-  const createProvider = async ({ config }) => {
+
+  const createStack = async ({ config }) => {
     const provider = AwsProvider({
-      config: configUsEast(config),
+      config: config.aws,
     });
 
-    await provider.start();
-
-    domain = await provider.useRoute53Domain({
+    const domain = await provider.useRoute53Domain({
       name: domainName,
     });
 
-    hostedZone = await provider.makeHostedZone({
+    const hostedZone = await provider.makeHostedZone({
       name: `${subDomainName}.`,
       dependencies: { domain },
       properties: () => ({}),
     });
 
-    recordA = await provider.makeRoute53Record({
+    const recordA = await provider.makeRoute53Record({
       name: `${subDomainName}.`,
       dependencies: { hostedZone },
       properties: () => ({
@@ -49,7 +40,7 @@ describe("AwsHostedZone", async function () {
       }),
     });
 
-    recordNS = await provider.makeRoute53Record({
+    const recordNS = await provider.makeRoute53Record({
       name: `validation.${subDomainName}.`,
       dependencies: { hostedZone },
       properties: () => ({
@@ -64,22 +55,25 @@ describe("AwsHostedZone", async function () {
       }),
     });
 
-    return provider;
+    return { provider, resources: { domain, hostedZone, recordA, recordNS } };
   };
-  const createProviderNext = async ({ config }) => {
+
+  const createStackNext = async ({ config }) => {
     const provider = AwsProvider({
-      config: configUsEast(config),
+      config: config.aws,
     });
 
-    await provider.start();
+    const domain = await provider.useRoute53Domain({
+      name: domainName,
+    });
 
-    hostedZone = await provider.makeHostedZone({
+    const hostedZone = await provider.makeHostedZone({
       name: `${subDomainName}.`,
       dependencies: { domain },
       properties: () => ({}),
     });
 
-    recordA = await provider.makeRoute53Record({
+    const recordA = await provider.makeRoute53Record({
       name: `${subDomainName}.`,
       dependencies: { hostedZone },
       properties: () => ({
@@ -92,7 +86,7 @@ describe("AwsHostedZone", async function () {
         Type: "A",
       }),
     });
-    return provider;
+    return { provider, resources: { domain, hostedZone, recordA } };
   };
   before(async function () {
     try {
@@ -100,16 +94,15 @@ describe("AwsHostedZone", async function () {
     } catch (error) {
       this.skip();
     }
-    provider = await createProvider({ config });
   });
   after(async () => {});
-  it("hostedZone resolveConfig", async function () {
-    assert.equal(hostedZone.name, `${subDomainName}.`);
-    const config = await hostedZone.resolveConfig();
-    assert.equal(config.Name, `${subDomainName}.`);
-  });
 
   it("hostedZone apply plan", async function () {
+    const {
+      provider,
+      resources: { hostedZone },
+    } = await createStack({ config });
+
     await testPlanDeploy({
       provider,
       types,
@@ -120,12 +113,13 @@ describe("AwsHostedZone", async function () {
     assert(hostedZoneLive);
     assert(find((record) => record.Type === "A")(hostedZoneLive.RecordSet));
 
-    const providerNext = await createProviderNext({ config });
+    const { provider: providerNext } = await createStackNext({ config });
 
     const { error, resultQuery } = await cliCommands.planQuery({
       infra: { provider: providerNext },
-      commandOptions: { force: true, types },
+      commandOptions: {},
     });
+
     assert(!error);
     const plan = resultQuery.results[0];
     //assert.equal(plan.resultDestroy.length, 1);
@@ -137,14 +131,17 @@ describe("AwsHostedZone", async function () {
     const updateRecord = plan.resultCreate[1];
     assert.equal(updateRecord.action, "UPDATE");
     assert(updateRecord.diff.updated.ResourceRecords);
-
-    const result = await cliCommands.planApply({
-      infra: { provider: providerNext },
-      commandOptions: { force: true },
-    });
-    assert(!result.error);
-    assert.equal(result.resultDeploy.results[0].resultCreate.results.length, 2);
-
-    await testPlanDestroy({ provider, types });
+    {
+      const result = await cliCommands.planApply({
+        infra: { provider: providerNext },
+        commandOptions: { force: true },
+      });
+      assert(!result.error);
+      assert.equal(
+        result.resultDeploy.results[0].resultCreate.results.length,
+        2
+      );
+    }
+    await testPlanDestroy({ provider: providerNext, types });
   });
 });
