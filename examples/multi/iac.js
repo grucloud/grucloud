@@ -161,7 +161,7 @@ exports.createStack = async ({ config }) => {
     await createAws({ config }),
     //await createAwsUsEast1({ config }),
     await createAzure({ config }),
-    await createGoogle({ config }),
+    //await createGoogle({ config }),
     //await createScaleway({ config }),
   ];
 };
