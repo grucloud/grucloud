@@ -117,3 +117,24 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 - https://jonathan.bergknoff.com/journal/terraform-pain-points/
 - terraform workspace new staging
 - terraform workspace select (staging/production)
+
+* retry when deleting:
+
+"Input": {
+"data": [undefined]
+"url": "delete https://compute.googleapis.com/compute/v1/projects/grucloud-e2e/global/networks/99300703649411466"
+}
+"Message": "Request failed with status code 400"
+"Output": {
+"error": {
+"code": 400
+"errors": [
+{
+"domain": "global"
+"message": "The resource 'projects/grucloud-e2e/global/networks/vpc-dev' is not ready"
+"reason": "resourceNotReady"
+}
+]
+"message": "The resource 'projects/grucloud-e2e/global/networks/vpc-dev' is not ready"
+}
+}

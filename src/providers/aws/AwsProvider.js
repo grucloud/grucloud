@@ -17,6 +17,8 @@ const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
 const AwsEKS = require("./EKS");
 
+const defaultRegion = "eu-west-2";
+
 const fnSpecs = () => [
   ...AwsS3,
   ...AwsEC2,
@@ -79,7 +81,7 @@ exports.AwsProvider = ({ name = "aws", config, ...other }) => {
   let zone;
   let zones;
   const getRegion = (config) =>
-    config.region || AWS.config.region || "us-east-1";
+    config.region || AWS.config.region || defaultRegion;
   const getZone = ({ zones }) => config.zone || first(zones);
   const region = getRegion(config);
   const start = async () => {
