@@ -1024,12 +1024,12 @@ exports.GoogleProvider = ({
             pick(["region", "zone"])(gcloudConfig.config.properties.compute) ||
               {}
           ),
-          defaultsDeep(computeDefault),
         ])(config);
       } else {
         return config;
       }
     },
+    defaultsDeep(computeDefault),
     (config) => defaultsDeep(config)(createConfig(config)),
   ])({});
 
