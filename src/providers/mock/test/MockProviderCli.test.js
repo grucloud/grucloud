@@ -15,8 +15,7 @@ const toJSON = (x) => JSON.stringify(x, null, 4);
 describe("MockProviderCli", async function () {
   before(async () => {});
   it("init and uninit error", async function () {
-    const config = ConfigLoader({ baseDir: __dirname });
-    const provider = MockProvider({ config });
+    const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
     const infra = { provider };
     const errorMessage = "stub-error";
@@ -57,8 +56,7 @@ describe("MockProviderCli", async function () {
     }
   });
   it("start error", async function () {
-    const config = ConfigLoader({ baseDir: __dirname });
-    const provider = MockProvider({ config });
+    const provider = MockProvider({ config: () => ({}) });
     const errorMessage = "stub-error";
 
     provider.start = sinon
@@ -98,8 +96,7 @@ describe("MockProviderCli", async function () {
     ]);
   });
   it("abort deploy and destroy", async function () {
-    const config = ConfigLoader({ baseDir: __dirname });
-    const provider = MockProvider({ config });
+    const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
     const infra = { provider, resources };
 

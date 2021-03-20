@@ -28,7 +28,10 @@ describe("GcpBucket", async function () {
       this.skip();
     }
     provider = GoogleProvider({
-      config: config.google,
+      config: () => ({
+        projectId: () => "grucloud-e2e",
+        projectName: () => "grucloud-e2e",
+      }),
     });
 
     bucket = await provider.makeBucket({
@@ -84,7 +87,10 @@ describe("GcpBucket", async function () {
 
     {
       const provider = GoogleProvider({
-        config: config.google,
+        config: () => ({
+          projectId: () => "grucloud-e2e",
+          projectName: () => "grucloud-e2e",
+        }),
       });
 
       const bucket = await provider.makeBucket({

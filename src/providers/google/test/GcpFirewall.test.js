@@ -24,7 +24,10 @@ describe("GcpFirewall", async function () {
 
     provider = GoogleProvider({
       name: "google",
-      config: config.google,
+      config: () => ({
+        projectId: () => "grucloud-e2e",
+        projectName: () => "grucloud-e2e",
+      }),
     });
 
     network = await provider.makeNetwork({

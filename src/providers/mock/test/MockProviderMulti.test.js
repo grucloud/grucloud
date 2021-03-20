@@ -17,12 +17,10 @@ describe("MockProviderMulti", async function () {
   let provider2;
   let volume2;
 
-  const config = ConfigLoader({ baseDir: __dirname });
-
   before(async () => {
     provider1 = MockProvider({
       name: providerName1,
-      config,
+      config: () => ({}),
     });
 
     volume1 = await provider1.makeVolume({
@@ -34,7 +32,7 @@ describe("MockProviderMulti", async function () {
 
     provider2 = MockProvider({
       name: providerName2,
-      config,
+      config: () => ({}),
       dependencies: { provider1 },
     });
 

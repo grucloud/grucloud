@@ -15,8 +15,7 @@ describe("MockProviderHooks", async function () {
     const onDeployed = { init: sinon.spy() };
     const onDestroyed = { init: sinon.spy() };
 
-    const config = ConfigLoader({ baseDir: __dirname });
-    const provider = MockProvider({ config });
+    const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
 
     provider.hookAdd("mock-test", {
@@ -45,9 +44,8 @@ describe("MockProviderHooks", async function () {
     const onDeployed = { init: sinon.spy() };
     const onDestroyed = { init: sinon.spy() };
 
-    const config = ConfigLoader({ baseDir: __dirname });
     const provider = MockProvider({
-      config: { ...config, ...config404 },
+      config: () => config404,
     });
     const resources = await createResources({ provider });
 
@@ -87,8 +85,7 @@ describe("MockProviderHooks", async function () {
     assert(!onDestroyed.init.called);
   });
   it("planApply init throw ", async function () {
-    const config = ConfigLoader({ baseDir: __dirname });
-    const provider = MockProvider({ config });
+    const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
     provider.hookAdd("mock-init-throw", {
       onDeployed: {
@@ -134,8 +131,7 @@ describe("MockProviderHooks", async function () {
     }
   });
   it("run --onDeployed init throw ", async function () {
-    const config = ConfigLoader({ baseDir: __dirname });
-    const provider = MockProvider({ config });
+    const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
     provider.hookAdd("mock-run-ondeployed-init-throw", {
       onDeployed: {
@@ -159,8 +155,7 @@ describe("MockProviderHooks", async function () {
   });
 
   it("action throw ", async function () {
-    const config = ConfigLoader({ baseDir: __dirname });
-    const provider = MockProvider({ config });
+    const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
     const message = "i throw in a command";
     provider.hookAdd("mock-action-throw", {

@@ -19,13 +19,13 @@ describe("AzProvider", async function () {
 
   before(async function () {
     try {
-      config = ConfigLoader({ path: "examples/azure" });
+      config = ConfigLoader({ path: "examples/multi" });
     } catch (error) {
       this.skip();
     }
     provider = AzureProvider({
       name: "azure",
-      config,
+      config: () => ({ location: "uksouth" }),
     });
     resourceGroup = await provider.makeResourceGroup({ name: rgName });
     virtualNetwork = await provider.makeVirtualNetwork({
@@ -134,7 +134,7 @@ describe("AzProvider", async function () {
     });
   });
   after(async () => {});
-  it("az info", async function () {
+  itp("az info", async function () {
     const info = await provider.info();
     assert(info.subscriptionId);
     assert(info.tenantId);

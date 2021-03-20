@@ -25,8 +25,12 @@ describe("GcpIamBinding", async function () {
     }
 
     provider = GoogleProvider({
-      config: config.google,
+      config: () => ({
+        projectId: () => "grucloud-e2e",
+        projectName: () => "grucloud-e2e",
+      }),
     });
+    await provider.start();
 
     const saName = `sa-${chance.guid().slice(0, 15)}`;
     serviceAccount = await provider.makeServiceAccount({
@@ -59,7 +63,10 @@ describe("GcpIamBinding", async function () {
     assert(live.role);
     {
       const provider = GoogleProvider({
-        config: config.google,
+        config: () => ({
+          projectId: () => "grucloud-e2e",
+          projectName: () => "grucloud-e2e",
+        }),
       });
 
       const saName = `sa-${chance.guid().slice(0, 15)}`;
@@ -94,7 +101,10 @@ describe("GcpIamBinding", async function () {
 
   it("iamBindingEmail", async function () {
     const provider = GoogleProvider({
-      config: config.google,
+      config: () => ({
+        projectId: () => "grucloud-e2e",
+        projectName: () => "grucloud-e2e",
+      }),
     });
 
     const email = "user:joe@gmail.com";

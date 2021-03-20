@@ -22,7 +22,10 @@ describe("GcpDnsManagedZone", async function () {
     }
     provider = GoogleProvider({
       name: "google",
-      config: config.google,
+      config: () => ({
+        projectId: () => "grucloud-e2e",
+        projectName: () => "grucloud-e2e",
+      }),
     });
 
     await provider.start();

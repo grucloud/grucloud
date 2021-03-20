@@ -148,7 +148,7 @@ const createScaleway = async ({ config }) => {
 
 const createMock = async ({ config }) => {
   const provider = MockProvider({
-    config: { stage: config.stage },
+    config: () => ({ stage: config.stage }),
   });
 
   const resources = await MockStack.createResources({ provider });

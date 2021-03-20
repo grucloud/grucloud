@@ -12,7 +12,10 @@ describe("GoogleProviderInit", async function () {
       this.skip();
     }
     provider = GoogleProvider({
-      config: config.google,
+      config: () => ({
+        projectId: () => "grucloud-e2e",
+        projectName: () => "grucloud-e2e",
+      }),
     });
 
     await provider.start();

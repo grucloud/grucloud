@@ -18,7 +18,10 @@ describe("GoogleError", async function () {
     try {
       GoogleProvider({
         name: "google",
-        config: config.google,
+        config: () => ({
+          projectId: () => "grucloud-e2e",
+          projectName: () => "grucloud-e2e",
+        }),
       });
     } catch (error) {
       assert.equal(error.code, 422);

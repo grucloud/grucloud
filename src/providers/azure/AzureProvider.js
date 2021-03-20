@@ -1,4 +1,6 @@
 const assert = require("assert");
+const { pipe } = require("rubico");
+
 const { defaultsDeep, isFunction } = require("rubico/x");
 
 const CoreProvider = require("../CoreProvider");

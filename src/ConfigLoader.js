@@ -1,4 +1,5 @@
 const { map, pipe, tap, filter, switchCase } = require("rubico");
+const { defaultsDeep } = require("rubico/x");
 const { isEmpty } = require("rubico/x");
 const assert = require("assert");
 const npath = require("path");
@@ -83,14 +84,22 @@ const envLoader = ({ configDir, stage }) => {
   envFromStage({ configDir, stage });
 };
 
+const configFromDefault = ({ configDir }) => {
+  const defaultConfigFile = npath.join(configDir, "config.js");
+  checkFileExist(defaultConfigFile);
+  return require(defaultConfigFile);
+};
+
 exports.ConfigLoader = ({
   baseDir = process.cwd(),
   path = "",
   stage = process.env.STAGE || "dev",
 }) => {
   //console.log(`ConfigLoader ${baseDir} ${stage}`);
-  logger.info(`${(baseDir, stage)}`);
-  const configDir = npath.join(baseDir, path, "config");
+  logger.info(`ConfigLoader ${baseDir}, ${stage}`);
+  const configDir = npath.join(baseDir, path);
   process.env.CONFIG_DIR = configDir;
   envLoader({ configDir, stage });
+
+  return configFromDefault({ configDir });
 };

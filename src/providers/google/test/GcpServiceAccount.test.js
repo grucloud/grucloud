@@ -25,7 +25,10 @@ describe("GcpServiceAccount", async function () {
 
     provider = GoogleProvider({
       name: "google",
-      config: config.google,
+      config: () => ({
+        projectId: () => "grucloud-e2e",
+        projectName: () => "grucloud-e2e",
+      }),
     });
 
     serviceAccount = await provider.makeServiceAccount({
@@ -60,7 +63,10 @@ describe("GcpServiceAccount", async function () {
     assert(serviceAccountLive);
 
     const providerEmpty = GoogleProvider({
-      config: config.google,
+      config: () => ({
+        projectId: () => "grucloud-e2e",
+        projectName: () => "grucloud-e2e",
+      }),
     });
     {
       const result = await cliCommands.planDestroy({

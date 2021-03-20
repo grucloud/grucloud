@@ -8,7 +8,7 @@ describe("AzAuth", function () {
 
   before(async function () {
     try {
-      config = ConfigLoader({ path: "examples/azure" });
+      config = ConfigLoader({ path: "examples/multi" });
     } catch (error) {
       assert(error.code, 422);
       this.skip();
