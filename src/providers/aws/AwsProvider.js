@@ -78,7 +78,8 @@ exports.AwsProvider = ({ name = "aws", config, ...other }) => {
   let accountId;
   let zone;
   let zones;
-  const getRegion = (config) => config.region || AWS.config.region;
+  const getRegion = (config) =>
+    config.region || AWS.config.region || "us-east-1";
   const getZone = ({ zones }) => config.zone || first(zones);
   const region = getRegion(config);
   const start = async () => {
