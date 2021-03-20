@@ -140,6 +140,8 @@ const fnSpecs = (config) => {
 };
 
 exports.ScalewayProvider = ({ name = "scaleway", config }) => {
+  assert(isFunction(config), "config must be a function");
+
   const configProviderDefault = {
     zone: "fr-par-1",
     organization: process.env.SCW_ORGANISATION,

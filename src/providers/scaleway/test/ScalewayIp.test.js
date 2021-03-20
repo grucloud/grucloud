@@ -16,7 +16,7 @@ describe("ScalewayIp", async function () {
     }
     provider = ScalewayProvider({
       name: "scaleway",
-      config: config.scaleway,
+      config: () => ({}),
     });
 
     ip = await provider.makeIp({ name: "myip" });

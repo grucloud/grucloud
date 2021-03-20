@@ -17,7 +17,7 @@ describe("ScalewayImage", async function () {
     }
     provider = ScalewayProvider({
       name: "scaleway",
-      config: config.scaleway,
+      config: () => ({}),
     });
 
     image = await provider.useImage({
