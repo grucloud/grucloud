@@ -14,7 +14,7 @@ module.exports = GcpSubNetwork = ({ spec, config }) => {
   assert(config);
 
   const { projectId, region, managedByDescription } = config;
-
+  assert(region);
   const configDefault = ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ properties, dependencies })}`);
     const { network } = dependencies;

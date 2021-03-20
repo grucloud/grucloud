@@ -243,6 +243,9 @@ exports.ProviderGru = ({ stacks }) => {
         logger.debug("live toString TODO");
         return `lives, #provider ${mapPerProvider.size}`;
       },
+      get json() {
+        return toJSON();
+      },
       toJSON,
       getByProvider: ({ providerName }) => {
         const mapPerType = mapPerProvider.get(providerName) || new Map();
@@ -322,7 +325,7 @@ exports.ProviderGru = ({ stacks }) => {
         assert(lives);
         logger.info(`displayLive`);
       }),
-      () => lives.toJSON(),
+      () => lives.json,
       tap((livesContent) => {
         assert(livesContent);
       }),

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, isFunction } = require("rubico/x");
 
 const CoreProvider = require("../CoreProvider");
 const AzClient = require("./AzClient");
@@ -298,6 +298,8 @@ const fnSpecs = (config) => {
 };
 
 exports.AzureProvider = ({ name = "azure", config, ...other }) => {
+  assert(isFunction(config), "config must be a function");
+
   const mandatoryEnvs = ["TENANT_ID", "SUBSCRIPTION_ID", "APP_ID", "PASSWORD"];
   checkEnv(mandatoryEnvs);
 
@@ -330,7 +332,12 @@ exports.AzureProvider = ({ name = "azure", config, ...other }) => {
     type: "azure",
     name,
     mandatoryConfigKeys: ["location"],
-    config: defaultsDeep(configProviderDefault)(config),
+    get config() {
+      return pipe([
+        () => config(configProviderDefault),
+        defaultsDeep(configProviderDefault),
+      ])();
+    },
     fnSpecs,
     start,
     info,

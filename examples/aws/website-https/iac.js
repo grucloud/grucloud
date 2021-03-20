@@ -8,7 +8,7 @@ const hooks = require("./hooks");
 const { makeDomainName, getFiles } = require("./dumpster");
 
 const createResources = async ({ provider }) => {
-  const config = provider.config();
+  const config = provider.config;
   const { rootDomainName, DomainName, websiteDir, stage } = config;
   assert(rootDomainName);
   assert(DomainName);
@@ -168,15 +168,13 @@ const createResources = async ({ provider }) => {
 
 exports.createResources = createResources;
 
-exports.createStack = async ({ name = "aws", config }) => {
+exports.createStack = async () => {
   const provider = AwsProvider({
-    name,
-    config,
+    config: require("./config"),
   });
 
   const resources = await createResources({
     provider,
-    config,
   });
 
   return {

@@ -18,7 +18,7 @@ npm install
 
 ## Config
 
-Edit [config/default.js](config/default.js) and set the following variable:
+Edit [config.js](config.js) and set the following variable:
 
 - _projetName_: the project name.
 - _bucketName_: the bucket name which is also the domain name, i.e. mywebsite.com

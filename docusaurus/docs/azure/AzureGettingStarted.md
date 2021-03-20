@@ -57,7 +57,7 @@ MACHINE_ADMIN_PASSWORD=
 
 ### Config
 
-Edit **config/default.js** and set the location:
+Edit **config.js** and set the location:
 
 ```js
 module.exports = () => ({

@@ -392,6 +392,9 @@ const ResourceMaker = ({
             hasLive: !!live, //TODO
           })}`
         );
+        if (!live) {
+          assert(true);
+        }
         assert(client.configDefault);
         assert(spec.propertiesDefault);
       }),
@@ -434,7 +437,7 @@ const ResourceMaker = ({
                 dependencies: resolvedDependencies,
                 items,
                 config,
-                configProvider: provider.config(),
+                configProvider: provider.config,
                 live,
               }),
           ]),
@@ -503,7 +506,7 @@ const ResourceMaker = ({
           id: client.findId(live),
         }),
       shouldRetryOnException: client.shouldRetryOnException,
-      config: provider.config(),
+      config: provider.config,
     });
 
     logger.info(`updated: ${toString()}`);
@@ -516,9 +519,14 @@ const ResourceMaker = ({
         assert(lives);
         logger.info(`planUpsert resource: ${resource.toString()}`);
       }),
-      fork({
+      assign({
         live: () => resource.findLive({ lives }),
-        target: pipe([() => resource.resolveConfig({ lives, deep: true })]),
+      }),
+      tap(({ live }) => {}),
+      assign({
+        target: pipe([
+          ({ live }) => resource.resolveConfig({ live, lives, deep: true }),
+        ]),
       }),
       tap(({ live, target }) => {
         logger.info(`planUpsert resource: ${resource.toString()}`);
@@ -536,7 +544,7 @@ const ResourceMaker = ({
         ],
         ({ live, target }) => planUpdate({ live, target, resource, lives }),
       ]),
-    ])();
+    ])({});
 
   const toString = () =>
     client.resourceKey({
@@ -682,22 +690,33 @@ function CoreProvider({
   );
 
   const hookMap = new Map();
-  const hookAdd = (name, hook) => {
-    assert(name);
-    const defaultHook = {
-      name,
-      onDeployed: {
-        init: () => {},
-        actions: [],
-      },
-      onDestroyed: {
-        init: () => {},
-        actions: [],
-      },
-    };
-    const newHook = defaultsDeep(defaultHook)(hook);
-    hookMap.set(name, newHook);
-  };
+
+  const hookAdd = (name, hook) =>
+    pipe([
+      tap(() => {
+        assert(name);
+        assert(hook);
+      }),
+      () => hook,
+      defaultsDeep({
+        name,
+        onDeployed: {
+          init: () => {},
+          actions: [],
+        },
+        onDestroyed: {
+          init: () => {},
+          actions: [],
+        },
+      }),
+      tap.if(
+        () => hookMap.has(name),
+        () => {
+          logger.error(`hook ${name} already added`);
+        }
+      ),
+      (newHook) => hookMap.set(name, newHook),
+    ])();
 
   // Target Resources
   const mapNameToResource = new Map();
@@ -2032,7 +2051,7 @@ function CoreProvider({
               isExpectedResult: () => true,
               //TODO isExpectedException: client.isExpectedExceptionDelete
               shouldRetryOnException: client.shouldRetryOnExceptionDelete,
-              config: provider.config(),
+              config: provider.config,
             })
           ),
         ])(resourcesPerType),
@@ -2168,7 +2187,9 @@ ${result}}
 
   const provider = {
     toString,
-    config: () => providerConfig,
+    get config() {
+      return providerConfig;
+    },
     name: providerName,
     dependencies,
     type: toType,
@@ -2220,6 +2241,9 @@ ${result}}
   };
   const enhanceProvider = {
     ...provider,
+    get config() {
+      return providerConfig;
+    },
     ...createResourceMakers({ provider, config: providerConfig, specs }),
   };
 

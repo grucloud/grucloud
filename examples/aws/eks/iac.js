@@ -8,7 +8,7 @@ const podPolicy = require("./pod-policy.json");
 const hooks = require("./hooks");
 
 const createResources = async ({ provider, resources: {} }) => {
-  const config = provider.config();
+  const { config } = provider;
   const clusterName = "cluster";
   const iamOpenIdConnectProviderName = "oicp-eks";
 
@@ -453,18 +453,23 @@ const createResources = async ({ provider, resources: {} }) => {
 
 exports.createResources = createResources;
 
-exports.createStack = async ({ name = "aws", config }) => {
-  const provider = AwsProvider({ name, config });
+const isProviderUp = ({ resources }) =>
+  pipe([
+    and([() => resources.cluster.getLive()]),
+    tap((isUp) => {
+      assert(true);
+    }),
+  ]);
+
+exports.isProviderUp;
+
+exports.createStack = async () => {
+  const provider = AwsProvider({ config: require("./config") });
   const resources = await createResources({ provider, resources: {} });
   return {
     provider,
     resources,
     hooks,
-    isProviderUp: pipe([
-      and([() => resources.cluster.getLive()]),
-      tap((isUp) => {
-        assert(true);
-      }),
-    ]),
+    isProviderUp: isProviderUp({ resources }),
   };
 };

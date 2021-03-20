@@ -8,7 +8,7 @@ const makeDomainName = ({ DomainName, stage }) =>
 exports.makeDomainName = makeDomainName;
 
 const createResources = async ({ provider }) => {
-  const config = provider.config();
+  const { config } = provider;
   const { DomainName, stage } = config;
 
   assert(DomainName);
@@ -21,7 +21,6 @@ const createResources = async ({ provider }) => {
 
   const certificate = await provider.makeCertificate({
     name: `certificate-${DomainName}-${stage}`,
-    config: { region: "us-east-1" },
     properties: () => ({
       DomainName: domainName,
     }),
@@ -69,10 +68,10 @@ const createResources = async ({ provider }) => {
 
 exports.createResources = createResources;
 
-exports.createStack = async ({ name = "aws", config }) => {
+exports.createStack = async ({ name = "aws" }) => {
   const provider = AwsProvider({
     name,
-    config,
+    config: require("./config"),
   });
 
   const resources = await createResources({

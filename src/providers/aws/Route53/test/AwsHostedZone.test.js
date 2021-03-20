@@ -13,7 +13,7 @@ describe("AwsHostedZone", async function () {
 
   const createStack = async ({ config }) => {
     const provider = AwsProvider({
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
     const domain = await provider.useRoute53Domain({
@@ -60,7 +60,7 @@ describe("AwsHostedZone", async function () {
 
   const createStackNext = async ({ config }) => {
     const provider = AwsProvider({
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
     const domain = await provider.useRoute53Domain({

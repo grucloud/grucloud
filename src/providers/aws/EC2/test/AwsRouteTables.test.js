@@ -23,7 +23,7 @@ describe("AwsRouteTables", async function () {
     }
     provider = AwsProvider({
       name: "aws",
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
     await provider.start();
@@ -67,7 +67,7 @@ describe("AwsRouteTables", async function () {
 
     assert(
       CheckAwsTags({
-        config: provider.config(),
+        config: provider.config,
         tags: rtLive.Tags,
         name: routeTable.name,
       })

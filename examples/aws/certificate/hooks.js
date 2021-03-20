@@ -2,7 +2,7 @@ const assert = require("assert");
 const { retryCall } = require("@grucloud/core").Retry;
 
 module.exports = ({ resources, provider }) => {
-  const { DomainName, stage } = provider.config();
+  const { DomainName, stage } = provider.config;
   const { hostedZone, certificate, recordValidation } = resources;
   assert(hostedZone);
   assert(DomainName);

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, isFunction } = require("rubico/x");
 
 const compare = require("../../Utils").compare;
 const CoreProvider = require("../CoreProvider");
@@ -149,7 +149,12 @@ exports.ScalewayProvider = ({ name = "scaleway", config }) => {
     name,
     mandatoryEnvs: ["SCW_ORGANISATION", "SCW_SECRET_KEY"],
     mandatoryConfigKeys: ["zone"],
-    config: defaultsDeep(configProviderDefault)(config),
+    get config() {
+      return pipe([
+        () => config(configProviderDefault),
+        defaultsDeep(configProviderDefault),
+      ])();
+    },
     fnSpecs,
   });
 };

@@ -173,14 +173,6 @@ describe("cli", function () {
       },
     });
   });
-  it("cannot open default config ", async function () {
-    await main({
-      argv: ["node", "gc", "--infra", filename, "list"],
-      onExit: ({ code, error: { message } }) => {
-        assert.equal(code, 400);
-      },
-    });
-  });
   it.skip("version", function () {
     const program = path.join(__dirname, "../cliEntry.js");
     const command = `${program} --version`;
@@ -245,7 +237,7 @@ describe("cli error", function () {
           `missing resultCreate[0].resource in ${tos(result)}`
         );
         assert(error.lives.error, `error.lives.error in ${tos(result)}`);
-        const livesJson = error.lives.toJSON();
+        const livesJson = error.lives.json;
         assert.equal(livesJson[0].results[0].error.message, "Network Error");
       },
     });
@@ -258,10 +250,7 @@ describe("cli error", function () {
       onExit: ({ code, error: { error } }) => {
         assert.equal(code, 422);
         assert(error.lives.error);
-        assert.equal(
-          error.lives.toJSON()[0].results[0].error.code,
-          "ECONNABORTED"
-        );
+        assert.equal(error.lives.json[0].results[0].error.code, "ECONNABORTED");
       },
     });
     assert.deepEqual(result, 422);
@@ -287,7 +276,7 @@ describe("cli error", function () {
         const { resultQuery } = error;
         assert(error.lives.error);
         assert.equal(
-          error.lives.toJSON()[0].results[0].error.message,
+          error.lives.json[0].results[0].error.message,
           "Network Error"
         );
       },
@@ -302,10 +291,7 @@ describe("cli error", function () {
         assert.equal(code, 422);
         const { resultQuery } = error;
         assert(error.lives.error);
-        assert.equal(
-          error.lives.toJSON()[0].results[0].error.code,
-          "ECONNABORTED"
-        );
+        assert.equal(error.lives.json[0].results[0].error.code, "ECONNABORTED");
       },
     });
     assert.deepEqual(result, 422);

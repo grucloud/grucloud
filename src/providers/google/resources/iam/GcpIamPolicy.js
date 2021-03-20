@@ -42,6 +42,10 @@ exports.GcpIamPolicy = ({ spec, config }) => {
 
   const configDefault = ({ properties, live }) =>
     pipe([
+      tap(() => {
+        assert(live);
+      }),
+      () => live.bindings,
       filter((binding) => prevervedRolesName.includes(binding.role)),
       tap((bindings) => {
         logger.debug(`configDefault ${tos(bindings)}`);
@@ -56,7 +60,7 @@ exports.GcpIamPolicy = ({ spec, config }) => {
       tap((policy) => {
         logger.debug(`configDefault ${policy}`);
       }),
-    ])(live.bindings);
+    ])();
 
   const getList = tryCatch(
     pipe([

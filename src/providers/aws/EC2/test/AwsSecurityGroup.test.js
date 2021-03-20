@@ -21,7 +21,7 @@ describe("AwsSecurityGroup", async function () {
       this.skip();
     }
     provider = AwsProvider({
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
     vpc = await provider.makeVpc({
@@ -130,7 +130,7 @@ describe("AwsSecurityGroup", async function () {
   after(async () => {});
   it("empty ingress", async function () {
     const provider = AwsProvider({
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
     await provider.start();
 
@@ -183,7 +183,7 @@ describe("AwsSecurityGroup", async function () {
 
     assert(
       CheckAwsTags({
-        config: provider.config(),
+        config: provider.config,
         tags: sgLive.Tags,
         name: sg.name,
       })

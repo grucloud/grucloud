@@ -48,7 +48,7 @@ describe("GcpSubNetwork", async function () {
     const config = await subNetwork.resolveConfig();
     assert(config);
     assert.equal(config.name, subNetworkName);
-    assert.equal(config.description, provider.config().managedByDescription);
+    assert.equal(config.description, provider.config.managedByDescription);
   });
   it.skip("subNetwork apply and destroy", async function () {
     await testPlanDeploy({ provider });

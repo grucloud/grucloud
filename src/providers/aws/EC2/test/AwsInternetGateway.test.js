@@ -19,7 +19,7 @@ describe("AwsInternetGateway", async function () {
       this.skip();
     }
     provider = AwsProvider({
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
     await provider.start();
@@ -47,7 +47,7 @@ describe("AwsInternetGateway", async function () {
     const vpcLive = await vpc.getLive();
     assert(
       CheckAwsTags({
-        config: provider.config(),
+        config: provider.config,
         tags: igLive.Tags,
         name: ig.name,
       })

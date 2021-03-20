@@ -16,7 +16,7 @@ exports.checkEnv = (mandatoryEnv = []) => {
     );
   }
 };
-
+//TODO do we need this ?
 exports.checkConfig = (config, mandatoryConfigKeys = []) => {
   const missingKeys = mandatoryConfigKeys.filter((key) => !config[key]);
   const { CONFIG_ENV = "dev" } = process.env;

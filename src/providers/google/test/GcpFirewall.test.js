@@ -50,7 +50,7 @@ describe("GcpFirewall", async function () {
     const config = await firewall.resolveConfig();
     assert(config);
     assert.equal(config.name, firewallName);
-    assert.equal(config.description, provider.config().managedByDescription);
+    assert.equal(config.description, provider.config.managedByDescription);
   });
   it.skip("firewall apply and destroy", async function () {
     await testPlanDeploy({ provider });

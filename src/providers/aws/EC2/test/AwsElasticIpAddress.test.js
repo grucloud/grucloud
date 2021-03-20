@@ -18,7 +18,7 @@ describe("AwsElasticIpAddress", async function () {
     }
     provider = AwsProvider({
       name: "aws",
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
     eip = await provider.makeElasticIpAddress({
@@ -42,7 +42,7 @@ describe("AwsElasticIpAddress", async function () {
 
     assert(
       CheckAwsTags({
-        config: provider.config(),
+        config: provider.config,
         tags: eipLive.Tags,
         name: eip.name,
       })

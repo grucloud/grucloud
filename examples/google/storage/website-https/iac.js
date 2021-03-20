@@ -25,15 +25,15 @@ async function getFilesWalk(dir) {
   return files.flat();
 }
 
-exports.createStack = async ({ config }) => {
+exports.createStack = async () => {
+  const provider = GoogleProvider({ config: require("./config") });
+
   const { bucketName, websiteDir } = config;
   assert(bucketName);
   assert(websiteDir);
 
   const domain = bucketName;
   const files = await getFiles(websiteDir);
-
-  const provider = GoogleProvider({ config });
 
   const bucketPublic = await provider.makeBucket({
     name: bucketName,

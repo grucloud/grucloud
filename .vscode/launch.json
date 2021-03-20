@@ -841,6 +841,7 @@
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/iam",
       "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
       "args": ["init"]
     },
     {
@@ -954,6 +955,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Google VM init",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/google/vm",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["init"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Google VM Run onDeployed",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/google/vm",
@@ -986,6 +996,16 @@
       "cwd": "${workspaceFolder}/examples/google/vm-network",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Google IAM Policy Apply",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/google/iam/iam-policy",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["apply", "-f"]
     },
     {
       "type": "node",

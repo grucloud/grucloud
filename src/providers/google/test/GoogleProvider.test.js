@@ -71,11 +71,11 @@ describe("GoogleProvider", async function () {
   });
   it("gcp server resolveConfig ", async function () {
     const config = await server.resolveConfig();
-    const { projectId, zone } = provider.config();
+    const { projectId, zone } = provider.config;
     assert.equal(
       config.machineType,
       `projects/${projectId(
-        provider.config()
+        provider.config
       )}/zones/${zone}/machineTypes/f1-micro`
     );
     assert.equal(config.disks[0].initializeParams.diskSizeGb, "20");
@@ -88,9 +88,9 @@ describe("GoogleProvider", async function () {
     const serverLive = await server.getLive();
     const { status, labels } = serverLive;
     assert(status, "RUNNING");
-    const { managedByKey, managedByValue, stageTagKey } = provider.config();
+    const { managedByKey, managedByValue, stageTagKey } = provider.config;
     assert(labels[managedByKey], managedByValue);
-    assert(labels[stageTagKey], provider.config().stage);
+    assert(labels[stageTagKey], provider.config.stage);
 
     const ipLive = await ip.getLive();
     assert.equal(

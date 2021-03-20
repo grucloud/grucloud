@@ -22,7 +22,7 @@ describe("AwsVpc", async function () {
       this.skip();
     }
     provider = AwsProvider({
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
     await provider.start();
@@ -62,7 +62,7 @@ describe("AwsVpc", async function () {
 
     assert(
       CheckAwsTags({
-        config: provider.config(),
+        config: provider.config,
         tags: vpcLive.Tags,
         name: vpc.name,
       })

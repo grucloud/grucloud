@@ -20,7 +20,7 @@ AWSSecretKey=
 
 ## Config file
 
-Edit **config/default.js** and set region and zone:
+Edit **config.js** and set region and zone:
 
 ```js
 module.exports = () => ({

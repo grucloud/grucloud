@@ -420,7 +420,7 @@ exports.compareHostedZone = async ({
         map(
           tryCatch(
             (resource) => {
-              return resource.resolveConfig({ lives });
+              return resource.resolveConfig({ lives, deep: true });
             },
             (error) => {
               logger.error("compareHostedZone error in resolveConfig");

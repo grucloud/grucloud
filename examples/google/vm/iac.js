@@ -3,7 +3,7 @@ const { GoogleProvider } = require("@grucloud/core");
 const hooks = require("./hooks");
 
 const createResources = async ({ provider, resources: { serviceAccount } }) => {
-  const { stage } = provider.config();
+  const { stage } = provider.config;
   // Allocate public Ip address
   const ip = await provider.makeAddress({
     name: `ip-webserver-${stage}`,
@@ -61,9 +61,9 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
 };
 exports.createResources = createResources;
 
-exports.createStack = async ({ config }) => {
-  const provider = GoogleProvider({ name: "google", config });
-  const { stage } = provider.config();
+exports.createStack = async () => {
+  const provider = GoogleProvider({ config: require("./config") });
+  const { stage } = provider.config;
   assert(stage, "missing stage");
 
   const serviceAccount = await provider.makeServiceAccount({

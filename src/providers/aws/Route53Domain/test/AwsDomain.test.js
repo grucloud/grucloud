@@ -12,7 +12,7 @@ describe("AwsDomain", async function () {
 
   const createProvider = async ({ config }) => {
     const provider = AwsProvider({
-      config: { ...config.aws, region: "us-east-1", zone: "us-east-1a" },
+      config: () => ({}),
     });
 
     await provider.start();

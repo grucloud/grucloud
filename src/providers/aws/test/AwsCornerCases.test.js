@@ -11,10 +11,10 @@ describe("AwsProvider Corner case", async function () {
       };
       const provider = AwsProvider({
         name: "aws",
-        config,
+        config: () => config,
       });
       await provider.start();
-      assert(false);
+      assert("should not be here");
     } catch (error) {
       assert.equal(error.code, 400);
     }

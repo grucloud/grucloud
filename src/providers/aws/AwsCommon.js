@@ -20,7 +20,7 @@ const handler = ({ endpointName, endpoint }) => ({
         shouldRetryOnException: ({ error, name }) =>
           pipe([
             tap((error) => {
-              logger.error(`${name}: ${tos(error)}`);
+              logger.info(`${name}: ${tos(error)}`);
             }),
             //TODO add network error
             eq(get("code"), "Throttling"),

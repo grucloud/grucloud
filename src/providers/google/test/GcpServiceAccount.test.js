@@ -44,7 +44,7 @@ describe("GcpServiceAccount", async function () {
     assert.equal(config.accountId, serviceAccountName);
     assert.equal(
       config.serviceAccount.description,
-      provider.config().managedByDescription
+      provider.config.managedByDescription
     );
     assert.equal(config.serviceAccount.displayName, serviceAccountDisplayName);
   });

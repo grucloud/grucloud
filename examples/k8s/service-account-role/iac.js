@@ -119,15 +119,15 @@ const createK8sStack = async ({
   };
 };
 
-exports.createStack = async ({ config }) => {
-  const awsStack = await createAwsStack({ config });
+exports.createStack = async () => {
+  const awsStack = await createAwsStack({ config: require("./configAws") });
   const k8sStack = await createK8sStack({
-    config,
+    config: require("./configK8s"),
     resources: awsStack.resources,
     dependencies: { aws: awsStack.provider },
   });
 
-  const { domainName } = config;
+  const { domainName } = k8sStack.provider.config;
   assert(domainName);
 
   const hostedZone = await awsStack.provider.makeHostedZone({

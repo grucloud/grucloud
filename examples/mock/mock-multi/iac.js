@@ -41,10 +41,7 @@ const createResources2 = async ({ provider }) => {
 exports.createStack = async ({ config }) => {
   const provider1 = MockProvider({
     name: "mock-1",
-    config: {
-      ...config,
-      createAxios,
-    },
+    config: require("./config"),
   });
 
   const resources1 = await createResources1({ provider: provider1 });
@@ -52,10 +49,7 @@ exports.createStack = async ({ config }) => {
   const provider2 = MockProvider({
     name: "mock-2",
     dependencies: { provider1 },
-    config: {
-      ...config,
-      createAxios,
-    },
+    config: require("./config"),
   });
 
   const resources2 = await createResources2({ provider: provider2 });

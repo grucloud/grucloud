@@ -12,6 +12,7 @@ const {
   tap,
   filter,
   switchCase,
+  eq,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -21,6 +22,7 @@ const {
   uniq,
   isDeepEqual,
   first,
+  isFunction,
 } = require("rubico/x");
 const { JWT } = require("google-auth-library");
 const shell = require("shelljs");
@@ -265,7 +267,7 @@ const serviceEnable = async ({ accessToken, projectId, servicesApiMap }) => {
                     method: servicesApiMap[serviceId].method || "GET",
                   }),
                 config: { retryCount: 120, retryDelay: 10e3 },
-                shouldRetryOnException: ({error}) => {
+                shouldRetryOnException: ({ error }) => {
                   return [403].includes(error.response?.status);
                 },
               }),
@@ -727,11 +729,11 @@ const createProject = async ({ accessToken, projectName, projectId }) => {
   return pipe([
     () => axiosProject.get("/"),
     get("data.projects"),
-    tap((xxx) => {
-      logger.debug(`createProject`);
+    tap((projects) => {
+      logger.debug(`createProject projects: ${tos(projects)}`);
     }),
-    filter(({ lifecycleState }) => lifecycleState === "ACTIVE"),
-    find((project) => project.projectId === projectId),
+    filter(eq(get("lifecycleState"), "ACTIVE")),
+    find(eq(get("name"), projectName)),
     switchCase([
       (project) => project,
       tap((project) => {
@@ -739,7 +741,9 @@ const createProject = async ({ accessToken, projectName, projectId }) => {
       }),
       pipe([
         tap(() => {
-          logger.debug(`creating project ${projectName}`);
+          logger.debug(
+            `creating project ${projectName}, projectId: ${projectId}`
+          );
         }),
         () =>
           axiosProject.post("/", {
@@ -997,10 +1001,12 @@ const unInit = async ({
   console.log(`Project is now un-initialized`);
 };
 
-exports.GoogleProvider = ({ name = "google", config: configUser, ...other }) => {
-  assert(configUser.projectName, "missing projectName");
-
-  const projectName = configUser.projectName(configUser);
+exports.GoogleProvider = ({
+  name = "google",
+  config: createConfig,
+  ...other
+}) => {
+  assert(isFunction(createConfig), "config must be a function");
 
   const gcloudConfig = getConfig();
 
@@ -1009,6 +1015,7 @@ exports.GoogleProvider = ({ name = "google", config: configUser, ...other }) => 
       managedByTag: "-managed-by-gru",
       managedByKey: "managed-by",
       managedByValue: "grucloud",
+      accessToken: () => serviceAccountAccessToken,
     }),
     (config) => {
       if (gcloudConfig.config) {
@@ -1023,12 +1030,16 @@ exports.GoogleProvider = ({ name = "google", config: configUser, ...other }) => 
         return config;
       }
     },
-  ])(configUser);
+    (config) => defaultsDeep(config)(createConfig(config)),
+  ])({});
+
+  const projectName = config.projectName(config);
+  assert(projectName, "missing projectName");
 
   logger.debug(`config: ${tos(config)}`);
   const projectId = switchCase([
-    () => configUser.projectId,
-    () => configUser.projectId(configUser),
+    () => config.projectId,
+    () => config.projectId(config),
     () => ProjectId({ projectName }),
   ])();
 
@@ -1057,9 +1068,9 @@ exports.GoogleProvider = ({ name = "google", config: configUser, ...other }) => 
     ...other,
     type: "google",
     name,
-    config: defaultsDeep({
-      accessToken: () => serviceAccountAccessToken,
-    })(config),
+    get config() {
+      return config;
+    },
     fnSpecs,
     start,
     info: ({ options } = {}) =>

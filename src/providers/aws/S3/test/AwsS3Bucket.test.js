@@ -18,7 +18,7 @@ describe("AwsS3Bucket", async function () {
     }
     provider = AwsProvider({
       name: "aws",
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
     await provider.start();
@@ -39,7 +39,7 @@ describe("AwsS3Bucket", async function () {
 
     assert(
       CheckAwsTags({
-        config: provider.config(),
+        config: provider.config,
         tags: s3BucketLive.Tags,
         name: s3Bucket.name,
       })

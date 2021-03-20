@@ -31,11 +31,11 @@ exports.loadManifest = async () => [
   ...(await loadManifest()),
 ];
 
-exports.createStack = async ({ config }) => {
+exports.createStack = async () => {
   const manifests = await CertManager.loadManifest();
 
   const provider = K8sProvider({
-    config,
+    config: require("./config"),
     manifests,
   });
 

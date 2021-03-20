@@ -2,7 +2,7 @@ process.env.AWS_SDK_LOAD_CONFIG = "true";
 const AWS = require("aws-sdk");
 const assert = require("assert");
 const { map, pipe, get } = require("rubico");
-const { first, pluck } = require("rubico/x");
+const { first, pluck, defaultsDeep, isFunction } = require("rubico/x");
 
 const logger = require("../../logger")({ prefix: "AwsProvider" });
 const { tos } = require("../../tos");
@@ -50,8 +50,7 @@ const fetchAccountId = pipe([
 ]);
 
 exports.AwsProvider = ({ name = "aws", config, ...other }) => {
-  assert(config);
-  assert(config.projectName, "missing projectName in config");
+  assert(isFunction(config), "config must be a function");
 
   AWS.config.apiVersions = {
     ec2: "2016-11-15",
@@ -103,11 +102,16 @@ exports.AwsProvider = ({ name = "aws", config, ...other }) => {
     ...other,
     type: "aws",
     name,
-    config: {
-      ...config,
-      accountId: () => accountId,
-      region: getRegion(config),
-      zone: () => zone,
+    get config() {
+      return pipe([
+        () => ({
+          accountId: () => accountId,
+          region: getRegion(config),
+          zone: () => zone,
+        }),
+        (configProvider) =>
+          defaultsDeep(configProvider)(config(configProvider)),
+      ])();
     },
     fnSpecs,
     start,

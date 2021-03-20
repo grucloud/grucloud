@@ -89,7 +89,10 @@ exports.AwsDistribution = ({ spec, config }) => {
       logger.info(`getById ${id}`);
     }),
     tryCatch(
-      ({ id }) => cloudfront().getDistribution({ Id: id }),
+      pipe([
+        ({ id }) => cloudfront().getDistribution({ Id: id }),
+        get("Distribution"),
+      ]),
       switchCase([
         eq(get("code"), "NoSuchDistribution"),
         (error, { id }) => {
@@ -105,7 +108,7 @@ exports.AwsDistribution = ({ spec, config }) => {
       logger.debug(`getById result: ${tos(result)}`);
     }),
   ]);
-  const isInstanceUp = eq(get("Distribution.Status"), "Deployed");
+  const isInstanceUp = eq(get("Status"), "Deployed");
   const isUpById = isUpByIdCore({
     isInstanceUp,
     getById,
@@ -366,15 +369,18 @@ exports.AwsDistribution = ({ spec, config }) => {
 
 exports.compareDistribution = async ({ target, live, dependencies }) =>
   pipe([
+    () => target,
     omit(["CallerReference", "ViewerCertificate.CloudFrontDefaultCertificate"]),
     tap((targetFiltered) => {
       logger.debug(`compareDistribution diff:${tos(targetFiltered)}`);
     }),
     (targetFiltered) => detailedDiff(live, targetFiltered),
+    //TODO
+    omit(["deleted"]),
     tap((diff) => {
       logger.debug(`compareDistribution diff:${tos(diff)}`);
     }),
-  ])(target);
+  ])();
 
 const findS3ObjectUpdated = ({ plans, Id, OriginPath }) =>
   pipe([

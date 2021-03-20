@@ -35,7 +35,7 @@ const checkDig = async ({ nameServer, domain, type = "A" }) => {
 };
 
 module.exports = ({ resources, provider }) => {
-  const { DomainName, stage } = provider.config();
+  const { DomainName, stage } = provider.config;
   const { websiteBucket, hostedZone, distribution, certificate } = resources;
   assert(websiteBucket);
   assert(hostedZone);

@@ -1009,7 +1009,7 @@ const listDoOk = ({ commandOptions, programOptions }) =>
         tap((lives) => {
           providersGru.displayLives(lives);
         }),
-        (lives) => lives.toJSON(),
+        (lives) => lives.json,
       ])(),
     tap(
       pipe([

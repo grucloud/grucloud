@@ -51,7 +51,7 @@ describe("GcpDnsManagedZone", async function () {
   it("dns managed zone config", async function () {
     const config = await dnsManagedZoneEmpty.resolveConfig();
     assert(config);
-    assert.equal(config.description, provider.config().managedByDescription);
+    assert.equal(config.description, provider.config.managedByDescription);
     assert(Array.isArray(config.recordSet));
   });
 

@@ -19,18 +19,13 @@ const {
 const { ConfigLoader } = require("../ConfigLoader");
 const logger = require("../logger")({ prefix: "Infra" });
 
-const creatInfraFromFile = async ({
-  commandOptions,
-  infraFileName,
-  config,
-  stage,
-}) => {
+const creatInfraFromFile = async ({ infraFileName, stage }) => {
   const InfraCode = require(infraFileName);
   if (!InfraCode.createStack) {
     throw { code: 400, message: `no createStack provided` };
   }
 
-  const infra = await InfraCode.createStack({ config: { ...config, stage } });
+  const infra = await InfraCode.createStack({ config: { stage } });
   if (!infra) {
     throw { code: 400, message: `no infra provided` };
   }
@@ -49,38 +44,23 @@ const checkFileExist = ({ fileName }) => {
   }
 };
 
-const requireConfig = ({ fileName, stage }) => {
-  if (!fileName) {
-    return ConfigLoader({ stage });
-  }
-  checkFileExist({ fileName });
-
-  const configFileNameFull = path.resolve(process.cwd(), fileName);
-  checkFileExist({ fileName: configFileNameFull });
-  const config = require(configFileNameFull);
-  return config;
-};
-
 exports.createInfra = ({ commandOptions }) => async ({
   infraFileName,
-  configFileName,
   stage = "dev",
 }) => {
   const infraFileNameFull = resolveFilename({
     fileName: infraFileName,
     defaultName: "iac.js",
   });
-  //console.log(`Using ${infraFileNameFull}`);
   checkFileExist({ fileName: infraFileNameFull });
 
-  const config = requireConfig({ fileName: configFileName, stage });
+  ConfigLoader({ stage });
+
   return {
-    config,
     stage,
     infra: await creatInfraFromFile({
       commandOptions,
       infraFileName: infraFileNameFull,
-      config,
       stage,
     }),
   };

@@ -3,7 +3,7 @@
 ## Common:
 
 - case where provider does have any resources
-
+-
 - add projectName and use it as the title of the graph
 - destroy: use live instead of id
 - gc d : EC2 │ web, web-iam, , web-server
@@ -51,8 +51,10 @@
 - doc
 
 ## TODO Aws:
+
+- website-https: 'gc a' does not run onDeployed
 - delete load balancers in vpc
-- minikite gc d -a: ✖ PersistentVolume 0/2           Request failed with status code 404 
+- minikite gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404
 - multi-provider aws, k8s, ipProviderUp is down, gc d -f fails
 - https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
 - https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html

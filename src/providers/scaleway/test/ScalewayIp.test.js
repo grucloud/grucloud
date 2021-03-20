@@ -26,7 +26,7 @@ describe("ScalewayIp", async function () {
   it("ip resolveConfig", async function () {
     const config = await ip.resolveConfig();
     assert(config.tags);
-    assert(config.tags.find((tag) => tag === provider.config().tag));
+    assert(config.tags.find((tag) => tag === provider.config.tag));
   });
 
   it.skip("apply and destroy", async function () {

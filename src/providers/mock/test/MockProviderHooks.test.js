@@ -80,7 +80,7 @@ describe("MockProviderHooks", async function () {
       });
       assert(false, "should not be here");
     } catch (error) {
-      const lives = error.error.lives.toJSON();
+      const lives = error.error.lives.json;
       assert.equal(lives[0].results[0].error.response.status, 404);
     }
 

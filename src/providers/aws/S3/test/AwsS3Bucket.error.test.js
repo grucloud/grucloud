@@ -21,8 +21,7 @@ describe("AwsS3BucketErrors", async function () {
 
   it("s3Bucket already exist", async function () {
     const provider = AwsProvider({
-      name: "aws",
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
     await provider.makeS3Bucket({
@@ -46,7 +45,7 @@ describe("AwsS3BucketErrors", async function () {
 
   it("s3Bucket acl error", async function () {
     const provider = AwsProvider({
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
     await provider.makeS3Bucket({
       name: `${bucketPrefix}-acl-accesscontrolpolicy`,
@@ -65,7 +64,7 @@ describe("AwsS3BucketErrors", async function () {
       }),
     });
 
-    const region = provider.config().region;
+    const region = provider.config.region;
     await provider.makeS3Bucket({
       name: `${bucketPrefix}-notification-configuration-invalid-topic`,
       properties: () => ({
@@ -108,7 +107,7 @@ describe("AwsS3BucketErrors", async function () {
     {
       const result = await cliCommands.planDestroy({
         infra: { provider },
-        commandOptions: { force: true, types, all: true },
+        commandOptions: { force: true, types },
       });
       assert(!result.error);
     }

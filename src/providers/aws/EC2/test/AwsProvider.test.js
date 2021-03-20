@@ -32,7 +32,7 @@ describe("AwsProvider", async function () {
     }
     provider = AwsProvider({
       name: "aws",
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
     keyPair = await provider.useKeyPair({
@@ -149,7 +149,7 @@ describe("AwsProvider", async function () {
 
     assert(
       CheckAwsTags({
-        config: provider.config(),
+        config: provider.config,
         tags: serverLive.Tags,
         name: server.name,
       })

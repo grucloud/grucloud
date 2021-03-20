@@ -29,7 +29,7 @@ describe("GcpNetwork", async function () {
     const config = await network.resolveConfig();
     assert(config);
     assert.equal(config.name, networkName);
-    assert.equal(config.description, provider.config().managedByDescription);
+    assert.equal(config.description, provider.config.managedByDescription);
   });
   it.skip("network apply and destroy", async function () {
     await testPlanDeploy({ provider });

@@ -10,9 +10,9 @@
 <title>graphname</title>
 <polygon fill="white" stroke="transparent" points="-4,4 -4,-179 585,-179 585,4 -4,4"/>
 <g id="clust1" class="cluster">
-<title>cluster_aws&#45;us&#45;east</title>
+<title>cluster_aws</title>
 <polygon fill="none" stroke="#383838" points="8,-8 8,-167 573,-167 573,-8 8,-8"/>
-<text text-anchor="start" x="232.5" y="-148" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="20.00" fill="#383838">aws&#45;us&#45;east</text>
+<text text-anchor="start" x="271" y="-148" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="20.00" fill="#383838">aws</text>
 </g>
 <!-- Certificate::certificate&#45;grucloud.org&#45;dev -->
 <g id="node1" class="node">

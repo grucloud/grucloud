@@ -24,7 +24,7 @@ describe("AwsSubnet", async function () {
     }
     provider = AwsProvider({
       name: "aws",
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
     await provider.start();
@@ -64,7 +64,7 @@ describe("AwsSubnet", async function () {
 
     assert(
       CheckAwsTags({
-        config: provider.config(),
+        config: provider.config,
         tags: subnetLive.Tags,
         name: subnet.name,
       })

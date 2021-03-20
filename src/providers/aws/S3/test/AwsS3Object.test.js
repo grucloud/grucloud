@@ -11,7 +11,7 @@ const types = ["S3Bucket", "S3Object"];
 const createStack = async ({ config }) => {
   const provider = AwsProvider({
     name: "aws",
-    config: config.aws,
+    config: () => ({ projectName: "gru-test" }),
   });
 
   const s3Bucket = await provider.makeS3Bucket({
@@ -35,7 +35,7 @@ const createStack = async ({ config }) => {
 const createStackNext = async ({ config }) => {
   const provider = AwsProvider({
     name: "aws",
-    config: config.aws,
+    config: () => ({ projectName: "gru-test" }),
   });
 
   const s3Bucket = await provider.makeS3Bucket({
