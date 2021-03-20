@@ -28,7 +28,7 @@ describe("K8sCustomResourceDefinition", async function () {
       this.skip();
     }
     provider = K8sProvider({
-      config: config.k8s,
+      config: () => ({}),
     });
 
     await provider.start();

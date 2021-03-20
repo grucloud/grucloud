@@ -11,7 +11,7 @@ const {
   or,
   filter,
 } = require("rubico");
-const { defaultsDeep, first, find, last } = require("rubico/x");
+const { defaultsDeep, first, find, isFunction } = require("rubico/x");
 const shell = require("shelljs");
 const os = require("os");
 const path = require("path");
@@ -284,7 +284,13 @@ const fnSpecs = () => [
   },
   {
     type: "StatefulSet",
-    dependsOn: ["Namespace", "ConfigMap", "Secret", "ServiceAccount"],
+    dependsOn: [
+      "Namespace",
+      "ConfigMap",
+      "Secret",
+      "ServiceAccount",
+      "PersistentVolumeClaim",
+    ],
     Client: ({ config, spec }) =>
       createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -400,10 +406,10 @@ const providerType = "k8s";
 exports.K8sProvider = ({
   name = providerType,
   manifests = [],
-  config,
+  config: createConfig,
   ...other
 }) => {
-  assert(isFunction(config), "config must be a function");
+  assert(isFunction(createConfig), "config must be a function");
 
   const info = () => ({});
 
@@ -414,7 +420,7 @@ exports.K8sProvider = ({
     tap(() => {
       logger.info("start k8s");
     }),
-    () => readKubeConfig({ kubeConfigFile: config.kubeConfigFile }),
+    () => readKubeConfig({ kubeConfigFile: createConfig().kubeConfigFile }),
     tap((newKubeConfig) => {
       kubeConfig = newKubeConfig;
     }),
@@ -475,13 +481,17 @@ exports.K8sProvider = ({
     type: providerType,
     name,
     get config() {
-      return defaultsDeep({
-        accessToken: () => accessToken,
-        kubeConfig: () => {
-          assert(kubeConfig, "kubeConfig not set, provider not started");
-          return kubeConfig;
-        },
-      })(createConfig(config));
+      return pipe([
+        () => ({
+          accessToken: () => accessToken,
+          kubeConfig: () => {
+            assert(kubeConfig, "kubeConfig not set, provider not started");
+            return kubeConfig;
+          },
+        }),
+        (configProvider) =>
+          defaultsDeep(configProvider)(createConfig(configProvider)),
+      ])();
     },
     fnSpecs: () => [...fnSpecs(), ...manifestToSpec(manifests)],
     start,

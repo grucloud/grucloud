@@ -17,6 +17,6 @@ const createAxios = ({ url }) => {
   return axios;
 };
 
-module.exports = {
+module.exports = () => ({
   createAxios,
-};
+});

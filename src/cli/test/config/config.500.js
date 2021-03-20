@@ -11,6 +11,6 @@ const createAxios = ({ url }) => {
   mock.onDelete(/.*/).reply(500);
   return axios;
 };
-module.exports = {
+module.exports = () => ({
   createAxios,
-};
+});

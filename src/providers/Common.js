@@ -290,12 +290,13 @@ exports.isOurMinionObject = ({ tags, config }) => {
   return pipe([
     tap(() => {
       assert(stage);
-      assert(projectName);
+      //TODO
+      //assert(projectName);
       assert(providerName);
     }),
     switchCase([
       and([
-        eq(get("projectName"), projectName),
+        //eq(get("projectName"), projectName),
         eq(get("stage"), stage),
         eq(get(createdByProviderKey), providerName),
       ]),

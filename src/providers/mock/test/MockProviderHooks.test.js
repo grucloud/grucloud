@@ -45,7 +45,7 @@ describe("MockProviderHooks", async function () {
     const onDestroyed = { init: sinon.spy() };
 
     const provider = MockProvider({
-      config: () => config404,
+      config: config404,
     });
     const resources = await createResources({ provider });
 

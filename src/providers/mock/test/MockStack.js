@@ -63,7 +63,7 @@ exports.createStack = async ({ name = "mock", config }) => {
   // Provider
   const provider = MockProvider({
     name,
-    config: () => config,
+    config,
   });
   const resources = await createResources({ provider });
   return { provider, resources };
