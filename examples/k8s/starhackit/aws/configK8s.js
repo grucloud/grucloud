@@ -1,6 +1,8 @@
 const pkg = require("./package.json");
 
-module.exports = ({ region, stage }) => ({
+module.exports = ({ stage }) => ({
+  namespaceName: "default",
+  ingress: { apiVersion: "networking.k8s.io/v1beta1" },
   ui: {
     container: { image: "fredericheem/ui", version: "v10.14.0" },
     serviceName: "web",
