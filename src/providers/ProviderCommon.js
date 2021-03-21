@@ -87,9 +87,9 @@ exports.isTypeMatch = isTypeMatch;
 const findDependentType = ({ clients }) =>
   pipe([
     tap((types) => {
-      logger.info(
+      /*logger.info(
         `findDependentType #clients ${clients.length}, types: ${types}`
-      );
+      );*/
     }),
     flatMap(
       pipe([
@@ -105,7 +105,7 @@ const findDependentType = ({ clients }) =>
       ])
     ),
     tap((types) => {
-      logger.info(`findDependentType result: ${types}`);
+      //logger.info(`findDependentType result: ${types}`);
     }),
   ]);
 
