@@ -459,7 +459,7 @@ const isProviderUp = ({ resources }) =>
     tap((isUp) => {
       assert(true);
     }),
-  ]);
+  ])();
 
 exports.isProviderUp = isProviderUp;
 
