@@ -420,7 +420,8 @@ exports.K8sProvider = ({
     tap(() => {
       logger.info("start k8s");
     }),
-    () => readKubeConfig({ kubeConfigFile: createConfig().kubeConfigFile }),
+    // TODO! stage
+    () => readKubeConfig({ kubeConfigFile: createConfig({}).kubeConfigFile }),
     tap((newKubeConfig) => {
       kubeConfig = newKubeConfig;
     }),

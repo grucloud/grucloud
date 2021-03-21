@@ -1,5 +1,7 @@
 ## Bugs
 
+- check stage for all providers
+
 ## Common:
 
 - case where provider does have any resources
