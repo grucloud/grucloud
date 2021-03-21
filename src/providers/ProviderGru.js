@@ -453,14 +453,10 @@ exports.ProviderGru = ({ stacks }) => {
                     tap((xxx) => {
                       assert(xxx);
                     }),
-                    switchCase([
-                      not(get("error")),
-                      assign({
-                        resultHooks: () =>
-                          provider.runOnDeployed({ onStateChange }),
-                      }),
-                      (result) => result,
-                    ]),
+                    assign({
+                      resultHooks: () =>
+                        provider.runOnDeployed({ onStateChange }),
+                    }),
                     assign({ error: any(get("error")) }),
                     tap((xxx) => {
                       assert(xxx);
