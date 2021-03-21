@@ -75,7 +75,7 @@ exports.createInfra = ({ commandOptions }) => async ({
   checkFileExist({ fileName: infraFileNameFull });
 
   const config = requireConfig({ fileName: configFileName, stage });
-  assert(isFunction(config));
+  //assert(isFunction(config));
   return {
     config,
     stage,
