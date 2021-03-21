@@ -281,7 +281,9 @@ exports.buildTagsObject = ({ name, config }) => {
     [managedByKey]: managedByValue,
     [createdByProviderKey]: providerName,
     [stageTagKey]: stage,
-    projectName,
+    ...(projectName && {
+      projectName,
+    }),
   };
 };
 
