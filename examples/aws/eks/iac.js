@@ -7,7 +7,7 @@ const loadBalancerPolicy = require("./load-balancer-policy.json");
 const podPolicy = require("./pod-policy.json");
 const hooks = require("./hooks");
 
-const createResources = async ({ provider, resources: {} }) => {
+const createResources = async ({ provider }) => {
   const { config } = provider;
   const clusterName = "cluster";
   const iamOpenIdConnectProviderName = "oicp-eks";
@@ -461,7 +461,7 @@ const isProviderUp = ({ resources }) =>
     }),
   ]);
 
-exports.isProviderUp;
+exports.isProviderUp = isProviderUp;
 
 exports.createStack = async () => {
   const provider = AwsProvider({ config: require("./config") });
