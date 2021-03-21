@@ -46,6 +46,11 @@ exports.compare = async ({ target, live }) =>
     }),
     () => detailedDiff(pickCompare(live), pickCompare(target)),
     omit(["deleted.spec", "deleted.metadata"]),
+    switchCase([
+      pipe([get("added.metadata.annotations"), isEmpty]),
+      omit(["added.metadata.annotations"]),
+      (diff) => diff,
+    ]),
     tap((diff) => {
       logger.debug(`k8s compare ${tos(diff)}`);
     }),
