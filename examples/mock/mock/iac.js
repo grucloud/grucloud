@@ -60,9 +60,9 @@ const createResources = async ({ provider }) => {
 };
 exports.createResources = createResources;
 
-exports.createStack = async () => {
+exports.createStack = async ({ config }) => {
   const provider = MockProvider({
-    config: require("./config"),
+    config,
   });
 
   const resources = await createResources({ provider });

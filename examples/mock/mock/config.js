@@ -12,4 +12,4 @@ const createAxios = ({ url }) => {
   });
 };
 
-module.exports = ({ stage }) => ({ createAxios });
+module.exports = () => ({ createAxios });
