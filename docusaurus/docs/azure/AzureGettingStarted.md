@@ -38,11 +38,7 @@ npm install
 
 ### Environment
 
-```sh
-cp config/default.env.example config/default.env
-```
-
-Edit **config/default.env** and set the correct values:
+Create **default.env** and set the correct values:
 
 ```sh
 TENANT_ID=
@@ -75,13 +71,12 @@ Now it is time to edit the infrastructure **iac.js** file that describes the arc
 
 ```js
 const assert = require("assert");
-const { AzureProvider } = require("@grucloud/core");
+const { AzureProvider } = require("@grucloud/provider-azure");
 
-exports.createStack = async ({ config }) => {
-  const { stage } = config;
+exports.createStack = async ({ config, stage }) => {
   assert(stage);
   // Create an Azure provider
-  const provider = AzureProvider({ name: "azure", config });
+  const provider = AzureProvider({ config });
 
   // https://docs.microsoft.com/en-us/rest/api/apimanagement/2019-12-01/apimanagementservice/createorupdate
   const rg = await provider.makeResourceGroup({

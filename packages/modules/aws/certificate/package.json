@@ -1,0 +1,16 @@
+{
+  "name": "@grucloud/aws-module-certificate",
+  "version": "1.0.0",
+  "description": "provides a SSL certificate and the associated Route53 resources to validate the certificate",
+  "main": "index.js",
+  "scripts": {
+    "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
+    "deploy:ci": "STAGE=ci gc apply -f"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "*",
+    "@grucloud/provider-aws": "*"
+  }
+}

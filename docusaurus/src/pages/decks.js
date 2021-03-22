@@ -129,7 +129,7 @@ if (ExecutionEnvironment.canUseDOM) {
             theme={lightTheme}
             fontSize="15"
           >
-            {`const { GoogleProvider } = require("@grucloud/core");
+            {`const { GoogleProvider } = require("@grucloud/provider-google");
 
 exports.createStack = async ({ config }) => {
   const provider = GoogleProvider({ config });

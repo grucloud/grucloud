@@ -1,0 +1,20 @@
+{
+  "name": "@grucloud/provider-aws",
+  "version": "1.0.0",
+  "description": "The GruCloud AWS provider",
+  "main": "AwsProvider.js",
+  "scripts": {
+    "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
+    "link": "npm link @grucloud/core",
+    "test": "mocha --exit './{,!(node_modules)/**}/*.test.js'"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "*"
+  },
+  "devDependencies": {
+    "mocha": "^8.3.2",
+    "sinon": "^9.2.4"
+  }
+}

@@ -11,6 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "*"
+    "@grucloud/core": "*",
+    "@grucloud/provider-aws": "*",
+    "@grucloud/provider-k8s": "*"
   }
 }

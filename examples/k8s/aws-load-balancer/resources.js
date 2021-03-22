@@ -553,8 +553,6 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  assert(provider.dependencies.aws.config.region);
-
   const awsLoadBalancerControllerDeployment = await provider.makeDeployment({
     name: "aws-load-balancer-controller",
     properties: () => ({
@@ -586,7 +584,6 @@ exports.createResources = async ({ provider, resources }) => {
               {
                 args: [
                   `--cluster-name=${provider.config.cluster?.name}`,
-                  `--aws-region=${provider.dependencies.aws.config.region}`,
                   "--ingress-class=alb",
                 ],
                 image: "amazon/aws-alb-ingress-controller:v2.1.2",

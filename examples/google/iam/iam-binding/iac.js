@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { GoogleProvider } = require("@grucloud/core");
+const { GoogleProvider } = require("@grucloud/provider-google");
 const hooks = require("./hooks");
 
 const createResources = async ({ provider, resources: { serviceAccount } }) => {

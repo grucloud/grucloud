@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { AwsProvider } = require("@grucloud/core");
+const { AwsProvider } = require("@grucloud/provider-aws");
 const { get, map, pipe, assign, tap, and } = require("rubico");
 const { pluck } = require("rubico/x");
 
@@ -470,6 +470,6 @@ exports.createStack = async () => {
     provider,
     resources,
     hooks,
-    isProviderUp: isProviderUp({ resources }),
+    isProviderUp: () => isProviderUp({ resources }),
   };
 };

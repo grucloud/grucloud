@@ -1,8 +1,10 @@
-const { K8sProvider } = require("@grucloud/core");
+const { K8sProvider } = require("@grucloud/provider-k8s");
+const assert = require("assert");
 const K8sStackBase = require("../base/k8sStackBase");
 const { createIngress } = require("./ingress");
 
 exports.createStack = async ({ config }) => {
+  assert(config);
   const provider = K8sProvider({
     config,
   });

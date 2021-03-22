@@ -2,7 +2,8 @@ const assert = require("assert");
 const { pipe, get } = require("rubico");
 const { first } = require("rubico/x");
 
-const { AwsProvider, K8sProvider } = require("@grucloud/core");
+const { AwsProvider } = require("@grucloud/provider-aws");
+const { K8sProvider } = require("@grucloud/provider-k8s");
 
 const BaseStack = require("../base/k8sStackBase");
 const AwsLoadBalancerStack = require("../../aws-load-balancer/iac");

@@ -3,7 +3,7 @@ const fs = require("fs").promises;
 const path = require("path");
 const yaml = require("js-yaml");
 const { pipe, tap } = require("rubico");
-const { K8sProvider } = require("@grucloud/core");
+const { K8sProvider } = require("@grucloud/provider-k8s");
 const { createResources } = require("./resources");
 const hooks = require("./hooks");
 

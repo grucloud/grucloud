@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { GoogleProvider } = require("@grucloud/core");
+const { GoogleProvider } = require("@grucloud/provider-google");
 
 exports.createStack = async () => {
   const provider = GoogleProvider({ config: require("./config") });

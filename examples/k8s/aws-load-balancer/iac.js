@@ -3,7 +3,7 @@ const yaml = require("js-yaml");
 const path = require("path");
 const { pipe, tap } = require("rubico");
 
-const { K8sProvider } = require("@grucloud/core");
+const { K8sProvider } = require("@grucloud/provider-k8s");
 const LoadBalancerResources = require("./resources");
 const CertManager = require("../cert-manager/iac");
 

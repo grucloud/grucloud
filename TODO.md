@@ -1,5 +1,7 @@
 ## Bugs
 
+- use why-is-node-running to find out why the app is not exiting
+- code coverage with monorepo
 - check stage for all providers
 
 ## Common:

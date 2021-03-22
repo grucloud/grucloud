@@ -1,5 +1,5 @@
 {
-  "name": "grucloud-mock-example",
+  "name": "grucloud-mock-simple-example",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "*"
+    "@grucloud/core": "*",
+    "@grucloud/provider-mock": "*"
   }
 }

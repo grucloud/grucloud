@@ -11,6 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "*",
-    "mime-types": "^2.1.27"
+    "@grucloud/provider-google": "*"
   }
 }
