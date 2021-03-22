@@ -87,7 +87,9 @@ exports.isTypeMatch = isTypeMatch;
 const findDependentType = ({ clients }) =>
   pipe([
     tap((types) => {
-      //logger.debug(`findDependentType ${types}`);
+      /*logger.info(
+        `findDependentType #clients ${clients.length}, types: ${types}`
+      );*/
     }),
     flatMap(
       pipe([
@@ -95,20 +97,30 @@ const findDependentType = ({ clients }) =>
           filter((client) =>
             isTypeMatch({ type, typeToMatch: client.spec.type })
           )(clients),
-        pluck("spec.listDependsOn"),
+        tap((xxx) => {
+          //logger.debug(`findDependentType`);
+        }),
+        pluck("spec.dependsOn"),
         flatten,
       ])
     ),
     tap((types) => {
-      logger.debug(`findDependentType ${types}`);
+      //logger.info(`findDependentType result: ${types}`);
     }),
   ]);
 
-const filterByType = ({ types }) =>
+const filterByType = ({ types = [], targetTypes }) =>
   pipe([
+    tap((clients) => {
+      logger.info(
+        `filterByType inputs #clients ${clients.length}, #targetTypes ${targetTypes.length}, #types ${types.length}`
+      );
+    }),
     (clients) =>
       filter((client) =>
         pipe([
+          () => types,
+          switchCase([isEmpty, () => targetTypes, (types) => types]),
           tap(() => {
             assert(client);
             assert(client.spec);
@@ -116,7 +128,7 @@ const filterByType = ({ types }) =>
           }),
           switchCase([
             or([
-              isEmpty,
+              isEmpty, //TOD never empty
               pipe([
                 findDependentType({ clients }),
                 tap(() => {
@@ -130,36 +142,55 @@ const filterByType = ({ types }) =>
             () => true,
             isTypesMatch({ typeToMatch: client.spec.type }),
           ]),
-        ])(types)
+        ])()
       )(clients),
-  ]);
-
-exports.filterReadClient = ({ types, all } = {}) =>
-  pipe([
     tap((clients) => {
-      logger.debug(
-        `filterReadClient types: ${types}, #clients ${clients.length}`
-      );
-    }),
-    filterByType({ types }),
-    filter((client) => all || !client.spec.listHide),
-    tap((clients) => {
-      logger.debug(`filterReadClient #clients ${clients.length}`);
+      logger.info(`filterByType result #clients ${clients.length}`);
     }),
   ]);
 
-exports.filterReadWriteClient = ({ types } = {}) =>
+exports.filterReadClient = ({ options: { types, all } = {}, targetTypes }) =>
   pipe([
     tap((clients) => {
-      logger.debug(
-        `filterReadWriteClient types: ${types}, #clients ${clients.length}`
+      assert(targetTypes);
+      logger.info(
+        `filterReadClient types: ${types}, #clients ${clients.length}, #targets: ${targetTypes.length}`
       );
     }),
-    filterByType({ types }),
-    filter((client) => !client.spec.singleton),
-    filter((client) => !client.spec.listOnly),
+    filter(not(get("spec.listHide"))),
+    switchCase([
+      () => all,
+      (clients) => clients,
+      filterByType({ types, targetTypes }),
+    ]),
     tap((clients) => {
-      logger.debug(`filterReadWriteClient result #clients ${clients.length}`);
+      logger.info(
+        `filterReadClient types: ${types}, targetTypes: ${targetTypes} #clients ${clients.length}`
+      );
+    }),
+  ]);
+
+exports.filterReadWriteClient = ({
+  options: { types, all } = {},
+  targetTypes,
+}) =>
+  pipe([
+    tap((clients) => {
+      assert(targetTypes);
+      logger.info(
+        `filterReadWriteClient types: ${types}, all: ${all}, #clients ${clients.length}`
+      );
+    }),
+    switchCase([
+      () => all,
+      (clients) => clients,
+      filterByType({ types, targetTypes }),
+    ]),
+    filter(and([not(get("spec.singleton")), not(get("spec.listOnly"))])),
+    tap((clients) => {
+      logger.info(
+        `filterReadWriteClient ${types}, result #clients ${clients.length}`
+      );
     }),
   ]);
 

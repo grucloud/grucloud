@@ -55,9 +55,10 @@ exports.AwsInternetGateway = ({ spec, config }) => {
     }),
   ]);
 
+  const isInstanceUp = eq(getStateName, "available");
   const isUpById = isUpByIdCore({
     getById,
-    isInstanceUp: eq(getStateName, "available"),
+    isInstanceUp,
   });
 
   const isDownById = isDownByIdCore({ getById });
@@ -169,6 +170,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
     type: "InternetGateway",
     spec,
     findId,
+    isInstanceUp,
     isUpById,
     isDownById,
     getByName,

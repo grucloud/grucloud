@@ -36,7 +36,7 @@ const findId = get("CertificateArn");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
 exports.AwsCertificate = ({ spec, config }) => {
-  const acm = ACMNew();
+  const acm = ACMNew(config);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#listCertificates-property
   const getList = async ({ params } = {}) =>
@@ -181,6 +181,7 @@ exports.AwsCertificate = ({ spec, config }) => {
   return {
     type: "Certificate",
     spec,
+    isInstanceUp,
     isUpById,
     isDownById,
     findId,

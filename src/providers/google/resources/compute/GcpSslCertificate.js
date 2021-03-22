@@ -12,9 +12,11 @@ exports.GcpSslCertificate = ({ spec, config }) => {
 
   const { projectId, managedByDescription } = config;
 
+  const isInstanceUp = get("selfLink");
+
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
-      isInstanceUp: get("selfLink"),
+      isInstanceUp,
       getById,
     });
 
@@ -31,6 +33,7 @@ exports.GcpSslCertificate = ({ spec, config }) => {
     url: `/projects/${projectId(config)}/global/sslCertificates`,
     config,
     configDefault,
+    isInstanceUp,
     isUpByIdFactory,
   });
 };

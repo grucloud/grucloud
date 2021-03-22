@@ -1,15 +1,17 @@
-const { createStack: createStackK8s } = require("../base/k8sStackBase");
+const { K8sProvider } = require("@grucloud/core");
+const K8sStackBase = require("../base/k8sStackBase");
 const { createIngress } = require("./ingress");
 
 exports.createStack = async ({ config }) => {
-  const stack = await createStackK8s({
+  const provider = K8sProvider({
     config,
   });
-  const { provider, resources } = stack;
+
+  const resources = await K8sStackBase.createResources({ provider });
 
   const ingress = await createIngress({
     provider,
-    config,
+    config: config(),
     resources: {
       namespace: resources.namespace,
       serviceWebServer: resources.webServerChart.service,
@@ -17,5 +19,9 @@ exports.createStack = async ({ config }) => {
     },
   });
 
-  return { ...stack, resources: { ...stack.resources, ingress } };
+  return {
+    provider,
+    resources: { ...resources, ingress },
+    hooks: K8sStackBase.hooks,
+  };
 };

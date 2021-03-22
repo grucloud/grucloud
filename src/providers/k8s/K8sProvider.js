@@ -11,7 +11,7 @@ const {
   or,
   filter,
 } = require("rubico");
-const { defaultsDeep, first, find, last } = require("rubico/x");
+const { defaultsDeep, first, find, isFunction } = require("rubico/x");
 const shell = require("shelljs");
 const os = require("os");
 const path = require("path");
@@ -70,7 +70,7 @@ const fnSpecs = () => [
         apiVersion: "apiextensions.k8s.io/v1",
         kind: "CustomResourceDefinition",
         cannotBeDeleted: cannotBeDeletedDefault,
-        isUpByIdFactory: K8sUtils({ config }).isUpByCrd,
+        isInstanceUp: K8sUtils({ config }).isUpByCrd,
       })({ config, spec }),
     isOurMinion,
   },
@@ -192,15 +192,15 @@ const fnSpecs = () => [
       apiVersion: "networking.k8s.io/v1",
       kind: "Ingress",
       cannotBeDeleted: cannotBeDeletedDefault,
-      isUpByIdFactory: ({ getById }) =>
-        isUpByIdCore({
-          isInstanceUp: pipe([
-            get("status.loadBalancer.ingress"),
-            first,
-            not(isEmpty),
-          ]),
-          getById,
+      isInstanceUp: pipe([
+        get("status"),
+        tap((status) => {
+          logger.debug(`isInstanceUp ingress status: ${tos(status)}`);
         }),
+        get("loadBalancer.ingress"),
+        first,
+        not(isEmpty),
+      ]),
     }),
     isOurMinion,
     compare,
@@ -239,11 +239,7 @@ const fnSpecs = () => [
       configKey: "persistentVolume",
       apiVersion: "v1",
       kind: "PersistentVolume",
-      isUpByIdFactory: ({ getById }) =>
-        isUpByIdCore({
-          isInstanceUp: eq(get("status.phase"), "Available"),
-          getById,
-        }),
+      isInstanceUp: eq(get("status.phase"), "Available"),
     }),
     isOurMinion,
     compare,
@@ -265,7 +261,13 @@ const fnSpecs = () => [
   },
   {
     type: "Deployment",
-    dependsOn: ["Namespace", "ConfigMap", "Secret"],
+    dependsOn: [
+      "Namespace",
+      "ConfigMap",
+      "Secret",
+      "ServiceAccount",
+      "CustomResourceDefinition",
+    ],
     Client: ({ config, spec }) =>
       createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -275,14 +277,20 @@ const fnSpecs = () => [
         apiVersion: "apps/v1",
         kind: "Deployment",
         cannotBeDeleted: cannotBeDeletedDefault,
-        isUpByIdFactory: K8sUtils({ config }).isUpByPod,
+        isInstanceUp: K8sUtils({ config }).isUpByPod,
       })({ config, spec }),
     isOurMinion,
     compare,
   },
   {
     type: "StatefulSet",
-    dependsOn: ["Namespace", "ConfigMap", "Secret"],
+    dependsOn: [
+      "Namespace",
+      "ConfigMap",
+      "Secret",
+      "ServiceAccount",
+      "PersistentVolumeClaim",
+    ],
     Client: ({ config, spec }) =>
       createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -314,7 +322,7 @@ const fnSpecs = () => [
   },
   {
     type: "Pod",
-    dependsOn: ["Namespace", "ConfigMap", "Secret"],
+    dependsOn: ["Namespace", "ConfigMap", "Secret", "ServiceAccount"],
     listDependsOn: ["ReplicaSet", "StatefulSet"],
     Client: createResourceNamespace({
       baseUrl: ({ namespace, apiVersion }) =>
@@ -398,9 +406,11 @@ const providerType = "k8s";
 exports.K8sProvider = ({
   name = providerType,
   manifests = [],
-  config = {},
+  config: createConfig,
   ...other
 }) => {
+  assert(isFunction(createConfig), "config must be a function");
+
   const info = () => ({});
 
   let accessToken;
@@ -408,9 +418,10 @@ exports.K8sProvider = ({
 
   const start = pipe([
     tap(() => {
-      logger.info("start ");
+      logger.info("start k8s");
     }),
-    () => readKubeConfig({ kubeConfigFile: config.kubeConfigFile }),
+    // TODO! stage
+    () => readKubeConfig({ kubeConfigFile: createConfig({}).kubeConfigFile }),
     tap((newKubeConfig) => {
       kubeConfig = newKubeConfig;
     }),
@@ -428,13 +439,7 @@ exports.K8sProvider = ({
       }),
       () => manifests,
       filter(eq(get("kind"), "CustomResourceDefinition")),
-      tap((xxx) => {
-        logger.info("manifestToSpec ");
-      }),
       map(get("spec")),
-      tap((xxx) => {
-        logger.info("manifestToSpec ");
-      }),
       map(({ names, scope, versions, group }) =>
         switchCase([
           () => scope === "Namespaced",
@@ -476,13 +481,19 @@ exports.K8sProvider = ({
     ...other,
     type: providerType,
     name,
-    config: defaultsDeep({
-      accessToken: () => accessToken,
-      kubeConfig: () => {
-        assert(kubeConfig, "kubeConfig not set, provider not started");
-        return kubeConfig;
-      },
-    })(config),
+    get config() {
+      return pipe([
+        () => ({
+          accessToken: () => accessToken,
+          kubeConfig: () => {
+            assert(kubeConfig, "kubeConfig not set, provider not started");
+            return kubeConfig;
+          },
+        }),
+        (configProvider) =>
+          defaultsDeep(configProvider)(createConfig(configProvider)),
+      ])();
+    },
     fnSpecs: () => [...fnSpecs(), ...manifestToSpec(manifests)],
     start,
     info,

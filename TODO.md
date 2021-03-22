@@ -1,9 +1,11 @@
 ## Bugs
 
+- check stage for all providers
+
 ## Common:
 
 - case where provider does have any resources
-
+-
 - add projectName and use it as the title of the graph
 - destroy: use live instead of id
 - gc d : EC2 │ web, web-iam, , web-server
@@ -52,6 +54,9 @@
 
 ## TODO Aws:
 
+- website-https: 'gc a' does not run onDeployed
+- delete load balancers in vpc
+- minikite gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404
 - multi-provider aws, k8s, ipProviderUp is down, gc d -f fails
 - https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
 - https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html
@@ -114,3 +119,24 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 - https://jonathan.bergknoff.com/journal/terraform-pain-points/
 - terraform workspace new staging
 - terraform workspace select (staging/production)
+
+* retry when deleting:
+
+"Input": {
+"data": [undefined]
+"url": "delete https://compute.googleapis.com/compute/v1/projects/grucloud-e2e/global/networks/99300703649411466"
+}
+"Message": "Request failed with status code 400"
+"Output": {
+"error": {
+"code": 400
+"errors": [
+{
+"domain": "global"
+"message": "The resource 'projects/grucloud-e2e/global/networks/vpc-dev' is not ready"
+"reason": "resourceNotReady"
+}
+]
+"message": "The resource 'projects/grucloud-e2e/global/networks/vpc-dev' is not ready"
+}
+}

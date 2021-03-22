@@ -29,10 +29,8 @@ describe("AwsNatGateway", async function () {
       this.skip();
     }
     provider = AwsProvider({
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
-
-    await provider.start();
 
     vpc = await provider.makeVpc({
       name: "vpc",

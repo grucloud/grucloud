@@ -20,7 +20,7 @@ describe("ScalewayProvider", async function () {
     }
     provider = ScalewayProvider({
       name: "scaleway",
-      config: config.scaleway,
+      config: () => ({}),
     });
 
     ip = await provider.makeIp({ name: "myip" });
@@ -56,12 +56,6 @@ describe("ScalewayProvider", async function () {
     const configs = await provider.listConfig();
     //console.log(JSON.stringify(configs, null, 4));
     assert(configs);
-  });
-
-  it("list lives", async function () {
-    const { results: lives } = await provider.listLives();
-    //console.log(JSON.stringify(result, null, 4));
-    assert(lives);
   });
   it("list targets", async function () {
     const result = await provider.listTargets();

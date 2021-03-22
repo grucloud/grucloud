@@ -1,7 +1,7 @@
 const { get, not } = require("rubico");
 const { defaultsDeep, isEmpty } = require("rubico/x");
 const K8sClient = require("./K8sClient");
-const { buildTagsObject } = require("../Common");
+const { buildTagsObject, isUpByIdCore } = require("../Common");
 const {
   displayNameDefault,
   displayNameResourceDefault,
@@ -15,7 +15,7 @@ exports.createResourceNamespaceless = ({
   apiVersion: apiVersionDefault,
   kind,
   cannotBeDeleted,
-  isUpByIdFactory,
+  isInstanceUp,
 }) => ({ spec, config }) => {
   //TODOs
   //const getApiVersion = () =>
@@ -43,6 +43,12 @@ exports.createResourceNamespaceless = ({
   const pathDelete = ({ name, apiVersion = apiVersionDefault }) =>
     `${baseUrl({ apiVersion })}/${name}`;
 
+  const isUpByIdFactory = ({ getById }) =>
+    isUpByIdCore({
+      isInstanceUp,
+      getById,
+    });
+
   return K8sClient({
     spec,
     config,
@@ -56,6 +62,7 @@ exports.createResourceNamespaceless = ({
     displayNameResource: displayNameResourceDefault,
     resourceKey: resourceKeyDefault,
     cannotBeDeleted,
+    isInstanceUp,
     isUpByIdFactory,
   });
 };
@@ -66,8 +73,7 @@ exports.createResourceNamespace = ({
   apiVersion,
   kind,
   cannotBeDeleted,
-  isUpByIdFactory,
-  isDownByIdFactory,
+  isInstanceUp,
 }) => ({ spec, config }) => {
   const getApiVersion = () =>
     get(`${configKey}.apiVersion`, apiVersion)(config);
@@ -91,6 +97,12 @@ exports.createResourceNamespace = ({
   const pathUpdate = pathGet;
   const pathDelete = pathGet;
 
+  const isUpByIdFactory = ({ getById }) =>
+    isUpByIdCore({
+      isInstanceUp,
+      getById,
+    });
+
   return K8sClient({
     spec,
     config,
@@ -101,8 +113,8 @@ exports.createResourceNamespace = ({
     pathDelete,
     configDefault,
     cannotBeDeleted,
+    isInstanceUp,
     isUpByIdFactory,
-    isDownByIdFactory,
     displayName: displayNameDefault,
     displayNameResource: displayNameResourceDefault,
     resourceKey: resourceKeyDefault,

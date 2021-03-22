@@ -208,6 +208,7 @@ exports.EKSCluster = ({ spec, config }) => {
   return {
     type: "EKSCluster",
     spec,
+    isInstanceUp,
     isUpById,
     isDownById,
     findId,

@@ -15,8 +15,7 @@ const toJSON = (x) => JSON.stringify(x, null, 4);
 describe("MockProviderCli", async function () {
   before(async () => {});
   it("init and uninit error", async function () {
-    const config = ConfigLoader({ baseDir: __dirname });
-    const provider = MockProvider({ config });
+    const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
     const infra = { provider };
     const errorMessage = "stub-error";
@@ -57,8 +56,7 @@ describe("MockProviderCli", async function () {
     }
   });
   it("start error", async function () {
-    const config = ConfigLoader({ baseDir: __dirname });
-    const provider = MockProvider({ config });
+    const provider = MockProvider({ config: () => ({}) });
     const errorMessage = "stub-error";
 
     provider.start = sinon
@@ -71,11 +69,14 @@ describe("MockProviderCli", async function () {
       map(
         tryCatch(
           async ({ command, options = {} }) => {
-            await cliCommands[command]({
+            const result = await cliCommands[command]({
               infra,
               commandOptions: options,
             });
-            assert(false, `should not be here for command ${command}`);
+            assert(
+              false,
+              `should not be here for command ${command}, ${tos(result)}`
+            );
           },
           (ex) => ex
         )
@@ -83,7 +84,7 @@ describe("MockProviderCli", async function () {
       forEach((ex) => {
         assert.equal(ex.code, 422);
         assert(ex.error);
-        assert(ex.error.error);
+        assert(ex.error.message);
         //assert(ex.error.result.resultStart);
       }),
     ])([
@@ -91,12 +92,11 @@ describe("MockProviderCli", async function () {
       { command: "planQuery" },
       { command: "planApply" },
       { command: "planDestroy" },
-      { command: "planRunScript", options: { onDeployed: true } },
+      // TODO live { command: "planRunScript", options: { onDeployed: true } },
     ]);
   });
   it("abort deploy and destroy", async function () {
-    const config = ConfigLoader({ baseDir: __dirname });
-    const provider = MockProvider({ config });
+    const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
     const infra = { provider, resources };
 

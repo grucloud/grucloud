@@ -2,10 +2,10 @@ const assert = require("assert");
 
 exports.createIngress = async ({
   provider,
-  config: { restServer, ui },
   resources: { namespace, certificate, serviceWebServer, serviceRestServer },
 }) => {
   assert(provider);
+  const { restServer, ui } = provider.config;
   assert(restServer);
   assert(ui);
   assert(serviceWebServer);

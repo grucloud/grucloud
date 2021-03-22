@@ -1,12 +1,12 @@
 const assert = require("assert");
-const { K8sProvider } = require("@grucloud/core");
 const { createChartWebServer } = require("./charts/web-server");
 const { createChartRestServer } = require("./charts/rest-server");
 const { createChartPostgres } = require("./charts/postgres");
 const { createChartRedis } = require("./charts/redis");
-const hooks = require("./hooks");
+exports.hooks = require("./hooks");
 
-const createResources = async ({ provider, config }) => {
+const createResources = async ({ provider }) => {
+  const { config } = provider;
   assert(config.namespaceName);
 
   const serviceAccountName = "service-account-aws";
@@ -58,13 +58,3 @@ const createResources = async ({ provider, config }) => {
 };
 
 exports.createResources = createResources;
-
-exports.createStack = async ({ config, dependencies }) => {
-  const provider = K8sProvider({ config, dependencies });
-
-  return {
-    provider,
-    resources: await createResources({ provider, config }),
-    hooks,
-  };
-};

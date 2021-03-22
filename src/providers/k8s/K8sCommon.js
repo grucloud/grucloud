@@ -45,7 +45,12 @@ exports.compare = async ({ target, live }) =>
       assert(live);
     }),
     () => detailedDiff(pickCompare(live), pickCompare(target)),
-    omit(["deleted.spec"]),
+    omit(["deleted.spec", "deleted.metadata"]),
+    switchCase([
+      pipe([get("added.metadata.annotations"), isEmpty]),
+      omit(["added.metadata.annotations"]),
+      (diff) => diff,
+    ]),
     tap((diff) => {
       logger.debug(`k8s compare ${tos(diff)}`);
     }),
@@ -156,7 +161,7 @@ exports.isOurMinion = ({ resource, lives, config }) =>
     () => isOurMinionObject({ tags: resource.metadata.annotations, config }),
     pipe([
       tap(() => {
-        //assert(lives);
+        assert(lives);
         logger.info(`isOurMinion ${JSON.stringify({ resource })}`);
       }),
       () => first(resource.metadata.ownerReferences),
@@ -164,14 +169,18 @@ exports.isOurMinion = ({ resource, lives, config }) =>
         not(isEmpty),
         ({ kind, uid }) =>
           pipe([
-            find(eq(get("type"), kind)),
+            () =>
+              lives.getByType({
+                providerName: config.providerName,
+                type: kind,
+              }),
             get("resources"),
             find(eq(get("live.metadata.uid"), uid)),
             get("managedByUs"),
             tap((result) => {
               logger.info(`isOurMinion ${resource.toString()}: ${result}`);
             }),
-          ])(lives),
+          ])(),
         () => false,
       ]),
     ]),

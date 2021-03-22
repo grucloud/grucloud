@@ -3,8 +3,8 @@ const fs = require("fs");
 const { GoogleProvider } = require("@grucloud/core");
 const hooks = require("./hooks");
 
-exports.createStack = async ({ config }) => {
-  const provider = GoogleProvider({ name: "google", config });
+exports.createStack = async () => {
+  const provider = GoogleProvider({ config: require("./config") });
 
   const publicKey = fs.readFileSync(
     path.resolve(process.env.HOME, ".ssh/id_rsa.pub")

@@ -16,7 +16,7 @@ describe("ScalewayVolume", async function () {
     }
     provider = ScalewayProvider({
       name: "scaleway",
-      config: config.scaleway,
+      config: () => ({}),
     });
     volume = await provider.makeVolume({
       name: "volume1",
@@ -32,12 +32,6 @@ describe("ScalewayVolume", async function () {
     const config = await volume.resolveConfig();
     assert(config.volume_type);
     assert(config.name);
-  });
-
-  it("plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.length, 0);
-    assert.equal(plan.resultCreate.length, 1);
   });
   it.skip("apply and destroy", async function () {
     await testPlanDeploy({ provider });

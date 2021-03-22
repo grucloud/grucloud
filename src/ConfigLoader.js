@@ -1,4 +1,4 @@
-const { map, pipe, tap, filter, switchCase } = require("rubico");
+const { map, pipe, tap, filter, switchCase, tryCatch } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
 const { isEmpty } = require("rubico/x");
 const assert = require("assert");
@@ -84,19 +84,11 @@ const envLoader = ({ configDir, stage }) => {
   envFromStage({ configDir, stage });
 };
 
-const configFromDefault = ({ configDir }) => {
-  const defaultConfigFile = npath.join(configDir, "default.js");
-  checkFileExist(defaultConfigFile);
-  return require(defaultConfigFile)();
-};
-
-const configFromStage = ({ configDir, stage }) => {
-  const stageConfigFile = npath.join(configDir, `${stage}.js`);
-  if (!fs.existsSync(stageConfigFile)) {
-    return;
-  }
-  return require(stageConfigFile)();
-};
+const configFromDefault = ({ configDir }) =>
+  pipe([
+    () => npath.join(configDir, "config.js"),
+    tryCatch(pipe([checkFileExist, require]), (error) => {}),
+  ])();
 
 exports.ConfigLoader = ({
   baseDir = process.cwd(),
@@ -104,15 +96,10 @@ exports.ConfigLoader = ({
   stage = process.env.STAGE || "dev",
 }) => {
   //console.log(`ConfigLoader ${baseDir} ${stage}`);
-  logger.info(`${(baseDir, stage)}`);
-  const configDir = npath.join(baseDir, path, "config");
+  logger.info(`ConfigLoader ${baseDir}, ${stage}`);
+  const configDir = npath.join(baseDir, path);
   process.env.CONFIG_DIR = configDir;
   envLoader({ configDir, stage });
 
-  const defaultConfig = configFromDefault({ configDir });
-  const stageConfig = configFromStage({ configDir, stage }) || {};
-  const merged = defaultsDeep(defaultConfig)(stageConfig);
-  logger.info(`config: ${tos(merged)}`);
-
-  return merged;
+  return configFromDefault({ configDir });
 };

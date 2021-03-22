@@ -10,6 +10,6 @@ const createAxios = ({ url }) => {
   mock.onGet(/^\/\w{3,}/).reply(500);
   return axios;
 };
-module.exports = {
+module.exports = () => ({
   createAxios,
-};
+});

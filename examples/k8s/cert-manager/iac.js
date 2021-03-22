@@ -16,8 +16,11 @@ exports.loadManifest = loadManifest;
 
 exports.createResources = createResources;
 
-exports.createStack = async ({ config }) => {
-  const provider = K8sProvider({ name: "cert-manager", config });
+exports.createStack = async () => {
+  const provider = K8sProvider({
+    name: "cert-manager",
+    config: require("./config"),
+  });
   const resources = await createResources({ provider });
   return {
     provider,

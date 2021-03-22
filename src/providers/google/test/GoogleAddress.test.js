@@ -21,7 +21,10 @@ describe("GoogleAddress", async function () {
     }
     provider = GoogleProvider({
       name: "google",
-      config: config.google,
+      config: () => ({
+        projectId: () => "grucloud-e2e",
+        projectName: () => "grucloud-e2e",
+      }),
     });
 
     await provider.start();
@@ -33,7 +36,7 @@ describe("GoogleAddress", async function () {
     const config = await address.resolveConfig();
     assert(config);
     assert.equal(config.name, addressName);
-    assert.equal(config.description, provider.config().managedByDescription);
+    assert.equal(config.description, provider.config.managedByDescription);
   });
   it.skip("apply and destroy", async function () {
     await testPlanDeploy({ provider, types });

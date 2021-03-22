@@ -6,13 +6,13 @@ const cliCommands = require("../../../cli/cliCommands");
 const logger = require("logger")({ prefix: "MockProviderTest" });
 
 describe("MockProviderCornerCase", async function () {
-  const config = ConfigLoader({ baseDir: __dirname });
+  let config;
 
   before(async () => {});
 
   it("undefined dependencies", async function () {
     const provider = MockProvider({
-      config,
+      config: () => ({}),
     });
     try {
       await provider.makeServer({
@@ -27,7 +27,7 @@ describe("MockProviderCornerCase", async function () {
 
   it("same name", async function () {
     const provider = MockProvider({
-      config,
+      config: () => ({}),
     });
     await provider.makeServer({
       name: "web-server",

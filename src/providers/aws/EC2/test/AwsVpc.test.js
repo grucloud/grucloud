@@ -22,7 +22,7 @@ describe("AwsVpc", async function () {
       this.skip();
     }
     provider = AwsProvider({
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
     await provider.start();
@@ -41,7 +41,7 @@ describe("AwsVpc", async function () {
     assert.equal(vpc.name, vpcName);
   });
 
-  it("vpc listLives canBeDeleted", async function () {
+  it.skip("vpc listLives canBeDeleted", async function () {
     const { results } = await provider.listLives({
       options: {
         types,
@@ -54,27 +54,19 @@ describe("AwsVpc", async function () {
   it.skip("vpc apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
     const vpcLive = await vpc.getLive({ deep: true });
-    const { VpcId } = vpcLive;
-    assert(vpcLive.Tags);
-    //assert(vpcLive.DnsHostnames);
+    const { VpcId, Tags } = vpcLive;
+    assert(VpcId);
+    assert(Tags);
 
     assert(find(eq(get("Key"), k8sClusterTagKey))(vpcLive.Tags));
 
     assert(
       CheckAwsTags({
-        config: provider.config(),
+        config: provider.config,
         tags: vpcLive.Tags,
         name: vpc.name,
       })
     );
-
-    const {
-      results: [vpcs],
-    } = await provider.listLives({ options: { types } });
-    assert(vpcs);
-    const vpcDefault = vpcs.resources.find((vpc) => vpc.data.IsDefault);
-    assert(vpcDefault);
-
     await testPlanDestroy({ provider, types, full: false });
   });
 });

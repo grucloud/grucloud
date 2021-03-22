@@ -2,7 +2,7 @@ process.env.AWS_SDK_LOAD_CONFIG = "true";
 const AWS = require("aws-sdk");
 const assert = require("assert");
 const { map, pipe, get } = require("rubico");
-const { first, pluck } = require("rubico/x");
+const { first, pluck, defaultsDeep, isFunction } = require("rubico/x");
 
 const logger = require("../../logger")({ prefix: "AwsProvider" });
 const { tos } = require("../../tos");
@@ -16,6 +16,8 @@ const AwsRoute53Domain = require("./Route53Domain");
 const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
 const AwsEKS = require("./EKS");
+
+const defaultRegion = "eu-west-2";
 
 const fnSpecs = () => [
   ...AwsS3,
@@ -50,8 +52,7 @@ const fetchAccountId = pipe([
 ]);
 
 exports.AwsProvider = ({ name = "aws", config, ...other }) => {
-  assert(config);
-  assert(config.projectName, "missing projectName in config");
+  assert(isFunction(config), "config must be a function");
 
   AWS.config.apiVersions = {
     ec2: "2016-11-15",
@@ -79,7 +80,8 @@ exports.AwsProvider = ({ name = "aws", config, ...other }) => {
   let accountId;
   let zone;
   let zones;
-  const getRegion = (config) => config.region || AWS.config.region;
+  const getRegion = (config) =>
+    config.region || AWS.config.region || defaultRegion;
   const getZone = ({ zones }) => config.zone || first(zones);
   const region = getRegion(config);
   const start = async () => {
@@ -103,11 +105,16 @@ exports.AwsProvider = ({ name = "aws", config, ...other }) => {
     ...other,
     type: "aws",
     name,
-    config: {
-      ...config,
-      accountId: () => accountId,
-      region: getRegion(config),
-      zone: () => zone,
+    get config() {
+      return pipe([
+        () => ({
+          accountId: () => accountId,
+          region: getRegion(config),
+          zone: () => zone,
+        }),
+        (configProvider) =>
+          defaultsDeep(configProvider)(config(configProvider)),
+      ])();
     },
     fnSpecs,
     start,

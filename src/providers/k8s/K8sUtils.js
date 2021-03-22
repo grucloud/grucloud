@@ -52,9 +52,8 @@ exports.K8sUtils = ({ config }) => {
         logger.debug(`#pods ${data.length}`);
       }),
     ])();
-
   // is up if the first pod is in the Running phase
-  const isUpByPod = () => ({ live: { metadata } }) =>
+  const isUpByPod = ({ metadata }) =>
     pipe([
       tap(() => {
         logger.debug(`isUpByPod`);
@@ -76,7 +75,7 @@ exports.K8sUtils = ({ config }) => {
       }),
     ])();
 
-  const isUpByCrd = () => ({ live: { metadata, spec } }) =>
+  const isUpByCrd = ({ metadata, spec }) =>
     pipe([
       tap(() => {
         logger.debug(`isUpByCrd ${spec.names.plural}`);

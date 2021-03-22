@@ -7,11 +7,7 @@ By default, credentials and config are obtained through files managed by the AWS
 
 ## Environment file
 
-```sh
-cp config/default.env.example config/default.env
-```
-
-Edit **config/default.env** and set the correct values:
+Create **default.env** and set the correct values:
 
 ```sh
 AWSAccessKeyId=
@@ -20,7 +16,7 @@ AWSSecretKey=
 
 ## Config file
 
-Edit **config/default.js** and set region and zone:
+Edit **config.js** and set region and zone:
 
 ```js
 module.exports = () => ({

@@ -15,8 +15,7 @@ describe("MockProviderHooks", async function () {
     const onDeployed = { init: sinon.spy() };
     const onDestroyed = { init: sinon.spy() };
 
-    const config = ConfigLoader({ baseDir: __dirname });
-    const provider = MockProvider({ config });
+    const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
 
     provider.hookAdd("mock-test", {
@@ -45,9 +44,8 @@ describe("MockProviderHooks", async function () {
     const onDeployed = { init: sinon.spy() };
     const onDestroyed = { init: sinon.spy() };
 
-    const config = ConfigLoader({ baseDir: __dirname });
     const provider = MockProvider({
-      config: { ...config, ...config404 },
+      config: config404,
     });
     const resources = await createResources({ provider });
 
@@ -80,18 +78,14 @@ describe("MockProviderHooks", async function () {
       });
       assert(false, "should not be here");
     } catch (error) {
-      assert.equal(
-        error.error.resultQueryDestroy.results[0].lives.results[0].error
-          .response.status,
-        404
-      );
+      const lives = error.error.lives.json;
+      assert.equal(lives[0].results[0].error.response.status, 404);
     }
 
     assert(!onDestroyed.init.called);
   });
   it("planApply init throw ", async function () {
-    const config = ConfigLoader({ baseDir: __dirname });
-    const provider = MockProvider({ config });
+    const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
     provider.hookAdd("mock-init-throw", {
       onDeployed: {
@@ -118,7 +112,7 @@ describe("MockProviderHooks", async function () {
       const { error } = exception;
       assert(error.error);
 
-      const { resultHooks } = error.results[0];
+      const { resultHooks } = error.resultDeploy.results[0];
       assert(resultHooks.error);
       assert(resultHooks.results[0].error);
     }
@@ -137,8 +131,7 @@ describe("MockProviderHooks", async function () {
     }
   });
   it("run --onDeployed init throw ", async function () {
-    const config = ConfigLoader({ baseDir: __dirname });
-    const provider = MockProvider({ config });
+    const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
     provider.hookAdd("mock-run-ondeployed-init-throw", {
       onDeployed: {
@@ -162,8 +155,7 @@ describe("MockProviderHooks", async function () {
   });
 
   it("action throw ", async function () {
-    const config = ConfigLoader({ baseDir: __dirname });
-    const provider = MockProvider({ config });
+    const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
     const message = "i throw in a command";
     provider.hookAdd("mock-action-throw", {
@@ -208,7 +200,7 @@ describe("MockProviderHooks", async function () {
       assert(false, "should not be here");
     } catch (ex) {
       const { error } = ex;
-      const resultHooks = error.results[0].resultHooks;
+      const { resultHooks } = error.resultDeploy.results[0];
       assert(resultHooks.error);
       assert(resultHooks.results[0].error);
     }

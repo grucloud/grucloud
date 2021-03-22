@@ -35,11 +35,7 @@ const createResources = async ({ provider }) => {
 };
 exports.createResources = createResources;
 
-exports.createStack = async ({}) => {
-  // Move env
-  const config = {
-    zone: "fr-par-1",
-  };
+exports.createStack = async ({ config }) => {
   // Create Scaleway provider
   const provider = ScalewayProvider({ name: "scaleway", config });
   const resources = await createResources({ provider });

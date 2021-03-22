@@ -10,11 +10,11 @@ const { tos } = require("../../../tos");
 const createMockProvider = async ({ name, config, mockCloud }) => {
   return MockProvider({
     name,
-    config: {
-      ...config,
+    config: () => ({
+      //...config,
       mockCloud,
       createAxios: createAxiosMock,
-    },
+    }),
   });
 };
 describe("MockProvider errors", async function () {

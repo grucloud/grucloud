@@ -3,6 +3,7 @@ const { ConfigLoader } = require("ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { CheckAwsTags } = require("../../AwsTagCheck");
+const cliCommands = require("../../../../cli/cliCommands");
 
 describe("AwsInternetGateway", async function () {
   let config;
@@ -18,7 +19,7 @@ describe("AwsInternetGateway", async function () {
       this.skip();
     }
     provider = AwsProvider({
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
     await provider.start();
@@ -46,15 +47,19 @@ describe("AwsInternetGateway", async function () {
     const vpcLive = await vpc.getLive();
     assert(
       CheckAwsTags({
-        config: provider.config(),
+        config: provider.config,
         tags: igLive.Tags,
         name: ig.name,
       })
     );
 
-    const {
-      results: [igs],
-    } = await provider.listLives({ options: { types } });
+    const result = await cliCommands.list({
+      infra: { provider },
+      commandOptions: { our: true, types },
+    });
+    assert(!result.error);
+    assert(result.results);
+    /*
     assert.equal(igs.type, "InternetGateway");
     const myIg = igs.resources.find(
       (resource) => resource.live.Attachments[0].VpcId === vpcLive.VpcId
@@ -64,6 +69,7 @@ describe("AwsInternetGateway", async function () {
 
     assert(myIg.live.InternetGatewayId);
     //assert(resource.PublicIp);
+    */
     await testPlanDestroy({ provider, types });
   });
 });

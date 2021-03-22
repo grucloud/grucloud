@@ -38,7 +38,10 @@ describe.skip("GcpWebSiteHttps", async function () {
 
     provider = GoogleProvider({
       name: "google",
-      config: config.google,
+      config: () => ({
+        projectId: () => "grucloud-e2e",
+        projectName: () => "grucloud-e2e",
+      }),
     });
 
     await provider.start();
@@ -88,7 +91,7 @@ describe.skip("GcpWebSiteHttps", async function () {
     const config = await sslCertificate.resolveConfig();
     assert(config);
     assert.equal(config.name, certificateName);
-    assert.equal(config.description, provider.config().managedByDescription);
+    assert.equal(config.description, provider.config.managedByDescription);
   });
   it("website https apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
@@ -98,7 +101,7 @@ describe.skip("GcpWebSiteHttps", async function () {
     assert(sslCertificateLive);
     assert.equal(
       sslCertificateLive.description,
-      provider.config().managedByDescription
+      provider.config.managedByDescription
     );
     assert(sslCertificateLive.managed.status);
     assert(sslCertificateLive.managed.domains[0], domain);

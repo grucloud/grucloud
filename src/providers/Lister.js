@@ -12,9 +12,10 @@ const {
   get,
   not,
   switchCase,
+  assign,
 } = require("rubico");
 
-const { isEmpty, isFunction, forEach, includes } = require("rubico/x");
+const { isEmpty, isFunction, forEach, includes, find } = require("rubico/x");
 const { logError } = require("./Common");
 
 const STATES = {
@@ -105,6 +106,17 @@ exports.Lister = ({ inputs, onStateChange }) => {
 
   return pipe([
     () => inputs,
+    map(
+      assign({
+        dependsOn: ({ dependsOn }) =>
+          filter((dependsOn) => find(eq(get("key"), dependsOn))(inputs))(
+            dependsOn
+          ),
+      })
+    ),
+    tap((results) => {
+      logger.debug(`Lister run: `);
+    }),
     //TODO we could have items in dependsOn as long as they are not on the plan
     filter(pipe([get("dependsOn"), isEmpty])),
     tap((x) => {
@@ -117,7 +129,8 @@ exports.Lister = ({ inputs, onStateChange }) => {
     () => [...resultMap.values()],
     (results) => ({ error: any(get("error"))(results), results }),
     tap(({ error, results }) => {
-      logger.debug(`Lister ${error && "error"}, result: ${tos(results)}`);
+      logger.info(`Lister ${error && "error"}`);
+      //logger.debug(`Lister ${error && "error"}, result: ${tos(results)}`);
     }),
   ])();
 };

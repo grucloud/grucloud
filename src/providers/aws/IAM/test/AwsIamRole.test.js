@@ -17,7 +17,7 @@ describe("AwsIamRole", async function () {
     }
     provider = AwsProvider({
       name: "aws",
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
     await provider.start();
@@ -46,10 +46,6 @@ describe("AwsIamRole", async function () {
   it("iamRole resolveConfig", async function () {
     assert.equal(iamRole.name, iamRoleName);
     const config = await iamRole.resolveConfig();
-  });
-  it("iamRole listLives all", async function () {
-    const { results: lives } = await provider.listLives({ options: { types } });
-    assert(lives);
   });
   it.skip("iamRole apply plan", async function () {
     await testPlanDeploy({

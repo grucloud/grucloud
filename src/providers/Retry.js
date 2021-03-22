@@ -21,7 +21,7 @@ const retryCall = async ({
   isExpectedResult = (result) => result,
   isExpectedException = () => false,
   shouldRetryOnException = ({ error, name }) => {
-    logger.error(
+    logger.info(
       `shouldRetryOnException ${name}, error: ${tos(convertError({ error }))}`
     );
     error.stack && logger.error(error.stack);

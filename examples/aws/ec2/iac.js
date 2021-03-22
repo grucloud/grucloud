@@ -22,9 +22,9 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
 };
 exports.createResources = createResources;
 
-exports.createStack = async ({ config }) => {
+exports.createStack = async () => {
   // Create a AWS provider
-  const provider = AwsProvider({ name: "aws", config });
+  const provider = AwsProvider({ config: require("./config") });
   const keyPair = await provider.useKeyPair({
     name: "kp",
   });

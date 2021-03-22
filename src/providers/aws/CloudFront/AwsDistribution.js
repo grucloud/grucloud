@@ -89,7 +89,10 @@ exports.AwsDistribution = ({ spec, config }) => {
       logger.info(`getById ${id}`);
     }),
     tryCatch(
-      ({ id }) => cloudfront().getDistribution({ Id: id }),
+      pipe([
+        ({ id }) => cloudfront().getDistribution({ Id: id }),
+        get("Distribution"),
+      ]),
       switchCase([
         eq(get("code"), "NoSuchDistribution"),
         (error, { id }) => {
@@ -105,9 +108,9 @@ exports.AwsDistribution = ({ spec, config }) => {
       logger.debug(`getById result: ${tos(result)}`);
     }),
   ]);
-
+  const isInstanceUp = eq(get("Status"), "Deployed");
   const isUpById = isUpByIdCore({
-    isInstanceUp: eq(get("Distribution.Status"), "Deployed"),
+    isInstanceUp,
     getById,
   });
 
@@ -278,15 +281,23 @@ exports.AwsDistribution = ({ spec, config }) => {
   const onDeployed = ({ resultCreate, lives }) =>
     pipe([
       tap(() => {
-        logger.debug(`onDeployed ${tos({ resultCreate, lives })}`);
+        logger.info(`onDeployed`);
+        logger.debug(`onDeployed ${tos({ resultCreate })}`);
+        assert(resultCreate);
+        assert(lives);
       }),
-      () => find(eq(get("type"), RESOURCE_TYPE))(lives.results),
-      get("results.items"),
+      () =>
+        lives.getByType({
+          providerName: config.providerName,
+          type: RESOURCE_TYPE,
+        }),
+      get("resources", []),
       tap((distributions) => {
         logger.info(`onDeployed ${tos({ distributions })}`);
       }),
       map((distribution) =>
         pipe([
+          () => distribution,
           get("Origins.Items"),
           flatMap(({ Id, OriginPath }) =>
             findS3ObjectUpdated({ plans: resultCreate, Id, OriginPath })
@@ -316,13 +327,14 @@ exports.AwsDistribution = ({ spec, config }) => {
               }),
             ])
           ),
-        ])(distribution)
+        ])()
       ),
     ])();
 
   return {
     type: RESOURCE_TYPE,
     spec,
+    isInstanceUp,
     isUpById,
     isDownById,
     findId,
@@ -357,15 +369,18 @@ exports.AwsDistribution = ({ spec, config }) => {
 
 exports.compareDistribution = async ({ target, live, dependencies }) =>
   pipe([
+    () => target,
     omit(["CallerReference", "ViewerCertificate.CloudFrontDefaultCertificate"]),
     tap((targetFiltered) => {
       logger.debug(`compareDistribution diff:${tos(targetFiltered)}`);
     }),
     (targetFiltered) => detailedDiff(live, targetFiltered),
+    //TODO
+    omit(["deleted"]),
     tap((diff) => {
       logger.debug(`compareDistribution diff:${tos(diff)}`);
     }),
-  ])(target);
+  ])();
 
 const findS3ObjectUpdated = ({ plans, Id, OriginPath }) =>
   pipe([

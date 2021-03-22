@@ -3,7 +3,7 @@ const { AzureProvider } = require("@grucloud/core");
 const hooks = require("./hooks");
 
 const createResources = async ({ provider }) => {
-  const { stage } = provider.config();
+  const { stage } = provider.config;
   assert(stage);
   // https://docs.microsoft.com/en-us/rest/api/apimanagement/2019-12-01/apimanagementservice/createorupdate
   const rg = await provider.makeResourceGroup({
@@ -141,8 +141,8 @@ const createResources = async ({ provider }) => {
 
 exports.createResources = createResources;
 
-exports.createStack = async ({ config }) => {
-  const provider = AzureProvider({ name: "azure", config });
+exports.createStack = async () => {
+  const provider = AzureProvider({ config: require("./config") });
   const resources = await createResources({ provider });
 
   return {

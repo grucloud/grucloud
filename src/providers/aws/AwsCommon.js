@@ -20,7 +20,7 @@ const handler = ({ endpointName, endpoint }) => ({
         shouldRetryOnException: ({ error, name }) =>
           pipe([
             tap((error) => {
-              logger.error(`${name}: ${tos(error)}`);
+              logger.info(`${name}: ${tos(error)}`);
             }),
             //TODO add network error
             eq(get("code"), "Throttling"),
@@ -54,8 +54,8 @@ exports.CloudFrontNew = (config) => () =>
 exports.Route53DomainsNew = () => () =>
   createEndpoint({ endpointName: "Route53Domains" })({ region: "us-east-1" });
 
-exports.ACMNew = () => () =>
-  createEndpoint({ endpointName: "ACM" })({ region: "us-east-1" });
+exports.ACMNew = (config) => () =>
+  createEndpoint({ endpointName: "ACM" })(config);
 
 exports.EKSNew = (config) => () =>
   createEndpoint({ endpointName: "EKS" })(config);
@@ -148,10 +148,9 @@ exports.isOurMinion = ({ resource, config }) => {
     ]),
     tap((minion) => {
       logger.debug(
-        `isOurMinion ${minion}, ${tos({
+        `isOurMinion ${minion}, ${JSON.stringify({
           stage,
           projectName,
-          resource,
         })}`
       );
     }),

@@ -151,6 +151,8 @@ exports.AwsNatGateway = ({ spec, config }) => {
     type: "NatGateway",
     spec,
     findId,
+    isInstanceUp,
+    isInstanceDown,
     isUpById,
     isDownById,
     getByName,

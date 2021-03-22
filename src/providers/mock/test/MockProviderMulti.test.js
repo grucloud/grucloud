@@ -17,12 +17,10 @@ describe("MockProviderMulti", async function () {
   let provider2;
   let volume2;
 
-  const config = ConfigLoader({ baseDir: __dirname });
-
   before(async () => {
     provider1 = MockProvider({
       name: providerName1,
-      config,
+      config: () => ({}),
     });
 
     volume1 = await provider1.makeVolume({
@@ -34,7 +32,7 @@ describe("MockProviderMulti", async function () {
 
     provider2 = MockProvider({
       name: providerName2,
-      config,
+      config: () => ({}),
       dependencies: { provider1 },
     });
 
@@ -54,7 +52,7 @@ describe("MockProviderMulti", async function () {
         commandOptions: { provider: [providerName2] },
       });
       assert(!result.error);
-      const mapProvider = groupBy("providerName")(result.result.results);
+      const mapProvider = groupBy("providerName")(result.results);
       assert.equal(mapProvider.size, 1);
     }
     {
@@ -75,7 +73,7 @@ describe("MockProviderMulti", async function () {
         infra,
       });
       assert(!result.error);
-      const mapProvider = groupBy("providerName")(result.result.results);
+      const mapProvider = groupBy("providerName")(result.results);
       assert.equal(mapProvider.size, 2);
     }
     {

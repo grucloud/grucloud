@@ -131,6 +131,7 @@ exports.getByNameCore = async ({
   resources,
   deep = true,
   //TODO meta ?
+  lives,
 }) =>
   pipe([
     tap(() => {
@@ -139,7 +140,7 @@ exports.getByNameCore = async ({
       assert(findName, "findName");
       assert(getList, "getList");
     }),
-    () => getList({ deep, resources }),
+    () => getList({ deep, lives, resources }),
     get("items"),
     find((item) => isDeepEqual(name, findName(item))), //TODO check on meta
     tap((instance) => {
@@ -176,6 +177,7 @@ exports.isUpByIdCore = ({ isInstanceUp, getById }) => async ({
   let up = false;
   const instance = await getById({ type, name, id, deep: false, live });
   if (instance) {
+    //TODO use default isInstanceUp
     if (isInstanceUp) {
       up = isInstanceUp(instance);
     } else {
@@ -279,7 +281,9 @@ exports.buildTagsObject = ({ name, config }) => {
     [managedByKey]: managedByValue,
     [createdByProviderKey]: providerName,
     [stageTagKey]: stage,
-    projectName,
+    ...(projectName && {
+      projectName,
+    }),
   };
 };
 
@@ -288,12 +292,13 @@ exports.isOurMinionObject = ({ tags, config }) => {
   return pipe([
     tap(() => {
       assert(stage);
-      assert(projectName);
+      //TODO
+      //assert(projectName);
       assert(providerName);
     }),
     switchCase([
       and([
-        eq(get("projectName"), projectName),
+        //eq(get("projectName"), projectName),
         eq(get("stage"), stage),
         eq(get(createdByProviderKey), providerName),
       ]),

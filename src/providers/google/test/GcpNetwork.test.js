@@ -20,7 +20,10 @@ describe("GcpNetwork", async function () {
     }
     provider = GoogleProvider({
       name: "google",
-      config: config.google,
+      config: () => ({
+        projectId: () => "grucloud-e2e",
+        projectName: () => "grucloud-e2e",
+      }),
     });
     network = await provider.makeNetwork({ name: networkName });
   });
@@ -29,7 +32,7 @@ describe("GcpNetwork", async function () {
     const config = await network.resolveConfig();
     assert(config);
     assert.equal(config.name, networkName);
-    assert.equal(config.description, provider.config().managedByDescription);
+    assert.equal(config.description, provider.config.managedByDescription);
   });
   it.skip("network apply and destroy", async function () {
     await testPlanDeploy({ provider });

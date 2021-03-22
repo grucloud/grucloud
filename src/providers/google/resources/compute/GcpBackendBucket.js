@@ -12,9 +12,11 @@ exports.GcpBackendBucket = ({ spec, config }) => {
 
   const { projectId, managedByDescription } = config;
 
+  const isInstanceUp = get("selfLink");
+
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
-      isInstanceUp: get("selfLink"),
+      isInstanceUp,
       getById,
     });
 
@@ -30,6 +32,7 @@ exports.GcpBackendBucket = ({ spec, config }) => {
     url: `/projects/${projectId(config)}/global/backendBuckets`,
     config: { ...config, repeatCount: 1 },
     configDefault,
+    isInstanceUp,
     isUpByIdFactory,
   });
 };

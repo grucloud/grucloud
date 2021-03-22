@@ -1,10 +1,11 @@
 const assert = require("assert");
-const { get, eq } = require("rubico");
+const { get, eq, pipe } = require("rubico");
 const { find } = require("rubico/x");
 const { ConfigLoader } = require("ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 const { CheckAwsTags } = require("../../AwsTagCheck");
+const cliCommands = require("../../../../cli/cliCommands");
 
 describe("AwsSubnet", async function () {
   const types = ["Vpc", "Subnet"];
@@ -12,7 +13,7 @@ describe("AwsSubnet", async function () {
   let provider;
   let vpc;
   let subnet;
-  const subnetName = "subnet";
+  const subnetName = "subnet-test";
   const k8sSubnetTagKey = "kubernetes.io/role/elb";
 
   before(async function () {
@@ -23,22 +24,22 @@ describe("AwsSubnet", async function () {
     }
     provider = AwsProvider({
       name: "aws",
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
     await provider.start();
 
     vpc = await provider.makeVpc({
-      name: "vpc",
+      name: "vpc-test-subnet",
       properties: () => ({
-        CidrBlock: "10.1.0.1/16",
+        CidrBlock: "192.168.1.1/16",
       }),
     });
     subnet = await provider.makeSubnet({
       name: subnetName,
       dependencies: { vpc },
       properties: () => ({
-        CidrBlock: "10.1.0.1/24",
+        CidrBlock: "192.168.1.1/24",
         Tags: [{ Key: k8sSubnetTagKey, Value: "1" }],
       }),
     });
@@ -63,12 +64,20 @@ describe("AwsSubnet", async function () {
 
     assert(
       CheckAwsTags({
-        config: provider.config(),
+        config: provider.config,
         tags: subnetLive.Tags,
         name: subnet.name,
       })
     );
 
+    const result = await cliCommands.list({
+      infra: { provider },
+      commandOptions: { our: true, types: ["Subnet"] },
+    });
+    assert(!result.error);
+    assert(result.results);
+    //TODO
+    /*
     const {
       results: [subnets],
     } = await provider.listLives({ options: { types: ["Subnet"] } });
@@ -77,7 +86,7 @@ describe("AwsSubnet", async function () {
       (subnet) => subnet.live.DefaultForAz
     );
     assert(subnetDefault);
-
-    await testPlanDestroy({ provider, types, full: false });
+*/
+    await testPlanDestroy({ provider, types });
   });
 });

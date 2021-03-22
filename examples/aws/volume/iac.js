@@ -33,8 +33,8 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
 
 exports.createResources = createResources;
 
-exports.createStack = async ({ config }) => {
-  const provider = AwsProvider({ config });
+exports.createStack = async () => {
+  const provider = AwsProvider({ config: require("./config") });
   const keyPair = await provider.useKeyPair({
     name: "kp",
   });

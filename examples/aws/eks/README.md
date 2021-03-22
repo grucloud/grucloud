@@ -23,6 +23,7 @@ The purpose of this example is to deploy an kubernetes on EKS: [Elastic Kubernet
 ### EKS
 
 - [EKS Cluster](https://www.grucloud.com/docs/aws/resources/EKS/EksCluster)
+- [NodeGroup](https://www.grucloud.com/docs/aws/resources/EKS/EksNodeGroup)
 
 ## Dependency Graph
 

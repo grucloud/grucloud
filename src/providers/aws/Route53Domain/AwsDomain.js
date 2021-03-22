@@ -42,7 +42,7 @@ exports.AwsDomain = ({ spec, config }) => {
       get("Domains"),
       map(({ DomainName }) => route53domains().getDomainDetail({ DomainName })),
       tap((Domains) => {
-        logger.debug(`getList Domain result: ${tos(Domains)}`);
+        //logger.debug(`getList Domain result: ${tos(Domains)}`);
       }),
       (Domains) => ({
         total: Domains.length,

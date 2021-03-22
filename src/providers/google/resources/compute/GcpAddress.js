@@ -21,9 +21,11 @@ module.exports = GcpAddress = ({ spec, config }) => {
       description: managedByDescription,
     })(properties);
 
+  const isInstanceUp = get("address");
+
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
-      isInstanceUp: get("address"),
+      isInstanceUp,
       getById,
     });
 
@@ -32,6 +34,7 @@ module.exports = GcpAddress = ({ spec, config }) => {
     baseURL: GCP_COMPUTE_BASE_URL,
     url: `/projects/${projectId(config)}/regions/${region}/addresses/`,
     config,
+    isInstanceUp,
     isUpByIdFactory,
     configDefault,
   });

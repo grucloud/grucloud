@@ -17,7 +17,7 @@ describe("ScalewayImage", async function () {
     }
     provider = ScalewayProvider({
       name: "scaleway",
-      config: config.scaleway,
+      config: () => ({}),
     });
 
     image = await provider.useImage({
@@ -46,11 +46,6 @@ describe("ScalewayImage", async function () {
     const instance = await image.getLive();
     // Image is a readonly resource,
     assert(!instance);
-  });
-  it("plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.length, 0);
-    assert.equal(plan.resultCreate.length, 0);
   });
   it.skip("apply and destroy", async function () {
     await testPlanDeploy({ provider });

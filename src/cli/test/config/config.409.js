@@ -10,6 +10,6 @@ const createAxios = ({ url }) => {
   mock.onPost("").reply(409);
   return axios;
 };
-module.exports = {
+module.exports = () => ({
   createAxios,
-};
+});

@@ -26,9 +26,9 @@ const {
   forEach,
   isString,
   uniq,
+  isDeepEqual,
 } = require("rubico/x");
 const { logError, convertError } = require("./Common");
-const isDeepEqual = require("rubico/x/isDeepEqual");
 
 const STATES = {
   WAITING: "WAITING",
@@ -305,7 +305,7 @@ exports.Planner = ({
       if (entry.item.action === "CREATE") {
         const { input, output } = result;
         assert(input, "no input");
-        assert(output, "no output");
+        //assert(output, "no output");
         entry.input = input;
         entry.output = output;
       }

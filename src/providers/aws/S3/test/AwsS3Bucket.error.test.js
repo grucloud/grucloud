@@ -21,29 +21,32 @@ describe("AwsS3BucketErrors", async function () {
 
   it("s3Bucket already exist", async function () {
     const provider = AwsProvider({
-      name: "aws",
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
-
-    await provider.start();
 
     await provider.makeS3Bucket({
       name: "bucket",
       properties: () => ({}),
     });
-
-    const result = await provider.planQueryAndApply({});
-    assert(result.error);
-    const plan = result.resultCreate.results[0];
-    assert.equal(plan.error.code, "Forbidden");
-    assert.equal(plan.item.resource.name, "bucket");
+    try {
+      await cliCommands.planApply({
+        infra: { provider },
+        commandOptions: { force: true },
+      });
+      assert("should not be here");
+    } catch (exception) {
+      assert(exception.error);
+      const result =
+        exception.error.resultDeploy.results[0].resultCreate.results[0];
+      assert.equal(result.error.code, "BucketAlreadyExists");
+      assert.equal(result.item.resource.name, "bucket");
+    }
   });
 
   it("s3Bucket acl error", async function () {
     const provider = AwsProvider({
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
-    await provider.start();
     await provider.makeS3Bucket({
       name: `${bucketPrefix}-acl-accesscontrolpolicy`,
       properties: () => ({
@@ -61,7 +64,7 @@ describe("AwsS3BucketErrors", async function () {
       }),
     });
 
-    const region = provider.config().region;
+    const region = provider.config.region;
     await provider.makeS3Bucket({
       name: `${bucketPrefix}-notification-configuration-invalid-topic`,
       properties: () => ({
@@ -100,19 +103,23 @@ describe("AwsS3BucketErrors", async function () {
         },
       }),
     });
-    const resultDestroy = await provider.destroyAll({
-      options: {
-        types,
-        all: true,
-      },
-    });
-    assert(!resultDestroy.error, "should not have failed");
 
-    const { error, resultCreate } = await provider.planQueryAndApply();
-    assert(error, "should have failed");
-    // order not predicatable
-    //assert(resultCreate.results[0].error.code);
-    //assert(resultCreate.results[1].error.code);
-    //assert(resultCreate.results[3].error.code);
+    {
+      const result = await cliCommands.planDestroy({
+        infra: { provider },
+        commandOptions: { force: true, types },
+      });
+      assert(!result.error);
+    }
+
+    try {
+      await cliCommands.planApply({
+        infra: { provider },
+        commandOptions: { force: true },
+      });
+      assert("should not be here");
+    } catch (exception) {
+      assert(exception.error);
+    }
   });
 });

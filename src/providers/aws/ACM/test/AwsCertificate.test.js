@@ -19,7 +19,7 @@ describe.skip("AwsCertificate", async function () {
     }
     provider = AwsProvider({
       name: "aws",
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
     await provider.start();

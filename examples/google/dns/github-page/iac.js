@@ -1,11 +1,11 @@
 const assert = require("assert");
 const { GoogleProvider } = require("@grucloud/core");
 
-exports.createStack = async ({ config }) => {
-  const { domain } = config;
-  assert(domain, "missing domain");
+exports.createStack = async () => {
+  const provider = GoogleProvider({ config: require("./config") });
 
-  const provider = GoogleProvider({ config });
+  const { domain } = provider.config;
+  assert(domain, "missing domain");
 
   const dnsManagedZone = await provider.makeDnsManagedZone({
     name: "domain",

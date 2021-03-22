@@ -42,3 +42,9 @@ title: Examples
 ### [S3 Simple](https://github.com/grucloud/grucloud/tree/main/examples/aws/s3-simple)
 
 ![S3 simple](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/s3-simple/grucloud.svg)
+
+## Route53
+
+### [Route53Record](https://github.com/grucloud/grucloud/tree/main/examples/aws/route53)
+
+![Route53Record](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/route53/grucloud.svg)

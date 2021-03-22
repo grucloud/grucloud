@@ -3,7 +3,7 @@ const { ConfigLoader } = require("ConfigLoader");
 const { K8sProvider } = require("../K8sProvider");
 const { testPlanDeploy, testPlanDestroy } = require("test/E2ETestUtils");
 
-describe("K8sCustomResourceDefinition", async function () {
+describe.skip("K8sCustomResourceDefinition", async function () {
   let config;
   let provider;
   let namespace;
@@ -28,7 +28,7 @@ describe("K8sCustomResourceDefinition", async function () {
       this.skip();
     }
     provider = K8sProvider({
-      config: config.k8s,
+      config: () => ({}),
     });
 
     await provider.start();

@@ -28,7 +28,7 @@ exports.AwsRoute = ({ spec, config }) => {
   const findId = get("name");
   const findName = findId;
 
-  const getList = ({ resources } = {}) =>
+  const getList = ({ resources, lives } = {}) =>
     pipe([
       tap(() => {
         assert(Array.isArray(resources));
@@ -39,7 +39,7 @@ exports.AwsRoute = ({ spec, config }) => {
           tap(() => {
             logger.debug(`getList resource ${resource.name}`);
           }),
-          () => resource.resolveDependencies({}),
+          () => resource.resolveDependencies({ lives }),
           tap((resolvedDependencies) => {
             logger.debug(`getList resource ${resolvedDependencies}`);
           }),
@@ -92,8 +92,8 @@ exports.AwsRoute = ({ spec, config }) => {
       }),
     ])(resources);
 
-  const getByName = ({ name, resources }) =>
-    getByNameCore({ name, getList, findName, resources });
+  const getByName = ({ name, lives, resources }) =>
+    getByNameCore({ name, getList, findName, lives, resources });
 
   //TODO
   const getById = getByIdCore({ fieldIds: "RouteTableIds", getList });

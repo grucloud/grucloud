@@ -28,16 +28,7 @@ describe("AzResourceGroup", async function () {
   it("config", async function () {
     const config = await rg.resolveConfig();
     assert(config);
-    assert.equal(config.location, provider.config().location);
-  });
-  it("lives", async function () {
-    const { results: lives } = await provider.listLives();
-    //console.log("lives ip", lives);
-  });
-  it("plan", async function () {
-    const plan = await provider.planQuery();
-    assert.equal(plan.resultDestroy.length, 0);
-    assert.equal(plan.resultCreate.length, 1);
+    assert.equal(config.location, provider.config.location);
   });
   it.skip("az rg apply and destroy", async function () {
     await testPlanDeploy({ provider });

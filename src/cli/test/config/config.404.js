@@ -8,6 +8,7 @@ const createAxios = ({ url }) => {
   mock.onGet("").reply(404);
   return axios;
 };
-module.exports = {
+
+module.exports = () => ({
   createAxios,
-};
+});

@@ -1,6 +1,7 @@
 const assert = require("assert");
 const { GoogleProvider } = require("../GoogleProvider");
 const { ConfigLoader } = require("ConfigLoader");
+const cliCommands = require("../../../cli/cliCommands");
 
 const {
   testPlanDeploy,
@@ -24,9 +25,11 @@ describe("GcpServiceAccount", async function () {
 
     provider = GoogleProvider({
       name: "google",
-      config: config.google,
+      config: () => ({
+        projectId: () => "grucloud-e2e",
+        projectName: () => "grucloud-e2e",
+      }),
     });
-    await provider.start();
 
     serviceAccount = await provider.makeServiceAccount({
       name: serviceAccountName,
@@ -44,7 +47,7 @@ describe("GcpServiceAccount", async function () {
     assert.equal(config.accountId, serviceAccountName);
     assert.equal(
       config.serviceAccount.description,
-      provider.config().managedByDescription
+      provider.config.managedByDescription
     );
     assert.equal(config.serviceAccount.displayName, serviceAccountDisplayName);
   });
@@ -60,28 +63,24 @@ describe("GcpServiceAccount", async function () {
     assert(serviceAccountLive);
 
     const providerEmpty = GoogleProvider({
-      config: config.google,
+      config: () => ({
+        projectId: () => "grucloud-e2e",
+        projectName: () => "grucloud-e2e",
+      }),
     });
-
-    await providerEmpty.start();
     {
-      const result = await providerEmpty.destroyAll({
-        options: {
-          all: false,
-          types,
-        },
+      const result = await cliCommands.planDestroy({
+        infra: { provider: providerEmpty },
+        commandOptions: { force: true, types },
       });
       assert(!result.error, "destroyAll failed");
-      //assert.equal(results.length, 0);
     }
     {
-      const { error, results } = await provider.destroyAll({
-        options: {
-          all: false,
-          types,
-        },
+      const result = await cliCommands.planDestroy({
+        infra: { provider },
+        commandOptions: { force: true, types, all: false },
       });
-      assert(!error, "destroyAll failed");
+      assert(!result.error, "destroyAll failed");
     }
   });
 });

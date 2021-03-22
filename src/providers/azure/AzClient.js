@@ -18,6 +18,7 @@ module.exports = AzClient = ({
   pathSuffixList,
   queryParameters,
   isUpByIdFactory,
+  isInstanceUp,
   config,
   configDefault,
   cannotBeDeleted,
@@ -55,6 +56,7 @@ module.exports = AzClient = ({
     pathList,
     verbCreate: "PUT",
     isUpByIdFactory,
+    isInstanceUp,
     cannotBeDeleted,
     axios: AxiosMaker({
       baseURL: BASE_URL,

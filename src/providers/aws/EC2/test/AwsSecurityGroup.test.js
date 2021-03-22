@@ -21,11 +21,9 @@ describe("AwsSecurityGroup", async function () {
       this.skip();
     }
     provider = AwsProvider({
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
-    await provider.start();
-    await provider.destroyAll({ options: { all: true, types } });
     vpc = await provider.makeVpc({
       name: "vpc",
       properties: () => ({
@@ -132,7 +130,7 @@ describe("AwsSecurityGroup", async function () {
   after(async () => {});
   it("empty ingress", async function () {
     const provider = AwsProvider({
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
     await provider.start();
 
@@ -151,18 +149,25 @@ describe("AwsSecurityGroup", async function () {
         },
       }),
     });
+    await testPlanDestroy({ provider, types });
 
-    await provider.destroyAll({ options: { types } });
+    try {
+      await testPlanDeploy({ provider, types });
+      assert(!error, "should have failed");
+    } catch (exception) {
+      assert(
+        exception.error.resultDeploy.results[0].resultCreate.results[1].error
+          .code,
+        "InvalidParameterValue"
+      );
+    }
 
-    const { error, resultCreate } = await provider.planQueryAndApply();
-    assert(error, "should have failed");
-    assert(resultCreate.results[1].error.code, "InvalidParameterValue");
-    await provider.destroyAll({ options: { types } });
+    await testPlanDestroy({ provider, types });
   });
   it("sg name", async function () {
     assert.equal(sg.name, "sg");
   });
-  it("sg resolveConfig", async function () {
+  it.skip("sg resolveConfig", async function () {
     const config = await sg.resolveConfig();
     assert.equal(config.ingress.IpPermissions[0].FromPort, 22);
   });
@@ -178,12 +183,12 @@ describe("AwsSecurityGroup", async function () {
 
     assert(
       CheckAwsTags({
-        config: provider.config(),
+        config: provider.config,
         tags: sgLive.Tags,
         name: sg.name,
       })
     );
 
-    await testPlanDestroy({ provider, full: false, types });
+    await testPlanDestroy({ provider, types });
   });
 });

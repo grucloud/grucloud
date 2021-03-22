@@ -173,6 +173,16 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "K8s Service Account Graph",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/service-account-role",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["graph"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "K8s EKS List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/k8s/starhackit/aws",
@@ -213,12 +223,22 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "K8s Starhackit List",
+      "name": "Minikube Starhackit List",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/starhackit",
+      "cwd": "${workspaceFolder}/examples/k8s/starhackit/minikube",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["list"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Minikube Starhackit Apply",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/k8s/starhackit/minikube",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["apply", "-f"]
     },
     {
       "type": "node",
@@ -789,10 +809,39 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Aws Route53 List",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/route53",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["list"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Aws Route53 Plan",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/route53",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Aws Route53 Destroy all",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/route53",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["destroy", "-f", "-a"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Aws IAM Init",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/iam",
       "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
       "args": ["init"]
     },
     {
@@ -906,6 +955,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Google VM init",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/google/vm",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["init"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Google VM Run onDeployed",
       "program": "${workspaceFolder}/src/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/google/vm",
@@ -938,6 +996,16 @@
       "cwd": "${workspaceFolder}/examples/google/vm-network",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Google IAM Policy Apply",
+      "program": "${workspaceFolder}/src/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/google/iam/iam-policy",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["apply", "-f"]
     },
     {
       "type": "node",

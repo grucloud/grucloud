@@ -14,6 +14,7 @@ const {
   or,
   omit,
   assign,
+  fork,
 } = require("rubico");
 const {
   first,
@@ -58,6 +59,7 @@ module.exports = K8sClient = ({
   resourceKey = resourceKeyNamespace,
   displayNameResource = displayNameResourceNamespace,
   displayName = displayNameNamespace,
+  isInstanceUp,
   isUpByIdFactory = ({ getById }) => isUpByIdCore({ getById }),
   isDownByIdFactory = ({ getById }) => isDownByIdCore({ getById }),
   cannotBeDeleted = () => false,
@@ -261,22 +263,28 @@ module.exports = K8sClient = ({
           logger.info(`update ${type}/${name}, diff: ${tos(diff)}`);
           assert(name);
           assert(payload);
+          assert(live);
         }),
-        () =>
-          pathUpdate({
-            name,
-            namespace:
-              payload.metadata.namespace ||
-              getNamespace(dependencies.namespace),
-          }),
-        tap((path) => {
-          logger.info(`update ${type}/${name}, path: ${path}`);
+        fork({
+          fullPath: pipe([
+            () =>
+              pathUpdate({
+                name,
+                namespace:
+                  payload.metadata.namespace ||
+                  getNamespace(dependencies.namespace),
+              }),
+            tap((path) => {
+              logger.info(`update ${type}/${name}, path: ${path}`);
+            }),
+            (path) => urljoin(getServerUrl(kubeConfig()), path),
+          ]),
+          data: pipe([() => payload, defaultsDeep(omit(["status"])(live))]),
         }),
-        (path) => urljoin(getServerUrl(kubeConfig()), path),
-        (fullPath) =>
+        ({ fullPath, data }) =>
           retryCallOnError({
             name: `update ${type}/${name} path: ${fullPath}`,
-            fn: () => axios().put(fullPath, payload),
+            fn: () => axios().put(fullPath, data),
             config: { ...config, repeatCount: 0 },
           }),
         tap((result) => {
@@ -345,5 +353,6 @@ module.exports = K8sClient = ({
     destroy,
     cannotBeDeleted,
     configDefault,
+    isInstanceUp,
   };
 };

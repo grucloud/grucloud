@@ -21,7 +21,7 @@ describe("AwsIamOpenIDConnectProvider", async function () {
       this.skip();
     }
     provider = AwsProvider({
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
 
     await provider.start();

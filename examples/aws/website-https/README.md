@@ -4,10 +4,13 @@ The purpose of this example is to deploy a secure static website on AWS accessib
 
 ## Config
 
-Edit [config/default.js](./config/default.js) and set the following parameters:
+Edit [config.js](./config.js) and set the following parameters:
 
-- **DomainName**: the website domain name managed by **Route53**
+- **rootDomainName**: the top level domain name managed by **Route53**
+- **DomainName**: the website sub-domain
 - **websiteDir**: the directory where the website is located.
+
+> The region must be set to **us-east-1** due a CloudFront limitation.
 
 ## Resources
 

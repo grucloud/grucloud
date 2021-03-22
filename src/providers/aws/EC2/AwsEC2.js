@@ -375,6 +375,8 @@ exports.AwsEC2 = ({ spec, config }) => {
   return {
     type: "EC2",
     spec,
+    isInstanceUp,
+    isInstanceDown,
     isUpById,
     isDownById,
     findId,

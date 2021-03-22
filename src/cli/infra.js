@@ -17,6 +17,7 @@ const {
   get,
 } = require("rubico");
 const { ConfigLoader } = require("../ConfigLoader");
+const { isFunction } = require("rubico/x");
 const logger = require("../logger")({ prefix: "Infra" });
 
 const creatInfraFromFile = async ({
@@ -30,7 +31,7 @@ const creatInfraFromFile = async ({
     throw { code: 400, message: `no createStack provided` };
   }
 
-  const infra = await InfraCode.createStack({ config: { ...config, stage } });
+  const infra = await InfraCode.createStack({ config, stage });
   if (!infra) {
     throw { code: 400, message: `no infra provided` };
   }
@@ -74,6 +75,7 @@ exports.createInfra = ({ commandOptions }) => async ({
   checkFileExist({ fileName: infraFileNameFull });
 
   const config = requireConfig({ fileName: configFileName, stage });
+  //assert(isFunction(config));
   return {
     config,
     stage,

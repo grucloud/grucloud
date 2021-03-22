@@ -54,9 +54,9 @@ exports.AwsVolume = ({ spec, config }) => {
 
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
   const getById = getByIdCore({ fieldIds: "VolumeIds", getList });
-
+  const isInstanceUp = eq(get("State"), "available");
   const isUpById = isUpByIdCore({
-    isInstanceUp: eq(get("State"), "available"),
+    isInstanceUp,
     getById,
   });
 
@@ -125,6 +125,7 @@ exports.AwsVolume = ({ spec, config }) => {
     type: "Volume",
     spec,
     findId,
+    isInstanceUp,
     isUpById,
     isDownById,
     getByName,

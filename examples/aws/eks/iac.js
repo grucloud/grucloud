@@ -1,14 +1,14 @@
 const assert = require("assert");
 const { AwsProvider } = require("@grucloud/core");
-const { get, map, pipe, assign } = require("rubico");
+const { get, map, pipe, assign, tap, and } = require("rubico");
 const { pluck } = require("rubico/x");
 
 const loadBalancerPolicy = require("./load-balancer-policy.json");
 const podPolicy = require("./pod-policy.json");
 const hooks = require("./hooks");
 
-const createResources = async ({ provider, resources: {} }) => {
-  const config = provider.config();
+const createResources = async ({ provider }) => {
+  const { config } = provider;
   const clusterName = "cluster";
   const iamOpenIdConnectProviderName = "oicp-eks";
 
@@ -447,18 +447,29 @@ const createResources = async ({ provider, resources: {} }) => {
     iamOpenIdConnectProvider,
     certificate,
     certificateRecordValidation,
+    hostedZone,
   };
 };
 
 exports.createResources = createResources;
 
-exports.createStack = async ({ name = "aws", config }) => {
-  const provider = AwsProvider({ name, config });
+const isProviderUp = ({ resources }) =>
+  pipe([
+    and([() => resources.cluster.getLive()]),
+    tap((isUp) => {
+      assert(true);
+    }),
+  ]);
+
+exports.isProviderUp = isProviderUp;
+
+exports.createStack = async () => {
+  const provider = AwsProvider({ config: require("./config") });
   const resources = await createResources({ provider, resources: {} });
   return {
     provider,
     resources,
     hooks,
-    isProviderUp: () => resources.cluster.getLive(),
+    isProviderUp: isProviderUp({ resources }),
   };
 };

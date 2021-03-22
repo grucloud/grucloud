@@ -26,6 +26,7 @@ module.exports = CoreClient = ({
   verbGet = "GET",
   verbList = "GET",
   verbCreate = "POST",
+  isInstanceUp,
   isUpByIdFactory = ({ getById }) => isUpByIdCore({ getById }),
   configDefault = async ({ name, properties }) => ({
     name,
@@ -237,6 +238,7 @@ module.exports = CoreClient = ({
     findId,
     getById,
     getByName,
+    isInstanceUp,
     findName,
     cannotBeDeleted,
     shouldRetryOnException,

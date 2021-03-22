@@ -22,7 +22,6 @@ Usage: gc [options] [command]
 Options:
   -V, --version        output the version number
   -i, --infra <file>   infrastructure default is iac.js
-  -c, --config <file>  config file, default is config/default.js
   -j, --json <file>    write result to a file in json format
   -h, --help           display help for command
 

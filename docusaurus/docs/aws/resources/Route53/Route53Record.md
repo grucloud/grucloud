@@ -93,6 +93,7 @@ const recordValidation = await provider.makeRoute53Record({
 
 - [https static website ](https://github.com/grucloud/grucloud/blob/main/examples/aws/website-https/iac.js)
 - [starhack.it](https://github.com/FredericHeem/starhackit/blob/master/deploy/grucloud-aws/iac.js)
+- [A record and hosted zone ](https://github.com/grucloud/grucloud/blob/main/examples/aws/route53/iac.js)
 
 ## Properties
 

@@ -15,8 +15,14 @@ exports.isOurMinionPersistentVolumeClaim = ({ resource, lives, config }) =>
       () => get("spec.volumeName")(resource),
       (volumeName) =>
         pipe([
-          () => lives,
-          find(eq(get("type"), "PersistentVolume")),
+          () =>
+            lives.getByType({
+              type: "PersistentVolume",
+              providerName: config.providerName,
+            }),
+          tap((xxx) => {
+            assert(true);
+          }),
           get("resources"),
           find(eq(get("name"), volumeName)),
           get("managedByUs"),

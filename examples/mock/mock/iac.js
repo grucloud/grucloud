@@ -1,18 +1,6 @@
-const Axios = require("axios");
 const assert = require("assert");
-const urljoin = require("url-join");
 const { MockProvider } = require("@grucloud/core");
 const hooks = require("./hooks");
-
-const BASE_URL = "http://localhost:8089";
-
-const createAxios = ({ url }) => {
-  assert(url);
-  return Axios.create({
-    baseURL: urljoin(BASE_URL, url),
-    headers: { "Content-Type": "application/json" },
-  });
-};
 
 const createResources = async ({ provider }) => {
   // Ip
@@ -74,16 +62,12 @@ exports.createResources = createResources;
 
 exports.createStack = async ({ config }) => {
   const provider = MockProvider({
-    name: "mock",
-    config: {
-      ...config,
-      createAxios,
-    },
+    config,
   });
 
   const resources = await createResources({ provider });
 
-  const hooksExtra = require("./hooksExtra")({ resources, config });
+  const hooksExtra = require("./hooksExtra")({ resources });
   provider.hookAdd("extra", hooksExtra);
 
   return {

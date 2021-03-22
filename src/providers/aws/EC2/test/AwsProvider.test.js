@@ -32,10 +32,8 @@ describe("AwsProvider", async function () {
     }
     provider = AwsProvider({
       name: "aws",
-      config: config.aws,
+      config: () => ({ projectName: "gru-test" }),
     });
-
-    await provider.start();
 
     keyPair = await provider.useKeyPair({
       name: keyPairName,
@@ -128,7 +126,7 @@ describe("AwsProvider", async function () {
     assert(info.accountId);
     assert(info.region);
   });
-  it("server resolveDependencies", async function () {
+  it.skip("server resolveDependencies", async function () {
     const dependencies = await server.resolveDependencies({
       dependenciesMustBeUp: false,
     });
@@ -139,7 +137,7 @@ describe("AwsProvider", async function () {
     assert(dependencies.securityGroups);
     assert(dependencies.keyPair);
   });
-  it("config", async function () {
+  it.skip("config", async function () {
     const config = await server.resolveConfig();
     assert.equal(config.ImageId, "ami-0917237b4e71c5759");
   });
@@ -151,7 +149,7 @@ describe("AwsProvider", async function () {
 
     assert(
       CheckAwsTags({
-        config: provider.config(),
+        config: provider.config,
         tags: serverLive.Tags,
         name: server.name,
       })

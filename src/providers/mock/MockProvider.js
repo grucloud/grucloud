@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, isFunction } = require("rubico/x");
 const Promise = require("bluebird");
 
 const MockClient = require("./MockClient");
@@ -129,7 +129,7 @@ const fnSpecs = (config) => {
 const providerType = "mock";
 
 exports.MockProvider = ({ name = providerType, config, ...other }) => {
-  assert(config);
+  assert(isFunction(config));
 
   const configDefault = {
     retryCount: 2,
@@ -150,7 +150,9 @@ exports.MockProvider = ({ name = providerType, config, ...other }) => {
   return CoreProvider({
     type: providerType,
     name,
-    config: defaultsDeep(configDefault)(config),
+    get config() {
+      return defaultsDeep(configDefault)(config());
+    },
     fnSpecs,
     start,
     info,

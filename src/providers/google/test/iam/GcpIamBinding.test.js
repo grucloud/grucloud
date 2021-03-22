@@ -2,6 +2,7 @@ const assert = require("assert");
 const { GoogleProvider } = require("../../GoogleProvider");
 const { ConfigLoader } = require("ConfigLoader");
 const chance = require("chance")();
+const cliCommands = require("../../../../cli/cliCommands");
 
 const {
   testPlanDeploy,
@@ -24,9 +25,11 @@ describe("GcpIamBinding", async function () {
     }
 
     provider = GoogleProvider({
-      config: config.google,
+      config: () => ({
+        projectId: () => "grucloud-e2e",
+        projectName: () => "grucloud-e2e",
+      }),
     });
-
     await provider.start();
 
     const saName = `sa-${chance.guid().slice(0, 15)}`;
@@ -50,16 +53,22 @@ describe("GcpIamBinding", async function () {
     });
   });
   it("iamBinding apply and destroy", async function () {
-    const result = await provider.planQueryAndApply();
-    assert(!result.error, "should not have failed");
+    const resultApply = await cliCommands.planApply({
+      infra: { provider },
+      commandOptions: { force: true },
+    });
+
     const live = await iamBindingServiceAccount.getLive();
     assert(live.members);
     assert(live.role);
     {
       const provider = GoogleProvider({
-        config: config.google,
+        config: () => ({
+          projectId: () => "grucloud-e2e",
+          projectName: () => "grucloud-e2e",
+        }),
       });
-      await provider.start();
+
       const saName = `sa-${chance.guid().slice(0, 15)}`;
       const serviceAccount = await provider.makeServiceAccount({
         name: saName,
@@ -72,11 +81,19 @@ describe("GcpIamBinding", async function () {
         dependencies: { serviceAccounts: [serviceAccount] },
         properties: ({}) => ({}),
       });
-      const plan = await provider.planQuery();
-      assert.equal(plan.resultDestroy.length, 0);
-      assert.equal(plan.resultCreate.length, 2);
-      const planCreate = plan.resultCreate[1];
-      assert.equal(planCreate.action, "UPDATE");
+
+      {
+        const { error, resultQuery } = await cliCommands.planQuery({
+          infra: { provider },
+          commandOptions: { force: true },
+        });
+        assert(!error, "planQuery failed");
+        const plan = resultQuery.results[0];
+        assert.equal(plan.resultDestroy.length, 0);
+        assert.equal(plan.resultCreate.length, 2);
+        const planCreate = plan.resultCreate[1];
+        assert.equal(planCreate.action, "UPDATE");
+      }
     }
 
     await testPlanDestroy({ provider, types });
@@ -84,9 +101,11 @@ describe("GcpIamBinding", async function () {
 
   it("iamBindingEmail", async function () {
     const provider = GoogleProvider({
-      config: config.google,
+      config: () => ({
+        projectId: () => "grucloud-e2e",
+        projectName: () => "grucloud-e2e",
+      }),
     });
-    await provider.start();
 
     const email = "user:joe@gmail.com";
     const iamBindingEmail = await provider.makeIamBinding({
@@ -94,12 +113,21 @@ describe("GcpIamBinding", async function () {
       properties: ({}) => ({ members: [email] }),
     });
 
-    const { error, resultCreate } = await provider.planQueryAndApply();
-    assert(error, "should have failed");
-    assert.equal(resultCreate.results[0].error.Status, 400);
-    assert.equal(
-      resultCreate.results[0].error.Output.error.status,
-      "INVALID_ARGUMENT"
-    );
+    try {
+      {
+        const result = await cliCommands.planApply({
+          infra: { provider },
+          commandOptions: { force: true },
+        });
+        assert("should not be here");
+      }
+    } catch (error) {
+      const resultCreate = error.error.resultDeploy.results[0].resultCreate;
+      assert.equal(resultCreate.results[0].error.Status, 400);
+      assert.equal(
+        resultCreate.results[0].error.Output.error.status,
+        "INVALID_ARGUMENT"
+      );
+    }
   });
 });

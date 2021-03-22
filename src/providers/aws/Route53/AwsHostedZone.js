@@ -399,20 +399,29 @@ exports.AwsHostedZone = ({ spec, config }) => {
   };
 };
 
-exports.compareHostedZone = async ({ usedBySet, target, live, dependencies }) =>
+exports.compareHostedZone = async ({
+  usedBySet,
+  target,
+  live,
+  dependencies,
+  lives,
+}) =>
   pipe([
     tap(() => {
-      logger.debug(`compareHostedZone ${tos({ target, live, dependencies })}`);
+      //logger.debug(`compareHostedZone ${tos({ target, live, dependencies })}`);
       assert(target.RecordSet, "target.recordSet");
       assert(live.RecordSet, "live.recordSet");
       assert(usedBySet, "usedBySet");
+      assert(lives);
     }),
     fork({
       liveRecordSet: () => filter(canDeleteRecord(target.Name))(live.RecordSet),
       targetRecordSet: async () =>
         map(
           tryCatch(
-            (resource) => resource.resolveConfig(),
+            (resource) => {
+              return resource.resolveConfig({ lives, deep: true });
+            },
             (error) => {
               logger.error("compareHostedZone error in resolveConfig");
               logger.error(tos(error));

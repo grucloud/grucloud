@@ -22,6 +22,7 @@ Visit the [Aws Requirements](./docusaurus/docs/aws/AwsRequirements.md) to prepar
 - [S3](./examples/aws/s3), [S3 Simple](./examples/aws/s3-simple), [S3 Multiple](./examples/aws/s3-multiple)
 - [HTTPS Website with CloudFront](./examples/aws/website-https)
 - [EKS: Elastic Kubernetes Service](./examples/aws/eks)
+- [Route53: hosted zone and record](./examples/aws/route53)
 
 ### Resources
 

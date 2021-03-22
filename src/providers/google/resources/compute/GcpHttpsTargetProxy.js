@@ -13,9 +13,11 @@ exports.GcpHttpsTargetProxy = ({ spec, config }) => {
 
   const { projectId, managedByDescription } = config;
 
+  const isInstanceUp = get("selfLink");
+
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
-      isInstanceUp: get("selfLink"),
+      isInstanceUp,
       getById,
     });
 
@@ -39,6 +41,7 @@ exports.GcpHttpsTargetProxy = ({ spec, config }) => {
     baseURL: GCP_COMPUTE_BASE_URL,
     url: `/projects/${projectId(config)}/global/targetHttpsProxies`,
     config,
+    isInstanceUp,
     isUpByIdFactory,
     configDefault,
   });

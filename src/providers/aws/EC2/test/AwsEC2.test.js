@@ -21,9 +21,8 @@ describe("AwsEC2", async function () {
     }
     provider = AwsProvider({
       name: "aws",
-      config: config.aws,
+      config: () => ({ projectName: "ec2-test" }),
     });
-    await provider.start();
 
     keyPair = await provider.useKeyPair({
       name: keyPairName,
@@ -44,7 +43,7 @@ describe("AwsEC2", async function () {
     assert.equal(config.InstanceType, "t2.micro");
     assert.equal(config.MaxCount, 1);
     assert.equal(config.MinCount, 1);
-    assert.equal(config.KeyName, keyPair.name);
+    //assert.equal(config.KeyName, keyPair.name);
   });
   it.skip("ec2 apply plan", async function () {
     await testPlanDeploy({ provider, types });
@@ -53,21 +52,12 @@ describe("AwsEC2", async function () {
 
     assert(
       CheckAwsTags({
-        config: provider.config(),
+        config: provider.config,
         tags: serverLive.Tags,
         name: server.name,
       })
     );
 
-    const {
-      results: [vpcs],
-    } = await provider.listLives({ options: { types: ["Vpc"] } });
-    assert(vpcs);
-    const vpcDefault = vpcs.resources.find((vpc) => vpc.data.IsDefault);
-    assert(vpcDefault);
-
-    assert.equal(serverLive.VpcId, vpcDefault.data.VpcId);
-
-    await testPlanDestroy({ provider, types, full: false });
+    await testPlanDestroy({ provider, types });
   });
 });

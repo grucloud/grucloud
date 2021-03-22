@@ -52,7 +52,8 @@ exports.AwsRouteTables = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = ({ name, lives }) =>
+    getByNameCore({ name, getList, lives, findName });
   const getById = getByIdCore({ fieldIds: "RouteTableIds", getList });
 
   const isUpById = isUpByIdCore({
