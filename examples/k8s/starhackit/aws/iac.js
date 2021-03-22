@@ -7,48 +7,73 @@ const { K8sProvider } = require("@grucloud/provider-k8s");
 
 const EKSStack = require("@grucloud/module-aws-eks/iac");
 const AwsLoadBalancerStack = require("@grucloud/module-k8s-aws-load-balancer-controller/iac");
+const AwsCertificateStack = require("@grucloud/module-aws-certificate/iac");
 
 const BaseStack = require("../base/k8sStackBase");
 
 const { createIngress } = require("./eksIngress");
 
-exports.createStack = async () => {
-  // TODO create createStackAws and createStackK8s
-  const providerAws = AwsProvider({ config: require("./configAws") });
+const createAwsStack = async () => {
+  const provider = AwsProvider({ config: require("./configAws") });
 
-  const resourcesAws = await EKSStack.createResources({
-    provider: providerAws,
+  const resourcesEks = await EKSStack.createResources({
+    provider,
   });
 
-  const providerK8s = K8sProvider({
+  const resourcesCertificate = await AwsCertificateStack.createResources({
+    provider,
+  });
+
+  return {
+    provider,
+    resources: { ...resourcesEks, ...resourcesCertificate },
+    isProviderUp: () => EKSStack.isProviderUp({ resources: resourcesEks }),
+  };
+};
+
+const createK8sStack = async ({ stackAws }) => {
+  const provider = K8sProvider({
     config: require("./configK8s"),
     manifests: await AwsLoadBalancerStack.loadManifest(),
-    dependencies: { aws: providerAws },
+    dependencies: { aws: stackAws.provider },
   });
 
   const awsLoadBalancerResources = await AwsLoadBalancerStack.createResources({
-    provider: providerK8s,
-    resources: resourcesAws,
+    provider,
+    resources: stackAws.resources,
   });
 
   const baseStackResources = await BaseStack.createResources({
-    provider: providerK8s,
-    resources: resourcesAws,
+    provider,
+    resources: stackAws.resources,
   });
 
   const ingress = await createIngress({
-    provider: providerK8s,
+    provider,
     resources: {
-      certificate: resourcesAws.certificate,
+      certificate: stackAws.resources.certificate,
       namespace: baseStackResources.namespace,
       serviceWebServer: baseStackResources.webServerChart.service,
       serviceRestServer: baseStackResources.restServerChart.service,
     },
   });
-  const { hostedZone } = resourcesAws;
-  assert(hostedZone);
 
-  const loadBalancerRecord = await providerAws.makeRoute53Record({
+  return {
+    provider,
+    resources: { baseStackResources, awsLoadBalancerResources, ingress },
+  };
+};
+
+exports.createStack = async () => {
+  const stackAws = await createAwsStack();
+  const stackK8s = await createK8sStack({ stackAws });
+
+  const { hostedZone } = stackAws.resources;
+  assert(hostedZone);
+  const { ingress } = stackK8s.resources;
+  assert(ingress);
+
+  const loadBalancerRecord = await stackAws.provider.makeRoute53Record({
     name: `dns-record-alias-load-balancer-${hostedZone.name}.`,
     dependencies: { hostedZone, ingress },
     properties: ({ dependencies }) => {
@@ -77,17 +102,11 @@ exports.createStack = async () => {
   });
 
   return [
+    stackAws,
     {
-      provider: providerAws,
-      resources: resourcesAws,
-      isProviderUp: () => EKSStack.isProviderUp({ resources: resourcesAws }),
-    },
-    {
-      provider: providerK8s,
+      provider: stackK8s.provider,
       resources: {
-        baseStackResources,
-        awsLoadBalancerResources,
-        ingress,
+        ...stackK8s.resources,
         loadBalancerRecord,
       },
     },
