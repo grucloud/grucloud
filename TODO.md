@@ -4,6 +4,8 @@
 
 ## Common:
 
+- kubectl edit ingress ingress
+- https://stackshare.io/terraform/alternatives
 - case where provider does have any resources
 -
 - add projectName and use it as the title of the graph
@@ -53,6 +55,8 @@
 - doc
 
 ## TODO Aws:
+
+- remove from kubeconfig when destroying ans EKS cluster.
 
 - website-https: 'gc a' does not run onDeployed
 - delete load balancers in vpc
