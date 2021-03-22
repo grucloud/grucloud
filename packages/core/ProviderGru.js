@@ -295,10 +295,9 @@ exports.ProviderGru = ({ stacks }) => {
       () => createLives(),
       (lives) =>
         pipe([
-          () => filterProviderUp({ stacks }),
+          () => filterProviderUp({ stacks, onStateChange }),
           map(({ provider }) =>
             pipe([
-              () => provider.start({ onStateChange }),
               () =>
                 provider.listLives({
                   onStateChange,
@@ -489,7 +488,7 @@ exports.ProviderGru = ({ stacks }) => {
       }),
     ])();
 
-  const filterProviderUp = ({ stacks }) =>
+  const filterProviderUp = ({ stacks, onStateChange }) =>
     pipe([
       tap(() => {
         logger.info(`filterProviderUp`);
@@ -497,7 +496,11 @@ exports.ProviderGru = ({ stacks }) => {
       () => stacks,
       map(
         assign({
-          providerUp: ({ isProviderUp = () => true }) => isProviderUp(),
+          providerUp: ({ provider, isProviderUp = () => true }) =>
+            pipe([
+              () => provider.start({ onStateChange }),
+              () => isProviderUp(),
+            ])(),
         })
       ),
       tap((stacks) => {

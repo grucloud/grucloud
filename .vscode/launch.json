@@ -209,9 +209,19 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "K8s Cert Manager List",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/packages/modules/k8s/cert-manager",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["list"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "K8s Cert Manager Apply",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/cert-manager",
+      "cwd": "${workspaceFolder}/packages/modules/k8s/cert-manager",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["apply", "-f"]
@@ -221,7 +231,7 @@
       "request": "launch",
       "name": "K8s Cert Manager Destroy",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/cert-manager",
+      "cwd": "${workspaceFolder}/packages/modules/k8s/cert-manager",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["destroy", "-f"]

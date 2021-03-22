@@ -4,12 +4,16 @@
   "description": "Grucloud module to manage an EKS Cluster",
   "main": "iac.js",
   "scripts": {
-    "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
+    "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
+    "test": "mocha --exit './{,!(node_modules)/**}/*.test.js'"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "*",
     "@grucloud/provider-aws": "*"
+  },
+  "devDependencies": {
+    "mocha": "^8.3.2"
   }
 }
