@@ -3,6 +3,9 @@ const yaml = require("js-yaml");
 const path = require("path");
 const { pipe, tap } = require("rubico");
 
+const { AwsProvider } = require("@grucloud/provider-aws");
+const EKSStack = require("@grucloud/module-aws-eks/iac");
+
 const { K8sProvider } = require("@grucloud/provider-k8s");
 const CertManager = require("@grucloud/module-k8s-cert-manager/iac");
 
@@ -32,15 +35,38 @@ exports.loadManifest = async () => [
   ...(await loadManifest()),
 ];
 
-exports.createStack = async () => {
+const createStackAws = async () => {
+  const provider = AwsProvider({ config: require("./configAws") });
+
+  const resources = await EKSStack.createResources({
+    provider,
+  });
+  return {
+    provider,
+    resources,
+    isProviderUp: () => EKSStack.isProviderUp({ resources }),
+  };
+};
+
+const createStackK8s = async ({ stackAws }) => {
   const manifests = await CertManager.loadManifest();
 
   const provider = K8sProvider({
-    config: require("./config"),
+    config: require("./configK8s"),
     manifests,
+    dependencies: { aws: stackAws.provider },
   });
 
-  const resources = await createResources({ provider });
+  const resources = await createResources({
+    provider,
+    resources: stackAws.resources,
+  });
 
-  return [{ provider, resources }];
+  return { provider, resources };
+};
+
+exports.createStack = async () => {
+  const stackAws = await createStackAws();
+  const stackK8s = await createStackK8s({ stackAws });
+  return [stackAws, stackK8s];
 };

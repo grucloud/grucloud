@@ -384,6 +384,7 @@ const createResources = async ({ provider }) => {
   assert(config.rootDomainName);
   assert(config.domainName);
 
+  //TODO remove
   const domain = await provider.useRoute53Domain({
     name: config.rootDomainName,
   });

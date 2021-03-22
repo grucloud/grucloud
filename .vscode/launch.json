@@ -161,7 +161,7 @@
       "request": "launch",
       "name": "K8s AWS Load Balancer List",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/aws-load-balancer",
+      "cwd": "${workspaceFolder}/packages/modules/k8s/aws-load-balancer",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["list"]
@@ -171,7 +171,7 @@
       "request": "launch",
       "name": "K8s AWS Load Balancer plan",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/aws-load-balancer",
+      "cwd": "${workspaceFolder}/packages/modules/k8s/aws-load-balancer",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["plan"]
@@ -181,7 +181,7 @@
       "request": "launch",
       "name": "K8s AWS Load Balancer Apply",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/aws-load-balancer",
+      "cwd": "${workspaceFolder}/packages/modules/k8s/aws-load-balancer",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["apply", "-f"]
@@ -191,7 +191,7 @@
       "request": "launch",
       "name": "K8s AWS Load Balancer Destroy",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/aws-load-balancer",
+      "cwd": "${workspaceFolder}/packages/modules/k8s/aws-load-balancer",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["destroy", "-f"]
@@ -201,7 +201,7 @@
       "request": "launch",
       "name": "K8s AWS Load Balancer Destroy only K8s",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/aws-load-balancer",
+      "cwd": "${workspaceFolder}/packages/modules/k8s/aws-load-balancer",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["destroy", "-f", "-p", "k8s"]
