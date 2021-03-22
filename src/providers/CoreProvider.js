@@ -1577,8 +1577,9 @@ function CoreProvider({
         ]),
       }),
       assign({ providerName: () => providerName }),
-      tap((result) => {
+      tap(({ results }) => {
         logger.info(`listLives done`);
+        lives.setByProvider({ providerName, livesPerProvider: results });
         //logger.debug(`listLives result: ${tos(result)}`);
       }),
     ])();

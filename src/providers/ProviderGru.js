@@ -251,6 +251,14 @@ exports.ProviderGru = ({ stacks }) => {
         const mapPerType = mapPerProvider.get(providerName) || new Map();
         return [...mapPerType.values()];
       },
+      setByProvider: ({ providerName, livesPerProvider }) => {
+        const mapPerType = new Map(
+          map((livesPerProvider) => [livesPerProvider.type, livesPerProvider])(
+            livesPerProvider
+          )
+        );
+        mapPerProvider.set(providerName, mapPerType);
+      },
       getByType: ({ providerName, type }) =>
         pipe([
           () => mapPerProvider.get(providerName) || new Map(),
@@ -312,7 +320,7 @@ exports.ProviderGru = ({ stacks }) => {
               }),
             ])()
           ),
-          tap(() => {
+          tap((xxx) => {
             logger.info(`listLives result: ${lives.toString()}`);
           }),
           () => lives,
