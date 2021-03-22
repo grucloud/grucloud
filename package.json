@@ -8,6 +8,7 @@
   },
   "homepage": "https://www.grucloud.com",
   "scripts": {
+    "bootstrap": "lerna bootstrap",
     "test:gcp": "cd packages/providers/google && npm test",
     "test:aws": "cd packages/providers/aws && npm test",
     "test:azure": "cd packages/providers/azure && npm test",
