@@ -5,10 +5,11 @@ const { first } = require("rubico/x");
 const { AwsProvider } = require("@grucloud/provider-aws");
 const { K8sProvider } = require("@grucloud/provider-k8s");
 
-const BaseStack = require("../base/k8sStackBase");
-const AwsLoadBalancerStack = require("../../aws-load-balancer/iac");
+const EKSStack = require("@grucloud/module-aws-eks/iac");
+const AwsLoadBalancerStack = require("@grucloud/module-k8s-aws-load-balancer-controller/iac");
 
-const EKSStack = require("../../../aws/eks/iac");
+const BaseStack = require("../base/k8sStackBase");
+
 const { createIngress } = require("./eksIngress");
 
 exports.createStack = async () => {

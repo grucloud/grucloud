@@ -4,8 +4,7 @@
   "description": "deploying starhackit on AWS EKS",
   "main": "index.js",
   "scripts": {
-    "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
-    "link": "npm link @grucloud/core",
+    "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
     "dot": "dot -Tsvg modules.dot -o modules.svg"
   },
   "author": "",
@@ -13,6 +12,9 @@
   "dependencies": {
     "@grucloud/core": "*",
     "@grucloud/provider-aws": "*",
+    "@grucloud/module-aws-eks": "*",
+    "@grucloud/module-aws-certificate": "*",
+    "@grucloud/module-k8s-aws-load-balancer-controller": "*",
     "@grucloud/provider-k8s": "*"
   }
 }

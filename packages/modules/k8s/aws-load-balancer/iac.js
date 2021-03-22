@@ -4,8 +4,9 @@ const path = require("path");
 const { pipe, tap } = require("rubico");
 
 const { K8sProvider } = require("@grucloud/provider-k8s");
+const CertManager = require("@grucloud/module-k8s-cert-manager/iac");
+
 const LoadBalancerResources = require("./resources");
-const CertManager = require("../cert-manager/iac");
 
 const createResources = async ({ provider, resources }) => {
   const certResources = await CertManager.createResources({ provider });

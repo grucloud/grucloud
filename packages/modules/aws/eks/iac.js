@@ -1,7 +1,8 @@
 const assert = require("assert");
-const { AwsProvider } = require("@grucloud/provider-aws");
 const { get, map, pipe, assign, tap, and } = require("rubico");
 const { pluck } = require("rubico/x");
+
+const { AwsProvider } = require("@grucloud/provider-aws");
 
 const loadBalancerPolicy = require("./load-balancer-policy.json");
 const podPolicy = require("./pod-policy.json");

@@ -1,11 +1,10 @@
 {
-  "name": "grucloud-aws-load-balancer-controller",
+  "name": "@grucloud/module-k8s-aws-load-balancer-controller",
   "version": "1.0.0",
-  "description": "grucloud module for the AWS Load Balancer Controller",
-  "main": "index.js",
+  "description": "GruCloud module for the AWS Load Balancer Controller running on K8s",
+  "main": "iac.js",
   "scripts": {
-    "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
-    "link": "npm link @grucloud/core",
+    "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
     "gen-code": "node ../../../tools/k8s-manifest2code.js --input aws-load-balancer-controller.yaml",
     "download-manifest": "curl -L -o aws-load-balancer-controller.yaml https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.1.2/docs/install/v2_1_2_full.yaml"
   },
@@ -14,6 +13,7 @@
   "dependencies": {
     "@grucloud/core": "*",
     "@grucloud/provider-k8s": "*",
+    "@grucloud/module-k8s-cert-manager": "*",
     "rubico": "^1.6.21"
   }
 }
