@@ -183,7 +183,7 @@ const fnSpecs = () => [
   },
   {
     type: "Ingress",
-    dependsOn: ["Namespace"],
+    dependsOn: ["Namespace", "Deployment"],
     Client: createResourceNamespace({
       baseUrl: ({ namespace, apiVersion }) =>
         `/apis/${apiVersion}/namespaces/${namespace}/ingresses`,
