@@ -2,18 +2,16 @@ const assert = require("assert");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const cliCommands = require("@grucloud/core/cli/cliCommands");
 const { createStack } = require("./iac");
-
-describe("Multi Example", async function () {
-  let config;
-
+const config = require("./config");
+describe("Certificate Module", async function () {
   before(async function () {
     try {
-      config = ConfigLoader({ path: "examples/multi" });
+      ConfigLoader({ path: "../../examples/multi" });
     } catch (error) {
       this.skip();
     }
   });
-  it("run multi example", async function () {
+  it("run", async function () {
     const infra = await createStack({ config });
 
     await cliCommands.planDestroy({
