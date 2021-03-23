@@ -6,7 +6,7 @@ const config = require("./config");
 describe("Certificate Module", async function () {
   before(async function () {
     try {
-      ConfigLoader({ path: "../../examples/multi" });
+      ConfigLoader({ path: "../../../../examples/multi/" });
     } catch (error) {
       this.skip();
     }
