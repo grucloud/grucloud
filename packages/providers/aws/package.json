@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-aws",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "The GruCloud AWS provider",
   "main": "AwsProvider.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.9.1"
+    "@grucloud/core": "^1.9.2"
   },
   "devDependencies": {
     "mocha": "^8.3.2",

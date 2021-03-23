@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-k8s",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "The GruCloud Kubernetes provider",
   "main": "K8sProvider.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.9.1"
+    "@grucloud/core": "^1.9.2"
   },
   "devDependencies": {
     "mocha": "^8.3.2",

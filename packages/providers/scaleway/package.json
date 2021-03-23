@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-scaleway",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "The GruCloud Scaleway provider",
   "main": "ScalewayProvider.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.9.1"
+    "@grucloud/core": "^1.9.2"
   },
   "devDependencies": {
     "mocha": "^8.3.2"
