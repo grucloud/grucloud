@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-azure",
-  "version": "1.9.2",
+  "version": "1.9.3",
   "description": "The GruCloud Azure provider",
   "main": "AzureProvider.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.9.2"
+    "@grucloud/core": "^1.9.3"
   },
   "devDependencies": {
     "mocha": "^8.3.2",
