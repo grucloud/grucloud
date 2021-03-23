@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-google-vm-ssh-keys",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "",
   "private": true,
   "main": "index.js",
@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.9.0",
-    "@grucloud/provider-google": "^1.9.0"
+    "@grucloud/core": "^1.9.1",
+    "@grucloud/provider-google": "^1.9.1"
   }
 }
