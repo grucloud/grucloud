@@ -10,6 +10,8 @@ Let's deploy a full-stack application on kubernetes locally with minikube.
 - an SQL database (postgres)
 - Key/Value, Pub/Sub (redis)
 
+![starhackit-grucloud](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/k8s/starhackit/minikube/grucloud.svg)
+
 ## Requirements
 
 Ensure **kubectl** and **minikube** is started with the ingress addon: [K8s Requirements](./K8sRequirements.md)
