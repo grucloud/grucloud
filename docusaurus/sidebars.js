@@ -80,6 +80,7 @@ module.exports = {
       "azure/AzureExamples",
       "azure/AzureMisc",
     ],
+
     "Google Cloud Platform": [
       "google/GoogleRequirements",
       "google/GoogleGettingStarted",
@@ -119,6 +120,25 @@ module.exports = {
         ],
       },
       "google/GoogleMisc",
+    ],
+    Kubernetes: [
+      "k8s/K8sRequirements",
+      "k8s/K8sGettingStarted",
+      {
+        Resources: [
+          "k8s/resources/ConfigMap",
+          "k8s/resources/Deployment",
+          "k8s/resources/Ingress",
+          "k8s/resources/Namespace",
+          "k8s/resources/PersistentVolume",
+          "k8s/resources/PersistentVolumeClaim",
+          "k8s/resources/Secret",
+          "k8s/resources/Service",
+          "k8s/resources/StatefulSet",
+        ],
+      },
+      "k8s/K8sExamples",
+      "k8s/K8sMisc",
     ],
     "User Guide": ["DeveloperGuide"],
   },
