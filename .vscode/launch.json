@@ -669,6 +669,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Aws Certificate Info",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/packages/modules/aws/certificate",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["info"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Aws Certificate List",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/packages/modules/aws/certificate",
