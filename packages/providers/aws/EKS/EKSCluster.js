@@ -171,7 +171,7 @@ exports.EKSCluster = ({ spec, config }) => {
     name: "cluster",
     onDeployed: {
       init: () => {
-        logger.info(`cluster hook init ${resource.name}`);
+        logger.info(`cluster onDeployed hook init ${resource.name}`);
         return {};
       },
       actions: [
@@ -200,8 +200,31 @@ exports.EKSCluster = ({ spec, config }) => {
       ],
     },
     onDestroyed: {
-      init: () => {},
-      actions: [],
+      init: async () => {
+        logger.info(`cluster onDestroyed hook init ${resource.name}`);
+        const clusterLive = await resource.getLive();
+        assert(clusterLive);
+        return { clusterLive };
+      },
+      actions: [
+        {
+          name: `Remove cluster from kubeconfig`,
+          command: async ({ clusterLive }) => {
+            const command = `kubectl config delete-cluster ${clusterLive.arn}`;
+            logger.info(`running ${command}`);
+            if (process.env.CONTINUOUS_INTEGRATION) {
+              //kubectl not installed on circleci
+              return;
+            }
+            const { stdout, stderr, code } = shell.exec(command, {
+              silent: true,
+            });
+            logger.info(`code: ${code}`);
+            logger.info(`stderr: ${stderr}`);
+            logger.info(`stdout: ${stdout}`);
+          },
+        },
+      ],
     },
   });
 
