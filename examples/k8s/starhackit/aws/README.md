@@ -2,15 +2,29 @@
 
 This example deploys a full-stack application with Kubernetes on AWS using their managed control plane called [Elastic Kubernetes Service](https://aws.amazon.com/eks/)
 
-# Providers
+## Providers
 
 This infrastructure depends on 2 providers: AWS and Kubernetes.
 
 ![Modules](modules.svg)
 
+## Modules
+
+A few modules for each of these providers are being used.
+
+### Modules for AWS resources
+
+- [module-aws-eks](../../../../packages/modules/aws/eks/README)
+- [module-aws-certificate](../../../../packages/modules/aws/certificate/README)
+
+### Modules for K8s resources
+
+- [module-k8s-aws-load-balancer](../../../../packages/modules/k8s/aws-load-balancer/README)
+- [module-k8s-cert-manager](../../../../packages/modules/k8s/certificate/README)
+
 ## Amazon EKS
 
-The first part of this deployment is to create an EKS control plan, a node group for the workers and all their numerous dependencies: Vpc, public and private subnets, internet gateway, nat gateway, route tables, routes, security groups, roles, policies, certificate, route53 record, hosted zone and domain.
+The first part of this deployment is to create an EKS control plan, a node group for the workers and all their numerous dependencies.
 
 Configuration for the AWS resources is located at [configAws.js](./configAws.js)
 
@@ -23,10 +37,6 @@ Set the **rootDomainName** and **domainName** according to your use case
 The second part is the kubernetes deployment of the full-stack application composed of a react front end, a node backend, postgres as the SQL database and finally redis for the cache and published/subscriber models.
 
 Configuration for the K8s resources is located at [configK8s.js](./configK8s.js)
-
-## Docs
-
-- https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
 
 ## Troubleshooting
 
