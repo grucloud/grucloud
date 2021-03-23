@@ -15,3 +15,5 @@ secrets
 **/test/*
 *.log
 gc.result.json
+*test*
+*.dot
