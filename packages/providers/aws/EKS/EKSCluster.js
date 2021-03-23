@@ -203,13 +203,15 @@ exports.EKSCluster = ({ spec, config }) => {
       init: async () => {
         logger.info(`cluster onDestroyed hook init ${resource.name}`);
         const clusterLive = await resource.getLive();
-        assert(clusterLive);
         return { clusterLive };
       },
       actions: [
         {
           name: `Remove cluster from kubeconfig`,
           command: async ({ clusterLive }) => {
+            if (!clusterLive) {
+              return;
+            }
             const command = `kubectl config delete-cluster ${clusterLive.arn}`;
             logger.info(`running ${command}`);
             if (process.env.CONTINUOUS_INTEGRATION) {
