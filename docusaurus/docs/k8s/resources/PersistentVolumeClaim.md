@@ -3,7 +3,7 @@ id: PersistentVolumeClaim
 title: Persistent Volume Claim
 ---
 
-Manages a Persistent Volume Claim
+Manages a [Kubernetes Persistent Volume Claim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
 
 ## List
 

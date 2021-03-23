@@ -3,7 +3,7 @@ id: PersistentVolume
 title: PersistentVolume
 ---
 
-Provides a PersistentVolume
+Provides a [Kubernetes PersistentVolume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
 
 ## Examples
 

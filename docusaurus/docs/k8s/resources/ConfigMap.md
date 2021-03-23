@@ -3,7 +3,7 @@ id: ConfigMap
 title: ConfigMap
 ---
 
-Provides a Kubernetes ConfigMap
+Provides a [Kubernetes ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/)
 
 ## Examples
 
@@ -29,7 +29,7 @@ const configMap = await provider.makeConfigMap({
 
 ## Source Code Examples
 
-- [starhackit](https://github.com/grucloud/grucloud/blob/main/examples/k8s/starhackit/base/charts/postgres.js)
+- [config map for postgres](https://github.com/grucloud/grucloud/blob/main/examples/k8s/starhackit/base/charts/postgres.js#L21)
 
 ## Dependencies
 

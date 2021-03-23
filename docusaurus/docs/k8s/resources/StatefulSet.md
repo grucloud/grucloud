@@ -86,7 +86,7 @@ const statefulSetPostgres = await provider.makeStatefulSet({
             accessModes: ["ReadWriteOnce"],
             resources: {
               requests: {
-                storage: "1Gi",
+                storage: "2Gi",
               },
             },
           },
@@ -99,8 +99,9 @@ const statefulSetPostgres = await provider.makeStatefulSet({
 
 ## Source Code Examples
 
-[postgres statefulset](https://github.com/grucloud/grucloud/blob/main/examples/k8s/starhackit/base/charts/postgres.js#L134)
-[redis statefulset](https://github.com/grucloud/grucloud/blob/main/examples/k8s/starhackit/base/charts/redis.js#L53)
+- [postgres statefulset](https://github.com/grucloud/grucloud/blob/main/examples/k8s/starhackit/base/charts/postgres.js#L134)
+
+- [redis statefulset](https://github.com/grucloud/grucloud/blob/main/examples/k8s/starhackit/base/charts/redis.js#L53)
 
 ## Listing
 

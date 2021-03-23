@@ -3,7 +3,7 @@ id: Ingress
 title: Ingress
 ---
 
-Provides a k8s Ingress
+Provides a [Kubernetes Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)
 
 ## Examples
 

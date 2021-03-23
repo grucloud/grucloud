@@ -3,6 +3,12 @@ id: K8sGettingStarted
 title: Getting Started
 ---
 
+## Introduction
+
+The Kubernetes Grucloud provider allows to define and describe Kubernetes resources in Javascript, removing the need to write YAML or templating file.
+
+The GruCloud Command Line Interface **gc** reads this description in Javascript and connect to the k8s control plane to apply the new or updated resource definitions.
+
 Let's deploy a full-stack application on kubernetes locally with minikube.
 
 - a frontend (React)

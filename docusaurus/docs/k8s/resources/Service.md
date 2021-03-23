@@ -75,7 +75,7 @@ const service = await provider.makeService({
 
 - [NodePort service for rest server](https://github.com/grucloud/grucloud/blob/main/examples/k8s/starhackit/base/charts/rest-server.js#L129)
 
-- [Headless service for postgres](https://github.com/grucloud/grucloud/blob/main/examples/k8s/starhackit/base/charts/postgres.js#L129)
+- [Headless service for postgres](https://github.com/grucloud/grucloud/blob/main/examples/k8s/starhackit/base/charts/postgres.js#L144)
 
 ## Listing
 
