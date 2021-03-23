@@ -1,4 +1,12 @@
 {
   "packages": ["packages/**/*", "examples/**/*"],
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "command": {
+    "publish": {
+      "ignoreChanges": ["svelte-app", "*examples*"]
+    },
+    "run": {
+      "ignoreChanges": ["@grucloud/provider-k8s", "module-k8s-cert-manager"]
+    }
+  }
 }
