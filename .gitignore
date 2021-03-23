@@ -6,5 +6,4 @@ coverage
 gc.result.json
 .DS_Store
 grucloud.dot
-grucloud.svg
 test-results.xml
