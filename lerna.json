@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "command": {
     "publish": {
-      "ignoreChanges": ["svelte-app", "@grucloud/example-*"]
+      "ignore": ["svelte-app", "@grucloud/example-*"]
     },
     "run": {
-      "ignoreChanges": ["@grucloud/provider-k8s", "module-k8s-cert-manager"]
+      "ignore": ["@grucloud/provider-k8s", "module-k8s-cert-manager"]
     }
   }
 }
