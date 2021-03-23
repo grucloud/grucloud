@@ -13,3 +13,5 @@ secrets
 .circleci
 .github
 **/test/*
+*.log
+gc.result.json
