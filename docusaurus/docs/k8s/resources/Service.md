@@ -39,7 +39,7 @@ const service = await provider.makeService({
 });
 ```
 
-### Create a Headless Service for a StatefulSet
+### Create a Headless Service for a StatefulSet
 
 This example creates a Headless service for use with a StatefulSet:
 
