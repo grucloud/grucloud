@@ -201,7 +201,7 @@ function Home() {
             <LinkLogo Logo={AwsLogo} url="docs/aws/AwsGettingStarted" />
             <LinkLogo Logo={GcpLogo} url="docs/google/GoogleGettingStarted" />
             <LinkLogo Logo={AzureLogo} url="docs/azure/AzureGettingStarted" />
-            <LinkLogo Logo={K8sLogo} url="docs/k8s/Kubernetes/GettingStarted" />
+            <LinkLogo Logo={K8sLogo} url="docs/k8s/K8sGettingStarted" />
           </div>
         </section>
         <section
