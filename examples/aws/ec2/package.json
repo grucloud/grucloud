@@ -1,5 +1,5 @@
 {
-  "name": "grucloud-aws-ec2-example",
+  "name": "@grucloud/example-aws-ec2",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

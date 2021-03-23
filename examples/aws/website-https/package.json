@@ -1,5 +1,5 @@
 {
-  "name": "grucloud-aws-website-https",
+  "name": "@grucloud/example-aws-website-https",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

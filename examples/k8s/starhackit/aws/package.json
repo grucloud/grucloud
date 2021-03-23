@@ -1,5 +1,5 @@
 {
-  "name": "grucloud-k8s-aws-starhackit",
+  "name": "@grucloud/example-k8s-aws-starhackit",
   "version": "1.0.0",
   "description": "deploying starhackit on AWS EKS",
   "main": "index.js",

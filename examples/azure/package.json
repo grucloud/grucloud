@@ -1,5 +1,5 @@
 {
-  "name": "grucloud-azure-example",
+  "name": "@grucloud/example-azure",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

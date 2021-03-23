@@ -1,5 +1,5 @@
 {
-  "name": "grucloud-dns-github-page",
+  "name": "@grucloud/example-google-dns-github-page",
   "version": "1.0.0",
   "description": "setup dns for github page",
   "main": "index.js",

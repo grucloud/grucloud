@@ -1,5 +1,5 @@
 {
-  "name": "grucloud-aws-iam-example",
+  "name": "@grucloud/example-aws-iam",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

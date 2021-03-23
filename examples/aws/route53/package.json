@@ -1,5 +1,5 @@
 {
-  "name": "grucloud-aws-route53",
+  "name": "@grucloud/example-aws-route53",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

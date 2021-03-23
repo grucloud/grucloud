@@ -1,5 +1,5 @@
 {
-  "name": "grucloud-google-storage-simple",
+  "name": "@grucloud/example-google-storage-simple",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

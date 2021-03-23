@@ -1,11 +1,10 @@
 {
-  "name": "grucloud-k8s-service-account-aws-role",
+  "name": "@grucloud/example-k8s-service-account-aws-role",
   "version": "1.0.0",
   "description": "link a service account to an AWS role",
   "main": "index.js",
   "scripts": {
-    "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
-    "link": "npm link @grucloud/core"
+    "e2e": "gc d-f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
   },
   "author": "",
   "license": "ISC",
