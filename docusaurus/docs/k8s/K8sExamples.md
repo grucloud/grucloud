@@ -6,7 +6,7 @@ title: Examples
 # Examples
 
 - [Starhackit: Full-stack app on Minikube](https://github.com/grucloud/grucloud/tree/main/examples/k8s/starhackit/minikube)
-- [Starhackit: Full-stack app on AmazonEKS](https://github.com/grucloud/grucloud/tree/main/examples/k8s/starhackit/aws)
+- [Starhackit: Full-stack app on Amazon EKS](https://github.com/grucloud/grucloud/tree/main/examples/k8s/starhackit/aws)
 
 # Modules
 
