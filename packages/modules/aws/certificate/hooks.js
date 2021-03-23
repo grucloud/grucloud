@@ -7,8 +7,9 @@ module.exports = ({ resources, provider }) => {
   const { rootDomainName } = config.certificate;
   assert(rootDomainName);
 
-  const { hostedZone, certificate, recordValidation } = resources;
+  const { hostedZone, certificate, certificateRecordValidation } = resources;
   assert(hostedZone);
+  assert(certificate);
 
   return {
     onDeployed: {
@@ -16,8 +17,8 @@ module.exports = ({ resources, provider }) => {
         const hostedZoneLive = await hostedZone.getLive();
         assert.equal(hostedZoneLive.ResourceRecordSetCount, 3);
 
-        const recordValidationLive = await recordValidation.getLive();
-        assert(recordValidationLive);
+        const certificateRecordValidationLive = await certificateRecordValidation.getLive();
+        assert(certificateRecordValidationLive);
         return { hostedZoneLive };
       },
       actions: [

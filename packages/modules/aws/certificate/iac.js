@@ -3,8 +3,8 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const hooks = require("./hooks");
 exports.hooks = hooks;
 
-const makeDomainName = ({ DomainName, stage }) =>
-  `${stage == "production" ? "" : `${stage}.`}${DomainName}`;
+const makeDomainName = ({ domainName, stage }) =>
+  `${stage == "production" ? "" : `${stage}.`}${domainName}`;
 
 exports.makeDomainName = makeDomainName;
 
