@@ -1,6 +1,7 @@
 {
   "name": "@grucloud/example-google-storage-simple",
   "version": "1.0.0",
+  "private": true,
   "description": "",
   "main": "index.js",
   "scripts": {

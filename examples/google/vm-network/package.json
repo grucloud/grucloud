@@ -2,6 +2,7 @@
   "name": "@grucloud/example-google-vm-network",
   "version": "1.0.0",
   "description": "",
+  "private": true,
   "main": "index.js",
   "scripts": {
     "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"

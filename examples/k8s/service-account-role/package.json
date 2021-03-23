@@ -1,6 +1,7 @@
 {
   "name": "@grucloud/example-k8s-service-account-aws-role",
   "version": "1.0.0",
+  "private": true,
   "description": "link a service account to an AWS role",
   "main": "index.js",
   "scripts": {
