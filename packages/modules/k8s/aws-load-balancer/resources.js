@@ -553,6 +553,10 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
+  assert(provider.dependencies.aws.config.eks);
+  const clusterName = provider.dependencies.aws.config.eks.cluster.name;
+  assert(clusterName);
+
   const awsLoadBalancerControllerDeployment = await provider.makeDeployment({
     name: "aws-load-balancer-controller",
     properties: () => ({
@@ -582,10 +586,7 @@ exports.createResources = async ({ provider, resources }) => {
           spec: {
             containers: [
               {
-                args: [
-                  `--cluster-name=${provider.config.cluster?.name}`,
-                  "--ingress-class=alb",
-                ],
+                args: [`--cluster-name=${clusterName}`, "--ingress-class=alb"],
                 image: "amazon/aws-alb-ingress-controller:v2.1.2",
                 livenessProbe: {
                   failureThreshold: 2,
