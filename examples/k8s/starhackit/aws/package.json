@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-k8s-aws-starhackit",
-  "version": "1.9.3",
+  "version": "1.9.4",
   "private": true,
   "description": "deploying starhackit on AWS EKS",
   "main": "index.js",
@@ -12,10 +12,10 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.9.3",
-    "@grucloud/module-aws-certificate": "^1.9.3",
-    "@grucloud/module-aws-eks": "^1.9.3",
-    "@grucloud/module-k8s-aws-load-balancer-controller": "^1.9.3",
-    "@grucloud/provider-aws": "^1.9.3",
-    "@grucloud/provider-k8s": "^1.9.3"
+    "@grucloud/module-aws-certificate": "^1.9.4",
+    "@grucloud/module-aws-eks": "^1.9.4",
+    "@grucloud/module-k8s-aws-load-balancer-controller": "^1.9.4",
+    "@grucloud/provider-aws": "^1.9.4",
+    "@grucloud/provider-k8s": "^1.9.4"
   }
 }

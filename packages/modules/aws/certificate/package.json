@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-aws-certificate",
-  "version": "1.9.3",
+  "version": "1.9.4",
   "description": "provides a SSL certificate and the associated Route53 resources to validate the certificate",
   "main": "iac.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.9.3",
-    "@grucloud/provider-aws": "^1.9.3"
+    "@grucloud/provider-aws": "^1.9.4"
   },
   "devDependencies": {
     "mocha": "^8.3.2"
