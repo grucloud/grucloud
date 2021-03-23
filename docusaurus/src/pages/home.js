@@ -13,6 +13,7 @@ import AwsLogo from "./img/aws.svg";
 import GcpLogo from "./img/gcp.svg";
 import AzureLogo from "./img/azure.svg";
 import MainLogo from "./img/gc.svg";
+import K8sLogo from "./img/k8s.svg";
 
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import js from "react-syntax-highlighter/dist/esm/languages/hljs/javascript";
@@ -172,18 +173,35 @@ function Home() {
           <h1>Get Started</h1>
           <div
             css={css`
-              display: flex;
-              flex-direction: column;
-              align-items: center;
+              display: grid;
+
+              grid-template-columns: 1fr 1fr;
+              grid-template-rows: 1fr 1fr;
+              gap: 30px 30px;
+              grid-template-areas:
+                ". ."
+                ". .";
+
+              @media (max-width: 600px) {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 1fr 1fr 1fr;
+                gap: 10px 10px;
+                grid-template-areas:
+                  "."
+                  "."
+                  "."
+                  ".";
+              }
               > a {
                 margin: 0.5rem 0 0.5rem 0;
-                width: 320px;
+                width: 375;
               }
             `}
           >
             <LinkLogo Logo={AwsLogo} url="docs/aws/AwsGettingStarted" />
             <LinkLogo Logo={GcpLogo} url="docs/google/GoogleGettingStarted" />
             <LinkLogo Logo={AzureLogo} url="docs/azure/AzureGettingStarted" />
+            <LinkLogo Logo={K8sLogo} url="docs/k8s/Kubernetes/GettingStarted" />
           </div>
         </section>
         <section

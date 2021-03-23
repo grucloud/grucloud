@@ -2,8 +2,8 @@ const assert = require("assert");
 const { get, pipe } = require("rubico");
 const { first } = require("rubico/x");
 
-const { AwsProvider } = require("@grucloud/core");
-const { K8sProvider } = require("@grucloud/core");
+const { AwsProvider } = require("@grucloud/provider-aws");
+const { K8sProvider } = require("@grucloud/provider-k8s");
 
 const podPolicy = require("./pod-policy.json");
 

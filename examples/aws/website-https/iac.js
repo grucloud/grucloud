@@ -3,7 +3,7 @@ const path = require("path");
 const { map } = require("rubico");
 const mime = require("mime-types");
 
-const { AwsProvider } = require("@grucloud/core");
+const { AwsProvider } = require("@grucloud/provider-aws");
 const hooks = require("./hooks");
 const { makeDomainName, getFiles } = require("./dumpster");
 

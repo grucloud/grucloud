@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { AwsProvider } = require("@grucloud/core");
+const { AwsProvider } = require("@grucloud/provider-aws");
 const hooks = require("./hooks");
 
 const makeDomainName = ({ DomainName, stage }) =>

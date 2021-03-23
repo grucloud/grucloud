@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { GoogleProvider } = require("@grucloud/core");
+const { GoogleProvider } = require("@grucloud/provider-google");
 const hooks = require("./hooks");
 
 //TODO do we use a name ?

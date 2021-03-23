@@ -5,7 +5,7 @@ const { resolve } = require("path");
 const { readdir } = require("fs").promises;
 const mime = require("mime-types");
 
-const { GoogleProvider } = require("@grucloud/core");
+const { GoogleProvider } = require("@grucloud/provider-google");
 const hooks = require("./hooks");
 
 async function getFiles(dir) {

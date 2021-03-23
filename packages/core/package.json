@@ -1,0 +1,107 @@
+{
+  "name": "@grucloud/core",
+  "version": "1.9.3",
+  "description": "Infrastructure as Code",
+  "public": true,
+  "main": "index.js",
+  "bin": {
+    "gc": "./cli/cliEntry.js"
+  },
+  "homepage": "https://www.grucloud.com",
+  "scripts": {
+    "test:mock": "NODE_PATH=. mocha  './cli/**/*.test.js'  './test/**/*.test.js'  './mockServer/test/*.test.js'",
+    "test": "npm run test:mock",
+    "start:mock": "nodemon node ./mockServer/MockServerRun.js"
+  },
+  "keywords": [
+    "cloud",
+    "infra as code",
+    "aws",
+    "azure",
+    "gcp"
+  ],
+  "author": "Frederic Heem",
+  "license": "ISC",
+  "devDependencies": {
+    "@koa/router": "*",
+    "jscpd": "^3.3.23",
+    "koa": "^2.13.1",
+    "koa-body": "^4.2.0",
+    "mocha": "^8.2.1",
+    "mocha-junit-reporter": "^2.0.0",
+    "nodemon": "^2.0.7",
+    "nyc": "^15.1.0"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.852.0",
+    "axios": "^0.21.1",
+    "axios-mock-adapter": "^1.19.0",
+    "bluebird": "^3.7.2",
+    "chance": "^1.1.7",
+    "change-case": "^4.1.2",
+    "cli-table3": "^0.6.0",
+    "colors": "^1.4.0",
+    "commander": "^7.0.0",
+    "deep-object-diff": "^1.1.0",
+    "dotenv": "^8.2.0",
+    "dotenv-cli": "^4.0.0",
+    "duration": "^0.2.2",
+    "expand-tilde": "^2.0.2",
+    "google-auth-library": "6.1.4",
+    "js-yaml": "^4.0.0",
+    "lerna": "^4.0.0",
+    "lodash": "^4.17.20",
+    "md5-file": "^5.0.0",
+    "moment": "^2.29.1",
+    "node-emoji": "^1.10.0",
+    "np": "^7.2.0",
+    "ping": "^0.4.0",
+    "pluralize": "^8.0.0",
+    "prettier": "^2.2.1",
+    "prompts": "^2.4.0",
+    "querystring": "^0.2.0",
+    "remedial": "^1.0.8",
+    "rubico": "^1.6.17",
+    "rxjs": "^6.6.3",
+    "shelljs": "^0.8.4",
+    "shortid": "^2.2.16",
+    "sinon": "^9.2.3",
+    "spinnies": "^0.5.1",
+    "ssh2": "^0.8.9",
+    "url-join": "^4.0.1",
+    "uuid": "^8.3.2",
+    "winston": "^3.3.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/grucloud/grucloud"
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.js"
+    ],
+    "exclude": [
+      "src/cli/cliEntry.js",
+      "src/**/*.spec.js",
+      "src/**/*test*.js",
+      "src/**/test/*.js",
+      "src/**/test/config/*.js",
+      "src/cli/test/infra/*.js",
+      "src/mockServer/MockServerRun.js",
+      "src/mockServer/config.js"
+    ],
+    "extension": [
+      ".js"
+    ],
+    "reporter": [
+      "html",
+      "text",
+      "text-summary"
+    ],
+    "all": true
+  },
+  "np": {
+    "yarn": false,
+    "branch": "main"
+  }
+}

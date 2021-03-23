@@ -1,16 +1,20 @@
 {
-  "name": "grucloud-multi-example",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "@grucloud/example-multi",
+  "version": "1.9.4",
+  "private": true,
+  "description": "Run multiple GruCloud examples",
+  "main": "iac.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "e2e": "gc d -f && gc d -f && gc l && gc a -f && gc a && gc d -f && gc d && gc l",
-    "link": "npm link @grucloud/core"
+    "e2e": "gc d -f && gc d -f && gc l && gc a -f && gc a && gc d -f && gc d && gc l"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "*"
+    "@grucloud/core": "^1.9.3",
+    "@grucloud/provider-aws": "^1.9.4",
+    "@grucloud/provider-azure": "^1.9.4",
+    "@grucloud/provider-google": "^1.9.4",
+    "@grucloud/provider-k8s": "^1.9.4",
+    "@grucloud/provider-scaleway": "^1.9.4"
   }
 }

@@ -11,16 +11,12 @@ exports.createIngress = async ({
   assert(serviceWebServer);
   assert(serviceRestServer);
   assert(certificate);
-  // See https://github.com/stacksimplify/aws-eks-kubernetes-masterclass/blob/f46e2b15533a96b7641662656cf5deebb63d5dae/11-DevOps-with-AWS-Developer-Tools/Application-Manifests/kube-manifests/03-DEVOPS-Nginx-ALB-IngressService.yml
-  //  # External DNS - For creating a Record Set in Route53
-  // external-dns.alpha.kubernetes.io/hostname: devops.kubeoncloud.com
+
   return provider.makeIngress({
     name: "ingress",
     dependencies: {
       namespace,
       certificate,
-      //serviceWebServer,
-      //serviceRestServer,
     },
     properties: ({ dependencies: { certificate } }) => ({
       apiVersion: "networking.k8s.io/v1beta1",

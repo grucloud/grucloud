@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { ConfigLoader } = require("ConfigLoader");
-const cliCommands = require("../../src/cli/cliCommands");
+const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
+const cliCommands = require("@grucloud/core/cli/cliCommands");
 const { createStack } = require("./iac");
 
 describe("Multi Example", async function () {

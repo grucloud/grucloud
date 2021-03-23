@@ -1,4 +1,4 @@
-const { AwsProvider } = require("@grucloud/core");
+const { AwsProvider } = require("@grucloud/provider-aws");
 const path = require("path");
 const hooks = require("./hooks");
 

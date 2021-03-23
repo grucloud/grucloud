@@ -1,0 +1,20 @@
+{
+  "name": "@grucloud/provider-k8s",
+  "version": "1.9.4",
+  "description": "The GruCloud Kubernetes provider",
+  "main": "K8sProvider.js",
+  "scripts": {
+    "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
+    "link": "npm link @grucloud/core",
+    "test": "NODE_PATH=. mocha './test/**/*.test.js'"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "^1.9.3"
+  },
+  "devDependencies": {
+    "mocha": "^8.3.2",
+    "sinon": "^9.2.4"
+  }
+}

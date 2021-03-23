@@ -1,8 +1,8 @@
 const assert = require("assert");
-const { AwsProvider } = require("@grucloud/core");
-const { GoogleProvider } = require("@grucloud/core");
-const { AzureProvider } = require("@grucloud/core");
-const { ScalewayProvider } = require("@grucloud/core");
+const { AwsProvider } = require("@grucloud/provider-aws");
+const { GoogleProvider } = require("@grucloud/provider-google");
+const { AzureProvider } = require("@grucloud/provider-azure");
+const { ScalewayProvider } = require("@grucloud/provider-scaleway");
 const { MockProvider } = require("@grucloud/core");
 
 const AwsStackEKS = require("../aws/eks/iac");

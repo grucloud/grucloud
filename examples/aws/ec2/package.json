@@ -1,6 +1,7 @@
 {
-  "name": "grucloud-aws-ec2-example",
-  "version": "1.0.0",
+  "name": "@grucloud/example-aws-ec2",
+  "version": "1.9.4",
+  "private": true,
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "*"
+    "@grucloud/core": "^1.9.3",
+    "@grucloud/provider-aws": "^1.9.4"
   }
 }
