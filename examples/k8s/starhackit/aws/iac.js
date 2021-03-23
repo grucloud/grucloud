@@ -14,7 +14,13 @@ const BaseStack = require("../base/k8sStackBase");
 const { createIngress } = require("./eksIngress");
 
 const createAwsStack = async () => {
-  const provider = AwsProvider({ config: require("./configAws") });
+  const provider = AwsProvider({
+    configs: [
+      require("./configAws"),
+      EKSStack.config,
+      AwsCertificateStack.config,
+    ],
+  });
 
   const resourcesEks = await EKSStack.createResources({
     provider,

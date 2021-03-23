@@ -2,6 +2,8 @@ const assert = require("assert");
 const { get, map, pipe, assign, tap, and } = require("rubico");
 const { pluck } = require("rubico/x");
 
+exports.config = require("./config");
+
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const loadBalancerPolicy = require("./load-balancer-policy.json");
@@ -10,6 +12,9 @@ const hooks = require("./hooks");
 
 const createResources = async ({ provider }) => {
   const { config } = provider;
+  assert(config.eks);
+  assert(config.eks.vpc);
+
   const clusterName = "cluster";
   const iamOpenIdConnectProviderName = "oicp-eks";
 
@@ -87,7 +92,7 @@ const createResources = async ({ provider }) => {
     name: "vpc-eks",
     properties: () => ({
       DnsHostnames: true,
-      CidrBlock: config.vpc.CidrBlock,
+      CidrBlock: config.eks.vpc.CidrBlock,
       Tags: [{ Key: `kubernetes.io/cluster/${clusterName}`, Value: "shared" }],
     }),
   });
@@ -102,7 +107,7 @@ const createResources = async ({ provider }) => {
   });
 
   //Public subnets
-  assert(config.vpc.subnetsPublic);
+  assert(config.eks.vpc.subnetsPublic);
 
   const publics = await map(({ name, CidrBlock, AvailabilityZone }) =>
     pipe([
@@ -139,7 +144,7 @@ const createResources = async ({ provider }) => {
           }),
       }),
     ])()
-  )(config.vpc.subnetsPublic);
+  )(config.eks.vpc.subnetsPublic);
 
   const subnet = publics[0].subnet;
   const natGateway = await provider.makeNatGateway({
@@ -148,7 +153,7 @@ const createResources = async ({ provider }) => {
   });
 
   //Private
-  assert(config.vpc.subnetsPrivate);
+  assert(config.eks.vpc.subnetsPrivate);
 
   const privates = await map(({ name, CidrBlock, AvailabilityZone }) =>
     pipe([
@@ -185,7 +190,7 @@ const createResources = async ({ provider }) => {
           }),
       }),
     ])()
-  )(config.vpc.subnetsPrivate);
+  )(config.eks.vpc.subnetsPrivate);
 
   const securityGroupCluster = await provider.makeSecurityGroup({
     name: "security-group-cluster",
@@ -410,8 +415,8 @@ const isProviderUp = ({ resources }) =>
 
 exports.isProviderUp = isProviderUp;
 
-exports.createStack = async () => {
-  const provider = AwsProvider({ config: require("./config") });
+exports.createStack = async ({ config }) => {
+  const provider = AwsProvider({ config });
   const resources = await createResources({ provider, resources: {} });
   return {
     provider,

@@ -36,7 +36,9 @@ exports.loadManifest = async () => [
 ];
 
 const createStackAws = async () => {
-  const provider = AwsProvider({ config: require("./configAws") });
+  const provider = AwsProvider({
+    configs: [require("./configAws"), EKSStack.config],
+  });
 
   const resources = await EKSStack.createResources({
     provider,

@@ -1,8 +1,8 @@
 process.env.AWS_SDK_LOAD_CONFIG = "true";
 const AWS = require("aws-sdk");
 const assert = require("assert");
-const { map, pipe, get } = require("rubico");
-const { first, pluck, defaultsDeep, isFunction } = require("rubico/x");
+const { map, pipe, get, filter, not, reduce, tap } = require("rubico");
+const { first, pluck, defaultsDeep, isFunction, isEmpty } = require("rubico/x");
 const { tos } = require("@grucloud/core/tos");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
@@ -51,8 +51,8 @@ const fetchAccountId = pipe([
   get("Account"),
 ]);
 
-exports.AwsProvider = ({ name = "aws", config, ...other }) => {
-  assert(isFunction(config), "config must be a function");
+exports.AwsProvider = ({ name = "aws", config, configs = [], ...other }) => {
+  assert(config ? isFunction(config) : true, "config must be a function");
 
   AWS.config.apiVersions = {
     ec2: "2016-11-15",
@@ -80,17 +80,22 @@ exports.AwsProvider = ({ name = "aws", config, ...other }) => {
   let accountId;
   let zone;
   let zones;
-  const getRegion = (config) =>
-    config.region || AWS.config.region || defaultRegion;
-  const getZone = ({ zones }) => config.zone || first(zones);
-  const region = getRegion(config);
+  let region;
+
+  const getRegionDefault = () => region || AWS.config.region || defaultRegion;
+
+  const getRegion = (config) => config.region || getRegionDefault();
+  const getZone = ({ zones, config }) => config.zone() || first(zones);
   const start = async () => {
     accountId = await fetchAccountId();
+    const merged = mergeConfig({ config, configs });
+    region = getRegion(merged);
     zones = await getAvailabilityZonesName({ region });
-    zone = getZone({ zones });
+    zone = getZone({ zones, config: merged });
+    assert(zone);
     validateConfig({
       region,
-      zone: config.zone,
+      zone,
       zones,
     });
   };
@@ -101,20 +106,26 @@ exports.AwsProvider = ({ name = "aws", config, ...other }) => {
     zone,
   });
 
+  const mergeConfig = ({ config, configs }) =>
+    pipe([
+      () => [...configs, config],
+      filter((x) => x),
+      reduce((acc, config) => defaultsDeep(config(acc))(acc), {
+        accountId: () => accountId,
+        region: getRegionDefault(),
+        zone: () => zone,
+      }),
+      tap((merged) => {
+        logger.info(`mergeConfig : ${tos(merged)}`);
+      }),
+    ])();
+
   return CoreProvider({
     ...other,
     type: "aws",
     name,
     get config() {
-      return pipe([
-        () => ({
-          accountId: () => accountId,
-          region: getRegion(config),
-          zone: () => zone,
-        }),
-        (configProvider) =>
-          defaultsDeep(configProvider)(config(configProvider)),
-      ])();
+      return mergeConfig({ config, configs });
     },
     fnSpecs,
     start,

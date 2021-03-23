@@ -10,16 +10,16 @@ exports.makeDomainName = makeDomainName;
 
 const createResources = async ({ provider }) => {
   const { config } = provider;
-
-  assert(config.rootDomainName);
-  assert(config.domainName);
+  assert(config.certificate);
+  assert(config.certificate.rootDomainName);
+  assert(config.certificate.domainName);
 
   const domain = await provider.useRoute53Domain({
-    name: config.rootDomainName,
+    name: config.certificate.rootDomainName,
   });
 
   const domainName = makeDomainName({
-    domainName: config.domainName,
+    domainName: config.certificate.domainName,
     stage: config.stage,
   });
 
