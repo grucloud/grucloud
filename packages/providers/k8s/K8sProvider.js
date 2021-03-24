@@ -12,7 +12,7 @@ const {
   filter,
   reduce,
 } = require("rubico");
-const { defaultsDeep, first, find, isFunction } = require("rubico/x");
+const { defaultsDeep, first, find, isFunction, includes } = require("rubico/x");
 const shell = require("shelljs");
 const os = require("os");
 const path = require("path");
@@ -246,7 +246,8 @@ const fnSpecs = () => [
       configKey: "persistentVolume",
       apiVersion: "v1",
       kind: "PersistentVolume",
-      isInstanceUp: eq(get("status.phase"), "Available"),
+      isInstanceUp: (instance) =>
+        includes(get("status.phase")(instance))(["Available", "Bound"]),
     }),
     isOurMinion,
     compare,
