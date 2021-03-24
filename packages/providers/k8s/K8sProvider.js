@@ -246,6 +246,7 @@ const fnSpecs = () => [
   },
   {
     type: "PersistentVolumeClaim",
+    dependsOn: ["PersistentVolume"],
     Client: createResourceNamespace({
       baseUrl: ({ namespace, apiVersion }) =>
         `/api/${apiVersion}/namespaces/${namespace}/persistentvolumeclaims`,
@@ -255,7 +256,6 @@ const fnSpecs = () => [
       kind: "PersistentVolumeClaim",
     }),
     dependsOn: ["Namespace", "StorageClass", "PersistentVolume"],
-    listDependsOn: ["PersistentVolume"],
     isOurMinion: isOurMinionPersistentVolumeClaim,
     compare,
   },
@@ -322,8 +322,14 @@ const fnSpecs = () => [
   },
   {
     type: "Pod",
-    dependsOn: ["Namespace", "ConfigMap", "Secret", "ServiceAccount"],
-    listDependsOn: ["ReplicaSet", "StatefulSet"],
+    dependsOn: [
+      "Namespace",
+      "ConfigMap",
+      "Secret",
+      "ServiceAccount",
+      "ReplicaSet",
+      "StatefulSet",
+    ],
     Client: createResourceNamespace({
       baseUrl: ({ namespace, apiVersion }) =>
         `/api/${apiVersion}/namespaces/${namespace}/pods`,

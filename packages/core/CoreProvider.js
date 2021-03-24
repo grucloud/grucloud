@@ -1515,7 +1515,7 @@ function CoreProvider({
         key: `${client.spec.providerName}::${client.spec.type}`,
         dependsOn: map(
           (dependOn) => `${client.spec.providerName}::${dependOn}`
-        )(client.spec.listDependsOn),
+        )(client.spec.dependsOn),
         executor: ({ results }) =>
           pipe([
             () =>

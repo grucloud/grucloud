@@ -30,7 +30,7 @@ exports.isOurMinionPersistentVolumeClaim = ({ resource, lives, config }) =>
           get("managedByUs"),
           tap((managedByUs) => {
             logger.info(
-              `isOurMinionPersistentVolumeClaim ${volumeName}: ${managedByUs}`
+              `isOurMinionPersistentVolumeClaim ${resource.metadata.name}, volumeName: ${volumeName}: ${managedByUs}`
             );
           }),
         ])(),

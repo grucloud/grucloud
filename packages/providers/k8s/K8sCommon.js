@@ -127,9 +127,6 @@ exports.createAxiosMakerK8s = ({ config, contentType }) =>
         find(eq(get("name"), kubeConfig["current-context"])),
         get("user"),
       ])(kubeConfig),
-    tap((user) => {
-      logger.debug(`createAxiosMakerK8s`);
-    }),
     (user) => ({
       rejectUnauthorized: false,
       ...(user["client-certificate"] && {
@@ -178,7 +175,7 @@ exports.isOurMinion = ({ resource, lives, config }) =>
             find(eq(get("live.metadata.uid"), uid)),
             get("managedByUs"),
             tap((result) => {
-              logger.info(`isOurMinion ${resource.toString()}: ${result}`);
+              logger.info(`isOurMinion ${resource.metadata?.name}: ${result}`);
             }),
           ])(),
         () => false,
