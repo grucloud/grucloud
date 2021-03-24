@@ -1,9 +1,9 @@
 module.exports = () => ({
   redis: {
-    container: { image: "redis", version: "latest" },
     serviceName: "redis",
     statefulSetName: "redis",
     label: "redis",
+    image: "redis",
     port: 6379,
   },
 });

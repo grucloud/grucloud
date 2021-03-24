@@ -16,57 +16,63 @@ const createResources = async ({ provider, resources: { namespace } }) => {
   assert(redis.label);
   assert(redis.serviceName);
   assert(redis.statefulSetName);
-  assert(redis.container);
+  assert(redis.image);
   assert(redis.port);
-
-  const statefulRedisContent = ({ label, image, version, port }) => ({
-    metadata: {
-      labels: {
-        app: label,
-      },
-    },
-    spec: {
-      serviceName: "redis",
-      replicas: 1,
-      selector: {
-        matchLabels: {
-          app: label,
-        },
-      },
-      template: {
-        metadata: {
-          labels: {
-            app: label,
-          },
-        },
-        spec: {
-          containers: [
-            {
-              name: "redis",
-              image: image,
-              ports: [
-                {
-                  containerPort: port,
-                  name: "redis",
-                },
-              ],
-            },
-          ],
-        },
-      },
-    },
-  });
 
   const statefulSet = await provider.makeStatefulSet({
     name: redis.statefulSetName,
     dependencies: { namespace },
-    properties: ({}) =>
-      statefulRedisContent({
-        label: redis.label,
-        image: redis.container.image,
-        version: redis.container.version,
-        port: redis.port,
-      }),
+    properties: ({}) => ({
+      metadata: {
+        labels: {
+          app: redis.label,
+        },
+      },
+      spec: {
+        serviceName: redis.serviceName,
+        replicas: 1,
+        selector: {
+          matchLabels: {
+            app: redis.label,
+          },
+        },
+        template: {
+          metadata: {
+            labels: {
+              app: redis.label,
+            },
+          },
+          spec: {
+            containers: [
+              {
+                name: "redis",
+                image: redis.image,
+                ports: [
+                  {
+                    containerPort: redis.port,
+                    name: "redis",
+                  },
+                ],
+                readinessProbe: {
+                  exec: {
+                    command: ["redis-cli", "ping"],
+                  },
+                  initialDelaySeconds: 4,
+                  timeoutSeconds: 2,
+                },
+                livenessProbe: {
+                  exec: {
+                    command: ["redis-cli", "ping"],
+                  },
+                  initialDelaySeconds: 45,
+                  timeoutSeconds: 2,
+                },
+              },
+            ],
+          },
+        },
+      },
+    }),
   });
 
   const service = await provider.makeService({
