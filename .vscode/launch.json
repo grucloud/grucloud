@@ -164,7 +164,7 @@
       "cwd": "${workspaceFolder}/packages/modules/k8s/postgres/example",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["list", "-t", "xf"]
+      "args": ["list", "-t"]
     },
     {
       "type": "node",
@@ -194,7 +194,7 @@
       "cwd": "${workspaceFolder}/packages/modules/k8s/postgres/example",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["destroy", "-f"]
+      "args": ["destroy", "-f", "-a"]
     },
     {
       "type": "node",

@@ -135,7 +135,7 @@ module.exports = K8sClient = ({
       get("data", []),
       filterList,
       tap((data) => {
-        logger.info(`getList k8s ${type}, #items ${data.length}`);
+        logger.info(`getList k8s ${type}, #items ${data.items.length}`);
       }),
     ]),
     (error) => {
@@ -162,7 +162,7 @@ module.exports = K8sClient = ({
           }),
         get("data"),
         tap((data) => {
-          //ogger.debug(`getByKey result ${name}: ${tos(data)}`);
+          logger.debug(`getByKey result ${name}: ${tos(data.status)}`);
         }),
       ]),
       switchCase([

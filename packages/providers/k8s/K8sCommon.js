@@ -159,7 +159,7 @@ exports.isOurMinion = ({ resource, lives, config }) =>
     pipe([
       tap(() => {
         assert(lives);
-        logger.info(`isOurMinion ${JSON.stringify({ resource })}`);
+        logger.info(`isOurMinion ${resource.metadata.name}`);
       }),
       () => first(resource.metadata.ownerReferences),
       switchCase([
