@@ -301,7 +301,7 @@ const fnSpecs = () => [
         apiVersion: "apps/v1",
         kind: "StatefulSet",
         cannotBeDeleted: cannotBeDeletedDefault,
-        isUpByIdFactory: K8sUtils({ config }).isUpByPod,
+        isInstanceUp: K8sUtils({ config }).isUpByPod,
       })({ config, spec }),
     isOurMinion,
     compare,
