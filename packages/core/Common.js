@@ -179,7 +179,7 @@ exports.isUpByIdCore = ({ isInstanceUp, getById }) => async ({
   if (instance) {
     //TODO use default isInstanceUp
     if (isInstanceUp) {
-      up = isInstanceUp(instance);
+      up = await isInstanceUp(instance);
     } else {
       up = true;
     }
@@ -307,7 +307,7 @@ exports.isOurMinionObject = ({ tags, config }) => {
     ]),
     tap((minion) => {
       logger.debug(
-        `isOurMinionObject ${minion}, ${tos({
+        `isOurMinionObject ${minion}, ${JSON.stringify({
           stage,
           projectName,
           tags,

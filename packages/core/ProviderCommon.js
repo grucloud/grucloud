@@ -149,23 +149,30 @@ const filterByType = ({ types = [], targetTypes }) =>
     }),
   ]);
 
+const displayClientsType = pipe([
+  pluck("spec.type"),
+  (types) => types.join(", "),
+]);
+
 exports.filterReadClient = ({ options: { types, all } = {}, targetTypes }) =>
   pipe([
     tap((clients) => {
       assert(targetTypes);
       logger.info(
-        `filterReadClient types: ${types}, #clients ${clients.length}, #targets: ${targetTypes.length}`
+        `filterReadClient types: ${types}, all: ${all}, #clients ${clients.length}, #targets: ${targetTypes.length}`
       );
     }),
     filter(not(get("spec.listHide"))),
     switchCase([
       () => all,
       (clients) => clients,
-      filterByType({ types, targetTypes }),
+      filterByType({ types, all, targetTypes }),
     ]),
     tap((clients) => {
       logger.info(
-        `filterReadClient types: ${types}, targetTypes: ${targetTypes} #clients ${clients.length}`
+        `filterReadClient types: ${types}, targetTypes: ${targetTypes} #clients ${
+          clients.length
+        }, final types: ${displayClientsType(clients)}`
       );
     }),
   ]);
@@ -184,12 +191,14 @@ exports.filterReadWriteClient = ({
     switchCase([
       () => all,
       (clients) => clients,
-      filterByType({ types, targetTypes }),
+      filterByType({ types, all, targetTypes }),
     ]),
     filter(and([not(get("spec.singleton")), not(get("spec.listOnly"))])),
     tap((clients) => {
       logger.info(
-        `filterReadWriteClient ${types}, result #clients ${clients.length}`
+        `filterReadWriteClient ${types}, result #clients ${
+          clients.length
+        }, ${displayClientsType(clients)}`
       );
     }),
   ]);

@@ -236,7 +236,7 @@ const groupByType = (init = {}) =>
   }, init);
 
 const tableSummaryDefs = {
-  columns: ["Type", "Resoures"],
+  columns: ["Type", "Resources"],
   colWidths: ({ columns }) => {
     const typeLength = 20;
     const resourceLength = columns - typeLength - 10;

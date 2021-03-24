@@ -11,6 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.9.3",
-    "@grucloud/provider-k8s": "^1.9.4"
+    "@grucloud/provider-k8s": "^1.9.4",
+    "@grucloud/module-k8s-postgres": "*",
+    "@grucloud/module-k8s-redis": "*"
   }
 }

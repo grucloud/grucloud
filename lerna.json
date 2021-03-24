@@ -6,7 +6,11 @@
       "ignoreChanges": ["svelte-app", "@grucloud/example-*"]
     },
     "run": {
-      "ignore": ["@grucloud/provider-k8s", "@grucloud/module-k8s-cert-manager"]
+      "ignore": [
+        "@grucloud/provider-k8s",
+        "@grucloud/module-*",
+        "@grucloud/module-k8s-cert-manager"
+      ]
     }
   }
 }

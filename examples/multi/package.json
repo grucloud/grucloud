@@ -15,6 +15,7 @@
     "@grucloud/provider-azure": "^1.9.4",
     "@grucloud/provider-google": "^1.9.4",
     "@grucloud/provider-k8s": "^1.9.4",
-    "@grucloud/provider-scaleway": "^1.9.4"
+    "@grucloud/provider-scaleway": "^1.9.4",
+    "@grucloud/module-aws-eks": "*"
   }
 }

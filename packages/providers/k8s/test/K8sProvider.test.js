@@ -235,7 +235,7 @@ describe("K8sProvider", async function () {
       }),
     });
 
-    const deploymentContent = ({ configMap, name, labelApp }) => ({
+    const deploymentContent = ({ labelApp }) => ({
       metadata: {
         labels: {
           app: labelApp,

@@ -266,7 +266,7 @@ function Home() {
           `}
         >
           <div>
-            <h2>Visualize the resoures</h2>
+            <h2>Visualize the resources</h2>
             <p>
               The <em>gc graph</em> command displays a graph of the
               infrastructure showing the dependencies between resources.

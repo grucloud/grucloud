@@ -57,7 +57,6 @@ module.exports = [
   {
     type: "Route",
     dependsOn: ["RouteTables", "InternetGateway", "NatGateway"],
-    listDependsOn: ["RouteTables", "InternetGateway", "NatGateway", "Vpc"],
     Client: AwsRoute,
     isOurMinion,
   },

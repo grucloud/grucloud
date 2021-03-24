@@ -2,6 +2,9 @@ const pkg = require("./package.json");
 module.exports = ({ region }) => ({
   projectName: pkg.name,
   eks: {
+    cluster: {
+      name: "cluster",
+    },
     vpc: {
       CidrBlock: "192.168.0.0/16",
       subnetsPublic: [

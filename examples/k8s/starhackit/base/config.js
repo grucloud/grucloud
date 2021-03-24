@@ -18,10 +18,6 @@ module.exports = ({ stage }) => ({
   },
   pv: { name: "pv-db" },
   postgres: {
-    statefulSetName: "postgres",
-    serviceName: "postgres",
-    label: "db",
-    port: 5432,
     env: {
       POSTGRES_USER: "dbuser",
       POSTGRES_PASSWORD: "peggy went to the market",
@@ -30,9 +26,5 @@ module.exports = ({ stage }) => ({
   },
   redis: {
     container: { image: "redis", version: "latest" },
-    serviceName: "redis",
-    statefulSetName: "redis",
-    label: "redis",
-    port: 6379,
   },
 });

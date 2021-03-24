@@ -7,7 +7,7 @@ const config = require("./config");
 describe("K8S Cert Manager Module", async function () {
   before(async function () {
     try {
-      ConfigLoader({ path: "../../examples/multi" });
+      ConfigLoader({ path: "../../../../examples/multi" });
     } catch (error) {
       this.skip();
     }

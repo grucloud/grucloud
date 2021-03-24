@@ -1,0 +1,22 @@
+{
+  "name": "@grucloud/example-module-k8s-postgres",
+  "version": "1.9.4",
+  "description": "Grucloud example for the k8s postgres module",
+  "main": "iac.js",
+  "private": true,
+  "scripts": {
+    "test": "mocha --exit './{,!(node_modules)/**}/*.test.js'",
+    "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "^1.9.3",
+    "@grucloud/provider-k8s": "^1.9.4",
+    "@grucloud/module-k8s-postgres": "*",
+    "rubico": "^1.6.21"
+  },
+  "devDependencies": {
+    "mocha": "^8.3.2"
+  }
+}

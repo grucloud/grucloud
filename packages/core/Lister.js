@@ -33,12 +33,14 @@ exports.Lister = ({ inputs, onStateChange }) => {
   const runItem = async ({
     entry: { meta, key, isUp = () => true, executor },
     onEnd,
+    inputsFiltered,
   }) =>
     pipe([
       tap(() => {
         assert(onEnd);
         assert(key);
         assert(executor);
+        assert(inputsFiltered);
       }),
       tryCatch(
         pipe([
@@ -58,12 +60,15 @@ exports.Lister = ({ inputs, onStateChange }) => {
       tap((result) => {
         resultMap.set(key, result);
       }),
-      (result) => onEnd({ key, isUp, result }),
+      (result) => onEnd({ inputsFiltered, key, isUp, result }),
     ])();
 
-  const onEnd = async ({ key, isUp, meta, result }) =>
+  const onEnd = async ({ inputsFiltered, key, isUp, meta, result }) =>
     pipe([
-      () => inputs,
+      tap(() => {
+        assert(inputsFiltered);
+      }),
+      () => inputsFiltered,
       //Exclude the current resource
       filter(not(eq(get("key"), key))),
       // Find resources that depends on the one that just ended
@@ -79,15 +84,18 @@ exports.Lister = ({ inputs, onStateChange }) => {
             // Remove from the dependsOn array the one that just ended
             filter(not(includes(key))),
             tap((updatedDependsOn) => {
+              logger.debug(
+                `Lister onEnd ${entry.key}, new updatedDependsOn: ${updatedDependsOn}`
+              );
               entry.dependsOn = updatedDependsOn;
             }),
-            tap.if(isEmpty, () => runItem({ entry, onEnd })),
+            tap.if(isEmpty, () => runItem({ inputsFiltered, entry, onEnd })),
           ])(entry)
         ),
         map((entry) =>
           pipe([
             tap(() => {
-              logger.debug(`Lister is not up`, entry);
+              logger.debug(`Lister ${key} is not up`, entry);
               assert(entry.key);
             }),
             () =>
@@ -100,7 +108,7 @@ exports.Lister = ({ inputs, onStateChange }) => {
         ),
       ]),
       tap((result) => {
-        logger.debug(`Lister end`);
+        logger.debug(`Lister onEnd ${key}`);
       }),
     ])();
 
@@ -114,23 +122,27 @@ exports.Lister = ({ inputs, onStateChange }) => {
           ),
       })
     ),
-    tap((results) => {
-      logger.debug(`Lister run: `);
-    }),
-    //TODO we could have items in dependsOn as long as they are not on the plan
-    filter(pipe([get("dependsOn"), isEmpty])),
-    tap((x) => {
-      logger.debug(`Lister run: start ${x.length}/${inputs.length}`);
-    }),
-    tap.if(isEmpty, () => {
-      //assert(false, `all resources has dependsOn, plan: ${tos({ inputs })}`);
-    }),
-    forEach((entry) => runItem({ entry, onEnd })),
-    () => [...resultMap.values()],
-    (results) => ({ error: any(get("error"))(results), results }),
-    tap(({ error, results }) => {
-      logger.info(`Lister ${error && "error"}`);
-      //logger.debug(`Lister ${error && "error"}, result: ${tos(results)}`);
-    }),
+    (inputsFiltered) =>
+      pipe([
+        tap((results) => {
+          logger.debug(`Lister run: `);
+        }),
+        () => inputsFiltered,
+        //TODO we could have items in dependsOn as long as they are not on the plan
+        filter(pipe([get("dependsOn"), isEmpty])),
+        tap((x) => {
+          logger.debug(`Lister run: start ${x.length}/${inputs.length}`);
+        }),
+        tap.if(isEmpty, () => {
+          //assert(false, `all resources has dependsOn, plan: ${tos({ inputs })}`);
+        }),
+        forEach((entry) => runItem({ entry, onEnd, inputsFiltered })),
+        () => [...resultMap.values()],
+        (results) => ({ error: any(get("error"))(results), results }),
+        tap(({ error, results }) => {
+          logger.info(`Lister ${error && "error"}`);
+          //logger.debug(`Lister ${error && "error"}, result: ${tos(results)}`);
+        }),
+      ])(),
   ])();
 };

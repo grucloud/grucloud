@@ -56,7 +56,7 @@ exports.K8sUtils = ({ config }) => {
   const isUpByPod = ({ metadata }) =>
     pipe([
       tap(() => {
-        logger.debug(`isUpByPod`);
+        logger.debug(`isUpByPod ${metadata.name}`);
         assert(metadata);
       }),
       () => metadata,
@@ -65,13 +65,10 @@ exports.K8sUtils = ({ config }) => {
       tap((pod) => {
         logger.debug(`pod ${tos(pod?.status)}`);
       }),
-      get("status.phase"),
-      tap((phase) => {
-        logger.debug(`isUpByPod pod phase ${phase}`);
-      }),
-      (phase) => eq(phase, "Running")(),
+      get("status.containerStatuses"),
+      find(get("state.running")),
       tap((isUp) => {
-        logger.debug(`isUpByPod ${isUp}`);
+        logger.debug(`isUpByPod ${metadata.name}: ${isUp}`);
       }),
     ])();
 

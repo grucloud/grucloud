@@ -10,8 +10,9 @@ const {
   not,
   or,
   filter,
+  reduce,
 } = require("rubico");
-const { defaultsDeep, first, find, isFunction } = require("rubico/x");
+const { defaultsDeep, first, find, isFunction, includes } = require("rubico/x");
 const shell = require("shelljs");
 const os = require("os");
 const path = require("path");
@@ -32,12 +33,18 @@ const {
   isOurMinionPersistentVolumeClaim,
 } = require("./K8sPersistentVolumeClaim");
 
-const cannotBeDeletedDefault = ({ name, resources }) =>
+const cannotBeDeletedDefault = ({ resource, config }) =>
   pipe([
-    () => resources,
-    not(find(eq(get("name"), name))),
+    () => resource.metadata.annotations,
+    switchCase([
+      eq(get(config.managedByKey), config.managedByValue),
+      () => false,
+      () => true,
+    ]),
     tap((result) => {
-      logger.debug(`cannotBeDeletedDefault ${name}: ${result}`);
+      logger.debug(
+        `cannotBeDeletedDefault ${resource.metadata.name}: ${result}`
+      );
     }),
   ])();
 
@@ -239,13 +246,15 @@ const fnSpecs = () => [
       configKey: "persistentVolume",
       apiVersion: "v1",
       kind: "PersistentVolume",
-      isInstanceUp: eq(get("status.phase"), "Available"),
+      isInstanceUp: (instance) =>
+        includes(get("status.phase")(instance))(["Available", "Bound"]),
     }),
     isOurMinion,
     compare,
   },
   {
     type: "PersistentVolumeClaim",
+    dependsOn: ["PersistentVolume"],
     Client: createResourceNamespace({
       baseUrl: ({ namespace, apiVersion }) =>
         `/api/${apiVersion}/namespaces/${namespace}/persistentvolumeclaims`,
@@ -255,7 +264,6 @@ const fnSpecs = () => [
       kind: "PersistentVolumeClaim",
     }),
     dependsOn: ["Namespace", "StorageClass", "PersistentVolume"],
-    listDependsOn: ["PersistentVolume"],
     isOurMinion: isOurMinionPersistentVolumeClaim,
     compare,
   },
@@ -300,7 +308,7 @@ const fnSpecs = () => [
         apiVersion: "apps/v1",
         kind: "StatefulSet",
         cannotBeDeleted: cannotBeDeletedDefault,
-        isUpByIdFactory: K8sUtils({ config }).isUpByPod,
+        isInstanceUp: K8sUtils({ config }).isUpByPod,
       })({ config, spec }),
     isOurMinion,
     compare,
@@ -322,8 +330,14 @@ const fnSpecs = () => [
   },
   {
     type: "Pod",
-    dependsOn: ["Namespace", "ConfigMap", "Secret", "ServiceAccount"],
-    listDependsOn: ["ReplicaSet", "StatefulSet"],
+    dependsOn: [
+      "Namespace",
+      "ConfigMap",
+      "Secret",
+      "ServiceAccount",
+      "ReplicaSet",
+      "StatefulSet",
+    ],
     Client: createResourceNamespace({
       baseUrl: ({ namespace, apiVersion }) =>
         `/api/${apiVersion}/namespaces/${namespace}/pods`,
@@ -406,12 +420,31 @@ const providerType = "k8s";
 exports.K8sProvider = ({
   name = providerType,
   manifests = [],
-  config: createConfig,
+  config,
+  configs = [],
   ...other
 }) => {
-  assert(isFunction(createConfig), "config must be a function");
+  config && assert(isFunction(config), "config must be a function");
 
-  const info = () => ({});
+  const mergeConfig = ({ config, configs }) =>
+    pipe([
+      () => [...configs, config],
+      filter((x) => x),
+      reduce((acc, config) => defaultsDeep(config(acc))(acc), {
+        accessToken: () => accessToken,
+        kubeConfig: () => {
+          assert(kubeConfig, "kubeConfig not set, provider not started");
+          return kubeConfig;
+        },
+      }),
+      tap((merged) => {
+        logger.info(`mergeConfig : ${tos(merged)}`);
+      }),
+    ])();
+
+  let mergedConfig = mergeConfig({ config, configs });
+
+  const info = () => mergedConfig;
 
   let accessToken;
   let kubeConfig;
@@ -421,7 +454,10 @@ exports.K8sProvider = ({
       logger.info("start k8s");
     }),
     // TODO! stage
-    () => readKubeConfig({ kubeConfigFile: createConfig({}).kubeConfigFile }),
+    () =>
+      readKubeConfig({
+        kubeConfigFile: mergedConfig.kubeConfigFile,
+      }),
     tap((newKubeConfig) => {
       kubeConfig = newKubeConfig;
     }),
@@ -477,22 +513,13 @@ exports.K8sProvider = ({
         logger.info("manifestToSpec ");
       }),
     ])();
+
   return CoreProvider({
     ...other,
     type: providerType,
     name,
     get config() {
-      return pipe([
-        () => ({
-          accessToken: () => accessToken,
-          kubeConfig: () => {
-            assert(kubeConfig, "kubeConfig not set, provider not started");
-            return kubeConfig;
-          },
-        }),
-        (configProvider) =>
-          defaultsDeep(configProvider)(createConfig(configProvider)),
-      ])();
+      return mergedConfig;
     },
     fnSpecs: () => [...fnSpecs(), ...manifestToSpec(manifests)],
     start,
