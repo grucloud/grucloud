@@ -1,27 +1,27 @@
 const assert = require("assert");
 const { createChartWebServer } = require("./charts/web-server");
 const { createChartRestServer } = require("./charts/rest-server");
-const { createChartPostgres } = require("./charts/postgres");
-const { createChartRedis } = require("./charts/redis");
+const PostgresStack = require("@grucloud/module-k8s-postgres");
+const RedisStack = require("@grucloud/module-k8s-redis");
+
 exports.hooks = require("./hooks");
+
+exports.configs = [PostgresStack.config, RedisStack.config];
 
 const createResources = async ({ provider }) => {
   const { config } = provider;
   assert(config.namespaceName);
 
-  const serviceAccountName = "service-account-aws";
-
   const namespace = await provider.makeNamespace({
     name: config.namespaceName,
   });
 
-  const postgresChart = await createChartPostgres({
+  const postgresResources = await PostgresStack.createResources({
     provider,
     resources: { namespace },
-    config,
   });
 
-  const redisChart = await createChartRedis({
+  const redisResources = await RedisStack.createResources({
     provider,
     resources: { namespace },
     config,
@@ -31,8 +31,8 @@ const createResources = async ({ provider }) => {
     provider,
     resources: {
       namespace,
-      postgresService: postgresChart.service,
-      redisService: redisChart.service,
+      postgresService: postgresResources.service,
+      redisService: redisResources.service,
     },
     config,
   });
@@ -43,15 +43,10 @@ const createResources = async ({ provider }) => {
     config,
   });
 
-  const serviceAccount = await provider.makeServiceAccount({
-    name: serviceAccountName,
-    dependencies: { namespace },
-    properties: () => ({}),
-  });
-
   return {
     namespace,
-    serviceAccount,
+    postgresResources,
+    redisResources,
     restServerChart,
     webServerChart,
   };

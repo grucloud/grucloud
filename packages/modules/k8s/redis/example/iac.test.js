@@ -1,10 +1,10 @@
 const assert = require("assert");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const cliCommands = require("@grucloud/core/cli/cliCommands");
-const { createStack } = require("./iac");
-const config = require("./config");
+const { createStack } = require("../iac");
+const config = require("../config");
 
-describe("K8S Cert Manager Module", async function () {
+describe("K8S Redis Module", async function () {
   before(async function () {
     try {
       ConfigLoader({ path: "../../../../examples/multi" });

@@ -6,7 +6,7 @@ const { createIngress } = require("./ingress");
 exports.createStack = async ({ config }) => {
   assert(config);
   const provider = K8sProvider({
-    config,
+    configs: [config, ...K8sStackBase.configs],
   });
 
   const resources = await K8sStackBase.createResources({ provider });

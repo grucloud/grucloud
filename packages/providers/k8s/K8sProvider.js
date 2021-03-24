@@ -10,6 +10,7 @@ const {
   not,
   or,
   filter,
+  reduce,
 } = require("rubico");
 const { defaultsDeep, first, find, isFunction } = require("rubico/x");
 const shell = require("shelljs");
@@ -412,12 +413,31 @@ const providerType = "k8s";
 exports.K8sProvider = ({
   name = providerType,
   manifests = [],
-  config: createConfig,
+  config,
+  configs = [],
   ...other
 }) => {
-  assert(isFunction(createConfig), "config must be a function");
+  config && assert(isFunction(config), "config must be a function");
 
-  const info = () => ({});
+  const mergeConfig = ({ config, configs }) =>
+    pipe([
+      () => [...configs, config],
+      filter((x) => x),
+      reduce((acc, config) => defaultsDeep(config(acc))(acc), {
+        accessToken: () => accessToken,
+        kubeConfig: () => {
+          assert(kubeConfig, "kubeConfig not set, provider not started");
+          return kubeConfig;
+        },
+      }),
+      tap((merged) => {
+        logger.info(`mergeConfig : ${tos(merged)}`);
+      }),
+    ])();
+
+  let mergedConfig = mergeConfig({ config, configs });
+
+  const info = () => mergedConfig;
 
   let accessToken;
   let kubeConfig;
@@ -427,7 +447,10 @@ exports.K8sProvider = ({
       logger.info("start k8s");
     }),
     // TODO! stage
-    () => readKubeConfig({ kubeConfigFile: createConfig({}).kubeConfigFile }),
+    () =>
+      readKubeConfig({
+        kubeConfigFile: mergedConfig.kubeConfigFile,
+      }),
     tap((newKubeConfig) => {
       kubeConfig = newKubeConfig;
     }),
@@ -483,22 +506,13 @@ exports.K8sProvider = ({
         logger.info("manifestToSpec ");
       }),
     ])();
+
   return CoreProvider({
     ...other,
     type: providerType,
     name,
     get config() {
-      return pipe([
-        () => ({
-          accessToken: () => accessToken,
-          kubeConfig: () => {
-            assert(kubeConfig, "kubeConfig not set, provider not started");
-            return kubeConfig;
-          },
-        }),
-        (configProvider) =>
-          defaultsDeep(configProvider)(createConfig(configProvider)),
-      ])();
+      return mergedConfig;
     },
     fnSpecs: () => [...fnSpecs(), ...manifestToSpec(manifests)],
     start,

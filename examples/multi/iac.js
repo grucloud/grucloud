@@ -5,7 +5,7 @@ const { AzureProvider } = require("@grucloud/provider-azure");
 const { ScalewayProvider } = require("@grucloud/provider-scaleway");
 const { MockProvider } = require("@grucloud/core");
 
-const AwsStackEKS = require("../aws/eks/iac");
+const AwsStackEKS = require("@grucloud/module-aws-eks");
 
 const AwsStackWebSite = require("../aws/website-https/iac");
 const AwsHooksWebSite = require("../aws/website-https/hooks");
@@ -35,7 +35,7 @@ const MockStack = require("../mock/mock/iac");
 
 const createAws = async ({}) => {
   const provider = AwsProvider({
-    config: require("./configAws"),
+    configs: [require("./configAws"), AwsStackEKS.config],
   });
 
   const keyPair = await provider.useKeyPair({
