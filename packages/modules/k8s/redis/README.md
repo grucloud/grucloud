@@ -1,4 +1,4 @@
-# Postgres
+# Kubernetes Redis module
 
 This module defines the kubernetes resources required to run Redis.
 
