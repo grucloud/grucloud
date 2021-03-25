@@ -58,20 +58,14 @@
 
 ## TODO Aws:
 
-- remove from kubeconfig when destroying ans EKS cluster.
-
-- website-https: 'gc a' does not run onDeployed
 - delete load balancers in vpc
 - minikite gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404
-- multi-provider aws, k8s, ipProviderUp is down, gc d -f fails
 - https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
 - https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html
 
 - s3 exmaple: gc d tries to delete roles
 - gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404: 404 should be ok
 
-- gc d -a : resource sg-08c62cd971a2e1d43 has a dependent object
-  sg depends on sg so hard to find out the dependencies, add a retry on DependencyViolation as a kludge
 - https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
 - https://docs.aws.amazon.com/eks/latest/userguide/load-balancing.html
 - https://medium.com/cloudzone/aws-alb-ingress-controller-guide-ec16233f5903
@@ -120,9 +114,6 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## Nice to have
 
-- https://kubedex.com/
-- https://www.cncf.io/
-- https://jonathan.bergknoff.com/journal/terraform-pain-points/
 - terraform workspace new staging
 - terraform workspace select (staging/production)
 

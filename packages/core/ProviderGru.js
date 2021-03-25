@@ -137,28 +137,6 @@ exports.ProviderGru = ({ stacks }) => {
       }),
     ])(getProviders());
 
-  //TODO remove it
-  const start = ({ onStateChange }) =>
-    pipe([
-      tap(() => {
-        logger.info(`start`);
-      }),
-      () => getProviders(),
-      map(
-        tryCatch(
-          (provider) => provider.start({ onStateChange }),
-          (error) => {
-            logger.error(`start ${tos(error)}`);
-            return { error };
-          }
-        )
-      ),
-      assign({ error: any(get("error")) }),
-      tap((result) => {
-        logger.info(`started`);
-      }),
-    ])();
-
   const createLives = () => {
     const mapPerProvider = new Map();
 
@@ -238,10 +216,6 @@ exports.ProviderGru = ({ stacks }) => {
         if (latestError) {
           error = true;
         }
-      },
-      toString: () => {
-        logger.debug("live toString TODO");
-        return `lives, #provider ${mapPerProvider.size}`;
       },
       get json() {
         return toJSON();
@@ -734,7 +708,6 @@ exports.ProviderGru = ({ stacks }) => {
     ])();
 
   return {
-    start,
     listLives,
     planQuery,
     planApply,
