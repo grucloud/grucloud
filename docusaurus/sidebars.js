@@ -138,7 +138,7 @@ module.exports = {
         ],
       },
       "k8s/K8sExamples",
-      "k8s/K8sMisc",
+      "k8s/K8sModules",
     ],
     "User Guide": ["DeveloperGuide"],
   },
