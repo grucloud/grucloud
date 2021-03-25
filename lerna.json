@@ -1,9 +1,15 @@
 {
-  "packages": ["packages/**/*", "examples/**/*"],
-  "version": "1.10.0",
+  "packages": [
+    "packages/**/*",
+    "examples/**/*"
+  ],
+  "version": "1.10.1",
   "command": {
     "publish": {
-      "ignoreChanges": ["svelte-app", "@grucloud/example-*"]
+      "ignoreChanges": [
+        "svelte-app",
+        "@grucloud/example-*"
+      ]
     },
     "run": {
       "ignore": [
