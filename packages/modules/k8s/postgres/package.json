@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-k8s-postgres",
-  "version": "1.10.2",
+  "version": "1.10.3",
   "description": "Grucloud module for the k8s postgres",
   "main": "iac.js",
   "scripts": {},
