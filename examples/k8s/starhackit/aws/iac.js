@@ -39,7 +39,7 @@ const createAwsStack = async () => {
 
 const createK8sStack = async ({ stackAws }) => {
   const provider = K8sProvider({
-    config: require("./configK8s"),
+    configs: [require("./configK8s"), ...BaseStack.configs],
     manifests: await AwsLoadBalancerStack.loadManifest(),
     dependencies: { aws: stackAws.provider },
   });
