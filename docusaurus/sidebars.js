@@ -127,13 +127,18 @@ module.exports = {
       {
         Resources: [
           "k8s/resources/ConfigMap",
+          "k8s/resources/ClusterRole",
+          "k8s/resources/ClusterRoleBinding",
           "k8s/resources/Deployment",
           "k8s/resources/Ingress",
           "k8s/resources/Namespace",
           "k8s/resources/PersistentVolume",
           "k8s/resources/PersistentVolumeClaim",
+          "k8s/resources/Role",
+          "k8s/resources/RoleBinding",
           "k8s/resources/Secret",
           "k8s/resources/Service",
+          "k8s/resources/ServiceAccount",
           "k8s/resources/StatefulSet",
         ],
       },
