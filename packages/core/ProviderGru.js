@@ -217,10 +217,6 @@ exports.ProviderGru = ({ stacks }) => {
           error = true;
         }
       },
-      toString: () => {
-        logger.debug("live toString TODO");
-        return `lives, #provider ${mapPerProvider.size}`;
-      },
       get json() {
         return toJSON();
       },
