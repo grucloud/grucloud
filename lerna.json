@@ -3,7 +3,9 @@
   "version": "1.10.1",
   "command": {
     "publish": {
-      "ignoreChanges": ["@grucloud/example-*"]
+      "ignoreChanges": ["@grucloud/example-*"],
+      "create-release": "github",
+      "conventional-commits": true
     },
     "run": {
       "ignore": [
