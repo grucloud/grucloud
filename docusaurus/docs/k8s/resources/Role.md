@@ -38,7 +38,7 @@ const role = await provider.makeRole({
 
 ## Source Code Examples
 
-- [Cluster Role for the aws load balancer](https://github.com/grucloud/grucloud/blob/main/packages/modules/k8s/aws-load-balancer/resources.js#L373)
+- [Role for the aws load balancer](https://github.com/grucloud/grucloud/blob/main/packages/modules/k8s/aws-load-balancer/resources.js#L373)
 
 ## Used By
 
