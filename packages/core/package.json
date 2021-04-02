@@ -70,6 +70,7 @@
     "ssh2": "^0.8.9",
     "url-join": "^4.0.1",
     "uuid": "^8.3.2",
+    "why-is-node-running": "^2.2.0",
     "winston": "^3.3.3"
   },
   "repository": {

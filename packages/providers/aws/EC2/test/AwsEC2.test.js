@@ -4,7 +4,7 @@ const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const {
   testPlanDeploy,
   testPlanDestroy,
-} = require("@grucloud/core/test/E2ETestUtils");
+} = require("@grucloud/core/E2ETestUtils");
 const { CheckAwsTags } = require("../../AwsTagCheck");
 
 describe("AwsEC2", async function () {

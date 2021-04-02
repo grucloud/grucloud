@@ -1,9 +1,9 @@
 const assert = require("assert");
 const { switchCase, and } = require("rubico");
 const { isEmpty } = require("rubico/x");
-const logger = require("../logger")({ prefix: "TestUtils" });
-const { tos } = require("../tos");
-const cliCommands = require("../cli/cliCommands");
+const logger = require("./logger")({ prefix: "TestUtils" });
+const { tos } = require("./tos");
+const cliCommands = require("./cli/cliCommands");
 
 const isPlanEmpty = switchCase([
   and([

@@ -3,7 +3,7 @@ const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const {
   testPlanDeploy,
   testPlanDestroy,
-} = require("@grucloud/core/test/E2ETestUtils");
+} = require("@grucloud/core/E2ETestUtils");
 const { createStack } = require("../../../../../examples/aws/s3/iac");
 describe.skip("AwsS3Bucket Example", async function () {
   let config;

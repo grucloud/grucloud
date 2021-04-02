@@ -12,8 +12,7 @@ secrets
 .travis.yml
 .circleci
 .github
-**/test/*
+**/test/**test.js
 *.log
 gc.result.json
-*test*
 *.dot

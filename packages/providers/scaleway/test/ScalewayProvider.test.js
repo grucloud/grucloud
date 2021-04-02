@@ -3,7 +3,7 @@ const logger = require("@grucloud/core/logger")({ prefix: "CoreProvider" });
 const {
   testPlanDeploy,
   testPlanDestroy,
-} = require("@grucloud/core/test/E2ETestUtils");
+} = require("@grucloud/core/E2ETestUtils");
 const { ScalewayProvider } = require("../ScalewayProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 
