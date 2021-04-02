@@ -179,10 +179,18 @@ exports.ProviderGru = ({ stacks }) => {
         const mapPerType = mapPerProvider.get(providerName) || new Map();
 
         logger.debug(
-          `live addResource ${JSON.stringify({ providerName, type })}`
+          `live addResource ${JSON.stringify({
+            providerName,
+            type,
+            mapPerTypeSize: mapPerType.size,
+          })}`
         );
 
         const resources = mapPerType.get(type) || { type, resources: [] };
+        assert(
+          Array.isArray(resources.resources),
+          `no an array: ${tos(resources)}`
+        );
         mapPerType.set(type, {
           type,
           providerName,
@@ -200,7 +208,7 @@ exports.ProviderGru = ({ stacks }) => {
       }) => {
         assert(providerName);
         assert(type);
-        assert(resources || latestError);
+        assert(Array.isArray(resources) || latestError);
         logger.debug(
           `live addResources ${JSON.stringify({
             providerName,
