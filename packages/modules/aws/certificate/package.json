@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-aws-certificate",
-  "version": "1.10.5",
+  "version": "1.10.6",
   "description": "provides an AWS SSL certificate and the associated Route53 resources to validate the certificate",
   "main": "iac.js",
   "scripts": {},
