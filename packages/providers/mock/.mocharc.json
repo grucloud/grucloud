@@ -1,5 +1,5 @@
 {
-  "file": "../../core/mockServer/setup",
+  "file": "../../tools/mockServer/setup",
   "watch-files": ["**/*.js"],
   "extension": ["js"],
   "exclude": "node_modules",

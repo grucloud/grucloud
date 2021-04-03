@@ -21,7 +21,6 @@ describe.skip("AwsCertificate", async function () {
       this.skip();
     }
     provider = AwsProvider({
-      name: "aws",
       config: () => ({ projectName: "gru-test" }),
     });
 

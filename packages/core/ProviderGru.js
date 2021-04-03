@@ -455,13 +455,17 @@ exports.ProviderGru = ({ stacks }) => {
                     }),
                   ])(),
               ])(),
-            (error, { providerName }) => {
-              logger.error(`planApply ${tos(error)}`);
-              return {
-                error: convertError({ error, name: "Apply" }),
-                providerName,
-              };
-            }
+            (error, { providerName }) =>
+              pipe([
+                () => convertError({ error, name: "Apply" }),
+                tap((error) => {
+                  logger.error(`planApply ${tos(error)}`);
+                }),
+                (error) => ({
+                  error,
+                  providerName,
+                }),
+              ])()
           )
         )(results),
       (results) => ({ error: any(get("error"))(results), results }),

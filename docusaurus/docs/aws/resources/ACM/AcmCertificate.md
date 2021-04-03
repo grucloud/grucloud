@@ -58,6 +58,7 @@ const recordValidation = await provider.makeRoute53Record({
 
 ## Source Code Examples
 
+- [module-aws-certificate](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/certificate/iac.js#L26)
 - [https static website ](https://github.com/grucloud/grucloud/blob/main/examples/aws/website-https/iac.js)
 
 ## Properties

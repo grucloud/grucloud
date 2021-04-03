@@ -1,0 +1,38 @@
+{
+  "name": "@grucloud/mock-server",
+  "version": "1.10.9",
+  "description": "Mock a Cloud Provider",
+  "main": "MockServer.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha './{,!(node_modules)/**}/*.test.js'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grucloud/grucloud.git"
+  },
+  "keywords": [
+    "iac",
+    "mock"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/grucloud/grucloud/issues"
+  },
+  "homepage": "https://github.com/grucloud/grucloud#readme",
+  "dependencies": {
+    "@koa/router": "*",
+    "axios": "^0.21.1",
+    "bluebird": "^3.7.2",
+    "chance": "^1.1.7",
+    "koa": "^2.13.1",
+    "koa-body": "^4.2.0",
+    "rubico": "^1.6.17"
+  },
+  "devDependencies": {
+    "mocha": "^8.3.2"
+  }
+}

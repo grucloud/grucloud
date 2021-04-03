@@ -1,6 +1,6 @@
 # EKS
 
-The purpose of this example is to deploy an kubernetes on EKS: [Elastic Kubernetes Service](https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html)
+The purpose of this example is to deploy an app on kubernetes with EKS: [Elastic Kubernetes Service](https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html)
 
 ## Resources
 
@@ -31,4 +31,4 @@ The purpose of this example is to deploy an kubernetes on EKS: [Elastic Kubernet
 gc graph
 ```
 
-![Graph](grucloud.svg)
+![Graph](./grucloud.svg)

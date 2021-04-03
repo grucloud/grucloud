@@ -1,0 +1,30 @@
+{
+  "name": "@grucloud/module-k8s-web-ui-dashboard",
+  "version": "1.10.11",
+  "description": "GruCloud Module for the Kubernetes Web Ui Dashboard",
+  "main": "iac.js",
+  "scripts": {
+    "download-manifest": "curl -L -o web-ui-dashboard.yaml https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml",
+    "gen-code": "k8s-manifest2code --input web-ui-dashboard.yaml"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/grucloud/grucloud.git"
+  },
+  "dependencies": {
+    "@grucloud/core": "^1.10.9",
+    "@grucloud/k8s-manifest2code": "^1.10.11",
+    "@grucloud/provider-k8s": "^1.10.9"
+  },
+  "keywords": [
+    "kubernetes",
+    "dashboard",
+    "manifest"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/grucloud/grucloud/issues"
+  },
+  "homepage": "https://github.com/grucloud/grucloud#readme"
+}

@@ -43,7 +43,7 @@ npm init
 ### Install this module
 
 ```sh
-npm i @grucloud/core @grucloud/module-aws-certificate
+npm i @grucloud/core @grucloud/provider-aws @grucloud/module-aws-certificate
 ```
 
 ### Configuration

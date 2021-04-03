@@ -10,7 +10,7 @@ Edit [config.js](./config.js) and set the following parameters:
 - **DomainName**: the website sub-domain
 - **websiteDir**: the directory where the website is located.
 
-> The region must be set to **us-east-1** due a CloudFront limitation.
+> The region must be set to **us-east-1** due to a CloudFront limitation.
 
 ## Resources
 
@@ -40,7 +40,7 @@ node -v
 
 ### GruCloud Cli
 
-Install the GruCloud CLI called **gc** is installed:
+Install the GruCloud CLI called **gc**:
 
 ```
 npm i -g @grucloud/core
@@ -57,7 +57,7 @@ To achieve full automation of this deployment, register or transfer a domain to 
 Verify that the domain is registered on Route53 with the following command:
 
 ```
-gc list  --types Route53Domain
+gc list --types Route53Domain
 ```
 
 ## Commands

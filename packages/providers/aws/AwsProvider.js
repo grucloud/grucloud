@@ -111,9 +111,11 @@ exports.AwsProvider = ({ name = "aws", config, configs = [], ...other }) => {
       () => [...configs, config],
       filter((x) => x),
       reduce((acc, config) => defaultsDeep(config(acc))(acc), {
-        accountId: () => accountId,
-        region: getRegionDefault(),
         zone: () => zone,
+        accountId: () => accountId,
+      }),
+      defaultsDeep({
+        region: getRegionDefault(),
       }),
       tap((merged) => {
         logger.info(`mergeConfig : ${tos(merged)}`);

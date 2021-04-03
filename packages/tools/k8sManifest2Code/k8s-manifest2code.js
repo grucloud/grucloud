@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const assert = require("assert");
 const { pipe, tap, get, map, omit, switchCase } = require("rubico");
 const Axios = require("axios");

@@ -1,8 +1,9 @@
 {
   "name": "@grucloud/provider-google",
-  "version": "1.10.4",
+  "version": "1.10.9",
   "description": "The GruCloud Google Cloud Platform provider",
   "main": "GoogleProvider.js",
+  "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/google",
   "scripts": {
     "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
     "test": "mocha --exit './test/**/*.test.js'"
@@ -10,10 +11,20 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.10.4"
+    "@grucloud/core": "^1.10.9",
+    "google-auth-library": "6.1.4"
   },
   "devDependencies": {
     "mocha": "^8.3.2",
     "sinon": "^9.2.4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/grucloud/grucloud"
+  },
+  "keywords": [
+    "GCP",
+    "GruCloud",
+    "Infrastructure as Code"
+  ]
 }

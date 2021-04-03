@@ -176,12 +176,13 @@ exports.AwsDistribution = ({ spec, config }) => {
             logger.debug(`updated distribution ${tos({ name, id })}`);
           }),
         ])(config),
-      () =>
+      tap(() =>
         retryCall({
           name: `distribution isUpById : ${name} id: ${id}`,
           fn: () => isUpById({ id }),
           config: { retryCount: 6 * 60, retryDelay: 10e3 },
-        }),
+        })
+      ),
       tap(() => {
         logger.info(`distribution updated: ${tos({ name, id })}`);
       }),
@@ -222,9 +223,13 @@ exports.AwsDistribution = ({ spec, config }) => {
             },
           },
         }),
+      () => cloudfront().getDistributionConfig({ Id: id }),
+      tap(({ ETag }) => {
+        assert(ETag);
+      }),
       ({ ETag }) =>
         retryCall({
-          name: `deleteDistribution: ${name} id: ${id}`,
+          name: `deleteDistribution: ${name} id: ${id}, IfMatch:${ETag}`,
           fn: () =>
             cloudfront().deleteDistribution({
               Id: id,
@@ -304,7 +309,7 @@ exports.AwsDistribution = ({ spec, config }) => {
           () => distribution,
           get("Origins.Items"),
           flatMap(({ Id, OriginPath }) =>
-            findS3ObjectUpdated({ plans: resultCreate, Id, OriginPath })
+            findS3ObjectUpdated({ plans: resultCreate.results, Id, OriginPath })
           ),
           tap((Items) => {
             logger.info(`distribution Items ${tos({ Items })}`);
@@ -386,16 +391,25 @@ exports.compareDistribution = async ({ target, live, dependencies }) =>
     }),
   ])();
 
-const findS3ObjectUpdated = ({ plans, Id, OriginPath }) =>
+const findS3ObjectUpdated = ({ plans = [], Id, OriginPath }) =>
   pipe([
     tap(() => {
-      logger.debug(`findS3ObjectUpdated ${tos({ Id })}`);
+      assert(Id, "Id");
+      assert(OriginPath, "OriginPath");
+      logger.debug(
+        `findS3ObjectUpdated ${tos({
+          Id,
+          OriginPath,
+          plansSize: plans.length,
+        })}`
+      );
     }),
+    () => plans,
     filter(
       and([
         eq(get("resource.type"), "S3Object"),
         eq(get("action"), "UPDATE"),
-        eq((plan) => `S3-${plan.live.Bucket}`, Id),
+        eq((plan) => `S3-${plan.output.Bucket}`, Id),
       ])
     ),
     pluck("live.Key"),
@@ -403,4 +417,4 @@ const findS3ObjectUpdated = ({ plans, Id, OriginPath }) =>
     tap((results) => {
       logger.debug(`findS3ObjectUpdated ${tos({ results })}`);
     }),
-  ])(plans);
+  ])();
