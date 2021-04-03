@@ -10,7 +10,7 @@ See the [list of k8s examples](https://www.grucloud.com/docs/k8s/K8sExamples) on
 
 Modules are a way to package resources for a given functionnality: add postgres, redis, the cert manager etc...
 
-Have a look at the [list of kubernetes module](./https://www.grucloud.com/docs/k8s/K8sModules).
+Have a look at the [list of kubernetes module](https://www.grucloud.com/docs/k8s/K8sModules).
 
 ## Resources
 
