@@ -10,3 +10,4 @@ coverage
 .circleci
 .github
 **/test/*
+gc.result.json
