@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-mock",
-  "version": "1.10.4",
+  "version": "1.10.5",
   "description": "The GruCloud Mock provider",
   "main": "index.js",
   "scripts": {
