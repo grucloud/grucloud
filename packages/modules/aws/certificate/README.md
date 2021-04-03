@@ -1,6 +1,6 @@
-# Aws Certificate
+# GruCloud Module for Aws SSL Certificate validated with DNS
 
-The purpose of this module is to deploy an SSL certificate and verify it with DNS.
+The purpose of this module is to deploy an AWS SSL certificate and verify it with DNS.
 
 When an AWS Certificate is created, the api returns information about a dns record to be added. At this point, a _Route53Record_ resource is created with this info.
 
