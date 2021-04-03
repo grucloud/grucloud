@@ -19,7 +19,7 @@
     "test:mocha": "lerna run  --stream test",
     "test": "CONTINUOUS_INTEGRATION=1 npm run test:mocha",
     "test:example": "node test/testExamples.js",
-    "start:mock": "nodemon node packages/core/mockServer/MockServerRun.js",
+    "start:mock": "nodemon node packages/tools/mockServer/MockServerRun.js",
     "cpd": "jscpd --ignore '**/node_modules/**'  -r console --format 'javascript,typescript' ./packages",
     "encrypt-data-ci": "dotenv -- sh secrets/encrypt-data-ci.sh",
     "decrypt-data-ci": "dotenv -- sh secrets/decrypt-data-ci.sh",
@@ -45,10 +45,8 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.852.0",
     "axios": "^0.21.1",
     "axios-mock-adapter": "^1.19.0",
-    "bluebird": "^3.7.2",
     "chance": "^1.1.7",
     "change-case": "^4.1.2",
     "cli-table3": "^0.6.0",
@@ -76,7 +74,6 @@
     "rubico": "^1.6.17",
     "rxjs": "^6.6.3",
     "shelljs": "^0.8.4",
-    "shortid": "^2.2.16",
     "sinon": "^9.2.3",
     "spinnies": "^0.5.1",
     "ssh2": "^0.8.9",
@@ -93,14 +90,8 @@
       "src/**/*.js"
     ],
     "exclude": [
-      "src/cli/cliEntry.js",
-      "src/**/*.spec.js",
-      "src/**/*test*.js",
-      "src/**/test/*.js",
-      "src/**/test/config/*.js",
-      "src/cli/test/infra/*.js",
-      "src/mockServer/MockServerRun.js",
-      "src/mockServer/config.js"
+      "packages/**/*.spec.js",
+      "packages/**/*test*.js"
     ],
     "extension": [
       ".js"

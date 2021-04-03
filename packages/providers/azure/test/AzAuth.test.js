@@ -1,5 +1,4 @@
 const assert = require("assert");
-const { JWT } = require("google-auth-library");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { AzAuthorize } = require("../AzAuthorize");
 

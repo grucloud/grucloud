@@ -6,7 +6,6 @@ const chance = require("chance")();
 const Promise = require("bluebird");
 const koaBody = require("koa-body");
 const logger = require("./logger")({ prefix: "MockServer" });
-const { tos } = require("../tos");
 const { map } = require("rubico");
 
 const portDefault = 7089;
@@ -63,7 +62,7 @@ exports.MockServer = (config) => {
           total: mapResources.size,
           items: [...mapResources.values()],
         };
-        logger.debug(`get ${path}, result: ${tos(context.body)}`);
+        logger.debug(`get ${path}, result: ${JSON.stringify(context.body)}`);
         context.status = 200;
         //  context.status = 500;
       })

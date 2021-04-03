@@ -10,8 +10,7 @@
   "homepage": "https://www.grucloud.com",
   "scripts": {
     "test:mock": "NODE_PATH=. mocha  './cli/**/*.test.js'  './test/**/*.test.js'  './mockServer/test/*.test.js'",
-    "test": "npm run test:mock",
-    "start:mock": "nodemon node ./mockServer/MockServerRun.js"
+    "test": "npm run test:mock"
   },
   "keywords": [
     "cloud",
@@ -33,11 +32,9 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.852.0",
     "axios": "^0.21.1",
     "axios-mock-adapter": "^1.19.0",
     "bluebird": "^3.7.2",
-    "chance": "^1.1.7",
     "change-case": "^4.1.2",
     "cli-table3": "^0.6.0",
     "colors": "^1.4.0",
@@ -46,10 +43,7 @@
     "dotenv": "^8.2.0",
     "dotenv-cli": "^4.0.0",
     "duration": "^0.2.2",
-    "expand-tilde": "^2.0.2",
-    "google-auth-library": "6.1.4",
     "js-yaml": "^4.0.0",
-    "lerna": "^4.0.0",
     "lodash": "^4.17.20",
     "md5-file": "^5.0.0",
     "moment": "^2.29.1",
@@ -57,14 +51,12 @@
     "np": "^7.2.0",
     "ping": "^0.4.0",
     "pluralize": "^8.0.0",
-    "prettier": "^2.2.1",
     "prompts": "^2.4.0",
     "querystring": "^0.2.0",
     "remedial": "^1.0.8",
     "rubico": "^1.6.17",
     "rxjs": "^6.6.3",
     "shelljs": "^0.8.4",
-    "shortid": "^2.2.16",
     "sinon": "^9.2.3",
     "spinnies": "^0.5.1",
     "ssh2": "^0.8.9",
