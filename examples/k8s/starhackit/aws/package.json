@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-k8s-aws-starhackit",
-  "version": "1.10.9",
+  "version": "1.10.10",
   "private": true,
   "description": "deploying starhackit on AWS EKS",
   "main": "index.js",

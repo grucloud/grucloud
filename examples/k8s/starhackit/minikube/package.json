@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-k8s-minikube-starhackit",
-  "version": "1.10.9",
+  "version": "1.10.10",
   "description": "deploying starhackit on minikube",
   "main": "index.js",
   "scripts": {
