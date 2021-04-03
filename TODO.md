@@ -1,6 +1,5 @@
 ## Bugs
 
-- mock server in own repo, TLDR
 - use why-is-node-running to find out why the app is not exiting
 - code coverage with monorepo
 - check stage for all providers
@@ -60,6 +59,7 @@
 
 ## TODO Aws:
 
+- getBucketTagging should not log error when tad dos not exist.
 - delete load balancers in vpc
 - minikite gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404
 - https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
