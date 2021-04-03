@@ -6,7 +6,7 @@ const cliCommands = require("@grucloud/core/cli/cliCommands");
 const {
   testPlanDeploy,
   testPlanDestroy,
-} = require("@grucloud/core/test/E2ETestUtils");
+} = require("@grucloud/core/E2ETestUtils");
 
 describe("GcpServiceAccount", async function () {
   const types = ["ServiceAccount"];

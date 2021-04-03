@@ -1,9 +1,14 @@
 {
-  "packages": ["packages/**/*", "examples/**/*"],
-  "version": "1.10.1",
+  "packages": [
+    "packages/**/*",
+    "examples/**/*"
+  ],
+  "version": "1.10.3",
   "command": {
     "publish": {
-      "ignoreChanges": ["@grucloud/example-*"],
+      "ignoreChanges": [
+        "@grucloud/example-*"
+      ],
       "create-release": "github",
       "conventional-commits": true
     },

@@ -5,7 +5,7 @@ const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const {
   testPlanDeploy,
   testPlanDestroy,
-} = require("@grucloud/core/test/E2ETestUtils");
+} = require("@grucloud/core/E2ETestUtils");
 
 describe("GcpNetwork", async function () {
   const networkName = "network-test";

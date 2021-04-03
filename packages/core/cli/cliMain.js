@@ -5,9 +5,7 @@ const pkg = require("../package.json");
 const { createProgram } = require("./program");
 const commands = require("./cliCommands");
 const logger = require("../logger")({ prefix: "CliMain" });
-const { tos } = require("../tos");
 const executableName = "gc";
-const YAML = require("./json2yaml");
 
 exports.main = async ({ argv, onExit }) => {
   const program = createProgram({
@@ -33,7 +31,7 @@ exports.main = async ({ argv, onExit }) => {
         )}" executed in ${duration.toString(1, 1)}`
       );
     }
-    onExit({ code: 0 });
+    await onExit({ code: 0 });
     return 0;
   } catch (error) {
     const { code = -1 } = error;
@@ -41,7 +39,7 @@ exports.main = async ({ argv, onExit }) => {
     //TODO
     //console.error(YAML.stringify(convertError({ error })));
     error.stack && console.log(error.stack);
-    onExit({ code, error });
+    await onExit({ code, error });
     return code;
   }
 };

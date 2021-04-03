@@ -8,3 +8,4 @@ coverage
 .mocharc.json
 .github
 **/test/*
+example/

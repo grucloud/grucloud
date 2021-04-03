@@ -3,7 +3,7 @@ const { K8sProvider } = require("../K8sProvider");
 const {
   testPlanDeploy,
   testPlanDestroy,
-} = require("@grucloud/core/test/E2ETestUtils");
+} = require("@grucloud/core/E2ETestUtils");
 
 describe("K8sProvider", async function () {
   let config;

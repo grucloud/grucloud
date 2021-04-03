@@ -7,7 +7,7 @@ const chance = require("chance")();
 const {
   testPlanDeploy,
   testPlanDestroy,
-} = require("@grucloud/core/test/E2ETestUtils");
+} = require("@grucloud/core/E2ETestUtils");
 
 describe.skip("GcpIamPolicy", async function () {
   let config;

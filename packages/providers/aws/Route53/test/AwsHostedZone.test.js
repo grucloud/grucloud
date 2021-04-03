@@ -5,7 +5,7 @@ const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const {
   testPlanDeploy,
   testPlanDestroy,
-} = require("@grucloud/core/test/E2ETestUtils");
+} = require("@grucloud/core/E2ETestUtils");
 const cliCommands = require("@grucloud/core/cli/cliCommands");
 
 describe("AwsHostedZone", async function () {

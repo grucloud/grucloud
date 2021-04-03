@@ -5,7 +5,7 @@ const { AwsProvider } = require("../../AwsProvider");
 const {
   testPlanDeploy,
   testPlanDestroy,
-} = require("@grucloud/core/test/E2ETestUtils");
+} = require("@grucloud/core/E2ETestUtils");
 const cliCommands = require("@grucloud/core/cli/cliCommands");
 
 const bucketName = "grucloud-s3bucket-test-update";
