@@ -9,17 +9,23 @@ Currently used to create the following kubernetes modules:
 
 # Tutorial: How to create a Kubernetes Module with k8s-manifest2code
 
-We'll create a [web ui dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) grucloud module in the tutorial with the help of the **k8s-manifest2code** generator.
+We'll create a [web ui dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) grucloud module and its example with the help of the **k8s-manifest2code** generator.
 
 ## Create the module-k8s-dashboard project
 
-```
+```sh
 mkdir web-ui-dashboard
 cd web-ui-dashboard
-npm init
 ```
 
-In this case, the package name is set to ` @grucloud/module-k8s-web-ui-dashboard`.
+Let's create a _package.json_ for this module:
+
+- in the particular case the package name is _@grucloud/example-module-k8s-web-ui-dashboard_
+- the entry point should be the generated file _resources.js_
+
+```sh
+npm init
+```
 
 ## Install the dependencies:
 
@@ -64,14 +70,33 @@ npm run gen-code
 
 Check the **resources.js** to find out which resources will be set up.
 
+## Create an example project
+
+```
+mkdir example
+cd example
+```
+
+Let's create a _package.json_, in the case the package name is _@grucloud/example-module-k8s-web-ui-dashboard_:
+
+```
+npm init
+```
+
+## Install the dependencies:
+
+```
+npm install @grucloud/core @grucloud/provider-k8s @grucloud/example-module-k8s-web-ui-dashboard
+```
+
 ## Create the iac.js file
 
-It is now time to create a K8s provider and uses the generated **createResources** function from _resource.js_
+It is now time to create a K8s provider and uses the generated **createResources** function from package _@grucloud/module-k8s-web-ui-dashboard_
 
 ```js
 // iac.js
 const { K8sProvider } = require("@grucloud/provider-k8s");
-const { createResources } = require("./resources");
+const { createResources } = require("../resources");
 
 exports.createStack = async () => {
   const provider = K8sProvider({});
@@ -82,7 +107,7 @@ exports.createStack = async () => {
 
 ## Deploying
 
-Ensure your cluster is running and run:
+Ensure your cluster is running and execute:
 
 ```sh
 gc apply

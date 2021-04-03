@@ -5,9 +5,6 @@ node_modules/
 coverage
 *.log
 .vscode/
-.mocharc.json
-.travis.yml
-.circleci
 .github
 **/test/*
 *.dot

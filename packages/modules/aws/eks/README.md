@@ -31,4 +31,4 @@ The purpose of this example is to deploy an app on kubernetes with EKS: [Elastic
 gc graph
 ```
 
-![Graph](grucloud.svg)
+![Graph](./grucloud.svg)
