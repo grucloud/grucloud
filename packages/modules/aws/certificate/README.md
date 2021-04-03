@@ -6,7 +6,7 @@ When an AWS Certificate is created, the api returns information about a dns reco
 
 > Your domain name need to be registered with AWS Route53 Service.
 
-## Resources
+## Resources
 
 This module exports the **createResources** function that takes an AWS provider and returns the following resources:
 
@@ -32,7 +32,7 @@ The following guide explains how to consume this module by creating a simple exa
 - Create 2 files **config.js** and **iac.js**
 - Run the **gc** commands: **apply**, **list** and **destroy**
 
-### Create a test project
+### Create a test project
 
 ```
 mkdir test-aws-certificate
@@ -46,7 +46,7 @@ npm init
 npm i @grucloud/core @grucloud/module-aws-certificate
 ```
 
-### Configuration
+### Configuration
 
 Create the **config.js** and set the **certificate** section according to your setup:
 
@@ -102,3 +102,11 @@ Let's check that the certificate is in the **ISSUED** _Status_
 ```sh
 gc l -t Certificate -o
 ```
+
+Do not forget to destroy the resources when no longer needed:
+
+```sh
+gc destroy
+```
+
+> By default, one AWS account can destroy a maximum of 20 certificates per year, for this reason, by default, certificates are not destroyed by GruCloud. You still can delete them with the AWS CLI or web interface.
