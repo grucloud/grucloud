@@ -1,4 +1,4 @@
-# Postgres
+# GruCloud Module for Postgres on K8s
 
 This module defines the kubernetes resources required to run a Postgres database.
 
