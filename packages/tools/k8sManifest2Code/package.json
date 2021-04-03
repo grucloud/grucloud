@@ -1,0 +1,38 @@
+{
+  "name": "@grucloud/k8s-manifest2code",
+  "version": "1.0.0",
+  "description": "Generate Grucloud Code from kubernetes YAML manifest",
+  "main": "k8s-manifest2code.js",
+  "bin": {
+    "k8s-manifest2code": "./k8s-manifest2code.js"
+  },
+  "scripts": {
+    "test": "mocha './{,!(node_modules)/**}/*.test.js'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grucloud/grucloud.git"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "change-case": "^4.1.2",
+    "commander": "^7.0.0",
+    "js-yaml": "^4.0.0",
+    "prettier": "^2.2.1",
+    "rubico": "^1.6.17",
+    "winston": "^3.3.3"
+  },
+  "keywords": [
+    "iac",
+    "kubernetes",
+    "YAML",
+    "manifest",
+    "grucloud"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/grucloud/grucloud/issues"
+  },
+  "homepage": "https://github.com/grucloud/grucloud#readme"
+}
