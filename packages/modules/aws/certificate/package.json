@@ -1,12 +1,9 @@
 {
   "name": "@grucloud/module-aws-certificate",
   "version": "1.10.2",
-  "description": "provides a SSL certificate and the associated Route53 resources to validate the certificate",
+  "description": "provides an AWS SSL certificate and the associated Route53 resources to validate the certificate",
   "main": "iac.js",
-  "scripts": {
-    "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
-    "test": "mocha --exit './{,!(node_modules)/**}/*.test.js'"
-  },
+  "scripts": {},
   "author": "",
   "license": "ISC",
   "dependencies": {
