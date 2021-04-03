@@ -21,7 +21,7 @@ This module exports the **createResources** function that takes an AWS provider 
 gc graph
 ```
 
-![Graph](grucloud.svg)
+![Graph](./grucloud.svg)
 
 # How to use this module
 
