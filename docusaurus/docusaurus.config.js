@@ -21,7 +21,7 @@ module.exports = {
       },
       links: [
         {
-          to: "docs/TLDR",
+          to: "docs/Introduction",
           activeBasePath: "docs",
           label: "Docs",
           position: "left",

@@ -3,6 +3,7 @@
   "version": "1.10.4",
   "description": "The GruCloud AWS provider",
   "main": "AwsProvider.js",
+  "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/aws",
   "scripts": {
     "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
     "link": "npm link @grucloud/core",
@@ -16,5 +17,18 @@
   "devDependencies": {
     "mocha": "^8.3.2",
     "sinon": "^9.2.4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/grucloud/grucloud"
+  },
+  "keywords": [
+    "AWS",
+    "ACM",
+    "EC2",
+    "Route53",
+    "IAM",
+    "EKS",
+    "GruCloud"
+  ]
 }

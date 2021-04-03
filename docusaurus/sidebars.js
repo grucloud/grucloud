@@ -1,6 +1,6 @@
 module.exports = {
   someSidebar: {
-    Introduction: ["TLDR"],
+    Introduction: ["Introduction"],
     "Command Line Interface": [
       "cli/gc",
       "cli/Init",
@@ -16,6 +16,7 @@ module.exports = {
       "aws/AwsGettingStarted",
       "aws/AwsConfig",
       "aws/AwsExamples",
+      "aws/AwsModules",
       {
         Resources: [
           { ACM: ["aws/resources/ACM/AcmCertificate"] },
