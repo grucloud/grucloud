@@ -1,8 +1,6 @@
-# Kubernetes Redis module
+# GruCloud Module for Redis on K8s
 
 This module defines the kubernetes resources required to run Redis.
-
-![Graph](grucloud.svg)
 
 ## Config
 

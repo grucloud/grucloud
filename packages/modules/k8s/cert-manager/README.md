@@ -1,4 +1,4 @@
-# Cert-Manager
+# GruCloud Module for the K8s Cert Manager
 
 Integrate the [jetstack cert-manager](https://github.com/jetstack/cert-manager/) with GruCloud.
 

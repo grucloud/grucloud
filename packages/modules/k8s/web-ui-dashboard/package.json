@@ -26,5 +26,5 @@
   "bugs": {
     "url": "https://github.com/grucloud/grucloud/issues"
   },
-  "homepage": "https://github.com/grucloud/grucloud#readme"
+  "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/modules/k8s/web-ui-dashboard"
 }
