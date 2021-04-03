@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-aws-eks",
-  "version": "1.10.9",
+  "version": "1.10.11",
   "description": "Grucloud module to manage an EKS Cluster",
   "main": "iac.js",
   "scripts": {
