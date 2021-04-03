@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Example deploy a certificate with DNS validation",
   "main": "iac.js",
+  "private":true,
   "scripts": {
     "test": "mocha --exit './{,!(node_modules)/**}/*.test.js'"
   },
