@@ -6,11 +6,10 @@ Visit the [Aws Requirements](https://grucloud.com/docs/aws/AwsRequirements) to p
 
 ### Examples
 
-- [EC2](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2), [EC2 with VPC](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2-vpc), [EBS Volume attached to EC2](https://github.com/grucloud/grucloud/tree/main/examples/aws/volumes)
+- [EC2](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2), [EC2 with VPC](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2-vpc), [EBS Volume attached to EC2](https://github.com/grucloud/grucloud/tree/main/examples/aws/volume)
 - [IAM](https://github.com/grucloud/grucloud/tree/main/examples/aws/iam)
 - [S3](https://github.com/grucloud/grucloud/tree/main/examples/aws/s3), [S3 Simple](https://github.com/grucloud/grucloud/tree/main/examples/aws/s3-simple), [S3 Multiple](https://github.com/grucloud/grucloud/tree/main/examples/aws/s3-multiple)
 - [HTTPS Website with CloudFront](https://github.com/grucloud/grucloud/tree/main/examples/aws/website-https)
-- [EKS: Elastic Kubernetes Service](https://github.com/grucloud/grucloud/tree/main/examples/aws/eks)
 - [Route53: hosted zone and record](https://github.com/grucloud/grucloud/tree/main/examples/aws/route53)
 
 ### Resources
