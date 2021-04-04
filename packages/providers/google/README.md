@@ -2,35 +2,35 @@
 
 The package implements the [GruCloud GCP provider](https://www.npmjs.com/package/@grucloud/provider-google)
 
-Visit the [Google Cloud Requirements](../../../docusaurus/docs/google/GoogleRequirements.md) to prepare for the [Google Getting Started Guide](../../../docusaurus/docs/google/GoogleGettingStarted.md)
+Visit the [Google Cloud Requirements](https://grucloud.com/docs/google/GoogleRequirements) to prepare for the [Google Getting Started Guide](https://grucloud.com/docs/google/GoogleGettingStarted)
 
 ## Examples
 
 ### Compute
 
-- [Virtual Machine](../../../examples/google/vm-simple/README.md)
-- [Virtual Machine with Firewall and public ip](../../../examples/google/vm/README.md)
-- [Virtual Machine with full network](../../../examples/google/vm-network/README.md)
+- [Virtual Machine](https://github.com/grucloud/grucloud/tree/main/examples/google/vm-simple)
+- [Virtual Machine with Firewall and public ip](https://github.com/grucloud/grucloud/tree/main/examples/google/vm)
+- [Virtual Machine with full network](https://github.com/grucloud/grucloud/tree/main/examples/google/vm-network)
 
 ### Storage
 
-- [HTTPS Website](../../../examples/google/storage/website-https/README.md)
-- [Simple storage with bucket and object](../../../examples/google/storage/simple/README.md)
+- [HTTPS Website](https://github.com/grucloud/grucloud/tree/main/examples/google/storage/website-https)
+- [Simple storage with bucket and object](https://github.com/grucloud/grucloud/tree/main/examples/google/storage/simple/README)
 
 ### IAM
 
-- [IAM Binding](../../../examples/google/iam/iam-binding/README.md)
-- [IAM Policy](../../../examples/google/iam/iam-policy/README.md)
+- [IAM Binding](https://github.com/grucloud/grucloud/tree/main/examples/google/iam/iam-binding)
+- [IAM Policy](https://github.com/grucloud/grucloud/tree/main/examples/google/iam/iam-policy)
 
 ### DNS
 
-- [DNS CNAME for a github page](../../../examples/google/dns/github-page/README.md)
+- [DNS CNAME for a github page](https://github.com/grucloud/grucloud/tree/main/examples/google/dns/github-page)
 
 ## Resources
 
 Available Resources:
 
-- Compute: [Address](../../../docusaurus/docs/google/resources/Compute/Address.md), [BackendBucket](../../../docusaurus/docs/google/resources/Compute/BackendBucket.md), [Firewall](../../../docusaurus/docs/google/resources/Compute/Firewall.md), [GlobalForwardingRule](../../../docusaurus/docs/google/resources/Compute/GlobalForwardingRule.md), [HttpsTargetProxy](../../../docusaurus/docs/google/resources/Compute/HttpsTargetProxy.md) [Network](../../../docusaurus/docs/google/resources/Compute/Network.md), [SslCertificate](../../../docusaurus/docs/google/resources/Compute/SslCertificate.md),, [SubNetwork](../../../docusaurus/docs/google/resources/Compute/SubNetwork.md), [UrlMap](../../../docusaurus/docs/google/resources/Compute/UrlMap.md), [VmInstance](../../../docusaurus/docs/google/resources/Compute/VmInstance.md)
-- IAM: [ServiceAccount](../../../docusaurus/docs/google/resources/IAM/ServiceAccount.md), [IamBinding](../../../docusaurus/docs/google/resources/IAM/IamBinding.md), [IamMember](../../../docusaurus/docs/google/resources/IAM/IamMember.md), [IamPolicy](../../../docusaurus/docs/google/resources/IAM/IamPolicy.md)
-- Storage: [Bucket](../../../docusaurus/docs/google/resources/storage/GcpBucket.md), [Object](../../../docusaurus/docs/google/resources/storage/GcpObject.md)
-- DNS: [DnsManagedZone](../../../docusaurus/docs/google/resources/DNS/DnsManagedZone.md)
+- Compute: [Address](https://grucloud.com/docs/google/resources/Compute/Address), [BackendBucket](https://grucloud.com/docs/google/resources/Compute/BackendBucket), [Firewall](https://grucloud.com/docs/google/resources/Compute/Firewall), [GlobalForwardingRule](https://grucloud.com/docs/google/resources/Compute/GlobalForwardingRule), [HttpsTargetProxy](https://grucloud.com/docs/google/resources/Compute/HttpsTargetProxy) [Network](https://grucloud.com/docs/google/resources/Compute/Network), [SslCertificate](https://grucloud.com/docs/google/resources/Compute/SslCertificate),, [SubNetwork](https://grucloud.com/docs/google/resources/Compute/SubNetwork), [UrlMap](https://grucloud.com/docs/google/resources/Compute/UrlMap), [VmInstance](https://grucloud.com/docs/google/resources/Compute/VmInstance)
+- IAM: [ServiceAccount](https://grucloud.com/docs/google/resources/IAM/ServiceAccount), [IamBinding](https://grucloud.com/docs/google/resources/IAM/IamBinding), [IamMember](https://grucloud.com/docs/google/resources/IAM/IamMember), [IamPolicy](https://grucloud.com/docs/google/resources/IAM/IamPolicy)
+- Storage: [Bucket](https://grucloud.com/docs/google/resources/storage/GcpBucket), [Object](https://grucloud.com/docs/google/resources/storage/GcpObject)
+- DNS: [DnsManagedZone](https://grucloud.com/docs/google/resources/DNS/DnsManagedZone)
