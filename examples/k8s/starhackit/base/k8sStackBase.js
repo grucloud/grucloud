@@ -3,6 +3,7 @@ const { createChartWebServer } = require("./charts/web-server");
 const { createChartRestServer } = require("./charts/rest-server");
 const PostgresStack = require("@grucloud/module-k8s-postgres");
 const RedisStack = require("@grucloud/module-k8s-redis");
+const Dashboard = require("@grucloud/module-k8s-web-ui-dashboard");
 
 exports.hooks = require("./hooks");
 
@@ -43,12 +44,15 @@ const createResources = async ({ provider }) => {
     config,
   });
 
+  const dashboardResources = await Dashboard.createResources({ provider });
+
   return {
     namespace,
     postgresResources,
     redisResources,
     restServerChart,
     webServerChart,
+    dashboardResources,
   };
 };
 

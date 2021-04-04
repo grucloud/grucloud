@@ -2,20 +2,20 @@
 
 This GruCloud example allows to deploy the [Kubernetes Web UI Dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/)
 
-## Usage
+Find out the secret key to access the dashboard:
 
 ```sh
-npm i @grucloud/module-k8s-web-ui-dashboard
+npm run key
 ```
 
-In your _iac.js_ file, import the package:
+Start the proxy:
 
-```js
-const Dashboard = require("@grucloud/module-k8s-web-ui-dashboard");
+```sh
+kubectl proxy
 ```
 
-Invoke the _createResources_ function with a K8sProvider instance
+Open the following URL to discover the dashboard:
 
-```js
-const dashboardResources = await Dashboard.createResources({ provider });
+```
+http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/overview?namespace=default
 ```
