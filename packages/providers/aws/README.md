@@ -2,27 +2,26 @@
 
 The package implements the [GruCloud AWS provider](https://www.npmjs.com/package/@grucloud/provider-aws)
 
-Visit the [Aws Requirements](../../../docusaurus/docs/aws/AwsRequirements.md) to prepare for the [AWS Getting Started Guide](../../../docusaurus/docs/aws/AwsGettingStarted.md)
+Visit the [Aws Requirements](https://grucloud.com/docs/aws/AwsRequirements) to prepare for the [AWS Getting Started Guide](https://grucloud.com/docs/aws/AwsGettingStarted)
 
 ### Examples
 
-- [EC2](../../../examples/aws/ec2/README.md), [EC2 with VPC](../../../examples/aws/ec2-vpc/README.md), [EBS Volume attached to EC2](../../../examples/aws/volumes/README.md)
-- [IAM](../../../examples/aws/iam/README.md)
-- [S3](../../../examples/aws/s3/README.md), [S3 Simple](../../../examples/aws/s3-simple/README.md), [S3 Multiple](../../../examples/aws/s3-multiple/README.md)
-- [HTTPS Website with CloudFront](../../../examples/aws/website-https/README.md)
-- [EKS: Elastic Kubernetes Service](../../../examples/aws/eks/README.md)
-- [Route53: hosted zone and record](../../../examples/aws/route53/README.md)
+- [EC2](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2), [EC2 with VPC](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2-vpc), [EBS Volume attached to EC2](https://github.com/grucloud/grucloud/tree/main/examples/aws/volume)
+- [IAM](https://github.com/grucloud/grucloud/tree/main/examples/aws/iam)
+- [S3](https://github.com/grucloud/grucloud/tree/main/examples/aws/s3), [S3 Simple](https://github.com/grucloud/grucloud/tree/main/examples/aws/s3-simple), [S3 Multiple](https://github.com/grucloud/grucloud/tree/main/examples/aws/s3-multiple)
+- [HTTPS Website with CloudFront](https://github.com/grucloud/grucloud/tree/main/examples/aws/website-https)
+- [Route53: hosted zone and record](https://github.com/grucloud/grucloud/tree/main/examples/aws/route53)
 
 ### Resources
 
-- ACM: [Certificate](../../../docusaurus/docs/aws/resources/ACM/AcmCertificate.md)
-- CloudFront: [Distribution](../../../docusaurus/docs/aws/resources/CloudFront/CloudFrontDistribution.md)
-- EC2: [EC2](../../../docusaurus/docs/aws/resources/EC2/EC2.md), [ElasticIpAddress](../../../docusaurus/docs/aws/resources/EC2/ElasticIpAddress.md), [InternetGateway](../../../docusaurus/docs/aws/resources/EC2/InternetGateway.md), [KeyPair](../../../docusaurus/docs/aws/resources/EC2/KeyPair.md), [NatGateway](../../../docusaurus/docs/aws/resources/EC2/NatGateway.md), [RouteTables](../../../docusaurus/docs/aws/resources/EC2/RouteTables.md), [Route](../../../docusaurus/docs/aws/resources/EC2/Route.md), [SecurityGroup](../../../docusaurus/docs/aws/resources/EC2/SecurityGroup.md), [Subnet](../../../docusaurus/docs/aws/resources/EC2/Subnet.md), [Volume](../../../docusaurus/docs/aws/resources/EC2/Volume.md), [Vpc](../../../docusaurus/docs/aws/resources/EC2/Vpc.md)
-- IAM: [IamInstanceProfile](../../../docusaurus/docs/aws/resources/IAM/IamInstanceProfile.md), [IamGroup](../../../docusaurus/docs/aws/resources/IAM/IamGroup.md), [IamOpenIDConnectProvider](../../../docusaurus/docs/aws/resources/IAM/IamOpenIDConnectProvider.md), [IamPolicy](../../../docusaurus/docs/aws/resources/IAM/IamPolicy.md), [IamRole](../../../docusaurus/docs/aws/resources/IAM/IamRole.md), [IamUser](../../../docusaurus/docs/aws/resources/IAM/IamUser.md)
-- Route53: [HostedZone](../../../docusaurus/docs/aws/resources/Route53/Route53HostedZone.md), [Route53Record](../../../docusaurus/docs/aws/resources/Route53/Route53Record.md)
-- Route53Domain: [Route53Domain](../../../docusaurus/docs/aws/resources/Route53Domain/Route53Domain.md)
-- S3: [S3Bucket](../../../docusaurus/docs/aws/resources/S3/S3Bucket.md), [S3Object](../../../docusaurus/docs/aws/resources/S3/S3Object.md)
-- EKS: [Cluster](../../../docusaurus/docs/aws/resources/EKS/EksCluster.md), [NodeGroup](../../../docusaurus/docs/aws/resources/EKS/EksNodeGroup.md)
+- ACM: [Certificate](https://grucloud.com/docs/aws/resources/ACM/AcmCertificate)
+- CloudFront: [Distribution](https://grucloud.com/docs/aws/resources/CloudFront/CloudFrontDistribution)
+- EC2: [EC2](https://grucloud.com/docs/aws/resources/EC2/EC2), [ElasticIpAddress](https://grucloud.com/docs/aws/resources/EC2/ElasticIpAddress), [InternetGateway](https://grucloud.com/docs/aws/resources/EC2/InternetGateway), [KeyPair](https://grucloud.com/docs/aws/resources/EC2/KeyPair), [NatGateway](https://grucloud.com/docs/aws/resources/EC2/NatGateway), [RouteTables](https://grucloud.com/docs/aws/resources/EC2/RouteTables), [Route](https://grucloud.com/docs/aws/resources/EC2/Route), [SecurityGroup](https://grucloud.com/docs/aws/resources/EC2/SecurityGroup), [Subnet](https://grucloud.com/docs/aws/resources/EC2/Subnet), [Volume](https://grucloud.com/docs/aws/resources/EC2/Volume), [Vpc](https://grucloud.com/docs/aws/resources/EC2/Vpc)
+- IAM: [IamInstanceProfile](https://grucloud.com/docs/aws/resources/IAM/IamInstanceProfile), [IamGroup](https://grucloud.com/docs/aws/resources/IAM/IamGroup), [IamOpenIDConnectProvider](https://grucloud.com/docs/aws/resources/IAM/IamOpenIDConnectProvider), [IamPolicy](https://grucloud.com/docs/aws/resources/IAM/IamPolicy), [IamRole](https://grucloud.com/docs/aws/resources/IAM/IamRole), [IamUser](https://grucloud.com/docs/aws/resources/IAM/IamUser)
+- Route53: [HostedZone](https://grucloud.com/docs/aws/resources/Route53/Route53HostedZone), [Route53Record](https://grucloud.com/docs/aws/resources/Route53/Route53Record)
+- Route53Domain: [Route53Domain](https://grucloud.com/docs/aws/resources/Route53Domain/Route53Domain)
+- S3: [S3Bucket](https://grucloud.com/docs/aws/resources/S3/S3Bucket), [S3Object](https://grucloud.com/docs/aws/resources/S3/S3Object)
+- EKS: [Cluster](https://grucloud.com/docs/aws/resources/EKS/EksCluster), [NodeGroup](https://grucloud.com/docs/aws/resources/EKS/EksNodeGroup)
 
 ### Modules
 

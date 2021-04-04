@@ -8,11 +8,17 @@ When an AWS Certificate is created, the api returns information about a dns reco
 
 ## Resources
 
-This module exports the **createResources** function that takes an AWS provider and returns the following resources:
+This module exports the **createResources** function:
+
+Inputs:
+
+- provider: AWS provider,
+- resources: [hostedZone](https://www.grucloud.com/docs/aws/resources/Route53/Route53HostedZone). The Route53 record will be created in this hosted zone.
+
+Outputs:
 
 - [Certificate](https://www.grucloud.com/docs/aws/resources/ACM/AcmCertificate)
-- [Route53Domain](https://www.grucloud.com/docs/aws/resources/Route53Domain/Route53Domain)
-- [HostedZone](https://www.grucloud.com/docs/aws/resources/Route53/Route53HostedZone)
+
 - [Route53Record](https://www.grucloud.com/docs/aws/resources/Route53/Route53Record)
 
 ## Dependency Graph
@@ -64,7 +70,7 @@ module.exports = ({ stage }) => ({
 
 ### IAC
 
-The _@grucloud/module-aws-certificate_ module is imported with the NodeJs **require** and exposes the **config** and **createResources** functions:
+The _@grucloud/module-aws-certificate_ module is imported with the NodeJs **require** and exposes the **config** and **createResources** functions.
 
 ```js
 // iac.js
@@ -76,8 +82,23 @@ exports.createStack = async ({ config }) => {
     configs: [config, ModuleAwsCertificate.config],
   });
 
+  assert(provider.config.certificate);
+  const { domainName, rootDomainName } = provider.config.certificate;
+  assert(domainName);
+  assert(rootDomainName);
+
+  const domain = await provider.useRoute53Domain({
+    name: rootDomainName,
+  });
+
+  const hostedZone = await provider.makeHostedZone({
+    name: `${domainName}.`,
+    dependencies: { domain },
+  });
+
   const certificateResources = await ModuleAwsCertificate.createResources({
     provider,
+    resources: { hostedZone },
   });
 
   return {

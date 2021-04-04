@@ -8,28 +8,15 @@ const makeDomainName = ({ domainName, stage }) =>
 
 exports.makeDomainName = makeDomainName;
 
-const createResources = async ({ provider }) => {
+const createResources = async ({ provider, resources: { hostedZone } }) => {
   const { config } = provider;
   assert(config.certificate);
-  assert(config.certificate.rootDomainName);
   assert(config.certificate.domainName);
 
-  const domain = await provider.useRoute53Domain({
-    name: config.certificate.rootDomainName,
-  });
-
-  const domainName = makeDomainName({
-    domainName: config.certificate.domainName,
-    stage: config.stage,
-  });
+  const { domainName } = config.certificate;
 
   const certificate = await provider.makeCertificate({
     name: domainName,
-  });
-
-  const hostedZone = await provider.makeHostedZone({
-    name: `${domainName}.`,
-    dependencies: { domain },
   });
 
   const certificateRecordValidation = await provider.makeRoute53Record({
@@ -60,7 +47,7 @@ const createResources = async ({ provider }) => {
     },
   });
 
-  return { certificate, hostedZone, certificateRecordValidation };
+  return { certificate, certificateRecordValidation };
 };
 
 exports.createResources = createResources;
