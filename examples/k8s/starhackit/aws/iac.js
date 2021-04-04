@@ -4,7 +4,6 @@ const { first } = require("rubico/x");
 
 const { AwsProvider } = require("@grucloud/provider-aws");
 const { K8sProvider } = require("@grucloud/provider-k8s");
-
 const EKSStack = require("@grucloud/module-aws-eks/iac");
 const AwsLoadBalancerStack = require("@grucloud/module-k8s-aws-load-balancer-controller/iac");
 const AwsCertificateStack = require("@grucloud/module-aws-certificate/iac");

@@ -7,7 +7,7 @@ Provides a [Kubernetes Cluster Role Binding](https://kubernetes.io/docs/referenc
 
 ## Examples
 
-### Create a Cluster Role
+### Create a Cluster Role Binding
 
 ```js
 const clusterRoleBinding = await provider.makeClusterRoleBinding({
