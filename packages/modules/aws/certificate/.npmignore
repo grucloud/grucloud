@@ -11,3 +11,4 @@ coverage
 .github
 **/test/*
 example
+*.dot

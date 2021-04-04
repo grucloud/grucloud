@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-k8s-cert-manager",
-  "version": "1.10.9",
+  "version": "1.10.14",
   "description": "Grucloud module for the k8s cert-manager",
   "main": "iac.js",
   "scripts": {
@@ -13,10 +13,22 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.10.9",
-    "@grucloud/provider-k8s": "^1.10.9",
+    "@grucloud/provider-k8s": "^1.10.12",
     "rubico": "^1.6.21"
   },
   "devDependencies": {
     "mocha": "^8.3.2"
-  }
+  },
+  "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/modules/k8s/cert-manager",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/grucloud/grucloud"
+  },
+  "keywords": [
+    "k8s",
+    "SSL",
+    "Cert Manager",
+    "Certificate",
+    "grucloud"
+  ]
 }

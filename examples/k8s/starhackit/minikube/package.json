@@ -1,16 +1,16 @@
 {
   "name": "@grucloud/example-k8s-minikube-starhackit",
-  "version": "1.10.10",
+  "version": "1.10.15",
   "description": "deploying starhackit on minikube",
   "main": "index.js",
+  "private": true,
   "scripts": {
-    "e2e": "gc d -f && gc d  && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
-    "link": "npm link @grucloud/core"
+    "e2e": "gc d -f && gc d  && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.10.9",
-    "@grucloud/provider-k8s": "^1.10.9"
+    "@grucloud/provider-k8s": "^1.10.12"
   }
 }
