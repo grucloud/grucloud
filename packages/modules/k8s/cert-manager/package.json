@@ -18,5 +18,17 @@
   },
   "devDependencies": {
     "mocha": "^8.3.2"
-  }
+  },
+  "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/modules/k8s/cert-manager",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/grucloud/grucloud"
+  },
+  "keywords": [
+    "k8s",
+    "SSL",
+    "Cert Manager",
+    "Certificate",
+    "grucloud"
+  ]
 }
