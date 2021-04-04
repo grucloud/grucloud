@@ -11,3 +11,4 @@ coverage
 .github
 **/test/*
 aws-load-balancer-controller.yaml
+*.dot
