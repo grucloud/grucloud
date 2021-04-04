@@ -247,7 +247,7 @@ exports.createResources = async ({ provider, resources }) => {
             containers: [
               {
                 name: "kubernetes-dashboard",
-                image: "kubernetesui/dashboard:v2.0.0",
+                image: "kubernetesui/dashboard:v2.2.0",
                 imagePullPolicy: "Always",
                 ports: [
                   {
@@ -369,7 +369,7 @@ exports.createResources = async ({ provider, resources }) => {
             containers: [
               {
                 name: "dashboard-metrics-scraper",
-                image: "kubernetesui/metrics-scraper:v1.0.4",
+                image: "kubernetesui/metrics-scraper:v1.0.6",
                 ports: [
                   {
                     containerPort: 8000,
