@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-k8s-cert-manager",
-  "version": "1.10.13",
+  "version": "1.10.14",
   "description": "Grucloud module for the k8s cert-manager",
   "main": "iac.js",
   "scripts": {

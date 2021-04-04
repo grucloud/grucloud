@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-k8s-redis",
-  "version": "1.10.13",
+  "version": "1.10.14",
   "description": "Grucloud module for the k8s redis",
   "main": "iac.js",
   "scripts": {},
