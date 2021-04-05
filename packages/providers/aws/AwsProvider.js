@@ -16,6 +16,7 @@ const AwsRoute53Domain = require("./Route53Domain");
 const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
 const AwsEKS = require("./EKS");
+const AwsELB = require("./ELB");
 
 const defaultRegion = "eu-west-2";
 
@@ -28,6 +29,7 @@ const fnSpecs = () => [
   ...AwsCertificateManager,
   ...AwsCloudFront,
   ...AwsEKS,
+  ...AwsELB,
 ];
 const getAvailabilityZonesName = pipe([
   ({ region }) => Ec2New({ region }),

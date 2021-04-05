@@ -43,6 +43,9 @@ module.exports = {
             ],
           },
           {
+            ELB: ["aws/resources/ELB/AwsLoadBalancer"],
+          },
+          {
             IAM: [
               "aws/resources/IAM/IamInstanceProfile",
               "aws/resources/IAM/IamGroup",
