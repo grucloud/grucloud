@@ -66,6 +66,7 @@ exports.AwsProvider = ({ name = "aws", config, configs = [], ...other }) => {
     acm: "2015-12-08",
     cloudfront: "2020-05-31",
     eks: "2017-11-01",
+    elb: "2012-06-01",
   };
 
   const { AWSAccessKeyId, AWSSecretKey } = process.env;

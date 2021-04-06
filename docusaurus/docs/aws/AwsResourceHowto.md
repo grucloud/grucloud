@@ -107,7 +107,7 @@ Edit _packages/providers/aws/README.md_ and add the new resource in the _Resourc
 - ELB: [Load Balancer](https://grucloud.com/docs/aws/resources/ELB/Loadbalancer),
 ```
 
-## Code
+# Boiler plate code
 
 The following section describes the files to create and edit.
 
@@ -204,6 +204,13 @@ exports.AwsLoadBalancer = ({ spec, config }) => {
       () => {
         throw Error("TODO create");
       },
+      tap(() =>
+        retryCall({
+          name: `isUpById: ${name} id: ${id}`,
+          fn: () => isUpById({ name, id }),
+          config,
+        })
+      ),
       tap(() => {
         logger.info(`created:`);
       }),
@@ -220,6 +227,13 @@ exports.AwsLoadBalancer = ({ spec, config }) => {
           () => {
             throw Error("TODO destroy");
           },
+          tap(() =>
+            retryCall({
+              name: `isDownById: ${id}`,
+              fn: () => isDownById({ id }),
+              config,
+            })
+          ),
           tap(() => {
             logger.info(`destroyed ${JSON.stringify({ name, id })}`);
           }),
@@ -343,6 +357,7 @@ module.exports = require("./ELBSpec");
 The _ELB/ELBSpec.js_ and _index.js_ created in the previous step is imported in _AwsProvider.js_
 
 ```js
+// AwsProvider.js
 const AwsELB = require("./ELB");
 
 const fnSpecs = () => [
@@ -351,7 +366,17 @@ const fnSpecs = () => [
 ];
 ```
 
-## Testing
+Now let's set the ELB api versions:
+
+```js
+// AwsProvider.js
+AWS.config.apiVersions = {
+  // Other versions
+  elb: "2012-06-01",
+};
+```
+
+# Testing
 
 At the stage, we have the necessary boilerplate code to start testing.
 
@@ -376,7 +401,7 @@ Open _grucloud-debug.log_ and search for "Error:"
 
 The exception **getList** has been thrown, as expected.
 
-## Debugging
+# Debugging
 
 We recommend VS Code for debugging, many debug configuration has already been created.
 
@@ -386,3 +411,327 @@ We recommend VS Code for debugging, many debug configuration has already been cr
 - Click on the debug icon on the left navigration bar
 - Select the "Debug Aws Provider" and click on the green arrow to start debugging.
 - You should expect the program to stop at the breakpoint.
+
+# Implementation code
+
+## AwsLoadBalancer.js
+
+To list all the load balancers for a given account, we'll use the (describeLoadBalancers)[https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELB.html#describeLoadBalancers-property] function.
+
+The _describeLoadBalancers_ _json_ output is:
+
+```js
+{
+  LoadBalancerDescriptions: [
+    {
+      AvailabilityZones: ["us-west-2a"],
+      BackendServerDescriptions: [
+        {
+          InstancePort: 80,
+          PolicyNames: ["my-ProxyProtocol-policy"],
+        },
+      ],
+      CanonicalHostedZoneName:
+        "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
+      CanonicalHostedZoneNameID: "Z3DZXE0EXAMPLE",
+      CreatedTime: "",
+      DNSName: "my-load-balancer-1234567890.us-west-2.elb.amazonaws.com",
+      HealthCheck: {
+        HealthyThreshold: 2,
+        Interval: 30,
+        Target: "HTTP:80/png",
+        Timeout: 3,
+        UnhealthyThreshold: 2,
+      },
+      Instances: [
+        {
+          InstanceId: "i-207d9717",
+        },
+        {
+          InstanceId: "i-afefb49b",
+        },
+      ],
+      ListenerDescriptions: [
+        {
+          Listener: {
+            InstancePort: 80,
+            InstanceProtocol: "HTTP",
+            LoadBalancerPort: 80,
+            Protocol: "HTTP",
+          },
+          PolicyNames: [],
+        },
+        {
+          Listener: {
+            InstancePort: 443,
+            InstanceProtocol: "HTTPS",
+            LoadBalancerPort: 443,
+            Protocol: "HTTPS",
+            SSLCertificateId:
+              "arn:aws:iam::123456789012:server-certificate/my-server-cert",
+          },
+          PolicyNames: ["ELBSecurityPolicy-2015-03"],
+        },
+      ],
+      LoadBalancerName: "my-load-balancer",
+      Policies: {
+        AppCookieStickinessPolicies: [],
+        LBCookieStickinessPolicies: [
+          {
+            CookieExpirationPeriod: 60,
+            PolicyName: "my-duration-cookie-policy",
+          },
+        ],
+        OtherPolicies: [
+          "my-PublicKey-policy",
+          "my-authentication-policy",
+          "my-SSLNegotiation-policy",
+          "my-ProxyProtocol-policy",
+          "ELBSecurityPolicy-2015-03",
+        ],
+      },
+      Scheme: "internet-facing",
+      SecurityGroups: ["sg-a61988c3"],
+      SourceSecurityGroup: {
+        GroupName: "my-elb-sg",
+        OwnerAlias: "123456789012",
+      },
+      Subnets: ["subnet-15aaab61"],
+      VPCId: "vpc-a01106c2",
+    },
+  ];
+}
+```
+
+#### getList()
+
+From the shape of the result we can now write the _getList_ function:
+
+```js
+const getList = async ({ params } = {}) =>
+  pipe([
+    tap(() => {
+      logger.info(`getList ${tos(params)}`);
+    }),
+    () => elb().describeLoadBalancers(params),
+    get("LoadBalancerDescriptions"),
+    tap((results) => {
+      logger.debug(`getList: result: ${tos(results)}`);
+    }),
+    (items = []) => ({
+      total: items.length,
+      items,
+    }),
+    tap(({ total }) => {
+      logger.info(`getList: #total: ${total}`);
+    }),
+  ])();
+```
+
+#### findName()
+
+Again by looking at the shape of the output of **LoadBalancerName**, we find the key name which is in this case **LoadBalancerName**.
+Hence the _findName_ function:
+
+```js
+const findName = (live) => live.LoadBalancerName;
+```
+
+Which could be simplify with _rubico_:
+
+```js
+const findName = get("LoadBalancerName");
+```
+
+#### findId()
+
+The _describeLoadBalancers_ _json_ input is
+
+```js
+var params = {
+  LoadBalancerNames: ["my-load-balancer"],
+};
+```
+
+In this case the id the same as the name:
+
+```js
+const findId = findName;
+```
+
+#### getByName()
+
+The _describeLoadBalancers_ can also be used to retrieve just one load balancer.
+
+```js
+const getByName = ({ name }) =>
+  pipe([
+    tap(() => {
+      logger.info(`getByName ${name}`);
+    }),
+    () => ({ LoadBalancerNames: [name] }),
+    (params) => elb().describeLoadBalancers(params),
+    get("LoadBalancerDescriptions"),
+    first,
+    tap((result) => {
+      logger.debug(`getByName result: ${tos(result)}`);
+    }),
+  ])();
+```
+
+#### getById()
+
+In the case of the load balancer resource, the name and id means the same:
+
+```js
+const getById = ({ id }) => getByName({ name: id });
+```
+
+## Resource Creation
+
+To create a load balancer, we'll use [createLoadBalancer](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELB.html#createLoadBalancer-property) function.
+
+From the offical documentation, here are the parameters to create a HTTPS Load Balancer in a VPC:
+
+```js
+var params = {
+  Listeners: [
+    {
+      InstancePort: 80,
+      InstanceProtocol: "HTTP",
+      LoadBalancerPort: 80,
+      Protocol: "HTTP",
+    },
+    {
+      InstancePort: 80,
+      InstanceProtocol: "HTTP",
+      LoadBalancerPort: 443,
+      Protocol: "HTTPS",
+      SSLCertificateId:
+        "arn:aws:iam::123456789012:server-certificate/my-server-cert",
+    },
+  ],
+  LoadBalancerName: "my-load-balancer",
+  SecurityGroups: ["sg-a61988c3"],
+  Subnets: ["subnet-15aaab61"],
+};
+```
+
+This tells us that the load balancer depends on the following resources that need to be created before:
+
+- SecurityGroups
+- Subnets
+- SSL Certificate
+
+Subnets and SecurityGroups depends on a VPC so we'll create one too.
+The load balancer also requires an Internet Gateway to be attached to the gateway.
+We have now all the informations on how to create a load balancer and its dependencies. Have a look at [ELB/test/AwsLoadBalancer.test.js] for the final result.
+
+#### configDefault()
+
+The _configDefault_ function infers the parameters for the resource creation.
+The load balancer depends on an array of subnets and security groups. We'll retrieve these values with the help of the **getField** function.
+
+```js
+const configDefault = async ({
+  name,
+  properties,
+  dependencies: { subnets, securityGroups },
+}) =>
+  pipe([
+    tap(() => {
+      assert(Array.isArray(securityGroups));
+      assert(Array.isArray(subnets));
+    }),
+    () => properties,
+    defaultsDeep({
+      LoadBalancerName: name,
+      SecurityGroups: map((securityGroup) =>
+        getField(securityGroup, "GroupId")
+      )(securityGroups),
+      Subnets: map((subnet) => getField(subnet, "SubnetId"))(subnets),
+    }),
+  ])();
+```
+
+#### isInstanceUp()
+
+_isInstanceUp_ is going to be used by _isUpById_ and indicates if the resource is up. The load balancer does not contains any state or status field, therefore we consider the load balancer is if it exists.
+
+```js
+const isInstanceUp = (live) => live;
+```
+
+Simplify with rubico with:
+
+```js
+const isInstanceUp = not(isEmpty);
+```
+
+### Create
+
+Now that the _configDefault_ and _isInstanceUp_ are implemented, we can write the _create_ function.
+We start calling the [aws createLoadBalancer](<(https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELB.html#createLoadBalancer-property)>) function, we check that the resource is up.
+
+We tag the resource with [addTags](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELB.html#addTags-property) to so we know they have been created by GruCloud.
+
+```js
+const create = async ({ name, payload }) =>
+  pipe([
+    tap(() => {
+      logger.debug(`create: ${name}, ${tos(payload)}`);
+    }),
+    () => elb().createLoadBalancer(payload),
+    tap(() =>
+      retryCall({
+        name: `load balancer isUpById: ${name} id: ${id}`,
+        fn: () => isUpById({ name, id }),
+        config,
+      })
+    ),
+    tap(() =>
+      elb().addTags({
+        LoadBalancerNames: [name],
+        Tags: buildTags({ name, config, UserTags: payload.Tags }),
+      })
+    ),
+    tap(({ DNSName }) => {
+      logger.info(`created: ${DNSName}`);
+    }),
+  ])();
+```
+
+### Destroy
+
+We'll use [deleteLoadBalancer](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELB.html#deleteLoadBalancer-property) to destroy the load baancer. We then check that the resource is down.
+
+```js
+const destroy = async ({ live }) =>
+  pipe([
+    () => ({ id: findId(live), name: findName(live) }),
+    ({ id, name }) =>
+      pipe([
+        tap(() => {
+          logger.info(`destroy ${JSON.stringify({ name })}`);
+        }),
+        () => ({
+          LoadBalancerName: name,
+        }),
+        (params) => elb().deleteLoadBalancer(params),
+        tap(() =>
+          retryCall({
+            name: `load balancer isDownById: ${id}`,
+            fn: () => isDownById({ id }),
+            config,
+          })
+        ),
+        tap(() => {
+          logger.info(`destroyed ${JSON.stringify({ name })}`);
+        }),
+      ])(),
+  ]);
+```
+
+Congratulation, the load balancer has been implemented, tested and documented.
+
+The remaining task it to use the load balancer in the EKS module.
