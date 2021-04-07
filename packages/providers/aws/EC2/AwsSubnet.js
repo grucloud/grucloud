@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { get, switchCase, pipe, tap } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { get, switchCase, pipe, tap, map, tryCatch, any } = require("rubico");
+const { defaultsDeep, forEach } = require("rubico/x");
 
 const { retryCall } = require("@grucloud/core/Retry");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSubnet" });
@@ -38,7 +38,7 @@ exports.AwsSubnet = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSubnet-property
 
-  const create = async ({ payload, name }) =>
+  const create = async ({ payload, attributes, name }) =>
     pipe([
       tap(() => {
         logger.info(`create subnet ${JSON.stringify({ name })}`);
@@ -52,6 +52,40 @@ exports.AwsSubnet = ({ spec, config }) => {
           fn: () => isUpById({ id: SubnetId }),
           config,
         })
+      ),
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#modifySubnetAttribute-property
+      tap((SubnetId) =>
+        pipe([
+          () => Object.entries(attributes()),
+          forEach(
+            tryCatch(
+              pipe([
+                ([key, value]) => ({ [key]: value, SubnetId }),
+                tap((params) => {
+                  logger.debug(
+                    `modifySubnetAttribute ${JSON.stringify(params)}`
+                  );
+                }),
+                (params) => ec2().modifySubnetAttribute(params),
+              ]),
+              (error, entry) =>
+                pipe([
+                  tap(() => {
+                    logger.error(
+                      `modifySubnetAttribute ${JSON.stringify({
+                        error,
+                        entry,
+                      })}`
+                    );
+                  }),
+                  () => ({ error, entry }),
+                ])()
+            )
+          ),
+          tap.if(any(get("error")), (results) => {
+            throw Error(`modifySubnetAttribute error: ${tos(results)}`);
+          }),
+        ])()
       ),
       tap((SubnetId) => {
         logger.info(`created subnet ${JSON.stringify({ name, SubnetId })}`);

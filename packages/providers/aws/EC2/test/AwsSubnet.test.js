@@ -41,6 +41,11 @@ describe("AwsSubnet", async function () {
     subnet = await provider.makeSubnet({
       name: subnetName,
       dependencies: { vpc },
+      attributes: () => ({
+        MapPublicIpOnLaunch: {
+          Value: true,
+        },
+      }),
       properties: () => ({
         CidrBlock: "192.168.1.1/24",
         Tags: [{ Key: k8sSubnetTagKey, Value: "1" }],
@@ -60,6 +65,7 @@ describe("AwsSubnet", async function () {
     await testPlanDeploy({ provider, types });
 
     const subnetLive = await subnet.getLive();
+    assert(subnetLive.MapPublicIpOnLaunch);
     const vpcLive = await vpc.getLive();
     assert.equal(subnetLive.VpcId, vpcLive.VpcId);
 

@@ -40,6 +40,11 @@ const createResources = async ({ provider }) => {
           provider.makeSubnet({
             name,
             dependencies: { vpc },
+            attributes: () => ({
+              MapPublicIpOnLaunch: {
+                Value: true,
+              },
+            }),
             properties: () => ({
               CidrBlock,
               AvailabilityZone,
