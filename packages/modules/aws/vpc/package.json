@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-aws-vpc",
-  "version": "1.10.18",
+  "version": "1.10.19",
   "description": "A GruCloud module to create an AWS VPC suitable for EKS",
   "main": "iac.js",
   "scripts": {
@@ -21,5 +21,10 @@
   },
   "devDependencies": {
     "mocha": "^8.3.2"
+  },
+  "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/modules/aws/vpc",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/grucloud/grucloud.git"
   }
 }

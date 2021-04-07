@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-aws-eks",
-  "version": "1.10.18",
+  "version": "1.10.19",
   "description": "Grucloud module to manage an EKS Cluster",
   "main": "iac.js",
   "scripts": {
@@ -15,5 +15,17 @@
   },
   "devDependencies": {
     "mocha": "^8.3.2"
+  },
+  "keywords": [
+    "aws",
+    "vpc",
+    "eks",
+    "kubernetes",
+    "grucloud"
+  ],
+  "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/modules/aws/eks",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/grucloud/grucloud.git"
   }
 }
