@@ -1,6 +1,6 @@
 ---
 id: AwsModuleHowto
-title: How to implement a new AWS Modules
+title: How to implement a new AWS Module
 ---
 
 This document will guide you through the implementation of new module for the [GruCloud AWS provider](https://www.npmjs.com/package/@grucloud/provider-aws).

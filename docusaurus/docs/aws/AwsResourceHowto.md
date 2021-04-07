@@ -1,5 +1,5 @@
 ---
-id: AwsResourcesHowto
+id: AwsResourceHowto
 title: How to implement a new AWS Resources
 ---
 

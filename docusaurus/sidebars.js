@@ -18,7 +18,7 @@ module.exports = {
       "aws/AwsExamples",
       "aws/AwsModules",
       "aws/AwsResourceHowto",
-      "aws/AwsModulesHowto",
+      "aws/AwsModuleHowto",
 
       {
         Resources: [
