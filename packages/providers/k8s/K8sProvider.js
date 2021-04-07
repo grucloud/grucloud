@@ -386,12 +386,17 @@ const readKubeConfig = ({
 
 const getAuthToken = ({ kubeConfig }) =>
   pipe([
-    get("users"),
-    first,
+    () => kubeConfig.contexts,
+    find(eq(get("name"), kubeConfig["current-context"])),
+    get("context.user"),
+    (user) => find(eq(get("name"), user))(kubeConfig.users),
     get("user.exec"),
     switchCase([
       isEmpty,
-      () => undefined,
+      () => {
+        logger.error(`getAuthToken: no user in kubeConfig`);
+        return undefined;
+      },
       pipe([
         ({ command, args }) => {
           logger.debug(`getAuthToken: ${command}, args: ${args}`);
