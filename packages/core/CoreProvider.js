@@ -2031,7 +2031,7 @@ function CoreProvider({
         assert(client);
         assert(live);
         assert(lives);
-        assert(name);
+        //assert(name);
       }),
       () => client.findId(live),
       tap((id) => {

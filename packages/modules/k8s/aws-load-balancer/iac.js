@@ -43,6 +43,7 @@ const createStackAws = async () => {
   const resources = await EKSStack.createResources({
     provider,
   });
+
   return {
     provider,
     resources,

@@ -14,7 +14,7 @@ The following resources are required to create an EKS Cluster:
 
 - [VPC](https://www.grucloud.com/docs/aws/resources/EC2/Vpc)
 - [Internet Gateway](https://www.grucloud.com/docs/aws/resources/EC2/InternetGateway): one internet gateway attached to the VPC
-- [Subnet](https://www.grucloud.com/docs/aws/resources/EC2/Subnet): 3 public and 3 private subnets belong to the VPC.
+- [Subnet](https://www.grucloud.com/docs/aws/resources/EC2/Subnet): 2 public and 2 private subnets belong to the VPC.
 - [SecurityGroup](https://www.grucloud.com/docs/aws/resources/EC2/SecurityGroup)
 - [Elastic IP Address](https://www.grucloud.com/docs/aws/resources/EC2/ElasticIpAddress): required by the NAT Gateway
 - [NAT Gateway](https://www.grucloud.com/docs/aws/resources/EC2/NatGateway): a NAT gateway to allow the ec2 instances to connect to internet.
