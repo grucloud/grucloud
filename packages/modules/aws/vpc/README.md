@@ -2,7 +2,7 @@
 
 The [AWS VPC Grucloud module](https://www.npmjs.com/package/@grucloud/module-aws-vpc) creates a base set of EC2 resources to be used by an EKS cluster.
 
-Once again, a picture is worth a thousands words. This modules packs and configures all these resources ready to be consumed by others.
+Once again, a picture is worth a thousands words. This module packs and configures all these resources ready to be consumed by your application.
 
 ![Graph](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/vpc/example/grucloud.svg)
 
@@ -60,7 +60,7 @@ Refer to the [example](https://github.com/grucloud/grucloud/tree/main/packages/m
 The Javascript describing this module is implemented in [iac.js](https://github.com/grucloud/grucloud/tree/main/packages/modules/aws/vpc/iac.js), which exports:
 
 - _createResources_: creates the resources for this provider.
-- [config.js](./config.js): the default configuration
+- [config.js](https://github.com/grucloud/grucloud/tree/main/packages/modules/aws/vpc/config.js): the default configuration
 
 ## Example
 

@@ -1,22 +1,27 @@
 const assert = require("assert");
-const { get, map, pipe, assign, tap, and } = require("rubico");
+const { map } = require("rubico");
 const { pluck } = require("rubico/x");
 
 exports.config = require("./config");
+exports.hooks = require("./hooks");
 
-const { AwsProvider } = require("@grucloud/provider-aws");
+//const podPolicy = require("./pod-policy.json");
 
-//const loadBalancerPolicy = require("./load-balancer-policy.json");
-const podPolicy = require("./pod-policy.json");
-const hooks = require("./hooks");
-
-const createResources = async ({ provider }) => {
+const createResources = async ({ provider, resources }) => {
   const { config } = provider;
   assert(config.eks);
-  assert(config.eks.vpc);
+  assert(config.eks.cluster);
+  assert(config.eks.roleCluster);
+  assert(config.eks.nodeGroupsPublic);
+  assert(config.eks.nodeGroupsPrivate);
 
-  const clusterName = "cluster";
-  //const iamOpenIdConnectProviderName = "oicp-eks";
+  assert(config.vpc);
+  assert(resources);
+  assert(resources.vpc);
+  const { vpc, publics, privates } = resources;
+
+  const clusterName = config.eks.cluster.name;
+  assert(clusterName);
 
   const iamPolicyEKSCluster = await provider.useIamPolicyReadOnly({
     name: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
@@ -29,7 +34,7 @@ const createResources = async ({ provider }) => {
   );
 
   const roleCluster = await provider.makeIamRole({
-    name: "role-cluster",
+    name: config.eks.roleCluster.name,
     dependencies: {
       policies: [iamPolicyEKSCluster, iamPolicyEKSVPCResourceController],
     },
@@ -88,110 +93,6 @@ const createResources = async ({ provider }) => {
     }),
   });
 
-  const vpc = await provider.makeVpc({
-    name: "vpc-eks",
-    properties: () => ({
-      DnsHostnames: true,
-      CidrBlock: config.eks.vpc.CidrBlock,
-      Tags: [{ Key: `kubernetes.io/cluster/${clusterName}`, Value: "shared" }],
-    }),
-  });
-
-  const ig = await provider.makeInternetGateway({
-    name: "ig-eks",
-    dependencies: { vpc },
-  });
-
-  const eip = await provider.makeElasticIpAddress({
-    name: "ip-eks",
-  });
-
-  //Public subnets
-  assert(config.eks.vpc.subnetsPublic);
-
-  const publics = await map(({ name, CidrBlock, AvailabilityZone }) =>
-    pipe([
-      assign({
-        subnet: () =>
-          provider.makeSubnet({
-            name,
-            dependencies: { vpc },
-            properties: () => ({
-              CidrBlock,
-              AvailabilityZone,
-              Tags: [
-                {
-                  Key: `kubernetes.io/cluster/${clusterName}`,
-                  Value: "shared",
-                },
-                { Key: "kubernetes.io/role/elb", Value: "1" },
-              ],
-            }),
-          }),
-      }),
-      assign({
-        routeTable: ({ subnet }) =>
-          provider.makeRouteTables({
-            name: `route-table-${subnet.name}`,
-            dependencies: { vpc, subnet },
-          }),
-      }),
-      assign({
-        routeIg: ({ routeTable }) =>
-          provider.makeRoute({
-            name: `route-igw-${routeTable.name}`,
-            dependencies: { routeTable, ig },
-          }),
-      }),
-    ])()
-  )(config.eks.vpc.subnetsPublic);
-
-  const subnet = publics[0].subnet;
-  const natGateway = await provider.makeNatGateway({
-    name: `nat-gateway-${subnet.name}`,
-    dependencies: { subnet, eip },
-  });
-
-  //Private
-  assert(config.eks.vpc.subnetsPrivate);
-
-  const privates = await map(({ name, CidrBlock, AvailabilityZone }) =>
-    pipe([
-      assign({
-        subnet: () =>
-          provider.makeSubnet({
-            name,
-            dependencies: { vpc },
-            properties: () => ({
-              CidrBlock,
-              AvailabilityZone,
-              Tags: [
-                {
-                  Key: `kubernetes.io/cluster/${clusterName}`,
-                  Value: "shared",
-                },
-                { Key: "kubernetes.io/role/internal-elb", Value: "1" },
-              ],
-            }),
-          }),
-      }),
-      assign({
-        routeTable: ({ subnet }) =>
-          provider.makeRouteTables({
-            name: `route-table-${subnet.name}`,
-            dependencies: { vpc, subnet },
-          }),
-      }),
-      assign({
-        routeNat: ({ routeTable }) =>
-          provider.makeRoute({
-            name: `route-nat-${routeTable.name}`,
-            dependencies: { routeTable, natGateway },
-          }),
-      }),
-    ])()
-  )(config.eks.vpc.subnetsPrivate);
-
   const securityGroupCluster = await provider.makeSecurityGroup({
     name: "security-group-cluster",
     dependencies: { vpc },
@@ -241,6 +142,7 @@ const createResources = async ({ provider }) => {
       },
     }),
   });
+
   const securityGroupNodes = await provider.makeSecurityGroup({
     name: "security-group-nodes",
     dependencies: { vpc, securityGroup: securityGroupCluster },
@@ -289,6 +191,7 @@ const createResources = async ({ provider }) => {
     }),
   });
 
+  // define the EKS cluster
   const cluster = await provider.makeEKSCluster({
     name: clusterName,
     dependencies: {
@@ -298,15 +201,33 @@ const createResources = async ({ provider }) => {
     },
   });
 
-  const nodeGroup = await provider.makeEKSNodeGroup({
-    name: "node-group-public",
-    dependencies: {
-      subnets: pluck("subnet")(privates),
-      cluster,
-      role: roleNodeGroup,
-    },
-  });
+  // defines a bunch of Node Groups on public subnets
+  const nodeGroupsPublic = await map((nodeGroup) =>
+    provider.makeEKSNodeGroup({
+      name: nodeGroup.name,
+      dependencies: {
+        subnets: pluck("subnet")(publics),
+        cluster,
+        role: roleNodeGroup,
+      },
+      properties: nodeGroup.properties,
+    })
+  )(config.eks.nodeGroupsPublic);
 
+  // Create a bunch of Node Groups on private subnets
+  const nodeGroupsPrivate = await map((nodeGroup) =>
+    provider.makeEKSNodeGroup({
+      name: nodeGroup.name,
+      dependencies: {
+        subnets: pluck("subnet")(privates),
+        cluster,
+        role: roleNodeGroup,
+      },
+      properties: nodeGroup.properties,
+    })
+  )(config.eks.nodeGroupsPrivate);
+
+  /*
   const iamPodPolicy = await provider.makeIamPolicy({
     name: "PodPolicy",
     properties: () => ({
@@ -333,95 +254,16 @@ const createResources = async ({ provider }) => {
       },
     }),
   });
-  /*
-  const iamOpenIdConnectProvider = await provider.makeIamOpenIDConnectProvider({
-    name: iamOpenIdConnectProviderName,
-    dependencies: { cluster },
-    properties: ({ dependencies: { cluster } }) => ({
-      Url: get(
-        "live.identity.oidc.issuer",
-        "oidc.issuer not available yet"
-      )(cluster),
-      ClientIDList: ["sts.amazonaws.com"],
-    }),
-  });
+  */
 
-  const iamLoadBalancerPolicy = await provider.makeIamPolicy({
-    name: "AWSLoadBalancerControllerIAMPolicy",
-    properties: () => ({
-      PolicyDocument: loadBalancerPolicy,
-      Description: "Load Balancer Policy",
-    }),
-  });
-
-  const roleLoadBalancer = await provider.makeIamRole({
-    name: "role-load-balancer",
-    dependencies: {
-      iamOpenIdConnectProvider,
-      policies: [iamLoadBalancerPolicy],
-    },
-    properties: ({ dependencies: { iamOpenIdConnectProvider } }) => ({
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Federated: get(
-                "live.Arn",
-                "iamOpenIdConnectProvider.Arn not yet known"
-              )(iamOpenIdConnectProvider),
-            },
-            Action: "sts:AssumeRoleWithWebIdentity",
-            Condition: {
-              StringEquals: {
-                [`${get(
-                  "live.Url",
-                  "iamOpenIdConnectProvider.Url not yet known"
-                )(iamOpenIdConnectProvider)}:aud`]: "sts.amazonaws.com",
-              },
-            },
-          },
-        ],
-      },
-    }),
-  });
-*/
   return {
     roleCluster,
     roleNodeGroup,
-    //roleLoadBalancer,
-    rolePod,
-    vpc,
-    ig,
-    privates,
-    publics,
     securityGroupCluster,
     cluster,
-    nodeGroup,
-    //iamOpenIdConnectProvider,
+    nodeGroupsPublic,
+    nodeGroupsPrivate,
   };
 };
 
 exports.createResources = createResources;
-
-const isProviderUp = ({ resources }) =>
-  pipe([
-    and([() => resources.cluster.getLive()]),
-    tap((isUp) => {
-      assert(true);
-    }),
-  ])();
-
-exports.isProviderUp = isProviderUp;
-
-exports.createStack = async ({ config }) => {
-  const provider = AwsProvider({ config });
-  const resources = await createResources({ provider, resources: {} });
-  return {
-    provider,
-    resources,
-    hooks,
-    isProviderUp: () => isProviderUp({ resources }),
-  };
-};

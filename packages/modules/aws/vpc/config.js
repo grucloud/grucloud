@@ -16,11 +16,6 @@ module.exports = ({ region }) => ({
           CidrBlock: "192.168.32.0/19",
           AvailabilityZone: `${region}b`,
         },
-        {
-          name: "subnet-public-3",
-          CidrBlock: "192.168.64.0/19",
-          AvailabilityZone: `${region}c`,
-        },
       ],
       privateTags: [],
       privates: [
@@ -33,11 +28,6 @@ module.exports = ({ region }) => ({
           name: "subnet-private-2",
           CidrBlock: "192.168.128.0/19",
           AvailabilityZone: `${region}b`,
-        },
-        {
-          name: "subnet-private-3",
-          CidrBlock: "192.168.160.0/19",
-          AvailabilityZone: `${region}c`,
         },
       ],
     },
