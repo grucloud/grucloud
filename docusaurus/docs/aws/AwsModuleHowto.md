@@ -308,7 +308,7 @@ Let's create the package.json with `npm init`:
 npm init
 ```
 
-This package is not meant to be pusblished to NPM, hence set the _private_ package.json field to _false_
+This package is not meant to be pusblished to NPM, hence set the _private_ package.json field to _true_
 
 We'll install the module _@grucloud/module-aws-vpc_ that has been implemented in the last steps:
 
