@@ -29,8 +29,6 @@ describe("AwsVolume", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    await provider.start();
-
     volume = await provider.makeVolume({
       name: volumeName,
       properties: () => ({
