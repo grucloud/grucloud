@@ -6,7 +6,7 @@ exports.config = require("./config");
 
 const { AwsProvider } = require("@grucloud/provider-aws");
 
-const loadBalancerPolicy = require("./load-balancer-policy.json");
+//const loadBalancerPolicy = require("./load-balancer-policy.json");
 const podPolicy = require("./pod-policy.json");
 const hooks = require("./hooks");
 
@@ -16,7 +16,7 @@ const createResources = async ({ provider }) => {
   assert(config.eks.vpc);
 
   const clusterName = "cluster";
-  const iamOpenIdConnectProviderName = "oicp-eks";
+  //const iamOpenIdConnectProviderName = "oicp-eks";
 
   const iamPolicyEKSCluster = await provider.useIamPolicyReadOnly({
     name: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
@@ -307,18 +307,6 @@ const createResources = async ({ provider }) => {
     },
   });
 
-  const iamOpenIdConnectProvider = await provider.makeIamOpenIDConnectProvider({
-    name: iamOpenIdConnectProviderName,
-    dependencies: { cluster },
-    properties: ({ dependencies: { cluster } }) => ({
-      Url: get(
-        "live.identity.oidc.issuer",
-        "oidc.issuer not available yet"
-      )(cluster),
-      ClientIDList: ["sts.amazonaws.com"],
-    }),
-  });
-
   const iamPodPolicy = await provider.makeIamPolicy({
     name: "PodPolicy",
     properties: () => ({
@@ -343,6 +331,18 @@ const createResources = async ({ provider }) => {
           },
         ],
       },
+    }),
+  });
+  /*
+  const iamOpenIdConnectProvider = await provider.makeIamOpenIDConnectProvider({
+    name: iamOpenIdConnectProviderName,
+    dependencies: { cluster },
+    properties: ({ dependencies: { cluster } }) => ({
+      Url: get(
+        "live.identity.oidc.issuer",
+        "oidc.issuer not available yet"
+      )(cluster),
+      ClientIDList: ["sts.amazonaws.com"],
     }),
   });
 
@@ -386,11 +386,11 @@ const createResources = async ({ provider }) => {
       },
     }),
   });
-
+*/
   return {
     roleCluster,
     roleNodeGroup,
-    roleLoadBalancer,
+    //roleLoadBalancer,
     rolePod,
     vpc,
     ig,
@@ -399,7 +399,7 @@ const createResources = async ({ provider }) => {
     securityGroupCluster,
     cluster,
     nodeGroup,
-    iamOpenIdConnectProvider,
+    //iamOpenIdConnectProvider,
   };
 };
 

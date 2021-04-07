@@ -22,6 +22,7 @@ Visit the [Aws Requirements](https://grucloud.com/docs/aws/AwsRequirements) to p
 - Route53Domain: [Route53Domain](https://grucloud.com/docs/aws/resources/Route53Domain/Route53Domain)
 - S3: [S3Bucket](https://grucloud.com/docs/aws/resources/S3/S3Bucket), [S3Object](https://grucloud.com/docs/aws/resources/S3/S3Object)
 - EKS: [Cluster](https://grucloud.com/docs/aws/resources/EKS/EksCluster), [NodeGroup](https://grucloud.com/docs/aws/resources/EKS/EksNodeGroup)
+- ELB: [Load Balancer](https://grucloud.com/docs/aws/resources/ELB/Loadbalancer),
 
 ### Modules
 

@@ -175,7 +175,7 @@ exports.AwsCertificate = ({ spec, config }) => {
             );
           }),
         ])(),
-    ]);
+    ])();
 
   const configDefault = async ({ name, properties, dependencies }) =>
     defaultsDeep({

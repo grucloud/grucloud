@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-certificate",
-  "version": "1.10.17",
+  "version": "1.10.18",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.10.9",
-    "@grucloud/provider-aws": "^1.10.17",
+    "@grucloud/provider-aws": "^1.10.18",
     "mime-types": "^2.1.27"
   }
 }

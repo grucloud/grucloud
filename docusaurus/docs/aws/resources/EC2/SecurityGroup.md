@@ -10,7 +10,7 @@ const sg = await provider.makeSecurityGroup({
   dependencies: { vpc },
   properties: () => ({
     create: {
-      Description: "Security Group Description",
+      Description: "Security Group SSH",
     },
     ingress: {
       IpPermissions: [

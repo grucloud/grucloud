@@ -17,6 +17,9 @@ module.exports = {
       "aws/AwsConfig",
       "aws/AwsExamples",
       "aws/AwsModules",
+      "aws/AwsResourceHowto",
+      "aws/AwsModuleHowto",
+
       {
         Resources: [
           { ACM: ["aws/resources/ACM/AcmCertificate"] },
@@ -41,6 +44,9 @@ module.exports = {
               "aws/resources/EKS/EksCluster",
               "aws/resources/EKS/EksNodeGroup",
             ],
+          },
+          {
+            ELB: ["aws/resources/ELB/AwsLoadBalancer"],
           },
           {
             IAM: [

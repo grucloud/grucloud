@@ -1,5 +1,6 @@
 ## Bugs
 
+- gc a: when an assert is thrown, it does not exit but ask for deployment confirmation.
 - use why-is-node-running to find out why the app is not exiting
 - code coverage with monorepo
 - check stage for all providers

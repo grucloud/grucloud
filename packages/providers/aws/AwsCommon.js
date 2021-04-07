@@ -60,6 +60,9 @@ exports.ACMNew = (config) => () =>
 exports.EKSNew = (config) => () =>
   createEndpoint({ endpointName: "EKS" })(config);
 
+exports.ELBNew = (config) => () =>
+  createEndpoint({ endpointName: "ELB" })(config);
+
 exports.shouldRetryOnException = ({ error, name }) =>
   pipe([
     tap(() => {

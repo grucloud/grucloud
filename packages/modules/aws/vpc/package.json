@@ -1,0 +1,25 @@
+{
+  "name": "@grucloud/module-aws-vpc",
+  "version": "1.10.18",
+  "description": "A GruCloud module to create an AWS VPC suitable for EKS",
+  "main": "iac.js",
+  "scripts": {
+    "test": "mocha 'test/**/*.test.js'"
+  },
+  "keywords": [
+    "aws",
+    "vpc",
+    "eks",
+    "grucloud-module"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "^1.10.9",
+    "@grucloud/provider-aws": "^1.10.18",
+    "rubico": "^1.6.23"
+  },
+  "devDependencies": {
+    "mocha": "^8.3.2"
+  }
+}
