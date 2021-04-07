@@ -238,7 +238,7 @@ exports.AwsLoadBalancer = ({ spec, config }) => {
             logger.info(`destroyed ${JSON.stringify({ name, id })}`);
           }),
         ])(),
-    ]);
+    ])();
 
   const configDefault = async ({ name, properties, dependencies }) =>
     defaultsDeep({})(properties);
@@ -328,6 +328,7 @@ describe("AwsLoadBalancer", async function () {
 ### ELB/ELBSpec.js
 
 In _ELBSpec.js_, we declare the list of resources belonging to ELB, for now just a the _AwsLoadBalancer_
+For each resources, we specify the _type_, the list of dependencies through _dependsOn_.
 
 ```js
 // packages/providers/aws/ELB/ELBSpec.js
@@ -337,6 +338,7 @@ const { AwsLoadBalancer } = require("./AwsLoadBalancer");
 module.exports = [
   {
     type: "LoadBalancer",
+    dependsOn: ["Subnet", "SecurityGroup", "Certificate"],
     Client: AwsLoadBalancer,
     isOurMinion,
   },
@@ -729,7 +731,7 @@ const destroy = async ({ live }) =>
           logger.info(`destroyed ${JSON.stringify({ name })}`);
         }),
       ])(),
-  ]);
+  ])();
 ```
 
 Congratulation, the load balancer has been implemented, tested and documented.

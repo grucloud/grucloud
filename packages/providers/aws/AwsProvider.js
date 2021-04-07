@@ -113,11 +113,9 @@ exports.AwsProvider = ({ name = "aws", config, configs = [], ...other }) => {
     pipe([
       () => [...configs, config],
       filter((x) => x),
-      reduce((acc, config) => defaultsDeep(config(acc))(acc), {
+      reduce((acc, config) => defaultsDeep(acc)(config(acc)), {
         zone: () => zone,
         accountId: () => accountId,
-      }),
-      defaultsDeep({
         region: getRegionDefault(),
       }),
       tap((merged) => {

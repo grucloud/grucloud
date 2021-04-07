@@ -87,6 +87,16 @@
       "port": 9229
     },
     {
+      "type": "node",
+      "request": "launch",
+      "name": "Module AWS VPC Apply",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/packages/modules/aws/vpc/example",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["apply", "-f"]
+    },
+    {
       "name": "Debug Core test",
       "type": "node",
       "request": "launch",

@@ -114,7 +114,7 @@ exports.AwsLoadBalancer = ({ spec, config }) => {
             logger.info(`destroyed ${JSON.stringify({ name })}`);
           }),
         ])(),
-    ]);
+    ])();
 
   const configDefault = async ({
     name,

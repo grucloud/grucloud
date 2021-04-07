@@ -6,7 +6,7 @@ exports.config = require("./config");
 
 const { AwsProvider } = require("@grucloud/provider-aws");
 
-const loadBalancerPolicy = require("./load-balancer-policy.json");
+//const loadBalancerPolicy = require("./load-balancer-policy.json");
 const podPolicy = require("./pod-policy.json");
 const hooks = require("./hooks");
 

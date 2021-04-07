@@ -18,6 +18,8 @@ module.exports = {
       "aws/AwsExamples",
       "aws/AwsModules",
       "aws/AwsResourceHowto",
+      "aws/AwsModulesHowto",
+
       {
         Resources: [
           { ACM: ["aws/resources/ACM/AcmCertificate"] },
