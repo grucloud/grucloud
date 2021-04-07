@@ -15,5 +15,17 @@
   },
   "devDependencies": {
     "mocha": "^8.3.2"
+  },
+  "keywords": [
+    "aws",
+    "vpc",
+    "eks",
+    "kubernetes",
+    "grucloud"
+  ],
+  "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/modules/aws/eks",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/grucloud/grucloud.git"
   }
 }
