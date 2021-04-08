@@ -4,8 +4,6 @@ This example deploys a full-stack application with Kubernetes on AWS using their
 
 In this flavour, the AWS Application Load Balancer is created and destroyed by the [AWS Load Balancer Controller](https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html)
 
-## Providers
-
 This infrastructure depends on 2 providers: AWS and Kubernetes.
 
 ![Modules](./modules.svg)
@@ -18,13 +16,13 @@ A few modules for each of these providers are being used.
 
 - [module-aws-certificate](https://www.npmjs.com/package/@grucloud/module-aws-certificate)
 - [module-aws-vpc](https://www.npmjs.com/package/@grucloud/module-aws-vpc)
-- [module-aws-eks](../../../../packages/modules/aws/eks/README)
-- [module-aws-load-balancer](../../../../packages/modules/aws/aws-load-balancer/README)
+- [module-aws-eks](https://www.npmjs.com/package/@grucloud/module-aws-eks)
+- [module-aws-load-balancer](https://www.npmjs.com/package/@grucloud/module-aws-load-balancer-controller)
 
 ### Modules for K8s resources
 
-- [module-k8s-aws-load-balancer](../../../../packages/modules/k8s/aws-load-balancer/README)
-- [module-k8s-cert-manager](../../../../packages/modules/k8s/certificate/README)
+- [module-k8s-aws-load-balancer](https://www.npmjs.com/package/@grucloud/module-k8s-aws-load-balancer-controller)
+- [module-k8s-cert-manager](https://www.npmjs.com/package/@grucloud/module-k8s-cert-manager)
 
 ## Amazon EKS
 
@@ -42,7 +40,17 @@ The second part is the kubernetes deployment of the full-stack application compo
 
 Configuration for the K8s resources is located at [configK8s.js](./configK8s.js)
 
+## Load Balancer Route53 Record
+
+The third part of the deployment begins when the k8s ingress controller assigns a new hostname, we can now create a new Route53 record, of type _A_, using an _AliasTarget_.
+
 ## Troubleshooting
+
+List the ingresses:
+
+```sh
+gc l -t Ingress
+```
 
 ```
 kubectl get po -A
@@ -56,7 +64,7 @@ kubectl describe pods  -n kube-system aws-load-balancer-controller-5c5c56786-q7t
 kubectl logs -n kube-system   deployment.apps/aws-load-balancer-controller
 ```
 
-Describe the _aws-load-balancer-controller_ service account with \*kubectl:
+Describe the _aws-load-balancer-controller_ service account with _kubectl_:
 
 ```sh
 kubectl get sa/aws-load-balancer-controller -n kube-system
