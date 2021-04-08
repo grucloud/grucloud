@@ -53,7 +53,13 @@ const fetchAccountId = pipe([
   get("Account"),
 ]);
 
-exports.AwsProvider = ({ name = "aws", config, configs = [], ...other }) => {
+exports.AwsProvider = ({
+  name = "aws",
+  stage = "dev",
+  config,
+  configs = [],
+  ...other
+}) => {
   assert(config ? isFunction(config) : true, "config must be a function");
 
   AWS.config.apiVersions = {
@@ -114,6 +120,7 @@ exports.AwsProvider = ({ name = "aws", config, configs = [], ...other }) => {
       () => [...configs, config],
       filter((x) => x),
       reduce((acc, config) => defaultsDeep(acc)(config(acc)), {
+        stage,
         zone: () => zone,
         accountId: () => accountId,
         region: getRegionDefault(),

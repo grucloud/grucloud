@@ -425,6 +425,7 @@ const providerType = "k8s";
 exports.K8sProvider = ({
   name = providerType,
   manifests = [],
+  stage = "dev",
   config,
   configs = [],
   ...other
@@ -436,6 +437,7 @@ exports.K8sProvider = ({
       () => [...configs, config],
       filter((x) => x),
       reduce((acc, config) => defaultsDeep(config(acc))(acc), {
+        stage,
         accessToken: () => accessToken,
         kubeConfig: () => {
           assert(kubeConfig, "kubeConfig not set, provider not started");
