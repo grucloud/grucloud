@@ -40,7 +40,7 @@ module.exports = [
   {
     type: "IamPolicy",
     Client: AwsIamPolicy,
-    isOurMinion: isOurMinionIamPolicy,
+    isOurMinion,
   },
   {
     type: "IamPolicyReadOnly",
