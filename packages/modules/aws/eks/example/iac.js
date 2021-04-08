@@ -1,19 +1,6 @@
-const assert = require("assert");
-const { pipe, tap, and } = require("rubico");
-
 const { AwsProvider } = require("@grucloud/provider-aws");
 const ModuleAwsVpc = require("@grucloud/module-aws-vpc");
 const ModuleAwsEKS = require("@grucloud/module-aws-eks");
-
-const isProviderUp = ({ resources }) =>
-  pipe([
-    and([() => resources.cluster.getLive()]),
-    tap((isUp) => {
-      assert(true);
-    }),
-  ])();
-
-exports.isProviderUp = isProviderUp;
 
 exports.createStack = async ({ config }) => {
   const provider = AwsProvider({
@@ -32,7 +19,7 @@ exports.createStack = async ({ config }) => {
   return {
     provider,
     resources: { vpc: vpcResources, eks: eksResources },
-    //hooks,
-    isProviderUp: () => isProviderUp({ resources: eksResources }),
+    //TODO hooks,
+    isProviderUp: () => ModuleAwsEKS.isProviderUp({ resources: eksResources }),
   };
 };

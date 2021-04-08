@@ -386,12 +386,17 @@ const readKubeConfig = ({
 
 const getAuthToken = ({ kubeConfig }) =>
   pipe([
-    get("users"),
-    first,
+    () => kubeConfig.contexts,
+    find(eq(get("name"), kubeConfig["current-context"])),
+    get("context.user"),
+    (user) => find(eq(get("name"), user))(kubeConfig.users),
     get("user.exec"),
     switchCase([
       isEmpty,
-      () => undefined,
+      () => {
+        logger.error(`getAuthToken: no user in kubeConfig`);
+        return undefined;
+      },
       pipe([
         ({ command, args }) => {
           logger.debug(`getAuthToken: ${command}, args: ${args}`);
@@ -420,6 +425,7 @@ const providerType = "k8s";
 exports.K8sProvider = ({
   name = providerType,
   manifests = [],
+  stage = "dev",
   config,
   configs = [],
   ...other
@@ -431,6 +437,7 @@ exports.K8sProvider = ({
       () => [...configs, config],
       filter((x) => x),
       reduce((acc, config) => defaultsDeep(config(acc))(acc), {
+        stage,
         accessToken: () => accessToken,
         kubeConfig: () => {
           assert(kubeConfig, "kubeConfig not set, provider not started");

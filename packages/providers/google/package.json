@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-google",
-  "version": "1.10.16",
+  "version": "1.10.20",
   "description": "The GruCloud Google Cloud Platform provider",
   "main": "GoogleProvider.js",
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/google",
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.10.9",
+    "@grucloud/core": "^1.10.20",
     "google-auth-library": "6.1.4"
   },
   "devDependencies": {

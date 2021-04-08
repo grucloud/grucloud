@@ -9,6 +9,8 @@ const {
   switchCase,
   fork,
   eq,
+  assign,
+  pick,
 } = require("rubico");
 const { defaultsDeep, isEmpty } = require("rubico/x");
 const moment = require("moment");
@@ -62,6 +64,15 @@ exports.AwsIamPolicy = ({ spec, config }) => {
           pipe([
             (policy) => iam().getPolicy({ PolicyArn: policy.Arn }),
             get("Policy"),
+            assign({
+              EntitiesForPolicy: pipe([
+                ({ Arn }) =>
+                  iam().listEntitiesForPolicy({
+                    PolicyArn: Arn,
+                  }),
+                pick(["PolicyGroups", "PolicyUsers", "PolicyRoles"]),
+              ]),
+            }),
           ]),
           (error, policy) =>
             pipe([
@@ -125,9 +136,6 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       }),
       () => ({
         ...payload,
-        Description: `${payload.Description}, tags:${JSON.stringify(
-          buildTags({ name, config })
-        )}`,
         PolicyDocument: JSON.stringify(payload.PolicyDocument),
       }),
       (createParams) => iam().createPolicy(createParams),
@@ -205,7 +213,9 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     ])();
 
   const configDefault = async ({ name, properties, dependencies }) =>
-    defaultsDeep({ PolicyName: name, Path: "/" })(properties);
+    defaultsDeep({ PolicyName: name, Tags: buildTags({ name, config }) })(
+      properties
+    );
 
   return {
     type: "IamPolicy",

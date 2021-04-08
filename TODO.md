@@ -1,5 +1,10 @@
 ## Bugs
 
+- kubectl logs -n kube-system deployment.apps/aws-load-balancer-controller
+
+User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot list resource "pods" in API group "" at the cluster scope
+
+- EC2 │ ec2-volume-test, ec2-volume-test
 - gc a: when an assert is thrown, it does not exit but ask for deployment confirmation.
 - use why-is-node-running to find out why the app is not exiting
 - code coverage with monorepo

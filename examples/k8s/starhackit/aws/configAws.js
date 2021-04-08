@@ -1,9 +1,9 @@
 const pkg = require("./package.json");
 module.exports = ({ stage }) => ({
-  projectName: pkg.name,
+  projectName: pkg.projectName,
   certificate: {
     rootDomainName: "grucloud.org",
     domainName: "starhackit.grucloud.org",
   },
-  eks: { cluster: { name: `${cluster}-${stage}` } },
+  eks: { cluster: { name: `cluster-${pkg.projectName}-${stage}` } },
 });

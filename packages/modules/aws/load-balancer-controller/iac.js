@@ -1,5 +1,5 @@
 const assert = require("assert");
-
+const { get } = require("rubico");
 exports.config = require("./config");
 
 const loadBalancerPolicy = require("./load-balancer-policy.json");
