@@ -1,12 +1,14 @@
-# Full Stack Application on AWS EKS
+# Full Stack Application on AWS EKS with the AWS Load Balancer Controller
 
 This example deploys a full-stack application with Kubernetes on AWS using their managed control plane called [Elastic Kubernetes Service](https://aws.amazon.com/eks/)
+
+In this flavour, the AWS Application Load Balancer is created and destroyed by the [AWS Load Balancer Controller](https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html)
 
 ## Providers
 
 This infrastructure depends on 2 providers: AWS and Kubernetes.
 
-![Modules](modules.svg)
+![Modules](./modules.svg)
 
 ## Modules
 
@@ -14,8 +16,8 @@ A few modules for each of these providers are being used.
 
 ### Modules for AWS resources
 
-- [module-aws-certificate](../../../../packages/modules/aws/certificate/README)
-- [module-aws-vpc](../../../../packages/modules/aws/eks/README)
+- [module-aws-certificate](https://www.npmjs.com/package/@grucloud/module-aws-certificate)
+- [module-aws-vpc](https://www.npmjs.com/package/@grucloud/module-aws-vpc)
 - [module-aws-eks](../../../../packages/modules/aws/eks/README)
 - [module-aws-load-balancer](../../../../packages/modules/aws/aws-load-balancer/README)
 

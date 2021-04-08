@@ -64,6 +64,6 @@ gc graph
 
 ![Graph](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/eks/example/grucloud.svg)
 
-## Example
+## Example
 
 Look at the [example](https://github.com/grucloud/grucloud/tree/main/packages/modules/aws/eks/example) to find out how to use this module.
