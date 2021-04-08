@@ -6,12 +6,12 @@ const {
   testPlanDestroy,
 } = require("@grucloud/core/E2ETestUtils");
 
-describe("AwsLoadBalancer", async function () {
+describe("AwsLoadBalancerV1", async function () {
   let config;
   let provider;
   let loadBalancer;
-  let loadBalancerName = "lb";
-  const types = ["LoadBalancer"];
+  let loadBalancerName = "lbv1";
+  const types = ["LoadBalancerV1"];
 
   before(async function () {
     try {
@@ -107,7 +107,7 @@ describe("AwsLoadBalancer", async function () {
     });
   });
   after(async () => {});
-  it("load balancer apply plan", async function () {
+  it("load balancer v1 apply plan", async function () {
     await testPlanDeploy({ provider, types });
     await testPlanDestroy({ provider, types });
   });

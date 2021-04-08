@@ -1,0 +1,15 @@
+package-lock.json
+node_modules/
+.env
+.nyc_output
+coverage
+*.log
+.vscode/
+.mocharc.json
+.travis.yml
+.circleci
+.github
+**/test/*
+*.dot
+*.svg
+example

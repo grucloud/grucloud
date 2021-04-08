@@ -3,7 +3,7 @@ const { AwsLoadBalancer } = require("./AwsLoadBalancer");
 
 module.exports = [
   {
-    type: "LoadBalancer",
+    type: "LoadBalancerV1",
     dependsOn: ["Subnet", "SecurityGroup", "Certificate"],
     Client: AwsLoadBalancer,
     isOurMinion,
