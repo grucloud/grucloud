@@ -1,11 +1,21 @@
 const assert = require("assert");
-const { map } = require("rubico");
+const { map, pipe, and, tap } = require("rubico");
 const { pluck } = require("rubico/x");
 
 exports.config = require("./config");
 exports.hooks = require("./hooks");
 
 //const podPolicy = require("./pod-policy.json");
+
+const isProviderUp = ({ resources }) =>
+  pipe([
+    and([() => resources.cluster.getLive()]),
+    tap((isUp) => {
+      assert(true);
+    }),
+  ])();
+
+exports.isProviderUp = isProviderUp;
 
 const createResources = async ({ provider, resources }) => {
   const { config } = provider;

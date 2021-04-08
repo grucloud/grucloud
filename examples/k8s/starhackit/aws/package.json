@@ -1,5 +1,6 @@
 {
   "name": "@grucloud/example-k8s-aws-starhackit",
+  "projectName": "starhackit",
   "version": "1.10.20",
   "private": true,
   "description": "deploying starhackit on AWS EKS",
@@ -14,6 +15,7 @@
     "@grucloud/core": "^1.10.20",
     "@grucloud/module-aws-certificate": "^1.10.20",
     "@grucloud/module-aws-eks": "^1.10.20",
+    "@grucloud/module-aws-load-balancer-controller": "^1.10.20",
     "@grucloud/module-aws-vpc": "^1.10.20",
     "@grucloud/module-k8s-aws-load-balancer-controller": "^1.10.20",
     "@grucloud/provider-aws": "^1.10.20",

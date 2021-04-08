@@ -7,7 +7,7 @@ const { K8sProvider } = require("@grucloud/provider-k8s");
 const ModuleAwsVpc = require("@grucloud/module-aws-vpc");
 
 const ModuleAwsEks = require("@grucloud/module-aws-eks/iac");
-const AwsLoadBalancerStack = require("@grucloud/module-k8s-aws-load-balancer-controller/iac");
+const ModuleK8sAwsLoadBalancerStack = require("@grucloud/module-k8s-aws-load-balancer-controller/iac");
 const ModuleAwsCertificate = require("@grucloud/module-aws-certificate/iac");
 const ModuleAwsLoadBalancerController = require("@grucloud/module-aws-load-balancer-controller");
 
@@ -15,8 +15,9 @@ const BaseStack = require("../base/k8sStackBase");
 
 const { createIngress } = require("./eksIngress");
 
-const createAwsStack = async () => {
+const createAwsStack = async ({ stage }) => {
   const provider = AwsProvider({
+    stage,
     configs: [
       ModuleAwsCertificate.config,
       ModuleAwsEks.config,
@@ -42,7 +43,7 @@ const createAwsStack = async () => {
 
   const resourcesCertificate = await ModuleAwsCertificate.createResources({
     provider,
-    resource: { hostedZone },
+    resources: { hostedZone },
   });
 
   const resourcesVpc = await ModuleAwsVpc.createResources({ provider });
@@ -60,6 +61,8 @@ const createAwsStack = async () => {
   return {
     provider,
     resources: {
+      domain,
+      hostedZone,
       certificate: resourcesCertificate,
       vpc: resourcesVpc,
       eks: resourcesEks,
@@ -69,17 +72,20 @@ const createAwsStack = async () => {
   };
 };
 
-const createK8sStack = async ({ stackAws }) => {
+const createK8sStack = async ({ stackAws, stage }) => {
   const provider = K8sProvider({
+    stage,
     configs: [require("./configK8s"), ...BaseStack.configs],
-    manifests: await AwsLoadBalancerStack.loadManifest(),
+    manifests: await ModuleK8sAwsLoadBalancerStack.loadManifest(),
     dependencies: { aws: stackAws.provider },
   });
 
-  const awsLoadBalancerResources = await AwsLoadBalancerStack.createResources({
-    provider,
-    resources: stackAws.resources,
-  });
+  const awsLoadBalancerResources = await ModuleK8sAwsLoadBalancerStack.createResources(
+    {
+      provider,
+      resources: stackAws.resources.lbc,
+    }
+  );
 
   const baseStackResources = await BaseStack.createResources({
     provider,
@@ -89,7 +95,7 @@ const createK8sStack = async ({ stackAws }) => {
   const ingress = await createIngress({
     provider,
     resources: {
-      certificate: stackAws.resources.certificate,
+      certificate: stackAws.resources.certificate.certificate,
       namespace: baseStackResources.namespace,
       serviceWebServer: baseStackResources.webServerChart.service,
       serviceRestServer: baseStackResources.restServerChart.service,
@@ -102,9 +108,9 @@ const createK8sStack = async ({ stackAws }) => {
   };
 };
 
-exports.createStack = async () => {
-  const stackAws = await createAwsStack();
-  const stackK8s = await createK8sStack({ stackAws });
+exports.createStack = async ({ stage }) => {
+  const stackAws = await createAwsStack({ stage });
+  const stackK8s = await createK8sStack({ stackAws, stage });
 
   const { hostedZone } = stackAws.resources;
   assert(hostedZone);
