@@ -20,7 +20,7 @@ const { tos } = require("@grucloud/core/tos");
 const {
   IAMNew,
   buildTags,
-  findNameInDescription,
+  findNameInTags,
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
 } = require("../AwsCommon");
@@ -38,8 +38,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
 
   const iam = IAMNew(config);
 
-  const findName = (item) =>
-    findNameInDescription({ Description: item.Description });
+  const findName = findNameInTags;
 
   const findId = get("Arn");
 
