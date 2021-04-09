@@ -18,7 +18,7 @@ describe("MockProviderCornerCase", async function () {
         properties: () => ({}),
       });
     } catch (error) {
-      assert.equal(error.message, "missing dependency");
+      assert.equal(error.message, "missing dependency for Server/web-server");
     }
   });
 

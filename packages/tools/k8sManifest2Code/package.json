@@ -4,7 +4,7 @@
   "description": "Generate Grucloud Code from kubernetes YAML manifest",
   "main": "k8s-manifest2code.js",
   "bin": {
-    "k8s-manifest2code": "./k8s-manifest2code.js"
+    "k8s-manifest2code": "./index.js"
   },
   "scripts": {
     "test": "mocha './{,!(node_modules)/**}/*.test.js'"
@@ -34,5 +34,8 @@
   "bugs": {
     "url": "https://github.com/grucloud/grucloud/issues"
   },
-  "homepage": "https://github.com/grucloud/grucloud#readme"
+  "homepage": "https://github.com/grucloud/grucloud#readme",
+  "devDependencies": {
+    "mocha": "^8.3.2"
+  }
 }
