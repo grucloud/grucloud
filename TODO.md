@@ -1,5 +1,6 @@
 ## Bugs
 
+- RouteTable should accepts an array of subnet
 - kubectl logs -n kube-system deployment.apps/aws-load-balancer-controller
 
 User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot list resource "pods" in API group "" at the cluster scope

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const log = require("why-is-node-running"); // should be your first require
+//const log = require("why-is-node-running"); // should be your first require
 
 const logger = require("../logger")({ prefix: "CliEntry" });
 
@@ -7,8 +7,8 @@ process.on("unhandledRejection", (reason, p) => {
   console.log("Unhandled Rejection at: Promise", p, "reason:", reason);
 });
 
-process.on("exit", function () {
-  //console.log("grucloud exit");
+process.on("exit", function (code) {
+  //console.log("grucloud exit", code);
 });
 
 const { main } = require("./cliMain");

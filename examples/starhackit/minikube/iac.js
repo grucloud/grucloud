@@ -34,8 +34,8 @@ exports.createStack = async ({ config }) => {
     config: config(),
     resources: {
       namespace: resources.namespace,
-      serviceWebServer: resources.webServerChart.service,
-      serviceRestServer: resources.restServerChart.service,
+      serviceWebServer: resources.webServerResources.service,
+      serviceRestServer: resources.restServerResources.service,
     },
   });
 

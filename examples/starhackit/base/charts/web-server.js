@@ -1,6 +1,6 @@
 const assert = require("assert");
 
-exports.createChartWebServer = async ({
+exports.createResourcesWebServer = async ({
   provider,
   resources: { namespace },
   config: { ui },
