@@ -6,9 +6,7 @@
 
 User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot list resource "pods" in API group "" at the cluster scope
 
-- EC2 │ ec2-volume-test, ec2-volume-test
 - gc a: when an assert is thrown, it does not exit but ask for deployment confirmation.
-- use why-is-node-running to find out why the app is not exiting
 - code coverage with monorepo
 - check stage for all providers
 
@@ -24,10 +22,6 @@ User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot lis
   empty name !
 - const getById = getByIdCore({ fieldIds: "AllocationIds", getList });
 
-- ebs volume: use lsblk ?
-- file -s /dev/xvdf
-- mkfs -t ext4 /dev/xvdf
-- dh -hT
 - gcp: projectName function to field
 - PROMPT='%4~ %# '
 - iam deal with deleted user
@@ -48,9 +42,7 @@ User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot lis
 - https://www.youtube.com/channel/UCs6i6bHcsnu-lXwNL1th35A/about
 - https://www.youtube.com/channel/UC33pBiUW51-InqrLd0BmhMQ/about
 
-- licences github
 - https://alternativeto.net/Manage/AddItem.aspx
-- sitemap
 
 ## Cli
 
@@ -75,15 +67,12 @@ User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot lis
 - https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html
 
 - s3 exmaple: gc d tries to delete roles
-- gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404: 404 should be ok
 
 - https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
 - https://docs.aws.amazon.com/eks/latest/userguide/load-balancing.html
 - https://medium.com/cloudzone/aws-alb-ingress-controller-guide-ec16233f5903
 - https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/
 - aws load balancer ingress https://github.com/stacksimplify/aws-eks-kubernetes-masterclass/blob/f46e2b15533a96b7641662656cf5deebb63d5dae/11-DevOps-with-AWS-Developer-Tools/Application-Manifests/kube-manifests/03-DEVOPS-Nginx-ALB-IngressService.yml
-
-- CloudFrontDistribution 0/1 The specified SSL certificate doesn't exist, isn't in us-east-1 region, isn't valid, or doesn't include a valid certificate chain
 
 - VpcEndpoint
 - https://medium.com/dev-genius/create-an-amazon-eks-cluster-with-managed-node-group-using-terraform-a3b50d276b13
