@@ -4,11 +4,11 @@ The purpose of this module is to deploy an AWS SSL certificate and verify it wit
 
 When an AWS Certificate is created, the api returns information about a dns record to be added. At this point, a _Route53Record_ resource is created with this info.
 
-> Your domain name need to be registered with AWS Route53 Service.
+> Your domain name needs to be registered with AWS Route53 Service.
 
 ## Resources
 
-This module exports the **createResources** function:
+This module exports the [createResources function from iac.js](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/certificate/iac.js):
 
 Inputs:
 
@@ -27,7 +27,7 @@ Outputs:
 gc graph
 ```
 
-![Graph](./grucloud.svg)
+![Graph](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/certificate/grucloud.svg)
 
 # How to use this module
 

@@ -1,5 +1,14 @@
 const assert = require("assert");
-const { get, switchCase, pipe, tap, map, tryCatch, any } = require("rubico");
+const {
+  get,
+  switchCase,
+  pipe,
+  tap,
+  map,
+  tryCatch,
+  any,
+  eq,
+} = require("rubico");
 const { defaultsDeep, forEach } = require("rubico/x");
 
 const { retryCall } = require("@grucloud/core/Retry");
@@ -98,7 +107,18 @@ exports.AwsSubnet = ({ spec, config }) => {
       tap(() => {
         logger.info(`destroy subnet ${JSON.stringify({ name, id })}`);
       }),
-      () => ec2().deleteSubnet({ SubnetId: id }),
+      () =>
+        retryCall({
+          name: `destroy subnet isDownById: ${name} id: ${id}`,
+          fn: () => ec2().deleteSubnet({ SubnetId: id }),
+          shouldRetryOnException: ({ error, name }) =>
+            switchCase([
+              eq(get("code"), "DependencyViolation"),
+              () => true,
+              () => false,
+            ])(error),
+          config: { retryCount: 10, retryDelay: 5e2 },
+        }),
       tap(() =>
         retryCall({
           name: `destroy subnet isDownById: ${name} id: ${id}`,

@@ -65,6 +65,8 @@ User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot lis
 
 ## TODO Aws:
 
+- https://kubernetes.github.io/ingress-nginx/deploy/
+
 - getBucketTagging should not log error when tad dos not exist.
 - delete load balancers in vpc
 - minikite gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404

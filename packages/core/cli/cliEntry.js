@@ -19,9 +19,10 @@ main({
     await new Promise((resolve, reject) => {
       logger.logger.on("finish", function () {
         //console.log("why-is-node-running:");
-        log();
+        //log();
         process.exit(code);
       });
+      logger.logger.end();
     });
   },
 });

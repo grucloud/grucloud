@@ -1,0 +1,24 @@
+{
+  "name": "@grucloud/module-aws-load-balancer",
+  "version": "1.0.0",
+  "description": "GruCloud Module to create load balancer, target group and rule",
+  "main": "iac.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "aws",
+    "load",
+    "balancer",
+    "target",
+    "group",
+    "rule",
+    "HTTP",
+    "HTTPS"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "mocha": "^8.3.2"
+  }
+}

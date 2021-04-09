@@ -118,7 +118,7 @@ exports.createStack = async ({ stage }) => {
   assert(ingress);
 
   const loadBalancerRecord = await stackAws.provider.makeRoute53Record({
-    name: `dns-record-alias-load-balancer-${hostedZone.name}.`,
+    name: `dns-record-alias-load-balancer-${hostedZone.name}`,
     dependencies: { hostedZone, ingress },
     properties: ({ dependencies }) => {
       const hostname = pipe([

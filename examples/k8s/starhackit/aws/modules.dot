@@ -1,23 +1,27 @@
 digraph graphname {
   subgraph "cluster_mock-1" {
 label=AWS;
-
-"EKS Module"
-"SSL Certificate"
-"Route53 Record Load Balancer"
+"VPC"
+"EKS"
+"Load Balancer Role"
+"Certificate"
+"Load Balancer Route53 Record"
 
 }
 
 subgraph "cluster_k8s-2" {
 label=K8S
-"Aws Load Balancer Controller" 
+"K8s Aws Load Balancer" 
 "Cert Manager" 
 "Ingress" 
 "Full Stack App"
 }
-"Ingress" -> "SSL Certificate"
-"Route53 Record Load Balancer"->"Ingress" 
-"Aws Load Balancer Controller"->"Cert Manager" 
+"K8s Aws Load Balancer"->"Cert Manager" 
+"K8s Aws Load Balancer"-> "Load Balancer Role"
+"EKS" -> "VPC"
+"Load Balancer Role" -> "EKS"
+"Ingress" -> "Certificate"
+"Load Balancer Route53 Record"->"Ingress" 
 
 
 }

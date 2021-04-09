@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-k8s-redis",
-  "version": "1.10.20",
+  "version": "1.10.21",
   "description": "Grucloud module for the k8s redis",
   "main": "iac.js",
   "scripts": {},
@@ -8,7 +8,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.10.20",
-    "@grucloud/provider-k8s": "^1.10.20"
+    "@grucloud/provider-k8s": "^1.10.21"
   },
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/modules/k8s/redis",
   "repository": {

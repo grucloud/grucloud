@@ -16,7 +16,8 @@ const AwsRoute53Domain = require("./Route53Domain");
 const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
 const AwsEKS = require("./EKS");
-const AwsELB = require("./ELB");
+//const AwsELB = require("./ELB");
+const AwsELBv2 = require("./ELBv2");
 
 const defaultRegion = "eu-west-2";
 
@@ -29,7 +30,8 @@ const fnSpecs = () => [
   ...AwsCertificateManager,
   ...AwsCloudFront,
   ...AwsEKS,
-  ...AwsELB,
+  //...AwsELB,
+  ...AwsELBv2,
 ];
 const getAvailabilityZonesName = pipe([
   ({ region }) => Ec2New({ region }),
@@ -73,6 +75,7 @@ exports.AwsProvider = ({
     cloudfront: "2020-05-31",
     eks: "2017-11-01",
     elb: "2012-06-01",
+    elbv2: "2015-12-01",
   };
 
   const { AWSAccessKeyId, AWSSecretKey } = process.env;

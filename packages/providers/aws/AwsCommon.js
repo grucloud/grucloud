@@ -63,6 +63,9 @@ exports.EKSNew = (config) => () =>
 exports.ELBNew = (config) => () =>
   createEndpoint({ endpointName: "ELB" })(config);
 
+exports.ELBv2New = (config) => () =>
+  createEndpoint({ endpointName: "ELBv2" })(config);
+
 exports.shouldRetryOnException = ({ error, name }) =>
   pipe([
     tap(() => {
