@@ -132,7 +132,7 @@ const ResourceMaker = ({
   config,
 }) => {
   const { type } = spec;
-  assert(resourceName, "missing 'name' property");
+  assert(resourceName, `missing 'name' property for type: ${type}`);
   logger.debug(`ResourceMaker: ${tos({ type, resourceName, meta })}`);
 
   const client = createClient({
@@ -259,8 +259,14 @@ const ResourceMaker = ({
         () => []
       ),
       tap((result) => {
-        //logger.info(`getDependencyList `);
+        logger.info(`getDependencyList `);
       }),
+      tap(
+        forEach((dep) => {
+          assert(dep, "dep");
+          assert(dep.type, "dep.type");
+        })
+      ),
     ])(dependencies);
 
   const resolveDependencies = ({
@@ -623,7 +629,10 @@ const ResourceMaker = ({
       return;
     }
     if (!dependency) {
-      throw { code: 422, message: "missing dependency" };
+      throw {
+        code: 422,
+        message: `missing dependency for ${type}/${resourceName}`,
+      };
     }
     if (!dependency.addUsedBy) {
       forEach((item) => {

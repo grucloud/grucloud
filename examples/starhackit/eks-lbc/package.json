@@ -1,9 +1,9 @@
 {
-  "name": "@grucloud/example-k8s-aws-starhackit",
+  "name": "starhackit-eks-lbc",
   "projectName": "starhackit",
   "version": "1.10.21",
   "private": true,
-  "description": "deploying starhackit on AWS EKS",
+  "description": "deploying starhackit on AWS EKS with the Load Balancer Controller",
   "main": "index.js",
   "scripts": {
     "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",

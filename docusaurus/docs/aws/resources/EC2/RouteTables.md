@@ -30,7 +30,7 @@ const routeTable = await provider.makeRouteTables({
 ### Examples
 
 - [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-vpc/iac.js)
-- [EKS](https://github.com/grucloud/grucloud/blob/main/examples/aws/eks/iac.js)
+- [EKS](https://github.com/grucloud/grucloud/blob/main/packages/module/aws/eks/iac.js)
 
 ### Dependencies
 

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { createChartWebServer } = require("./charts/web-server");
+const { createResourcesWebServer } = require("./charts/web-server");
 const { createChartRestServer } = require("./charts/rest-server");
 const PostgresStack = require("@grucloud/module-k8s-postgres");
 const RedisStack = require("@grucloud/module-k8s-redis");
@@ -28,7 +28,7 @@ const createResources = async ({ provider }) => {
     config,
   });
 
-  const restServerChart = await createChartRestServer({
+  const restServerResources = await createChartRestServer({
     provider,
     resources: {
       namespace,
@@ -38,20 +38,21 @@ const createResources = async ({ provider }) => {
     config,
   });
 
-  const webServerChart = await createChartWebServer({
+  const webServerResources = await createResourcesWebServer({
     provider,
     resources: { namespace },
     config,
   });
 
-  const dashboardResources = await Dashboard.createResources({ provider });
+  const dashboardResources =
+    config.dashboard && (await Dashboard.createResources({ provider }));
 
   return {
     namespace,
     postgresResources,
     redisResources,
-    restServerChart,
-    webServerChart,
+    restServerResources,
+    webServerResources,
     dashboardResources,
   };
 };

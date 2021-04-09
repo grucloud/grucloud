@@ -58,7 +58,7 @@ exports.ELBRule = ({ spec, config }) => {
       tap(() => {
         logger.info(`getByName ${name}`);
       }),
-      describeAllListeners,
+      describeAllRules,
       find(eq(findName, name)),
       tap((result) => {
         logger.debug(`getByName ${name}, result: ${tos(result)}`);
@@ -70,7 +70,7 @@ exports.ELBRule = ({ spec, config }) => {
       tap(() => {
         logger.info(`getById ${id}`);
       }),
-      () => ({ RulesArns: [id] }),
+      () => ({ RuleArns: [id] }),
       (params) => elb().describeRules(params),
       get("Rules"),
       first,
@@ -144,7 +144,7 @@ exports.ELBRule = ({ spec, config }) => {
       }),
       () => properties,
       defaultsDeep({
-        ListenerArn: getField(listener, "VpcId"),
+        ListenerArn: getField(listener, "ListenerArn"),
         Tags: buildTags({ name, config }),
       }),
     ])();

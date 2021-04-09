@@ -75,7 +75,7 @@ exports.createIngress = async ({
 ## Source Code Examples
 
 - [ingress on minikube](https://github.com/grucloud/grucloud/blob/main/examples/k8s/starhackit/minikube/ingress.js#L14)
-- [ingress on EKS](https://github.com/grucloud/grucloud/blob/main/examples/k8s/starhackit/aws/eksIngress.js#L15)
+- [ingress on EKS](https://github.com/grucloud/grucloud/blob/main/examples/k8s/starhackit/eks-lbc/eksIngress.js#L15)
 
 ## Listing
 

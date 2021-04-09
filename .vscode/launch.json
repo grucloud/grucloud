@@ -424,9 +424,19 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "K8s EKS Graph",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["graph"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "K8s EKS List",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/starhackit/aws",
+      "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["list"]
@@ -434,19 +444,9 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "K8s EKS List Ingress",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/starhackit/aws",
-      "internalConsoleOptions": "openOnSessionStart",
-      "console": "integratedTerminal",
-      "args": ["list", "-t", "Subnet"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
       "name": "K8s EKS Plan",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/starhackit/aws",
+      "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["plan"]
@@ -456,7 +456,7 @@
       "request": "launch",
       "name": "K8s EKS Apply",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/starhackit/aws",
+      "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["apply", "-f"]
@@ -466,7 +466,7 @@
       "request": "launch",
       "name": "K8s EKS Destroy All",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/starhackit/aws",
+      "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["destroy", "-f", "-a"]
@@ -476,7 +476,7 @@
       "request": "launch",
       "name": "Minikube Starhackit List",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/starhackit/minikube",
+      "cwd": "${workspaceFolder}/examples/starhackit/minikube",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["list"]
@@ -486,7 +486,7 @@
       "request": "launch",
       "name": "Minikube Starhackit Apply",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/starhackit/minikube",
+      "cwd": "${workspaceFolder}/examples/starhackit/minikube",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["apply", "-f"]
@@ -496,7 +496,7 @@
       "request": "launch",
       "name": "Minikube Starhackit Destroy all",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/starhackit/minikube",
+      "cwd": "${workspaceFolder}/examples/starhackit/minikube",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["destroy", "-f", "-a"]
@@ -506,7 +506,7 @@
       "request": "launch",
       "name": "Minikube Starhackit Outout ingress",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/starhackit/minikube",
+      "cwd": "${workspaceFolder}/examples/starhackit/minikube",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["output", "-n", "default::ingress", "-t", "Ingress", "-f", "status.loadBalancer.ingress.ip"]
@@ -516,7 +516,7 @@
       "request": "launch",
       "name": "K8s Starhackit Plan",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/starhackit",
+      "cwd": "${workspaceFolder}/examples/starhackit",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["plan"]
@@ -526,7 +526,7 @@
       "request": "launch",
       "name": "K8s Starhackit Apply",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/starhackit",
+      "cwd": "${workspaceFolder}/examples/starhackit",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["apply", "-f"]
@@ -536,7 +536,7 @@
       "request": "launch",
       "name": "K8s Starhackit Destroy",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/starhackit",
+      "cwd": "${workspaceFolder}/examples/starhackit",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["destroy", "-f"]
@@ -546,7 +546,7 @@
       "request": "launch",
       "name": "K8s Starhackit Destroy StatefulSet",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/starhackit",
+      "cwd": "${workspaceFolder}/examples/starhackit",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["destroy", "-f", "-t", "StatefulSet"]
@@ -556,7 +556,7 @@
       "request": "launch",
       "name": "K8s Starhackit Destroy All",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/k8s/starhackit",
+      "cwd": "${workspaceFolder}/examples/starhackit",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["destroy", "-f", "-a"]
@@ -937,51 +937,6 @@
       "console": "integratedTerminal",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["destroy", "-f"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Aws EKS List",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/aws/eks/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["list"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Aws EKS Plan",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/aws/eks/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["plan"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Aws EKS Apply",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/aws/eks/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["apply", "-f"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Aws EKS onDeployed",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/aws/eks/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["run", "--onDeployed"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Aws EKS Destroy",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/aws/eks/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["d", "-f"]
     },
     {
       "type": "node",
