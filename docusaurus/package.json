@@ -2,6 +2,7 @@
   "name": "grucloud-doc",
   "version": "0.0.0",
   "private": true,
+  "homepage": "https://grucloud.com",
   "scripts": {
     "start": "docusaurus start",
     "build": "docusaurus build",
