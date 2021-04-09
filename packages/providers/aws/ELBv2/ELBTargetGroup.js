@@ -1,11 +1,19 @@
 const assert = require("assert");
-const { map, pipe, tap, get, not, assign, switchCase } = require("rubico");
-const { first, defaultsDeep, isEmpty } = require("rubico/x");
+const {
+  map,
+  pipe,
+  tap,
+  get,
+  not,
+  assign,
+  eq,
+  switchCase,
+  tryCatch,
+} = require("rubico");
+const { first, find, defaultsDeep, isEmpty } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const logger = require("@grucloud/core/logger")({
-  prefix: "ELBTargetGroup",
-});
+const logger = require("@grucloud/core/logger")({ prefix: "ELBTargetGroup" });
 
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
@@ -57,16 +65,37 @@ exports.ELBTargetGroup = ({ spec, config }) => {
       tap(() => {
         logger.info(`getByName ${name}`);
       }),
-      () => ({ Names: [name] }),
-      (params) => elb().describeTargetGroups(params),
+      () => elb().describeTargetGroups({}),
       get("TargetGroups"),
-      first,
+      find(eq(findName, name)),
       tap((result) => {
-        logger.debug(`getByName result: ${tos(result)}`);
+        logger.debug(`getByName ${name}, result: ${tos(result)}`);
       }),
     ])();
 
-  const getById = ({ id }) => getByName({ name: id });
+  const getById = ({ id }) =>
+    tryCatch(
+      pipe([
+        tap(() => {
+          logger.info(`getById ${id}`);
+        }),
+        () => ({ TargetGroupArns: [id] }),
+        (params) => elb().describeTargetGroups(params),
+        get("TargetGroups"),
+        first,
+        tap((result) => {
+          logger.debug(`getById ${id}, result: ${tos(result)}`);
+        }),
+      ]),
+      switchCase([
+        eq(get("code"), "TargetGroupNotFound"),
+        () => false,
+        (error) => {
+          logger.error(`getById ${id}, error: ${tos(error)}`);
+          throw error;
+        },
+      ])
+    )();
 
   const isInstanceUp = not(isEmpty);
 

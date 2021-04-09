@@ -1,12 +1,9 @@
 const assert = require("assert");
-const { map, pipe, tap, get, not } = require("rubico");
-const { first, defaultsDeep, isEmpty } = require("rubico/x");
+const { flatMap, pipe, tap, get, not, eq, filter } = require("rubico");
+const { first, defaultsDeep, isEmpty, pluck, find } = require("rubico/x");
+
 const { getField } = require("@grucloud/core/ProviderCommon");
-
-const logger = require("@grucloud/core/logger")({
-  prefix: "ELBRule",
-});
-
+const logger = require("@grucloud/core/logger")({ prefix: "ELBRule" });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { isUpByIdCore, isDownByIdCore } = require("@grucloud/core/Common");
@@ -19,11 +16,23 @@ const {
 
 const findName = findNameInTags;
 const findId = get("RuleArn");
-
+const { ELBListener } = require("./ELBListener");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
-
 exports.ELBRule = ({ spec, config }) => {
   const elb = ELBv2New(config);
+  const elbListener = ELBListener({ spec, config });
+  const describeAllRules = pipe([
+    () => elbListener.getList({}),
+    get("items"),
+    pluck("ListenerArn"),
+    flatMap(
+      pipe([
+        (ListenerArn) => elb().describeRules({ ListenerArn }),
+        get("Rules"),
+      ])
+    ),
+    filter(not(isEmpty)),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeRules-property
   const getList = async () =>
@@ -31,9 +40,7 @@ exports.ELBRule = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList rule`);
       }),
-
-      () => elb().describeRules({}),
-      get("Rules"),
+      describeAllRules,
       tap((results) => {
         logger.debug(`getList rule result: ${tos(results)}`);
       }),
@@ -46,22 +53,31 @@ exports.ELBRule = ({ spec, config }) => {
       }),
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeRules-property
   const getByName = ({ name }) =>
     pipe([
       tap(() => {
         logger.info(`getByName ${name}`);
       }),
-      () => ({ Names: [name] }),
+      describeAllListeners,
+      find(eq(findName, name)),
+      tap((result) => {
+        logger.debug(`getByName ${name}, result: ${tos(result)}`);
+      }),
+    ])();
+
+  const getById = ({ id }) =>
+    pipe([
+      tap(() => {
+        logger.info(`getById ${id}`);
+      }),
+      () => ({ RulesArns: [id] }),
       (params) => elb().describeRules(params),
       get("Rules"),
       first,
       tap((result) => {
-        logger.debug(`getByName result: ${tos(result)}`);
+        logger.debug(`getById ${id}, result: ${tos(result)}`);
       }),
     ])();
-
-  const getById = ({ id }) => getByName({ name: id });
 
   const isInstanceUp = not(isEmpty);
 
@@ -133,6 +149,8 @@ exports.ELBRule = ({ spec, config }) => {
       }),
     ])();
 
+  const cannotBeDeleted = get("resource.IsDefault");
+
   return {
     type: "Rule",
     spec,
@@ -148,5 +166,6 @@ exports.ELBRule = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    cannotBeDeleted,
   };
 };

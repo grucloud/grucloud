@@ -19,14 +19,14 @@ module.exports = [
   },
   {
     type: "Listener",
-    dependsOn: ["LoadBalancer"],
+    dependsOn: ["LoadBalancer", "TargetGroup"],
     Client: ELBListener,
     isOurMinion,
   },
-  /*{
+  {
     type: "Rule",
-    dependsOn: ["Listener"],
+    dependsOn: ["Listener", "TargetGroup"],
     Client: ELBRule,
     isOurMinion,
-  },*/
+  },
 ];

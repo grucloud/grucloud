@@ -1,5 +1,14 @@
 const assert = require("assert");
-const { map, pipe, tap, get, eq, assign } = require("rubico");
+const {
+  map,
+  pipe,
+  tap,
+  get,
+  eq,
+  assign,
+  tryCatch,
+  switchCase,
+} = require("rubico");
 const { first, defaultsDeep, isEmpty } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
@@ -56,7 +65,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
       tap(() => {
         logger.info(`getByName ${name}`);
       }),
-      () => ({ LoadBalancerArns: [name] }),
+      () => ({ Names: [name] }),
       (params) => elb().describeLoadBalancers(params),
       get("LoadBalancers"),
       first,
@@ -65,9 +74,31 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
       }),
     ])();
 
-  const getById = ({ id }) => getByName({ name: id });
+  const getById = ({ id }) =>
+    tryCatch(
+      pipe([
+        tap(() => {
+          logger.info(`getById ${id}`);
+        }),
+        () => ({ LoadBalancerArns: [id] }),
+        (params) => elb().describeLoadBalancers(params),
+        get("LoadBalancers"),
+        first,
+        tap((result) => {
+          logger.debug(`getById result: ${tos(result)}`);
+        }),
+      ]),
+      switchCase([
+        eq(get("code"), "LoadBalancerNotFound"),
+        () => false,
+        (error) => {
+          logger.error(`getById ${id}, error: ${tos(error)}`);
+          throw error;
+        },
+      ])
+    )();
 
-  const isInstanceUp = eq(get("State"), "active");
+  const isInstanceUp = eq(get("State.Code"), "active");
 
   const isUpById = isUpByIdCore({ isInstanceUp, getById });
   const isDownById = isDownByIdCore({ getById });
@@ -90,7 +121,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
         })
       ),
       tap(() => {
-        logger.info(`created lbv2`);
+        logger.info(`created lbv2 ${name}`);
       }),
     ])();
 

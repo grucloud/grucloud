@@ -12,10 +12,11 @@ describe("AwsLoadBalancerV2", async function () {
   let loadBalancer;
   let targetGroup;
   let listenerHttp;
-  let loadBalancerName = "lbv2";
-  let targetGroupName = "targetGroup";
-  let listenerHttpName = "listener-http";
-  const types = ["LoadBalancer", "TargetGroup", "Listener"];
+  const projectName = "elb-test";
+  const loadBalancerName = "load-balancer";
+  const targetGroupName = "targetGroup";
+  const listenerHttpName = "listener-http";
+  const types = ["LoadBalancer", "TargetGroup", "Listener", "Rule"];
 
   before(async function () {
     try {
@@ -24,24 +25,24 @@ describe("AwsLoadBalancerV2", async function () {
       this.skip();
     }
     provider = AwsProvider({
-      config: () => ({ projectName: "gru-test" }),
+      config: () => ({ projectName }),
     });
     assert(provider.config.region);
 
     const vpc = await provider.makeVpc({
-      name: "vpc-elbv2-test",
+      name: `vpc-${projectName}`,
       properties: () => ({
         CidrBlock: "192.168.0.0/16",
       }),
     });
 
     const internetGateway = await provider.makeInternetGateway({
-      name: "ig",
+      name: `ig-${projectName}`,
       dependencies: { vpc },
     });
 
     const subnet1 = await provider.makeSubnet({
-      name: "subnet1",
+      name: `subnet1-${projectName}`,
       dependencies: { vpc },
       properties: () => ({
         CidrBlock: "192.168.0.0/19",
@@ -49,7 +50,7 @@ describe("AwsLoadBalancerV2", async function () {
       }),
     });
     const subnet2 = await provider.makeSubnet({
-      name: "subnet2",
+      name: `subnet2-${projectName}`,
       dependencies: { vpc },
       properties: () => ({
         CidrBlock: "192.168.32.0/19",
@@ -58,7 +59,7 @@ describe("AwsLoadBalancerV2", async function () {
     });
 
     loadBalancer = await provider.makeLoadBalancer({
-      name: loadBalancerName,
+      name: `${loadBalancerName}-${projectName}`,
       dependencies: {
         subnets: [subnet1, subnet2],
       },
@@ -66,7 +67,7 @@ describe("AwsLoadBalancerV2", async function () {
     });
 
     targetGroup = await provider.makeTargetGroup({
-      name: targetGroupName,
+      name: `${targetGroupName}-${projectName}`,
       dependencies: {
         vpc,
       },
@@ -74,7 +75,7 @@ describe("AwsLoadBalancerV2", async function () {
     });
 
     listenerHttp = await provider.makeListener({
-      name: listenerHttpName,
+      name: `${listenerHttpName}-${projectName}`,
       dependencies: {
         loadBalancer,
         targetGroups: { targetGroup },
@@ -88,7 +89,7 @@ describe("AwsLoadBalancerV2", async function () {
         Protocol: "HTTP",
         DefaultActions: [
           {
-            TargetGroupArn: targetGroup?.live.TargetGroupArn,
+            TargetGroupArn: targetGroup?.live?.TargetGroupArn,
             Type: "forward",
           },
         ],
