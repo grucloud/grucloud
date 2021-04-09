@@ -9,6 +9,8 @@ const {
   filter,
   tryCatch,
   switchCase,
+  assign,
+  map,
 } = require("rubico");
 const { first, defaultsDeep, isEmpty, pluck, find } = require("rubico/x");
 
@@ -55,6 +57,16 @@ exports.ELBRule = ({ spec, config }) => {
       tap((results) => {
         logger.debug(`getList rule result: ${tos(results)}`);
       }),
+      map(
+        assign({
+          Tags: pipe([
+            ({ RuleArn }) => elb().describeTags({ ResourceArns: [RuleArn] }),
+            get("TagDescriptions"),
+            first,
+            get("Tags"),
+          ]),
+        })
+      ),
       (items = []) => ({
         total: items.length,
         items,
