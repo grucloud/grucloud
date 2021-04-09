@@ -1,5 +1,15 @@
 const assert = require("assert");
-const { flatMap, pipe, tap, get, not, eq, filter } = require("rubico");
+const {
+  flatMap,
+  pipe,
+  tap,
+  get,
+  not,
+  eq,
+  filter,
+  tryCatch,
+  switchCase,
+} = require("rubico");
 const { first, defaultsDeep, isEmpty, pluck, find } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -11,11 +21,12 @@ const {
   ELBv2New,
   buildTags,
   shouldRetryOnException,
-  findNameInTags,
+  findNameInTagsOrId,
 } = require("../AwsCommon");
 
-const findName = findNameInTags;
 const findId = get("RuleArn");
+const findName = (item) => findNameInTagsOrId({ item, findId });
+
 const { ELBListener } = require("./ELBListener");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 exports.ELBRule = ({ spec, config }) => {
@@ -71,9 +82,17 @@ exports.ELBRule = ({ spec, config }) => {
         logger.info(`getById ${id}`);
       }),
       () => ({ RuleArns: [id] }),
-      (params) => elb().describeRules(params),
-      get("Rules"),
-      first,
+      tryCatch(
+        pipe([(params) => elb().describeRules(params), get("Rules"), first]),
+        switchCase([
+          eq(get("code"), "RuleNotFound"),
+          () => undefined,
+          (error) => {
+            logger.error(`getById describeRules error ${tos(error)}`);
+            throw error;
+          },
+        ])
+      ),
       tap((result) => {
         logger.debug(`getById ${id}, result: ${tos(result)}`);
       }),
