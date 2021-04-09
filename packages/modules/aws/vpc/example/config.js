@@ -3,7 +3,7 @@ const pkg = require("./package.json");
 module.exports = ({ region }) => {
   assert(region);
   return {
-    projectName: pkg.name,
+    projectName: "ex-vpc-mod",
     vpc: {
       vpc: { Tags: [] },
       subnets: {

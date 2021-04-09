@@ -102,7 +102,7 @@ const subnetPrivate = await provider.makeSubnet({
 
 - [SecurityGroup](./SecurityGroup)
 - [EC2](./EC2)
-- [RouteTables](./RouteTables)
+- [RouteTable](./RouteTable)
 - [NatGateway](./NatGateway)
 
 ## Listing

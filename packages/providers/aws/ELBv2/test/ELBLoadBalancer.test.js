@@ -97,7 +97,7 @@ describe("AwsLoadBalancerV2", async function () {
     });
   });
   after(async () => {});
-  it.only("load balancer v2 apply plan", async function () {
+  it("load balancer v2 apply plan", async function () {
     await testPlanDeploy({ provider, types });
 
     await testPlanDestroy({ provider, types });

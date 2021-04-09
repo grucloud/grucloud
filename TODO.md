@@ -1,6 +1,7 @@
 ## Bugs
 
-- RouteTable should accepts an array of subnet
+- revokeSecurityGroupIngress
+
 - kubectl logs -n kube-system deployment.apps/aws-load-balancer-controller
 
 User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot list resource "pods" in API group "" at the cluster scope
@@ -69,7 +70,6 @@ User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot lis
 - https://kubernetes.github.io/ingress-nginx/deploy/
 
 - getBucketTagging should not log error when tad dos not exist.
-- delete load balancers in vpc
 - minikite gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404
 - https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
 - https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html
@@ -150,44 +150,3 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 }
 
 ## Bugs
-
-nodeGroup result: {
-"nodegroupName": "node-group-public-cluster",
-"nodegroupArn": "arn:aws:eks:eu-west-2:840541460064:nodegroup/cluster/node-group-public-cluster/f6bc56cd-aa2e-5c37-7aa1-2eb8c607c661",
-"clusterName": "cluster",
-"version": "1.18",
-"releaseVersion": "1.18.9-20210329",
-"createdAt": "2021-04-07T18:32:23.002Z",
-"modifiedAt": "2021-04-07T18:32:37.117Z",
-"status": "CREATE_FAILED",
-"capacityType": "ON_DEMAND",
-"scalingConfig": {
-"minSize": 1,
-"maxSize": 1,
-"desiredSize": 1
-},
-"instanceTypes": [
-"t2.medium"
-],
-"subnets": [
-"subnet-0b684fe8afd1bcdee",
-"subnet-0aab30dda9279c1fe"
-],
-"amiType": "AL2_x86_64",
-"nodeRole": "arn:aws:iam::840541460064:role/role-node-group",
-"resources": {
-"remoteAccessSecurityGroup": null
-},
-"diskSize": 20,
-"health": {
-"issues": [
-{
-"code": "Ec2SubnetInvalidConfiguration",
-"message": "One or more Amazon EC2 Subnets of [subnet-0b684fe8afd1bcdee, subnet-0aab30dda9279c1fe] for node group node-group-public-cluster does not automatically assign public IP addresses to instances launched into it. If you want your instances to be assigned a public IP address, then you need to enable auto-assign public IP address for the subnet. See IP addressing in VPC guide: https://docs.aws.amazon.com/vpc/latest/userguide/vpc-ip-addressing.html#subnet-public-ip",
-"resourceIds": [
-"subnet-0b684fe8afd1bcdee",
-"subnet-0aab30dda9279c1fe"
-]
-}
-]
-},

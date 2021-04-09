@@ -9,8 +9,9 @@ const {
   eq,
   fork,
   switchCase,
+  all,
 } = require("rubico");
-const { isEmpty, defaultsDeep } = require("rubico/x");
+const { isEmpty, forEach, defaultsDeep } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsRouteTable" });
 const { tos } = require("@grucloud/core/tos");
@@ -27,7 +28,7 @@ const {
   shouldRetryOnException,
 } = require("../AwsCommon");
 
-exports.AwsRouteTables = ({ spec, config }) => {
+exports.AwsRouteTable = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
@@ -69,14 +70,20 @@ exports.AwsRouteTables = ({ spec, config }) => {
   const create = async ({
     payload,
     name,
-    resolvedDependencies: { vpc, subnet },
+    resolvedDependencies: { vpc, subnets },
   }) =>
     pipe([
       tap(() => {
         logger.info(`create rt ${tos({ name })}`);
-        assert(vpc, "RouteTables is missing the dependency 'vpc'");
-        assert(subnet, "RouteTables is missing the dependency 'subnet'");
-        assert(subnet.live.SubnetId, "subnet.live.SubnetId");
+        assert(vpc, "RouteTable is missing the dependency 'vpc'");
+        assert(
+          Array.isArray(subnets),
+          "RouteTable is missing the dependency 'subnets' array"
+        );
+        assert(
+          all(get("live.SubnetId"))(subnets),
+          "one of the subnet is not up"
+        );
       }),
       () =>
         defaultsDeep({
@@ -84,11 +91,24 @@ exports.AwsRouteTables = ({ spec, config }) => {
         })(payload),
       (params) => ec2().createRouteTable(params),
       get("RouteTable.RouteTableId"),
-      (RouteTableId) =>
-        ec2().associateRouteTable({
-          RouteTableId,
-          SubnetId: subnet.live.SubnetId,
-        }),
+      tap((RouteTableId) =>
+        forEach(
+          pipe([
+            get("live.SubnetId"),
+            tap((SubnetId) => {
+              logger.info(
+                `associateRouteTable ${tos({ name, SubnetId, SubnetId })}`
+              );
+              assert(SubnetId, "SubnetId");
+            }),
+            (SubnetId) =>
+              ec2().associateRouteTable({
+                RouteTableId,
+                SubnetId,
+              }),
+          ])
+        )(subnets)
+      ),
       tap((RouteTableId) => {
         logger.info(`created rt ${JSON.stringify({ name, RouteTableId })}`);
       }),
@@ -146,7 +166,7 @@ exports.AwsRouteTables = ({ spec, config }) => {
   };
 
   return {
-    type: "RouteTables",
+    type: "RouteTable",
     spec,
     findId,
     isUpById,

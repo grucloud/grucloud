@@ -97,6 +97,16 @@
       "args": ["apply", "-f"]
     },
     {
+      "type": "node",
+      "request": "launch",
+      "name": "Module AWS VPC Destroy All",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/packages/modules/aws/vpc/example",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["destroy", "-f", "-a"]
+    },
+    {
       "name": "Debug Core test",
       "type": "node",
       "request": "launch",

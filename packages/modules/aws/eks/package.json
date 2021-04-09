@@ -5,7 +5,7 @@
   "main": "iac.js",
   "scripts": {
     "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
-    "test": "mocha --exit './{,!(node_modules)/**}/*.test.js'"
+    "test": "mocha --exit 'test/**/*.test.js'"
   },
   "author": "",
   "license": "ISC",

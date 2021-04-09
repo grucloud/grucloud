@@ -8,7 +8,7 @@ const {
 const { CheckAwsTags } = require("../../AwsTagCheck");
 const cliCommands = require("@grucloud/core/cli/cliCommands");
 
-describe("AwsRouteTables", async function () {
+describe("AwsRouteTable", async function () {
   let config;
   let provider;
   let vpc;
@@ -51,9 +51,9 @@ describe("AwsRouteTables", async function () {
       dependencies: { vpc },
     });
 
-    routeTable = await provider.makeRouteTables({
+    routeTable = await provider.makeRouteTable({
       name: resourceName,
-      dependencies: { vpc, subnet },
+      dependencies: { vpc, subnets: [subnet] },
     });
 
     routeIg = await provider.makeRoute({
@@ -62,7 +62,7 @@ describe("AwsRouteTables", async function () {
     });
   });
   after(async () => {});
-  it.skip("rt apply and destroy", async function () {
+  it("rt apply and destroy", async function () {
     await testPlanDeploy({ provider });
     const rtLive = await routeTable.getLive();
     const subnetLive = await subnet.getLive();
@@ -78,15 +78,15 @@ describe("AwsRouteTables", async function () {
 
     const result = await cliCommands.list({
       infra: { provider },
-      commandOptions: { our: true, types: ["RouteTables"] },
+      commandOptions: { our: true, types: ["RouteTable"] },
     });
     assert(!result.error);
     assert(result.results);
     /*
     const {
       results: [rts],
-    } = await provider.listLives({ options: { types: ["RouteTables"] } });
-    assert.equal(rts.type, "RouteTables");
+    } = await provider.listLives({ options: { types: ["RouteTable"] } });
+    assert.equal(rts.type, "RouteTable");
     {
       const { data: routeTable } = rts.resources.find(
         (resource) => resource.managedByUs
