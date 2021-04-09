@@ -22,7 +22,7 @@ The following resources are required to create an EKS Cluster:
 - [Route](https://www.grucloud.com/docs/aws/resources/EC2/Route): 3 routes for the public subnet and 3 routes for the private subnet
 
 A picture is worth a thousand word, we'll be able to generate this dependency graph at the end of this tutorial:
-![Graph](https://github.com/grucloud/grucloud/tree/main/packages/modules/aws/vpc/example/grucloud.svg)
+![Graph](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/vpc/example/grucloud.svg)
 
 # Requirements
 
@@ -82,7 +82,7 @@ The entry point will be _iac.js_
 npm init
 ```
 
-## .npmignore
+## .npmignore
 
 This code will be published to NPM, therefore ensure _.npmignore_ excludes files and directories not needed by the published packages: logs, examples and tests.
 
@@ -334,7 +334,7 @@ module.exports = ({ region }) => ({
 });
 ```
 
-## iac.js
+## iac.js
 
 The file will export the _createStack_ function. It uses the _createResources_ and _config_ function from this module: _@grucloud/module-aws-vpc_.
 
@@ -365,7 +365,7 @@ The `graph` command generates a graph from the _iac.js_ file in the form of a _.
 gc graph
 ```
 
-## Running with gc
+## Running with gc
 
 At this stage, one can use the usual _gc_ commands: _plan_, _apply_, _list_ and _destroy_
 
