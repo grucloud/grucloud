@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-//const log = require("why-is-node-running"); // should be your first require
-
 const logger = require("../logger")({ prefix: "CliEntry" });
 
 process.on("unhandledRejection", (reason, p) => {
@@ -16,13 +14,13 @@ main({
   argv: process.argv,
   onExit: async ({ code }) => {
     logger.info(`onExit ${code}`);
-    await new Promise((resolve, reject) => {
+
+    setTimeout(() => logger.logger.end(), 100);
+
+    await new Promise(() => {
       logger.logger.on("finish", function () {
-        //console.log("why-is-node-running:");
-        //log();
         process.exit(code);
       });
-      logger.logger.end();
     });
   },
 });
