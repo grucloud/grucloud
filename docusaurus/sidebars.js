@@ -23,6 +23,7 @@ module.exports = {
       {
         Resources: [
           { ACM: ["aws/resources/ACM/AcmCertificate"] },
+          { AutoScaling: ["aws/resources/AutoScaling/AutoScalingGroup"] },
           { CloudFront: ["aws/resources/CloudFront/CloudFrontDistribution"] },
           {
             EC2: [

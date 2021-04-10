@@ -4,7 +4,7 @@ const { AwsAutoScalingGroup } = require("./AwsAutoScalingGroup");
 module.exports = [
   {
     type: "AutoScalingGroup",
-    //dependsOn: [],
+    dependsOn: ["LoadBalancer", "TargetGroup"],
     Client: AwsAutoScalingGroup,
     isOurMinion,
     listOnly: true,
