@@ -59,7 +59,7 @@ const dependenciesTodependsOn = ({ dependencies, stacks }) =>
 
 const runnerParams = ({ provider, isProviderUp, stacks }) => ({
   key: provider.name,
-  meta: { providerName: provider.name },
+  meta: { providerName: provider.name, provider },
   dependsOn: dependenciesTodependsOn({
     dependencies: provider.dependencies,
     stacks,
@@ -479,46 +479,45 @@ exports.ProviderGru = ({ stacks }) => {
       tap(() => {
         logger.info(`filterProviderUp`);
       }),
+
       () => stacks,
-      map(
-        assign({
-          providerUp: ({ provider, isProviderUp = () => true }) =>
-            pipe([
-              () => provider.start({ onStateChange }),
-              () => isProviderUp(),
-            ])(),
-        })
-      ),
-      tap((stacks) => {
-        assert(stacks);
-      }),
-      (stacks) =>
-        filter(({ provider }) =>
+      map(({ provider, isProviderUp }) => ({
+        ...runnerParams({ provider, isProviderUp, stacks }),
+        executor: ({ results }) =>
           pipe([
-            () => provider.dependencies,
-            map(
-              pipe([
-                (providerDep) =>
-                  find(eq(get("provider.name"), providerDep.name))(stacks),
-                tap((xxx) => {
-                  assert(true);
-                }),
-                get("providerUp", true),
-                tap((isUp) => {
-                  logger.info(`provider is up: ${isUp}`);
-                }),
-              ])
-            ),
-            values,
-            tap((ups) => {
-              assert(ups);
+            tap(() => {
+              logger.info(`filterProviderUp start`);
             }),
-            all((v) => v),
-            tap((keep) => {
-              assert(true);
+            () => provider.start(),
+            tap(() => {
+              logger.info(`filterProviderUp started`);
             }),
-          ])()
-        )(stacks),
+            () => ({
+              provider,
+              isProviderUp,
+            }),
+          ])(),
+      })),
+      (inputs) =>
+        Lister({
+          inputs,
+          onStateChange: ({ key, result, nextState }) =>
+            pipe([
+              tap.if(
+                () => includes(nextState)(["DONE", "ERROR"]),
+                pipe([
+                  () => getProvider({ providerName: key }),
+                  (provider) => {
+                    logger.info(
+                      `filterProviderUp provider ${provider.name}, nextState: ${nextState}`
+                    );
+                  },
+                ])
+              ),
+            ])(),
+        }),
+      get("results"),
+      filter(not(get("error"))),
       tap((results) => {
         logger.info(`filterProviderUp #providers ${results.length}`);
       }),

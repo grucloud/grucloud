@@ -1,5 +1,7 @@
 ## Bugs
 
+-     ✖ SecurityGroup 0/4               The security group 'sg-0be1ccc0c18345ade' does not exist
+
 - revokeSecurityGroupIngress
 
 - kubectl logs -n kube-system deployment.apps/aws-load-balancer-controller
