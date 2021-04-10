@@ -140,6 +140,7 @@ exports.createChartRestServer = async ({
             protocol: "TCP",
             port: restServer.port,
             targetPort: restServer.port,
+            nodePort: 30020,
           },
         ],
       },
