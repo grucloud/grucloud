@@ -213,6 +213,7 @@ const createResources = async ({ provider, resources }) => {
   });
 
   // defines a bunch of Node Groups on public subnets
+  /*
   const nodeGroupsPublic = await map((nodeGroup) =>
     provider.makeEKSNodeGroup({
       name: nodeGroup.name,
@@ -224,7 +225,7 @@ const createResources = async ({ provider, resources }) => {
       properties: nodeGroup.properties,
     })
   )(config.eks.nodeGroupsPublic);
-
+*/
   // Create a bunch of Node Groups on private subnets
   const nodeGroupsPrivate = await map((nodeGroup) =>
     provider.makeEKSNodeGroup({
@@ -272,7 +273,7 @@ const createResources = async ({ provider, resources }) => {
     roleNodeGroup,
     securityGroupCluster,
     cluster,
-    nodeGroupsPublic,
+    //nodeGroupsPublic,
     nodeGroupsPrivate,
   };
 };
