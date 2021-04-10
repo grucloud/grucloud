@@ -56,7 +56,7 @@ npm test
 
 ## Creating the files & directories
 
-Create the ELB directory that will contains the ELB resources: LoadBalancer. Create as well as a test directory:
+Create the ELB directory that will contain the ELB resources: LoadBalancer. Create as well as a test directory:
 
 ```sh
 packages/providers/aws $ mkdir ELB

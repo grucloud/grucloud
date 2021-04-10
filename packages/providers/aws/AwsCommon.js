@@ -66,6 +66,9 @@ exports.ELBNew = (config) => () =>
 exports.ELBv2New = (config) => () =>
   createEndpoint({ endpointName: "ELBv2" })(config);
 
+exports.AutoScalingNew = (config) => () =>
+  createEndpoint({ endpointName: "AutoScaling" })(config);
+
 exports.shouldRetryOnException = ({ error, name }) =>
   pipe([
     tap(() => {

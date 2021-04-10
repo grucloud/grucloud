@@ -212,7 +212,7 @@ exports.EKSCluster = ({ spec, config }) => {
             if (!clusterLive) {
               return;
             }
-            const command = `kubectl config delete-cluster ${clusterLive.arn}`;
+            const command = `kubectl config delete-context ${clusterLive.arn}; kubectl config delete-cluster ${clusterLive.arn}`;
             logger.info(`running ${command}`);
             if (process.env.CONTINUOUS_INTEGRATION) {
               //kubectl not installed on circleci

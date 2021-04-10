@@ -59,6 +59,8 @@ User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot lis
 
 ## TODO Aws:
 
+- https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#attachLoadBalancerTargetGroups-property
+
 - https://kubernetes.github.io/ingress-nginx/deploy/
 
 - getBucketTagging should not log error when tad dos not exist.

@@ -293,7 +293,7 @@ exports.AwsEC2 = ({ spec, config }) => {
       }),
     ]);
 
-  const destroy = async ({ id, name }) =>
+  const destroyById = async ({ id, name }) =>
     pipe([
       tap(() => {
         logger.info(
@@ -302,6 +302,7 @@ exports.AwsEC2 = ({ spec, config }) => {
             id,
           })}`
         );
+        assert(id, "destroyById missing id");
       }),
       disassociateAddress({ id }),
       volumesDetach({ id }),
@@ -319,6 +320,8 @@ exports.AwsEC2 = ({ spec, config }) => {
         logger.info(`destroyed ec2  ${tos({ name, id })}`);
       }),
     ])();
+  //By live
+  const destroy = destroyById;
 
   const configDefault = async ({ name, properties, dependencies }) => {
     const {
@@ -388,6 +391,7 @@ exports.AwsEC2 = ({ spec, config }) => {
     getById,
     findName,
     create,
+    destroyById,
     destroy,
     getList,
     configDefault,
