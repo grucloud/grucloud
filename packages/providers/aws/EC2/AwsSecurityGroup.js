@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { get, pipe, map, eq, or, tap, fork } = require("rubico");
-const { defaultsDeep, find } = require("rubico/x");
+const { get, pipe, map, eq, or, tap, fork, filter, not } = require("rubico");
+const { defaultsDeep, forEach, pluck, identity, isEmpty } = require("rubico/x");
 const {
   Ec2New,
   getByIdCore,
@@ -57,7 +57,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     get("resource"),
     or([
       eq(get("GroupName"), "default"),
-      pipe([get("Tags"), find(eq(get("Key"), "aws:eks:cluster-name"))]),
+      //pipe([get("Tags"), find(eq(get("Key"), "aws:eks:cluster-name"))]),
     ]),
   ]);
 
@@ -114,6 +114,37 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       tap(() => {
         logger.debug(`destroy sg ${JSON.stringify({ name, id })}`);
       }),
+      () =>
+        ec2().describeNetworkInterfaces({
+          Filters: [{ Name: "group-id", Values: [id] }],
+        }),
+      get("NetworkInterfaces", []),
+      tap((NetworkInterfaces) => {
+        logger.debug(`#NetworkInterfaces ${NetworkInterfaces.length}`);
+      }),
+      tap(
+        forEach(
+          pipe([
+            get("Attachment.AttachmentId"),
+            tap.if(not(isEmpty), (AttachmentId) =>
+              ec2().detachNetworkInterface({ AttachmentId })
+            ),
+          ])
+        )
+      ),
+      tap(
+        forEach(
+          pipe([
+            get("NetworkInterfaceId"),
+            tap((NetworkInterfaceId) => {
+              logger.debug(`deleteNetworkInterface: ${NetworkInterfaceId}`);
+              assert(NetworkInterfaceId);
+            }),
+            (NetworkInterfaceId) =>
+              ec2().deleteNetworkInterface({ NetworkInterfaceId }),
+          ])
+        )
+      ),
       () => ec2().deleteSecurityGroup({ GroupId: id }),
       tap(() =>
         retryCall({
