@@ -7,13 +7,11 @@ const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { isUpByIdCore, isDownByIdCore } = require("@grucloud/core/Common");
 const { AutoScalingNew, shouldRetryOnException } = require("../AwsCommon");
-const { AwsEC2 } = require("../EC2/AwsEC2");
 const findName = get("AutoScalingGroupName");
 const findId = get("AutoScalingGroupARN");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
 exports.AwsAutoScalingGroup = ({ spec, config }) => {
-  const ec2Instance = AwsEC2({ spec, config });
   const autoScaling = AutoScalingNew(config);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeAutoScalingGroups-property
@@ -62,42 +60,9 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
           tap(() => {
             logger.info(`destroy ${JSON.stringify({ name, id })}`);
           }),
+
           //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#updateAutoScalingGroup-property
-          () => ({
-            AutoScalingGroupName: name,
-            MaxSize: 0,
-            MinSize: 0,
-          }),
-          (params) => autoScaling().updateAutoScalingGroup(params),
-          () => autoScaling().describeAutoScalingInstances({}),
-          get("AutoScalingInstances"),
-          pluck("InstanceId"),
-          tap((InstanceIds) => {
-            logger.info(
-              `destroy autoscalingGroup: #instances: ${InstanceIds.length}`
-            );
-          }),
-          map(
-            tryCatch(
-              (InstanceId) => ec2Instance.destroyById({ id: InstanceId }),
-              (error, InstanceId) =>
-                pipe([
-                  tap(() => {
-                    logger.error(
-                      `destroy error destroying ec2 ${InstanceId}, ${tos(
-                        error
-                      )}`
-                    );
-                  }),
-                  () => ({ error, InstanceId }),
-                ])()
-            )
-          ),
-          //Throw if error
-          tap(() => {
-            logger.info(`destroy autoscalingGroup: ec2 instances destroyed`);
-          }),
-          () => ({ AutoScalingGroupName: name }),
+          () => ({ AutoScalingGroupName: name, ForceDelete: true }),
           (params) => autoScaling().deleteAutoScalingGroup(params),
           tap(() =>
             retryCall({

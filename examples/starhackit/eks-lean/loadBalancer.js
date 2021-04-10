@@ -5,13 +5,14 @@ const { map, assign, pipe } = require("rubico");
 
 exports.createResources = async ({
   provider,
-  resources: { vpc, subnets, hostedZone, k8s, certificate },
+  resources: { vpc, subnets, hostedZone, k8s, eks, certificate },
 }) => {
   assert(Array.isArray(subnets));
   assert(vpc);
   assert(certificate);
   assert(hostedZone);
   assert(k8s);
+  assert(eks);
   const { config } = provider;
   assert(config.elb);
   assert(config.elb.loadBalancer);
@@ -20,10 +21,55 @@ exports.createResources = async ({
   assert(config.elb.rules);
   assert(config.elb.listeners.https.name);
 
+  const securityGroupLoadBalancer = await provider.makeSecurityGroup({
+    name: "load-balancer-security-group",
+    dependencies: { vpc },
+    properties: () => ({
+      create: {
+        Description: "Load Balancer HTTP HTTPS Security Group",
+      },
+      ingress: {
+        IpPermissions: [
+          {
+            FromPort: 80,
+            IpProtocol: "tcp",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+            ToPort: 80,
+          },
+          {
+            FromPort: 443,
+            IpProtocol: "tcp",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+            ToPort: 443,
+          },
+        ],
+      },
+    }),
+  });
+
   const loadBalancer = await provider.makeLoadBalancer({
     name: config.elb.loadBalancer.name,
     dependencies: {
       subnets,
+      securityGroups: [securityGroupLoadBalancer],
     },
     properties: () => ({}),
   });
@@ -33,15 +79,21 @@ exports.createResources = async ({
       name: config.elb.targetGroups.web.name,
       dependencies: {
         vpc,
+        nodeGroup: eks.nodeGroupsPrivate[0],
       },
-      properties: () => ({}),
+      properties: () => ({
+        Port: config.elb.targetGroups.web.nodePort,
+      }),
     }),
     rest: await provider.makeTargetGroup({
       name: config.elb.targetGroups.rest.name,
       dependencies: {
+        nodeGroup: eks.nodeGroupsPrivate[0],
         vpc,
       },
-      properties: () => ({}),
+      properties: () => ({
+        Port: config.elb.targetGroups.rest.nodePort,
+      }),
     }),
   };
 

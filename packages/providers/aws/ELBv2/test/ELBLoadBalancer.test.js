@@ -71,7 +71,9 @@ describe("AwsLoadBalancerV2", async function () {
       dependencies: {
         vpc,
       },
-      properties: () => ({}),
+      properties: () => ({
+        Port: 3000,
+      }),
     });
 
     listenerHttp = await provider.makeListener({

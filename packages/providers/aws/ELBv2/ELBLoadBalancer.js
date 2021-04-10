@@ -155,11 +155,12 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const configDefault = async ({
     name,
     properties,
-    dependencies: { subnets },
+    dependencies: { subnets, securityGroups },
   }) =>
     pipe([
       tap(() => {
         assert(Array.isArray(subnets));
+        assert(Array.isArray(securityGroups));
       }),
       () => properties,
       defaultsDeep({
@@ -168,6 +169,9 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
         Scheme: "internet-facing",
         Tags: buildTags({ name, config }),
         Subnets: map((subnet) => getField(subnet, "SubnetId"))(subnets),
+        SecurityGroups: map((securityGroup) =>
+          getField(securityGroup, "GroupId")
+        )(securityGroups),
       }),
     ])();
 

@@ -9,8 +9,8 @@ module.exports = ({ stage }) => ({
   elb: {
     loadBalancer: { name: `load-balancer-${pkg.projectName}` },
     targetGroups: {
-      web: { name: `target-group-web-${pkg.projectName}`, port: 300 },
-      rest: { name: `target-group-rest-${pkg.projectName}`, port: 900 },
+      web: { name: `target-group-web-${pkg.projectName}`, nodePort: 30010 },
+      rest: { name: `target-group-rest-${pkg.projectName}`, nodePort: 30020 },
     },
     listeners: {
       http: { name: `listener-http-${pkg.projectName}`, port: 80, rules: [] },
