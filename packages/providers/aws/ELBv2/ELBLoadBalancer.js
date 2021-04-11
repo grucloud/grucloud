@@ -167,11 +167,14 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
         Name: name,
         Type: "application",
         Scheme: "internet-facing",
-        Tags: buildTags({ name, config }),
+        Tags: buildTags({ name, config, UserTags: properties.Tags }),
         Subnets: map((subnet) => getField(subnet, "SubnetId"))(subnets),
         SecurityGroups: map((securityGroup) =>
           getField(securityGroup, "GroupId")
         )(securityGroups),
+      }),
+      tap((result) => {
+        assert(result);
       }),
     ])();
 

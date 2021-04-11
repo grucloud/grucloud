@@ -244,6 +244,11 @@ exports.getByIdCore = ({ fieldIds, getList }) =>
 
 exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
   pipe([
+    tap(() => {
+      assert(ec2);
+      assert(Name);
+      assert(Array.isArray(Values));
+    }),
     () =>
       ec2().describeNetworkInterfaces({
         Filters: [{ Name, Values }],
