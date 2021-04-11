@@ -4,7 +4,7 @@ const { defaultsDeep, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsKp" });
 const { tos } = require("@grucloud/core/tos");
-const { getByNameCore } = require("@grucloud/core/Common");
+const { getByNameCore, getByIdCore } = require("@grucloud/core/Common");
 const { Ec2New } = require("../AwsCommon");
 
 exports.AwsClientKeyPair = ({ spec, config }) => {
