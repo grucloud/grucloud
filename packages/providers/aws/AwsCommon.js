@@ -1,8 +1,18 @@
 process.env.AWS_SDK_LOAD_CONFIG = "true";
 const AWS = require("aws-sdk");
 const assert = require("assert");
-const { pipe, tryCatch, tap, switchCase, and, get, eq, or } = require("rubico");
-const { first, find, isEmpty } = require("rubico/x");
+const {
+  pipe,
+  tryCatch,
+  tap,
+  switchCase,
+  and,
+  get,
+  eq,
+  or,
+  not,
+} = require("rubico");
+const { first, find, isEmpty, forEach } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsCommon" });
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");

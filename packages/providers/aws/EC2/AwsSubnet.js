@@ -26,6 +26,7 @@ const {
   findNameInTags,
   shouldRetryOnException,
   buildTags,
+  destroyNetworkInterfaces,
 } = require("../AwsCommon");
 
 exports.AwsSubnet = ({ spec, config }) => {
