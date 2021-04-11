@@ -11,6 +11,8 @@ const { AwsSubnet } = require("./AwsSubnet");
 const { AwsSecurityGroup } = require("./AwsSecurityGroup");
 const { AwsElasticIpAddress } = require("./AwsElasticIpAddress");
 const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
+const { AwsNetworkInterface } = require("./AwsNetworkInterface");
+const { AwsNetworkAcl } = require("./AwsNetworkAcl");
 
 module.exports = [
   {
@@ -89,6 +91,18 @@ module.exports = [
       MinCount: 1,
       ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
     },
+    isOurMinion,
+  },
+  {
+    type: "NetworkInterface",
+    Client: AwsNetworkInterface,
+    listOnly: true,
+    isOurMinion,
+  },
+  {
+    type: "NetworkAcl",
+    Client: AwsNetworkAcl,
+    listOnly: true,
     isOurMinion,
   },
 ];
