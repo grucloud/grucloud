@@ -6,6 +6,7 @@ const {
   getByIdCore,
   shouldRetryOnException,
   buildTags,
+  destroyNetworkInterfaces,
 } = require("../AwsCommon");
 const { retryCall } = require("@grucloud/core/Retry");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -114,37 +115,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       tap(() => {
         logger.debug(`destroy sg ${JSON.stringify({ name, id })}`);
       }),
-      () =>
-        ec2().describeNetworkInterfaces({
-          Filters: [{ Name: "group-id", Values: [id] }],
-        }),
-      get("NetworkInterfaces", []),
-      tap((NetworkInterfaces) => {
-        logger.debug(`#NetworkInterfaces ${NetworkInterfaces.length}`);
-      }),
-      tap(
-        forEach(
-          pipe([
-            get("Attachment.AttachmentId"),
-            tap.if(not(isEmpty), (AttachmentId) =>
-              ec2().detachNetworkInterface({ AttachmentId })
-            ),
-          ])
-        )
-      ),
-      tap(
-        forEach(
-          pipe([
-            get("NetworkInterfaceId"),
-            tap((NetworkInterfaceId) => {
-              logger.debug(`deleteNetworkInterface: ${NetworkInterfaceId}`);
-              assert(NetworkInterfaceId);
-            }),
-            (NetworkInterfaceId) =>
-              ec2().deleteNetworkInterface({ NetworkInterfaceId }),
-          ])
-        )
-      ),
+      () => destroyNetworkInterfaces({ ec2, Name: "group-id", Values: [id] }),
       () => ec2().deleteSecurityGroup({ GroupId: id }),
       tap(() =>
         retryCall({

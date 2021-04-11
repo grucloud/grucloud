@@ -107,6 +107,7 @@ exports.AwsSubnet = ({ spec, config }) => {
       tap(() => {
         logger.info(`destroy subnet ${JSON.stringify({ name, id })}`);
       }),
+      () => destroyNetworkInterfaces({ ec2, Name: "subnet", Values: [id] }),
       () =>
         retryCall({
           name: `destroy subnet isDownById: ${name} id: ${id}`,

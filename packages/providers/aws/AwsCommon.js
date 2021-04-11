@@ -231,3 +231,38 @@ exports.getByIdCore = ({ fieldIds, getList }) =>
       logger.debug(`getById  ${fieldIds} no result: ${error.message}`);
     }
   );
+
+exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
+  pipe([
+    () =>
+      ec2().describeNetworkInterfaces({
+        Filters: [{ Name, Values }],
+      }),
+    get("NetworkInterfaces", []),
+    tap((NetworkInterfaces) => {
+      logger.debug(`#NetworkInterfaces ${NetworkInterfaces.length}`);
+    }),
+    tap(
+      forEach(
+        pipe([
+          get("Attachment.AttachmentId"),
+          tap.if(not(isEmpty), (AttachmentId) =>
+            ec2().detachNetworkInterface({ AttachmentId })
+          ),
+        ])
+      )
+    ),
+    tap(
+      forEach(
+        pipe([
+          get("NetworkInterfaceId"),
+          tap((NetworkInterfaceId) => {
+            logger.debug(`deleteNetworkInterface: ${NetworkInterfaceId}`);
+            assert(NetworkInterfaceId);
+          }),
+          (NetworkInterfaceId) =>
+            ec2().deleteNetworkInterface({ NetworkInterfaceId }),
+        ])
+      )
+    ),
+  ])();
