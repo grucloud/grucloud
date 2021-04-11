@@ -14,6 +14,9 @@ exports.createResources = async ({
   assert(k8s);
   assert(eks);
   const { config } = provider;
+  assert(config.eks);
+  assert(config.eks.cluster);
+  assert(config.eks.cluster.name);
   assert(config.elb);
   assert(config.elb.loadBalancer);
   assert(config.elb.targetGroups);
@@ -28,6 +31,20 @@ exports.createResources = async ({
       create: {
         Description: "Load Balancer HTTP HTTPS Security Group",
       },
+      Tags: [
+        {
+          Key: "ingress.k8s.aws/stack",
+          Value: "default/ingress",
+        },
+        {
+          Key: "elbv2.k8s.aws/cluster",
+          Value: config.eks.cluster.name,
+        },
+        {
+          Key: "ingress.k8s.aws/resource",
+          Value: "ManagedLBSecurityGroup",
+        },
+      ],
       ingress: {
         IpPermissions: [
           {

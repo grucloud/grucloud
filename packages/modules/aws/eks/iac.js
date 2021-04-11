@@ -5,8 +5,6 @@ const { pluck } = require("rubico/x");
 exports.config = require("./config");
 exports.hooks = require("./hooks");
 
-//const podPolicy = require("./pod-policy.json");
-
 const isProviderUp = ({ resources }) =>
   pipe([
     and([() => resources.cluster.getLive()]),
@@ -16,6 +14,8 @@ const isProviderUp = ({ resources }) =>
   ])();
 
 exports.isProviderUp = isProviderUp;
+
+const formatName = (name, config) => `${name}-${config.projectName}`;
 
 const createResources = async ({ provider, resources }) => {
   const { config } = provider;
@@ -45,7 +45,7 @@ const createResources = async ({ provider, resources }) => {
   );
 
   const roleCluster = await provider.makeIamRole({
-    name: config.eks.roleCluster.name,
+    name: formatName(config.eks.roleCluster.name, config),
     dependencies: {
       policies: [iamPolicyEKSCluster, iamPolicyEKSVPCResourceController],
     },
@@ -80,7 +80,7 @@ const createResources = async ({ provider, resources }) => {
   });
 
   const roleNodeGroup = await provider.makeIamRole({
-    name: "role-node-group",
+    name: formatName(config.eks.roleNodeGroup.name, config),
     dependencies: {
       policies: [
         iamPolicyEKSWorkerNode,
@@ -105,12 +105,12 @@ const createResources = async ({ provider, resources }) => {
   });
 
   const securityGroupCluster = await provider.makeSecurityGroup({
-    name: "security-group-cluster",
+    name: formatName(config.eks.securityGroupCluster.name, config),
     dependencies: { vpc },
     properties: () => ({
       //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
       create: {
-        Description: "SG for the EKS Cluster",
+        Description: "EKS Cluster Security Group",
       },
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
       ingress: {
@@ -155,7 +155,7 @@ const createResources = async ({ provider, resources }) => {
   });
 
   const securityGroupNodes = await provider.makeSecurityGroup({
-    name: "security-group-nodes",
+    name: formatName(config.eks.securityGroupNode.name, config),
     dependencies: { vpc, securityGroup: securityGroupCluster },
     properties: ({ dependencies: { securityGroup } }) => ({
       Tags: [{ Key: `kubernetes.io/cluster/${clusterName}`, Value: "owned" }],
@@ -204,7 +204,7 @@ const createResources = async ({ provider, resources }) => {
 
   // define the EKS cluster
   const cluster = await provider.makeEKSCluster({
-    name: clusterName,
+    name: formatName(clusterName, config),
     dependencies: {
       subnets: [...subnetsPublic, ...pluck("subnet")(privates)],
       securityGroups: [securityGroupCluster, securityGroupNodes],
@@ -229,7 +229,7 @@ const createResources = async ({ provider, resources }) => {
   // Create a bunch of Node Groups on private subnets
   const nodeGroupsPrivate = await map((nodeGroup) =>
     provider.makeEKSNodeGroup({
-      name: nodeGroup.name,
+      name: formatName(nodeGroup.name, config),
       dependencies: {
         subnets: pluck("subnet")(privates),
         cluster,
@@ -238,35 +238,6 @@ const createResources = async ({ provider, resources }) => {
       properties: nodeGroup.properties,
     })
   )(config.eks.nodeGroupsPrivate);
-
-  /*
-  const iamPodPolicy = await provider.makeIamPolicy({
-    name: "PodPolicy",
-    properties: () => ({
-      PolicyDocument: podPolicy,
-      Description: "Pod Policy",
-    }),
-  });
-
-  const rolePod = await provider.makeIamRole({
-    name: "role-pod",
-    dependencies: { policies: [iamPodPolicy] },
-    properties: () => ({
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Service: "ec2.amazonaws.com",
-            },
-            Action: "sts:AssumeRole",
-          },
-        ],
-      },
-    }),
-  });
-  */
 
   return {
     roleCluster,

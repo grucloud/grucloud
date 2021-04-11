@@ -1,6 +1,5 @@
 {
   "name": "starhackit-eks-lbc",
-  "projectName": "starhackit",
   "version": "1.10.22",
   "private": true,
   "description": "deploying starhackit on AWS EKS with the Load Balancer Controller",

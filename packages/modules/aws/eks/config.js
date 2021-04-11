@@ -5,7 +5,10 @@ module.exports = ({}) => ({
     cluster: {
       name: clusterName,
     },
-    roleCluster: { name: `role-${clusterName}` },
+    roleCluster: { name: `role-cluster` },
+    roleNodeGroup: { name: `role-node-group` },
+    securityGroupCluster: { name: "security-group-cluster" },
+    securityGroupNode: { name: "security-group-node" },
     nodeGroupsPublic: [
       {
         name: `node-group-public-${clusterName}`,
