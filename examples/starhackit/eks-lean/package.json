@@ -17,6 +17,7 @@
     "@grucloud/module-aws-eks": "^1.10.22",
     "@grucloud/module-aws-vpc": "^1.10.22",
     "@grucloud/provider-aws": "^1.10.22",
-    "@grucloud/provider-k8s": "^1.10.22"
+    "@grucloud/provider-k8s": "^1.10.22",
+    "rubico": "^1.6.23"
   }
 }

@@ -2,10 +2,7 @@
   "name": "@grucloud/meta",
   "version": "1.8.0",
   "description": "Infrastructure as Code",
-  "public": true,
-  "bin": {
-    "gc": "./packages/core/cli/cliEntry.js"
-  },
+  "private": true,
   "homepage": "https://www.grucloud.com",
   "scripts": {
     "bootstrap": "lerna bootstrap",
@@ -41,7 +38,9 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "dotenv-cli": "^4.0.0",
-    "lerna": "^4.0.0"
+    "lerna": "^4.0.0",
+    "mocha": "^8.2.1",
+    "mocha-junit-reporter": "^2.0.0"
   },
   "repository": {
     "type": "git",

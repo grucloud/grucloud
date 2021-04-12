@@ -14,6 +14,8 @@
     "@grucloud/module-k8s-postgres": "^1.10.22",
     "@grucloud/module-k8s-redis": "^1.10.22",
     "@grucloud/module-k8s-web-ui-dashboard": "^1.10.22",
-    "@grucloud/provider-k8s": "^1.10.22"
+    "@grucloud/provider-k8s": "^1.10.22",
+    "axios": "^0.21.1",
+    "rubico": "^1.6.23"
   }
 }
