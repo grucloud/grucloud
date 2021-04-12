@@ -42,42 +42,61 @@ describe("AwsLoadBalancerV2", async function () {
         create: {
           Description: "Load Balancer HTTP HTTPS Security Group",
         },
-        ingress: {
-          IpPermissions: [
-            {
-              FromPort: 80,
-              IpProtocol: "tcp",
-              IpRanges: [
-                {
-                  CidrIp: "0.0.0.0/0",
-                },
-              ],
-              Ipv6Ranges: [
-                {
-                  CidrIpv6: "::/0",
-                },
-              ],
-              ToPort: 80,
-            },
-            {
-              FromPort: 443,
-              IpProtocol: "tcp",
-              IpRanges: [
-                {
-                  CidrIp: "0.0.0.0/0",
-                },
-              ],
-              Ipv6Ranges: [
-                {
-                  CidrIpv6: "::/0",
-                },
-              ],
-              ToPort: 443,
-            },
-          ],
         },
       }),
     });
+
+    const sgRuleIngressHttp = await provider.makeSecurityGroupRuleIngress({
+      name: "sg-rule-ingress-http",
+      dependencies: {
+        securityGroup: securityGroupLoadBalancer,
+      },
+      properties: () => ({
+        IpPermissions: [
+          {
+            FromPort: 80,
+            IpProtocol: "tcp",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+            ToPort: 80,
+          },
+        ],
+      }),
+    });
+    const sgRuleIngressHttps = await provider.makeSecurityGroupRuleIngress({
+      name: "sg-rule-ingress-https",
+      dependencies: {
+        securityGroup: securityGroupLoadBalancer,
+      },
+      properties: () => ({
+        IpPermissions: [
+          {
+            FromPort: 443,
+            IpProtocol: "tcp",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+            ToPort: 443,
+          },
+        ],
+      }),
+    });
+
     const internetGateway = await provider.makeInternetGateway({
       name: `ig-${projectName}`,
       dependencies: { vpc },

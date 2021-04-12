@@ -112,8 +112,16 @@ const createResources = async ({ provider, resources }) => {
       create: {
         Description: "EKS Cluster Security Group",
       },
-      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
-      ingress: {
+    }),
+  });
+
+  const sgClusterRuleIngressHttps = await provider.makeSecurityGroupRuleIngress(
+    {
+      name: formatName("sg-cluster-rule-ingress-https", config),
+      dependencies: {
+        securityGroup: securityGroupCluster,
+      },
+      properties: () => ({
         IpPermissions: [
           {
             FromPort: 443,
@@ -131,56 +139,82 @@ const createResources = async ({ provider, resources }) => {
             ToPort: 443,
           },
         ],
-      },
-      egress: {
-        IpPermissions: [
-          {
-            FromPort: 1024,
-            IpProtocol: "tcp",
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-            Ipv6Ranges: [
-              {
-                CidrIpv6: "::/0",
-              },
-            ],
-            ToPort: 65535,
-          },
-        ],
-      },
+      }),
+    }
+  );
+  const sgClusterRuleEgress = await provider.makeSecurityGroupRuleEgress({
+    name: formatName("sg-cluster-rule-egress", config),
+    dependencies: {
+      securityGroup: securityGroupCluster,
+    },
+    properties: () => ({
+      IpPermissions: [
+        {
+          FromPort: 1024,
+          IpProtocol: "tcp",
+          IpRanges: [
+            {
+              CidrIp: "0.0.0.0/0",
+            },
+          ],
+          Ipv6Ranges: [
+            {
+              CidrIpv6: "::/0",
+            },
+          ],
+          ToPort: 65535,
+        },
+      ],
     }),
   });
 
   const securityGroupNodes = await provider.makeSecurityGroup({
     name: formatName(config.eks.securityGroupNode.name, config),
-    dependencies: { vpc, securityGroup: securityGroupCluster },
-    properties: ({ dependencies: { securityGroup } }) => ({
+    dependencies: { vpc },
+    properties: () => ({
       Tags: [{ Key: `kubernetes.io/cluster/${clusterName}`, Value: "owned" }],
       //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
       create: {
         Description: "SG for the EKS Nodes",
       },
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
-      ingress: {
+    }),
+  });
+
+  const sgNodesRuleIngressAll = await provider.makeSecurityGroupRuleIngress({
+    name: formatName("sg-nodes-rule-ingress-all", config),
+    dependencies: {
+      securityGroup: securityGroupNodes,
+    },
+    properties: () => ({
+      IpPermissions: [
+        {
+          FromPort: 0,
+          IpProtocol: "-1",
+          IpRanges: [
+            {
+              CidrIp: "0.0.0.0/0",
+            },
+          ],
+          Ipv6Ranges: [
+            {
+              CidrIpv6: "::/0",
+            },
+          ],
+          ToPort: 65535,
+        },
+      ],
+    }),
+  });
+  const sgNodesRuleIngressCluster = await provider.makeSecurityGroupRuleIngress(
+    {
+      name: formatName("sg-nodes-rule-ingress-cluster", config),
+      dependencies: {
+        securityGroup: securityGroupNodes,
+        securityGroupCluster,
+      },
+      properties: ({ dependencies: { securityGroupCluster } }) => ({
         IpPermissions: [
-          {
-            FromPort: 0,
-            IpProtocol: "-1",
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-            Ipv6Ranges: [
-              {
-                CidrIpv6: "::/0",
-              },
-            ],
-            ToPort: 65535,
-          },
           {
             FromPort: 1025,
             IpProtocol: "tcp",
@@ -194,13 +228,13 @@ const createResources = async ({ provider, resources }) => {
                 CidrIpv6: "::/0",
               },
             ],
-            UserIdGroupPairs: [{ GroupId: securityGroup.live?.GroupId }],
+            UserIdGroupPairs: [{ GroupId: securityGroupCluster.live?.GroupId }],
             ToPort: 65535,
           },
         ],
-      },
-    }),
-  });
+      }),
+    }
+  );
 
   // define the EKS cluster
   const cluster = await provider.makeEKSCluster({

@@ -36,7 +36,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
   });
 
   const sg = await provider.makeSecurityGroup({
-    name: "securityGroup",
+    name: "security-group",
     dependencies: { vpc },
     properties: () => ({
       //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
@@ -44,43 +44,59 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
         Description: "Security Group Description",
       },
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
-      ingress: {
-        IpPermissions: [
-          {
-            FromPort: 22,
-            IpProtocol: "tcp",
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-            Ipv6Ranges: [
-              {
-                CidrIpv6: "::/0",
-              },
-            ],
-            ToPort: 22,
-          },
-          {
-            FromPort: -1,
-            IpProtocol: "icmp",
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-            Ipv6Ranges: [
-              {
-                CidrIpv6: "::/0",
-              },
-            ],
-            ToPort: -1,
-          },
-        ],
-      },
     }),
   });
 
+  const sgRuleIngressSsh = await provider.makeSecurityGroupRuleIngress({
+    name: "sg-rule-ingress-ssh",
+    dependencies: {
+      securityGroup: sg,
+    },
+    properties: () => ({
+      IpPermissions: [
+        {
+          FromPort: 22,
+          IpProtocol: "tcp",
+          IpRanges: [
+            {
+              CidrIp: "0.0.0.0/0",
+            },
+          ],
+          Ipv6Ranges: [
+            {
+              CidrIpv6: "::/0",
+            },
+          ],
+          ToPort: 22,
+        },
+      ],
+    }),
+  });
+  const sgRuleIngressIcmp = await provider.makeSecurityGroupRuleIngress({
+    name: "sg-rule-ingress-icmp",
+    dependencies: {
+      securityGroup: sg,
+    },
+    properties: () => ({
+      IpPermissions: [
+        {
+          FromPort: -1,
+          IpProtocol: "icmp",
+          IpRanges: [
+            {
+              CidrIp: "0.0.0.0/0",
+            },
+          ],
+          Ipv6Ranges: [
+            {
+              CidrIpv6: "::/0",
+            },
+          ],
+          ToPort: -1,
+        },
+      ],
+    }),
+  });
   const eip = await provider.makeElasticIpAddress({
     name: "myip",
     properties: () => ({}),
