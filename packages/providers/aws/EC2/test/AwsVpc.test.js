@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { get, eq } = require("rubico");
+const { get, eq, pipe, tap } = require("rubico");
 const { find } = require("rubico/x");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
@@ -15,7 +15,7 @@ describe("AwsVpc", async function () {
   let config;
   let provider;
   let vpc;
-
+  let vpcDefault;
   const k8sClusterTagKey = `kubernetes.io/cluster/myClusterName`;
 
   before(async function () {
@@ -28,8 +28,6 @@ describe("AwsVpc", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    await provider.start();
-
     vpc = await provider.makeVpc({
       name: vpcName,
       properties: () => ({
@@ -37,6 +35,17 @@ describe("AwsVpc", async function () {
         CidrBlock: "10.0.0.0/16",
         Tags: [{ Key: k8sClusterTagKey, Value: "shared" }],
       }),
+    });
+    vpcDefault = await provider.useVpc({
+      name: "vpc-default",
+      filterLives: ({ items }) =>
+        pipe([
+          () => items,
+          find(get("IsDefault")),
+          tap((live) => {
+            assert(true);
+          }),
+        ])(),
     });
   });
   after(async () => {});
@@ -54,9 +63,20 @@ describe("AwsVpc", async function () {
     assert(isEmpty(results));
   });
 
-  it.skip("vpc apply and destroy", async function () {
+  it("vpc apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
     const vpcLive = await vpc.getLive({ deep: true });
+
+    //TODO
+    {
+      const vpcLiveDefault = await vpcDefault.resolveConfig();
+      assert(vpcLiveDefault);
+    }
+    {
+      const vpcLiveDefault = await vpcDefault.getLive();
+      assert(vpcLiveDefault);
+      assert(vpcLiveDefault.IsDefault);
+    }
     const { VpcId, Tags } = vpcLive;
     assert(VpcId);
     assert(Tags);

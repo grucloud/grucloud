@@ -406,12 +406,14 @@ exports.ProviderGru = ({ stacks }) => {
                     pipe([
                       () => provider.start({ onStateChange }),
                       tap((xxx) => {
-                        assert(xxx);
+                        assert(true);
                       }),
                     ])(),
                 ])(),
               (error, { providerName }) => {
-                logger.error(`planApply start error ${tos(error)}`);
+                logger.error(
+                  `planApply start error ${tos(convertError({ error }))}`
+                );
                 return {
                   error: convertError({ error, name: "Apply" }),
                   providerName,
@@ -504,14 +506,17 @@ exports.ProviderGru = ({ stacks }) => {
           onStateChange: ({ key, result, nextState }) =>
             pipe([
               tap.if(
-                () => includes(nextState)(["DONE", "ERROR"]),
+                () => includes(nextState)(["ERROR"]),
                 pipe([
                   () => getProvider({ providerName: key }),
-                  (provider) => {
-                    logger.info(
-                      `filterProviderUp provider ${provider.name}, nextState: ${nextState}`
-                    );
-                  },
+                  tap((provider) => {
+                    logger.info(`filterProviderUp provider ${provider.name}`);
+                  }),
+                  (provider) =>
+                    provider.spinnersStopListLives({
+                      onStateChange,
+                      error: true,
+                    }),
                 ])
               ),
             ])(),

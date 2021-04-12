@@ -16,7 +16,7 @@ const {
   isUpByIdCore,
   isDownByIdCore,
 } = require("@grucloud/core/Common");
-const logger = require("@grucloud/core/logger")({ prefix: "AwsSg" });
+const logger = require("@grucloud/core/logger")({ prefix: "AwsSecurityGroup" });
 const { tos } = require("@grucloud/core/tos");
 
 exports.AwsSecurityGroup = ({ spec, config }) => {
@@ -135,7 +135,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     dependencies,
   }) => {
     const { vpc } = dependencies;
-    assert(vpc, "missing vpc dependency");
+    //assert(vpc, "missing vpc dependency");
     return defaultsDeep(otherProps)({
       create: {
         ...(vpc && { VpcId: getField(vpc, "VpcId") }),

@@ -22,6 +22,8 @@ exports.getNewCallerReference = () => `grucloud-${new Date()}`;
 
 const handler = ({ endpointName, endpoint }) => ({
   get: (target, name, receiver) => {
+    assert(endpointName);
+    assert(endpoint);
     return (...args) =>
       retryCall({
         name: `${endpointName}.${name} ${JSON.stringify(args)}`,

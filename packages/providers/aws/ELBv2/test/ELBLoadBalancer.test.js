@@ -35,7 +35,49 @@ describe("AwsLoadBalancerV2", async function () {
         CidrBlock: "192.168.0.0/16",
       }),
     });
-
+    const securityGroupLoadBalancer = await provider.makeSecurityGroup({
+      name: "load-balancer-security-group-test",
+      dependencies: { vpc },
+      properties: () => ({
+        create: {
+          Description: "Load Balancer HTTP HTTPS Security Group",
+        },
+        ingress: {
+          IpPermissions: [
+            {
+              FromPort: 80,
+              IpProtocol: "tcp",
+              IpRanges: [
+                {
+                  CidrIp: "0.0.0.0/0",
+                },
+              ],
+              Ipv6Ranges: [
+                {
+                  CidrIpv6: "::/0",
+                },
+              ],
+              ToPort: 80,
+            },
+            {
+              FromPort: 443,
+              IpProtocol: "tcp",
+              IpRanges: [
+                {
+                  CidrIp: "0.0.0.0/0",
+                },
+              ],
+              Ipv6Ranges: [
+                {
+                  CidrIpv6: "::/0",
+                },
+              ],
+              ToPort: 443,
+            },
+          ],
+        },
+      }),
+    });
     const internetGateway = await provider.makeInternetGateway({
       name: `ig-${projectName}`,
       dependencies: { vpc },
@@ -62,6 +104,7 @@ describe("AwsLoadBalancerV2", async function () {
       name: `${loadBalancerName}-${projectName}`,
       dependencies: {
         subnets: [subnet1, subnet2],
+        securityGroups: [securityGroupLoadBalancer],
       },
       properties: () => ({}),
     });

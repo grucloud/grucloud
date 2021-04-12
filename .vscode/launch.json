@@ -70,6 +70,23 @@
       "port": 9229
     },
     {
+      "name": "Debug Mock Provider",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "test",
+        "--",
+        "--trace-warnings",
+        "--inspect-brk=9229"
+      ],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}/packages/providers/mock",
+      "port": 9229
+    },
+    {
       "name": "Debug test",
       "type": "node",
       "request": "launch",

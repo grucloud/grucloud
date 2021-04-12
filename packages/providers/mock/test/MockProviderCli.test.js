@@ -53,7 +53,7 @@ describe("MockProviderCli", async function () {
       checkError(ex);
     }
   });
-  it("start error", async function () {
+  it.skip("start error", async function () {
     const provider = MockProvider({ config: () => ({}) });
     const errorMessage = "stub-error";
 
@@ -71,10 +71,8 @@ describe("MockProviderCli", async function () {
               infra,
               commandOptions: options,
             });
-            assert(
-              false,
-              `should not be here for command ${command}, ${tos(result)}`
-            );
+            assert(result.error);
+            assert(false, `should not be here for command ${command}`);
           },
           (ex) => ex
         )
@@ -86,7 +84,7 @@ describe("MockProviderCli", async function () {
         //assert(ex.error.result.resultStart);
       }),
     ])([
-      { command: "list" },
+      //{ command: "list" },
       { command: "planQuery" },
       { command: "planApply" },
       { command: "planDestroy" },

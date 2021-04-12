@@ -5,17 +5,17 @@ module.exports = ({ stage }) => ({
     rootDomainName: "grucloud.org",
     domainName: "starhackit-eks-lean.grucloud.org",
   },
-  eks: { cluster: { name: `cluster-${pkg.projectName}` } },
+  eks: { cluster: { name: `cluster` } },
   elb: {
-    loadBalancer: { name: `load-balancer-${pkg.projectName}` },
+    loadBalancer: { name: `load-balancer` },
     targetGroups: {
-      web: { name: `target-group-web-${pkg.projectName}`, nodePort: 30010 },
-      rest: { name: `target-group-rest-${pkg.projectName}`, nodePort: 30020 },
+      web: { name: `target-group-web`, nodePort: 30010 },
+      rest: { name: `target-group-rest`, nodePort: 30020 },
     },
     listeners: {
-      http: { name: `listener-http-${pkg.projectName}`, port: 80, rules: [] },
+      http: { name: `listener-http`, port: 80, rules: [] },
       https: {
-        name: `listener-https-${pkg.projectName}`,
+        name: `listener-https`,
         port: 443,
       },
     },

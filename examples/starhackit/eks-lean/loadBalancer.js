@@ -1,5 +1,6 @@
 const assert = require("assert");
-const { map, assign, pipe } = require("rubico");
+const { get, pipe, tap, and, eq } = require("rubico");
+const { find } = require("rubico/x");
 
 // Create Load Balancer, Target Group, Listeners and Rule
 
@@ -13,6 +14,8 @@ exports.createResources = async ({
   assert(hostedZone);
   assert(k8s);
   assert(eks);
+  assert(eks.cluster);
+
   const { config } = provider;
   assert(config.eks);
   assert(config.eks.cluster);
@@ -79,6 +82,71 @@ exports.createResources = async ({
           },
         ],
       },
+    }),
+  });
+
+  const findGroupIdFromSecurityGroup = ({ securityGroupK8sCluster }) =>
+    pipe([
+      tap(() => {}),
+      () => securityGroupK8sCluster.resolveConfig(),
+      tap((live) => {}),
+      get("GroupId"),
+      tap((GroupId) => {}),
+    ])();
+
+  // Use the security group created by EKS
+  const securityGroupK8sCluster = await provider.useSecurityGroup({
+    name: "sg-eks-k8s-cluster",
+    filterLives: ({ items }) =>
+      pipe([
+        () => items,
+        find(
+          pipe([
+            get("Tags"),
+            find(
+              and([
+                eq(get("Key"), "aws:eks:cluster-name"),
+                eq(get("Value"), eks.cluster.name),
+              ])
+            ),
+          ])
+        ),
+        tap((live) => {
+          //logger.info(`securityGroupK8sCluster live ${live}`);
+        }),
+      ])(),
+  });
+
+  // Attach an Ingress Rule to the eks-k8s security group to allwo traffic from the load balancer
+  const sgRuleIngress = await provider.makeSecurityGroupRuleIngress({
+    name: "sg-rule-ingress",
+    dependencies: {
+      cluster: eks.cluster,
+      securityGroup: securityGroupK8sCluster,
+      securityGroupLoadBalancer,
+    },
+    properties: async ({ dependencies: { securityGroupLoadBalancer } }) => ({
+      GroupId: await findGroupIdFromSecurityGroup({ securityGroupK8sCluster }),
+      IpPermissions: [
+        {
+          FromPort: 1025,
+          IpProtocol: "tcp",
+          IpRanges: [
+            {
+              CidrIp: "0.0.0.0/0",
+            },
+          ],
+          Ipv6Ranges: [
+            {
+              CidrIpv6: "::/0",
+            },
+          ],
+          UserIdGroupPairs: [
+            { GroupId: get("live.GroupId")(securityGroupLoadBalancer) },
+          ],
+          ToPort: 65535,
+        },
+      ],
     }),
   });
 

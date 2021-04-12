@@ -124,7 +124,7 @@ const ResourceMaker = ({
   name: resourceName,
   meta = {},
   dependencies = {},
-  transformConfig,
+  filterLives,
   properties = () => ({}),
   attributes = () => ({}),
   spec,
@@ -161,7 +161,8 @@ const ResourceMaker = ({
           lives,
         }),
       tap((live) => {
-        logger.debug(`getLive ${toString()} result: ${tos(live)}`);
+        logger.info(`getLive ${toString()} hasLive: ${!!live}`);
+        logger.debug(`getLive ${toString()} live: ${tos(live)}`);
       }),
     ])();
 
@@ -174,10 +175,6 @@ const ResourceMaker = ({
       switchCase([
         not(isEmpty),
         pipe([
-          tap((xxx) => {
-            logger.debug(`findLive`);
-          }),
-          //filter(not(get("error"))),
           tap((xxx) => {
             logger.debug(`findLive`);
           }),
@@ -321,16 +318,21 @@ const ResourceMaker = ({
                 );
               }),
               switchCase([
-                () => isEmpty(lives),
-                () => dependency.getLive({ deep: true }),
-                () => dependency.findLive({ lives }),
+                () => dependency.filterLives,
+                () => dependency.resolveConfig(),
+                switchCase([
+                  () => isEmpty(lives),
+                  () => dependency.getLive({ deep: true }),
+                  () => dependency.findLive({ lives }),
+                ]),
               ]),
               tap.if(
                 (live) => {
                   if (dependenciesMustBeUp) {
-                    if (!dependency.isUp({ live, lives })) {
+                    if (!dependency.isUp({ live })) {
                       return true;
                     }
+                    return false;
                   }
                 },
                 () => {
@@ -428,14 +430,14 @@ const ResourceMaker = ({
           name: resourceName,
           meta,
           properties: defaultsDeep(spec.propertiesDefault)(
-            properties({ dependencies: resolvedDependencies })
+            await properties({ dependencies: resolvedDependencies })
           ),
           dependencies: resolvedDependencies,
           live,
         });
-
+        // TODO out of resolveConfig
         const finalConfig = await switchCase([
-          () => transformConfig,
+          () => filterLives,
           pipe([
             () =>
               client.getList({
@@ -446,12 +448,13 @@ const ResourceMaker = ({
                 lives,
               }),
             ({ items }) =>
-              transformConfig({
+              filterLives({
                 dependencies: resolvedDependencies,
                 items,
                 config,
                 configProvider: provider.config,
                 live,
+                lives,
               }),
           ]),
           () => config,
@@ -603,7 +606,8 @@ const ResourceMaker = ({
     create,
     update,
     planUpsert,
-    getLive,
+    filterLives,
+    getLive: filterLives ? resolveConfig : getLive,
     findLive,
     getDependencyList,
     resolveDependencies: ({ lives, dependenciesMustBeUp }) =>
@@ -613,7 +617,7 @@ const ResourceMaker = ({
         lives,
         dependenciesMustBeUp,
       }),
-    isUp: ({ live, lives }) =>
+    isUp: ({ live }) =>
       pipe([
         tap(() => {
           assert(client.isInstanceUp);
@@ -647,45 +651,88 @@ const ResourceMaker = ({
   return resourceMaker;
 };
 
-const factoryName = (spec) => `${spec.listOnly ? "use" : "make"}${spec.type}`;
-
 const createResourceMakers = ({ specs, config: configProvider, provider }) =>
-  specs.reduce((acc, spec) => {
-    assert(spec.type);
-    acc[factoryName(spec)] = async ({
-      name,
-      meta = {},
-      config: configUser = {},
-      dependencies,
-      properties,
-      attributes,
-      transformConfig,
-    }) => {
-      const config = defaultsDeep(configProvider)(configUser);
-      const resource = ResourceMaker({
-        meta,
+  pipe([
+    () => specs,
+    filter(not(get("listOnly"))),
+    reduce((acc, spec) => {
+      assert(spec.type);
+      acc[`make${spec.type}`] = async ({
         name,
-        transformConfig,
+        meta = {},
+        config: configUser = {},
+        dependencies,
         properties,
         attributes,
+        filterLives,
+      }) => {
+        const config = defaultsDeep(configProvider)(configUser);
+        const resource = ResourceMaker({
+          meta,
+          name,
+          filterLives,
+          properties,
+          attributes,
+          dependencies,
+          spec: defaultsDeep(SpecDefault({ config }))(spec),
+          provider,
+          config,
+        });
+        provider.targetResourcesAdd(resource);
+
+        //TODO move it somewhere else to remove async.
+
+        if (resource.client.validate) {
+          await resource.client.validate({ name });
+        }
+
+        return resource;
+      };
+      return acc;
+    }, {}),
+  ])();
+
+const createResourceMakersListOnly = ({
+  specs,
+  config: configProvider,
+  provider,
+}) =>
+  pipe([
+    () => specs,
+    reduce((acc, spec) => {
+      assert(spec.type);
+      acc[`use${spec.type}`] = async ({
+        name,
+        meta = {},
+        config: configUser = {},
         dependencies,
-        spec: defaultsDeep(SpecDefault({ config }))(spec),
-        provider,
-        config,
-      });
-      provider.targetResourcesAdd(resource);
+        properties,
+        attributes,
+        filterLives,
+      }) => {
+        const config = defaultsDeep(configProvider)(configUser);
+        const resource = ResourceMaker({
+          meta,
+          name,
+          filterLives,
+          properties,
+          attributes,
+          dependencies,
+          spec: pipe([
+            () => ({ listOnly: true }),
+            defaultsDeep(SpecDefault({ config })),
+            defaultsDeep(spec),
+          ])(),
+          provider,
+          config,
+        });
+        provider.targetResourcesAdd(resource);
 
-      //TODO move it somewhere else to remove async.
-
-      if (resource.client.validate) {
-        await resource.client.validate({ name });
-      }
-
-      return resource;
-    };
-    return acc;
-  }, {});
-
+        return resource;
+      };
+      return acc;
+    }, {}),
+  ])();
 function CoreProvider({
   name: providerName,
   dependencies = {},
@@ -1407,11 +1454,11 @@ function CoreProvider({
         }),
       ]),
       (error) => {
-        logger.error(`start error ${tos(error)}`);
+        logger.error(`start error ${tos(convertError({ error }))}`);
         onStateChange({
           context: contextFromProviderInit({ providerName }),
           nextState: "ERROR",
-          error,
+          error: convertError({ error }),
         });
         onStateChange({
           context: contextFromProvider({ providerName }),
@@ -1865,7 +1912,7 @@ function CoreProvider({
         })
       ),
       tap((result) => {
-        //logger.debug(`planQuery result ${providerName}: ${tos(result)}`);
+        logger.debug(`planQuery done ${providerName}`);
       }),
     ])({});
 
@@ -2266,6 +2313,11 @@ ${result}}
       return providerConfig;
     },
     ...createResourceMakers({ provider, config: providerConfig, specs }),
+    ...createResourceMakersListOnly({
+      provider,
+      config: providerConfig,
+      specs,
+    }),
   };
 
   return enhanceProvider;

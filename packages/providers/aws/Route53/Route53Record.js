@@ -64,6 +64,7 @@ const findId = pick(["Name", "Type"]);
 
 const getHostedZone = ({ name, dependencies = {} }) =>
   pipe([
+    () => dependencies,
     get("hostedZone"),
     switchCase([
       isEmpty,
@@ -80,7 +81,7 @@ const getHostedZone = ({ name, dependencies = {} }) =>
         }),
       ]),
     ]),
-  ])(dependencies);
+  ])();
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.Route53Record = ({ spec, config }) => {
@@ -122,6 +123,7 @@ exports.Route53Record = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList Route53Record #resources ${resources.length}`);
       }),
+      () => resources,
       map((resource) =>
         pipe([
           tap(() => {
@@ -137,7 +139,7 @@ exports.Route53Record = ({ spec, config }) => {
             (hostedZone) =>
               findRecordInZone({ name: resource.name, hostedZone }),
           ]),
-        ])(resource)
+        ])()
       ),
       filter(not(isEmpty)),
       tap((records) => {
@@ -150,7 +152,7 @@ exports.Route53Record = ({ spec, config }) => {
       tap(({ total }) => {
         logger.info(`getList #route53records: ${total}`);
       }),
-    ])(resources);
+    ])();
 
   const getByName = async ({ name, dependencies }) =>
     pipe([
@@ -224,6 +226,7 @@ exports.Route53Record = ({ spec, config }) => {
         assert(name, "destroy name");
         assert(resource, "resource");
       }),
+      () => resource,
       getHostedZone,
       (hostedZone) =>
         pipe([
@@ -250,7 +253,7 @@ exports.Route53Record = ({ spec, config }) => {
       tap((result) => {
         logger.debug(`destroy Route53Record done, ${tos({ name, id })}`);
       }),
-    ])(resource);
+    ])();
 
   const update = async ({
     name,

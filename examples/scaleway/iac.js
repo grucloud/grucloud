@@ -6,7 +6,7 @@ const createResources = async ({ provider }) => {
   // Choose an image
   const image = await provider.useImage({
     name: "ubuntu",
-    transformConfig: ({ items: images }) => {
+    filterLives: ({ items: images }) => {
       const image = images.find(
         ({ name, arch, default_bootscript }) =>
           name.includes("Ubuntu") && arch === "x86_64" /*&& default_bootscript*/
