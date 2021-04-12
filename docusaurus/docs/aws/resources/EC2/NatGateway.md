@@ -42,4 +42,4 @@ const natGateway = await provider.makeNatGateway({
 
 ### Used By
 
-- [RouteTables](./RouteTables)
+- [RouteTable](./RouteTable)

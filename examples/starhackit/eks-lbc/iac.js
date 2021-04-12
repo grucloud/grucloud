@@ -138,7 +138,7 @@ exports.createStack = async ({ stage }) => {
         Type: "A",
         AliasTarget: {
           HostedZoneId: "ZHURV8PSTC4K8",
-          DNSName: hostname,
+          DNSName: `${hostname}.`,
           EvaluateTargetHealth: false,
         },
       };

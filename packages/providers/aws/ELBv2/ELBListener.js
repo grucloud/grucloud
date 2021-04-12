@@ -23,12 +23,12 @@ const { isUpByIdCore, isDownByIdCore } = require("@grucloud/core/Common");
 const {
   ELBv2New,
   buildTags,
-  findNameInTags,
+  findNameInTagsOrId,
   shouldRetryOnException,
 } = require("../AwsCommon");
 
-const findName = findNameInTags;
 const findId = get("ListenerArn");
+const findName = (item) => findNameInTagsOrId({ item, findId });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 

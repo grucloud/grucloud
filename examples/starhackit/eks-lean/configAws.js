@@ -20,23 +20,43 @@ module.exports = ({ stage }) => ({
       },
     },
     rules: {
-      rest: {
-        name: `rule-rest`,
-        properties: ({ dependencies: { targetGroup } }) => ({
-          Actions: [
-            {
-              TargetGroupArn: targetGroup.live?.TargetGroupArn,
-              Type: "forward",
-            },
-          ],
-          Conditions: [
-            {
-              Field: "path-pattern",
-              Values: ["/api/*"],
-            },
-          ],
-          Priority: 10,
-        }),
+      http: {
+        rest: {
+          name: `rule-rest`,
+          properties: ({ dependencies: { targetGroup } }) => ({
+            Actions: [
+              {
+                TargetGroupArn: targetGroup.live?.TargetGroupArn,
+                Type: "forward",
+              },
+            ],
+            Conditions: [
+              {
+                Field: "path-pattern",
+                Values: ["/api/*"],
+              },
+            ],
+            Priority: 100,
+          }),
+        },
+        web: {
+          name: `rule-web`,
+          properties: ({ dependencies: { targetGroup } }) => ({
+            Actions: [
+              {
+                TargetGroupArn: targetGroup.live?.TargetGroupArn,
+                Type: "forward",
+              },
+            ],
+            Conditions: [
+              {
+                Field: "path-pattern",
+                Values: ["/*"],
+              },
+            ],
+            Priority: 11,
+          }),
+        },
       },
     },
   },

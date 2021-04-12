@@ -20,7 +20,7 @@ describe("AwsNatGateway", async function () {
     "Vpc",
     "Subnet",
     "RouteTable",
-    "RouteTables",
+    "RouteTable",
     "NatGateway",
     "InternetGateway",
     "ElasticIpAddress",
@@ -64,9 +64,9 @@ describe("AwsNatGateway", async function () {
       dependencies: { subnet, eip },
     });
 
-    routeTable = await provider.makeRouteTables({
+    routeTable = await provider.makeRouteTable({
       name: "route-table-nat-gateway",
-      dependencies: { vpc, subnet },
+      dependencies: { vpc, subnets: [subnet] },
     });
 
     routeNatGateway = await provider.makeRoute({

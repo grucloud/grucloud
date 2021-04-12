@@ -1,8 +1,9 @@
 const assert = require("assert");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const cliCommands = require("@grucloud/core/cli/cliCommands");
-const { createStack } = require("./iac");
-const config = require("./config");
+const { createStack } = require("../example/iac");
+const config = require("../example/config");
+
 describe("EKS Module", async function () {
   before(async function () {
     try {

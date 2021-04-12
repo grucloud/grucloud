@@ -18,11 +18,11 @@ The following resources are required to create an EKS Cluster:
 - [SecurityGroup](https://www.grucloud.com/docs/aws/resources/EC2/SecurityGroup)
 - [Elastic IP Address](https://www.grucloud.com/docs/aws/resources/EC2/ElasticIpAddress): required by the NAT Gateway
 - [NAT Gateway](https://www.grucloud.com/docs/aws/resources/EC2/NatGateway): a NAT gateway to allow the ec2 instances to connect to internet.
-- [Route Table](https://www.grucloud.com/docs/aws/resources/EC2/RouteTables)
+- [Route Table](https://www.grucloud.com/docs/aws/resources/EC2/RouteTable)
 - [Route](https://www.grucloud.com/docs/aws/resources/EC2/Route): 3 routes for the public subnet and 3 routes for the private subnet
 
 A picture is worth a thousand word, we'll be able to generate this dependency graph at the end of this tutorial:
-![Graph](https://github.com/grucloud/grucloud/tree/main/packages/modules/aws/vpc/example/grucloud.svg)
+![Graph](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/vpc/example/grucloud.svg)
 
 # Requirements
 
@@ -82,7 +82,7 @@ The entry point will be _iac.js_
 npm init
 ```
 
-## .npmignore
+## .npmignore
 
 This code will be published to NPM, therefore ensure _.npmignore_ excludes files and directories not needed by the published packages: logs, examples and tests.
 
@@ -167,123 +167,7 @@ For a module, the _iac.js_ must exports the **createResources** function which t
 We'll also exports the _config_ from here.
 
 ```js
-const assert = require("assert");
-const { get, map, pipe, assign, tap, and } = require("rubico");
-
-exports.config = require("./config");
-
-const createResources = async ({ provider }) => {
-  const { config } = provider;
-  assert(config.vpc);
-  assert(config.vpc.vpc);
-  assert(config.vpc.internetGateway);
-  assert(config.vpc.eip);
-  assert(config.vpc.publics);
-  assert(config.vpc.privates);
-
-  const vpc = await provider.makeVpc({
-    name: config.vpc.vpc.name,
-    properties: () => ({
-      DnsHostnames: true,
-      CidrBlock: config.vpc.vpc.CidrBlock,
-      Tags: config.vpc.vpc.Tags,
-    }),
-  });
-
-  const internetGateway = await provider.makeInternetGateway({
-    name: config.internetGateway.name,
-    dependencies: { vpc },
-  });
-
-  const eip = await provider.makeElasticIpAddress({
-    name: config.eip.name,
-  });
-
-  //Public subnets
-  assert(config.vpc.subnet.public);
-
-  const publics = await map(({ name, CidrBlock, AvailabilityZone }) =>
-    pipe([
-      assign({
-        subnet: () =>
-          provider.makeSubnet({
-            name,
-            dependencies: { vpc },
-            properties: () => ({
-              CidrBlock,
-              AvailabilityZone,
-              Tags: config.vpc.subnets.publicTags,
-            }),
-          }),
-      }),
-      assign({
-        routeTable: ({ subnet }) =>
-          provider.makeRouteTables({
-            name: `route-table-${subnet.name}`,
-            dependencies: { vpc, subnet },
-          }),
-      }),
-      assign({
-        routeIg: ({ routeTable }) =>
-          provider.makeRoute({
-            name: `route-igw-${routeTable.name}`,
-            dependencies: { routeTable, ig },
-          }),
-      }),
-    ])()
-  )(config.vpc.subnets.public);
-
-  const subnet = publics[0].subnet;
-  const natGateway = await provider.makeNatGateway({
-    name: `nat-gateway-${subnet.name}`,
-    dependencies: { subnet, eip },
-  });
-
-  //Private
-  assert(config.vpc.subnets.private);
-
-  const privates = await map(({ name, CidrBlock, AvailabilityZone }) =>
-    pipe([
-      assign({
-        subnet: () =>
-          provider.makeSubnet({
-            name,
-            dependencies: { vpc },
-            properties: () => ({
-              CidrBlock,
-              AvailabilityZone,
-              Tags: config.vpc.subnets.privateTags,
-            }),
-          }),
-      }),
-      assign({
-        routeTable: ({ subnet }) =>
-          provider.makeRouteTables({
-            name: `route-table-${subnet.name}`,
-            dependencies: { vpc, subnet },
-          }),
-      }),
-      assign({
-        routeNat: ({ routeTable }) =>
-          provider.makeRoute({
-            name: `route-nat-${routeTable.name}`,
-            dependencies: { routeTable, natGateway },
-          }),
-      }),
-    ])()
-  )(config.vpc.subnets.private);
-
-  return {
-    vpc,
-    internetGateway,
-    eip,
-    natGateway,
-    privates,
-    publics,
-  };
-};
-
-exports.createResources = createResources;
+// TODO
 ```
 
 # Example
@@ -334,7 +218,7 @@ module.exports = ({ region }) => ({
 });
 ```
 
-## iac.js
+## iac.js
 
 The file will export the _createStack_ function. It uses the _createResources_ and _config_ function from this module: _@grucloud/module-aws-vpc_.
 
@@ -365,7 +249,7 @@ The `graph` command generates a graph from the _iac.js_ file in the form of a _.
 gc graph
 ```
 
-## Running with gc
+## Running with gc
 
 At this stage, one can use the usual _gc_ commands: _plan_, _apply_, _list_ and _destroy_
 

@@ -98,14 +98,24 @@ exports.createResources = async ({
   };
 
   const rules = {
-    rest: await provider.makeRule({
-      name: config.elb.rules.rest.name,
-      dependencies: {
-        listener: listeners.http,
-        targetGroup: targetGroups.rest,
-      },
-      properties: config.elb.rules.rest.properties,
-    }),
+    http: {
+      web: await provider.makeRule({
+        name: config.elb.rules.http.web.name,
+        dependencies: {
+          listener: listeners.http,
+          targetGroup: targetGroups.web,
+        },
+        properties: config.elb.rules.http.web.properties,
+      }),
+      rest: await provider.makeRule({
+        name: config.elb.rules.http.rest.name,
+        dependencies: {
+          listener: listeners.http,
+          targetGroup: targetGroups.rest,
+        },
+        properties: config.elb.rules.http.rest.properties,
+      }),
+    },
   };
 
   const loadBalancerDnsRecord = await provider.makeRoute53Record({
@@ -125,7 +135,7 @@ exports.createResources = async ({
         Type: "A",
         AliasTarget: {
           HostedZoneId: "ZHURV8PSTC4K8",
-          DNSName: hostname,
+          DNSName: `${hostname}.`,
           EvaluateTargetHealth: false,
         },
       };

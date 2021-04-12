@@ -5,7 +5,7 @@ const { AwsClientKeyPair } = require("./AwsKeyPair");
 const { AwsVpc } = require("./AwsVpc");
 const { AwsInternetGateway } = require("./AwsInternetGateway");
 const { AwsNatGateway } = require("./AwsNatGateway");
-const { AwsRouteTables } = require("./AwsRouteTables");
+const { AwsRouteTable } = require("./AwsRouteTable");
 const { AwsRoute } = require("./AwsRoute");
 const { AwsSubnet } = require("./AwsSubnet");
 const { AwsSecurityGroup } = require("./AwsSecurityGroup");
@@ -49,14 +49,14 @@ module.exports = [
     isOurMinion,
   },
   {
-    type: "RouteTables",
+    type: "RouteTable",
     dependsOn: ["Vpc", "Subnet"],
-    Client: AwsRouteTables,
+    Client: AwsRouteTable,
     isOurMinion,
   },
   {
     type: "Route",
-    dependsOn: ["RouteTables", "InternetGateway", "NatGateway"],
+    dependsOn: ["RouteTable", "InternetGateway", "NatGateway"],
     Client: AwsRoute,
     isOurMinion,
   },

@@ -16,7 +16,7 @@ Below is the list of the resources involved as well a link towards their documen
 - [Elastic IP Address](https://www.grucloud.com/docs/aws/resources/EC2/ElasticIpAddress)
 - [Internet Gateway](https://www.grucloud.com/docs/aws/resources/EC2/InternetGateway)
 - [Nat Gateway](https://www.grucloud.com/docs/aws/resources/EC2/NatGateway)
-- [Route Table](https://www.grucloud.com/docs/aws/resources/EC2/RouteTables)
+- [Route Table](https://www.grucloud.com/docs/aws/resources/EC2/RouteTable)
 - [Route](https://www.grucloud.com/docs/aws/resources/EC2/Route)
 
 All these resources are just the foundation to build real world applications on top of it, for instance a Kubernetes cluster

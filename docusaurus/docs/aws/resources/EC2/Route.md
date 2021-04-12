@@ -30,9 +30,9 @@ const subnet = await provider.makeSubnet({
   }),
 });
 
-const routeTable = await provider.makeRouteTables({
+const routeTable = await provider.makeRouteTable({
   name: "route-table",
-  dependencies: { vpc, subnet },
+  dependencies: { vpc, subnets: [subnet] },
 });
 
 const route = await provider.makeRoute({
@@ -76,9 +76,9 @@ const subnetPrivate = await provider.makeSubnet({
   }),
 });
 
-const routeTablePrivate = await provider.makeRouteTables({
+const routeTablePrivate = await provider.makeRouteTable({
   name: "route-table-private",
-  dependencies: { vpc, subnet: subnetPrivate },
+  dependencies: { vpc, subnets: [subnetPrivate] },
 });
 
 const routeNat = await provider.makeRoute({
@@ -94,6 +94,6 @@ const routeNat = await provider.makeRoute({
 
 ## Dependencies
 
-- [RouteTables](./RouteTables)
+- [RouteTable](./RouteTable)
 - [InternetGateway](./InternetGateway)
 - [NatGateway](./NatGateway)

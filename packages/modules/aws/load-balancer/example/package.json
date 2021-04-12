@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-module-aws-load-balancer",
-  "version": "1.0.0",
+  "version": "1.10.22",
   "description": "An example of the GruCloud Module to manage load balancer, target groups and rules",
   "main": "iac.js",
   "private": true,
@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.10.20",
-    "@grucloud/provider-aws": "^1.10.21",
-    "@grucloud/module-aws-load-balancer": "*"
+    "@grucloud/core": "^1.10.22",
+    "@grucloud/module-aws-load-balancer": "^1.10.22",
+    "@grucloud/provider-aws": "^1.10.22"
   }
 }

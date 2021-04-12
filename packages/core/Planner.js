@@ -256,7 +256,7 @@ exports.Planner = ({
     assert(item, "item");
     assert(item.resource, "item.resource");
     assert(item.resource.uri, "item.resource.uri");
-    return item.resource.uri;
+    return `${item.resource.uri}::${item.resource.id}`;
   };
 
   const findDependsOn = (item, dependencyTree) =>

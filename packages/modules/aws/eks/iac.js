@@ -28,8 +28,9 @@ const createResources = async ({ provider, resources }) => {
   assert(config.vpc);
   assert(resources);
   assert(resources.vpc);
-  const { vpc, publics, privates } = resources;
-
+  const { vpc, subnetsPublic, privates } = resources;
+  assert(vpc);
+  assert(subnetsPublic);
   const clusterName = config.eks.cluster.name;
   assert(clusterName);
 
@@ -205,7 +206,7 @@ const createResources = async ({ provider, resources }) => {
   const cluster = await provider.makeEKSCluster({
     name: clusterName,
     dependencies: {
-      subnets: [...pluck("subnet")(publics), ...pluck("subnet")(privates)],
+      subnets: [...subnetsPublic, ...pluck("subnet")(privates)],
       securityGroups: [securityGroupCluster, securityGroupNodes],
       role: roleCluster,
     },
@@ -216,7 +217,7 @@ const createResources = async ({ provider, resources }) => {
     provider.makeEKSNodeGroup({
       name: nodeGroup.name,
       dependencies: {
-        subnets: pluck("subnet")(publics),
+        subnets: subnetsPublic,
         cluster,
         role: roleNodeGroup,
       },

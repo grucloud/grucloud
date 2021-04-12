@@ -24,9 +24,9 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
       CidrBlock: "10.1.0.1/24",
     }),
   });
-  const routeTable = await provider.makeRouteTables({
+  const routeTable = await provider.makeRouteTable({
     name: "route-table",
-    dependencies: { vpc, subnet },
+    dependencies: { vpc, subnets: [subnet] },
     properties: () => ({}),
   });
 

@@ -48,7 +48,7 @@ describe("AwsVolume", async function () {
   });
 
   after(async () => {});
-  it("volume resolveConfig", async function () {
+  it.skip("volume resolveConfig", async function () {
     const config = await volume.resolveConfig();
     assert(config.Size);
     assert(config.AvailabilityZone);

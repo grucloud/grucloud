@@ -3,10 +3,10 @@ const {
   switchCase,
   tryCatch,
   pipe,
+  not,
   tap,
   eq,
   omit,
-  not,
 } = require("rubico");
 const { isEmpty, defaultsDeep, first } = require("rubico/x");
 const assert = require("assert");
@@ -92,7 +92,12 @@ exports.AwsVolume = ({ spec, config }) => {
       tap(() => {
         logger.info(`destroy volume ${JSON.stringify({ name, id })}`);
       }),
-      () => ec2().deleteVolume({ VolumeId: id }),
+      tryCatch(
+        () => ec2().deleteVolume({ VolumeId: id }),
+        tap.if(not(eq(get("code"), "InvalidVolume.NotFound")), () => {
+          throw error;
+        })
+      ),
       tap(() =>
         retryCall({
           name: `destroy volume isDownById: ${name} id: ${id}`,
@@ -100,7 +105,7 @@ exports.AwsVolume = ({ spec, config }) => {
           config,
         })
       ),
-      tap((result) => {
+      tap(() => {
         logger.info(`volume destroyed ${JSON.stringify({ name, id })}`);
       }),
     ])();

@@ -90,7 +90,7 @@ exports.createStack = async ({ stage }) => {
       certificate: stackAws.resources.certificate.certificate,
       vpc: stackAws.resources.vpc.vpc,
       hostedZone: stackAws.resources.hostedZone,
-      subnets: pluck("subnet")(stackAws.resources.vpc.publics),
+      subnets: stackAws.resources.vpc.subnetsPublic,
       k8s: stackK8s.resources,
     },
   });

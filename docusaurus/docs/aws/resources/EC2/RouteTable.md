@@ -1,6 +1,6 @@
 ---
-id: RouteTables
-title: Route Tables
+id: RouteTable
+title: Route Table
 ---
 
 Provides a [Route Table](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html)
@@ -21,16 +21,16 @@ const subnet = await provider.makeSubnet({
   }),
 });
 
-const routeTable = await provider.makeRouteTables({
+const routeTable = await provider.makeRouteTable({
   name: "rt",
-  dependencies: { vpc, subnet },
+  dependencies: { vpc, subnets: [subnet] },
 });
 ```
 
 ### Examples
 
 - [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-vpc/iac.js)
-- [EKS](https://github.com/grucloud/grucloud/blob/main/packages/module/aws/eks/iac.js)
+- [EKS](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/eks/iac.js)
 
 ### Dependencies
 

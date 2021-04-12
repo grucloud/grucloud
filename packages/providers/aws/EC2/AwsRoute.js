@@ -152,7 +152,7 @@ exports.AwsRoute = ({ spec, config }) => {
         assert(routeTable.live.RouteTableId, "routeTable.live.RouteTableId");
         assert(
           ig || natGateway,
-          "RouteTables needs the dependency 'ig', or 'natGateway'"
+          "Route needs the dependency 'ig', or 'natGateway'"
         );
       }),
       () => routeTable.live.RouteTableId,

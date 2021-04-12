@@ -380,7 +380,7 @@ const readKubeConfig = ({
       logger.error(
         `Cannot read kube config file: ${kubeConfigFile}, error: ${error}`
       );
-      throw error;
+      //throw error;
     }
   )();
 
@@ -460,19 +460,24 @@ exports.K8sProvider = ({
     tap(() => {
       logger.info("start k8s");
     }),
-    // TODO! stage
     () =>
       readKubeConfig({
         kubeConfigFile: mergedConfig.kubeConfigFile,
       }),
-    tap((newKubeConfig) => {
-      kubeConfig = newKubeConfig;
-    }),
-    (kubeConfig) => getAuthToken({ kubeConfig }),
-    (token) => {
-      logger.info(`start set accessToken to ${token}`);
-      accessToken = token;
-    },
+    switchCase([
+      isEmpty,
+      () => {},
+      pipe([
+        tap((newKubeConfig) => {
+          kubeConfig = newKubeConfig;
+        }),
+        (kubeConfig) => getAuthToken({ kubeConfig }),
+        (token) => {
+          logger.info(`start set accessToken to ${token}`);
+          accessToken = token;
+        },
+      ]),
+    ]),
   ]);
 
   const manifestToSpec = (manifests = []) =>
