@@ -182,9 +182,7 @@ exports.createResources = async ({
         vpc,
         nodeGroup: eks.nodeGroupsPrivate[0],
       },
-      properties: () => ({
-        Port: config.elb.targetGroups.web.nodePort,
-      }),
+      properties: config.elb.targetGroups.web.properties,
     }),
     rest: await provider.makeTargetGroup({
       name: config.elb.targetGroups.rest.name,
@@ -192,9 +190,7 @@ exports.createResources = async ({
         nodeGroup: eks.nodeGroupsPrivate[0],
         vpc,
       },
-      properties: () => ({
-        Port: config.elb.targetGroups.rest.nodePort,
-      }),
+      properties: config.elb.targetGroups.rest.properties,
     }),
   };
 
@@ -267,6 +263,24 @@ exports.createResources = async ({
           targetGroup: targetGroups.rest,
         },
         properties: config.elb.rules.http.rest.properties,
+      }),
+    },
+    https: {
+      web: await provider.makeRule({
+        name: config.elb.rules.https.web.name,
+        dependencies: {
+          listener: listeners.https,
+          targetGroup: targetGroups.web,
+        },
+        properties: config.elb.rules.https.web.properties,
+      }),
+      rest: await provider.makeRule({
+        name: config.elb.rules.https.rest.name,
+        dependencies: {
+          listener: listeners.https,
+          targetGroup: targetGroups.rest,
+        },
+        properties: config.elb.rules.https.rest.properties,
       }),
     },
   };

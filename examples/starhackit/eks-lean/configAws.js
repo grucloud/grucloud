@@ -9,8 +9,19 @@ module.exports = ({ stage }) => ({
   elb: {
     loadBalancer: { name: `load-balancer` },
     targetGroups: {
-      web: { name: `target-group-web`, nodePort: 30010 },
-      rest: { name: `target-group-rest`, nodePort: 30020 },
+      web: {
+        name: `target-group-web`,
+        properties: () => ({
+          Port: 30010,
+        }),
+      },
+      rest: {
+        name: `target-group-rest`,
+        properties: () => ({
+          Port: 30020,
+          HealthCheckPath: "/api/v1/version",
+        }),
+      },
     },
     listeners: {
       http: { name: `listener-http`, port: 80, rules: [] },
@@ -22,7 +33,7 @@ module.exports = ({ stage }) => ({
     rules: {
       http: {
         rest: {
-          name: `rule-rest`,
+          name: `rule-rest-http`,
           properties: ({ dependencies: { targetGroup } }) => ({
             Actions: [
               {
@@ -40,7 +51,45 @@ module.exports = ({ stage }) => ({
           }),
         },
         web: {
-          name: `rule-web`,
+          name: `rule-web-http`,
+          properties: ({ dependencies: { targetGroup } }) => ({
+            Actions: [
+              {
+                TargetGroupArn: targetGroup.live?.TargetGroupArn,
+                Type: "forward",
+              },
+            ],
+            Conditions: [
+              {
+                Field: "path-pattern",
+                Values: ["/*"],
+              },
+            ],
+            Priority: 11,
+          }),
+        },
+      },
+      https: {
+        rest: {
+          name: `rule-rest-https`,
+          properties: ({ dependencies: { targetGroup } }) => ({
+            Actions: [
+              {
+                TargetGroupArn: targetGroup.live?.TargetGroupArn,
+                Type: "forward",
+              },
+            ],
+            Conditions: [
+              {
+                Field: "path-pattern",
+                Values: ["/api/*"],
+              },
+            ],
+            Priority: 100,
+          }),
+        },
+        web: {
+          name: `rule-web-https`,
           properties: ({ dependencies: { targetGroup } }) => ({
             Actions: [
               {
