@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { MockProvider } = require("@grucloud/core");
+const { MockProvider } = require("@grucloud/provider-mock");
 const hooks = require("./hooks");
 
 const createResources = async ({ provider }) => {

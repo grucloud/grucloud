@@ -36,6 +36,7 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "dotenv": "^8.2.0",
     "dotenv-cli": "^4.0.0",
     "lerna": "^4.0.0",

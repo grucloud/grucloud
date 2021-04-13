@@ -1,7 +1,7 @@
 const Axios = require("axios");
 const assert = require("assert");
 const urljoin = require("url-join");
-const { MockProvider } = require("@grucloud/core");
+const { MockProvider } = require("@grucloud/provider-mock");
 const hooks = require("./hooks");
 
 const BASE_URL = "http://localhost:8089";
