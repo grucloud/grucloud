@@ -2,7 +2,7 @@ const assert = require("assert");
 const { get, pipe, tap, and, eq } = require("rubico");
 const { find } = require("rubico/x");
 
-// Create Load Balancer, Target Group, Listeners and Rule
+// Create Load Balancer, Target Group, Listeners and Rule, Security Group and Rules
 
 exports.createResources = async ({
   provider,
@@ -247,24 +247,13 @@ exports.createResources = async ({
   };
 
   const rules = {
-    http: {
-      web: await provider.makeRule({
-        name: config.elb.rules.http.web.name,
-        dependencies: {
-          listener: listeners.http,
-          targetGroup: targetGroups.web,
-        },
-        properties: config.elb.rules.http.web.properties,
-      }),
-      rest: await provider.makeRule({
-        name: config.elb.rules.http.rest.name,
-        dependencies: {
-          listener: listeners.http,
-          targetGroup: targetGroups.rest,
-        },
-        properties: config.elb.rules.http.rest.properties,
-      }),
-    },
+    http2https: await provider.makeRule({
+      name: config.elb.rules.http2https.name,
+      dependencies: {
+        listener: listeners.http,
+      },
+      properties: config.elb.rules.http2https.properties,
+    }),
     https: {
       web: await provider.makeRule({
         name: config.elb.rules.https.web.name,

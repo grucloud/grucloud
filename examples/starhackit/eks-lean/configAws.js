@@ -31,43 +31,31 @@ module.exports = ({ stage }) => ({
       },
     },
     rules: {
-      http: {
-        rest: {
-          name: `rule-rest-http`,
-          properties: ({ dependencies: { targetGroup } }) => ({
-            Actions: [
-              {
-                TargetGroupArn: targetGroup.live?.TargetGroupArn,
-                Type: "forward",
+      http2https: {
+        name: `rule-http-redirect-https`,
+        properties: () => ({
+          Actions: [
+            {
+              Type: "redirect",
+              Order: 1,
+              RedirectConfig: {
+                Protocol: "HTTPS",
+                Port: "443",
+                Host: "#{host}",
+                Path: "/#{path}",
+                Query: "#{query}",
+                StatusCode: "HTTP_301",
               },
-            ],
-            Conditions: [
-              {
-                Field: "path-pattern",
-                Values: ["/api/*"],
-              },
-            ],
-            Priority: 100,
-          }),
-        },
-        web: {
-          name: `rule-web-http`,
-          properties: ({ dependencies: { targetGroup } }) => ({
-            Actions: [
-              {
-                TargetGroupArn: targetGroup.live?.TargetGroupArn,
-                Type: "forward",
-              },
-            ],
-            Conditions: [
-              {
-                Field: "path-pattern",
-                Values: ["/*"],
-              },
-            ],
-            Priority: 11,
-          }),
-        },
+            },
+          ],
+          Conditions: [
+            {
+              Field: "path-pattern",
+              Values: ["/*"],
+            },
+          ],
+          Priority: 1,
+        }),
       },
       https: {
         rest: {
@@ -85,7 +73,7 @@ module.exports = ({ stage }) => ({
                 Values: ["/api/*"],
               },
             ],
-            Priority: 100,
+            Priority: 10,
           }),
         },
         web: {
