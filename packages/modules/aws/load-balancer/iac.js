@@ -1,5 +1,6 @@
 const assert = require("assert");
 exports.config = require("./config");
+exports.hooks = [];
 
 const createResources = async ({ provider, resources: { vpc, subnets } }) => {
   const { config } = provider;

@@ -1,5 +1,5 @@
-const { K8sProvider } = require("@grucloud/provider-k8s");
 const Dashboard = require("./resources");
+exports.hooks = [];
 
 exports.createResources = async ({ provider }) => {
   const adminUsername = "dashboard-admin-user";

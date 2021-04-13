@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { GoogleProvider } = require("@grucloud/provider-google");
-const hooks = require("./hooks");
+const hook = require("./hook");
 
 const createResources = async ({ provider, resources: { serviceAccount } }) => {
   const iamBinding = await provider.makeIamBinding({
@@ -38,6 +38,6 @@ exports.createStack = async () => {
   return {
     provider,
     resources,
-    hooks,
+    hooks: [hook],
   };
 };

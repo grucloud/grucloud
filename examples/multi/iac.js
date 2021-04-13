@@ -11,7 +11,7 @@ const ModuleAwsVpc = require("@grucloud/module-aws-vpc");
 const AwsStackEKS = require("@grucloud/module-aws-eks");
 
 const AwsStackWebSite = require("../aws/website-https/iac");
-const AwsHooksWebSite = require("../aws/website-https/hooks");
+const AwsHooksWebSite = require("../aws/website-https/hook");
 const AwsConfigWebSite = require("../aws/website-https/config");
 
 const AwsStackEC2 = require("../aws/ec2/iac");

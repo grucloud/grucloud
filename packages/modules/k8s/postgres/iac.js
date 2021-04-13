@@ -1,8 +1,7 @@
 const assert = require("assert");
 const { K8sProvider } = require("@grucloud/provider-k8s");
 
-const hooks = require("./hooks");
-exports.hooks = hooks;
+exports.hooks = [require("./hook")];
 
 const config = require("./config");
 exports.config = config;

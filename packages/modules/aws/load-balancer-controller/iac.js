@@ -1,6 +1,7 @@
 const assert = require("assert");
 const { get } = require("rubico");
 exports.config = require("./config");
+exports.hooks = [];
 
 const formatName = (name, config) => `${name}-${config.projectName}`;
 

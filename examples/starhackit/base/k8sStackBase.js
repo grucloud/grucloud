@@ -5,7 +5,7 @@ const PostgresStack = require("@grucloud/module-k8s-postgres");
 const RedisStack = require("@grucloud/module-k8s-redis");
 const Dashboard = require("@grucloud/module-k8s-web-ui-dashboard");
 
-exports.hooks = require("./hooks");
+exports.hooks = [];
 
 exports.configs = [PostgresStack.config, RedisStack.config];
 

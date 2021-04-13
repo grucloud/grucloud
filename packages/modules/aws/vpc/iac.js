@@ -2,6 +2,7 @@ const assert = require("assert");
 const { map, pipe, assign } = require("rubico");
 
 exports.config = require("./config");
+exports.hooks = [];
 
 const formatName = (name, config) => `${name}-${config.projectName}`;
 

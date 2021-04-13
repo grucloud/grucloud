@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { MockProvider } = require("@grucloud/provider-mock");
-const hooks = require("./hooks");
+const hook = require("./hook");
 
 const createResources = async ({ provider }) => {
   // Ip
@@ -67,12 +67,11 @@ exports.createStack = async ({ config }) => {
 
   const resources = await createResources({ provider });
 
-  const hooksExtra = require("./hooksExtra")({ resources });
-  provider.hookAdd("extra", hooksExtra);
+  const hooksExtra = require("./hooksExtra");
 
   return {
     provider,
     resources,
-    hooks,
+    hooks: [hook, hooksExtra],
   };
 };

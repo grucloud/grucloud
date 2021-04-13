@@ -49,15 +49,15 @@ const createK8sStack = async ({
   dependencies,
 }) => {
   const provider = K8sProvider({ config, dependencies });
-  const { ui } = config;
+  const { ui, namespaceName } = provider.config;
   assert(ui);
-  assert(config.namespaceName);
+  assert(namespaceName);
   assert(rolePod);
 
   const serviceAccountName = "service-account-aws";
 
   const namespace = await provider.makeNamespace({
-    name: config.namespaceName,
+    name: namespaceName,
   });
 
   const serviceAccount = await provider.makeServiceAccount({

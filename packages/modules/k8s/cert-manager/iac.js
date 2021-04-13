@@ -5,7 +5,7 @@ const yaml = require("js-yaml");
 const { pipe, tap } = require("rubico");
 const { K8sProvider } = require("@grucloud/provider-k8s");
 const { createResources } = require("./resources");
-const hooks = require("./hooks");
+const hooks = [require("./hook")];
 
 const loadManifest = pipe([
   () => fs.readFile(path.join(__dirname, "./cert-manager.yaml")),
