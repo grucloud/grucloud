@@ -102,11 +102,13 @@ exports.createStack = async ({ stage }) => {
     },
   });
 
-  return [
-    {
-      ...stackAws,
-      resources: { ...stackAws.resources, lbResources },
-    },
-    stackK8s,
-  ];
+  return {
+    stacks: [
+      {
+        ...stackAws,
+        resources: { ...stackAws.resources, lbResources },
+      },
+      stackK8s,
+    ],
+  };
 };

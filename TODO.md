@@ -1,5 +1,7 @@
 ## Bugs
 
+- - s3 example: gc d tries to delete roles
+
 -     ✖ SecurityGroup 0/4               The security group 'sg-0be1ccc0c18345ade' does not exist
 
 - revokeSecurityGroupIngress
@@ -14,7 +16,6 @@ User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot lis
 
 ## Common:
 
-- kubectl edit ingress ingress
 - https://stackshare.io/terraform/alternatives
 - case where provider does have any resources
 -
@@ -61,6 +62,8 @@ User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot lis
 
 ## TODO Aws:
 
+- aws_route53_delegation_set
+
 - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#attachLoadBalancerTargetGroups-property
 
 - https://kubernetes.github.io/ingress-nginx/deploy/
@@ -69,8 +72,6 @@ User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot lis
 - minikite gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404
 - https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
 - https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html
-
-- s3 exmaple: gc d tries to delete roles
 
 - https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html
 - https://docs.aws.amazon.com/eks/latest/userguide/load-balancing.html
