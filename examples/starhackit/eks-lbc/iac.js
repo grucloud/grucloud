@@ -68,6 +68,11 @@ const createAwsStack = async ({ stage }) => {
       eks: resourcesEks,
       lbc: resourcesLbc,
     },
+    hooks: [
+      ...ModuleAwsCertificate.hooks,
+      ...ModuleAwsVpc.hooks,
+      ...ModuleAwsEks.hooks,
+    ],
     isProviderUp: () => ModuleAwsEks.isProviderUp({ resources: resourcesEks }),
   };
 };

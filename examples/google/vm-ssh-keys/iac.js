@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const { GoogleProvider } = require("@grucloud/provider-google");
-const hooks = require("./hooks");
+const hook = require("./hook");
 
 exports.createStack = async () => {
   const provider = GoogleProvider({ config: require("./config") });
@@ -60,6 +60,6 @@ exports.createStack = async () => {
   return {
     provider,
     resources: { ip, server },
-    hooks,
+    hooks: [hook],
   };
 };

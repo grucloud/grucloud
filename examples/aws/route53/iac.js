@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { AwsProvider } = require("@grucloud/provider-aws");
-const hooks = require("./hooks");
+const hook = require("./hook");
 
 const makeDomainName = ({ domainName, stage }) =>
   `${stage == "production" ? "" : `${stage}.`}${domainName}`;
@@ -55,6 +55,6 @@ exports.createStack = async () => {
   return {
     provider,
     resources,
-    hooks,
+    hooks: [hook],
   };
 };

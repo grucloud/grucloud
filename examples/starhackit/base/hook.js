@@ -5,7 +5,7 @@ const Axios = require("axios");
 
 const { retryCallOnError } = require("@grucloud/core").Retry;
 
-module.exports = ({ resources: { ingress }, provider }) => {
+module.exports = ({ resources: { ingress } }) => {
   assert(ingress);
 
   const axios = Axios.create({

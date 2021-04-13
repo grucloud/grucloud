@@ -15,12 +15,15 @@ describe("MockProviderHooks", async function () {
     const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
 
-    provider.hookAdd("mock-test", {
-      onDeployed: {
-        init: onDeployed.init,
-      },
-      onDestroyed: {
-        init: onDestroyed.init,
+    provider.hookAdd({
+      name: "mock-test",
+      hookInstance: {
+        onDeployed: {
+          init: onDeployed.init,
+        },
+        onDestroyed: {
+          init: onDestroyed.init,
+        },
       },
     });
     const infra = { provider };
@@ -46,12 +49,15 @@ describe("MockProviderHooks", async function () {
     });
     const resources = await createResources({ provider });
 
-    provider.hookAdd("mock-test", {
-      onDeployed: {
-        init: onDeployed.init,
-      },
-      onDestroyed: {
-        init: onDestroyed.init,
+    provider.hookAdd({
+      name: "mock-test",
+      hookInstance: {
+        onDeployed: {
+          init: onDeployed.init,
+        },
+        onDestroyed: {
+          init: onDestroyed.init,
+        },
       },
     });
     const infra = { provider };
@@ -84,15 +90,18 @@ describe("MockProviderHooks", async function () {
   it("planApply init throw ", async function () {
     const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
-    provider.hookAdd("mock-init-throw", {
-      onDeployed: {
-        init: () => {
-          throw "i throw in onDeployed init";
+    provider.hookAdd({
+      name: "mock-init-throw",
+      hookInstance: {
+        onDeployed: {
+          init: () => {
+            throw "i throw in onDeployed init";
+          },
         },
-      },
-      onDestroyed: {
-        init: () => {
-          throw "i throw in onDestroyed init";
+        onDestroyed: {
+          init: () => {
+            throw "i throw in onDestroyed init";
+          },
         },
       },
     });
@@ -130,10 +139,13 @@ describe("MockProviderHooks", async function () {
   it("run --onDeployed init throw ", async function () {
     const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
-    provider.hookAdd("mock-run-ondeployed-init-throw", {
-      onDeployed: {
-        init: () => {
-          throw "i throw in onDeployed init";
+    provider.hookAdd({
+      name: "mock-run-ondeployed-init-throw",
+      hookInstance: {
+        onDeployed: {
+          init: () => {
+            throw "i throw in onDeployed init";
+          },
         },
       },
     });
@@ -155,36 +167,39 @@ describe("MockProviderHooks", async function () {
     const provider = MockProvider({ config: () => ({}) });
     const resources = await createResources({ provider });
     const message = "i throw in a command";
-    provider.hookAdd("mock-action-throw", {
-      onDeployed: {
-        init: () => {},
-        actions: [
-          {
-            name: "Ping",
-            command: async () => {},
-          },
-          {
-            name: "SSH",
-            command: async () => {
-              throw Error(message);
+    provider.hookAdd({
+      name: "mock-action-throw",
+      hookInstance: {
+        onDeployed: {
+          init: () => {},
+          actions: [
+            {
+              name: "Ping",
+              command: async () => {},
             },
-          },
-        ],
-      },
-      onDestroyed: {
-        init: () => {},
-        actions: [
-          {
-            name: "Ping",
-            command: async () => {},
-          },
-          {
-            name: "SSH",
-            command: async () => {
-              throw Error(message);
+            {
+              name: "SSH",
+              command: async () => {
+                throw Error(message);
+              },
             },
-          },
-        ],
+          ],
+        },
+        onDestroyed: {
+          init: () => {},
+          actions: [
+            {
+              name: "Ping",
+              command: async () => {},
+            },
+            {
+              name: "SSH",
+              command: async () => {
+                throw Error(message);
+              },
+            },
+          ],
+        },
       },
     });
 

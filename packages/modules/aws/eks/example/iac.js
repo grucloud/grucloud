@@ -19,7 +19,7 @@ exports.createStack = async ({ config }) => {
   return {
     provider,
     resources: { vpc: vpcResources, eks: eksResources },
-    //TODO hooks,
+    hooks: [...ModuleAwsVpc.hooks, ...ModuleAwsEKS.hooks],
     isProviderUp: () => ModuleAwsEKS.isProviderUp({ resources: eksResources }),
   };
 };

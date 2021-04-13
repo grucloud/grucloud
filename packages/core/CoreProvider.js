@@ -758,13 +758,14 @@ function CoreProvider({
 
   const hookMap = new Map();
 
-  const hookAdd = (name, hook) =>
+  const hookAdd = ({ name, hookInstance }) =>
     pipe([
       tap(() => {
         assert(name);
-        assert(hook);
+        assert(hookInstance);
+        logger.info(`hookAdd ${name}`);
       }),
-      () => hook,
+      () => hookInstance,
       defaultsDeep({
         name,
         onDeployed: {
@@ -813,7 +814,10 @@ function CoreProvider({
     ]);
 
     tap.if(get("hook"), (client) =>
-      hookAdd(client.spec.type, client.hook({ resource }))
+      hookAdd({
+        name: client.spec.type,
+        hookInstance: client.hook({ resource }),
+      })
     )(resource.client);
   };
 
@@ -1411,23 +1415,61 @@ function CoreProvider({
 
   const toType = () => type || providerName;
 
-  const register = ({ resources, hooks }) =>
-    tap.if(
-      () => isFunction(hooks),
-      pipe([
-        () =>
-          hooks({
-            resources,
-            config: providerConfig,
-            provider,
+  const register = ({ resources, hooks = [] }) =>
+    pipe([
+      () => hooks,
+      tap(() => {
+        logger.debug(`register #hooks ${hooks.length}`);
+      }),
+      map((hook) =>
+        pipe([
+          tap(() => {
+            assert(isFunction(hook), "hook must be a function.");
           }),
-        (instance) => {
-          //TODO check for duplicate
-          hookAdd(get("name", "default")(instance), instance);
-        },
-      ])
-    )();
+          () =>
+            hook({
+              resources,
+              config: providerConfig,
+              provider,
+            }),
+          tap((hookInstance) => {
+            assert(
+              !isFunction(hookInstance),
+              "hook instance must be not a function."
+            );
+          }),
+          (hookInstance) =>
+            pipe([
+              () => hookInstance,
+              get("name", "default"),
+              tap((name) => {
+                logger.debug(`register hook ${name}`);
+              }),
+              (name) => hookAdd({ name, hookInstance }),
+            ])(),
+          tap(() => {
+            logger.debug(`register done`);
+          }),
+        ])()
+      ),
+      tap(() => {
+        logger.debug(`register done`);
+      }),
+    ])();
 
+  /*(hookInstance) =>
+            pipe([
+              tap(() => {
+               
+              }),
+
+              () => hookInstance,
+              get("name", "default"),
+              tap((name) => {
+                logger.debug(`register hook ${name}`);
+              }),
+              (name) => hookAdd({ name, hookInstance }),
+            ])(),*/
   const getResourcesByType = ({ type }) => mapTypeToResources.get(type) || [];
 
   const startBase = ({ onStateChange = identity } = {}) =>

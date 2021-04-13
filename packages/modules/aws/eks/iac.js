@@ -3,7 +3,7 @@ const { map, pipe, and, tap } = require("rubico");
 const { pluck } = require("rubico/x");
 
 exports.config = require("./config");
-exports.hooks = require("./hooks");
+exports.hooks = [require("./hook")];
 
 const isProviderUp = ({ resources }) =>
   pipe([

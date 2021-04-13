@@ -4,7 +4,7 @@ const { map } = require("rubico");
 const mime = require("mime-types");
 
 const { AwsProvider } = require("@grucloud/provider-aws");
-const hooks = require("./hooks");
+const hook = require("./hook");
 const { makeDomainName, getFiles } = require("./dumpster");
 
 const createResources = async ({ provider }) => {
@@ -179,6 +179,6 @@ exports.createStack = async ({ config }) => {
   return {
     provider,
     resources,
-    hooks,
+    hooks: [hook],
   };
 };

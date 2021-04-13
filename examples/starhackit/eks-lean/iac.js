@@ -4,8 +4,8 @@ const { first, pluck } = require("rubico/x");
 
 const { AwsProvider } = require("@grucloud/provider-aws");
 const { K8sProvider } = require("@grucloud/provider-k8s");
-const ModuleAwsVpc = require("@grucloud/module-aws-vpc");
 
+const ModuleAwsVpc = require("@grucloud/module-aws-vpc");
 const ModuleAwsEks = require("@grucloud/module-aws-eks/iac");
 const ModuleAwsCertificate = require("@grucloud/module-aws-certificate/iac");
 
@@ -58,6 +58,11 @@ const createAwsStack = async ({ stage }) => {
       vpc: resourcesVpc,
       eks: resourcesEks,
     },
+    hooks: [
+      ...ModuleAwsCertificate.hooks,
+      ...ModuleAwsVpc.hooks,
+      ...ModuleAwsEks.hooks,
+    ],
     isProviderUp: () => ModuleAwsEks.isProviderUp({ resources: resourcesEks }),
   };
 };
@@ -77,6 +82,7 @@ const createK8sStack = async ({ stackAws, stage }) => {
   return {
     provider,
     resources: { baseStackResources },
+    hooks: [...BaseStack.hooks],
   };
 };
 

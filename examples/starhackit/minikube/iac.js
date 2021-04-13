@@ -2,6 +2,7 @@ const assert = require("assert");
 const { K8sProvider } = require("@grucloud/provider-k8s");
 const K8sStackBase = require("../base/k8sStackBase");
 const { createIngress } = require("./ingress");
+const hooks = [require("./hook")];
 
 exports.createStack = async ({ config }) => {
   assert(config);
@@ -42,6 +43,6 @@ exports.createStack = async ({ config }) => {
   return {
     provider,
     resources: { ...resources, ingress },
-    hooks: K8sStackBase.hooks,
+    hooks: [...K8sStackBase.hooks, ...hooks],
   };
 };
