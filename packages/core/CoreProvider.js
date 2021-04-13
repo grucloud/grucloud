@@ -1430,7 +1430,7 @@ function CoreProvider({
 
   const getResourcesByType = ({ type }) => mapTypeToResources.get(type) || [];
 
-  const startBase = ({ onStateChange } = {}) =>
+  const startBase = ({ onStateChange = identity } = {}) =>
     tryCatch(
       pipe([
         tap(() => {
