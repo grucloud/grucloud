@@ -1430,10 +1430,11 @@ function CoreProvider({
 
   const getResourcesByType = ({ type }) => mapTypeToResources.get(type) || [];
 
-  const startBase = ({ onStateChange = identity } = {}) =>
+  const startBase = ({ onStateChange } = {}) =>
     tryCatch(
       pipe([
         tap(() => {
+          assert(onStateChange);
           logger.debug(`start`);
         }),
         tap(() =>
@@ -2291,7 +2292,7 @@ ${result}}
     buildSubGraph,
     buildGraphAssociation,
     info: pipe([
-      () => startBase(),
+      () => startBase({ onStateChange: identity }),
       () => ({
         provider: toString(),
         stage: providerConfig.stage,

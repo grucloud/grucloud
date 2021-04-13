@@ -287,9 +287,6 @@ exports.ProviderGru = ({ stacks }) => {
                   readWrite,
                   lives,
                 }),
-              tap((result) => {
-                logger.info(`listLives result: ${tos(result)}`);
-              }),
               tap(({ error }) =>
                 provider.spinnersStopListLives({
                   onStateChange,
@@ -490,7 +487,7 @@ exports.ProviderGru = ({ stacks }) => {
             tap(() => {
               logger.info(`filterProviderUp start`);
             }),
-            () => provider.start(),
+            () => provider.start({ onStateChange }),
             tap(() => {
               logger.info(`filterProviderUp started`);
             }),
