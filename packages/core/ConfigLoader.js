@@ -85,7 +85,9 @@ const envLoader = ({ configDir, stage }) => {
 const configFromDefault = ({ configDir }) =>
   pipe([
     () => npath.join(configDir, "config.js"),
-    tryCatch(pipe([tap(checkFileExist), require]), (error) => {}),
+    tryCatch(pipe([tap(checkFileExist), require]), (error) => {
+      logger.error(`configFromDefault error loading config: ${error}`);
+    }),
   ])();
 
 exports.ConfigLoader = ({
