@@ -1,7 +1,7 @@
 {
   "name": "@grucloud/core",
   "version": "1.10.22",
-  "description": "Infrastructure as Code",
+  "description": "GruCloud core, Infrastructure as Code",
   "public": true,
   "main": "index.js",
   "bin": {
@@ -9,15 +9,12 @@
   },
   "homepage": "https://www.grucloud.com",
   "scripts": {
-    "test:mock": "NODE_PATH=. mocha  './cli/**/*.test.js'  './test/**/*.test.js'  './mockServer/test/*.test.js'",
+    "test:mock": "NODE_PATH=. mocha  './cli/**/*.test.js'  './test/**/*.test.js'",
     "test": "npm run test:mock"
   },
   "keywords": [
     "cloud",
-    "infra as code",
-    "aws",
-    "azure",
-    "gcp"
+    "infrastrucure as code"
   ],
   "author": "Frederic Heem",
   "license": "ISC",
@@ -27,6 +24,7 @@
     "sinon": "^9.2.3"
   },
   "dependencies": {
+    "bluebird": "^3.7.2",
     "cli-table3": "^0.6.0",
     "colors": "^1.4.0",
     "commander": "^7.0.0",
@@ -51,17 +49,15 @@
   },
   "nyc": {
     "include": [
-      "src/**/*.js"
+      "**/*.js"
     ],
     "exclude": [
-      "src/cli/cliEntry.js",
-      "src/**/*.spec.js",
-      "src/**/*test*.js",
-      "src/**/test/*.js",
-      "src/**/test/config/*.js",
-      "src/cli/test/infra/*.js",
-      "src/mockServer/MockServerRun.js",
-      "src/mockServer/config.js"
+      "cli/cliEntry.js",
+      "**/*.spec.js",
+      "**/*test*.js",
+      "**/test/*.js",
+      "**/test/config/*.js",
+      "cli/test/infra/*.js"
     ],
     "extension": [
       ".js"
