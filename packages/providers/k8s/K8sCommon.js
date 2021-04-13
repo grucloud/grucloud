@@ -135,21 +135,28 @@ exports.createAxiosMakerK8s = ({ config, contentType }) =>
       ...(user["client-key"] && { key: fs.readFileSync(user["client-key"]) }),
     }),
     tap(({ cert, key }) => {
-      //logger.debug(`createAxiosMakerK8s agentParam ${tos({ cert, key })}`);
+      logger.debug(
+        `createAxiosMakerK8s agentParam hasCert ${!!cert}, hasKey ${!!key}`
+      );
     }),
     (agentParam) => new https.Agent(agentParam),
     (httpsAgent) =>
       AxiosMaker({
         contentType,
         httpsAgent,
-        onHeaders: () => {
-          assert(config.accessToken, "config.accessToken function not set");
-          const accessToken = config.accessToken();
-          assert(accessToken, "accessToken not set");
-          return {
-            Authorization: `Bearer ${accessToken}`,
-          };
-        },
+        onHeaders: pipe([
+          tap(() => {
+            assert(config.accessToken, "config.accessToken function not set");
+          }),
+          () => config.accessToken(),
+          switchCase([
+            isEmpty,
+            () => ({}),
+            (accessToken) => ({
+              Authorization: `Bearer ${accessToken}`,
+            }),
+          ]),
+        ]),
       }),
   ])();
 
