@@ -18,7 +18,7 @@ const AwsCloudFront = require("./CloudFront");
 const AwsEKS = require("./EKS");
 //const AwsELB = require("./ELB");
 const AwsELBv2 = require("./ELBv2");
-
+const AutoScaling = require("./Autoscaling");
 const defaultRegion = "eu-west-2";
 
 const fnSpecs = () => [
@@ -32,6 +32,7 @@ const fnSpecs = () => [
   ...AwsEKS,
   //...AwsELB,
   ...AwsELBv2,
+  ...AutoScaling,
 ];
 const getAvailabilityZonesName = pipe([
   ({ region }) => Ec2New({ region }),
@@ -76,6 +77,7 @@ exports.AwsProvider = ({
     eks: "2017-11-01",
     elb: "2012-06-01",
     elbv2: "2015-12-01",
+    autoscaling: "2011-01-01",
   };
 
   const { AWSAccessKeyId, AWSSecretKey } = process.env;

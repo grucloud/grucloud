@@ -79,6 +79,7 @@ exports.createResourcesWebServer = async ({
             protocol: "TCP",
             port: ui.port,
             targetPort: ui.containerPort,
+            nodePort: 30010,
           },
         ],
       },

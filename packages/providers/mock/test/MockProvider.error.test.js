@@ -39,6 +39,7 @@ describe("MockProvider errors", async function () {
       assert.equal(error.code, 400);
     }
   });
+  //TODO should not throw an error
   it("create 2 providers with the same resource name", async function () {
     const provider1 = await createMockProvider({
       name: "mock1",

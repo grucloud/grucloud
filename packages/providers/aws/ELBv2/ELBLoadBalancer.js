@@ -104,7 +104,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createLoadBalancer-property
-  const create = async ({ name, payload }) =>
+  const create = async ({ name, payload, dependencies }) =>
     pipe([
       tap(() => {
         logger.info(`create: lbv2 ${name}`);
@@ -120,6 +120,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
           config,
         })
       ),
+      //dependencies nodeGroups
       tap(() => {
         logger.info(`created lbv2 ${name}`);
       }),
@@ -154,19 +155,26 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const configDefault = async ({
     name,
     properties,
-    dependencies: { subnets },
+    dependencies: { subnets, securityGroups },
   }) =>
     pipe([
       tap(() => {
         assert(Array.isArray(subnets));
+        assert(Array.isArray(securityGroups));
       }),
       () => properties,
       defaultsDeep({
         Name: name,
         Type: "application",
         Scheme: "internet-facing",
-        Tags: buildTags({ name, config }),
+        Tags: buildTags({ name, config, UserTags: properties.Tags }),
         Subnets: map((subnet) => getField(subnet, "SubnetId"))(subnets),
+        SecurityGroups: map((securityGroup) =>
+          getField(securityGroup, "GroupId")
+        )(securityGroups),
+      }),
+      tap((result) => {
+        assert(result);
       }),
     ])();
 

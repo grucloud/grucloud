@@ -91,13 +91,14 @@ exports.createStack = async ({ stage }) => {
       vpc: stackAws.resources.vpc.vpc,
       hostedZone: stackAws.resources.hostedZone,
       subnets: stackAws.resources.vpc.subnetsPublic,
+      eks: stackAws.resources.eks,
       k8s: stackK8s.resources,
     },
   });
 
   return [
     {
-      provider: stackAws.provider,
+      ...stackAws,
       resources: { ...stackAws.resources, lbResources },
     },
     stackK8s,

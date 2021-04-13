@@ -26,6 +26,7 @@ const {
   findNameInTags,
   shouldRetryOnException,
   buildTags,
+  destroyNetworkInterfaces,
 } = require("../AwsCommon");
 
 exports.AwsSubnet = ({ spec, config }) => {
@@ -107,6 +108,7 @@ exports.AwsSubnet = ({ spec, config }) => {
       tap(() => {
         logger.info(`destroy subnet ${JSON.stringify({ name, id })}`);
       }),
+      () => destroyNetworkInterfaces({ ec2, Name: "subnet-id", Values: [id] }),
       () =>
         retryCall({
           name: `destroy subnet isDownById: ${name} id: ${id}`,

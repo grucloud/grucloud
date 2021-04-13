@@ -1,8 +1,18 @@
 process.env.AWS_SDK_LOAD_CONFIG = "true";
 const AWS = require("aws-sdk");
 const assert = require("assert");
-const { pipe, tryCatch, tap, switchCase, and, get, eq, or } = require("rubico");
-const { first, find, isEmpty } = require("rubico/x");
+const {
+  pipe,
+  tryCatch,
+  tap,
+  switchCase,
+  and,
+  get,
+  eq,
+  or,
+  not,
+} = require("rubico");
+const { first, find, isEmpty, forEach } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsCommon" });
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
@@ -12,6 +22,8 @@ exports.getNewCallerReference = () => `grucloud-${new Date()}`;
 
 const handler = ({ endpointName, endpoint }) => ({
   get: (target, name, receiver) => {
+    assert(endpointName);
+    assert(endpoint);
     return (...args) =>
       retryCall({
         name: `${endpointName}.${name} ${JSON.stringify(args)}`,
@@ -65,6 +77,9 @@ exports.ELBNew = (config) => () =>
 
 exports.ELBv2New = (config) => () =>
   createEndpoint({ endpointName: "ELBv2" })(config);
+
+exports.AutoScalingNew = (config) => () =>
+  createEndpoint({ endpointName: "AutoScaling" })(config);
 
 exports.shouldRetryOnException = ({ error, name }) =>
   pipe([
@@ -228,3 +243,43 @@ exports.getByIdCore = ({ fieldIds, getList }) =>
       logger.debug(`getById  ${fieldIds} no result: ${error.message}`);
     }
   );
+
+exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
+  pipe([
+    tap(() => {
+      assert(ec2);
+      assert(Name);
+      assert(Array.isArray(Values));
+    }),
+    () =>
+      ec2().describeNetworkInterfaces({
+        Filters: [{ Name, Values }],
+      }),
+    get("NetworkInterfaces", []),
+    tap((NetworkInterfaces) => {
+      logger.debug(`#NetworkInterfaces ${NetworkInterfaces.length}`);
+    }),
+    tap(
+      forEach(
+        pipe([
+          get("Attachment.AttachmentId"),
+          tap.if(not(isEmpty), (AttachmentId) =>
+            ec2().detachNetworkInterface({ AttachmentId })
+          ),
+        ])
+      )
+    ),
+    tap(
+      forEach(
+        pipe([
+          get("NetworkInterfaceId"),
+          tap((NetworkInterfaceId) => {
+            logger.debug(`deleteNetworkInterface: ${NetworkInterfaceId}`);
+            assert(NetworkInterfaceId);
+          }),
+          (NetworkInterfaceId) =>
+            ec2().deleteNetworkInterface({ NetworkInterfaceId }),
+        ])
+      )
+    ),
+  ])();

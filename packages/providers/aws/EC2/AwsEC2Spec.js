@@ -9,8 +9,14 @@ const { AwsRouteTable } = require("./AwsRouteTable");
 const { AwsRoute } = require("./AwsRoute");
 const { AwsSubnet } = require("./AwsSubnet");
 const { AwsSecurityGroup } = require("./AwsSecurityGroup");
+const {
+  AwsSecurityGroupRuleIngress,
+  AwsSecurityGroupRuleEgress,
+} = require("./AwsSecurityGroupRule");
 const { AwsElasticIpAddress } = require("./AwsElasticIpAddress");
 const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
+const { AwsNetworkInterface } = require("./AwsNetworkInterface");
+const { AwsNetworkAcl } = require("./AwsNetworkAcl");
 
 module.exports = [
   {
@@ -67,6 +73,18 @@ module.exports = [
     isOurMinion,
   },
   {
+    type: "SecurityGroupRuleIngress",
+    dependsOn: ["SecurityGroup"],
+    Client: AwsSecurityGroupRuleIngress,
+    isOurMinion,
+  },
+  {
+    type: "SecurityGroupRuleEgress",
+    dependsOn: ["SecurityGroup"],
+    Client: AwsSecurityGroupRuleEgress,
+    isOurMinion,
+  },
+  {
     type: "ElasticIpAddress",
     dependsOn: ["InternetGateway"],
     Client: AwsElasticIpAddress,
@@ -89,6 +107,18 @@ module.exports = [
       MinCount: 1,
       ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
     },
+    isOurMinion,
+  },
+  {
+    type: "NetworkInterface",
+    Client: AwsNetworkInterface,
+    listOnly: true,
+    isOurMinion,
+  },
+  {
+    type: "NetworkAcl",
+    Client: AwsNetworkAcl,
+    listOnly: true,
     isOurMinion,
   },
 ];

@@ -5,12 +5,13 @@ const {
   tap,
   get,
   not,
+  and,
   assign,
   eq,
   switchCase,
   tryCatch,
 } = require("rubico");
-const { first, find, defaultsDeep, isEmpty } = require("rubico/x");
+const { first, find, defaultsDeep, isEmpty, identity } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "ELBTargetGroup" });
@@ -18,8 +19,12 @@ const logger = require("@grucloud/core/logger")({ prefix: "ELBTargetGroup" });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { isUpByIdCore, isDownByIdCore } = require("@grucloud/core/Common");
-const { ELBv2New, buildTags, shouldRetryOnException } = require("../AwsCommon");
-
+const {
+  ELBv2New,
+  AutoScalingNew,
+  buildTags,
+  shouldRetryOnException,
+} = require("../AwsCommon");
 const findName = get("TargetGroupName");
 const findId = get("TargetGroupArn");
 
@@ -27,6 +32,7 @@ const findId = get("TargetGroupArn");
 
 exports.ELBTargetGroup = ({ spec, config }) => {
   const elb = ELBv2New(config);
+  const autoScaling = AutoScalingNew(config);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeTargetGroups-property
   const getList = async () =>
@@ -102,8 +108,48 @@ exports.ELBTargetGroup = ({ spec, config }) => {
   const isUpById = isUpByIdCore({ isInstanceUp, getById });
   const isDownById = isDownByIdCore({ getById });
 
+  const findAutoScalingGroup = ({ nodeGroup }) =>
+    pipe([
+      tap(() => {
+        logger.info(`findAutoScalingGroup: ${nodeGroup.name}`);
+        assert(nodeGroup);
+      }),
+      () => autoScaling().describeAutoScalingGroups({}),
+      get("AutoScalingGroups"),
+      tap((autoScalingGroups) => {
+        logger.debug(`findAutoScalingGroup: #asg: ${autoScalingGroups.length}`);
+        logger.debug(
+          `findAutoScalingGroup: asg: ${JSON.stringify(
+            autoScalingGroups,
+            null,
+            4
+          )}`
+        );
+      }),
+      find(
+        pipe([
+          get("Tags"),
+          find(
+            and([
+              eq(get("Key"), "eks:nodegroup-name"),
+              eq(get("Value"), nodeGroup.name),
+            ])
+          ),
+        ])
+      ),
+      tap.if(isEmpty, () => {
+        throw Error(
+          `Cannot find AutoScalingGroup for nodeGroup: ${nodeGroup.name}`
+        );
+      }),
+      tap((autoScalingGroup) => {
+        assert(autoScalingGroup.AutoScalingGroupName);
+        logger.info(`findAutoScalingGroup : ${tos(autoScalingGroup)}`);
+      }),
+    ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createTargetGroup-property
-  const create = async ({ name, payload }) =>
+  const create = async ({ name, payload, dependencies: { nodeGroup } }) =>
     pipe([
       tap(() => {
         logger.info(`create target group : ${name}`);
@@ -119,6 +165,19 @@ exports.ELBTargetGroup = ({ spec, config }) => {
           config,
         })
       ),
+      switchCase([
+        () => !isEmpty(nodeGroup),
+        ({ TargetGroupArn }) =>
+          pipe([
+            () => findAutoScalingGroup({ nodeGroup }),
+            ({ AutoScalingGroupName }) => ({
+              AutoScalingGroupName,
+              TargetGroupARNs: [TargetGroupArn],
+            }),
+            (params) => autoScaling().attachLoadBalancerTargetGroups(params),
+          ])(),
+        identity,
+      ]),
       tap((result) => {
         logger.info(`created target group ${name}`);
       }),
@@ -159,7 +218,6 @@ exports.ELBTargetGroup = ({ spec, config }) => {
       () => properties,
       defaultsDeep({
         Name: name,
-        Port: 80,
         Protocol: "HTTP",
         VpcId: getField(vpc, "VpcId"),
         Tags: buildTags({ name, config }),

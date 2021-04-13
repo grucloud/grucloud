@@ -2,6 +2,8 @@ const assert = require("assert");
 const { get } = require("rubico");
 exports.config = require("./config");
 
+const formatName = (name, config) => `${name}-${config.projectName}`;
+
 const loadBalancerPolicy = require("./load-balancer-policy.json");
 
 const createResources = async ({ provider, resources }) => {
@@ -16,7 +18,10 @@ const createResources = async ({ provider, resources }) => {
   assert(cluster);
 
   const iamOpenIdConnectProvider = await provider.makeIamOpenIDConnectProvider({
-    name: config.awsLoadBalancerController.iamOpenIdConnectProvider.name,
+    name: formatName(
+      config.awsLoadBalancerController.iamOpenIdConnectProvider.name,
+      config
+    ),
     dependencies: { cluster },
     properties: ({ dependencies: { cluster } }) => ({
       Url: get(

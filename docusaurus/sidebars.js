@@ -23,6 +23,7 @@ module.exports = {
       {
         Resources: [
           { ACM: ["aws/resources/ACM/AcmCertificate"] },
+          { AutoScaling: ["aws/resources/AutoScaling/AutoScalingGroup"] },
           { CloudFront: ["aws/resources/CloudFront/CloudFrontDistribution"] },
           {
             EC2: [
@@ -34,6 +35,8 @@ module.exports = {
               "aws/resources/EC2/Route",
               "aws/resources/EC2/Subnet",
               "aws/resources/EC2/SecurityGroup",
+              "aws/resources/EC2/SecurityGroupRuleIngress",
+              "aws/resources/EC2/SecurityGroupRuleEgress",
               "aws/resources/EC2/EC2",
               "aws/resources/EC2/ElasticIpAddress",
               "aws/resources/EC2/Volume",

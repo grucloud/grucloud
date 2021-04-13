@@ -1,18 +1,25 @@
 const assert = require("assert");
-const { map, assign, pipe } = require("rubico");
+const { get, pipe, tap, and, eq } = require("rubico");
+const { find } = require("rubico/x");
 
-// Create Load Balancer, Target Group, Listeners and Rule
+// Create Load Balancer, Target Group, Listeners and Rule, Security Group and Rules
 
 exports.createResources = async ({
   provider,
-  resources: { vpc, subnets, hostedZone, k8s, certificate },
+  resources: { vpc, subnets, hostedZone, k8s, eks, certificate },
 }) => {
   assert(Array.isArray(subnets));
   assert(vpc);
   assert(certificate);
   assert(hostedZone);
   assert(k8s);
+  assert(eks);
+  assert(eks.cluster);
+
   const { config } = provider;
+  assert(config.eks);
+  assert(config.eks.cluster);
+  assert(config.eks.cluster.name);
   assert(config.elb);
   assert(config.elb.loadBalancer);
   assert(config.elb.targetGroups);
@@ -20,10 +27,150 @@ exports.createResources = async ({
   assert(config.elb.rules);
   assert(config.elb.listeners.https.name);
 
+  const securityGroupLoadBalancer = await provider.makeSecurityGroup({
+    name: "load-balancer-security-group",
+    dependencies: { vpc },
+    properties: () => ({
+      create: {
+        Description: "Load Balancer HTTP HTTPS Security Group",
+      },
+      Tags: [
+        {
+          Key: "ingress.k8s.aws/stack",
+          Value: "default/ingress",
+        },
+        {
+          Key: "elbv2.k8s.aws/cluster",
+          Value: config.eks.cluster.name,
+        },
+        {
+          Key: "ingress.k8s.aws/resource",
+          Value: "ManagedLBSecurityGroup",
+        },
+      ],
+    }),
+  });
+
+  const sgRuleIngressHttp = await provider.makeSecurityGroupRuleIngress({
+    name: "sg-rule-ingress-http",
+    dependencies: {
+      securityGroup: securityGroupLoadBalancer,
+    },
+    properties: () => ({
+      IpPermissions: [
+        {
+          FromPort: 80,
+          IpProtocol: "tcp",
+          IpRanges: [
+            {
+              CidrIp: "0.0.0.0/0",
+            },
+          ],
+          Ipv6Ranges: [
+            {
+              CidrIpv6: "::/0",
+            },
+          ],
+          ToPort: 80,
+        },
+      ],
+    }),
+  });
+  const sgRuleIngressHttps = await provider.makeSecurityGroupRuleIngress({
+    name: "sg-rule-ingress-https",
+    dependencies: {
+      securityGroup: securityGroupLoadBalancer,
+    },
+    properties: () => ({
+      IpPermissions: [
+        {
+          FromPort: 443,
+          IpProtocol: "tcp",
+          IpRanges: [
+            {
+              CidrIp: "0.0.0.0/0",
+            },
+          ],
+          Ipv6Ranges: [
+            {
+              CidrIpv6: "::/0",
+            },
+          ],
+          ToPort: 443,
+        },
+      ],
+    }),
+  });
+  const findGroupIdFromSecurityGroup = ({ securityGroupK8sCluster }) =>
+    pipe([
+      tap(() => {}),
+      () => securityGroupK8sCluster.resolveConfig(),
+      tap((live) => {}),
+      get("GroupId"),
+      tap((GroupId) => {}),
+    ])();
+
+  // Use the security group created by EKS
+  const securityGroupK8sCluster = await provider.useSecurityGroup({
+    name: "sg-eks-k8s-cluster",
+    filterLives: ({ items }) =>
+      pipe([
+        () => items,
+        find(
+          pipe([
+            get("Tags"),
+            find(
+              and([
+                eq(get("Key"), "aws:eks:cluster-name"),
+                eq(get("Value"), eks.cluster.name),
+              ])
+            ),
+          ])
+        ),
+        tap((live) => {
+          //logger.info(`securityGroupK8sCluster live ${live}`);
+        }),
+      ])(),
+  });
+
+  // Attach an Ingress Rule to the eks-k8s security group to allwo traffic from the load balancer
+  const sgRuleIngress = await provider.makeSecurityGroupRuleIngress({
+    name: "sg-rule-ingress",
+    dependencies: {
+      cluster: eks.cluster,
+      securityGroup: securityGroupK8sCluster,
+      securityGroupLoadBalancer,
+    },
+    properties: async ({ dependencies: { securityGroupLoadBalancer } }) => ({
+      GroupId: await findGroupIdFromSecurityGroup({ securityGroupK8sCluster }),
+      IpPermissions: [
+        {
+          FromPort: 1025,
+          IpProtocol: "tcp",
+          IpRanges: [
+            {
+              CidrIp: "0.0.0.0/0",
+            },
+          ],
+          Ipv6Ranges: [
+            {
+              CidrIpv6: "::/0",
+            },
+          ],
+          UserIdGroupPairs: [
+            { GroupId: get("live.GroupId")(securityGroupLoadBalancer) },
+          ],
+          ToPort: 65535,
+        },
+      ],
+    }),
+  });
+
   const loadBalancer = await provider.makeLoadBalancer({
     name: config.elb.loadBalancer.name,
     dependencies: {
       subnets,
+      securityGroups: [securityGroupLoadBalancer],
     },
     properties: () => ({}),
   });
@@ -33,15 +180,17 @@ exports.createResources = async ({
       name: config.elb.targetGroups.web.name,
       dependencies: {
         vpc,
+        nodeGroup: eks.nodeGroupsPrivate[0],
       },
-      properties: () => ({}),
+      properties: config.elb.targetGroups.web.properties,
     }),
     rest: await provider.makeTargetGroup({
       name: config.elb.targetGroups.rest.name,
       dependencies: {
+        nodeGroup: eks.nodeGroupsPrivate[0],
         vpc,
       },
-      properties: () => ({}),
+      properties: config.elb.targetGroups.rest.properties,
     }),
   };
 
@@ -98,22 +247,29 @@ exports.createResources = async ({
   };
 
   const rules = {
-    http: {
+    http2https: await provider.makeRule({
+      name: config.elb.rules.http2https.name,
+      dependencies: {
+        listener: listeners.http,
+      },
+      properties: config.elb.rules.http2https.properties,
+    }),
+    https: {
       web: await provider.makeRule({
-        name: config.elb.rules.http.web.name,
+        name: config.elb.rules.https.web.name,
         dependencies: {
-          listener: listeners.http,
+          listener: listeners.https,
           targetGroup: targetGroups.web,
         },
-        properties: config.elb.rules.http.web.properties,
+        properties: config.elb.rules.https.web.properties,
       }),
       rest: await provider.makeRule({
-        name: config.elb.rules.http.rest.name,
+        name: config.elb.rules.https.rest.name,
         dependencies: {
-          listener: listeners.http,
+          listener: listeners.https,
           targetGroup: targetGroups.rest,
         },
-        properties: config.elb.rules.http.rest.properties,
+        properties: config.elb.rules.https.rest.properties,
       }),
     },
   };

@@ -2,10 +2,7 @@
   "name": "@grucloud/meta",
   "version": "1.8.0",
   "description": "Infrastructure as Code",
-  "public": true,
-  "bin": {
-    "gc": "./packages/core/cli/cliEntry.js"
-  },
+  "private": true,
   "homepage": "https://www.grucloud.com",
   "scripts": {
     "bootstrap": "lerna bootstrap",
@@ -15,7 +12,7 @@
     "test:azure": "cd packages/providers/azure && npm test",
     "test:k8s": "lerna run --concurrency 1 --scope @grucloud/provider-k8s --scope @grucloud/example-module-k8s* test",
     "test:mock": "CONTINUOUS_INTEGRATION=1 lerna run  --concurrency 1 --scope @grucloud/core --scope @grucloud/provider-mock --stream test",
-    "test:ci": "CONTINUOUS_INTEGRATION=1 lerna run  --concurrency 1 --scope @grucloud/core --scope @grucloud/provider-mock --stream test --  --reporter=mocha-junit-reporter",
+    "test:ci": "CONTINUOUS_INTEGRATION=1 lerna run  --concurrency 1 --scope @grucloud/core --scope @grucloud/provider-mock --scope @grucloud/mock-server --stream test --  --reporter=mocha-junit-reporter",
     "test:mocha": "lerna run  --stream test",
     "test": "CONTINUOUS_INTEGRATION=1 npm run test:mocha",
     "test:example": "node test/testExamples.js",
@@ -39,7 +36,12 @@
     "nyc": "^15.1.0"
   },
   "dependencies": {
-    "lerna": "^4.0.0"
+    "axios": "^0.21.1",
+    "dotenv": "^8.2.0",
+    "dotenv-cli": "^4.0.0",
+    "lerna": "^4.0.0",
+    "mocha": "^8.2.1",
+    "mocha-junit-reporter": "^2.0.0"
   },
   "repository": {
     "type": "git",

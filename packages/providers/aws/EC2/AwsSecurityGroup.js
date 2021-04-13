@@ -1,11 +1,12 @@
 const assert = require("assert");
-const { get, pipe, map, eq, or, tap, fork } = require("rubico");
-const { defaultsDeep, find } = require("rubico/x");
+const { get, pipe, map, eq, or, tap, fork, filter, not } = require("rubico");
+const { defaultsDeep, pluck, identity } = require("rubico/x");
 const {
   Ec2New,
   getByIdCore,
   shouldRetryOnException,
   buildTags,
+  destroyNetworkInterfaces,
 } = require("../AwsCommon");
 const { retryCall } = require("@grucloud/core/Retry");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -15,7 +16,7 @@ const {
   isUpByIdCore,
   isDownByIdCore,
 } = require("@grucloud/core/Common");
-const logger = require("@grucloud/core/logger")({ prefix: "AwsSg" });
+const logger = require("@grucloud/core/logger")({ prefix: "AwsSecurityGroup" });
 const { tos } = require("@grucloud/core/tos");
 
 exports.AwsSecurityGroup = ({ spec, config }) => {
@@ -57,7 +58,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     get("resource"),
     or([
       eq(get("GroupName"), "default"),
-      pipe([get("Tags"), find(eq(get("Key"), "aws:eks:cluster-name"))]),
+      //pipe([get("Tags"), find(eq(get("Key"), "aws:eks:cluster-name"))]),
     ]),
   ]);
 
@@ -114,6 +115,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       tap(() => {
         logger.debug(`destroy sg ${JSON.stringify({ name, id })}`);
       }),
+      () => destroyNetworkInterfaces({ ec2, Name: "group-id", Values: [id] }),
       () => ec2().deleteSecurityGroup({ GroupId: id }),
       tap(() =>
         retryCall({
@@ -133,7 +135,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     dependencies,
   }) => {
     const { vpc } = dependencies;
-    assert(vpc, "missing vpc dependency");
+    //assert(vpc, "missing vpc dependency");
     return defaultsDeep(otherProps)({
       create: {
         ...(vpc && { VpcId: getField(vpc, "VpcId") }),

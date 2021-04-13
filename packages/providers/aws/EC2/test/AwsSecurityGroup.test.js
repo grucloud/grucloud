@@ -14,9 +14,15 @@ describe("AwsSecurityGroup", async function () {
   let provider;
   let vpc;
   let sg;
+  let sgDefault;
   const clusterName = "cluster";
   const k8sSecurityGroupTagKey = `kubernetes.io/cluster/${clusterName}`;
-  const types = ["SecurityGroup", "Vpc"];
+  const types = [
+    "SecurityGroup",
+    "SecurityGroupRuleIngress",
+    "SecurityGroupRuleEgress",
+    "Vpc",
+  ];
   before(async function () {
     try {
       config = ConfigLoader({ path: "../../../examples/multi" });
@@ -34,56 +40,64 @@ describe("AwsSecurityGroup", async function () {
       }),
     });
     sg = await provider.makeSecurityGroup({
-      name: "sg",
+      name: "security-group-test",
       dependencies: { vpc },
       properties: () => ({
         Tags: [{ Key: k8sSecurityGroupTagKey, Value: "owned" }],
         create: {
           Description: "Security Group Description",
         },
-        ingress: {
-          IpPermissions: [
-            {
-              FromPort: 22,
-              IpProtocol: "tcp",
-              IpRanges: [
-                {
-                  CidrIp: "0.0.0.0/0",
-                },
-              ],
-              Ipv6Ranges: [
-                {
-                  CidrIpv6: "::/0",
-                },
-              ],
-              ToPort: 22,
-            },
-          ],
-        },
-        egress: {
-          IpPermissions: [
-            {
-              FromPort: 1024,
-              IpProtocol: "tcp",
-              IpRanges: [
-                {
-                  CidrIp: "0.0.0.0/0",
-                },
-              ],
-              Ipv6Ranges: [
-                {
-                  CidrIpv6: "::/0",
-                },
-              ],
-              ToPort: 65535,
-            },
-          ],
-        },
+      }),
+    });
+    sgRuleIngress = await provider.makeSecurityGroupRuleIngress({
+      name: "sg-rule-ingress-port-22",
+      dependencies: { securityGroup: sg },
+      properties: () => ({
+        IpPermissions: [
+          {
+            FromPort: 22,
+            IpProtocol: "tcp",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+            ToPort: 22,
+          },
+        ],
+      }),
+    });
+    sgRuleEgress = await provider.makeSecurityGroupRuleEgress({
+      name: "sg-rule-egress-all",
+      dependencies: { securityGroup: sg },
+      properties: () => ({
+        IpPermissions: [
+          {
+            FromPort: 1024,
+            IpProtocol: "tcp",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+            ToPort: 65535,
+          },
+        ],
       }),
     });
 
     const securityGroupNodes = await provider.makeSecurityGroup({
-      name: "security-group-nodes",
+      name: "security-group-nodes-test",
       dependencies: { vpc, securityGroup: sg },
       properties: ({ dependencies: { securityGroup } }) => ({
         Tags: [{ Key: `kubernetes.io/cluster/${clusterName}`, Value: "owned" }],

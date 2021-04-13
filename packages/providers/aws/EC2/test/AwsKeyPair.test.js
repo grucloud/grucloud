@@ -34,14 +34,9 @@ describe("AwsKeyPair", async function () {
   });
 
   it("keyPair name not found on server", async function () {
-    try {
-      await provider.useKeyPair({
-        name: "idonotexist",
-      });
-      assert(false);
-    } catch (error) {
-      assert.equal(error.code, 400);
-      assert(error.message);
-    }
+    await provider.useKeyPair({
+      name: "idonotexist",
+    });
+    // Shoult not throw at this time
   });
 });

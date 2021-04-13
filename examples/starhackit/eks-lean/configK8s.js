@@ -10,6 +10,7 @@ module.exports = ({ stage }) => ({
     label: "ui",
     port: 80,
     containerPort: 3000,
+    nodePort: 30010,
   },
   restServer: {
     container: { image: "fredericheem/api", version: "v10.14.0" },
@@ -17,6 +18,7 @@ module.exports = ({ stage }) => ({
     deploymentName: "rest",
     label: "rest",
     port: 9000,
+    nodePort: 30020,
   },
   pv: { name: "pv-db" },
   postgres: {

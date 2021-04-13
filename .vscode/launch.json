@@ -70,6 +70,23 @@
       "port": 9229
     },
     {
+      "name": "Debug Mock Provider",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "test",
+        "--",
+        "--trace-warnings",
+        "--inspect-brk=9229"
+      ],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}/packages/providers/mock",
+      "port": 9229
+    },
+    {
       "name": "Debug test",
       "type": "node",
       "request": "launch",
@@ -239,6 +256,7 @@
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/src/providers/mock/test/",
       "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
       "args": ["--infra", "MockStack.js", "list", "--all"]
     },
     {
@@ -734,6 +752,7 @@
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/mock",
       "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
       "args": ["list"]
     },
     {
@@ -743,6 +762,7 @@
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/mock/mock",
       "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
       "args": ["list", "--provider", "ff"]
     },
     {
@@ -752,6 +772,7 @@
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/azure/",
       "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
       "args": ["run", "--onDeployed"]
     },
     {

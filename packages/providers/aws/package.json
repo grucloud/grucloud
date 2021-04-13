@@ -12,7 +12,11 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.10.22",
-    "aws-sdk": "^2.882.0"
+    "aws-sdk": "^2.882.0",
+    "deep-object-diff": "^1.1.0",
+    "moment": "^2.29.1",
+    "querystring": "^0.2.1",
+    "rubico": "^1.6.23"
   },
   "devDependencies": {
     "mocha": "^8.3.2",

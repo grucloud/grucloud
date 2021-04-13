@@ -59,7 +59,7 @@ const dependenciesTodependsOn = ({ dependencies, stacks }) =>
 
 const runnerParams = ({ provider, isProviderUp, stacks }) => ({
   key: provider.name,
-  meta: { providerName: provider.name },
+  meta: { providerName: provider.name, provider },
   dependsOn: dependenciesTodependsOn({
     dependencies: provider.dependencies,
     stacks,
@@ -287,9 +287,6 @@ exports.ProviderGru = ({ stacks }) => {
                   readWrite,
                   lives,
                 }),
-              tap((result) => {
-                logger.info(`listLives result: ${tos(result)}`);
-              }),
               tap(({ error }) =>
                 provider.spinnersStopListLives({
                   onStateChange,
@@ -406,12 +403,14 @@ exports.ProviderGru = ({ stacks }) => {
                     pipe([
                       () => provider.start({ onStateChange }),
                       tap((xxx) => {
-                        assert(xxx);
+                        assert(true);
                       }),
                     ])(),
                 ])(),
               (error, { providerName }) => {
-                logger.error(`planApply start error ${tos(error)}`);
+                logger.error(
+                  `planApply start error ${tos(convertError({ error }))}`
+                );
                 return {
                   error: convertError({ error, name: "Apply" }),
                   providerName,
@@ -479,46 +478,48 @@ exports.ProviderGru = ({ stacks }) => {
       tap(() => {
         logger.info(`filterProviderUp`);
       }),
+
       () => stacks,
-      map(
-        assign({
-          providerUp: ({ provider, isProviderUp = () => true }) =>
-            pipe([
-              () => provider.start({ onStateChange }),
-              () => isProviderUp(),
-            ])(),
-        })
-      ),
-      tap((stacks) => {
-        assert(stacks);
-      }),
-      (stacks) =>
-        filter(({ provider }) =>
+      map(({ provider, isProviderUp }) => ({
+        ...runnerParams({ provider, isProviderUp, stacks }),
+        executor: ({ results }) =>
           pipe([
-            () => provider.dependencies,
-            map(
-              pipe([
-                (providerDep) =>
-                  find(eq(get("provider.name"), providerDep.name))(stacks),
-                tap((xxx) => {
-                  assert(true);
-                }),
-                get("providerUp", true),
-                tap((isUp) => {
-                  logger.info(`provider is up: ${isUp}`);
-                }),
-              ])
-            ),
-            values,
-            tap((ups) => {
-              assert(ups);
+            tap(() => {
+              logger.info(`filterProviderUp start`);
             }),
-            all((v) => v),
-            tap((keep) => {
-              assert(true);
+            () => provider.start({ onStateChange }),
+            tap(() => {
+              logger.info(`filterProviderUp started`);
             }),
-          ])()
-        )(stacks),
+            () => ({
+              provider,
+              isProviderUp,
+            }),
+          ])(),
+      })),
+      (inputs) =>
+        Lister({
+          inputs,
+          onStateChange: ({ key, result, nextState }) =>
+            pipe([
+              tap.if(
+                () => includes(nextState)(["ERROR"]),
+                pipe([
+                  () => getProvider({ providerName: key }),
+                  tap((provider) => {
+                    logger.info(`filterProviderUp provider ${provider.name}`);
+                  }),
+                  (provider) =>
+                    provider.spinnersStopListLives({
+                      onStateChange,
+                      error: true,
+                    }),
+                ])
+              ),
+            ])(),
+        }),
+      get("results"),
+      filter(not(get("error"))),
       tap((results) => {
         logger.info(`filterProviderUp #providers ${results.length}`);
       }),

@@ -1,5 +1,7 @@
 ## Bugs
 
+-     ✖ SecurityGroup 0/4               The security group 'sg-0be1ccc0c18345ade' does not exist
+
 - revokeSecurityGroupIngress
 
 - kubectl logs -n kube-system deployment.apps/aws-load-balancer-controller
@@ -58,6 +60,8 @@ User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot lis
 - doc
 
 ## TODO Aws:
+
+- https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#attachLoadBalancerTargetGroups-property
 
 - https://kubernetes.github.io/ingress-nginx/deploy/
 
