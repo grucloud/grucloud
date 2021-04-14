@@ -371,3 +371,32 @@ exports.contextFromHookAction = ({
     displayText: () => name,
   };
 };
+
+// Global Hooks
+exports.contextFromHookGlobal = ({ hookType }) => {
+  assert(hookType);
+
+  return {
+    uri: `hookGlobal::${hookType}`,
+    displayText: () => `hook::${hookType}`,
+  };
+};
+
+exports.contextFromHookGlobalInit = ({ hookType }) => {
+  assert(hookType);
+
+  return {
+    uri: `hookGlobal::init`,
+    displayText: () => "Initialising",
+  };
+};
+
+exports.contextFromHookGlobalAction = ({ hookType, name }) => {
+  assert(hookType);
+  assert(name);
+
+  return {
+    uri: `hookGlobal::${hookType}::${name}`,
+    displayText: () => name,
+  };
+};

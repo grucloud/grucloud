@@ -2,7 +2,7 @@ const Axios = require("axios");
 const assert = require("assert");
 const urljoin = require("url-join");
 const { MockProvider } = require("@grucloud/provider-mock");
-//const hookGlobal = require("./hook");
+const hookGlobal = require("./hookGlobal");
 
 const BASE_URL = "http://localhost:8089";
 
@@ -55,7 +55,7 @@ exports.createStack = async ({ config }) => {
   const resources2 = await createResources2({ provider: provider2 });
 
   return {
-    //hookGlobal,
+    hookGlobal,
     stacks: [
       {
         provider: provider1,

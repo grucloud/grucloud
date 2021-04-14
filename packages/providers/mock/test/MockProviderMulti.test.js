@@ -42,7 +42,9 @@ describe("MockProviderMulti", async function () {
   });
 
   it("multi  apply", async function () {
-    const infra = [{ provider: provider1 }, { provider: provider2 }];
+    const infra = {
+      stacks: [{ provider: provider1 }, { provider: provider2 }],
+    };
     {
       const result = await cliCommands.list({
         infra,

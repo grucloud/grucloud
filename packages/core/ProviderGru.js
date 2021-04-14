@@ -26,6 +26,7 @@ const {
   first,
   size,
   isEmpty,
+  callProp,
   isString,
   flatten,
   pluck,
@@ -36,9 +37,15 @@ const {
   includes,
   groupBy,
   values,
+  isFunction,
 } = require("rubico/x");
 const { Lister } = require("./Lister");
-
+const {
+  contextFromHookGlobal,
+  contextFromHookGlobalInit,
+  contextFromHookGlobalAction,
+  nextStateOnError,
+} = require("./ProviderCommon");
 const logger = require("./logger")({ prefix: "ProviderGru" });
 const { tos } = require("./tos");
 const { convertError } = require("./Common");
@@ -91,7 +98,7 @@ const buildDependsOnReverse = (stacks) =>
     }),
   ])(stacks);
 
-exports.ProviderGru = ({ stacks }) => {
+exports.ProviderGru = ({ hookGlobal, stacks }) => {
   assert(Array.isArray(stacks));
 
   const getProviders = () => pipe([map(get("provider"))])(stacks);
@@ -628,6 +635,7 @@ exports.ProviderGru = ({ stacks }) => {
   } = {}) =>
     pipe([
       tap(() => {
+        assert(functionName);
         logger.info(`runCommand ${functionName}`);
       }),
       () => stacks, //TODO provider up
@@ -636,7 +644,10 @@ exports.ProviderGru = ({ stacks }) => {
         executor: ({ results }) =>
           pipe([
             tap(() => {
-              assert(provider[functionName]);
+              assert(
+                provider[functionName],
+                `${functionName} is not a provider function `
+              );
             }),
             () => provider.start({ onStateChange }),
             () =>
@@ -720,6 +731,250 @@ exports.ProviderGru = ({ stacks }) => {
       }),
     ])();
 
+  const startHookGlobalSpinners = ({ hookType, onStateChange, hookInstance }) =>
+    pipe([
+      () => {
+        logger.debug(`startHookGlobalSpinners: ${hookType}`);
+        assert(hookType);
+        assert(onStateChange);
+        assert(hookInstance[hookType]);
+      },
+      () =>
+        onStateChange({
+          context: contextFromHookGlobalInit({ hookType }),
+          nextState: "WAITING",
+          indent: 2,
+        }),
+      () => hookInstance[hookType],
+      get("actions"),
+      forEach((action) =>
+        onStateChange({
+          context: contextFromHookGlobalAction({
+            hookType,
+            name: action.name,
+          }),
+          nextState: "WAITING",
+          indent: 4,
+        })
+      ),
+    ])();
+
+  const runGlobalActions = ({
+    actions,
+    hookType,
+    onStateChange,
+    actionPayload,
+  }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`runGlobalActions: ${hookType}, #action ${size(actions)}`);
+        //assert(Array.isArray(actions), "actions is not an array");
+        assert(hookType);
+        assert(onStateChange);
+      }),
+      () => actions,
+      map((action) =>
+        pipe([
+          tap(() => {
+            assert(action);
+            assert(isFunction(action.command), `command is not a function`);
+            assert(action.name, "action is missing the name properties");
+            logger.debug(`action name: ${action.name}`);
+          }),
+          tap(() =>
+            onStateChange({
+              context: contextFromHookGlobalAction({
+                hookType,
+                name: action.name,
+              }),
+              nextState: "RUNNING",
+            })
+          ),
+          tryCatch(
+            () => action.command(actionPayload),
+            (error) =>
+              pipe([
+                tap(() => {
+                  logger.error(
+                    `runCommandGlobal ${convertError({
+                      error,
+                      name: action.name,
+                    })}`
+                  );
+                }),
+                () => ({ error, action: action.name }),
+              ])()
+          ),
+          tap(({ error } = {}) =>
+            onStateChange({
+              context: contextFromHookGlobalAction({
+                hookType,
+                name: action.name,
+              }),
+              nextState: nextStateOnError(error),
+              error,
+            })
+          ),
+        ])()
+      ),
+      tap((result) => {
+        assert(true);
+      }),
+      (results) => ({
+        error: any(get("error"))(results),
+        results,
+      }),
+      tap((result) => {
+        assert(result);
+      }),
+    ])();
+
+  const runHookInstance = ({ hookType, onStateChange, hookInstance }) =>
+    pipe([
+      tap(() => {
+        assert(hookInstance);
+        assert(hookInstance[hookType]);
+      }),
+      tap(() =>
+        startHookGlobalSpinners({
+          hookType,
+          onStateChange,
+          hookInstance,
+        })
+      ),
+      tap(() =>
+        onStateChange({
+          context: contextFromHookGlobalInit({ hookType }),
+          nextState: "RUNNING",
+        })
+      ),
+      tryCatch(
+        pipe([
+          () => hookInstance[hookType].init(),
+          tap((actionPayload) => {
+            logger.debug(`init result: ${actionPayload}`);
+          }),
+          tap(() =>
+            onStateChange({
+              context: contextFromHookGlobalInit({ hookType }),
+              nextState: "DONE",
+            })
+          ),
+          (actionPayload) => ({ kind: "#hookActions", actionPayload }),
+          assign({
+            results: ({ actionPayload }) =>
+              runGlobalActions({
+                onStateChange,
+                actions: hookInstance[hookType].actions,
+                hookType,
+                actionPayload,
+              }),
+          }),
+          assign({ error: any(get("error")) }),
+          tap((result) => {
+            logger.debug(``);
+          }),
+        ]),
+        pipe([
+          (error) => convertError({ error }),
+          tap((error) => {
+            logger.error(`runHookInstance ${hookType}, ${tos(error)}`);
+          }),
+          tap((error) =>
+            onStateChange({
+              context: contextFromHookGlobalInit({ hookType }),
+              nextState: "ERROR",
+              error,
+            })
+          ),
+          (error) => ({ error, hookType }),
+        ])
+      ),
+      //assign({ error: any(get("error")) }),
+      tap((result) => {
+        assert(result);
+      }),
+    ])();
+
+  const runCommandGlobal = ({ hookType, onStateChange }) =>
+    pipe([
+      tap(() => {
+        assert(hookType);
+        assert(onStateChange);
+        logger.info(
+          `runCommandGlobal ${hookType}, hashookGlobal: ${!!hookGlobal}`
+        );
+      }),
+
+      switchCase([
+        () => hookGlobal,
+        pipe([
+          tap(() =>
+            onStateChange({
+              context: contextFromHookGlobal({ hookType }),
+              nextState: "WAITING",
+            })
+          ),
+          tap(() =>
+            onStateChange({
+              context: contextFromHookGlobal({ hookType }),
+              nextState: "RUNNING",
+            })
+          ),
+          tryCatch(
+            pipe([
+              tap(() => {
+                logger.info(
+                  `runCommandGlobal ${hookType}, hashookGlobal: ${!!hookGlobal}`
+                );
+                assert(isFunction(hookGlobal));
+                assert(stacks);
+              }),
+              () => hookGlobal({ stacks }),
+              switchCase([
+                pipe([get(hookType), isEmpty]),
+                identity,
+                (hookInstance) =>
+                  runHookInstance({ hookType, onStateChange, hookInstance }),
+              ]),
+            ]),
+            (error) =>
+              pipe([
+                tap(() => {
+                  logger.error(
+                    `runCommandGlobal ${hookType}, ${tos(
+                      convertError({ error })
+                    )}`
+                  );
+                }),
+                tap(() =>
+                  onStateChange({
+                    context: contextFromHookGlobalInit({ hookType }),
+                    nextState: "ERROR",
+                    error: convertError({ error, name: hookType }),
+                  })
+                ),
+                () => ({ error, hookType }),
+              ])()
+          ),
+          tap((result) => {
+            logger.debug(result);
+          }),
+          tap(({ error }) =>
+            onStateChange({
+              context: contextFromHookGlobal({ hookType }),
+              nextState: nextStateOnError(error),
+              error,
+            })
+          ),
+        ]),
+        identity,
+      ]),
+      tap((result) => {
+        logger.info(`runCommandGlobal ${hookType}, done`);
+      }),
+    ])();
+
   return {
     listLives,
     planQuery,
@@ -731,6 +986,7 @@ exports.ProviderGru = ({ stacks }) => {
     getProvider,
     getProviders,
     runCommand,
+    runCommandGlobal,
     buildGraph,
   };
 };

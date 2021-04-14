@@ -30,7 +30,7 @@ Commands:
   init|i               Initialise the cloud providers
   uninit|u             Un-initialise the cloud providers
   plan|p [options]     Find out which resources need to be deployed or destroyed
-  run|r [options]      run onDeployed or onDestroy
+  run|r [options]      Run the hooks
   apply|a [options]    Apply the plan, a.k.a deploy the resources
   destroy|d [options]  Destroy the resources
   list|l [options]     List the resources

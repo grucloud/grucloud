@@ -452,7 +452,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "K8s EKS Graph",
+      "name": "EKS LEAN Graph",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
       "internalConsoleOptions": "openOnSessionStart",
@@ -462,7 +462,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "K8s EKS List",
+      "name": "EKS LEAN List",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
       "internalConsoleOptions": "openOnSessionStart",
@@ -472,7 +472,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "K8s EKS Plan",
+      "name": "EKS LEAN Plan",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
       "internalConsoleOptions": "openOnSessionStart",
@@ -482,7 +482,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "K8s EKS Apply",
+      "name": "EKS LEAN Apply",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
       "internalConsoleOptions": "openOnSessionStart",
@@ -492,12 +492,32 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "K8s EKS Destroy All",
+      "name": "EKS LEAN Destroy All",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["destroy", "-f", "-a"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "EKS LEAN onDeployedGlobal",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["run", "--onDeployedGlobal"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "EKS LEAN onDestroyedGlobal",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["run", "--onDestroyedGlobal"]
     },
     {
       "type": "node",
@@ -648,6 +668,16 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["run", "--onDeployed"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Mock Multi onDeployedGlobal",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/mock/mock-multi",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["run", "--onDeployedGlobal"]
     },
     {
       "type": "node",

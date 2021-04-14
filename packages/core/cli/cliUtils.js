@@ -151,10 +151,12 @@ exports.runAsyncCommand = async ({ text, command }) => {
 
         if (!hide) {
           const spinny = spinnies.pick(uri);
-          assert(
-            spinny,
-            `ERROR event: ${uri} was not created, error: ${error}`
-          );
+          if (!spinny) {
+            logger.error(
+              `ERROR event: ${uri} was not created, error: ${error}`
+            );
+            return;
+          }
           assert(error, `should have set the error, id: ${uri}`);
           const spinner = spinnerMap.get(uri);
           if (!spinner) {
@@ -249,7 +251,7 @@ exports.setupProviders = ({ commandOptions = {} } = {}) => (infra) =>
       ]),
     }),
     (infraNew) => ({
-      providersGru: ProviderGru({ commandOptions, ...infraNew }),
+      providerGru: ProviderGru({ commandOptions, ...infraNew }),
     }),
     tap((xx) => {
       //logger.debug("setupProviders");
