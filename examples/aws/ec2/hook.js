@@ -35,26 +35,16 @@ const testSsh = async ({ host, username = "ubuntu" }) =>
       });
   });
 
-module.exports = ({ resources: { eip, server }, provider }) => {
+module.exports = ({ resources: { eip, ec2Instance }, provider }) => {
   assert(provider);
   return {
     onDeployed: {
       init: async () => {
         const eipLive = await eip.getLive();
-        const serverLive = await server.getLive();
+        const serverLive = await ec2Instance.getLive();
         assert(serverLive, "server should be alive");
         //Static checks
         assert.equal(serverLive.PublicIpAddress, eipLive.PublicIp);
-        /*
-TODO
-        const {
-          results: [vpcs],
-        } = await provider.listLives({ options: { types: ["Vpc"] } });
-        assert(vpcs);
-        const vpcDefault = vpcs.resources.find((vpc) => vpc.live.IsDefault);
-        assert(vpcDefault);
-*/
-        assert.equal(serverLive.VpcId, vpcDefault.live.VpcId);
 
         const host = eipLive.PublicIp;
         return {
