@@ -1,13 +1,13 @@
 const assert = require("assert");
-const { map, pipe, assign } = require("rubico");
+const { map, pipe, assign, get } = require("rubico");
+const { identity } = require("rubico/x");
 
 exports.config = require("./config");
 exports.hooks = [];
 
-const formatName = (name, config) => `${name}-${config.projectName}`;
-
 const createResources = async ({ provider }) => {
   const { config } = provider;
+  const formatName = config.formatName || identity;
   assert(config.vpc);
   assert(config.vpc.vpc);
   assert(config.vpc.internetGateway);

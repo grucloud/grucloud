@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { map, pipe, and, tap } = require("rubico");
-const { pluck } = require("rubico/x");
+const { pluck, identity, isFunction } = require("rubico/x");
 
 exports.config = require("./config");
 exports.hooks = [require("./hook")];
@@ -15,10 +15,9 @@ const isProviderUp = ({ resources }) =>
 
 exports.isProviderUp = isProviderUp;
 
-const formatName = (name, config) => `${name}-${config.projectName}`;
-
 const createResources = async ({ provider, resources }) => {
   const { config } = provider;
+  const formatName = config.formatName || identity;
   assert(config.eks);
   assert(config.eks.cluster);
   assert(config.eks.roleCluster);

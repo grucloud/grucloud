@@ -5,6 +5,8 @@ title: Getting Started
 
 Let's create a simple infrastructure with one [EC2 instance](https://aws.amazon.com/ec2/) with the [GruCloud AWS provider](https://www.npmjs.com/package/@grucloud/provider-aws).
 
+## Requirements
+
 Ensure the AWS CLI is configured properly.
 Visit the [Aws Requirements](./AwsRequirements.md) to retrieve these informations.
 
@@ -12,9 +14,9 @@ Visit the [Aws Requirements](./AwsRequirements.md) to retrieve these information
 aws configure
 ```
 
-## Getting the GruCloud Command Line Interface
+### Getting the GruCloud Command Line Interface
 
-GruCloud is a written in Javascript running on NodeJs. Check node is present on your system:
+GruCloud is a written in Javascript running on [NodeJs](https://nodejs.org/). Check if node is present on your system:
 
 ```
 node --version
@@ -34,7 +36,16 @@ Check the current version of **gc**:
 gc --version
 ```
 
-## Create a new project
+## Describing the instrustructure code and config
+
+In this section, we'll create the files needed to describe an infrastructure with GruCloud:
+
+- package.json: contains information about the npm dependencies.
+- config.js: the config function
+- iac.js: exports _createStack_ with provider and resources associated
+- hooks.js: optionnaly provides hook functions called after deployment or destruction.
+
+### Create a new project
 
 Create a new directory, for instance `ec2-example`:
 
@@ -43,19 +54,19 @@ mkdir ec2-example
 cd ec2-example
 ```
 
-Let's create a new `package.json` with the `npm init` command.
+Let's create a new `package.json` with the `npm init` command:
 
 ```
 npm init
 ```
 
-Let's install the AWS provider [@grucloud/provider-aws`](https://www.npmjs.com/package/@grucloud/provider-aws) npm package, as well as the GruCloud core library `@grucloud/core`
+Let's install the AWS provider [@grucloud/provider-aws](https://www.npmjs.com/package/@grucloud/provider-aws) npm package, as well as the GruCloud core library `@grucloud/core`
 
 ```sh
 npm install @grucloud/core @grucloud/provider-aws
 ```
 
-## Configuration
+### Configuration
 
 The configuration is a Javascript function located in _config.js_
 
@@ -73,7 +84,7 @@ module.exports = ({ stage }) => ({
 });
 ```
 
-## iac.js
+### iac.js
 
 Create a file called `iac.js` where `createStack` is exported.
 
@@ -96,7 +107,9 @@ exports.createStack = async ({}) => {
 };
 ```
 
-## Deploy
+## GruCloud CLI
+
+### Deploy
 
 We are ready to deploy with `apply` command:
 
@@ -147,7 +160,7 @@ Querying resources on 1 provider: aws
 ? Are you sure to deploy 1 resource, 1 type on 1 provider? › (y/N)
 ```
 
-At this point, you are given the opportunity to look at the what is going to be deployed.
+At this point, you are given the opportunity to look at what is going to be deployed.
 Type `y` to accept:
 
 ```
@@ -161,9 +174,9 @@ Running OnDeployedGlobal resources on 1 provider: aws
 Command "gc a" executed in 1m 29s
 ```
 
-## List
+### List
 
-To list the resource that has been deployed, use the `gc list` command:
+To list the resources that have been deployed, use the `gc list` command:
 
 ```
 gc list --our
@@ -298,11 +311,11 @@ Command "gc list --our" executed in 6s
 
 ```
 
-Note that tags has been added to the EC2 Instance, it gives GruCloud a way to identify the resources under its control. Unlike other instructure as code tool such as Terraform and Pulumi, GruCloud does not need a _state_ file. Hence removing a lot a complexity and issues.
+> Note that tags have been added to the EC2 Instance, it gives GruCloud a way to identify the resources under its control. Unlike other instructure as code tool such as Terraform and Pulumi, GruCloud does not need a _state_ file. Hence removing a lot a complexity and issues.
 
-## Destroy
+### Destroy
 
-Time to destroy the resources allocated and therefore saves a lot of £$€.
+Time to destroy the resources allocated and therefore save a lot of £$€.
 
 ```bash
 gc destroy
@@ -354,3 +367,15 @@ Command "gc list -t EC2" executed in 3s
 This example demonstrates how to code a very basic infrastructure with one EC2 instance, and how can we use the `gc apply`, `gc list`, `gc destroy` and `gc graph` to manage the instrastructure.
 
 It paves the way for more [AWS examples](https://www.grucloud.com/docs/aws/AwsExamples)
+
+### Graph
+
+A picture is worth a thousand words, GruCloud generate SVG file describing the resources and their relationship.
+
+```
+gc graph
+```
+
+Here is the graph of a tipical web application managed by Kubernetes running on AWS where the master node is managed by EKS.
+
+![kubernetes eks](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/grucloud.svg)
