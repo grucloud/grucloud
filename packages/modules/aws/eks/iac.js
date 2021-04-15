@@ -34,12 +34,18 @@ const createResources = async ({ provider, resources }) => {
   assert(clusterName);
 
   const iamPolicyEKSCluster = await provider.useIamPolicyReadOnly({
-    name: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+    name: "AmazonEKSClusterPolicy",
+    properties: () => ({
+      Arn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+    }),
   });
 
   const iamPolicyEKSVPCResourceController = await provider.useIamPolicyReadOnly(
     {
-      name: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
+      name: "AmazonEKSVPCResourceController",
+      properties: () => ({
+        Arn: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
+      }),
     }
   );
 
@@ -65,17 +71,26 @@ const createResources = async ({ provider, resources }) => {
   });
 
   const iamPolicyEKSWorkerNode = await provider.useIamPolicyReadOnly({
-    name: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+    name: "AmazonEKSWorkerNodePolicy",
+    properties: () => ({
+      Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+    }),
   });
 
   const iamPolicyEC2ContainerRegistryReadOnly = await provider.useIamPolicyReadOnly(
     {
-      name: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+      name: "AmazonEC2ContainerRegistryReadOnly",
+      properties: () => ({
+        Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+      }),
     }
   );
 
   const iamPolicyEKS_CNI = await provider.useIamPolicyReadOnly({
-    name: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+    name: "AmazonEKS_CNI_Policy",
+    properties: () => ({
+      Arn: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+    }),
   });
 
   const roleNodeGroup = await provider.makeIamRole({

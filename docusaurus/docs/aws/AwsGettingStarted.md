@@ -40,10 +40,10 @@ gc --version
 
 In this section, we'll create the files needed to describe an infrastructure with GruCloud:
 
-- package.json: contains information about the npm dependencies.
-- config.js: the config function
-- iac.js: exports _createStack_ with provider and resources associated
-- hooks.js: optionnaly provides hook functions called after deployment or destruction.
+- **package.json**: specifies the npm dependencies and other informations.
+- **config.js**: the config function.
+- **iac.js**: exports _createStack_ with provider and resources associated
+- **hooks.js**: optionnaly provides hook functions called after deployment or destruction.
 
 ### Create a new project
 
@@ -84,9 +84,22 @@ module.exports = ({ stage }) => ({
 });
 ```
 
+You will have to find out the _ImageId_ for your specific region. One way to retrieve to list of images with the aws cli:
+
+```sh
+aws ec2 describe-images --filters "Name=description,Values=Ubuntu Server 20.04 LTS" "Name=architecture,Values=x86_64"
+```
+
+We'll automate this step in a future episode with the help of the Image resource.
+
 ### iac.js
 
-Create a file called `iac.js` where `createStack` is exported.
+Create a file called `iac.js` which stands for infrastructure as code.
+We'll first import _AwsProvider_ from [@grucloud/provider-aws](https://www.npmjs.com/package/@grucloud/provider-aws)
+
+`iac.js` must exports the `createStack` function which returns the provider and the resources.
+We instanciate _AwsProvider_ by provider the _config_ function.
+In the case, an [EC2 Instance](https://www.grucloud.com/docs/aws/resources/EC2/EC2) is defined with `provider.makeEC2`.
 
 ```js
 // iac.js

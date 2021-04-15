@@ -14,6 +14,10 @@ aws ec2 describe-instances
 aws ec2 describe-instances --filters "Name=tag:name,Values=web-server"
 aws ec2 describe-tags
 aws ec2 describe-account-attributes
+aws ec2 describe-images --filters "Name=name,Values=ubuntu*"
+aws ec2 describe-images --filters "Name=Description,Values=*20.04*"
+
+aws ec2 describe-images --filters "Name=description,Values=Ubuntu Server 20.04 LTS" "Name=architecture,Values=x86_64"
 
 aws iam list-users
 aws iam list-user-tags --user-name Alice

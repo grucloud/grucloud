@@ -11,7 +11,10 @@ The examples below uses a read only policy and add it to a role, a user or a gro
 
 ```js
 const iamPolicyEKSCluster = await provider.useIamPolicyReadOnly({
-  name: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+  name: "AmazonEKSClusterPolicy",
+  properties: () => ({
+    Arn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+  }),
 });
 
 const iamRole = await provider.makeIamRole({

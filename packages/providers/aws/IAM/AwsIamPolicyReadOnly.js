@@ -33,7 +33,7 @@ exports.AwsIamPolicyReadOnly = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList policy readonly #resources ${resources.length}`);
       }),
-      map((resource) => ({ Arn: resource.name })),
+      map((resource) => resource.properties()),
       tap((items) => {
         logger.info(`getList policy readonly ${tos(items)}`);
       }),
@@ -43,8 +43,8 @@ exports.AwsIamPolicyReadOnly = ({ spec, config }) => {
       }),
     ])(resources);
 
-  const getByName = ({ name, resources }) =>
-    getByNameCore({ name, resources, getList, findName });
+  const getByName = ({ name, properties, resources }) =>
+    getByNameCore({ name: properties().Arn, resources, getList, findName });
 
   return {
     type: "IamPolicyReadOnly",
