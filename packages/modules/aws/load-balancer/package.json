@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-aws-load-balancer",
-  "version": "1.10.22",
+  "version": "1.10.23",
   "description": "GruCloud Module to create load balancer, target group and rule",
   "main": "iac.js",
   "scripts": {

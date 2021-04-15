@@ -1,6 +1,6 @@
 {
   "name": "grucloud-scaleway-example",
-  "version": "1.10.22",
+  "version": "1.10.23",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -8,7 +8,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.10.22",
-    "@grucloud/provider-scaleway": "^1.10.22"
+    "@grucloud/core": "^1.10.23",
+    "@grucloud/provider-scaleway": "^1.10.23"
   }
 }
