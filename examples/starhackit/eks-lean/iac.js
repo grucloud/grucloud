@@ -102,11 +102,14 @@ exports.createStack = async ({ stage }) => {
     },
   });
 
-  return [
-    {
-      ...stackAws,
-      resources: { ...stackAws.resources, lbResources },
-    },
-    stackK8s,
-  ];
+  return {
+    hookGlobal: require("./hookGlobal"),
+    stacks: [
+      {
+        ...stackAws,
+        resources: { ...stackAws.resources, lb: lbResources },
+      },
+      stackK8s,
+    ],
+  };
 };

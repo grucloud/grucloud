@@ -90,7 +90,10 @@ exports.createProgram = ({ version, commands }) => {
     .description("run onDeployed or onDestroy")
     .alias("r")
     .option("--onDeployed", "Run Post Deploy Hook")
+    .option("--onDeployedGlobal", "Run Global Post Deploy Hook")
     .option("--onDestroyed", "Run Post Destroy Hook")
+    .option("--onDestroyedGlobal", "Run Global Post Destroy Hook")
+
     .option(...optionFilteredByProvider)
     .action(runCommand({ commandName: "planRunScript", program }));
 

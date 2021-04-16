@@ -1107,6 +1107,7 @@ function CoreProvider({
       onStateChange({
         context: contextFromProvider({ providerName }),
         nextState: nextStateOnError(error),
+        error,
       })
     )();
 

@@ -181,9 +181,6 @@ describe("AwsSecurityGroup", async function () {
 
     await testPlanDestroy({ provider, types });
   });
-  it("sg name", async function () {
-    assert.equal(sg.name, "sg");
-  });
   it.skip("sg resolveConfig", async function () {
     const config = await sg.resolveConfig();
     assert.equal(config.ingress.IpPermissions[0].FromPort, 22);

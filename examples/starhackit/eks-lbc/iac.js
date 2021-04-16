@@ -150,14 +150,16 @@ exports.createStack = async ({ stage }) => {
     },
   });
 
-  return [
-    stackAws,
-    {
-      provider: stackK8s.provider,
-      resources: {
-        ...stackK8s.resources,
-        loadBalancerRecord,
+  return {
+    stacks: [
+      stackAws,
+      {
+        provider: stackK8s.provider,
+        resources: {
+          ...stackK8s.resources,
+          loadBalancerRecord,
+        },
       },
-    },
-  ];
+    ],
+  };
 };

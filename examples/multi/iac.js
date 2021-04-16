@@ -161,12 +161,14 @@ const createMock = async ({ config }) => {
 };
 
 exports.createStack = async ({ config }) => {
-  return [
-    //await createMock({ config }),
-    await createAws({ config }),
-    //await createAwsUsEast1({ config }),
-    await createAzure({ config }),
-    //await createGoogle({ config }),
-    //await createScaleway({ config }),
-  ];
+  return {
+    stacks: [
+      //await createMock({ config }),
+      await createAws({ config }),
+      //await createAwsUsEast1({ config }),
+      await createAzure({ config }),
+      //await createGoogle({ config }),
+      //await createScaleway({ config }),
+    ],
+  };
 };

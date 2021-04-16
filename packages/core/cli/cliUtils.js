@@ -12,8 +12,9 @@ const {
   or,
   tryCatch,
   get,
+  assign,
 } = require("rubico");
-const { pluck, isEmpty } = require("rubico/x");
+const { pluck, isEmpty, identity } = require("rubico/x");
 const logger = require("../logger")({ prefix: "CliUtils" });
 const { tos } = require("../tos");
 const { ProviderGru } = require("../ProviderGru");
@@ -150,10 +151,12 @@ exports.runAsyncCommand = async ({ text, command }) => {
 
         if (!hide) {
           const spinny = spinnies.pick(uri);
-          assert(
-            spinny,
-            `ERROR event: ${uri} was not created, error: ${error}`
-          );
+          if (!spinny) {
+            logger.error(
+              `ERROR event: ${uri} was not created, error: ${error}`
+            );
+            return;
+          }
           assert(error, `should have set the error, id: ${uri}`);
           const spinner = spinnerMap.get(uri);
           if (!spinner) {
@@ -228,23 +231,29 @@ const filterProvider = ({
 
 exports.filterProvider = filterProvider;
 
-exports.setupProviders = ({ commandOptions = {} } = {}) =>
+exports.setupProviders = ({ commandOptions = {} } = {}) => (infra) =>
   pipe([
-    tap((input) => {
+    tap(() => {
       logger.debug(`setupProviders ${JSON.stringify(commandOptions)}`);
-      assert(input);
+      assert(infra);
     }),
-    switchCase([Array.isArray, (infra) => infra, (infra) => [infra]]),
-    filter(not(isEmpty)),
-    //TODO infra validation, has provider ?
-    filter(filterProvider({ commandOptions })),
-    tap.if(isEmpty, () => {
-      throw { code: 422, message: `no provider provided` };
+    () => infra,
+    assign({
+      stacks: pipe([
+        get("stacks"),
+        switchCase([isEmpty, () => [infra], identity]),
+        //TODO infra validation, has provider ?
+        filter(not(isEmpty)),
+        filter(filterProvider({ commandOptions })),
+        tap.if(isEmpty, () => {
+          throw { code: 422, message: `no provider provided` };
+        }),
+      ]),
     }),
-    (stacks) => ({
-      providersGru: ProviderGru({ commandOptions, stacks }),
+    (infraNew) => ({
+      providerGru: ProviderGru({ commandOptions, ...infraNew }),
     }),
     tap((xx) => {
       //logger.debug("setupProviders");
     }),
-  ]);
+  ])();

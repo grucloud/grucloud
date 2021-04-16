@@ -176,5 +176,5 @@ exports.createStack = async () => {
     },
   });
 
-  return [awsStack, k8sStack];
+  return { stacks: [awsStack, k8sStack] };
 };

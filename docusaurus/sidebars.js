@@ -8,7 +8,9 @@ module.exports = {
       "cli/PlanApply",
       "cli/List",
       "cli/PlanDestroy",
+      "cli/Hook",
     ],
+
     Requirements: ["Requirements"],
 
     "Amazon Web Service": [

@@ -42,7 +42,6 @@ describe("AwsLoadBalancerV2", async function () {
         create: {
           Description: "Load Balancer HTTP HTTPS Security Group",
         },
-        },
       }),
     });
 
