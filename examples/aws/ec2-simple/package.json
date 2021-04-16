@@ -1,11 +1,10 @@
 {
-  "name": "@grucloud/example-aws-iam",
+  "name": "ec2-simple",
   "version": "1.10.23",
-  "private": true,
-  "description": "",
+  "description": "Simple EC2 Instance with GruCloud",
   "main": "index.js",
   "scripts": {
-    "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",

@@ -17,19 +17,20 @@ Clone the source code and install the dependencies
 git clone git@github.com:grucloud/grucloud.git
 cd grucloud
 npm install
+npm run bootstrap
 ```
 
-Start the mock cloud service provider
+Start the mock cloud service provider located at `package/tools/mockServer`
 
 ```
-npm run start:mock
+cd package/tools/mockServer
+npm run start
 ```
 
 Open another console, go the mock example directory and install the dependencies:
 
 ```
 cd examples/mock
-npm install
 ```
 
 Now it is time to edit the infrastructure file that describes the architecture:

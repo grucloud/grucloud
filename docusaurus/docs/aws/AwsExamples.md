@@ -5,9 +5,13 @@ title: Examples
 
 ## EC2
 
-### [EC2](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2)
+### [EC2](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2-simple)
 
 ![EC2](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/grucloud.svg)
+
+### [EC2/ElasticIp/KeyPair](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2)
+
+![EC2/ElasticIp/KeyPair](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/grucloud.svg)
 
 ### [EC2-VPC](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2-vpc)
 
@@ -17,7 +21,7 @@ title: Examples
 
 ### [Certificate](https://github.com/grucloud/grucloud/tree/main/examples/aws/certificate)
 
-![Certificate](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/certificate/grucloud.svg)
+![Certificate](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/certificate/example/grucloud.svg)
 
 ## IAM
 

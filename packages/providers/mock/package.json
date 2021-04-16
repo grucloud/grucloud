@@ -1,9 +1,9 @@
 {
   "name": "@grucloud/provider-mock",
-  "version": "1.10.22",
+  "version": "1.10.23",
   "description": "The GruCloud Mock provider",
   "main": "MockProvider.js",
-  "private":true,
+  "private": true,
   "scripts": {
     "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
     "test": "NODE_PATH=. mocha  './test/**/*.test.js'"
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.10.22",
+    "@grucloud/core": "^1.10.23",
     "axios": "^0.21.1",
     "axios-mock-adapter": "^1.19.0",
     "bluebird": "^3.7.2",
