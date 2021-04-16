@@ -6,6 +6,7 @@ const {
   testPlanDestroy,
 } = require("@grucloud/core/E2ETestUtils");
 
+const formatName = (name) => `${name}-test-load-balancer`;
 describe("AwsLoadBalancerV2", async function () {
   let config;
   let provider;
@@ -30,13 +31,13 @@ describe("AwsLoadBalancerV2", async function () {
     assert(provider.config.region);
 
     const vpc = await provider.makeVpc({
-      name: `vpc-${projectName}`,
+      name: formatName("vpc"),
       properties: () => ({
         CidrBlock: "192.168.0.0/16",
       }),
     });
     const securityGroupLoadBalancer = await provider.makeSecurityGroup({
-      name: "load-balancer-security-group-test",
+      name: formatName("load-balancer-security-group-test"),
       dependencies: { vpc },
       properties: () => ({
         create: {
@@ -46,7 +47,7 @@ describe("AwsLoadBalancerV2", async function () {
     });
 
     const sgRuleIngressHttp = await provider.makeSecurityGroupRuleIngress({
-      name: "sg-rule-ingress-http",
+      name: formatName("sg-rule-ingress-http"),
       dependencies: {
         securityGroup: securityGroupLoadBalancer,
       },
@@ -71,7 +72,7 @@ describe("AwsLoadBalancerV2", async function () {
       }),
     });
     const sgRuleIngressHttps = await provider.makeSecurityGroupRuleIngress({
-      name: "sg-rule-ingress-https",
+      name: formatName("sg-rule-ingress-https"),
       dependencies: {
         securityGroup: securityGroupLoadBalancer,
       },
@@ -97,12 +98,12 @@ describe("AwsLoadBalancerV2", async function () {
     });
 
     const internetGateway = await provider.makeInternetGateway({
-      name: `ig-${projectName}`,
+      name: formatName("ig"),
       dependencies: { vpc },
     });
 
     const subnet1 = await provider.makeSubnet({
-      name: `subnet1-${projectName}`,
+      name: formatName("subnet1"),
       dependencies: { vpc },
       properties: () => ({
         CidrBlock: "192.168.0.0/19",
@@ -110,7 +111,7 @@ describe("AwsLoadBalancerV2", async function () {
       }),
     });
     const subnet2 = await provider.makeSubnet({
-      name: `subnet2-${projectName}`,
+      name: formatName("subnet2"),
       dependencies: { vpc },
       properties: () => ({
         CidrBlock: "192.168.32.0/19",
@@ -119,7 +120,7 @@ describe("AwsLoadBalancerV2", async function () {
     });
 
     loadBalancer = await provider.makeLoadBalancer({
-      name: `${loadBalancerName}-${projectName}`,
+      name: formatName(loadBalancerName),
       dependencies: {
         subnets: [subnet1, subnet2],
         securityGroups: [securityGroupLoadBalancer],
@@ -128,7 +129,7 @@ describe("AwsLoadBalancerV2", async function () {
     });
 
     targetGroup = await provider.makeTargetGroup({
-      name: `${targetGroupName}-${projectName}`,
+      name: formatName(targetGroupName),
       dependencies: {
         vpc,
       },
@@ -138,7 +139,7 @@ describe("AwsLoadBalancerV2", async function () {
     });
 
     listenerHttp = await provider.makeListener({
-      name: `${listenerHttpName}-${projectName}`,
+      name: formatName(listenerHttpName),
       dependencies: {
         loadBalancer,
         targetGroups: { targetGroup },

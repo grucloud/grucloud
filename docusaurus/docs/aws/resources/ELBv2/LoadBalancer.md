@@ -5,9 +5,9 @@ title: Load Balancer
 
 Manage an AWS Load Balancer.
 
-# Example:
+## Example:
 
-## Load Balancer in a VPC
+### Load Balancer in a VPC
 
 ```js
 const vpc = await provider.makeVpc({
@@ -71,11 +71,11 @@ const loadBalancer = await provider.makeLoadBalancer({
 });
 ```
 
-# Source Code
+## Source Code
 
 - [module AWS EKS]()
 
-# Dependencies
+## Dependencies
 
 - [SecurityGroup](../EC2/SecurityGroup.md)
 - [Subnet](../EC2/Subnet.md)

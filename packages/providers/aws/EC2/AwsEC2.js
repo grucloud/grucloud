@@ -329,6 +329,7 @@ exports.AwsEC2 = ({ spec, config }) => {
       subnet,
       securityGroups = {},
       iamInstanceProfile,
+      image,
     } = dependencies;
     const { UserData, ...otherProperties } = properties;
     const buildNetworkInterfaces = () => [
@@ -348,6 +349,7 @@ exports.AwsEC2 = ({ spec, config }) => {
       ...(UserData && {
         UserData: Buffer.from(UserData, "utf-8").toString("base64"),
       }),
+      ...(image && { ImageId: getField(image, "ImageId") }),
       ...(subnet && { NetworkInterfaces: buildNetworkInterfaces() }),
       ...(iamInstanceProfile && {
         IamInstanceProfile: {

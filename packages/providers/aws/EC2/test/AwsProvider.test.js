@@ -22,11 +22,13 @@ describe("AwsProvider", async function () {
   let subnet;
   let sg;
   let eip;
+  let image;
   const keyPairName = "kp";
   const subnetName = "subnet";
   const securityGroupName = "securityGroup";
   const serverName = "web-server";
 
+  const formatName = (name) => `${name}-provider-test`;
   before(async function () {
     try {
       config = ConfigLoader({ path: "../../../examples/multi" });
@@ -43,19 +45,19 @@ describe("AwsProvider", async function () {
     });
 
     vpc = await provider.makeVpc({
-      name: "vpc",
+      name: formatName("vpc"),
       properties: () => ({
         CidrBlock: "10.1.0.1/16",
       }),
     });
 
     ig = await provider.makeInternetGateway({
-      name: "ig",
+      name: formatName("ig"),
       dependencies: { vpc },
     });
 
     subnet = await provider.makeSubnet({
-      name: subnetName,
+      name: formatName(subnetName),
       dependencies: { vpc },
       properties: () => ({
         CidrBlock: "10.1.0.1/24",
@@ -63,17 +65,17 @@ describe("AwsProvider", async function () {
     });
 
     routeTable = await provider.makeRouteTable({
-      name: "rt",
+      name: formatName("rt"),
       dependencies: { vpc, subnets: [subnet] },
     });
 
     routeIg = await provider.makeRoute({
-      name: "routeIg",
+      name: formatName("routeIg"),
       dependencies: { routeTable, ig },
     });
 
     sg = await provider.makeSecurityGroup({
-      name: securityGroupName,
+      name: formatName(securityGroupName),
       dependencies: { vpc },
       properties: () => ({
         //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
@@ -104,21 +106,36 @@ describe("AwsProvider", async function () {
     });
 
     eip = await provider.makeElasticIpAddress({
-      name: "myip",
+      name: formatName("myip"),
       properties: () => ({}),
     });
 
+    image = await provider.useImage({
+      name: "Amazon Linux 2",
+      properties: () => ({
+        Filters: [
+          {
+            Name: "architecture",
+            Values: ["x86_64"],
+          },
+          {
+            Name: "description",
+            Values: ["Amazon Linux 2 AMI *"],
+          },
+        ],
+      }),
+    });
+
     server = await provider.makeEC2({
-      name: serverName,
+      name: formatName(serverName),
       properties: () => ({}),
-      dependencies: { keyPair, subnet, securityGroups: [sg], eip },
+      dependencies: { image, keyPair, subnet, securityGroups: [sg], eip },
     });
   });
   after(async () => {});
   it("aws server resolveConfig", async function () {
-    assert.equal(server.name, serverName);
+    assert.equal(server.name, formatName(serverName));
     const config = await server.resolveConfig({ deep: false });
-    assert.equal(config.ImageId, "ami-0917237b4e71c5759");
     assert.equal(config.InstanceType, "t2.micro");
     assert.equal(config.MaxCount, 1);
     assert.equal(config.MinCount, 1);
@@ -140,13 +157,8 @@ describe("AwsProvider", async function () {
     assert(dependencies.securityGroups);
     assert(dependencies.keyPair);
   });
-  it.skip("config", async function () {
-    const config = await server.resolveConfig();
-    assert.equal(config.ImageId, "ami-0917237b4e71c5759");
-  });
-
   it.skip("aws apply plan", async function () {
-    await testPlanDeploy({ provider, full: true });
+    await testPlanDeploy({ provider });
 
     const serverLive = await server.getLive();
 
@@ -177,6 +189,6 @@ describe("AwsProvider", async function () {
     assert.equal(subnetLive.VpcId, vpcLive.VpcId);
     assert.equal(sgLive.VpcId, vpcLive.VpcId);
 
-    await testPlanDestroy({ provider, full: true });
+    await testPlanDestroy({ provider });
   });
 });

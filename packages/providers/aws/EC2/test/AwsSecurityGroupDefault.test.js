@@ -44,7 +44,7 @@ describe("AwsSecurityGroupDefault", async function () {
     });
 
     securityGroup = await provider.useSecurityGroup({
-      name: "sgCluster",
+      name: "sgCluster-test",
       filterLives: ({ items }) =>
         pipe([
           () => items,
@@ -56,7 +56,7 @@ describe("AwsSecurityGroupDefault", async function () {
     });
 
     sgRuleIngress = await provider.makeSecurityGroupRuleIngress({
-      name: "sg-rule-ingress",
+      name: "sg-rule-ingress-test",
       dependencies: { securityGroup },
       properties: () => ({
         IpPermissions: [
@@ -79,7 +79,7 @@ describe("AwsSecurityGroupDefault", async function () {
       }),
     });
     sgRuleEgress = await provider.makeSecurityGroupRuleEgress({
-      name: "sg-rule-egress",
+      name: "sg-rule-egress-test",
       dependencies: { securityGroup },
       properties: () => ({
         IpPermissions: [

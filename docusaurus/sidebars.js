@@ -44,7 +44,11 @@ module.exports = {
             ],
           },
           {
-            ELB: ["aws/resources/ELB/AwsLoadBalancer"],
+            ELB: [
+              "aws/resources/ELBv2/AwsLoadBalancer",
+              "aws/resources/ELBv2/AwsTargetGroup",
+              "aws/resources/ELBv2/AwsListener",
+            ],
           },
           {
             IAM: [

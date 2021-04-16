@@ -1020,6 +1020,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Aws EC2 plan",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/ec2/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Aws EC2 Run onDeployed",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/ec2/",

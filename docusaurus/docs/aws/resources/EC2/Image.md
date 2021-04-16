@@ -5,7 +5,9 @@ title: AMI
 
 Provides an [Amazon Managed Image](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html).
 
-# Example
+## Example
+
+### EC2 running on Ubuntu 20.04
 
 - Find the _Ubuntu Server 20.04 LTS_ image running on _x86_64_.
 - Provides the image as an EC2 dependency.
@@ -21,7 +23,7 @@ const image = await provider.useImage({
       },
       {
         Name: "description",
-        Values: ["Ubuntu Server 20.04 LTS"],
+        Values: ["Ubuntu Server 20.04 LTS*"],
       },
     ],
   }),
@@ -37,6 +39,32 @@ const server = await provider.makeEC2({
   }),
 });
 ```
+
+### Amazon Linux 2
+
+Here is the Amazone Linux 2 image:
+
+```js
+const image = await provider.useImage({
+  name: "Amazon Linux 2",
+  properties: () => ({
+    Filters: [
+      {
+        Name: "architecture",
+        Values: ["x86_64"],
+      },
+      {
+        Name: "description",
+        Values: ["Amazon Linux 2 AMI *"],
+      },
+    ],
+  }),
+});
+```
+
+## Properties
+
+The list of properties can be found in [describeImages](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeImages-property)
 
 ## Examples
 
@@ -108,4 +136,12 @@ Provider: aws
 └────────────────────┴────────────────────────────────────────────────────────────────────────────────────────┘
 1 resource, 1 type, 1 provider
 Command "gc l -t Image" executed in 2s
+```
+
+## AWS CLI
+
+You can fiddle the filters with the `aws cli` as well:
+
+```sh
+aws ec2 describe-images --filters "Name=description,Values=Amazon Linux 2 AMI*" "Name=architecture,Values=x86_64"
 ```
