@@ -14,14 +14,6 @@ module.exports = {
     Requirements: ["Requirements"],
 
     "Amazon Web Service": [
-      "aws/AwsRequirements",
-      "aws/AwsGettingStarted",
-      "aws/AwsConfig",
-      "aws/AwsExamples",
-      "aws/AwsModules",
-      "aws/AwsResourceHowto",
-      "aws/AwsModuleHowto",
-
       {
         Resources: [
           { ACM: ["aws/resources/ACM/AcmCertificate"] },
@@ -31,6 +23,7 @@ module.exports = {
             EC2: [
               "aws/resources/EC2/KeyPair",
               "aws/resources/EC2/Vpc",
+              "aws/resources/EC2/Image",
               "aws/resources/EC2/InternetGateway",
               "aws/resources/EC2/NatGateway",
               "aws/resources/EC2/RouteTable",
@@ -51,7 +44,11 @@ module.exports = {
             ],
           },
           {
-            ELB: ["aws/resources/ELB/AwsLoadBalancer"],
+            ELB: [
+              "aws/resources/ELBv2/AwsLoadBalancer",
+              "aws/resources/ELBv2/AwsTargetGroup",
+              "aws/resources/ELBv2/AwsListener",
+            ],
           },
           {
             IAM: [
@@ -74,6 +71,15 @@ module.exports = {
           { S3: ["aws/resources/S3/S3Bucket", "aws/resources/S3/S3Object"] },
         ],
       },
+      "aws/AwsRequirements",
+      "aws/AwsGettingStarted",
+
+      "aws/AwsExamples",
+      "aws/AwsModules",
+      {
+        Howto: ["aws/howto/AwsResourceHowto", "aws/howto/AwsModuleHowto"],
+      },
+      "aws/AwsConfig",
       "aws/AwsMisc",
     ],
     "Microsoft Azure": [

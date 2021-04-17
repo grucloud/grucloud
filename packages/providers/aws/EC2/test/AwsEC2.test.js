@@ -42,7 +42,6 @@ describe("AwsEC2", async function () {
     assert.equal(server.name, serverName);
 
     const config = await server.resolveConfig();
-    assert.equal(config.ImageId, "ami-0917237b4e71c5759");
     assert.equal(config.InstanceType, "t2.micro");
     assert.equal(config.MaxCount, 1);
     assert.equal(config.MinCount, 1);

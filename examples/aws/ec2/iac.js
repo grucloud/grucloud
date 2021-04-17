@@ -7,11 +7,27 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     name: config.eip.name,
   });
 
+  const image = await provider.useImage({
+    name: "Amazon Linux 2",
+    properties: () => ({
+      Filters: [
+        {
+          Name: "architecture",
+          Values: ["x86_64"],
+        },
+        {
+          Name: "description",
+          Values: ["Amazon Linux 2 AMI *"],
+        },
+      ],
+    }),
+  });
+
   return {
     eip,
     ec2Instance: await provider.makeEC2({
       name: config.ec2Instance.name,
-      dependencies: { keyPair, eip },
+      dependencies: { keyPair, eip, image },
       properties: config.ec2Instance.properties,
     }),
   };

@@ -24,7 +24,8 @@ const server = await provider.makeEC2({
 
 ### Examples
 
-- [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/iac.js)
+- [one ec2](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/iac.js)
+- [ec2 with elastic ip address, key pair](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2/iac.js)
 - [attached an EBS volume](https://github.com/grucloud/grucloud/blob/main/examples/aws/volume/iac.js)
 - [example with IAM](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam/iac.js)
 - [full example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-vpc/iac.js)
@@ -40,4 +41,5 @@ const server = await provider.makeEC2({
 - [KeyPair](./KeyPair)
 - [ElasticIpAddress](./ElasticIpAddress)
 - [Volume](./Volume)
+- [Image](./Image)
 - [IamInstanceProfile](../IAM/iamInstanceProfile)

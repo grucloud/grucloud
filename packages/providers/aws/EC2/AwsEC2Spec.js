@@ -17,12 +17,18 @@ const { AwsElasticIpAddress } = require("./AwsElasticIpAddress");
 const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
 const { AwsNetworkInterface } = require("./AwsNetworkInterface");
 const { AwsNetworkAcl } = require("./AwsNetworkAcl");
+const { AwsImage } = require("./AwsImage");
 
 module.exports = [
   {
     type: "KeyPair",
     Client: AwsClientKeyPair,
     listOnly: true,
+    isOurMinion, // TODO do we need isOurMinion for listOnly ?
+  },
+  {
+    type: "Image",
+    Client: AwsImage,
     isOurMinion,
   },
   {
@@ -105,7 +111,6 @@ module.exports = [
       InstanceType: "t2.micro",
       MaxCount: 1,
       MinCount: 1,
-      ImageId: "ami-0917237b4e71c5759", // Ubuntu 20.04
     },
     isOurMinion,
   },

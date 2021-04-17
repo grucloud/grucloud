@@ -29,8 +29,25 @@ describe("AwsVolume", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
+    const image = await provider.useImage({
+      name: "Amazon Linux 2",
+      properties: () => ({
+        Filters: [
+          {
+            Name: "architecture",
+            Values: ["x86_64"],
+          },
+          {
+            Name: "description",
+            Values: ["Amazon Linux 2 AMI *"],
+          },
+        ],
+      }),
+    });
+
     volume = await provider.makeVolume({
       name: volumeName,
+
       properties: () => ({
         Size: 5,
         VolumeType: "standard",
@@ -43,7 +60,7 @@ describe("AwsVolume", async function () {
       properties: () => ({
         UserData: volume.spec.setupEbsVolume({ deviceMounted, mountPoint }),
       }),
-      dependencies: { volumes: [volume] },
+      dependencies: { image, volumes: [volume] },
     });
   });
 

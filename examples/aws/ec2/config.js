@@ -7,7 +7,6 @@ module.exports = ({ stage }) => ({
     name: "web-server",
     properties: () => ({
       InstanceType: "t2.micro",
-      ImageId: "ami-00f6a0c18edb19300", // Ubuntu 18.04
     }),
   },
 });
