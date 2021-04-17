@@ -52,13 +52,6 @@ const getSecurityGroup = ({ name, dependencies = {} }) =>
     ]),
   ])();
 
-const assignTags = ({ name, config }) =>
-  switchCase([
-    not(isEmpty),
-    (record) => ({ ...record, Tags: buildTags({ name, config }) }),
-    () => undefined,
-  ]);
-
 const findGroupId = (live) =>
   pipe([
     () => live,

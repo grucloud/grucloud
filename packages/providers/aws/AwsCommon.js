@@ -157,6 +157,8 @@ exports.isOurMinion = ({ resource, config }) => {
       assert(resource);
       assert(stage);
     }),
+    () => resource,
+    get("Tags"),
     switchCase([
       and([
         find(
@@ -175,7 +177,7 @@ exports.isOurMinion = ({ resource, config }) => {
         })}`
       );
     }),
-  ])(resource.Tags || []);
+  ])();
 };
 
 const findNameInTags = (item) =>

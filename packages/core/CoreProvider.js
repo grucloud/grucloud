@@ -216,42 +216,53 @@ const ResourceMaker = ({
     ])();
 
   const planUpdate = async ({ resource, target, live, lives }) => {
-    logger.debug(
-      `planUpdate resource: ${tos(resource.toJSON())}, target: ${tos(
-        target
-      )}, live: ${tos(live)}`
-    );
-
-    if (isEmpty(target)) {
-      //TODO do we need this ?
-      return;
-    }
-    const diff = await spec.compare({
-      usedBySet,
-      target,
-      live,
-      dependencies: resource.dependencies,
-      lives,
-    });
-    logger.info(`planUpdate diff ${tos(diff)}`);
-    // TODO unify
-    if (
-      diff.needUpdate ||
-      !isEmpty(diff.added) ||
-      !isEmpty(diff.updated) ||
-      !isEmpty(diff.deleted)
-    ) {
-      return [
-        {
-          action: "UPDATE",
-          resource: resource.toJSON(),
-          target: target,
+    return pipe([
+      tap(() => {
+        logger.debug(
+          `planUpdate resource: ${tos(resource.toJSON())}, target: ${tos(
+            target
+          )}, live: ${tos(live)}`
+        );
+      }),
+      () =>
+        spec.compare({
+          usedBySet,
+          target,
           live,
-          diff,
-          providerName: resource.toJSON().providerName,
+          dependencies: resource.dependencies,
+          lives,
+        }),
+      tap((diff) => {
+        logger.debug(`planUpdate diff ${tos(diff)}`);
+      }),
+      switchCase([
+        or([
+          pipe([get("needUpdate"), not(isEmpty)]),
+          pipe([get("added"), not(isEmpty)]),
+          pipe([get("updated"), not(isEmpty)]),
+          pipe([get("deleted"), not(isEmpty)]),
+        ]),
+        (diff) =>
+          pipe([
+            () => [
+              {
+                action: "UPDATE",
+                resource: resource.toJSON(),
+                target,
+                live,
+                diff,
+                providerName: resource.toJSON().providerName,
+              },
+            ],
+            tap((updateItem) => {
+              logger.debug(`updateItem ${tos(updateItem)}`);
+            }),
+          ]),
+        () => {
+          logger.info(`planUpdate diff no update`);
         },
-      ];
-    }
+      ]),
+    ])();
   };
   const getDependencyList = () =>
     pipe([
@@ -1553,7 +1564,8 @@ function CoreProvider({
           id: client.findId(live),
           dependencies: client.findDependencies({ live }),
           managedByUs: client.spec.isOurMinion({
-            resource: live,
+            resource: live, //TODO remove resource
+            live,
             lives,
             //TODO remove resourceNames
             resourceNames: resourceNames(),

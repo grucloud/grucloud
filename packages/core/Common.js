@@ -290,6 +290,7 @@ exports.buildTagsObject = ({ name, config }) => {
 exports.isOurMinionObject = ({ tags, config }) => {
   const { stage, projectName, providerName, createdByProviderKey } = config;
   return pipe([
+    () => tags,
     tap(() => {
       assert(stage);
       //TODO
@@ -314,5 +315,5 @@ exports.isOurMinionObject = ({ tags, config }) => {
         })}`
       );
     }),
-  ])(tags);
+  ])();
 };
