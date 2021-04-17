@@ -12,7 +12,14 @@ const {
   assign,
   map,
 } = require("rubico");
-const { first, defaultsDeep, isEmpty, pluck, find } = require("rubico/x");
+const {
+  first,
+  defaultsDeep,
+  isEmpty,
+  pluck,
+  find,
+  flatten,
+} = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
 const logger = require("@grucloud/core/logger")({ prefix: "ELBRule" });
@@ -27,22 +34,42 @@ const {
 } = require("../AwsCommon");
 
 const findId = get("RuleArn");
-const findName = (item) => findNameInTagsOrId({ item, findId });
+const findName = (item) =>
+  switchCase([
+    get("IsDefault"),
+    () => "default",
+    () => findNameInTagsOrId({ item, findId }),
+  ])(item);
 
 const { ELBListener } = require("./ELBListener");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 exports.ELBRule = ({ spec, config }) => {
   const elb = ELBv2New(config);
   const elbListener = ELBListener({ spec, config });
+
+  const findDependencies = ({ live }) => [
+    { type: "Listener", ids: [live.ListenerArn] },
+    {
+      type: "TargetGroup",
+      ids: pipe([
+        () => live,
+        get("Actions"),
+        pluck("TargetGroupArn"),
+        filter(not(isEmpty)),
+      ])(),
+    },
+  ];
+
   const describeAllRules = pipe([
     () => elbListener.getList({}),
     get("items"),
     pluck("ListenerArn"),
-    flatMap(
+    flatMap((ListenerArn) =>
       pipe([
-        (ListenerArn) => elb().describeRules({ ListenerArn }),
+        () => elb().describeRules({ ListenerArn }),
         get("Rules"),
-      ])
+        map(assign({ ListenerArn: () => ListenerArn })),
+      ])()
     ),
     filter(not(isEmpty)),
   ]);
@@ -185,12 +212,9 @@ exports.ELBRule = ({ spec, config }) => {
   return {
     type: "Rule",
     spec,
-    isInstanceUp,
-    isUpById,
-    isDownById,
     findId,
+    findDependencies,
     getByName,
-    getById,
     findName,
     create,
     destroy,

@@ -1,12 +1,14 @@
-const { isOurMinion } = require("../AwsCommon");
-const { AwsAutoScalingGroup } = require("./AwsAutoScalingGroup");
+const {
+  AwsAutoScalingGroup,
+  autoScalingGroupIsOurMinion,
+} = require("./AwsAutoScalingGroup");
 
 module.exports = [
   {
     type: "AutoScalingGroup",
-    dependsOn: ["LoadBalancer", "TargetGroup"],
+    dependsOn: ["LoadBalancer", "TargetGroup", "EC2", "EKSCluster"],
     Client: AwsAutoScalingGroup,
-    isOurMinion,
+    isOurMinion: autoScalingGroupIsOurMinion,
     listOnly: true,
   },
 ];

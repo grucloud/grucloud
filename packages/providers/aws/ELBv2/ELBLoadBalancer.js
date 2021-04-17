@@ -28,6 +28,17 @@ const findId = get("LoadBalancerArn");
 exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const elb = ELBv2New(config);
 
+  const findDependencies = ({ live }) => [
+    {
+      type: "Vpc",
+      ids: [live.VpcId],
+    },
+    {
+      type: "SecurityGroup",
+      ids: live.SecurityGroups,
+    },
+  ];
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeLoadBalancers-property
   const getList = async () =>
     pipe([
@@ -181,12 +192,9 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   return {
     type: "LoadBalancer",
     spec,
-    isInstanceUp,
-    isUpById,
-    isDownById,
     findId,
+    findDependencies,
     getByName,
-    getById,
     findName,
     create,
     destroy,

@@ -11,7 +11,7 @@ const {
   switchCase,
   all,
 } = require("rubico");
-const { isEmpty, forEach, defaultsDeep } = require("rubico/x");
+const { isEmpty, forEach, defaultsDeep, pluck, includes } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsRouteTable" });
 const { tos } = require("@grucloud/core/tos");
@@ -36,6 +36,19 @@ exports.AwsRouteTable = ({ spec, config }) => {
 
   const findId = get("RouteTableId");
   const findName = (item) => findNameInTagsOrId({ item, findId });
+
+  const findDependencies = ({ live }) => [
+    { type: "Vpc", ids: [live.VpcId] },
+    {
+      type: "InternetGateway",
+      ids: pipe([
+        () => live,
+        get("Routes"),
+        pluck("GatewayId"),
+        filter(includes("igw-")),
+      ])(),
+    },
+  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeRouteTables-property
   const getList = ({ params } = {}) =>
@@ -169,11 +182,10 @@ exports.AwsRouteTable = ({ spec, config }) => {
     type: "RouteTable",
     spec,
     findId,
-    isUpById,
-    isDownById,
+    findName,
+    findDependencies,
     getByName,
     getById,
-    findName,
     cannotBeDeleted,
     getList,
     create,

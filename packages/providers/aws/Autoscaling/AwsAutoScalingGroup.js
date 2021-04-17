@@ -1,18 +1,76 @@
 const assert = require("assert");
 const { map, pipe, tap, tryCatch, get, switchCase, eq } = require("rubico");
-const { defaultsDeep, pluck } = require("rubico/x");
+const { find, defaultsDeep, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AutoScalingGroup" });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
-const { isUpByIdCore, isDownByIdCore } = require("@grucloud/core/Common");
 const { AutoScalingNew, shouldRetryOnException } = require("../AwsCommon");
+const { isOurMinionObject } = require("@grucloud/core/Common");
+
 const findName = get("AutoScalingGroupName");
-const findId = get("AutoScalingGroupARN");
+const findId = get("AutoScalingGroupName");
+
+const findClusterNameFromLive = pipe([
+  get("Tags"),
+  find(eq(get("Key"), "eks:cluster-name")),
+  get("Value"),
+]);
+
+const findClusterNameFromLives = ({ clusterName, clusters }) =>
+  pipe([
+    tap(() => {
+      logger.debug(`findClusterNameFromLives ${clusterName}`);
+      assert(clusterName);
+      assert(clusters);
+    }),
+    () => clusters,
+    get("resources"),
+    find(eq(get("name"), clusterName)),
+    tap((resource) => {
+      assert(true);
+    }),
+    get("live"),
+  ])();
+
+exports.autoScalingGroupIsOurMinion = ({ live, lives, config }) =>
+  pipe([
+    tap(() => {
+      assert(live);
+      assert(lives);
+      assert(config.providerName);
+      logger.debug(`autoScalingGroupIsOurMinion`);
+    }),
+    () => findClusterNameFromLive(live),
+    (clusterName) =>
+      findClusterNameFromLives({
+        clusterName,
+        clusters: lives.getByType({
+          providerName: config.providerName,
+          type: "EKSCluster",
+        }),
+      }),
+    tap((clusterLive) => {
+      logger.debug(`autoScalingGroupIsOurMinion clusterLive: ${clusterLive}`);
+    }),
+    get("tags"),
+    (tags) => isOurMinionObject({ tags, config }),
+    tap((result) => {
+      logger.debug(`autoScalingGroupIsOurMinion result: ${result}`);
+    }),
+  ])();
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
 exports.AwsAutoScalingGroup = ({ spec, config }) => {
   const autoScaling = AutoScalingNew(config);
+
+  const findDependencies = ({ live }) => [
+    { type: "TargetGroup", ids: live.TargetGroupARNs },
+    {
+      type: "EC2",
+      ids: pipe([() => live, get("Instances"), pluck("InstanceId")])(),
+    },
+  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeAutoScalingGroups-property
   const getList = async ({ params } = {}) =>
@@ -49,8 +107,6 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
 
   const getById = ({ id }) => getByName({ name: id });
 
-  const isDownById = isDownByIdCore({ getById });
-
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#deleteAutoScalingGroup-property
   const destroy = async ({ live }) =>
     pipe([
@@ -84,6 +140,7 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
     type: "AutoScalingGroup",
     spec,
     findId,
+    findDependencies,
     findName,
     getByName,
     findName,

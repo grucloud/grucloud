@@ -43,3 +43,55 @@ const natGateway = await provider.makeNatGateway({
 ### Used By
 
 - [RouteTable](./RouteTable)
+
+### List
+
+```sh
+gc l -t NatGateway
+```
+
+```sh
+Listing resources on 1 provider: aws
+✓ aws
+  ✓ Initialising
+  ✓ Listing 5/5
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│ 1 NatGateway from aws                                                            │
+├─────────────┬─────────────────────────────────────────────────────────────┬──────┤
+│ Name        │ Data                                                        │ Our  │
+├─────────────┼─────────────────────────────────────────────────────────────┼──────┤
+│ nat-gateway │ CreateTime: 2021-04-16T19:18:00.000Z                        │ NO   │
+│             │ NatGatewayAddresses:                                        │      │
+│             │   - AllocationId: eipalloc-09d70cf85e0cd268b                │      │
+│             │     NetworkInterfaceId: eni-0325508aa856d2aaa               │      │
+│             │     PrivateIp: 192.168.14.211                               │      │
+│             │     PublicIp: 18.135.138.10                                 │      │
+│             │ NatGatewayId: nat-032b4f385655f59d8                         │      │
+│             │ State: available                                            │      │
+│             │ SubnetId: subnet-053363a740a209ba8                          │      │
+│             │ VpcId: vpc-03b8d521b703d6c46                                │      │
+│             │ Tags:                                                       │      │
+│             │   - Key: ManagedBy                                          │      │
+│             │     Value: GruCloud                                         │      │
+│             │   - Key: stage                                              │      │
+│             │     Value: dev                                              │      │
+│             │   - Key: projectName                                        │      │
+│             │     Value: starhackit                                       │      │
+│             │   - Key: CreatedByProvider                                  │      │
+│             │     Value: aws                                              │      │
+│             │   - Key: Name                                               │      │
+│             │     Value: nat-gateway                                      │      │
+│             │                                                             │      │
+└─────────────┴─────────────────────────────────────────────────────────────┴──────┘
+
+
+List Summary:
+Provider: aws
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                             │
+├────────────────────┬────────────────────────────────────────────────────────────┤
+│ NatGateway         │ nat-gateway                                                │
+└────────────────────┴────────────────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t NatGateway" executed in 7s
+```

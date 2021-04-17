@@ -40,6 +40,8 @@ exports.AwsSubnet = ({ spec, config }) => {
 
   const findId = get("SubnetId");
 
+  const findDependencies = ({ live }) => [{ type: "Vpc", ids: [live.VpcId] }];
+
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
   const getById = ({ id }) => getByIdCore({ id, getList, findId });
 
@@ -173,11 +175,9 @@ exports.AwsSubnet = ({ spec, config }) => {
     type: "Subnet",
     spec,
     findId,
-    isUpById,
-    isDownById,
-    getByName,
-    getById,
     findName,
+    findDependencies,
+    getByName,
     cannotBeDeleted,
     getList,
     create,

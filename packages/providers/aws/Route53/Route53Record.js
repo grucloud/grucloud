@@ -17,32 +17,18 @@ const {
   omit,
   and,
 } = require("rubico");
-const {
-  find,
-  pluck,
-  defaultsDeep,
-  isEmpty,
-  differenceWith,
-  isDeepEqual,
-  flatten,
-} = require("rubico/x");
+const { find, pluck, defaultsDeep, isEmpty, isDeepEqual } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
 const logger = require("@grucloud/core/logger")({ prefix: "Route53Record" });
-const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
-const {
-  convertError,
-  isUpByIdCore,
-  isDownByIdCore,
-  logError,
-  axiosErrorToJSON,
-  mapPoolSize,
-} = require("@grucloud/core/Common");
 const { Route53New, shouldRetryOnException } = require("../AwsCommon");
 const { filterEmptyResourceRecords } = require("./Route53Utils");
 
-const liveToResourceSet = pipe([omit(["Tags"]), filterEmptyResourceRecords]);
+const liveToResourceSet = pipe([
+  omit(["Tags", "hostedZoneId"]),
+  filterEmptyResourceRecords,
+]);
 
 const findName = pipe([
   tap((live) => {
@@ -60,7 +46,7 @@ const findName = pipe([
   }),
 ]);
 
-const findId = pick(["Name", "Type"]);
+const findId = ({ Name, Type }) => `${Type}::${Name}`;
 
 const getHostedZone = ({ name, dependencies = {} }) =>
   pipe([
@@ -90,12 +76,9 @@ exports.Route53Record = ({ spec, config }) => {
 
   const route53 = Route53New(config);
 
-  const assignTags = ({ Tags }) =>
-    switchCase([
-      not(isEmpty),
-      (record) => ({ ...record, Tags }),
-      () => undefined,
-    ]);
+  const findDependencies = ({ live }) => [
+    { type: "HostedZone", ids: [live.hostedZoneId] },
+  ];
 
   const findRecordInZone = ({ name, hostedZone }) =>
     pipe([
@@ -110,7 +93,10 @@ exports.Route53Record = ({ spec, config }) => {
       switchCase([
         isEmpty,
         () => undefined,
-        assignTags({ Tags: hostedZone.Tags }),
+        assign({
+          Tags: () => hostedZone.Tags,
+          hostedZoneId: () => hostedZone.Id,
+        }),
       ]),
       tap((record) => {
         logger.debug(`findRecordInZone record ${tos({ record })}`);
@@ -161,9 +147,6 @@ exports.Route53Record = ({ spec, config }) => {
         assert(dependencies, "dependencies");
       }),
       () => getHostedZone({ dependencies, name }),
-      tap((hostedZone) => {
-        logger.debug(`getByName hostedZoneId ${hostedZone?.Id}`);
-      }),
       switchCase([
         not(isEmpty),
         (hostedZone) => findRecordInZone({ name, hostedZone }),
@@ -173,10 +156,6 @@ exports.Route53Record = ({ spec, config }) => {
         logger.debug(`getByName result: ${tos(result)}`);
       }),
     ])();
-
-  const getById = ({ name }) => getByName({ name });
-  const isDownById = isDownByIdCore({ getById, getList, findId });
-  const isUpById = isUpByIdCore({ getById });
 
   const create = async ({
     name,
@@ -195,9 +174,10 @@ exports.Route53Record = ({ spec, config }) => {
           })}`
         );
       }),
-      () => ({
+      () => payload,
+      (ResourceRecordSet) => ({
         Action: "CREATE",
-        ResourceRecordSet: payload,
+        ResourceRecordSet,
       }),
       (Change) =>
         route53().changeResourceRecordSets({
@@ -310,11 +290,9 @@ exports.Route53Record = ({ spec, config }) => {
   return {
     type: "Route53Record",
     spec,
-    isUpById,
-    isDownById,
+    findDependencies,
     findId,
     getByName,
-    getById,
     findName,
     create,
     update,

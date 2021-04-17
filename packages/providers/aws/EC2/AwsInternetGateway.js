@@ -1,5 +1,5 @@
 const { get, pipe, filter, map, tap, eq, switchCase, not } = require("rubico");
-const { defaultsDeep, isEmpty, first } = require("rubico/x");
+const { defaultsDeep, isEmpty, first, pluck } = require("rubico/x");
 const assert = require("assert");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsIgw" });
@@ -26,6 +26,13 @@ exports.AwsInternetGateway = ({ spec, config }) => {
 
   const findId = get("InternetGatewayId");
   const findName = (item) => findNameInTagsOrId({ item, findId });
+
+  const findDependencies = ({ live }) => [
+    {
+      type: "Vpc",
+      ids: pipe([() => live, get("Attachments"), pluck("VpcId")])(),
+    },
+  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInternetGateways-property
   const getList = ({ params } = {}) =>
@@ -174,12 +181,10 @@ exports.AwsInternetGateway = ({ spec, config }) => {
     type: "InternetGateway",
     spec,
     findId,
-    isInstanceUp,
-    isUpById,
-    isDownById,
-    getByName,
-    getById,
     findName,
+    findDependencies,
+    isInstanceUp,
+    getByName,
     cannotBeDeleted,
     getList,
     create,

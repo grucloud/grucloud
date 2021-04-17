@@ -46,7 +46,14 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   const iam = IAMNew(config);
 
   const findName = get("InstanceProfileName");
-  const findId = findName;
+  const findId = get("Arn");
+
+  const findDependencies = ({ live }) => [
+    {
+      type: "IamRole",
+      ids: pipe([() => live, get("Roles"), pluck("Arn")])(),
+    },
+  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listInstanceProfiles-property
   const getList = async ({ params } = {}) =>
@@ -175,7 +182,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteInstanceProfile-property
   const destroy = async ({ live }) =>
     pipe([
-      () => findId(live),
+      () => findName(live),
       (InstanceProfileName) =>
         pipe([
           tap(() => {
@@ -208,17 +215,15 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
         ])(),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) =>
+  const configDefault = ({ name, properties, dependencies }) =>
     defaultsDeep({ InstanceProfileName: name })(properties);
 
   return {
     type: "IamInstanceProfile",
     spec,
-    isUpById,
-    isDownById,
     findId,
+    findDependencies,
     getByName,
-    getById,
     findName,
     create,
     destroy,

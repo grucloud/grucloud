@@ -35,6 +35,13 @@ const findName = (item) => findNameInTagsOrId({ item, findId });
 exports.ELBListener = ({ spec, config }) => {
   const elb = ELBv2New(config);
 
+  const findDependencies = ({ live }) => [
+    {
+      type: "LoadBalancer",
+      ids: [live.LoadBalancerArn],
+    },
+  ];
+
   const describeAllListeners = pipe([
     () => elb().describeLoadBalancers({}),
     get("LoadBalancers"),
@@ -188,12 +195,9 @@ exports.ELBListener = ({ spec, config }) => {
   return {
     type: "Listener",
     spec,
-    isInstanceUp,
-    isUpById,
-    isDownById,
     findId,
+    findDependencies,
     getByName,
-    getById,
     findName,
     create,
     destroy,

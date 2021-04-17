@@ -1,5 +1,5 @@
 const { get, pipe, filter, map, tap, eq, switchCase, not } = require("rubico");
-const { defaultsDeep, isEmpty, first } = require("rubico/x");
+const { defaultsDeep, isEmpty, first, pluck } = require("rubico/x");
 const assert = require("assert");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsNatGateway" });
@@ -24,6 +24,23 @@ exports.AwsNatGateway = ({ spec, config }) => {
   const findId = get("NatGatewayId");
 
   const findName = (item) => findNameInTagsOrId({ item, findId });
+
+  const findDependencies = ({ live }) => [
+    { type: "Vpc", ids: [live.VpcId] },
+    {
+      type: "Subnet",
+      ids: [live.SubnetId],
+    },
+    {
+      type: "NetworkInterface",
+      ids: pipe([
+        () => live,
+        get("NatGatewayAddresses"),
+        pluck("NetworkInterfaceId"),
+      ])(),
+    },
+  ];
+
   const isInstanceUp = eq(get("State"), "available");
   const isInstanceDown = eq(get("State"), "deleted");
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeNatGateways-property
@@ -155,13 +172,9 @@ exports.AwsNatGateway = ({ spec, config }) => {
     type: "NatGateway",
     spec,
     findId,
-    isInstanceUp,
-    isInstanceDown,
-    isUpById,
-    isDownById,
     getByName,
-    getById,
     findName,
+    findDependencies,
     getList,
     create,
     destroy,

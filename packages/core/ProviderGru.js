@@ -51,6 +51,7 @@ const { tos } = require("./tos");
 const { convertError } = require("./Common");
 
 const { displayLive } = require("./cli/displayUtils");
+const { buildSubGraphLive, buildGraphAssociationLive } = require("./Graph");
 
 const identity = (x) => x;
 
@@ -731,6 +732,32 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
       }),
     ])();
 
+  const buildGraphLive = ({ lives }) =>
+    pipe([
+      tap(() => {
+        logger.info(`buildGraphLive`);
+      }),
+      () => `digraph graphname {
+  rankdir=LR; 
+  ${pipe([
+    map(({ providerName, results }) =>
+      buildSubGraphLive({ providerName, resourcesPerType: results })
+    ),
+    (result) => result.join("\n"),
+  ])(lives)}
+  # Association
+  ${pipe([
+    map(({ results }) =>
+      buildGraphAssociationLive({ resourcesPerType: results })
+    ),
+    (result) => result.join("\n"),
+  ])(lives)}
+}`,
+      tap((result) => {
+        logger.info(`buildGraph done`);
+      }),
+    ])();
+
   const startHookGlobalSpinners = ({ hookType, onStateChange, hookInstance }) =>
     pipe([
       () => {
@@ -792,18 +819,18 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
           ),
           tryCatch(
             () => action.command(actionPayload),
-            (error) =>
-              pipe([
-                tap(() => {
-                  logger.error(
-                    `runCommandGlobal ${convertError({
-                      error,
-                      name: action.name,
-                    })}`
-                  );
-                }),
-                () => ({ error, action: action.name }),
-              ])()
+            pipe([
+              (error) => convertError({ error }),
+              tap((error) => {
+                logger.error(
+                  `runCommandGlobal ${convertError({
+                    error,
+                    name: action.name,
+                  })}`
+                );
+              }),
+              (error) => ({ error, action: action.name }),
+            ])
           ),
           tap(({ error } = {}) =>
             onStateChange({
@@ -988,5 +1015,6 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
     runCommand,
     runCommandGlobal,
     buildGraph,
+    buildGraphLive,
   };
 };

@@ -14,7 +14,7 @@ module.exports = [
   },
   {
     type: "EKSNodeGroup",
-    dependsOn: ["EKSCluster", "Subnet", "IamRole"],
+    dependsOn: ["EKSCluster", "Subnet", "IamRole", "AutoScalingGroup"],
     Client: EKSNodeGroup,
     isOurMinion,
     compare: compareNodeGroup,

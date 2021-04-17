@@ -25,12 +25,15 @@ const {
   isEmpty,
   isString,
   flatten,
+  size,
   pluck,
   forEach,
   find,
   defaultsDeep,
   isDeepEqual,
   includes,
+  identity,
+  uniq,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "ProviderCommon" });
@@ -84,30 +87,37 @@ const isTypeMatch = ({ type, typeToMatch }) =>
 
 exports.isTypeMatch = isTypeMatch;
 
-const findDependentType = ({ clients }) =>
+const findDependentType = ({ type, specs }) =>
   pipe([
-    tap((types) => {
-      /*logger.info(
-        `findDependentType #clients ${clients.length}, types: ${types}`
-      );*/
+    tap(() => {
+      assert(type);
     }),
-    flatMap(
-      pipe([
-        (type) =>
-          filter((client) =>
-            isTypeMatch({ type, typeToMatch: client.spec.type })
-          )(clients),
-        tap((xxx) => {
-          //logger.debug(`findDependentType`);
-        }),
-        pluck("spec.dependsOn"),
-        flatten,
-      ])
+    () => specs,
+    find(eq(get("type"), type)),
+    get("dependsOn", []),
+    flatMap((type) => findDependentType({ type, specs })),
+    (results) => [type, ...results],
+    tap((results) => {
+      logger.debug(`findDependentTypes ${type}, result: ${results}`);
+    }),
+  ])();
+
+const findDependentTypes = ({ types, clients }) =>
+  pipe([
+    tap(() => {
+      logger.debug(
+        `findDependentTypes #clients ${size(clients)}, types: ${size(types)}`
+      );
+    }),
+    () => types,
+    flatMap((type) =>
+      findDependentType({ type, specs: pluck("spec")(clients) })
     ),
-    tap((types) => {
-      //logger.info(`findDependentType result: ${types}`);
+    uniq,
+    tap((results) => {
+      logger.debug(`findDependentTypes results: ${results}`);
     }),
-  ]);
+  ])();
 
 const filterByType = ({ types = [], targetTypes }) =>
   pipe([
@@ -120,7 +130,7 @@ const filterByType = ({ types = [], targetTypes }) =>
       filter((client) =>
         pipe([
           () => types,
-          switchCase([isEmpty, () => targetTypes, (types) => types]),
+          switchCase([isEmpty, () => targetTypes, identity]),
           tap(() => {
             assert(client);
             assert(client.spec);
@@ -130,7 +140,7 @@ const filterByType = ({ types = [], targetTypes }) =>
             or([
               isEmpty, //TOD never empty
               pipe([
-                findDependentType({ clients }),
+                (types) => findDependentTypes({ types, clients }),
                 tap(() => {
                   assert(client);
                   assert(client.spec);

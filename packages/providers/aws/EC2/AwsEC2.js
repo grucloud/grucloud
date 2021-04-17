@@ -49,26 +49,54 @@ exports.AwsEC2 = ({ spec, config }) => {
 
   const ec2 = Ec2New(config);
 
+  const findDependencies = ({ live }) => [
+    { type: "Image", ids: [live.ImageId] },
+    { type: "KeyPair", ids: filter(not(isEmpty))([live.KeyName]) },
+    { type: "Vpc", ids: [live.VpcId] },
+    { type: "Subnet", ids: [live.SubnetId] },
+    {
+      type: "Volume",
+      ids: pipe([
+        () => live,
+        get("BlockDeviceMappings"),
+        pluck("Ebs.VolumeId"),
+      ])(),
+    },
+    {
+      type: "NetworkInterface",
+      ids: pipe([
+        () => live,
+        get("NetworkInterfaces"),
+        pluck("NetworkInterfaceId"),
+      ])(),
+    },
+    {
+      type: "SecurityGroup",
+      ids: pipe([() => live, get("SecurityGroups"), pluck("GroupId")])(),
+    },
+    {
+      type: "IamInstanceProfile",
+      ids: [get("IamInstanceProfile.Arn")(live)],
+    },
+  ];
+
   const findValue = ({ key }) =>
     pipe([find(eq(get("Key"), key)), get("Value")]);
 
-  const findEksName = pipe([
-    get("Tags"),
-    (Tags) =>
-      pipe([
-        findValue({ key: "eks:cluster-name" }),
-        switchCase([
-          isEmpty,
-          () => undefined,
-          (clusterName) =>
-            `${clusterName}::${findValue({
-              key: "eks:nodegroup-name",
-            })(Tags)}::${findValue({
-              key: "aws:ec2:fleet-id",
-            })(Tags)}`,
-        ]),
-      ])(Tags),
-  ]);
+  const findEksName = (live) =>
+    pipe([
+      () => live,
+      get("Tags"),
+      (Tags) =>
+        pipe([
+          findValue({ key: "eks:nodegroup-name" }),
+          switchCase([
+            isEmpty,
+            () => undefined,
+            (nodegroupName) => `${nodegroupName}::${live.InstanceId}`,
+          ]),
+        ])(Tags),
+    ])();
 
   const findName = (item) =>
     pipe([
@@ -384,13 +412,9 @@ exports.AwsEC2 = ({ spec, config }) => {
   return {
     type: "EC2",
     spec,
-    isInstanceUp,
-    isInstanceDown,
-    isUpById,
-    isDownById,
     findId,
+    findDependencies,
     getByName,
-    getById,
     findName,
     create,
     destroyById,

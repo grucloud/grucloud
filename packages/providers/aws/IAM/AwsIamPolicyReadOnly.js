@@ -25,15 +25,15 @@ exports.AwsIamPolicyReadOnly = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const findName = get("Arn");
-  const findId = findName;
+  const findName = get("name");
+  const findId = get("Arn");
 
   const getList = async ({ resources = [] } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getList policy readonly #resources ${resources.length}`);
       }),
-      map((resource) => resource.properties()),
+      map((resource) => ({ name: resource.name, ...resource.properties() })),
       tap((items) => {
         logger.info(`getList policy readonly ${tos(items)}`);
       }),
@@ -44,7 +44,7 @@ exports.AwsIamPolicyReadOnly = ({ spec, config }) => {
     ])(resources);
 
   const getByName = ({ name, properties, resources }) =>
-    getByNameCore({ name: properties().Arn, resources, getList, findName });
+    getByNameCore({ name, resources, getList, findName });
 
   return {
     type: "IamPolicyReadOnly",

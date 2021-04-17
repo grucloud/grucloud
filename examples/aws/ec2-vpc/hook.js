@@ -13,7 +13,7 @@ const testPing = ({ host }) =>
 //  path.resolve(__dirname, "../../../secrets/kp.pem")
 //);
 
-const testSsh = async ({ host, username = "ubuntu" }) =>
+const testSsh = async ({ host, username = "ec2-user" }) =>
   await new Promise((resolve, reject) => {
     const conn = new Client();
     conn

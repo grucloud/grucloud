@@ -287,7 +287,7 @@
       "cwd": "${workspaceFolder}/packages/modules/k8s/postgres/example",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["list", "-t"]
+      "args": ["list"]
     },
     {
       "type": "node",
@@ -1025,6 +1025,15 @@
       "cwd": "${workspaceFolder}/examples/aws/ec2/",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["plan"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Aws EC2 List -t ",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/ec2/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["list", "-t", "NetworkAcl"]
     },
     {
       "type": "node",

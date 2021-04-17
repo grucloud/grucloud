@@ -14,7 +14,7 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
   const findName = get("KeyName");
-  const findId = get("KeyPairId");
+  const findId = findName;
 
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
   const getById = ({ id }) => getByIdCore({ id, getList, findId });
@@ -67,7 +67,6 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
     findName,
     findId,
     getByName,
-    getById,
     getList,
     validate,
   };

@@ -8,6 +8,7 @@ const {
   get,
   switchCase,
   eq,
+  not,
   assign,
 } = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck, find } = require("rubico/x");
@@ -38,7 +39,14 @@ exports.AwsIamRole = ({ spec, config }) => {
   const iam = IAMNew(config);
 
   const findName = get("RoleName");
-  const findId = findName;
+  const findId = get("Arn");
+
+  const findDependencies = ({ live }) => [
+    //TODO
+    //{ type: "IamPolicy", ids: live.AttachedPolicies },
+    { type: "IamPolicyReadOnly", ids: live.AttachedPolicies },
+  ];
+
   const listAttachedRolePolicies = pipe([
     ({ RoleName }) =>
       iam().listAttachedRolePolicies({
@@ -46,7 +54,7 @@ exports.AwsIamRole = ({ spec, config }) => {
         MaxItems: 1e3,
       }),
     get("AttachedPolicies"),
-    pluck("PolicyName"),
+    pluck("PolicyArn"),
     tap((policies) => {
       logger.debug(`getList listAttachedRolePolicies: ${tos(policies)}`);
     }),
@@ -61,6 +69,7 @@ exports.AwsIamRole = ({ spec, config }) => {
       () => iam().listRoles(params),
       get("Roles"),
       filter((role) => moment(role.CreateDate).isAfter("2020-09-11")),
+      filter((role) => !role.RoleName.includes("AWSServiceRole")),
       tap((roles) => {
         assert(roles);
       }),
@@ -137,31 +146,8 @@ exports.AwsIamRole = ({ spec, config }) => {
 
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
 
-  const getById = pipe([
-    tap(({ id }) => {
-      logger.info(`getById role ${id}`);
-    }),
-    tryCatch(
-      ({ id }) => iam().getRole({ RoleName: id }),
-      switchCase([
-        eq(get("code"), "NoSuchEntity"),
-        (error, { id }) => {
-          logger.debug(`getById ${id} NoSuchEntity`);
-        },
-        (error) => {
-          logger.debug(`getById error: ${tos(error)}`);
-          throw error;
-        },
-      ])
-    ),
-    tap((result) => {
-      logger.debug(`getById role result: ${tos(result)}`);
-    }),
-  ]);
-
-  const isUpById = isUpByIdCore({ getById });
-  const isDownById = isDownByIdCore({ getById });
-
+  const isDownByName = ({ name }) =>
+    pipe([() => getByName({ name }), not(isEmpty)])();
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createRole-property
 
   const create = async ({
@@ -228,49 +214,48 @@ exports.AwsIamRole = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteRole-property
-  const destroy = async ({ id, name }) =>
+  const destroy = async ({ name: RoleName }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy iam role ${JSON.stringify({ name, id })}`);
-        assert(!isEmpty(id), `destroy invalid id`);
+        logger.info(`destroy iam role ${JSON.stringify({ RoleName })}`);
       }),
-      () => iam().listInstanceProfilesForRole({ RoleName: id, MaxItems: 1e3 }),
+      () => iam().listInstanceProfilesForRole({ RoleName, MaxItems: 1e3 }),
       get("InstanceProfiles"),
       forEach((instanceProfile) => {
         iam().removeRoleFromInstanceProfile({
           InstanceProfileName: instanceProfile.InstanceProfileName,
-          RoleName: id,
+          RoleName,
         });
       }),
-      () => iam().listAttachedRolePolicies({ RoleName: id, MaxItems: 1e3 }),
+      () => iam().listAttachedRolePolicies({ RoleName, MaxItems: 1e3 }),
       get("AttachedPolicies"),
       forEach((policy) => {
         iam().detachRolePolicy({
           PolicyArn: policy.PolicyArn,
-          RoleName: id,
+          RoleName,
         });
       }),
-      () => iam().listRolePolicies({ RoleName: id, MaxItems: 1e3 }),
+      () => iam().listRolePolicies({ RoleName, MaxItems: 1e3 }),
       get("PolicyNames"),
       forEach((policyName) => {
         iam().deleteRolePolicy({
           PolicyName: policyName,
-          RoleName: id,
+          RoleName,
         });
       }),
       () =>
         iam().deleteRole({
-          RoleName: id,
+          RoleName,
         }),
       tap(() =>
         retryCall({
-          name: `isDownById iam role: ${name} id: ${id}`,
-          fn: () => isDownById({ id }),
+          name: `isDownById iam role: ${RoleName}`,
+          fn: () => isDownByName({ name: RoleName }),
           config,
         })
       ),
       tap(() => {
-        logger.info(`destroy iam role done, ${JSON.stringify({ name, id })}`);
+        logger.info(`destroy iam role done, ${RoleName}`);
       }),
     ])();
 
@@ -284,11 +269,9 @@ exports.AwsIamRole = ({ spec, config }) => {
   return {
     type: "IamRole",
     spec,
-    isUpById,
-    isDownById,
+    findDependencies,
     findId,
     getByName,
-    getById,
     cannotBeDeleted,
     findName,
     create,

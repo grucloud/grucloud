@@ -157,6 +157,8 @@ exports.isOurMinion = ({ resource, config }) => {
       assert(resource);
       assert(stage);
     }),
+    () => resource,
+    get("Tags"),
     switchCase([
       and([
         find(
@@ -175,7 +177,7 @@ exports.isOurMinion = ({ resource, config }) => {
         })}`
       );
     }),
-  ])(resource.Tags || []);
+  ])();
 };
 
 const findNameInTags = (item) =>
@@ -277,8 +279,20 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
             logger.debug(`deleteNetworkInterface: ${NetworkInterfaceId}`);
             assert(NetworkInterfaceId);
           }),
-          (NetworkInterfaceId) =>
-            ec2().deleteNetworkInterface({ NetworkInterfaceId }),
+          tryCatch(
+            (NetworkInterfaceId) =>
+              ec2().deleteNetworkInterface({ NetworkInterfaceId }),
+            switchCase([
+              eq(get("code"), "InvalidNetworkInterfaceID.NotFound"),
+              () => undefined,
+              (error) => {
+                logger.error(
+                  `deleteNetworkInterface error code: ${error.code}`
+                );
+                throw error;
+              },
+            ])
+          ),
         ])
       )
     ),

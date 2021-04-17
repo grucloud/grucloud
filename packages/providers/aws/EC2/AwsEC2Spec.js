@@ -104,6 +104,7 @@ module.exports = [
       "ElasticIpAddress",
       "IamInstanceProfile",
       "Volume",
+      "NetworkInterface",
     ],
     Client: AwsEC2,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS.html#runInstances-property

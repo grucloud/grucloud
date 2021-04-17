@@ -1,6 +1,18 @@
 const assert = require("assert");
-const { get, pipe, map, eq, or, tap, fork, filter, not } = require("rubico");
-const { defaultsDeep, pluck, identity } = require("rubico/x");
+const {
+  get,
+  pipe,
+  map,
+  eq,
+  or,
+  tap,
+  fork,
+  filter,
+  not,
+  tryCatch,
+  switchCase,
+} = require("rubico");
+const { defaultsDeep, pluck, flatten } = require("rubico/x");
 const {
   Ec2New,
   getByIdCore,
@@ -27,6 +39,19 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
 
   const findName = get("GroupName");
   const findId = get("GroupId");
+  const findDependencies = ({ live }) => [
+    { type: "Vpc", ids: [live.VpcId] },
+    {
+      type: "SecurityGroup",
+      ids: pipe([
+        () => live,
+        get("IpPermissions"),
+        pluck("UserIdGroupPairs"),
+        flatten,
+        pluck("GroupId"),
+      ])(),
+    },
+  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroups-property
   const getList = ({ params } = {}) =>
@@ -116,7 +141,17 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
         logger.debug(`destroy sg ${JSON.stringify({ name, id })}`);
       }),
       () => destroyNetworkInterfaces({ ec2, Name: "group-id", Values: [id] }),
-      () => ec2().deleteSecurityGroup({ GroupId: id }),
+      tryCatch(
+        () => ec2().deleteSecurityGroup({ GroupId: id }),
+        switchCase([
+          eq(get("code"), "InvalidGroup.NotFound"),
+          () => undefined,
+          (error) => {
+            logger.error(`deleteSecurityGroup error code: ${error.code}`);
+            throw error;
+          },
+        ])
+      ),
       tap(() =>
         retryCall({
           name: `destroy sg isDownById: ${name} id: ${id}`,
@@ -152,13 +187,11 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
   return {
     type: "SecurityGroup",
     spec,
-    findId,
     getByName,
-    getById,
+    findId,
     findName,
+    findDependencies,
     cannotBeDeleted,
-    isUpById,
-    isDownById,
     getList,
     create,
     destroy,

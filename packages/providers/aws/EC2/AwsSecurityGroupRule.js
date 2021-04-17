@@ -52,13 +52,6 @@ const getSecurityGroup = ({ name, dependencies = {} }) =>
     ]),
   ])();
 
-const assignTags = ({ name, config }) =>
-  switchCase([
-    not(isEmpty),
-    (record) => ({ ...record, Tags: buildTags({ name, config }) }),
-    () => undefined,
-  ]);
-
 const findGroupId = (live) =>
   pipe([
     () => live,
@@ -95,6 +88,13 @@ const removeTags = ({ ec2, name, securityGroup }) =>
     (params) => ec2().deleteTags(params),
   ])();
 
+const findDependencies = ({ live }) => [
+  {
+    type: "SecurityGroup",
+    ids: [live.GroupId],
+  },
+];
+
 const SecurityGroupRuleBase = ({ config }) => {
   const configDefault = async ({
     name,
@@ -121,7 +121,14 @@ const SecurityGroupRuleBase = ({ config }) => {
       find(eq(get("Key"), name)),
       get("Value"),
       tryCatch(
-        pipe([JSON.parse, assignTags({ name, config })]),
+        pipe([
+          JSON.parse,
+          (record) => ({
+            ...record,
+            Tags: buildTags({ name, config }),
+            GroupId: securityGroup.GroupId,
+          }),
+        ]),
         () => undefined
       ),
       tap((rule) => {
@@ -236,6 +243,7 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
     type: "SecurityGroupRuleIngress",
     spec,
     findId,
+    findDependencies,
     findName,
     getByName,
     getList,
@@ -298,6 +306,7 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
     type: "SecurityGroupRuleEgress",
     spec,
     findId,
+    findDependencies,
     findName,
     getByName,
     getList,
