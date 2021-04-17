@@ -467,7 +467,7 @@
       "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["list"]
+      "args": ["list", "-g", "-p", "aws"]
     },
     {
       "type": "node",
@@ -527,7 +527,7 @@
       "cwd": "${workspaceFolder}/examples/starhackit/minikube",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["list"]
+      "args": ["list", "-g", "-a"]
     },
     {
       "type": "node",

@@ -1029,7 +1029,7 @@ const doGraphLive = ({ providerGru, lives, commandOptions }) =>
   tap.if(
     () => commandOptions.graph,
     pipe([
-      () => providerGru.buildGraphLive({ lives }),
+      () => providerGru.buildGraphLive({ lives, options: commandOptions }),
       (result) => dotToSvg({ commandOptions, result }),
     ])
   )();

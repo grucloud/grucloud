@@ -732,7 +732,7 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
       }),
     ])();
 
-  const buildGraphLive = ({ lives }) =>
+  const buildGraphLive = ({ lives, options }) =>
     pipe([
       tap(() => {
         logger.info(`buildGraphLive`);
@@ -741,14 +741,14 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
   rankdir=LR; 
   ${pipe([
     map(({ providerName, results }) =>
-      buildSubGraphLive({ providerName, resourcesPerType: results })
+      buildSubGraphLive({ providerName, resourcesPerType: results, options })
     ),
     (result) => result.join("\n"),
   ])(lives)}
   # Association
   ${pipe([
     map(({ results }) =>
-      buildGraphAssociationLive({ resourcesPerType: results })
+      buildGraphAssociationLive({ resourcesPerType: results, options })
     ),
     (result) => result.join("\n"),
   ])(lives)}

@@ -16,6 +16,7 @@ exports.createResourceNamespaceless = ({
   kind,
   cannotBeDeleted,
   isInstanceUp,
+  findDependencies,
 }) => ({ spec, config }) => {
   //TODOs
   //const getApiVersion = () =>
@@ -64,6 +65,7 @@ exports.createResourceNamespaceless = ({
     cannotBeDeleted,
     isInstanceUp,
     isUpByIdFactory,
+    findDependencies,
   });
 };
 exports.createResourceNamespace = ({
@@ -74,6 +76,7 @@ exports.createResourceNamespace = ({
   kind,
   cannotBeDeleted,
   isInstanceUp,
+  findDependencies,
 }) => ({ spec, config }) => {
   const getApiVersion = () =>
     get(`${configKey}.apiVersion`, apiVersion)(config);
@@ -118,5 +121,6 @@ exports.createResourceNamespace = ({
     displayName: displayNameDefault,
     displayNameResource: displayNameResourceDefault,
     resourceKey: resourceKeyDefault,
+    findDependencies,
   });
 };

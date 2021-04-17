@@ -2,7 +2,7 @@ const pkg = require("./package.json");
 
 module.exports = () => ({
   projectName: pkg.name,
-  namespaceName: "default",
+  namespaceName: "starhackit",
   ui: {
     container: { image: "fredericheem/ui", version: "v10.14.0" },
     serviceName: "web",

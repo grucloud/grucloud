@@ -5,9 +5,12 @@ const { identity } = require("rubico/x");
 exports.config = require("./config");
 exports.hooks = [];
 
-const createResources = async ({ provider }) => {
+const NamespaceDefault = "vpc";
+
+const createResources = async ({ provider, namespace = NamespaceDefault }) => {
   const { config } = provider;
   const formatName = config.formatName || identity;
+
   assert(config.vpc);
   assert(config.vpc.vpc);
   assert(config.vpc.internetGateway);
@@ -20,6 +23,7 @@ const createResources = async ({ provider }) => {
 
   const vpc = await provider.makeVpc({
     name: formatName(config.vpc.vpc.name, config),
+    namespace,
     properties: () => ({
       DnsHostnames: true,
       CidrBlock: config.vpc.vpc.CidrBlock,
@@ -29,10 +33,12 @@ const createResources = async ({ provider }) => {
 
   const internetGateway = await provider.makeInternetGateway({
     name: formatName(config.vpc.internetGateway.name, config),
+    namespace,
     dependencies: { vpc },
   });
 
   const eip = await provider.makeElasticIpAddress({
+    namespace,
     name: formatName(config.vpc.eip.name, config),
   });
 
@@ -44,6 +50,7 @@ const createResources = async ({ provider }) => {
     map(({ name, CidrBlock, AvailabilityZone }) =>
       provider.makeSubnet({
         name: formatName(name, config),
+        namespace,
         dependencies: { vpc },
         attributes: () => ({
           MapPublicIpOnLaunch: {
@@ -61,11 +68,13 @@ const createResources = async ({ provider }) => {
 
   const routeTablePublic = await provider.makeRouteTable({
     name: formatName(config.vpc.routeTablePublic.name, config),
+    namespace,
     dependencies: { vpc, subnets: subnetsPublic },
   });
 
   const routePublic = await provider.makeRoute({
     name: formatName(config.vpc.routePublic.name, config),
+    namespace,
     dependencies: { routeTable: routeTablePublic, ig: internetGateway },
   });
 
@@ -73,6 +82,7 @@ const createResources = async ({ provider }) => {
   assert(subnet);
   const natGateway = await provider.makeNatGateway({
     name: formatName(config.vpc.natGateway.name, config),
+    namespace,
     dependencies: { subnet, eip },
   });
 
@@ -87,6 +97,7 @@ const createResources = async ({ provider }) => {
           subnet: () =>
             provider.makeSubnet({
               name: formatName(name, config),
+              namespace,
               dependencies: { vpc },
               properties: () => ({
                 CidrBlock,
@@ -99,6 +110,7 @@ const createResources = async ({ provider }) => {
           routeTable: ({ subnet }) =>
             provider.makeRouteTable({
               name: formatName(routeTableName, config),
+              namespace,
               dependencies: { vpc, subnets: [subnet] },
             }),
         }),
@@ -106,6 +118,7 @@ const createResources = async ({ provider }) => {
           routeNat: ({ routeTable }) =>
             provider.makeRoute({
               name: formatName(routeName, config),
+              namespace,
               dependencies: { routeTable, natGateway },
             }),
         }),

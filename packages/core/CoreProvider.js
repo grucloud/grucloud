@@ -34,6 +34,7 @@ const {
   includes,
   isFunction,
   identity,
+  size,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreProvider" });
@@ -117,6 +118,7 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
       displayNameResource: get("name"),
       findMeta: () => undefined,
       findDependencies: () => [],
+      findNamespace: () => "default",
       cannotBeDeleted: () => false,
       configDefault: () => ({}),
       isInstanceUp: not(isEmpty),
@@ -126,6 +128,7 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
 
 const ResourceMaker = ({
   name: resourceName,
+  namespace,
   meta = {},
   dependencies = {},
   filterLives,
@@ -591,6 +594,7 @@ const ResourceMaker = ({
   const toJSON = () => ({
     providerName: provider.name,
     type,
+    namespace,
     name: resourceName,
     meta,
     displayName: client.displayNameResource({
@@ -609,6 +613,7 @@ const ResourceMaker = ({
     type,
     provider,
     name: resourceName,
+    namespace,
     meta,
     dependencies,
     addUsedBy,
@@ -1556,13 +1561,14 @@ function CoreProvider({
         map((live) => ({
           uri: liveToUri({ client, live }),
           name: client.findName(live),
+          namespace: client.findNamespace(live),
           displayName: client.displayName({
             name: client.findName(live),
             meta: client.findMeta(live),
           }),
           meta: client.findMeta(live),
           id: client.findId(live),
-          dependencies: client.findDependencies({ live }),
+          dependencies: client.findDependencies({ live, lives }),
           managedByUs: client.spec.isOurMinion({
             resource: live, //TODO remove resource
             live,
@@ -1629,7 +1635,7 @@ function CoreProvider({
         filterReadClient({ options, targetTypes: getTargetTypes() }),
       ]),
       tap((clients) => {
-        logger.info(`listLives #clients ${clients.length}`);
+        logger.info(`listLives #clients ${size(clients)}`);
       }),
       map((client) => ({
         meta: {

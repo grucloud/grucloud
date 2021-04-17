@@ -11,8 +11,20 @@ const {
   or,
   filter,
   reduce,
+  pick,
 } = require("rubico");
-const { defaultsDeep, first, find, isFunction, includes } = require("rubico/x");
+const {
+  defaultsDeep,
+  first,
+  find,
+  isFunction,
+  includes,
+  pluck,
+  flatten,
+  isEmpty,
+  values,
+  uniq,
+} = require("rubico/x");
 const shell = require("shelljs");
 const os = require("os");
 const path = require("path");
@@ -46,6 +58,40 @@ const cannotBeDeletedDefault = ({ resource, config }) =>
         `cannotBeDeletedDefault ${resource.metadata.name}: ${result}`
       );
     }),
+  ])();
+
+const findDependenciesService = ({ live, lives, config }) =>
+  pipe([
+    () => live,
+    get("spec.selector.matchLabels.app"),
+    (label) =>
+      pipe([
+        () =>
+          lives.getByType({
+            providerName: config.providerName,
+            type: "Service",
+          }),
+        get("resources"),
+        pluck("live"),
+        filter(eq(get("spec.selector.app"), label)),
+        map(get("metadata.name")),
+        tap((services) => {
+          //logger.debug(`findDependenciesService ${services}`);
+        }),
+      ])(),
+  ])();
+
+const findDependenciesConfig = ({ live }) =>
+  pipe([
+    () => live,
+    get("spec.template.spec.containers"),
+    pluck("env"),
+    flatten,
+    pluck("valueFrom"),
+    pluck("configMapKeyRef"),
+    pluck("name"),
+    uniq,
+    filter(not(isEmpty)),
   ])();
 
 const fnSpecs = () => [
@@ -129,6 +175,28 @@ const fnSpecs = () => [
       apiVersion: "rbac.authorization.k8s.io/v1",
       kind: "ClusterRoleBinding",
       cannotBeDeleted: cannotBeDeletedDefault,
+      findDependencies: ({ live, lives }) => [
+        {
+          type: "ClusterRole",
+          ids: pipe([() => live, get("roleRef.name"), (name) => [name]])(),
+        },
+        {
+          type: "ServiceAccount",
+          ids: pipe([
+            () => live,
+            get("subjects"),
+            filter(eq(get("kind"), "ServiceAccount")),
+            tap((xxx) => {
+              assert(true);
+            }),
+            pluck("name"),
+            //TODO namespace
+            tap((xxx) => {
+              logger.debug(xxx);
+            }),
+          ])(),
+        },
+      ],
     }),
     isOurMinion,
   },
@@ -158,6 +226,12 @@ const fnSpecs = () => [
       apiVersion: "rbac.authorization.k8s.io/v1beta1",
       kind: "RoleBinding",
       cannotBeDeleted: cannotBeDeletedDefault,
+      findDependencies: ({ live }) => [
+        {
+          type: "Role",
+          ids: pipe([() => live, get("roleRef.name"), (name) => [name]])(),
+        },
+      ],
     }),
     isOurMinion,
   },
@@ -172,6 +246,20 @@ const fnSpecs = () => [
       apiVersion: "v1",
       kind: "ServiceAccount",
       cannotBeDeleted: cannotBeDeletedDefault,
+      findDependencies: ({ live }) => [
+        {
+          type: "Secret",
+          ids: pipe([
+            () => live,
+            get("secrets"),
+            //TODO namespace
+            pluck("name"),
+            tap((xxx) => {
+              logger.debug(``);
+            }),
+          ])(),
+        },
+      ],
     }),
     isOurMinion,
   },
@@ -208,6 +296,30 @@ const fnSpecs = () => [
         first,
         not(isEmpty),
       ]),
+      findDependencies: ({ live }) => [
+        {
+          type: "Service",
+          ids: pipe([
+            () => live,
+            get("spec.rules"),
+            map(
+              pipe([
+                values,
+                pluck("paths"),
+                flatten,
+                pluck("backend"),
+                pluck("service"),
+                pluck("name"),
+              ])
+            ),
+            flatten,
+            filter(not(isEmpty)),
+            tap((services) => {
+              logger.debug(`Ingress findDependencies: ${services}`);
+            }),
+          ])(),
+        },
+      ],
     }),
     isOurMinion,
     compare,
@@ -254,16 +366,28 @@ const fnSpecs = () => [
   },
   {
     type: "PersistentVolumeClaim",
-    dependsOn: ["PersistentVolume"],
-    Client: createResourceNamespace({
-      baseUrl: ({ namespace, apiVersion }) =>
-        `/api/${apiVersion}/namespaces/${namespace}/persistentvolumeclaims`,
-      pathList: ({ apiVersion }) => `/api/${apiVersion}/persistentvolumeclaims`,
-      configKey: "secret",
-      apiVersion: "v1",
-      kind: "PersistentVolumeClaim",
-    }),
     dependsOn: ["Namespace", "StorageClass", "PersistentVolume"],
+    Client: ({ config, spec }) =>
+      createResourceNamespace({
+        baseUrl: ({ namespace, apiVersion }) =>
+          `/api/${apiVersion}/namespaces/${namespace}/persistentvolumeclaims`,
+        pathList: ({ apiVersion }) =>
+          `/api/${apiVersion}/persistentvolumeclaims`,
+        configKey: "secret",
+        apiVersion: "v1",
+        kind: "PersistentVolumeClaim",
+        findDependencies: ({ live, lives }) => [
+          {
+            type: "PersistentVolume",
+            ids: pipe([
+              () => live,
+              get("spec.volumeName"),
+              (volumeName) => [volumeName],
+              filter(not(isEmpty)),
+            ])(),
+          },
+        ],
+      })({ config, spec }),
     isOurMinion: isOurMinionPersistentVolumeClaim,
     compare,
   },
@@ -286,19 +410,23 @@ const fnSpecs = () => [
         kind: "Deployment",
         cannotBeDeleted: cannotBeDeletedDefault,
         isInstanceUp: K8sUtils({ config }).isUpByPod,
+        findDependencies: ({ live, lives }) => [
+          {
+            type: "Service",
+            ids: findDependenciesService({ live, lives, config }),
+          },
+          {
+            type: "ConfigMap",
+            ids: findDependenciesConfig({ live, lives }),
+          },
+        ],
       })({ config, spec }),
     isOurMinion,
     compare,
   },
   {
     type: "StatefulSet",
-    dependsOn: [
-      "Namespace",
-      "ConfigMap",
-      "Secret",
-      "ServiceAccount",
-      "PersistentVolumeClaim",
-    ],
+    dependsOn: ["Namespace", "ConfigMap", "Secret", "ServiceAccount"],
     Client: ({ config, spec }) =>
       createResourceNamespace({
         baseUrl: ({ namespace, apiVersion }) =>
@@ -309,6 +437,16 @@ const fnSpecs = () => [
         kind: "StatefulSet",
         cannotBeDeleted: cannotBeDeletedDefault,
         isInstanceUp: K8sUtils({ config }).isUpByPod,
+        findDependencies: ({ live, lives }) => [
+          {
+            type: "Service",
+            ids: findDependenciesService({ live, lives, config }),
+          },
+          {
+            type: "ConfigMap",
+            ids: findDependenciesConfig({ live }),
+          },
+        ],
       })({ config, spec }),
     isOurMinion,
     compare,
@@ -345,6 +483,86 @@ const fnSpecs = () => [
       configKey: "pod",
       apiVersion: "v1",
       kind: "Pod",
+      findDependencies: ({ live, lives }) => [
+        {
+          type: "ReplicaSet",
+          ids: pipe([
+            tap(() => {
+              logger.debug(`${lives}`);
+            }),
+            () => live,
+            get("metadata.ownerReferences"),
+            filter(eq(get("kind"), "ReplicaSet")),
+            pluck("name"),
+            //TODO add namespace
+            tap((xxx) => {
+              logger.debug(``);
+            }),
+          ])(),
+        },
+        {
+          type: "StatefulSet",
+          ids: pipe([
+            tap(() => {
+              logger.debug(`${lives}`);
+            }),
+            () => live,
+            get("metadata.ownerReferences"),
+            filter(eq(get("kind"), "StatefulSet")),
+            pluck("name"),
+            //TODO add namespace
+            tap((xxx) => {
+              logger.debug(``);
+            }),
+          ])(),
+        },
+        {
+          type: "ConfigMap",
+          ids: pipe([
+            tap(() => {
+              assert(true);
+            }),
+            () => live,
+            get("spec.volumes"),
+            filter(get("configMap")),
+            pluck("name"),
+            //TODO add namespace
+            tap((xxx) => {
+              logger.debug(``);
+            }),
+          ])(),
+        },
+        {
+          type: "Secret",
+          ids: pipe([
+            () => live,
+            get("spec.volumes"),
+            filter(get("secret")),
+            pluck("name"),
+            //TODO add namespace
+            tap((xxx) => {
+              logger.debug(``);
+            }),
+          ])(),
+        },
+        {
+          type: "PersistentVolumeClaim",
+          ids: pipe([
+            tap(() => {
+              assert(true);
+            }),
+            () => live,
+            get("spec.volumes"),
+            filter(get("persistentVolumeClaim")),
+            map(get("persistentVolumeClaim.claimName")),
+            //TODO add namespace
+            tap((label) => {
+              logger.debug(` ${label}`);
+            }),
+            filter(not(isEmpty)),
+          ])(),
+        },
+      ],
     }),
     isOurMinion,
     listOnly: true,
@@ -359,6 +577,20 @@ const fnSpecs = () => [
       configKey: "replicaSet",
       apiVersion: "apps/v1",
       kind: "ReplicaSet",
+      findDependencies: ({ live, lives }) => [
+        {
+          type: "Deployment",
+          ids: pipe([
+            () => live,
+            get("metadata.ownerReferences"),
+            pluck("name"),
+            //TODO namespace
+            tap((xxx) => {
+              assert(true);
+            }),
+          ])(),
+        },
+      ],
     }),
     isOurMinion,
     listOnly: true,
