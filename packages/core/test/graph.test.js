@@ -7,7 +7,7 @@ const gcList = [];
 
 const { buildSubGraphLive, buildGraphAssociationLive } = require("../Graph");
 
-describe("graph", function () {
+describe.skip("graph", function () {
   it("ok", async function () {
     const listProviders = gcList.result.results;
     assert(listProviders);
