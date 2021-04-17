@@ -48,6 +48,13 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   const findName = get("InstanceProfileName");
   const findId = get("Arn");
 
+  const findDependencies = ({ live }) => [
+    {
+      type: "IamRole",
+      ids: pipe([() => live, get("Roles"), pluck("Arn")])(),
+    },
+  ];
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listInstanceProfiles-property
   const getList = async ({ params } = {}) =>
     pipe([
@@ -215,6 +222,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     type: "IamInstanceProfile",
     spec,
     findId,
+    findDependencies,
     getByName,
     findName,
     create,
