@@ -5,7 +5,7 @@ const {
   testPlanDeploy,
   testPlanDestroy,
 } = require("@grucloud/core/E2ETestUtils");
-
+const formatName = (name) => `${name}-test-policy-read-only`;
 describe("AwsIamPolicyReadOnly", async function () {
   let config;
   let provider;
@@ -23,7 +23,7 @@ describe("AwsIamPolicyReadOnly", async function () {
     await provider.start();
   });
   after(async () => {});
-  it("iamPolicy resolveConfig", async function () {
+  it("iamPolicy read only", async function () {
     const policyArn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy";
     const iamPolicyEKSCluster = await provider.useIamPolicyReadOnly({
       name: "AmazonEKSClusterPolicy",
@@ -32,8 +32,30 @@ describe("AwsIamPolicyReadOnly", async function () {
       }),
     });
 
-    await testPlanDeploy({ provider, types });
     const policy = await iamPolicyEKSCluster.getLive();
+    assert(policy);
+
+    const roleCluster = await provider.makeIamRole({
+      name: formatName("role-cluster"),
+      dependencies: {
+        policies: [iamPolicyEKSCluster],
+      },
+      properties: () => ({
+        AssumeRolePolicyDocument: {
+          Version: "2012-10-17",
+          Statement: [
+            {
+              Effect: "Allow",
+              Principal: {
+                Service: "eks.amazonaws.com",
+              },
+              Action: "sts:AssumeRole",
+            },
+          ],
+        },
+      }),
+    });
+    await testPlanDeploy({ provider, types });
     assert.equal(policy.Arn, policyArn);
     await testPlanDestroy({ provider, types });
     //TODO

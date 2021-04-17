@@ -1025,6 +1025,14 @@ const displayListSummaryResults = ({ providers, types, resources }) => {
     )}`
   );
 };
+const doGraphLive = ({ providerGru, lives, commandOptions }) =>
+  tap.if(
+    () => commandOptions.graph,
+    pipe([
+      () => providerGru.buildGraphLive({ lives }),
+      (result) => dotToSvg({ commandOptions, result }),
+    ])
+  )();
 
 const listDoOk = ({ commandOptions, programOptions }) =>
   pipe([
@@ -1062,41 +1070,41 @@ const listDoOk = ({ commandOptions, programOptions }) =>
         tap((lives) => {
           providerGru.displayLives(lives);
         }),
-        //TODO
         (lives) => lives.json,
-        tap((livesJson) => {
-          assert(true);
-        }),
-      ])(),
-    tap(
-      pipe([
         tap((xxx) => {
           assert(xxx);
         }),
-        switchCase([
-          pipe([isEmpty]),
-          displayNoList,
-          pipe([
-            tap(displayListSummary),
-            filter(not(get("error"))),
-            countResources,
-            displayListSummaryResults,
-          ]),
-        ]),
-      ])
-    ),
-    tap((xxx) => {
-      assert(xxx);
-    }),
-    (results) => ({
-      error: any(get("error"))(results),
-      results,
-      kind: "livesPerProvider",
-    }),
-    tap((result) =>
-      saveToJson({ command: "list", commandOptions, programOptions, result })
-    ),
-    throwIfError,
+        tap(
+          switchCase([
+            pipe([isEmpty]),
+            displayNoList,
+            pipe([
+              tap(displayListSummary),
+              filter(not(get("error"))),
+              countResources,
+              displayListSummaryResults,
+            ]),
+          ])
+        ),
+        tap((lives) => doGraphLive({ providerGru, lives, commandOptions })),
+        tap((xxx) => {
+          assert(true);
+        }),
+        (results) => ({
+          error: any(get("error"))(results),
+          results,
+          kind: "livesPerProvider",
+        }),
+        tap((result) =>
+          saveToJson({
+            command: "list",
+            commandOptions,
+            programOptions,
+            result,
+          })
+        ),
+        throwIfError,
+      ])(),
   ]);
 
 //List all
@@ -1226,6 +1234,42 @@ exports.unInit = async ({ infra, commandOptions = {}, programOptions = {} }) =>
 const graphOutputFileName = (commandOptions) =>
   `${path.parse(commandOptions.file).name}.${commandOptions.type}`;
 
+const dotToSvg = ({
+  result,
+  commandOptions: { file = "list.dot", type = "svg" },
+}) =>
+  pipe([
+    tap(() => {
+      logger.debug(`writeDotToFile`);
+    }),
+    tap(() => fs.writeFileSync(file, result)),
+    tap(() => {
+      //console.log(`dot file written to: ${file}`);
+    }),
+    tap(() => {
+      const output = graphOutputFileName({ file, type });
+      const command = `dot  -T${type} ${file} -o ${output}`;
+
+      const { stdout, stderr, code } = shell.exec(command, {
+        silent: true,
+      });
+      if (code !== 0) {
+        throw {
+          message: `command '${command}' failed`,
+          stdout,
+          stderr,
+          code,
+        };
+      }
+      //console.log(`output saved to: ${output}`);
+    }),
+    tap(() => {
+      shell.exec(`open ${graphOutputFileName({ file, type })}`, {
+        silent: true,
+      });
+    }),
+  ])();
+
 exports.graph = async ({ infra, config, commandOptions = {} }) =>
   tryCatch(
     pipe([
@@ -1236,37 +1280,8 @@ exports.graph = async ({ infra, config, commandOptions = {} }) =>
         assert(input.providerGru);
       }),
       ({ providerGru }) => providerGru.buildGraph({ options: commandOptions }),
-      tap((result) => {
-        logger.debug(`graph done`);
-      }),
       // TODO add title from config.projectName
-      tap((result) => fs.writeFileSync(commandOptions.file, result)),
-      tap((result) => {
-        console.log(`dot file written to: ${commandOptions.file}`);
-      }),
-      tap((result) => {
-        const { type } = commandOptions;
-        const output = graphOutputFileName(commandOptions);
-        const command = `dot  -T${type} ${commandOptions.file} -o ${output}`;
-
-        const { stdout, stderr, code } = shell.exec(command, {
-          silent: true,
-        });
-        if (code !== 0) {
-          throw {
-            message: `command '${command}' failed`,
-            stdout,
-            stderr,
-            code,
-          };
-        }
-        console.log(`output saved to: ${output}`);
-      }),
-      tap(() => {
-        shell.exec(`open ${graphOutputFileName(commandOptions)}`, {
-          silent: true,
-        });
-      }),
+      (result) => dotToSvg({ commandOptions, result }),
     ]),
     DisplayAndThrow({ name: "graph" })
   )();

@@ -34,6 +34,21 @@ const { EKSNew, shouldRetryOnException } = require("../AwsCommon");
 
 const findName = get("name");
 const findId = findName;
+const findDependencies = ({ live }) => [
+  { type: "Vpc", ids: [get("resourcesVpcConfig.vpcId")(live)] },
+  { type: "IamRole", ids: [live.roleArn] },
+  {
+    type: "Subnet",
+    ids: get("resourcesVpcConfig.subnetIds")(live),
+  },
+  {
+    type: "SecurityGroup",
+    ids: [
+      get("resourcesVpcConfig.clusterSecurityGroupId")(live),
+      ...get("resourcesVpcConfig.securityGroupIds")(live),
+    ],
+  },
+];
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html
 exports.EKSCluster = ({ spec, config }) => {
@@ -233,12 +248,9 @@ exports.EKSCluster = ({ spec, config }) => {
   return {
     type: "EKSCluster",
     spec,
-    isInstanceUp,
-    isUpById,
-    isDownById,
     findId,
+    findDependencies,
     getByName,
-    getById,
     findName,
     create,
     destroy,

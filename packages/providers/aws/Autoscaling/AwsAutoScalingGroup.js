@@ -7,12 +7,21 @@ const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { isUpByIdCore, isDownByIdCore } = require("@grucloud/core/Common");
 const { AutoScalingNew, shouldRetryOnException } = require("../AwsCommon");
+
 const findName = get("AutoScalingGroupName");
-const findId = get("AutoScalingGroupARN");
+const findId = get("AutoScalingGroupName");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
 exports.AwsAutoScalingGroup = ({ spec, config }) => {
   const autoScaling = AutoScalingNew(config);
+
+  const findDependencies = ({ live }) => [
+    { type: "TargetGroup", ids: live.TargetGroupARNs },
+    {
+      type: "EC2",
+      ids: pipe([() => live, get("Instances"), pluck("InstanceId")])(),
+    },
+  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeAutoScalingGroups-property
   const getList = async ({ params } = {}) =>
@@ -84,6 +93,7 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
     type: "AutoScalingGroup",
     spec,
     findId,
+    findDependencies,
     findName,
     getByName,
     findName,

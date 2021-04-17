@@ -94,7 +94,7 @@ exports.AwsVolume = ({ spec, config }) => {
       }),
       tryCatch(
         () => ec2().deleteVolume({ VolumeId: id }),
-        tap.if(not(eq(get("code"), "InvalidVolume.NotFound")), () => {
+        tap.if(not(eq(get("code"), "InvalidVolume.NotFound")), (error) => {
           throw error;
         })
       ),
@@ -134,11 +134,7 @@ exports.AwsVolume = ({ spec, config }) => {
     type: "Volume",
     spec,
     findId,
-    isInstanceUp,
-    isUpById,
-    isDownById,
     getByName,
-    getById,
     findName,
     getList,
     create,

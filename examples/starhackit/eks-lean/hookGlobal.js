@@ -22,7 +22,7 @@ module.exports = ({ stacks }) => {
       actions: [
         {
           name: `Check http://${domainName}`,
-          command: async ({}) => {
+          command: async () => {
             const url = `http://${domainName}`;
             await retryCallOnError({
               name: `get ${domainName}`,
@@ -39,7 +39,7 @@ module.exports = ({ stacks }) => {
         },
         {
           name: `Check https://${domainName}`,
-          command: async ({}) => {
+          command: async () => {
             const url = `https://${domainName}`;
             await retryCallOnError({
               name: `get ${domainName}`,

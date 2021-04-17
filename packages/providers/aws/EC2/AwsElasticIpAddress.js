@@ -24,6 +24,13 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
   const findId = get("AllocationId");
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeAddresses-property
 
+  const findDependencies = ({ live }) => [
+    {
+      type: "NetworkInterface",
+      ids: [live.NetworkInterfaceId],
+    },
+  ];
+
   const getList = ({ params } = {}) =>
     pipe([
       tap(() => {
@@ -109,10 +116,8 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
     type: "ElasticIpAddress",
     spec,
     findId,
-    isUpById,
-    isDownById,
+    findDependencies,
     getByName,
-    getById,
     findName,
     getList,
     create,

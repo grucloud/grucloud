@@ -37,6 +37,16 @@ const findId = findName;
 exports.EKSNodeGroup = ({ spec, config }) => {
   const eks = EKSNew(config);
 
+  const findDependencies = ({ live }) => [
+    { type: "EKSCluster", ids: [live.clusterName] },
+    { type: "Subnet", ids: live.subnets },
+    {
+      type: "AutoScalingGroup",
+      ids: pipe([get("resources.autoScalingGroups"), pluck("name")])(live),
+    },
+    { type: "IamRole", ids: [live.nodeRole] },
+  ];
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#listNodegroups-property
   const getList = async ({ resources = [] } = {}) =>
     pipe([
@@ -233,12 +243,9 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   return {
     type: "EKSNodeGroup",
     spec,
-    isInstanceUp,
-    isUpById,
-    isDownById,
     findId,
+    findDependencies,
     getByName,
-    getById,
     findName,
     update,
     create,

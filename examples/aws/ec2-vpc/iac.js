@@ -1,5 +1,5 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
-const hook = require("./hook");
+const hooks = [require("./hook")];
 
 const createResources = async ({ provider, resources: { keyPair } }) => {
   const Device = "/dev/sdf";
@@ -111,6 +111,22 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
+  const image = await provider.useImage({
+    name: "Amazon Linux 2",
+    properties: () => ({
+      Filters: [
+        {
+          Name: "architecture",
+          Values: ["x86_64"],
+        },
+        {
+          Name: "description",
+          Values: ["Amazon Linux 2 AMI *"],
+        },
+      ],
+    }),
+  });
+
   // Allocate a server
   const server = await provider.makeEC2({
     name: "web-server",
@@ -120,11 +136,11 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
       securityGroups: [sg],
       eip,
       volumes: [volume],
+      image,
     },
     properties: () => ({
       UserData: volume.spec.setupEbsVolume({ deviceMounted, mountPoint }),
       InstanceType: "t2.micro",
-      ImageId: "ami-00f6a0c18edb19300", // Ubuntu 20.04
     }),
   });
   return { vpc, ig, subnet, routeTable, routeIg, sg, eip, server };

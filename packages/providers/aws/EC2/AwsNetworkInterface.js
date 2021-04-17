@@ -1,5 +1,5 @@
 const { get, pipe, filter, map, tap, eq, switchCase, not } = require("rubico");
-const { defaultsDeep, isEmpty, first, identity } = require("rubico/x");
+const { defaultsDeep, isEmpty, first, identity, pluck } = require("rubico/x");
 const assert = require("assert");
 
 const logger = require("@grucloud/core/logger")({
@@ -18,6 +18,21 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
   const findId = get("NetworkInterfaceId");
 
   const findName = (item) => findNameInTagsOrId({ item, findId });
+
+  const findDependencies = ({ live }) => [
+    {
+      type: "SecurityGroup",
+      ids: pipe([() => live, get("Groups"), pluck("GroupId")])(),
+    },
+    {
+      type: "Vpc",
+      ids: [live.VpcId],
+    },
+    {
+      type: "Subnet",
+      ids: [live.SubnetId],
+    },
+  ];
 
   const getList = ({ params } = {}) =>
     pipe([
@@ -41,6 +56,7 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
   return {
     type: "NetworkInterface",
     spec,
+    findDependencies,
     findId,
     findName,
     getList,

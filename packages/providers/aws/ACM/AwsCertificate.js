@@ -14,7 +14,7 @@ const {
   first,
   defaultsDeep,
   isEmpty,
-  forEach,
+  find,
   pluck,
   flatten,
 } = require("rubico/x");
@@ -43,6 +43,20 @@ const findId = get("CertificateArn");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
 exports.AwsCertificate = ({ spec, config }) => {
   const acm = ACMNew(config);
+
+  const findDependencies = ({ live }) => [
+    {
+      type: "Route53Record",
+      ids: pipe([
+        () => live,
+        get("DomainValidationOptions"),
+        filter(eq(get("ValidationMethod"), "DNS")),
+        map(
+          pipe([get("ResourceRecord"), ({ Type, Name }) => `${Type}::${Name}`])
+        ),
+      ])(),
+    },
+  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#listCertificates-property
   const getList = async ({ params } = {}) =>
@@ -187,12 +201,9 @@ exports.AwsCertificate = ({ spec, config }) => {
   return {
     type: "Certificate",
     spec,
-    isInstanceUp,
-    isUpById,
-    isDownById,
     findId,
+    findDependencies,
     getByName,
-    getById,
     findName,
     create,
     destroy,

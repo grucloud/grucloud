@@ -34,6 +34,11 @@ exports.ELBTargetGroup = ({ spec, config }) => {
   const elb = ELBv2New(config);
   const autoScaling = AutoScalingNew(config);
 
+  const findDependencies = ({ live }) => [
+    { type: "Vpc", ids: [live.VpcId] },
+    { type: "LoadBalancer", ids: live.LoadBalancerArns },
+  ];
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeTargetGroups-property
   const getList = async () =>
     pipe([
@@ -227,12 +232,9 @@ exports.ELBTargetGroup = ({ spec, config }) => {
   return {
     type: "TargetGroup",
     spec,
-    isInstanceUp,
-    isUpById,
-    isDownById,
     findId,
+    findDependencies,
     getByName,
-    getById,
     findName,
     create,
     destroy,

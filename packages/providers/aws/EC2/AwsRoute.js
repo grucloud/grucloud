@@ -18,7 +18,7 @@ const { isEmpty, defaultsDeep, find } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsRoute" });
 const { tos } = require("@grucloud/core/tos");
-const { getByIdCore } = require("../AwsCommon");
+const { getByIdCore, buildTags } = require("../AwsCommon");
 const {
   getByNameCore,
   isUpByIdCore,
@@ -31,6 +31,21 @@ exports.AwsRoute = ({ spec, config }) => {
 
   const findId = get("name");
   const findName = findId;
+
+  const findDependencies = ({ live }) => [
+    {
+      type: "RouteTable",
+      ids: [live.RouteTableId],
+    },
+    {
+      type: "InternetGateway",
+      ids: filter(not(isEmpty))([live.GatewayId]),
+    },
+    {
+      type: "NatGateway",
+      ids: filter(not(isEmpty))([live.NatGatewayId]),
+    },
+  ];
 
   const getList = ({ resources, lives } = {}) =>
     pipe([
@@ -71,7 +86,11 @@ exports.AwsRoute = ({ spec, config }) => {
                     )(routeTable.live.Routes),
                   switchCase([
                     not(isEmpty),
-                    assign({ name: () => resource.name }),
+                    assign({
+                      name: () => resource.name,
+                      RouteTableId: () => routeTable.live.RouteTableId,
+                      Tags: () => buildTags({ config, name: resource.name }),
+                    }),
                     () => undefined,
                   ]),
                 ]),
@@ -195,10 +214,8 @@ exports.AwsRoute = ({ spec, config }) => {
     type: "Route",
     spec,
     findId,
-    isUpById,
-    isDownById,
+    findDependencies,
     getByName,
-    getById,
     findName,
     getList,
     create,

@@ -124,6 +124,10 @@ exports.createProgram = ({ version, commands }) => {
     .command("list")
     .description("List the live resources")
     .alias("l")
+    .option(
+      "-g, --graph",
+      "create an SVG representation of the live infrastructure"
+    )
     .option("-a, --all", "List also read-only resources")
     .option("-n, --name <value>", "List by name")
     .option("--id <value>", "List by id")

@@ -33,6 +33,7 @@ const {
   isDeepEqual,
   includes,
   isFunction,
+  identity,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreProvider" });
@@ -85,8 +86,7 @@ const configProviderDefault = {
   retryCount: 30,
   retryDelay: 10e3,
 };
-
-const identity = (x) => x;
+const { buildSubGraphLive, buildGraphAssociationLive } = require("./Graph");
 
 const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
   pipe([
@@ -107,12 +107,16 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
             `no name or id in resource ${tos(resource)}`
           );
         }),
+        //TODO
         ({ providerName, type, name, id }) =>
-          `${providerName}::${type}::${name || JSON.stringify(id)}`,
+          `${providerName}::${type}::${
+            (isString(id) ? id : JSON.stringify(id)) || name
+          }`,
       ]),
       displayName: get("name"),
       displayNameResource: get("name"),
       findMeta: () => undefined,
+      findDependencies: () => [],
       cannotBeDeleted: () => false,
       configDefault: () => ({}),
       isInstanceUp: not(isEmpty),
@@ -363,7 +367,7 @@ const ResourceMaker = ({
       }),
       tap((result) => {
         /*logger.debug(
-          `resolveDependencies for ${toString()}, result: ${tos(result)}`
+          `resolveDependencies for ${()}, result: ${tos(result)}`
         );*/
       }),
       tap.if(any(get("error")), (resolvedDependencies) => {
@@ -1547,6 +1551,7 @@ function CoreProvider({
           }),
           meta: client.findMeta(live),
           id: client.findId(live),
+          dependencies: client.findDependencies({ live }),
           managedByUs: client.spec.isOurMinion({
             resource: live,
             lives,
@@ -2334,6 +2339,9 @@ ${result}}
     runOnDeployed,
     runOnDestroyed,
     hookAdd,
+    buildSubGraphLive: (params) =>
+      buildSubGraphLive({ providerName, ...params }),
+    buildGraphAssociationLive,
     buildSubGraph,
     buildGraphAssociation,
     info: pipe([
