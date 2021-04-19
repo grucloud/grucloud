@@ -1,6 +1,15 @@
 const assert = require("assert");
-const { map, pipe, tap, tryCatch, get, switchCase, eq } = require("rubico");
-const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
+const {
+  map,
+  pipe,
+  tap,
+  tryCatch,
+  get,
+  switchCase,
+  eq,
+  assign,
+} = require("rubico");
+const { defaultsDeep, isEmpty, forEach, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamGroup" });
 const { retryCall } = require("@grucloud/core/Retry");
@@ -9,6 +18,7 @@ const {
   getByNameCore,
   isUpByIdCore,
   isDownByIdCore,
+  mapPoolSize,
 } = require("@grucloud/core/Common");
 const {
   IAMNew,
@@ -26,6 +36,14 @@ exports.AwsIamGroup = ({ spec, config }) => {
 
   const iam = IAMNew(config);
 
+  const findDependencies = ({ live }) => [
+    {
+      type: "IamPolicy",
+      ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
+    },
+    //{ type: "IamPolicyReadOnly", ids: live.AttachedPolicies },
+  ];
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listGroups-property
   const getList = async ({ params } = {}) =>
     pipe([
@@ -34,6 +52,38 @@ exports.AwsIamGroup = ({ spec, config }) => {
       }),
       () => iam().listGroups(params),
       get("Groups"),
+      map.pool(
+        mapPoolSize,
+        tryCatch(
+          assign({
+            AttachedPolicies: pipe([
+              ({ GroupName }) =>
+                iam().listAttachedGroupPolicies({
+                  GroupName,
+                  MaxItems: 1e3,
+                }),
+              get("AttachedPolicies"),
+            ]),
+            Policies: pipe([
+              ({ GroupName }) =>
+                iam().listGroupPolicies({
+                  GroupName,
+                  MaxItems: 1e3,
+                }),
+              get("Policies"),
+            ]),
+          }),
+          (error, group) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `getList iam group error: ${tos({ error, group })}`
+                );
+              }),
+              () => ({ error, group }),
+            ])()
+        )
+      ),
       tap((groups) => {
         logger.debug(`getList groups: ${tos(groups)}`);
       }),
@@ -170,6 +220,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
     type: "IamGroup",
     spec,
     findId,
+    findDependencies,
     getByName,
     findName,
     create,

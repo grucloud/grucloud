@@ -54,6 +54,45 @@ const iamUser = await provider.makeIamUser({
 - [IamPolicyReadOnly](./IamPolicyReadOnly)
 - [IamUser](./IamUser)
 
+### List
+
+```sh
+gc l -t IamGroup
+```
+
+```sh
+Listing resources on 1 provider: aws
+✓ aws
+  ✓ Initialising
+  ✓ Listing 2/2
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 IamGroup from aws                                                                          │
+├──────────┬────────────────────────────────────────────────────────────────────────────┬──────┤
+│ Name     │ Data                                                                       │ Our  │
+├──────────┼────────────────────────────────────────────────────────────────────────────┼──────┤
+│ Admin    │ Path: /                                                                    │ Yes  │
+│          │ GroupName: Admin                                                           │      │
+│          │ GroupId: AGPA4HNBM2ZQAA5U7GCZY                                             │      │
+│          │ Arn: arn:aws:iam::840541460064:group/Admin                                 │      │
+│          │ CreateDate: 2021-04-19T17:38:37.000Z                                       │      │
+│          │ AttachedPolicies:                                                          │      │
+│          │   - PolicyName: myPolicy-to-group                                          │      │
+│          │     PolicyArn: arn:aws:iam::840541460064:policy/myPolicy-to-group          │      │
+│          │                                                                            │      │
+└──────────┴────────────────────────────────────────────────────────────────────────────┴──────┘
+
+
+List Summary:
+Provider: aws
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                                         │
+├────────────────────┬────────────────────────────────────────────────────────────────────────┤
+│ IamGroup           │ Admin                                                                  │
+└────────────────────┴────────────────────────────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t IamGroup" executed in 3s
+```
+
 ### AWS CLI
 
 List all iam groups

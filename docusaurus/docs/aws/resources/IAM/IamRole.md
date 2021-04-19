@@ -115,6 +115,71 @@ const iamInstanceProfile = await provider.makeIamInstanceProfile({
 - [IamPolicy](./IamPolicy)
 - [IamPolicyReadOnly](./IamPolicyReadOnly)
 
+### List
+
+```sh
+gc list -t IamRole
+```
+
+```sh
+Listing resources on 1 provider: aws
+✓ aws
+  ✓ Initialising
+  ✓ Listing 2/2
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 IamRole from aws                                                                           │
+├────────────────────────┬──────────────────────────────────────────────────────────────┬──────┤
+│ Name                   │ Data                                                         │ Our  │
+├────────────────────────┼──────────────────────────────────────────────────────────────┼──────┤
+│ role-allow-assume-role │ Path: /                                                      │ Yes  │
+│                        │ RoleName: role-allow-assume-role                             │      │
+│                        │ RoleId: AROA4HNBM2ZQAT5MU5E5F                                │      │
+│                        │ Arn: arn:aws:iam::840541460064:role/role-allow-assume-role   │      │
+│                        │ CreateDate: 2021-04-19T17:38:37.000Z                         │      │
+│                        │ AssumeRolePolicyDocument:                                    │      │
+│                        │   Version: 2012-10-17                                        │      │
+│                        │   Statement:                                                 │      │
+│                        │     - Sid:                                                   │      │
+│                        │       Effect: Allow                                          │      │
+│                        │       Principal:                                             │      │
+│                        │         Service: ec2.amazonaws.com                           │      │
+│                        │       Action: sts:AssumeRole                                 │      │
+│                        │ MaxSessionDuration: 3600                                     │      │
+│                        │ Tags:                                                        │      │
+│                        │   - Key: Name                                                │      │
+│                        │     Value: role-allow-assume-role                            │      │
+│                        │   - Key: ManagedBy                                           │      │
+│                        │     Value: GruCloud                                          │      │
+│                        │   - Key: CreatedByProvider                                   │      │
+│                        │     Value: aws                                               │      │
+│                        │   - Key: stage                                               │      │
+│                        │     Value: dev                                               │      │
+│                        │   - Key: projectName                                         │      │
+│                        │     Value: @grucloud/example-aws-iam                         │      │
+│                        │ Policies: []                                                 │      │
+│                        │ InstanceProfiles:                                            │      │
+│                        │   - InstanceProfileName: my-profile                          │      │
+│                        │     InstanceProfileId: AIPA4HNBM2ZQN3SFYOLNT                 │      │
+│                        │     Arn: arn:aws:iam::840541460064:instance-profile/my-prof… │      │
+│                        │     Path: /                                                  │      │
+│                        │ AttachedPolicies:                                            │      │
+│                        │   - PolicyName: myPolicy-to-role                             │      │
+│                        │     PolicyArn: arn:aws:iam::840541460064:policy/myPolicy-to… │      │
+│                        │                                                              │      │
+└────────────────────────┴──────────────────────────────────────────────────────────────┴──────┘
+
+
+List Summary:
+Provider: aws
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                                         │
+├────────────────────┬────────────────────────────────────────────────────────────────────────┤
+│ IamRole            │ role-allow-assume-role                                                 │
+└────────────────────┴────────────────────────────────────────────────────────────────────────┘
+1 resource, 1 type, 1 provider
+Command "gc l -t IamRole" executed in 3s
+```
+
 ### AWS CLI
 
 List all iam roles
