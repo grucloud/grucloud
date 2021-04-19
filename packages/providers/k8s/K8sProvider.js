@@ -75,10 +75,10 @@ const findDependenciesService = ({ live, lives, config }) =>
         pluck("live"),
         filter(eq(get("spec.selector.app"), label)),
         pluck("metadata"),
-        // TODO findDependencies
-        map(({ namespace, name }) => `${namespace}::${name}`),
       ])(),
   ])();
+
+const findNamespace = get("metadata.namespace", "default");
 
 const findDependenciesConfig = ({ live }) =>
   pipe([
@@ -89,9 +89,12 @@ const findDependenciesConfig = ({ live }) =>
     pluck("valueFrom"),
     pluck("configMapKeyRef"),
     filter(not(isEmpty)),
-    // TODO findDependencies
-    map(({ name }) => `${live.metadata.namespace}::${name}`),
+    tap((xxx) => {
+      assert(true);
+    }),
+    pluck("name"),
     uniq,
+    map((name) => ({ name, namespace: findNamespace(live) })),
   ])();
 
 const fnSpecs = () => [
@@ -178,7 +181,11 @@ const fnSpecs = () => [
       findDependencies: ({ live, lives }) => [
         {
           type: "ClusterRole",
-          ids: pipe([() => live, get("roleRef.name"), (name) => [name]])(),
+          ids: pipe([
+            () => live,
+            get("roleRef.name"),
+            (name) => [{ name, namespace: findNamespace(live) }],
+          ])(),
         },
         {
           type: "ServiceAccount",
@@ -189,8 +196,6 @@ const fnSpecs = () => [
             tap((xxx) => {
               assert(true);
             }),
-            // TODO findDependencies
-            map(({ name, namespace }) => name),
           ])(),
         },
       ],
@@ -226,7 +231,11 @@ const fnSpecs = () => [
       findDependencies: ({ live }) => [
         {
           type: "Role",
-          ids: pipe([() => live, get("roleRef.name"), (name) => [name]])(),
+          ids: pipe([
+            () => live,
+            get("roleRef.name"),
+            (name) => [{ name, namespace: findNamespace(live) }],
+          ])(),
         },
       ],
     }),
@@ -246,8 +255,11 @@ const fnSpecs = () => [
       findDependencies: ({ live }) => [
         {
           type: "Secret",
-          // TODO findDependencies
-          ids: pipe([() => live, get("secrets"), map(({ name }) => name)])(),
+          ids: pipe([
+            () => live,
+            get("secrets"),
+            map(({ name }) => ({ name, namespace: findNamespace(live) })),
+          ])(),
         },
       ],
     }),
@@ -299,8 +311,7 @@ const fnSpecs = () => [
                 flatten,
                 pluck("backend"),
                 pluck("service"),
-                // TODO findDependencies
-                map(({ name }) => `${live.metadata.namespace}::${name}`),
+                map(({ name }) => ({ name, namespace: findNamespace(live) })),
               ])
             ),
             flatten,
@@ -370,8 +381,7 @@ const fnSpecs = () => [
             ids: pipe([
               () => live,
               get("spec.volumeName"),
-              // TODO findDependencies
-              (volumeName) => [`default::${volumeName}`],
+              (volumeName) => [{ namespace: "default", name: volumeName }],
               filter(not(isEmpty)),
             ])(),
           },
@@ -476,14 +486,10 @@ const fnSpecs = () => [
         {
           type: "ReplicaSet",
           ids: pipe([
-            tap(() => {
-              logger.debug(`${lives}`);
-            }),
             () => live,
             get("metadata.ownerReferences"),
             filter(eq(get("kind"), "ReplicaSet")),
-            // TODO findDependencies
-            map(({ name }) => `${live.metadata.namespace}::${name}`),
+            map(({ name }) => ({ name, namespace: findNamespace(live) })),
           ])(),
         },
         {
@@ -495,8 +501,7 @@ const fnSpecs = () => [
             () => live,
             get("metadata.ownerReferences"),
             filter(eq(get("kind"), "StatefulSet")),
-            // TODO findDependencies
-            map(({ name }) => `${live.metadata.namespace}::${name}`),
+            map(({ name }) => ({ name, namespace: findNamespace(live) })),
           ])(),
         },
         {
@@ -508,8 +513,7 @@ const fnSpecs = () => [
             () => live,
             get("spec.volumes"),
             filter(get("configMap")),
-            // TODO findDependencies
-            map(({ name }) => `${live.metadata.namespace}::${name}`),
+            map(({ name }) => ({ name, namespace: findNamespace(live) })),
           ])(),
         },
         {
@@ -518,8 +522,7 @@ const fnSpecs = () => [
             () => live,
             get("spec.volumes"),
             filter(get("secret")),
-            // TODO findDependencies
-            map(({ name }) => `${live.metadata.namespace}::${name}`),
+            map(({ name }) => ({ name, namespace: findNamespace(live) })),
           ])(),
         },
         {
@@ -532,10 +535,8 @@ const fnSpecs = () => [
             get("spec.volumes"),
             filter(get("persistentVolumeClaim")),
             map(get("persistentVolumeClaim.claimName")),
-            // TODO findDependencies
             filter(not(isEmpty)),
-            map((name) => `${live.metadata.namespace}::${name}`),
-            filter(not(isEmpty)),
+            map(({ name }) => ({ name, namespace: findNamespace(live) })),
           ])(),
         },
       ],
@@ -559,8 +560,7 @@ const fnSpecs = () => [
           ids: pipe([
             () => live,
             get("metadata.ownerReferences"),
-            // TODO findDependencies
-            map(({ name }) => `${live.metadata.namespace}::${name}`),
+            map(({ name }) => ({ name, namespace: findNamespace(live) })),
           ])(),
         },
       ],
