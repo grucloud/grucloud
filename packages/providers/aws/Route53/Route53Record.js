@@ -25,10 +25,9 @@ const { tos } = require("@grucloud/core/tos");
 const { Route53New, shouldRetryOnException } = require("../AwsCommon");
 const { filterEmptyResourceRecords } = require("./Route53Utils");
 
-const liveToResourceSet = pipe([
-  omit(["Tags", "hostedZoneId", "namespace"]),
-  filterEmptyResourceRecords,
-]);
+const omitFieldRecord = omit(["Tags", "hostedZoneId", "namespace"]);
+
+const liveToResourceSet = pipe([omitFieldRecord, filterEmptyResourceRecords]);
 
 const findName = pipe([
   tap((live) => {
@@ -104,7 +103,7 @@ exports.Route53Record = ({ spec, config }) => {
         }),
       ]),
       tap((record) => {
-        logger.debug(`findRecordInZone record ${tos({ record })}`);
+        logger.debug(`findRecordInZone ${name}: ${tos({ record })}`);
       }),
     ])();
 
@@ -324,7 +323,7 @@ exports.compareRoute53Record = async ({ target, live, dependencies }) =>
     }),
     () =>
       detailedDiff(
-        omit(["Tags"])(live),
+        omitFieldRecord(live),
         defaultsDeep({ ResourceRecords: [] })(target)
       ),
     tap((diff) => {
