@@ -264,7 +264,7 @@ const ResourceMaker = ({
             tap((updateItem) => {
               logger.debug(`updateItem ${tos(updateItem)}`);
             }),
-          ]),
+          ])(),
         () => {
           logger.info(`planUpdate diff no update`);
         },
