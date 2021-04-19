@@ -8,6 +8,7 @@ const {
   switchCase,
   and,
   filter,
+  assign,
   eq,
   not,
 } = require("rubico");
