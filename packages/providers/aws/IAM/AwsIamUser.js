@@ -51,6 +51,17 @@ exports.AwsIamUser = ({ spec, config }) => {
       ids: pipe([() => live, get("Groups"), pluck("GroupName")])(),
     },
   ];
+  const fetchLoginProfile = ({ UserName }) =>
+    tryCatch(
+      pipe([() => iam().getLoginProfile({ UserName }), get("LoginProfile")]),
+      switchCase([
+        eq(get("code"), "NoSuchEntity"),
+        () => undefined,
+        (error) => {
+          throw error;
+        },
+      ])
+    )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listUsers-property
   const getList = async ({ params } = {}) =>
@@ -91,15 +102,7 @@ exports.AwsIamUser = ({ spec, config }) => {
               ({ UserName }) => iam().listAccessKeys({ UserName }),
               get("AccessKeyMetadata"),
             ]),
-            LoginProfile: tryCatch(
-              pipe([
-                ({ UserName }) => iam().getLoginProfile({ UserName }),
-                get("LoginProfile"),
-              ]),
-              tap.if(not(eq(get("code"), "NoSuchEntity")), (error) => {
-                throw error;
-              })
-            ),
+            LoginProfile: fetchLoginProfile,
             Tags: pipe([
               ({ UserName }) => iam().listUserTags({ UserName }),
               get("Tags"),
@@ -257,7 +260,12 @@ exports.AwsIamUser = ({ spec, config }) => {
     ])();
 
   const deleteLoginProfile = ({ UserName }) =>
-    pipe([() => iam().deleteLoginProfile({ UserName })])();
+    tryCatch(
+      pipe([() => iam().deleteLoginProfile({ UserName })]),
+      tap.if(not(eq(get("code"), "NoSuchEntity")), (error) => {
+        throw error;
+      })
+    )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteUser-property
   const destroy = async ({ id: UserName, name }) =>
