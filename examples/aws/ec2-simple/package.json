@@ -3,6 +3,7 @@
   "version": "1.10.24",
   "description": "Simple EC2 Instance with GruCloud",
   "main": "index.js",
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
