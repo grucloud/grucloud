@@ -3,7 +3,6 @@ const path = require("path");
 const { JWT } = require("google-auth-library");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { authorize } = require("../GoogleProvider");
-const expandTilde = require("expand-tilde");
 
 describe("GoogleAuth", function () {
   let config;
@@ -16,32 +15,6 @@ describe("GoogleAuth", function () {
     }
   });
 
-  it.skip("auth ok", async function () {
-    const applicationCredentials = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-    assert(applicationCredentials);
-
-    const keys = require(path.resolve(
-      process.env.CONFIG_DIR,
-      expandTilde(applicationCredentials)
-    ));
-
-    const client = new JWT({
-      email: keys.client_email,
-      key: keys.private_key,
-      scopes: ["https://www.googleapis.com/auth/cloud-platform"],
-    });
-
-    const accessToken = await new Promise((resolve, reject) => {
-      client.authorize((err, response) => {
-        if (response.access_token) {
-          resolve(response.access_token);
-        }
-        reject(err);
-      });
-    });
-
-    assert(accessToken);
-  });
   it("auth ko: account not found", async function () {
     const applicationCredentialsFile = path.resolve(
       __dirname,

@@ -16,12 +16,13 @@
     "axios-mock-adapter": "^1.19.0",
     "bluebird": "^3.7.2",
     "rubico": "^1.6.23",
+    "shelljs": "^0.8.4",
     "url-join": "^4.0.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
     "mocha": "^8.3.2",
-    "prompts": "^2.4.0",
+    "prompts": "^2.4.1",
     "sinon": "^10.0.0"
   }
 }
