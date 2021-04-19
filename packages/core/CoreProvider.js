@@ -1811,7 +1811,7 @@ function CoreProvider({
         pipe([
           tap(() => {
             assert(type);
-            assert(Array.isArray(resources));
+            assert(Array.isArray(resources), `no resources for type ${type}`);
           }),
           () => clientByType({ type }),
           (client) =>

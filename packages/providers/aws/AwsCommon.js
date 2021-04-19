@@ -267,7 +267,7 @@ const findNamespaceInTagsObject = (config) => ({ live } = {}) =>
     }),
     () => live,
     get("tags"),
-    get(config.namespaceKey),
+    get(config.namespaceKey, ""),
     tap(() => {
       assert(true);
     }),

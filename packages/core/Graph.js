@@ -220,14 +220,14 @@ exports.buildGraphAssociationLive = ({ resourcesPerType, options }) =>
         map((dependency) =>
           pipe([
             tap(() => {
-              logger.debug(
-                `type ${dependency.type}, #ids ${size(dependency.ids)}`
-              );
+              assert(dependency.type);
+              assert(Array.isArray(dependency.ids)),
+                logger.debug(
+                  `type ${dependency.type}, #ids ${size(dependency.ids)}`
+                );
             }),
             () => dependency.ids,
-            tap((result) => {
-              logger.debug(`buildGraphAssociationLive`);
-            }),
+            filter(not(isEmpty)),
             map((dependencyId) =>
               switchCase([
                 isString,
@@ -241,7 +241,15 @@ exports.buildGraphAssociationLive = ({ resourcesPerType, options }) =>
                 isObject,
                 associationIdObject({ type, idFrom: id, dependency }),
                 (dependencyId) => {
-                  assert(false, `dependencyId not valid: ${dependencyId}`);
+                  assert(
+                    false,
+                    `dependencyId not valid: ${JSON.stringify({
+                      type,
+                      namespace,
+                      id,
+                      dependencyId,
+                    })}`
+                  );
                 },
               ])(dependencyId)
             ),

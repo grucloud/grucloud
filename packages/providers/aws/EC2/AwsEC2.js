@@ -79,7 +79,12 @@ exports.AwsEC2 = ({ spec, config }) => {
     },
     {
       type: "IamInstanceProfile",
-      ids: [get("IamInstanceProfile.Arn")(live)],
+      ids: pipe([
+        () => live,
+        get("IamInstanceProfile.Arn"),
+        (arn) => [arn],
+        filter(not(isEmpty)),
+      ])(),
     },
   ];
 

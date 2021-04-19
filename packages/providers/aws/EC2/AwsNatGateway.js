@@ -46,23 +46,25 @@ exports.AwsNatGateway = ({ spec, config }) => {
         () => live,
         get("NatGatewayAddresses"),
         pluck("AllocationId"),
-        map((AllocationId) =>
-          pipe([
-            tap(() => {
-              logger.debug(``);
-            }),
-            () =>
-              lives.getByType({
-                type: "ElasticIpAddress",
-                providerName: config.providerName,
+        map(
+          (AllocationId) =>
+            pipe([
+              tap(() => {
+                logger.debug(``);
               }),
-            get("resources"),
-            find(eq(get("live.AllocationId"), AllocationId)),
-            tap((eips) => {
-              logger.debug(eips);
-            }),
-            get("id"),
-          ])()
+              () =>
+                lives.getByType({
+                  type: "ElasticIpAddress",
+                  providerName: config.providerName,
+                }),
+              get("resources"),
+              find(eq(get("live.AllocationId"), AllocationId)),
+              tap((eips) => {
+                logger.debug(eips);
+              }),
+              get("id"),
+            ])(),
+          filter(not(isEmpty))
         ),
       ])(),
     },

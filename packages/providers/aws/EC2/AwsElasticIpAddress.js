@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { get, pipe, tap, filter, map } = require("rubico");
+const { get, pipe, tap, filter, map, not } = require("rubico");
 const { defaultsDeep, isEmpty } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsEip" });
@@ -28,7 +28,12 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "NetworkInterface",
-      ids: [live.NetworkInterfaceId],
+      ids: pipe([
+        () => live,
+        get("NetworkInterfaceId"),
+        (NetworkInterfaceId) => [NetworkInterfaceId],
+        filter(not(isEmpty)),
+      ])(),
     },
   ];
 
