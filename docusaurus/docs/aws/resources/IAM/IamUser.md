@@ -50,39 +50,45 @@ Listing resources on 1 provider: aws
 ✓ aws
   ✓ Initialising
   ✓ Listing 3/3
-┌──────────────────────────────────────────────────────────────────────────────────────┐
-│ 1 IamUser from aws                                                                   │
-├───────────────┬───────────────────────────────────────────────────────────────┬──────┤
-│ Name          │ Data                                                          │ Our  │
-├───────────────┼───────────────────────────────────────────────────────────────┼──────┤
-│ grucloud-user │ Path: /                                                       │ NO   │
-│               │ UserName: grucloud-user                                       │      │
-│               │ UserId: AIDA4HNBM2ZQKBPH37UFW                                 │      │
-│               │ Arn: arn:aws:iam::840541460064:user/grucloud-user             │      │
-│               │ CreateDate: 2021-04-19T18:42:53.000Z                          │      │
-│               │ Tags: []                                                      │      │
-│               │ AttachedPolicies:                                             │      │
-│               │   - PolicyName: AdministratorAccess                           │      │
-│               │     PolicyArn: arn:aws:iam::aws:policy/AdministratorAccess    │      │
-│               │ AccessKeys:                                                   │      │
-│               │   - UserName: grucloud-user                                   │      │
-│               │     AccessKeyId: AKIA4HNBM2ZQN5KTXR7K                         │      │
-│               │     Status: Active                                            │      │
-│               │     CreateDate: 2021-04-19T18:42:54.000Z                      │      │
-│               │ Groups: []                                                    │      │
-│               │                                                               │      │
-└───────────────┴───────────────────────────────────────────────────────────────┴──────┘
+┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 IamUser from aws                                                                                │
+├──────────┬─────────────────────────────────────────────────────────────────────────────────┬──────┤
+│ Name     │ Data                                                                            │ Our  │
+├──────────┼─────────────────────────────────────────────────────────────────────────────────┼──────┤
+│ grucloud │ Path: /                                                                         │ NO   │
+│          │ UserName: grucloud                                                              │      │
+│          │ UserId: AIDA4HNBM2ZQG52XXYCYX                                                   │      │
+│          │ Arn: arn:aws:iam::840541460064:user/grucloud                                    │      │
+│          │ CreateDate: 2021-04-19T18:59:01.000Z                                            │      │
+│          │ Tags: []                                                                        │      │
+│          │ LoginProfile:                                                                   │      │
+│          │   UserName: grucloud                                                            │      │
+│          │   CreateDate: 2021-04-19T18:59:02.000Z                                          │      │
+│          │   PasswordResetRequired: true                                                   │      │
+│          │ AccessKeys:                                                                     │      │
+│          │   - UserName: grucloud                                                          │      │
+│          │     AccessKeyId: AKIA4HNBM2ZQIMJ35GUF                                           │      │
+│          │     Status: Active                                                              │      │
+│          │     CreateDate: 2021-04-19T18:59:02.000Z                                        │      │
+│          │ AttachedPolicies:                                                               │      │
+│          │   - PolicyName: AdministratorAccess                                             │      │
+│          │     PolicyArn: arn:aws:iam::aws:policy/AdministratorAccess                      │      │
+│          │   - PolicyName: IAMUserChangePassword                                           │      │
+│          │     PolicyArn: arn:aws:iam::aws:policy/IAMUserChangePassword                    │      │
+│          │ Groups: []                                                                      │      │
+│          │                                                                                 │      │
+└──────────┴─────────────────────────────────────────────────────────────────────────────────┴──────┘
 
 
 List Summary:
 Provider: aws
-┌─────────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                                 │
-├────────────────────┬────────────────────────────────────────────────────────────────┤
-│ IamUser            │ grucloud-user                                                  │
-└────────────────────┴────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                                              │
+├────────────────────┬─────────────────────────────────────────────────────────────────────────────┤
+│ IamUser            │ grucloud                                                                    │
+└────────────────────┴─────────────────────────────────────────────────────────────────────────────┘
 1 resource, 1 type, 1 provider
-Command "gc l -t IamUser" executed in 2s
+Command "gc l -t IamUser" executed in 3s
 ```
 
 ### AWS CLI

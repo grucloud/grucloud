@@ -8,6 +8,8 @@ const {
   switchCase,
   eq,
   assign,
+  fork,
+  not,
 } = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck, find } = require("rubico/x");
 
@@ -89,6 +91,15 @@ exports.AwsIamUser = ({ spec, config }) => {
               ({ UserName }) => iam().listAccessKeys({ UserName }),
               get("AccessKeyMetadata"),
             ]),
+            LoginProfile: tryCatch(
+              pipe([
+                ({ UserName }) => iam().getLoginProfile({ UserName }),
+                get("LoginProfile"),
+              ]),
+              tap.if(not(eq(get("code"), "NoSuchEntity")), (error) => {
+                throw error;
+              })
+            ),
             Tags: pipe([
               ({ UserName }) => iam().listUserTags({ UserName }),
               get("Tags"),
@@ -245,17 +256,24 @@ exports.AwsIamUser = ({ spec, config }) => {
       }),
     ])();
 
+  const deleteLoginProfile = ({ UserName }) =>
+    pipe([() => iam().deleteLoginProfile({ UserName })])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteUser-property
   const destroy = async ({ id: UserName, name }) =>
     pipe([
       tap(() => {
         logger.info(`destroy iam user ${JSON.stringify({ name, UserName })}`);
       }),
-      //TODO use fork
-      () => removeUserFromGroup({ UserName }),
-      () => detachUserPolicy({ UserName }),
-      () => deleteUserPolicy({ UserName }),
-      () => destroyAccessKey({ UserName }),
+      fork({
+        userFromGroup: () => removeUserFromGroup({ UserName }),
+        deletePolicy: pipe([
+          () => detachUserPolicy({ UserName }),
+          () => deleteUserPolicy({ UserName }),
+        ]),
+        loginProfile: () => deleteLoginProfile({ UserName }),
+        accessKey: () => destroyAccessKey({ UserName }),
+      }),
       () =>
         iam().deleteUser({
           UserName,
