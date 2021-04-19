@@ -1030,11 +1030,11 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Aws EC2 List -t ",
+      "name": "Aws EC2 List -g",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/ec2/",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["list", "-t", "NetworkAcl"]
+      "args": ["list", "-g"]
     },
     {
       "type": "node",
@@ -1079,7 +1079,7 @@
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/ec2-vpc",
       "internalConsoleOptions": "openOnSessionStart",
-      "args": ["list", "--all"]
+      "args": ["list", "-g"]
     },
     {
       "type": "node",
