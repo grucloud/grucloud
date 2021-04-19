@@ -6,9 +6,10 @@ const {
   tryCatch,
   get,
   switchCase,
-  pick,
+  and,
   filter,
   eq,
+  not,
 } = require("rubico");
 const {
   first,
@@ -17,6 +18,7 @@ const {
   find,
   pluck,
   flatten,
+  size,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
@@ -33,6 +35,7 @@ const {
   ACMNew,
   buildTags,
   findNameInTags,
+  findNamespaceInTags,
   shouldRetryOnException,
 } = require("../AwsCommon");
 
@@ -44,7 +47,41 @@ const findId = get("CertificateArn");
 exports.AwsCertificate = ({ spec, config }) => {
   const acm = ACMNew(config);
 
-  const findDependencies = ({ live }) => [
+  //TODO
+  const findRecordId = ({ config, lives }) => ({ Type, Name }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`findRecordId ${JSON.stringify({ Type, Name })}`);
+      }),
+      () =>
+        lives.getByType({
+          providerName: config.providerName,
+          type: "Route53Record",
+        }),
+      get("resources"),
+      pluck("live"),
+      tap((xxx) => {
+        logger.debug(``);
+      }),
+      map(
+        find(
+          and([
+            eq(get("Name"), Name), //
+            eq(get("Type"), Type),
+          ])
+        )
+      ),
+      filter(not(isEmpty)),
+      tap((records) => {
+        logger.debug(
+          `findRecordId ${JSON.stringify({ Type, Name })} #records ${size(
+            records
+          )}`
+        );
+      }),
+    ])();
+
+  const findDependencies = ({ live, lives }) => [
     {
       type: "Route53Record",
       ids: pipe([
@@ -52,8 +89,18 @@ exports.AwsCertificate = ({ spec, config }) => {
         get("DomainValidationOptions"),
         filter(eq(get("ValidationMethod"), "DNS")),
         map(
-          pipe([get("ResourceRecord"), ({ Type, Name }) => `${Type}::${Name}`])
+          pipe([
+            get("ResourceRecord"),
+            tap((xxx) => {
+              logger.debug(``);
+            }),
+            findRecordId({ config, lives }),
+          ])
         ),
+        filter(not(isEmpty)),
+        tap((xxx) => {
+          logger.debug(``);
+        }),
       ])(),
     },
   ];
@@ -66,22 +113,24 @@ exports.AwsCertificate = ({ spec, config }) => {
       }),
       () => acm().listCertificates(params),
       get("CertificateSummaryList"),
-      map(async ({ CertificateArn }) => ({
-        ...(await pipe([
+      map(({ CertificateArn }) =>
+        pipe([
           () =>
             acm().describeCertificate({
               CertificateArn,
             }),
           get("Certificate"),
-        ])()),
-        Tags: await pipe([
-          () =>
-            acm().listTagsForCertificate({
-              CertificateArn,
-            }),
-          get("Tags"),
-        ])(),
-      })),
+          assign({
+            Tags: pipe([
+              () =>
+                acm().listTagsForCertificate({
+                  CertificateArn,
+                }),
+              get("Tags"),
+            ]),
+          }),
+        ])()
+      ),
       tap((certificates) => {
         logger.debug(`getList certificates result: ${tos(certificates)}`);
       }),
@@ -138,16 +187,10 @@ exports.AwsCertificate = ({ spec, config }) => {
       tap(() => {
         assert(name);
         assert(payload);
-        logger.info(`create certificate: ${name}, ${tos(payload)}`);
+        logger.info(`create certificate: ${name}`);
+        logger.debug(`${name} => ${tos(payload)}`);
       }),
-      () => ({
-        ...payload,
-        Tags: [...payload.Tags, ...buildTags({ name, config })],
-      }),
-      tap((params) => {
-        logger.debug(`create certificate: ${name}, params: ${tos(params)}`);
-      }),
-      (params) => acm().requestCertificate(params),
+      () => acm().requestCertificate(payload),
       tap(({ CertificateArn }) => {
         logger.debug(
           `created certificate: ${name}, result: ${tos(CertificateArn)}`
@@ -191,11 +234,17 @@ exports.AwsCertificate = ({ spec, config }) => {
         ])(),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) =>
+  const configDefault = async ({
+    name,
+    namespace,
+    payload,
+    properties,
+    dependencies,
+  }) =>
     defaultsDeep({
       DomainName: name,
       ValidationMethod: "DNS",
-      Tags: [],
+      Tags: buildTags({ name, namespace, config, UserTags: payload?.Tags }),
     })(properties);
 
   return {
@@ -203,6 +252,7 @@ exports.AwsCertificate = ({ spec, config }) => {
     spec,
     findId,
     findDependencies,
+    findNamespace: findNamespaceInTags(config),
     getByName,
     findName,
     create,

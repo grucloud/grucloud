@@ -14,6 +14,7 @@ const {
 const {
   Ec2New,
   findNameInTags,
+  findNamespaceInTags,
   shouldRetryOnException,
 } = require("../AwsCommon");
 
@@ -101,13 +102,13 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties }) =>
+  const configDefault = async ({ name, namespace, properties }) =>
     defaultsDeep({
       Domain: "Vpc",
       TagSpecifications: [
         {
           ResourceType: "elastic-ip",
-          Tags: buildTags({ config, name }),
+          Tags: buildTags({ config, namespace, name }),
         },
       ],
     })(properties);
@@ -117,6 +118,7 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
     spec,
     findId,
     findDependencies,
+    findNamespace: findNamespaceInTags(config),
     getByName,
     findName,
     getList,

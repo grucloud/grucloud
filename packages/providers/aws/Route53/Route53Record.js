@@ -26,7 +26,7 @@ const { Route53New, shouldRetryOnException } = require("../AwsCommon");
 const { filterEmptyResourceRecords } = require("./Route53Utils");
 
 const liveToResourceSet = pipe([
-  omit(["Tags", "hostedZoneId"]),
+  omit(["Tags", "hostedZoneId", "namespace"]),
   filterEmptyResourceRecords,
 ]);
 
@@ -77,10 +77,13 @@ exports.Route53Record = ({ spec, config }) => {
   const route53 = Route53New(config);
 
   const findDependencies = ({ live }) => [
+    // TODO findDependencies
     { type: "HostedZone", ids: [live.hostedZoneId] },
   ];
 
-  const findRecordInZone = ({ name, hostedZone }) =>
+  const findNamespace = get("live.namespace", "");
+
+  const findRecordInZone = ({ name, namespace, hostedZone }) =>
     pipe([
       () => hostedZone,
       tap(() => {
@@ -93,9 +96,11 @@ exports.Route53Record = ({ spec, config }) => {
       switchCase([
         isEmpty,
         () => undefined,
-        assign({
-          Tags: () => hostedZone.Tags,
-          hostedZoneId: () => hostedZone.Id,
+        (record) => ({
+          ...record,
+          Tags: hostedZone.Tags,
+          hostedZoneId: hostedZone.Id,
+          namespace,
         }),
       ]),
       tap((record) => {
@@ -123,7 +128,11 @@ exports.Route53Record = ({ spec, config }) => {
             isEmpty,
             () => null,
             (hostedZone) =>
-              findRecordInZone({ name: resource.name, hostedZone }),
+              findRecordInZone({
+                name: resource.name,
+                namespace: resource.namespace,
+                hostedZone,
+              }),
           ]),
         ])()
       ),
@@ -140,7 +149,7 @@ exports.Route53Record = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = async ({ name, dependencies }) =>
+  const getByName = async ({ name, namespace, dependencies }) =>
     pipe([
       tap(() => {
         logger.info(`getByName ${name}`);
@@ -149,7 +158,7 @@ exports.Route53Record = ({ spec, config }) => {
       () => getHostedZone({ dependencies, name }),
       switchCase([
         not(isEmpty),
-        (hostedZone) => findRecordInZone({ name, hostedZone }),
+        (hostedZone) => findRecordInZone({ name, namespace, hostedZone }),
         () => {},
       ]),
       tap((result) => {
@@ -291,6 +300,7 @@ exports.Route53Record = ({ spec, config }) => {
     type: "Route53Record",
     spec,
     findDependencies,
+    findNamespace,
     findId,
     getByName,
     findName,

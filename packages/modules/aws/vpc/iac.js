@@ -5,7 +5,7 @@ const { identity } = require("rubico/x");
 exports.config = require("./config");
 exports.hooks = [];
 
-const NamespaceDefault = "vpc";
+const NamespaceDefault = "VPC";
 
 const createResources = async ({ provider, namespace = NamespaceDefault }) => {
   const { config } = provider;

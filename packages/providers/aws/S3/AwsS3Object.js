@@ -33,10 +33,12 @@ const buildTags = ({
     providerName,
     stage,
     projectName,
+    namespaceKey,
   },
   Tagging,
+  namespace = "",
 }) =>
-  `${managedByKey}=${managedByValue}&${stageTagKey}=${stage}&${createdByProviderKey}=${providerName}&projectName=${projectName}${
+  `${managedByKey}=${managedByValue}&${stageTagKey}=${stage}&${createdByProviderKey}=${providerName}&${namespaceKey}=${namespace}&projectName=${projectName}${
     Tagging ? `&${Tagging}` : ""
   }`;
 
@@ -50,6 +52,20 @@ exports.AwsS3Object = ({ spec, config }) => {
 
   const findName = get("Key");
   const findId = findName;
+
+  const findDependencies = ({ live }) => [
+    {
+      type: "S3Bucket",
+      ids: pipe([
+        () => live,
+        get("Bucket"),
+        (bucket) => [bucket],
+        tap((xxx) => {
+          assert(true);
+        }),
+      ])(),
+    },
+  ];
 
   const getBucket = ({ name, dependencies = {} }) => {
     assert(name);
@@ -193,7 +209,7 @@ exports.AwsS3Object = ({ spec, config }) => {
   };
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
-  const create = async ({ name, payload, dependencies }) => {
+  const create = async ({ name, namespace, payload, dependencies }) => {
     assert(name);
     assert(payload);
     assert(dependencies);
@@ -226,7 +242,7 @@ exports.AwsS3Object = ({ spec, config }) => {
               Body,
               Bucket: bucket.name,
               ContentMD5,
-              Tagging: buildTags({ config, Tagging }),
+              Tagging: buildTags({ config, namespace, Tagging }),
               Metadata: {
                 md5hash: ContentMD5,
               },
@@ -281,11 +297,9 @@ exports.AwsS3Object = ({ spec, config }) => {
     type: "S3Object",
     spec,
     config: clientConfig,
-    isUpById,
-    isDownById,
     findId,
+    findDependencies,
     getByName,
-    getById,
     findName,
     create,
     update: create,

@@ -27,13 +27,18 @@ exports.AwsIamPolicyReadOnly = ({ spec, config }) => {
 
   const findName = get("name");
   const findId = get("Arn");
+  const findNamespace = get("live.namespace", "");
 
   const getList = async ({ resources = [] } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getList policy readonly #resources ${resources.length}`);
       }),
-      map((resource) => ({ name: resource.name, ...resource.properties() })),
+      map((resource) => ({
+        name: resource.name,
+        namespace: resource.namespace,
+        ...resource.properties(),
+      })),
       tap((items) => {
         logger.info(`getList policy readonly ${tos(items)}`);
       }),
@@ -52,8 +57,11 @@ exports.AwsIamPolicyReadOnly = ({ spec, config }) => {
     getList,
     findName,
     findId,
+    findNamespace,
     getByName,
     shouldRetryOnException,
     shouldRetryOnExceptionDelete,
   };
 };
+
+exports.isOurMinionIamPolicyReadOnly = () => true;

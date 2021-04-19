@@ -12,12 +12,15 @@ const {
   tryCatch,
   switchCase,
 } = require("rubico");
-const { defaultsDeep, pluck, flatten } = require("rubico/x");
+const { find, defaultsDeep, pluck, flatten, isEmpty } = require("rubico/x");
 const {
   Ec2New,
   getByIdCore,
   shouldRetryOnException,
   buildTags,
+  findValueInTags,
+  findNamespaceEksCluster,
+  findNamespaceInTagsOrEksCluster,
   destroyNetworkInterfaces,
 } = require("../AwsCommon");
 const { retryCall } = require("@grucloud/core/Retry");
@@ -52,6 +55,11 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       ])(),
     },
   ];
+
+  const findNamespace = findNamespaceInTagsOrEksCluster({
+    config,
+    key: "aws:eks:cluster-name",
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroups-property
   const getList = ({ params } = {}) =>
@@ -166,6 +174,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
 
   const configDefault = async ({
     name,
+    namespace,
     properties: { Tags, ...otherProps },
     dependencies,
   }) => {
@@ -177,7 +186,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
         TagSpecifications: [
           {
             ResourceType: "security-group",
-            Tags: buildTags({ config, name, UserTags: Tags }),
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
           },
         ],
       },
@@ -191,6 +200,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     findId,
     findName,
     findDependencies,
+    findNamespace,
     cannotBeDeleted,
     getList,
     create,

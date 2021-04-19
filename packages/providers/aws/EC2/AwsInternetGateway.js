@@ -16,6 +16,7 @@ const {
   findNameInTagsOrId,
   shouldRetryOnException,
   buildTags,
+  findNamespaceInTags,
 } = require("../AwsCommon");
 
 exports.AwsInternetGateway = ({ spec, config }) => {
@@ -161,12 +162,12 @@ exports.AwsInternetGateway = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties }) =>
+  const configDefault = async ({ name, namespace, properties }) =>
     defaultsDeep({
       TagSpecifications: [
         {
           ResourceType: "internet-gateway",
-          Tags: buildTags({ config, name }),
+          Tags: buildTags({ config, namespace, name }),
         },
       ],
     })(properties);
@@ -183,7 +184,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
     findId,
     findName,
     findDependencies,
-    isInstanceUp,
+    findNamespace: findNamespaceInTags(config),
     getByName,
     cannotBeDeleted,
     getList,

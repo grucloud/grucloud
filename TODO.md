@@ -2,10 +2,6 @@
 
 - - s3 example: gc d tries to delete roles
 
--     ✖ SecurityGroup 0/4               The security group 'sg-0be1ccc0c18345ade' does not exist
-
-- revokeSecurityGroupIngress
-
 - kubectl logs -n kube-system deployment.apps/aws-load-balancer-controller
 
 User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot list resource "pods" in API group "" at the cluster scope
@@ -63,10 +59,6 @@ User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot lis
 ## TODO Aws:
 
 - aws_route53_delegation_set
-
-- https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#attachLoadBalancerTargetGroups-property
-
-- https://kubernetes.github.io/ingress-nginx/deploy/
 
 - getBucketTagging should not log error when tad dos not exist.
 - minikite gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404

@@ -83,6 +83,7 @@ const configProviderDefault = {
   managedByDescription: "Managed By GruCloud",
   createdByProviderKey: "CreatedByProvider",
   stageTagKey: "stage",
+  namespaceKey: "namespace",
   stage: "dev",
   retryCount: 30,
   retryDelay: 10e3,
@@ -118,7 +119,7 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
       displayNameResource: get("name"),
       findMeta: () => undefined,
       findDependencies: () => [],
-      findNamespace: () => "default",
+      findNamespace: () => "",
       cannotBeDeleted: () => false,
       configDefault: () => ({}),
       isInstanceUp: not(isEmpty),
@@ -129,7 +130,7 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
 const ResourceMaker = ({
   name: resourceName,
   namespace,
-  meta = {},
+  meta,
   dependencies = {},
   filterLives,
   properties = () => ({}),
@@ -140,7 +141,9 @@ const ResourceMaker = ({
 }) => {
   const { type } = spec;
   assert(resourceName, `missing 'name' property for type: ${type}`);
-  logger.debug(`ResourceMaker: ${tos({ type, resourceName, meta })}`);
+  logger.debug(
+    `ResourceMaker: ${tos({ type, resourceName, namespace, meta })}`
+  );
 
   const client = createClient({
     providerName: provider.name,
@@ -158,8 +161,9 @@ const ResourceMaker = ({
       () =>
         client.getByName({
           provider,
-          meta,
           name: resourceName,
+          namespace,
+          meta,
           dependencies,
           properties,
           resolveConfig,
@@ -448,6 +452,7 @@ const ResourceMaker = ({
         const config = await client.configDefault({
           name: resourceName,
           meta,
+          namespace,
           properties: defaultsDeep(spec.propertiesDefault)(
             await properties({ dependencies: resolvedDependencies })
           ),
@@ -504,6 +509,7 @@ const ResourceMaker = ({
           meta,
           name: resourceName,
           payload,
+          namespace,
           dependencies,
           attributes,
           resolvedDependencies,
@@ -681,7 +687,8 @@ const createResourceMakers = ({ specs, config: configProvider, provider }) =>
       assert(spec.type);
       acc[`make${spec.type}`] = async ({
         name,
-        meta = {},
+        meta,
+        namespace,
         config: configUser = {},
         dependencies,
         properties,
@@ -692,6 +699,7 @@ const createResourceMakers = ({ specs, config: configProvider, provider }) =>
         const resource = ResourceMaker({
           meta,
           name,
+          namespace,
           filterLives,
           properties,
           attributes,
@@ -725,7 +733,8 @@ const createResourceMakersListOnly = ({
       assert(spec.type);
       acc[`use${spec.type}`] = async ({
         name,
-        meta = {},
+        meta,
+        namespace,
         config: configUser = {},
         dependencies,
         properties,
@@ -736,6 +745,7 @@ const createResourceMakersListOnly = ({
         const resource = ResourceMaker({
           meta,
           name,
+          namespace,
           filterLives,
           properties,
           attributes,
@@ -1561,14 +1571,12 @@ function CoreProvider({
         map((live) => ({
           uri: liveToUri({ client, live }),
           name: client.findName(live),
-          namespace: client.findNamespace(live),
           displayName: client.displayName({
             name: client.findName(live),
             meta: client.findMeta(live),
           }),
           meta: client.findMeta(live),
           id: client.findId(live),
-          dependencies: client.findDependencies({ live, lives }),
           managedByUs: client.spec.isOurMinion({
             resource: live, //TODO remove resource
             live,

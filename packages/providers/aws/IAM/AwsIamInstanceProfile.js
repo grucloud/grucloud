@@ -36,6 +36,7 @@ const {
   IAMNew,
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
+  findNamespaceInTags,
 } = require("../AwsCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
@@ -223,6 +224,21 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     spec,
     findId,
     findDependencies,
+    findNamespace: pipe([
+      get("live.Roles"),
+      tap((namespace) => {
+        logger.info(`IamInstanceProfile ${namespace}`);
+      }),
+      first,
+      switchCase([
+        isEmpty,
+        () => undefined,
+        (live) => findNamespaceInTags(config)({ live }),
+      ]),
+      tap((namespace) => {
+        logger.info(`IamInstanceProfile ${namespace}`);
+      }),
+    ]),
     getByName,
     findName,
     create,

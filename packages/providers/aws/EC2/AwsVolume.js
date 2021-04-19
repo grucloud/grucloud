@@ -8,7 +8,7 @@ const {
   eq,
   omit,
 } = require("rubico");
-const { isEmpty, defaultsDeep, first } = require("rubico/x");
+const { isEmpty, defaultsDeep, first, identity, find } = require("rubico/x");
 const assert = require("assert");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsVolume" });
 const { retryCall } = require("@grucloud/core/Retry");
@@ -25,6 +25,7 @@ const {
   shouldRetryOnException,
   getByIdCore,
   buildTags,
+  findNamespaceInTags,
 } = require("../AwsCommon");
 
 exports.AwsVolume = ({ spec, config }) => {
@@ -110,7 +111,7 @@ exports.AwsVolume = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) =>
+  const configDefault = async ({ name, namespace, properties, dependencies }) =>
     defaultsDeep({
       Size: 10,
       Device: "/dev/sdf",
@@ -119,7 +120,7 @@ exports.AwsVolume = ({ spec, config }) => {
       TagSpecifications: [
         {
           ResourceType: "volume",
-          Tags: buildTags({ config, name }),
+          Tags: buildTags({ config, namespace, name }),
         },
       ],
     })(properties);
@@ -130,10 +131,41 @@ exports.AwsVolume = ({ spec, config }) => {
     get("DeleteOnTermination"),
   ]);
 
+  const findInstanceId = pipe([get("Attachments"), first, get("InstanceId")]);
+
+  const findNamespaceFromInstanceId = ({ live, lives }) =>
+    pipe([
+      () =>
+        lives.getByType({
+          type: "EC2",
+          providerName: config.providerName,
+        }),
+      get("resources"),
+      find(eq(get("live.InstanceId"), findInstanceId(live))),
+      get("namespace", ""),
+      tap((namespace) => {
+        logger.debug(`findNamespaceFromInstanceId ${namespace}`);
+      }),
+    ])();
+
+  const findNamespace = ({ live, lives }) =>
+    pipe([
+      () => findNamespaceInTags(config)({ live }),
+      switchCase([
+        isEmpty,
+        () => findNamespaceFromInstanceId({ live, lives }),
+        identity,
+      ]),
+      tap((namespace) => {
+        logger.debug(`findNamespace`, namespace);
+      }),
+    ])();
+
   return {
     type: "Volume",
     spec,
     findId,
+    findNamespace,
     getByName,
     findName,
     getList,

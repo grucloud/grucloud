@@ -1,5 +1,5 @@
 const { get, pipe, filter, map, tap, eq, switchCase, not } = require("rubico");
-const { defaultsDeep, isEmpty, first, pluck } = require("rubico/x");
+const { defaultsDeep, isEmpty, first, pluck, find } = require("rubico/x");
 const assert = require("assert");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsNatGateway" });
@@ -16,6 +16,7 @@ const {
   findNameInTagsOrId,
   shouldRetryOnException,
   buildTags,
+  findNamespaceInTags,
 } = require("../AwsCommon");
 
 exports.AwsNatGateway = ({ spec, config }) => {
@@ -25,7 +26,7 @@ exports.AwsNatGateway = ({ spec, config }) => {
 
   const findName = (item) => findNameInTagsOrId({ item, findId });
 
-  const findDependencies = ({ live }) => [
+  const findDependencies = ({ live, lives }) => [
     { type: "Vpc", ids: [live.VpcId] },
     {
       type: "Subnet",
@@ -37,6 +38,32 @@ exports.AwsNatGateway = ({ spec, config }) => {
         () => live,
         get("NatGatewayAddresses"),
         pluck("NetworkInterfaceId"),
+      ])(),
+    },
+    {
+      type: "ElasticIpAddress",
+      ids: pipe([
+        () => live,
+        get("NatGatewayAddresses"),
+        pluck("AllocationId"),
+        map((AllocationId) =>
+          pipe([
+            tap(() => {
+              logger.debug(``);
+            }),
+            () =>
+              lives.getByType({
+                type: "ElasticIpAddress",
+                providerName: config.providerName,
+              }),
+            get("resources"),
+            find(eq(get("live.AllocationId"), AllocationId)),
+            tap((eips) => {
+              logger.debug(eips);
+            }),
+            get("id"),
+          ])()
+        ),
       ])(),
     },
   ];
@@ -158,12 +185,12 @@ exports.AwsNatGateway = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties }) =>
+  const configDefault = async ({ name, namespace, properties }) =>
     defaultsDeep({
       TagSpecifications: [
         {
           ResourceType: "natgateway",
-          Tags: buildTags({ config, name }),
+          Tags: buildTags({ config, namespace, name }),
         },
       ],
     })(properties);
@@ -175,6 +202,7 @@ exports.AwsNatGateway = ({ spec, config }) => {
     getByName,
     findName,
     findDependencies,
+    findNamespace: findNamespaceInTags(config),
     getList,
     create,
     destroy,

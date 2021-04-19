@@ -8,9 +8,19 @@ const {
   filter,
   get,
   not,
+  eq,
   switchCase,
 } = require("rubico");
-const { pluck, flatten, isEmpty, size, groupBy, values } = require("rubico/x");
+const {
+  pluck,
+  flatten,
+  isEmpty,
+  size,
+  groupBy,
+  values,
+  find,
+  identity,
+} = require("rubico/x");
 const includes = require("rubico/x/includes");
 
 const logger = require("./logger")({ prefix: "Graph" });
@@ -23,9 +33,9 @@ const color = "#383838";
 const colorLigher = "#707070";
 const fontName = "Helvetica";
 
-const buildNode = ({ resource, namespace }) => `"${resource.type}::${
-  resource.id
-}" [label=<
+const buildNode = ({ resource, namespace }) => `"${
+  resource.type
+}::${namespace}::${resource.id}" [label=<
   <table color='${color}' border="0">
      <tr><td align="text"><FONT color='${colorLigher}' POINT-SIZE="16"><B>${
   resource.type
@@ -34,6 +44,8 @@ const buildNode = ({ resource, namespace }) => `"${resource.type}::${
   resource.name || resource.id
 }</FONT><br align="left" /></td></tr>
   </table>>];\n`;
+
+const formatNamespace = switchCase([isEmpty, () => "default", identity]);
 
 const buildSubGraph = ({ providerName, namespace, resources }) =>
   pipe([
@@ -78,15 +90,16 @@ const filterResources = ({
 exports.buildSubGraphLive = ({ providerName, resourcesPerType, options }) =>
   pipe([
     tap(() => {
-      logger.debug(`buildGraphNode`);
+      logger.debug(`buildSubGraphLive`);
       assert(providerName);
       assert(Array.isArray(resourcesPerType));
     }),
     () => resourcesPerType,
     pluck("resources"),
     flatten,
+    filter(not(isEmpty)),
     tap((xxx) => {
-      logger.debug(`buildGraphNode`);
+      logger.debug(`buildSubGraphLive`);
       //TODO check error
     }),
     filterResources(options),
@@ -96,7 +109,11 @@ exports.buildSubGraphLive = ({ providerName, resourcesPerType, options }) =>
     }),
     map.entries(([namespace, resources]) => [
       namespace,
-      buildSubGraph({ providerName, namespace, resources }),
+      buildSubGraph({
+        providerName,
+        namespace: formatNamespace(namespace),
+        resources,
+      }),
     ]),
     values,
     switchCase([
@@ -115,7 +132,22 @@ exports.buildSubGraphLive = ({ providerName, resourcesPerType, options }) =>
       ]),
     ]),
     tap((result) => {
-      logger.debug(`buildGraphNode done`);
+      logger.debug(`buildSubGraphLive done`);
+    }),
+  ])();
+
+const findNamespace = ({ type, id, resourcesPerType }) =>
+  pipe([
+    () => resourcesPerType,
+    find(eq(get("type"), type)),
+    get("resources"),
+    find(eq(get("id"), id)),
+    get("namespace"),
+    formatNamespace,
+    tap((namespace) => {
+      logger.debug(
+        `findNamespace type: ${type}, id: ${id}, namespace: ${namespace}`
+      );
     }),
   ])();
 
@@ -130,11 +162,11 @@ exports.buildGraphAssociationLive = ({ resourcesPerType, options }) =>
     flatten,
     filterResources(options),
     filter(pipe([get("dependencies"), not(isEmpty)])),
-    flatMap(({ providerName, type, id, dependencies }) =>
+    flatMap(({ providerName, type, namespace, id, dependencies }) =>
       pipe([
         tap(() => {
           logger.debug(
-            `${providerName}, type ${type}, id, ${id}, #dependencies ${size(
+            `${providerName}, type ${type}, id, ${id}, namespace: ${namespace}, #dependencies ${size(
               dependencies
             )}`
           );
@@ -150,7 +182,13 @@ exports.buildGraphAssociationLive = ({ resourcesPerType, options }) =>
             () => dependency.ids,
             map(
               (dependencyId) =>
-                `"${type}::${id}" -> "${dependency.type}::${dependencyId}" [color="${color}"];`
+                `"${type}::${formatNamespace(namespace)}::${id}" -> "${
+                  dependency.type
+                }::${findNamespace({
+                  type: dependency.type,
+                  id: dependencyId,
+                  resourcesPerType,
+                })}::${dependencyId}" [color="${color}"];`
             ),
           ])()
         ),

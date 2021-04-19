@@ -2,11 +2,14 @@ const assert = require("assert");
 const { get, pipe, tap, and, eq } = require("rubico");
 const { find } = require("rubico/x");
 
+const NamespaceDefault = "LoadBalancer";
+
 // Create Load Balancer, Target Group, Listeners and Rule, Security Group and Rules
 
 exports.createResources = async ({
   provider,
   resources: { vpc, subnets, hostedZone, k8s, eks, certificate },
+  namespace = NamespaceDefault,
 }) => {
   assert(Array.isArray(subnets));
   assert(vpc);
@@ -29,6 +32,7 @@ exports.createResources = async ({
 
   const securityGroupLoadBalancer = await provider.makeSecurityGroup({
     name: "load-balancer-security-group",
+    namespace,
     dependencies: { vpc },
     properties: () => ({
       create: {
@@ -53,6 +57,7 @@ exports.createResources = async ({
 
   const sgRuleIngressHttp = await provider.makeSecurityGroupRuleIngress({
     name: "sg-rule-ingress-http",
+    namespace,
     dependencies: {
       securityGroup: securityGroupLoadBalancer,
     },
@@ -78,6 +83,7 @@ exports.createResources = async ({
   });
   const sgRuleIngressHttps = await provider.makeSecurityGroupRuleIngress({
     name: "sg-rule-ingress-https",
+    namespace,
     dependencies: {
       securityGroup: securityGroupLoadBalancer,
     },
@@ -133,9 +139,10 @@ exports.createResources = async ({
       ])(),
   });
 
-  // Attach an Ingress Rule to the eks-k8s security group to allwo traffic from the load balancer
+  // Attach an Ingress Rule to the eks-k8s security group to allow traffic from the load balancer
   const sgRuleIngress = await provider.makeSecurityGroupRuleIngress({
     name: "sg-rule-ingress",
+    namespace,
     dependencies: {
       cluster: eks.cluster,
       securityGroup: securityGroupK8sCluster,
@@ -168,6 +175,7 @@ exports.createResources = async ({
 
   const loadBalancer = await provider.makeLoadBalancer({
     name: config.elb.loadBalancer.name,
+    namespace,
     dependencies: {
       subnets,
       securityGroups: [securityGroupLoadBalancer],
@@ -178,6 +186,7 @@ exports.createResources = async ({
   const targetGroups = {
     web: await provider.makeTargetGroup({
       name: config.elb.targetGroups.web.name,
+      namespace,
       dependencies: {
         vpc,
         nodeGroup: eks.nodeGroupsPrivate[0],
@@ -186,6 +195,7 @@ exports.createResources = async ({
     }),
     rest: await provider.makeTargetGroup({
       name: config.elb.targetGroups.rest.name,
+      namespace,
       dependencies: {
         nodeGroup: eks.nodeGroupsPrivate[0],
         vpc,
@@ -197,6 +207,7 @@ exports.createResources = async ({
   const listeners = {
     http: await provider.makeListener({
       name: config.elb.listeners.http.name,
+      namespace,
       dependencies: {
         loadBalancer,
         targetGroups: [targetGroups.web],
@@ -218,6 +229,7 @@ exports.createResources = async ({
     }),
     https: await provider.makeListener({
       name: config.elb.listeners.https.name,
+      namespace,
       dependencies: {
         loadBalancer,
         targetGroups: [targetGroups.web],
@@ -249,6 +261,7 @@ exports.createResources = async ({
   const rules = {
     http2https: await provider.makeRule({
       name: config.elb.rules.http2https.name,
+      namespace,
       dependencies: {
         listener: listeners.http,
       },
@@ -257,6 +270,7 @@ exports.createResources = async ({
     https: {
       web: await provider.makeRule({
         name: config.elb.rules.https.web.name,
+        namespace,
         dependencies: {
           listener: listeners.https,
           targetGroup: targetGroups.web,
@@ -265,6 +279,7 @@ exports.createResources = async ({
       }),
       rest: await provider.makeRule({
         name: config.elb.rules.https.rest.name,
+        namespace,
         dependencies: {
           listener: listeners.https,
           targetGroup: targetGroups.rest,
@@ -276,6 +291,7 @@ exports.createResources = async ({
 
   const loadBalancerDnsRecord = await provider.makeRoute53Record({
     name: `load-balancer-dns-record-alias-${hostedZone.name}`,
+    namespace,
     dependencies: { hostedZone, loadBalancer },
     properties: ({ dependencies: { loadBalancer } }) => {
       const hostname = loadBalancer.live?.DNSName;

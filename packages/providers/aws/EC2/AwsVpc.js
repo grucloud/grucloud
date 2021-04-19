@@ -25,6 +25,7 @@ const {
   getByIdCore,
   buildTags,
   findNameInTags,
+  findNamespaceInTags,
   shouldRetryOnException,
 } = require("../AwsCommon");
 
@@ -285,12 +286,16 @@ exports.AwsVpc = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties: { Tags, ...otherProps } }) =>
+  const configDefault = async ({
+    name,
+    namespace,
+    properties: { Tags, ...otherProps },
+  }) =>
     defaultsDeep({
       TagSpecifications: [
         {
           ResourceType: "vpc",
-          Tags: buildTags({ config, name, UserTags: Tags }),
+          Tags: buildTags({ config, namespace, name, UserTags: Tags }),
         },
       ],
     })(otherProps);
@@ -299,11 +304,8 @@ exports.AwsVpc = ({ spec, config }) => {
     type: "Vpc",
     spec,
     findId,
-    isInstanceUp,
-    isUpById,
-    isDownById,
+    findNamespace: findNamespaceInTags(config),
     getByName,
-    getById,
     findName,
     cannotBeDeleted,
     getList,

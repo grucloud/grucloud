@@ -20,6 +20,7 @@ const {
   flatten,
   forEach,
   find,
+  identity,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsEc2" });
@@ -35,6 +36,8 @@ const {
   getByIdCore,
   findNameInTags,
   buildTags,
+  findValueInTags,
+  findNamespaceInTagsOrEksCluster,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { CheckAwsTags } = require("../AwsTagCheck");
@@ -80,22 +83,20 @@ exports.AwsEC2 = ({ spec, config }) => {
     },
   ];
 
-  const findValue = ({ key }) =>
-    pipe([find(eq(get("Key"), key)), get("Value")]);
+  const findNamespace = findNamespaceInTagsOrEksCluster({
+    config,
+    key: "eks:cluster-name",
+  });
 
   const findEksName = (live) =>
     pipe([
       () => live,
-      get("Tags"),
-      (Tags) =>
-        pipe([
-          findValue({ key: "eks:nodegroup-name" }),
-          switchCase([
-            isEmpty,
-            () => undefined,
-            (nodegroupName) => `${nodegroupName}::${live.InstanceId}`,
-          ]),
-        ])(Tags),
+      findValueInTags({ key: "eks:nodegroup-name" }),
+      switchCase([
+        isEmpty,
+        () => undefined,
+        (nodegroupName) => `${nodegroupName}::${live.InstanceId}`,
+      ]),
     ])();
 
   const findName = (item) =>
@@ -351,7 +352,12 @@ exports.AwsEC2 = ({ spec, config }) => {
   //By live
   const destroy = destroyById;
 
-  const configDefault = async ({ name, properties, dependencies }) => {
+  const configDefault = async ({
+    name,
+    namespace,
+    properties,
+    dependencies,
+  }) => {
     const {
       keyPair,
       subnet,
@@ -387,7 +393,7 @@ exports.AwsEC2 = ({ spec, config }) => {
       TagSpecifications: [
         {
           ResourceType: "instance",
-          Tags: buildTags({ config, name }),
+          Tags: buildTags({ config, namespace, name }),
         },
       ],
       ...(keyPair && { KeyName: keyPair.resource.name }),
@@ -414,6 +420,7 @@ exports.AwsEC2 = ({ spec, config }) => {
     spec,
     findId,
     findDependencies,
+    findNamespace,
     getByName,
     findName,
     create,

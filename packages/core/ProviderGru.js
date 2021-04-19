@@ -145,8 +145,17 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
       }),
     ])(getProviders());
 
-  const createLives = () => {
-    const mapPerProvider = new Map();
+  const createLives = (livesRaw = []) => {
+    const livesToMap = map(({ providerName, results }) => [
+      providerName,
+      new Map(
+        map(({ type, resources }) => [type, { type, providerName, resources }])(
+          results
+        )
+      ),
+    ]);
+
+    const mapPerProvider = new Map(livesToMap(livesRaw));
 
     let error;
 
@@ -271,6 +280,46 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
     };
   };
 
+  // Add namespace and dependencies.
+  const resourceDecorate = ({ lives }) => (resource) =>
+    pipe([
+      tap(() => {
+        assert(resource.providerName);
+        assert(resource.type);
+        assert(lives);
+      }),
+      () => getProvider({ providerName: resource.providerName }),
+      (provider) => provider.clientByType({ type: resource.type }),
+      (client) => ({
+        ...resource,
+        namespace: client.findNamespace({ live: resource.live, lives }),
+        dependencies: client.findDependencies({ live: resource.live, lives }),
+      }),
+      tap((resource) => {
+        assert(true);
+      }),
+    ])();
+
+  const decorateListResult = ({ lives }) =>
+    pipe([
+      map(
+        assign({
+          results: pipe([
+            get("results"),
+            map(
+              assign({
+                resources: pipe([
+                  get("resources"),
+                  map(resourceDecorate({ lives })),
+                ]),
+              })
+            ),
+          ]),
+        })
+      ),
+      (livesRaw) => createLives(livesRaw),
+    ]);
+
   const listLives = async ({
     onStateChange,
     onProviderEnd = () => {},
@@ -306,10 +355,7 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
               }),
             ])()
           ),
-          tap((xxx) => {
-            logger.info(`listLives result: ${lives.toString()}`);
-          }),
-          () => lives,
+          decorateListResult({ lives }),
         ])(),
     ])();
 

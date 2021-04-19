@@ -5,8 +5,11 @@ const {
   AwsIamInstanceProfile,
   isOurMinionInstanceProfile,
 } = require("./AwsIamInstanceProfile");
-const { AwsIamPolicy, isOurMinionIamPolicy } = require("./AwsIamPolicy");
-const { AwsIamPolicyReadOnly } = require("./AwsIamPolicyReadOnly");
+const { AwsIamPolicy } = require("./AwsIamPolicy");
+const {
+  AwsIamPolicyReadOnly,
+  isOurMinionIamPolicyReadOnly,
+} = require("./AwsIamPolicyReadOnly");
 const {
   AwsIamOpenIDConnectProvider,
 } = require("./AwsIamOpenIDConnectProvider");
@@ -46,6 +49,7 @@ module.exports = [
     type: "IamPolicyReadOnly",
     Client: AwsIamPolicyReadOnly,
     listOnly: true,
+    isOurMinion: isOurMinionIamPolicyReadOnly,
   },
   {
     type: "IamInstanceProfile",

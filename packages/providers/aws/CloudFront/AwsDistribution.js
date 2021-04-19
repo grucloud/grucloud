@@ -38,6 +38,7 @@ const {
   CloudFrontNew,
   buildTags,
   findNameInTags,
+  findNamespaceInTags,
   getNewCallerReference,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -52,6 +53,36 @@ exports.AwsDistribution = ({ spec, config }) => {
   assert(config);
 
   const cloudfront = CloudFrontNew(config);
+
+  const findDependencies = ({ live }) => [
+    {
+      type: "Certificate",
+      ids: pipe([
+        () => live,
+        get("ViewerCertificate.ACMCertificateArn"),
+        (arn) => [arn],
+        filter(not(isEmpty)),
+        tap((xxx) => {
+          assert(true);
+        }),
+      ])(),
+    },
+    {
+      type: "S3Bucket",
+      ids: pipe([
+        () => live,
+        get("Origins.Items"),
+        pluck("DomainName"),
+        map((domainName) =>
+          domainName.replace(new RegExp(".s3.amazonaws.com$"), "")
+        ),
+        filter(not(isEmpty)),
+        tap((xxx) => {
+          assert(true);
+        }),
+      ])(),
+    },
+  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#listDistributions-property
   const getList = async ({ params } = {}) =>
@@ -127,14 +158,30 @@ exports.AwsDistribution = ({ spec, config }) => {
         assert(name);
         assert(payload);
         logger.info(`create distribution: ${name}`);
-        logger.debug(`create distribution: ${name}, ${tos(payload)}`);
+        logger.debug(`${name} => ${tos(payload)}`);
       }),
       () =>
-        cloudfront().createDistributionWithTags({
-          DistributionConfigWithTags: {
-            DistributionConfig: payload,
-            Tags: { Items: buildTags({ name, config }) },
-          },
+        retryCall({
+          name: `createDistributionWithTags: ${name}`,
+          fn: () => cloudfront().createDistributionWithTags(payload),
+          config: { retryCount: 10, repeatDelay: 5e3 },
+          shouldRetryOnException: ({ error, name }) =>
+            pipe([
+              tap(() => {
+                logger.info(
+                  `createDistributionWithTags shouldRetryOnException ${tos({
+                    name,
+                    error,
+                  })}`
+                );
+              }),
+              eq(get("code"), "InvalidViewerCertificate"),
+              tap((retry) => {
+                logger.info(
+                  `createDistributionWithTags shouldRetryOnException retry: ${retry}`
+                );
+              }),
+            ])(error),
         }),
       tap((result) => {
         logger.debug(`created distribution: ${name}, result: ${tos(result)}`);
@@ -270,22 +317,32 @@ exports.AwsDistribution = ({ spec, config }) => {
   const configDefault = async ({
     name,
     properties,
+    namespace,
     dependencies: { certificate },
   }) =>
-    defaultsDeep({
-      CallerReference: getNewCallerReference(),
-      Enabled: true,
-      ...(certificate && {
-        ViewerCertificate: {
-          ACMCertificateArn: getField(certificate, "CertificateArn"),
-          SSLSupportMethod: "sni-only",
-          MinimumProtocolVersion: "TLSv1.2_2019",
-          Certificate: getField(certificate, "CertificateArn"),
-          CertificateSource: "acm",
-          CloudFrontDefaultCertificate: false,
+    pipe([
+      () => properties,
+      defaultsDeep({
+        CallerReference: getNewCallerReference(),
+        Enabled: true,
+        ...(certificate && {
+          ViewerCertificate: {
+            ACMCertificateArn: getField(certificate, "CertificateArn"),
+            SSLSupportMethod: "sni-only",
+            MinimumProtocolVersion: "TLSv1.2_2019",
+            Certificate: getField(certificate, "CertificateArn"),
+            CertificateSource: "acm",
+            CloudFrontDefaultCertificate: false,
+          },
+        }),
+      }),
+      (payload) => ({
+        DistributionConfigWithTags: {
+          DistributionConfig: payload,
+          Tags: { Items: buildTags({ name, namespace, config }) },
         },
       }),
-    })(properties);
+    ])();
 
   const onDeployed = ({ resultCreate, lives }) =>
     pipe([
@@ -307,7 +364,7 @@ exports.AwsDistribution = ({ spec, config }) => {
       map((distribution) =>
         pipe([
           () => distribution,
-          get("Origins.Items"),
+          get("live.Origins.Items"),
           flatMap(({ Id, OriginPath }) =>
             findS3ObjectUpdated({ plans: resultCreate.results, Id, OriginPath })
           ),
@@ -339,16 +396,13 @@ exports.AwsDistribution = ({ spec, config }) => {
         ])()
       ),
     ])();
-
   return {
     type: RESOURCE_TYPE,
     spec,
-    isInstanceUp,
-    isUpById,
-    isDownById,
     findId,
+    findDependencies,
+    findNamespace: findNamespaceInTags(config),
     getByName,
-    getById,
     findName,
     create,
     update,
@@ -395,7 +449,6 @@ const findS3ObjectUpdated = ({ plans = [], Id, OriginPath }) =>
   pipe([
     tap(() => {
       assert(Id, "Id");
-      assert(OriginPath, "OriginPath");
       logger.debug(
         `findS3ObjectUpdated ${tos({
           Id,

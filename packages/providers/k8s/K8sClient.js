@@ -94,7 +94,7 @@ module.exports = K8sClient = ({
   ]);
 
   const findId = findName;
-  const findNamespace = get("metadata.namespace", "default");
+  const findNamespace = get("live.metadata.namespace", "default");
 
   const axios = () => createAxiosMakerK8s({ config });
 

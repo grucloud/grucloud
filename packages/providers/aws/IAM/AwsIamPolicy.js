@@ -21,6 +21,7 @@ const {
   IAMNew,
   buildTags,
   findNameInTags,
+  findNamespaceInTags,
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
 } = require("../AwsCommon");
@@ -211,19 +212,19 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) =>
-    defaultsDeep({ PolicyName: name, Tags: buildTags({ name, config }) })(
-      properties
-    );
+  const configDefault = async ({ name, namespace, properties, dependencies }) =>
+    defaultsDeep({
+      PolicyName: name,
+      Tags: buildTags({ name, namespace, config }),
+    })(properties);
 
   return {
     type: "IamPolicy",
     spec,
-    isUpById,
-    isDownById,
+
     findId,
+    findNamespace: findNamespaceInTags(config),
     getByName,
-    getById,
     findName,
     create,
     destroy,
@@ -232,30 +233,4 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     shouldRetryOnException,
     shouldRetryOnExceptionDelete,
   };
-};
-
-exports.isOurMinionIamPolicy = ({ resource, config }) => {
-  assert(resource);
-  const { managedByKey, managedByValue } = config;
-  assert(managedByKey);
-  assert(managedByValue);
-
-  const tags = resource.Description?.split("tags:")[1];
-  let minion = false;
-  if (tags) {
-    try {
-      const tagsJson = JSON.parse(tags);
-
-      if (
-        tagsJson.find(
-          (tag) => tag.Key === managedByKey && tag.Value === managedByValue
-        )
-      ) {
-        minion = true;
-      }
-    } catch (error) {
-      logger.error(`isOurMinionIamPolicy ${error}`);
-    }
-  }
-  return minion;
 };

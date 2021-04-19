@@ -41,6 +41,7 @@ const {
   Route53New,
   Route53DomainsNew,
   buildTags,
+  findNamespaceInTags,
   shouldRetryOnException,
   getNewCallerReference,
 } = require("../AwsCommon");
@@ -66,6 +67,8 @@ exports.AwsHostedZone = ({ spec, config }) => {
 
   const route53 = Route53New(config);
   const route53domains = Route53DomainsNew(config);
+
+  // TODO findDependencies
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZones-property
   const getList = async () =>
@@ -196,6 +199,7 @@ exports.AwsHostedZone = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#createHostedZone-property
   const create = async ({
     name,
+    namespace,
     payload = {},
     resolvedDependencies: { domain },
   }) =>
@@ -223,7 +227,7 @@ exports.AwsHostedZone = ({ spec, config }) => {
             route53().changeTagsForResource({
               ResourceId: HostedZone.Id,
               AddTags: [
-                ...buildTags({ name, config }),
+                ...buildTags({ name, namespace, config }),
                 { Key: "DelegationSetId", Value: DelegationSetId },
               ],
               ResourceType: "hostedzone",
@@ -396,6 +400,7 @@ exports.AwsHostedZone = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    findNamespace: findNamespaceInTags(config),
   };
 };
 
