@@ -20,6 +20,8 @@ const {
   values,
   find,
   identity,
+  isString,
+  isObject,
 } = require("rubico/x");
 const includes = require("rubico/x/includes");
 
@@ -151,6 +153,49 @@ const findNamespace = ({ type, id, resourcesPerType }) =>
     }),
   ])();
 
+const nodeFrom = (type, namespace, id) =>
+  `"${type}::${formatNamespace(namespace)}::${id}"`;
+
+const associationIdString = ({
+  type,
+  namespace,
+  idFrom,
+  dependency,
+  resourcesPerType,
+}) =>
+  pipe([
+    tap((id) => {
+      if (!id) {
+        assert(id);
+      }
+    }),
+    (id) =>
+      `${nodeFrom(type, namespace, idFrom)} -> "${
+        dependency.type
+      }::${findNamespace({
+        type: dependency.type,
+        id,
+        resourcesPerType,
+      })}::${id}" [color="${color}"];`,
+  ]);
+
+const associationIdObject = ({ type, idFrom, dependency }) =>
+  pipe([
+    tap((xxx) => {
+      assert(true);
+    }),
+    tap(({ name, namespace }) => {
+      assert(name);
+      if (!namespace) {
+        assert(true);
+      }
+    }),
+    ({ name, namespace }) =>
+      `${nodeFrom(type, namespace, idFrom)} -> "${
+        dependency.type
+      }::${namespace}::${name}" [color="${color}"];`,
+  ]);
+
 exports.buildGraphAssociationLive = ({ resourcesPerType, options }) =>
   pipe([
     tap(() => {
@@ -180,15 +225,25 @@ exports.buildGraphAssociationLive = ({ resourcesPerType, options }) =>
               );
             }),
             () => dependency.ids,
-            map(
-              (dependencyId) =>
-                `"${type}::${formatNamespace(namespace)}::${id}" -> "${
-                  dependency.type
-                }::${findNamespace({
-                  type: dependency.type,
-                  id: dependencyId,
+            tap((result) => {
+              logger.debug(`buildGraphAssociationLive`);
+            }),
+            map((dependencyId) =>
+              switchCase([
+                isString,
+                associationIdString({
+                  type,
+                  idFrom: id,
+                  namespace,
+                  dependency,
                   resourcesPerType,
-                })}::${dependencyId}" [color="${color}"];`
+                }),
+                isObject,
+                associationIdObject({ type, idFrom: id, dependency }),
+                (dependencyId) => {
+                  assert(false, `dependencyId not valid: ${dependencyId}`);
+                },
+              ])(dependencyId)
             ),
           ])()
         ),

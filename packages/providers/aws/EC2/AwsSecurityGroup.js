@@ -149,17 +149,25 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
         logger.debug(`destroy sg ${JSON.stringify({ name, id })}`);
       }),
       () => destroyNetworkInterfaces({ ec2, Name: "group-id", Values: [id] }),
-      tryCatch(
-        () => ec2().deleteSecurityGroup({ GroupId: id }),
-        switchCase([
-          eq(get("code"), "InvalidGroup.NotFound"),
-          () => undefined,
-          (error) => {
-            logger.error(`deleteSecurityGroup error code: ${error.code}`);
-            throw error;
-          },
-        ])
-      ),
+      () =>
+        retryCall({
+          name: `deleteSecurityGroup: ${name}`,
+          fn: () => ec2().deleteSecurityGroup({ GroupId: id }),
+          config: { retryCount: 5, repeatDelay: 2e3 },
+          isExpectedException: pipe([
+            tap((ex) => {
+              logger.error(`delete sg isExpectedException ${tos(ex)}`);
+            }),
+            eq(get("code"), "InvalidGroup.NotFound"),
+          ]),
+          shouldRetryOnException: ({ error, name }) =>
+            pipe([
+              tap(() => {
+                logger.error(`delete shouldRetry ${tos({ name, error })}`);
+              }),
+              eq(get("code"), "DependencyViolation"),
+            ])(error),
+        }),
       tap(() =>
         retryCall({
           name: `destroy sg isDownById: ${name} id: ${id}`,
