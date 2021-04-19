@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-k8s-service-account-aws-role",
-  "version": "1.10.23",
+  "version": "1.11.0",
   "private": true,
   "description": "link a service account to an AWS role",
   "main": "index.js",
@@ -10,9 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.10.23",
-    "@grucloud/provider-aws": "^1.10.23",
-    "@grucloud/provider-k8s": "^1.10.23",
+    "@grucloud/core": "^1.10.25",
+    "@grucloud/provider-aws": "^1.11.0",
+    "@grucloud/provider-k8s": "^1.11.0",
     "rubico": "^1.6.21"
   }
 }

@@ -143,7 +143,7 @@ exports.AwsIamRole = ({ spec, config }) => {
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
 
   const isDownByName = ({ name }) =>
-    pipe([() => getByName({ name }), not(isEmpty)])();
+    pipe([() => getByName({ name }), isEmpty])();
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createRole-property
 
   const create = async ({

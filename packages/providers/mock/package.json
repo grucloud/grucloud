@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-mock",
-  "version": "1.10.23",
+  "version": "1.11.0",
   "description": "The GruCloud Mock provider",
   "main": "MockProvider.js",
   "private": true,
@@ -11,17 +11,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.10.23",
+    "@grucloud/core": "^1.10.25",
     "axios": "^0.21.1",
     "axios-mock-adapter": "^1.19.0",
     "bluebird": "^3.7.2",
     "rubico": "^1.6.23",
+    "shelljs": "^0.8.4",
     "url-join": "^4.0.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
     "mocha": "^8.3.2",
-    "prompts": "^2.4.0",
+    "prompts": "^2.4.1",
     "sinon": "^10.0.0"
   }
 }

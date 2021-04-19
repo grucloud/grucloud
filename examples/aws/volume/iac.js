@@ -15,13 +15,28 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
+  const image = await provider.useImage({
+    name: "Amazon Linux 2",
+    properties: () => ({
+      Filters: [
+        {
+          Name: "architecture",
+          Values: ["x86_64"],
+        },
+        {
+          Name: "description",
+          Values: ["Amazon Linux 2 AMI *"],
+        },
+      ],
+    }),
+  });
+
   const server = await provider.makeEC2({
     name: "server-4-volume",
-    dependencies: { keyPair, volumes: [volume] },
+    dependencies: { image, keyPair, volumes: [volume] },
     properties: () => ({
       UserData: volume.spec.setupEbsVolume({ deviceMounted, mountPoint }),
       InstanceType: "t2.micro",
-      ImageId: "ami-00f6a0c18edb19300", // Ubuntu 18.04
     }),
   });
 
