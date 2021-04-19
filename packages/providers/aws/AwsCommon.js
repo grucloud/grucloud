@@ -12,7 +12,14 @@ const {
   or,
   not,
 } = require("rubico");
-const { first, find, isEmpty, forEach } = require("rubico/x");
+const {
+  first,
+  find,
+  isEmpty,
+  forEach,
+  identity,
+  isFunction,
+} = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsCommon" });
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
@@ -24,6 +31,7 @@ const handler = ({ endpointName, endpoint }) => ({
   get: (target, name, receiver) => {
     assert(endpointName);
     assert(endpoint);
+    assert(isFunction(endpoint[name]), `${name} is not a function`);
     return (...args) =>
       retryCall({
         name: `${endpointName}.${name} ${JSON.stringify(args)}`,
@@ -105,7 +113,53 @@ exports.shouldRetryOnExceptionDelete = ({ error, name }) => {
   return retry;
 };
 
-exports.buildTags = ({ name, config, UserTags = [] }) => {
+const findValueInTags = ({ key }) =>
+  pipe([get("Tags"), find(eq(get("Key"), key)), get("Value")]);
+
+exports.findValueInTags = findValueInTags;
+
+const findNamespaceEksCluster = ({ config, key = "aws:eks:cluster-name" }) => ({
+  live,
+  lives,
+}) =>
+  pipe([
+    tap(() => {
+      assert(lives, "lives");
+    }),
+    () =>
+      lives.getByType({
+        type: "EKSCluster",
+        providerName: config.providerName,
+      }),
+    get("resources"),
+    find(eq(get("name"), findValueInTags({ key })(live))),
+    findNamespaceInTagsObject(config),
+    tap((namespace) => {
+      logger.debug(`findNamespace`, namespace);
+    }),
+  ])();
+
+exports.findNamespaceInTagsOrEksCluster = ({ config, key }) => ({
+  live,
+  lives,
+}) =>
+  pipe([
+    tap(() => {
+      assert(lives, "lives");
+    }),
+    () => findNamespaceInTags(config)({ live }),
+    switchCase([
+      isEmpty,
+      () =>
+        findNamespaceEksCluster({ config, key })({
+          live,
+          lives,
+        }),
+      identity,
+    ]),
+  ])();
+
+exports.buildTags = ({ name, config, namespace, UserTags = [] }) => {
   const {
     managedByKey,
     managedByValue,
@@ -114,6 +168,7 @@ exports.buildTags = ({ name, config, UserTags = [] }) => {
     stage,
     providerName,
     projectName,
+    namespaceKey,
   } = config;
 
   assert(name);
@@ -121,26 +176,39 @@ exports.buildTags = ({ name, config, UserTags = [] }) => {
   assert(stage);
   assert(projectName);
 
-  return [
-    ...UserTags,
-    {
-      Key: KeyName,
-      Value: name,
-    },
-    {
-      Key: managedByKey,
-      Value: managedByValue,
-    },
-    {
-      Key: createdByProviderKey,
-      Value: providerName,
-    },
-    {
-      Key: stageTagKey,
-      Value: stage,
-    },
-    { Key: "projectName", Value: projectName },
-  ];
+  return pipe([
+    () => [
+      ...UserTags,
+      {
+        Key: KeyName,
+        Value: name,
+      },
+      {
+        Key: managedByKey,
+        Value: managedByValue,
+      },
+      {
+        Key: createdByProviderKey,
+        Value: providerName,
+      },
+      {
+        Key: stageTagKey,
+        Value: stage,
+      },
+      { Key: "projectName", Value: projectName },
+    ],
+    switchCase([
+      () => isEmpty(namespace),
+      identity,
+      (tags) => [
+        ...tags,
+        {
+          Key: namespaceKey,
+          Value: namespace,
+        },
+      ],
+    ]),
+  ])();
 };
 
 exports.isOurMinion = ({ resource, config }) => {
@@ -179,6 +247,33 @@ exports.isOurMinion = ({ resource, config }) => {
     }),
   ])();
 };
+const findNamespaceInTags = (config) => ({ live }) =>
+  pipe([
+    tap(() => {
+      assert(live);
+    }),
+    () => live,
+    get("Tags"),
+    find(eq(get("Key"), config.namespaceKey)),
+    get("Value", ""),
+  ])();
+
+exports.findNamespaceInTags = findNamespaceInTags;
+
+const findNamespaceInTagsObject = (config) => ({ live } = {}) =>
+  pipe([
+    tap(() => {
+      assert(config.namespaceKey);
+    }),
+    () => live,
+    get("tags"),
+    get(config.namespaceKey),
+    tap(() => {
+      assert(true);
+    }),
+  ])();
+
+exports.findNamespaceInTagsObject = findNamespaceInTagsObject;
 
 const findNameInTags = (item) =>
   pipe([

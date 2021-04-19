@@ -26,6 +26,7 @@ const {
   Ec2New,
   findNameInTagsOrId,
   shouldRetryOnException,
+  findNamespaceInTags,
 } = require("../AwsCommon");
 
 exports.AwsRouteTable = ({ spec, config }) => {
@@ -163,12 +164,12 @@ exports.AwsRouteTable = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties }) =>
+  const configDefault = async ({ name, namespace, properties }) =>
     defaultsDeep({
       TagSpecifications: [
         {
           ResourceType: "route-table",
-          Tags: buildTags({ config, name }),
+          Tags: buildTags({ config, namespace, name }),
         },
       ],
     })(properties);
@@ -184,6 +185,7 @@ exports.AwsRouteTable = ({ spec, config }) => {
     findId,
     findName,
     findDependencies,
+    findNamespace: findNamespaceInTags(config),
     getByName,
     getById,
     cannotBeDeleted,

@@ -23,6 +23,7 @@ const {
   ELBv2New,
   AutoScalingNew,
   buildTags,
+  findNamespaceInTags,
   shouldRetryOnException,
 } = require("../AwsCommon");
 const findName = get("TargetGroupName");
@@ -34,6 +35,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
   const elb = ELBv2New(config);
   const autoScaling = AutoScalingNew(config);
 
+  // TODO findDependencies
   const findDependencies = ({ live }) => [
     { type: "Vpc", ids: [live.VpcId] },
     { type: "LoadBalancer", ids: live.LoadBalancerArns },
@@ -215,7 +217,12 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createTargetGroup-property
-  const configDefault = async ({ name, properties, dependencies: { vpc } }) =>
+  const configDefault = async ({
+    name,
+    namespace,
+    properties,
+    dependencies: { vpc },
+  }) =>
     pipe([
       tap(() => {
         assert(vpc);
@@ -225,7 +232,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
         Name: name,
         Protocol: "HTTP",
         VpcId: getField(vpc, "VpcId"),
-        Tags: buildTags({ name, config }),
+        Tags: buildTags({ name, namespace, config }),
       }),
     ])();
 
@@ -233,6 +240,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     type: "TargetGroup",
     spec,
     findId,
+    findNamespace: findNamespaceInTags(config),
     findDependencies,
     getByName,
     findName,

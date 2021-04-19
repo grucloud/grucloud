@@ -30,7 +30,11 @@ const {
   isDownByIdCore,
   buildTagsObject,
 } = require("@grucloud/core/Common");
-const { EKSNew, shouldRetryOnException } = require("../AwsCommon");
+const {
+  EKSNew,
+  shouldRetryOnException,
+  findNamespaceInTagsObject,
+} = require("../AwsCommon");
 
 const findName = get("name");
 const findId = findName;
@@ -179,8 +183,10 @@ exports.EKSCluster = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) =>
-    defaultsDeep({ name, tags: buildTagsObject({ config, name }) })(properties);
+  const configDefault = async ({ name, namespace, properties, dependencies }) =>
+    defaultsDeep({ name, tags: buildTagsObject({ config, namespace, name }) })(
+      properties
+    );
 
   const hook = ({ resource }) => ({
     name: "cluster",
@@ -250,6 +256,7 @@ exports.EKSCluster = ({ spec, config }) => {
     spec,
     findId,
     findDependencies,
+    findNamespace: findNamespaceInTagsObject(config),
     getByName,
     findName,
     create,

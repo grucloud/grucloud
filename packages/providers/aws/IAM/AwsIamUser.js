@@ -18,6 +18,7 @@ const {
   IAMNew,
   buildTags,
   findNameInTags,
+  findNamespaceInTags,
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
 } = require("../AwsCommon");
@@ -142,10 +143,9 @@ exports.AwsIamUser = ({ spec, config }) => {
     pipe([
       tap(() => {
         logger.info(`create iam user ${name}`);
-        logger.debug(`payload: ${tos(payload)}`);
+        logger.debug(`${name} => ${tos(payload)}`);
       }),
-      () => defaultsDeep({ Tags: buildTags({ name, config }) })(payload),
-      (createParams) => iam().createUser(createParams),
+      () => iam().createUser(payload),
       get("User"),
       tap.if(
         () => iamGroups,
@@ -233,8 +233,12 @@ exports.AwsIamUser = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) =>
-    defaultsDeep({ UserName: name, Path: "/" })(properties);
+  const configDefault = async ({ name, namespace, properties, dependencies }) =>
+    defaultsDeep({
+      UserName: name,
+      Path: "/",
+      Tags: buildTags({ name, namespace, config }),
+    })(properties);
 
   return {
     type: "IamUser",
@@ -251,5 +255,6 @@ exports.AwsIamUser = ({ spec, config }) => {
     configDefault,
     shouldRetryOnException,
     shouldRetryOnExceptionDelete,
+    findNamespace: findNamespaceInTags(config),
   };
 };

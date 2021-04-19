@@ -38,7 +38,7 @@ const MockStack = require("../mock/mock/iac");
 
 const createAws = async ({}) => {
   const provider = AwsProvider({
-    configs: [require("./configAws"), AwsStackEKS.config],
+    configs: [require("./configAws"), AwsStackEC2.config, AwsStackEKS.config],
   });
 
   const keyPair = await provider.useKeyPair({

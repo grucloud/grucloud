@@ -18,12 +18,8 @@ const { isEmpty, defaultsDeep, find } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsRoute" });
 const { tos } = require("@grucloud/core/tos");
-const { getByIdCore, buildTags } = require("../AwsCommon");
-const {
-  getByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-} = require("@grucloud/core/Common");
+const { findNamespaceInTags, buildTags } = require("../AwsCommon");
+const { getByNameCore } = require("@grucloud/core/Common");
 const { Ec2New, shouldRetryOnException } = require("../AwsCommon");
 
 exports.AwsRoute = ({ spec, config }) => {
@@ -89,7 +85,14 @@ exports.AwsRoute = ({ spec, config }) => {
                     assign({
                       name: () => resource.name,
                       RouteTableId: () => routeTable.live.RouteTableId,
-                      Tags: () => buildTags({ config, name: resource.name }),
+                      Tags: () =>
+                        buildTags({
+                          config,
+                          namespace: findNamespaceInTags(config)({
+                            live: routeTable.live,
+                          }),
+                          name: resource.name,
+                        }),
                     }),
                     () => undefined,
                   ]),
@@ -117,12 +120,6 @@ exports.AwsRoute = ({ spec, config }) => {
 
   const getByName = ({ name, lives, resources }) =>
     getByNameCore({ name, getList, findName, lives, resources });
-
-  //TODO
-  const getById = getByIdCore({ fieldIds: "RouteTableIds", getList });
-
-  const isUpById = () => true;
-  const isDownById = () => true;
 
   const createRouteInternetGateway = ({ ig, RouteTableId, payload }) =>
     switchCase([
@@ -162,7 +159,7 @@ exports.AwsRoute = ({ spec, config }) => {
   const create = async ({
     payload,
     name,
-    resolvedDependencies: { routeTable, subnet, ig, natGateway },
+    resolvedDependencies: { routeTable, ig, natGateway },
   }) =>
     pipe([
       tap(() => {
@@ -215,6 +212,7 @@ exports.AwsRoute = ({ spec, config }) => {
     spec,
     findId,
     findDependencies,
+    findNamespace: findNamespaceInTags(config),
     getByName,
     findName,
     getList,

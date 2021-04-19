@@ -1,21 +1,22 @@
 const assert = require("assert");
 const { map, pipe, tap, tryCatch, get, switchCase, eq } = require("rubico");
-const { find, defaultsDeep, pluck } = require("rubico/x");
+const { find, defaultsDeep, pluck, identity } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AutoScalingGroup" });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
-const { AutoScalingNew, shouldRetryOnException } = require("../AwsCommon");
+const {
+  AutoScalingNew,
+  shouldRetryOnException,
+  findValueInTags,
+  findNamespaceInTagsOrEksCluster,
+} = require("../AwsCommon");
 const { isOurMinionObject } = require("@grucloud/core/Common");
 
 const findName = get("AutoScalingGroupName");
 const findId = get("AutoScalingGroupName");
 
-const findClusterNameFromLive = pipe([
-  get("Tags"),
-  find(eq(get("Key"), "eks:cluster-name")),
-  get("Value"),
-]);
+const findClusterName = findValueInTags({ key: "eks:cluster-name" });
 
 const findClusterNameFromLives = ({ clusterName, clusters }) =>
   pipe([
@@ -41,7 +42,7 @@ exports.autoScalingGroupIsOurMinion = ({ live, lives, config }) =>
       assert(config.providerName);
       logger.debug(`autoScalingGroupIsOurMinion`);
     }),
-    () => findClusterNameFromLive(live),
+    () => findClusterName(live),
     (clusterName) =>
       findClusterNameFromLives({
         clusterName,
@@ -71,6 +72,11 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
       ids: pipe([() => live, get("Instances"), pluck("InstanceId")])(),
     },
   ];
+
+  const findNamespace = findNamespaceInTagsOrEksCluster({
+    config,
+    key: "eks:cluster-name",
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeAutoScalingGroups-property
   const getList = async ({ params } = {}) =>
@@ -104,8 +110,6 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
         logger.debug(`getByName: ${name}, result: ${tos(result)}`);
       }),
     ])();
-
-  const getById = ({ id }) => getByName({ name: id });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#deleteAutoScalingGroup-property
   const destroy = async ({ live }) =>
@@ -141,6 +145,7 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
     spec,
     findId,
     findDependencies,
+    findNamespace,
     findName,
     getByName,
     findName,

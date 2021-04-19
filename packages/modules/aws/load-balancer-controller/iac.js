@@ -7,7 +7,13 @@ const formatName = (name, config) => `${name}-${config.projectName}`;
 
 const loadBalancerPolicy = require("./load-balancer-policy.json");
 
-const createResources = async ({ provider, resources }) => {
+const NamespaceDefault = "LoadBalancerControllerRole";
+
+const createResources = async ({
+  provider,
+  resources,
+  namespace = NamespaceDefault,
+}) => {
   const { config } = provider;
   const { awsLoadBalancerController, eks } = config;
   assert(awsLoadBalancerController);
@@ -20,9 +26,10 @@ const createResources = async ({ provider, resources }) => {
 
   const iamOpenIdConnectProvider = await provider.makeIamOpenIDConnectProvider({
     name: formatName(
-      config.awsLoadBalancerController.iamOpenIdConnectProvider.name,
+      awsLoadBalancerController.iamOpenIdConnectProvider.name,
       config
     ),
+    namespace,
     dependencies: { cluster },
     properties: ({ dependencies: { cluster } }) => ({
       Url: get(
@@ -34,7 +41,8 @@ const createResources = async ({ provider, resources }) => {
   });
 
   const iamLoadBalancerPolicy = await provider.makeIamPolicy({
-    name: "AWSLoadBalancerControllerIAMPolicy",
+    name: formatName("AWSLoadBalancerControllerIAMPolicy", config),
+    namespace,
     properties: () => ({
       PolicyDocument: loadBalancerPolicy,
       Description: "Load Balancer Policy",
@@ -42,7 +50,8 @@ const createResources = async ({ provider, resources }) => {
   });
 
   const roleLoadBalancer = await provider.makeIamRole({
-    name: awsLoadBalancerController.role.name,
+    name: formatName(awsLoadBalancerController.role.name, config),
+    namespace,
     dependencies: {
       iamOpenIdConnectProvider,
       policies: [iamLoadBalancerPolicy],

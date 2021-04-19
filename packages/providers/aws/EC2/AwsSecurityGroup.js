@@ -12,12 +12,15 @@ const {
   tryCatch,
   switchCase,
 } = require("rubico");
-const { defaultsDeep, pluck, flatten } = require("rubico/x");
+const { find, defaultsDeep, pluck, flatten, isEmpty } = require("rubico/x");
 const {
   Ec2New,
   getByIdCore,
   shouldRetryOnException,
   buildTags,
+  findValueInTags,
+  findNamespaceEksCluster,
+  findNamespaceInTagsOrEksCluster,
   destroyNetworkInterfaces,
 } = require("../AwsCommon");
 const { retryCall } = require("@grucloud/core/Retry");
@@ -52,6 +55,11 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       ])(),
     },
   ];
+
+  const findNamespace = findNamespaceInTagsOrEksCluster({
+    config,
+    key: "aws:eks:cluster-name",
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroups-property
   const getList = ({ params } = {}) =>
@@ -141,17 +149,25 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
         logger.debug(`destroy sg ${JSON.stringify({ name, id })}`);
       }),
       () => destroyNetworkInterfaces({ ec2, Name: "group-id", Values: [id] }),
-      tryCatch(
-        () => ec2().deleteSecurityGroup({ GroupId: id }),
-        switchCase([
-          eq(get("code"), "InvalidGroup.NotFound"),
-          () => undefined,
-          (error) => {
-            logger.error(`deleteSecurityGroup error code: ${error.code}`);
-            throw error;
-          },
-        ])
-      ),
+      () =>
+        retryCall({
+          name: `deleteSecurityGroup: ${name}`,
+          fn: () => ec2().deleteSecurityGroup({ GroupId: id }),
+          config: { retryCount: 5, repeatDelay: 2e3 },
+          isExpectedException: pipe([
+            tap((ex) => {
+              logger.error(`delete sg isExpectedException ${tos(ex)}`);
+            }),
+            eq(get("code"), "InvalidGroup.NotFound"),
+          ]),
+          shouldRetryOnException: ({ error, name }) =>
+            pipe([
+              tap(() => {
+                logger.error(`delete shouldRetry ${tos({ name, error })}`);
+              }),
+              eq(get("code"), "DependencyViolation"),
+            ])(error),
+        }),
       tap(() =>
         retryCall({
           name: `destroy sg isDownById: ${name} id: ${id}`,
@@ -166,6 +182,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
 
   const configDefault = async ({
     name,
+    namespace,
     properties: { Tags, ...otherProps },
     dependencies,
   }) => {
@@ -177,7 +194,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
         TagSpecifications: [
           {
             ResourceType: "security-group",
-            Tags: buildTags({ config, name, UserTags: Tags }),
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
           },
         ],
       },
@@ -191,6 +208,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     findId,
     findName,
     findDependencies,
+    findNamespace,
     cannotBeDeleted,
     getList,
     create,

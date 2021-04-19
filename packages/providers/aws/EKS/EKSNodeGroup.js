@@ -27,7 +27,11 @@ const logger = require("@grucloud/core/logger")({ prefix: "EKSNodeGroup" });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore, buildTagsObject } = require("@grucloud/core/Common");
-const { EKSNew, shouldRetryOnException } = require("../AwsCommon");
+const {
+  EKSNew,
+  shouldRetryOnException,
+  findNamespaceInTagsObject,
+} = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const findName = get("nodegroupName");
@@ -220,6 +224,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
 
   const configDefault = async ({
     name,
+    namespace,
     properties,
     dependencies: { cluster, role, subnets },
   }) =>
@@ -237,7 +242,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
         maxSize: 1,
         desiredSize: 1,
       },
-      tags: buildTagsObject({ config, name }),
+      tags: buildTagsObject({ config, namespace, name }),
     })(properties);
 
   return {
@@ -245,6 +250,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     spec,
     findId,
     findDependencies,
+    findNamespace: findNamespaceInTagsObject(config),
     getByName,
     findName,
     update,

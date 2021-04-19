@@ -996,6 +996,7 @@ const countResources = pipe([
   tap((perProviders) => {
     assert(Array.isArray(perProviders));
   }),
+  filter(not(get("error"))),
   reduce(
     (acc, { results }) => ({
       providers: acc.providers + 1,
@@ -1029,10 +1030,21 @@ const doGraphLive = ({ providerGru, lives, commandOptions }) =>
   tap.if(
     () => commandOptions.graph,
     pipe([
-      () => providerGru.buildGraphLive({ lives }),
+      () => providerGru.buildGraphLive({ lives, options: commandOptions }),
       (result) => dotToSvg({ commandOptions, result }),
     ])
   )();
+
+const displayListResult = pipe([
+  tap((xxx) => {
+    logger.debug(`displayListResult`);
+  }),
+  switchCase([
+    pipe([countResources, eq(get("resources"), 0)]),
+    displayNoList,
+    pipe([tap(displayListSummary), countResources, displayListSummaryResults]),
+  ]),
+]);
 
 const listDoOk = ({ commandOptions, programOptions }) =>
   pipe([
@@ -1071,24 +1083,9 @@ const listDoOk = ({ commandOptions, programOptions }) =>
           providerGru.displayLives(lives);
         }),
         (lives) => lives.json,
-        tap((xxx) => {
-          assert(xxx);
-        }),
-        tap(
-          switchCase([
-            pipe([isEmpty]),
-            displayNoList,
-            pipe([
-              tap(displayListSummary),
-              filter(not(get("error"))),
-              countResources,
-              displayListSummaryResults,
-            ]),
-          ])
-        ),
-        tap((lives) => doGraphLive({ providerGru, lives, commandOptions })),
-        tap((xxx) => {
-          assert(true);
+        tap(displayListResult),
+        tap((lives) => {
+          doGraphLive({ providerGru, lives, commandOptions });
         }),
         (results) => ({
           error: any(get("error"))(results),

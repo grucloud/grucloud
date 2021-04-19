@@ -1,8 +1,12 @@
+const assert = require("assert");
 const { AwsProvider } = require("@grucloud/provider-aws");
 const hook = require("./hook");
 
+exports.config = require("./config");
+
 const createResources = async ({ provider, resources: { keyPair } }) => {
   const { config } = provider;
+  assert(config.eip);
   const eip = await provider.makeElasticIpAddress({
     name: config.eip.name,
   });

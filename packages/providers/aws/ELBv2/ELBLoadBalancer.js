@@ -18,7 +18,12 @@ const logger = require("@grucloud/core/logger")({
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { isUpByIdCore, isDownByIdCore } = require("@grucloud/core/Common");
-const { ELBv2New, buildTags, shouldRetryOnException } = require("../AwsCommon");
+const {
+  ELBv2New,
+  buildTags,
+  findNamespaceInTags,
+  shouldRetryOnException,
+} = require("../AwsCommon");
 
 const findName = get("LoadBalancerName");
 const findId = get("LoadBalancerArn");
@@ -165,6 +170,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
 
   const configDefault = async ({
     name,
+    namespace,
     properties,
     dependencies: { subnets, securityGroups },
   }) =>
@@ -178,7 +184,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
         Name: name,
         Type: "application",
         Scheme: "internet-facing",
-        Tags: buildTags({ name, config, UserTags: properties.Tags }),
+        Tags: buildTags({ name, config, namespace, UserTags: properties.Tags }),
         Subnets: map((subnet) => getField(subnet, "SubnetId"))(subnets),
         SecurityGroups: map((securityGroup) =>
           getField(securityGroup, "GroupId")
@@ -194,6 +200,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     spec,
     findId,
     findDependencies,
+    findNamespace: findNamespaceInTags(config),
     getByName,
     findName,
     create,

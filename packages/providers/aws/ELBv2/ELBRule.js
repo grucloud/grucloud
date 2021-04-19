@@ -29,6 +29,7 @@ const { isUpByIdCore, isDownByIdCore } = require("@grucloud/core/Common");
 const {
   ELBv2New,
   buildTags,
+  findNamespaceInTags,
   shouldRetryOnException,
   findNameInTagsOrId,
 } = require("../AwsCommon");
@@ -193,6 +194,7 @@ exports.ELBRule = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createRule-property
   const configDefault = async ({
     name,
+    namespace,
     properties,
     dependencies: { listener },
   }) =>
@@ -203,7 +205,7 @@ exports.ELBRule = ({ spec, config }) => {
       () => properties,
       defaultsDeep({
         ListenerArn: getField(listener, "ListenerArn"),
-        Tags: buildTags({ name, config }),
+        Tags: buildTags({ name, namespace, config }),
       }),
     ])();
 
@@ -214,6 +216,7 @@ exports.ELBRule = ({ spec, config }) => {
     spec,
     findId,
     findDependencies,
+    findNamespace: findNamespaceInTags(config),
     getByName,
     findName,
     create,

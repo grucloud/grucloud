@@ -467,7 +467,7 @@
       "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["list"]
+      "args": ["list", "-g", "-p", "aws"]
     },
     {
       "type": "node",
@@ -527,7 +527,7 @@
       "cwd": "${workspaceFolder}/examples/starhackit/minikube",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["list"]
+      "args": ["list", "-g", "-a"]
     },
     {
       "type": "node",
@@ -853,15 +853,7 @@
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["g"]
     },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Aws Website List",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/aws/website-https",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["list"]
-    },
+   
     {
       "type": "node",
       "request": "launch",
@@ -906,6 +898,15 @@
       "cwd": "${workspaceFolder}/packages/modules/aws/certificate",
       "internalConsoleOptions": "openOnSessionStart",
       "args": ["destroy", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Aws Website List",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/website-https",
+      "internalConsoleOptions": "openOnSessionStart",
+      "args": ["list", "-g"]
     },
     {
       "type": "node",

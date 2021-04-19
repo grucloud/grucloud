@@ -23,6 +23,7 @@ const { isUpByIdCore, isDownByIdCore } = require("@grucloud/core/Common");
 const {
   ELBv2New,
   buildTags,
+  findNamespaceInTags,
   findNameInTagsOrId,
   shouldRetryOnException,
 } = require("../AwsCommon");
@@ -39,6 +40,10 @@ exports.ELBListener = ({ spec, config }) => {
     {
       type: "LoadBalancer",
       ids: [live.LoadBalancerArn],
+    },
+    {
+      type: "Certificate",
+      ids: pipe([() => live, get("Certificates"), pluck("CertificateArn")])(),
     },
   ];
 
@@ -178,6 +183,7 @@ exports.ELBListener = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createListener-property
   const configDefault = async ({
     name,
+    namespace,
     properties,
     dependencies: { loadBalancer },
   }) =>
@@ -188,7 +194,7 @@ exports.ELBListener = ({ spec, config }) => {
       () => properties,
       defaultsDeep({
         LoadBalancerArn: getField(loadBalancer, "LoadBalancerArn"),
-        Tags: buildTags({ name, config }),
+        Tags: buildTags({ name, namespace, config }),
       }),
     ])();
 
@@ -197,6 +203,7 @@ exports.ELBListener = ({ spec, config }) => {
     spec,
     findId,
     findDependencies,
+    findNamespace: findNamespaceInTags(config),
     getByName,
     findName,
     create,

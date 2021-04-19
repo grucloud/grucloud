@@ -24,6 +24,7 @@ const {
 const {
   Ec2New,
   findNameInTags,
+  findNamespaceInTags,
   shouldRetryOnException,
   buildTags,
   destroyNetworkInterfaces,
@@ -40,7 +41,12 @@ exports.AwsSubnet = ({ spec, config }) => {
 
   const findId = get("SubnetId");
 
-  const findDependencies = ({ live }) => [{ type: "Vpc", ids: [live.VpcId] }];
+  const findDependencies = ({ live }) => [
+    {
+      type: "Vpc",
+      ids: [live.VpcId],
+    },
+  ];
 
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });
   const getById = ({ id }) => getByIdCore({ id, getList, findId });
@@ -156,6 +162,7 @@ exports.AwsSubnet = ({ spec, config }) => {
 
   const configDefault = async ({
     name,
+    namespace,
     properties: { Tags, ...otherProps },
     dependencies: { vpc },
   }) =>
@@ -164,7 +171,7 @@ exports.AwsSubnet = ({ spec, config }) => {
       TagSpecifications: [
         {
           ResourceType: "subnet",
-          Tags: buildTags({ config, name, UserTags: Tags }),
+          Tags: buildTags({ config, namespace, name, UserTags: Tags }),
         },
       ],
     })(otherProps);
@@ -177,6 +184,7 @@ exports.AwsSubnet = ({ spec, config }) => {
     findId,
     findName,
     findDependencies,
+    findNamespace: findNamespaceInTags(config),
     getByName,
     cannotBeDeleted,
     getList,

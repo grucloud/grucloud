@@ -34,6 +34,7 @@ const {
   includes,
   isFunction,
   identity,
+  size,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreProvider" });
@@ -82,6 +83,7 @@ const configProviderDefault = {
   managedByDescription: "Managed By GruCloud",
   createdByProviderKey: "CreatedByProvider",
   stageTagKey: "stage",
+  namespaceKey: "namespace",
   stage: "dev",
   retryCount: 30,
   retryDelay: 10e3,
@@ -117,6 +119,7 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
       displayNameResource: get("name"),
       findMeta: () => undefined,
       findDependencies: () => [],
+      findNamespace: () => "",
       cannotBeDeleted: () => false,
       configDefault: () => ({}),
       isInstanceUp: not(isEmpty),
@@ -126,7 +129,8 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
 
 const ResourceMaker = ({
   name: resourceName,
-  meta = {},
+  namespace,
+  meta,
   dependencies = {},
   filterLives,
   properties = () => ({}),
@@ -137,7 +141,9 @@ const ResourceMaker = ({
 }) => {
   const { type } = spec;
   assert(resourceName, `missing 'name' property for type: ${type}`);
-  logger.debug(`ResourceMaker: ${tos({ type, resourceName, meta })}`);
+  logger.debug(
+    `ResourceMaker: ${tos({ type, resourceName, namespace, meta })}`
+  );
 
   const client = createClient({
     providerName: provider.name,
@@ -155,8 +161,9 @@ const ResourceMaker = ({
       () =>
         client.getByName({
           provider,
-          meta,
           name: resourceName,
+          namespace,
+          meta,
           dependencies,
           properties,
           resolveConfig,
@@ -257,7 +264,7 @@ const ResourceMaker = ({
             tap((updateItem) => {
               logger.debug(`updateItem ${tos(updateItem)}`);
             }),
-          ]),
+          ])(),
         () => {
           logger.info(`planUpdate diff no update`);
         },
@@ -445,6 +452,7 @@ const ResourceMaker = ({
         const config = await client.configDefault({
           name: resourceName,
           meta,
+          namespace,
           properties: defaultsDeep(spec.propertiesDefault)(
             await properties({ dependencies: resolvedDependencies })
           ),
@@ -501,6 +509,7 @@ const ResourceMaker = ({
           meta,
           name: resourceName,
           payload,
+          namespace,
           dependencies,
           attributes,
           resolvedDependencies,
@@ -591,6 +600,7 @@ const ResourceMaker = ({
   const toJSON = () => ({
     providerName: provider.name,
     type,
+    namespace,
     name: resourceName,
     meta,
     displayName: client.displayNameResource({
@@ -609,6 +619,7 @@ const ResourceMaker = ({
     type,
     provider,
     name: resourceName,
+    namespace,
     meta,
     dependencies,
     addUsedBy,
@@ -676,7 +687,8 @@ const createResourceMakers = ({ specs, config: configProvider, provider }) =>
       assert(spec.type);
       acc[`make${spec.type}`] = async ({
         name,
-        meta = {},
+        meta,
+        namespace,
         config: configUser = {},
         dependencies,
         properties,
@@ -687,6 +699,7 @@ const createResourceMakers = ({ specs, config: configProvider, provider }) =>
         const resource = ResourceMaker({
           meta,
           name,
+          namespace,
           filterLives,
           properties,
           attributes,
@@ -720,7 +733,8 @@ const createResourceMakersListOnly = ({
       assert(spec.type);
       acc[`use${spec.type}`] = async ({
         name,
-        meta = {},
+        meta,
+        namespace,
         config: configUser = {},
         dependencies,
         properties,
@@ -731,6 +745,7 @@ const createResourceMakersListOnly = ({
         const resource = ResourceMaker({
           meta,
           name,
+          namespace,
           filterLives,
           properties,
           attributes,
@@ -1562,7 +1577,6 @@ function CoreProvider({
           }),
           meta: client.findMeta(live),
           id: client.findId(live),
-          dependencies: client.findDependencies({ live }),
           managedByUs: client.spec.isOurMinion({
             resource: live, //TODO remove resource
             live,
@@ -1629,7 +1643,7 @@ function CoreProvider({
         filterReadClient({ options, targetTypes: getTargetTypes() }),
       ]),
       tap((clients) => {
-        logger.info(`listLives #clients ${clients.length}`);
+        logger.info(`listLives #clients ${size(clients)}`);
       }),
       map((client) => ({
         meta: {

@@ -21,15 +21,11 @@ const {
   IAMNew,
   buildTags,
   findNameInTags,
+  findNamespaceInTags,
   shouldRetryOnExceptionDelete,
   shouldRetryOnException,
 } = require("../AwsCommon");
-const {
-  mapPoolSize,
-  getByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-} = require("@grucloud/core/Common");
+const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamRole = ({ spec, config }) => {
@@ -152,6 +148,7 @@ exports.AwsIamRole = ({ spec, config }) => {
 
   const create = async ({
     name,
+    namespace,
     payload = {},
     resolvedDependencies: { policies },
   }) =>
@@ -172,9 +169,12 @@ exports.AwsIamRole = ({ spec, config }) => {
           () =>
             iam().tagRole({
               RoleName: name,
-              Tags: defaultsDeep(buildTags({ name, config }))(
-                payload.Tags || []
-              ),
+              Tags: buildTags({
+                name,
+                config,
+                namespace,
+                UserTags: payload.Tags,
+              }),
             }),
           () => iam().listRoleTags({ RoleName: name }),
           get("Tags"),
@@ -270,6 +270,7 @@ exports.AwsIamRole = ({ spec, config }) => {
     type: "IamRole",
     spec,
     findDependencies,
+    findNamespace: findNamespaceInTags(config),
     findId,
     getByName,
     cannotBeDeleted,

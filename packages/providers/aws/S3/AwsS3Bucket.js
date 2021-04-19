@@ -483,7 +483,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property
-  const create = async ({ name: Bucket, payload }) => {
+  const create = async ({ name: Bucket, namespace, payload }) => {
     assert(Bucket);
     assert(payload);
 
@@ -513,7 +513,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
     logger.info(`create bucket ${tos({ Bucket, payload })}`);
 
-    const managementTags = buildTags({ name: Bucket, config });
+    const managementTags = buildTags({ name: Bucket, namespace, config });
 
     const paramsTag = {
       Bucket,
