@@ -4,7 +4,7 @@ module.exports = ({ stage }) => ({
   keyPair: { name: "kp" },
   eip: { name: "eip" },
   ec2Instance: {
-    name: "web-server",
+    name: "web-server-ec2-example",
     properties: () => ({
       InstanceType: "t2.micro",
     }),
