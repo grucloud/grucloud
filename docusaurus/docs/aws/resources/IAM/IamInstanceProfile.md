@@ -36,12 +36,27 @@ const iamInstanceProfile = await provider.makeIamInstanceProfile({
   }),
 });
 
+const image = await provider.useImage({
+  name: "Amazon Linux 2",
+  properties: () => ({
+    Filters: [
+      {
+        Name: "architecture",
+        Values: ["x86_64"],
+      },
+      {
+        Name: "description",
+        Values: ["Amazon Linux 2 AMI *"],
+      },
+    ],
+  }),
+});
+
 const server = await provider.makeEC2({
   name: "web-iam",
-  dependencies: { keyPair, iamInstanceProfile },
+  dependencies: { image, keyPair, iamInstanceProfile },
   properties: () => ({
     InstanceType: "t2.micro",
-    ImageId: "ami-00f6a0c18edb19300", // Ubuntu 18.04
   }),
 });
 ```
