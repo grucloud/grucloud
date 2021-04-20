@@ -16,9 +16,10 @@ At this point, one can use the usual **gc** commands such as **apply**, **list**
 gc apply
 ```
 
-```
+```sh
+
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
-│ Plan summary for provider k8s                                                           │
+│ Plan summary for provider cert-manager                                                  │
 ├─────────────────────────────────────────────────────────────────────────────────────────┤
 │ DEPLOY RESOURCES                                                                        │
 ├────────────────────┬────────────────────────────────────────────────────────────────────┤
@@ -36,18 +37,24 @@ gc apply
 │                    │ cert-manager-controller-orders,                                    │
 │                    │ cert-manager-controller-challenges,                                │
 │                    │ cert-manager-controller-ingress-shim, cert-manager-view,           │
-│                    │ cert-manager-edit                                                  │
+│                    │ cert-manager-edit,                                                 │
+│                    │ cert-manager-controller-approve:cert-manager-io,                   │
+│                    │ cert-manager-webhook:subjectaccessreviews                          │
 ├────────────────────┼────────────────────────────────────────────────────────────────────┤
 │ ClusterRoleBinding │ cert-manager-cainjector, cert-manager-controller-issuers,          │
 │                    │ cert-manager-controller-clusterissuers,                            │
 │                    │ cert-manager-controller-certificates,                              │
 │                    │ cert-manager-controller-orders,                                    │
 │                    │ cert-manager-controller-challenges,                                │
-│                    │ cert-manager-controller-ingress-shim                               │
+│                    │ cert-manager-controller-ingress-shim,                              │
+│                    │ cert-manager-controller-approve:cert-manager-io,                   │
+│                    │ cert-manager-webhook:subjectaccessreviews                          │
 ├────────────────────┼────────────────────────────────────────────────────────────────────┤
-│ Role               │ cert-manager-webhook:dynamic-serving                               │
+│ Role               │ cert-manager-cainjector:leaderelection,                            │
+│                    │ cert-manager:leaderelection, cert-manager-webhook:dynamic-serving  │
 ├────────────────────┼────────────────────────────────────────────────────────────────────┤
-│ RoleBinding        │ cert-manager-webhook:dynamic-serving                               │
+│ RoleBinding        │ cert-manager-cainjector:leaderelection,                            │
+│                    │ cert-manager:leaderelection, cert-manager-webhook:dynamic-serving  │
 ├────────────────────┼────────────────────────────────────────────────────────────────────┤
 │ Service            │ cert-manager, cert-manager-webhook                                 │
 ├────────────────────┼────────────────────────────────────────────────────────────────────┤
@@ -57,22 +64,24 @@ gc apply
 ├────────────────────┼────────────────────────────────────────────────────────────────────┤
 │ ValidatingWebhook… │ cert-manager-webhook                                               │
 └────────────────────┴────────────────────────────────────────────────────────────────────┘
-✔ Are you sure to deploy 35 resources, 11 types on 1 provider? … yes
-Deploying resources on 1 provider: k8s
-✓ k8s
+Deploying resources on 1 provider: cert-manager
+✓ cert-manager
   ✓ Initialising
   ✓ Deploying
     ✓ CustomResourceDefinition 6/6
     ✓ Namespace 1/1
     ✓ ServiceAccount 3/3
-    ✓ ClusterRole 9/9
-    ✓ ClusterRoleBinding 7/7
-    ✓ Role 1/1
-    ✓ RoleBinding 1/1
+    ✓ ClusterRole 11/11
+    ✓ ClusterRoleBinding 9/9
+    ✓ Role 3/3
+    ✓ RoleBinding 3/3
     ✓ Service 2/2
     ✓ Deployment 3/3
     ✓ MutatingWebhookConfiguration 1/1
     ✓ ValidatingWebhookConfiguration 1/1
-35 resources deployed of 11 types and 1 provider
-
+  ✓ default::onDeployed
+    ✓ CertificateRequest
+43 resources deployed of 11 types and 1 provider
+Running OnDeployedGlobal resources on 1 provider: cert-manager
+Command "gc a -f" executed in 17s
 ```

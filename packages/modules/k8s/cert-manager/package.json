@@ -6,13 +6,14 @@
   "scripts": {
     "test": "mocha --exit './{,!(node_modules)/**}/*.test.js'",
     "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
-    "gen-code": "node ../../../tools/k8s-manifest2code.js --input cert-manager.yaml",
-    "download-manifest": "curl -L -o cert-manager.yaml https://github.com/jetstack/cert-manager/releases/download/v1.0.2/cert-manager.yaml"
+    "gen-code": "k8s-manifest2code --input cert-manager.yaml",
+    "download-manifest": "curl -L -o cert-manager.yaml https://github.com/jetstack/cert-manager/releases/download/v1.3.0/cert-manager.yaml"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.10.25",
+    "@grucloud/k8s-manifest2code": "^1.10.22",
     "@grucloud/provider-k8s": "^1.11.0",
     "rubico": "^1.6.21"
   },
