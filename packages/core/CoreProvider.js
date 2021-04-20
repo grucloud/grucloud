@@ -133,7 +133,7 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
 
 const ResourceMaker = ({
   name: resourceName,
-  namespace,
+  namespace = "",
   meta,
   dependencies = {},
   filterLives,

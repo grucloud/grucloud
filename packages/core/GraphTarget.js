@@ -1,3 +1,4 @@
+const { AssertionError } = require("assert");
 const assert = require("assert");
 const {
   pipe,
@@ -13,10 +14,10 @@ const {
   switchCase,
   reduce,
 } = require("rubico");
-const { callProp, isEmpty, size } = require("rubico/x");
+const { callProp, isEmpty, size, groupBy, values } = require("rubico/x");
 const logger = require("./logger")({ prefix: "Graph" });
 
-const { formatNodeName } = require("./GraphCommon");
+const { formatNodeName, formatNamespace } = require("./GraphCommon");
 
 const buildNode = ({ colorLigher, color }) => (resource) => `"${
   resource.type
@@ -30,32 +31,85 @@ const buildNode = ({ colorLigher, color }) => (resource) => `"${
 )}</FONT><br align="left" /></td></tr>
   </table>>];\n`;
 
+const buildNodes = ({ options }) =>
+  pipe([
+    tap((resources) => {
+      assert(true);
+    }),
+    map(buildNode(options)),
+    callProp("join", "\n"),
+    tap((nodes) => {
+      assert(true);
+    }),
+  ]);
+
 const buildEdge = ({ color }) => ({ resource, dependency }) =>
   `"${resource.type}::${resource.name}" -> "${dependency.type}::${dependency.name}" [color="${color}"];\n`;
 
-const buildSubGraphCluster = ({ fontName, color }) => ({
+const buildSubGraphClusterProvider = ({
   providerName,
-  assocations,
-}) => `subgraph "cluster_${providerName}" {
+  options: { fontName, color },
+}) => (content) => `subgraph "cluster_${providerName}" {
     fontname=${fontName}
     color="${color}"
     label=<<FONT color='${color}' POINT-SIZE="20"><B>${providerName}</B></FONT>>;
     node [shape=box fontname=${fontName} color="${color}"]
-    ${assocations}}
+    ${content}}
     `;
+
+const buildSubGraphClusterNamespace = ({
+  options: { fontName, color },
+  providerName,
+  namespace,
+}) => (content) => `subgraph "cluster_${providerName}_${namespace}" {
+        fontname=${fontName}
+        color="${color}"
+        label=<<FONT color='${color}' POINT-SIZE="20"><B>${namespace}</B></FONT>>;
+        node [shape=box fontname=${fontName} color="${color}"]
+        ${content}}
+        `;
+
+const buildNamespaceGraph = ({ options, providerName, namespace, resources }) =>
+  pipe([
+    tap(() => {
+      assert(true);
+    }),
+    () => resources,
+    buildNodes({ options, namespace }),
+    buildSubGraphClusterNamespace({ namespace, providerName, options }),
+    tap((xxx) => {
+      assert(true);
+    }),
+  ])();
 
 exports.buildSubGraph = ({ providerName, resources, options }) =>
   pipe([
     tap((xxx) => {
-      logger.debug(`buildGraphNode`);
+      logger.debug(`buildSubGraph`);
     }),
     () => resources,
-    map(buildNode(options)),
+    groupBy("namespace"),
+    tap((xxx) => {
+      logger.debug(`buildSubGraph`);
+    }),
+    map.entries(([namespace, resources]) => [
+      namespace,
+      buildNamespaceGraph({
+        providerName,
+        options,
+        namespace: formatNamespace(namespace),
+        resources,
+      }),
+    ]),
+    values,
+    tap((xxx) => {
+      assert(true);
+    }),
+    //callProp("reverse"),
     callProp("join", "\n"),
-    (assocations) =>
-      buildSubGraphCluster(options)({ providerName, assocations }),
+    buildSubGraphClusterProvider({ options, providerName }),
     tap((result) => {
-      logger.debug(`buildSubGraph ${result}`);
+      assert(true);
     }),
   ])();
 

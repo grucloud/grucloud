@@ -120,6 +120,7 @@ exports.createResources = async ({
   // Use the security group created by EKS
   const securityGroupK8sCluster = await provider.useSecurityGroup({
     name: "sg-eks-k8s-cluster",
+    namespace,
     filterLives: ({ items }) =>
       pipe([
         () => items,

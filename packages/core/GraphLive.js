@@ -27,7 +27,7 @@ const {
 } = require("rubico/x");
 const logger = require("./logger")({ prefix: "Graph" });
 
-const { formatNodeName, optionsDefault } = require("./GraphCommon");
+const { formatNodeName, formatNamespace } = require("./GraphCommon");
 
 const NamespacesHide = ["kube-system", "kube-public", "kube-node-lease"];
 
@@ -50,8 +50,6 @@ const buildNode = ({ resource, namespace }) => `"${
   { name: nodeNameFromResource(resource) }
 )}</FONT><br align="left" /></td></tr>
   </table>>];\n`;
-
-const formatNamespace = switchCase([isEmpty, () => "default", identity]);
 
 const buildSubGraph = ({ providerName, namespace, resources }) =>
   pipe([
@@ -85,13 +83,21 @@ const filterResources = ({
   resourceTypesHide = ResourceTypesHide,
   resourceNameFilter = resourceNameFilterDefault,
 }) =>
-  filter(
-    and([
-      (resource) => not(includes(resource.namespace))(namespacesHide),
-      (resource) => not(includes(resource.type))(resourceTypesHide),
-      resourceNameFilter,
-    ])
-  );
+  pipe([
+    tap((resources) => {
+      logger.debug(`buildSubGraphLive #resources ${size(resources)}`);
+    }),
+    filter(
+      and([
+        (resource) => not(includes(resource.namespace))(namespacesHide),
+        (resource) => not(includes(resource.type))(resourceTypesHide),
+        resourceNameFilter,
+      ])
+    ),
+    tap((resources) => {
+      logger.debug(`buildSubGraphLive filtered #resources ${size(resources)}`);
+    }),
+  ]);
 
 exports.buildSubGraphLive = ({ providerName, resourcesPerType, options }) =>
   pipe([

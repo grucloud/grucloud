@@ -13,7 +13,7 @@ const {
   switchCase,
   reduce,
 } = require("rubico");
-const { size, identity } = require("rubico/x");
+const { size, identity, isEmpty } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "Graph" });
 
@@ -31,3 +31,5 @@ exports.formatNodeName = ({ name }) =>
     () => `${name.substring(0, NodeNameMaxLength)}...`,
     identity,
   ])(name);
+
+exports.formatNamespace = switchCase([isEmpty, () => "default", identity]);
