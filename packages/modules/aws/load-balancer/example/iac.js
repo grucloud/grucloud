@@ -1,47 +1,74 @@
+const assert = require("assert");
 const { AwsProvider } = require("@grucloud/provider-aws");
+
+const ModuleAwsVpc = require("@grucloud/module-aws-vpc");
+const ModuleAwsEks = require("@grucloud/module-aws-eks");
+const ModuleAwsCertificate = require("@grucloud/module-aws-certificate");
 const ModuleAwsLoadBalancer = require("@grucloud/module-aws-load-balancer");
 
-exports.createStack = async ({ config }) => {
+exports.createStack = async ({ stage }) => {
   const provider = AwsProvider({
-    configs: [ModuleAwsLoadBalancer.config, config],
+    stage,
+    configs: [
+      ModuleAwsCertificate.config,
+      ModuleAwsEks.config,
+      ModuleAwsVpc.config,
+      ModuleAwsLoadBalancer.config,
+      require("./config"),
+    ],
   });
 
-  const vpc = await provider.makeVpc({
-    name: "vpc-elbv2-example",
-    properties: () => ({
-      CidrBlock: "192.168.0.0/16",
-    }),
+  assert(provider.config.certificate);
+  const { domainName, rootDomainName } = provider.config.certificate;
+  assert(domainName);
+  assert(rootDomainName);
+
+  const domain = await provider.useRoute53Domain({
+    name: rootDomainName,
   });
 
-  const internetGateway = await provider.makeInternetGateway({
-    name: `ig-${vpc.name}`,
-    dependencies: { vpc },
+  const hostedZone = await provider.makeHostedZone({
+    name: `${domainName}.`,
+    dependencies: { domain },
   });
 
-  const subnet1 = await provider.makeSubnet({
-    name: `subnet1-${vpc.name}`,
-    dependencies: { vpc },
-    properties: () => ({
-      CidrBlock: "192.168.0.0/19",
-      AvailabilityZone: `${provider.config.region}a`,
-    }),
-  });
-  const subnet2 = await provider.makeSubnet({
-    name: `subnet2-${vpc.name}`,
-    dependencies: { vpc },
-    properties: () => ({
-      CidrBlock: "192.168.32.0/19",
-      AvailabilityZone: `${provider.config.region}b`,
-    }),
-  });
-
-  const loadBalancerResources = await ModuleAwsLoadBalancer.createResources({
+  const resourcesCertificate = await ModuleAwsCertificate.createResources({
     provider,
-    resources: { vpc, subnets: [subnet1, subnet2] },
+    resources: { hostedZone },
+  });
+
+  const resourcesVpc = await ModuleAwsVpc.createResources({ provider });
+  const resourcesEks = await ModuleAwsEks.createResources({
+    provider,
+    resources: resourcesVpc,
+  });
+
+  const resourcesLb = await ModuleAwsLoadBalancer.createResources({
+    provider,
+    resources: {
+      certificate: resourcesCertificate.certificate,
+      vpc: resourcesVpc.vpc,
+      hostedZone,
+      subnets: resourcesVpc.subnetsPublic,
+      eks: resourcesEks,
+    },
   });
 
   return {
     provider,
-    resources: { loadBalancer: loadBalancerResources },
+    resources: {
+      domain,
+      hostedZone,
+      certificate: resourcesCertificate,
+      vpc: resourcesVpc,
+      eks: resourcesEks,
+      lb: resourcesLb,
+    },
+    hooks: [
+      ...ModuleAwsCertificate.hooks,
+      ...ModuleAwsVpc.hooks,
+      ...ModuleAwsEks.hooks,
+    ],
+    isProviderUp: () => ModuleAwsEks.isProviderUp({ resources: resourcesEks }),
   };
 };

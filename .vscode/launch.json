@@ -472,6 +472,16 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "EKS LBC Plan",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["plan", "-p", "k8s"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "EKS LEAN Graph",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",

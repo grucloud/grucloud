@@ -16,6 +16,7 @@
     "@grucloud/module-aws-certificate": "^1.11.0",
     "@grucloud/module-aws-eks": "^1.11.0",
     "@grucloud/module-aws-vpc": "^1.11.0",
+    "@grucloud/module-aws-load-balancer": "*",
     "@grucloud/provider-aws": "^1.11.0",
     "@grucloud/provider-k8s": "^1.11.0",
     "axios": "^0.21.1",
