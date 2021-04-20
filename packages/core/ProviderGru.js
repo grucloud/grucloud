@@ -148,16 +148,10 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
   const createLives = (livesRaw = []) => {
     const livesToMap = map(({ providerName, results }) => [
       providerName,
-      new Map(
-        map(({ type, resources }) => [type, { type, providerName, resources }])(
-          results
-        )
-      ),
+      new Map(map((perProvider) => [perProvider.type, perProvider])(results)),
     ]);
 
     const mapPerProvider = new Map(livesToMap(livesRaw));
-
-    let error;
 
     const toJSON = () =>
       pipe([
@@ -210,12 +204,22 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
           assert(true);
         }),
       ])();
-
+    const getByName = ({ providerName, type, name }) =>
+      pipe([
+        () => getByType({ providerName, type }),
+        tap.if(isEmpty, () => {
+          logger.error(`cannot find type ${type} on provider ${providerName}`);
+        }),
+        get("resources"),
+        find(eq(get("name"), name)),
+        tap((result) => {
+          assert(true);
+        }),
+      ])();
     return {
       get error() {
-        return error;
+        return any(get("error"))(toJSON());
       },
-      getById,
       addResource: ({ providerName, type, live }) => {
         assert(providerName);
         assert(type);
@@ -269,10 +273,6 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
         const mapPerType = mapPerProvider.get(providerName) || new Map();
         mapPerType.set(type, { type, resources, error: latestError });
         mapPerProvider.set(providerName, mapPerType);
-
-        if (latestError) {
-          error = true;
-        }
       },
       get json() {
         return toJSON();
@@ -291,6 +291,8 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
         mapPerProvider.set(providerName, mapPerType);
       },
       getByType,
+      getById,
+      getByName,
     };
   };
 
@@ -337,6 +339,9 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
 
   const decorateListResult = ({ lives }) =>
     pipe([
+      tap((xxx) => {
+        assert(lives);
+      }),
       map(
         assign({
           results: pipe([
@@ -353,6 +358,9 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
         })
       ),
       (livesRaw) => createLives(livesRaw),
+      tap((xxx) => {
+        assert(lives);
+      }),
     ]);
 
   const listLives = async ({
@@ -775,6 +783,9 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
           }
         )
       ),
+      tap.if(get("error"), (error) => {
+        throw error;
+      }),
       (results) => results.join("\n"),
       tap((result) => {
         logger.info(`buildSubGraph ${result}`);
