@@ -9,6 +9,7 @@ const {
   get,
   not,
   eq,
+  gte,
   switchCase,
 } = require("rubico");
 const {
@@ -22,9 +23,8 @@ const {
   identity,
   isString,
   isObject,
+  includes,
 } = require("rubico/x");
-const includes = require("rubico/x/includes");
-
 const logger = require("./logger")({ prefix: "Graph" });
 
 const NamespacesHide = ["kube-system", "kube-public", "kube-node-lease"];
@@ -35,6 +35,17 @@ const color = "#383838";
 const colorLigher = "#707070";
 const fontName = "Helvetica";
 
+const NodeNameMaxLength = 32;
+
+const formatNodeName = ({ name }) =>
+  switchCase([
+    gte(size, NodeNameMaxLength),
+    () => `${name.substring(0, NodeNameMaxLength)}...`,
+    identity,
+  ])(name);
+
+const nodeNameFromResource = (resource) => resource.name || resource.id;
+
 const buildNode = ({ resource, namespace }) => `"${
   resource.type
 }::${namespace}::${resource.id}" [label=<
@@ -42,9 +53,9 @@ const buildNode = ({ resource, namespace }) => `"${
      <tr><td align="text"><FONT color='${colorLigher}' POINT-SIZE="16"><B>${
   resource.type
 }</B></FONT><br align="left" /></td></tr>
-     <tr><td align="text"><FONT color='${color}' POINT-SIZE="18">${
-  resource.name || resource.id
-}</FONT><br align="left" /></td></tr>
+     <tr><td align="text"><FONT color='${color}' POINT-SIZE="18">${formatNodeName(
+  { name: nodeNameFromResource(resource) }
+)}</FONT><br align="left" /></td></tr>
   </table>>];\n`;
 
 const formatNamespace = switchCase([isEmpty, () => "default", identity]);
