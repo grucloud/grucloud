@@ -376,8 +376,21 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
       forEach(
         pipe([
           get("Attachment.AttachmentId"),
-          tap.if(not(isEmpty), (AttachmentId) =>
-            ec2().detachNetworkInterface({ AttachmentId })
+          tap.if(
+            not(isEmpty),
+            tryCatch(
+              (AttachmentId) => ec2().detachNetworkInterface({ AttachmentId }),
+              switchCase([
+                eq(get("code"), "AuthFailure"),
+                () => undefined,
+                (error) => {
+                  logger.error(
+                    `deleteNetworkInterface error code: ${error.code}`
+                  );
+                  throw error;
+                },
+              ])
+            )
           ),
         ])
       )
