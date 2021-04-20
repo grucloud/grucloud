@@ -85,6 +85,14 @@ const SecurityGroupRuleBase = ({ config }) => {
     return defaultsDeep(otherProps)({});
   };
 
+  const findNamespace = ({ live }) =>
+    pipe([
+      () => findNamespaceInTags(config)({ live }),
+      tap((namespace) => {
+        logger.debug(`findNamespace ${namespace}`);
+      }),
+    ])();
+
   const addTags = ({ name, namespace = "", payload, securityGroup }) =>
     pipe([
       () => ({
@@ -137,7 +145,9 @@ const SecurityGroupRuleBase = ({ config }) => {
             ...payload,
             Tags: buildTags({
               name,
-              namespace: findValueInTags({ key: buildKeyNamespace({ name }) }),
+              namespace: findValueInTags({ key: buildKeyNamespace({ name }) })(
+                securityGroup
+              ),
               config,
             }),
             GroupId: securityGroup.GroupId,
@@ -272,6 +282,7 @@ const SecurityGroupRuleBase = ({ config }) => {
     ])();
 
   return {
+    findNamespace,
     configDefault,
     getList,
     getByName,
@@ -289,6 +300,7 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
     configDefault,
     create,
     destroy,
+    findNamespace,
   } = SecurityGroupRuleBase({
     config,
   });
@@ -298,7 +310,7 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
     spec,
     findId,
     findDependencies,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace,
     findName,
     getByName,
     getList,
@@ -319,6 +331,7 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
     configDefault,
     create,
     destroy,
+    findNamespace,
   } = SecurityGroupRuleBase({
     config,
   });
@@ -328,7 +341,7 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
     spec,
     findId,
     findDependencies,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace,
     findName,
     getByName,
     getList,

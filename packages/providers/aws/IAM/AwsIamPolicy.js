@@ -11,6 +11,7 @@ const {
   eq,
   assign,
   pick,
+  or,
 } = require("rubico");
 const { defaultsDeep, find, size, identity, isEmpty } = require("rubico/x");
 const moment = require("moment");
@@ -24,6 +25,7 @@ const {
   findNamespaceInTags,
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
+  isOurMinion,
 } = require("../AwsCommon");
 const {
   mapPoolSize,
@@ -51,6 +53,20 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       ]),
       tap((name) => {
         logger.debug(`IamPolicy name: ${name}`);
+      }),
+    ])();
+
+  const findNamespace = ({ live }) =>
+    pipe([
+      () => live,
+      get("namespace"),
+      switchCase([
+        isEmpty,
+        () => findNamespaceInTags(config)({ live }),
+        identity,
+      ]),
+      tap((namespace) => {
+        logger.debug(`findNamespace ${namespace}`);
       }),
     ])();
 
@@ -259,7 +275,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     type: "IamPolicy",
     spec,
     findId,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace,
     getByName,
     findName,
     create,
@@ -270,3 +286,12 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     shouldRetryOnExceptionDelete,
   };
 };
+
+exports.isOurMinionIamPolicy = (item) =>
+  pipe([
+    () => item,
+    or([get("resource.readOnly"), isOurMinion]),
+    tap((isOurMinion) => {
+      logger.debug(`isOurMinionIamPolicy ${isOurMinion}`);
+    }),
+  ])();

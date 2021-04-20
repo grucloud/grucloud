@@ -18,17 +18,7 @@ module.exports = (config) => [
         spec,
         config,
       }),
-    isOurMinion: ({ resource }) => GoogleTag.isOurMinion({ resource, config }),
+    isOurMinion: GoogleTag.isOurMinion,
     compare: compareDnsManagedZone,
   },
-  /*{
-    type: "Domain",
-    Client: ({ spec }) =>
-      GcpDomain({
-        spec,
-        config,
-      }),
-    isOurMinion: ({ resource }) => GoogleTag.isOurMinion({ resource, config }),
-    compare: compareDomain,
-  },*/
 ];

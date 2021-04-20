@@ -14,7 +14,7 @@ module.exports = (config) => [
         spec,
         config,
       }),
-    isOurMinion: ({ resource }) => GoogleTag.isOurMinion({ resource, config }),
+    isOurMinion: GoogleTag.isOurMinion,
   },
   {
     type: "Object",
@@ -36,6 +36,6 @@ module.exports = (config) => [
 
       return [];
     },
-    isOurMinion: ({ resource }) => isGcpObjectOurMinion({ resource, config }),
+    isOurMinion: isGcpObjectOurMinion,
   },
 ];

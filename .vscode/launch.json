@@ -106,6 +106,16 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Module EKS List Graph",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/packages/modules/aws/eks/example",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["list", "-g"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Module AWS VPC Apply",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/packages/modules/aws/vpc/example",
@@ -448,6 +458,16 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["graph"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "EKS LBC Apply",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["apply", "-f", "-p", "aws"]
     },
     {
       "type": "node",

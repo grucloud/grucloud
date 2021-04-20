@@ -118,7 +118,7 @@ const findValueInTags = ({ key }) =>
 
 exports.findValueInTags = findValueInTags;
 
-const findNamespaceEksCluster = ({ config, key = "aws:eks:cluster-name" }) => ({
+const findEksCluster = ({ config, key = "aws:eks:cluster-name" }) => ({
   live,
   lives,
 }) =>
@@ -133,6 +133,22 @@ const findNamespaceEksCluster = ({ config, key = "aws:eks:cluster-name" }) => ({
       }),
     get("resources"),
     find(eq(get("name"), findValueInTags({ key })(live))),
+    tap((cluster) => {
+      logger.debug(`findEksCluster ${!!cluster}`);
+    }),
+  ])();
+
+exports.findEksCluster = findEksCluster;
+
+const findNamespaceEksCluster = ({ config, key = "aws:eks:cluster-name" }) => ({
+  live,
+  lives,
+}) =>
+  pipe([
+    tap(() => {
+      assert(lives, "lives");
+    }),
+    () => findEksCluster({ config, key })({ live, lives }),
     findNamespaceInTagsObject(config),
     tap((namespace) => {
       logger.debug(`findNamespace`, namespace);
@@ -211,7 +227,7 @@ exports.buildTags = ({ name, config, namespace, UserTags = [] }) => {
   ])();
 };
 
-exports.isOurMinion = ({ resource, config }) => {
+exports.isOurMinion = ({ live, config }) => {
   const {
     createdByProviderKey,
     providerName,
@@ -222,10 +238,10 @@ exports.isOurMinion = ({ resource, config }) => {
   return pipe([
     tap(() => {
       assert(createdByProviderKey);
-      assert(resource);
+      assert(live);
       assert(stage);
     }),
-    () => resource,
+    () => live,
     get("Tags"),
     switchCase([
       and([

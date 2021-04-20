@@ -11,6 +11,7 @@ const {
   and,
   tryCatch,
   switchCase,
+  or,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -38,6 +39,8 @@ const {
   buildTags,
   findValueInTags,
   findNamespaceInTagsOrEksCluster,
+  isOurMinion,
+  findEksCluster,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { CheckAwsTags } = require("../AwsTagCheck");
@@ -436,3 +439,24 @@ exports.AwsEC2 = ({ spec, config }) => {
     cannotBeDeleted,
   };
 };
+
+const isInOurCluster = ({ config }) => ({ live, lives }) =>
+  pipe([
+    () => ({ live, lives }),
+    findEksCluster({ config, key: "eks:cluster-name" }),
+    tap((cluster) => {
+      assert(true);
+    }),
+  ])();
+
+exports.isOurMinionEC2Instance = (item) =>
+  pipe([
+    tap(() => {
+      assert(true);
+    }),
+    () => item,
+    or([isInOurCluster({ config: item.config }), isOurMinion]),
+    tap((isOurMinion) => {
+      logger.debug(`isOurMinionEC2Instance ${isOurMinion}`);
+    }),
+  ])();

@@ -249,8 +249,9 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     shouldRetryOnExceptionDelete,
   };
 };
-exports.isOurMinionInstanceProfile = ({ resource, config: { projectName } }) =>
+exports.isOurMinionInstanceProfile = ({ live, config: { projectName } }) =>
   pipe([
+    () => live,
     get("Roles"),
     first,
     get("Tags"),
@@ -262,11 +263,6 @@ exports.isOurMinionInstanceProfile = ({ resource, config: { projectName } }) =>
       ])
     ),
     tap((minion) => {
-      logger.debug(
-        `isOurMinion ${minion} ${tos({
-          projectName,
-          resource,
-        })}`
-      );
+      logger.debug(`isOurMinion ${minion} ${tos({ projectName })}`);
     }),
-  ])(resource);
+  ])();

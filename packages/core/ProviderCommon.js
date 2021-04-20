@@ -98,16 +98,16 @@ const findDependentType = ({ type, specs }) =>
     flatMap((type) => findDependentType({ type, specs })),
     (results) => [type, ...results],
     tap((results) => {
-      logger.debug(`findDependentTypes ${type}, result: ${results}`);
+      //logger.debug(`findDependentTypes ${type}, result: ${results}`);
     }),
   ])();
 
 const findDependentTypes = ({ types, clients }) =>
   pipe([
     tap(() => {
-      logger.debug(
-        `findDependentTypes #clients ${size(clients)}, types: ${size(types)}`
-      );
+      // logger.debug(
+      //   `findDependentTypes #clients ${size(clients)}, types: ${size(types)}`
+      // );
     }),
     () => types,
     flatMap((type) =>
@@ -115,7 +115,7 @@ const findDependentTypes = ({ types, clients }) =>
     ),
     uniq,
     tap((results) => {
-      logger.debug(`findDependentTypes results: ${results}`);
+      //logger.debug(`findDependentTypes results: ${results}`);
     }),
   ])();
 

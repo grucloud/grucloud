@@ -41,7 +41,6 @@ exports.AwsIamGroup = ({ spec, config }) => {
       type: "IamPolicy",
       ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
     },
-    //{ type: "IamPolicyReadOnly", ids: live.AttachedPolicies },
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listGroups-property
@@ -236,10 +235,10 @@ exports.AwsIamGroup = ({ spec, config }) => {
   };
 };
 // TODO use resources instead of resourceNames
-exports.isOurMinionIamGroup = ({ resource, resourceNames }) => {
-  assert(resource);
+exports.isOurMinionIamGroup = ({ live, resourceNames }) => {
+  assert(live);
   assert(resourceNames, "resourceNames");
-  const isOur = resourceNames.includes(resource.GroupName);
+  const isOur = resourceNames.includes(live.GroupName);
   logger.debug(`isOurMinionIamGroup: ${isOur}`);
   return isOur;
 };

@@ -160,15 +160,15 @@ exports.createAxiosMakerK8s = ({ config, contentType }) =>
       }),
   ])();
 
-exports.isOurMinion = ({ resource, lives, config }) =>
+exports.isOurMinion = ({ live, lives, config }) =>
   or([
-    () => isOurMinionObject({ tags: resource.metadata.annotations, config }),
+    () => isOurMinionObject({ tags: live.metadata.annotations, config }),
     pipe([
       tap(() => {
         assert(lives);
-        logger.info(`isOurMinion ${resource.metadata.name}`);
+        logger.info(`isOurMinion ${live.metadata.name}`);
       }),
-      () => first(resource.metadata.ownerReferences),
+      () => first(live.metadata.ownerReferences),
       switchCase([
         not(isEmpty),
         ({ kind, uid }) =>
@@ -182,7 +182,7 @@ exports.isOurMinion = ({ resource, lives, config }) =>
             find(eq(get("live.metadata.uid"), uid)),
             get("managedByUs"),
             tap((result) => {
-              logger.info(`isOurMinion ${resource.metadata?.name}: ${result}`);
+              logger.info(`isOurMinion ${live.metadata?.name}: ${result}`);
             }),
           ])(),
         () => false,

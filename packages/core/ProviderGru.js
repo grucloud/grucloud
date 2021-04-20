@@ -180,10 +180,42 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
         }),
       ])();
 
+    const getByType = ({ providerName, type }) =>
+      pipe([
+        () => mapPerProvider.get(providerName) || new Map(),
+        (mapPerType) => mapPerType.get(type),
+        tap.if(isEmpty, () => {
+          logger.error(`cannot find type ${type} on provider ${providerName}`);
+        }),
+        tap((results) => {
+          logger.debug(
+            `getByType ${JSON.stringify({
+              providerName,
+              type,
+              count: pipe([get("resources"), size])(results),
+            })}`
+          );
+        }),
+      ])();
+
+    const getById = ({ providerName, type, id }) =>
+      pipe([
+        () => getByType({ providerName, type }),
+        tap.if(isEmpty, () => {
+          logger.error(`cannot find type ${type} on provider ${providerName}`);
+        }),
+        get("resources"),
+        find(eq(get("id"), id)),
+        tap((result) => {
+          assert(true);
+        }),
+      ])();
+
     return {
       get error() {
         return error;
       },
+      getById,
       addResource: ({ providerName, type, live }) => {
         assert(providerName);
         assert(type);
@@ -258,25 +290,7 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
         );
         mapPerProvider.set(providerName, mapPerType);
       },
-      getByType: ({ providerName, type }) =>
-        pipe([
-          () => mapPerProvider.get(providerName) || new Map(),
-          (mapPerType) => mapPerType.get(type),
-          tap.if(isEmpty, () => {
-            logger.error(
-              `cannot find type ${type} on provider ${providerName}`
-            );
-          }),
-          tap((results) => {
-            logger.debug(
-              `getByType ${JSON.stringify({
-                providerName,
-                type,
-                count: pipe([get("resources"), size])(results),
-              })}`
-            );
-          }),
-        ])(),
+      getByType,
     };
   };
 
@@ -289,12 +303,33 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
         assert(lives);
       }),
       () => getProvider({ providerName: resource.providerName }),
-      (provider) => provider.clientByType({ type: resource.type }),
-      (client) => ({
-        ...resource,
-        namespace: client.findNamespace({ live: resource.live, lives }),
-        dependencies: client.findDependencies({ live: resource.live, lives }),
-      }),
+
+      (provider) =>
+        pipe([
+          () => provider.clientByType({ type: resource.type }),
+          (client) => ({
+            ...resource,
+            namespace: client.findNamespace({ live: resource.live, lives }),
+            dependencies: client.findDependencies({
+              live: resource.live,
+              lives,
+            }),
+            managedByUs: client.spec.isOurMinion({
+              resource: provider.getResourceFromLive({
+                client,
+                live: resource.live,
+              }),
+              live: resource.live,
+              lives,
+              //TODO remove resourceNames
+              resourceNames: provider.resourceNames(),
+              resources: provider.getResourcesByType({
+                type: client.spec.type,
+              }),
+              config: provider.config,
+            }),
+          }),
+        ])(),
       tap((resource) => {
         assert(true);
       }),

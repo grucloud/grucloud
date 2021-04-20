@@ -337,7 +337,7 @@ exports.AwsHostedZone = ({ spec, config }) => {
   const update = async ({ name, live, diff }) =>
     pipe([
       tap(() => {
-        logger.info(`update ${name}, diff: ${tos(diff)}`);
+        logger.info(`update hosted zone ${name}, diff: ${tos(diff)}`);
         assert(name, "name");
         assert(live, "live");
         assert(diff, "diff");

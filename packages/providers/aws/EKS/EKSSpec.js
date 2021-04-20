@@ -2,8 +2,8 @@ const { isOurMinionObject } = require("@grucloud/core/Common");
 const { EKSCluster } = require("./EKSCluster");
 const { EKSNodeGroup, compareNodeGroup } = require("./EKSNodeGroup");
 
-const isOurMinion = ({ resource, config }) =>
-  isOurMinionObject({ tags: resource.tags, config });
+const isOurMinion = ({ live, config }) =>
+  isOurMinionObject({ tags: live.tags, config });
 
 module.exports = [
   {

@@ -4,11 +4,11 @@ const logger = require("@grucloud/core/logger")({ prefix: "GoogleTag" });
 const { tos } = require("@grucloud/core/tos");
 const { hasTag } = require("@grucloud/core/TagName");
 
-exports.isOurMinion = ({ resource, config }) => {
+exports.isOurMinion = ({ live, config }) => {
   //logger.info(`isOurMinion ? ${tos({ config, resource })}`);
   const { managedByKey, managedByValue, managedByDescription } = config;
   assert(managedByKey);
-  const { labels = {}, description } = resource;
+  const { labels = {}, description } = live;
 
   const isGruLabel = (key, value) =>
     key === managedByKey && value === managedByValue;

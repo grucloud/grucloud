@@ -302,13 +302,16 @@ const fnSpecs = () => [
           ids: pipe([
             () => live,
             get("spec.rules"),
+            tap((rules) => {
+              logger.debug(`ingress findDependencies ${rules}`);
+            }),
             map(
               pipe([
-                values,
                 pluck("paths"),
                 flatten,
                 pluck("backend"),
                 pluck("service"),
+                filter(not(isEmpty)),
                 map(({ name }) => ({ name, namespace: findNamespace(live) })),
               ])
             ),

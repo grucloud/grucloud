@@ -245,7 +245,7 @@ const ResourceMaker = ({
       }),
       switchCase([
         or([
-          pipe([get("needUpdate"), not(isEmpty)]),
+          pipe([get("needUpdate")]),
           pipe([get("added"), not(isEmpty)]),
           pipe([get("updated"), not(isEmpty)]),
           pipe([get("deleted"), not(isEmpty)]),
@@ -1586,15 +1586,7 @@ function CoreProvider({
           }),
           meta: client.findMeta(live),
           id: client.findId(live),
-          managedByUs: client.spec.isOurMinion({
-            resource: live, //TODO remove resource
-            live,
-            lives,
-            //TODO remove resourceNames
-            resourceNames: resourceNames(),
-            resources: getResourcesByType({ type: client.spec.type }),
-            config: providerConfig,
-          }),
+
           providerName: client.spec.providerName,
           type: client.spec.type,
           live,
