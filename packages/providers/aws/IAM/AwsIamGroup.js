@@ -141,6 +141,10 @@ exports.AwsIamGroup = ({ spec, config }) => {
         () =>
           forEach(
             pipe([
+              tap((policy) => {
+                logger.info(`attachGroupPolicy ${tos({ policy })}`);
+                assert(policy.live.Arn, `no live.Arn in ${tos(policy)}`);
+              }),
               (policy) => ({
                 PolicyArn: policy.live.Arn,
                 GroupName: name,

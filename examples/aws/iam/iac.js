@@ -46,6 +46,13 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
+  const iamPolicyEKSWorkerNode = await provider.useIamPolicy({
+    name: "AmazonEKSWorkerNodePolicy",
+    properties: () => ({
+      Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+    }),
+  });
+
   const iamGroup = await provider.makeIamGroup({
     name: groupName,
     dependencies: { policies: [iamPolicyToGroup] },
@@ -60,7 +67,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
 
   const iamRole = await provider.makeIamRole({
     name: roleName,
-    dependencies: { policies: [iamPolicyToRole] },
+    dependencies: { policies: [iamPolicyToRole, iamPolicyEKSWorkerNode] },
     properties: () => ({
       Path: "/",
       AssumeRolePolicyDocument: {

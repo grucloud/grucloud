@@ -405,12 +405,12 @@ exports.AwsEC2 = ({ spec, config }) => {
     })(otherProperties);
   };
 
-  const cannotBeDeleted = ({ resource }) =>
+  const cannotBeDeleted = ({ live }) =>
     pipe([
-      () => resource,
+      () => live,
       get("Tags"),
       tap((tags) => {
-        logger.info(`cannotBeDeleted  ${tos({ tags })}`);
+        //logger.info(`cannotBeDeleted  ${tos({ tags })}`);
       }),
       find(
         and([

@@ -126,7 +126,7 @@ exports.AwsVolume = ({ spec, config }) => {
     })(properties);
 
   const cannotBeDeleted = pipe([
-    get("resource.Attachments"),
+    get("live.Attachments"),
     first,
     get("DeleteOnTermination"),
   ]);

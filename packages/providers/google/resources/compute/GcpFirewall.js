@@ -35,6 +35,6 @@ module.exports = GcpFirewall = ({ spec, config }) => {
     url: `/projects/${projectId(config)}/global/firewalls`,
     config,
     configDefault,
-    cannotBeDeleted: eq(get("name"), "default"),
+    cannotBeDeleted: eq(get("live.name"), "default"),
   });
 };

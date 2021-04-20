@@ -12,7 +12,7 @@ const {
   assign,
   pick,
 } = require("rubico");
-const { defaultsDeep, isEmpty } = require("rubico/x");
+const { defaultsDeep, find, size, identity, isEmpty } = require("rubico/x");
 const moment = require("moment");
 const logger = require("@grucloud/core/logger")({ prefix: "IamPolicy" });
 const { retryCall } = require("@grucloud/core/Retry");
@@ -40,10 +40,44 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   const iam = IAMNew(config);
 
   const findId = get("Arn");
-  const findName = (item) => findNameInTagsOrId({ item, findId });
+  const findName = (item) =>
+    pipe([
+      () => item,
+      get("name"),
+      switchCase([
+        isEmpty,
+        () => findNameInTagsOrId({ item, findId }),
+        identity,
+      ]),
+      tap((name) => {
+        logger.debug(`IamPolicy name: ${name}`);
+      }),
+    ])();
+
+  const addTargets = ({ resources = [], policies } = {}) =>
+    pipe([
+      tap(() => {
+        logger.info(
+          `addTargets #policies: ${size(policies)}, #resources: ${size(
+            resources
+          )}`
+        );
+      }),
+      () => resources,
+      filter(get("readOnly")),
+      map((resource) => ({
+        name: resource.name,
+        namespace: resource.namespace,
+        ...resource.properties(),
+      })),
+      (readOnlyResources) => [...policies, ...readOnlyResources],
+      tap((policiesAll) => {
+        logger.info(`addTargets #policies  ${size(policiesAll)}`);
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listPolicies-property
-  const getList = async ({ params } = {}) =>
+  const getList = async ({ params, resources } = {}) =>
     pipe([
       tap(() => {
         logger.debug(`getList iam policy`);
@@ -88,7 +122,11 @@ exports.AwsIamPolicy = ({ spec, config }) => {
         )
       ),
       tap((policies) => {
-        logger.debug(`getList policy: ${tos(policies)}`);
+        logger.debug(`getList policy all: ${tos(policies)}`);
+      }),
+      (policies) => addTargets({ policies, resources }),
+      tap((policies) => {
+        logger.debug(`getList policy all: ${tos(policies)}`);
       }),
       (policies) => ({
         total: policies.length,
@@ -220,7 +258,6 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   return {
     type: "IamPolicy",
     spec,
-
     findId,
     findNamespace: findNamespaceInTags(config),
     getByName,

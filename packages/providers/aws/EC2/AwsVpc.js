@@ -97,10 +97,7 @@ exports.AwsVpc = ({ spec, config }) => {
 
   const isDownById = isDownByIdCore({ getById });
 
-  const cannotBeDeleted = ({ resource }) => {
-    assert(resource.hasOwnProperty("IsDefault"));
-    return resource.IsDefault;
-  };
+  const cannotBeDeleted = get("live.IsDefault");
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpc-property
 

@@ -45,18 +45,16 @@ const {
   isOurMinionPersistentVolumeClaim,
 } = require("./K8sPersistentVolumeClaim");
 
-const cannotBeDeletedDefault = ({ resource, config }) =>
+const cannotBeDeletedDefault = ({ live, config }) =>
   pipe([
-    () => resource.metadata.annotations,
+    () => live.metadata.annotations,
     switchCase([
       eq(get(config.managedByKey), config.managedByValue),
       () => false,
       () => true,
     ]),
     tap((result) => {
-      logger.debug(
-        `cannotBeDeletedDefault ${resource.metadata.name}: ${result}`
-      );
+      logger.debug(`cannotBeDeletedDefault ${live.metadata.name}: ${result}`);
     }),
   ])();
 
@@ -106,7 +104,7 @@ const fnSpecs = () => [
       apiVersion: "v1",
       kind: "Namespace",
       cannotBeDeleted: pipe([
-        get("resource.metadata.name", ""),
+        get("live.metadata.name", ""),
         or([
           (name) => name.startsWith("default"),
           (name) => name.startsWith("kube"),

@@ -176,7 +176,7 @@ exports.AwsSubnet = ({ spec, config }) => {
       ],
     })(otherProps);
 
-  const cannotBeDeleted = get("resource.DefaultForAz");
+  const cannotBeDeleted = get("live.DefaultForAz");
 
   return {
     type: "Subnet",

@@ -174,10 +174,8 @@ exports.AwsRouteTable = ({ spec, config }) => {
       ],
     })(properties);
 
-  const cannotBeDeleted = ({ resource, name }) => {
-    logger.debug(`cannotBeDeleted name: ${name} ${tos({ resource })}`);
-    return resource.RouteTableId === name;
-  };
+  const cannotBeDeleted = ({ live, name }) =>
+    pipe([() => live, eq(get("RouteTableId"), name)])();
 
   return {
     type: "RouteTable",

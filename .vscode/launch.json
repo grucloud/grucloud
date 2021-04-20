@@ -1497,6 +1497,36 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Iam Policy List",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/iam-policy/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["list"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Iam Policy Apply",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/iam-policy/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["apply", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Iam Policy Destroy",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/iam-policy/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["destroy", "-f", "-a"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Iam List",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/iam/",

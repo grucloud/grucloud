@@ -88,7 +88,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   const cannotBeDeleted = pipe([
-    get("resource"),
+    get("live"),
     or([
       eq(get("GroupName"), "default"),
       //pipe([get("Tags"), find(eq(get("Key"), "aws:eks:cluster-name"))]),

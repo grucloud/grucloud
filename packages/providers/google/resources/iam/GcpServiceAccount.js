@@ -16,17 +16,18 @@ const findName = pipe([
   first,
 ]);
 
-const isOurMinionServiceAccount = ({ name, config, resource }) =>
+const isOurMinionServiceAccount = ({ name, config, live }) =>
   pipe([
     tap(() => {
       assert(config.managedByDescription, config);
-      assert(resource, "resource");
+      assert(live, "live");
     }),
+    () => live,
     eq(get("description"), config.managedByDescription),
     tap((isOur) => {
       logger.info(`isOurMinionServiceAccount: name: ${name} ${isOur}`);
     }),
-  ])(resource);
+  ])();
 
 exports.isOurMinionServiceAccount = isOurMinionServiceAccount;
 // https://cloud.google.com/iam/docs/reference/rest/v1/projects.serviceAccounts

@@ -120,7 +120,7 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
       findMeta: () => undefined,
       findDependencies: () => [],
       findNamespace: () => "",
-      cannotBeDeleted: () => false,
+      cannotBeDeleted: get("resource.readOnly"),
       configDefault: () => ({}),
       isInstanceUp: not(isEmpty),
       providerName,
@@ -133,6 +133,7 @@ const ResourceMaker = ({
   meta,
   dependencies = {},
   filterLives,
+  readOnly,
   properties = () => ({}),
   attributes = () => ({}),
   spec,
@@ -621,6 +622,7 @@ const ResourceMaker = ({
     name: resourceName,
     namespace,
     meta,
+    readOnly,
     dependencies,
     addUsedBy,
     usedBy: () => usedBySet,
@@ -750,6 +752,7 @@ const createResourceMakersListOnly = ({
           properties,
           attributes,
           dependencies,
+          readOnly: true,
           spec: pipe([
             () => ({ listOnly: true }),
             defaultsDeep(SpecDefault({ config })),
@@ -821,6 +824,25 @@ function CoreProvider({
   // Target Resources
   const mapNameToResource = new Map();
   const getMapNameToResource = () => mapNameToResource;
+
+  const getResourceFromLive = ({ live, client }) =>
+    pipe([
+      () =>
+        client.resourceKey({
+          providerName: provider.name,
+          type: client.spec.type,
+          name: client.findName(live),
+          //id: client.findId(live),
+          meta: client.findMeta(live),
+        }),
+      tap((key) => {
+        logger.debug(`${key}`);
+      }),
+      (key) => mapNameToResource.get(key),
+      tap((resource) => {
+        logger.debug(`${!!resource}`);
+      }),
+    ])();
 
   const mapTypeToResources = new Map();
 
@@ -1490,19 +1512,6 @@ function CoreProvider({
       }),
     ])();
 
-  /*(hookInstance) =>
-            pipe([
-              tap(() => {
-               
-              }),
-
-              () => hookInstance,
-              get("name", "default"),
-              tap((name) => {
-                logger.debug(`register hook ${name}`);
-              }),
-              (name) => hookAdd({ name, hookInstance }),
-            ])(),*/
   const getResourcesByType = ({ type }) => mapTypeToResources.get(type) || [];
 
   const startBase = ({ onStateChange = identity } = {}) =>
@@ -1590,11 +1599,12 @@ function CoreProvider({
           type: client.spec.type,
           live,
           cannotBeDeleted: client.cannotBeDeleted({
-            resource: live,
+            live,
             name: client.findName(live),
             //TODO remove resourceNames
             resourceNames: resourceNames(),
             resources: getResourcesByType({ type: client.spec.type }),
+            resource: getResourceFromLive({ client, live }),
             config: providerConfig,
           }),
         })),
@@ -2338,6 +2348,7 @@ ${result}}
     name: providerName,
     dependencies,
     type: toType,
+    getResourceFromLive,
     spinnersStopProvider,
     spinnersStartHook,
     spinnersStartQuery,

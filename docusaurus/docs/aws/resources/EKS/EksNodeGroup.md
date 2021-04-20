@@ -10,21 +10,20 @@ Provides an [EKS Node Group](https://docs.aws.amazon.com/eks/latest/userguide/ma
 ### Create a Node Group
 
 ```js
-const iamPolicyEKSWorkerNode = await provider.useIamPolicyReadOnly({
+const iamPolicyEKSWorkerNode = await provider.useIamPolicy({
   name: "AmazonEKSWorkerNodePolicy",
   properties: () => ({
     Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
   }),
 });
 
-const iamPolicyEC2ContainerRegistryReadOnly = await provider.useIamPolicyReadOnly(
-  {
-    name: "AmazonEC2ContainerRegistryReadOnly",
-    properties: () => ({
-      Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-    }),
-  }
-);
+const iamPolicyEC2ContainerRegistryReadOnly = await provider.useIamPolicy({
+  name: "AmazonEC2ContainerRegistryReadOnly",
+  properties: () => ({
+    Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+  }),
+});
+
 const roleNodeGroup = await provider.makeIamRole({
   name: "role-node-group",
   dependencies: {

@@ -209,7 +209,7 @@ exports.ELBRule = ({ spec, config }) => {
       }),
     ])();
 
-  const cannotBeDeleted = get("resource.IsDefault");
+  const cannotBeDeleted = get("live.IsDefault");
 
   return {
     type: "Rule",

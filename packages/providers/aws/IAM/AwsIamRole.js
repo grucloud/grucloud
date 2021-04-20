@@ -12,7 +12,14 @@ const {
   assign,
   pick,
 } = require("rubico");
-const { defaultsDeep, isEmpty, forEach, pluck, find } = require("rubico/x");
+const {
+  defaultsDeep,
+  isEmpty,
+  forEach,
+  pluck,
+  find,
+  includes,
+} = require("rubico/x");
 const moment = require("moment");
 const querystring = require("querystring");
 const logger = require("@grucloud/core/logger")({ prefix: "IamRole" });
@@ -43,7 +50,6 @@ exports.AwsIamRole = ({ spec, config }) => {
       type: "IamPolicy",
       ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
     },
-    //{ type: "IamPolicyReadOnly", ids: live.AttachedPolicies },
   ];
 
   const listAttachedRolePolicies = pipe([
@@ -271,10 +277,10 @@ exports.AwsIamRole = ({ spec, config }) => {
   const configDefault = ({ name, properties }) =>
     defaultsDeep({ RoleName: name, Path: "/" })(properties);
 
-  const cannotBeDeleted = (item) => {
-    return item.resource.Path.includes("/aws-service-role");
-  };
-
+  const cannotBeDeleted = pipe([
+    get("live.Path"),
+    includes("/aws-service-role"),
+  ]);
   return {
     type: "IamRole",
     spec,
