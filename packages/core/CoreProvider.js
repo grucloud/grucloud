@@ -89,6 +89,7 @@ const configProviderDefault = {
   retryDelay: 10e3,
 };
 const { buildSubGraphLive, buildGraphAssociationLive } = require("./Graph");
+const { buildSubGraph, buildGraphAssociation } = require("./GraphTarget");
 
 const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
   pipe([
@@ -2287,51 +2288,6 @@ function CoreProvider({
 
   const toString = () => ({ name: providerName, type: toType() });
 
-  const color = "#383838";
-  const colorLigher = "#707070";
-  const fontName = "Helvetica";
-
-  const buildSubGraph = ({ options }) =>
-    pipe([
-      tap((xxx) => {
-        logger.debug(`buildGraphNode`);
-      }),
-      () => getTargetResources(),
-      reduce(
-        (acc, resource) =>
-          `${acc}"${resource.type}::${resource.name}" [label=<
-          <table color='${color}' border="0">
-             <tr><td align="text"><FONT color='${colorLigher}' POINT-SIZE="10"><B>${resource.type}</B></FONT><br align="left" /></td></tr>
-             <tr><td align="text"><FONT color='${color}' POINT-SIZE="13">${resource.name}</FONT><br align="left" /></td></tr>
-          </table>>];\n`,
-        ""
-      ),
-      (result) =>
-        `subgraph "cluster_${providerName}" {
-fontname=${fontName}
-color="${color}"
-label=<<FONT color='${color}' POINT-SIZE="20"><B>${providerName}</B></FONT>>;
-node [shape=box fontname=${fontName} color="${color}"]
-${result}}
-`,
-    ])();
-
-  const buildGraphAssociation = ({ options }) =>
-    pipe([
-      () => getTargetResources(),
-      reduce(
-        (acc, resource) =>
-          `${acc}${map(
-            (deps) =>
-              `"${resource.type}::${resource.name}" -> "${deps.type}::${deps.name}" [color="${color}"];\n`
-          )(resource.getDependencyList()).join("\n")}`,
-        ""
-      ),
-      tap((result) => {
-        logger.debug(`buildGraphAssociation ${result}`);
-      }),
-    ])();
-
   const provider = {
     toString,
     get config() {
@@ -2371,8 +2327,19 @@ ${result}}
     buildSubGraphLive: (params) =>
       buildSubGraphLive({ providerName, ...params }),
     buildGraphAssociationLive,
-    buildSubGraph,
-    buildGraphAssociation,
+    buildSubGraph: ({ options }) =>
+      buildSubGraph({
+        providerName,
+        options,
+        resources: getTargetResources(),
+      }),
+    buildGraphAssociation: ({ options }) =>
+      buildGraphAssociation({
+        providerName,
+        options,
+        resources: getTargetResources(),
+      }),
+
     info: pipe([
       () => startBase({ onStateChange: identity }),
       () => ({
