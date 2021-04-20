@@ -20,9 +20,28 @@ const logger = require("./logger")({ prefix: "Graph" });
 const NodeNameMaxLength = 32;
 
 exports.optionsDefault = {
-  color: "#383838",
-  colorLigher: "#707070",
   fontName: "Helvetica",
+  edge: { color: "#707070" },
+  cluster: {
+    provider: {
+      fontColor: "#383838",
+      color: "#f5f5f5",
+      fillColor: "#f5f5f5",
+      pointSize: 42,
+    },
+    namespace: {
+      fontColor: "#383838",
+      color: "#eeeeee",
+      fillColor: "#eeeeee",
+      pointSize: 24,
+    },
+    node: {
+      color: "#dddddd",
+      fillColor: "#e5e5e5",
+      type: { fontColor: "#707070", pointSize: 16 },
+      name: { fontColor: "#383838", pointSize: 16 },
+    },
+  },
 };
 
 exports.formatNodeName = ({ name }) =>

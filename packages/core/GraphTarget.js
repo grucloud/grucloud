@@ -19,16 +19,22 @@ const logger = require("./logger")({ prefix: "Graph" });
 
 const { formatNodeName, formatNamespace } = require("./GraphCommon");
 
-const buildNode = ({ colorLigher, color }) => (resource) => `"${
-  resource.type
-}::${resource.name}" [label=<
-  <table title="TOTO" color='${color}' border="0">
-     <tr><td align="text"><FONT color='${colorLigher}' POINT-SIZE="10"><B>${
+const buildNode = ({ cluster }) => (resource) => `"${resource.type}::${
+  resource.name
+}" [fillcolor="${cluster.node.fillColor}" color="${
+  cluster.node.color
+}" style=filled label=<
+  <table color='${cluster.node.color}' border="0">
+     <tr><td align="text"><FONT color='${
+       cluster.node.type.fontColor
+     }' POINT-SIZE="${cluster.node.type.pointSize}"><B>${
   resource.type
 }</B></FONT><br align="left" /></td></tr>
-     <tr><td align="text"><FONT color='${color}' POINT-SIZE="13">${formatNodeName(
-  { name: resource.name }
-)}</FONT><br align="left" /></td></tr>
+     <tr><td align="text"><FONT color='${
+       cluster.node.name.fontColor
+     }' POINT-SIZE="${cluster.node.name.pointSize}">${formatNodeName({
+  name: resource.name,
+})}</FONT><br align="left" /></td></tr>
   </table>>];\n`;
 
 const buildNodes = ({ options }) =>
@@ -43,29 +49,34 @@ const buildNodes = ({ options }) =>
     }),
   ]);
 
-const buildEdge = ({ color }) => ({ resource, dependency }) =>
-  `"${resource.type}::${resource.name}" -> "${dependency.type}::${dependency.name}" [color="${color}"];\n`;
+const buildEdge = ({ edge }) => ({ resource, dependency }) =>
+  `"${resource.type}::${resource.name}" -> "${dependency.type}::${dependency.name}" [color="${edge.color}"];\n`;
 
 const buildSubGraphClusterProvider = ({
   providerName,
-  options: { fontName, color },
+  options: { fontName, cluster },
 }) => (content) => `subgraph "cluster_${providerName}" {
     fontname=${fontName}
-    color="${color}"
-    label=<<FONT color='${color}' POINT-SIZE="20"><B>${providerName}</B></FONT>>;
-    node [shape=box fontname=${fontName} color="${color}"]
+    style=filled;
+    color="${cluster.provider.color}"
+    fillcolor="${cluster.provider.fillColor}";
+    label=<<FONT color='${cluster.provider.fontColor}' POINT-SIZE="${
+  cluster.provider.pointSize
+}"><B>${providerName.toUpperCase()}</B></FONT>>;
     ${content}}
     `;
 
 const buildSubGraphClusterNamespace = ({
-  options: { fontName, color },
+  options: { fontName, cluster },
   providerName,
   namespace,
 }) => (content) => `subgraph "cluster_${providerName}_${namespace}" {
         fontname=${fontName}
-        color="${color}"
-        label=<<FONT color='${color}' POINT-SIZE="20"><B>${namespace}</B></FONT>>;
-        node [shape=box fontname=${fontName} color="${color}"]
+        style=filled;
+        color="${cluster.namespace.color}";
+        fillcolor="${cluster.namespace.fillColor}";
+        label=<<FONT color='${cluster.namespace.fontColor}' POINT-SIZE="${cluster.namespace.pointSize}"><B>${namespace}</B></FONT>>;
+        node [shape=box style=filled fontname=${fontName} fillcolor="${cluster.node.fillColor}" color="${cluster.node.color}"]
         ${content}}
         `;
 
