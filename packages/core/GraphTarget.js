@@ -13,24 +13,36 @@ const {
   switchCase,
   reduce,
 } = require("rubico");
-const {
-  pluck,
-  flatten,
-  isEmpty,
-  size,
-  groupBy,
-  values,
-  find,
-  identity,
-  isString,
-  isObject,
-  includes,
-} = require("rubico/x");
+const { callProp, isEmpty, size } = require("rubico/x");
 const logger = require("./logger")({ prefix: "Graph" });
 
-const color = "#383838";
-const colorLigher = "#707070";
-const fontName = "Helvetica";
+const { formatNodeName } = require("./GraphCommon");
+
+const buildNode = ({ colorLigher, color }) => (resource) => `"${
+  resource.type
+}::${resource.name}" [label=<
+  <table title="TOTO" color='${color}' border="0">
+     <tr><td align="text"><FONT color='${colorLigher}' POINT-SIZE="10"><B>${
+  resource.type
+}</B></FONT><br align="left" /></td></tr>
+     <tr><td align="text"><FONT color='${color}' POINT-SIZE="13">${formatNodeName(
+  { name: resource.name }
+)}</FONT><br align="left" /></td></tr>
+  </table>>];\n`;
+
+const buildEdge = ({ color }) => ({ resource, dependency }) =>
+  `"${resource.type}::${resource.name}" -> "${dependency.type}::${dependency.name}" [color="${color}"];\n`;
+
+const buildSubGraphCluster = ({ fontName, color }) => ({
+  providerName,
+  assocations,
+}) => `subgraph "cluster_${providerName}" {
+    fontname=${fontName}
+    color="${color}"
+    label=<<FONT color='${color}' POINT-SIZE="20"><B>${providerName}</B></FONT>>;
+    node [shape=box fontname=${fontName} color="${color}"]
+    ${assocations}}
+    `;
 
 exports.buildSubGraph = ({ providerName, resources, options }) =>
   pipe([
@@ -38,23 +50,10 @@ exports.buildSubGraph = ({ providerName, resources, options }) =>
       logger.debug(`buildGraphNode`);
     }),
     () => resources,
-    reduce(
-      (acc, resource) =>
-        `${acc}"${resource.type}::${resource.name}" [label=<
-          <table color='${color}' border="0">
-             <tr><td align="text"><FONT color='${colorLigher}' POINT-SIZE="10"><B>${resource.type}</B></FONT><br align="left" /></td></tr>
-             <tr><td align="text"><FONT color='${color}' POINT-SIZE="13">${resource.name}</FONT><br align="left" /></td></tr>
-          </table>>];\n`,
-      ""
-    ),
-    (result) =>
-      `subgraph "cluster_${providerName}" {
-fontname=${fontName}
-color="${color}"
-label=<<FONT color='${color}' POINT-SIZE="20"><B>${providerName}</B></FONT>>;
-node [shape=box fontname=${fontName} color="${color}"]
-${result}}
-`,
+    map(buildNode(options)),
+    callProp("join", "\n"),
+    (assocations) =>
+      buildSubGraphCluster(options)({ providerName, assocations }),
     tap((result) => {
       logger.debug(`buildSubGraph ${result}`);
     }),
@@ -62,15 +61,26 @@ ${result}}
 
 exports.buildGraphAssociation = ({ resources, options }) =>
   pipe([
+    tap(() => {
+      logger.debug(`buildGraphAssociation `);
+      assert(Array.isArray(resources));
+    }),
     () => resources,
-    reduce(
-      (acc, resource) =>
-        `${acc}${map(
-          (deps) =>
-            `"${resource.type}::${resource.name}" -> "${deps.type}::${deps.name}" [color="${color}"];\n`
-        )(resource.getDependencyList()).join("\n")}`,
-      ""
+    map((resource) =>
+      pipe([
+        () => resource.getDependencyList(),
+        tap((result) => {
+          assert(true);
+        }),
+        map((dependency) => buildEdge(options)({ resource, dependency })),
+        callProp("join", "\n"),
+      ])()
     ),
+    filter(not(isEmpty)),
+    tap((result) => {
+      logger.debug(`buildGraphAssociation ${result}`);
+    }),
+    callProp("join", "\n"),
     tap((result) => {
       logger.debug(`buildGraphAssociation ${result}`);
     }),

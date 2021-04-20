@@ -27,6 +27,8 @@ const {
 } = require("rubico/x");
 const logger = require("./logger")({ prefix: "Graph" });
 
+const { formatNodeName, optionsDefault } = require("./GraphCommon");
+
 const NamespacesHide = ["kube-system", "kube-public", "kube-node-lease"];
 
 const ResourceTypesHide = ["Namespace"];
@@ -34,15 +36,6 @@ const ResourceTypesHide = ["Namespace"];
 const color = "#383838";
 const colorLigher = "#707070";
 const fontName = "Helvetica";
-
-const NodeNameMaxLength = 32;
-
-const formatNodeName = ({ name }) =>
-  switchCase([
-    gte(size, NodeNameMaxLength),
-    () => `${name.substring(0, NodeNameMaxLength)}...`,
-    identity,
-  ])(name);
 
 const nodeNameFromResource = (resource) => resource.name || resource.id;
 

@@ -88,7 +88,10 @@ const configProviderDefault = {
   retryCount: 30,
   retryDelay: 10e3,
 };
-const { buildSubGraphLive, buildGraphAssociationLive } = require("./Graph");
+
+const GraphCommon = require("./GraphCommon");
+
+const { buildSubGraphLive, buildGraphAssociationLive } = require("./GraphLive");
 const { buildSubGraph, buildGraphAssociation } = require("./GraphTarget");
 
 const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
@@ -2324,19 +2327,25 @@ function CoreProvider({
     runOnDeployed,
     runOnDestroyed,
     hookAdd,
-    buildSubGraphLive: (params) =>
-      buildSubGraphLive({ providerName, ...params }),
-    buildGraphAssociationLive,
+    buildSubGraphLive: ({ options }) =>
+      buildSubGraphLive({
+        providerName,
+        options: defaultsDeep(GraphCommon.optionsDefault)(options),
+      }),
+    buildGraphAssociationLive: ({ options }) =>
+      buildGraphAssociationLive({
+        options: defaultsDeep(GraphCommon.optionsDefault)(options),
+      }),
     buildSubGraph: ({ options }) =>
       buildSubGraph({
         providerName,
-        options,
+        options: defaultsDeep(GraphCommon.optionsDefault)(options),
         resources: getTargetResources(),
       }),
     buildGraphAssociation: ({ options }) =>
       buildGraphAssociation({
         providerName,
-        options,
+        options: defaultsDeep(GraphCommon.optionsDefault)(options),
         resources: getTargetResources(),
       }),
 

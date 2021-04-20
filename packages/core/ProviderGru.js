@@ -51,7 +51,7 @@ const { tos } = require("./tos");
 const { convertError } = require("./Common");
 
 const { displayLive } = require("./cli/displayUtils");
-const { buildSubGraphLive, buildGraphAssociationLive } = require("./Graph");
+const { buildSubGraphLive, buildGraphAssociationLive } = require("./GraphLive");
 
 const identity = (x) => x;
 
@@ -816,6 +816,7 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
       }),
       () => `digraph graphname {
   rankdir=LR; 
+  node [margin=0.05 fontsize=32 width=0.5 shape=box style=rounded]
   ${buildSubGraph({ options })}
   ${buildGraphAssociation({ options })}
 }`,
