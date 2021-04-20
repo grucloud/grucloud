@@ -77,37 +77,44 @@ exports.AwsIamUser = ({ spec, config }) => {
       map.pool(
         mapPoolSize,
         tryCatch(
-          assign({
-            AttachedPolicies: pipe([
-              ({ UserName }) =>
-                iam().listAttachedUserPolicies({
-                  UserName,
-                  MaxItems: 1e3,
-                }),
-              get("AttachedPolicies"),
-            ]),
-            Policies: pipe([
-              ({ UserName }) =>
-                iam().listUserPolicies({
-                  UserName,
-                  MaxItems: 1e3,
-                }),
-              get("Policies"),
-            ]),
-            Groups: pipe([
-              ({ UserName }) => iam().listGroupsForUser({ UserName }),
-              get("Groups"),
-            ]),
-            AccessKeys: pipe([
-              ({ UserName }) => iam().listAccessKeys({ UserName }),
-              get("AccessKeyMetadata"),
-            ]),
-            LoginProfile: fetchLoginProfile,
-            Tags: pipe([
-              ({ UserName }) => iam().listUserTags({ UserName }),
-              get("Tags"),
-            ]),
-          }),
+          pipe([
+            ({ UserName }) =>
+              iam().getUser({
+                UserName,
+              }),
+            get("User"),
+            assign({
+              AttachedPolicies: pipe([
+                ({ UserName }) =>
+                  iam().listAttachedUserPolicies({
+                    UserName,
+                    MaxItems: 1e3,
+                  }),
+                get("AttachedPolicies"),
+              ]),
+              Policies: pipe([
+                ({ UserName }) =>
+                  iam().listUserPolicies({
+                    UserName,
+                    MaxItems: 1e3,
+                  }),
+                get("Policies"),
+              ]),
+              Groups: pipe([
+                ({ UserName }) => iam().listGroupsForUser({ UserName }),
+                get("Groups"),
+              ]),
+              AccessKeys: pipe([
+                ({ UserName }) => iam().listAccessKeys({ UserName }),
+                get("AccessKeyMetadata"),
+              ]),
+              LoginProfile: fetchLoginProfile,
+              Tags: pipe([
+                ({ UserName }) => iam().listUserTags({ UserName }),
+                get("Tags"),
+              ]),
+            }),
+          ]),
           (error, user) =>
             pipe([
               tap(() => {
@@ -188,6 +195,10 @@ exports.AwsIamUser = ({ spec, config }) => {
         () =>
           forEach(
             pipe([
+              tap((policy) => {
+                logger.debug(`attachUserPolicy: ${tos(policy)}`);
+                assert(policy.live.Arn);
+              }),
               (policy) =>
                 iam().attachUserPolicy({
                   PolicyArn: policy.live.Arn,
