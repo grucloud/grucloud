@@ -9,7 +9,7 @@ const {
   tryCatch,
   switchCase,
 } = require("rubico");
-const { first, defaultsDeep, isEmpty } = require("rubico/x");
+const { first, defaultsDeep, pluck } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const logger = require("@grucloud/core/logger")({
@@ -37,6 +37,10 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     {
       type: "Vpc",
       ids: [live.VpcId],
+    },
+    {
+      type: "Subnet",
+      ids: pipe([() => live, get("AvailabilityZones"), pluck("SubnetId")])(),
     },
     {
       type: "SecurityGroup",
