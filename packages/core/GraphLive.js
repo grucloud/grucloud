@@ -235,10 +235,17 @@ exports.buildGraphAssociationLive = ({ resourcesPerType, options }) =>
           pipe([
             tap(() => {
               assert(dependency.type);
-              assert(Array.isArray(dependency.ids)),
-                logger.debug(
-                  `type ${dependency.type}, #ids ${size(dependency.ids)}`
-                );
+              assert(
+                Array.isArray(dependency.ids),
+                `no ids array in ${JSON.stringify({
+                  type,
+                  providerName,
+                  dependency,
+                })}`
+              );
+              logger.debug(
+                `type ${dependency.type}, #ids ${size(dependency.ids)}`
+              );
             }),
             () => dependency.ids,
             filter(not(isEmpty)),
