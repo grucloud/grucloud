@@ -20,6 +20,7 @@ const {
   isFunction,
   includes,
   pluck,
+  isObject,
   flatten,
   isEmpty,
   values,
@@ -308,15 +309,36 @@ const fnSpecs = () => [
             map(
               pipe([
                 pluck("paths"),
-                flatten,
-                pluck("backend"),
-                pluck("service"),
-                filter(not(isEmpty)),
-                map(({ name }) => ({ name, namespace: findNamespace(live) })),
+                switchCase([
+                  isObject,
+                  pipe([
+                    // for minikube
+                    flatten,
+                    get("backend.service.name"),
+                    (name) => [{ name, namespace: findNamespace(live) }],
+                  ]),
+                  pipe([
+                    // other
+                    flatten,
+                    pluck("backend"),
+                    pluck("service"),
+                    filter(not(isEmpty)),
+                    map(({ name }) => ({
+                      name,
+                      namespace: findNamespace(live),
+                    })),
+                  ]),
+                ]),
+                tap((xxx) => {
+                  assert(true);
+                }),
               ])
             ),
             flatten,
             filter(not(isEmpty)),
+            tap((results) => {
+              logger.debug(`ingress findDependencies ${tos(results)}`);
+            }),
           ])(),
         },
       ],
@@ -381,9 +403,15 @@ const fnSpecs = () => [
             type: "PersistentVolume",
             ids: pipe([
               () => live,
+              tap((xxx) => {
+                logger.debug(``, lives);
+              }),
               get("spec.volumeName"),
               (volumeName) => [{ namespace: "default", name: volumeName }],
               filter(not(isEmpty)),
+              tap((xxx) => {
+                assert(true);
+              }),
             ])(),
           },
         ],
