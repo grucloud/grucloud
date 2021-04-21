@@ -138,12 +138,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test", "--", "--inspect-brk=9229"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/packages/core",
@@ -154,12 +149,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test", "--", "--inspect-brk=9229"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/packages/providers/mock",
@@ -170,12 +160,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test", "--", "--inspect-brk=9229"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/packages/providers/aws",
@@ -186,12 +171,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test", "--", "--inspect-brk=9229"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/packages/providers/azure",
@@ -202,12 +182,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test", "--", "--inspect-brk=9229"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/packages/providers/google",
@@ -218,12 +193,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test", "--", "--inspect-brk=9229"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/packages/providers/k8s",
@@ -587,7 +557,15 @@
       "cwd": "${workspaceFolder}/examples/starhackit/minikube",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["output", "-n", "default::ingress", "-t", "Ingress", "-f", "status.loadBalancer.ingress.ip"]
+      "args": [
+        "output",
+        "-n",
+        "default::ingress",
+        "-t",
+        "Ingress",
+        "-f",
+        "status.loadBalancer.ingress.ip"
+      ]
     },
     {
       "type": "node",
@@ -825,65 +803,6 @@
       "console": "integratedTerminal",
       "args": ["list", "--provider", "ff"]
     },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Azure Run onDeployed",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/azure/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "console": "integratedTerminal",
-      "args": ["run", "--onDeployed"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Azure Plan",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/azure/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["plan"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Azure List",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/azure/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["list", "--all"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Azure Apply",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/azure/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "console": "integratedTerminal",
-      "args": ["apply", "-f"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Azure Destroy",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/azure/",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["destroy", "-f"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Azure Graph",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/azure/",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["g"]
-    },
-   
     {
       "type": "node",
       "request": "launch",
@@ -1593,7 +1512,6 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["destroy", "-f", "-a"]
-    },
-    
+    }
   ]
 }

@@ -5,6 +5,8 @@
   "main": "iac.js",
   "private": true,
   "scripts": {
+    "graph-target": "gc graph",
+    "graph-live": "gc list --graph",
     "test": "mocha --exit './{,!(node_modules)/**}/*.test.js'"
   },
   "keywords": [

@@ -5,6 +5,8 @@
   "main": "iac.js",
   "private": true,
   "scripts": {
+    "graph-target": "gc graph",
+    "graph-live": "gc list --graph",
     "key": "kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/dashboard-admin-user -o jsonpath='{.secrets[0].name}') -o go-template='{{.data.token | base64decode}}'"
   },
   "repository": {
