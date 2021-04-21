@@ -22,8 +22,8 @@ const findClusterNameFromLives = ({ clusterName, clusters }) =>
   pipe([
     tap(() => {
       logger.debug(`findClusterNameFromLives ${clusterName}`);
-      assert(clusterName);
-      assert(clusters);
+      //assert(clusterName);
+      //assert(clusters);
     }),
     () => clusters,
     get("resources"),

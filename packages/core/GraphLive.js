@@ -90,6 +90,7 @@ const filterResources = ({
     tap((resources) => {
       logger.debug(`buildSubGraphLive #resources ${size(resources)}`);
     }),
+    filter(not(isEmpty)),
     filter(
       and([
         (resource) => not(includes(resource.namespace))(namespacesHide),

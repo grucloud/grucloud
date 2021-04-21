@@ -91,7 +91,13 @@ exports.Route53Record = ({ spec, config }) => {
       get("Tags", []),
       find(eq(get("Value"), name)),
       get("Key"),
+      tap((xxx) => {
+        assert(true);
+      }),
       (name) => find(eq(get("Name"), name))(hostedZone.RecordSet),
+      tap((xxx) => {
+        assert(true);
+      }),
       switchCase([
         isEmpty,
         () => undefined,

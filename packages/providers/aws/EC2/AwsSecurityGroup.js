@@ -148,7 +148,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       tap(() => {
         logger.debug(`destroy sg ${JSON.stringify({ name, id })}`);
       }),
-      () => destroyNetworkInterfaces({ ec2, Name: "group-id", Values: [id] }),
+      //() => destroyNetworkInterfaces({ ec2, Name: "group-id", Values: [id] }),
       () =>
         retryCall({
           name: `deleteSecurityGroup: ${name}`,
