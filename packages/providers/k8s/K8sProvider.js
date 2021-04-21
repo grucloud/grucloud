@@ -426,6 +426,7 @@ const fnSpecs = () => [
       "ConfigMap",
       "Secret",
       "ServiceAccount",
+      "Service",
       "CustomResourceDefinition",
     ],
     Client: ({ config, spec }) =>
