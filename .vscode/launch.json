@@ -106,6 +106,16 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Module EKS List Graph",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/packages/modules/aws/eks/example",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["list", "-g"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Module AWS VPC Apply",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/packages/modules/aws/vpc/example",
@@ -128,12 +138,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test", "--", "--inspect-brk=9229"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/packages/core",
@@ -144,12 +149,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test", "--", "--inspect-brk=9229"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/packages/providers/mock",
@@ -160,12 +160,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test", "--", "--inspect-brk=9229"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/packages/providers/aws",
@@ -176,12 +171,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test", "--", "--inspect-brk=9229"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/packages/providers/azure",
@@ -192,12 +182,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test", "--", "--inspect-brk=9229"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/packages/providers/google",
@@ -208,12 +193,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "test",
-        "--",
-        "--inspect-brk=9229"
-      ],
+      "runtimeArgs": ["run", "test", "--", "--inspect-brk=9229"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/packages/providers/k8s",
@@ -452,6 +432,26 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "EKS LBC Apply",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["apply", "-f", "-p", "aws"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "EKS LBC Plan",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["plan", "-p", "k8s"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "EKS LEAN Graph",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/starhackit/eks-lean",
@@ -557,7 +557,15 @@
       "cwd": "${workspaceFolder}/examples/starhackit/minikube",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["output", "-n", "default::ingress", "-t", "Ingress", "-f", "status.loadBalancer.ingress.ip"]
+      "args": [
+        "output",
+        "-n",
+        "default::ingress",
+        "-t",
+        "Ingress",
+        "-f",
+        "status.loadBalancer.ingress.ip"
+      ]
     },
     {
       "type": "node",
@@ -794,110 +802,6 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["list", "--provider", "ff"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Azure Run onDeployed",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/azure/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "console": "integratedTerminal",
-      "args": ["run", "--onDeployed"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Azure Plan",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/azure/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["plan"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Azure List",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/azure/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["list", "--all"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Azure Apply",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/azure/",
-      "internalConsoleOptions": "openOnSessionStart",
-      "console": "integratedTerminal",
-      "args": ["apply", "-f"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Azure Destroy",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/azure/",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["destroy", "-f"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Azure Graph",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/examples/azure/",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["g"]
-    },
-   
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Aws Certificate Info",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/packages/modules/aws/certificate",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["info"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Aws Certificate List",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/packages/modules/aws/certificate",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["list", "-o"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Aws Certificate Plan",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/packages/modules/aws/certificate",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["plan"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Aws Certificate Apply",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/packages/modules/aws/certificate",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["apply", "-f"]
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Aws Certificate Destroy",
-      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
-      "cwd": "${workspaceFolder}/packages/modules/aws/certificate",
-      "internalConsoleOptions": "openOnSessionStart",
-      "args": ["destroy", "-f"]
     },
     {
       "type": "node",
@@ -1142,10 +1046,21 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Aws IAM List -g",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/iam",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["list", "-g"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Aws IAM Plan",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/iam",
       "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
       "args": ["plan"]
     },
     {
@@ -1155,6 +1070,7 @@
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/iam",
       "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
       "args": ["apply", "-f"]
     },
     {
@@ -1164,6 +1080,7 @@
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/iam",
       "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
       "args": ["destroy", "-f"]
     },
     {
@@ -1411,6 +1328,7 @@
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/multi/",
       "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
       "args": ["plan"]
     },
     {
@@ -1421,7 +1339,7 @@
       "cwd": "${workspaceFolder}/examples/multi/",
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "args": ["list"]
+      "args": ["list", "-g"]
     },
     {
       "type": "node",
@@ -1483,6 +1401,36 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Iam Policy List",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/iam-policy/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["list"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Iam Policy Apply",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/iam-policy/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["apply", "-f"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Iam Policy Destroy",
+      "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
+      "cwd": "${workspaceFolder}/examples/aws/iam-policy/",
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "args": ["destroy", "-f", "-a"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Iam List",
       "program": "${workspaceFolder}/packages/core/cli/cliEntry.js",
       "cwd": "${workspaceFolder}/examples/aws/iam/",
@@ -1519,7 +1467,6 @@
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "args": ["destroy", "-f", "-a"]
-    },
-    
+    }
   ]
 }

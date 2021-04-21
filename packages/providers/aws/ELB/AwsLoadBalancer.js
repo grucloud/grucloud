@@ -20,6 +20,8 @@ const {
   shouldRetryOnException,
 } = require("../AwsCommon");
 
+// DEPRECATED use ELBv2
+
 const findName = get("LoadBalancerName");
 const findId = findName;
 

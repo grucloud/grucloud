@@ -1002,7 +1002,7 @@ const countResources = pipe([
       providers: acc.providers + 1,
       types: reduce((acc) => acc + 1, acc.types)(results),
       resources: reduce(
-        (acc, value) => acc + value.resources.length,
+        (acc, value) => acc + size(value.resources),
         acc.resources
       )(results),
     }),

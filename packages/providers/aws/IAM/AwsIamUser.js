@@ -8,6 +8,8 @@ const {
   switchCase,
   eq,
   assign,
+  fork,
+  not,
 } = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck, find } = require("rubico/x");
 
@@ -17,8 +19,9 @@ const { tos } = require("@grucloud/core/tos");
 const {
   IAMNew,
   buildTags,
-  findNameInTags,
+  findNameInTagsOrId,
   findNamespaceInTags,
+
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
 } = require("../AwsCommon");
@@ -36,8 +39,29 @@ exports.AwsIamUser = ({ spec, config }) => {
 
   const iam = IAMNew(config);
 
-  const findName = findNameInTags;
   const findId = get("UserName");
+  const findName = (item) => findNameInTagsOrId({ item, findId });
+  const findDependencies = ({ live }) => [
+    {
+      type: "IamPolicy",
+      ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
+    },
+    {
+      type: "IamGroup",
+      ids: pipe([() => live, get("Groups"), pluck("GroupName")])(),
+    },
+  ];
+  const fetchLoginProfile = ({ UserName }) =>
+    tryCatch(
+      pipe([() => iam().getLoginProfile({ UserName }), get("LoginProfile")]),
+      switchCase([
+        eq(get("code"), "NoSuchEntity"),
+        () => undefined,
+        (error) => {
+          throw error;
+        },
+      ])
+    )();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listUsers-property
   const getList = async ({ params } = {}) =>
@@ -53,35 +77,44 @@ exports.AwsIamUser = ({ spec, config }) => {
       map.pool(
         mapPoolSize,
         tryCatch(
-          assign({
-            AttachedPolicies: pipe([
-              ({ UserName }) =>
-                iam().listAttachedUserPolicies({
-                  UserName,
-                  MaxItems: 1e3,
-                }),
-              get("AttachedPolicies"),
-              pluck("PolicyName"),
-            ]),
-            Policies: pipe([
-              ({ UserName }) =>
-                iam().listUserPolicies({
-                  UserName,
-                  MaxItems: 1e3,
-                }),
-              get("Policies"),
-              pluck("PolicyName"),
-            ]),
-            Groups: pipe([
-              ({ UserName }) => iam().listGroupsForUser({ UserName }),
-              get("Groups"),
-              pluck("GroupName"),
-            ]),
-            Tags: pipe([
-              ({ UserName }) => iam().listUserTags({ UserName }),
-              get("Tags"),
-            ]),
-          }),
+          pipe([
+            ({ UserName }) =>
+              iam().getUser({
+                UserName,
+              }),
+            get("User"),
+            assign({
+              AttachedPolicies: pipe([
+                ({ UserName }) =>
+                  iam().listAttachedUserPolicies({
+                    UserName,
+                    MaxItems: 1e3,
+                  }),
+                get("AttachedPolicies"),
+              ]),
+              Policies: pipe([
+                ({ UserName }) =>
+                  iam().listUserPolicies({
+                    UserName,
+                    MaxItems: 1e3,
+                  }),
+                get("Policies"),
+              ]),
+              Groups: pipe([
+                ({ UserName }) => iam().listGroupsForUser({ UserName }),
+                get("Groups"),
+              ]),
+              AccessKeys: pipe([
+                ({ UserName }) => iam().listAccessKeys({ UserName }),
+                get("AccessKeyMetadata"),
+              ]),
+              LoginProfile: fetchLoginProfile,
+              Tags: pipe([
+                ({ UserName }) => iam().listUserTags({ UserName }),
+                get("Tags"),
+              ]),
+            }),
+          ]),
           (error, user) =>
             pipe([
               tap(() => {
@@ -162,6 +195,10 @@ exports.AwsIamUser = ({ spec, config }) => {
         () =>
           forEach(
             pipe([
+              tap((policy) => {
+                logger.debug(`attachUserPolicy: ${tos(policy)}`);
+                assert(policy.live.Arn);
+              }),
               (policy) =>
                 iam().attachUserPolicy({
                   PolicyArn: policy.live.Arn,
@@ -176,60 +213,99 @@ exports.AwsIamUser = ({ spec, config }) => {
       }),
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteUser-property
-  const destroy = async ({ id, name }) =>
+  const destroyAccessKey = ({ UserName }) =>
     pipe([
-      tap(() => {
-        logger.info(`destroy iam user ${JSON.stringify({ name, id })}`);
+      () => iam().listAccessKeys({ UserName }),
+      get("AccessKeyMetadata"),
+      forEach(({ AccessKeyId }) => {
+        iam().deleteAccessKey({
+          AccessKeyId,
+          UserName,
+        });
       }),
-      () => iam().listGroupsForUser({ UserName: id }),
+    ])();
+
+  const removeUserFromGroup = ({ UserName }) =>
+    pipe([
+      () => iam().listGroupsForUser({ UserName }),
       get("Groups"),
       tap((Groups = []) => {
-        logger.debug(`destroy iam user Groups: ${Groups.length}`);
+        logger.debug(`removeUserFromGroup: ${Groups.length}`);
       }),
-      forEach((group) => {
+      forEach(({ GroupName }) => {
         iam().removeUserFromGroup({
-          GroupName: group.GroupName,
-          UserName: id,
+          GroupName,
+          UserName,
         });
       }),
-      () => iam().listAttachedUserPolicies({ UserName: id, MaxItems: 1e3 }),
+    ])();
+
+  const detachUserPolicy = ({ UserName }) =>
+    pipe([
+      () => iam().listAttachedUserPolicies({ UserName, MaxItems: 1e3 }),
       get("AttachedPolicies"),
       tap((AttachedPolicies = []) => {
-        logger.debug(
-          `destroy iam user AttachedPolicies: ${AttachedPolicies.length}`
-        );
+        logger.debug(`detachUserPolicy: ${AttachedPolicies.length}`);
       }),
-      forEach((policy) => {
+      forEach(({ PolicyArn }) => {
         iam().detachUserPolicy({
-          PolicyArn: policy.PolicyArn,
-          UserName: id,
+          PolicyArn,
+          UserName,
         });
       }),
-      () => iam().listUserPolicies({ UserName: id, MaxItems: 1e3 }),
+    ])();
+
+  const deleteUserPolicy = ({ UserName }) =>
+    pipe([
+      () => iam().listUserPolicies({ UserName, MaxItems: 1e3 }),
       get("PolicyNames"),
       tap((PolicyNames = []) => {
-        logger.debug(`destroy iam user PolicyNames: ${PolicyNames.length}`);
+        logger.debug(`deleteUserPolicy: ${PolicyNames.length}`);
       }),
-      forEach((policyName) => {
+      forEach((PolicyName) => {
         iam().deleteUserPolicy({
-          PolicyName: policyName,
-          UserName: id,
+          PolicyName,
+          UserName,
         });
+      }),
+    ])();
+
+  const deleteLoginProfile = ({ UserName }) =>
+    tryCatch(
+      pipe([() => iam().deleteLoginProfile({ UserName })]),
+      tap.if(not(eq(get("code"), "NoSuchEntity")), (error) => {
+        throw error;
+      })
+    )();
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteUser-property
+  const destroy = async ({ id: UserName, name }) =>
+    pipe([
+      tap(() => {
+        logger.info(`destroy iam user ${JSON.stringify({ name, UserName })}`);
+      }),
+      fork({
+        userFromGroup: () => removeUserFromGroup({ UserName }),
+        deletePolicy: pipe([
+          () => detachUserPolicy({ UserName }),
+          () => deleteUserPolicy({ UserName }),
+        ]),
+        loginProfile: () => deleteLoginProfile({ UserName }),
+        accessKey: () => destroyAccessKey({ UserName }),
       }),
       () =>
         iam().deleteUser({
-          UserName: id,
+          UserName,
         }),
       tap(() =>
         retryCall({
-          name: `iam user isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id }),
+          name: `iam user isDownById: UserName: ${UserName}`,
+          fn: () => isDownById({ id: UserName }),
           config,
         })
       ),
       tap(() => {
-        logger.info(`destroy iam user done, ${JSON.stringify({ name, id })}`);
+        logger.info(`destroy iam user done, ${JSON.stringify({ UserName })}`);
       }),
     ])();
 
@@ -243,11 +319,9 @@ exports.AwsIamUser = ({ spec, config }) => {
   return {
     type: "IamUser",
     spec,
-    isUpById,
-    isDownById,
     findId,
+    findDependencies,
     getByName,
-    getById,
     findName,
     create,
     destroy,

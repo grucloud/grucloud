@@ -10,8 +10,16 @@ const {
   eq,
   not,
   assign,
+  pick,
 } = require("rubico");
-const { defaultsDeep, isEmpty, forEach, pluck, find } = require("rubico/x");
+const {
+  defaultsDeep,
+  isEmpty,
+  forEach,
+  pluck,
+  find,
+  includes,
+} = require("rubico/x");
 const moment = require("moment");
 const querystring = require("querystring");
 const logger = require("@grucloud/core/logger")({ prefix: "IamRole" });
@@ -38,9 +46,10 @@ exports.AwsIamRole = ({ spec, config }) => {
   const findId = get("Arn");
 
   const findDependencies = ({ live }) => [
-    //TODO
-    //{ type: "IamPolicy", ids: live.AttachedPolicies },
-    { type: "IamPolicyReadOnly", ids: live.AttachedPolicies },
+    {
+      type: "IamPolicy",
+      ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
+    },
   ];
 
   const listAttachedRolePolicies = pipe([
@@ -50,7 +59,6 @@ exports.AwsIamRole = ({ spec, config }) => {
         MaxItems: 1e3,
       }),
     get("AttachedPolicies"),
-    pluck("PolicyArn"),
     tap((policies) => {
       logger.debug(`getList listAttachedRolePolicies: ${tos(policies)}`);
     }),
@@ -104,7 +112,14 @@ exports.AwsIamRole = ({ spec, config }) => {
                   )}`
                 );
               }),
-              pluck("InstanceProfileName"),
+              map(
+                pick([
+                  "InstanceProfileName",
+                  "InstanceProfileId",
+                  "Arn",
+                  "Path",
+                ])
+              ),
             ]),
             Tags: pipe([
               ({ RoleName }) => iam().listRoleTags({ RoleName }),
@@ -262,10 +277,10 @@ exports.AwsIamRole = ({ spec, config }) => {
   const configDefault = ({ name, properties }) =>
     defaultsDeep({ RoleName: name, Path: "/" })(properties);
 
-  const cannotBeDeleted = (item) => {
-    return item.resource.Path.includes("/aws-service-role");
-  };
-
+  const cannotBeDeleted = pipe([
+    get("live.Path"),
+    includes("/aws-service-role"),
+  ]);
   return {
     type: "IamRole",
     spec,

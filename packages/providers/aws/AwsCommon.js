@@ -118,7 +118,7 @@ const findValueInTags = ({ key }) =>
 
 exports.findValueInTags = findValueInTags;
 
-const findNamespaceEksCluster = ({ config, key = "aws:eks:cluster-name" }) => ({
+const findEksCluster = ({ config, key = "aws:eks:cluster-name" }) => ({
   live,
   lives,
 }) =>
@@ -133,6 +133,22 @@ const findNamespaceEksCluster = ({ config, key = "aws:eks:cluster-name" }) => ({
       }),
     get("resources"),
     find(eq(get("name"), findValueInTags({ key })(live))),
+    tap((cluster) => {
+      logger.debug(`findEksCluster ${!!cluster}`);
+    }),
+  ])();
+
+exports.findEksCluster = findEksCluster;
+
+const findNamespaceEksCluster = ({ config, key = "aws:eks:cluster-name" }) => ({
+  live,
+  lives,
+}) =>
+  pipe([
+    tap(() => {
+      assert(lives, "lives");
+    }),
+    () => findEksCluster({ config, key })({ live, lives }),
     findNamespaceInTagsObject(config),
     tap((namespace) => {
       logger.debug(`findNamespace`, namespace);
@@ -211,7 +227,7 @@ exports.buildTags = ({ name, config, namespace, UserTags = [] }) => {
   ])();
 };
 
-exports.isOurMinion = ({ resource, config }) => {
+exports.isOurMinion = ({ live, config }) => {
   const {
     createdByProviderKey,
     providerName,
@@ -222,10 +238,10 @@ exports.isOurMinion = ({ resource, config }) => {
   return pipe([
     tap(() => {
       assert(createdByProviderKey);
-      assert(resource);
+      assert(live);
       assert(stage);
     }),
-    () => resource,
+    () => live,
     get("Tags"),
     switchCase([
       and([
@@ -267,7 +283,7 @@ const findNamespaceInTagsObject = (config) => ({ live } = {}) =>
     }),
     () => live,
     get("tags"),
-    get(config.namespaceKey),
+    get(config.namespaceKey, ""),
     tap(() => {
       assert(true);
     }),
@@ -360,8 +376,21 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
       forEach(
         pipe([
           get("Attachment.AttachmentId"),
-          tap.if(not(isEmpty), (AttachmentId) =>
-            ec2().detachNetworkInterface({ AttachmentId })
+          tap.if(
+            not(isEmpty),
+            tryCatch(
+              (AttachmentId) => ec2().detachNetworkInterface({ AttachmentId }),
+              switchCase([
+                eq(get("code"), "AuthFailure"),
+                () => undefined,
+                (error) => {
+                  logger.error(
+                    `deleteNetworkInterface error code: ${error.code}`
+                  );
+                  throw error;
+                },
+              ])
+            )
           ),
         ])
       )

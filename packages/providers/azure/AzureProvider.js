@@ -34,7 +34,7 @@ const fnSpecs = (config) => {
       getById,
     });
 
-  const isOurMinion = ({ resource }) => AzTag.isOurMinion({ resource, config });
+  const isOurMinion = AzTag.isOurMinion;
 
   const buildTags = () => ({
     [managedByKey]: managedByValue,

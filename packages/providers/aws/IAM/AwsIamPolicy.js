@@ -11,8 +11,9 @@ const {
   eq,
   assign,
   pick,
+  or,
 } = require("rubico");
-const { defaultsDeep, isEmpty } = require("rubico/x");
+const { defaultsDeep, find, size, identity, isEmpty } = require("rubico/x");
 const moment = require("moment");
 const logger = require("@grucloud/core/logger")({ prefix: "IamPolicy" });
 const { retryCall } = require("@grucloud/core/Retry");
@@ -20,10 +21,11 @@ const { tos } = require("@grucloud/core/tos");
 const {
   IAMNew,
   buildTags,
-  findNameInTags,
+  findNameInTagsOrId,
   findNamespaceInTags,
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
+  isOurMinion,
 } = require("../AwsCommon");
 const {
   mapPoolSize,
@@ -39,12 +41,59 @@ exports.AwsIamPolicy = ({ spec, config }) => {
 
   const iam = IAMNew(config);
 
-  const findName = findNameInTags;
-
   const findId = get("Arn");
+  const findName = (item) =>
+    pipe([
+      () => item,
+      get("name"),
+      switchCase([
+        isEmpty,
+        () => findNameInTagsOrId({ item, findId }),
+        identity,
+      ]),
+      tap((name) => {
+        logger.debug(`IamPolicy name: ${name}`);
+      }),
+    ])();
+
+  const findNamespace = ({ live }) =>
+    pipe([
+      () => live,
+      get("namespace"),
+      switchCase([
+        isEmpty,
+        () => findNamespaceInTags(config)({ live }),
+        identity,
+      ]),
+      tap((namespace) => {
+        logger.debug(`findNamespace ${namespace}`);
+      }),
+    ])();
+
+  const addTargets = ({ resources = [], policies } = {}) =>
+    pipe([
+      tap(() => {
+        logger.info(
+          `addTargets #policies: ${size(policies)}, #resources: ${size(
+            resources
+          )}`
+        );
+      }),
+      () => resources,
+      filter(get("readOnly")),
+      map((resource) => ({
+        name: resource.name,
+        namespace: resource.namespace,
+        ...resource.properties(),
+      })),
+      (readOnlyResources) => [...policies, ...readOnlyResources],
+      tap((policiesAll) => {
+        logger.info(`addTargets #policies  ${size(policiesAll)}`);
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listPolicies-property
-  const getList = async ({ params } = {}) =>
+  const getList = async ({ params, resources } = {}) =>
     pipe([
       tap(() => {
         logger.debug(`getList iam policy`);
@@ -89,7 +138,11 @@ exports.AwsIamPolicy = ({ spec, config }) => {
         )
       ),
       tap((policies) => {
-        logger.debug(`getList policy: ${tos(policies)}`);
+        logger.debug(`getList policy all: ${tos(policies)}`);
+      }),
+      (policies) => addTargets({ policies, resources }),
+      tap((policies) => {
+        logger.debug(`getList policy all: ${tos(policies)}`);
       }),
       (policies) => ({
         total: policies.length,
@@ -221,9 +274,8 @@ exports.AwsIamPolicy = ({ spec, config }) => {
   return {
     type: "IamPolicy",
     spec,
-
     findId,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace,
     getByName,
     findName,
     create,
@@ -234,3 +286,12 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     shouldRetryOnExceptionDelete,
   };
 };
+
+exports.isOurMinionIamPolicy = (item) =>
+  pipe([
+    () => item,
+    or([get("resource.readOnly"), isOurMinion]),
+    tap((isOurMinion) => {
+      logger.debug(`isOurMinionIamPolicy ${isOurMinion}`);
+    }),
+  ])();

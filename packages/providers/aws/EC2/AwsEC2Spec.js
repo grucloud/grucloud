@@ -1,6 +1,6 @@
 const { isOurMinion } = require("../AwsCommon");
 
-const { AwsEC2 } = require("./AwsEC2");
+const { AwsEC2, isOurMinionEC2Instance } = require("./AwsEC2");
 const { AwsClientKeyPair } = require("./AwsKeyPair");
 const { AwsVpc } = require("./AwsVpc");
 const { AwsInternetGateway } = require("./AwsInternetGateway");
@@ -113,7 +113,7 @@ module.exports = [
       MaxCount: 1,
       MinCount: 1,
     },
-    isOurMinion,
+    isOurMinion: isOurMinionEC2Instance,
   },
   {
     type: "NetworkInterface",

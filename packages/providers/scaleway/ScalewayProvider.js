@@ -14,8 +14,8 @@ const { tos } = require("@grucloud/core/tos");
 const fnSpecs = (config) => {
   const { organization } = config;
   assert(organization);
-  const isOurMinion = ({ resource }) =>
-    ScalewayTag.isOurMinion({ resource, tag: config.tag });
+  const isOurMinion = ({ live }) =>
+    ScalewayTag.isOurMinion({ live, tag: config.tag });
 
   return [
     {

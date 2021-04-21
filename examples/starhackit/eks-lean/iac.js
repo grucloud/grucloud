@@ -1,17 +1,14 @@
 const assert = require("assert");
-const { pipe, get } = require("rubico");
-const { first, pluck } = require("rubico/x");
 
 const { AwsProvider } = require("@grucloud/provider-aws");
 const { K8sProvider } = require("@grucloud/provider-k8s");
 
 const ModuleAwsVpc = require("@grucloud/module-aws-vpc");
-const ModuleAwsEks = require("@grucloud/module-aws-eks/iac");
-const ModuleAwsCertificate = require("@grucloud/module-aws-certificate/iac");
+const ModuleAwsEks = require("@grucloud/module-aws-eks");
+const ModuleAwsCertificate = require("@grucloud/module-aws-certificate");
+const ModuleAwsLoadBalancer = require("@grucloud/module-aws-load-balancer");
 
 const BaseStack = require("../base/k8sStackBase");
-
-const LoadBalancer = require("./loadBalancer");
 
 const createAwsStack = async ({ stage }) => {
   const provider = AwsProvider({
@@ -20,6 +17,7 @@ const createAwsStack = async ({ stage }) => {
       ModuleAwsCertificate.config,
       ModuleAwsEks.config,
       ModuleAwsVpc.config,
+      ModuleAwsLoadBalancer.config,
       require("./configAws"),
     ],
   });
@@ -49,6 +47,17 @@ const createAwsStack = async ({ stage }) => {
     resources: resourcesVpc,
   });
 
+  const resourcesLb = await ModuleAwsLoadBalancer.createResources({
+    provider,
+    resources: {
+      certificate: resourcesCertificate.certificate,
+      vpc: resourcesVpc.vpc,
+      hostedZone,
+      subnets: resourcesVpc.subnetsPublic,
+      eks: resourcesEks,
+    },
+  });
+
   return {
     provider,
     resources: {
@@ -57,6 +66,7 @@ const createAwsStack = async ({ stage }) => {
       certificate: resourcesCertificate,
       vpc: resourcesVpc,
       eks: resourcesEks,
+      lb: resourcesLb,
     },
     hooks: [
       ...ModuleAwsCertificate.hooks,
@@ -90,26 +100,8 @@ exports.createStack = async ({ stage }) => {
   const stackAws = await createAwsStack({ stage });
   const stackK8s = await createK8sStack({ stackAws, stage });
 
-  const lbResources = await LoadBalancer.createResources({
-    provider: stackAws.provider,
-    resources: {
-      certificate: stackAws.resources.certificate.certificate,
-      vpc: stackAws.resources.vpc.vpc,
-      hostedZone: stackAws.resources.hostedZone,
-      subnets: stackAws.resources.vpc.subnetsPublic,
-      eks: stackAws.resources.eks,
-      k8s: stackK8s.resources,
-    },
-  });
-
   return {
     hookGlobal: require("./hookGlobal"),
-    stacks: [
-      {
-        ...stackAws,
-        resources: { ...stackAws.resources, lb: lbResources },
-      },
-      stackK8s,
-    ],
+    stacks: [stackAws, stackK8s],
   };
 };

@@ -18,6 +18,7 @@ const {
   isEmpty,
   pluck,
   find,
+  identity,
   flatten,
 } = require("rubico/x");
 
@@ -60,6 +61,38 @@ exports.ELBRule = ({ spec, config }) => {
       ])(),
     },
   ];
+
+  const findNamespaceInListener = (config) => ({ live, lives }) =>
+    pipe([
+      () => live,
+      get("ListenerArn"),
+      (ListenerArn) =>
+        lives.getById({
+          providerName: config.providerName,
+          type: "Listener",
+          id: ListenerArn,
+        }),
+      tap((listener) => {
+        assert(listener);
+      }),
+      findNamespaceInTags(config),
+      tap((namespace) => {
+        assert(true);
+      }),
+    ])();
+
+  const findNamespace = ({ live, lives }) =>
+    pipe([
+      () => findNamespaceInTags(config)({ live }),
+      switchCase([
+        not(isEmpty),
+        identity,
+        () => findNamespaceInListener(config)({ live, lives }),
+      ]),
+      tap((namespace) => {
+        logger.debug(`findNamespace rules ${namespace}`);
+      }),
+    ])();
 
   const describeAllRules = pipe([
     () => elbListener.getList({}),
@@ -209,14 +242,14 @@ exports.ELBRule = ({ spec, config }) => {
       }),
     ])();
 
-  const cannotBeDeleted = get("resource.IsDefault");
+  const cannotBeDeleted = get("live.IsDefault");
 
   return {
     type: "Rule",
     spec,
     findId,
     findDependencies,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace,
     getByName,
     findName,
     create,

@@ -88,7 +88,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   const cannotBeDeleted = pipe([
-    get("resource"),
+    get("live"),
     or([
       eq(get("GroupName"), "default"),
       //pipe([get("Tags"), find(eq(get("Key"), "aws:eks:cluster-name"))]),
@@ -148,7 +148,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       tap(() => {
         logger.debug(`destroy sg ${JSON.stringify({ name, id })}`);
       }),
-      () => destroyNetworkInterfaces({ ec2, Name: "group-id", Values: [id] }),
+      //() => destroyNetworkInterfaces({ ec2, Name: "group-id", Values: [id] }),
       () =>
         retryCall({
           name: `deleteSecurityGroup: ${name}`,

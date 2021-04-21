@@ -1,11 +1,11 @@
 const assert = require("assert");
 const logger = require("@grucloud/core/logger")({ prefix: "AzTag" });
 const { tos } = require("@grucloud/core/tos");
-exports.isOurMinion = ({ resource, config }) => {
+exports.isOurMinion = ({ live, config }) => {
   //logger.info(`isOurMinion ? ${tos({ config, resource })}`);
   const { managedByKey, managedByValue } = config;
   assert(managedByKey);
-  const { tags = {} } = resource;
+  const { tags = {} } = live;
 
   const isGruLabel = (key, value) =>
     key === managedByKey && value === managedByValue;

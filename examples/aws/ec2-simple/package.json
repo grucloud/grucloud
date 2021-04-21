@@ -5,6 +5,8 @@
   "main": "index.js",
   "private": true,
   "scripts": {
+    "graph-target": "gc graph",
+    "graph-live": "gc list --graph",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

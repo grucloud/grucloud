@@ -25,6 +25,6 @@ module.exports = GcpNetwork = ({ spec, config }) => {
     url: `/projects/${projectId(config)}/global/networks`,
     config,
     configDefault,
-    cannotBeDeleted: eq(get("resource.name"), "default"),
+    cannotBeDeleted: eq(get("live.name"), "default"),
   });
 };

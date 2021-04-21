@@ -12,6 +12,7 @@ const { isEmpty, defaultsDeep, first, identity, find } = require("rubico/x");
 const assert = require("assert");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsVolume" });
 const { retryCall } = require("@grucloud/core/Retry");
+const { AwsEC2 } = require("./AwsEC2");
 
 const { tos } = require("@grucloud/core/tos");
 const {
@@ -33,6 +34,8 @@ exports.AwsVolume = ({ spec, config }) => {
   assert(config);
 
   const ec2 = Ec2New(config);
+
+  const awsEC2 = AwsEC2({ config, spec });
 
   const findId = get("VolumeId");
   const findName = (item) => findNameInTagsOrId({ item, findId });
@@ -126,7 +129,7 @@ exports.AwsVolume = ({ spec, config }) => {
     })(properties);
 
   const cannotBeDeleted = pipe([
-    get("resource.Attachments"),
+    get("live.Attachments"),
     first,
     get("DeleteOnTermination"),
   ]);
@@ -142,7 +145,11 @@ exports.AwsVolume = ({ spec, config }) => {
         }),
       get("resources"),
       find(eq(get("live.InstanceId"), findInstanceId(live))),
-      get("namespace", ""),
+      switchCase([
+        isEmpty,
+        identity,
+        ({ live }) => awsEC2.findNamespace({ live, lives }),
+      ]),
       tap((namespace) => {
         logger.debug(`findNamespaceFromInstanceId ${namespace}`);
       }),

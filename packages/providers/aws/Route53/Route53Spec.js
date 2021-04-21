@@ -14,7 +14,7 @@ module.exports = [
     type: "Route53Record",
     dependsOn: ["HostedZone", "Certificate"],
     Client: Route53Record,
-    isOurMinion,
+    isOurMinion: () => true,
     compare: compareRoute53Record,
   },
 ];

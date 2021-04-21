@@ -39,7 +39,7 @@ const createResources = async ({
   const clusterName = config.eks.cluster.name;
   assert(clusterName);
 
-  const iamPolicyEKSCluster = await provider.useIamPolicyReadOnly({
+  const iamPolicyEKSCluster = await provider.useIamPolicy({
     name: "AmazonEKSClusterPolicy",
     namespace,
     properties: () => ({
@@ -47,15 +47,13 @@ const createResources = async ({
     }),
   });
 
-  const iamPolicyEKSVPCResourceController = await provider.useIamPolicyReadOnly(
-    {
-      name: "AmazonEKSVPCResourceController",
-      namespace,
-      properties: () => ({
-        Arn: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
-      }),
-    }
-  );
+  const iamPolicyEKSVPCResourceController = await provider.useIamPolicy({
+    name: "AmazonEKSVPCResourceController",
+    namespace,
+    properties: () => ({
+      Arn: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
+    }),
+  });
 
   const roleCluster = await provider.makeIamRole({
     name: formatName(config.eks.roleCluster.name, config),
@@ -79,7 +77,7 @@ const createResources = async ({
     }),
   });
 
-  const iamPolicyEKSWorkerNode = await provider.useIamPolicyReadOnly({
+  const iamPolicyEKSWorkerNode = await provider.useIamPolicy({
     name: "AmazonEKSWorkerNodePolicy",
     namespace,
     properties: () => ({
@@ -87,17 +85,15 @@ const createResources = async ({
     }),
   });
 
-  const iamPolicyEC2ContainerRegistryReadOnly = await provider.useIamPolicyReadOnly(
-    {
-      name: "AmazonEC2ContainerRegistryReadOnly",
-      namespace,
-      properties: () => ({
-        Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-      }),
-    }
-  );
+  const iamPolicyEC2ContainerRegistryReadOnly = await provider.useIamPolicy({
+    name: "AmazonEC2ContainerRegistryReadOnly",
+    namespace,
+    properties: () => ({
+      Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    }),
+  });
 
-  const iamPolicyEKS_CNI = await provider.useIamPolicyReadOnly({
+  const iamPolicyEKS_CNI = await provider.useIamPolicy({
     name: "AmazonEKS_CNI_Policy",
     namespace,
     properties: () => ({

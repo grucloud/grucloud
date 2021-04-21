@@ -20,6 +20,7 @@ const {
 } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 
+// Deprecated
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamPolicyReadOnly = ({ spec, config }) => {
   assert(spec);
@@ -34,6 +35,7 @@ exports.AwsIamPolicyReadOnly = ({ spec, config }) => {
       tap(() => {
         logger.info(`getList policy readonly #resources ${resources.length}`);
       }),
+      () => resources,
       map((resource) => ({
         name: resource.name,
         namespace: resource.namespace,
@@ -46,7 +48,7 @@ exports.AwsIamPolicyReadOnly = ({ spec, config }) => {
         total: items.length,
         items,
       }),
-    ])(resources);
+    ])();
 
   const getByName = ({ name, properties, resources }) =>
     getByNameCore({ name, resources, getList, findName });

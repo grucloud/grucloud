@@ -1,6 +1,15 @@
 const assert = require("assert");
-const { map, pipe, tap, tryCatch, get, switchCase, eq } = require("rubico");
-const { defaultsDeep, isEmpty, forEach, pluck, flatten } = require("rubico/x");
+const {
+  map,
+  pipe,
+  tap,
+  tryCatch,
+  get,
+  switchCase,
+  eq,
+  assign,
+} = require("rubico");
+const { defaultsDeep, isEmpty, forEach, pluck } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "IamGroup" });
 const { retryCall } = require("@grucloud/core/Retry");
@@ -9,6 +18,7 @@ const {
   getByNameCore,
   isUpByIdCore,
   isDownByIdCore,
+  mapPoolSize,
 } = require("@grucloud/core/Common");
 const {
   IAMNew,
@@ -26,6 +36,13 @@ exports.AwsIamGroup = ({ spec, config }) => {
 
   const iam = IAMNew(config);
 
+  const findDependencies = ({ live }) => [
+    {
+      type: "IamPolicy",
+      ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
+    },
+  ];
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listGroups-property
   const getList = async ({ params } = {}) =>
     pipe([
@@ -34,6 +51,38 @@ exports.AwsIamGroup = ({ spec, config }) => {
       }),
       () => iam().listGroups(params),
       get("Groups"),
+      map.pool(
+        mapPoolSize,
+        tryCatch(
+          assign({
+            AttachedPolicies: pipe([
+              ({ GroupName }) =>
+                iam().listAttachedGroupPolicies({
+                  GroupName,
+                  MaxItems: 1e3,
+                }),
+              get("AttachedPolicies"),
+            ]),
+            Policies: pipe([
+              ({ GroupName }) =>
+                iam().listGroupPolicies({
+                  GroupName,
+                  MaxItems: 1e3,
+                }),
+              get("Policies"),
+            ]),
+          }),
+          (error, group) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `getList iam group error: ${tos({ error, group })}`
+                );
+              }),
+              () => ({ error, group }),
+            ])()
+        )
+      ),
       tap((groups) => {
         logger.debug(`getList groups: ${tos(groups)}`);
       }),
@@ -91,6 +140,10 @@ exports.AwsIamGroup = ({ spec, config }) => {
         () =>
           forEach(
             pipe([
+              tap((policy) => {
+                logger.info(`attachGroupPolicy ${tos({ policy })}`);
+                assert(policy.live.Arn, `no live.Arn in ${tos(policy)}`);
+              }),
               (policy) => ({
                 PolicyArn: policy.live.Arn,
                 GroupName: name,
@@ -170,6 +223,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
     type: "IamGroup",
     spec,
     findId,
+    findDependencies,
     getByName,
     findName,
     create,
@@ -181,10 +235,10 @@ exports.AwsIamGroup = ({ spec, config }) => {
   };
 };
 // TODO use resources instead of resourceNames
-exports.isOurMinionIamGroup = ({ resource, resourceNames }) => {
-  assert(resource);
+exports.isOurMinionIamGroup = ({ live, resourceNames }) => {
+  assert(live);
   assert(resourceNames, "resourceNames");
-  const isOur = resourceNames.includes(resource.GroupName);
+  const isOur = resourceNames.includes(live.GroupName);
   logger.debug(`isOurMinionIamGroup: ${isOur}`);
   return isOur;
 };

@@ -77,8 +77,8 @@ const loadBalancer = await provider.makeLoadBalancer({
 
 ## Dependencies
 
-- [SecurityGroup](../EC2/SecurityGroup.md)
 - [Subnet](../EC2/Subnet.md)
+- [SecurityGroup](../EC2/SecurityGroup.md)
 
 ## List
 

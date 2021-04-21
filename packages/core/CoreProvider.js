@@ -88,7 +88,11 @@ const configProviderDefault = {
   retryCount: 30,
   retryDelay: 10e3,
 };
-const { buildSubGraphLive, buildGraphAssociationLive } = require("./Graph");
+
+const GraphCommon = require("./GraphCommon");
+
+const { buildSubGraphLive, buildGraphAssociationLive } = require("./GraphLive");
+const { buildSubGraph, buildGraphAssociation } = require("./GraphTarget");
 
 const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
   pipe([
@@ -120,7 +124,7 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
       findMeta: () => undefined,
       findDependencies: () => [],
       findNamespace: () => "",
-      cannotBeDeleted: () => false,
+      cannotBeDeleted: get("resource.readOnly"),
       configDefault: () => ({}),
       isInstanceUp: not(isEmpty),
       providerName,
@@ -129,10 +133,11 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
 
 const ResourceMaker = ({
   name: resourceName,
-  namespace,
+  namespace = "",
   meta,
   dependencies = {},
   filterLives,
+  readOnly,
   properties = () => ({}),
   attributes = () => ({}),
   spec,
@@ -244,7 +249,7 @@ const ResourceMaker = ({
       }),
       switchCase([
         or([
-          pipe([get("needUpdate"), not(isEmpty)]),
+          pipe([get("needUpdate")]),
           pipe([get("added"), not(isEmpty)]),
           pipe([get("updated"), not(isEmpty)]),
           pipe([get("deleted"), not(isEmpty)]),
@@ -621,6 +626,7 @@ const ResourceMaker = ({
     name: resourceName,
     namespace,
     meta,
+    readOnly,
     dependencies,
     addUsedBy,
     usedBy: () => usedBySet,
@@ -750,6 +756,7 @@ const createResourceMakersListOnly = ({
           properties,
           attributes,
           dependencies,
+          readOnly: true,
           spec: pipe([
             () => ({ listOnly: true }),
             defaultsDeep(SpecDefault({ config })),
@@ -821,6 +828,25 @@ function CoreProvider({
   // Target Resources
   const mapNameToResource = new Map();
   const getMapNameToResource = () => mapNameToResource;
+
+  const getResourceFromLive = ({ live, client }) =>
+    pipe([
+      () =>
+        client.resourceKey({
+          providerName: provider.name,
+          type: client.spec.type,
+          name: client.findName(live),
+          //id: client.findId(live),
+          meta: client.findMeta(live),
+        }),
+      tap((key) => {
+        logger.debug(`${key}`);
+      }),
+      (key) => mapNameToResource.get(key),
+      tap((resource) => {
+        logger.debug(`${!!resource}`);
+      }),
+    ])();
 
   const mapTypeToResources = new Map();
 
@@ -1490,19 +1516,6 @@ function CoreProvider({
       }),
     ])();
 
-  /*(hookInstance) =>
-            pipe([
-              tap(() => {
-               
-              }),
-
-              () => hookInstance,
-              get("name", "default"),
-              tap((name) => {
-                logger.debug(`register hook ${name}`);
-              }),
-              (name) => hookAdd({ name, hookInstance }),
-            ])(),*/
   const getResourcesByType = ({ type }) => mapTypeToResources.get(type) || [];
 
   const startBase = ({ onStateChange = identity } = {}) =>
@@ -1577,24 +1590,17 @@ function CoreProvider({
           }),
           meta: client.findMeta(live),
           id: client.findId(live),
-          managedByUs: client.spec.isOurMinion({
-            resource: live, //TODO remove resource
-            live,
-            lives,
-            //TODO remove resourceNames
-            resourceNames: resourceNames(),
-            resources: getResourcesByType({ type: client.spec.type }),
-            config: providerConfig,
-          }),
+
           providerName: client.spec.providerName,
           type: client.spec.type,
           live,
           cannotBeDeleted: client.cannotBeDeleted({
-            resource: live,
+            live,
             name: client.findName(live),
             //TODO remove resourceNames
             resourceNames: resourceNames(),
             resources: getResourcesByType({ type: client.spec.type }),
+            resource: getResourceFromLive({ client, live }),
             config: providerConfig,
           }),
         })),
@@ -1811,7 +1817,7 @@ function CoreProvider({
         pipe([
           tap(() => {
             assert(type);
-            assert(Array.isArray(resources));
+            assert(Array.isArray(resources), `no resources for type ${type}`);
           }),
           () => clientByType({ type }),
           (client) =>
@@ -2285,51 +2291,6 @@ function CoreProvider({
 
   const toString = () => ({ name: providerName, type: toType() });
 
-  const color = "#383838";
-  const colorLigher = "#707070";
-  const fontName = "Helvetica";
-
-  const buildSubGraph = ({ options }) =>
-    pipe([
-      tap((xxx) => {
-        logger.debug(`buildGraphNode`);
-      }),
-      () => getTargetResources(),
-      reduce(
-        (acc, resource) =>
-          `${acc}"${resource.type}::${resource.name}" [label=<
-          <table color='${color}' border="0">
-             <tr><td align="text"><FONT color='${colorLigher}' POINT-SIZE="10"><B>${resource.type}</B></FONT><br align="left" /></td></tr>
-             <tr><td align="text"><FONT color='${color}' POINT-SIZE="13">${resource.name}</FONT><br align="left" /></td></tr>
-          </table>>];\n`,
-        ""
-      ),
-      (result) =>
-        `subgraph "cluster_${providerName}" {
-fontname=${fontName}
-color="${color}"
-label=<<FONT color='${color}' POINT-SIZE="20"><B>${providerName}</B></FONT>>;
-node [shape=box fontname=${fontName} color="${color}"]
-${result}}
-`,
-    ])();
-
-  const buildGraphAssociation = ({ options }) =>
-    pipe([
-      () => getTargetResources(),
-      reduce(
-        (acc, resource) =>
-          `${acc}${map(
-            (deps) =>
-              `"${resource.type}::${resource.name}" -> "${deps.type}::${deps.name}" [color="${color}"];\n`
-          )(resource.getDependencyList()).join("\n")}`,
-        ""
-      ),
-      tap((result) => {
-        logger.debug(`buildGraphAssociation ${result}`);
-      }),
-    ])();
-
   const provider = {
     toString,
     get config() {
@@ -2338,6 +2299,7 @@ ${result}}
     name: providerName,
     dependencies,
     type: toType,
+    getResourceFromLive,
     spinnersStopProvider,
     spinnersStartHook,
     spinnersStartQuery,
@@ -2365,11 +2327,28 @@ ${result}}
     runOnDeployed,
     runOnDestroyed,
     hookAdd,
-    buildSubGraphLive: (params) =>
-      buildSubGraphLive({ providerName, ...params }),
-    buildGraphAssociationLive,
-    buildSubGraph,
-    buildGraphAssociation,
+    buildSubGraphLive: ({ options }) =>
+      buildSubGraphLive({
+        providerName,
+        options: defaultsDeep(GraphCommon.optionsDefault)(options),
+      }),
+    buildGraphAssociationLive: ({ options }) =>
+      buildGraphAssociationLive({
+        options: defaultsDeep(GraphCommon.optionsDefault)(options),
+      }),
+    buildSubGraph: ({ options }) =>
+      buildSubGraph({
+        providerName,
+        options: defaultsDeep(GraphCommon.optionsDefault)(options),
+        resources: getTargetResources(),
+      }),
+    buildGraphAssociation: ({ options }) =>
+      buildGraphAssociation({
+        providerName,
+        options: defaultsDeep(GraphCommon.optionsDefault)(options),
+        resources: getTargetResources(),
+      }),
+
     info: pipe([
       () => startBase({ onStateChange: identity }),
       () => ({

@@ -109,7 +109,8 @@ exports.runAsyncCommand = async ({ text, command }) => {
         logger.debug(`spinnies RUNNING uri: ${uri}`);
         const spinner = spinnerMap.get(uri);
         if (!spinner) {
-          assert(false, `event RUNNING but ${uri} was not created`);
+          logger.error(`event RUNNING but ${uri} was not created`);
+          return;
         }
 
         if (!hide) {
@@ -134,7 +135,10 @@ exports.runAsyncCommand = async ({ text, command }) => {
 
         if (!hide) {
           const spinny = spinnies.pick(uri);
-          assert(spinny, `DONE event: ${uri} was not created`);
+          if (!spinny) {
+            logger.error(`DONE event: ${uri} was not created`);
+            return;
+          }
         }
         const spinner = spinnerMap.get(uri);
         if (!spinner) {

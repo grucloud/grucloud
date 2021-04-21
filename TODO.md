@@ -1,7 +1,5 @@
 ## Bugs
 
-- - s3 example: gc d tries to delete roles
-
 - kubectl logs -n kube-system deployment.apps/aws-load-balancer-controller
 
 User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot list resource "pods" in API group "" at the cluster scope
@@ -47,6 +45,7 @@ User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot lis
 
 ## Kubernetes
 
+- cert-manager example
 - kubectl cluster-info
 
 ## Azure
@@ -57,6 +56,8 @@ User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot lis
 - doc
 
 ## TODO Aws:
+
+- - https://github.com/kubernetes/kops/blob/master/docs/getting_started/aws.md#setup-iam-user
 
 - aws_route53_delegation_set
 

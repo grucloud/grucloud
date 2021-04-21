@@ -34,17 +34,18 @@ const findId = findName;
 
 // TODO use resources instead of resourceNames
 
-const isOurMinionIamBinding = ({ name, resource, resourceNames }) =>
+const isOurMinionIamBinding = ({ name, live, resourceNames }) =>
   pipe([
     tap(() => {
-      assert(resource, "resource");
+      assert(live, "live");
       assert(Array.isArray(resourceNames), "resourceNames");
     }),
-    find((item) => isDeepEqual(item, findName(resource))),
+    () => resourceNames,
+    find((item) => isDeepEqual(item, findName(live))),
     tap((isOur) => {
       logger.debug(`isOurMinionIamBinding: ${name}: ${isOur}`);
     }),
-  ])(resourceNames);
+  ])();
 
 const cannotBeDeleted = not(isOurMinionIamBinding);
 

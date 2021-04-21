@@ -10,11 +10,11 @@ const { isOurMinionObject } = require("@grucloud/core/Common");
 
 // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#persistentvolumeclaim-v1-core
 
-exports.isOurMinionPersistentVolumeClaim = ({ resource, lives, config }) =>
+exports.isOurMinionPersistentVolumeClaim = ({ live, lives, config }) =>
   or([
-    () => isOurMinionObject({ tags: resource.metadata.annotations, config }),
+    () => isOurMinionObject({ tags: live.metadata.annotations, config }),
     pipe([
-      () => get("spec.volumeName")(resource),
+      () => get("spec.volumeName")(live),
       (volumeName) =>
         pipe([
           () =>
@@ -30,7 +30,7 @@ exports.isOurMinionPersistentVolumeClaim = ({ resource, lives, config }) =>
           get("managedByUs"),
           tap((managedByUs) => {
             logger.info(
-              `isOurMinionPersistentVolumeClaim ${resource.metadata.name}, volumeName: ${volumeName}: ${managedByUs}`
+              `isOurMinionPersistentVolumeClaim ${live.metadata.name}, volumeName: ${volumeName}: ${managedByUs}`
             );
           }),
         ])(),

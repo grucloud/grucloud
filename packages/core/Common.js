@@ -281,7 +281,9 @@ exports.buildTagsObject = ({ name, namespace, config }) => {
     [KeyName]: name,
     [managedByKey]: managedByValue,
     [createdByProviderKey]: providerName,
-    [namespaceKey]: namespace,
+    ...(namespace && {
+      [namespaceKey]: namespace,
+    }),
     [stageTagKey]: stage,
     ...(projectName && {
       projectName,

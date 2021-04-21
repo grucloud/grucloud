@@ -20,6 +20,7 @@ const {
   isFunction,
   includes,
   pluck,
+  isObject,
   flatten,
   isEmpty,
   values,
@@ -45,18 +46,16 @@ const {
   isOurMinionPersistentVolumeClaim,
 } = require("./K8sPersistentVolumeClaim");
 
-const cannotBeDeletedDefault = ({ resource, config }) =>
+const cannotBeDeletedDefault = ({ live, config }) =>
   pipe([
-    () => resource.metadata.annotations,
+    () => live.metadata.annotations,
     switchCase([
       eq(get(config.managedByKey), config.managedByValue),
       () => false,
       () => true,
     ]),
     tap((result) => {
-      logger.debug(
-        `cannotBeDeletedDefault ${resource.metadata.name}: ${result}`
-      );
+      logger.debug(`cannotBeDeletedDefault ${live.metadata.name}: ${result}`);
     }),
   ])();
 
@@ -106,7 +105,7 @@ const fnSpecs = () => [
       apiVersion: "v1",
       kind: "Namespace",
       cannotBeDeleted: pipe([
-        get("resource.metadata.name", ""),
+        get("live.metadata.name", ""),
         or([
           (name) => name.startsWith("default"),
           (name) => name.startsWith("kube"),
@@ -304,18 +303,42 @@ const fnSpecs = () => [
           ids: pipe([
             () => live,
             get("spec.rules"),
+            tap((rules) => {
+              logger.debug(`ingress findDependencies ${rules}`);
+            }),
             map(
               pipe([
-                values,
                 pluck("paths"),
-                flatten,
-                pluck("backend"),
-                pluck("service"),
-                map(({ name }) => ({ name, namespace: findNamespace(live) })),
+                switchCase([
+                  isObject,
+                  pipe([
+                    // for minikube
+                    flatten,
+                    get("backend.service.name"),
+                    (name) => [{ name, namespace: findNamespace(live) }],
+                  ]),
+                  pipe([
+                    // other
+                    flatten,
+                    pluck("backend"),
+                    pluck("service"),
+                    filter(not(isEmpty)),
+                    map(({ name }) => ({
+                      name,
+                      namespace: findNamespace(live),
+                    })),
+                  ]),
+                ]),
+                tap((xxx) => {
+                  assert(true);
+                }),
               ])
             ),
             flatten,
             filter(not(isEmpty)),
+            tap((results) => {
+              logger.debug(`ingress findDependencies ${tos(results)}`);
+            }),
           ])(),
         },
       ],
@@ -380,9 +403,15 @@ const fnSpecs = () => [
             type: "PersistentVolume",
             ids: pipe([
               () => live,
+              tap((xxx) => {
+                logger.debug(``, lives);
+              }),
               get("spec.volumeName"),
               (volumeName) => [{ namespace: "default", name: volumeName }],
               filter(not(isEmpty)),
+              tap((xxx) => {
+                assert(true);
+              }),
             ])(),
           },
         ],
@@ -397,6 +426,7 @@ const fnSpecs = () => [
       "ConfigMap",
       "Secret",
       "ServiceAccount",
+      "Service",
       "CustomResourceDefinition",
     ],
     Client: ({ config, spec }) =>

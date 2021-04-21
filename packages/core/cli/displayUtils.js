@@ -69,7 +69,10 @@ exports.displayListSummary = pipe([
             pipe([
               tap(() => {
                 assert(type);
-                assert(Array.isArray(resources));
+                assert(
+                  Array.isArray(resources),
+                  `no resources for type ${type}`
+                );
               }),
               () => pluck("displayName")(resources).join("\n"),
               tap.if(not(isEmpty), (content) =>

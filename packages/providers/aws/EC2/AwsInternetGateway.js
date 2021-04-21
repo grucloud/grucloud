@@ -172,11 +172,8 @@ exports.AwsInternetGateway = ({ spec, config }) => {
       ],
     })(properties);
 
-  //TODO
-  const cannotBeDeleted = ({ resource, name }) => {
-    logger.debug(`cannotBeDeleted name: ${name} ${tos({ resource })}`);
-    return resource.InternetGatewayId === name;
-  };
+  const cannotBeDeleted = ({ live, name }) =>
+    pipe([() => live, eq(get("InternetGatewayId"), name)])();
 
   return {
     type: "InternetGateway",

@@ -6,6 +6,8 @@
   "description": "Deploying starhackit on AWS EKS without the Load Balancer Controller",
   "main": "index.js",
   "scripts": {
+    "graph-target": "gc graph",
+    "graph-live": "gc list --graph",
     "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
     "dot": "dot -Tsvg modules.dot -o modules.svg"
   },
@@ -16,6 +18,7 @@
     "@grucloud/module-aws-certificate": "^1.11.0",
     "@grucloud/module-aws-eks": "^1.11.0",
     "@grucloud/module-aws-vpc": "^1.11.0",
+    "@grucloud/module-aws-load-balancer": "*",
     "@grucloud/provider-aws": "^1.11.0",
     "@grucloud/provider-k8s": "^1.11.0",
     "axios": "^0.21.1",

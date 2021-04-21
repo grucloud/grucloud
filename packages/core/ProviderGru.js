@@ -51,7 +51,8 @@ const { tos } = require("./tos");
 const { convertError } = require("./Common");
 
 const { displayLive } = require("./cli/displayUtils");
-const { buildSubGraphLive, buildGraphAssociationLive } = require("./Graph");
+const { buildSubGraphLive, buildGraphAssociationLive } = require("./GraphLive");
+const GraphCommon = require("./GraphCommon");
 
 const identity = (x) => x;
 
@@ -148,16 +149,10 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
   const createLives = (livesRaw = []) => {
     const livesToMap = map(({ providerName, results }) => [
       providerName,
-      new Map(
-        map(({ type, resources }) => [type, { type, providerName, resources }])(
-          results
-        )
-      ),
+      new Map(map((perProvider) => [perProvider.type, perProvider])(results)),
     ]);
 
     const mapPerProvider = new Map(livesToMap(livesRaw));
-
-    let error;
 
     const toJSON = () =>
       pipe([
@@ -180,9 +175,51 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
         }),
       ])();
 
+    const getByType = ({ providerName, type }) =>
+      pipe([
+        () => mapPerProvider.get(providerName) || new Map(),
+        (mapPerType) => mapPerType.get(type),
+        tap.if(isEmpty, () => {
+          logger.error(`cannot find type ${type} on provider ${providerName}`);
+        }),
+        tap((results) => {
+          logger.debug(
+            `getByType ${JSON.stringify({
+              providerName,
+              type,
+              count: pipe([get("resources"), size])(results),
+            })}`
+          );
+        }),
+      ])();
+
+    const getById = ({ providerName, type, id }) =>
+      pipe([
+        () => getByType({ providerName, type }),
+        tap.if(isEmpty, () => {
+          logger.error(`cannot find type ${type} on provider ${providerName}`);
+        }),
+        get("resources"),
+        find(eq(get("id"), id)),
+        tap((result) => {
+          assert(true);
+        }),
+      ])();
+    const getByName = ({ providerName, type, name }) =>
+      pipe([
+        () => getByType({ providerName, type }),
+        tap.if(isEmpty, () => {
+          logger.error(`cannot find type ${type} on provider ${providerName}`);
+        }),
+        get("resources"),
+        find(eq(get("name"), name)),
+        tap((result) => {
+          assert(true);
+        }),
+      ])();
     return {
       get error() {
-        return error;
+        return any(get("error"))(toJSON());
       },
       addResource: ({ providerName, type, live }) => {
         assert(providerName);
@@ -237,10 +274,6 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
         const mapPerType = mapPerProvider.get(providerName) || new Map();
         mapPerType.set(type, { type, resources, error: latestError });
         mapPerProvider.set(providerName, mapPerType);
-
-        if (latestError) {
-          error = true;
-        }
       },
       get json() {
         return toJSON();
@@ -258,25 +291,9 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
         );
         mapPerProvider.set(providerName, mapPerType);
       },
-      getByType: ({ providerName, type }) =>
-        pipe([
-          () => mapPerProvider.get(providerName) || new Map(),
-          (mapPerType) => mapPerType.get(type),
-          tap.if(isEmpty, () => {
-            logger.error(
-              `cannot find type ${type} on provider ${providerName}`
-            );
-          }),
-          tap((results) => {
-            logger.debug(
-              `getByType ${JSON.stringify({
-                providerName,
-                type,
-                count: pipe([get("resources"), size])(results),
-              })}`
-            );
-          }),
-        ])(),
+      getByType,
+      getById,
+      getByName,
     };
   };
 
@@ -289,12 +306,33 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
         assert(lives);
       }),
       () => getProvider({ providerName: resource.providerName }),
-      (provider) => provider.clientByType({ type: resource.type }),
-      (client) => ({
-        ...resource,
-        namespace: client.findNamespace({ live: resource.live, lives }),
-        dependencies: client.findDependencies({ live: resource.live, lives }),
-      }),
+
+      (provider) =>
+        pipe([
+          () => provider.clientByType({ type: resource.type }),
+          (client) => ({
+            ...resource,
+            namespace: client.findNamespace({ live: resource.live, lives }),
+            dependencies: client.findDependencies({
+              live: resource.live,
+              lives,
+            }),
+            managedByUs: client.spec.isOurMinion({
+              resource: provider.getResourceFromLive({
+                client,
+                live: resource.live,
+              }),
+              live: resource.live,
+              lives,
+              //TODO remove resourceNames
+              resourceNames: provider.resourceNames(),
+              resources: provider.getResourcesByType({
+                type: client.spec.type,
+              }),
+              config: provider.config,
+            }),
+          }),
+        ])(),
       tap((resource) => {
         assert(true);
       }),
@@ -302,6 +340,9 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
 
   const decorateListResult = ({ lives }) =>
     pipe([
+      tap((xxx) => {
+        assert(lives);
+      }),
       map(
         assign({
           results: pipe([
@@ -318,6 +359,9 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
         })
       ),
       (livesRaw) => createLives(livesRaw),
+      tap((xxx) => {
+        assert(lives);
+      }),
     ]);
 
   const listLives = async ({
@@ -740,6 +784,9 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
           }
         )
       ),
+      tap.if(get("error"), (error) => {
+        throw error;
+      }),
       (results) => results.join("\n"),
       tap((result) => {
         logger.info(`buildSubGraph ${result}`);
@@ -770,6 +817,7 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
       }),
       () => `digraph graphname {
   rankdir=LR; 
+  node [margin=0.05 fontsize=32 width=0.5 shape=box style=rounded]
   ${buildSubGraph({ options })}
   ${buildGraphAssociation({ options })}
 }`,
@@ -1061,6 +1109,10 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
     runCommand,
     runCommandGlobal,
     buildGraph,
-    buildGraphLive,
+    buildGraphLive: ({ lives, options }) =>
+      buildGraphLive({
+        lives,
+        options: defaultsDeep(GraphCommon.optionsDefault)(options),
+      }),
   };
 };

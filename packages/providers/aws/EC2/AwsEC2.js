@@ -11,6 +11,7 @@ const {
   and,
   tryCatch,
   switchCase,
+  or,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -38,6 +39,8 @@ const {
   buildTags,
   findValueInTags,
   findNamespaceInTagsOrEksCluster,
+  isOurMinion,
+  findEksCluster,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { CheckAwsTags } = require("../AwsTagCheck");
@@ -79,7 +82,12 @@ exports.AwsEC2 = ({ spec, config }) => {
     },
     {
       type: "IamInstanceProfile",
-      ids: [get("IamInstanceProfile.Arn")(live)],
+      ids: pipe([
+        () => live,
+        get("IamInstanceProfile.Arn"),
+        (arn) => [arn],
+        filter(not(isEmpty)),
+      ])(),
     },
   ];
 
@@ -400,12 +408,12 @@ exports.AwsEC2 = ({ spec, config }) => {
     })(otherProperties);
   };
 
-  const cannotBeDeleted = ({ resource }) =>
+  const cannotBeDeleted = ({ live }) =>
     pipe([
-      () => resource,
+      () => live,
       get("Tags"),
       tap((tags) => {
-        logger.info(`cannotBeDeleted  ${tos({ tags })}`);
+        //logger.info(`cannotBeDeleted  ${tos({ tags })}`);
       }),
       find(
         and([
@@ -431,3 +439,24 @@ exports.AwsEC2 = ({ spec, config }) => {
     cannotBeDeleted,
   };
 };
+
+const isInOurCluster = ({ config }) => ({ live, lives }) =>
+  pipe([
+    () => ({ live, lives }),
+    findEksCluster({ config, key: "eks:cluster-name" }),
+    tap((cluster) => {
+      assert(true);
+    }),
+  ])();
+
+exports.isOurMinionEC2Instance = (item) =>
+  pipe([
+    tap(() => {
+      assert(true);
+    }),
+    () => item,
+    or([isInOurCluster({ config: item.config }), isOurMinion]),
+    tap((isOurMinion) => {
+      logger.debug(`isOurMinionEC2Instance ${isOurMinion}`);
+    }),
+  ])();

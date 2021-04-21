@@ -25,7 +25,7 @@ describe("AwsIamPolicyReadOnly", async function () {
   after(async () => {});
   it("iamPolicy read only", async function () {
     const policyArn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy";
-    const iamPolicyEKSCluster = await provider.useIamPolicyReadOnly({
+    const iamPolicyEKSCluster = await provider.useIamPolicy({
       name: "AmazonEKSClusterPolicy",
       properties: () => ({
         Arn: policyArn,

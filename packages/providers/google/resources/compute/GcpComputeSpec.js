@@ -16,8 +16,7 @@ const { GcpUrlMap } = require("./GcpUrlMap");
 const { GcpGlobalForwardingRule } = require("./GcpGlobalForwardingRule");
 
 module.exports = (config) => {
-  const isOurMinion = ({ resource }) =>
-    GoogleTag.isOurMinion({ resource, config });
+  const isOurMinion = GoogleTag.isOurMinion;
 
   return [
     {

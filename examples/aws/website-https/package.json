@@ -5,6 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "graph-target": "gc graph",
+    "graph-live": "gc list --graph",
     "e2e": "gc d -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
     "deploy:ci": "STAGE=ci gc apply -f"
   },

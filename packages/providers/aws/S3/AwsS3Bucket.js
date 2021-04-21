@@ -14,7 +14,13 @@ const {
   all,
   tryCatch,
 } = require("rubico");
-const { isEmpty, isDeepEqual, defaultsDeep, unionWith } = require("rubico/x");
+const {
+  size,
+  isEmpty,
+  isDeepEqual,
+  defaultsDeep,
+  unionWith,
+} = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "S3Bucket" });
 const { retryCall } = require("@grucloud/core/Retry");
@@ -298,6 +304,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
                 }),
                 or([
                   () => [503].includes(error.statusCode),
+                  // TODO check that
                   eq(get("code"), "NoSuchBucket"),
                 ]),
                 tap((retry) => {
@@ -306,7 +313,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
                   );
                 }),
               ])(error),
-            config: { retryCount: 5, retryDelay: config.retryDelay },
+            config: { retryCount: 5, retryDelay: 1e3 },
           }),
       ]),
       switchCase([
@@ -328,7 +335,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
       () => s3().listBuckets(),
       get("Buckets"),
       tap((Buckets) => {
-        logger.info(`getList s3Bucket `);
+        logger.info(`getList #s3Bucket ${size(Buckets)}`);
       }),
       map.pool(
         mapPoolSize,
