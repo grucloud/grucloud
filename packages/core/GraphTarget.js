@@ -1,23 +1,15 @@
 const { AssertionError } = require("assert");
 const assert = require("assert");
-const {
-  pipe,
-  map,
-  flatMap,
-  and,
-  tap,
-  filter,
-  get,
-  not,
-  eq,
-  gte,
-  switchCase,
-  reduce,
-} = require("rubico");
-const { callProp, isEmpty, size, groupBy, values } = require("rubico/x");
+const { pipe, map, tap, filter, not } = require("rubico");
+const { callProp, isEmpty, groupBy, values } = require("rubico/x");
 const logger = require("./logger")({ prefix: "Graph" });
 
-const { formatNodeName, formatNamespace } = require("./GraphCommon");
+const {
+  formatNodeName,
+  formatNamespace,
+  buildSubGraphClusterNamespace,
+  buildSubGraphClusterProvider,
+} = require("./GraphCommon");
 
 const buildNode = ({ cluster }) => (resource) => `"${resource.type}::${
   resource.name
@@ -49,36 +41,8 @@ const buildNodes = ({ options }) =>
     }),
   ]);
 
-const buildEdge = ({ edge }) => ({ resource, dependency }) =>
+const buildEdge = ({ options: { edge }, resource }) => (dependency) =>
   `"${resource.type}::${resource.name}" -> "${dependency.type}::${dependency.name}" [color="${edge.color}"];\n`;
-
-const buildSubGraphClusterProvider = ({
-  providerName,
-  options: { fontName, cluster },
-}) => (content) => `subgraph "cluster_${providerName}" {
-    fontname=${fontName}
-    style=filled;
-    color="${cluster.provider.color}"
-    fillcolor="${cluster.provider.fillColor}";
-    label=<<FONT color='${cluster.provider.fontColor}' POINT-SIZE="${
-  cluster.provider.pointSize
-}"><B>${providerName.toUpperCase()}</B></FONT>>;
-    ${content}}
-    `;
-
-const buildSubGraphClusterNamespace = ({
-  options: { fontName, cluster },
-  providerName,
-  namespace,
-}) => (content) => `subgraph "cluster_${providerName}_${namespace}" {
-        fontname=${fontName}
-        style=filled;
-        color="${cluster.namespace.color}";
-        fillcolor="${cluster.namespace.fillColor}";
-        label=<<FONT color='${cluster.namespace.fontColor}' POINT-SIZE="${cluster.namespace.pointSize}"><B>${namespace}</B></FONT>>;
-        node [shape=box style=filled fontname=${fontName} fillcolor="${cluster.node.fillColor}" color="${cluster.node.color}"]
-        ${content}}
-        `;
 
 const buildNamespaceGraph = ({ options, providerName, namespace, resources }) =>
   pipe([
@@ -134,17 +98,11 @@ exports.buildGraphAssociation = ({ resources, options }) =>
     map((resource) =>
       pipe([
         () => resource.getDependencyList(),
-        tap((result) => {
-          assert(true);
-        }),
-        map((dependency) => buildEdge(options)({ resource, dependency })),
+        map(buildEdge({ options, resource })),
         callProp("join", "\n"),
       ])()
     ),
     filter(not(isEmpty)),
-    tap((result) => {
-      logger.debug(`buildGraphAssociation ${result}`);
-    }),
     callProp("join", "\n"),
     tap((result) => {
       logger.debug(`buildGraphAssociation ${result}`);

@@ -52,6 +52,7 @@ const { convertError } = require("./Common");
 
 const { displayLive } = require("./cli/displayUtils");
 const { buildSubGraphLive, buildGraphAssociationLive } = require("./GraphLive");
+const GraphCommon = require("./GraphCommon");
 
 const identity = (x) => x;
 
@@ -1108,6 +1109,10 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
     runCommand,
     runCommandGlobal,
     buildGraph,
-    buildGraphLive,
+    buildGraphLive: ({ lives, options }) =>
+      buildGraphLive({
+        lives,
+        options: defaultsDeep(GraphCommon.optionsDefault)(options),
+      }),
   };
 };

@@ -24,51 +24,54 @@ const {
   isString,
   isObject,
   includes,
+  callProp,
 } = require("rubico/x");
 const logger = require("./logger")({ prefix: "Graph" });
 
-const { formatNodeName, formatNamespace } = require("./GraphCommon");
+const {
+  formatNodeName,
+  formatNamespace,
+  buildSubGraphClusterNamespace,
+  buildSubGraphClusterProvider,
+} = require("./GraphCommon");
 
 const NamespacesHide = ["kube-system", "kube-public", "kube-node-lease"];
 
 const ResourceTypesHide = ["Namespace"];
 
-const color = "#383838";
-const colorLigher = "#707070";
-const fontName = "Helvetica";
-
 const nodeNameFromResource = (resource) => resource.name || resource.id;
 
-const buildNode = ({ resource, namespace }) => `"${
-  resource.type
-}::${namespace}::${resource.id}" [label=<
-  <table color='${color}' border="0">
-     <tr><td align="text"><FONT color='${colorLigher}' POINT-SIZE="16"><B>${
-  resource.type
-}</B></FONT><br align="left" /></td></tr>
-     <tr><td align="text"><FONT color='${color}' POINT-SIZE="18">${formatNodeName(
-  { name: nodeNameFromResource(resource) }
-)}</FONT><br align="left" /></td></tr>
+const buildNode = ({
+  namespace,
+  options: {
+    cluster: { node },
+  },
+}) => (resource) => `"${resource.type}::${namespace}::${resource.id}" [label=<
+  <table color='${node.color}' border="0">
+     <tr><td align="text"><FONT color='${node.type.fontColor}' POINT-SIZE="${
+  node.type.pointSize
+}"><B>${resource.type}</B></FONT><br align="left" /></td></tr>
+     <tr><td align="text"><FONT color='${node.name.fontColor}' POINT-SIZE="${
+  node.name.pointSize
+}">${formatNodeName({
+  name: nodeNameFromResource(resource),
+})}</FONT><br align="left" /></td></tr>
   </table>>];\n`;
 
-const buildSubGraph = ({ providerName, namespace, resources }) =>
+const buildSubGraph = ({ providerName, options, namespace, resources }) =>
   pipe([
-    () => resources,
-    map((resource) => buildNode({ resource, namespace })),
-    (nodes) => nodes.join("\n"),
     tap((xxx) => {
-      logger.debug(`buildSubGraph`, xxx);
+      assert(options);
     }),
-    (result) =>
-      `subgraph "cluster_${providerName}_${namespace}" {
-            fontname=${fontName}
-            color="${color}"
-            label=<<FONT color='${color}' POINT-SIZE="20"><B>${namespace}</B></FONT>>;
-            node [shape=box fontname=${fontName} color="${color}"]
-            ${result}}
-            `,
+    () => resources,
+    map(buildNode({ namespace, options })),
+    callProp("join", "\n"),
     tap((xxx) => {
-      logger.debug(`buildSubGraph`, xxx);
+      assert(true);
+    }),
+    buildSubGraphClusterNamespace({ namespace, providerName, options }),
+    tap((xxx) => {
+      assert(true);
     }),
   ])();
 
@@ -123,6 +126,7 @@ exports.buildSubGraphLive = ({ providerName, resourcesPerType, options }) =>
       namespace,
       buildSubGraph({
         providerName,
+        options,
         namespace: formatNamespace(namespace),
         resources,
       }),
@@ -132,15 +136,8 @@ exports.buildSubGraphLive = ({ providerName, resourcesPerType, options }) =>
       isEmpty,
       () => "",
       pipe([
-        (results) => results.join("\n"),
-        (result) =>
-          `subgraph "cluster_${providerName}" {
-          fontname=${fontName}
-          color="${color}"
-          label=<<FONT color='${color}' POINT-SIZE="20"><B>${providerName}</B></FONT>>;
-          node [shape=box fontname=${fontName} color="${color}"]
-          ${result}}
-          `,
+        callProp("join", "\n"),
+        buildSubGraphClusterProvider({ options, providerName }),
       ]),
     ]),
     tap((result) => {
@@ -167,6 +164,7 @@ const nodeFrom = (type, namespace, id) =>
   `"${type}::${formatNamespace(namespace)}::${id}"`;
 
 const associationIdString = ({
+  options: { edge },
   type,
   namespace,
   idFrom,
@@ -186,10 +184,16 @@ const associationIdString = ({
         type: dependency.type,
         id,
         resourcesPerType,
-      })}::${id}" [color="${color}"];`,
+      })}::${id}" [color="${edge.color}"];`,
   ]);
 
-const associationIdObject = ({ type, idFrom, dependency }) =>
+const associationIdObject = ({
+  options: { edge },
+  type,
+  idFrom,
+  namespaceFrom,
+  dependency,
+}) =>
   pipe([
     tap((xxx) => {
       assert(true);
@@ -201,9 +205,9 @@ const associationIdObject = ({ type, idFrom, dependency }) =>
       }
     }),
     ({ name, namespace }) =>
-      `${nodeFrom(type, namespace, idFrom)} -> "${
+      `${nodeFrom(type, namespaceFrom, idFrom)} -> "${
         dependency.type
-      }::${namespace}::${name}" [color="${color}"];`,
+      }::${namespace}::${name}" [color="${edge.color}"];`,
   ]);
 
 exports.buildGraphAssociationLive = ({ resourcesPerType, options }) =>
@@ -242,6 +246,7 @@ exports.buildGraphAssociationLive = ({ resourcesPerType, options }) =>
               switchCase([
                 isString,
                 associationIdString({
+                  options,
                   type,
                   idFrom: id,
                   namespace,
@@ -249,7 +254,13 @@ exports.buildGraphAssociationLive = ({ resourcesPerType, options }) =>
                   resourcesPerType,
                 }),
                 isObject,
-                associationIdObject({ type, idFrom: id, dependency }),
+                associationIdObject({
+                  options,
+                  type,
+                  idFrom: id,
+                  namespaceFrom: namespace,
+                  dependency,
+                }),
                 (dependencyId) => {
                   assert(
                     false,
@@ -268,7 +279,7 @@ exports.buildGraphAssociationLive = ({ resourcesPerType, options }) =>
       ])()
     ),
     flatten,
-    (result) => result.join("\n"),
+    callProp("join", "\n"),
     tap((result) => {
       logger.debug(`buildGraphAssociationLive done`);
     }),
