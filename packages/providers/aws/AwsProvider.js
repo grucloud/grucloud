@@ -51,6 +51,9 @@ const validateConfig = ({ region, zone, zones }) => {
 
 //TODO wrap for retry
 const fetchAccountId = pipe([
+  tap(() => {
+    logger.debug(`fetchAccountId`);
+  }),
   () => new AWS.STS(),
   (sts) => sts.getCallerIdentity({}).promise(),
   get("Account"),

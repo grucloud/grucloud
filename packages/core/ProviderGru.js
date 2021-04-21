@@ -306,7 +306,6 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
         assert(lives);
       }),
       () => getProvider({ providerName: resource.providerName }),
-
       (provider) =>
         pipe([
           () => provider.clientByType({ type: resource.type }),
