@@ -11,6 +11,8 @@ const {
   not,
   tryCatch,
   switchCase,
+  omit,
+  pick,
 } = require("rubico");
 const { find, defaultsDeep, pluck, flatten, isEmpty } = require("rubico/x");
 const {
@@ -143,41 +145,66 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       (GroupId) => ({ id: GroupId }),
     ])();
 
-  const destroy = async ({ id, name }) =>
+  const revokeIngressRules = (live) =>
     pipe([
       tap(() => {
-        logger.debug(`destroy sg ${JSON.stringify({ name, id })}`);
+        logger.debug(`revokeIngressRules`);
       }),
-      //() => destroyNetworkInterfaces({ ec2, Name: "group-id", Values: [id] }),
-      () =>
-        retryCall({
-          name: `deleteSecurityGroup: ${name}`,
-          fn: () => ec2().deleteSecurityGroup({ GroupId: id }),
-          config: { retryCount: 5, repeatDelay: 2e3 },
-          isExpectedException: pipe([
-            tap((ex) => {
-              logger.error(`delete sg isExpectedException ${tos(ex)}`);
+      () => live.IpPermissions,
+      filter(pipe([get("UserIdGroupPairs"), not(isEmpty)])),
+      map(
+        pipe([
+          omit(["IpRanges", "Ipv6Ranges", "PrefixListIds"]),
+          (ipPermission) =>
+            ec2().revokeSecurityGroupIngress({
+              GroupId: live.GroupId,
+              IpPermissions: [ipPermission],
             }),
-            eq(get("code"), "InvalidGroup.NotFound"),
-          ]),
-          shouldRetryOnException: ({ error, name }) =>
-            pipe([
-              tap(() => {
-                logger.error(`delete shouldRetry ${tos({ name, error })}`);
-              }),
-              eq(get("code"), "DependencyViolation"),
-            ])(error),
-        }),
-      tap(() =>
-        retryCall({
-          name: `destroy sg isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id }),
-          config,
-        })
+        ])
       ),
-      tap(() => {
-        logger.debug(`destroyed sg ${JSON.stringify({ name, id })}`);
-      }),
+    ])();
+
+  const destroy = async ({ live }) =>
+    pipe([
+      () => ({ name: findName(live), GroupId: findId(live) }),
+      ({ name, GroupId }) =>
+        pipe([
+          tap(() => {
+            logger.info(`destroy sg ${JSON.stringify({ name, GroupId })}`);
+            logger.debug(`destroy sg ${JSON.stringify(live)}`);
+          }),
+          () => revokeIngressRules(live),
+          //() => destroyNetworkInterfaces({ ec2, Name: "group-id", Values: [id] }),
+          () =>
+            retryCall({
+              name: `deleteSecurityGroup: ${name}`,
+              fn: () => ec2().deleteSecurityGroup({ GroupId }),
+              config: { retryCount: 5, repeatDelay: 2e3 },
+              isExpectedException: pipe([
+                tap((ex) => {
+                  logger.error(`delete sg isExpectedException ${tos(ex)}`);
+                }),
+                eq(get("code"), "InvalidGroup.NotFound"),
+              ]),
+              shouldRetryOnException: ({ error, name }) =>
+                pipe([
+                  tap(() => {
+                    logger.error(`delete shouldRetry ${tos({ name, error })}`);
+                  }),
+                  eq(get("code"), "DependencyViolation"),
+                ])(error),
+            }),
+          tap(() =>
+            retryCall({
+              name: `destroy sg isDownById: ${name} GroupId: ${GroupId}`,
+              fn: () => isDownById({ id: GroupId }),
+              config,
+            })
+          ),
+          tap(() => {
+            logger.debug(`destroyed sg ${JSON.stringify({ name, GroupId })}`);
+          }),
+        ])(),
     ])();
 
   const configDefault = async ({
