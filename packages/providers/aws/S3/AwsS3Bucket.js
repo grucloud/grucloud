@@ -27,7 +27,12 @@ const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { mapPoolSize } = require("@grucloud/core/Common");
 const { CheckAwsTags } = require("../AwsTagCheck");
-const { S3New, buildTags, shouldRetryOnException } = require("../AwsCommon");
+const {
+  S3New,
+  buildTags,
+  shouldRetryOnException,
+  findNamespaceInTags,
+} = require("../AwsCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html
 exports.AwsS3Bucket = ({ spec, config }) => {
@@ -39,6 +44,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
   const findName = get("Name");
   const findId = findName;
+  const findNamespace = findNamespaceInTags(config);
 
   const getAccelerateConfiguration = ({ name, params }) =>
     tryCatch(
@@ -810,11 +816,9 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     type: "S3Bucket",
     spec,
     config: clientConfig,
-    isUpById,
-    isDownById,
+    findNamespace,
     findId,
     getByName,
-    getById,
     findName,
     create,
     destroy,

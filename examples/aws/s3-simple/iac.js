@@ -2,17 +2,21 @@ const path = require("path");
 const { AwsProvider } = require("@grucloud/provider-aws");
 const hook = require("./hook");
 
+const namespace = "My namespace"; // Optional
+
 const createResources = async ({ provider }) => {
   const bucketPrefix = "grucloud-simple";
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property
   const s3Bucket = await provider.makeS3Bucket({
     name: `${bucketPrefix}-bucket`,
+    namespace,
     properties: () => ({}),
   });
 
   const s3Object = await provider.makeS3Object({
     name: `${bucketPrefix}-file-test`,
+    namespace,
     dependencies: { bucket: s3Bucket },
     properties: () => ({
       ACL: "public-read",

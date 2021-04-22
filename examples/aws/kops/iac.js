@@ -3,6 +3,9 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const { map, get, pipe, eq, tap } = require("rubico");
 const { find } = require("rubico/x");
 const hook = require("./hook");
+
+const namespace = "Kops Dependencies";
+
 const PolicyNames = [
   "AmazonEC2FullAccess",
   "AmazonRoute53FullAccess",
@@ -19,6 +22,7 @@ const createIamResources = async ({ provider }) => {
   const policies = await map((policy) =>
     provider.useIamPolicy({
       name: policy,
+      namespace,
       properties: () => ({
         Arn: `arn:aws:iam::aws:policy/${policy}`,
       }),
@@ -27,12 +31,14 @@ const createIamResources = async ({ provider }) => {
 
   const iamGroup = await provider.makeIamGroup({
     name: groupName,
+    namespace,
     dependencies: { policies: policies },
     properties: () => ({}),
   });
 
   const iamUser = await provider.makeIamUser({
     name: userName,
+    namespace,
     dependencies: { iamGroups: [iamGroup] },
     properties: () => ({}),
   });
@@ -45,23 +51,21 @@ const createRoute53Resources = async ({ provider }) => {
   assert(domainName);
   assert(subDomainName);
 
-  const domain = await provider.useRoute53Domain({
-    name: domainName,
-  });
-
   // Read Only Parent with useHostedZone
   const hostedZoneParent = await provider.useHostedZone({
     name: `${domainName}.`,
-    dependencies: { domain },
+    namespace,
   });
 
   const hostedZoneSub = await provider.makeHostedZone({
     name: `${subDomainName}.`,
+    namespace,
   });
 
-  // Add a NS record of the sub dns server to the parent.
+  // Add a NS record from the sub dns server to the parent.
   const recordNS = await provider.makeRoute53Record({
     name: `${subDomainName}-ns`,
+    namespace,
     dependencies: { hostedZone: hostedZoneParent, hostedZoneSub },
     properties: ({ dependencies: { hostedZoneSub } }) => {
       assert(hostedZoneSub);
@@ -69,19 +73,10 @@ const createRoute53Resources = async ({ provider }) => {
         Name: `${subDomainName}.`,
         Type: "NS",
         ResourceRecords: pipe([
-          tap(() => {
-            //
-          }),
           () => hostedZoneSub,
           get("live.RecordSet"),
           find(eq(get("Type"), "NS")),
-          tap((xxx) => {
-            //
-          }),
           get("ResourceRecords"),
-          tap((xxx) => {
-            assert(true);
-          }),
         ])(),
         TTL: 60,
       };
@@ -93,7 +88,8 @@ const createRoute53Resources = async ({ provider }) => {
 const createS3Resources = async ({ provider }) => {
   const { config } = provider;
   const s3Bucket = await provider.makeS3Bucket({
-    name: config.kops.s3BucketName,
+    name: config.kops.subDomainName,
+    namespace,
     properties: () => ({
       VersioningConfiguration: {
         MFADelete: "Disabled",

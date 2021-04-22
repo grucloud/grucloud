@@ -39,6 +39,7 @@ module.exports = [
   },
   {
     type: "Vpc",
+    dependsOn: ["IamUser", "IamGroup"],
     Client: AwsVpc,
     isOurMinion,
   },
@@ -105,6 +106,7 @@ module.exports = [
       "IamInstanceProfile",
       "Volume",
       "NetworkInterface",
+      "InternetGateway",
     ],
     Client: AwsEC2,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS.html#runInstances-property

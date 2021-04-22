@@ -306,7 +306,6 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
         assert(lives);
       }),
       () => getProvider({ providerName: resource.providerName }),
-
       (provider) =>
         pipe([
           () => provider.clientByType({ type: resource.type }),
@@ -1112,7 +1111,9 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
     buildGraphLive: ({ lives, options }) =>
       buildGraphLive({
         lives,
-        options: defaultsDeep(GraphCommon.optionsDefault)(options),
+        options: defaultsDeep(GraphCommon.optionsDefault({ kind: "live" }))(
+          options
+        ),
       }),
   };
 };
