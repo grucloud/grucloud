@@ -5,7 +5,10 @@ const logger = require("../logger")({ prefix: "GraphLive" });
 //const gcList = require("./fixture/gc-list.json");
 const gcList = [];
 
-const { buildSubGraphLive, buildGraphAssociationLive } = require("../Graph");
+const {
+  buildSubGraphLive,
+  buildGraphAssociationLive,
+} = require("../GraphLive");
 
 describe.skip("graph", function () {
   it("ok", async function () {
