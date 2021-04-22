@@ -164,6 +164,13 @@ const findNamespace = ({ type, id, resourcesPerType }) =>
 const nodeFrom = (type, namespace, id) =>
   `"${type}::${formatNamespace(namespace)}::${id}"`;
 
+const nodeToId = ({ dependency, idTo, resourcesPerType }) =>
+  `${dependency.type}::${findNamespace({
+    type: dependency.type,
+    id: idTo,
+    resourcesPerType,
+  })}::${idTo}`;
+
 const associationIdString = ({
   options: { edge },
   type,
@@ -178,14 +185,12 @@ const associationIdString = ({
         assert(id);
       }
     }),
-    (id) =>
-      `${nodeFrom(type, namespace, idFrom)} -> "${
-        dependency.type
-      }::${findNamespace({
-        type: dependency.type,
-        id,
+    (idTo) =>
+      `${nodeFrom(type, namespace, idFrom)} -> "${nodeToId({
+        dependency,
         resourcesPerType,
-      })}::${id}" [color="${edge.color}"];`,
+        idTo,
+      })}" [color="${edge.color}"];`,
   ]);
 
 const associationIdObject = ({
