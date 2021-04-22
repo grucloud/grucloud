@@ -58,7 +58,7 @@ A picture is worth a thousand word, the _graph_ command creates a graph of the r
 gc graph
 ```
 
-![Starhackit-minikube](./grucloud.svg)
+![Starhackit-minikube-graph-target](./graph-target.svg)
 
 ### Apply Commands:
 
@@ -129,7 +129,7 @@ Command "gc apply" executed in 49s
 To list our freshly installed resources:
 
 ```sh
-gc list --our
+gc list --our --graph
 ```
 
 ```
@@ -171,6 +171,8 @@ Provider: k8s
 20 resources, 10 types, 1 provider
 Command "gc list --our" executed in 2s
 ```
+
+![Starhackit-minikube-graph-live](./graph-live.svg)
 
 To filter the list by a specific type such as Ingress:
 

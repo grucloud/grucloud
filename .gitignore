@@ -8,5 +8,5 @@ gc.result.json
 grucloud.dot
 test-results.xml
 .DS_Store
-list.dot
+*.dot
 list.svg
