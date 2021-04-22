@@ -347,7 +347,7 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
     providerNames,
     defaultExclude,
     ...other
-  }) => (items) =>
+  } = {}) => (items) =>
     pipe([
       () => items,
       tap((initialItems) => {
