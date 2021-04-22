@@ -96,7 +96,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       //pipe([get("Tags"), find(eq(get("Key"), "aws:eks:cluster-name"))]),
     ]),
   ]);
-
+  const isDefault = cannotBeDeleted;
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
 
   const create = async ({ payload, name }) =>
@@ -236,6 +236,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     findName,
     findDependencies,
     findNamespace,
+    isDefault,
     cannotBeDeleted,
     getList,
     create,

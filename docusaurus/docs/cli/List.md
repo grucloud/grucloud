@@ -3,83 +3,7 @@ id: List
 title: List Resources
 ---
 
-The **list** commands list the already deployed resources:
-
-```
-gc list
-```
-
-```
-List for mock
-┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 1 Volume from mock                                                                                                                               │
-├─────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┬───────────────┤
-│ Name    │ Data                                                                                                                   │ Managed by Us │
-├─────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼───────────────┤
-│ volume1 │ id: "dLyck8kW9"                                                                                                        │ Yes           │
-│         │ name: "volume1"                                                                                                        │               │
-│         │ tags:                                                                                                                  │               │
-│         │   - "volume1ManagedByGru"                                                                                              │               │
-│         │ size: 20000000000                                                                                                      │               │
-│         │                                                                                                                        │               │
-└─────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴───────────────┘
-
-
-┌───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 1 Ip from mock                                                                                                                                │
-├──────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┬───────────────┤
-│ Name │ Data                                                                                                                   │ Managed by Us │
-├──────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼───────────────┤
-│ myip │ id: "t5XMOoWji_"                                                                                                       │ Yes           │
-│      │ name: "myip"                                                                                                           │               │
-│      │ tags:                                                                                                                  │               │
-│      │   - "myipManagedByGru"                                                                                                 │               │
-│      │                                                                                                                        │               │
-└──────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴───────────────┘
-
-
-┌───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 1 SecurityGroup from mock                                                                                                                     │
-├──────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┬───────────────┤
-│ Name │ Data                                                                                                                   │ Managed by Us │
-├──────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼───────────────┤
-│ sg   │ id: "i72y9t-vwK"                                                                                                       │ Yes           │
-│      │ name: "sg"                                                                                                             │               │
-│      │ tags:                                                                                                                  │               │
-│      │   - "sgManagedByGru"                                                                                                   │               │
-│      │                                                                                                                        │               │
-└──────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴───────────────┘
-
-
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 1 Server from mock                                                                                                                                  │
-├────────────┬────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┬───────────────┤
-│ Name       │ Data                                                                                                                   │ Managed by Us │
-├────────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┼───────────────┤
-│ web-server │ id: "ewBMe9BLC"                                                                                                        │ Yes           │
-│            │ name: "web-server"                                                                                                     │               │
-│            │ zone: "projects/undefined/zones/undefined"                                                                             │               │
-│            │ machineType: "projects/undefined/zones/undefined/machineTypes/f1-micro"                                                │               │
-│            │ tags:                                                                                                                  │               │
-│            │   items:                                                                                                               │               │
-│            │     - "web-serverManagedByGru"                                                                                         │               │
-│            │ disks:                                                                                                                 │               │
-│            │   - deviceName: "web-serverManagedByGru"                                                                               │               │
-│            │     initializeParams:                                                                                                  │               │
-│            │       sourceImage: "projects/debian-cloud/global/images/debian-9-stretch-v20200420"                                    │               │
-│            │       diskType: "projects/undefined/zones/undefined/diskTypes/pd-standard"                                             │               │
-│            │       diskSizeGb: "20"                                                                                                 │               │
-│            │ networkInterfaces:                                                                                                     │               │
-│            │   - subnetwork: "projects/undefined/regions/undefined/subnetworks/default"                                             │               │
-│            │     accessConfigs:                                                                                                     │               │
-│            │       - natIP: "<< address of myip not available yet >>"                                                               │               │
-│            │                                                                                                                        │               │
-└────────────┴────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴───────────────┘
-
-
-4 resources, 4 types, 1 provider
-Command "gc list" executed in 0s
-```
+The **list** commands lists the live resources.
 
 ## Command Options
 
@@ -90,17 +14,28 @@ gc help list
 ```
 Usage: gc list|l [options]
 
-List the resources
+List the live resources
 
 Options:
+  -g, --graph             create an SVG representation of the live infrastructure
   -a, --all               List also read-only resources
   -n, --name <value>      List by name
   --id <value>            List by id
-  -t, --types <value>     Filter by type, multiple values allowed
   -o, --our               List only our managed resources
-  -d, --canBeDeleted      display resources which can be deleted, a.k.a non default resources
-  -p, --provider <value>  Filter by provider
+  --default-exclude       Exclude the default resources, i.e VPC and Subnet
+  -d, --canBeDeleted      display resources which can be deleted, a.k.a non default
+                          resources
+  -p, --provider <value>  Filter by provider, multiple values allowed
+  -t, --types <value>     Filter by type, multiple values allowed
   -h, --help              display help for command
+```
+
+### graph
+
+Produce a diagram depicting the lives resources and their associations.
+
+```sh
+gc list --graph
 ```
 
 ### all
@@ -155,6 +90,14 @@ The **canBeDeleted** option only lists resources that can be deleted by this app
 
 ```
 gc list --canBeDeleted
+```
+
+### --default-exclude
+
+The **--default-exclude** option excludes the default resources such as VPC, subnet and security group.
+
+```
+gc list --default-exclude
 ```
 
 ### provider

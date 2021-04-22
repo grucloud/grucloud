@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { pipe, tap } = require("rubico");
 const CoreClient = require("@grucloud/core/CoreClient");
 const logger = require("@grucloud/core/logger")({ prefix: "GoogleClient" });
 const { createAxiosMakerGoogle } = require("./GoogleCommon");
@@ -7,6 +8,11 @@ const { tos } = require("@grucloud/core/tos");
 const onResponseListDefault = ({ items = [] }) => {
   return { total: items.length, items };
 };
+const onResponseDelete = pipe([
+  tap((result) => {
+    logger.debug(`onResponseDelete ${tos(result)}`);
+  }),
+]);
 
 module.exports = GoogleClient = ({
   baseURL,
@@ -66,6 +72,7 @@ module.exports = GoogleClient = ({
     isUpByIdFactory,
     onResponseGet,
     onResponseList,
+    onResponseDelete,
     configDefault,
     findTargetId,
     cannotBeDeleted,

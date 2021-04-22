@@ -34,8 +34,13 @@ exports.AwsSubnet = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
   const isDefault = get("live.DefaultForAz");
+  const cannotBeDeleted = isDefault;
 
-  const findName = switchCase([isDefault, () => "default", findNameInTags]);
+  const findName = switchCase([
+    get("DefaultForAz"),
+    () => "default",
+    findNameInTags,
+  ]);
 
   const findId = get("SubnetId");
 
@@ -173,8 +178,6 @@ exports.AwsSubnet = ({ spec, config }) => {
         },
       ],
     })(otherProps);
-
-  const cannotBeDeleted = get("live.DefaultForAz");
 
   return {
     type: "Subnet",
