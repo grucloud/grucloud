@@ -15,7 +15,11 @@ const {
 const { defaultsDeep, isEmpty, first, find } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "S3Object" });
 const { retryCall } = require("@grucloud/core/Retry");
-const { S3New, shouldRetryOnException } = require("../AwsCommon");
+const {
+  S3New,
+  shouldRetryOnException,
+  findNamespaceInTags,
+} = require("../AwsCommon");
 
 const { tos } = require("@grucloud/core/tos");
 const {
@@ -52,6 +56,8 @@ exports.AwsS3Object = ({ spec, config }) => {
 
   const findName = get("Key");
   const findId = findName;
+
+  const findNamespace = findNamespaceInTags(config);
 
   const findDependencies = ({ live }) => [
     {
@@ -297,6 +303,7 @@ exports.AwsS3Object = ({ spec, config }) => {
     type: "S3Object",
     spec,
     config: clientConfig,
+    findNamespace,
     findId,
     findDependencies,
     getByName,
