@@ -161,8 +161,8 @@ const findNamespace = ({ type, id, resourcesPerType }) =>
     }),
   ])();
 
-const nodeFrom = (type, namespace, id) =>
-  `"${type}::${formatNamespace(namespace)}::${id}"`;
+const nodeFrom = ({ type, namespaceFrom, idFrom }) =>
+  `"${type}::${formatNamespace(namespaceFrom)}::${idFrom}"`;
 
 const nodeToId = ({ dependency, idTo, resourcesPerType }) =>
   `${dependency.type}::${findNamespace({
@@ -174,7 +174,7 @@ const nodeToId = ({ dependency, idTo, resourcesPerType }) =>
 const associationIdString = ({
   options: { edge },
   type,
-  namespace,
+  namespace: namespaceFrom,
   idFrom,
   dependency,
   resourcesPerType,
@@ -186,7 +186,7 @@ const associationIdString = ({
       }
     }),
     (idTo) =>
-      `${nodeFrom(type, namespace, idFrom)} -> "${nodeToId({
+      `${nodeFrom({ type, namespaceFrom, idFrom })} -> "${nodeToId({
         dependency,
         resourcesPerType,
         idTo,
@@ -211,7 +211,7 @@ const associationIdObject = ({
       }
     }),
     ({ name, namespace }) =>
-      `${nodeFrom(type, namespaceFrom, idFrom)} -> "${
+      `${nodeFrom({ type, namespaceFrom, idFrom })} -> "${
         dependency.type
       }::${namespace}::${name}" [color="${edge.color}"];`,
   ]);
