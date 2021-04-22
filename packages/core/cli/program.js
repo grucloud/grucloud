@@ -156,12 +156,15 @@ exports.createProgram = ({ version, commands }) => {
 
   program
     .command("graph")
-    .description("Output dot file ")
+    .description(
+      "Output the target resources in a dot file and a graphical format such as SVG"
+    )
+    .alias("gt")
     .alias("g")
     .option(
       "-f, --file <file>",
       "write result to the given file name",
-      "grucloud.dot"
+      "graph-target.dot"
     )
     .option("-t, --type <type>", "file type: png, svg", "svg")
     .action(runCommand({ commandName: "graph", program }));
