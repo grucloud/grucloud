@@ -133,6 +133,10 @@ exports.createProgram = ({ version, commands }) => {
     .option("--id <value>", "List by id")
     .option("-o, --our", "List only our managed resources")
     .option(
+      "--default-exclude",
+      "Exclude the default resources, i.e VPC and Subnet"
+    )
+    .option(
       "-d, --canBeDeleted",
       "display resources which can be deleted, a.k.a non default resources"
     )

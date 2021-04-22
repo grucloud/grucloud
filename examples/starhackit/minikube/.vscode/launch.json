@@ -24,6 +24,17 @@
       "port": 9229
     },
     {
+      "name": "List --default-exclude",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["list", "--default-exclude"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}/",
+      "port": 9229
+    },
+    {
       "name": "Plan",
       "type": "node",
       "request": "launch",

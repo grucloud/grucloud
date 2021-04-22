@@ -100,7 +100,7 @@ const buildDependsOnReverse = (stacks) =>
     }),
   ])(stacks);
 
-exports.ProviderGru = ({ hookGlobal, stacks }) => {
+exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
   assert(Array.isArray(stacks));
 
   const getProviders = () => pipe([map(get("provider"))])(stacks);
@@ -311,6 +311,7 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
           () => provider.clientByType({ type: resource.type }),
           (client) => ({
             ...resource,
+            isDefault: client.isDefault({ live: resource.live, lives }),
             namespace: client.findNamespace({ live: resource.live, lives }),
             dependencies: client.findDependencies({
               live: resource.live,
@@ -337,6 +338,37 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
       }),
     ])();
 
+  const filterLives = ({
+    our,
+    name,
+    id,
+    canBeDeleted,
+    providerName,
+    providerNames,
+    defaultExclude,
+    ...other
+  }) => (items) =>
+    pipe([
+      () => items,
+      tap((initialItems) => {
+        logger.debug(`filterLives #initialItems ${size(initialItems)}`);
+        logger.debug(`filterLives #options ${tos(other)}`);
+      }),
+      filter((item) => (defaultExclude ? !item.isDefault : true)),
+      filter((item) => (our ? item.managedByUs : true)),
+      filter((item) => (name ? item.name === name : true)),
+      filter((item) => (id ? item.id === id : true)),
+      filter((item) =>
+        providerName && !isEmpty(providerNames)
+          ? includes(item.providerName)(providerNames)
+          : true
+      ),
+      filter((item) => (canBeDeleted ? !item.cannotBeDeleted : true)),
+      tap((remainingItems) => {
+        logger.debug(`filterLives #remainingItems ${size(remainingItems)}`);
+      }),
+    ])();
+
   const decorateListResult = ({ lives }) =>
     pipe([
       tap((xxx) => {
@@ -351,6 +383,7 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
                 resources: pipe([
                   get("resources"),
                   map(resourceDecorate({ lives })),
+                  filterLives(commandOptions),
                 ]),
               })
             ),

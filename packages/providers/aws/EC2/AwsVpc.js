@@ -32,11 +32,9 @@ const {
 exports.AwsVpc = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
-  const findName = switchCase([
-    get("IsDefault"),
-    () => "default",
-    findNameInTags,
-  ]);
+  const isDefault = get("live.IsDefault");
+
+  const findName = switchCase([isDefault, () => "default", findNameInTags]);
 
   const findId = get("VpcId");
 
@@ -300,6 +298,7 @@ exports.AwsVpc = ({ spec, config }) => {
   return {
     type: "Vpc",
     spec,
+    isDefault,
     findId,
     findNamespace: findNamespaceInTags(config),
     getByName,
