@@ -12,6 +12,8 @@ module.exports = GcpNetwork = ({ spec, config }) => {
   assert(config);
 
   const { projectId, managedByDescription } = config;
+  const isDefault = eq(get("live.name"), "default");
+  const cannotBeDeleted = isDefault;
 
   const configDefault = ({ name, properties }) =>
     defaultsDeep({
@@ -25,6 +27,7 @@ module.exports = GcpNetwork = ({ spec, config }) => {
     url: `/projects/${projectId(config)}/global/networks`,
     config,
     configDefault,
-    cannotBeDeleted: eq(get("live.name"), "default"),
+    isDefault,
+    cannotBeDeleted,
   });
 };

@@ -2,58 +2,58 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "EC2 Graph",
+      "name": "Graph",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
       "runtimeArgs": ["graph"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/example",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
-      "name": "EC2 List",
+      "name": "List",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
-      "runtimeArgs": ["list", "-g"],
+      "runtimeArgs": ["list", "-g", "--default-exclude"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/example",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
-      "name": "EC2 Plan",
+      "name": "Plan",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
       "runtimeArgs": ["plan"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/example",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
-      "name": "EC2 Apply",
+      "name": "Apply",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
       "runtimeArgs": ["apply", "-f"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/example",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
-      "name": "EC2 Destroy",
+      "name": "Destroy",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
       "runtimeArgs": ["destroy", "-f"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/example",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     }
   ]

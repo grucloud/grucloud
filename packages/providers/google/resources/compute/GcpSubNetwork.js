@@ -13,6 +13,9 @@ module.exports = GcpSubNetwork = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
+  const isDefault = eq(get("live.name"), "default");
+  const cannotBeDeleted = isDefault;
+
   const { projectId, region, managedByDescription } = config;
   assert(region);
   const configDefault = ({ name, properties, dependencies }) => {
@@ -35,6 +38,7 @@ module.exports = GcpSubNetwork = ({ spec, config }) => {
     url: `/projects/${projectId(config)}/regions/${region}/subnetworks`,
     config,
     configDefault,
-    cannotBeDeleted: eq(get("live.name"), "default"),
+    isDefault,
+    cannotBeDeleted,
   });
 };

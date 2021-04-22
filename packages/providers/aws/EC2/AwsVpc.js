@@ -33,8 +33,13 @@ exports.AwsVpc = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
   const isDefault = get("live.IsDefault");
+  const cannotBeDeleted = isDefault;
 
-  const findName = switchCase([isDefault, () => "default", findNameInTags]);
+  const findName = switchCase([
+    get("IsDefault"),
+    () => "default",
+    findNameInTags,
+  ]);
 
   const findId = get("VpcId");
 
@@ -94,8 +99,6 @@ exports.AwsVpc = ({ spec, config }) => {
   });
 
   const isDownById = isDownByIdCore({ getById });
-
-  const cannotBeDeleted = get("live.IsDefault");
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpc-property
 

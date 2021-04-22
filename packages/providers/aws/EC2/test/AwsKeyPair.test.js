@@ -2,7 +2,7 @@ const assert = require("assert");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 
-describe("AwsKeyPair", async function () {
+describe.skip("AwsKeyPair", async function () {
   let config;
   let provider;
   let keyPair;
@@ -14,7 +14,6 @@ describe("AwsKeyPair", async function () {
       this.skip();
     }
     provider = AwsProvider({
-      name: "aws",
       config: () => ({ projectName: "gru-test" }),
     });
 

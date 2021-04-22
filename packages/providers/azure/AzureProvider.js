@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe } = require("rubico");
+const { pipe, eq, get } = require("rubico");
 
 const { defaultsDeep, isFunction } = require("rubico/x");
 
@@ -41,6 +41,8 @@ const fnSpecs = (config) => {
     [stageTagKey]: stage,
   });
 
+  const isDefaultResourceGroup = eq(get("name"), "NetworkWatcherRG");
+
   return [
     {
       // https://docs.microsoft.com/en-us/rest/api/resources/resourcegroups
@@ -64,7 +66,8 @@ const fnSpecs = (config) => {
               location,
               tags: buildTags(config),
             })(properties),
-          cannotBeDeleted: ({ name }) => "NetworkWatcherRG" === name,
+          isDefault: isDefaultResourceGroup,
+          cannotBeDeleted: isDefaultResourceGroup,
         }),
       isOurMinion,
     },
