@@ -1,10 +1,14 @@
 {
   "name": "@grucloud/example-aws-kops",
   "version": "1.0.0",
-  "description": "Provision users, groups, and S3 bucket for kops",
+  "description": "Provision users, groups, S3 bucket, route53 records for kops",
   "main": "iac,js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "kops:create": "source kops.env && kops create cluster --zones=us-east-1a $NAME",
+    "kops:update": "source kops.env && kops update cluster --name $NAME --yes --admin",
+    "kops:validate": "source kops.env && kops validate cluster --wait 10m",
+    "kops:destroy": "source kops.env && kops delete cluster $NAME --yes"
   },
   "keywords": [
     "kops",
@@ -16,6 +20,7 @@
   "dependencies": {
     "@grucloud/core": "^1.10.25",
     "@grucloud/provider-aws": "^1.11.0",
-    "rubico": "^1.6.23"
+    "rubico": "^1.6.23",
+    "shelljs": "^0.8.4"
   }
 }
