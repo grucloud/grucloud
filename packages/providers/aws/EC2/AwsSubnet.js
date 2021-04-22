@@ -33,11 +33,9 @@ const {
 exports.AwsSubnet = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
-  const findName = switchCase([
-    get("DefaultForAz"),
-    () => "default",
-    findNameInTags,
-  ]);
+  const isDefault = get("live.DefaultForAz");
+
+  const findName = switchCase([isDefault, () => "default", findNameInTags]);
 
   const findId = get("SubnetId");
 
@@ -181,6 +179,7 @@ exports.AwsSubnet = ({ spec, config }) => {
   return {
     type: "Subnet",
     spec,
+    isDefault,
     findId,
     findName,
     findDependencies,

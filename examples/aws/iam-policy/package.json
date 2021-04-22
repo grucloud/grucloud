@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-iam-policy",
-  "version": "1.11.0",
+  "version": "1.12.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.10.25",
-    "@grucloud/provider-aws": "^1.11.0"
+    "@grucloud/core": "^1.12.0",
+    "@grucloud/provider-aws": "^1.12.0"
   }
 }

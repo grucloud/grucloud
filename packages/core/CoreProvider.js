@@ -124,6 +124,7 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
       findDependencies: () => [],
       findNamespace: () => "",
       cannotBeDeleted: get("resource.readOnly"),
+      isDefault: () => false,
       configDefault: () => ({}),
       isInstanceUp: not(isEmpty),
       providerName,
@@ -1583,41 +1584,15 @@ function CoreProvider({
       }),
     ])();
 
-  const decorateLives = async ({
-    result,
-    client,
-    options: { our, name, id, canBeDeleted, provider: providerNames },
-  }) =>
+  const decorateLives = async ({ result, client }) =>
     switchCase([
       get("error"),
       () => result,
       pipe([
-        tap((result) => {
-          logger.info(
-            `decorateLives ${JSON.stringify({
-              our,
-              name,
-              id,
-              canBeDeleted,
-              providerName,
-              type: client.spec.type,
-            })}`
-          );
-        }),
+        tap((result) => {}),
         get("items"),
         filter(not(get("error"))),
         map(decorateLive({ client })),
-
-        //TODO filter later on when isOurMinion is Called
-        filter((item) => (our ? item.managedByUs : true)),
-        filter((item) => (name ? item.name === name : true)),
-        filter((item) => (id ? item.id === id : true)),
-        filter((item) =>
-          providerName && !isEmpty(providerNames)
-            ? includes(item.providerName)(providerNames)
-            : true
-        ),
-        filter((item) => (canBeDeleted ? !item.cannotBeDeleted : true)),
         (resources) => ({
           type: client.spec.type,
           resources,

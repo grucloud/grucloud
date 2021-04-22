@@ -133,6 +133,10 @@ exports.createProgram = ({ version, commands }) => {
     .option("--id <value>", "List by id")
     .option("-o, --our", "List only our managed resources")
     .option(
+      "--default-exclude",
+      "Exclude the default resources, i.e VPC and Subnet"
+    )
+    .option(
       "-d, --canBeDeleted",
       "display resources which can be deleted, a.k.a non default resources"
     )
@@ -152,12 +156,15 @@ exports.createProgram = ({ version, commands }) => {
 
   program
     .command("graph")
-    .description("Output dot file ")
+    .description(
+      "Output the target resources in a dot file and a graphical format such as SVG"
+    )
+    .alias("gt")
     .alias("g")
     .option(
       "-f, --file <file>",
       "write result to the given file name",
-      "grucloud.dot"
+      "graph-target.dot"
     )
     .option("-t, --type <type>", "file type: png, svg", "svg")
     .action(runCommand({ commandName: "graph", program }));

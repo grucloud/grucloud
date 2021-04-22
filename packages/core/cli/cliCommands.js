@@ -1233,7 +1233,7 @@ const graphOutputFileName = (commandOptions) =>
 
 const dotToSvg = ({
   result,
-  commandOptions: { file = "list.dot", type = "svg" },
+  commandOptions: { file = "graph-live.dot", type = "svg" },
 }) =>
   pipe([
     tap(() => {
