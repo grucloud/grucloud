@@ -91,7 +91,6 @@ const configProviderDefault = {
 
 const GraphCommon = require("./GraphCommon");
 
-const { buildSubGraphLive, buildGraphAssociationLive } = require("./GraphLive");
 const { buildSubGraph, buildGraphAssociation } = require("./GraphTarget");
 
 const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
@@ -1557,11 +1556,37 @@ function CoreProvider({
       }
     )();
 
-  const filterClient = async ({
+  const decorateLive = ({ client }) => (live) =>
+    pipe([
+      () => live,
+      () => ({
+        uri: liveToUri({ client, live }),
+        name: client.findName(live),
+        displayName: client.displayName({
+          name: client.findName(live),
+          meta: client.findMeta(live),
+        }),
+        meta: client.findMeta(live),
+        id: client.findId(live),
+        providerName: client.spec.providerName,
+        type: client.spec.type,
+        live,
+        cannotBeDeleted: client.cannotBeDeleted({
+          live,
+          name: client.findName(live),
+          //TODO remove resourceNames
+          resourceNames: resourceNames(),
+          resources: getResourcesByType({ type: client.spec.type }),
+          resource: getResourceFromLive({ client, live }),
+          config: providerConfig,
+        }),
+      }),
+    ])();
+
+  const decorateLives = async ({
     result,
     client,
     options: { our, name, id, canBeDeleted, provider: providerNames },
-    lives,
   }) =>
     switchCase([
       get("error"),
@@ -1569,7 +1594,7 @@ function CoreProvider({
       pipe([
         tap((result) => {
           logger.info(
-            `filterClient ${JSON.stringify({
+            `decorateLives ${JSON.stringify({
               our,
               name,
               id,
@@ -1581,29 +1606,9 @@ function CoreProvider({
         }),
         get("items"),
         filter(not(get("error"))),
-        map((live) => ({
-          uri: liveToUri({ client, live }),
-          name: client.findName(live),
-          displayName: client.displayName({
-            name: client.findName(live),
-            meta: client.findMeta(live),
-          }),
-          meta: client.findMeta(live),
-          id: client.findId(live),
+        map(decorateLive({ client })),
 
-          providerName: client.spec.providerName,
-          type: client.spec.type,
-          live,
-          cannotBeDeleted: client.cannotBeDeleted({
-            live,
-            name: client.findName(live),
-            //TODO remove resourceNames
-            resourceNames: resourceNames(),
-            resources: getResourcesByType({ type: client.spec.type }),
-            resource: getResourceFromLive({ client, live }),
-            config: providerConfig,
-          }),
-        })),
+        //TODO filter later on when isOurMinion is Called
         filter((item) => (our ? item.managedByUs : true)),
         filter((item) => (name ? item.name === name : true)),
         filter((item) => (id ? item.id === id : true)),
@@ -1672,13 +1677,12 @@ function CoreProvider({
               assert(true);
             }),
             (result) =>
-              filterClient({
+              decorateLives({
                 result,
                 client,
                 onStateChange,
                 options,
                 //TODO live
-                lives,
               }),
             tap((result) => {
               lives.addResources(result);
@@ -2327,25 +2331,21 @@ function CoreProvider({
     runOnDeployed,
     runOnDestroyed,
     hookAdd,
-    buildSubGraphLive: ({ options }) =>
-      buildSubGraphLive({
-        providerName,
-        options: defaultsDeep(GraphCommon.optionsDefault)(options),
-      }),
-    buildGraphAssociationLive: ({ options }) =>
-      buildGraphAssociationLive({
-        options: defaultsDeep(GraphCommon.optionsDefault)(options),
-      }),
     buildSubGraph: ({ options }) =>
       buildSubGraph({
         providerName,
-        options: defaultsDeep(GraphCommon.optionsDefault)(options),
+        options: defaultsDeep(GraphCommon.optionsDefault({ kind: "target" }))(
+          options
+        ),
         resources: getTargetResources(),
       }),
+    //TODO should be done once in ProviderGru
     buildGraphAssociation: ({ options }) =>
       buildGraphAssociation({
         providerName,
-        options: defaultsDeep(GraphCommon.optionsDefault)(options),
+        options: defaultsDeep(GraphCommon.optionsDefault({ kind: "target" }))(
+          options
+        ),
         resources: getTargetResources(),
       }),
 

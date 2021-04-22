@@ -1111,7 +1111,9 @@ exports.ProviderGru = ({ hookGlobal, stacks }) => {
     buildGraphLive: ({ lives, options }) =>
       buildGraphLive({
         lives,
-        options: defaultsDeep(GraphCommon.optionsDefault)(options),
+        options: defaultsDeep(GraphCommon.optionsDefault({ kind: "live" }))(
+          options
+        ),
       }),
   };
 };
