@@ -7,4 +7,4 @@ title: Examples
 
 ### [Virtual Machine inside a VPC](https://github.com/grucloud/grucloud/tree/main/examples/azure)
 
-![Virtual Machine](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/azure/grucloud.svg)
+![Virtual Machine](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/azure/diagram-target.svg)
