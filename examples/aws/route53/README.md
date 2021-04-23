@@ -13,4 +13,4 @@ The purpose of this example is to create an hosted zone and add some records.
 gc graph
 ```
 
-![Graph](grucloud.svg)
+![GraphTarget](diagram-target.svg)

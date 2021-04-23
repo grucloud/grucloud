@@ -5,6 +5,8 @@
   "description": "setup dns for github page",
   "main": "index.js",
   "scripts": {
+    "graph-target": "gc graph",
+    "graph-live": "gc list --graph",
     "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
   },
   "author": "",

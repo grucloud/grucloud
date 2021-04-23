@@ -14,4 +14,4 @@ The purpose of this example is to deploy a virtual machine attached to a public 
 gc graph
 ```
 
-![Graph](grucloud.svg)
+![GraphTarget](diagram-target.svg)

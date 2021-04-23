@@ -51,7 +51,9 @@ const { tos } = require("./tos");
 const { convertError } = require("./Common");
 
 const { displayLive } = require("./cli/displayUtils");
-const { buildSubGraphLive, buildGraphAssociationLive } = require("./GraphLive");
+const { buildGraphLive } = require("./GraphLive");
+const { buildGraphTarget } = require("./GraphTarget");
+
 const GraphCommon = require("./GraphCommon");
 
 const identity = (x) => x;
@@ -805,85 +807,6 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
     });
   };
 
-  const buildSubGraph = ({ options }) =>
-    pipe([
-      () => getProviders(),
-      map(
-        tryCatch(
-          (provider) => provider.buildSubGraph({ options }),
-          (error, provider) => {
-            return { error, provider: provider.toString() };
-          }
-        )
-      ),
-      tap.if(get("error"), (error) => {
-        throw error;
-      }),
-      (results) => results.join("\n"),
-      tap((result) => {
-        logger.info(`buildSubGraph ${result}`);
-      }),
-    ])();
-
-  const buildGraphAssociation = ({ options }) =>
-    pipe([
-      () => getProviders(),
-      map(
-        tryCatch(
-          (provider) => provider.buildGraphAssociation({ options }),
-          (error, provider) => {
-            return { error, provider: provider.toString() };
-          }
-        )
-      ),
-      (results) => results.join("\n"),
-      tap((result) => {
-        logger.info(`buildGraphAssociation ${result}`);
-      }),
-    ])();
-
-  const buildGraph = ({ options }) =>
-    pipe([
-      tap(() => {
-        logger.info(`buildGraph ${tos(options)}`);
-      }),
-      () => `digraph graphname {
-  rankdir=LR; 
-  node [margin=0.05 fontsize=32 width=0.5 shape=box style=rounded]
-  ${buildSubGraph({ options })}
-  ${buildGraphAssociation({ options })}
-}`,
-      tap((result) => {
-        logger.info(`buildGraph done`);
-      }),
-    ])();
-
-  const buildGraphLive = ({ lives, options }) =>
-    pipe([
-      tap(() => {
-        logger.info(`buildGraphLive`);
-      }),
-      () => `digraph graphname {
-  rankdir=LR; 
-  ${pipe([
-    map(({ providerName, results }) =>
-      buildSubGraphLive({ providerName, resourcesPerType: results, options })
-    ),
-    (result) => result.join("\n"),
-  ])(lives)}
-  # Association
-  ${pipe([
-    map(({ results }) =>
-      buildGraphAssociationLive({ resourcesPerType: results, options })
-    ),
-    (result) => result.join("\n"),
-  ])(lives)}
-}`,
-      tap((result) => {
-        logger.info(`buildGraph done`);
-      }),
-    ])();
-
   const startHookGlobalSpinners = ({ hookType, onStateChange, hookInstance }) =>
     pipe([
       () => {
@@ -1140,7 +1063,14 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
     getProviders,
     runCommand,
     runCommandGlobal,
-    buildGraph,
+    buildGraphTarget: ({ lives, options }) =>
+      buildGraphTarget({
+        providers: getProviders(),
+        lives,
+        options: defaultsDeep(GraphCommon.optionsDefault({ kind: "target" }))(
+          options
+        ),
+      }),
     buildGraphLive: ({ lives, options }) =>
       buildGraphLive({
         lives,

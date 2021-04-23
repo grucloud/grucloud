@@ -88,4 +88,4 @@ To check that the deployment is successful, run the `run --onDeployed` command:
 gc graph
 ```
 
-![Graph](grucloud.svg)
+![GraphTarget](diagram-target.svg)

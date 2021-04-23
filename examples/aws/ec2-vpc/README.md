@@ -8,4 +8,4 @@ The purpose of this example is to deploy an EC2 instance attached to an elastic 
 gc graph
 ```
 
-![Graph](grucloud.svg)
+![GraphTarget](diagram-target.svg)

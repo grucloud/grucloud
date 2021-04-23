@@ -11,4 +11,4 @@ This infrastructure deploys the dns configuration to setup github page.
 gc graph
 ```
 
-![Graph](grucloud.svg)
+![GraphTarget](diagram-target.svg)

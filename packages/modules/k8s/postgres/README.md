@@ -2,7 +2,7 @@
 
 This module defines the kubernetes resources required to run a Postgres database.
 
-![Graph](grucloud.svg)
+![GraphTarget](diagram-target.svg)
 
 ## Config
 

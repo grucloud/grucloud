@@ -1,21 +1,20 @@
-const { AssertionError } = require("assert");
 const assert = require("assert");
-const { pipe, map, tap, filter, not } = require("rubico");
+const { pipe, map, tap, filter, not, tryCatch, get } = require("rubico");
 const { callProp, isEmpty, groupBy, values } = require("rubico/x");
 const logger = require("./logger")({ prefix: "Graph" });
+const { tos } = require("./tos");
 
 const {
   formatNodeName,
   formatNamespace,
   buildSubGraphClusterNamespace,
   buildSubGraphClusterProvider,
+  buildGraphRootLabel,
 } = require("./GraphCommon");
 
 const buildNode = ({ cluster }) => (resource) => `"${resource.type}::${
   resource.name
-}" [fillcolor="${cluster.node.fillColor}" color="${
-  cluster.node.color
-}" style=filled label=<
+}" [label=<
   <table color='${cluster.node.color}' border="0">
      <tr><td align="text"><FONT color='${
        cluster.node.type.fontColor
@@ -57,15 +56,15 @@ const buildNamespaceGraph = ({ options, providerName, namespace, resources }) =>
     }),
   ])();
 
-exports.buildSubGraph = ({ providerName, resources, options }) =>
+const buildSubGraphTargetNode = ({ providerName, resources, options }) =>
   pipe([
     tap((xxx) => {
-      logger.debug(`buildSubGraph`);
+      logger.debug(`buildSubGraphTargetNode`);
     }),
     () => resources,
     groupBy("namespace"),
     tap((xxx) => {
-      logger.debug(`buildSubGraph`);
+      logger.debug(`buildSubGraphTargetNode`);
     }),
     map.entries(([namespace, resources]) => [
       namespace,
@@ -88,10 +87,10 @@ exports.buildSubGraph = ({ providerName, resources, options }) =>
     }),
   ])();
 
-exports.buildGraphAssociation = ({ resources, options }) =>
+const buildSubGraphTargetNodeAssociation = ({ resources, options }) =>
   pipe([
     tap(() => {
-      logger.debug(`buildGraphAssociation `);
+      logger.debug(`buildSubGraphTargetNodeAssociation `);
       assert(Array.isArray(resources));
     }),
     () => resources,
@@ -105,6 +104,70 @@ exports.buildGraphAssociation = ({ resources, options }) =>
     filter(not(isEmpty)),
     callProp("join", "\n"),
     tap((result) => {
-      logger.debug(`buildGraphAssociation ${result}`);
+      assert(true);
+    }),
+  ])();
+
+const buildGraphTargetNodes = ({ providers, options }) =>
+  pipe([
+    () => providers,
+    map(
+      tryCatch(
+        (provider) =>
+          buildSubGraphTargetNode({
+            providerName: provider.name,
+            resources: provider.getTargetResources(),
+            options,
+          }),
+        (error, provider) => {
+          return { error, provider: provider.toString() };
+        }
+      )
+    ),
+    tap.if(get("error"), (error) => {
+      throw error;
+    }),
+    callProp("join", "\n"),
+    tap((result) => {
+      assert(true);
+    }),
+  ])();
+
+const buildGraphTargetAssociation = ({ providers, options }) =>
+  pipe([
+    () => providers,
+    map(
+      tryCatch(
+        (provider) =>
+          buildSubGraphTargetNodeAssociation({
+            providerName: provider.name,
+            resources: provider.getTargetResources(),
+            options,
+          }),
+        (error, provider) => {
+          return { error, provider: provider.toString() };
+        }
+      )
+    ),
+    callProp("join", "\n"),
+    tap((result) => {
+      assert(true);
+    }),
+  ])();
+
+exports.buildGraphTarget = ({ providers, options }) =>
+  pipe([
+    tap(() => {
+      assert(providers);
+      logger.info(`buildGraphTarget ${tos(options)}`);
+    }),
+    () => `digraph graphname {
+  ${buildGraphRootLabel({ options })}
+  ${buildGraphTargetNodes({ providers, options })}
+
+${buildGraphTargetAssociation({ providers, options })}
+}`,
+    tap((result) => {
+      logger.info(`buildGraphTarget done`);
     }),
   ])();

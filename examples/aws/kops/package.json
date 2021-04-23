@@ -5,6 +5,8 @@
   "main": "iac,js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "graph-target": "gc graph",
+    "graph-live": "gc list --graph",
     "kops:create": "source kops.env && kops create cluster --zones=us-east-1a $NAME",
     "kops:update": "source kops.env && kops update cluster --name $NAME --yes --admin",
     "kops:validate": "source kops.env && kops validate cluster --wait 10m",

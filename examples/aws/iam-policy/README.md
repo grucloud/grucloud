@@ -8,4 +8,4 @@ The purpose of this example is to deploy a policy and a read only policy attache
 gc graph
 ```
 
-![Graph](grucloud.svg)
+![GraphTarget](diagram-target.svg)

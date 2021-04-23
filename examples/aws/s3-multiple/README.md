@@ -8,4 +8,4 @@ The purpose of this example is to deploy multiple S3Bucket programmatically.
 gc graph
 ```
 
-![Graph](grucloud.svg)
+![GraphTarget](diagram-target.svg)

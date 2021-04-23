@@ -8,4 +8,4 @@ The purpose of this example is to deploy IamUser, IamGroup, IamRole and IamPolic
 gc graph
 ```
 
-![Graph](grucloud.svg)
+![GraphTarget](diagram-target.svg)

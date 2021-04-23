@@ -1,18 +1,5 @@
 const assert = require("assert");
-const {
-  pipe,
-  map,
-  flatMap,
-  and,
-  tap,
-  filter,
-  get,
-  not,
-  eq,
-  gte,
-  switchCase,
-  reduce,
-} = require("rubico");
+const { gte, switchCase } = require("rubico");
 const { size, identity, isEmpty } = require("rubico/x");
 const changeCase = require("change-case");
 
@@ -23,17 +10,29 @@ exports.optionsDefault = ({ kind }) => ({
   fontName: "Helvetica",
   edge: { color: "#707070" },
   cluster: {
-    provider: {
+    root: {
+      bgColor: "#fafafa",
+      fillColor: "#f5f5f5",
+    },
+    titleLabel: {
       fontColor: "#383838",
+      pointSize: 22,
+    },
+    titleKind: {
+      fontColor: "#707070",
+      pointSize: 16,
+    },
+    provider: {
+      fontColor: "#707070",
       color: "#f5f5f5",
       fillColor: "#f5f5f5",
-      pointSize: 30,
+      pointSize: 20,
     },
     namespace: {
       fontColor: "#383838",
       color: "#eeeeee",
       fillColor: "#eeeeee",
-      pointSize: 24,
+      pointSize: 20,
     },
     node: {
       color: "#dddddd",
@@ -53,31 +52,55 @@ exports.formatNodeName = ({ name }) =>
 
 exports.formatNamespace = switchCase([isEmpty, () => "", identity]);
 
-const providerTitle = ({ providerName, kind }) =>
-  `${changeCase.headerCase(kind)} resources on ${providerName}`;
+const rootTitle = ({ title }) => `Project ${title}`;
+
+const providerTitle = ({ providerName }) => `Provider ${providerName}`;
+
+exports.buildGraphRootLabel = ({
+  options: {
+    fontName,
+    title,
+    cluster: { root, titleKind, titleLabel },
+    kind,
+  },
+}) =>
+  `
+    rankdir=LR; 
+    labelloc=t;
+    fontname=${fontName};
+    bgcolor="${root.bgColor}";
+    label=<
+    <table  border="0">
+       <tr><td align="text"><FONT color='${titleLabel.fontColor}' POINT-SIZE="${
+    titleLabel.pointSize
+  }"><B>${rootTitle({ title })}</B></FONT><br align="left" /></td></tr>
+  <tr><td align="text"><FONT color='${titleKind.fontColor}' POINT-SIZE="${
+    titleKind.pointSize
+  }"><B>${changeCase.pascalCase(
+    kind
+  )} Diagram</B></FONT><br align="left" /></td></tr>
+    </table>>`;
 
 const buildClusterProviderLabel = ({
   options: {
     fontName,
     cluster: { provider },
-    kind,
   },
   providerName,
 }) =>
   `fontname=${fontName}
   style=filled;
+  labelloc=b;
   color="${provider.color}"
   fillcolor="${provider.fillColor}";
   label=<
   <table color='${provider.color}' border="0">
      <tr><td align="text"><FONT color='${provider.fontColor}' POINT-SIZE="${
     provider.pointSize
-  }">${providerTitle({
+  }"><B>${providerTitle({
     providerName,
-    kind,
-  })}</FONT><br align="left" /></td></tr>
-  </table>>
-`;
+  })}</B></FONT><br align="left" /></td></tr>
+  </table>>`;
 
 exports.buildSubGraphClusterProvider = ({ providerName, options }) => (
   content
