@@ -1,9 +1,5 @@
 ## Bugs
 
-- kubectl logs -n kube-system deployment.apps/aws-load-balancer-controller
-
-User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot list resource "pods" in API group "" at the cluster scope
-
 - gc a: when an assert is thrown, it does not exit but ask for deployment confirmation.
 - code coverage with monorepo
 - check stage for all providers
@@ -45,11 +41,13 @@ User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot lis
 
 ## Kubernetes
 
+- minikite gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404
 - cert-manager example
 - kubectl cluster-info
 
 ## Azure
 
+- remove NetworkWatcherRG from list
 - check resource group name
 - check machine type: https://docs.microsoft.com/en-us/rest/api/compute/availabilitysets/listavailablesizes#virtualmachinesize
 
@@ -62,7 +60,6 @@ User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot lis
 - aws_route53_delegation_set
 
 - getBucketTagging should not log error when tad dos not exist.
-- minikite gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404
 - https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
 - https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html
 
