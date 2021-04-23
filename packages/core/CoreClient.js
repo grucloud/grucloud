@@ -27,6 +27,7 @@ module.exports = CoreClient = ({
   verbList = "GET",
   verbCreate = "POST",
   isInstanceUp,
+  isDefault,
   isUpByIdFactory = ({ getById }) => isUpByIdCore({ getById }),
   configDefault = async ({ name, properties }) => ({
     name,
@@ -44,6 +45,7 @@ module.exports = CoreClient = ({
   cannotBeDeleted = () => false,
   shouldRetryOnException,
   onCreateExpectedException,
+  findDependencies,
 }) => {
   assert(spec);
   assert(type);
@@ -236,10 +238,12 @@ module.exports = CoreClient = ({
     type,
     config,
     findId,
+    findDependencies,
     getById,
     getByName,
     isInstanceUp,
     findName,
+    isDefault,
     cannotBeDeleted,
     shouldRetryOnException,
     isUpById,
