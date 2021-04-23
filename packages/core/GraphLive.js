@@ -74,9 +74,9 @@ const buildSubGraph = ({ providerName, options, namespace, resources }) =>
       assert(true);
     }),
   ])();
-
+//TODO
 const resourceNameFilterDefault = and([
-  ({ name }) => !name.startsWith("kube"),
+  //({ name }) => !name.startsWith("kube"),
   ({ name }) => !name.startsWith("system"),
   //({ name }) => !name.startsWith("default"),
 ]);
