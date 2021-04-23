@@ -17,17 +17,17 @@ Usage: gc list|l [options]
 List the live resources
 
 Options:
-  -g, --graph             create an SVG representation of the live infrastructure
-  -a, --all               List also read-only resources
-  -n, --name <value>      List by name
-  --id <value>            List by id
-  -o, --our               List only our managed resources
-  --default-exclude       Exclude the default resources, i.e VPC and Subnet
-  -d, --canBeDeleted      display resources which can be deleted, a.k.a non default
-                          resources
-  -p, --provider <value>  Filter by provider, multiple values allowed
-  -t, --types <value>     Filter by type, multiple values allowed
-  -h, --help              display help for command
+  -g, --graph                  create an SVG representation of the live infrastructure
+  -a, --all                    List also read-only resources
+  -n, --name <value>           List by name
+  --id <value>                 List by id
+  -o, --our                    List only our managed resources
+  --default-exclude            Exclude the default resources, i.e VPC and Subnet
+  -e, --types-exclude <value>  Exclude by type, multiple values allowed
+  -d, --canBeDeleted           display resources which can be deleted, a.k.a non default resources
+  -p, --provider <value>       Filter by provider, multiple values allowed
+  -t, --types <value>          Include by type, multiple values allowed
+  -h, --help                   display help for command
 ```
 
 ### graph
@@ -74,6 +74,14 @@ The **types** option is repeatable:
 
 ```sh
 gc list --types Server --types SecurityGroup
+```
+
+### --types-exclude
+
+The **--types-exclude** option excludes one or more types
+
+```
+gc list --graph  --types-exclude Certificate --types-exclude Route53Domain --types-exclude NetworkInterface
 ```
 
 ### our
