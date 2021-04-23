@@ -69,6 +69,10 @@ module.exports = {
               label: "Microsoft Azure",
               href: "/docs/azure/AzureGettingStarted",
             },
+            {
+              label: "Kubernetes",
+              href: "/docs/k8s/K8sGettingStarted",
+            },
           ],
         },
         /*{
