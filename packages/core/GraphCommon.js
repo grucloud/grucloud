@@ -27,7 +27,7 @@ exports.optionsDefault = ({ kind }) => ({
       fontColor: "#383838",
       color: "#f5f5f5",
       fillColor: "#f5f5f5",
-      pointSize: 36,
+      pointSize: 30,
     },
     namespace: {
       fontColor: "#383838",
@@ -51,10 +51,10 @@ exports.formatNodeName = ({ name }) =>
     identity,
   ])(name);
 
-exports.formatNamespace = switchCase([isEmpty, () => "default", identity]);
+exports.formatNamespace = switchCase([isEmpty, () => "", identity]);
 
 const providerTitle = ({ providerName, kind }) =>
-  `${changeCase.headerCase(kind)} resources on provider ${providerName}`;
+  `${changeCase.headerCase(kind)} resources on ${providerName}`;
 
 const buildClusterProviderLabel = ({
   options: {
@@ -85,6 +85,12 @@ exports.buildSubGraphClusterProvider = ({ providerName, options }) => (
     ${buildClusterProviderLabel({ options, providerName })};
     ${content}}
 `;
+const labelClusterNamespace = ({ namespace, options: { cluster } }) =>
+  isEmpty(namespace)
+    ? `label=<<FONT color='${
+        cluster.namespace.fontColor
+      }' POINT-SIZE="${1}"> </FONT>>;`
+    : `label=<<FONT color='${cluster.namespace.fontColor}' POINT-SIZE="${cluster.namespace.pointSize}"><B>${namespace}</B></FONT>>;`;
 
 exports.buildSubGraphClusterNamespace = ({
   options: { fontName, cluster },
@@ -95,7 +101,9 @@ exports.buildSubGraphClusterNamespace = ({
         style=filled;
         color="${cluster.namespace.color}";
         fillcolor="${cluster.namespace.fillColor}";
-        label=<<FONT color='${cluster.namespace.fontColor}' POINT-SIZE="${cluster.namespace.pointSize}"><B>${namespace}</B></FONT>>;
-        node [shape=box style=filled fontname=${fontName} fillcolor="${cluster.node.fillColor}" color="${cluster.node.color}"]
+        ${labelClusterNamespace({ options: { fontName, cluster }, namespace })}
+        node [shape=box style=filled fontname=${fontName} fillcolor="${
+  cluster.node.fillColor
+}" color="${cluster.node.color}"]
         ${content}}
         `;
