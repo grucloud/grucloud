@@ -13,9 +13,7 @@ const {
 
 const buildNode = ({ cluster }) => (resource) => `"${resource.type}::${
   resource.name
-}" [fillcolor="${cluster.node.fillColor}" color="${
-  cluster.node.color
-}" style=filled label=<
+}" [label=<
   <table color='${cluster.node.color}' border="0">
      <tr><td align="text"><FONT color='${
        cluster.node.type.fontColor
@@ -164,9 +162,10 @@ exports.buildGraphTarget = ({ providers, options }) =>
     }),
     () => `digraph graphname {
   rankdir=LR; 
-  node [margin=0.05 fontsize=32 width=0.5 shape=box style=rounded]
+
   ${buildGraphTargetNodes({ providers, options })}
-  ${buildGraphTargetAssociation({ providers, options })}
+
+${buildGraphTargetAssociation({ providers, options })}
 }`,
     tap((result) => {
       logger.info(`buildGraphTarget done`);

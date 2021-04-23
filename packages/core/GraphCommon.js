@@ -76,8 +76,7 @@ const buildClusterProviderLabel = ({
     providerName,
     kind,
   })}</FONT><br align="left" /></td></tr>
-  </table>>
-`;
+  </table>>`;
 
 exports.buildSubGraphClusterProvider = ({ providerName, options }) => (
   content
