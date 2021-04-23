@@ -146,11 +146,9 @@ const buildSubGraphLive = ({ providerName, resourcesPerType, options }) =>
     }),
   ])();
 
-const findNamespace = ({ type, id, resourcesPerType }) =>
+const findNamespace = ({ type, id, resources }) =>
   pipe([
-    () => resourcesPerType,
-    find(eq(get("type"), type)),
-    get("resources"),
+    () => resources,
     find(eq(get("id"), id)),
     get("namespace"),
     formatNamespace,
@@ -161,14 +159,14 @@ const findNamespace = ({ type, id, resourcesPerType }) =>
     }),
   ])();
 
-const nodeFrom = ({ type, namespaceFrom, idFrom }) =>
-  `"${type}::${formatNamespace(namespaceFrom)}::${idFrom}"`;
+const buildNodeFrom = ({ type, namespaceFrom, idFrom }) =>
+  `${type}::${formatNamespace(namespaceFrom)}::${idFrom}`;
 
-const nodeToId = ({ dependency, idTo, resourcesPerType }) =>
+const buildNodeToId = ({ dependency, idTo, resources }) =>
   `${dependency.type}::${findNamespace({
     type: dependency.type,
     id: idTo,
-    resourcesPerType,
+    resources,
   })}::${idTo}`;
 
 const associationIdString = ({
@@ -176,22 +174,34 @@ const associationIdString = ({
   type,
   namespace: namespaceFrom,
   idFrom,
+  idTo,
   dependency,
-  resourcesPerType,
+  resources,
 }) =>
   pipe([
-    tap((id) => {
-      if (!id) {
-        assert(id);
-      }
+    tap(() => {
+      assert(idTo);
+      assert(resources);
     }),
-    (idTo) =>
-      `${nodeFrom({ type, namespaceFrom, idFrom })} -> "${nodeToId({
-        dependency,
-        resourcesPerType,
-        idTo,
-      })}" [color="${edge.color}"];`,
-  ]);
+    () => resources,
+    switchCase([
+      find(eq(get("id"), idTo)),
+      pipe([
+        () => ({
+          nodeFrom: buildNodeFrom({ type, namespaceFrom, idFrom }),
+          nodeTo: buildNodeToId({
+            dependency,
+            resources,
+            idTo,
+          }),
+        }),
+        ({ nodeFrom, nodeTo }) =>
+          `"${nodeFrom}" -> "${nodeTo}" [color="${edge.color}"];`,
+      ]),
+      () => "",
+    ]),
+    ,
+  ])();
 
 const associationIdObject = ({
   options: { edge },
@@ -211,7 +221,7 @@ const associationIdObject = ({
       }
     }),
     ({ name, namespace }) =>
-      `${nodeFrom({ type, namespaceFrom, idFrom })} -> "${
+      `${buildNodeFrom({ type, namespaceFrom, idFrom })} -> "${
         dependency.type
       }::${namespace}::${name}" [color="${edge.color}"];`,
   ]);
@@ -258,14 +268,20 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
             map((dependencyId) =>
               switchCase([
                 isString,
-                associationIdString({
-                  options,
-                  type,
-                  idFrom: id,
-                  namespace,
-                  dependency,
-                  resourcesPerType,
-                }),
+                (idTo) =>
+                  associationIdString({
+                    options,
+                    type,
+                    idFrom: id,
+                    idTo,
+                    namespace,
+                    dependency,
+                    resources: pipe([
+                      () => resourcesPerType,
+                      find(eq(get("type"), dependency.type)),
+                      get("resources"),
+                    ])(),
+                  }),
                 isObject,
                 associationIdObject({
                   options,

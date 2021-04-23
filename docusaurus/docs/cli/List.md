@@ -76,9 +76,9 @@ The **types** option is repeatable:
 gc list --types Server --types SecurityGroup
 ```
 
-### --types-exclude
+### types-exclude
 
-The **--types-exclude** option excludes one or more types
+The **--types-exclude** option excludes one or more types:
 
 ```
 gc list --graph  --types-exclude Certificate --types-exclude Route53Domain --types-exclude NetworkInterface
