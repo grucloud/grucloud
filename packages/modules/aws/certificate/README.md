@@ -27,7 +27,7 @@ Outputs:
 gc graph
 ```
 
-![Graph](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/certificate/grucloud.svg)
+![Graph](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/certificate/diagram-target.svg)
 
 # How to use this module
 

@@ -5,8 +5,8 @@
   "main": "iac.js",
   "private": true,
   "scripts": {
-    "graph-target": "gc graph",
-    "graph-live": "gc list --graph",
+    "graph-target": "gc graph --title 'EKS Module'",
+    "graph-live": "gc list --graph --title 'EKS Module'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

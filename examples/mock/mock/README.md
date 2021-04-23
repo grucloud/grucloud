@@ -54,4 +54,4 @@ gc destroy
 gc graph
 ```
 
-![Graph](grucloud.svg)
+![GraphTarget](diagram-target.svg)

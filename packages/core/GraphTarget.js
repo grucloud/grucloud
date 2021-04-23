@@ -9,6 +9,7 @@ const {
   formatNamespace,
   buildSubGraphClusterNamespace,
   buildSubGraphClusterProvider,
+  buildGraphRootLabel,
 } = require("./GraphCommon");
 
 const buildNode = ({ cluster }) => (resource) => `"${resource.type}::${
@@ -161,8 +162,7 @@ exports.buildGraphTarget = ({ providers, options }) =>
       logger.info(`buildGraphTarget ${tos(options)}`);
     }),
     () => `digraph graphname {
-  rankdir=LR; 
-
+  ${buildGraphRootLabel({ options })}
   ${buildGraphTargetNodes({ providers, options })}
 
 ${buildGraphTargetAssociation({ providers, options })}

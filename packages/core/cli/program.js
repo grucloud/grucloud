@@ -1,8 +1,11 @@
 require("dotenv").config();
 const { Command } = require("commander");
 const { pipe, tryCatch } = require("rubico");
+const { last } = require("rubico/x");
+
 const { createInfra } = require("./infra");
 const YAML = require("./json2yaml");
+const path = require("path");
 
 const collect = (value, previous = []) => previous.concat([value]);
 
@@ -154,6 +157,8 @@ exports.createProgram = ({ version, commands }) => {
     .option(...optionFilteredByProvider)
     .action(runCommand({ commandName: "output", program }));
 
+  const defautTitle = last(process.cwd().split(path.sep));
+
   program
     .command("graph")
     .description(
@@ -166,6 +171,7 @@ exports.createProgram = ({ version, commands }) => {
       "write result to the given file name",
       "diagram-target.dot"
     )
+    .option("--title <value>", "diagram title", defautTitle)
     .option("-t, --type <type>", "file type: png, svg", "svg")
     .action(runCommand({ commandName: "graph", program }));
 

@@ -8,4 +8,4 @@ The purpose of this example is to create and attach an EBS volume to an EC2 inst
 gc graph
 ```
 
-![Graph](grucloud.svg)
+![GraphTarget](diagram-target.svg)

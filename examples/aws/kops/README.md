@@ -50,7 +50,7 @@ Another way to explore the _iac.js_ is to generate a diagram of the resources:
 gc graph
 ```
 
-![kops-graph](./grucloud.svg)
+![kops-graph](./diagram-target.svg)
 
 ## Deploying
 

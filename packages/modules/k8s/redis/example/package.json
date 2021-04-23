@@ -5,7 +5,7 @@
   "main": "iac.js",
   "private": true,
   "scripts": {
-    "graph-target": "gc graph",
+    "graph-target": "gc graph --title 'Redis Module'",
     "graph-live": "gc list --graph",
     "test": "mocha --exit './{,!(node_modules)/**}/*.test.js'",
     "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"

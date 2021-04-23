@@ -2,7 +2,7 @@
 
 This example demonstrate how to use the GruCloud Kubernetes Postgres module.
 
-![Graph](grucloud.svg)
+![GraphTarget](diagram-target.svg)
 
 ## Config
 

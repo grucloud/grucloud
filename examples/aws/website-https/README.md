@@ -26,7 +26,7 @@ Here is the list of the resources involved in this deployment:
 
 ## Dependency Graph
 
-![Graph](grucloud.svg)
+![GraphTarget](diagram-target.svg)
 
 ## Requirements
 
