@@ -51,7 +51,7 @@ const { tos } = require("./tos");
 const { convertError } = require("./Common");
 
 const { displayLive } = require("./cli/displayUtils");
-const { buildSubGraphLive, buildGraphAssociationLive } = require("./GraphLive");
+const { buildGraphLive } = require("./GraphLive");
 const GraphCommon = require("./GraphCommon");
 
 const identity = (x) => x;
@@ -852,32 +852,6 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
   node [margin=0.05 fontsize=32 width=0.5 shape=box style=rounded]
   ${buildSubGraph({ options })}
   ${buildGraphAssociation({ options })}
-}`,
-      tap((result) => {
-        logger.info(`buildGraph done`);
-      }),
-    ])();
-
-  const buildGraphLive = ({ lives, options }) =>
-    pipe([
-      tap(() => {
-        logger.info(`buildGraphLive`);
-      }),
-      () => `digraph graphname {
-  rankdir=LR; 
-  ${pipe([
-    map(({ providerName, results }) =>
-      buildSubGraphLive({ providerName, resourcesPerType: results, options })
-    ),
-    (result) => result.join("\n"),
-  ])(lives)}
-  # Association
-  ${pipe([
-    map(({ results }) =>
-      buildGraphAssociationLive({ resourcesPerType: results, options })
-    ),
-    (result) => result.join("\n"),
-  ])(lives)}
 }`,
       tap((result) => {
         logger.info(`buildGraph done`);

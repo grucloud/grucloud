@@ -88,7 +88,7 @@ const filterResources = ({
 }) =>
   pipe([
     tap((resources) => {
-      logger.debug(`buildSubGraphLive #resources ${size(resources)}`);
+      logger.debug(`filterResources #resources ${size(resources)}`);
     }),
     filter(not(isEmpty)),
     filter(
@@ -99,11 +99,11 @@ const filterResources = ({
       ])
     ),
     tap((resources) => {
-      logger.debug(`buildSubGraphLive filtered #resources ${size(resources)}`);
+      logger.debug(`filterResources filtered #resources ${size(resources)}`);
     }),
   ]);
 
-exports.buildSubGraphLive = ({ providerName, resourcesPerType, options }) =>
+const buildSubGraphLive = ({ providerName, resourcesPerType, options }) =>
   pipe([
     tap(() => {
       logger.debug(`buildSubGraphLive`);
@@ -216,7 +216,7 @@ const associationIdObject = ({
       }::${namespace}::${name}" [color="${edge.color}"];`,
   ]);
 
-exports.buildGraphAssociationLive = ({ resourcesPerType, options }) =>
+const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
   pipe([
     tap(() => {
       logger.debug(`buildGraphAssociationLive`);
@@ -295,5 +295,32 @@ exports.buildGraphAssociationLive = ({ resourcesPerType, options }) =>
     callProp("join", "\n"),
     tap((result) => {
       logger.debug(`buildGraphAssociationLive done`);
+    }),
+  ])();
+
+exports.buildGraphLive = ({ lives, options }) =>
+  pipe([
+    tap(() => {
+      logger.info(`buildGraphLive`);
+    }),
+    () => `digraph graphname {
+  rankdir=LR; 
+  # Nodes
+  ${pipe([
+    map(({ providerName, results }) =>
+      buildSubGraphLive({ providerName, resourcesPerType: results, options })
+    ),
+    callProp("join", "\n"),
+  ])(lives)}
+  # Association
+  ${pipe([
+    map(({ results }) =>
+      buildGraphAssociationLive({ resourcesPerType: results, options })
+    ),
+    callProp("join", "\n"),
+  ])(lives)}
+}`,
+    tap((result) => {
+      logger.info(`buildGraphLive done`);
     }),
   ])();
