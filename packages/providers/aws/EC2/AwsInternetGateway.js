@@ -1,5 +1,5 @@
-const { get, pipe, filter, map, tap, eq, switchCase, not } = require("rubico");
-const { defaultsDeep, isEmpty, first, pluck } = require("rubico/x");
+const { pipe, filter, map, get, tap, eq, switchCase, not } = require("rubico");
+const { find, defaultsDeep, isEmpty, first, pluck } = require("rubico/x");
 const assert = require("assert");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsIgw" });
@@ -19,10 +19,28 @@ const {
   findNamespaceInTags,
 } = require("../AwsCommon");
 
+const findVpcId = pipe([get("Attachments"), first, get("VpcId")]);
+
+const isDefault = ({ providerName }) => ({ live, lives }) =>
+  pipe([
+    () => lives.getByType({ type: "Vpc", providerName }),
+    get("resources"),
+    find(eq(get("live.IsDefault"), true)),
+    switchCase([
+      eq(get("live.VpcId"), findVpcId(live)),
+      () => true,
+      () => false,
+    ]),
+    tap((result) => {
+      logger.debug(`isDefault ${result}`);
+    }),
+  ])();
+
+exports.isDefault = isDefault;
+
 exports.AwsInternetGateway = ({ spec, config }) => {
   assert(spec);
   assert(config);
-
   const ec2 = Ec2New(config);
 
   const findId = get("InternetGatewayId");
@@ -178,6 +196,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
   return {
     type: "InternetGateway",
     spec,
+    isDefault: isDefault(config),
     findId,
     findName,
     findDependencies,
