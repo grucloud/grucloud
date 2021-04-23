@@ -1276,7 +1276,8 @@ exports.graph = async ({ infra, config, commandOptions = {} }) =>
         logger.debug(`graph`, config);
         assert(input.providerGru);
       }),
-      ({ providerGru }) => providerGru.buildGraph({ options: commandOptions }),
+      ({ providerGru }) =>
+        providerGru.buildGraphTarget({ options: commandOptions }),
       // TODO add title from config.projectName
       (result) => dotToSvg({ commandOptions, result }),
     ]),

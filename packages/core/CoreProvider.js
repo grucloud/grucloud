@@ -89,10 +89,6 @@ const configProviderDefault = {
   retryDelay: 10e3,
 };
 
-const GraphCommon = require("./GraphCommon");
-
-const { buildSubGraph, buildGraphAssociation } = require("./GraphTarget");
-
 const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
   pipe([
     () => spec.Client({ providerName, spec, config, mapTypeToResources }),
@@ -2306,24 +2302,6 @@ function CoreProvider({
     runOnDeployed,
     runOnDestroyed,
     hookAdd,
-    buildSubGraph: ({ options }) =>
-      buildSubGraph({
-        providerName,
-        options: defaultsDeep(GraphCommon.optionsDefault({ kind: "target" }))(
-          options
-        ),
-        resources: getTargetResources(),
-      }),
-    //TODO should be done once in ProviderGru
-    buildGraphAssociation: ({ options }) =>
-      buildGraphAssociation({
-        providerName,
-        options: defaultsDeep(GraphCommon.optionsDefault({ kind: "target" }))(
-          options
-        ),
-        resources: getTargetResources(),
-      }),
-
     info: pipe([
       () => startBase({ onStateChange: identity }),
       () => ({
