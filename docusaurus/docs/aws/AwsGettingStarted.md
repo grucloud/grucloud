@@ -391,4 +391,4 @@ gc graph
 
 Here is the graph of a tipical web application managed by Kubernetes running on AWS where the master node is managed by EKS.
 
-![kubernetes eks](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/grucloud.svg)
+![kubernetes eks](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/diagram-target.svg)

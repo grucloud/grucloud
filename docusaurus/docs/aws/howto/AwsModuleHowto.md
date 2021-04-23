@@ -22,7 +22,7 @@ The following resources are required to create an EKS Cluster:
 - [Route](https://www.grucloud.com/docs/aws/resources/EC2/Route): 3 routes for the public subnet and 3 routes for the private subnet
 
 A picture is worth a thousand word, we'll be able to generate this dependency graph at the end of this tutorial:
-![Graph](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/vpc/example/grucloud.svg)
+![Graph](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/vpc/example/diagram-target.svg)
 
 # Requirements
 
