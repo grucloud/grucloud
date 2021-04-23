@@ -11,16 +11,6 @@
 <polygon fill="#fafafa" stroke="transparent" points="-4,4 -4,-1622 1271,-1622 1271,4 -4,4"/>
 <text text-anchor="start" x="567.5" y="-1593.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project multi</text>
 <text text-anchor="start" x="567.5" y="-1568.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
-<g id="clust3" class="cluster">
-<title>cluster_azure</title>
-<polygon fill="#f5f5f5" stroke="#f5f5f5" points="60.5,-1217 60.5,-1546 963,-1546 963,-1217 60.5,-1217"/>
-<text text-anchor="start" x="442.75" y="-1232" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="20.00" fill="#707070">Provider azure</text>
-</g>
-<g id="clust4" class="cluster">
-<title>cluster_azure_</title>
-<polygon fill="#eeeeee" stroke="#eeeeee" points="68.5,-1263 68.5,-1538 955,-1538 955,-1263 68.5,-1263"/>
-<text text-anchor="start" x="511.61" y="-1267.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
-</g>
 <g id="clust1" class="cluster">
 <title>cluster_aws</title>
 <polygon fill="#f5f5f5" stroke="#f5f5f5" points="8,-8 8,-1209 1259,-1209 1259,-8 8,-8"/>
@@ -30,6 +20,16 @@
 <title>cluster_aws_</title>
 <polygon fill="#eeeeee" stroke="#eeeeee" points="16,-54 16,-1201 1251,-1201 1251,-54 16,-54"/>
 <text text-anchor="start" x="633.36" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_azure</title>
+<polygon fill="#f5f5f5" stroke="#f5f5f5" points="60.5,-1217 60.5,-1546 963,-1546 963,-1217 60.5,-1217"/>
+<text text-anchor="start" x="442.75" y="-1232" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="20.00" fill="#707070">Provider azure</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_azure_</title>
+<polygon fill="#eeeeee" stroke="#eeeeee" points="68.5,-1263 68.5,-1538 955,-1538 955,-1263 68.5,-1263"/>
+<text text-anchor="start" x="511.61" y="-1267.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
 </g>
 <!-- KeyPair::kp -->
 <g id="node1" class="node">
@@ -94,8 +94,8 @@
 <!-- InternetGateway::ig&#45;&gt;Vpc::vpc -->
 <g id="edge4" class="edge">
 <title>InternetGateway::ig&#45;&gt;Vpc::vpc</title>
-<path fill="none" stroke="#707070" d="M492.62,-1158.51C556.67,-1153.4 651.64,-1144.92 734,-1134 765.47,-1129.83 801.03,-1123.65 826.83,-1118.91"/>
-<polygon fill="#707070" stroke="#707070" points="827.7,-1122.3 836.9,-1117.04 826.43,-1115.42 827.7,-1122.3"/>
+<path fill="none" stroke="#707070" d="M492.6,-1158.06C556.63,-1152.6 651.59,-1143.75 734,-1133 765.44,-1128.9 801,-1123.02 826.81,-1118.52"/>
+<polygon fill="#707070" stroke="#707070" points="827.64,-1121.93 836.88,-1116.75 826.43,-1115.04 827.64,-1121.93"/>
 </g>
 <!-- Subnet::subnet -->
 <g id="node7" class="node">
@@ -468,98 +468,98 @@
 <!-- ResourceGroup::resource&#45;group&#45;dev -->
 <g id="node39" class="node">
 <title>ResourceGroup::resource&#45;group&#45;dev</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="947,-1378 781,-1378 781,-1320 947,-1320 947,-1378"/>
-<text text-anchor="start" x="793" y="-1358.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ResourceGroup</text>
-<text text-anchor="start" x="793" y="-1333.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">resource&#45;group&#45;dev</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="947,-1434 781,-1434 781,-1376 947,-1376 947,-1434"/>
+<text text-anchor="start" x="793" y="-1414.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ResourceGroup</text>
+<text text-anchor="start" x="793" y="-1389.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">resource&#45;group&#45;dev</text>
 </g>
 <!-- VirtualNetwork::virtual&#45;network&#45;dev -->
 <g id="node40" class="node">
 <title>VirtualNetwork::virtual&#45;network&#45;dev</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="731,-1378 570,-1378 570,-1320 731,-1320 731,-1378"/>
-<text text-anchor="start" x="582.5" y="-1358.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">VirtualNetwork</text>
-<text text-anchor="start" x="582.5" y="-1333.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">virtual&#45;network&#45;dev</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="731,-1530 570,-1530 570,-1472 731,-1472 731,-1530"/>
+<text text-anchor="start" x="582.5" y="-1510.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">VirtualNetwork</text>
+<text text-anchor="start" x="582.5" y="-1485.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">virtual&#45;network&#45;dev</text>
 </g>
 <!-- VirtualNetwork::virtual&#45;network&#45;dev&#45;&gt;ResourceGroup::resource&#45;group&#45;dev -->
 <g id="edge29" class="edge">
 <title>VirtualNetwork::virtual&#45;network&#45;dev&#45;&gt;ResourceGroup::resource&#45;group&#45;dev</title>
-<path fill="none" stroke="#707070" d="M731.16,-1349C744.13,-1349 757.66,-1349 770.9,-1349"/>
-<polygon fill="#707070" stroke="#707070" points="770.95,-1352.5 780.95,-1349 770.95,-1345.5 770.95,-1352.5"/>
+<path fill="none" stroke="#707070" d="M715.53,-1471.94C738.93,-1461.32 765.56,-1449.23 789.7,-1438.27"/>
+<polygon fill="#707070" stroke="#707070" points="791.16,-1441.45 798.82,-1434.13 788.27,-1435.08 791.16,-1441.45"/>
 </g>
 <!-- SecurityGroup::security&#45;group&#45;dev -->
 <g id="node41" class="node">
 <title>SecurityGroup::security&#45;group&#45;dev</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="730,-1454 571,-1454 571,-1396 730,-1396 730,-1454"/>
-<text text-anchor="start" x="583.5" y="-1434.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">SecurityGroup</text>
-<text text-anchor="start" x="583.5" y="-1409.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">security&#45;group&#45;dev</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="730,-1358 571,-1358 571,-1300 730,-1300 730,-1358"/>
+<text text-anchor="start" x="583.5" y="-1338.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">SecurityGroup</text>
+<text text-anchor="start" x="583.5" y="-1313.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">security&#45;group&#45;dev</text>
 </g>
 <!-- SecurityGroup::security&#45;group&#45;dev&#45;&gt;ResourceGroup::resource&#45;group&#45;dev -->
 <g id="edge30" class="edge">
 <title>SecurityGroup::security&#45;group&#45;dev&#45;&gt;ResourceGroup::resource&#45;group&#45;dev</title>
-<path fill="none" stroke="#707070" d="M730.25,-1396.7C744,-1391.76 758.39,-1386.59 772.42,-1381.55"/>
-<polygon fill="#707070" stroke="#707070" points="773.83,-1384.76 782.06,-1378.08 771.47,-1378.17 773.83,-1384.76"/>
+<path fill="none" stroke="#707070" d="M730.25,-1357.3C744,-1362.24 758.39,-1367.41 772.42,-1372.45"/>
+<polygon fill="#707070" stroke="#707070" points="771.47,-1375.83 782.06,-1375.92 773.83,-1369.24 771.47,-1375.83"/>
 </g>
 <!-- PublicIpAddress::ip&#45;dev -->
 <g id="node42" class="node">
 <title>PublicIpAddress::ip&#45;dev</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="726,-1530 575,-1530 575,-1472 726,-1472 726,-1530"/>
-<text text-anchor="start" x="587.5" y="-1510.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">PublicIpAddress</text>
-<text text-anchor="start" x="587.5" y="-1485.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ip&#45;dev</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="726,-1434 575,-1434 575,-1376 726,-1376 726,-1434"/>
+<text text-anchor="start" x="587.5" y="-1414.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">PublicIpAddress</text>
+<text text-anchor="start" x="587.5" y="-1389.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">ip&#45;dev</text>
 </g>
 <!-- PublicIpAddress::ip&#45;dev&#45;&gt;ResourceGroup::resource&#45;group&#45;dev -->
 <g id="edge31" class="edge">
 <title>PublicIpAddress::ip&#45;dev&#45;&gt;ResourceGroup::resource&#45;group&#45;dev</title>
-<path fill="none" stroke="#707070" d="M719.03,-1471.91C724.19,-1469.08 729.24,-1466.1 734,-1463 768.26,-1440.66 802.76,-1409.63 827.44,-1385.59"/>
-<polygon fill="#707070" stroke="#707070" points="830.11,-1387.87 834.78,-1378.36 825.2,-1382.89 830.11,-1387.87"/>
+<path fill="none" stroke="#707070" d="M726.07,-1405C740.46,-1405 755.71,-1405 770.6,-1405"/>
+<polygon fill="#707070" stroke="#707070" points="770.83,-1408.5 780.83,-1405 770.83,-1401.5 770.83,-1408.5"/>
 </g>
 <!-- NetworkInterface::network&#45;interface&#45;dev -->
 <g id="node43" class="node">
 <title>NetworkInterface::network&#45;interface&#45;dev</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="507.5,-1378 327.5,-1378 327.5,-1320 507.5,-1320 507.5,-1378"/>
-<text text-anchor="start" x="339.5" y="-1358.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">NetworkInterface</text>
-<text text-anchor="start" x="339.5" y="-1333.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">network&#45;interface&#45;dev</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="507.5,-1434 327.5,-1434 327.5,-1376 507.5,-1376 507.5,-1434"/>
+<text text-anchor="start" x="339.5" y="-1414.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">NetworkInterface</text>
+<text text-anchor="start" x="339.5" y="-1389.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">network&#45;interface&#45;dev</text>
 </g>
 <!-- NetworkInterface::network&#45;interface&#45;dev&#45;&gt;ResourceGroup::resource&#45;group&#45;dev -->
 <g id="edge32" class="edge">
 <title>NetworkInterface::network&#45;interface&#45;dev&#45;&gt;ResourceGroup::resource&#45;group&#45;dev</title>
-<path fill="none" stroke="#707070" d="M507.72,-1322.32C527.09,-1317.62 547.59,-1313.44 567,-1311 640.64,-1301.73 660.54,-1300.41 734,-1311 746.13,-1312.75 758.7,-1315.38 771.03,-1318.45"/>
-<polygon fill="#707070" stroke="#707070" points="770.29,-1321.88 780.85,-1321 772.05,-1315.1 770.29,-1321.88"/>
+<path fill="none" stroke="#707070" d="M507.72,-1431.68C527.09,-1436.38 547.59,-1440.56 567,-1443 640.64,-1452.27 660.54,-1453.59 734,-1443 746.13,-1441.25 758.7,-1438.62 771.03,-1435.55"/>
+<polygon fill="#707070" stroke="#707070" points="772.05,-1438.9 780.85,-1433 770.29,-1432.12 772.05,-1438.9"/>
 </g>
 <!-- NetworkInterface::network&#45;interface&#45;dev&#45;&gt;VirtualNetwork::virtual&#45;network&#45;dev -->
 <g id="edge33" class="edge">
 <title>NetworkInterface::network&#45;interface&#45;dev&#45;&gt;VirtualNetwork::virtual&#45;network&#45;dev</title>
-<path fill="none" stroke="#707070" d="M507.81,-1349C524.74,-1349 542.46,-1349 559.41,-1349"/>
-<polygon fill="#707070" stroke="#707070" points="559.85,-1352.5 569.85,-1349 559.85,-1345.5 559.85,-1352.5"/>
+<path fill="none" stroke="#707070" d="M488.43,-1434.06C514.21,-1444.78 543.59,-1456.99 570.14,-1468.02"/>
+<polygon fill="#707070" stroke="#707070" points="568.83,-1471.26 579.4,-1471.87 571.51,-1464.8 568.83,-1471.26"/>
 </g>
 <!-- NetworkInterface::network&#45;interface&#45;dev&#45;&gt;SecurityGroup::security&#45;group&#45;dev -->
 <g id="edge34" class="edge">
 <title>NetworkInterface::network&#45;interface&#45;dev&#45;&gt;SecurityGroup::security&#45;group&#45;dev</title>
-<path fill="none" stroke="#707070" d="M506.82,-1378.06C524.55,-1383.89 543.19,-1390.02 560.93,-1395.86"/>
-<polygon fill="#707070" stroke="#707070" points="560.09,-1399.27 570.68,-1399.07 562.28,-1392.62 560.09,-1399.27"/>
+<path fill="none" stroke="#707070" d="M506.82,-1375.94C524.55,-1370.11 543.19,-1363.98 560.93,-1358.14"/>
+<polygon fill="#707070" stroke="#707070" points="562.28,-1361.38 570.68,-1354.93 560.09,-1354.73 562.28,-1361.38"/>
 </g>
 <!-- NetworkInterface::network&#45;interface&#45;dev&#45;&gt;PublicIpAddress::ip&#45;dev -->
 <g id="edge35" class="edge">
 <title>NetworkInterface::network&#45;interface&#45;dev&#45;&gt;PublicIpAddress::ip&#45;dev</title>
-<path fill="none" stroke="#707070" d="M452.04,-1378.24C481.16,-1402.76 525.12,-1437.72 567,-1463 569.19,-1464.32 571.42,-1465.62 573.7,-1466.91"/>
-<polygon fill="#707070" stroke="#707070" points="572.18,-1470.07 582.64,-1471.77 575.53,-1463.92 572.18,-1470.07"/>
+<path fill="none" stroke="#707070" d="M507.81,-1405C526.45,-1405 546.05,-1405 564.53,-1405"/>
+<polygon fill="#707070" stroke="#707070" points="564.66,-1408.5 574.66,-1405 564.66,-1401.5 564.66,-1408.5"/>
 </g>
 <!-- VirtualMachine::vm&#45;dev -->
 <g id="node44" class="node">
 <title>VirtualMachine::vm&#45;dev</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="215.5,-1358 76.5,-1358 76.5,-1300 215.5,-1300 215.5,-1358"/>
-<text text-anchor="start" x="89" y="-1338.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">VirtualMachine</text>
-<text text-anchor="start" x="89" y="-1313.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vm&#45;dev</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="215.5,-1386 76.5,-1386 76.5,-1328 215.5,-1328 215.5,-1386"/>
+<text text-anchor="start" x="89" y="-1366.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">VirtualMachine</text>
+<text text-anchor="start" x="89" y="-1341.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">vm&#45;dev</text>
 </g>
 <!-- VirtualMachine::vm&#45;dev&#45;&gt;ResourceGroup::resource&#45;group&#45;dev -->
 <g id="edge36" class="edge">
 <title>VirtualMachine::vm&#45;dev&#45;&gt;ResourceGroup::resource&#45;group&#45;dev</title>
-<path fill="none" stroke="#707070" d="M215.91,-1315.45C326.28,-1296 549.09,-1266.06 734,-1300 752.96,-1303.48 772.75,-1309.61 790.97,-1316.39"/>
-<polygon fill="#707070" stroke="#707070" points="789.75,-1319.67 800.34,-1319.98 792.26,-1313.13 789.75,-1319.67"/>
+<path fill="none" stroke="#707070" d="M215.56,-1329.42C327.8,-1288.56 556.09,-1223.65 734,-1291 774.58,-1306.36 810.62,-1340.96 834.22,-1368.04"/>
+<polygon fill="#707070" stroke="#707070" points="831.69,-1370.46 840.83,-1375.81 837.02,-1365.93 831.69,-1370.46"/>
 </g>
 <!-- VirtualMachine::vm&#45;dev&#45;&gt;NetworkInterface::network&#45;interface&#45;dev -->
 <g id="edge37" class="edge">
 <title>VirtualMachine::vm&#45;dev&#45;&gt;NetworkInterface::network&#45;interface&#45;dev</title>
-<path fill="none" stroke="#707070" d="M215.7,-1334.1C246.44,-1336.38 283.27,-1339.11 316.95,-1341.61"/>
-<polygon fill="#707070" stroke="#707070" points="317.06,-1345.13 327.29,-1342.38 317.58,-1338.15 317.06,-1345.13"/>
+<path fill="none" stroke="#707070" d="M215.7,-1369.24C246.58,-1374.74 283.59,-1381.33 317.39,-1387.35"/>
+<polygon fill="#707070" stroke="#707070" points="316.83,-1390.8 327.29,-1389.11 318.06,-1383.91 316.83,-1390.8"/>
 </g>
 </g>
 </svg>
