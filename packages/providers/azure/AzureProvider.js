@@ -1,7 +1,7 @@
 const assert = require("assert");
-const { pipe, eq, get } = require("rubico");
+const { pipe, eq, get, tap, filter, map } = require("rubico");
 
-const { defaultsDeep, isFunction } = require("rubico/x");
+const { defaultsDeep, isFunction, pluck, find } = require("rubico/x");
 
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const AzClient = require("./AzClient");
@@ -14,9 +14,16 @@ const { checkEnv } = require("@grucloud/core/Utils");
 const { tos } = require("@grucloud/core/tos");
 
 const fnSpecs = (config) => {
-  const { location, managedByKey, managedByValue, stageTagKey, stage } = config;
+  const {
+    location,
+    managedByKey,
+    managedByValue,
+    stageTagKey,
+    stage,
+    providerName,
+  } = config;
   const subscriptionId = process.env.SUBSCRIPTION_ID;
-
+  assert(providerName);
   //TODO move isInstanceUp and  isUpByIdFactory in AzClient
   const getStateName = (instance) => {
     const { provisioningState } = instance.properties;
@@ -41,7 +48,12 @@ const fnSpecs = (config) => {
     [stageTagKey]: stage,
   });
 
-  const isDefaultResourceGroup = eq(get("name"), "NetworkWatcherRG");
+  const isDefaultResourceGroup = eq(get("live.name"), "NetworkWatcherRG");
+
+  const findDependenciesResourceGroup = ({ live }) => ({
+    type: "ResourceGroup",
+    ids: [live.id.replace(`/providers/${live.type}/${live.name}`, "")],
+  });
 
   return [
     {
@@ -90,6 +102,9 @@ const fnSpecs = (config) => {
           queryParameters: () => "?api-version=2020-05-01",
           isUpByIdFactory,
           isInstanceUp,
+          findDependencies: ({ live }) => [
+            findDependenciesResourceGroup({ live }),
+          ],
           config,
           configDefault: ({ properties }) =>
             defaultsDeep({
@@ -125,6 +140,9 @@ const fnSpecs = (config) => {
               location,
               tags: buildTags(config),
             })(properties),
+          findDependencies: ({ live }) => [
+            findDependenciesResourceGroup({ live }),
+          ],
         }),
       isOurMinion,
     },
@@ -135,7 +153,6 @@ const fnSpecs = (config) => {
 
       type: "PublicIpAddress",
       dependsOn: ["ResourceGroup"],
-
       Client: ({ spec }) =>
         AzClient({
           spec,
@@ -157,6 +174,9 @@ const fnSpecs = (config) => {
               properties: {},
             })(properties);
           },
+          findDependencies: ({ live }) => [
+            findDependenciesResourceGroup({ live }),
+          ],
         }),
       isOurMinion,
     },
@@ -183,6 +203,36 @@ const fnSpecs = (config) => {
             `/providers/Microsoft.Network/networkInterfaces`,
           queryParameters: () => "?api-version=2020-05-01",
           isInstanceUp,
+          findDependencies: ({ live, lives }) => [
+            findDependenciesResourceGroup({ live }),
+            {
+              type: "VirtualNetwork",
+              ids: pipe([
+                () => live,
+                get("properties.ipConfigurations"),
+                map(
+                  pipe([
+                    get("properties.subnet.id"),
+                    (id) => id.replace(/\/subnet.+$/g, ""),
+                  ])
+                ),
+              ])(),
+            },
+            {
+              type: "PublicIpAddress",
+              ids: pipe([
+                () => live,
+                get("properties.ipConfigurations"),
+                pluck("properties"),
+                pluck("publicIPAddress"),
+                pluck("id"),
+              ])(),
+            },
+            {
+              type: "SecurityGroup",
+              ids: [get("properties.networkSecurityGroup.id")(live)],
+            },
+          ],
           config,
           configDefault: async ({ properties, dependencies }) => {
             const {
@@ -295,6 +345,27 @@ const fnSpecs = (config) => {
               },
             })(properties);
           },
+          findDependencies: ({ live }) => [
+            {
+              type: "ResourceGroup",
+              ids: pipe([
+                () => [
+                  live.id
+                    .replace(`/providers/${live.type}/${live.name}`, "")
+                    .toLowerCase()
+                    .replace("resourcegroups", "resourceGroups"),
+                ],
+              ])(),
+            },
+            {
+              type: "NetworkInterface",
+              ids: pipe([
+                () => live,
+                get("properties.networkProfile.networkInterfaces"),
+                pluck("id"),
+              ])(),
+            },
+          ],
         }),
       isOurMinion,
     },

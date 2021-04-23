@@ -218,10 +218,10 @@ gc apply
 
 ## List
 
-List the available resources with:
+List the available resources and display a diagram with:
 
 ```sh
-gc list
+gc list --graph
 ```
 
 ## Destroy

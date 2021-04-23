@@ -21,7 +21,9 @@ module.exports = AzClient = ({
   isInstanceUp,
   config,
   configDefault,
+  isDefault,
   cannotBeDeleted,
+  findDependencies,
 }) => {
   assert(pathBase);
   assert(spec);
@@ -48,6 +50,7 @@ module.exports = AzClient = ({
     type: "azure",
     spec,
     config,
+    findDependencies,
     onResponseList,
     configDefault,
     pathGet,
@@ -57,6 +60,7 @@ module.exports = AzClient = ({
     verbCreate: "PUT",
     isUpByIdFactory,
     isInstanceUp,
+    isDefault,
     cannotBeDeleted,
     axios: AxiosMaker({
       baseURL: BASE_URL,

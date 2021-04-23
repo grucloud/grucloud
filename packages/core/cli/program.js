@@ -164,7 +164,7 @@ exports.createProgram = ({ version, commands }) => {
     .option(
       "-f, --file <file>",
       "write result to the given file name",
-      "graph-target.dot"
+      "diagram-target.dot"
     )
     .option("-t, --type <type>", "file type: png, svg", "svg")
     .action(runCommand({ commandName: "graph", program }));
