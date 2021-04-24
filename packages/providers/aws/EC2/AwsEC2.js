@@ -439,12 +439,12 @@ exports.AwsEC2 = ({ spec, config }) => {
       tap((tags) => {
         //logger.info(`cannotBeDeleted  ${tos({ tags })}`);
       }),
-      find(
-        and([
-          eq(get("Key"), "kubernetes.io/cluster/cluster"),
-          eq(get("Value"), "owned"),
-        ])
-      ),
+      // find(
+      //   and([
+      //     eq(get("Key"), "kubernetes.io/cluster/cluster"),
+      //     eq(get("Value"), "owned"),
+      //   ])
+      // ),
     ])();
 
   return {
