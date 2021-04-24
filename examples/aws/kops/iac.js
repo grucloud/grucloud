@@ -4,7 +4,7 @@ const { map, get, pipe, eq, tap } = require("rubico");
 const { find } = require("rubico/x");
 const hook = require("./hook");
 
-const namespace = "Kops Dependencies";
+const namespace = "";
 
 const PolicyNames = [
   "AmazonEC2FullAccess",

@@ -17,6 +17,7 @@ exports.createResources = async ({
   assert(vpc);
   assert(certificate);
   assert(hostedZone);
+  //TODO remove EKS dependency
   assert(eks);
   assert(eks.cluster);
 
@@ -39,6 +40,7 @@ exports.createResources = async ({
       create: {
         Description: "Load Balancer HTTP HTTPS Security Group",
       },
+      //TODO Tags not needed ?
       Tags: [
         {
           Key: "ingress.k8s.aws/stack",
@@ -118,6 +120,7 @@ exports.createResources = async ({
     ])();
 
   // Use the security group created by EKS
+  //TODO out of this module
   const securityGroupK8sCluster = await provider.useSecurityGroup({
     name: "sg-eks-k8s-cluster",
     namespace,
@@ -141,12 +144,13 @@ exports.createResources = async ({
       ])(),
   });
 
+  // TODO Should be outside too
   // Attach an Ingress Rule to the eks-k8s security group to allow traffic from the load balancer
   const sgRuleIngress = await provider.makeSecurityGroupRuleIngress({
     name: "sg-rule-ingress",
     namespace,
     dependencies: {
-      cluster: eks.cluster,
+      cluster: eks.cluster, //TODO do we need that deps ?
       securityGroup: securityGroupK8sCluster,
       securityGroupLoadBalancer,
     },
