@@ -6,9 +6,8 @@ const {
 module.exports = [
   {
     type: "AutoScalingGroup",
-    dependsOn: ["LoadBalancer", "TargetGroup", "EC2", "EKSCluster"],
+    dependsOn: ["LoadBalancer", "TargetGroup", "EKSCluster"],
     Client: AwsAutoScalingGroup,
     isOurMinion: autoScalingGroupIsOurMinion,
-    listOnly: true,
   },
 ];

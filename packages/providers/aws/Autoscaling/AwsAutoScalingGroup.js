@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { map, pipe, tap, tryCatch, get, switchCase, eq } = require("rubico");
-const { find, defaultsDeep, pluck, identity } = require("rubico/x");
+const { find, defaultsDeep, pluck, isEmpty, first } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AutoScalingGroup" });
 const { retryCall } = require("@grucloud/core/Retry");
@@ -82,7 +82,7 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {
-        logger.info(`getList ${tos(params)}`);
+        logger.info(`getList autoscaling group ${tos(params)}`);
       }),
       () => autoScaling().describeAutoScalingGroups({}),
       get("AutoScalingGroups"),
@@ -91,7 +91,7 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
         items,
       }),
       tap(({ total }) => {
-        logger.info(`getList: ${total}`);
+        logger.info(`getList autoscaling group ${total}`);
       }),
     ])();
 
@@ -111,14 +111,19 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
       }),
     ])();
 
+  const isDownByName = ({ name }) =>
+    pipe([() => getByName({ name }), isEmpty])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#deleteAutoScalingGroup-property
   const destroy = async ({ live }) =>
     pipe([
-      () => ({ id: findId(live), name: findName(live) }),
+      () => ({ name: findName(live) }),
       ({ id, name }) =>
         pipe([
           tap(() => {
-            logger.info(`destroy ${JSON.stringify({ name, id })}`);
+            logger.info(
+              `destroy autoscaling group ${JSON.stringify({ name })}`
+            );
           }),
 
           //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#updateAutoScalingGroup-property
@@ -126,13 +131,15 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
           (params) => autoScaling().deleteAutoScalingGroup(params),
           tap(() =>
             retryCall({
-              name: `isDownById: ${id}`,
-              fn: () => isDownById({ id }),
+              name: `isDownByName: ${name}`,
+              fn: () => isDownByName({ name }),
               config,
             })
           ),
           tap(() => {
-            logger.info(`destroyed ${JSON.stringify({ name, id })}`);
+            logger.info(
+              `destroyed autoscaling group ${JSON.stringify({ name })}`
+            );
           }),
         ])(),
     ])();
