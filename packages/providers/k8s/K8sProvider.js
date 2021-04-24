@@ -557,15 +557,15 @@ const fnSpecs = () => [
         {
           type: "PersistentVolumeClaim",
           ids: pipe([
-            tap(() => {
-              assert(true);
-            }),
             () => live,
             get("spec.volumes"),
             filter(get("persistentVolumeClaim")),
             map(get("persistentVolumeClaim.claimName")),
             filter(not(isEmpty)),
-            map(({ name }) => ({ name, namespace: findNamespace(live) })),
+            map((name) => ({
+              name,
+              namespace: findNamespace(live),
+            })),
           ])(),
         },
       ],
