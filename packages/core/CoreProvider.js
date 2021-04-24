@@ -296,6 +296,7 @@ const ResourceMaker = ({
     dependenciesMustBeUp = false,
   }) =>
     pipe([
+      () => dependencies,
       tap(() => {
         logger.info(
           `resolveDependencies for ${toString()}: ${Object.keys(
@@ -326,7 +327,7 @@ const ResourceMaker = ({
                 )}`
               );
               return {
-                error,
+                error: convertError({ error }),
               };
             }
           )();
@@ -379,7 +380,7 @@ const ResourceMaker = ({
             logger.error(`resolveDependencies: ${tos(error)}`);
             return {
               item: { resource: dependency.toString() },
-              error,
+              error: convertError({ error }),
             };
           }
         )(dependency);
@@ -415,7 +416,7 @@ const ResourceMaker = ({
           `resolveDependencies for ${toString()}, result: ${tos(result)}`
         );*/
       }),
-    ])(dependencies);
+    ])();
 
   const resolveConfig = async ({
     live,
@@ -449,19 +450,8 @@ const ResourceMaker = ({
             lives,
           }),
       ]),
-      async (resolvedDependencies) => {
-        const config = await client.configDefault({
-          name: resourceName,
-          meta,
-          namespace,
-          properties: defaultsDeep(spec.propertiesDefault)(
-            await properties({ dependencies: resolvedDependencies })
-          ),
-          dependencies: resolvedDependencies,
-          live,
-        });
-        // TODO out of resolveConfig
-        const finalConfig = await switchCase([
+      async (resolvedDependencies) =>
+        switchCase([
           () => filterLives,
           pipe([
             () =>
@@ -476,17 +466,23 @@ const ResourceMaker = ({
               filterLives({
                 dependencies: resolvedDependencies,
                 items,
-                config,
                 configProvider: provider.config,
                 live,
                 lives,
               }),
           ]),
-          () => config,
-        ])();
-
-        return finalConfig;
-      },
+          async () =>
+            client.configDefault({
+              name: resourceName,
+              meta,
+              namespace,
+              properties: defaultsDeep(spec.propertiesDefault)(
+                await properties({ dependencies: resolvedDependencies })
+              ),
+              dependencies: resolvedDependencies,
+              live,
+            }),
+        ])(),
     ])();
 
   const create = async ({ payload, resolvedDependencies, lives }) =>

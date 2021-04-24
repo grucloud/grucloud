@@ -46,11 +46,7 @@ exports.mapToGraph = pipe([
           switchCase([
             isString,
             () => [],
-            Array.isArray,
-            transform(
-              map((dep) => dep.toJSON()),
-              () => []
-            ),
+
             (resource) => {
               if (!resource.toJSON) {
                 assert(
@@ -61,6 +57,10 @@ exports.mapToGraph = pipe([
               return resource.name;
             },
             (resource) => [resource.toJSON()],
+            transform(
+              map((dep) => dep.toJSON()),
+              () => []
+            ),
           ])
         ),
         () => []
