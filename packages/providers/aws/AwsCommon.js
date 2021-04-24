@@ -27,7 +27,7 @@ const { KeyName } = require("@grucloud/core/Common");
 
 exports.getNewCallerReference = () => `grucloud-${new Date()}`;
 
-const handler = ({ endpointName, endpoint }) => ({
+const proxyHandler = ({ endpointName, endpoint }) => ({
   get: (target, name, receiver) => {
     assert(endpointName);
     assert(endpoint);
@@ -49,12 +49,12 @@ const handler = ({ endpointName, endpoint }) => ({
   },
 });
 
-const createEndpoint = ({ endpointName }) =>
+const createEndpoint = ({ endpointName }) => (config) =>
   pipe([
-    tap((config) => AWS.config.update(config)),
-    (config) => new AWS[endpointName]({ region: config.region }),
-    (endpoint) => new Proxy({}, handler({ endpointName, endpoint })),
-  ]);
+    tap(() => AWS.config.update(config)),
+    () => new AWS[endpointName]({ region: config.region }),
+    (endpoint) => new Proxy({}, proxyHandler({ endpointName, endpoint })),
+  ])();
 
 exports.Ec2New = (config) => () =>
   createEndpoint({ endpointName: "EC2" })(config);
