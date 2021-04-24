@@ -33,6 +33,7 @@ const {
   formatNamespace,
   buildSubGraphClusterNamespace,
   buildSubGraphClusterProvider,
+  buildGraphRootLabel,
 } = require("./GraphCommon");
 
 const NamespacesHide = ["kube-system", "kube-public", "kube-node-lease"];
@@ -320,7 +321,8 @@ exports.buildGraphLive = ({ lives, options }) =>
       logger.info(`buildGraphLive`);
     }),
     () => `digraph graphname {
-  rankdir=LR; 
+  ${buildGraphRootLabel({ options })}
+
   # Nodes
   ${pipe([
     map(({ providerName, results }) =>

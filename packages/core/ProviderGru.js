@@ -356,7 +356,6 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
       () => items,
       tap((initialItems) => {
         logger.debug(`filterLives #initialItems ${size(initialItems)}`);
-        logger.debug(`filterLives #options ${tos(other)}`);
       }),
       filter(pipe([get("type"), (type) => !includes(type)(typesExclude)])),
       filter((item) => (defaultExclude ? !item.isDefault : true)),

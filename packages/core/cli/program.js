@@ -32,6 +32,8 @@ const handleError = (error) => {
   throw error;
 };
 
+const defautTitle = last(process.cwd().split(path.sep));
+
 exports.createProgram = ({ version, commands }) => {
   const program = new Command();
   program.storeOptionsAsProperties(false);
@@ -151,6 +153,7 @@ exports.createProgram = ({ version, commands }) => {
     )
     .option(...optionFilteredByProvider)
     .option(...optionFilteredByTypes)
+    .option("--title <value>", "diagram title", defautTitle)
     .action(runCommand({ commandName: "list", program }));
 
   program
@@ -162,8 +165,6 @@ exports.createProgram = ({ version, commands }) => {
     .requiredOption("-f, --field <value>", "the resource field to get")
     .option(...optionFilteredByProvider)
     .action(runCommand({ commandName: "output", program }));
-
-  const defautTitle = last(process.cwd().split(path.sep));
 
   program
     .command("graph")
