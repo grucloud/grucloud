@@ -1,6 +1,22 @@
 const assert = require("assert");
-const { map, pipe, tap, tryCatch, get, switchCase, eq } = require("rubico");
-const { find, defaultsDeep, pluck, isEmpty, first } = require("rubico/x");
+const {
+  map,
+  pipe,
+  tap,
+  tryCatch,
+  get,
+  switchCase,
+  eq,
+  not,
+} = require("rubico");
+const {
+  find,
+  defaultsDeep,
+  pluck,
+  isEmpty,
+  first,
+  includes,
+} = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AutoScalingGroup" });
 const { retryCall } = require("@grucloud/core/Retry");
@@ -98,7 +114,7 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
   const getByName = ({ name }) =>
     pipe([
       tap(() => {
-        logger.info(`getByName ${tos(params)}`);
+        logger.info(`getByName ${tos(name)}`);
       }),
       () =>
         autoScaling().describeAutoScalingGroups({
@@ -118,24 +134,37 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
   const destroy = async ({ live }) =>
     pipe([
       () => ({ name: findName(live) }),
-      ({ id, name }) =>
+      ({ name }) =>
         pipe([
           tap(() => {
             logger.info(
               `destroy autoscaling group ${JSON.stringify({ name })}`
             );
           }),
-
-          //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#updateAutoScalingGroup-property
-          () => ({ AutoScalingGroupName: name, ForceDelete: true }),
-          (params) => autoScaling().deleteAutoScalingGroup(params),
-          tap(() =>
-            retryCall({
-              name: `isDownByName: ${name}`,
-              fn: () => isDownByName({ name }),
-              config,
-            })
+          tryCatch(
+            pipe([
+              //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#updateAutoScalingGroup-property
+              () => ({ AutoScalingGroupName: name, ForceDelete: true }),
+              (params) => autoScaling().deleteAutoScalingGroup(params),
+              tap(() =>
+                retryCall({
+                  name: `isDownByName: ${name}`,
+                  fn: () => isDownByName({ name }),
+                  config,
+                })
+              ),
+            ]),
+            tap.if(
+              pipe([
+                get("message"),
+                not(includes("AutoScalingGroup name not found")),
+              ]),
+              (error) => {
+                throw error;
+              }
+            )
           ),
+
           tap(() => {
             logger.info(
               `destroyed autoscaling group ${JSON.stringify({ name })}`
