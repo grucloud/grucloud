@@ -4,11 +4,13 @@ This GrucCloud code automatically create and destroy the users, groups, S3 bucke
 
 We'll refer to the [kops guide for AWS](https://kops.sigs.k8s.io/getting_started/aws/).
 
+![kops-graph](./diagram-target.svg)
+
 Regarding ths DNS settings, we implement the case of a subdomain where a top level hosted zone already exists.
 
 ## TD;DR
 
-1. Get the boilerplate code and install the dependencies.
+1. Get this example code and install the dependencies.
 2. Edit the configuration file and set the domain name and subdomain name.
 3. `gc apply`
 
@@ -26,11 +28,13 @@ Here are a few npm scripts wrapper: `npm run kops:create`, `npm run kops:update`
 - [Node.js](https://nodejs.org)
 - [GruCloud CLI](https://www.grucloud.com/docs/cli/gc)
 
-## Install
+## Install
 
-Install the npm dependencies with the _install_ command:
+Clone this code, change to the [kops](https://github.com/grucloud/grucloud/tree/main/examples/aws/kops) folder, install the npm dependencies with the _install_ command:
 
 ```sh
+git clone https://github.com/grucloud/grucloud
+cd grucloud/examples/aws/kops
 npm install
 ```
 
@@ -49,8 +53,6 @@ Another way to explore the _iac.js_ is to generate a diagram of the resources:
 ```sh
 gc graph
 ```
-
-![kops-graph](./diagram-target.svg)
 
 ## Deploying
 
@@ -149,7 +151,7 @@ Provider: aws
 Command "gc l -g -a" executed in 8s
 ```
 
-![list-kops](./list.svg)
+![diagram-live.partial.svg](./diagram-live-partial.svg)
 
 ## Envirornment variables
 
@@ -188,10 +190,10 @@ npm run kops:validate
 Let's fetch all the live resources, we'll see that _kops_ creates many resources such as autoscaling groups, ec2 instances, subnets, vpc, internet gateway, volumes and so on:
 
 ```sh
-gc list --graph --all
+gc list --graph --all --default-exclude --types-exclude Certificate --types-exclude Route53Domain --types-exclude NetworkInterface
 ```
 
-![list-kops-all](./list-kops-all.svg)
+![kops-diagram-live-all](./diagram-live-all.svg)
 
 ## Destroy
 
@@ -203,3 +205,16 @@ To destroy the resources created by GruCloud, use the _destroy_ command.
 npm run kops:destroy
 gc destroy
 ```
+
+## Further Step
+
+Congratulations, you know how to create and destroy a Kubernetes cluster with _kops_.
+What about a load balancers, DNS records, SSL certificates ? Grucloud provides some ready made modules distributed with _npm_, the node package manager.
+
+Have a look at:
+
+- [@grucloud/module-aws-certificate](https://www.npmjs.com/package/@grucloud/module-aws-certificate): Create a certificate and a Route53 record for validation.
+- [@grucloud/module-aws-load-balancer](https://www.npmjs.com/package/@grucloud/module-aws-load-balancer): Manages a load balancer, target groups, listeners and rules. A leaner alternative the AWS Load Balancer Controller which runs on the cluster.
+- [@grucloud/module-aws-vpc](https://www.npmjs.com/package/@grucloud/module-aws-vpc): Contains the base resources required to create a Kubernetes cluster.
+
+On the Kubernetes side, be aware of the [GruCloud Kubernetes Provider](https://www.npmjs.com/package/@grucloud/provider-k8s).In a nutshell, instead of writing YAML manifest, Javascript is used instead to define the manifest, no more templating engine, just a real programming language instead.

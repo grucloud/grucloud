@@ -15,7 +15,7 @@ exports.AwsNetworkAcl = ({ spec, config }) => {
 
   const findId = get("NetworkAclId");
   const findName = (item) => findNameInTagsOrId({ item, findId });
-
+  const isDefault = get("live.IsDefault");
   const findDependencies = ({ live }) => [
     { type: "Vpc", ids: [live.VpcId] },
     {
@@ -47,6 +47,7 @@ exports.AwsNetworkAcl = ({ spec, config }) => {
     type: "NetworkAcl",
     spec,
     findId,
+    isDefault,
     findName,
     findDependencies,
     getList,

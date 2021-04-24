@@ -24,8 +24,8 @@ Below is a list of official modules for the AWS provider:
 
 ### Aws EKS Module
 
-![Aws Vpc Module](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/eks/example/diagram-target.svg)
+![Aws EKS Module](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/eks/example/diagram-target.svg)
 
 ### Aws Load Balancer Module
 
-![Aws Vpc Module](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/load-balancer/example/diagram-target.svg)
+![Aws Load Balancer Module](https://raw.githubusercontent.com/grucloud/grucloud/main/packages/modules/aws/load-balancer/example/diagram-target.svg)

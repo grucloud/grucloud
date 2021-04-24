@@ -7,11 +7,20 @@ const {
   map,
   not,
   eq,
+  or,
   fork,
   switchCase,
   all,
 } = require("rubico");
-const { isEmpty, forEach, defaultsDeep, pluck, includes } = require("rubico/x");
+const {
+  isEmpty,
+  find,
+  first,
+  forEach,
+  defaultsDeep,
+  pluck,
+  includes,
+} = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsRouteTable" });
 const { tos } = require("@grucloud/core/tos");
@@ -28,15 +37,24 @@ const {
   shouldRetryOnException,
   findNamespaceInTags,
 } = require("../AwsCommon");
-
 exports.AwsRouteTable = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
   const ec2 = Ec2New(config);
-
   const findId = get("RouteTableId");
   const findName = (item) => findNameInTagsOrId({ item, findId });
+
+  const isDefault = ({ live, lives }) =>
+    pipe([
+      () => live,
+      get("Associations"),
+      first,
+      get("Main"),
+      tap((result) => {
+        logger.debug(`isDefault ${live.RouteTableId} : ${result}`);
+      }),
+    ])();
 
   const findDependencies = ({ live }) => [
     { type: "Vpc", ids: [live.VpcId] },
@@ -180,6 +198,7 @@ exports.AwsRouteTable = ({ spec, config }) => {
   return {
     type: "RouteTable",
     spec,
+    isDefault,
     findId,
     findName,
     findDependencies,

@@ -7,10 +7,6 @@ title: Examples
 
 ### EC2
 
-#### [EC2](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2-simple)
-
-![EC2](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/diagram-target.svg)
-
 #### [EC2/ElasticIp/KeyPair](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2)
 
 ![EC2/ElasticIp/KeyPair](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2/diagram-target.svg)
@@ -21,15 +17,15 @@ title: Examples
 
 ### IAM
 
-#### [IAM](https://github.com/grucloud/grucloud/tree/main/examples/aws/iam)
+#### [IAM Policy](https://github.com/grucloud/grucloud/tree/main/examples/aws/iam-policy)
 
-![IAM](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/iam/diagram-target.svg)
+![IAM Policy](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/iam-policy/diagram-target.svg)
 
 ### S3
 
-#### [S3](https://github.com/grucloud/grucloud/tree/main/examples/aws/s3)
+#### [S3](https://github.com/grucloud/grucloud/tree/main/examples/aws/s3-simple)
 
-![S3](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/s3/diagram-target.svg)
+![S3](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/s3-simple/diagram-target.svg)
 
 ### Route53
 

@@ -48,6 +48,7 @@ module.exports = {
               "aws/resources/ELBv2/AwsLoadBalancer",
               "aws/resources/ELBv2/AwsTargetGroup",
               "aws/resources/ELBv2/AwsListener",
+              "aws/resources/ELBv2/AwsListenerRule",
             ],
           },
           {

@@ -307,6 +307,7 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
         assert(resource.type);
         assert(lives);
       }),
+      // Use Lister
       () => getProvider({ providerName: resource.providerName }),
       (provider) =>
         pipe([
@@ -348,14 +349,15 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
     providerName,
     providerNames,
     defaultExclude,
+    typesExclude,
     ...other
   } = {}) => (items) =>
     pipe([
       () => items,
       tap((initialItems) => {
         logger.debug(`filterLives #initialItems ${size(initialItems)}`);
-        logger.debug(`filterLives #options ${tos(other)}`);
       }),
+      filter(pipe([get("type"), (type) => !includes(type)(typesExclude)])),
       filter((item) => (defaultExclude ? !item.isDefault : true)),
       filter((item) => (our ? item.managedByUs : true)),
       filter((item) => (name ? item.name === name : true)),

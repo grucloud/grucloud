@@ -17,16 +17,22 @@ const optionFilteredByProvider = [
 
 const optionFilteredByTypes = [
   "-t, --types <value>",
-  "Filter by type, multiple values allowed",
+  "Include by type, multiple values allowed",
   collect,
 ];
-
+const optionExcludesByTypes = [
+  "-e, --types-exclude <value>",
+  "Exclude by type, multiple values allowed",
+  collect,
+];
 const handleError = (error) => {
   if (!error.error?.displayed) {
     console.error(YAML.stringify(error));
   }
   throw error;
 };
+
+const defautTitle = last(process.cwd().split(path.sep));
 
 exports.createProgram = ({ version, commands }) => {
   const program = new Command();
@@ -115,6 +121,7 @@ exports.createProgram = ({ version, commands }) => {
     .option("-f, --force", "force destroy, will not prompt user")
     .option(...optionFilteredByProvider)
     .option(...optionFilteredByTypes)
+    .option(...optionExcludesByTypes)
     .option(
       "-a, --all",
       "destroy all resources including those not managed by us"
@@ -139,12 +146,14 @@ exports.createProgram = ({ version, commands }) => {
       "--default-exclude",
       "Exclude the default resources, i.e VPC and Subnet"
     )
+    .option(...optionExcludesByTypes)
     .option(
       "-d, --canBeDeleted",
       "display resources which can be deleted, a.k.a non default resources"
     )
     .option(...optionFilteredByProvider)
     .option(...optionFilteredByTypes)
+    .option("--title <value>", "diagram title", defautTitle)
     .action(runCommand({ commandName: "list", program }));
 
   program
@@ -156,8 +165,6 @@ exports.createProgram = ({ version, commands }) => {
     .requiredOption("-f, --field <value>", "the resource field to get")
     .option(...optionFilteredByProvider)
     .action(runCommand({ commandName: "output", program }));
-
-  const defautTitle = last(process.cwd().split(path.sep));
 
   program
     .command("graph")

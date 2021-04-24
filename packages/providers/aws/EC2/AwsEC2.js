@@ -51,12 +51,36 @@ const StateTerminated = "terminated";
 exports.AwsEC2 = ({ spec, config }) => {
   assert(spec);
   assert(config);
+  const { providerName } = config;
+  assert(providerName);
   const clientConfig = { ...config, retryDelay: 5000, repeatCount: 1 };
 
   const ec2 = Ec2New(config);
 
-  const findDependencies = ({ live }) => [
-    { type: "Image", ids: [live.ImageId] },
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "Image",
+      ids: [
+        pipe([
+          tap((xxx) => {
+            assert(true);
+          }),
+          () => lives.getByType({ type: "Image", providerName }),
+          get("resources"),
+          tap((xxx) => {
+            assert(true);
+          }),
+          filter(eq(get("id"), live.ImageId)),
+          tap((xxx) => {
+            assert(true);
+          }),
+          pluck("id"),
+          tap((xxx) => {
+            assert(true);
+          }),
+        ])(),
+      ],
+    },
     { type: "KeyPair", ids: filter(not(isEmpty))([live.KeyName]) },
     { type: "Vpc", ids: [live.VpcId] },
     { type: "Subnet", ids: [live.SubnetId] },
