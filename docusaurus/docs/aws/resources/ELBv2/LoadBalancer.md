@@ -73,7 +73,7 @@ const loadBalancer = await provider.makeLoadBalancer({
 
 ## Source Code
 
-- [module AWS EKS]()
+- [Load Balancer Module](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/load-balancer/iac.js)
 
 ## Dependencies
 

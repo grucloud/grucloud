@@ -41,7 +41,7 @@ The list of properties are the parameter of [createTargetGroup](https://docs.aws
 
 ## Source Code
 
-- [module AWS Load Balancer]()
+- [Load Balancer Module](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/load-balancer/iac.js)
 
 ## Dependencies
 

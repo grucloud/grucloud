@@ -57,7 +57,9 @@
 
 ## TODO Aws:
 
-- - https://github.com/kubernetes/kops/blob/master/docs/getting_started/aws.md#setup-iam-user
+- delete keypair from kops
+- HostedZone => Route53HostedZon
+- Rule => ListenerRule
 
 - aws_route53_delegation_set
 
@@ -76,7 +78,6 @@
 - security group update
 
 - ssh should use use kp.pem instead of ssh-add
-- add example code in AwsGettingStarted
 - aws.config.loadFromPath('./AwsConfig.json');
 
 - error padend

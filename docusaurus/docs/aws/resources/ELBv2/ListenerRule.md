@@ -78,7 +78,7 @@ const ruleHttps = await provider.makeRule({
 
 ## Source Code
 
-- [Load Balancer Module](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/load-balancer/iac.js#L263)
+- [Load Balancer Module](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/load-balancer/iac.js)
 
 ## Dependencies
 
