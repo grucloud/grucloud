@@ -19,7 +19,7 @@ module.exports = [
   },
   {
     type: "Listener",
-    dependsOn: ["LoadBalancer", "TargetGroup"],
+    dependsOn: ["LoadBalancer", "TargetGroup", "Certificate"],
     Client: ELBListener,
     isOurMinion,
   },
