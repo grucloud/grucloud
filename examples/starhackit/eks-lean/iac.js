@@ -1,4 +1,6 @@
 const assert = require("assert");
+const { tap, pipe, get, and, eq } = require("rubico");
+const { find } = require("rubico/x");
 
 const { AwsProvider } = require("@grucloud/provider-aws");
 const { K8sProvider } = require("@grucloud/provider-k8s");
@@ -22,8 +24,10 @@ const createAwsStack = async ({ stage }) => {
     ],
   });
 
-  assert(provider.config.certificate);
-  const { domainName, rootDomainName } = provider.config.certificate;
+  const { config } = provider;
+  const { eks } = config;
+  assert(config.certificate);
+  const { domainName, rootDomainName } = config.certificate;
   assert(domainName);
   assert(rootDomainName);
 
@@ -54,8 +58,77 @@ const createAwsStack = async ({ stage }) => {
       vpc: resourcesVpc.vpc,
       hostedZone,
       subnets: resourcesVpc.subnetsPublic,
-      eks: resourcesEks,
+      nodeGroup: resourcesEks.nodeGroupsPrivate[0],
     },
+  });
+
+  // Use the security group created by EKS
+  const securityGroupEKSCluster = await provider.useSecurityGroup({
+    name: "sg-eks-cluster",
+    namespace: "EKS",
+    filterLives: ({ items }) =>
+      pipe([
+        () => items,
+        find(
+          pipe([
+            get("Tags"),
+            find(
+              and([
+                eq(get("Key"), "aws:eks:cluster-name"),
+                eq(get("Value"), eks.cluster.name),
+              ])
+            ),
+          ])
+        ),
+        tap((live) => {
+          //logger.info(`securityGroupEKSCluster live ${live}`);
+        }),
+      ])(),
+  });
+
+  const findGroupIdFromSecurityGroup = ({ securityGroupEKSCluster }) =>
+    pipe([
+      tap(() => {}),
+      //TODO getLive instead ?
+      () => securityGroupEKSCluster.resolveConfig(),
+      get("GroupId"),
+      tap((GroupId) => {
+        assert(true);
+      }),
+    ])();
+
+  // Attach an Ingress Rule to the eks security group to allow traffic from the load balancer
+  const sgRuleIngressEks = await provider.makeSecurityGroupRuleIngress({
+    name: "sg-rule-ingress-eks",
+    namespace: "EKS",
+    dependencies: {
+      cluster: resourcesEks.cluster, // Wait until the cluster is up
+      securityGroup: securityGroupEKSCluster,
+      securityGroupLoadBalancer: resourcesLb.securityGroupLoadBalancer,
+    },
+    properties: async ({ dependencies: { securityGroupLoadBalancer } }) => ({
+      GroupId: await findGroupIdFromSecurityGroup({ securityGroupEKSCluster }),
+      IpPermissions: [
+        {
+          FromPort: 1025,
+          IpProtocol: "tcp",
+          IpRanges: [
+            {
+              CidrIp: "0.0.0.0/0",
+            },
+          ],
+          Ipv6Ranges: [
+            {
+              CidrIpv6: "::/0",
+            },
+          ],
+          UserIdGroupPairs: [
+            { GroupId: get("live.GroupId")(securityGroupLoadBalancer) },
+          ],
+          ToPort: 65535,
+        },
+      ],
+    }),
   });
 
   return {

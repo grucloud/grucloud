@@ -8,6 +8,7 @@
 
 ## Common:
 
+- gc info with config
 - https://stackshare.io/terraform/alternatives
 - case where provider does have any resources
 -

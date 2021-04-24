@@ -1,0 +1,139 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Graph",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["graph"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
+      "name": "List",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": [
+        "list",
+        "-g",
+        "-a",
+        "--default-exclude",
+        "--types-exclude",
+        "Certificate",
+        "--types-exclude",
+        "Route53Domain",
+        "--types-exclude",
+        "NetworkInterface"
+      ],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
+      "name": "List K8s",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": [
+        "list",
+        "-g",
+        "-a",
+        "--default-exclude",
+        "--types-exclude",
+        "Certificate",
+        "--types-exclude",
+        "Route53Domain",
+        "--types-exclude",
+        "NetworkInterface",
+        "-p",
+        "k8s"
+      ],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
+      "name": "Plan",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["plan"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
+      "name": "Apply",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["apply", "-f"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
+      "name": "Destroy",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["destroy", "-f"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
+      "name": "Destroy All",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["destroy", "-f", "-a"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
+      "name": "onDeployed",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["run", "--onDeployed"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
+      "name": "onDestroyed",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["run", "--onDestroyed"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
+      "name": "Target Graph",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["graph"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    }
+  ]
+}
