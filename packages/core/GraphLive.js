@@ -212,8 +212,10 @@ const associationIdObject = ({
   dependency,
 }) =>
   pipe([
-    tap((xxx) => {
-      assert(true);
+    tap((id) => {
+      if (!id.name) {
+        assert(false, id);
+      }
     }),
     tap(({ name, namespace }) => {
       assert(name);
@@ -222,7 +224,7 @@ const associationIdObject = ({
       }
     }),
     ({ name, namespace }) =>
-      `${buildNodeFrom({ type, namespaceFrom, idFrom })} -> "${
+      `"${buildNodeFrom({ type, namespaceFrom, idFrom })}" -> "${
         dependency.type
       }::${namespace}::${name}" [color="${edge.color}"];`,
   ]);
