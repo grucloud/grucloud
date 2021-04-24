@@ -123,12 +123,6 @@ exports.AwsProvider = ({
     });
   };
 
-  const info = () => ({
-    accountId,
-    region,
-    zone,
-  });
-
   const mergeConfig = ({ config, configs }) =>
     pipe([
       () => [...configs, config],
@@ -144,12 +138,21 @@ exports.AwsProvider = ({
       }),
     ])();
 
+  const mergedConfig = mergeConfig({ config, configs });
+
+  const info = () => ({
+    accountId,
+    region,
+    zone,
+    config: mergedConfig,
+  });
+
   return CoreProvider({
     ...other,
     type: "aws",
     name,
     get config() {
-      return mergeConfig({ config, configs });
+      return mergedConfig;
     },
     fnSpecs,
     start,
