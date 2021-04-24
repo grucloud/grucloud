@@ -17,6 +17,7 @@ const {
   and,
 } = require("rubico");
 const {
+  first,
   find,
   pluck,
   defaultsDeep,
@@ -60,15 +61,74 @@ const canDeleteRecord = (zoneName) =>
     ])
   );
 
+const findNsRecordByName = (name) =>
+  find(and([eq(get("Name"), name), eq(get("Type"), "NS")]));
+
+const findDnsServers = (live) =>
+  pipe([
+    () => live.RecordSet,
+    findNsRecordByName(live.Name),
+    get("ResourceRecords"),
+    pluck("Value"),
+    tap((xxx) => {
+      logger.debug(``);
+    }),
+  ])();
+
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsHostedZone = ({ spec, config }) => {
   assert(spec);
   assert(config);
-
+  const { providerName } = config;
   const route53 = Route53New(config);
   const route53domains = Route53DomainsNew(config);
 
-  // TODO findDependencies
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "HostedZone",
+      ids: pipe([
+        tap(() => {
+          logger.debug(``);
+        }),
+        () => lives.getByType({ type: "HostedZone", providerName }),
+        get("resources"),
+        tap((xxx) => {
+          logger.debug(``);
+        }),
+        filter(not(eq(get("name"), live.Name))),
+
+        filter(
+          pipe([
+            tap((xxx) => {
+              logger.debug(``);
+            }),
+            tap((xxx) => {
+              logger.debug(``);
+            }),
+            get("live.RecordSet"),
+            findNsRecordByName(live.Name),
+            tap((xxx) => {
+              logger.debug(``);
+            }),
+            get("ResourceRecords"),
+            first,
+            get("Value"),
+            tap((xxx) => {
+              logger.debug(``);
+            }),
+            (dnsServer) => includes(dnsServer)(findDnsServers(live)),
+            tap((xxx) => {
+              logger.debug(``);
+            }),
+          ])
+        ),
+        pluck("id"),
+        tap((xxx) => {
+          logger.debug(``);
+        }),
+      ])(),
+    },
+  ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZones-property
   const getList = async () =>
@@ -388,11 +448,9 @@ exports.AwsHostedZone = ({ spec, config }) => {
   return {
     type: "HostedZone",
     spec,
-    isUpById,
-    isDownById,
     findId,
     getByName,
-    getById,
+    findDependencies,
     findName,
     create,
     update,
