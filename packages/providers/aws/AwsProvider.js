@@ -34,12 +34,17 @@ const fnSpecs = () => [
   ...AwsELBv2,
   ...AutoScaling,
 ];
-const getAvailabilityZonesName = pipe([
-  ({ region }) => Ec2New({ region }),
-  (ec2) => ec2().describeAvailabilityZones(),
-  get("AvailabilityZones"),
-  pluck("ZoneName"),
-]);
+
+const getAvailabilityZonesName = ({ region }) =>
+  pipe([
+    () => Ec2New({ region }),
+    (ec2) => ec2().describeAvailabilityZones(),
+    get("AvailabilityZones"),
+    pluck("ZoneName"),
+    tap((ZoneNames) => {
+      logger.debug(`AvailabilityZones: for region ${region}: ${ZoneNames}`);
+    }),
+  ])();
 
 const validateConfig = ({ region, zone, zones }) => {
   logger.debug(`region: ${region}, zone: ${zone}, zones: ${zones}`);
@@ -108,6 +113,7 @@ exports.AwsProvider = ({
     const merged = mergeConfig({ config, configs });
     region = getRegion(merged);
     zones = await getAvailabilityZonesName({ region });
+    assert(zones, `no zones for region ${region}`);
     zone = getZone({ zones, config: merged });
     assert(zone);
     validateConfig({
