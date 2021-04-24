@@ -662,13 +662,14 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
   const planQueryDestroy = async ({ onStateChange, options }) =>
     pipe([
       tap(() => {
-        logger.info(`planQueryDestroy`);
+        logger.info(`planQueryDestroy ${JSON.stringify(options)}`);
         assert(onStateChange);
+        assert(stacks);
       }),
       () => listLives({ onStateChange, options, readWrite: true }),
       (lives) =>
         pipe([
-          () => stacks, // filter by isProviderUp
+          () => filterProviderUp({ stacks, onStateChange }),
           map(({ provider, isProviderUp }) =>
             pipe([
               () =>
