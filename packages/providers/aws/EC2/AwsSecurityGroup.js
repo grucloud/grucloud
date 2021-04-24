@@ -155,11 +155,19 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       map(
         pipe([
           omit(["IpRanges", "Ipv6Ranges", "PrefixListIds"]),
-          (ipPermission) =>
-            ec2().revokeSecurityGroupIngress({
-              GroupId: live.GroupId,
-              IpPermissions: [ipPermission],
-            }),
+          tryCatch(
+            (ipPermission) =>
+              ec2().revokeSecurityGroupIngress({
+                GroupId: live.GroupId,
+                IpPermissions: [ipPermission],
+              }),
+            tap.if(
+              not(eq(get("code"), "InvalidPermission.NotFound")),
+              (error) => {
+                throw error;
+              }
+            )
+          ),
         ])
       ),
     ])();
