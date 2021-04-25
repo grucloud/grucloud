@@ -23,7 +23,7 @@ const {
   ELBv2New,
   AutoScalingNew,
   buildTags,
-  findNamespaceInTags,
+  findNamespaceInTagsOrEksCluster,
   shouldRetryOnException,
 } = require("../AwsCommon");
 const findName = get("TargetGroupName");
@@ -40,6 +40,11 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     { type: "Vpc", ids: [live.VpcId] },
     { type: "LoadBalancer", ids: live.LoadBalancerArns },
   ];
+
+  const findNamespace = findNamespaceInTagsOrEksCluster({
+    config,
+    key: "elbv2.k8s.aws/cluster",
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeTargetGroups-property
   const getList = async () =>
@@ -181,6 +186,11 @@ exports.ELBTargetGroup = ({ spec, config }) => {
               AutoScalingGroupName,
               TargetGroupARNs: [TargetGroupArn],
             }),
+            tap(({ AutoScalingGroupName }) => {
+              logger.info(
+                `attachLoadBalancerTargetGroups ${AutoScalingGroupName}`
+              );
+            }),
             (params) => autoScaling().attachLoadBalancerTargetGroups(params),
           ])(),
         identity,
@@ -240,7 +250,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     type: "TargetGroup",
     spec,
     findId,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace,
     findDependencies,
     getByName,
     findName,
