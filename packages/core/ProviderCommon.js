@@ -180,9 +180,15 @@ exports.filterReadClient = ({ options: { types, all } = {}, targetTypes }) =>
     ]),
     tap((clients) => {
       logger.info(
-        `filterReadClient types: ${types}, targetTypes: ${targetTypes} #clients ${
-          clients.length
-        }, final types: ${displayClientsType(clients)}`
+        `filterReadClient types: ${types}, ${size(
+          targetTypes
+        )} targetTypes: ${targetTypes}`
+      );
+
+      logger.info(
+        `filterReadClient #clients ${size(
+          clients
+        )}, final types: ${displayClientsType(clients)}`
       );
     }),
   ]);

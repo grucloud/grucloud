@@ -395,6 +395,9 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
         assign({
           results: pipe([
             get("results"),
+            tap((results) => {
+              logger.debug(`decorateListResult #types: ${size(results)}`);
+            }),
             map(
               assign({
                 resources: ({ resources, type }) =>

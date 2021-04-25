@@ -284,6 +284,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     configDefault,
     shouldRetryOnException,
     shouldRetryOnExceptionDelete,
+    cannotBeDeleted: get("resource.readOnly"),
   };
 };
 

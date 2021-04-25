@@ -119,7 +119,7 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
       findMeta: () => undefined,
       findDependencies: () => [],
       findNamespace: () => "",
-      cannotBeDeleted: get("resource.readOnly"),
+      cannotBeDeleted: () => false,
       isDefault: () => false,
       configDefault: () => ({}),
       isInstanceUp: not(isEmpty),
@@ -1690,8 +1690,20 @@ function CoreProvider({
             or([
               and([
                 pipe([
+                  tap((result) => {
+                    logger.debug(
+                      `listLives type ${
+                        result.type
+                      }, error ${!!result.error}, #resources ${size(
+                        result.resources
+                      )}`
+                    );
+                  }),
                   get("type"),
                   (type) => isTypesMatch({ typeToMatch: type })(options.types),
+                  tap((keep) => {
+                    logger.debug(`listLives keep: ${keep}`);
+                  }),
                 ]),
                 pipe([get("resources"), not(isEmpty)]),
               ]),
@@ -1702,9 +1714,12 @@ function CoreProvider({
       }),
       assign({ providerName: () => providerName }),
       tap(({ results }) => {
-        logger.info(`listLives done`);
         lives.setByProvider({ providerName, livesPerProvider: results });
-        //logger.debug(`listLives result: ${tos(result)}`);
+        logger.debug(
+          `listLives provider ${providerName}, ${size(
+            results
+          )} results: ${pluck("type")(results).join(", ")}`
+        );
       }),
     ])();
 
