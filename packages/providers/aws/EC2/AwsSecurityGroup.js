@@ -63,10 +63,23 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     },
   ];
 
-  const findNamespace = findNamespaceInTagsOrEksCluster({
-    config,
-    key: "aws:eks:cluster-name",
-  });
+  const findNamespace = (param) =>
+    pipe([
+      () => [
+        findNamespaceInTagsOrEksCluster({
+          config,
+          key: "aws:eks:cluster-name",
+        })(param),
+        findNamespaceInTagsOrEksCluster({
+          config,
+          key: "elbv2.k8s.aws/cluster",
+        })(param),
+      ],
+      find(not(isEmpty)),
+      tap((namespace) => {
+        logger.debug(`findNamespace ${namespace}`);
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroups-property
   const getList = ({ params } = {}) =>
