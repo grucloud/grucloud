@@ -9,6 +9,7 @@ const {
   eq,
   assign,
   pick,
+  not,
 } = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck, find } = require("rubico/x");
 const tls = require("tls");
@@ -22,6 +23,7 @@ const {
   IAMNew,
   buildTags,
   findNameInTags,
+  findNamespaceInTags,
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
 } = require("../AwsCommon");
@@ -93,12 +95,16 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   const iam = IAMNew(config);
 
   const findName = findNameInTags;
-  const findId = pipe([
-    tap((item) => {
-      logger.debug(`findId iam oidc`);
-    }),
-    get("Arn"),
-  ]);
+  const findId = get("Arn");
+
+  const findNamespace = (param) =>
+    pipe([
+      () => [findNamespaceInTags(config)(param)],
+      find(not(isEmpty)),
+      tap((namespace) => {
+        logger.debug(`findNamespace ${namespace}`);
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#listOpenIDConnectProviders-property
   const getList = async ({ params } = {}) =>
@@ -186,10 +192,15 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createOpenIDConnectProvider-property
-  const create = async ({ name, payload = {}, resolvedDependencies: {} }) =>
+  const create = async ({
+    name,
+    namespace,
+    payload = {},
+    resolvedDependencies: {},
+  }) =>
     pipe([
       tap(() => {
-        logger.info(`create iam oidc ${name}`);
+        logger.info(`create iam oidc ${name}, namespace: ${namespace}`);
         logger.debug(`payload: ${tos(payload)}`);
       }),
       () => fetchThumbprint({ Url: payload.Url }),
@@ -201,9 +212,16 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
       tap((result) => {
         logger.debug(`createOpenIDConnectProvider result: ${tos(result)}`);
       }),
+      tap(({ OpenIDConnectProviderArn }) =>
+        retryCall({
+          name: `iam oidc isUpById: ${name} OpenIDConnectProviderArn: ${OpenIDConnectProviderArn}`,
+          fn: () => isUpById({ id: OpenIDConnectProviderArn }),
+          config,
+        })
+      ),
       ({ OpenIDConnectProviderArn }) => ({
         OpenIDConnectProviderArn,
-        Tags: buildTags({ config, name }),
+        Tags: buildTags({ config, namespace, name }),
       }),
       (tagParams) => iam().tagOpenIDConnectProvider(tagParams),
       tap((oidcp) => {
@@ -257,17 +275,14 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   const configDefault = async ({ name, properties, dependencies }) =>
     defaultsDeep({
       ClientIDList: ["sts.amazonaws.com"],
-      /*Tags: buildTags({ name, config }),*/
     })(properties);
 
   return {
     type: "IamOpenIDConnectProvider",
     spec,
-    isUpById,
-    isDownById,
+    findNamespace,
     findId,
     getByName,
-    getById,
     findName,
     create,
     destroy,
