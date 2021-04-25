@@ -42,7 +42,13 @@ const isDefault = ({ providerName }) => ({ live, lives }) =>
   pipe([
     () => lives.getByType({ type: "Vpc", providerName }),
     get("resources"),
-    find(eq(get("live.IsDefault"), true)),
+    tap((result) => {
+      logger.debug(`isDefault ${result}`);
+    }),
+    find(get("isDefault")),
+    tap((result) => {
+      logger.debug(`isDefault ${result}`);
+    }),
     switchCase([
       eq(get("live.VpcId"), findVpcId(live)),
       () => true,
@@ -146,11 +152,6 @@ exports.AwsInternetGateway = ({ spec, config }) => {
 
   const detachInternetGateway = ({ InternetGatewayId, VpcId }) =>
     pipe([
-      () => ec2().describeAddresses({}),
-      get("Addresses"),
-      tap((Addresses) => {
-        logger.debug(`destroy ig describeAddresses ${tos({ Addresses })}`);
-      }),
       () =>
         retryCall({
           name: `destroy ig detachInternetGateway ${InternetGatewayId}, VpcId: ${VpcId}`,
