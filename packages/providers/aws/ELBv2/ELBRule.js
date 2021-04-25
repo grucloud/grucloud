@@ -80,8 +80,7 @@ exports.ELBRule = ({ spec, config }) => {
       tap((listener) => {
         assert(listener);
       }),
-
-      findNamespaceInTags(config),
+      get("namespace"),
       tap((namespace) => {
         assert(true);
       }),

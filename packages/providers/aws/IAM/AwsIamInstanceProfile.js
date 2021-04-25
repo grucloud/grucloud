@@ -200,6 +200,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
                       RoleName,
                     }),
                   tap.if(not(eq(get("code"), "NoSuchEntity")), (error) => {
+                    logger.error(`removeRoleFromInstanceProfile ${tos(error)}`);
                     throw error;
                   })
                 )

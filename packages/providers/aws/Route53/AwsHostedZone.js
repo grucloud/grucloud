@@ -96,12 +96,11 @@ exports.AwsHostedZone = ({ spec, config }) => {
           logger.debug(``);
         }),
         filter(not(eq(get("name"), live.Name))),
-
+        tap((xxx) => {
+          logger.debug(``);
+        }),
         filter(
           pipe([
-            tap((xxx) => {
-              logger.debug(``);
-            }),
             tap((xxx) => {
               logger.debug(``);
             }),
