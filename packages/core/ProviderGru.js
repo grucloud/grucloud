@@ -360,7 +360,7 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
       defaultExclude,
       typesExclude,
       ...other
-    },
+    } = {},
     type,
   } = {}) => (items) =>
     pipe([
