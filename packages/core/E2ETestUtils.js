@@ -149,9 +149,14 @@ const testPlanDestroy = async ({ provider, types = [], full = false }) => {
 
 exports.testPlanDestroy = testPlanDestroy;
 
-exports.testPlanDeploy = async ({ provider, types = [], full = false }) => {
+exports.testPlanDeploy = async ({
+  provider,
+  types = [],
+  full = false,
+  destroy = true,
+}) => {
   const infra = { provider };
-  {
+  if (destroy) {
     const result = await cliCommands.planDestroy({
       infra,
       commandOptions: { force: true, types },
