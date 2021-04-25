@@ -309,29 +309,26 @@ const fnSpecs = () => [
             map(
               pipe([
                 pluck("paths"),
+                flatten,
+                get("backend"),
                 switchCase([
-                  isObject,
+                  get("service.name"),
                   pipe([
                     // for minikube
-                    flatten,
-                    get("backend.service.name"),
+                    get("service.name"),
                     (name) => [{ name, namespace: findNamespace(live) }],
                   ]),
                   pipe([
-                    // other
-                    flatten,
-                    pluck("backend"),
-                    pluck("service"),
-                    filter(not(isEmpty)),
-                    map(({ name }) => ({
-                      name,
-                      namespace: findNamespace(live),
-                    })),
+                    // EKS
+                    get("serviceName"),
+                    (name) => [
+                      {
+                        name,
+                        namespace: findNamespace(live),
+                      },
+                    ],
                   ]),
                 ]),
-                tap((xxx) => {
-                  assert(true);
-                }),
               ])
             ),
             flatten,
@@ -426,7 +423,6 @@ const fnSpecs = () => [
       "ConfigMap",
       "Secret",
       "ServiceAccount",
-      "Service",
       "CustomResourceDefinition",
     ],
     Client: ({ config, spec }) =>
@@ -558,15 +554,15 @@ const fnSpecs = () => [
         {
           type: "PersistentVolumeClaim",
           ids: pipe([
-            tap(() => {
-              assert(true);
-            }),
             () => live,
             get("spec.volumes"),
             filter(get("persistentVolumeClaim")),
             map(get("persistentVolumeClaim.claimName")),
             filter(not(isEmpty)),
-            map(({ name }) => ({ name, namespace: findNamespace(live) })),
+            map((name) => ({
+              name,
+              namespace: findNamespace(live),
+            })),
           ])(),
         },
       ],

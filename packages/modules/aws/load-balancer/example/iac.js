@@ -2,7 +2,6 @@ const assert = require("assert");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const ModuleAwsVpc = require("@grucloud/module-aws-vpc");
-const ModuleAwsEks = require("@grucloud/module-aws-eks");
 const ModuleAwsCertificate = require("@grucloud/module-aws-certificate");
 const ModuleAwsLoadBalancer = require("@grucloud/module-aws-load-balancer");
 
@@ -11,8 +10,7 @@ exports.createStack = async ({ stage }) => {
     stage,
     configs: [
       ModuleAwsCertificate.config,
-      ModuleAwsEks.config,
-      ModuleAwsVpc.config,
+      //ModuleAwsVpc.config,
       ModuleAwsLoadBalancer.config,
       require("./config"),
     ],
@@ -38,10 +36,6 @@ exports.createStack = async ({ stage }) => {
   });
 
   const resourcesVpc = await ModuleAwsVpc.createResources({ provider });
-  const resourcesEks = await ModuleAwsEks.createResources({
-    provider,
-    resources: resourcesVpc,
-  });
 
   const resourcesLb = await ModuleAwsLoadBalancer.createResources({
     provider,
@@ -50,7 +44,6 @@ exports.createStack = async ({ stage }) => {
       vpc: resourcesVpc.vpc,
       hostedZone,
       subnets: resourcesVpc.subnetsPublic,
-      eks: resourcesEks,
     },
   });
 
@@ -61,14 +54,8 @@ exports.createStack = async ({ stage }) => {
       hostedZone,
       certificate: resourcesCertificate,
       vpc: resourcesVpc,
-      eks: resourcesEks,
       lb: resourcesLb,
     },
-    hooks: [
-      ...ModuleAwsCertificate.hooks,
-      ...ModuleAwsVpc.hooks,
-      ...ModuleAwsEks.hooks,
-    ],
-    isProviderUp: () => ModuleAwsEks.isProviderUp({ resources: resourcesEks }),
+    hooks: [...ModuleAwsCertificate.hooks, ...ModuleAwsVpc.hooks],
   };
 };

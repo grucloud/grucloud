@@ -35,6 +35,33 @@ const findName = (item) => findNameInTagsOrId({ item, findId });
 
 exports.ELBListener = ({ spec, config }) => {
   const elb = ELBv2New(config);
+  const { providerName } = config;
+
+  const findNamespaceInLoadBalancer = ({ live, lives }) =>
+    pipe([
+      () =>
+        lives.getById({
+          type: "LoadBalancer",
+          providerName,
+          id: live.LoadBalancerArn,
+        }),
+      tap((xxx) => {
+        logger.debug(``);
+      }),
+      get("namespace"),
+    ])();
+
+  const findNamespace = (param) =>
+    pipe([
+      () => [
+        findNamespaceInLoadBalancer(param),
+        findNamespaceInTags(config)(param),
+      ],
+      find(not(isEmpty)),
+      tap((namespace) => {
+        logger.debug(`findNamespace ${namespace}`);
+      }),
+    ])();
 
   const findDependencies = ({ live }) => [
     {
@@ -203,7 +230,7 @@ exports.ELBListener = ({ spec, config }) => {
     spec,
     findId,
     findDependencies,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace,
     getByName,
     findName,
     create,

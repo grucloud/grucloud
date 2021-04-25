@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "graph-target": "gc graph",
-    "graph-live": "gc list --graph",
+    "graph-live": "gc list --graph -a --default-exclude --types-exclude KeyPair --types-exclude Certificate --types-exclude Route53Domain --types-exclude NetworkInterface",
     "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
     "dot": "dot -Tsvg modules.dot -o modules.svg"
   },

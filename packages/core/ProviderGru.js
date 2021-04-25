@@ -300,7 +300,7 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
   };
 
   // Add namespace and dependencies.
-  const resourceDecorate = ({ lives }) => (resource) =>
+  const resourceDecorate = ({ lives, commandOptions }) => (resource) =>
     pipe([
       tap(() => {
         assert(resource.providerName);
@@ -314,91 +314,110 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
           () => provider.clientByType({ type: resource.type }),
           (client) => ({
             ...resource,
-            isDefault: client.isDefault({ live: resource.live, lives }),
-            namespace: client.findNamespace({ live: resource.live, lives }),
-            dependencies: client.findDependencies({
-              live: resource.live,
-              lives,
-            }),
-            managedByUs: client.spec.isOurMinion({
-              resource: provider.getResourceFromLive({
-                client,
+            get isDefault() {
+              return client.isDefault({ live: resource.live, lives });
+            },
+            get namespace() {
+              return client.findNamespace({ live: resource.live, lives });
+            },
+            get dependencies() {
+              return client.findDependencies({
                 live: resource.live,
-              }),
-              live: resource.live,
-              lives,
-              //TODO remove resourceNames
-              resourceNames: provider.resourceNames(),
-              resources: provider.getResourcesByType({
-                type: client.spec.type,
-              }),
-              config: provider.config,
-            }),
+                lives,
+              });
+            },
+            get managedByUs() {
+              return client.spec.isOurMinion({
+                resource: provider.getResourceFromLive({
+                  client,
+                  live: resource.live,
+                }),
+                live: resource.live,
+                lives,
+                //TODO remove resourceNames
+                resourceNames: provider.resourceNames(),
+                resources: provider.getResourcesByType({
+                  type: client.spec.type,
+                }),
+                config: provider.config,
+              });
+            },
           }),
+          tap((resource) =>
+            Object.defineProperty(resource, "show", {
+              enumerable: true,
+              get: () => showLive({ commandOptions })(resource),
+            })
+          ),
         ])(),
       tap((resource) => {
         assert(true);
       }),
     ])();
 
-  const filterLives = ({
-    our,
-    name,
-    id,
-    canBeDeleted,
-    providerName,
-    providerNames,
-    defaultExclude,
-    typesExclude,
-    ...other
-  } = {}) => (items) =>
+  const showLive = ({ commandOptions = {} } = {}) => (resource) =>
     pipe([
-      () => items,
-      tap((initialItems) => {
-        logger.debug(`filterLives #initialItems ${size(initialItems)}`);
-      }),
-      filter(pipe([get("type"), (type) => !includes(type)(typesExclude)])),
-      filter((item) => (defaultExclude ? !item.isDefault : true)),
-      filter((item) => (our ? item.managedByUs : true)),
-      filter((item) => (name ? item.name === name : true)),
-      filter((item) => (id ? item.id === id : true)),
-      filter((item) =>
-        providerName && !isEmpty(providerNames)
-          ? includes(item.providerName)(providerNames)
-          : true
-      ),
-      filter((item) => (canBeDeleted ? !item.cannotBeDeleted : true)),
-      tap((remainingItems) => {
-        logger.debug(`filterLives #remainingItems ${size(remainingItems)}`);
+      () => resource,
+      and([
+        (resource) => !includes(resource.type)(commandOptions.typesExclude),
+        (resource) =>
+          commandOptions.defaultExclude ? !resource.isDefault : true,
+        (resource) => (commandOptions.our ? resource.managedByUs : true),
+        (resource) =>
+          commandOptions.name ? resource.name === commandOptions.name : true,
+        (resource) =>
+          commandOptions.id ? resource.id === commandOptions.id : true,
+        (resource) =>
+          commandOptions.providerName && !isEmpty(commandOptions.providerNames)
+            ? includes(resource.providerName)(commandOptions.providerNames)
+            : true,
+        (resource) =>
+          commandOptions.canBeDeleted ? !resource.cannotBeDeleted : true,
+      ]),
+      tap((show) => {
+        logger.debug(`showLive ${resource.name} show: ${show}`);
       }),
     ])();
 
-  const decorateListResult = ({ lives }) =>
+  const decorateListResult = ({}) => (perProvider) =>
     pipe([
       tap((xxx) => {
-        assert(lives);
+        assert(true);
       }),
-      map(
-        assign({
-          results: pipe([
-            get("results"),
-            map(
-              assign({
-                resources: pipe([
-                  get("resources"),
-                  map(resourceDecorate({ lives })),
-                  filterLives(commandOptions),
-                ]),
-              })
-            ),
-          ]),
-        })
+      () => createLives(),
+      tap((lives) =>
+        map(
+          assign({
+            results: pipe([
+              get("results"),
+              tap((results) => {
+                logger.debug(`decorateListResult #types: ${size(results)}`);
+              }),
+              map(
+                assign({
+                  resources: ({ providerName, resources, type, error }) =>
+                    pipe([
+                      () => resources,
+                      map(resourceDecorate({ lives, commandOptions })),
+                      tap((resources) => {
+                        lives.addResources({
+                          providerName,
+                          type,
+                          resources,
+                          error,
+                        });
+                      }),
+                    ])(),
+                })
+              ),
+            ]),
+          })
+        )(perProvider)
       ),
-      (livesRaw) => createLives(livesRaw),
-      tap((xxx) => {
-        assert(lives);
+      tap((lives) => {
+        assert(true);
       }),
-    ]);
+    ])();
 
   const listLives = async ({
     onStateChange,
@@ -662,13 +681,14 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
   const planQueryDestroy = async ({ onStateChange, options }) =>
     pipe([
       tap(() => {
-        logger.info(`planQueryDestroy`);
+        logger.info(`planQueryDestroy ${JSON.stringify(options)}`);
         assert(onStateChange);
+        assert(stacks);
       }),
       () => listLives({ onStateChange, options, readWrite: true }),
       (lives) =>
         pipe([
-          () => stacks, // filter by isProviderUp
+          () => filterProviderUp({ stacks, onStateChange }),
           map(({ provider, isProviderUp }) =>
             pipe([
               () =>

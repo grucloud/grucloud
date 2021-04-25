@@ -10,21 +10,23 @@ const NamespaceDefault = "LoadBalancer";
 
 exports.createResources = async ({
   provider,
-  resources: { vpc, subnets, hostedZone, eks, certificate },
+  resources: {
+    vpc,
+    subnets,
+    hostedZone,
+    certificate,
+    nodeGroup,
+    autoScalingGroup,
+  },
   namespace = NamespaceDefault,
 }) => {
   assert(Array.isArray(subnets));
   assert(vpc);
   assert(certificate);
   assert(hostedZone);
-  //TODO remove EKS dependency
-  assert(eks);
-  assert(eks.cluster);
-
+  //TODO
+  //assert(autoScalingGroup)
   const { config } = provider;
-  assert(config.eks);
-  assert(config.eks.cluster);
-  assert(config.eks.cluster.name);
   assert(config.elb);
   assert(config.elb.loadBalancer);
   assert(config.elb.targetGroups);
@@ -32,6 +34,8 @@ exports.createResources = async ({
   assert(config.elb.rules);
   assert(config.elb.listeners.https.name);
 
+  // Load Balancer Security Group,
+  // HTTP and HTTPS Ingress rule
   const securityGroupLoadBalancer = await provider.makeSecurityGroup({
     name: "load-balancer-security-group",
     namespace,
@@ -40,26 +44,11 @@ exports.createResources = async ({
       create: {
         Description: "Load Balancer HTTP HTTPS Security Group",
       },
-      //TODO Tags not needed ?
-      Tags: [
-        {
-          Key: "ingress.k8s.aws/stack",
-          Value: "default/ingress",
-        },
-        {
-          Key: "elbv2.k8s.aws/cluster",
-          Value: config.eks.cluster.name,
-        },
-        {
-          Key: "ingress.k8s.aws/resource",
-          Value: "ManagedLBSecurityGroup",
-        },
-      ],
     }),
   });
 
   const sgRuleIngressHttp = await provider.makeSecurityGroupRuleIngress({
-    name: "sg-rule-ingress-http",
+    name: "sg-rule-ingress-lb-http",
     namespace,
     dependencies: {
       securityGroup: securityGroupLoadBalancer,
@@ -85,7 +74,7 @@ exports.createResources = async ({
     }),
   });
   const sgRuleIngressHttps = await provider.makeSecurityGroupRuleIngress({
-    name: "sg-rule-ingress-https",
+    name: "sg-rule-ingress-lb-https",
     namespace,
     dependencies: {
       securityGroup: securityGroupLoadBalancer,
@@ -110,75 +99,8 @@ exports.createResources = async ({
       ],
     }),
   });
-  const findGroupIdFromSecurityGroup = ({ securityGroupK8sCluster }) =>
-    pipe([
-      tap(() => {}),
-      () => securityGroupK8sCluster.resolveConfig(),
-      tap((live) => {}),
-      get("GroupId"),
-      tap((GroupId) => {}),
-    ])();
 
-  // Use the security group created by EKS
-  //TODO out of this module
-  const securityGroupK8sCluster = await provider.useSecurityGroup({
-    name: "sg-eks-k8s-cluster",
-    namespace,
-    filterLives: ({ items }) =>
-      pipe([
-        () => items,
-        find(
-          pipe([
-            get("Tags"),
-            find(
-              and([
-                eq(get("Key"), "aws:eks:cluster-name"),
-                eq(get("Value"), eks.cluster.name),
-              ])
-            ),
-          ])
-        ),
-        tap((live) => {
-          //logger.info(`securityGroupK8sCluster live ${live}`);
-        }),
-      ])(),
-  });
-
-  // TODO Should be outside too
-  // Attach an Ingress Rule to the eks-k8s security group to allow traffic from the load balancer
-  const sgRuleIngress = await provider.makeSecurityGroupRuleIngress({
-    name: "sg-rule-ingress",
-    namespace,
-    dependencies: {
-      cluster: eks.cluster, //TODO do we need that deps ?
-      securityGroup: securityGroupK8sCluster,
-      securityGroupLoadBalancer,
-    },
-    properties: async ({ dependencies: { securityGroupLoadBalancer } }) => ({
-      GroupId: await findGroupIdFromSecurityGroup({ securityGroupK8sCluster }),
-      IpPermissions: [
-        {
-          FromPort: 1025,
-          IpProtocol: "tcp",
-          IpRanges: [
-            {
-              CidrIp: "0.0.0.0/0",
-            },
-          ],
-          Ipv6Ranges: [
-            {
-              CidrIpv6: "::/0",
-            },
-          ],
-          UserIdGroupPairs: [
-            { GroupId: get("live.GroupId")(securityGroupLoadBalancer) },
-          ],
-          ToPort: 65535,
-        },
-      ],
-    }),
-  });
-
+  // The Load Balancer
   const loadBalancer = await provider.makeLoadBalancer({
     name: config.elb.loadBalancer.name,
     namespace,
@@ -189,13 +111,15 @@ exports.createResources = async ({
     properties: () => ({}),
   });
 
+  // Web and REST API target group
   const targetGroups = {
     web: await provider.makeTargetGroup({
       name: config.elb.targetGroups.web.name,
       namespace,
       dependencies: {
         vpc,
-        nodeGroup: eks.nodeGroupsPrivate[0],
+        autoScalingGroup,
+        nodeGroup,
       },
       properties: config.elb.targetGroups.web.properties,
     }),
@@ -203,13 +127,15 @@ exports.createResources = async ({
       name: config.elb.targetGroups.rest.name,
       namespace,
       dependencies: {
-        nodeGroup: eks.nodeGroupsPrivate[0],
+        autoScalingGroup,
+        nodeGroup,
         vpc,
       },
       properties: config.elb.targetGroups.rest.properties,
     }),
   };
 
+  // HTTP and HTTPS Listeners
   const listeners = {
     http: await provider.makeListener({
       name: config.elb.listeners.http.name,
@@ -251,7 +177,7 @@ exports.createResources = async ({
         Protocol: "HTTPS",
         Certificates: [
           {
-            CertificateArn: certificate?.live.CertificateArn,
+            CertificateArn: certificate?.live?.CertificateArn,
           },
         ],
         DefaultActions: [
@@ -263,7 +189,7 @@ exports.createResources = async ({
       }),
     }),
   };
-
+  // Listener Rules
   const rules = {
     http2https: await provider.makeRule({
       name: config.elb.rules.http2https.name,
@@ -295,6 +221,7 @@ exports.createResources = async ({
     },
   };
 
+  // The load balancer DNS record
   const loadBalancerDnsRecord = await provider.makeRoute53Record({
     name: `load-balancer-dns-record-alias-${hostedZone.name}`,
     namespace,
@@ -312,7 +239,7 @@ exports.createResources = async ({
         Name: hostedZone.name,
         Type: "A",
         AliasTarget: {
-          HostedZoneId: "ZHURV8PSTC4K8",
+          HostedZoneId: loadBalancer.live?.CanonicalHostedZoneId,
           DNSName: `${hostname}.`,
           EvaluateTargetHealth: false,
         },
@@ -321,6 +248,7 @@ exports.createResources = async ({
   });
 
   return {
+    securityGroupLoadBalancer,
     loadBalancer,
     targetGroups,
     listeners,

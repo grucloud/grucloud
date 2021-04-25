@@ -28,6 +28,7 @@ exports.createStack = async ({ config }) => {
 
   return {
     provider,
-    resources: { domain, hostedZone, certificateResources },
+    resources: { domain, hostedZone, certificate: certificateResources },
+    hooks: [...ModuleAwsCertificate.hooks],
   };
 };

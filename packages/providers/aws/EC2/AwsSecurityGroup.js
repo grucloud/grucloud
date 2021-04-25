@@ -14,16 +14,21 @@ const {
   omit,
   pick,
 } = require("rubico");
-const { find, defaultsDeep, pluck, flatten, isEmpty } = require("rubico/x");
+const {
+  find,
+  defaultsDeep,
+  pluck,
+  flatten,
+  isEmpty,
+  includes,
+} = require("rubico/x");
 const {
   Ec2New,
   getByIdCore,
   shouldRetryOnException,
   buildTags,
-  findValueInTags,
-  findNamespaceEksCluster,
   findNamespaceInTagsOrEksCluster,
-  destroyNetworkInterfaces,
+  revokeSecurityGroupIngress,
 } = require("../AwsCommon");
 const { retryCall } = require("@grucloud/core/Retry");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -58,10 +63,23 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     },
   ];
 
-  const findNamespace = findNamespaceInTagsOrEksCluster({
-    config,
-    key: "aws:eks:cluster-name",
-  });
+  const findNamespace = (param) =>
+    pipe([
+      () => [
+        findNamespaceInTagsOrEksCluster({
+          config,
+          key: "aws:eks:cluster-name",
+        })(param),
+        findNamespaceInTagsOrEksCluster({
+          config,
+          key: "elbv2.k8s.aws/cluster",
+        })(param),
+      ],
+      find(not(isEmpty)),
+      tap((namespace) => {
+        logger.debug(`findNamespace ${namespace}`);
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSecurityGroups-property
   const getList = ({ params } = {}) =>
@@ -155,11 +173,11 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       map(
         pipe([
           omit(["IpRanges", "Ipv6Ranges", "PrefixListIds"]),
-          (ipPermission) =>
-            ec2().revokeSecurityGroupIngress({
-              GroupId: live.GroupId,
-              IpPermissions: [ipPermission],
-            }),
+          (ipPermission) => ({
+            GroupId: live.GroupId,
+            IpPermissions: [ipPermission],
+          }),
+          revokeSecurityGroupIngress({ ec2 }),
         ])
       ),
     ])();

@@ -62,6 +62,11 @@ exports.ELBRule = ({ spec, config }) => {
     },
   ];
 
+  // const findNamespace = findNamespaceInTagsOrEksCluster({
+  //   config,
+  //   key: "elbv2.k8s.aws/cluster",
+  // });
+
   const findNamespaceInListener = (config) => ({ live, lives }) =>
     pipe([
       () => live,
@@ -75,7 +80,7 @@ exports.ELBRule = ({ spec, config }) => {
       tap((listener) => {
         assert(listener);
       }),
-      findNamespaceInTags(config),
+      get("namespace"),
       tap((namespace) => {
         assert(true);
       }),

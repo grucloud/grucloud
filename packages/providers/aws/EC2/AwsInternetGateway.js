@@ -1,5 +1,22 @@
-const { pipe, filter, map, get, tap, eq, switchCase, not } = require("rubico");
-const { find, defaultsDeep, isEmpty, first, pluck } = require("rubico/x");
+const {
+  pipe,
+  filter,
+  map,
+  get,
+  tap,
+  eq,
+  switchCase,
+  not,
+  tryCatch,
+} = require("rubico");
+const {
+  find,
+  defaultsDeep,
+  isEmpty,
+  first,
+  pluck,
+  includes,
+} = require("rubico/x");
 const assert = require("assert");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsIgw" });
@@ -25,7 +42,13 @@ const isDefault = ({ providerName }) => ({ live, lives }) =>
   pipe([
     () => lives.getByType({ type: "Vpc", providerName }),
     get("resources"),
-    find(eq(get("live.IsDefault"), true)),
+    tap((result) => {
+      logger.debug(`isDefault ${result}`);
+    }),
+    find(get("isDefault")),
+    tap((result) => {
+      logger.debug(`isDefault ${result}`);
+    }),
     switchCase([
       eq(get("live.VpcId"), findVpcId(live)),
       () => true,
@@ -129,11 +152,6 @@ exports.AwsInternetGateway = ({ spec, config }) => {
 
   const detachInternetGateway = ({ InternetGatewayId, VpcId }) =>
     pipe([
-      () => ec2().describeAddresses({}),
-      get("Addresses"),
-      tap((Addresses) => {
-        logger.debug(`destroy ig describeAddresses ${tos({ Addresses })}`);
-      }),
       () =>
         retryCall({
           name: `destroy ig detachInternetGateway ${InternetGatewayId}, VpcId: ${VpcId}`,
@@ -168,13 +186,23 @@ exports.AwsInternetGateway = ({ spec, config }) => {
       tap.if(not(isEmpty), ({ VpcId }) =>
         detachInternetGateway({ InternetGatewayId: id, VpcId })
       ),
-      () => ec2().deleteInternetGateway({ InternetGatewayId: id }),
-      () =>
-        retryCall({
-          name: `destroy ig isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id }),
-          config,
-        }),
+      tryCatch(
+        pipe([
+          () => ec2().deleteInternetGateway({ InternetGatewayId: id }),
+          () =>
+            retryCall({
+              name: `destroy ig isDownById: ${name} id: ${id}`,
+              fn: () => isDownById({ id }),
+              config,
+            }),
+        ]),
+        tap.if(
+          ({ code }) => !includes(code)(["AuthFailure"]),
+          () => {
+            throw error;
+          }
+        )
+      ),
       tap(() => {
         logger.debug(`destroyed ig ${tos({ name, id })}`);
       }),

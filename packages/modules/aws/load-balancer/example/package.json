@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "graph-target": "gc graph --title 'Load Balancer Module'",
-    "graph-live": "gc list --graph --title 'Load Balancer Module'",
+    "graph-live": "gc list --graph -a  --title 'Load Balancer Module' --default-exclude --types-exclude Certificate --types-exclude Route53Domain --types-exclude NetworkInterface",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -14,7 +14,6 @@
   "dependencies": {
     "@grucloud/core": "^1.12.0",
     "@grucloud/module-aws-certificate": "^1.12.0",
-    "@grucloud/module-aws-eks": "^1.12.0",
     "@grucloud/module-aws-load-balancer": "^1.12.0",
     "@grucloud/module-aws-vpc": "^1.12.0",
     "@grucloud/provider-aws": "^1.12.0"

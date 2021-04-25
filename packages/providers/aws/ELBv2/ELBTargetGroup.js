@@ -23,7 +23,7 @@ const {
   ELBv2New,
   AutoScalingNew,
   buildTags,
-  findNamespaceInTags,
+  findNamespaceInTagsOrEksCluster,
   shouldRetryOnException,
 } = require("../AwsCommon");
 const findName = get("TargetGroupName");
@@ -40,6 +40,11 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     { type: "Vpc", ids: [live.VpcId] },
     { type: "LoadBalancer", ids: live.LoadBalancerArns },
   ];
+
+  const findNamespace = findNamespaceInTagsOrEksCluster({
+    config,
+    key: "elbv2.k8s.aws/cluster",
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeTargetGroups-property
   const getList = async () =>
@@ -156,7 +161,11 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createTargetGroup-property
-  const create = async ({ name, payload, dependencies: { nodeGroup } }) =>
+  const create = async ({
+    name,
+    payload,
+    dependencies: { nodeGroup, autoScalingGroup },
+  }) =>
     pipe([
       tap(() => {
         logger.info(`create target group : ${name}`);
@@ -173,12 +182,28 @@ exports.ELBTargetGroup = ({ spec, config }) => {
         })
       ),
       switchCase([
+        // NodeGroup Case
         () => !isEmpty(nodeGroup),
         ({ TargetGroupArn }) =>
           pipe([
             () => findAutoScalingGroup({ nodeGroup }),
             ({ AutoScalingGroupName }) => ({
               AutoScalingGroupName,
+              TargetGroupARNs: [TargetGroupArn],
+            }),
+            tap(({ AutoScalingGroupName }) => {
+              logger.info(
+                `attachLoadBalancerTargetGroups ${AutoScalingGroupName}`
+              );
+            }),
+            (params) => autoScaling().attachLoadBalancerTargetGroups(params),
+          ])(),
+        // AutoScaling Group Case
+        () => !isEmpty(autoScalingGroup),
+        ({ TargetGroupArn }) =>
+          pipe([
+            () => ({
+              AutoScalingGroupName: autoScalingGroup.live?.AutoScalingGroupName,
               TargetGroupARNs: [TargetGroupArn],
             }),
             (params) => autoScaling().attachLoadBalancerTargetGroups(params),
@@ -240,7 +265,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     type: "TargetGroup",
     spec,
     findId,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace,
     findDependencies,
     getByName,
     findName,

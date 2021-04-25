@@ -1,13 +1,13 @@
 ## Bugs
 
-- use lister when decorating the list result
-- remove eks dependency from load balancer module
+- document useLoadBalancer
 - gc a: when an assert is thrown, it does not exit but ask for deployment confirmation.
 - code coverage with monorepo
 - check stage for all providers
 
 ## Common:
 
+- gc info with config for gcp and azure
 - https://stackshare.io/terraform/alternatives
 - case where provider does have any resources
 -
@@ -57,7 +57,9 @@
 
 ## TODO Aws:
 
-- - https://github.com/kubernetes/kops/blob/master/docs/getting_started/aws.md#setup-iam-user
+- delete keypair from kops
+- HostedZone => Route53HostedZon
+- Rule => ListenerRule
 
 - aws_route53_delegation_set
 
@@ -76,7 +78,6 @@
 - security group update
 
 - ssh should use use kp.pem instead of ssh-add
-- add example code in AwsGettingStarted
 - aws.config.loadFromPath('./AwsConfig.json');
 
 - error padend

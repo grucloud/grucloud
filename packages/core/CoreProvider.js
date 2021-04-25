@@ -119,7 +119,7 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
       findMeta: () => undefined,
       findDependencies: () => [],
       findNamespace: () => "",
-      cannotBeDeleted: get("resource.readOnly"),
+      cannotBeDeleted: () => false,
       isDefault: () => false,
       configDefault: () => ({}),
       isInstanceUp: not(isEmpty),
@@ -274,7 +274,7 @@ const ResourceMaker = ({
   };
   const getDependencyList = () =>
     pipe([
-      filter(not(isString)),
+      filter(and([not(isString), not(isEmpty)])),
       transform(
         map((dep) => dep),
         () => []
@@ -296,6 +296,7 @@ const ResourceMaker = ({
     dependenciesMustBeUp = false,
   }) =>
     pipe([
+      () => dependencies,
       tap(() => {
         logger.info(
           `resolveDependencies for ${toString()}: ${Object.keys(
@@ -307,9 +308,14 @@ const ResourceMaker = ({
         }
       }),
       map(async (dependency) => {
+        if (!dependency) {
+          logger.error(`${toString()} has undefined dependencies`);
+          return;
+        }
         if (isString(dependency)) {
           return dependency;
         }
+
         //TODO isArray
         if (!dependency.getLive) {
           return tryCatch(
@@ -326,7 +332,7 @@ const ResourceMaker = ({
                 )}`
               );
               return {
-                error,
+                error: convertError({ error }),
               };
             }
           )();
@@ -379,7 +385,7 @@ const ResourceMaker = ({
             logger.error(`resolveDependencies: ${tos(error)}`);
             return {
               item: { resource: dependency.toString() },
-              error,
+              error: convertError({ error }),
             };
           }
         )(dependency);
@@ -415,7 +421,7 @@ const ResourceMaker = ({
           `resolveDependencies for ${toString()}, result: ${tos(result)}`
         );*/
       }),
-    ])(dependencies);
+    ])();
 
   const resolveConfig = async ({
     live,
@@ -449,19 +455,8 @@ const ResourceMaker = ({
             lives,
           }),
       ]),
-      async (resolvedDependencies) => {
-        const config = await client.configDefault({
-          name: resourceName,
-          meta,
-          namespace,
-          properties: defaultsDeep(spec.propertiesDefault)(
-            await properties({ dependencies: resolvedDependencies })
-          ),
-          dependencies: resolvedDependencies,
-          live,
-        });
-        // TODO out of resolveConfig
-        const finalConfig = await switchCase([
+      async (resolvedDependencies) =>
+        switchCase([
           () => filterLives,
           pipe([
             () =>
@@ -476,17 +471,23 @@ const ResourceMaker = ({
               filterLives({
                 dependencies: resolvedDependencies,
                 items,
-                config,
                 configProvider: provider.config,
                 live,
                 lives,
               }),
           ]),
-          () => config,
-        ])();
-
-        return finalConfig;
-      },
+          async () =>
+            client.configDefault({
+              name: resourceName,
+              meta,
+              namespace,
+              properties: defaultsDeep(spec.propertiesDefault)(
+                await properties({ dependencies: resolvedDependencies })
+              ),
+              dependencies: resolvedDependencies,
+              live,
+            }),
+        ])(),
     ])();
 
   const create = async ({ payload, resolvedDependencies, lives }) =>
@@ -663,10 +664,8 @@ const ResourceMaker = ({
       return;
     }
     if (!dependency) {
-      throw {
-        code: 422,
-        message: `missing dependency for ${type}/${resourceName}`,
-      };
+      logger.error(`undefined dependency for ${type}/${resourceName}`);
+      return;
     }
     if (!dependency.addUsedBy) {
       forEach((item) => {
@@ -1691,8 +1690,20 @@ function CoreProvider({
             or([
               and([
                 pipe([
+                  tap((result) => {
+                    logger.debug(
+                      `listLives type ${
+                        result.type
+                      }, error ${!!result.error}, #resources ${size(
+                        result.resources
+                      )}`
+                    );
+                  }),
                   get("type"),
                   (type) => isTypesMatch({ typeToMatch: type })(options.types),
+                  tap((keep) => {
+                    logger.debug(`listLives keep: ${keep}`);
+                  }),
                 ]),
                 pipe([get("resources"), not(isEmpty)]),
               ]),
@@ -1703,9 +1714,12 @@ function CoreProvider({
       }),
       assign({ providerName: () => providerName }),
       tap(({ results }) => {
-        logger.info(`listLives done`);
         lives.setByProvider({ providerName, livesPerProvider: results });
-        //logger.debug(`listLives result: ${tos(result)}`);
+        logger.debug(
+          `listLives provider ${providerName}, ${size(
+            results
+          )} results: ${pluck("type")(results).join(", ")}`
+        );
       }),
     ])();
 

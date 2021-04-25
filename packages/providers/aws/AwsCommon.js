@@ -19,6 +19,7 @@ const {
   forEach,
   identity,
   isFunction,
+  includes,
 } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsCommon" });
 const { tos } = require("@grucloud/core/tos");
@@ -27,7 +28,7 @@ const { KeyName } = require("@grucloud/core/Common");
 
 exports.getNewCallerReference = () => `grucloud-${new Date()}`;
 
-const handler = ({ endpointName, endpoint }) => ({
+const proxyHandler = ({ endpointName, endpoint }) => ({
   get: (target, name, receiver) => {
     assert(endpointName);
     assert(endpoint);
@@ -49,12 +50,12 @@ const handler = ({ endpointName, endpoint }) => ({
   },
 });
 
-const createEndpoint = ({ endpointName }) =>
+const createEndpoint = ({ endpointName }) => (config) =>
   pipe([
-    tap((config) => AWS.config.update(config)),
-    (config) => new AWS[endpointName]({ region: config.region }),
-    (endpoint) => new Proxy({}, handler({ endpointName, endpoint })),
-  ]);
+    tap(() => AWS.config.update(config)),
+    () => new AWS[endpointName]({ region: config.region }),
+    (endpoint) => new Proxy({}, proxyHandler({ endpointName, endpoint })),
+  ])();
 
 exports.Ec2New = (config) => () =>
   createEndpoint({ endpointName: "EC2" })(config);
@@ -357,6 +358,21 @@ exports.getByIdCore = ({ fieldIds, getList }) =>
     }
   );
 
+exports.revokeSecurityGroupIngress = ({ ec2 }) => (params) =>
+  tryCatch(
+    () => ec2().revokeSecurityGroupIngress(params),
+    tap.if(
+      ({ code }) =>
+        !includes(code)([
+          "InvalidPermission.NotFound",
+          "InvalidGroup.NotFound",
+        ]),
+      (error) => {
+        throw error;
+      }
+    )
+  )();
+
 exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
   pipe([
     tap(() => {
@@ -395,7 +411,7 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
         ])
       )
     ),
-    tap(
+    /*tap(
       forEach(
         pipe([
           get("NetworkInterfaceId"),
@@ -419,5 +435,5 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
           ),
         ])
       )
-    ),
+    ),*/
   ])();

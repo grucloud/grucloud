@@ -7,7 +7,7 @@ const { ELBRule } = require("./ELBRule");
 module.exports = [
   {
     type: "LoadBalancer",
-    dependsOn: ["Subnet"],
+    dependsOn: ["Subnet", "InternetGateway"],
     Client: ELBLoadBalancerV2,
     isOurMinion,
   },
@@ -19,7 +19,7 @@ module.exports = [
   },
   {
     type: "Listener",
-    dependsOn: ["LoadBalancer", "TargetGroup"],
+    dependsOn: ["LoadBalancer", "TargetGroup", "Certificate"],
     Client: ELBListener,
     isOurMinion,
   },

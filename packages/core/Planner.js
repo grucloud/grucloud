@@ -46,7 +46,17 @@ exports.mapToGraph = pipe([
           switchCase([
             isString,
             () => [],
-            (resource) => resource.name,
+            isEmpty,
+            () => [],
+            (resource) => {
+              if (!resource.toJSON) {
+                assert(
+                  !resource.toJSON,
+                  `Dependency is not a resource ${tos(resource)}`
+                );
+              }
+              return resource.name;
+            },
             (resource) => [resource.toJSON()],
             transform(
               map((dep) => dep.toJSON()),

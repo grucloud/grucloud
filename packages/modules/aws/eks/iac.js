@@ -1,15 +1,18 @@
 const assert = require("assert");
 const { map, pipe, and, tap } = require("rubico");
-const { pluck, identity, isFunction } = require("rubico/x");
+const { pluck, identity } = require("rubico/x");
 
 exports.config = require("./config");
 exports.hooks = [require("./hook")];
+
+const logger = require("@grucloud/core/logger")({ prefix: "EKSModule" });
 
 const isProviderUp = ({ resources }) =>
   pipe([
     and([() => resources.cluster.getLive()]),
     tap((isUp) => {
       assert(true);
+      logger.debug(`isProviderUp ${isUp}`);
     }),
   ])();
 

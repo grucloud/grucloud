@@ -21,7 +21,7 @@ const { isUpByIdCore, isDownByIdCore } = require("@grucloud/core/Common");
 const {
   ELBv2New,
   buildTags,
-  findNamespaceInTags,
+  findNamespaceInTagsOrEksCluster,
   shouldRetryOnException,
 } = require("../AwsCommon");
 
@@ -47,6 +47,11 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
       ids: live.SecurityGroups,
     },
   ];
+
+  const findNamespace = findNamespaceInTagsOrEksCluster({
+    config,
+    key: "elbv2.k8s.aws/cluster",
+  });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeLoadBalancers-property
   const getList = async () =>
@@ -204,7 +209,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     spec,
     findId,
     findDependencies,
-    findNamespace: findNamespaceInTags(config),
+    findNamespace,
     getByName,
     findName,
     create,

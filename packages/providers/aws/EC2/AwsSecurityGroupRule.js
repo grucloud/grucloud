@@ -265,15 +265,23 @@ const SecurityGroupRuleBase = ({ config }) => {
             ...omit(["Tags"])(live),
           }),
           //TODO pass revokeSecurityGroupIngress or revokeSecurityGroupEgress from param
-          switchCase([
-            eq(kind, "ingress"),
-            (params) => ec2().revokeSecurityGroupIngress(params),
-            eq(kind, "egress"),
-            (params) => ec2().revokeSecurityGroupEgress(params),
-            () => {
-              assert(`invalid kind: '${kind}'`);
-            },
-          ]),
+          tryCatch(
+            switchCase([
+              eq(kind, "ingress"),
+              (params) => ec2().revokeSecurityGroupIngress(params),
+              eq(kind, "egress"),
+              (params) => ec2().revokeSecurityGroupEgress(params),
+              () => {
+                assert(`invalid kind: '${kind}'`);
+              },
+            ]),
+            tap.if(
+              not(eq(get("code"), "InvalidPermission.NotFound")),
+              (error) => {
+                throw error;
+              }
+            )
+          ),
           () => removeTags({ name, securityGroup }),
         ])(),
       tap(() => {

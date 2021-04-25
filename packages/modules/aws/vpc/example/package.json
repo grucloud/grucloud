@@ -5,8 +5,8 @@
   "main": "iac.js",
   "private": true,
   "scripts": {
-    "graph-target": "gc graph --title 'Load Balancer Module'",
-    "graph-live": "gc list --graph --title 'Load Balancer Module'",
+    "graph-target": "gc graph --title 'VPC Module'",
+    "graph-live": "gc list --graph --title 'VPC Module'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

@@ -9,7 +9,7 @@ Less pods means we can choose a cheaper worker node.
 
 This infrastructure combines 2 providers: AWS and Kubernetes.
 
-![Modules](./modules.svg)
+![diagram-target.svg](./diagram-target.svg)
 
 ## Modules
 
@@ -20,12 +20,15 @@ A few modules for each of these providers are being used.
 - [module-aws-certificate](https://www.npmjs.com/package/@grucloud/module-aws-certificate)
 - [module-aws-vpc](https://www.npmjs.com/package/@grucloud/module-aws-vpc)
 - [module-aws-eks](https://www.npmjs.com/package/@grucloud/module-aws-eks)
+- [module-aws-load-balancer](https://www.npmjs.com/package/@grucloud/module-aws-load-balancer)
 
 ### Modules for K8s resources
 
 The local module defining the app on the k8s side is located at [base](../base)
 
-## Amazon EKS
+## Configuration
+
+### Amazon EKS
 
 The first part of this deployment is to create an EKS control plan, a node group for the workers and all their numerous dependencies.
 
@@ -35,18 +38,126 @@ Set the **rootDomainName** and **domainName** according to your use case
 
 > For end to end automation, the **rootDomainName** should be registered or transfered to the AWS Route53 service.
 
-## K8s
+### K8s
 
 The second part is the kubernetes deployment of the full-stack application composed of a react front end, a node backend, postgres as the SQL database and finally redis for the cache and published/subscriber models.
 
 Configuration for the K8s resources is located at [configK8s.js](./configK8s.js)
 
-## Load Balancer
+## Requirements
 
-The third part of the deployment begins when k8s services are up. The AWS load balancer target group depends on this services.
+- Ensure access to the [AWS Console](https://console.aws.amazon.com)
+- AWS CLI
 
-## Troubleshooting
+Verify the AWS CLI is installed:
+
+```
+aws --version
+```
+
+- AWS Access and Secret Key
 
 ```sh
-gc l -t LoadBalancer
+aws configure
 ```
+
+- Node.js 14
+
+Check _node_ is present on your machine:
+
+```
+node --version
+```
+
+- GruCloud CLI
+
+Install the GruCloud CLI with:
+
+```
+npm install -g grucloud/core
+```
+
+Verify **gc** is installed correctly:
+
+```sh
+gc --version
+```
+
+## Workflow
+
+### Listing
+
+Let's find out if everyting is setup properly by listing the live resources from AWS:
+
+```sh
+gc list
+```
+
+```txt
+Listing resources on 2 providers: aws, k8s
+✓ aws
+  ✓ Initialising
+  ✓ Listing 29/29
+k8s
+  Initialising
+  Listing 0/8
+List Summary:
+Provider: aws
+┌───────────────────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                                           │
+├────────────────────┬──────────────────────────────────────────────────────────────────────────┤
+│ IamPolicy          │ AmazonEKSClusterPolicy                                                   │
+│                    │ AmazonEKSVPCResourceController                                           │
+│                    │ AmazonEKSWorkerNodePolicy                                                │
+│                    │ AmazonEC2ContainerRegistryReadOnly                                       │
+│                    │ AmazonEKS_CNI_Policy                                                     │
+├────────────────────┼──────────────────────────────────────────────────────────────────────────┤
+│ Route53Domain      │ grucloud.org                                                             │
+├────────────────────┼──────────────────────────────────────────────────────────────────────────┤
+│ Vpc                │ default                                                                  │
+├────────────────────┼──────────────────────────────────────────────────────────────────────────┤
+│ InternetGateway    │ igw-9c2f1ae7                                                             │
+├────────────────────┼──────────────────────────────────────────────────────────────────────────┤
+│ SecurityGroup      │ default                                                                  │
+├────────────────────┼──────────────────────────────────────────────────────────────────────────┤
+│ Subnet             │ default                                                                  │
+│                    │ default                                                                  │
+│                    │ default                                                                  │
+│                    │ default                                                                  │
+│                    │ default                                                                  │
+│                    │ default                                                                  │
+├────────────────────┼──────────────────────────────────────────────────────────────────────────┤
+│ RouteTable         │ rtb-19753867                                                             │
+└────────────────────┴──────────────────────────────────────────────────────────────────────────┘
+19 resources, 8 types, 1 provider
+Command "gc l" executed in 5s
+```
+
+Note the presence of a default VPC, subnets, security group and internet gateway.
+
+> Verify that the domain name is registered with Route53Domain, in this case _grucloud.org_
+
+The Kubernetes control created by EKS is not up yet, as a consequence, listing the k8s resources cannot be retrieved at this stage.
+
+### Deploying
+
+Show time for deploying all the AWS and Kubernetes resources in one command:
+
+```sh
+gc apply
+```
+
+The app should be now running with Kubernetes on AWS.
+
+When all the resources are created, custom code can be invoked in [hook.js](./hook.js).
+In this example, we verify access to the web server and the API server securely.
+This  
+Let's list and produce a diagram of the AWS resources freshly created:
+
+```sh
+gc list -p aws --graph -a --default-exclude --types-exclude Certificate --types-exclude Route53Domain --types-exclude NetworkInterface
+```
+
+![diagram-live.svg](./diagram-live.svg)
+
+Notice that the NodeGroup has created an AutoScaling Group, which in turns creates EC2 instances, intance profiles and volumes.

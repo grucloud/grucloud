@@ -39,16 +39,48 @@ const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
 exports.AwsIamRole = ({ spec, config }) => {
   assert(spec);
   assert(config);
-
+  const { providerName } = config;
   const iam = IAMNew(config);
 
   const findName = get("RoleName");
   const findId = get("Arn");
 
-  const findDependencies = ({ live }) => [
+  const findDependencies = ({ live, lives }) => [
     {
       type: "IamPolicy",
       ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
+    },
+    {
+      type: "IamOpenIDConnectProvider",
+      ids: pipe([
+        () => live,
+        get("AssumeRolePolicyDocument.Statement"),
+        map(
+          pipe([
+            get("Principal.Federated"),
+            tap((id) => {
+              assert(true);
+            }),
+            (id) =>
+              lives.getById({
+                type: "IamOpenIDConnectProvider",
+                providerName,
+                id,
+              }),
+            tap((id) => {
+              assert(true);
+            }),
+            get("id"),
+          ])
+        ),
+        tap((id) => {
+          assert(true);
+        }),
+        filter(not(isEmpty)),
+        tap((ids) => {
+          logger.debug(`IamOpenIDConnectProvider ${ids}`);
+        }),
+      ])(),
     },
   ];
 
@@ -236,12 +268,22 @@ exports.AwsIamRole = ({ spec, config }) => {
       }),
       () => iam().listInstanceProfilesForRole({ RoleName, MaxItems: 1e3 }),
       get("InstanceProfiles"),
-      forEach((instanceProfile) => {
-        iam().removeRoleFromInstanceProfile({
-          InstanceProfileName: instanceProfile.InstanceProfileName,
-          RoleName,
-        });
-      }),
+
+      forEach(
+        tryCatch(
+          ({ InstanceProfileName }) =>
+            iam().removeRoleFromInstanceProfile({
+              InstanceProfileName,
+              RoleName,
+            }),
+          tap.if(not(eq(get("code"), "NoSuchEntity")), (error) => {
+            logger.error(
+              `iam role removeRoleFromInstanceProfile ${tos(error)}`
+            );
+            throw error;
+          })
+        )
+      ),
       () => iam().listAttachedRolePolicies({ RoleName, MaxItems: 1e3 }),
       get("AttachedPolicies"),
       forEach((policy) => {

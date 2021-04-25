@@ -1,4 +1,7 @@
 const assert = require("assert");
+const { pipe, tap, eq, get, and } = require("rubico");
+const { find } = require("rubico/x");
+
 const { AwsProvider } = require("../../AwsProvider");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const {
@@ -162,6 +165,60 @@ describe("AwsLoadBalancerV2", async function () {
   });
   after(async () => {});
   it("load balancer v2 apply plan", async function () {
+    const loadBalancerReadOnly = await provider.useLoadBalancer({
+      name: "load-balancer-k8s-readonly",
+      filterLives: ({ items }) =>
+        pipe([
+          () => items,
+          find(
+            pipe([
+              get("Tags"),
+              find(
+                and([
+                  eq(get("Key"), "Name"), //
+                  eq(get("Value"), loadBalancer.name),
+                ])
+              ),
+            ])
+          ),
+          tap((lb) => {
+            assert(true);
+          }),
+        ])(),
+    });
+
+    const domainName = "test-load-balancer.grucloud.org";
+    const hostedZoneName = "hostedZoneNameTODO";
+
+    const hostedZone = await provider.makeHostedZone({
+      name: `${domainName}.`,
+    });
+
+    const loadBalancerRecord = await provider.makeRoute53Record({
+      name: `dns-record-alias-load-balancer-${hostedZoneName}`,
+      dependencies: { hostedZone, loadBalancerReadOnly, loadBalancer },
+      properties: ({ dependencies }) => {
+        const hostname = dependencies.loadBalancerReadOnly.live?.DNSName;
+        if (!hostname) {
+          return {
+            message: "loadBalancer not up yet",
+            Type: "A",
+            Name: hostedZone.name,
+          };
+        }
+        return {
+          Name: hostedZone.name,
+          Type: "A",
+          AliasTarget: {
+            HostedZoneId:
+              dependencies.loadBalancerReadOnly?.live.CanonicalHostedZoneId,
+            DNSName: `${hostname}.`,
+            EvaluateTargetHealth: false,
+          },
+        };
+      },
+    });
+
     await testPlanDeploy({ provider, types });
 
     await testPlanDestroy({ provider, types });
