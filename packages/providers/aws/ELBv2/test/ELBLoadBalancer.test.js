@@ -182,7 +182,7 @@ describe("AwsLoadBalancerV2", async function () {
             ])
           ),
           tap((lb) => {
-            assert(lb);
+            assert(true);
           }),
         ])(),
     });
@@ -219,8 +219,8 @@ describe("AwsLoadBalancerV2", async function () {
       },
     });
 
-    await testPlanDeploy({ provider, types, destroy: false });
+    await testPlanDeploy({ provider, types });
 
-    //await testPlanDestroy({ provider, types });
+    await testPlanDestroy({ provider, types });
   });
 });

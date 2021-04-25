@@ -3,14 +3,16 @@ id: AwsTargetGroup
 title: Target Group
 ---
 
-Manage an [ELB Target Group](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html).
+Manages an [ELB Target Group](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html).
+
+A target group can be attached directly to an AutoScaling Group or an AutoScaling Group created by an EKS Node Group.
 
 ## Example
 
 ### TargetGroup attached to a EKS Node Group
 
-In this exmaple, we'll create TargetGroup associated to an [EKS Node Group](../EKS/EksNodeGroup.md).
-When an EKS Node Group is created, an [Auto Scaling Group](../AutoScaling/AutoScalingGroup.md) is also created. During the deployment, the Target Group is attached automatically to the Auto Scaling Group.
+In this example, we'll create a TargetGroup associated to an [EKS Node Group](../EKS/EksNodeGroup.md).
+When an EKS Node Group is created, an [Auto Scaling Group](../AutoScaling/AutoScalingGroup.md) is also created. During the deployment, the Target Group is attached automatically to this Auto Scaling Group.
 
 ```js
 const vpc = await provider.makeVpc({
@@ -27,6 +29,33 @@ const targetGroupRest = await provider.makeTargetGroup({
   dependencies: {
     vpc,
     nodeGroup,
+  },
+  properties: () => ({
+    Port: 30020,
+    HealthCheckPath: "/api/v1/version",
+  }),
+});
+```
+
+### TargetGroup attached to a AutoScaling Group
+
+In this example, a TargetGroup is associated with an [AutoScaling Group](../AutoScaling/AutoScalingGroup.md). The goal is to attach the target group to the autoscaling group.
+
+```js
+const vpc = await provider.makeVpc({
+  name: "vpc",
+  properties: () => ({
+    CidrBlock: "10.1.0.0/16",
+  }),
+});
+
+const autoScalingGroup = {}; // Insert autoscaling
+
+const targetGroupRest = await provider.makeTargetGroup({
+  name: "target-group-rest",
+  dependencies: {
+    vpc,
+    autoScalingGroup,
   },
   properties: () => ({
     Port: 30020,
@@ -54,7 +83,7 @@ The list of properties are the parameter of [createTargetGroup](https://docs.aws
 gc l -t TargetGroup
 ```
 
-```sh
+```txt
 Listing resources on 2 providers: aws, k8s
 ✓ aws
   ✓ Initialising

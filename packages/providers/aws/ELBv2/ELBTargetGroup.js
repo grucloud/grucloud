@@ -161,7 +161,11 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createTargetGroup-property
-  const create = async ({ name, payload, dependencies: { nodeGroup } }) =>
+  const create = async ({
+    name,
+    payload,
+    dependencies: { nodeGroup, autoScalingGroup },
+  }) =>
     pipe([
       tap(() => {
         logger.info(`create target group : ${name}`);
@@ -178,6 +182,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
         })
       ),
       switchCase([
+        // NodeGroup Case
         () => !isEmpty(nodeGroup),
         ({ TargetGroupArn }) =>
           pipe([
@@ -190,6 +195,16 @@ exports.ELBTargetGroup = ({ spec, config }) => {
               logger.info(
                 `attachLoadBalancerTargetGroups ${AutoScalingGroupName}`
               );
+            }),
+            (params) => autoScaling().attachLoadBalancerTargetGroups(params),
+          ])(),
+        // AutoScaling Group Case
+        () => !isEmpty(autoScalingGroup),
+        ({ TargetGroupArn }) =>
+          pipe([
+            () => ({
+              AutoScalingGroupName: autoScalingGroup.live?.AutoScalingGroupName,
+              TargetGroupARNs: [TargetGroupArn],
             }),
             (params) => autoScaling().attachLoadBalancerTargetGroups(params),
           ])(),
