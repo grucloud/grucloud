@@ -5,6 +5,7 @@
   "private": true,
   "homepage": "https://www.grucloud.com",
   "scripts": {
+    "graph-target": "lerna run graph-target",
     "bootstrap": "lerna bootstrap",
     "test:gcp": "cd packages/providers/google && npm test",
     "test:aws": "cd packages/providers/aws && npm test",

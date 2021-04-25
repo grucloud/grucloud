@@ -143,15 +143,8 @@
 <path fill="none" stroke="#707070" d="M1629.76,-1207C1726.12,-1231.23 1897.02,-1259.25 2025,-1198 2104.23,-1160.08 2159.44,-1067.78 2185.66,-1015.24"/>
 <polygon fill="#707070" stroke="#707070" points="2188.81,-1016.75 2190.06,-1006.23 2182.53,-1013.68 2188.81,-1016.75"/>
 </g>
-<!-- ElasticIpAddress::iep -->
-<g id="node9" class="node">
-<title>ElasticIpAddress::iep</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="1943.5,-1174 1789.5,-1174 1789.5,-1116 1943.5,-1116 1943.5,-1174"/>
-<text text-anchor="start" x="1801.5" y="-1154.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ElasticIpAddress</text>
-<text text-anchor="start" x="1801.5" y="-1129.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">iep</text>
-</g>
 <!-- Subnet::subnet&#45;public&#45;a -->
-<g id="node10" class="node">
+<g id="node9" class="node">
 <title>Subnet::subnet&#45;public&#45;a</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="1934.5,-1098 1798.5,-1098 1798.5,-1040 1934.5,-1040 1934.5,-1098"/>
 <text text-anchor="start" x="1810.5" y="-1078.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Subnet</text>
@@ -164,7 +157,7 @@
 <polygon fill="#707070" stroke="#707070" points="2168.06,-990.27 2176.77,-984.24 2166.2,-983.53 2168.06,-990.27"/>
 </g>
 <!-- Subnet::subnet&#45;public&#45;b -->
-<g id="node11" class="node">
+<g id="node10" class="node">
 <title>Subnet::subnet&#45;public&#45;b</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="1934.5,-982 1798.5,-982 1798.5,-924 1934.5,-924 1934.5,-982"/>
 <text text-anchor="start" x="1810.5" y="-962.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Subnet</text>
@@ -177,7 +170,7 @@
 <polygon fill="#707070" stroke="#707070" points="2166.63,-977.91 2176.85,-975.13 2167.12,-970.92 2166.63,-977.91"/>
 </g>
 <!-- RouteTable::route&#45;table&#45;public -->
-<g id="node12" class="node">
+<g id="node11" class="node">
 <title>RouteTable::route&#45;table&#45;public</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="1629.5,-1138 1479.5,-1138 1479.5,-1080 1629.5,-1080 1629.5,-1138"/>
 <text text-anchor="start" x="1491.5" y="-1118.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">RouteTable</text>
@@ -202,7 +195,7 @@
 <polygon fill="#707070" stroke="#707070" points="1790.68,-986.85 1798.3,-979.49 1787.75,-980.5 1790.68,-986.85"/>
 </g>
 <!-- Route::route&#45;public -->
-<g id="node13" class="node">
+<g id="node12" class="node">
 <title>Route::route&#45;public</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="1306,-1157 1197,-1157 1197,-1099 1306,-1099 1306,-1157"/>
 <text text-anchor="start" x="1209.5" y="-1137.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Route</text>
@@ -220,6 +213,13 @@
 <path fill="none" stroke="#707070" d="M1306.31,-1124.6C1351.49,-1121.75 1416.84,-1117.63 1468.99,-1114.33"/>
 <polygon fill="#707070" stroke="#707070" points="1469.48,-1117.81 1479.24,-1113.69 1469.04,-1110.82 1469.48,-1117.81"/>
 </g>
+<!-- ElasticIpAddress::iep -->
+<g id="node13" class="node">
+<title>ElasticIpAddress::iep</title>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="1943.5,-1174 1789.5,-1174 1789.5,-1116 1943.5,-1116 1943.5,-1174"/>
+<text text-anchor="start" x="1801.5" y="-1154.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">ElasticIpAddress</text>
+<text text-anchor="start" x="1801.5" y="-1129.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">iep</text>
+</g>
 <!-- NatGateway::nat&#45;gateway -->
 <g id="node14" class="node">
 <title>NatGateway::nat&#45;gateway</title>
@@ -227,17 +227,17 @@
 <text text-anchor="start" x="1508.5" y="-1042.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">NatGateway</text>
 <text text-anchor="start" x="1508.5" y="-1017.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">nat&#45;gateway</text>
 </g>
-<!-- NatGateway::nat&#45;gateway&#45;&gt;ElasticIpAddress::iep -->
-<g id="edge13" class="edge">
-<title>NatGateway::nat&#45;gateway&#45;&gt;ElasticIpAddress::iep</title>
-<path fill="none" stroke="#707070" d="M1613.25,-1046.01C1632.78,-1051.89 1654.14,-1060.04 1672,-1071 1691.29,-1082.83 1688.26,-1095.93 1708,-1107 1729.78,-1119.21 1755.39,-1127.53 1779.56,-1133.17"/>
-<polygon fill="#707070" stroke="#707070" points="1778.93,-1136.62 1789.45,-1135.36 1780.45,-1129.78 1778.93,-1136.62"/>
-</g>
 <!-- NatGateway::nat&#45;gateway&#45;&gt;Subnet::subnet&#45;public&#45;a -->
 <g id="edge12" class="edge">
 <title>NatGateway::nat&#45;gateway&#45;&gt;Subnet::subnet&#45;public&#45;a</title>
 <path fill="none" stroke="#707070" d="M1613.08,-1039.69C1662.45,-1045.42 1733.99,-1053.73 1788.32,-1060.04"/>
 <polygon fill="#707070" stroke="#707070" points="1787.91,-1063.51 1798.25,-1061.19 1788.72,-1056.56 1787.91,-1063.51"/>
+</g>
+<!-- NatGateway::nat&#45;gateway&#45;&gt;ElasticIpAddress::iep -->
+<g id="edge13" class="edge">
+<title>NatGateway::nat&#45;gateway&#45;&gt;ElasticIpAddress::iep</title>
+<path fill="none" stroke="#707070" d="M1613.25,-1046.01C1632.78,-1051.89 1654.14,-1060.04 1672,-1071 1691.29,-1082.83 1688.26,-1095.93 1708,-1107 1729.78,-1119.21 1755.39,-1127.53 1779.56,-1133.17"/>
+<polygon fill="#707070" stroke="#707070" points="1778.93,-1136.62 1789.45,-1135.36 1780.45,-1129.78 1778.93,-1136.62"/>
 </g>
 <!-- Subnet::subnet&#45;private&#45;a -->
 <g id="node15" class="node">
