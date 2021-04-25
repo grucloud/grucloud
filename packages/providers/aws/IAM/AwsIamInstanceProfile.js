@@ -192,11 +192,17 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
           tap(
             pipe([
               () => live.Roles,
-              forEach(({ RoleName }) =>
-                iam().removeRoleFromInstanceProfile({
-                  InstanceProfileName,
-                  RoleName,
-                })
+              forEach(
+                tryCatch(
+                  ({ RoleName }) =>
+                    iam().removeRoleFromInstanceProfile({
+                      InstanceProfileName,
+                      RoleName,
+                    }),
+                  tap.if(not(eq(get("code"), "NoSuchEntity")), (error) => {
+                    throw error;
+                  })
+                )
               ),
             ])
           ),
