@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Load Balancer Module Graph",
+      "name": "Graph",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
@@ -13,11 +13,33 @@
       "port": 9229
     },
     {
-      "name": "Load Balancer Module List",
+      "name": "List",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
       "runtimeArgs": ["list", "-g"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}/example",
+      "port": 9229
+    },
+    {
+      "name": "Apply",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["apply", "-f"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}/example",
+      "port": 9229
+    },
+    {
+      "name": "Destroy",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["destroy", "-f"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/example",

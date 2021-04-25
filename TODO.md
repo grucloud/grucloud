@@ -1,7 +1,6 @@
 ## Bugs
 
 - use lister when decorating the list result
-- remove eks dependency from load balancer module
 - gc a: when an assert is thrown, it does not exit but ask for deployment confirmation.
 - code coverage with monorepo
 - check stage for all providers

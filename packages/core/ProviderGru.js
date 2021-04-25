@@ -314,26 +314,34 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
           () => provider.clientByType({ type: resource.type }),
           (client) => ({
             ...resource,
-            isDefault: client.isDefault({ live: resource.live, lives }),
-            namespace: client.findNamespace({ live: resource.live, lives }),
-            dependencies: client.findDependencies({
-              live: resource.live,
-              lives,
-            }),
-            managedByUs: client.spec.isOurMinion({
-              resource: provider.getResourceFromLive({
-                client,
+            get isDefault() {
+              return client.isDefault({ live: resource.live, lives });
+            },
+            get namespace() {
+              return client.findNamespace({ live: resource.live, lives });
+            },
+            get dependencies() {
+              return client.findDependencies({
                 live: resource.live,
-              }),
-              live: resource.live,
-              lives,
-              //TODO remove resourceNames
-              resourceNames: provider.resourceNames(),
-              resources: provider.getResourcesByType({
-                type: client.spec.type,
-              }),
-              config: provider.config,
-            }),
+                lives,
+              });
+            },
+            get managedByUs() {
+              return client.spec.isOurMinion({
+                resource: provider.getResourceFromLive({
+                  client,
+                  live: resource.live,
+                }),
+                live: resource.live,
+                lives,
+                //TODO remove resourceNames
+                resourceNames: provider.resourceNames(),
+                resources: provider.getResourcesByType({
+                  type: client.spec.type,
+                }),
+                config: provider.config,
+              });
+            },
           }),
         ])(),
       tap((resource) => {
@@ -342,20 +350,23 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
     ])();
 
   const filterLives = ({
-    our,
-    name,
-    id,
-    canBeDeleted,
-    providerName,
-    providerNames,
-    defaultExclude,
-    typesExclude,
-    ...other
+    commandOptions: {
+      our,
+      name,
+      id,
+      canBeDeleted,
+      providerName,
+      providerNames,
+      defaultExclude,
+      typesExclude,
+      ...other
+    },
+    type,
   } = {}) => (items) =>
     pipe([
       () => items,
-      tap((initialItems) => {
-        logger.debug(`filterLives #initialItems ${size(initialItems)}`);
+      tap((items) => {
+        assert(true);
       }),
       filter(pipe([get("type"), (type) => !includes(type)(typesExclude)])),
       filter((item) => (defaultExclude ? !item.isDefault : true)),
@@ -369,7 +380,9 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
       ),
       filter((item) => (canBeDeleted ? !item.cannotBeDeleted : true)),
       tap((remainingItems) => {
-        logger.debug(`filterLives #remainingItems ${size(remainingItems)}`);
+        logger.debug(
+          `filterLives ${type} from ${size(items)} to ${size(remainingItems)}`
+        );
       }),
     ])();
 
@@ -384,11 +397,12 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
             get("results"),
             map(
               assign({
-                resources: pipe([
-                  get("resources"),
-                  map(resourceDecorate({ lives })),
-                  filterLives(commandOptions),
-                ]),
+                resources: ({ resources, type }) =>
+                  pipe([
+                    () => resources,
+                    map(resourceDecorate({ lives })),
+                    filterLives({ type, commandOptions }),
+                  ])(),
               })
             ),
           ]),

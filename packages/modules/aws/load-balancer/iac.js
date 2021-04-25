@@ -10,14 +10,22 @@ const NamespaceDefault = "LoadBalancer";
 
 exports.createResources = async ({
   provider,
-  resources: { vpc, subnets, hostedZone, certificate, nodeGroup },
+  resources: {
+    vpc,
+    subnets,
+    hostedZone,
+    certificate,
+    nodeGroup,
+    autoScalingGroup,
+  },
   namespace = NamespaceDefault,
 }) => {
   assert(Array.isArray(subnets));
   assert(vpc);
   assert(certificate);
   assert(hostedZone);
-  assert(nodeGroup);
+  //TODO
+  //assert(autoScalingGroup)
   const { config } = provider;
   assert(config.elb);
   assert(config.elb.loadBalancer);
@@ -110,6 +118,7 @@ exports.createResources = async ({
       namespace,
       dependencies: {
         vpc,
+        autoScalingGroup,
         nodeGroup,
       },
       properties: config.elb.targetGroups.web.properties,
@@ -118,6 +127,7 @@ exports.createResources = async ({
       name: config.elb.targetGroups.rest.name,
       namespace,
       dependencies: {
+        autoScalingGroup,
         nodeGroup,
         vpc,
       },
@@ -167,7 +177,7 @@ exports.createResources = async ({
         Protocol: "HTTPS",
         Certificates: [
           {
-            CertificateArn: certificate?.live.CertificateArn,
+            CertificateArn: certificate?.live?.CertificateArn,
           },
         ],
         DefaultActions: [

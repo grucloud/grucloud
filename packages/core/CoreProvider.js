@@ -274,7 +274,7 @@ const ResourceMaker = ({
   };
   const getDependencyList = () =>
     pipe([
-      filter(not(isString)),
+      filter(and([not(isString), not(isEmpty)])),
       transform(
         map((dep) => dep),
         () => []
@@ -308,9 +308,14 @@ const ResourceMaker = ({
         }
       }),
       map(async (dependency) => {
+        if (!dependency) {
+          logger.error(`${toString()} has undefined dependencies`);
+          return;
+        }
         if (isString(dependency)) {
           return dependency;
         }
+
         //TODO isArray
         if (!dependency.getLive) {
           return tryCatch(
@@ -659,10 +664,8 @@ const ResourceMaker = ({
       return;
     }
     if (!dependency) {
-      throw {
-        code: 422,
-        message: `missing dependency for ${type}/${resourceName}`,
-      };
+      logger.error(`undefined dependency for ${type}/${resourceName}`);
+      return;
     }
     if (!dependency.addUsedBy) {
       forEach((item) => {

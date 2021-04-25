@@ -7,17 +7,16 @@ module.exports = ({ resources, provider }) => {
   const { rootDomainName } = config.certificate;
   assert(rootDomainName);
 
-  const { hostedZone, certificate, certificateRecordValidation } = resources;
+  const { hostedZone, certificate } = resources;
   assert(hostedZone);
   assert(certificate);
+  assert(certificate.certificateRecordValidation);
 
   return {
     onDeployed: {
       init: async () => {
         const hostedZoneLive = await hostedZone.getLive();
-        assert.equal(hostedZoneLive.ResourceRecordSetCount, 3);
-
-        const certificateRecordValidationLive = await certificateRecordValidation.getLive();
+        const certificateRecordValidationLive = await certificate.certificateRecordValidation.getLive();
         assert(certificateRecordValidationLive);
         return { hostedZoneLive };
       },
@@ -27,7 +26,7 @@ module.exports = ({ resources, provider }) => {
           command: async () => {
             await retryCall({
               name: `getting certificate status`,
-              fn: () => certificate.getLive(),
+              fn: () => certificate.certificate.getLive(),
               isExpectedResult: (sslCertificateLive) => {
                 return sslCertificateLive.Status == "ISSUED";
               },

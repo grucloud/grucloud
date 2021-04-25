@@ -46,7 +46,8 @@ exports.mapToGraph = pipe([
           switchCase([
             isString,
             () => [],
-
+            isEmpty,
+            () => [],
             (resource) => {
               if (!resource.toJSON) {
                 assert(

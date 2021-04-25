@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { pipe, get } = require("rubico");
-const { first } = require("rubico/x");
+const { pipe, get, tap, and, eq } = require("rubico");
+const { find } = require("rubico/x");
 
 const { AwsProvider } = require("@grucloud/provider-aws");
 const { K8sProvider } = require("@grucloud/provider-k8s");
@@ -117,20 +117,41 @@ exports.createStack = async ({ stage }) => {
   const stackAws = await createAwsStack({ stage });
   const stackK8s = await createK8sStack({ stackAws, stage });
 
-  const { hostedZone } = stackAws.resources;
+  const { hostedZone, eks } = stackAws.resources;
   assert(hostedZone);
   const { ingress } = stackK8s.resources;
   assert(ingress);
 
+  const loadBalancer = await stackAws.provider.useLoadBalancer({
+    name: "load-balancer",
+    filterLives: ({ items }) =>
+      pipe([
+        () => items,
+        find(
+          pipe([
+            tap((xxx) => {
+              assert(true);
+            }),
+            get("Tags"),
+            find(
+              and([
+                eq(get("Key"), "elbv2.k8s.aws/cluster"),
+                eq(get("Value"), eks.cluster.name),
+              ])
+            ),
+          ])
+        ),
+        tap((lb) => {
+          assert(true);
+        }),
+      ])(),
+  });
+
   const loadBalancerRecord = await stackAws.provider.makeRoute53Record({
     name: `dns-record-alias-load-balancer-${hostedZone.name}`,
-    dependencies: { hostedZone, ingress },
+    dependencies: { hostedZone, loadBalancer },
     properties: ({ dependencies }) => {
-      const hostname = pipe([
-        get("live.status.loadBalancer.ingress"),
-        first,
-        get("hostname"),
-      ])(dependencies.ingress);
+      const hostname = dependencies.loadBalancer.live?.DNSName;
       if (!hostname) {
         return {
           message: "loadBalancer not up yet",
@@ -142,7 +163,7 @@ exports.createStack = async ({ stage }) => {
         Name: hostedZone.name,
         Type: "A",
         AliasTarget: {
-          HostedZoneId: "ZHURV8PSTC4K8",
+          HostedZoneId: dependencies.loadBalancer?.live.CanonicalHostedZoneId,
           DNSName: `${hostname}.`,
           EvaluateTargetHealth: false,
         },

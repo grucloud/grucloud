@@ -182,7 +182,6 @@ const associationIdString = ({
   pipe([
     tap(() => {
       assert(idTo);
-      assert(resources);
     }),
     () => resources,
     switchCase([
