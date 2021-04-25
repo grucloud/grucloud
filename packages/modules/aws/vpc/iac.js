@@ -96,7 +96,9 @@ const createResources = async ({ provider, namespace = NamespaceDefault }) => {
               namespace,
               dependencies: { subnet: subnetsPublic[0], eip },
             }),
-          privates: ({ vpc }) =>
+        }),
+        assign({
+          privates: ({ vpc, natGateway }) =>
             pipe([
               () => config.vpc.subnets.privates,
               map(
@@ -122,7 +124,7 @@ const createResources = async ({ provider, namespace = NamespaceDefault }) => {
                         }),
                     }),
                     assign({
-                      routeTable: ({ vpc, subnet }) =>
+                      routeTable: ({ subnet }) =>
                         provider.makeRouteTable({
                           name: formatName(routeTableName, config),
                           namespace,
@@ -130,7 +132,7 @@ const createResources = async ({ provider, namespace = NamespaceDefault }) => {
                         }),
                     }),
                     assign({
-                      routeNat: ({ routeTable, natGateway }) =>
+                      routeNat: ({ routeTable }) =>
                         provider.makeRoute({
                           name: formatName(routeName, config),
                           namespace,
