@@ -8,7 +8,7 @@
 
 ## Common:
 
-- gc info with config
+- gc info with config for gcp and azure
 - https://stackshare.io/terraform/alternatives
 - case where provider does have any resources
 -

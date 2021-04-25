@@ -1,0 +1,15 @@
+{
+  "name": "@grucloud/example-k8s-tuto1",
+  "version": "1.0.0",
+  "description": "GruCloud Kubernetes Tutorial Part 1",
+  "main": "iac.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "^1.12.0",
+    "@grucloud/provider-k8s": "^1.12.0"
+  }
+}

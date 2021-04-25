@@ -9,13 +9,20 @@ The Kubernetes Grucloud provider allows to define and describe Kubernetes resour
 
 The GruCloud Command Line Interface **gc** reads this description in Javascript and connect to the k8s control plane to apply the new or updated resource definitions.
 
-Let's define a _Deployment_ and a _Service_ to serve the nginx web server.
+Let's deploy a full-stack application on kubernetes locally with minikube.
+
+- a frontend (React)
+- a backend (Node.js)
+- an SQL database (postgres)
+- Key/Value, Pub/Sub (redis)
+
+![starhackit-grucloud](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/k8s/starhackit/minikube/diagram-target.svg)
 
 ## Requirements
 
 Ensure **kubectl** and **minikube** is started with the ingress addon: [K8s Requirements](./K8sRequirements.md)
 
-### Getting GruCLoud CLI
+### Getting the code
 
 Install the _grucloud_ command line utility: **gc**
 
@@ -23,50 +30,27 @@ Install the _grucloud_ command line utility: **gc**
 npm i -g @grucloud/core
 ```
 
-```
-gc --version
-```
+Clone the source code containing the examples:
 
-## Create the project
-
-```sh
-mkdir tuto
-cd tuto
+```bash
+git clone git@github.com:grucloud/grucloud.git
 ```
 
-### package.json
+Change the k8s minikube directory
 
-```sh
-npm init
+```bash
+cd grucloud/examples/k8s/starhackit/minikube
 ```
 
-```sh
-npm install @grucloud/core @grucloud/provider-k8s
+Install the node dependencies:
+
+```bash
+npm install
 ```
 
 ### config.js
 
-Create the **config.js**
-
-```js
-// config.js
-const pkg = require("./package.json");
-module.exports = () => ({
-  projectName: pkg.name,
-  namespaceName: "default",
-});
-```
-
-### iac.js
-
-```js
-const { K8sProvider } = require("@grucloud/provider-k8s");
-exports.createStack = async (config) => {
-  const provider = K8sProvider({ config });
-  // Define manifest here
-  return { provider };
-};
-```
+Edit **config.js** and eventually change the configuration.
 
 ## Plan
 
