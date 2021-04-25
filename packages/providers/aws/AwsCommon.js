@@ -357,6 +357,21 @@ exports.getByIdCore = ({ fieldIds, getList }) =>
     }
   );
 
+exports.revokeSecurityGroupIngress = ({ ec2 }) => (params) =>
+  tryCatch(
+    () => ec2().revokeSecurityGroupIngress(params),
+    tap.if(
+      ({ code }) =>
+        !includes(code)([
+          "InvalidPermission.NotFound",
+          "InvalidGroup.NotFound",
+        ]),
+      (error) => {
+        throw error;
+      }
+    )
+  )();
+
 exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
   pipe([
     tap(() => {
@@ -395,7 +410,7 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
         ])
       )
     ),
-    tap(
+    /*tap(
       forEach(
         pipe([
           get("NetworkInterfaceId"),
@@ -419,5 +434,5 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
           ),
         ])
       )
-    ),
+    ),*/
   ])();

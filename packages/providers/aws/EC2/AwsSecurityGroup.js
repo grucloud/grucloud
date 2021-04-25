@@ -14,16 +14,21 @@ const {
   omit,
   pick,
 } = require("rubico");
-const { find, defaultsDeep, pluck, flatten, isEmpty } = require("rubico/x");
+const {
+  find,
+  defaultsDeep,
+  pluck,
+  flatten,
+  isEmpty,
+  includes,
+} = require("rubico/x");
 const {
   Ec2New,
   getByIdCore,
   shouldRetryOnException,
   buildTags,
-  findValueInTags,
-  findNamespaceEksCluster,
   findNamespaceInTagsOrEksCluster,
-  destroyNetworkInterfaces,
+  revokeSecurityGroupIngress,
 } = require("../AwsCommon");
 const { retryCall } = require("@grucloud/core/Retry");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -155,19 +160,11 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       map(
         pipe([
           omit(["IpRanges", "Ipv6Ranges", "PrefixListIds"]),
-          tryCatch(
-            (ipPermission) =>
-              ec2().revokeSecurityGroupIngress({
-                GroupId: live.GroupId,
-                IpPermissions: [ipPermission],
-              }),
-            tap.if(
-              not(eq(get("code"), "InvalidPermission.NotFound")),
-              (error) => {
-                throw error;
-              }
-            )
-          ),
+          (ipPermission) => ({
+            GroupId: live.GroupId,
+            IpPermissions: [ipPermission],
+          }),
+          revokeSecurityGroupIngress({ ec2 }),
         ])
       ),
     ])();
