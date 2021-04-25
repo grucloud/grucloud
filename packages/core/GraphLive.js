@@ -86,23 +86,29 @@ const filterResources = ({
   namespacesHide = NamespacesHide,
   resourceTypesHide = ResourceTypesHide,
   resourceNameFilter = resourceNameFilterDefault,
-}) =>
+}) => (resources) =>
   pipe([
-    tap((resources) => {
+    tap(() => {
       logger.debug(`filterResources #resources ${size(resources)}`);
     }),
+    () => resources,
     filter(not(isEmpty)),
     filter(
       and([
+        get("show"),
         (resource) => not(includes(resource.namespace))(namespacesHide),
         (resource) => not(includes(resource.type))(resourceTypesHide),
         resourceNameFilter,
       ])
     ),
-    tap((resources) => {
-      logger.debug(`filterResources filtered #resources ${size(resources)}`);
+    tap((filteredResources) => {
+      logger.debug(
+        `filterResources filtered #resources ${size(resources)} to ${size(
+          filteredResources
+        )}`
+      );
     }),
-  ]);
+  ])();
 
 const buildSubGraphLive = ({ providerName, resourcesPerType, options }) =>
   pipe([
@@ -185,8 +191,17 @@ const associationIdString = ({
     }),
     () => resources,
     switchCase([
-      find(eq(get("id"), idTo)),
       pipe([
+        find(eq(get("id"), idTo)),
+        get("show"),
+        tap((xxx) => {
+          logger.debug(``);
+        }),
+      ]),
+      pipe([
+        tap((xxx) => {
+          logger.debug(``);
+        }),
         () => ({
           nodeFrom: buildNodeFrom({ type, namespaceFrom, idFrom }),
           nodeTo: buildNodeToId({
