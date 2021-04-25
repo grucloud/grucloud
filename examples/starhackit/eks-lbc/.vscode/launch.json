@@ -50,6 +50,8 @@
         "Route53Domain",
         "--types-exclude",
         "NetworkInterface",
+        "--types-exclude",
+        "KeyPair",
         "-p",
         "aws"
       ],
@@ -112,6 +114,17 @@
       "request": "launch",
       "runtimeExecutable": "gc",
       "runtimeArgs": ["destroy", "-f"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
+      "name": "Destroy All AWS",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["destroy", "-t", "LoadBalancer", "-f", "-a", "-p", "aws"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
