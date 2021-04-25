@@ -432,21 +432,6 @@ exports.AwsEC2 = ({ spec, config }) => {
     })(otherProperties);
   };
 
-  const cannotBeDeleted = ({ live }) =>
-    pipe([
-      () => live,
-      get("Tags"),
-      tap((tags) => {
-        //logger.info(`cannotBeDeleted  ${tos({ tags })}`);
-      }),
-      // find(
-      //   and([
-      //     eq(get("Key"), "kubernetes.io/cluster/cluster"),
-      //     eq(get("Value"), "owned"),
-      //   ])
-      // ),
-    ])();
-
   return {
     type: "EC2",
     spec,
@@ -460,7 +445,6 @@ exports.AwsEC2 = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
-    cannotBeDeleted,
   };
 };
 
