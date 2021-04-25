@@ -1,5 +1,22 @@
-const { pipe, filter, map, get, tap, eq, switchCase, not } = require("rubico");
-const { find, defaultsDeep, isEmpty, first, pluck } = require("rubico/x");
+const {
+  pipe,
+  filter,
+  map,
+  get,
+  tap,
+  eq,
+  switchCase,
+  not,
+  tryCatch,
+} = require("rubico");
+const {
+  find,
+  defaultsDeep,
+  isEmpty,
+  first,
+  pluck,
+  includes,
+} = require("rubico/x");
 const assert = require("assert");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsIgw" });
@@ -168,13 +185,23 @@ exports.AwsInternetGateway = ({ spec, config }) => {
       tap.if(not(isEmpty), ({ VpcId }) =>
         detachInternetGateway({ InternetGatewayId: id, VpcId })
       ),
-      () => ec2().deleteInternetGateway({ InternetGatewayId: id }),
-      () =>
-        retryCall({
-          name: `destroy ig isDownById: ${name} id: ${id}`,
-          fn: () => isDownById({ id }),
-          config,
-        }),
+      tryCatch(
+        pipe([
+          () => ec2().deleteInternetGateway({ InternetGatewayId: id }),
+          () =>
+            retryCall({
+              name: `destroy ig isDownById: ${name} id: ${id}`,
+              fn: () => isDownById({ id }),
+              config,
+            }),
+        ]),
+        tap.if(
+          ({ code }) => !includes(code)(["AuthFailure"]),
+          () => {
+            throw error;
+          }
+        )
+      ),
       tap(() => {
         logger.debug(`destroyed ig ${tos({ name, id })}`);
       }),
