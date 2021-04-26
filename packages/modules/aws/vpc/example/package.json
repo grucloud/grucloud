@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-module-aws-vpc",
-  "version": "1.13.0",
+  "version": "1.13.2",
   "description": "Example for the AWS VPC GruCloud module.",
   "main": "iac.js",
   "private": true,
@@ -17,8 +17,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.13.0",
-    "@grucloud/module-aws-vpc": "^1.13.0",
-    "@grucloud/provider-aws": "^1.13.0"
+    "@grucloud/core": "^1.13.2",
+    "@grucloud/module-aws-vpc": "^1.13.2",
+    "@grucloud/provider-aws": "^1.13.2"
   }
 }
