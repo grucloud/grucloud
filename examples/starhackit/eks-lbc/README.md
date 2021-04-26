@@ -17,7 +17,7 @@ A few modules for each of these providers are being used.
 - [module-aws-certificate](https://www.npmjs.com/package/@grucloud/module-aws-certificate)
 - [module-aws-vpc](https://www.npmjs.com/package/@grucloud/module-aws-vpc)
 - [module-aws-eks](https://www.npmjs.com/package/@grucloud/module-aws-eks)
-- [module-aws-load-balancer](https://www.npmjs.com/package/@grucloud/module-aws-load-balancer-controller)
+- [module-aws-load-balancer-controller](https://www.npmjs.com/package/@grucloud/module-aws-load-balancer-controller)
 
 ### Modules for K8s resources
 
