@@ -1035,7 +1035,33 @@ const doGraphLive = ({ providerGru, lives, commandOptions }) =>
     ])
   )();
 
+const filterShow = map(
+  assign({
+    results: pipe([
+      get("results"),
+      tap((results) => {
+        logger.debug(`filterShow : ${size(results)}`);
+      }),
+      map(
+        assign({
+          resources: ({ providerName, resources, type, error }) =>
+            pipe([
+              () => resources,
+              filter(get("show")),
+              tap((xxx) => {
+                logger.debug(``);
+              }),
+            ])(),
+        })
+      ),
+    ]),
+  })
+);
 const displayListResult = pipe([
+  tap((xxx) => {
+    logger.debug(`displayListResult`);
+  }),
+  filterShow,
   tap((xxx) => {
     logger.debug(`displayListResult`);
   }),
