@@ -32,6 +32,7 @@ const {
   findNamespaceInTags,
   shouldRetryOnExceptionDelete,
   shouldRetryOnException,
+  removeRoleFromInstanceProfile,
 } = require("../AwsCommon");
 const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
 
@@ -268,19 +269,11 @@ exports.AwsIamRole = ({ spec, config }) => {
       }),
       () => iam().listInstanceProfilesForRole({ RoleName, MaxItems: 1e3 }),
       get("InstanceProfiles"),
-
       forEach(
-        tryCatch(
-          ({ InstanceProfileName }) =>
-            iam().removeRoleFromInstanceProfile({
-              InstanceProfileName,
-              RoleName,
-            }),
-          tap.if(not(eq(get("code"), "NoSuchEntity")), (error) => {
-            logger.error(
-              `iam role removeRoleFromInstanceProfile ${tos(error)}`
-            );
-            throw error;
+        tryCatch(({ InstanceProfileName }) =>
+          removeRoleFromInstanceProfile({ iam })({
+            RoleName,
+            InstanceProfileName,
           })
         )
       ),

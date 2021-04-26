@@ -373,6 +373,19 @@ exports.revokeSecurityGroupIngress = ({ ec2 }) => (params) =>
     )
   )();
 
+exports.removeRoleFromInstanceProfile = ({ iam }) => (params) =>
+  tryCatch(
+    () => iam().removeRoleFromInstanceProfile(params),
+    switchCase([
+      eq(get("code"), "NoSuchEntity"),
+      () => undefined,
+      (error) => {
+        logger.error(`iam role removeRoleFromInstanceProfile ${tos(error)}`);
+        throw error;
+      },
+    ])
+  )();
+
 exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
   pipe([
     tap(() => {

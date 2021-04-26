@@ -57,6 +57,7 @@
 
 ## TODO Aws:
 
+- Resource pages
 - delete keypair from kops
 - HostedZone => Route53HostedZon
 - Rule => ListenerRule

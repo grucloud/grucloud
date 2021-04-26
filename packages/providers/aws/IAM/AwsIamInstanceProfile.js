@@ -37,6 +37,7 @@ const {
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
   findNamespaceInTags,
+  removeRoleFromInstanceProfile,
 } = require("../AwsCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
@@ -192,18 +193,11 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
           tap(
             pipe([
               () => live.Roles,
-              forEach(
-                tryCatch(
-                  ({ RoleName }) =>
-                    iam().removeRoleFromInstanceProfile({
-                      InstanceProfileName,
-                      RoleName,
-                    }),
-                  tap.if(not(eq(get("code"), "NoSuchEntity")), (error) => {
-                    logger.error(`removeRoleFromInstanceProfile ${tos(error)}`);
-                    throw error;
-                  })
-                )
+              forEach(({ RoleName }) =>
+                removeRoleFromInstanceProfile({ iam })({
+                  RoleName,
+                  InstanceProfileName,
+                })
               ),
             ])
           ),

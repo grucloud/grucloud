@@ -301,11 +301,8 @@ const ResourceMaker = ({
         logger.info(
           `resolveDependencies for ${toString()}: ${Object.keys(
             dependencies
-          )}, dependenciesMustBeUp: ${dependenciesMustBeUp}`
+          )}, mustBeUp: ${dependenciesMustBeUp}`
         );
-        if (!lives) {
-          assert(true);
-        }
       }),
       map(async (dependency) => {
         if (!dependency) {
