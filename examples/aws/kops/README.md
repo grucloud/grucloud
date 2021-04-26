@@ -1,14 +1,12 @@
-# Setup KOPS on AWS with GruCloud
+The aim of this tutorial is to automatically create and destroy the AWS resources required by [kops](https://kops.sigs.k8s.io/), a tool to create a Kubernetes cluster.
 
-This [GrucCloud](http://grucloud.com) code automatically creates and destroys the AWS resources required by [kops](https://kops.sigs.k8s.io/), a tool to create Kubernetes cluster.
+The section ['setup your environment'](https://kops.sigs.k8s.io/getting_started/aws/#setup-your-environment) from the official _kops_ documentation will be automated with [GruCloud](https://grucloud.com)
 
-This tutorial explains the automation of the section ['setup your environment'](https://kops.sigs.k8s.io/getting_started/aws/#setup-your-environment) from the official _kops_ documentation.
-
-Below is the diagram generated from the target code, it illustrates the resources and their association between each others:
+Below is the diagram generated from the target code, it illustrates the resources and their association with each other:
 
 ![kops-graph](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/kops/diagram-target.svg)
 
-> Regarding this DNS scenario, the case of a subdomain where a top level hosted zone already exists is implemented.
+> Regarding this DNS scenario, the case of a subdomain where a top-level hosted zone already exists is implemented.
 
 ## TD;DR
 
@@ -26,30 +24,30 @@ Here are a few npm scripts wrapper: `npm run kops:create`, `npm run kops:update`
 
 Here is a description of the steps that are automated:
 
-1. IAM
+#### IAM
 
 - create a kops group, attach 5 IAM policies.
-- create a kops user, attach the user the kops group.
-- create a access and secret key for the kops user.
+- create a kops user, attach the user to the kops group.
+- create access and secret key for the kops user.
 
-2. Route53
+#### Route53
 
 - create a hosted zone for a subdomain.
-- create a DNS record of type _NS_ in the top level hosted zone with the dns servers as values from the subdomain hosted zone.
+- create a DNS record of type _NS_ in the top-level hosted zone with the DNS servers as values from the subdomain hosted zone.
 
-3. S3
+#### S3
 
-- create a S3 bucket with encryption and versioning.
+- create an S3 bucket with encryption and versioning.
 
-4. kops.env
+#### kops.env file
 
-- create a file containing the envirorment variable for _kops_
+- create a file containing the environment variable for _kops_
 
-You will be free from performing all these commands manually. Same apply for the destruction of all these resources.
+You will be free from performing all these commands manually. The same applies to the destruction of all these resources.
 
 ## Requirements
 
-- [Access the the AWS console](https://console.aws.amazon.com)
+- [Access to the AWS console](https://console.aws.amazon.com)
 - AWS CLI configured
 - A domain name registered on Route53.
 - [Node.js](https://nodejs.org)
@@ -67,7 +65,7 @@ npm install
 
 ## Configuration
 
-Edit [config.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/kops/config.js) and set the _domainName_, the _subDomainName_ and the _zone_.
+Edit [config.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/kops/config.js) and set the _domainName_, the _subDomainName_, the _zone_ and the region:
 
 Double check your configuration with `gc info`:
 
@@ -111,7 +109,7 @@ gc list  -t Route53Domain -t HostedZone
 ## iac.js
 
 For your information, the architecture is described in [iac.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/kops/iac.js).
-In this use, the cloud provider is AWS, so we'll use [GruCloud AWS Provider](https://www.npmjs.com/package/@grucloud/provider-aws) to create the resources.
+In this use, the cloud provider is AWS, so we'll use the [GruCloud AWS Provider](https://www.npmjs.com/package/@grucloud/provider-aws) to create the resources.
 
 ## Target Graph
 
@@ -228,7 +226,7 @@ gc destroy --all
 ## Further Step
 
 Congratulations, you know how to create and destroy a Kubernetes cluster with _kops_.
-What about a load balancers, DNS records, SSL certificates ? Grucloud provides some ready made modules distributed with _npm_, the node package manager.
+What about a load balancer, DNS records, SSL certificates ? Grucloud provides some ready made modules distributed with _npm_, the node package manager.
 
 Have a look at:
 
