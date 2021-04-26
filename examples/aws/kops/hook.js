@@ -13,7 +13,7 @@ const fileExist = ({ fileName }) =>
     () => false
   )();
 
-const writeAccessKeyFile = ({ subDomainName, fileName }) => (
+const writeAccessKeyFile = ({ region, zone, subDomainName, fileName }) => (
   contentAccessKey
 ) =>
   pipe([
@@ -26,6 +26,8 @@ export AWS_ACCESS_KEY_ID=${AccessKey.AccessKeyId}
 export AWS_SECRET_ACCESS_KEY=${AccessKey.SecretAccessKey}
 export NAME=${subDomainName}
 export KOPS_STATE_STORE=s3://${subDomainName}
+export REGION=${region}
+export ZONE=${zone}
     `,
     (content) => fs.writeFile(fileName, content),
   ])();
@@ -72,6 +74,8 @@ module.exports = ({ resources: {}, provider }) => {
               }),
               () =>
                 createAndSaveAccessKey({
+                  region: config.region,
+                  zone: config.zone(),
                   ...config.kops,
                   fileName: kopsEnvFilename,
                 }),

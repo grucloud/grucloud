@@ -1,36 +1,63 @@
-# KOPS on AWS with GruCloud
+# Setup KOPS on AWS with GruCloud
 
-This GrucCloud code automatically create and destroy the users, groups, S3 bucket, and route53 dns record required by [kops](https://kops.sigs.k8s.io/), a tool to create Kubernetes cluster.
+This [GrucCloud](http://grucloud.com) code automatically creates and destroys the AWS resources required by [kops](https://kops.sigs.k8s.io/), a tool to create Kubernetes cluster.
 
-We'll refer to the [kops guide for AWS](https://kops.sigs.k8s.io/getting_started/aws/).
+This tutorial explains the automation of the section ['setup your environment'](https://kops.sigs.k8s.io/getting_started/aws/#setup-your-environment) from the official _kops_ documentation.
 
-![kops-graph](./diagram-target.svg)
+Below is the diagram generated from the target code, it illustrates the resources and their association between each other:
 
-Regarding ths DNS settings, we implement the case of a subdomain where a top level hosted zone already exists.
+![kops-graph](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/kops/diagram-target.svg)
+
+> Regarding this DNS scenario, the case of a subdomain where a top level hosted zone already exists is implemented.
 
 ## TD;DR
 
-1. Get this example code and install the dependencies.
+1. Get this [example code](https://github.com/grucloud/grucloud/tree/main/examples/aws/kops) and install the dependencies.
 2. Edit the configuration file and set the domain name and subdomain name.
 3. `gc apply`
 
-All the AWS resources required by kops should have been created. The environment file _kops.env_ containing the necessary information is also generated.
+All the AWS resources required by kops should have been created. The environment file _kops.env_ containing the necessary information should have been generated too.
 
 You are now ready to create a cluster with kops.
 
 Here are a few npm scripts wrapper: `npm run kops:create`, `npm run kops:update` and `npm run kops:validate`.
 
+## Steps
+
+Here is a description of the steps that are automated:
+
+1. IAM
+
+- create a kops group, attach 5 IAM policies.
+- create a kops user, attach the user the kops group.
+- create a access and secret key for the kops user.
+
+2. Route53
+
+- create a hosted zone for a subdomain.
+- create a DNS record of type _NS_ in the top level hosted zone with the dns servers as values from the subdomain hosted zone.
+
+3. S3
+
+- create a S3 bucket with encryption and versioning.
+
+4. kops.env
+
+- create a file containing the envirorment variable for _kops_
+
+You will be free from performing all these commands manually. Same apply for the destruction of all these resources.
+
 ## Requirements
 
 - [Access the the AWS console](https://console.aws.amazon.com)
 - AWS CLI configured
-- A domain name registered on Route53
+- A domain name registered on Route53.
 - [Node.js](https://nodejs.org)
 - [GruCloud CLI](https://www.grucloud.com/docs/cli/gc)
 
 ## Install
 
-Clone this code, change to the [kops](https://github.com/grucloud/grucloud/tree/main/examples/aws/kops) folder, install the npm dependencies with the _install_ command:
+Clone this [code](https://github.com/grucloud/grucloud), change to the [kops folder](https://github.com/grucloud/grucloud/tree/main/examples/aws/kops), install the npm dependencies:
 
 ```sh
 git clone https://github.com/grucloud/grucloud
@@ -40,15 +67,55 @@ npm install
 
 ## Configuration
 
-Edit [config.js](./config.js) and set the _domainName_ and _subDomainName_.
+Edit [config.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/kops/config.js) and set the _domainName_, the _subDomainName_ and the _zone_.
+
+Double check your configuration with `gc info`:
+
+```txt
+  - provider:
+      name: aws
+      type: aws
+    stage: dev
+    config:
+      projectName: @grucloud/create-aws-kops
+      kops:
+        domainName: grucloud.org
+        subDomainName: kops.example.grucloud.org
+        groupName: kops
+        userName: kops
+      stage: dev
+      zone: us-east-1a
+      accountId: 4444454555555
+      region: us-east-1
+```
+
+The domain name must be registered with Route53 **for the current AWS user**.
+Let's also verify that a top level hosted zone already exists.
+You could use the _gc list_ command with the _Route53Domain_ and _HostedZone_ type filter:
+
+```sh
+gc list  -t Route53Domain -t HostedZone
+```
+
+```txt
+[...Truncated]
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                                         │
+├────────────────────┬────────────────────────────────────────────────────────────────────────┤
+│ Route53Domain      │ grucloud.org                                                           │
+├────────────────────┼────────────────────────────────────────────────────────────────────────┤
+│ HostedZone         │ grucloud.org.                                                          │
+└────────────────────┴────────────────────────────────────────────────────────────────────────┘
+```
 
 ## iac.js
 
-For your information, the architecture is described in [iac.js](./iac.js).
+For your information, the architecture is described in [iac.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/kops/iac.js).
+In this use, the cloud provider is AWS, so we'll use [GruCloud AWS Provider](https://www.npmjs.com/package/@grucloud/provider-aws) to create the resources.
 
 ## Target Graph
 
-Another way to explore the _iac.js_ is to generate a diagram of the resources:
+Another way to explore the _iac.js_ is to generate a diagram of the target resources:
 
 ```sh
 gc graph
@@ -62,96 +129,38 @@ Ready to deploy the user, group, s3 bucket, route53 hosted zone and record ?
 gc apply
 ```
 
-Let's find out the list of live resources created by GrouCloud as well as a diagram showing the dependencies between the resources.
+The AWS resources should have been deployed.
+Let's find out our live resources as well as a diagram showing the dependencies between these resources:
 
 ```sh
-gc list --graph
+gc list --graph --our
 ```
 
 ```txt
-List Summary:
-Provider: aws
-┌───────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                                                   │
-├────────────────────┬──────────────────────────────────────────────────────────────────────────────────┤
-│ NetworkAcl         │ acl-d6ecc5ab                                                                     │
-│                    │ acl-0edaac567955a3a1a                                                            │
-│                    │ acl-0132f54ddc1279c50                                                            │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ KeyPair            │ kubernetes.kops.example.grucloud.org-0e:29:14:fb:1b:d2:de:6c:a7:c8:a0:cb:1c:41:… │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ NetworkInterface   │ eni-00125f14983089e55                                                            │
-│                    │ eni-00269f773890846bf                                                            │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ IamPolicy          │ AmazonEC2FullAccess                                                              │
-│                    │ AmazonRoute53FullAccess                                                          │
-│                    │ AmazonS3FullAccess                                                               │
-│                    │ IAMFullAccess                                                                    │
-│                    │ AmazonVPCFullAccess                                                              │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ Volume             │ a.etcd-main.kops.example.grucloud.org                                            │
-│                    │ a.etcd-events.kops.example.grucloud.org                                          │
-│                    │ master-us-east-1a.masters.kops.example.grucloud.org                              │
-│                    │ nodes-us-east-1a.kops.example.grucloud.org                                       │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ Route53Domain      │ grucloud.com                                                                     │
-│                    │ grucloud.org                                                                     │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ IamRole            │ masters.kops.example.grucloud.org                                                │
-│                    │ nodes.kops.example.grucloud.org                                                  │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ S3Bucket           │ kops.example.grucloud.org                                                        │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ IamGroup           │ kops                                                                             │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ IamInstanceProfile │ masters.kops.example.grucloud.org                                                │
-│                    │ nodes.kops.example.grucloud.org                                                  │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ HostedZone         │ grucloud.org.                                                                    │
-│                    │ kops.example.grucloud.org.                                                       │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ IamUser            │ kops                                                                             │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ Route53Record      │ kops.example.grucloud.org-ns                                                     │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ Vpc                │ default                                                                          │
-│                    │ kops.example.grucloud.org                                                        │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ InternetGateway    │ kops.example.grucloud.org                                                        │
-│                    │ igw-9c2f1ae7                                                                     │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ Subnet             │ us-east-1a.kops.example.grucloud.org                                             │
-│                    │ default                                                                          │
-│                    │ default                                                                          │
-│                    │ default                                                                          │
-│                    │ default                                                                          │
-│                    │ default                                                                          │
-│                    │ subnet1-test-load-balancer                                                       │
-│                    │ default                                                                          │
-│                    │ subnet2-test-load-balancer                                                       │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ SecurityGroup      │ default                                                                          │
-│                    │ default                                                                          │
-│                    │ masters.kops.example.grucloud.org                                                │
-│                    │ nodes.kops.example.grucloud.org                                                  │
-│                    │ default                                                                          │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ RouteTable         │ rtb-19753867                                                                     │
-│                    │ rtb-0d1d24e2564fd421d                                                            │
-│                    │ rtb-04b0fb8968d8fc5ba                                                            │
-│                    │ kops.example.grucloud.org                                                        │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ EC2                │ nodes-us-east-1a.kops.example.grucloud.org                                       │
-│                    │ master-us-east-1a.masters.kops.example.grucloud.org                              │
-├────────────────────┼──────────────────────────────────────────────────────────────────────────────────┤
-│ AutoScalingGroup   │ master-us-east-1a.masters.kops.example.grucloud.org                              │
-│                    │ nodes-us-east-1a.kops.example.grucloud.org                                       │
-└────────────────────┴──────────────────────────────────────────────────────────────────────────────────┘
-57 resources, 21 types, 1 provider
-Command "gc l -g -a" executed in 8s
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                                         │
+├────────────────────┬────────────────────────────────────────────────────────────────────────┤
+│ IamPolicy          │ AmazonEC2FullAccess                                                    │
+│                    │ AmazonRoute53FullAccess                                                │
+│                    │ AmazonS3FullAccess                                                     │
+│                    │ IAMFullAccess                                                          │
+│                    │ AmazonVPCFullAccess                                                    │
+├────────────────────┼────────────────────────────────────────────────────────────────────────┤
+│ IamGroup           │ kops                                                                   │
+├────────────────────┼────────────────────────────────────────────────────────────────────────┤
+│ S3Bucket           │ kops.example.grucloud.org                                              │
+├────────────────────┼────────────────────────────────────────────────────────────────────────┤
+│ IamUser            │ kops                                                                   │
+├────────────────────┼────────────────────────────────────────────────────────────────────────┤
+│ HostedZone         │ kops.example.grucloud.org.                                             │
+│                    │ grucloud.org.                                                          │
+├────────────────────┼────────────────────────────────────────────────────────────────────────┤
+│ Route53Record      │ kops.example.grucloud.org-ns                                           │
+└────────────────────┴────────────────────────────────────────────────────────────────────────┘
+11 resources, 15 types, 1 provider
 ```
 
-![diagram-live.partial.svg](./diagram-live-partial.svg)
+![diagram-live.partial.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/kops/diagram-live-partial.svg)
 
 ## Envirornment variables
 
@@ -163,6 +172,8 @@ export AWS_ACCESS_KEY_ID=XXXXXXNBM2ZQEPXXXXX
 export AWS_SECRET_ACCESS_KEY=XXXXXiXmSB3aZTK/AxOOvSPcGby3XXXXXX
 export NAME=kops.example.grucloud.org
 export KOPS_STATE_STORE=s3://kops.example.grucloud.org
+export REGION=eu-west-2
+export ZONE=eu-west-2a
 ```
 
 Source with variables with:
@@ -173,11 +184,11 @@ source kops.env
 
 When the deploment is destroyed with _gc destroy_, **kops.env** is removed.
 
-The file [hook.js](./hook.js) is the place where this logic is implemented
+The file [hook.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/kops/hook.js) is the place where this logic is implemented.
 
 ## NPM kops scripts
 
-The following npm scripts manage the kops commands, the environment variables are sourced from **kops.env** and given to **kops**.
+The following npm scripts manage the kops commands, the environment variables are sourced from **kops.env**.
 
 ```sh
 npm run kops:create
@@ -187,13 +198,15 @@ npm run kops:validate
 
 ## List Resources
 
-Let's fetch all the live resources, we'll see that _kops_ creates many resources such as autoscaling groups, ec2 instances, subnets, vpc, internet gateway, volumes and so on:
+Let's fetch all the live resources, we'll see that _kops_ creates many resources such as autoscaling groups, ec2 instances, subnets, vpc, internet gateway, volumes, key pair and so on:
 
 ```sh
 gc list --graph --all --default-exclude --types-exclude Certificate --types-exclude Route53Domain --types-exclude NetworkInterface
 ```
 
-![kops-diagram-live-all](./diagram-live-all.svg)
+![kops-diagram-live-all](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/kops/diagram-live-all.svg)
+
+> You could inspect and generate a diagram of any existing AWS infrastruture for the [most used resources](https://github.com/grucloud/grucloud/tree/main/packages/providers/aws#resources)
 
 ## Destroy
 
@@ -206,6 +219,12 @@ npm run kops:destroy
 gc destroy
 ```
 
+Alternatively, _gc_ could also destroy all the resources created by _kops_, use the _all_ flag:
+
+```
+gc destroy --all
+```
+
 ## Further Step
 
 Congratulations, you know how to create and destroy a Kubernetes cluster with _kops_.
@@ -214,7 +233,20 @@ What about a load balancers, DNS records, SSL certificates ? Grucloud provides s
 Have a look at:
 
 - [@grucloud/module-aws-certificate](https://www.npmjs.com/package/@grucloud/module-aws-certificate): Create a certificate and a Route53 record for validation.
-- [@grucloud/module-aws-load-balancer](https://www.npmjs.com/package/@grucloud/module-aws-load-balancer): Manages a load balancer, target groups, listeners and rules. A leaner alternative the AWS Load Balancer Controller which runs on the cluster.
+- [@grucloud/module-aws-load-balancer](https://www.npmjs.com/package/@grucloud/module-aws-load-balancer): Manage a load balancer, target groups, listeners and rules. A leaner alternative the AWS Load Balancer Controller which runs on the cluster.
 - [@grucloud/module-aws-vpc](https://www.npmjs.com/package/@grucloud/module-aws-vpc): Contains the base resources required to create a Kubernetes cluster.
 
-On the Kubernetes side, be aware of the [GruCloud Kubernetes Provider](https://www.npmjs.com/package/@grucloud/provider-k8s).In a nutshell, instead of writing YAML manifest, Javascript is used instead to define the manifest, no more templating engine, just a real programming language instead.
+On the Kubernetes side, be aware of the [GruCloud Kubernetes Provider](https://www.npmjs.com/package/@grucloud/provider-k8s). In a nutshell, instead of writing YAML manifest, Javascript is used instead to define the manifest, no more templating engine, just a real programming language instead.
+
+Would you like to deploy a [full stack application](https://github.com/FredericHeem/starhackit) on EKS ? Choose the flavour depending on who is reponsible to create the load balancer, target groups, listener and rules:
+
+- Load balancer resources created inside the cluster with the AWS Load Balancer Controller: [eks-lbc](https://github.com/grucloud/grucloud/tree/main/examples/starhackit/eks-lbc).
+
+- A leaner solution where the load balancer resources are created by GruCLoud outside the cluster: [eks-lean](https://github.com/grucloud/grucloud/tree/main/examples/starhackit/eks-lean).
+
+## Links
+
+- [GitHub](https://github.com/grucloud/grucloud)
+- [Documentation](https://www.grucloud.com/docs/Introduction)
+- [Website](https://www.grucloud.com)
+- [Twitter][https://twitter.com/grucloud_iac]
