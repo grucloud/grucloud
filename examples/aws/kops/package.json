@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "graph-target": "gc graph",
-    "graph-live": "gc list --graph -a --default-exclude --types-exclude Certificate --types-exclude Route53Domain --types-exclude NetworkInterface",
+    "graph-live": "gc list --graph -a --default-exclude --types-exclude KeyPair --types-exclude Certificate --types-exclude Route53Domain --types-exclude NetworkInterface",
     "kops:create": "source kops.env && kops create cluster --zones=us-east-1a $NAME",
     "kops:update": "source kops.env && kops update cluster --name $NAME --yes --admin",
     "kops:validate": "source kops.env && kops validate cluster --wait 10m",
