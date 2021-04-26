@@ -4,7 +4,7 @@ This [GrucCloud](http://grucloud.com) code automatically creates and destroys th
 
 This tutorial explains the automation of the section ['setup your environment'](https://kops.sigs.k8s.io/getting_started/aws/#setup-your-environment) from the official _kops_ documentation.
 
-Below is the diagram generated from the target code, it illustrates the resources and their association between each other:
+Below is the diagram generated from the target code, it illustrates the resources and their association between each others:
 
 ![kops-graph](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/kops/diagram-target.svg)
 
@@ -13,12 +13,12 @@ Below is the diagram generated from the target code, it illustrates the resource
 ## TD;DR
 
 1. Get this [example code](https://github.com/grucloud/grucloud/tree/main/examples/aws/kops) and install the dependencies.
-2. Edit the configuration file and set the domain name and subdomain name.
+2. Edit the configuration file and set the domain name, the subdomain name, the region, and the zone.
 3. `gc apply`
 
 All the AWS resources required by kops should have been created. The environment file _kops.env_ containing the necessary information should have been generated too.
 
-You are now ready to create a cluster with kops.
+You are now ready to [create a cluster with kops](https://kops.sigs.k8s.io/getting_started/aws/#creating-your-first-cluster),
 
 Here are a few npm scripts wrapper: `npm run kops:create`, `npm run kops:update` and `npm run kops:validate`.
 
@@ -236,7 +236,7 @@ Have a look at:
 - [@grucloud/module-aws-load-balancer](https://www.npmjs.com/package/@grucloud/module-aws-load-balancer): Manage a load balancer, target groups, listeners and rules. A leaner alternative the AWS Load Balancer Controller which runs on the cluster.
 - [@grucloud/module-aws-vpc](https://www.npmjs.com/package/@grucloud/module-aws-vpc): Contains the base resources required to create a Kubernetes cluster.
 
-On the Kubernetes side, be aware of the [GruCloud Kubernetes Provider](https://www.npmjs.com/package/@grucloud/provider-k8s). In a nutshell, instead of writing YAML manifest, Javascript is used instead to define the manifest, no more templating engine, just a real programming language instead.
+On the Kubernetes side, be aware of the [GruCloud Kubernetes Provider](https://www.npmjs.com/package/@grucloud/provider-k8s). In a nutshell, instead of writing YAML manifest, Javascript is used instead to define the manifests, no more templating engine, enjoy a real programming language instead.
 
 Would you like to deploy a [full stack application](https://github.com/FredericHeem/starhackit) on EKS ? Choose the flavour depending on who is reponsible to create the load balancer, target groups, listener and rules:
 
@@ -249,4 +249,4 @@ Would you like to deploy a [full stack application](https://github.com/FredericH
 - [GitHub](https://github.com/grucloud/grucloud)
 - [Documentation](https://www.grucloud.com/docs/Introduction)
 - [Website](https://www.grucloud.com)
-- [Twitter][https://twitter.com/grucloud_iac]
+- [Twitter](https://twitter.com/grucloud_iac)
