@@ -353,13 +353,13 @@ exports.Planner = ({
       filter(pipe([get("dependsOn"), find(eq(get("uri"), item.resource.uri))])),
       //filter(({ dependsOn = [] }) => dependsOn.includes(item.resource.name)),
       tap((values) => {
-        logger.debug(`onEnd  ${tos(values)}`);
+        //logger.debug(`onEnd  ${tos(values)}`);
       }),
       map((entry) =>
         tryCatch(
           pipe([
             tap((values) => {
-              logger.debug(`onEnd  ${tos(values)}`);
+              //logger.debug(`onEnd  ${tos(values)}`);
             }),
             // Remove from the dependsOn array the one that just ended
             filter(({ uri }) => uri !== item.resource.uri),
@@ -383,7 +383,7 @@ exports.Planner = ({
               () => {},
             ]),
             tap((xxx) => {
-              logger.debug(`onEnd  ${tos(xxx)}`);
+              //logger.debug(`onEnd  ${tos(xxx)}`);
             }),
           ]),
           (error) => {

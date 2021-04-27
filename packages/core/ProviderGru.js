@@ -359,6 +359,10 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
     pipe([
       () => resource,
       and([
+        (resource) =>
+          switchCase([not(isEmpty), includes(resource.type), () => true])(
+            commandOptions.types
+          ),
         (resource) => !includes(resource.type)(commandOptions.typesExclude),
         (resource) =>
           commandOptions.defaultExclude ? !resource.isDefault : true,

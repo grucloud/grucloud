@@ -215,7 +215,6 @@ const associationIdString = ({
       ]),
       () => "",
     ]),
-    ,
   ])();
 
 const associationIdObject = ({
@@ -223,24 +222,47 @@ const associationIdObject = ({
   type,
   idFrom,
   namespaceFrom,
+  dependencyId,
   dependency,
+  resources,
 }) =>
   pipe([
     tap((id) => {
-      if (!id.name) {
-        assert(false, id);
-      }
+      //assert(resources);
     }),
-    tap(({ name, namespace }) => {
-      assert(name);
-      if (!namespace) {
-        assert(true);
-      }
+    () => resources,
+    switchCase([
+      pipe([
+        find(
+          and([
+            eq(get("name"), dependencyId.name),
+            eq(get("namespace"), dependencyId.namespace),
+          ])
+        ),
+        get("show"),
+        tap((xxx) => {
+          logger.debug(``);
+        }),
+      ]),
+      pipe([
+        tap((xxx) => {
+          logger.debug(``);
+        }),
+        () => ({
+          nodeFrom: `"${buildNodeFrom({ type, namespaceFrom, idFrom })}"`,
+          nodeTo: `"${dependency.type}::${dependencyId.namespace}::${dependencyId.name}"`,
+        }),
+        ({ nodeFrom, nodeTo }) =>
+          `${nodeFrom} -> ${nodeTo} [color="${edge.color}"];`,
+        tap((xx) => {
+          logger.debug(``);
+        }),
+      ]),
+      () => "",
+    ]),
+    tap((xxx) => {
+      logger.debug(``);
     }),
-    ({ name, namespace }) =>
-      `"${buildNodeFrom({ type, namespaceFrom, idFrom })}" -> "${
-        dependency.type
-      }::${namespace}::${name}" [color="${edge.color}"];`,
   ]);
 
 const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
@@ -300,13 +322,20 @@ const buildGraphAssociationLive = ({ resourcesPerType, options }) =>
                     ])(),
                   }),
                 isObject,
-                associationIdObject({
-                  options,
-                  type,
-                  idFrom: id,
-                  namespaceFrom: namespace,
-                  dependency,
-                }),
+                (dependencyId) =>
+                  associationIdObject({
+                    options,
+                    type,
+                    idFrom: id,
+                    namespaceFrom: namespace,
+                    dependency,
+                    dependencyId,
+                    resources: pipe([
+                      () => resourcesPerType,
+                      find(eq(get("type"), dependency.type)),
+                      get("resources"),
+                    ])(),
+                  })(),
                 (dependencyId) => {
                   assert(
                     false,

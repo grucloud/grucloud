@@ -115,7 +115,7 @@ const findDependentTypes = ({ types, clients }) =>
     ),
     uniq,
     tap((results) => {
-      //logger.debug(`findDependentTypes results: ${results}`);
+      // logger.debug(`findDependentTypes results: ${results}`);
     }),
   ])();
 
@@ -123,7 +123,9 @@ const filterByType = ({ types = [], targetTypes }) =>
   pipe([
     tap((clients) => {
       logger.info(
-        `filterByType inputs #clients ${clients.length}, #targetTypes ${targetTypes.length}, #types ${types.length}`
+        `filterByType inputs #clients ${size(clients)}, #targetTypes ${size(
+          targetTypes
+        )}, #types ${size(types)}`
       );
     }),
     (clients) =>
@@ -141,12 +143,15 @@ const filterByType = ({ types = [], targetTypes }) =>
               isEmpty, //TOD never empty
               pipe([
                 (types) => findDependentTypes({ types, clients }),
-                tap(() => {
+                tap((dependentTypes) => {
                   assert(client);
                   assert(client.spec);
                   assert(client.spec.type);
                 }),
                 includes(client.spec.type),
+                tap((keep) => {
+                  logger.debug(`${client.spec.type}: ${keep}`);
+                }),
               ]),
             ]),
             () => true,
@@ -155,7 +160,9 @@ const filterByType = ({ types = [], targetTypes }) =>
         ])()
       )(clients),
     tap((clients) => {
-      logger.info(`filterByType result #clients ${clients.length}`);
+      logger.info(
+        `filterByType result #clients ${pluck("spec.type")(clients)}`
+      );
     }),
   ]);
 
