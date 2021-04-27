@@ -114,6 +114,19 @@ const fnSpecs = () => [
     }),
     isOurMinion,
   },
+  // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#job-v1-batch
+  {
+    type: "Job",
+    Client: createResourceNamespace({
+      baseUrl: ({ namespace, apiVersion }) =>
+        `/apis/${apiVersion}/namespaces/${namespace}/jobs`,
+      pathList: ({ apiVersion }) => `/apis/${apiVersion}/jobs`,
+      configKey: "job",
+      apiVersion: "batch/v1",
+      kind: "Job",
+    }),
+    isOurMinion,
+  },
   // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#customresourcedefinition-v1beta1-apiextensions-k8s-io
   {
     type: "CustomResourceDefinition",
