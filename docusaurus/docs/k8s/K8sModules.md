@@ -10,5 +10,6 @@ A Module is a collection of resources packaged with **npm**, the node package ma
 - [Postgres](https://github.com/grucloud/grucloud/tree/main/packages/modules/k8s/postgres): Defines resources to setup a Postgres database.
 - [Redis](https://github.com/grucloud/grucloud/tree/main/packages/modules/k8s/redis): Defines resources to setup Redis.
 - [Web Ui Dashboard](https://github.com/grucloud/grucloud/tree/main/packages/modules/k8s/web-ui-dashboard): Setup the [Web Ui Dashboard](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/)
+- [Crunchy Postgres Operator](https://github.com/grucloud/grucloud/tree/main/packages/modules/k8s/crunchy-postgres): Uses the [Crunchy Data Postgres Operator](https://github.com/CrunchyData/postgres-operator)
 
 See the [k8s examples](./K8sExamples) how on to consume these modules in your project.

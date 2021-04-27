@@ -6,6 +6,8 @@ Currently used to create the following kubernetes modules:
 
 - [Cert Manager](https://www.npmjs.com/package/@grucloud/module-k8s-cert-manager)
 - [Aws Load Balancer Controller](https://www.npmjs.com/package/@grucloud/module-k8s-aws-load-balancer-controller)
+- [Web Ui Dashboard](https://github.com/grucloud/grucloud/tree/main/packages/modules/k8s/web-ui-dashboard)
+- [Crunchy Postgres Operator](https://github.com/grucloud/grucloud/tree/main/packages/modules/k8s/crunchy-postgres)
 
 # Tutorial: How to create a Kubernetes Module with k8s-manifest2code
 
