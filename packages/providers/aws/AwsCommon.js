@@ -424,7 +424,7 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
         ])
       )
     ),
-    /*tap(
+    tap(
       forEach(
         pipe([
           get("NetworkInterfaceId"),
@@ -448,5 +448,5 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
           ),
         ])
       )
-    ),*/
+    ),
   ])();
