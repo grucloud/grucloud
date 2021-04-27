@@ -1,4 +1,14 @@
-const { get, pipe, filter, map, tap, eq, switchCase, not } = require("rubico");
+const {
+  get,
+  pipe,
+  filter,
+  map,
+  tap,
+  eq,
+  switchCase,
+  not,
+  tryCatch,
+} = require("rubico");
 const { defaultsDeep, isEmpty, first, identity, pluck } = require("rubico/x");
 const assert = require("assert");
 
@@ -75,6 +85,37 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
       }),
     ])();
 
+  const destroy = ({ live }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`destroy network interface`);
+      }),
+      () => ({ NetworkInterfaceId: findId(live) }),
+      ({ NetworkInterfaceId }) =>
+        pipe([
+          tap(() => {}),
+          tap(() => {
+            logger.debug(`network interface destroyed ${NetworkInterfaceId}`);
+          }),
+          tryCatch(
+            () => ec2().deleteNetworkInterface({ NetworkInterfaceId }),
+            switchCase([
+              eq(get("code"), "InvalidNetworkInterfaceID.NotFound"),
+              () => undefined,
+              (error) => {
+                logger.error(
+                  `deleteNetworkInterface error code: ${error.code}`
+                );
+                throw error;
+              },
+            ])
+          ),
+          tap(() => {
+            logger.debug(`network interface destroyed ${NetworkInterfaceId}`);
+          }),
+        ])(),
+    ])();
+
   return {
     type: "NetworkInterface",
     spec,
@@ -83,6 +124,7 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
     findId,
     findName,
     getList,
+    destroy,
     shouldRetryOnException,
   };
 };

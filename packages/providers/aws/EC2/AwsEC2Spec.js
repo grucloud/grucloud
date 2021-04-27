@@ -119,8 +119,8 @@ module.exports = [
   },
   {
     type: "NetworkInterface",
+    dependsOn: ["Subnet"],
     Client: AwsNetworkInterface,
-    listOnly: true,
     isOurMinion,
   },
   {
