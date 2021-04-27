@@ -1035,6 +1035,7 @@ const doGraphLive = ({ providerGru, lives, commandOptions }) =>
     ])
   )();
 
+//Remove type when there is no resource
 const filterShow = map(
   assign({
     results: pipe([
@@ -1061,7 +1062,6 @@ const displayListResult = pipe([
   tap((xxx) => {
     logger.debug(`displayListResult`);
   }),
-  filterShow,
   tap((xxx) => {
     logger.debug(`displayListResult`);
   }),
@@ -1105,10 +1105,11 @@ const listDoOk = ({ commandOptions, programOptions }) =>
                   }),
               ])({}),
           }),
+        (lives) => lives.json,
+        filterShow,
         tap((lives) => {
           providerGru.displayLives(lives);
         }),
-        (lives) => lives.json,
         tap(displayListResult),
         tap((lives) => {
           doGraphLive({ providerGru, lives, commandOptions });

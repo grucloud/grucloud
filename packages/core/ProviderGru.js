@@ -464,7 +464,7 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
         assert(lives);
         logger.info(`displayLive`);
       }),
-      () => lives.json,
+      () => lives,
       tap((livesContent) => {
         assert(livesContent);
       }),
