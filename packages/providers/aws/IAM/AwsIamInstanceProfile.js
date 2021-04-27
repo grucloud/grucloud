@@ -201,13 +201,25 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
               ),
             ])
           ),
-          tap(() => iam().deleteInstanceProfile({ InstanceProfileName })),
-          tap(() =>
-            retryCall({
-              name: `iam instance profile isDownById id: ${InstanceProfileName}`,
-              fn: () => isDownById({ id: InstanceProfileName }),
-              config,
-            })
+          tryCatch(
+            pipe([
+              () => iam().deleteInstanceProfile({ InstanceProfileName }),
+              tap(() =>
+                retryCall({
+                  name: `iam instance profile isDownById id: ${InstanceProfileName}`,
+                  fn: () => isDownById({ id: InstanceProfileName }),
+                  config,
+                })
+              ),
+            ]),
+            switchCase([
+              eq(get("code"), "NoSuchEntity"),
+              () => undefined,
+              (error) => {
+                logger.error(`deleteInstanceProfile ${tos(error)}`);
+                throw error;
+              },
+            ])
           ),
           tap(() => {
             logger.info(
