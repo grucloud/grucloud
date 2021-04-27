@@ -70,7 +70,7 @@ const findDependenciesService = ({ live, lives, config }) =>
             providerName: config.providerName,
             type: "Service",
           }),
-        get("resources"),
+        get("resources", []),
         pluck("live"),
         filter(eq(get("spec.selector.app"), label)),
         pluck("metadata"),
@@ -500,6 +500,7 @@ const fnSpecs = () => [
       "ServiceAccount",
       "ReplicaSet",
       "StatefulSet",
+      "Deployment",
     ],
     Client: createResourceNamespace({
       baseUrl: ({ namespace, apiVersion }) =>
