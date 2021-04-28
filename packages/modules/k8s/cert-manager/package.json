@@ -15,6 +15,7 @@
     "@grucloud/core": "^1.13.2",
     "@grucloud/k8s-manifest2code": "^1.10.22",
     "@grucloud/provider-k8s": "^1.13.2",
+    "js-yaml": "^4.1.0",
     "rubico": "^1.6.21"
   },
   "devDependencies": {
