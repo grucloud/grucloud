@@ -1061,7 +1061,6 @@ const displayListResult = pipe([
   tap((xxx) => {
     logger.debug(`displayListResult`);
   }),
-  filterShow,
   tap((xxx) => {
     logger.debug(`displayListResult`);
   }),
@@ -1105,14 +1104,16 @@ const listDoOk = ({ commandOptions, programOptions }) =>
                   }),
               ])({}),
           }),
-        tap((lives) => {
-          providerGru.displayLives(lives);
-        }),
         (lives) => lives.json,
-        tap(displayListResult),
         tap((lives) => {
           doGraphLive({ providerGru, lives, commandOptions });
         }),
+        filterShow,
+        tap((lives) => {
+          providerGru.displayLives(lives);
+        }),
+        tap(displayListResult),
+
         (results) => ({
           error: any(get("error"))(results),
           results,

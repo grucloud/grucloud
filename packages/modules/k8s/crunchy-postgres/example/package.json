@@ -1,0 +1,33 @@
+{
+  "name": "@grucloud/example-module-k8s-crunchy-postgres",
+  "version": "1.13.2",
+  "description": "Example of the GruCloud module for the Kubernetes CrunchyData postgres operator",
+  "main": "iac.js",
+  "private": true,
+  "scripts": {
+    "graph-target": "gc graph --title 'CrunchData Postgres'",
+    "graph-live": "gc list --graph --title 'CrunchData Postgres'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grucloud/grucloud.git"
+  },
+  "keywords": [
+    "kubernetes",
+    "postgres",
+    "operator",
+    "crunchydata",
+    "grucloud"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/grucloud/grucloud/issues"
+  },
+  "homepage": "https://github.com/grucloud/grucloud#readme",
+  "dependencies": {
+    "@grucloud/core": "^1.13.2",
+    "@grucloud/module-k8s-crunchy-postgres": "^1.13.2",
+    "@grucloud/provider-k8s": "^1.13.2"
+  }
+}

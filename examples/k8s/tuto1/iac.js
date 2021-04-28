@@ -1,6 +1,79 @@
 const { K8sProvider } = require("@grucloud/provider-k8s");
+
+// Create a namespace, service and deployment
+
+const createResource = async ({ provider }) => {
+  const { config } = provider;
+
+  const namespace = await provider.makeNamespace({
+    name: config.namespace,
+  });
+
+  const service = await provider.makeService({
+    name: config.service.name,
+    dependencies: { namespace },
+    properties: () => ({
+      spec: {
+        selector: {
+          app: config.appLabel,
+        },
+        type: "NodePort",
+        ports: [
+          {
+            protocol: "TCP",
+            port: 80,
+            targetPort: 8080,
+          },
+        ],
+      },
+    }),
+  });
+
+  const deployment = await provider.makeDeployment({
+    name: config.deployment.name,
+    dependencies: { namespace },
+    properties: ({}) => ({
+      metadata: {
+        labels: {
+          app: config.appLabel,
+        },
+      },
+      spec: {
+        replicas: 1,
+        selector: {
+          matchLabels: {
+            app: config.appLabel,
+          },
+        },
+        template: {
+          metadata: {
+            labels: {
+              app: config.appLabel,
+            },
+          },
+          spec: {
+            containers: [
+              {
+                name: "nginx",
+                image: "nginx:1.14.2",
+                ports: [
+                  {
+                    containerPort: 80,
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
+    }),
+  });
+
+  return { namespace, service, deployment };
+};
+
 exports.createStack = async ({ config }) => {
   const provider = K8sProvider({ config });
-  // Define manifest here
-  return { provider };
+  const resources = await createResource({ provider });
+  return { provider, resources };
 };

@@ -587,10 +587,9 @@ function CoreProvider({
             "resourcesPerType must be an array"
           );
           logger.info(
-            `spinnersStartResources ${title}, #resourcesPerType ${resourcesPerType.length}`
-          );
-          logger.debug(
-            `spinnersStartResources ${title}, ${tos(resourcesPerType)}`
+            `spinnersStartResources ${title}, #resourcesPerType ${size(
+              resourcesPerType
+            )}`
           );
         }),
         () =>
@@ -1095,34 +1094,20 @@ function CoreProvider({
       tap((result) => {
         assert(result);
       }),
+      //TODO do we still need that ?
       assign({
         results: pipe([
           get("results"),
           filter(
             or([
-              and([
-                pipe([
-                  tap((result) => {
-                    logger.debug(
-                      `listLives type ${
-                        result.type
-                      }, error ${!!result.error}, #resources ${size(
-                        result.resources
-                      )}`
-                    );
-                  }),
-                  get("type"),
-                  (type) => isTypesMatch({ typeToMatch: type })(options.types),
-                  tap((keep) => {
-                    logger.debug(`listLives keep: ${keep}`);
-                  }),
-                ]),
-                pipe([get("resources"), not(isEmpty)]),
-              ]),
+              and([pipe([get("resources"), not(isEmpty)])]),
               pipe([get("error"), not(isEmpty)]),
             ])
           ),
         ]),
+      }),
+      tap((result) => {
+        assert(result);
       }),
       assign({ providerName: () => providerName }),
       tap(({ results }) => {

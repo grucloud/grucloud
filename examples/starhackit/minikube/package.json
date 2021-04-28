@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-k8s-minikube-starhackit",
-  "version": "1.13.0",
+  "version": "1.13.2",
   "description": "deploying starhackit on minikube",
   "main": "index.js",
   "private": true,
@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.13.0",
-    "@grucloud/provider-k8s": "^1.13.0",
+    "@grucloud/core": "^1.13.2",
+    "@grucloud/provider-k8s": "^1.13.2",
     "rubico": "^1.6.23"
   }
 }

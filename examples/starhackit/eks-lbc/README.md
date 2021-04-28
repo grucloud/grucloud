@@ -268,3 +268,13 @@ Provider: aws
 Command "gc l -t IamPolicy -n AWSLoadBalancerControllerIAMPolicy" executed in 4s
 
 ```
+
+## Destroy
+
+Due to the [delete ingress object hangs #95983](https://github.com/kubernetes/kubernetes/issues/95983) bug, the workaround to delete all the resources is to use the _all_ options on the _aws_ provider:
+
+```sh
+gc destroy --all -p aws
+```
+
+_gc_ will take care of deleting the resources the AWS Load Balancer Controller has created: load balanacer, target groups, listener and rules.

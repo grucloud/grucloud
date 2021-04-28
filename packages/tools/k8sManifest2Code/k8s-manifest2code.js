@@ -1,66 +1,176 @@
 const assert = require("assert");
-const { pipe, tap, get, map, omit, switchCase } = require("rubico");
+const path = require("path");
+const {
+  pipe,
+  tap,
+  get,
+  map,
+  omit,
+  switchCase,
+  tryCatch,
+  not,
+  filter,
+} = require("rubico");
+const {
+  first,
+  forEach,
+  callProp,
+  isEmpty,
+  pluck,
+  groupBy,
+  values,
+} = require("rubico/x");
 const Axios = require("axios");
 const yaml = require("js-yaml");
 const prettier = require("prettier");
-const changeCase = require("change-case");
+const { camelCase } = require("change-case");
 const fs = require("fs").promises;
+const { getFiles } = require("./dumpster");
+const URL = require("url").URL;
 
 //const manifestUrl =
 // "https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.8/docs/examples/rbac-role.yaml";
 //console.log(process.argv);
 //const manifestUrl =
 // "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/v2_1_3_full.yaml";
-const resourceName = ({ metadata, kind }) =>
-  `${changeCase.camelCase(metadata.name)}${kind}`;
+const buildResourceVariableName = ({
+  metadata: { name, namespace = "" },
+  kind,
+}) => `${camelCase(namespace)}${camelCase(name)}${kind}`;
+
+const buildResourceName = ({ metadata: { name, namespace = "" } }) =>
+  switchCase([isEmpty, () => name, () => `${namespace}-${name}`])(namespace);
 
 const writeResources = map((manifest) =>
   pipe([
     tap(() => {
       //console.log(manifest);
+      assert(manifest);
     }),
-    () => manifest.metadata.name,
-    (name) => `const ${resourceName(manifest)} = await provider.make${
-      manifest.kind
-    }({
+    () => manifest,
+    get("items"),
+    switchCase([
+      Array.isArray,
+      writeResources, // Recursive
+      pipe([
+        tap(() => {
+          assert(manifest);
+        }),
+        () => manifest,
+        buildResourceName,
+        (name) => `const ${buildResourceVariableName(
+          manifest
+        )} = await provider.make${manifest.kind}({
     name: "${name}",
-    properties: () => (${JSON.stringify(
-      omit(["kind", "metadata.name"])(manifest),
-      null,
-      4
-    )})
+    properties: () => (${JSON.stringify(omit(["kind"])(manifest), null, 4)})
 })
 `,
-    tap((code) => {
-      console.log(code);
-    }),
-    (code) => ({ manifest, code }),
+        tap((code) => {
+          assert(true);
+        }),
+        (code) => ({ manifest, code }),
+      ]),
+    ]),
   ])()
 );
-exports.main = (options) =>
-  pipe([
-    tap(() => {
-      assert(options.input, "options.input");
-    }),
-    () => options.input,
-    switchCase([
-      () => true, //TODO is file or url ?
-      pipe([() => fs.readFile(options.input)]),
-      pipe([() => Axios.get(options.input), get("data")]),
-    ]),
 
-    tap((result) => {
-      //console.log(result);
+const processDirectory = ({ dir, fullYamlFile }) =>
+  pipe([
+    () => getFiles({ dir, includePattern: new RegExp("^.*(yml|yaml)$") }),
+    tap((xxx) => {
+      assert(true);
     }),
-    yaml.loadAll,
-    tap((result) => {
-      console.log(`${result.length} resources`);
+    map((file) =>
+      pipe([
+        () => fs.readFile(path.resolve(dir, file), "utf-8"),
+        (content) => `${content}`,
+      ])()
+    ),
+    callProp("join", "\n---\n"),
+    tap((xxx) => {
+      assert(true);
     }),
-    writeResources,
-    tap((code) => {
-      //console.log(code);
-    }),
-    (results) => `
+    tap((content) => fs.writeFile(fullYamlFile, content)),
+  ])();
+
+const isValidUrl = tryCatch(
+  pipe([(url) => new URL(url), () => true]),
+  () => false
+);
+
+const displayManifests = pipe([
+  tap((xxx) => {
+    assert(true);
+  }),
+  pluck("manifest"),
+  groupBy("kind"),
+  values,
+  map((manifests) =>
+    pipe([
+      tap((result) => {
+        assert(true);
+      }),
+      () => manifests,
+      map(({ metadata: { name, namespace } }) => `${namespace}::${name}`),
+      callProp("join", ", "),
+      (result) => `${first(manifests).kind}: ${result}`,
+    ])()
+  ),
+  callProp("join", "\n"),
+  tap((result) => {
+    console.log(result);
+  }),
+]);
+
+exports.main = (options) =>
+  tryCatch(
+    pipe([
+      tap(() => {
+        assert(options.input, "missing input");
+      }),
+      () => path.resolve(process.cwd(), options.input),
+      tap((xxx) => {
+        assert(true);
+      }),
+      tryCatch(
+        pipe([
+          (file) => fs.lstat(file),
+          switchCase([
+            callProp("isFile"),
+            pipe([() => fs.readFile(options.input)]),
+            callProp("isDirectory"),
+            () =>
+              processDirectory({
+                dir: options.input,
+                fullYamlFile: options.fullYamlFile,
+              }),
+            () => {
+              throw Error(`'${options.input}' is not a file or directory`);
+            },
+          ]),
+        ]),
+        switchCase([
+          () => isValidUrl(options.input),
+          pipe([() => Axios.get(options.input), get("data")]),
+          (error) => {
+            throw error;
+          },
+        ])
+      ),
+      tap((content) => {
+        assert(true);
+      }),
+      yaml.loadAll,
+      tap((code) => {
+        assert(true);
+      }),
+      writeResources,
+      callProp("flat"),
+      tap((result) => {
+        console.log(`Writing ${result.length} resources`);
+      }),
+      tap(displayManifests),
+      (results) => `
   // Generated by k8s-manifest2code from ${options.input}
   const assert = require("assert")
   exports.createResources = async ({ provider, resources }) => {
@@ -69,18 +179,35 @@ ${map(get("code"))(results).join("\n")}
 return {
     ${pipe([
       () => results,
-      map(pipe([get("manifest"), resourceName, (name) => `${name},`])),
+      tap((xxx) => {
+        assert(true);
+      }),
+      pluck("manifest"),
+      tap((xxx) => {
+        assert(true);
+      }),
+      filter(not(isEmpty)),
+      tap((xxx) => {
+        assert(true);
+      }),
+      map(pipe([buildResourceVariableName, (name) => `${name},`])),
       (results) => results.join("\n"),
     ])()}
 }
 }
 `,
-    tap((formatted) => {
-      assert(formatted);
-    }),
-    prettier.format,
-    tap((formatted) => {
-      console.log(formatted);
-    }),
-    (formatted) => fs.writeFile(options.output || "./resources.js", formatted),
-  ])();
+      tap((formatted) => {
+        assert(formatted);
+      }),
+      prettier.format,
+      tap((formatted) => {
+        assert(true);
+      }),
+      (formatted) =>
+        fs.writeFile(options.output || "./resources.js", formatted),
+    ]),
+    (error) => {
+      console.error(error);
+      return -1;
+    }
+  )();

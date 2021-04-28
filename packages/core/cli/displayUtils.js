@@ -313,6 +313,7 @@ exports.displayPlan = async (plan) => {
         ]);
         table.push(tableDefinitions.columns.map((item) => colors.red(item)));
 
+        //TODO
         resources.forEach((resource) =>
           displayLiveItem({ table, resource, tableDefinitions })
         );
@@ -440,11 +441,13 @@ const displayTablePerType = ({
   )();
 };
 
-exports.displayLive = async ({ providerName, error, resources = [] }) => {
-  assert(providerName);
-  assert(Array.isArray(resources));
-
-  resources.forEach((resourcesByType) =>
-    displayTablePerType({ providerName, resourcesByType })
-  );
-};
+exports.displayLive = ({ providerName, error, resources = [] }) =>
+  pipe([
+    tap(() => {
+      assert(providerName);
+    }),
+    () => resources,
+    forEach((resourcesByType) =>
+      displayTablePerType({ providerName, resourcesByType })
+    ),
+  ])();

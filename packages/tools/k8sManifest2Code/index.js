@@ -1,6 +1,10 @@
 #!/usr/bin/env node
+const { last } = require("rubico/x");
+const path = require("path");
 const { Command } = require("commander");
 const { main } = require("./k8s-manifest2code");
+
+const defautFullYamlFile = `${last(process.cwd().split(path.sep))}.yaml`;
 
 const createProgram = ({ version }) => {
   const program = new Command();
@@ -12,6 +16,11 @@ const createProgram = ({ version }) => {
     "-o, --output <file>",
     "javascript output file",
     "resources.js"
+  );
+  program.option(
+    "--fullYamlFile <file>",
+    "write a YAML manifest combining all the manifest in directory",
+    defautFullYamlFile
   );
 
   program.parse(process.argv);
