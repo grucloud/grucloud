@@ -79,14 +79,20 @@ exports.resourceKeyNamespace = pipe([
 ]);
 
 exports.displayNameResourceDefault = ({ name }) => name;
-exports.displayNameResourceNamespace = ({ name, properties }) =>
+exports.displayNameResourceNamespace = ({ name, dependencies, properties }) =>
   pipe([
     tap(() => {
       assert(name);
       assert(isFunction(properties));
     }),
-    () =>
-      `${get("metadata.namespace")(properties({ dependencies: {} }))}::${name}`,
+    () => ({
+      namespaceDependencies: get("namespace.name")(dependencies),
+      namespaceProperties: get("metadata.namespace")(
+        properties({ dependencies: {} })
+      ),
+    }),
+    find(not(isEmpty)),
+    (namespace) => `${namespace}::${name}`,
   ])();
 
 exports.displayNameDefault = pipe([
