@@ -11,6 +11,10 @@ The GruCloud Command Line Interface **gc** reads a description in Javascript and
 
 For this tutorial, we will define a [Namespace](https://www.grucloud.com/docs/k8s/resources/Namespace), a [Service](https://www.grucloud.com/docs/k8s/resources/Service), and a [Deployment](https://www.grucloud.com/docs/k8s/resources/Deployment) to deploy an Nginx web server.
 
+![diagram-target](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/k8s/tuto1/diagram-target.svg)
+
+> This diagram is generated from the code with `gc graph`
+
 ## Requirements
 
 Ensure **kubectl** is installed, and **minikube** is started: [K8s Requirements](./K8sRequirements.md)
@@ -181,7 +185,7 @@ exports.createStack = async ({ config }) => {
 
 ### hook.js
 
-When the resources are created, any code can be invoked, defined in [hook.js](./hook.ks), useful to perform some final health check.
+When the resources are created, any code can be invoked, defined in [hook.js](https://github.com/grucloud/grucloud/blob/main/examples/k8s/tuto1/hook.js), useful to perform some final health check.
 
 In this case, the _kubectl port-forward_ is called with the right option:
 
@@ -392,9 +396,9 @@ Running OnDeployedGlobal resources on 1 provider: k8s
 Command "gc a" executed in 30s
 ```
 
-In the case of the deployment manifest, **gc** will query the pod that is started by the deployment through the replica set, when one of the container's pod is ready, the deployment can proceed.
+In the case of the `Deployment` type manifest, **gc** will query the pod that is started by the deployment through the replica set, when one of the container's pod is ready, the deployment can proceed.
 
-Later on, when we deal with the ingress type, **gc** will wait for the load balancer to be ready.
+Later on, when we deal with the `Ingress` type, **gc** will wait for the load balancer to be ready.
 
 The command `gc apply` is the equivalent of `kubectl apply -f mymanifest.yaml` but it waits for resources to be up and running, ready to serve.
 
@@ -462,7 +466,7 @@ Command "gc run --onDeployed" executed in 5s
 
 ### Update
 
-Now that the initial deployment is successful, some changes will be made, For instance, let's change the Nginx container version, located at [config.js](https://github.com/grucloud/grucloud/blob/main/examples/k8s/tuto1/config.js).
+Now that the initial deployment is successful, some changes will be made, for instance, let's change the Nginx container version, located at [config.js](https://github.com/grucloud/grucloud/blob/main/examples/k8s/tuto1/config.js).
 
 > Browse the list of Nginx images at https://hub.docker.com/_/nginx
 

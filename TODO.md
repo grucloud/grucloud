@@ -9,7 +9,7 @@
 
 ## Common:
 
-- gc graph -p aws
+- gc graph: wrong namespace, it is default, should be myapp
 
 - gc info with config for gcp and azure
 - https://stackshare.io/terraform/alternatives
