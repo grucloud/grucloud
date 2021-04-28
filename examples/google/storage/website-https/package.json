@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-google-website-https",
-  "version": "1.13.2",
+  "version": "1.14.0",
   "description": "",
   "private": true,
   "main": "index.js",
@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.13.2",
-    "@grucloud/provider-google": "^1.13.2",
+    "@grucloud/core": "^1.14.0",
+    "@grucloud/provider-google": "^1.14.0",
     "mime-types": "^2.1.27"
   }
 }
