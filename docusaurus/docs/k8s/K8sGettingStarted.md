@@ -71,7 +71,7 @@ The `npm init` command will create a basic _package.json_:
 npm init
 ```
 
-Let's install the [GruCloud Kubernetes provider](https://www.npmjs.com/package/@grucloud/provider-k8s) and the SDK. We'll also install [axios](https://github.com/axios/axios) and [rubico](https://rubico.land/), needed for the post deployment hooks, which does some final health check.
+Let's install the [GruCloud Kubernetes provider](https://www.npmjs.com/package/@grucloud/provider-k8s) and the SDK. We'll also install [axios](https://github.com/axios/axios) and [rubico](https://rubico.land/), needed for the post-deployment hooks, which does some final health check.
 
 ```sh
 npm install @grucloud/core @grucloud/provider-k8s rubico axios
@@ -442,11 +442,11 @@ Notice the relationship between the Pod, ReplicaSet and Deployment.
 
 The Deployment creates a ReplicaSet which creates a one or more Pod(s).
 
-When quering the _k8s-api-server_ for the live resources, the pod contains information about its ReplicaSet parent, who has itself information about its parent Deployment. This allows _gc_ to find out the links between the resources.
+When querying the _k8s-api-server_ for the live resources, the pod contains information about its ReplicaSet parent, who has itself information about its parent Deployment. This allows _gc_ to find out the links between the resources.
 
 ### Post Deploy Hook
 
-Would like to check the health of the system ? You can run the _onDeployed_ hook any time with the following command:
+Would like to check the health of the system? You can run the _onDeployed_ hook any time with the following command:
 
 ```sh
 gc run --onDeployed
@@ -680,7 +680,7 @@ As expected, the _destroy_ command is idempotent.
 
 ## Debugging
 
-A benefit of using a general purpose programming such as Javasript, is debugging. Thanks [Visual Studio Code](https://code.visualstudio.com/) for providing such an easy way to debug Javascript application.
+A benefit of using a general-purpose programming such as Javascript, is debugging. Thanks [Visual Studio Code](https://code.visualstudio.com/) for providing such an easy way to debug Javascript applications.
 
 This example contains a vs code file called [launch.json](https://github.com/grucloud/grucloud/blob/main/examples/k8s/tuto1/.vscode/launch.json), which defines various debug targets for `gc apply`, `gc destroy` and so on.
 
