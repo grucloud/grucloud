@@ -4,7 +4,7 @@
   "description": "GruCloud Module for prometheus",
   "main": "iac.js",
   "scripts": {
-    "download-manifest": "git clone --depth=1 https://github.com/prometheus-operator/kube-prometheus.git",
+    "download-manifest": "git clone --depth=1 --branch v0.8.0 https://github.com/prometheus-operator/kube-prometheus.git",
     "gen-code": "k8s-manifest2code --input kube-prometheus/manifests"
   },
   "repository": {

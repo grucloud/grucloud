@@ -323,12 +323,17 @@ exports.createResources = async ({ provider, resources }) => {
     }
   );
 
+  assert(resources.lbc.roleLoadBalancer);
   const kubeSystemawsLoadBalancerControllerServiceAccount = await provider.makeServiceAccount(
     {
       name: "kube-system-aws-load-balancer-controller",
-      properties: () => ({
+      dependencies: { role: resources.lbc.roleLoadBalancer },
+      properties: ({ dependencies: { role } }) => ({
         apiVersion: "v1",
         metadata: {
+          annotations: {
+            "eks.amazonaws.com/role-arn": role?.live?.Arn,
+          },
           labels: {
             "app.kubernetes.io/component": "controller",
             "app.kubernetes.io/name": "aws-load-balancer-controller",
@@ -558,6 +563,9 @@ exports.createResources = async ({ provider, resources }) => {
       }),
     }
   );
+  assert(provider.dependencies.aws.config.eks);
+  const clusterName = provider.dependencies.aws.config.eks.cluster.name;
+  assert(clusterName);
 
   const kubeSystemawsLoadBalancerControllerDeployment = await provider.makeDeployment(
     {
@@ -591,7 +599,7 @@ exports.createResources = async ({ provider, resources }) => {
               containers: [
                 {
                   args: [
-                    "--cluster-name=your-cluster-name",
+                    `--cluster-name=${clusterName}`,
                     "--ingress-class=alb",
                   ],
                   image: "amazon/aws-alb-ingress-controller:v2.1.2",

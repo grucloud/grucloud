@@ -4,5 +4,8 @@ module.exports = () => ({
   namespace: "myapp",
   appLabel: "nginx-label",
   service: { name: "nginx-service" },
-  deployment: { name: "nginx-deployment" },
+  deployment: {
+    name: "nginx-deployment",
+    container: { name: "nginx", image: "nginx:1.14.2" },
+  },
 });
