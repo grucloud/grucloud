@@ -12,7 +12,7 @@ const {
   not,
   omit,
 } = require("rubico");
-const { find, first, isEmpty } = require("rubico/x");
+const { find, first, isEmpty, isFunction } = require("rubico/x");
 const fs = require("fs");
 const https = require("https");
 const { detailedDiff } = require("deep-object-diff");
@@ -83,9 +83,10 @@ exports.displayNameResourceNamespace = ({ name, properties }) =>
   pipe([
     tap(() => {
       assert(name);
-      assert(properties);
+      assert(isFunction(properties));
     }),
-    () => `${get("metadata.namespace")(properties)}::${name}`,
+    () =>
+      `${get("metadata.namespace")(properties({ dependencies: {} }))}::${name}`,
   ])();
 
 exports.displayNameDefault = pipe([
