@@ -43,19 +43,21 @@ gc --version
 
 ## Project Content
 
+We'll describe in the next sections the 4 files required for this _infrastructure as code_ project:
+
+- [package.json](https://github.com/grucloud/grucloud/blob/main/examples/k8s/tuto1/package.json)
+- [config.js](https://github.com/grucloud/grucloud/blob/main/examples/k8s/tuto1/config.js)
+- [iac.js](https://github.com/grucloud/grucloud/blob/main/examples/k8s/tuto1/iac.js)
+- [hook.js](https://github.com/grucloud/grucloud/blob/main/examples/k8s/tuto1/hook.js)
+
+> The link to the [source code for this tutorial](https://github.com/grucloud/grucloud/tree/main/examples/k8s/tuto1)
+
 Let's create a new project directory
 
 ```sh
 mkdir tuto
 cd tuto
 ```
-
-We'll describe in the next sections the 4 files required for this _iac_ project:
-
-- package.json
-- config.js
-- iac.js
-- hook.js
 
 ### package.json
 
@@ -257,7 +259,7 @@ module.exports = ({ resources, provider }) => {
 };
 ```
 
-## Workflow
+## Workflow
 
 We'll describe the most useful _gc_ commands: `apply`, `list`, `destroy`, and `plan`.
 
@@ -378,9 +380,6 @@ Querying resources on 1 provider: k8s
 │ Deployment         │ myapp::nginx-deployment                                                        │
 └────────────────────┴────────────────────────────────────────────────────────────────────────────────┘
 ✔ Are you sure to deploy 3 resources, 3 types on 1 provider? … yes
-```
-
-```txt
 Deploying resources on 1 provider: k8s
 ✓ k8s
   ✓ Initialising
@@ -394,7 +393,9 @@ Command "gc a" executed in 30s
 ```
 
 In the case of the deployment manifest, **gc** will query the pod that is started by the deployment through the replica set, when one of the container's pod is ready, the deployment can proceed.
+
 Later on, when we deal with the ingress type, **gc** will wait for the load balancer to be ready.
+
 The command `gc apply` is the equivalent of `kubectl apply -f mymanifest.yaml` but it waits for resources to be up and running, ready to serve.
 
 We could try to run the `gc apply` or the `gc plan`, we should not expect any deployment or destruction of resources.
@@ -410,8 +411,6 @@ A live diagram will be also generated.
 ```bash
 gc list --our --all --graph
 ```
-
-![diagram-live](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/k8s/tuto1/diagram-live.svg)
 
 ```txt
 List Summary:
@@ -433,7 +432,21 @@ Provider: k8s
 Command "gc list --our --all --graph" executed in 0s
 ```
 
+![diagram-live](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/k8s/tuto1/diagram-live.svg)
+
+Notice the relationship between the Pod, ReplicaSet and Deployment.
+
+The Deployment creates a ReplicaSet which creates a one or more Pod(s).
+
+When quering the _k8s-api-server_ for the live resources, the pod contains information about its ReplicaSet parent, who has itself information about its parent Deployment. This allows _gc_ to find out the links between the resources.
+
 ### Post Deploy Hook
+
+Would like to check the health of the system ? You can run the _onDeployed_ hook any time with the following command:
+
+```sh
+gc run --onDeployed
+```
 
 ```txt
 Running OnDeployed resources on 1 provider: k8s
@@ -447,9 +460,9 @@ Handling connection for 8081
 Command "gc run --onDeployed" executed in 5s
 ```
 
-## Update
+### Update
 
-Now that the initial deployment is successful, some changes will be made to the code. For instance, let's change the Nginx container version, located at [config.js](https://github.com/grucloud/grucloud/blob/main/examples/k8s/tuto1/config.js).
+Now that the initial deployment is successful, some changes will be made, For instance, let's change the Nginx container version, located at [config.js](https://github.com/grucloud/grucloud/blob/main/examples/k8s/tuto1/config.js).
 
 > Browse the list of Nginx images at https://hub.docker.com/_/nginx
 
@@ -660,6 +673,12 @@ Command "gc d" executed in 0s
 ```
 
 As expected, the _destroy_ command is idempotent.
+
+## Debugging
+
+A benefit of using a general purpose programming such as Javasript, is debugging. Thanks [Visual Studio Code](https://code.visualstudio.com/) for providing such an easy way to debug Javascript application.
+
+This example contains a vs code file called [launch.json](https://github.com/grucloud/grucloud/blob/main/examples/k8s/tuto1/.vscode/launch.json), which defines various debug targets for `gc apply`, `gc destroy` and so on.
 
 ## Conclusion
 

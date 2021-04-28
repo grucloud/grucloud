@@ -1,6 +1,6 @@
 ---
-id: K8sGettingStarted
-title: Getting Started with Kubernetes
+id: K8sTutorialFullStack
+title: Full Stack App on Kubernetes
 ---
 
 ## Introduction
