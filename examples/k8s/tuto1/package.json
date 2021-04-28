@@ -3,6 +3,7 @@
   "version": "1.13.2",
   "description": "GruCloud Kubernetes Tutorial Part 1",
   "main": "iac.js",
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
