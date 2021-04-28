@@ -5,6 +5,7 @@
   "main": "iac.js",
   "private": true,
   "scripts": {
+    "graph-live": "gc list --our --all --graph",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
