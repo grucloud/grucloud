@@ -3,12 +3,15 @@ const { pipe, get, tap, and, eq } = require("rubico");
 const { find } = require("rubico/x");
 
 const { AwsProvider } = require("@grucloud/provider-aws");
-const { K8sProvider } = require("@grucloud/provider-k8s");
-const ModuleAwsVpc = require("@grucloud/module-aws-vpc");
 
-const ModuleAwsEks = require("@grucloud/module-aws-eks/iac");
-const ModuleK8sAwsLoadBalancerStack = require("@grucloud/module-k8s-aws-load-balancer-controller/iac");
-const ModuleAwsCertificate = require("@grucloud/module-aws-certificate/iac");
+const ModuleAwsVpc = require("@grucloud/module-aws-vpc");
+const ModuleAwsEks = require("@grucloud/module-aws-eks");
+
+const { K8sProvider } = require("@grucloud/provider-k8s");
+
+const ModuleCertManager = require("@grucloud/module-k8s-cert-manager");
+const ModuleK8sAwsLoadBalancer = require("@grucloud/module-k8s-aws-load-balancer-controller");
+const ModuleAwsCertificate = require("@grucloud/module-aws-certificate");
 const ModuleAwsLoadBalancerController = require("@grucloud/module-aws-load-balancer-controller");
 
 const BaseStack = require("../base/k8sStackBase");
@@ -80,12 +83,24 @@ const createAwsStack = async ({ stage }) => {
 const createK8sStack = async ({ stackAws, stage }) => {
   const provider = K8sProvider({
     stage,
-    configs: [require("./configK8s"), ...BaseStack.configs],
-    manifests: await ModuleK8sAwsLoadBalancerStack.loadManifest(),
+    configs: [
+      require("./configK8s"),
+      ModuleCertManager.config,
+      ModuleK8sAwsLoadBalancer.config,
+      ...BaseStack.configs,
+    ],
+    manifests: [
+      ...(await ModuleCertManager.loadManifest()),
+      ...(await ModuleK8sAwsLoadBalancer.loadManifest()),
+    ],
     dependencies: { aws: stackAws.provider },
   });
 
-  const awsLoadBalancerResources = await ModuleK8sAwsLoadBalancerStack.createResources(
+  const certManagerResources = await ModuleCertManager.createResources({
+    provider,
+  });
+
+  const k8sLoadBalancerResources = await ModuleK8sAwsLoadBalancer.createResources(
     {
       provider,
       resources: stackAws.resources.lbc,
@@ -109,7 +124,12 @@ const createK8sStack = async ({ stackAws, stage }) => {
 
   return {
     provider,
-    resources: { baseStackResources, awsLoadBalancerResources, ingress },
+    resources: {
+      baseStackResources,
+      certManagerResources,
+      k8sLoadBalancerResources,
+      ingress,
+    },
   };
 };
 

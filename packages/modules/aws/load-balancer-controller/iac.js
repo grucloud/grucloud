@@ -3,7 +3,8 @@ const { get } = require("rubico");
 exports.config = require("./config");
 exports.hooks = [];
 
-const formatName = (name, config) => `${name}-${config.projectName}`;
+//TODO
+const formatName = (name, config) => name;
 
 const loadBalancerPolicy = require("./load-balancer-policy.json");
 
@@ -41,7 +42,7 @@ const createResources = async ({
   });
 
   const iamLoadBalancerPolicy = await provider.makeIamPolicy({
-    name: formatName("AWSLoadBalancerControllerIAMPolicy", config),
+    name: "AWSLoadBalancerControllerIAMPolicy",
     namespace,
     properties: () => ({
       PolicyDocument: loadBalancerPolicy,

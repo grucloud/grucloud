@@ -1,4 +1,4 @@
-require("dotenv").config();
+//require("dotenv").config();
 const { Command } = require("commander");
 const { pipe, tryCatch } = require("rubico");
 const { last } = require("rubico/x");
@@ -180,6 +180,7 @@ exports.createProgram = ({ version, commands }) => {
     )
     .option("--title <value>", "diagram title", defautTitle)
     .option("-t, --type <type>", "file type: png, svg", "svg")
+    .option(...optionFilteredByProvider)
     .action(runCommand({ commandName: "graph", program }));
 
   return program;

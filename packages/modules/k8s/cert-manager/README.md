@@ -2,86 +2,63 @@
 
 Integrate the [jetstack cert-manager](https://github.com/jetstack/cert-manager/) with GruCloud.
 
-The cert-manager manifest is transformed into javascript code using the **k8s-manifest2code** tool:
+## How to use this module
+
+```sh
+npm i @grucloud/module-k8s-cert-manager
+```
+
+Require the package [@grucloud/module-k8s-cert-manager](https://www.npmjs.com/package/@grucloud/module-k8s-cert-manager)
+
+```js
+const CertManager = require("@grucloud/module-k8s-cert-manager");
+```
+
+The _CertManager_ exposes these functions:
+
+- _createResources_
+- _config_
+- _loadManifest_
+
+> _loadManifest_ will tell the K8s provider about the Cert Manager CRDs.
+
+```js
+const createStack = async ({ stackAws }) => {
+  const provider = K8sProvider({
+    configs: [require("./configK8s"), CertManager.config],
+    manifests: await CertManager.loadManifest(),
+  });
+
+  const certManagerResources = await CertManager.createResources({
+    provider,
+  });
+
+  return { provider, resources: certManagerResources };
+};
+```
+
+## Contributing
+
+The cert-manager manifest is transformed into javascript code using the [k8s-manifest2code](https://www.npmjs.com/package/@grucloud/k8s-manifest2code) tool:
+
+### Change the version
+
+Change the Cert Manager version in the `download-manifest` script located in [package.json](./package.json).
+
+> Found the latest version at https://github.com/jetstack/cert-manager/tags
+
+### Download the new manifet
+
+This script calls _curl_ wit the right options:
+
+```
+npm run download-manifest
+```
+
+### Generate resources.js
+
+The _gen-code_ script is a wrapper around [k8s-manifest2code](https://www.npmjs.com/package/@grucloud/k8s-manifest2code). The manifest _cert-manager.yaml_ previously downloaded is transformed into _resource.js_ which exports the _createResource_ function.
 
 ```
 npm run gen-code
-```
-
-This commands creates the **resource.js** file containing all the resources.
-
-At this point, one can use the usual **gc** commands such as **apply**, **list** and **destroy**
-
-```
-gc apply
-```
-
-```sh
-
-┌─────────────────────────────────────────────────────────────────────────────────────────┐
-│ Plan summary for provider cert-manager                                                  │
-├─────────────────────────────────────────────────────────────────────────────────────────┤
-│ DEPLOY RESOURCES                                                                        │
-├────────────────────┬────────────────────────────────────────────────────────────────────┤
-│ CustomResourceDef… │ certificaterequests.cert-manager.io, certificates.cert-manager.io, │
-│                    │ challenges.acme.cert-manager.io, clusterissuers.cert-manager.io,   │
-│                    │ issuers.cert-manager.io, orders.acme.cert-manager.io               │
-├────────────────────┼────────────────────────────────────────────────────────────────────┤
-│ Namespace          │ cert-manager                                                       │
-├────────────────────┼────────────────────────────────────────────────────────────────────┤
-│ ServiceAccount     │ cert-manager-cainjector, cert-manager, cert-manager-webhook        │
-├────────────────────┼────────────────────────────────────────────────────────────────────┤
-│ ClusterRole        │ cert-manager-cainjector, cert-manager-controller-issuers,          │
-│                    │ cert-manager-controller-clusterissuers,                            │
-│                    │ cert-manager-controller-certificates,                              │
-│                    │ cert-manager-controller-orders,                                    │
-│                    │ cert-manager-controller-challenges,                                │
-│                    │ cert-manager-controller-ingress-shim, cert-manager-view,           │
-│                    │ cert-manager-edit,                                                 │
-│                    │ cert-manager-controller-approve:cert-manager-io,                   │
-│                    │ cert-manager-webhook:subjectaccessreviews                          │
-├────────────────────┼────────────────────────────────────────────────────────────────────┤
-│ ClusterRoleBinding │ cert-manager-cainjector, cert-manager-controller-issuers,          │
-│                    │ cert-manager-controller-clusterissuers,                            │
-│                    │ cert-manager-controller-certificates,                              │
-│                    │ cert-manager-controller-orders,                                    │
-│                    │ cert-manager-controller-challenges,                                │
-│                    │ cert-manager-controller-ingress-shim,                              │
-│                    │ cert-manager-controller-approve:cert-manager-io,                   │
-│                    │ cert-manager-webhook:subjectaccessreviews                          │
-├────────────────────┼────────────────────────────────────────────────────────────────────┤
-│ Role               │ cert-manager-cainjector:leaderelection,                            │
-│                    │ cert-manager:leaderelection, cert-manager-webhook:dynamic-serving  │
-├────────────────────┼────────────────────────────────────────────────────────────────────┤
-│ RoleBinding        │ cert-manager-cainjector:leaderelection,                            │
-│                    │ cert-manager:leaderelection, cert-manager-webhook:dynamic-serving  │
-├────────────────────┼────────────────────────────────────────────────────────────────────┤
-│ Service            │ cert-manager, cert-manager-webhook                                 │
-├────────────────────┼────────────────────────────────────────────────────────────────────┤
-│ Deployment         │ cert-manager-cainjector, cert-manager, cert-manager-webhook        │
-├────────────────────┼────────────────────────────────────────────────────────────────────┤
-│ MutatingWebhookCo… │ cert-manager-webhook                                               │
-├────────────────────┼────────────────────────────────────────────────────────────────────┤
-│ ValidatingWebhook… │ cert-manager-webhook                                               │
-└────────────────────┴────────────────────────────────────────────────────────────────────┘
-Deploying resources on 1 provider: cert-manager
-✓ cert-manager
-  ✓ Initialising
-  ✓ Deploying
-    ✓ CustomResourceDefinition 6/6
-    ✓ Namespace 1/1
-    ✓ ServiceAccount 3/3
-    ✓ ClusterRole 11/11
-    ✓ ClusterRoleBinding 9/9
-    ✓ Role 3/3
-    ✓ RoleBinding 3/3
-    ✓ Service 2/2
-    ✓ Deployment 3/3
-    ✓ MutatingWebhookConfiguration 1/1
-    ✓ ValidatingWebhookConfiguration 1/1
-  ✓ default::onDeployed
-    ✓ CertificateRequest
-43 resources deployed of 11 types and 1 provider
-Running OnDeployedGlobal resources on 1 provider: cert-manager
-Command "gc a -f" executed in 17s
 ```

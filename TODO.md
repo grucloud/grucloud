@@ -9,6 +9,8 @@
 
 ## Common:
 
+- gc graph -p aws
+
 - gc info with config for gcp and azure
 - https://stackshare.io/terraform/alternatives
 - case where provider does have any resources
@@ -57,7 +59,7 @@
 
 - doc
 
-## TODO Aws:
+## Aws
 
 - Resource pages
 - delete keypair from kops

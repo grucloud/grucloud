@@ -13,6 +13,17 @@
       "port": 9229
     },
     {
+      "name": "Graph AWS",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["graph", "-p", "aws"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}/example",
+      "port": 9229
+    },
+    {
       "name": "List",
       "type": "node",
       "request": "launch",
@@ -29,6 +40,17 @@
       "request": "launch",
       "runtimeExecutable": "gc",
       "runtimeArgs": ["plan"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}/example",
+      "port": 9229
+    },
+    {
+      "name": "Plan AWS",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["plan", "-p", "aws"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/example",

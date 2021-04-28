@@ -5,6 +5,8 @@
   "private": true,
   "homepage": "https://www.grucloud.com",
   "scripts": {
+    "download-manifest": "lerna run download-manifest",
+    "gen-code": "lerna run gen-code",
     "graph-target": "lerna run graph-target",
     "bootstrap": "lerna bootstrap",
     "test:gcp": "cd packages/providers/google && npm test",

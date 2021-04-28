@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-require("dotenv").config();
+//require("dotenv").config();
 const Duration = require("duration");
 const YAML = require("./json2yaml");
 const pkg = require("../package.json");

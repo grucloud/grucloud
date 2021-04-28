@@ -16,6 +16,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "certificaterequests.cert-manager.io",
         },
         spec: {
           conversion: {
@@ -1061,6 +1062,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "certificates.cert-manager.io",
         },
         spec: {
           conversion: {
@@ -1323,7 +1325,6 @@ exports.createResources = async ({ provider, resources }) => {
                           description:
                             "revisionHistoryLimit is the maximum number of CertificateRequest revisions that are maintained in the Certificate's history. Each revision represents a single `CertificateRequest` created by this Certificate, either when it was created, renewed, or Spec was changed. Revisions will be removed by oldest first if the number of revisions exceeds this number. If set, revisionHistoryLimit must be a value of `1` or greater. If unset (`nil`), revisions will not be garbage collected. Default value is `nil`.",
                           format: "int32",
-                          minimum: 1,
                           type: "integer",
                         },
                         secretName: {
@@ -1763,7 +1764,6 @@ exports.createResources = async ({ provider, resources }) => {
                           description:
                             "revisionHistoryLimit is the maximum number of CertificateRequest revisions that are maintained in the Certificate's history. Each revision represents a single `CertificateRequest` created by this Certificate, either when it was created, renewed, or Spec was changed. Revisions will be removed by oldest first if the number of revisions exceeds this number. If set, revisionHistoryLimit must be a value of `1` or greater. If unset (`nil`), revisions will not be garbage collected. Default value is `nil`.",
                           format: "int32",
-                          minimum: 1,
                           type: "integer",
                         },
                         secretName: {
@@ -2211,7 +2211,6 @@ exports.createResources = async ({ provider, resources }) => {
                           description:
                             "revisionHistoryLimit is the maximum number of CertificateRequest revisions that are maintained in the Certificate's history. Each revision represents a single `CertificateRequest` created by this Certificate, either when it was created, renewed, or Spec was changed. Revisions will be removed by oldest first if the number of revisions exceeds this number. If set, revisionHistoryLimit must be a value of `1` or greater. If unset (`nil`), revisions will not be garbage collected. Default value is `nil`.",
                           format: "int32",
-                          minimum: 1,
                           type: "integer",
                         },
                         secretName: {
@@ -2660,7 +2659,6 @@ exports.createResources = async ({ provider, resources }) => {
                           description:
                             "revisionHistoryLimit is the maximum number of CertificateRequest revisions that are maintained in the Certificate's history. Each revision represents a single `CertificateRequest` created by this Certificate, either when it was created, renewed, or Spec was changed. Revisions will be removed by oldest first if the number of revisions exceeds this number. If set, revisionHistoryLimit must be a value of `1` or greater. If unset (`nil`), revisions will not be garbage collected. Default value is `nil`.",
                           format: "int32",
-                          minimum: 1,
                           type: "integer",
                         },
                         secretName: {
@@ -2910,6 +2908,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "challenges.acme.cert-manager.io",
         },
         spec: {
           conversion: {
@@ -8356,6 +8355,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "clusterissuers.cert-manager.io",
         },
         spec: {
           conversion: {
@@ -15172,6 +15172,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "issuers.cert-manager.io",
         },
         spec: {
           conversion: {
@@ -21984,6 +21985,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "orders.acme.cert-manager.io",
         },
         spec: {
           conversion: {
@@ -22963,13 +22965,15 @@ exports.createResources = async ({ provider, resources }) => {
     name: "cert-manager",
     properties: () => ({
       apiVersion: "v1",
-      metadata: {},
+      metadata: {
+        name: "cert-manager",
+      },
     }),
   });
 
-  const certManagerCainjectorServiceAccount = await provider.makeServiceAccount(
+  const certManagercertManagerCainjectorServiceAccount = await provider.makeServiceAccount(
     {
-      name: "cert-manager-cainjector",
+      name: "cert-manager-cert-manager-cainjector",
       properties: () => ({
         apiVersion: "v1",
         automountServiceAccountToken: true,
@@ -22980,45 +22984,52 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cainjector",
           },
+          name: "cert-manager-cainjector",
           namespace: "cert-manager",
         },
       }),
     }
   );
 
-  const certManagerServiceAccount = await provider.makeServiceAccount({
-    name: "cert-manager",
-    properties: () => ({
-      apiVersion: "v1",
-      automountServiceAccountToken: true,
-      metadata: {
-        labels: {
-          app: "cert-manager",
-          "app.kubernetes.io/component": "controller",
-          "app.kubernetes.io/instance": "cert-manager",
-          "app.kubernetes.io/name": "cert-manager",
+  const certManagercertManagerServiceAccount = await provider.makeServiceAccount(
+    {
+      name: "cert-manager-cert-manager",
+      properties: () => ({
+        apiVersion: "v1",
+        automountServiceAccountToken: true,
+        metadata: {
+          labels: {
+            app: "cert-manager",
+            "app.kubernetes.io/component": "controller",
+            "app.kubernetes.io/instance": "cert-manager",
+            "app.kubernetes.io/name": "cert-manager",
+          },
+          name: "cert-manager",
+          namespace: "cert-manager",
         },
-        namespace: "cert-manager",
-      },
-    }),
-  });
+      }),
+    }
+  );
 
-  const certManagerWebhookServiceAccount = await provider.makeServiceAccount({
-    name: "cert-manager-webhook",
-    properties: () => ({
-      apiVersion: "v1",
-      automountServiceAccountToken: true,
-      metadata: {
-        labels: {
-          app: "webhook",
-          "app.kubernetes.io/component": "webhook",
-          "app.kubernetes.io/instance": "cert-manager",
-          "app.kubernetes.io/name": "webhook",
+  const certManagercertManagerWebhookServiceAccount = await provider.makeServiceAccount(
+    {
+      name: "cert-manager-cert-manager-webhook",
+      properties: () => ({
+        apiVersion: "v1",
+        automountServiceAccountToken: true,
+        metadata: {
+          labels: {
+            app: "webhook",
+            "app.kubernetes.io/component": "webhook",
+            "app.kubernetes.io/instance": "cert-manager",
+            "app.kubernetes.io/name": "webhook",
+          },
+          name: "cert-manager-webhook",
+          namespace: "cert-manager",
         },
-        namespace: "cert-manager",
-      },
-    }),
-  });
+      }),
+    }
+  );
 
   const certManagerCainjectorClusterRole = await provider.makeClusterRole({
     name: "cert-manager-cainjector",
@@ -23031,6 +23042,7 @@ exports.createResources = async ({ provider, resources }) => {
           "app.kubernetes.io/instance": "cert-manager",
           "app.kubernetes.io/name": "cainjector",
         },
+        name: "cert-manager-cainjector",
       },
       rules: [
         {
@@ -23087,6 +23099,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "cert-manager-controller-issuers",
         },
         rules: [
           {
@@ -23126,6 +23139,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "cert-manager-controller-clusterissuers",
         },
         rules: [
           {
@@ -23165,6 +23179,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "cert-manager-controller-certificates",
         },
         rules: [
           {
@@ -23227,6 +23242,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "cert-manager-controller-orders",
         },
         rules: [
           {
@@ -23281,6 +23297,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "cert-manager-controller-challenges",
         },
         rules: [
           {
@@ -23350,6 +23367,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "cert-manager-controller-ingress-shim",
         },
         rules: [
           {
@@ -23401,6 +23419,7 @@ exports.createResources = async ({ provider, resources }) => {
           "rbac.authorization.k8s.io/aggregate-to-edit": "true",
           "rbac.authorization.k8s.io/aggregate-to-view": "true",
         },
+        name: "cert-manager-view",
       },
       rules: [
         {
@@ -23430,6 +23449,7 @@ exports.createResources = async ({ provider, resources }) => {
           "rbac.authorization.k8s.io/aggregate-to-admin": "true",
           "rbac.authorization.k8s.io/aggregate-to-edit": "true",
         },
+        name: "cert-manager-edit",
       },
       rules: [
         {
@@ -23458,6 +23478,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "cert-manager-controller-approve:cert-manager-io",
         },
         rules: [
           {
@@ -23486,6 +23507,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "webhook",
           },
+          name: "cert-manager-webhook:subjectaccessreviews",
         },
         rules: [
           {
@@ -23510,6 +23532,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cainjector",
           },
+          name: "cert-manager-cainjector",
         },
         roleRef: {
           apiGroup: "rbac.authorization.k8s.io",
@@ -23539,6 +23562,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "cert-manager-controller-issuers",
         },
         roleRef: {
           apiGroup: "rbac.authorization.k8s.io",
@@ -23568,6 +23592,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "cert-manager-controller-clusterissuers",
         },
         roleRef: {
           apiGroup: "rbac.authorization.k8s.io",
@@ -23597,6 +23622,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "cert-manager-controller-certificates",
         },
         roleRef: {
           apiGroup: "rbac.authorization.k8s.io",
@@ -23626,6 +23652,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "cert-manager-controller-orders",
         },
         roleRef: {
           apiGroup: "rbac.authorization.k8s.io",
@@ -23655,6 +23682,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "cert-manager-controller-challenges",
         },
         roleRef: {
           apiGroup: "rbac.authorization.k8s.io",
@@ -23684,6 +23712,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "cert-manager-controller-ingress-shim",
         },
         roleRef: {
           apiGroup: "rbac.authorization.k8s.io",
@@ -23713,6 +23742,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cert-manager",
           },
+          name: "cert-manager-controller-approve:cert-manager-io",
         },
         roleRef: {
           apiGroup: "rbac.authorization.k8s.io",
@@ -23742,6 +23772,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "webhook",
           },
+          name: "cert-manager-webhook:subjectaccessreviews",
         },
         roleRef: {
           apiGroup: "rbac.authorization.k8s.io",
@@ -23760,40 +23791,43 @@ exports.createResources = async ({ provider, resources }) => {
     }
   );
 
-  const certManagerCainjectorLeaderelectionRole = await provider.makeRole({
-    name: "cert-manager-cainjector:leaderelection",
-    properties: () => ({
-      apiVersion: "rbac.authorization.k8s.io/v1",
-      metadata: {
-        labels: {
-          app: "cainjector",
-          "app.kubernetes.io/component": "cainjector",
-          "app.kubernetes.io/instance": "cert-manager",
-          "app.kubernetes.io/name": "cainjector",
+  const kubeSystemcertManagerCainjectorLeaderelectionRole = await provider.makeRole(
+    {
+      name: "kube-system-cert-manager-cainjector:leaderelection",
+      properties: () => ({
+        apiVersion: "rbac.authorization.k8s.io/v1",
+        metadata: {
+          labels: {
+            app: "cainjector",
+            "app.kubernetes.io/component": "cainjector",
+            "app.kubernetes.io/instance": "cert-manager",
+            "app.kubernetes.io/name": "cainjector",
+          },
+          name: "cert-manager-cainjector:leaderelection",
+          namespace: "kube-system",
         },
-        namespace: "kube-system",
-      },
-      rules: [
-        {
-          apiGroups: [""],
-          resourceNames: [
-            "cert-manager-cainjector-leader-election",
-            "cert-manager-cainjector-leader-election-core",
-          ],
-          resources: ["configmaps"],
-          verbs: ["get", "update", "patch"],
-        },
-        {
-          apiGroups: [""],
-          resources: ["configmaps"],
-          verbs: ["create"],
-        },
-      ],
-    }),
-  });
+        rules: [
+          {
+            apiGroups: [""],
+            resourceNames: [
+              "cert-manager-cainjector-leader-election",
+              "cert-manager-cainjector-leader-election-core",
+            ],
+            resources: ["configmaps"],
+            verbs: ["get", "update", "patch"],
+          },
+          {
+            apiGroups: [""],
+            resources: ["configmaps"],
+            verbs: ["create"],
+          },
+        ],
+      }),
+    }
+  );
 
-  const certManagerLeaderelectionRole = await provider.makeRole({
-    name: "cert-manager:leaderelection",
+  const kubeSystemcertManagerLeaderelectionRole = await provider.makeRole({
+    name: "kube-system-cert-manager:leaderelection",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -23803,6 +23837,7 @@ exports.createResources = async ({ provider, resources }) => {
           "app.kubernetes.io/instance": "cert-manager",
           "app.kubernetes.io/name": "cert-manager",
         },
+        name: "cert-manager:leaderelection",
         namespace: "kube-system",
       },
       rules: [
@@ -23821,38 +23856,41 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const certManagerWebhookDynamicServingRole = await provider.makeRole({
-    name: "cert-manager-webhook:dynamic-serving",
-    properties: () => ({
-      apiVersion: "rbac.authorization.k8s.io/v1",
-      metadata: {
-        labels: {
-          app: "webhook",
-          "app.kubernetes.io/component": "webhook",
-          "app.kubernetes.io/instance": "cert-manager",
-          "app.kubernetes.io/name": "webhook",
-        },
-        namespace: "cert-manager",
-      },
-      rules: [
-        {
-          apiGroups: [""],
-          resourceNames: ["cert-manager-webhook-ca"],
-          resources: ["secrets"],
-          verbs: ["get", "list", "watch", "update"],
-        },
-        {
-          apiGroups: [""],
-          resources: ["secrets"],
-          verbs: ["create"],
-        },
-      ],
-    }),
-  });
-
-  const certManagerCainjectorLeaderelectionRoleBinding = await provider.makeRoleBinding(
+  const certManagercertManagerWebhookDynamicServingRole = await provider.makeRole(
     {
-      name: "cert-manager-cainjector:leaderelection",
+      name: "cert-manager-cert-manager-webhook:dynamic-serving",
+      properties: () => ({
+        apiVersion: "rbac.authorization.k8s.io/v1",
+        metadata: {
+          labels: {
+            app: "webhook",
+            "app.kubernetes.io/component": "webhook",
+            "app.kubernetes.io/instance": "cert-manager",
+            "app.kubernetes.io/name": "webhook",
+          },
+          name: "cert-manager-webhook:dynamic-serving",
+          namespace: "cert-manager",
+        },
+        rules: [
+          {
+            apiGroups: [""],
+            resourceNames: ["cert-manager-webhook-ca"],
+            resources: ["secrets"],
+            verbs: ["get", "list", "watch", "update"],
+          },
+          {
+            apiGroups: [""],
+            resources: ["secrets"],
+            verbs: ["create"],
+          },
+        ],
+      }),
+    }
+  );
+
+  const kubeSystemcertManagerCainjectorLeaderelectionRoleBinding = await provider.makeRoleBinding(
+    {
+      name: "kube-system-cert-manager-cainjector:leaderelection",
       properties: () => ({
         apiVersion: "rbac.authorization.k8s.io/v1",
         metadata: {
@@ -23862,6 +23900,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cainjector",
           },
+          name: "cert-manager-cainjector:leaderelection",
           namespace: "kube-system",
         },
         roleRef: {
@@ -23880,38 +23919,41 @@ exports.createResources = async ({ provider, resources }) => {
     }
   );
 
-  const certManagerLeaderelectionRoleBinding = await provider.makeRoleBinding({
-    name: "cert-manager:leaderelection",
-    properties: () => ({
-      apiVersion: "rbac.authorization.k8s.io/v1",
-      metadata: {
-        labels: {
-          app: "cert-manager",
-          "app.kubernetes.io/component": "controller",
-          "app.kubernetes.io/instance": "cert-manager",
-          "app.kubernetes.io/name": "cert-manager",
-        },
-        namespace: "kube-system",
-      },
-      roleRef: {
-        apiGroup: "rbac.authorization.k8s.io",
-        kind: "Role",
-        name: "cert-manager:leaderelection",
-      },
-      subjects: [
-        {
-          apiGroup: "",
-          kind: "ServiceAccount",
-          name: "cert-manager",
-          namespace: "cert-manager",
-        },
-      ],
-    }),
-  });
-
-  const certManagerWebhookDynamicServingRoleBinding = await provider.makeRoleBinding(
+  const kubeSystemcertManagerLeaderelectionRoleBinding = await provider.makeRoleBinding(
     {
-      name: "cert-manager-webhook:dynamic-serving",
+      name: "kube-system-cert-manager:leaderelection",
+      properties: () => ({
+        apiVersion: "rbac.authorization.k8s.io/v1",
+        metadata: {
+          labels: {
+            app: "cert-manager",
+            "app.kubernetes.io/component": "controller",
+            "app.kubernetes.io/instance": "cert-manager",
+            "app.kubernetes.io/name": "cert-manager",
+          },
+          name: "cert-manager:leaderelection",
+          namespace: "kube-system",
+        },
+        roleRef: {
+          apiGroup: "rbac.authorization.k8s.io",
+          kind: "Role",
+          name: "cert-manager:leaderelection",
+        },
+        subjects: [
+          {
+            apiGroup: "",
+            kind: "ServiceAccount",
+            name: "cert-manager",
+            namespace: "cert-manager",
+          },
+        ],
+      }),
+    }
+  );
+
+  const certManagercertManagerWebhookDynamicServingRoleBinding = await provider.makeRoleBinding(
+    {
+      name: "cert-manager-cert-manager-webhook:dynamic-serving",
       properties: () => ({
         apiVersion: "rbac.authorization.k8s.io/v1",
         metadata: {
@@ -23921,6 +23963,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "webhook",
           },
+          name: "cert-manager-webhook:dynamic-serving",
           namespace: "cert-manager",
         },
         roleRef: {
@@ -23940,8 +23983,8 @@ exports.createResources = async ({ provider, resources }) => {
     }
   );
 
-  const certManagerService = await provider.makeService({
-    name: "cert-manager",
+  const certManagercertManagerService = await provider.makeService({
+    name: "cert-manager-cert-manager",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -23951,6 +23994,7 @@ exports.createResources = async ({ provider, resources }) => {
           "app.kubernetes.io/instance": "cert-manager",
           "app.kubernetes.io/name": "cert-manager",
         },
+        name: "cert-manager",
         namespace: "cert-manager",
       },
       spec: {
@@ -23971,8 +24015,8 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const certManagerWebhookService = await provider.makeService({
-    name: "cert-manager-webhook",
+  const certManagercertManagerWebhookService = await provider.makeService({
+    name: "cert-manager-cert-manager-webhook",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -23982,6 +24026,7 @@ exports.createResources = async ({ provider, resources }) => {
           "app.kubernetes.io/instance": "cert-manager",
           "app.kubernetes.io/name": "webhook",
         },
+        name: "cert-manager-webhook",
         namespace: "cert-manager",
       },
       spec: {
@@ -24002,66 +24047,69 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const certManagerCainjectorDeployment = await provider.makeDeployment({
-    name: "cert-manager-cainjector",
-    properties: () => ({
-      apiVersion: "apps/v1",
-      metadata: {
-        labels: {
-          app: "cainjector",
-          "app.kubernetes.io/component": "cainjector",
-          "app.kubernetes.io/instance": "cert-manager",
-          "app.kubernetes.io/name": "cainjector",
-        },
-        namespace: "cert-manager",
-      },
-      spec: {
-        replicas: 1,
-        selector: {
-          matchLabels: {
+  const certManagercertManagerCainjectorDeployment = await provider.makeDeployment(
+    {
+      name: "cert-manager-cert-manager-cainjector",
+      properties: () => ({
+        apiVersion: "apps/v1",
+        metadata: {
+          labels: {
+            app: "cainjector",
             "app.kubernetes.io/component": "cainjector",
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "cainjector",
           },
+          name: "cert-manager-cainjector",
+          namespace: "cert-manager",
         },
-        template: {
-          metadata: {
-            labels: {
-              app: "cainjector",
+        spec: {
+          replicas: 1,
+          selector: {
+            matchLabels: {
               "app.kubernetes.io/component": "cainjector",
               "app.kubernetes.io/instance": "cert-manager",
               "app.kubernetes.io/name": "cainjector",
             },
           },
-          spec: {
-            containers: [
-              {
-                args: ["--v=2", "--leader-election-namespace=kube-system"],
-                env: [
-                  {
-                    name: "POD_NAMESPACE",
-                    valueFrom: {
-                      fieldRef: {
-                        fieldPath: "metadata.namespace",
+          template: {
+            metadata: {
+              labels: {
+                app: "cainjector",
+                "app.kubernetes.io/component": "cainjector",
+                "app.kubernetes.io/instance": "cert-manager",
+                "app.kubernetes.io/name": "cainjector",
+              },
+            },
+            spec: {
+              containers: [
+                {
+                  args: ["--v=2", "--leader-election-namespace=kube-system"],
+                  env: [
+                    {
+                      name: "POD_NAMESPACE",
+                      valueFrom: {
+                        fieldRef: {
+                          fieldPath: "metadata.namespace",
+                        },
                       },
                     },
-                  },
-                ],
-                image: "quay.io/jetstack/cert-manager-cainjector:v1.3.0",
-                imagePullPolicy: "IfNotPresent",
-                name: "cert-manager",
-                resources: {},
-              },
-            ],
-            serviceAccountName: "cert-manager-cainjector",
+                  ],
+                  image: "quay.io/jetstack/cert-manager-cainjector:v1.3.1",
+                  imagePullPolicy: "IfNotPresent",
+                  name: "cert-manager",
+                  resources: {},
+                },
+              ],
+              serviceAccountName: "cert-manager-cainjector",
+            },
           },
         },
-      },
-    }),
-  });
+      }),
+    }
+  );
 
-  const certManagerDeployment = await provider.makeDeployment({
-    name: "cert-manager",
+  const certManagercertManagerDeployment = await provider.makeDeployment({
+    name: "cert-manager-cert-manager",
     properties: () => ({
       apiVersion: "apps/v1",
       metadata: {
@@ -24071,6 +24119,7 @@ exports.createResources = async ({ provider, resources }) => {
           "app.kubernetes.io/instance": "cert-manager",
           "app.kubernetes.io/name": "cert-manager",
         },
+        name: "cert-manager",
         namespace: "cert-manager",
       },
       spec: {
@@ -24114,7 +24163,7 @@ exports.createResources = async ({ provider, resources }) => {
                     },
                   },
                 ],
-                image: "quay.io/jetstack/cert-manager-controller:v1.3.0",
+                image: "quay.io/jetstack/cert-manager-controller:v1.3.1",
                 imagePullPolicy: "IfNotPresent",
                 name: "cert-manager",
                 ports: [
@@ -24133,99 +24182,102 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const certManagerWebhookDeployment = await provider.makeDeployment({
-    name: "cert-manager-webhook",
-    properties: () => ({
-      apiVersion: "apps/v1",
-      metadata: {
-        labels: {
-          app: "webhook",
-          "app.kubernetes.io/component": "webhook",
-          "app.kubernetes.io/instance": "cert-manager",
-          "app.kubernetes.io/name": "webhook",
-        },
-        namespace: "cert-manager",
-      },
-      spec: {
-        replicas: 1,
-        selector: {
-          matchLabels: {
+  const certManagercertManagerWebhookDeployment = await provider.makeDeployment(
+    {
+      name: "cert-manager-cert-manager-webhook",
+      properties: () => ({
+        apiVersion: "apps/v1",
+        metadata: {
+          labels: {
+            app: "webhook",
             "app.kubernetes.io/component": "webhook",
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "webhook",
           },
+          name: "cert-manager-webhook",
+          namespace: "cert-manager",
         },
-        template: {
-          metadata: {
-            labels: {
-              app: "webhook",
+        spec: {
+          replicas: 1,
+          selector: {
+            matchLabels: {
               "app.kubernetes.io/component": "webhook",
               "app.kubernetes.io/instance": "cert-manager",
               "app.kubernetes.io/name": "webhook",
             },
           },
-          spec: {
-            containers: [
-              {
-                args: [
-                  "--v=2",
-                  "--secure-port=10250",
-                  "--dynamic-serving-ca-secret-namespace=$(POD_NAMESPACE)",
-                  "--dynamic-serving-ca-secret-name=cert-manager-webhook-ca",
-                  "--dynamic-serving-dns-names=cert-manager-webhook,cert-manager-webhook.cert-manager,cert-manager-webhook.cert-manager.svc",
-                ],
-                env: [
-                  {
-                    name: "POD_NAMESPACE",
-                    valueFrom: {
-                      fieldRef: {
-                        fieldPath: "metadata.namespace",
+          template: {
+            metadata: {
+              labels: {
+                app: "webhook",
+                "app.kubernetes.io/component": "webhook",
+                "app.kubernetes.io/instance": "cert-manager",
+                "app.kubernetes.io/name": "webhook",
+              },
+            },
+            spec: {
+              containers: [
+                {
+                  args: [
+                    "--v=2",
+                    "--secure-port=10250",
+                    "--dynamic-serving-ca-secret-namespace=$(POD_NAMESPACE)",
+                    "--dynamic-serving-ca-secret-name=cert-manager-webhook-ca",
+                    "--dynamic-serving-dns-names=cert-manager-webhook,cert-manager-webhook.cert-manager,cert-manager-webhook.cert-manager.svc",
+                  ],
+                  env: [
+                    {
+                      name: "POD_NAMESPACE",
+                      valueFrom: {
+                        fieldRef: {
+                          fieldPath: "metadata.namespace",
+                        },
                       },
                     },
+                  ],
+                  image: "quay.io/jetstack/cert-manager-webhook:v1.3.1",
+                  imagePullPolicy: "IfNotPresent",
+                  livenessProbe: {
+                    failureThreshold: 3,
+                    httpGet: {
+                      path: "/livez",
+                      port: 6080,
+                      scheme: "HTTP",
+                    },
+                    initialDelaySeconds: 60,
+                    periodSeconds: 10,
+                    successThreshold: 1,
+                    timeoutSeconds: 1,
                   },
-                ],
-                image: "quay.io/jetstack/cert-manager-webhook:v1.3.0",
-                imagePullPolicy: "IfNotPresent",
-                livenessProbe: {
-                  failureThreshold: 3,
-                  httpGet: {
-                    path: "/livez",
-                    port: 6080,
-                    scheme: "HTTP",
+                  name: "cert-manager",
+                  ports: [
+                    {
+                      containerPort: 10250,
+                      name: "https",
+                    },
+                  ],
+                  readinessProbe: {
+                    failureThreshold: 3,
+                    httpGet: {
+                      path: "/healthz",
+                      port: 6080,
+                      scheme: "HTTP",
+                    },
+                    initialDelaySeconds: 5,
+                    periodSeconds: 5,
+                    successThreshold: 1,
+                    timeoutSeconds: 1,
                   },
-                  initialDelaySeconds: 60,
-                  periodSeconds: 10,
-                  successThreshold: 1,
-                  timeoutSeconds: 1,
+                  resources: {},
                 },
-                name: "cert-manager",
-                ports: [
-                  {
-                    containerPort: 10250,
-                    name: "https",
-                  },
-                ],
-                readinessProbe: {
-                  failureThreshold: 3,
-                  httpGet: {
-                    path: "/healthz",
-                    port: 6080,
-                    scheme: "HTTP",
-                  },
-                  initialDelaySeconds: 5,
-                  periodSeconds: 5,
-                  successThreshold: 1,
-                  timeoutSeconds: 1,
-                },
-                resources: {},
-              },
-            ],
-            serviceAccountName: "cert-manager-webhook",
+              ],
+              serviceAccountName: "cert-manager-webhook",
+            },
           },
         },
-      },
-    }),
-  });
+      }),
+    }
+  );
 
   const certManagerWebhookMutatingWebhookConfiguration = await provider.makeMutatingWebhookConfiguration(
     {
@@ -24243,6 +24295,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "webhook",
           },
+          name: "cert-manager-webhook",
         },
         webhooks: [
           {
@@ -24288,6 +24341,7 @@ exports.createResources = async ({ provider, resources }) => {
             "app.kubernetes.io/instance": "cert-manager",
             "app.kubernetes.io/name": "webhook",
           },
+          name: "cert-manager-webhook",
         },
         webhooks: [
           {
@@ -24339,9 +24393,9 @@ exports.createResources = async ({ provider, resources }) => {
     issuersCertManagerIoCustomResourceDefinition,
     ordersAcmeCertManagerIoCustomResourceDefinition,
     certManagerNamespace,
-    certManagerCainjectorServiceAccount,
-    certManagerServiceAccount,
-    certManagerWebhookServiceAccount,
+    certManagercertManagerCainjectorServiceAccount,
+    certManagercertManagerServiceAccount,
+    certManagercertManagerWebhookServiceAccount,
     certManagerCainjectorClusterRole,
     certManagerControllerIssuersClusterRole,
     certManagerControllerClusterissuersClusterRole,
@@ -24362,17 +24416,17 @@ exports.createResources = async ({ provider, resources }) => {
     certManagerControllerIngressShimClusterRoleBinding,
     certManagerControllerApproveCertManagerIoClusterRoleBinding,
     certManagerWebhookSubjectaccessreviewsClusterRoleBinding,
-    certManagerCainjectorLeaderelectionRole,
-    certManagerLeaderelectionRole,
-    certManagerWebhookDynamicServingRole,
-    certManagerCainjectorLeaderelectionRoleBinding,
-    certManagerLeaderelectionRoleBinding,
-    certManagerWebhookDynamicServingRoleBinding,
-    certManagerService,
-    certManagerWebhookService,
-    certManagerCainjectorDeployment,
-    certManagerDeployment,
-    certManagerWebhookDeployment,
+    kubeSystemcertManagerCainjectorLeaderelectionRole,
+    kubeSystemcertManagerLeaderelectionRole,
+    certManagercertManagerWebhookDynamicServingRole,
+    kubeSystemcertManagerCainjectorLeaderelectionRoleBinding,
+    kubeSystemcertManagerLeaderelectionRoleBinding,
+    certManagercertManagerWebhookDynamicServingRoleBinding,
+    certManagercertManagerService,
+    certManagercertManagerWebhookService,
+    certManagercertManagerCainjectorDeployment,
+    certManagercertManagerDeployment,
+    certManagercertManagerWebhookDeployment,
     certManagerWebhookMutatingWebhookConfiguration,
     certManagerWebhookValidatingWebhookConfiguration,
   };

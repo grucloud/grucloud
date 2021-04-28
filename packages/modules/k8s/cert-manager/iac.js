@@ -7,6 +7,9 @@ const { K8sProvider } = require("@grucloud/provider-k8s");
 const { createResources } = require("./resources");
 const hooks = [require("./hook")];
 
+exports.hooks = hooks;
+exports.config = () => ({});
+
 const loadManifest = pipe([
   () => fs.readFile(path.join(__dirname, "./cert-manager.yaml")),
   yaml.loadAll,
