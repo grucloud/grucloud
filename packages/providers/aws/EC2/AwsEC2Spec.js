@@ -51,7 +51,7 @@ module.exports = [
   },
   {
     type: "NatGateway",
-    dependsOn: ["ElasticIpAddress", "Subnet"],
+    dependsOn: ["ElasticIpAddress", "Subnet", "NetworkInterface"],
     Client: AwsNatGateway,
     isOurMinion,
   },
@@ -93,7 +93,7 @@ module.exports = [
   },
   {
     type: "ElasticIpAddress",
-    dependsOn: ["InternetGateway"],
+    dependsOn: ["InternetGateway", "NetworkInterface"],
     Client: AwsElasticIpAddress,
     isOurMinion,
   },
@@ -107,6 +107,7 @@ module.exports = [
       "Volume",
       "NetworkInterface",
       "InternetGateway",
+      "NetworkInterface",
     ],
     Client: AwsEC2,
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS.html#runInstances-property
