@@ -60,40 +60,55 @@ exports.resourceKeyDefault = pipe([
   tap((resource) => {
     assert(resource.providerName);
     assert(resource.type);
-    assert(resource.name || resource.id);
+    assert(resource.name);
   }),
-  ({ providerName, type, name, id }) =>
-    `${providerName}::${type}::${name || id}`,
+  ({ providerName, type, name }) => `${providerName}::${type}::${name}`,
 ]);
 
 exports.resourceKeyNamespace = pipe([
   tap((resource) => {
     assert(resource.providerName);
     assert(resource.type);
-    assert(resource.name || resource.id);
+    assert(resource.name);
+    //assert(resource.properties);
   }),
-  ({ providerName, type, dependencies, name, id }) =>
-    `${providerName}::${type}::${getNamespace(dependencies?.namespace)}::${
-      name || id
-    }`,
+  ({ providerName, type, properties, name, live }) =>
+    `${providerName}::${type}::${get("metadata.namespace")(
+      properties ? properties : live
+    )}::${name}`,
 ]);
 
 exports.displayNameResourceDefault = ({ name }) => name;
-exports.displayNameResourceNamespace = ({ name, dependencies }) =>
-  `${getNamespace(dependencies?.namespace)}::${name}`;
+exports.displayNameResourceNamespace = ({ name, properties }) =>
+  pipe([
+    tap(() => {
+      assert(name);
+      assert(properties);
+    }),
+    () => `${get("metadata.namespace")(properties)}::${name}`,
+  ])();
 
-exports.displayNameDefault = ({ name }) => name;
+exports.displayNameDefault = pipe([
+  tap((xxx) => {
+    assert(true);
+  }),
+  get("name"),
+]);
 exports.displayNameNamespace = ({ name, meta }) =>
   pipe([
     tap(() => {
       assert(meta);
       assert(name);
+      assert(meta.namespace);
     }),
     switchCase([
       () => isEmpty(meta.namespace),
       () => name,
       () => `${meta.namespace}::${name}`,
     ]),
+    tap((name) => {
+      assert(name);
+    }),
   ])();
 
 exports.shouldRetryOnException = ({ error, name }) => {

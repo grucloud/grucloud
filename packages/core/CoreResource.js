@@ -67,11 +67,22 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
             (isString(id) ? id : JSON.stringify(id)) || name
           }`,
       ]),
-      displayName: get("name"),
-      displayNameResource: get("name"),
+      displayName: pipe([
+        tap((xxx) => {
+          assert(true);
+        }),
+        get("name"),
+      ]),
+      displayNameResource: pipe([
+        tap((xxx) => {
+          assert(true);
+        }),
+        get("name"),
+      ]),
       findMeta: () => undefined,
       findDependencies: () => [],
       findNamespace: () => "",
+      findNamespaceFromTarget: ({ namespace }) => namespace,
       cannotBeDeleted: () => false,
       isDefault: () => false,
       configDefault: () => ({}),
@@ -548,17 +559,19 @@ exports.ResourceMaker = ({
       name: resourceName,
       meta,
       dependencies,
+      properties,
     });
 
   const toJSON = () => ({
     providerName: provider.name,
     type,
-    namespace,
+    namespace: client.findNamespaceFromTarget({ namespace, properties }),
     name: resourceName,
     meta,
     displayName: client.displayNameResource({
       name: resourceName,
       meta,
+      properties,
       dependencies,
     }),
     uri: toString(),

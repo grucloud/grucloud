@@ -127,6 +127,44 @@ const fnSpecs = () => [
     }),
     isOurMinion,
   },
+  // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#poddisruptionbudget-v1beta1-policy
+  {
+    type: "PodDisruptionBudget",
+    Client: createResourceNamespace({
+      baseUrl: ({ namespace, apiVersion }) =>
+        `/apis/${apiVersion}/namespaces/${namespace}/poddisruptionbudgets`,
+      pathList: ({ apiVersion }) => `/apis/${apiVersion}/poddisruptionbudgets`,
+      configKey: "podDisruptionBudget",
+      apiVersion: "policy/v1beta1",
+      kind: "PodDisruptionBudget",
+    }),
+    isOurMinion,
+  },
+  // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#daemonset-v1-apps
+  {
+    type: "DaemonSet",
+    Client: createResourceNamespace({
+      baseUrl: ({ namespace, apiVersion }) =>
+        `/apis/${apiVersion}/namespaces/${namespace}/daemonsets`,
+      pathList: ({ apiVersion }) => `/apis/${apiVersion}/daemonsets`,
+      configKey: "daemonset",
+      apiVersion: "apps/v1",
+      kind: "DaemonSet",
+    }),
+    isOurMinion,
+  },
+  // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#apiservice-v1-apiregistration-k8s-io
+  {
+    type: "APIService",
+    Client: ({ config, spec }) =>
+      createResourceNamespaceless({
+        baseUrl: ({ apiVersion }) => `/apis/${apiVersion}/apiservices`,
+        configKey: "apiService",
+        apiVersion: "apiregistration.k8s.io/v1",
+        kind: "APIService",
+      })({ config, spec }),
+    isOurMinion,
+  },
   // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#customresourcedefinition-v1beta1-apiextensions-k8s-io
   {
     type: "CustomResourceDefinition",

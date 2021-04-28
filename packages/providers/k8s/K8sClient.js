@@ -95,6 +95,8 @@ module.exports = K8sClient = ({
 
   const findId = findName;
   const findNamespace = get("live.metadata.namespace", "default");
+  const findNamespaceFromTarget = ({ properties }) =>
+    get("live.metadata.namespace", "default")(properties({ dependencies: {} }));
 
   const axios = () => createAxiosMakerK8s({ config });
 
@@ -359,5 +361,6 @@ module.exports = K8sClient = ({
     isInstanceUp,
     findDependencies,
     findNamespace,
+    findNamespaceFromTarget,
   };
 };

@@ -4,7 +4,10 @@ const K8sClient = require("./K8sClient");
 const { buildTagsObject, isUpByIdCore } = require("@grucloud/core/Common");
 const {
   displayNameDefault,
+  displayNameNamespace,
   displayNameResourceDefault,
+  displayNameResourceNamespace,
+  resourceKeyNamespace,
   resourceKeyDefault,
   getNamespace,
 } = require("./K8sCommon");
@@ -59,6 +62,7 @@ exports.createResourceNamespaceless = ({
     pathUpdate,
     pathDelete,
     configDefault,
+    getNamespace,
     displayName: displayNameDefault,
     displayNameResource: displayNameResourceDefault,
     resourceKey: resourceKeyDefault,
@@ -118,9 +122,9 @@ exports.createResourceNamespace = ({
     cannotBeDeleted,
     isInstanceUp,
     isUpByIdFactory,
-    displayName: displayNameDefault,
-    displayNameResource: displayNameResourceDefault,
-    resourceKey: resourceKeyDefault,
+    displayName: displayNameNamespace,
+    displayNameResource: displayNameResourceNamespace,
+    resourceKey: resourceKeyNamespace,
     findDependencies,
   });
 };

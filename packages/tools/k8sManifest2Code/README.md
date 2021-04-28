@@ -1,6 +1,6 @@
 # K8s Manifest to GruCloud Code
 
-This code generator takes a kubernetes YAML manifest and creates the corresponding resources in the GruCloud Javascript code.
+This code generator takes any kubernetes YAML manifests and creates the corresponding resources written with the GruCloud Javascript SDK.
 
 Currently used to create the following kubernetes modules:
 
@@ -8,6 +8,9 @@ Currently used to create the following kubernetes modules:
 - [Aws Load Balancer Controller](https://www.npmjs.com/package/@grucloud/module-k8s-aws-load-balancer-controller)
 - [Web Ui Dashboard](https://github.com/grucloud/grucloud/tree/main/packages/modules/k8s/web-ui-dashboard)
 - [Crunchy Postgres Operator](https://github.com/grucloud/grucloud/tree/main/packages/modules/k8s/crunchy-postgres)
+- [Prometheus](https://github.com/grucloud/grucloud/tree/main/packages/modules/k8s/prometheus)
+
+> **k8s-manifest2code** supports reading from a single file, recursively from a directory, and from HTTPS.
 
 # Tutorial: How to create a Kubernetes Module with k8s-manifest2code
 
@@ -100,8 +103,8 @@ It is now time to create a K8s provider and uses the generated **createResources
 const { K8sProvider } = require("@grucloud/provider-k8s");
 const { createResources } = require("../resources");
 
-exports.createStack = async () => {
-  const provider = K8sProvider({});
+exports.createStack = async ({ config }) => {
+  const provider = K8sProvider({ config });
   const resources = await createResources({ provider });
   return { provider, resources };
 };

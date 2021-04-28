@@ -65,6 +65,7 @@ exports.clientByType = ({ type }) => find(eq(get("spec.type"), type));
 
 const liveToUri = ({ client, live }) =>
   client.resourceKey({
+    live,
     providerName: client.spec.providerName,
     type: client.spec.type,
     name: client.findName(live),

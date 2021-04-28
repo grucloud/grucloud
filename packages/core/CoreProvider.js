@@ -587,10 +587,9 @@ function CoreProvider({
             "resourcesPerType must be an array"
           );
           logger.info(
-            `spinnersStartResources ${title}, #resourcesPerType ${resourcesPerType.length}`
-          );
-          logger.debug(
-            `spinnersStartResources ${title}, ${tos(resourcesPerType)}`
+            `spinnersStartResources ${title}, #resourcesPerType ${size(
+              resourcesPerType
+            )}`
           );
         }),
         () =>
