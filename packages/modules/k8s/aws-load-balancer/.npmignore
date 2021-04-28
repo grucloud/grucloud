@@ -10,5 +10,6 @@ coverage
 .circleci
 .github
 **/test/*
+example
 aws-load-balancer-controller.yaml
 *.dot

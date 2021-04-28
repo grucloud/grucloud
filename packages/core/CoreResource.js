@@ -82,7 +82,7 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
       findMeta: () => undefined,
       findDependencies: () => [],
       findNamespace: () => "",
-      findNamespaceFromTarget: ({ namespace }) => namespace,
+      findNamespaceFromTarget: get("namespace"),
       cannotBeDeleted: () => false,
       isDefault: () => false,
       configDefault: () => ({}),
@@ -562,20 +562,25 @@ exports.ResourceMaker = ({
       properties,
     });
 
-  const toJSON = () => ({
-    providerName: provider.name,
-    type,
-    namespace: client.findNamespaceFromTarget({ namespace, properties }),
-    name: resourceName,
-    meta,
-    displayName: client.displayNameResource({
+  const toJSON = pipe([
+    () => ({
+      providerName: provider.name,
+      type,
+      namespace: client.findNamespaceFromTarget({ namespace, properties }),
       name: resourceName,
       meta,
-      properties,
-      dependencies,
+      displayName: client.displayNameResource({
+        name: resourceName,
+        meta,
+        properties,
+        dependencies,
+      }),
+      uri: toString(),
     }),
-    uri: toString(),
-  });
+    tap((json) => {
+      assert(json);
+    }),
+  ]);
 
   const addUsedBy = (usedBy) => {
     usedBySet.add(usedBy);

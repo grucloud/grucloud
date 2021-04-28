@@ -1,6 +1,14 @@
 # GruCloud Module for the AWS Load Balancer Controller on Kubernetes
 
-Integrate the [Aws load balancer controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/) with GruCloud.
+Integrate the [Aws Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/) with GruCloud.
+
+## How to use this module
+
+See the [example](example/README.md)
+
+## Dependecencies
+
+This module depends on the [cert-manager](https://www.npmjs.com/package/@grucloud/module-k8s-cert-manager) which install Custom Resource Definition, aka CRD
 
 ## Update manifest version
 
@@ -21,7 +29,3 @@ npm run gen-code
 ```
 
 This commands creates the **resource.js** file containing all the resources.
-
-## Workflow
-
-This module depends on the [cert-manager](https://www.npmjs.com/package/@grucloud/module-k8s-cert-manager) which install Custom Resource Definition, aka CRD

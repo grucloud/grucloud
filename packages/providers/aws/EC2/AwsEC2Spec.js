@@ -45,7 +45,7 @@ module.exports = [
   },
   {
     type: "InternetGateway",
-    dependsOn: ["Vpc"],
+    dependsOn: ["Vpc", "NetworkInterface"],
     Client: AwsInternetGateway,
     isOurMinion,
   },
@@ -75,7 +75,7 @@ module.exports = [
   },
   {
     type: "SecurityGroup",
-    dependsOn: ["Vpc"],
+    dependsOn: ["Vpc", "NetworkInterface"],
     Client: AwsSecurityGroup,
     isOurMinion,
   },

@@ -6,8 +6,8 @@
   "scripts": {
     "test": "mocha --exit './{,!(node_modules)/**}/*.test.js'",
     "e2e": "gc d -f && gc d && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
-    "gen-code": "node ../../../tools/k8s-manifest2code.js --input aws-load-balancer-controller.yaml",
-    "download-manifest": "curl -L -o aws-load-balancer-controller.yaml https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.1.2/docs/install/v2_1_2_full.yaml"
+    "gen-code": "k8s-manifest2code --input aws-load-balancer-controller.yaml",
+    "download-manifest": "curl -L -o aws-load-balancer-controller.yaml https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.1.3/docs/install/v2_1_2_full.yaml"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +20,7 @@
     "rubico": "^1.6.21"
   },
   "devDependencies": {
+    "@grucloud/k8s-manifest2code": "^1.10.22",
     "mocha": "^8.3.2"
   },
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/modules/k8s/aws-load-balancer",
