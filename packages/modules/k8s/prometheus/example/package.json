@@ -1,0 +1,35 @@
+{
+  "name": "@grucloud/example-module-k8s-prometheus",
+  "version": "1.13.2",
+  "description": "Example of the GruCloud module for Prometheus",
+  "main": "iac.js",
+  "private": true,
+  "scripts": {
+    "graph-target": "gc graph --title 'Prometheus'",
+    "graph-live": "gc list --graph --title 'Prometheus'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grucloud/grucloud.git"
+  },
+  "keywords": [
+    "kubernetes",
+    "postgres",
+    "operator",
+    "prometheus",
+    "grucloud"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/grucloud/grucloud/issues"
+  },
+  "homepage": "https://github.com/grucloud/grucloud#readme",
+  "dependencies": {
+    "@grucloud/core": "^1.13.2",
+    "@grucloud/module-k8s-prometheus": "*",
+    "@grucloud/provider-k8s": "^1.13.2",
+    "js-yaml": "^4.1.0",
+    "rubico": "*"
+  }
+}
