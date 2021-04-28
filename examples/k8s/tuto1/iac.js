@@ -1,7 +1,6 @@
 const { K8sProvider } = require("@grucloud/provider-k8s");
 
 // Create a namespace, service and deployment
-
 const createResource = async ({ provider }) => {
   const { config } = provider;
 
@@ -22,7 +21,8 @@ const createResource = async ({ provider }) => {
           {
             protocol: "TCP",
             port: 80,
-            targetPort: 8080,
+            targetPort: 80,
+            nodePort: 30020,
           },
         ],
       },
@@ -54,8 +54,8 @@ const createResource = async ({ provider }) => {
           spec: {
             containers: [
               {
-                name: "nginx",
-                image: "nginx:1.14.2",
+                name: config.deployment.container.name,
+                image: config.deployment.container.image,
                 ports: [
                   {
                     containerPort: 80,
@@ -75,5 +75,5 @@ const createResource = async ({ provider }) => {
 exports.createStack = async ({ config }) => {
   const provider = K8sProvider({ config });
   const resources = await createResource({ provider });
-  return { provider, resources };
+  return { provider, resources, hooks: [require("./hook")] };
 };

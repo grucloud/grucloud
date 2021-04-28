@@ -57,6 +57,17 @@
       "port": 9229
     },
     {
+      "name": "onDeployed",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["run", "--onDeployed"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}/",
+      "port": 9229
+    },
+    {
       "name": "Destroy",
       "type": "node",
       "request": "launch",

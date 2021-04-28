@@ -12,6 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.13.2",
-    "@grucloud/provider-k8s": "^1.13.2"
+    "@grucloud/provider-k8s": "^1.13.2",
+    "axios": "^0.21.1",
+    "rubico": "^1.6.23"
   }
 }
