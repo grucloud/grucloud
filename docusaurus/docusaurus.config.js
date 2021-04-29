@@ -1,4 +1,5 @@
 module.exports = {
+  onBrokenLinks: "warn",
   title: "GruCloud",
   tagline: "Infrastructure as Code",
   url: "https://grucloud.github.io/",
@@ -6,7 +7,7 @@ module.exports = {
   favicon: "img/cloud.svg",
   organizationName: "grucloud", // Usually your GitHub org/user name.
   projectName: "grucloud", // Usually your repo name.
-  plugins: ["@docusaurus/plugin-google-gtag"],
+  //plugins: ["@docusaurus/plugin-google-gtag"],
   themeConfig: {
     colorMode: { disableSwitch: true },
     gtag: {

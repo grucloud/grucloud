@@ -52,8 +52,8 @@ const httpsTargetProxy = await provider.makeHttpsTargetProxy({
 
 ## Dependencies
 
-- [SslCertificate](./GcpSslCertificate)
-- [UrlMap](./GcpUrlMap)
+- [SslCertificate](./SslCertificate)
+- [UrlMap](./UrlMap)
 
 ## Used by
 

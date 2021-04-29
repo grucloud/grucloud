@@ -31,7 +31,7 @@ const iamOpenIdConnectProvider = await provider.makeIamOpenIDConnectProvider({
 
 ### Dependencies
 
-- [EKSCluster](..EKS/EksCluster)
+- [EKSCluster](../EKS/EksCluster)
 
 ### Aws Docs
 

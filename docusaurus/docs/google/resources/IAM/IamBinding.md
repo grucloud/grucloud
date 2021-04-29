@@ -41,4 +41,4 @@ const iamBinding = await provider.makeIamBinding({
 
 ### Used By
 
-- [ServiceAccount](../Compute/ServiceAccount)
+- [ServiceAccount](./ServiceAccount)
