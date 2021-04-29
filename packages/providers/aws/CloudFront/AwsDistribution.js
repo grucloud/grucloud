@@ -71,7 +71,7 @@ exports.AwsDistribution = ({ spec, config }) => {
       type: "S3Bucket",
       ids: pipe([
         () => live,
-        get("Origins.Items"),
+        get("Origins.Items", []),
         pluck("DomainName"),
         map((domainName) =>
           domainName.replace(new RegExp(".s3.amazonaws.com$"), "")
@@ -433,6 +433,7 @@ exports.AwsDistribution = ({ spec, config }) => {
 exports.compareDistribution = async ({ target, live, dependencies }) =>
   pipe([
     () => target,
+    get("DistributionConfigWithTags.DistributionConfig"),
     omit(["CallerReference", "ViewerCertificate.CloudFrontDefaultCertificate"]),
     tap((targetFiltered) => {
       logger.debug(`compareDistribution diff:${tos(targetFiltered)}`);
