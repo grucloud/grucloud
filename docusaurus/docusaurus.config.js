@@ -8,7 +8,7 @@ module.exports = {
   projectName: "grucloud", // Usually your repo name.
   plugins: ["@docusaurus/plugin-google-gtag"],
   themeConfig: {
-    disableDarkMode: true,
+    colorMode: { disableSwitch: true },
     gtag: {
       trackingID: "UA-179962442-1",
       anonymizeIP: true,
@@ -19,7 +19,7 @@ module.exports = {
         alt: "GruCloud Logo",
         src: "img/cloud.svg",
       },
-      links: [
+      items: [
         {
           to: "docs/Introduction",
           activeBasePath: "docs",

@@ -1,6 +1,6 @@
 ---
 id: K8sModules
-title: Module
+title: Kubernetes Modules
 ---
 
 A Module is a collection of resources packaged with **npm**, the node package manager. These modules can be imported and be used in your project:

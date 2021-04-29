@@ -1,6 +1,6 @@
 ---
 id: Requirements
-title: Common Requirements
+title: Requirements
 ---
 
 ## Node
