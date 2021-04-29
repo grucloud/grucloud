@@ -1,15 +1,12 @@
 ## Bugs
 
-- ✖ NetworkInterface 4/6 Network interface 'eni-0aa140cf86a483205' is currently in use.
-
-- document useLoadBalancer
 - gc a: when an assert is thrown, it does not exit but ask for deployment confirmation.
 - code coverage with monorepo
 - check stage for all providers
 
 ## Common:
 
-- gc graph -p aws
+- gc graph: wrong namespace, it is default, should be myapp
 
 - gc info with config for gcp and azure
 - https://stackshare.io/terraform/alternatives
@@ -60,6 +57,8 @@
 - doc
 
 ## Aws
+
+- https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
 
 - Resource pages
 - delete keypair from kops
