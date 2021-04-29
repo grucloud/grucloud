@@ -2,7 +2,6 @@
 import { css, jsx } from "@emotion/core";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import classnames from "classnames";
 import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
@@ -80,7 +79,7 @@ const features = [
 function Feature({ imageUrl, title, description }) {
   const imgUrl = useBaseUrl(imageUrl);
   return (
-    <div className={classnames("col col--4", styles.feature)}>
+    <div className="col col--4">
       {imgUrl && (
         <div className="text--center">
           <img className={styles.featureImage} src={imgUrl} alt={title} />
@@ -94,10 +93,7 @@ function Feature({ imageUrl, title, description }) {
 
 const LinkLogo = ({ Logo, url }) => (
   <Link
-    className={classnames(
-      "button button--outline button--secondary button--lg",
-      styles.getStarted
-    )}
+    className="button button--outline button--secondary button--lg"
     to={useBaseUrl(url)}
   >
     <Logo></Logo>
@@ -252,7 +248,7 @@ function Home() {
             css={css`
               width: 250px;
             `}
-            className={classnames("button  button--secondary")}
+            className="button  button--secondary"
             to={"https://github.com/grucloud/grucloud/tree/main/examples"}
           >
             See more examples
@@ -308,7 +304,6 @@ function Home() {
               css={css`
                 width: 300px;
               `}
-              className={classnames("button  button--secondary")}
               to={"https://www.grucloud.com/docs/cli/gc"}
             >
               Visit the GruCloud CLI documentation

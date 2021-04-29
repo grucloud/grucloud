@@ -1,6 +1,10 @@
 const { isOurMinion } = require("../AwsCommon");
 
-const { AwsEC2, isOurMinionEC2Instance } = require("./AwsEC2");
+const {
+  AwsEC2,
+  isOurMinionEC2Instance,
+  compareEC2Instance,
+} = require("./AwsEC2");
 const { AwsClientKeyPair } = require("./AwsKeyPair");
 const { AwsVpc } = require("./AwsVpc");
 const { AwsInternetGateway } = require("./AwsInternetGateway");
@@ -57,7 +61,7 @@ module.exports = [
   },
   {
     type: "Subnet",
-    dependsOn: ["Vpc"],
+    dependsOn: ["Vpc", "NetworkInterface"],
     Client: AwsSubnet,
     isOurMinion,
   },
@@ -116,11 +120,11 @@ module.exports = [
       MaxCount: 1,
       MinCount: 1,
     },
+    compare: compareEC2Instance,
     isOurMinion: isOurMinionEC2Instance,
   },
   {
     type: "NetworkInterface",
-    dependsOn: ["Subnet"],
     Client: AwsNetworkInterface,
     isOurMinion,
   },

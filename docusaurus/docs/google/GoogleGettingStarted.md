@@ -1,6 +1,6 @@
 ---
 id: GoogleGettingStarted
-title: Getting Started
+title: GCP Getting Started
 ---
 
 Let's create a simple infrastructure with a server running ubuntu, connected to a public ip address, accessible through SSH.

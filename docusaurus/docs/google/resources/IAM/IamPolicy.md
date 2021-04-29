@@ -31,4 +31,4 @@ const iamPolicy = await provider.makeIamPolicy({
 
 ### Used By
 
-- [ServiceAccount](../Compute/ServiceAccount)
+- [ServiceAccount](../IAM/ServiceAccount)

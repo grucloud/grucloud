@@ -1,6 +1,6 @@
 ---
 id: GoogleExamples
-title: Examples
+title: Google Examples
 ---
 
 ## Virtual Machine

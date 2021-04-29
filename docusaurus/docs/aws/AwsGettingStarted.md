@@ -1,6 +1,6 @@
 ---
 id: AwsGettingStarted
-title: Getting Started
+title: Aws Getting Started
 ---
 
 Let's create a simple infrastructure with one [EC2 instance](https://aws.amazon.com/ec2/) with the [GruCloud AWS provider](https://www.npmjs.com/package/@grucloud/provider-aws).

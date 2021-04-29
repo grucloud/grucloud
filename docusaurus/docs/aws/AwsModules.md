@@ -1,6 +1,6 @@
 ---
 id: AwsModules
-title: Modules
+title: Aws Modules
 ---
 
 Modules encapsulates the creation of a set of related resources for a given functionality.

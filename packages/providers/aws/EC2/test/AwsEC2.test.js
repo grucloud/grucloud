@@ -9,12 +9,26 @@ const { CheckAwsTags } = require("../../AwsTagCheck");
 
 describe("AwsEC2", async function () {
   let config;
-  let provider;
-  let server;
-  let keyPair;
   const types = ["EC2"];
   const keyPairName = "kp";
   const serverName = "web-server";
+
+  const createStack = async ({ serverProperty }) => {
+    const provider = AwsProvider({
+      config: () => ({ projectName: "ec2-test" }),
+    });
+
+    const keyPair = await provider.useKeyPair({
+      name: keyPairName,
+    });
+
+    const server = await provider.makeEC2({
+      name: serverName,
+      properties: serverProperty,
+      dependencies: { keyPair },
+    });
+    return { provider, resources: { server } };
+  };
 
   before(async function () {
     try {
@@ -22,23 +36,16 @@ describe("AwsEC2", async function () {
     } catch (error) {
       this.skip();
     }
-    provider = AwsProvider({
-      name: "aws",
-      config: () => ({ projectName: "ec2-test" }),
-    });
-
-    keyPair = await provider.useKeyPair({
-      name: keyPairName,
-    });
-
-    server = await provider.makeEC2({
-      name: serverName,
-      properties: () => ({}),
-      dependencies: { keyPair },
-    });
   });
   after(async () => {});
   it("ec2 server resolveConfig", async function () {
+    const {
+      provider,
+      resources: { server },
+    } = await createStack({
+      serverProperty: () => ({}),
+    });
+
     assert.equal(server.name, serverName);
 
     const config = await server.resolveConfig();
@@ -47,19 +54,47 @@ describe("AwsEC2", async function () {
     assert.equal(config.MinCount, 1);
     //assert.equal(config.KeyName, keyPair.name);
   });
-  it.skip("ec2 apply plan", async function () {
-    await testPlanDeploy({ provider, types });
+  it("ec2 apply plan", async function () {
+    {
+      const {
+        provider,
+        resources: { server },
+      } = await createStack({
+        serverProperty: () => ({
+          InstanceType: "t2.micro",
+          ImageId: "ami-00f6a0c18edb19300", // Ubuntu 18.04
+        }),
+      });
 
-    const serverLive = await server.getLive();
+      await testPlanDeploy({ provider, types, destroy: true });
 
-    assert(
-      CheckAwsTags({
-        config: provider.config,
-        tags: serverLive.Tags,
-        name: server.name,
-      })
-    );
+      const serverLive = await server.getLive();
 
-    await testPlanDestroy({ provider, types });
+      assert(
+        CheckAwsTags({
+          config: provider.config,
+          tags: serverLive.Tags,
+          name: server.name,
+        })
+      );
+    }
+    {
+      const {
+        provider,
+        resources: { server },
+      } = await createStack({
+        serverProperty: () => ({
+          InstanceType: "t3.micro",
+          ImageId: "ami-00f6a0c18edb19300", // Ubuntu 18.04
+        }),
+      });
+
+      await testPlanDeploy({ provider, types, destroy: false });
+
+      const serverLive = await server.getLive();
+      //Check new Instance Type
+
+      await testPlanDestroy({ provider, types });
+    }
   });
 });

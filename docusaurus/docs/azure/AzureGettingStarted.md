@@ -1,6 +1,6 @@
 ---
 id: AzureGettingStarted
-title: Getting Started
+title: Azure Getting Started
 ---
 
 Let's create a simple infrastructure with the following resources:

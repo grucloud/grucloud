@@ -41,7 +41,7 @@ const urlMap = await provider.makeUrlMap({
 
 ## Used By
 
-- [HttpTargetProxy](./HttpTargetProxy.md)
+- [HttpsTargetProxy](./HttpsTargetProxy.md)
 
 ## GCloud docs
 

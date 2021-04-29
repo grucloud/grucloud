@@ -1,6 +1,6 @@
 ---
 id: AzureExamples
-title: Examples
+title: Azure Examples
 ---
 
 ## Virtual Machine

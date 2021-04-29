@@ -1,6 +1,6 @@
 ---
 id: AwsExamples
-title: Examples
+title: Aws Examples
 ---
 
 ## Simple Use Case
