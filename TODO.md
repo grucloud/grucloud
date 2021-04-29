@@ -1,7 +1,5 @@
 ## Bugs
 
-- ✖ NetworkInterface 4/6 Network interface 'eni-0aa140cf86a483205' is currently in use.
-
 - document useLoadBalancer
 - gc a: when an assert is thrown, it does not exit but ask for deployment confirmation.
 - code coverage with monorepo
@@ -60,6 +58,8 @@
 - doc
 
 ## Aws
+
+- https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
 
 - Resource pages
 - delete keypair from kops

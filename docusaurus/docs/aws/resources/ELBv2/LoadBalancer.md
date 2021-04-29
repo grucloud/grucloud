@@ -71,6 +71,65 @@ const loadBalancer = await provider.makeLoadBalancer({
 });
 ```
 
+### Reference an existing Load Balancer
+
+When using the _AWS Load Balancer Controller_ to create the load balancer & associated resources, there is the need to get a reference to this load balancer. _DNSName_ and _CanonicalHostedZoneId_ are 2 pieces of information required to create a DNS record which maps a DNS name to the load balancer DNS name.
+
+```js
+const clusterName = "cluster";
+const domainName = "test-load-balancer.grucloud.org";
+
+const loadBalancer = await provider.useLoadBalancer({
+  name: "load-balancer",
+  filterLives: ({ items }) =>
+    pipe([
+      () => items,
+      find(
+        pipe([
+          get("Tags"),
+          find(
+            and([
+              eq(get("Key"), "elbv2.k8s.aws/cluster"),
+              eq(get("Value"), clusterName),
+            ])
+          ),
+        ])
+      ),
+      tap((lb) => {
+        // log here
+      }),
+    ])(),
+});
+
+const hostedZone = await provider.makeHostedZone({
+  name: `${domainName}.`,
+});
+
+const loadBalancerRecord = await provider.makeRoute53Record({
+  name: `dns-record-alias-load-balancer-${hostedZoneName}`,
+  dependencies: { hostedZone, loadBalancer },
+  properties: ({ dependencies }) => {
+    const hostname = dependencies.loadBalancer.live?.DNSName;
+    if (!hostname) {
+      return {
+        message: "loadBalancer not up yet",
+        Type: "A",
+        Name: hostedZone.name,
+      };
+    }
+    return {
+      Name: hostedZone.name,
+      Type: "A",
+      AliasTarget: {
+        HostedZoneId: dependencies.loadBalancer?.live.CanonicalHostedZoneId,
+        DNSName: `${hostname}.`,
+        EvaluateTargetHealth: false,
+      },
+    };
+  },
+});
+```
+
 ## Source Code
 
 - [Load Balancer Module](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/load-balancer/iac.js)
