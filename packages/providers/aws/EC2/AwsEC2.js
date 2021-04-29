@@ -12,6 +12,7 @@ const {
   tryCatch,
   switchCase,
   or,
+  omit,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -22,7 +23,10 @@ const {
   forEach,
   find,
   identity,
+  includes,
 } = require("rubico/x");
+
+const { detailedDiff } = require("deep-object-diff");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsEc2" });
 const {
@@ -47,6 +51,7 @@ const { CheckAwsTags } = require("../AwsTagCheck");
 
 const StateRunning = "running";
 const StateTerminated = "terminated";
+const StateStopped = "stopped";
 
 exports.AwsEC2 = ({ spec, config }) => {
   assert(spec);
@@ -141,7 +146,8 @@ exports.AwsEC2 = ({ spec, config }) => {
 
   const getStateName = get("State.Name");
   const isInstanceUp = eq(getStateName, StateRunning);
-  const isInstanceDown = eq(getStateName, StateTerminated);
+  const isInstanceDown = (instance) =>
+    includes(getStateName(instance))([StateTerminated, StateStopped]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
 
@@ -240,6 +246,63 @@ exports.AwsEC2 = ({ spec, config }) => {
       }),
     ])();
 
+  const updateInstanceType = ({ InstanceId, updated }) =>
+    pipe([
+      () => updated,
+      get("InstanceType"),
+      tap.if(
+        not(isEmpty),
+        pipe([
+          (Value) => ({ InstanceId, InstanceType: { Value } }),
+          (params) => ec2().modifyInstanceAttribute(params),
+        ])
+      ),
+    ])();
+
+  const instanceStart = ({ InstanceId }) =>
+    pipe([
+      tap(() => {
+        logger.info(`instanceStart ${tos(InstanceId)}`);
+      }),
+      () => ec2().startInstances({ InstanceIds: [InstanceId] }),
+      () =>
+        retryCall({
+          name: `startInstances: ${InstanceId}`,
+          fn: () => isUpById({ id: InstanceId }),
+          config,
+        }),
+    ])();
+
+  const instanceStop = ({ InstanceId }) =>
+    pipe([
+      tap(() => {
+        logger.info(`instanceStop ${tos(InstanceId)}`);
+      }),
+      () => ec2().stopInstances({ InstanceIds: [InstanceId] }),
+      () =>
+        retryCall({
+          name: `stopInstances: ${InstanceId}`,
+          fn: () => isDownById({ id: InstanceId }),
+          config,
+        }),
+    ])();
+
+  const update = async ({ name, live: { InstanceId }, diff }) =>
+    pipe([
+      tap(() => {
+        logger.info(`update ec2 ${tos({ name, InstanceId, diff })}`);
+      }),
+      () => instanceStop({ InstanceId }),
+      () =>
+        updateInstanceType({
+          InstanceId,
+          updated: diff.updated,
+        }),
+      () => instanceStart({ InstanceId }),
+      tap(() => {
+        logger.info(`ec2 updated ${name}`);
+      }),
+    ])();
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property
   const create = async ({
     name,
@@ -441,6 +504,7 @@ exports.AwsEC2 = ({ spec, config }) => {
     getByName,
     findName,
     create,
+    update,
     destroyById,
     destroy,
     getList,
@@ -466,5 +530,19 @@ exports.isOurMinionEC2Instance = (item) =>
     or([isInOurCluster({ config: item.config }), isOurMinion]),
     tap((isOurMinion) => {
       logger.debug(`isOurMinionEC2Instance ${isOurMinion}`);
+    }),
+  ])();
+
+exports.compareEC2Instance = async ({ target, live, dependencies }) =>
+  pipe([
+    tap(() => {
+      assert(target);
+    }),
+    () => target,
+    omit(["TagSpecifications", "MinCount", "MaxCount"]),
+    (targetFiltered) => detailedDiff(live, targetFiltered),
+    omit(["deleted"]),
+    tap((diff) => {
+      logger.debug(`compareEC2Instance diff:${tos(diff)}`);
     }),
   ])();
