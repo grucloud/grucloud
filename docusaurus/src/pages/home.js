@@ -155,7 +155,9 @@ function Home() {
         </div>
 
         <p className="hero__subtitle">Infrastructure as Code in Javascript</p>
-        <p className="hero__subtitle">Deploy and Destroy Cloud Resources </p>
+        <p className="hero__subtitle">
+          Deploy, Visualize, Destroy Cloud Resources
+        </p>
       </header>
       <main
         css={css`
