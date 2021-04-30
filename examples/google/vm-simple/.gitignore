@@ -3,3 +3,6 @@ node_modules/
 .nyc_output
 coverage
 *.log
+*_rsa
+*_rsa.pub
+

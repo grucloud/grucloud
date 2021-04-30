@@ -51,6 +51,7 @@ module.exports = GoogleClient = ({
 
     return false;
   },
+  findDependencies,
 }) => {
   assert(baseURL);
   assert(url);
@@ -78,6 +79,7 @@ module.exports = GoogleClient = ({
     cannotBeDeleted,
     shouldRetryOnException,
     onCreateExpectedException,
+    findDependencies,
     axios: createAxiosMakerGoogle({
       baseURL,
       url,

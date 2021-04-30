@@ -72,8 +72,7 @@ describe("GoogleProvider", async function () {
   it("gcp info", async function () {
     const info = await provider.info();
     assert(info.projectId);
-    assert(info.region);
-    assert(info.zone);
+    assert(info.config);
   });
   it("gcp server resolveConfig ", async function () {
     const config = await server.resolveConfig();

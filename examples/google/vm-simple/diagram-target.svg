@@ -21,12 +21,12 @@
 <polygon fill="#eeeeee" stroke="#eeeeee" points="41,-54 41,-137 172,-137 172,-54 41,-54"/>
 <text text-anchor="start" x="106.36" y="-58.3" font-family="Helvetica,sans-Serif" font-size="1.00" fill="#383838"> </text>
 </g>
-<!-- VmInstance::webserver -->
+<!-- VmInstance::web&#45;server -->
 <g id="node1" class="node">
-<title>VmInstance::webserver</title>
+<title>VmInstance::web&#45;server</title>
 <polygon fill="#e5e5e5" stroke="#dddddd" points="164,-129 49,-129 49,-71 164,-71 164,-129"/>
 <text text-anchor="start" x="61.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">VmInstance</text>
-<text text-anchor="start" x="61.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">webserver</text>
+<text text-anchor="start" x="61.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">web&#45;server</text>
 </g>
 </g>
 </svg>

@@ -13,6 +13,8 @@ const {
   filter,
   switchCase,
   eq,
+  not,
+  omit,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -27,8 +29,11 @@ const {
 const { JWT } = require("google-auth-library");
 const shell = require("shelljs");
 
+const { convertError } = require("@grucloud/core/Common");
+
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
+const YAML = require("@grucloud/core/cli/json2yaml");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GoogleProvider" });
 const { tos } = require("@grucloud/core/tos");
@@ -233,7 +238,15 @@ const serviceEnable = async ({ accessToken, projectId, servicesApiMap }) => {
         `Enabling ${servicesApis.length} services: ${servicesApis.join(", ")}`
       );
     }),
-    () => axiosService.get("/services?filter=state:ENABLED"),
+    () =>
+      retryCallOnError({
+        name: `get("/services?filter=state:ENABLED")`,
+        fn: () => axiosService.get("/services?filter=state:ENABLED"),
+        config: { retryCount: 20, retryDelay: 2e3 },
+        shouldRetryOnException: ({ error }) => {
+          return [403].includes(error.response?.status);
+        },
+      }),
     get("data.services"),
     tap((xxx) => {
       logger.debug("services");
@@ -242,7 +255,7 @@ const serviceEnable = async ({ accessToken, projectId, servicesApiMap }) => {
     (servicesEnabled = []) =>
       filter((service) => !servicesEnabled.includes(service))(servicesApis),
     switchCase([
-      (serviceIds) => !isEmpty(serviceIds),
+      not(isEmpty),
       pipe([
         tap((serviceIds) => {
           logger.info(`Enabling ${serviceIds.length} services`);
@@ -730,7 +743,7 @@ const createProject = async ({ accessToken, projectName, projectId }) => {
     () => axiosProject.get("/"),
     get("data.projects"),
     tap((projects) => {
-      logger.debug(`createProject projects: ${tos(projects)}`);
+      logger.debug(`Current projects: ${tos(projects)}`);
     }),
     filter(eq(get("lifecycleState"), "ACTIVE")),
     find(eq(get("name"), projectName)),
@@ -742,7 +755,7 @@ const createProject = async ({ accessToken, projectName, projectId }) => {
       pipe([
         tap(() => {
           logger.debug(
-            `creating project ${projectName}, projectId: ${projectId}`
+            `Creating project ${projectName}, projectId: ${projectId}`
           );
         }),
         () =>
@@ -867,14 +880,12 @@ const info = ({
   serviceAccountName,
 }) => {
   return {
-    stage: config.stage,
     projectId,
     projectName,
-    region: config.region,
-    zone: config.zone,
     applicationCredentialsFile,
     serviceAccountName,
     hasGCloud: !!gcloudConfig,
+    config: omit(["projectName", "projectId", "accessToken"])(config),
   };
 };
 
@@ -890,56 +901,83 @@ const init = async ({
     console.error(`gcloud is not installed, setup aborted`);
     return;
   }
-  console.log(`Initializing project ${projectId}`);
-  const accessToken = getDefaultAccessToken();
-  if (!accessToken) {
-    logger.debug(
-      `cannot get default access token, run 'gcloud auth login' and try again`
-    );
-    return;
-  }
 
-  await createProject({ projectName, projectId, accessToken });
-
-  await serviceEnable({
-    projectId,
-    accessToken,
-    servicesApiMap: servicesApiMapBase,
-  });
-
-  await billingEnable({ projectId, accessToken });
-
-  await serviceAccountCreate({
-    projectId,
-    accessToken,
-    serviceAccountName,
-  });
-  console.log(
-    `Create and save credential file to ${applicationCredentialsFile}`
-  );
-
-  await serviceAccountKeyCreate({
-    projectId,
-    projectName,
-    accessToken,
-    serviceAccountName,
-    applicationCredentialsFile,
-  });
-  console.log(`Update iam policy`);
-
-  await iamPolicyAdd({
-    accessToken,
-    projectId,
-    serviceAccountName,
-  });
-
-  await serviceEnable({
-    projectId,
-    accessToken,
-    servicesApiMap: servicesApiMapMain,
-  });
-
-  console.log(`Project is now initialized`);
+  return tryCatch(
+    pipe([
+      () => {
+        console.log(`Initializing project ${projectId}`);
+      },
+      () => getDefaultAccessToken(),
+      switchCase([
+        isEmpty,
+        () => {
+          console.error(
+            `Cannot get default access token, run 'gcloud auth login' and try again`
+          );
+        },
+        (accessToken) =>
+          pipe([
+            () => createProject({ projectName, projectId, accessToken }),
+            () =>
+              serviceEnable({
+                projectId,
+                accessToken,
+                servicesApiMap: servicesApiMapBase,
+              }),
+            () => billingEnable({ projectId, accessToken }),
+            () =>
+              serviceAccountCreate({
+                projectId,
+                accessToken,
+                serviceAccountName,
+              }),
+            () => {
+              console.log(
+                `Create and save credential file to ${applicationCredentialsFile}`
+              );
+            },
+            () =>
+              serviceAccountKeyCreate({
+                projectId,
+                projectName,
+                accessToken,
+                serviceAccountName,
+                applicationCredentialsFile,
+              }),
+            () => {
+              console.log(`Update IAM policy`);
+            },
+            () =>
+              iamPolicyAdd({
+                accessToken,
+                projectId,
+                serviceAccountName,
+              }),
+            () =>
+              serviceEnable({
+                projectId,
+                accessToken,
+                servicesApiMap: servicesApiMapMain,
+              }),
+            () => {
+              console.log(`Project ${projectName} is now initialized`);
+            },
+          ])(),
+      ]),
+    ]),
+    pipe([
+      tap((error) => {
+        assert(true);
+      }),
+      (error) => convertError({ error }),
+      tap((error) => {
+        console.error(YAML.stringify(error));
+      }),
+      (error) => {
+        throw error;
+      },
+    ])
+  )();
 };
 
 const unInit = async ({
