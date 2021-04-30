@@ -5,7 +5,7 @@ title: Aws Getting Started
 
 This tutorial explains the deployment automation of a simple [AWS EC2 instance](https://aws.amazon.com/ec2/) with the [GruCloud AWS provider](https://www.npmjs.com/package/@grucloud/provider-aws).
 
-Instead of manually creating, updating, and destroying EC2 instances, the infrastructure will be described as Javascript code, the GruCloud CLI then reads this code, retrieves the lives resources through the AWS API, and decides what needs to be created, updated or destroyed.
+Instead of manually creating, updating, and destroying EC2 instances, the infrastructure will be described as Javascript code. The GruCloud CLI then reads this code, retrieves the lives resources through the AWS API, and decides what needs to be created, updated, or destroyed.
 
 ![graph-diagram-ec2.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2-simple/diagram-target.svg)
 
@@ -34,7 +34,7 @@ Visit the [security credentials](https://console.aws.amazon.com/iam/home#/securi
 
 Write down the **AWSAccessKeyId** and **AWSSecretKey**
 
-> In further episode, the access and secret key will be obtained from a dedicated IAM user with the correct role and policy.
+> In a further episode, the access and secret key will be obtained from a dedicated IAM user with the correct role and policy.
 
 ### Configure AWS CLI
 
@@ -46,7 +46,7 @@ aws configure
 
 ### Getting the GruCloud CLI
 
-GruCloud is a written in Javascript running on [NodeJs](https://nodejs.org/). Check if node is present on your system:
+GruCloud is written in Javascript running on [NodeJs](https://nodejs.org/). Check if `node` is present on your system:
 
 ```
 node --version
@@ -54,7 +54,7 @@ node --version
 
 > The version must be greater than 14
 
-Install the _GrucCloud_ command line utility **gc** with _npm_
+Install the _GrucCloud_ command-line utility **gc** with _npm_
 
 ```sh
 npm i -g @grucloud/core
@@ -70,10 +70,10 @@ gc --version
 
 In this section, we'll create the files needed to describe an infrastructure with GruCloud:
 
-- [package.json](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/package.json): specifies the npm dependencies and other informations.
+- [package.json](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/package.json): specifies the npm dependencies and other information.
 - [config.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/config.js): the config function.
 - [iac.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/iac.js): exports _createStack_ with provider and resources associated
-- [hooks.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/hook.js): optionnaly provides hook functions called after deployment or destruction.
+- [hooks.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/hook.js): optionally provides hook functions called after deployment or destruction.
 
 > The [source code](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2-simple) for this example in on GitHub.
 
@@ -119,7 +119,7 @@ module.exports = ({ stage }) => ({
 });
 ```
 
-You will have to find out the `ImageId` for your specific region. One way to retrieve to list of images is with the aws cli:
+You will have to find out the `ImageId` for your specific region. One way to retrieve to list of images is with the _aws cli_:
 
 ```sh
 aws ec2 describe-images --filters "Name=description,Values=Ubuntu Server 20.04 LTS" "Name=architecture,Values=x86_64"
@@ -134,7 +134,7 @@ We'll first import _AwsProvider_ from [@grucloud/provider-aws](https://www.npmjs
 
 [iac.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/iac.js) must export the `createStack` function which returns the provider and the resources.
 
-Then, instanciate _AwsProvider_ by provider the _config_ function.
+Then, instantiate _AwsProvider_ by providing the _config_ function.
 
 In the case, an [EC2 Instance](https://www.grucloud.com/docs/aws/resources/EC2/EC2) is defined with `provider.makeEC2`.
 
@@ -285,7 +285,7 @@ To list all the resources, and generate a diagram:
 gc list --graph --all
 ```
 
-This will include the default AWS resources such as VPC, subnet, internet gateway and security group.
+This will include the default AWS resources such as VPC, subnet, internet gateway, and security group.
 
 ![graph-live](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2-simple/diagram-live.svg)
 
@@ -424,13 +424,13 @@ Provider: aws
 Command "gc l -o" executed in 7s
 ```
 
-> Note that tags have been added to the EC2 Instance, it gives GruCloud a way to identify the resources under its control. Unlike other instructure as code tool such as Terraform and Pulumi, GruCloud does not need a _state_ file. Hence removing a lot a complexity and issues.
+> Note that tags have been added to the EC2 Instance, it gives GruCloud a way to identify the resources under its control. Unlike other infrastructure as code tools such as Terraform and Pulumi, GruCloud does not need a _state_ file. Hence removing a lot of complexity and issues.
 
 ### Update
 
 The ec2 instance configuration might change, for instance, let's modify the machine type to `t3.micro` located in _config.js_
 
-The `plan` command is a read-only command which fetches the live resources and compare them with the targets resources defined in the code.
+The `plan` command is a read-only command which fetches the live resources and compares them with the target resources defined in the code.
 
 ```sh
 gc plan
@@ -501,7 +501,7 @@ gc output -t EC2 --name web-server -f 'NetworkInterfaces[0].Association.PublicIp
 18.130.34.212
 ```
 
-The tentation to ping is high:
+The temptation to ping is high:
 
 ```sh
 ping `gc output -t EC2 --name web-server -f 'NetworkInterfaces[0].Association.PublicIp'`
@@ -565,18 +565,18 @@ Provider: aws
 Command "gc list -t EC2" executed in 3s
 ```
 
-This example demonstrates how to code a very basic infrastructure with one EC2 instance, and how can we use the `gc apply`, `gc list`, `gc destroy` and `gc graph` to manage the instrastructure.
+This example demonstrates how to code a very basic infrastructure with one EC2 instance, and how can we use the `gc apply`, `gc list`, `gc destroy` and `gc graph` to manage the infrastructure.
 
 It paves the way for more [AWS examples](https://www.grucloud.com/docs/aws/AwsExamples)
 
 ### Graph
 
-A picture is worth a thousand words, GruCloud generates SVG file describing the resources and their relationship.
+A picture is worth a thousand words, GruCloud generates an SVG file describing the resources and their relationship.
 
 ```
 gc graph
 ```
 
-Here is the graph of a tipical web application managed by Kubernetes running on AWS where the master node is managed by EKS.
+Here is the graph of a typical web application managed by Kubernetes running on AWS where the master node is managed by EKS.
 
 ![kubernetes eks](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/diagram-target.svg)
