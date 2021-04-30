@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-k8s-tuto1",
-  "version": "1.14.0",
+  "version": "1.14.1",
   "description": "GruCloud Kubernetes Tutorial Part 1",
   "main": "iac.js",
   "private": true,
