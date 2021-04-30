@@ -50,6 +50,7 @@
 
 ## Azure
 
+- list ec2 instance in stopped state
 - remove NetworkWatcherRG from list
 - check resource group name
 - check machine type: https://docs.microsoft.com/en-us/rest/api/compute/availabilitysets/listavailablesizes#virtualmachinesize

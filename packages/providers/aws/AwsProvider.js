@@ -142,7 +142,6 @@ exports.AwsProvider = ({
 
   const info = () => ({
     accountId,
-    region,
     zone,
     config: mergedConfig,
   });
