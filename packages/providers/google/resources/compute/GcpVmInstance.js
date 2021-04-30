@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { get, eq, switchCase } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { get, eq, switchCase, pipe, tap, map } = require("rubico");
+const { defaultsDeep, pluck, find } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GcpVmInstance" });
 const { tos } = require("@grucloud/core/tos");
@@ -15,7 +15,44 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
   assert(spec);
   assert(configProvider);
   assert(configProvider.stage);
+  const { providerName } = configProvider;
+  assert(providerName);
   const { projectId, region, zone, managedByTag } = configProvider;
+
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "Network",
+      ids: pipe([
+        () => live,
+        get("networkInterfaces"),
+        pluck("network"),
+        map((network) =>
+          pipe([
+            () => lives.getByType({ type: "Network", providerName }),
+            get("resources", []),
+            find(eq(get("live.selfLink"), network)),
+            get("id"),
+          ])()
+        ),
+      ])(),
+    },
+    {
+      type: "SubNetwork",
+      ids: pipe([
+        () => live,
+        get("networkInterfaces"),
+        pluck("subnetwork"),
+        map((network) =>
+          pipe([
+            () => lives.getByType({ type: "SubNetwork", providerName }),
+            get("resources", []),
+            find(eq(get("live.selfLink"), network)),
+            get("id"),
+          ])()
+        ),
+      ])(),
+    },
+  ];
 
   const configDefault = ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ properties, dependencies })}`);
@@ -136,5 +173,6 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
     config: configProvider,
     isUpByIdFactory,
     configDefault,
+    findDependencies,
   });
 };

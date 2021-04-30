@@ -1,28 +1,23 @@
 const { GoogleProvider } = require("@grucloud/provider-google");
 
-exports.createStack = async () => {
-  const provider = GoogleProvider({ config: require("./config") });
-
+const createResources = async ({ provider }) => {
+  const { config } = provider;
   const server = await provider.makeVmInstance({
-    name: `webserver`,
-    properties: () => ({
-      diskSizeGb: "20",
-      machineType: "f1-micro",
-      sourceImage:
-        "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
-      metadata: {
-        items: [
-          {
-            key: "enable-oslogin",
-            value: "True",
-          },
-        ],
-      },
-    }),
+    name: config.vm.name,
+    properties: () => config.vm.properties,
   });
 
   return {
+    server,
+  };
+};
+
+exports.createStack = async ({ config, stage }) => {
+  const provider = GoogleProvider({ config, stage });
+  const resources = await createResources({ provider });
+
+  return {
     provider,
-    resources: { server },
+    resources,
   };
 };

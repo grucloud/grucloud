@@ -1717,7 +1717,7 @@ function CoreProvider({
       () => startBase({ onStateChange: identity }),
       () => ({
         provider: toString(),
-        stage: providerConfig.stage,
+        //stage: providerConfig.stage,
         ...info(),
       }),
       tap((info) => {

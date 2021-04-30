@@ -3,74 +3,382 @@ id: GoogleGettingStarted
 title: GCP Getting Started
 ---
 
-Let's create a simple infrastructure with a server running ubuntu, connected to a public ip address, accessible through SSH.
+## Objective
 
-First of all, make sure all the gcp prerequisites has been met: [GoogleRequirements](./GoogleRequirements.md)
+Let's automate the deployment of a virtual machine on GCP, the Google Cloud Platform.
 
+This basic infrastructure is going to be described and configured in Javascript with the GruCloud GCP provider, distributed as the NPM package [@grucloud/provider-google](https://www.npmjs.com/package/@grucloud/provider-google)
+
+This diagram represents the target resources that will be deployed:
+
+![graph-target-gpc-vm](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/vm-simple/diagram-target.svg)
+
+> The diagram is generated with `gc graph`
+
+## Requirements
+
+### GCP Account
+
+Access to the [GCP console](https://console.cloud.google.com/home/dashboard) is required to run this tutorial.
+
+### gcloud
+
+Ensure the GCP CLI called [gcloud](https://cloud.google.com/sdk/docs/install) is installed:
+
+```sh
+$ gcloud -v
 ```
-gcloud info
+
+```txt
+Google Cloud SDK 318.0.0
+beta 2020.11.06
+bq 2.0.62
+core 2020.11.06
+gsutil 4.54
 ```
 
-## Getting the code
+### Initialise gcloud
 
-Install the grucloud command line utility: **gc**
+Initialize _gcloud_ in order to authenticate your user, as well and setting the default region and zone:
 
-```bash
+```sh
+gcloud init
+```
+
+Check the config at any time with:
+
+```sh
+gcloud config list
+```
+
+### SSH keys
+
+The section describes how to manage SSH keys to access the virtual machine.
+
+First of all, let's list the SSH keys that may have been already created:
+
+```sh
+gcloud compute os-login ssh-keys list
+```
+
+Describe a specific key with:
+
+```sh
+gcloud compute os-login ssh-keys describe --key=ad1811081881c04dad627f96b5d20ddd41fd44e31e76fc259c3e2534f75a190b
+```
+
+Let's create a new SSH key pair for this project and call it for instance `gcp-vm_rsa`
+
+```sh
+ssh-keygen -t rsa
+```
+
+Upload your ssh keys:
+
+```sh
+gcloud compute os-login ssh-keys add --key-file gcp-vm_rsa.pub
+```
+
+### Node.js
+
+GruCloud is written in Javascript running on [Node.js](https://nodejs.org)
+
+Verify the presence of _node_ and check the version:
+
+```sh
+node --version
+```
+
+Any version above 14 should be fine.
+
+### GruCloud CLI
+
+The GruCloud CLI called `gc` can be installed globally with NPM:
+
+```sh
 npm i -g @grucloud/core
 ```
 
-Clone one of the example:
+As a sanity check, display the version with:
 
-```bash
-git clone git@github.com:grucloud/grucloud.git
+```sh
+gc --version
 ```
 
-```bash
-cd grucloud/examples/google/vm
+That's all for these requirements.
+
+## Code Architecture
+
+The infrastructure will be configured and described as Javascript code, defined in the following file
+
+- [package.json](https://github.com/grucloud/grucloud/blob/main/examples/google/vm-simple/package.json): contains the project dependencies.
+- [config.js](https://github.com/grucloud/grucloud/blob/main/examples/google/vm-simple/config.js): the configuration function.
+- [iac.js](https://github.com/grucloud/grucloud/blob/main/examples/google/vm-simple/iac.js): the infrastructure as code
+- [hook.js](https://github.com/grucloud/grucloud/blob/main/examples/google/vm-simple/hook.js): user defined function executed after deployment or destruction.
+
+The next sections show how to create a new project from scratch.
+
+> FYI, the [source code](https://github.com/grucloud/grucloud/blob/main/examples/google/vm-simple) for this example.
+
+First of all, create a new folder called for instance `vm-simple` and `cd` to it.
+
+```sh
+mkdir vm-simple
+cd vm-simple
 ```
 
-```bash
-npm install
+### package.json
+
+The _package.json_ file is usually created with:
+
+```sh
+npm init
 ```
 
-## Project Name
+The project depends on libraries distributed on NPM. For this example targeting GCP, install [@grucloud/provider-google](https://www.npmjs.com/package/@grucloud/provider-google) and `@grucloud/core`
 
-Edit _config/default.js_ ans set the _projectName_
+```
+npm install @grucloud/core @grucloud/provider-google
+```
 
-## Initialise
+### config.js
 
-Initialise the project:
+The configuration is defined in [config.js](https://github.com/grucloud/grucloud/blob/main/examples/google/vm-simple/config.js)
+
+The minimum is to set the _projectName_ and _projectId_.
+
+```js
+// config.js
+// TODO
+```
+
+GruCloud will take care of creating the project if necessary.
+
+The `stage` parameter by default is `dev`. It could be any value such as `production`, `uat` or any other stages of your deployment.
+Notice how the `projectName` could be prefixed or suffixed with stage.
+
+### iac.js
+
+Now it is time to create the infrastructure **iac.js** file that describes the architecture:
+
+```js
+// iac.js
+// TODO
+```
+
+## Initialisation
+
+A few actions need to be performed prior to deploying the resources.
+
+- Create the project
+- Setup billing for that project
+- Enable the API services
+- Create a service account
+- Create and save the credential file for this service account
+- Update the IAM policy by binding roles to the service account
+
+The preparation steps are fully automated:
 
 ```sh
 gc init
 ```
 
-## iac.js
+### Project
 
-Now it is time to edit the infrastructure **iac.js** file that describes the architecture:
+Let's verify the project has been created:
 
-```js
-const { GoogleProvider } = require("@grucloud/provider-google");
-
-exports.createStack = async ({ config }) => {
-  // Create GCP provider
-  const provider = GoogleProvider({ config });
-  // Allocate public Ip address
-  const ip = await provider.makeAddress({ name: "ip-webserver" });
-  // Allocate a server
-  const server = await provider.makeVmInstance({
-    name: "web-server",
-    dependencies: { ip },
-    properties: () => ({
-      machineType: "e2-micro",
-    }),
-  });
-
-  return { provider };
-};
+```sh
+gcloud projects list
 ```
 
-## Plan
+```txt
+PROJECT_ID                      NAME                   PROJECT_NUMBER
+vm-tuto                         vm-tuto                623960601462
+```
+
+Perfect, the project has been created automatically based on our config.
+
+### API Services
+
+The `init` command takes care of enabling the minimum set of API services:
+
+- cloudbilling.googleapis.com
+- cloudresourcemanager.googleapis.com
+- iam.googleapis.com
+- serviceusage.googleapis.com
+
+Let's check all the services in the _enabled_ state:
+
+```sh
+gcloud services list --enabled
+```
+
+```txt
+NAME                                 TITLE
+bigquery.googleapis.com              BigQuery API
+bigquerystorage.googleapis.com       BigQuery Storage API
+cloudbilling.googleapis.com          Cloud Billing API
+clouddebugger.googleapis.com         Cloud Debugger API
+cloudresourcemanager.googleapis.com  Cloud Resource Manager API
+cloudtrace.googleapis.com            Cloud Trace API
+compute.googleapis.com               Compute Engine API
+datastore.googleapis.com             Cloud Datastore API
+dns.googleapis.com                   Cloud DNS API
+domains.googleapis.com               Cloud Domains API
+iam.googleapis.com                   Identity and Access Management (IAM) API
+iamcredentials.googleapis.com        IAM Service Account Credentials API
+logging.googleapis.com               Cloud Logging API
+monitoring.googleapis.com            Cloud Monitoring API
+networkmanagement.googleapis.com     Network Management API
+oslogin.googleapis.com               Cloud OS Login API
+servicemanagement.googleapis.com     Service Management API
+serviceusage.googleapis.com          Service Usage API
+sql-component.googleapis.com         Cloud SQL
+storage-api.googleapis.com           Google Cloud Storage JSON API
+storage-component.googleapis.com     Cloud Storage
+storage.googleapis.com               Cloud Storage API
+```
+
+### Service Account
+
+A service account called in the form of `grucloud@YouProjecId.iam.gserviceaccount.com` is created and will be used by GruCloud to talk to GCP.
+
+Let's retrieve the list of service accounts:
+
+```sh
+gcloud iam service-accounts list
+```
+
+```txt
+DISPLAY NAME              EMAIL                                                    DISABLED
+grucloud service account  grucloud@grucloud-e2e.iam.gserviceaccount.com            False
+```
+
+Bingo, the service account has been created successfully.
+
+### Roles Binding
+
+Next, the operation is to bind the following roles to the service account `grucloud@vm-tuto1.iam.gserviceaccount.com`
+
+- iam.serviceAccountAdmin
+- compute.admin
+- storage.admin
+- storage.objectAdmin
+- dns.admin
+- editor
+- resourcemanager.projectIamAdmin
+
+```sh
+gcloud projects get-iam-policy  vm-tuto1
+```
+
+```txt
+bindings:
+- members:
+  - serviceAccount:grucloud@vm-tuto1.iam.gserviceaccount.com
+  role: roles/compute.admin
+- members:
+  - serviceAccount:service-571739547473@compute-system.iam.gserviceaccount.com
+  role: roles/compute.serviceAgent
+- members:
+  - serviceAccount:grucloud@vm-tuto1.iam.gserviceaccount.com
+  role: roles/dns.admin
+- members:
+  - serviceAccount:571739547473-compute@developer.gserviceaccount.com
+  - serviceAccount:571739547473@cloudservices.gserviceaccount.com
+  - serviceAccount:grucloud@vm-tuto1.iam.gserviceaccount.com
+  role: roles/editor
+- members:
+  - serviceAccount:grucloud@vm-tuto1.iam.gserviceaccount.com
+  role: roles/iam.serviceAccountAdmin
+- members:
+  - user:frederic.heem@gmail.com
+  role: roles/owner
+- members:
+  - serviceAccount:grucloud@vm-tuto1.iam.gserviceaccount.com
+  role: roles/resourcemanager.projectIamAdmin
+- members:
+  - serviceAccount:grucloud@vm-tuto1.iam.gserviceaccount.com
+  role: roles/storage.admin
+- members:
+  - serviceAccount:grucloud@vm-tuto1.iam.gserviceaccount.com
+  role: roles/storage.objectAdmin
+etag: BwXBNb1KkZg=
+version: 1
+```
+
+As expected, the roles are bounded to our service account.
+
+### Credential file
+
+A credential file is generated and is located at `/Users/yourusername/.config/gcloud/YourProjectId.json`
+
+For your information, here what it looks like:
+
+```
+{
+  "type": "service_account",
+  "project_id": "vm-tuto1",
+  "private_key_id": "112233445566aabb00d4e4071478a7ca74c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nTHE PRIVATE KEY HERE\n-----END PRIVATE KEY-----\n",
+  "client_email": "grucloud@vm-tuto1.iam.gserviceaccount.com",
+  "client_id": "123456789858242482",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/grucloud%40vm-tuto1.iam.gserviceaccount.com"
+}
+```
+
+### Info
+
+The `info` provides useful information about the project and its configuration:
+
+```sh
+gc info
+```
+
+```txt
+  - provider:
+      name: google
+      type: google
+    projectId: vm-tuto1
+    projectName: vm-tuto1
+    applicationCredentialsFile: /Users/yourusername/.config/gcloud/vm-tuto1.json
+    serviceAccountName: grucloud
+    hasGCloud: true
+    config:
+      vm:
+        name: web-server
+        properties:
+          diskSizeGb: 20
+          machineType: f1-micro
+          sourceImage: projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts
+          metadata:
+            items:
+              - key: enable-oslogin
+                value: True
+      managedByTag: -managed-by-gru
+      managedByKey: managed-by
+      managedByValue: grucloud
+      region: southamerica-east1
+      zone: southamerica-east1-b
+
+Command "gc info" executed in 1s
+```
+
+At this stage, the system is ready for deployment.
+
+## CLI Workflow
+
+The infrastructure can be managed with a bunch of commands:
+
+- `gc plan`
+- `gc apply`
+- `gc list`
+- `gc destroy`
+
+### Plan
 
 Find out which resources are going to be allocated:
 
@@ -78,32 +386,265 @@ Find out which resources are going to be allocated:
 gc plan
 ```
 
-## Deploy
+```txt
+Querying resources on 1 provider: google
+✓ google
+  ✓ Initialising
+  ✓ Listing 6/6
+  ✓ Querying
+    ✓ VmInstance 1/1
+┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 VmInstance from google                                                                            │
+├────────────┬──────────┬─────────────────────────────────────────────────────────────────────────────┤
+│ Name       │ Action   │ Data                                                                        │
+├────────────┼──────────┼─────────────────────────────────────────────────────────────────────────────┤
+│ web-server │ CREATE   │ kind: compute#instance                                                      │
+│            │          │ name: web-server                                                            │
+│            │          │ zone: projects/vm-tuto1/zones/southamerica-east1-b                          │
+│            │          │ machineType: projects/vm-tuto1/zones/southamerica-east1-b/machineTypes/f1-… │
+│            │          │ labels:                                                                     │
+│            │          │   managed-by: grucloud                                                      │
+│            │          │   stage: dev                                                                │
+│            │          │ metadata:                                                                   │
+│            │          │   items:                                                                    │
+│            │          │     - key: enable-oslogin                                                   │
+│            │          │       value: True                                                           │
+│            │          │   kind: compute#metadata                                                    │
+│            │          │ disks:                                                                      │
+│            │          │   - kind: compute#attachedDisk                                              │
+│            │          │     type: PERSISTENT                                                        │
+│            │          │     boot: true                                                              │
+│            │          │     mode: READ_WRITE                                                        │
+│            │          │     autoDelete: true                                                        │
+│            │          │     deviceName: web-server-managed-by-gru                                   │
+│            │          │     initializeParams:                                                       │
+│            │          │       sourceImage: projects/ubuntu-os-cloud/global/images/family/ubuntu-20… │
+│            │          │       diskType: projects/vm-tuto1/zones/southamerica-east1-b/diskTypes/pd-… │
+│            │          │       diskSizeGb: 20                                                        │
+│            │          │     diskEncryptionKey:                                                      │
+│            │          │ networkInterfaces:                                                          │
+│            │          │   - kind: compute#networkInterface                                          │
+│            │          │     subnetwork: projects/vm-tuto1/regions/southamerica-east1/subnetworks/d… │
+│            │          │     accessConfigs:                                                          │
+│            │          │       - kind: compute#accessConfig                                          │
+│            │          │         name: External NAT                                                  │
+│            │          │         type: ONE_TO_ONE_NAT                                                │
+│            │          │         networkTier: PREMIUM                                                │
+│            │          │     aliasIpRanges: []                                                       │
+│            │          │ displayDevice:                                                              │
+│            │          │   enableDisplay: false                                                      │
+│            │          │ canIpForward: false                                                         │
+│            │          │ scheduling:                                                                 │
+│            │          │   preemptible: false                                                        │
+│            │          │   onHostMaintenance: MIGRATE                                                │
+│            │          │   automaticRestart: true                                                    │
+│            │          │   nodeAffinities: []                                                        │
+│            │          │ deletionProtection: false                                                   │
+│            │          │ reservationAffinity:                                                        │
+│            │          │   consumeReservationType: ANY_RESERVATION                                   │
+│            │          │ shieldedInstanceConfig:                                                     │
+│            │          │   enableSecureBoot: false                                                   │
+│            │          │   enableVtpm: true                                                          │
+│            │          │   enableIntegrityMonitoring: true                                           │
+│            │          │ confidentialInstanceConfig:                                                 │
+│            │          │   enableConfidentialCompute: false                                          │
+│            │          │                                                                             │
+└────────────┴──────────┴─────────────────────────────────────────────────────────────────────────────┘
 
-Happy with the expected plan ? Deploy it now:
+
+┌────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Plan summary for provider google                                                                   │
+├────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ DEPLOY RESOURCES                                                                                   │
+├────────────────────┬───────────────────────────────────────────────────────────────────────────────┤
+│ VmInstance         │ web-server                                                                    │
+└────────────────────┴───────────────────────────────────────────────────────────────────────────────┘
+1 resource to deploy on 1 provider
+Command "gc plan" executed in 6s
+```
+
+Have the opportunity to review the change that will be applied next.
+
+### Deploy
+
+Happy with the expected plan? Deploy it now:
 
 ```sh
 gc apply
 ```
 
-Verify the newly created server is accessible:
-
-```sh
-gcloud compute ssh web-server
+```txt
+Querying resources on 1 provider: google
+✓ google
+  ✓ Initialising
+  ✓ Listing 6/6
+  ✓ Querying
+    ✓ VmInstance 1/1
+┌────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Plan summary for provider google                                                                   │
+├────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ DEPLOY RESOURCES                                                                                   │
+├────────────────────┬───────────────────────────────────────────────────────────────────────────────┤
+│ VmInstance         │ web-server                                                                    │
+└────────────────────┴───────────────────────────────────────────────────────────────────────────────┘
+✔ Are you sure to deploy 1 resource, 1 type on 1 provider? … yes
+Deploying resources on 1 provider: google
+✓ google
+  ✓ Initialising
+  ✓ Deploying
+    ✓ VmInstance 1/1
+1 resource deployed of 1 type and 1 provider
+Running OnDeployedGlobal resources on 1 provider: google
+Command "gc a" executed in 21s
 ```
 
-## List
-
-List the available resources with:
+Verify the newly created server is accessible through SSH:
 
 ```sh
-gc list
+gcloud compute ssh web-server --project vm-tuto1
 ```
 
-## Destroy
+Mission accomplished! The server is installed, up and running.
 
-Time to destroy the resouces allocated:
+Triple check the instance is running on the [gcp compute console](https://console.cloud.google.com/compute/instances)
+
+### List
+
+The command queries the GCP API and lists the available resources. It gives an overall view of the resources under the current project.
+
+The `--graph` options generate a diagram of the live resources, showing their dependencies.
+
+```sh
+gc list --graph
+```
+
+```
+[...TRUNCATED]
+List Summary:
+Provider: google
+┌───────────────────────────────────────────────────────────────────────┐
+│ google                                                                │
+├────────────────────┬──────────────────────────────────────────────────┤
+│ Network            │ default                                          │
+├────────────────────┼──────────────────────────────────────────────────┤
+│ Firewall           │ default-allow-icmp                               │
+│                    │ default-allow-internal                           │
+│                    │ default-allow-rdp                                │
+│                    │ default-allow-ssh                                │
+├────────────────────┼──────────────────────────────────────────────────┤
+│ SubNetwork         │ default                                          │
+├────────────────────┼──────────────────────────────────────────────────┤
+│ ServiceAccount     │ 571739547473-compute                             │
+│                    │ grucloud                                         │
+├────────────────────┼──────────────────────────────────────────────────┤
+│ VmInstance         │ web-server                                       │
+└────────────────────┴──────────────────────────────────────────────────┘
+9 resources, 5 types, 1 provider
+Command "gc l" executed in 12s
+```
+
+![graph-live-gcp-vm](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/vm-simple/diagram-live.svg)
+
+Notice the default `Network`, `Subnet`, and 4 `Firewall` rules.
+
+There are many options to the _list command_, for instance, list only the resources created by GruCloud
+
+```sh
+gc list --our
+```
+
+Would you like to display only the virtual machines?
+
+```sh
+gc l -t VmInstance
+```
+
+Remember the service account created in the `init` phase?
+
+```sh
+ gc l -t ServiceAccount
+```
+
+```txt
+Listing resources on 1 provider: google
+✓ google
+  ✓ Initialising
+  ✓ Listing 1/1
+┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 2 ServiceAccount from google                                                                        │
+├──────────────────────┬───────────────────────────────────────────────────────────────────────┬──────┤
+│ Name                 │ Data                                                                  │ Our  │
+├──────────────────────┼───────────────────────────────────────────────────────────────────────┼──────┤
+│ 571739547473-compute │ name: projects/vm-tuto1/serviceAccounts/571739547473-compute@develop… │ NO   │
+│                      │ projectId: vm-tuto1                                                   │      │
+│                      │ uniqueId: 100537252433166772587                                       │      │
+│                      │ email: 571739547473-compute@developer.gserviceaccount.com             │      │
+│                      │ displayName: Compute Engine default service account                   │      │
+│                      │ etag: MDEwMjE5MjA=                                                    │      │
+│                      │ oauth2ClientId: 100537252433166772587                                 │      │
+│                      │ iamPolicy:                                                            │      │
+│                      │   etag: ACAB                                                          │      │
+│                      │                                                                       │      │
+├──────────────────────┼───────────────────────────────────────────────────────────────────────┼──────┤
+│ grucloud             │ name: projects/vm-tuto1/serviceAccounts/grucloud@vm-tuto1.iam.gservi… │ NO   │
+│                      │ projectId: vm-tuto1                                                   │      │
+│                      │ uniqueId: 105136741134058242482                                       │      │
+│                      │ email: grucloud@vm-tuto1.iam.gserviceaccount.com                      │      │
+│                      │ displayName: grucloud service account                                 │      │
+│                      │ etag: MDEwMjE5MjA=                                                    │      │
+│                      │ oauth2ClientId: 105136741134058242482                                 │      │
+│                      │ iamPolicy:                                                            │      │
+│                      │   etag: ACAB                                                          │      │
+│                      │                                                                       │      │
+└──────────────────────┴───────────────────────────────────────────────────────────────────────┴──────┘
+
+
+List Summary:
+Provider: google
+┌────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ google                                                                                             │
+├────────────────────┬───────────────────────────────────────────────────────────────────────────────┤
+│ ServiceAccount     │ 571739547473-compute                                                          │
+│                    │ grucloud                                                                      │
+└────────────────────┴───────────────────────────────────────────────────────────────────────────────┘
+2 resources, 1 type, 1 provider
+Command "gc l -t ServiceAccount" executed in 5s
+```
+
+Notice here GCP has created a default service account for the compute engine.
+
+### Destroy
+
+When the resources are no longer needed, delete them with the `destroy` command
 
 ```sh
 gc destroy
 ```
+
+```txt
+Find Deletable resources on 1 provider: google
+✓ google
+  ✓ Initialising
+  ✓ Listing 6/6
+  [TRUNCATED]
+┌───────────────────────────────────────────────────────────────────────┐
+│ Destroy summary for provider google                                   │
+├────────────────────┬──────────────────────────────────────────────────┤
+│ VmInstance         │ web-server                                       │
+└────────────────────┴──────────────────────────────────────────────────┘
+✔ Are you sure to destroy 1 resource, 1 type on 1 provider? … yes
+Destroying resources on 1 provider: google
+✓ google
+  ✓ Initialising
+  ✓ Destroying
+    ✓ VmInstance 1/1
+1 resource destroyed, 1 type on 1 provider
+Running OnDestroyedGlobal resources on 1 provider: google
+Command "gc destroy" executed in 1m 20s
+```
+
+If the `destroy` command is executed again, no resources should be destroyed.
+
+## Next Steps
+
+Browse the various [examples] which helps to find out how to use this software.

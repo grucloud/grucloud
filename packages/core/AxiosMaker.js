@@ -1,7 +1,7 @@
 const Axios = require("axios");
 const logger = require("./logger")({ prefix: "AxiosMaker" });
 const { tos } = require("./tos");
-
+const { convertError } = require("./Common");
 module.exports = AxiosMaker = ({
   baseURL,
   httpsAgent,
@@ -43,15 +43,13 @@ module.exports = AxiosMaker = ({
       return response;
     },
     function (error) {
-      if (error.response?.status === 404) {
+      const { response } = error;
+      if (response?.status === 404) {
         const { method, baseURL = "", url } = error.config;
         logger.info(`axios ${method} ${baseURL}${url}`);
         logger.info(`axios ${error}`);
       } else {
-        logger.error(`axios error config url: ${error.config?.url}`);
-        logger.error(`axios error ${error}`);
-        error.response &&
-          logger.error(`axios error response:: ${tos(error.response.data)}`);
+        logger.error(`axios error ${tos(convertError({ error }))}`);
       }
 
       return Promise.reject(error);

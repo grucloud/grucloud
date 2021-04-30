@@ -1,9 +1,12 @@
 const assert = require("assert");
-const { eq, get } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { eq, get, pipe, tap, map } = require("rubico");
+const { defaultsDeep, pluck, find } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const GoogleClient = require("../../GoogleClient");
-const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
+const {
+  GCP_COMPUTE_BASE_URL,
+  findDependenciesNetwork,
+} = require("./GcpComputeCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GcpSubNetwork" });
 const { tos } = require("@grucloud/core/tos");
@@ -12,12 +15,18 @@ const { tos } = require("@grucloud/core/tos");
 module.exports = GcpSubNetwork = ({ spec, config }) => {
   assert(spec);
   assert(config);
+  const { providerName } = config;
 
   const isDefault = eq(get("live.name"), "default");
   const cannotBeDeleted = isDefault;
 
   const { projectId, region, managedByDescription } = config;
   assert(region);
+
+  const findDependencies = ({ live, lives }) => [
+    findDependenciesNetwork({ live, lives, providerName }),
+  ];
+
   const configDefault = ({ name, properties, dependencies }) => {
     logger.debug(`configDefault ${tos({ properties, dependencies })}`);
     const { network } = dependencies;
@@ -40,5 +49,6 @@ module.exports = GcpSubNetwork = ({ spec, config }) => {
     configDefault,
     isDefault,
     cannotBeDeleted,
+    findDependencies,
   });
 };
