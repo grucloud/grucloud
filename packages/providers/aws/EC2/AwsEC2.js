@@ -541,7 +541,12 @@ exports.compareEC2Instance = async ({ target, live, dependencies }) =>
     () => target,
     omit(["TagSpecifications", "MinCount", "MaxCount"]),
     (targetFiltered) => detailedDiff(live, targetFiltered),
-    omit(["deleted"]),
+    omit([
+      "deleted",
+      "added.NetworkInterfaces",
+      "updated.NetworkInterfaces",
+      "added.UserData", //TODO
+    ]),
     tap((diff) => {
       logger.debug(`compareEC2Instance diff:${tos(diff)}`);
     }),
