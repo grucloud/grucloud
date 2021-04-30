@@ -3,18 +3,48 @@ id: AwsGettingStarted
 title: Aws Getting Started
 ---
 
-Let's create a simple infrastructure with one [EC2 instance](https://aws.amazon.com/ec2/) with the [GruCloud AWS provider](https://www.npmjs.com/package/@grucloud/provider-aws).
+This tutorial explains the deployment automation of a simple [AWS EC2 instance](https://aws.amazon.com/ec2/) with the [GruCloud AWS provider](https://www.npmjs.com/package/@grucloud/provider-aws).
+
+Instead of manually creating, updating, and destroying EC2 instances, the infrastructure will be described as Javascript code, the GruCloud CLI then reads this code, retrieves the lives resources through the AWS API, and decides what needs to be created, updated or destroyed.
+
+![graph-diagram-ec2.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2-simple/diagram-target.svg)
 
 ## Requirements
 
-Ensure the AWS CLI is configured properly.
-Visit the [Aws Requirements](./AwsRequirements.md) to retrieve these informations.
+### AWS Account
+
+Ensure access to the [Amazon Console](https://console.aws.amazon.com) and create an account if necessary.
+
+### AWS CLI
+
+Ensure the _AWS CLI_ is installed and configured:
 
 ```sh
+aws --version
+```
+
+If not, visit https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html
+
+### Access and Secret Key
+
+Visit the [security credentials](https://console.aws.amazon.com/iam/home#/security_credentials)
+
+- Click on **Access key (access key ID and secret access key).**
+- Click on the button **Create New Access Key**.
+
+Write down the **AWSAccessKeyId** and **AWSSecretKey**
+
+> In further episode, the access and secret key will be obtained from a dedicated IAM user with the correct role and policy.
+
+### Configure AWS CLI
+
+Configure the account with the previously obtained **AWSAccessKeyId** and **AWSSecretKey**, as well as the region, for instance `us-east-1`
+
+```
 aws configure
 ```
 
-### Getting the GruCloud Command Line Interface
+### Getting the GruCloud CLI
 
 GruCloud is a written in Javascript running on [NodeJs](https://nodejs.org/). Check if node is present on your system:
 
@@ -36,14 +66,16 @@ Check the current version of **gc**:
 gc --version
 ```
 
-## Describing the instrustructure code and config
+## Code Architecture
 
 In this section, we'll create the files needed to describe an infrastructure with GruCloud:
 
-- **package.json**: specifies the npm dependencies and other informations.
-- **config.js**: the config function.
-- **iac.js**: exports _createStack_ with provider and resources associated
-- **hooks.js**: optionnaly provides hook functions called after deployment or destruction.
+- [package.json](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/package.json): specifies the npm dependencies and other informations.
+- [config.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/config.js): the config function.
+- [iac.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/iac.js): exports _createStack_ with provider and resources associated
+- [hooks.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/hook.js): optionnaly provides hook functions called after deployment or destruction.
+
+> The [source code](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2-simple) for this example in on GitHub.
 
 ### Create a new project
 
@@ -54,63 +86,68 @@ mkdir ec2-example
 cd ec2-example
 ```
 
+### package.json
+
 Let's create a new `package.json` with the `npm init` command:
 
-```
+```sh
 npm init
 ```
 
-Let's install the AWS provider [@grucloud/provider-aws](https://www.npmjs.com/package/@grucloud/provider-aws) npm package, as well as the GruCloud core library `@grucloud/core`
+Let's install the GruCloud AWS provider called [@grucloud/provider-aws](https://www.npmjs.com/package/@grucloud/provider-aws), as well as the GruCloud core library `@grucloud/core`.
 
 ```sh
 npm install @grucloud/core @grucloud/provider-aws
 ```
 
-### Configuration
+### config.js
 
-The configuration is a Javascript function located in _config.js_
+The configuration is a Javascript function located in [config.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/config.js)
 
 ```js
+// config.js
 const pkg = require("./package.json");
 module.exports = ({ stage }) => ({
   projectName: pkg.name,
   ec2Instance: {
     name: "web-server",
-    properties: () => ({
+    properties: {
       InstanceType: "t2.micro",
       ImageId: "ami-00f6a0c18edb19300", // Ubuntu 18.04
-    }),
+    },
   },
 });
 ```
 
-You will have to find out the _ImageId_ for your specific region. One way to retrieve to list of images with the aws cli:
+You will have to find out the `ImageId` for your specific region. One way to retrieve to list of images is with the aws cli:
 
 ```sh
 aws ec2 describe-images --filters "Name=description,Values=Ubuntu Server 20.04 LTS" "Name=architecture,Values=x86_64"
 ```
 
-We'll automate this step in a future episode with the help of the Image resource.
+> This step will be automated in a future episode with the help of the [Amazon Managed Image](https://www.grucloud.com/docs/aws/resources/EC2/Image) resource.
 
 ### iac.js
 
-Create a file called `iac.js` which stands for infrastructure as code.
+Create a file called `iac.js` which stands for _infrastructure as code_.
 We'll first import _AwsProvider_ from [@grucloud/provider-aws](https://www.npmjs.com/package/@grucloud/provider-aws)
 
-`iac.js` must exports the `createStack` function which returns the provider and the resources.
-We instanciate _AwsProvider_ by provider the _config_ function.
+[iac.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/iac.js) must export the `createStack` function which returns the provider and the resources.
+
+Then, instanciate _AwsProvider_ by provider the _config_ function.
+
 In the case, an [EC2 Instance](https://www.grucloud.com/docs/aws/resources/EC2/EC2) is defined with `provider.makeEC2`.
 
 ```js
 // iac.js
 const { AwsProvider } = require("@grucloud/provider-aws");
 
-exports.createStack = async ({}) => {
-  const provider = AwsProvider({ config: require("./config") });
+exports.createStack = async ({ stage }) => {
+  const provider = AwsProvider({ config: require("./config"), stage });
   const { config } = provider;
   const ec2Instance = await provider.makeEC2({
     name: config.ec2Instance.name,
-    properties: config.ec2Instance.properties,
+    properties: () => config.ec2Instance.properties,
   });
 
   return {
@@ -121,6 +158,36 @@ exports.createStack = async ({}) => {
 ```
 
 ## GruCloud CLI
+
+### Info
+
+As a way to verify that **gc** can connect to the AWS API, one can use the `info` command:
+
+```sh
+gc info
+```
+
+```txt
+  - provider:
+      name: aws
+      type: aws
+    stage: dev
+    accountId: 840541460064
+    zone: eu-west-2a
+    config:
+      projectName: ec2-simple
+      ec2Instance:
+        name: web-server
+        properties:
+          InstanceType: t2.micro
+          ImageId: ami-00f6a0c18edb19300
+      stage: dev
+      zone: [object Function]
+      accountId: [object Function]
+      region: eu-west-2
+
+Command "gc info" executed in 1s
+```
 
 ### Deploy
 
@@ -187,144 +254,265 @@ Running OnDeployedGlobal resources on 1 provider: aws
 Command "gc a" executed in 1m 29s
 ```
 
+When `gc apply` is executed a second time, resources should not be created or destroyed.
+
+```sh
+gc a
+```
+
+```txt
+Querying resources on 1 provider: aws
+✓ aws
+  ✓ Initialising
+  ✓ Listing 13/13
+  ✓ Querying
+    ✓ EC2 1/1
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ Plan summary for provider aws                                                           │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
+Nothing to deploy
+Running OnDeployedGlobal resources on 1 provider: aws
+Command "gc a" executed in 9s
+```
+
+As expected, nothing to deploy, the target resources defined in the code match the live resources.
+
 ### List
 
-To list the resources that have been deployed, use the `gc list` command:
+To list all the resources, and generate a diagram:
+
+```
+gc list --graph --all
+```
+
+This will include the default AWS resources such as VPC, subnet, internet gateway and security group.
+
+![graph-live](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/aws/ec2-simple/diagram-live.svg)
+
+To list only the resources created by GruCloud:
 
 ```
 gc list --our
 ```
 
-```
+```txt
 Listing resources on 1 provider: aws
 ✓ aws
   ✓ Initialising
-  ✓ Listing 6/6
-┌──────────────────────────────────────────────────────────────────────────┐
-│ 1 EC2 from aws                                                           │
-├────────────┬──────────────────────────────────────────────────────┬──────┤
-│ Name       │ Data                                                 │ Our  │
-├────────────┼──────────────────────────────────────────────────────┼──────┤
-│ web-server │ AmiLaunchIndex: 0                                    │ Yes  │
-│            │ ImageId: ami-00f6a0c18edb19300                       │      │
-│            │ InstanceId: i-094ea36963d8b649b                      │      │
-│            │ InstanceType: t2.micro                               │      │
-│            │ LaunchTime: 2021-04-15T02:36:09.000Z                 │      │
-│            │ Monitoring:                                          │      │
-│            │   State: disabled                                    │      │
-│            │ Placement:                                           │      │
-│            │   AvailabilityZone: eu-west-2a                       │      │
-│            │   GroupName:                                         │      │
-│            │   Tenancy: default                                   │      │
-│            │ PrivateDnsName: ip-172-31-8-176.eu-west-2.compute.i… │      │
-│            │ PrivateIpAddress: 172.31.8.176                       │      │
-│            │ ProductCodes: []                                     │      │
-│            │ PublicDnsName: ec2-35-178-63-237.eu-west-2.compute.… │      │
-│            │ PublicIpAddress: 35.178.63.237                       │      │
-│            │ State:                                               │      │
-│            │   Code: 16                                           │      │
-│            │   Name: running                                      │      │
-│            │ StateTransitionReason:                               │      │
-│            │ SubnetId: subnet-0f6f085fc384bf8ce                   │      │
-│            │ VpcId: vpc-bbbafcd3                                  │      │
-│            │ Architecture: x86_64                                 │      │
-│            │ BlockDeviceMappings:                                 │      │
-│            │   - DeviceName: /dev/sda1                            │      │
-│            │     Ebs:                                             │      │
-│            │       AttachTime: 2021-04-15T02:36:10.000Z           │      │
-│            │       DeleteOnTermination: true                      │      │
-│            │       Status: attached                               │      │
-│            │       VolumeId: vol-0b16e59c9d0e50349                │      │
-│            │ ClientToken: 7f9b32cf-ca3d-4657-b431-ad87204e857e    │      │
-│            │ EbsOptimized: false                                  │      │
-│            │ EnaSupport: true                                     │      │
-│            │ Hypervisor: xen                                      │      │
-│            │ ElasticGpuAssociations: []                           │      │
-│            │ ElasticInferenceAcceleratorAssociations: []          │      │
-│            │ NetworkInterfaces:                                   │      │
-│            │   - Association:                                     │      │
-│            │       IpOwnerId: amazon                              │      │
-│            │       PublicDnsName: ec2-35-178-63-237.eu-west-2.co… │      │
-│            │       PublicIp: 35.178.63.237                        │      │
-│            │     Attachment:                                      │      │
-│            │       AttachTime: 2021-04-15T02:36:09.000Z           │      │
-│            │       AttachmentId: eni-attach-0da7cd7b764a97a37     │      │
-│            │       DeleteOnTermination: true                      │      │
-│            │       DeviceIndex: 0                                 │      │
-│            │       Status: attached                               │      │
-│            │     Description:                                     │      │
-│            │     Groups:                                          │      │
-│            │       - GroupName: default                           │      │
-│            │         GroupId: sg-f4139a96                         │      │
-│            │     Ipv6Addresses: []                                │      │
-│            │     MacAddress: 06:5d:b6:ea:0b:b2                    │      │
-│            │     NetworkInterfaceId: eni-05813eeec4cd3a498        │      │
-│            │     OwnerId: 840541460064                            │      │
-│            │     PrivateDnsName: ip-172-31-8-176.eu-west-2.compu… │      │
-│            │     PrivateIpAddress: 172.31.8.176                   │      │
-│            │     PrivateIpAddresses:                              │      │
-│            │       - Association:                                 │      │
-│            │           IpOwnerId: amazon                          │      │
-│            │           PublicDnsName: ec2-35-178-63-237.eu-west-… │      │
-│            │           PublicIp: 35.178.63.237                    │      │
-│            │         Primary: true                                │      │
-│            │         PrivateDnsName: ip-172-31-8-176.eu-west-2.c… │      │
-│            │         PrivateIpAddress: 172.31.8.176               │      │
-│            │     SourceDestCheck: true                            │      │
-│            │     Status: in-use                                   │      │
-│            │     SubnetId: subnet-0f6f085fc384bf8ce               │      │
-│            │     VpcId: vpc-bbbafcd3                              │      │
-│            │     InterfaceType: interface                         │      │
-│            │ RootDeviceName: /dev/sda1                            │      │
-│            │ RootDeviceType: ebs                                  │      │
-│            │ SecurityGroups:                                      │      │
-│            │   - GroupName: default                               │      │
-│            │     GroupId: sg-f4139a96                             │      │
-│            │ SourceDestCheck: true                                │      │
-│            │ Tags:                                                │      │
-│            │   - Key: Name                                        │      │
-│            │     Value: web-server                                │      │
-│            │   - Key: stage                                       │      │
-│            │     Value: dev                                       │      │
-│            │   - Key: projectName                                 │      │
-│            │     Value: ec2-simple                                │      │
-│            │   - Key: CreatedByProvider                           │      │
-│            │     Value: aws                                       │      │
-│            │   - Key: ManagedBy                                   │      │
-│            │     Value: GruCloud                                  │      │
-│            │ VirtualizationType: hvm                              │      │
-│            │ CpuOptions:                                          │      │
-│            │   CoreCount: 1                                       │      │
-│            │   ThreadsPerCore: 1                                  │      │
-│            │ CapacityReservationSpecification:                    │      │
-│            │   CapacityReservationPreference: open                │      │
-│            │ HibernationOptions:                                  │      │
-│            │   Configured: false                                  │      │
-│            │ Licenses: []                                         │      │
-│            │ MetadataOptions:                                     │      │
-│            │   State: applied                                     │      │
-│            │   HttpTokens: optional                               │      │
-│            │   HttpPutResponseHopLimit: 1                         │      │
-│            │   HttpEndpoint: enabled                              │      │
-│            │ EnclaveOptions:                                      │      │
-│            │   Enabled: false                                     │      │
-│            │                                                      │      │
-└────────────┴──────────────────────────────────────────────────────┴──────┘
+  ✓ Listing 13/13
+┌─────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 EC2 from aws                                                                                          │
+├────────────┬─────────────────────────────────────────────────────────────────────────────────────┬──────┤
+│ Name       │ Data                                                                                │ Our  │
+├────────────┼─────────────────────────────────────────────────────────────────────────────────────┼──────┤
+│ web-server │ AmiLaunchIndex: 0                                                                   │ Yes  │
+│            │ ImageId: ami-00f6a0c18edb19300                                                      │      │
+│            │ InstanceId: i-016628a1b6a6a2f91                                                     │      │
+│            │ InstanceType: t3.micro                                                              │      │
+│            │ LaunchTime: 2021-04-29T23:10:44.000Z                                                │      │
+│            │ Monitoring:                                                                         │      │
+│            │   State: disabled                                                                   │      │
+│            │ Placement:                                                                          │      │
+│            │   AvailabilityZone: eu-west-2a                                                      │      │
+│            │   GroupName:                                                                        │      │
+│            │   Tenancy: default                                                                  │      │
+│            │ PrivateDnsName: ip-172-31-2-146.eu-west-2.compute.internal                          │      │
+│            │ PrivateIpAddress: 172.31.2.146                                                      │      │
+│            │ ProductCodes: []                                                                    │      │
+│            │ PublicDnsName: ec2-18-132-98-216.eu-west-2.compute.amazonaws.com                    │      │
+│            │ PublicIpAddress: 18.132.98.216                                                      │      │
+│            │ State:                                                                              │      │
+│            │   Code: 16                                                                          │      │
+│            │   Name: running                                                                     │      │
+│            │ StateTransitionReason:                                                              │      │
+│            │ SubnetId: subnet-0f6f085fc384bf8ce                                                  │      │
+│            │ VpcId: vpc-bbbafcd3                                                                 │      │
+│            │ Architecture: x86_64                                                                │      │
+│            │ BlockDeviceMappings:                                                                │      │
+│            │   - DeviceName: /dev/sda1                                                           │      │
+│            │     Ebs:                                                                            │      │
+│            │       AttachTime: 2021-04-29T23:10:45.000Z                                          │      │
+│            │       DeleteOnTermination: true                                                     │      │
+│            │       Status: attached                                                              │      │
+│            │       VolumeId: vol-0a88a34248fe18740                                               │      │
+│            │ ClientToken: 7ef5fd60-e962-400f-a2b9-37719d8329ed                                   │      │
+│            │ EbsOptimized: false                                                                 │      │
+│            │ EnaSupport: true                                                                    │      │
+│            │ Hypervisor: xen                                                                     │      │
+│            │ ElasticGpuAssociations: []                                                          │      │
+│            │ ElasticInferenceAcceleratorAssociations: []                                         │      │
+│            │ NetworkInterfaces:                                                                  │      │
+│            │   - Association:                                                                    │      │
+│            │       IpOwnerId: amazon                                                             │      │
+│            │       PublicDnsName: ec2-18-132-98-216.eu-west-2.compute.amazonaws.com              │      │
+│            │       PublicIp: 18.132.98.216                                                       │      │
+│            │     Attachment:                                                                     │      │
+│            │       AttachTime: 2021-04-29T23:10:44.000Z                                          │      │
+│            │       AttachmentId: eni-attach-02744addcff43ecbb                                    │      │
+│            │       DeleteOnTermination: true                                                     │      │
+│            │       DeviceIndex: 0                                                                │      │
+│            │       Status: attached                                                              │      │
+│            │       NetworkCardIndex: 0                                                           │      │
+│            │     Description:                                                                    │      │
+│            │     Groups:                                                                         │      │
+│            │       - GroupName: default                                                          │      │
+│            │         GroupId: sg-f4139a96                                                        │      │
+│            │     Ipv6Addresses: []                                                               │      │
+│            │     MacAddress: 06:ee:ef:d7:1c:48                                                   │      │
+│            │     NetworkInterfaceId: eni-06e9d87ff776cf40f                                       │      │
+│            │     OwnerId: 840541460064                                                           │      │
+│            │     PrivateDnsName: ip-172-31-2-146.eu-west-2.compute.internal                      │      │
+│            │     PrivateIpAddress: 172.31.2.146                                                  │      │
+│            │     PrivateIpAddresses:                                                             │      │
+│            │       - Association:                                                                │      │
+│            │           IpOwnerId: amazon                                                         │      │
+│            │           PublicDnsName: ec2-18-132-98-216.eu-west-2.compute.amazonaws.com          │      │
+│            │           PublicIp: 18.132.98.216                                                   │      │
+│            │         Primary: true                                                               │      │
+│            │         PrivateDnsName: ip-172-31-2-146.eu-west-2.compute.internal                  │      │
+│            │         PrivateIpAddress: 172.31.2.146                                              │      │
+│            │     SourceDestCheck: true                                                           │      │
+│            │     Status: in-use                                                                  │      │
+│            │     SubnetId: subnet-0f6f085fc384bf8ce                                              │      │
+│            │     VpcId: vpc-bbbafcd3                                                             │      │
+│            │     InterfaceType: interface                                                        │      │
+│            │ RootDeviceName: /dev/sda1                                                           │      │
+│            │ RootDeviceType: ebs                                                                 │      │
+│            │ SecurityGroups:                                                                     │      │
+│            │   - GroupName: default                                                              │      │
+│            │     GroupId: sg-f4139a96                                                            │      │
+│            │ SourceDestCheck: true                                                               │      │
+│            │ Tags:                                                                               │      │
+│            │   - Key: Name                                                                       │      │
+│            │     Value: web-server                                                               │      │
+│            │   - Key: stage                                                                      │      │
+│            │     Value: dev                                                                      │      │
+│            │   - Key: CreatedByProvider                                                          │      │
+│            │     Value: aws                                                                      │      │
+│            │   - Key: ManagedBy                                                                  │      │
+│            │     Value: GruCloud                                                                 │      │
+│            │   - Key: projectName                                                                │      │
+│            │     Value: ec2-simple                                                               │      │
+│            │ VirtualizationType: hvm                                                             │      │
+│            │ CpuOptions:                                                                         │      │
+│            │   CoreCount: 1                                                                      │      │
+│            │   ThreadsPerCore: 2                                                                 │      │
+│            │ CapacityReservationSpecification:                                                   │      │
+│            │   CapacityReservationPreference: open                                               │      │
+│            │ HibernationOptions:                                                                 │      │
+│            │   Configured: false                                                                 │      │
+│            │ Licenses: []                                                                        │      │
+│            │ MetadataOptions:                                                                    │      │
+│            │   State: applied                                                                    │      │
+│            │   HttpTokens: optional                                                              │      │
+│            │   HttpPutResponseHopLimit: 1                                                        │      │
+│            │   HttpEndpoint: enabled                                                             │      │
+│            │ EnclaveOptions:                                                                     │      │
+│            │   Enabled: false                                                                    │      │
+│            │                                                                                     │      │
+└────────────┴─────────────────────────────────────────────────────────────────────────────────────┴──────┘
 
 
 List Summary:
 Provider: aws
-┌─────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                     │
-├────────────────────┬────────────────────────────────────────────────────┤
-│ EC2                │ web-server                                         │
-└────────────────────┴────────────────────────────────────────────────────┘
-1 resource, 1 type, 1 provider
-Command "gc list --our" executed in 6s
-
+┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                                                    │
+├────────────────────┬───────────────────────────────────────────────────────────────────────────────────┤
+│ EC2                │ web-server                                                                        │
+└────────────────────┴───────────────────────────────────────────────────────────────────────────────────┘
+1 resource, 7 types, 1 provider
+Command "gc l -o" executed in 7s
 ```
 
 > Note that tags have been added to the EC2 Instance, it gives GruCloud a way to identify the resources under its control. Unlike other instructure as code tool such as Terraform and Pulumi, GruCloud does not need a _state_ file. Hence removing a lot a complexity and issues.
+
+### Update
+
+The ec2 instance configuration might change, for instance, let's modify the machine type to `t3.micro` located in _config.js_
+
+The `plan` command is a read-only command which fetches the live resources and compare them with the targets resources defined in the code.
+
+```sh
+gc plan
+```
+
+```txt
+Querying resources on 1 provider: aws
+✓ aws
+  ✓ Initialising
+  ✓ Listing 13/13
+  ✓ Querying
+    ✓ EC2 1/1
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 EC2 from aws                                                                           │
+├────────────┬──────────┬──────────────────────────────────────────────────────────────────┤
+│ Name       │ Action   │ Data                                                             │
+├────────────┼──────────┼──────────────────────────────────────────────────────────────────┤
+│ web-server │ UPDATE   │ added:                                                           │
+│            │          │ updated:                                                         │
+│            │          │   InstanceType: t3.micro                                         │
+│            │          │                                                                  │
+└────────────┴──────────┴──────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ Plan summary for provider aws                                                           │
+├─────────────────────────────────────────────────────────────────────────────────────────┤
+│ DEPLOY RESOURCES                                                                        │
+├────────────────────┬────────────────────────────────────────────────────────────────────┤
+│ EC2                │ web-server                                                         │
+└────────────────────┴────────────────────────────────────────────────────────────────────┘
+1 resource to deploy on 1 provider
+Command "gc plan" executed in 5s
+```
+
+Let's apply the change:
+
+```sh
+gc apply
+```
+
+> Bear in mind that the machine requires to be stopped and restarted.
+
+Trust but verify, hence, list the EC2 instances and check the `InstanceType` has been changed.
+
+```sh
+gc l -t EC2
+```
+
+### Output
+
+Another useful command is _gc output_, which extract information for a specific field of a given resource
+
+```
+gc output -t EC2 --name web-server -f InstanceType
+```
+
+```txt
+t3.micro
+```
+
+Nested field can be accessed too, for example, let's retrieve the public IP address attached to the EC2 instance:
+
+```sh
+gc output -t EC2 --name web-server -f 'NetworkInterfaces[0].Association.PublicIp'
+```
+
+```txt
+18.130.34.212
+```
+
+The tentation to ping is high:
+
+```sh
+ping `gc output -t EC2 --name web-server -f 'NetworkInterfaces[0].Association.PublicIp'`
+```
+
+```txt
+PING 18.130.34.212 (18.130.34.212): 56 data bytes
+64 bytes from 18.130.34.212: icmp_seq=0 ttl=38 time=153.799 ms
+64 bytes from 18.130.34.212: icmp_seq=1 ttl=38 time=153.583 ms
+64 bytes from 18.130.34.212: icmp_seq=2 ttl=38 time=140.622 ms
+```
 
 ### Destroy
 
@@ -383,7 +571,7 @@ It paves the way for more [AWS examples](https://www.grucloud.com/docs/aws/AwsEx
 
 ### Graph
 
-A picture is worth a thousand words, GruCloud generate SVG file describing the resources and their relationship.
+A picture is worth a thousand words, GruCloud generates SVG file describing the resources and their relationship.
 
 ```
 gc graph
