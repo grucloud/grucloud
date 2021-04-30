@@ -645,6 +645,10 @@ Command "gc destroy" executed in 1m 20s
 
 If the `destroy` command is executed again, no resources should be destroyed.
 
+Double check with `gc list --our`.
+
 ## Next Steps
 
-Browse the various [examples] which helps to find out how to use this software.
+- Browse the various [examples](https://github.com/grucloud/grucloud/tree/main/examples/google) which helps to find out how to use this software.
+
+- Available [GCP Resources](http://localhost:3000/docs/Introduction)
