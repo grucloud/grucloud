@@ -65,26 +65,12 @@ exports.AwsEC2 = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "Image",
-      ids: [
-        pipe([
-          tap((xxx) => {
-            assert(true);
-          }),
-          () => lives.getByType({ type: "Image", providerName }),
-          get("resources"),
-          tap((xxx) => {
-            assert(true);
-          }),
-          filter(eq(get("id"), live.ImageId)),
-          tap((xxx) => {
-            assert(true);
-          }),
-          pluck("id"),
-          tap((xxx) => {
-            assert(true);
-          }),
-        ])(),
-      ],
+      ids: pipe([
+        () => lives.getByType({ type: "Image", providerName }),
+        get("resources", []),
+        filter(eq(get("id"), live.ImageId)),
+        pluck("id"),
+      ])(),
     },
     { type: "KeyPair", ids: filter(not(isEmpty))([live.KeyName]) },
     { type: "Vpc", ids: [live.VpcId] },
@@ -541,7 +527,12 @@ exports.compareEC2Instance = async ({ target, live, dependencies }) =>
     () => target,
     omit(["TagSpecifications", "MinCount", "MaxCount"]),
     (targetFiltered) => detailedDiff(live, targetFiltered),
-    omit(["deleted"]),
+    omit([
+      "deleted",
+      "added.NetworkInterfaces",
+      "updated.NetworkInterfaces",
+      "added.UserData", //TODO
+    ]),
     tap((diff) => {
       logger.debug(`compareEC2Instance diff:${tos(diff)}`);
     }),

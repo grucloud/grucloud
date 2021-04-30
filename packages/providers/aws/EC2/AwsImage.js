@@ -50,9 +50,6 @@ exports.AwsImage = ({ spec, config }) => {
               logger.info(`getList image name ${resource.name}`);
             }),
             getByName,
-            tap((result) => {
-              logger.info(`getList image result: ${tos(result)}`);
-            }),
           ]),
           (error, resource) =>
             pipe([

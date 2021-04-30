@@ -59,6 +59,8 @@
 
 ## Aws
 
+- ec2 update: handle UserData
+
 - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
 
 - Resource pages

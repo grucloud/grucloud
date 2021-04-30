@@ -1,8 +1,3 @@
----
-id: AwsGettingStarted
-title: Aws Getting Started
----
-
 This tutorial explains the deployment automation of a simple [AWS EC2 instance](https://aws.amazon.com/ec2/) with the [GruCloud AWS provider](https://www.npmjs.com/package/@grucloud/provider-aws).
 
 Instead of manually creating, updating, and destroying EC2 instances, the infrastructure will be described as Javascript code. The GruCloud CLI then reads this code, retrieves the lives resources through the AWS API, and decides what needs to be created, updated, or destroyed.
@@ -46,7 +41,7 @@ aws configure
 
 ### Getting the GruCloud CLI
 
-GruCloud is written in Javascript running on [NodeJs](https://nodejs.org/). Check if `node` is present on your system:
+GruCloud is written in Javascript running on [Node.js](https://nodejs.org/). Check if `node` is present on your system:
 
 ```
 node --version
