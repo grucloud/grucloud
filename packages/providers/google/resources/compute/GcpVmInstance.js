@@ -1,6 +1,9 @@
 const assert = require("assert");
-const { get, eq, switchCase, pipe, tap, map } = require("rubico");
+const path = require("path");
+
+const { get, eq, switchCase, pipe, tap, map, omit, assign } = require("rubico");
 const { defaultsDeep, pluck, find } = require("rubico/x");
+const { detailedDiff } = require("deep-object-diff");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GcpVmInstance" });
 const { tos } = require("@grucloud/core/tos");
@@ -11,14 +14,14 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 const { isUpByIdCore } = require("@grucloud/core/Common");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
 
-module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
+exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
   assert(spec);
   assert(configProvider);
   assert(configProvider.stage);
   const { providerName } = configProvider;
   assert(providerName);
   const { projectId, region, zone, managedByTag } = configProvider;
-
+  assert(projectId);
   const findDependencies = ({ live, lives }) => [
     {
       type: "Network",
@@ -86,8 +89,10 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
     const config = defaultsDeep({
       kind: "compute#instance",
       name,
-      zone: `projects/${projectId(configProvider)}/zones/${zone}`,
-      machineType: `projects/${projectId(
+      zone: `${GCP_COMPUTE_BASE_URL}/projects/${projectId(
+        configProvider
+      )}/zones/${zone}`,
+      machineType: `${GCP_COMPUTE_BASE_URL}/projects/${projectId(
         configProvider
       )}/zones/${zone}/machineTypes/${machineType}`,
       labels: buildLabel(configProvider),
@@ -176,3 +181,48 @@ module.exports = GoogleVmInstance = ({ spec, config: configProvider }) => {
     findDependencies,
   });
 };
+
+const filterItem = ({ config, item }) =>
+  pipe([
+    tap(() => {
+      assert(config.zone);
+      assert(config.projectId);
+    }),
+    () => item,
+    omit(["disks", "networkInterfaces", "scheduling", "serviceAccounts"]),
+    assign({
+      machineType: ({ machineType }) =>
+        machineType.replace(
+          `${GCP_COMPUTE_BASE_URL}/projects/${config.projectId()}/zones/${
+            config.zone
+          }/machineTypes/`,
+          ""
+        ),
+    }),
+    tap((xxx) => {
+      assert(true);
+    }),
+  ])();
+
+exports.compareVmInstance = pipe([
+  tap((xxx) => {
+    assert(true);
+  }),
+  assign({
+    target: ({ target, config }) => filterItem({ config, item: target }),
+    live: ({ live, config }) => filterItem({ config, item: live }),
+  }),
+  ({ target, live }) => ({
+    targetDiff: pipe([
+      () => detailedDiff(target, live),
+      omit(["added", "deleted"]),
+    ])(),
+    liveDiff: pipe([
+      () => detailedDiff(live, target),
+      omit(["added", "deleted"]),
+    ])(),
+  }),
+  tap((diff) => {
+    logger.debug(`compareVmInstance ${tos(diff)}`);
+  }),
+]);

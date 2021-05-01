@@ -204,37 +204,43 @@ exports.ResourceMaker = ({
           live,
           dependencies: resource.dependencies,
           lives,
+          config,
         }),
       tap((diff) => {
         logger.debug(`planUpdate diff ${tos(diff)}`);
       }),
-      switchCase([
-        or([
-          pipe([get("needUpdate")]),
-          pipe([get("added"), not(isEmpty)]),
-          pipe([get("updated"), not(isEmpty)]),
-          pipe([get("deleted"), not(isEmpty)]),
-        ]),
-        (diff) =>
-          pipe([
-            () => [
-              {
-                action: "UPDATE",
-                resource: resource.toJSON(),
-                target,
-                live,
-                diff,
-                providerName: resource.toJSON().providerName,
-              },
-            ],
-            tap((updateItem) => {
-              logger.debug(`updateItem ${tos(updateItem)}`);
-            }),
-          ])(),
-        () => {
-          logger.info(`planUpdate diff no update`);
-        },
-      ]),
+      (diff) =>
+        pipe([
+          () => diff,
+          get("liveDiff"),
+          switchCase([
+            or([
+              pipe([get("needUpdate")]),
+              pipe([get("added"), not(isEmpty)]),
+              pipe([get("updated"), not(isEmpty)]),
+              pipe([get("deleted"), not(isEmpty)]),
+            ]),
+            () =>
+              pipe([
+                () => [
+                  {
+                    action: "UPDATE",
+                    resource: resource.toJSON(),
+                    target,
+                    live,
+                    diff,
+                    providerName: resource.toJSON().providerName,
+                  },
+                ],
+                tap((updateItem) => {
+                  logger.debug(`updateItem ${tos(updateItem)}`);
+                }),
+              ])(),
+            () => {
+              logger.info(`planUpdate diff no update`);
+            },
+          ]),
+        ])(),
     ])();
   };
   const getDependencyList = () =>

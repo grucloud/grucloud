@@ -317,22 +317,30 @@ exports.Route53Record = ({ spec, config }) => {
     shouldRetryOnException,
   };
 };
+const filterTarget = ({ config, target }) =>
+  pipe([() => target, defaultsDeep({ ResourceRecords: [] })])();
 
-exports.compareRoute53Record = async ({ target, live, dependencies }) =>
-  pipe([
-    tap(() => {
-      logger.debug(
-        `compareRoute53Record ${tos({ target, live, dependencies })}`
-      );
-      assert(target, "target");
-      assert(live.ResourceRecords, "live.ResourceRecords");
-    }),
-    () =>
-      detailedDiff(
-        omitFieldRecord(live),
-        defaultsDeep({ ResourceRecords: [] })(target)
-      ),
-    tap((diff) => {
-      logger.debug(`compareRoute53Record diff:${tos(diff)}`);
-    }),
-  ])();
+const filterLive = ({ live }) => pipe([() => live, omitFieldRecord])();
+
+exports.compareRoute53Record = pipe([
+  tap((xxx) => {
+    assert(true);
+  }),
+  assign({
+    target: filterTarget,
+    live: filterLive,
+  }),
+  ({ target, live }) => ({
+    targetDiff: pipe([
+      () => detailedDiff(target, live),
+      omit(["added", "deleted"]),
+    ])(),
+    liveDiff: pipe([
+      () => detailedDiff(live, target),
+      omit(["added", "deleted"]),
+    ])(),
+  }),
+  tap((diff) => {
+    logger.debug(`compareRoute53Record ${tos(diff)}`);
+  }),
+]);

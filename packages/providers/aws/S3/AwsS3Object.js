@@ -327,7 +327,10 @@ exports.compareS3Object = async ({ target, live }) => {
 
     if (md5hash !== md5) {
       logger.debug(`object are different`);
-      return { updated: target };
+      return {
+        liveDiff: { updated: { md5: md5hash } },
+        targetDiff: { updated: { md5: md5 } },
+      };
     }
   }
 

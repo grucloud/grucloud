@@ -8,20 +8,17 @@ const {
   tryCatch,
   switchCase,
   not,
+  assign,
+  omit,
 } = require("rubico");
 
-const {
-  first,
-  find,
-  defaultsDeep,
-  differenceWith,
-  isDeepEqual,
-  uniq,
-} = require("rubico/x");
+const { first, find, defaultsDeep, isDeepEqual, uniq } = require("rubico/x");
+const { detailedDiff } = require("deep-object-diff");
+
 const { retryCallOnError } = require("@grucloud/core/Retry");
 const { getField } = require("@grucloud/core/ProviderCommon");
 const { isDownByIdCore } = require("@grucloud/core/Common");
-const logger = require("@grucloud/core/logger")({ prefix: "GcpIamPolicy" });
+const logger = require("@grucloud/core/logger")({ prefix: "GcpIamBinding" });
 const { tos } = require("@grucloud/core/tos");
 const { axiosErrorToJSON, logError } = require("@grucloud/core/Common");
 const {
@@ -229,10 +226,23 @@ exports.GcpIamBinding = ({ spec, config }) => {
   };
 };
 
+const filterTarget = ({ config, target }) => pipe([() => target])();
+const filterLive = ({ config, live }) => pipe([() => live])();
+
 exports.compareIamBinding = pipe([
+  assign({
+    target: filterTarget,
+    live: filterLive,
+  }),
   ({ target, live }) => ({
-    added: differenceWith(isDeepEqual, target.members)(live.members),
-    deleted: differenceWith(isDeepEqual, live.members)(target.members),
+    targetDiff: pipe([
+      () => detailedDiff(target, live),
+      omit(["added", "deleted"]),
+    ])(),
+    liveDiff: pipe([
+      () => detailedDiff(live, target),
+      omit(["added", "deleted"]),
+    ])(),
   }),
   tap((diff) => {
     logger.debug(`compareIamBinding ${tos(diff)}`);

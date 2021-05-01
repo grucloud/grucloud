@@ -30,7 +30,10 @@ module.exports = (config) => [
       if (target.source) {
         const md5 = await md5FileBase64(target.source);
         if (live.md5Hash !== md5) {
-          return { updated: target };
+          return {
+            liveDiff: { updated: { md5: live.md5Hash } },
+            targetDiff: { updated: { md5: md5 } },
+          };
         }
       }
 

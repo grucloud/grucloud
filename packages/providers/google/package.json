@@ -13,6 +13,7 @@
   "dependencies": {
     "@grucloud/core": "^1.14.0",
     "chance": "^1.1.7",
+    "deep-object-diff": "^1.1.0",
     "google-auth-library": "6.1.4",
     "lodash": "^4.17.21",
     "rubico": "^1.6.23",

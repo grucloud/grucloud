@@ -13,6 +13,7 @@ const {
   switchCase,
   or,
   omit,
+  assign,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -282,7 +283,7 @@ exports.AwsEC2 = ({ spec, config }) => {
       () =>
         updateInstanceType({
           InstanceId,
-          updated: diff.updated,
+          updated: diff.liveDiff.updated,
         }),
       () => instanceStart({ InstanceId }),
       tap(() => {
@@ -519,21 +520,30 @@ exports.isOurMinionEC2Instance = (item) =>
     }),
   ])();
 
-exports.compareEC2Instance = async ({ target, live, dependencies }) =>
-  pipe([
-    tap(() => {
-      assert(target);
-    }),
-    () => target,
-    omit(["TagSpecifications", "MinCount", "MaxCount"]),
-    (targetFiltered) => detailedDiff(live, targetFiltered),
-    omit([
-      "deleted",
-      "added.NetworkInterfaces",
-      "updated.NetworkInterfaces",
-      "added.UserData", //TODO
-    ]),
-    tap((diff) => {
-      logger.debug(`compareEC2Instance diff:${tos(diff)}`);
-    }),
-  ])();
+const filterTarget = ({ config, target }) =>
+  pipe([() => target, omit(["TagSpecifications", "MinCount", "MaxCount"])])();
+
+const filterLive = ({ live, item }) => pipe([() => live])();
+
+exports.compareEC2Instance = pipe([
+  tap((xxx) => {
+    assert(true);
+  }),
+  assign({
+    target: filterTarget,
+    live: filterLive,
+  }),
+  ({ target, live }) => ({
+    targetDiff: pipe([
+      () => detailedDiff(target, live),
+      omit(["added", "deleted"]),
+    ])(),
+    liveDiff: pipe([
+      () => detailedDiff(live, target),
+      omit(["added", "deleted"]),
+    ])(),
+  }),
+  tap((diff) => {
+    logger.debug(`compareEC2Instance ${tos(diff)}`);
+  }),
+]);

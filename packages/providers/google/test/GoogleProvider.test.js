@@ -79,7 +79,7 @@ describe("GoogleProvider", async function () {
     const { projectId, zone } = provider.config;
     assert.equal(
       config.machineType,
-      `projects/${projectId(
+      `https://www.googleapis.com/compute/v1/projects/${projectId(
         provider.config
       )}/zones/${zone}/machineTypes/f1-micro`
     );

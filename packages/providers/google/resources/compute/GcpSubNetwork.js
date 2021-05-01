@@ -12,7 +12,7 @@ const logger = require("@grucloud/core/logger")({ prefix: "GcpSubNetwork" });
 const { tos } = require("@grucloud/core/tos");
 
 // https://cloud.google.com/compute/docs/reference/rest/v1/subnetworks
-module.exports = GcpSubNetwork = ({ spec, config }) => {
+exports.GcpSubNetwork = ({ spec, config }) => {
   assert(spec);
   assert(config);
   const { providerName } = config;

@@ -11,6 +11,7 @@ module.exports = ({}) => ({
     securityGroupNode: { name: "security-group-node" },
     nodeGroupsPublic: [
       {
+        //TODO remove the function
         name: `node-group-public-${clusterName}`,
         properties: () => ({ diskSize: 20, instanceTypes: ["t2.medium"] }),
       },
@@ -18,6 +19,7 @@ module.exports = ({}) => ({
     nodeGroupsPrivate: [
       {
         name: `node-group-private-${clusterName}`,
+        //TODO remove the function
         properties: () => ({ diskSize: 20, instanceTypes: ["t2.medium"] }),
       },
     ],

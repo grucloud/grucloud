@@ -163,7 +163,10 @@ exports.AwsDistribution = ({ spec, config }) => {
       () =>
         retryCall({
           name: `createDistributionWithTags: ${name}`,
-          fn: () => cloudfront().createDistributionWithTags(payload),
+          fn: () =>
+            cloudfront().createDistributionWithTags({
+              DistributionConfigWithTags: payload,
+            }),
           config: { retryCount: 10, repeatDelay: 5e3 },
           shouldRetryOnException: ({ error, name }) =>
             pipe([
@@ -203,15 +206,17 @@ exports.AwsDistribution = ({ spec, config }) => {
     pipe([
       tap(() => {
         logger.info(`update distribution ${tos({ name, id })}`);
+        logger.debug(tos({ payload }));
         assert(id, "id");
       }),
       () => cloudfront().getDistributionConfig({ Id: id }),
       (config) =>
         pipe([
+          () => config,
           get("DistributionConfig"),
           (distributionConfig) =>
             defaultsDeep(distributionConfig)(
-              omit(["CallerReference", "Origin"])(payload)
+              omit(["CallerReference", "Origin"])(payload.DistributionConfig)
             ),
           (DistributionConfig) =>
             cloudfront().updateDistribution({
@@ -222,7 +227,7 @@ exports.AwsDistribution = ({ spec, config }) => {
           tap((xxx) => {
             logger.debug(`updated distribution ${tos({ name, id })}`);
           }),
-        ])(config),
+        ])(),
       tap(() =>
         retryCall({
           name: `distribution isUpById : ${name} id: ${id}`,
@@ -247,26 +252,28 @@ exports.AwsDistribution = ({ spec, config }) => {
           id,
           name,
           payload: {
-            Enabled: false,
-            DefaultCacheBehavior: {
-              ForwardedValues: {
-                QueryString: false,
-                Cookies: {
-                  Forward: "none",
+            DistributionConfig: {
+              Enabled: false,
+              DefaultCacheBehavior: {
+                ForwardedValues: {
+                  QueryString: false,
+                  Cookies: {
+                    Forward: "none",
+                  },
+                  Headers: {
+                    Quantity: 0,
+                    Items: [],
+                  },
+                  QueryStringCacheKeys: {
+                    Quantity: 0,
+                    Items: [],
+                  },
                 },
-                Headers: {
-                  Quantity: 0,
-                  Items: [],
-                },
-                QueryStringCacheKeys: {
-                  Quantity: 0,
-                  Items: [],
-                },
+                MinTTL: 60,
+                DefaultTTL: 86400,
+                MaxTTL: 31536000,
+                CachePolicyId: "",
               },
-              MinTTL: 60,
-              DefaultTTL: 86400,
-              MaxTTL: 31536000,
-              CachePolicyId: "",
             },
           },
         }),
@@ -337,10 +344,8 @@ exports.AwsDistribution = ({ spec, config }) => {
         }),
       }),
       (payload) => ({
-        DistributionConfigWithTags: {
-          DistributionConfig: payload,
-          Tags: { Items: buildTags({ name, namespace, config }) },
-        },
+        DistributionConfig: payload,
+        Tags: { Items: buildTags({ name, namespace, config }) },
       }),
     ])();
 
@@ -430,21 +435,37 @@ exports.AwsDistribution = ({ spec, config }) => {
   };
 };
 
-exports.compareDistribution = async ({ target, live, dependencies }) =>
+const filterTarget = ({ config, target }) =>
   pipe([
     () => target,
-    get("DistributionConfigWithTags.DistributionConfig"),
+    get("DistributionConfig"),
     omit(["CallerReference", "ViewerCertificate.CloudFrontDefaultCertificate"]),
-    tap((targetFiltered) => {
-      logger.debug(`compareDistribution diff:${tos(targetFiltered)}`);
-    }),
-    (targetFiltered) => detailedDiff(live, targetFiltered),
-    //TODO
-    omit(["deleted"]),
-    tap((diff) => {
-      logger.debug(`compareDistribution diff:${tos(diff)}`);
-    }),
   ])();
+
+const filterLive = ({ config, live }) => pipe([() => live])();
+
+exports.compareDistribution = pipe([
+  tap((xxx) => {
+    assert(true);
+  }),
+  assign({
+    target: filterTarget,
+    live: filterLive,
+  }),
+  ({ target, live }) => ({
+    targetDiff: pipe([
+      () => detailedDiff(target, live),
+      omit(["added", "deleted"]),
+    ])(),
+    liveDiff: pipe([
+      () => detailedDiff(live, target),
+      omit(["added", "deleted"]),
+    ])(),
+  }),
+  tap((diff) => {
+    logger.debug(`compareDistribution ${tos(diff)}`);
+  }),
+]);
 
 const findS3ObjectUpdated = ({ plans = [], Id, OriginPath }) =>
   pipe([

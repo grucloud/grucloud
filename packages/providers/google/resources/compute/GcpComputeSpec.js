@@ -4,11 +4,11 @@ const logger = require("@grucloud/core/logger")({ prefix: "GcpComputeSpec" });
 const { tos } = require("@grucloud/core/tos");
 const GoogleTag = require("../../GoogleTag");
 
-const GcpNetwork = require("./GcpNetwork");
-const GcpSubNetwork = require("./GcpSubNetwork");
-const GcpFirewall = require("./GcpFirewall");
-const GoogleVmInstance = require("./GcpVmInstance");
-const GcpAddress = require("./GcpAddress");
+const { GcpNetwork } = require("./GcpNetwork");
+const { GcpSubNetwork } = require("./GcpSubNetwork");
+const { GcpFirewall } = require("./GcpFirewall");
+const { GoogleVmInstance, compareVmInstance } = require("./GcpVmInstance");
+const { GcpAddress } = require("./GcpAddress");
 const { GcpSslCertificate } = require("./GcpSslCertificate");
 const { GcpBackendBucket } = require("./GcpBackendBucket");
 const { GcpHttpsTargetProxy } = require("./GcpHttpsTargetProxy");
@@ -122,6 +122,7 @@ module.exports = (config) => {
           "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
       },
       isOurMinion,
+      compare: compareVmInstance,
     },
   ];
 };
