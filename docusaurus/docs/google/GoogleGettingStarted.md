@@ -651,4 +651,4 @@ Double check with `gc list --our`.
 
 - Browse the various [examples](https://github.com/grucloud/grucloud/tree/main/examples/google) which helps to find out how to use this software.
 
-- Available [GCP Resources](http://localhost:3000/docs/Introduction)
+- Available [GCP Resources](https://grucloud.com/docs/Introduction)
