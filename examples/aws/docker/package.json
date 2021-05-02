@@ -1,0 +1,18 @@
+{
+  "name": "@grucloud/docker-aws",
+  "version": "1.14.1",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "docker:build": "docker build -t grucloud-aws .",
+    "gc:list": "docker run --mount type=bind,source=$PWD/volume,target=/app/output --env-file=aws.env grucloud-aws list --json output/gc-list.json ",
+    "gc:info": "docker run --env-file=aws.env grucloud-aws info "
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "",
+    "@grucloud/provider-aws": "*"
+  }
+}
