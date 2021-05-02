@@ -12,7 +12,7 @@ const {
   not,
   omit,
 } = require("rubico");
-const { find, first, isEmpty, isFunction } = require("rubico/x");
+const { find, first, isEmpty, isFunction, identity } = require("rubico/x");
 const fs = require("fs");
 const https = require("https");
 const { detailedDiff } = require("deep-object-diff");
@@ -36,25 +36,35 @@ const pickCompare = ({ metadata, spec, data }) => ({
   spec,
   data,
 });
+const filterTarget = ({ config, target }) =>
+  pipe([() => target, pickCompare])();
 
-exports.compare = async ({ target, live }) =>
-  pipe([
-    tap(() => {
-      logger.debug(`compare ${tos({ target, live })}`);
-      assert(target);
-      assert(live);
-    }),
-    () => detailedDiff(pickCompare(live), pickCompare(target)),
-    omit(["deleted.spec", "deleted.metadata"]),
-    switchCase([
-      pipe([get("added.metadata.annotations"), isEmpty]),
-      omit(["added.metadata.annotations"]),
-      (diff) => diff,
-    ]),
-    tap((diff) => {
-      logger.debug(`k8s compare ${tos(diff)}`);
-    }),
-  ])();
+const filterLive = ({ live }) => pipe([() => live, pickCompare])();
+
+exports.compare = pipe([
+  assign({
+    target: filterTarget,
+    live: filterLive,
+  }),
+  ({ target, live }) => ({
+    targetDiff: pipe([
+      () => detailedDiff(target, live),
+      omit(["added", "deleted"]),
+    ])(),
+    liveDiff: pipe([
+      () => detailedDiff(live, target),
+      omit(["deleted"]),
+      switchCase([
+        pipe([get("added.metadata.annotations"), isEmpty]),
+        omit(["added.metadata.annotations"]),
+        identity,
+      ]),
+    ])(),
+  }),
+  tap((diff) => {
+    logger.debug(`compare k8s ${tos(diff)}`);
+  }),
+]);
 
 exports.resourceKeyDefault = pipe([
   tap((resource) => {

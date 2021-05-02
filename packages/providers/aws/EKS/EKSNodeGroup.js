@@ -13,6 +13,8 @@ const {
   filter,
   eq,
   not,
+  assign,
+  omit,
 } = require("rubico");
 const {
   first,
@@ -269,16 +271,30 @@ const pickCompare = pick([
   "instanceTypes",
   "scalingConfig",
 ]);
+const filterTarget = ({ config, target }) =>
+  pipe([() => target, pickCompare])();
 
-exports.compareNodeGroup = async ({ target, live }) =>
-  pipe([
-    tap(() => {
-      logger.debug(`compareNodeGroup ${tos({ target, live })}`);
-      assert(target);
-      assert(live);
-    }),
-    () => detailedDiff(pickCompare(live), pickCompare(target)),
-    tap((diff) => {
-      logger.debug(`compareNodeGroup diff: ${tos(diff)}`);
-    }),
-  ])();
+const filterLive = ({ live }) => pipe([() => live, pickCompare])();
+
+exports.compareNodeGroup = pipe([
+  tap((xxx) => {
+    assert(true);
+  }),
+  assign({
+    target: filterTarget,
+    live: filterLive,
+  }),
+  ({ target, live }) => ({
+    targetDiff: pipe([
+      () => detailedDiff(target, live),
+      omit(["added", "deleted"]),
+    ])(),
+    liveDiff: pipe([
+      () => detailedDiff(live, target),
+      omit(["added", "deleted"]),
+    ])(),
+  }),
+  tap((diff) => {
+    logger.debug(`compareNodeGroup ${tos(diff)}`);
+  }),
+]);

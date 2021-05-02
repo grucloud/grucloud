@@ -166,7 +166,6 @@ gc info
   - provider:
       name: aws
       type: aws
-    stage: dev
     accountId: 840541460064
     zone: eu-west-2a
     config:
@@ -177,8 +176,6 @@ gc info
           InstanceType: t2.micro
           ImageId: ami-00f6a0c18edb19300
       stage: dev
-      zone: [object Function]
-      accountId: [object Function]
       region: eu-west-2
 
 Command "gc info" executed in 1s

@@ -29,6 +29,7 @@ module.exports = CoreClient = ({
   isInstanceUp,
   isDefault,
   isUpByIdFactory = ({ getById }) => isUpByIdCore({ getById }),
+  isDownByIdFactory = ({ getById }) => isDownByIdCore({ getById }),
   configDefault = async ({ name, properties }) => ({
     name,
     ...properties,
@@ -121,7 +122,7 @@ module.exports = CoreClient = ({
   );
 
   const isUpById = isUpByIdFactory({ getById, getList, findId });
-  const isDownById = isDownByIdCore({ getById, getList, findId });
+  const isDownById = isDownByIdFactory({ getById, getList, findId });
 
   const create = async ({ name, payload, dependencies }) =>
     tryCatch(

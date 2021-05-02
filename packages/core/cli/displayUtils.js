@@ -12,15 +12,13 @@ const {
   not,
   get,
   eq,
+  and,
 } = require("rubico");
 const { isEmpty, forEach, pluck, size, find, groupBy } = require("rubico/x");
 
 const { planToResourcesPerType } = require("../Common");
 
 const hasPlan = (plan) => !isEmpty(plan.newOrUpdate) || !isEmpty(plan.destroy);
-
-const displayResource = (item) =>
-  item.live != null ? YAML.stringify(item.live) : undefined;
 
 const displayManagedByUs = (resource) =>
   resource.managedByUs ? colors.green("Yes") : colors.red("NO");
@@ -252,36 +250,6 @@ const tableSummaryDefs = {
   ],
 };
 
-const tablePlanPerType = {
-  columns: ["Name", "Action", "Data"],
-  colWidths: ({ resources, columns }) => {
-    const nameLength =
-      computeLength({ field: "resource.displayName", maxLength: 40 })(
-        resources
-      ) + 2;
-    const actionLength = 10;
-    const dataLength = columns - nameLength - actionLength - 10;
-    return [nameLength, actionLength, dataLength];
-  },
-  fields: [
-    get("resource.displayName"),
-    get("action"),
-    switchCase([
-      eq(get("action"), "UPDATE"),
-      ({ target, live, diff }) => {
-        assert(target);
-        assert(live);
-        assert(diff);
-        return YAML.stringify(diff);
-      },
-      eq(get("action"), "CREATE"),
-      ({ target }) => YAML.stringify(target),
-      eq(get("action"), "DESTROY"),
-      ({ live }) => YAML.stringify(live),
-    ]),
-  ],
-};
-
 exports.displayPlan = async (plan) => {
   if (!hasPlan(plan)) {
     return plan;
@@ -295,28 +263,23 @@ exports.displayPlan = async (plan) => {
     (result) =>
       map((type) => {
         const resources = result[type];
-        const tableDefinitions = tablePlanPerType;
+        const columns = process.stdout.columns || 80;
         const table = new Table({
-          colWidths: tableDefinitions.colWidths({
-            resources,
-            columns: process.stdout.columns || 80,
-          }),
-          style: { head: [], border: [] },
+          colWidths: [columns - 2],
+          style: {
+            head: [],
+            border: [],
+          },
         });
         table.push([
           {
-            colSpan: 3,
             content: colors.yellow(
               `${resources.length} ${type} from ${plan.providerName}`
             ),
           },
         ]);
-        table.push(tableDefinitions.columns.map((item) => colors.red(item)));
 
-        //TODO
-        resources.forEach((resource) =>
-          displayLiveItem({ table, resource, tableDefinitions })
-        );
+        forEach((resource) => displayPlanItem({ table, resource }))(resources);
 
         console.log(table.toString());
         console.log("\n");
@@ -387,6 +350,152 @@ const displayLiveItem = ({ table, resource, tableDefinitions }) => {
   ])();
 };
 
+const displayPlanItemUpdate = ({
+  tableItem,
+  resource: { diff, resource, id, action },
+}) =>
+  pipe([
+    tap(() => {
+      assert(diff.targetDiff);
+      assert(diff.targetDiff.updated);
+    }),
+    () => diff,
+    tap(() =>
+      tableItem.push([
+        {
+          colSpan: 2,
+          content: colors.green(
+            `${action}: name: ${resource.displayName}, id: ${id}`
+          ),
+        },
+      ])
+    ),
+    tap.if(get("updateNeedDestroy"), () =>
+      tableItem.push([
+        {
+          colSpan: 2,
+          content: colors.red(`REQUIRES DESTROYING AND CREATING`),
+        },
+      ])
+    ),
+    tap.if(and([get("updateNeedRestart"), not(get("updateNeedDestroy"))]), () =>
+      tableItem.push([
+        {
+          colSpan: 2,
+          content: colors.yellow(`REQUIRES STOPPING AND STARTING`),
+        },
+      ])
+    ),
+    () => diff.targetDiff.updated,
+    map.entries(([key, value]) => {
+      tableItem.push([
+        {
+          colSpan: 2,
+          content: colors.yellow(`Key: ${key}`),
+        },
+      ]);
+      tableItem.push([
+        {
+          content: colors.red(`- ${YAML.stringify(value)}`),
+        },
+        {
+          content: colors.green(
+            `+ ${YAML.stringify(diff.liveDiff.updated[key])}`
+          ),
+        },
+      ]);
+      return [key, value];
+    }),
+  ])();
+
+const displayPlanItemCreate = ({ tableItem, resource }) =>
+  pipe([
+    tap(() => {
+      assert(true);
+    }),
+    () =>
+      tableItem.push([
+        {
+          colSpan: 2,
+          content: colors.green(
+            `${resource.action}: ${resource.resource.displayName}`
+          ),
+        },
+      ]),
+
+    () =>
+      tableItem.push([
+        {
+          colSpan: 2,
+          content: colors.green(YAML.stringify(resource.target)),
+        },
+      ]),
+  ])();
+
+const displayPlanItemDestroy = ({ tableItem, resource }) =>
+  pipe([
+    tap(() => {
+      assert(true);
+    }),
+    () =>
+      tableItem.push([
+        {
+          colSpan: 2,
+          content: colors.red(
+            `${resource.action} ${resource.resource.displayName}`
+          ),
+        },
+      ]),
+    () =>
+      tableItem.push([
+        {
+          colSpan: 2,
+          content: colors.red(YAML.stringify(resource.live)),
+        },
+      ]),
+  ])();
+
+const displayPlanItem = ({ table, resource }) => {
+  assert(resource);
+  const columnsWidth = Math.floor(((process.stdout.columns || 80) - 8) / 2);
+
+  const tableItem = new Table({
+    colWidths: [columnsWidth, columnsWidth],
+    style: { head: [], border: [] },
+  });
+
+  switchCase([
+    () => resource.error,
+    () =>
+      table.push([
+        {
+          content: colors.red(YAML.stringify(resource)),
+        },
+      ]),
+    pipe([
+      () => resource,
+      switchCase([
+        eq(get("action"), "UPDATE"),
+        (resource) => displayPlanItemUpdate({ tableItem, resource }),
+        eq(get("action"), "CREATE"),
+        (resource) => displayPlanItemCreate({ tableItem, resource }),
+        eq(get("action"), "DESTROY"),
+        (resource) => displayPlanItemDestroy({ tableItem, resource }),
+        (resource) => {
+          throw Error(
+            `not a valid action in resource ${JSON.stringify(
+              resource,
+              null,
+              4
+            )}`
+          );
+        },
+      ]),
+      () => table.push([{ content: tableItem.toString() }]),
+    ]),
+  ])();
+};
+
 const displayTablePerType = ({
   providerName,
   resourcesByType: { type, resources = [], error },
@@ -409,7 +518,6 @@ const displayTablePerType = ({
       () =>
         table.push([
           {
-            colSpan: 3,
             content: colors.yellow(
               `${resources.length} ${type} from ${providerName}`
             ),

@@ -12,7 +12,7 @@ const logger = require("@grucloud/core/logger")({ prefix: "GcpFirewall" });
 const { tos } = require("@grucloud/core/tos");
 
 // https://cloud.google.com/compute/docs/reference/rest/v1/firewalls
-module.exports = GcpFirewall = ({ spec, config }) => {
+exports.GcpFirewall = ({ spec, config }) => {
   assert(spec);
   assert(config);
   const { providerName } = config;

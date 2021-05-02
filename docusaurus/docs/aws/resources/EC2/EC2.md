@@ -3,7 +3,7 @@ id: EC2
 title: EC2 Instance
 ---
 
-Provides an EC2 instance resource, a.k.a virtual machine.
+Manages an EC2 instance resource, a.k.a virtual machine.
 
 ```js
 const server = await provider.makeEC2({
@@ -43,3 +43,15 @@ const server = await provider.makeEC2({
 - [Volume](./Volume)
 - [Image](./Image)
 - [IamInstanceProfile](../IAM/iamInstanceProfile)
+
+### Update
+
+There are 2 kind of update depending on the attribute to modify:
+
+- `Stop and Start`: The instance is stopped, the attribute is changed, the instance is started.
+- `Destroy and Create`: The instance is destroyed and created with the new attributes.
+
+| Attribute    |         Description         |      Update Kind |
+| ------------ | :-------------------------: | ---------------: |
+| ImageId      | The Amazon Managed Image Id | Destroy & Create |
+| InstanceType |      The Instance Type      |     Stop & Start |

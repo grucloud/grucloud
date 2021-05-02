@@ -1,4 +1,4 @@
-exports.GCP_COMPUTE_BASE_URL = "https://compute.googleapis.com/compute/v1/";
+exports.GCP_COMPUTE_BASE_URL = "https://www.googleapis.com/compute/v1";
 
 const { eq, get, pipe, tap } = require("rubico");
 const { find } = require("rubico/x");

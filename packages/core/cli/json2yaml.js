@@ -11,7 +11,9 @@ const trimWhitespace = (input) =>
 function stringify(data) {
   var handlers,
     indentLevel = "";
-
+  if (typeOf(data) === "string") {
+    return data;
+  }
   handlers = {
     undefined: function () {
       // objects will not have `undefined` converted to `null`
