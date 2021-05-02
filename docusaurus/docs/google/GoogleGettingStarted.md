@@ -494,72 +494,74 @@ Querying resources on 1 provider: google
   ✓ Listing 6/6
   ✓ Querying
     ✓ VmInstance 1/1
-┌─────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 1 VmInstance from google                                                                            │
-├────────────┬──────────┬─────────────────────────────────────────────────────────────────────────────┤
-│ Name       │ Action   │ Data                                                                        │
-├────────────┼──────────┼─────────────────────────────────────────────────────────────────────────────┤
-│ web-server │ CREATE   │ kind: compute#instance                                                      │
-│            │          │ name: web-server                                                            │
-│            │          │ zone: projects/vm-tuto1/zones/southamerica-east1-b                          │
-│            │          │ machineType: projects/vm-tuto1/zones/southamerica-east1-b/machineTypes/f1-… │
-│            │          │ labels:                                                                     │
-│            │          │   managed-by: grucloud                                                      │
-│            │          │   stage: dev                                                                │
-│            │          │ metadata:                                                                   │
-│            │          │   items:                                                                    │
-│            │          │     - key: enable-oslogin                                                   │
-│            │          │       value: True                                                           │
-│            │          │   kind: compute#metadata                                                    │
-│            │          │ disks:                                                                      │
-│            │          │   - kind: compute#attachedDisk                                              │
-│            │          │     type: PERSISTENT                                                        │
-│            │          │     boot: true                                                              │
-│            │          │     mode: READ_WRITE                                                        │
-│            │          │     autoDelete: true                                                        │
-│            │          │     deviceName: web-server-managed-by-gru                                   │
-│            │          │     initializeParams:                                                       │
-│            │          │       sourceImage: projects/ubuntu-os-cloud/global/images/family/ubuntu-20… │
-│            │          │       diskType: projects/vm-tuto1/zones/southamerica-east1-b/diskTypes/pd-… │
-│            │          │       diskSizeGb: 20                                                        │
-│            │          │     diskEncryptionKey:                                                      │
-│            │          │ networkInterfaces:                                                          │
-│            │          │   - kind: compute#networkInterface                                          │
-│            │          │     subnetwork: projects/vm-tuto1/regions/southamerica-east1/subnetworks/d… │
-│            │          │     accessConfigs:                                                          │
-│            │          │       - kind: compute#accessConfig                                          │
-│            │          │         name: External NAT                                                  │
-│            │          │         type: ONE_TO_ONE_NAT                                                │
-│            │          │         networkTier: PREMIUM                                                │
-│            │          │     aliasIpRanges: []                                                       │
-│            │          │ displayDevice:                                                              │
-│            │          │   enableDisplay: false                                                      │
-│            │          │ canIpForward: false                                                         │
-│            │          │ scheduling:                                                                 │
-│            │          │   preemptible: false                                                        │
-│            │          │   onHostMaintenance: MIGRATE                                                │
-│            │          │   automaticRestart: true                                                    │
-│            │          │   nodeAffinities: []                                                        │
-│            │          │ deletionProtection: false                                                   │
-│            │          │ reservationAffinity:                                                        │
-│            │          │   consumeReservationType: ANY_RESERVATION                                   │
-│            │          │ shieldedInstanceConfig:                                                     │
-│            │          │   enableSecureBoot: false                                                   │
-│            │          │   enableVtpm: true                                                          │
-│            │          │   enableIntegrityMonitoring: true                                           │
-│            │          │ confidentialInstanceConfig:                                                 │
-│            │          │   enableConfidentialCompute: false                                          │
-│            │          │                                                                             │
-└────────────┴──────────┴─────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 VmInstance from google                                                                     │
+├──────────────────────────────────────────────────────────────────────────────────────────────┤
+│ ┌─────────────────────────────────────────────────────────────────────────────────────────┐  │
+│ │ CREATE: web-server                                                                      │  │
+│ ├─────────────────────────────────────────────────────────────────────────────────────────┤  │
+│ │ kind: compute#instance                                                                  │  │
+│ │ name: web-server                                                                        │  │
+│ │ zone: https://www.googleapis.com/compute/v1/projects/vm-tuto1/zones/southamerica-east1… │  │
+│ │ machineType: https://www.googleapis.com/compute/v1/projects/vm-tuto1/zones/southameric… │  │
+│ │ labels:                                                                                 │  │
+│ │   managed-by: grucloud                                                                  │  │
+│ │   stage: dev                                                                            │  │
+│ │ metadata:                                                                               │  │
+│ │   items:                                                                                │  │
+│ │     - key: enable-oslogin                                                               │  │
+│ │       value: True                                                                       │  │
+│ │   kind: compute#metadata                                                                │  │
+│ │ disks:                                                                                  │  │
+│ │   - kind: compute#attachedDisk                                                          │  │
+│ │     type: PERSISTENT                                                                    │  │
+│ │     boot: true                                                                          │  │
+│ │     mode: READ_WRITE                                                                    │  │
+│ │     autoDelete: true                                                                    │  │
+│ │     deviceName: web-server-managed-by-gru                                               │  │
+│ │     initializeParams:                                                                   │  │
+│ │       sourceImage: projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts        │  │
+│ │       diskType: projects/vm-tuto1/zones/southamerica-east1-b/diskTypes/pd-standard      │  │
+│ │       diskSizeGb: 20                                                                    │  │
+│ │     diskEncryptionKey:                                                                  │  │
+│ │ networkInterfaces:                                                                      │  │
+│ │   - kind: compute#networkInterface                                                      │  │
+│ │     subnetwork: projects/vm-tuto1/regions/southamerica-east1/subnetworks/default        │  │
+│ │     accessConfigs:                                                                      │  │
+│ │       - kind: compute#accessConfig                                                      │  │
+│ │         name: External NAT                                                              │  │
+│ │         type: ONE_TO_ONE_NAT                                                            │  │
+│ │         networkTier: PREMIUM                                                            │  │
+│ │     aliasIpRanges: []                                                                   │  │
+│ │ displayDevice:                                                                          │  │
+│ │   enableDisplay: false                                                                  │  │
+│ │ canIpForward: false                                                                     │  │
+│ │ scheduling:                                                                             │  │
+│ │   preemptible: false                                                                    │  │
+│ │   onHostMaintenance: MIGRATE                                                            │  │
+│ │   automaticRestart: true                                                                │  │
+│ │   nodeAffinities: []                                                                    │  │
+│ │ deletionProtection: false                                                               │  │
+│ │ reservationAffinity:                                                                    │  │
+│ │   consumeReservationType: ANY_RESERVATION                                               │  │
+│ │ shieldedInstanceConfig:                                                                 │  │
+│ │   enableSecureBoot: false                                                               │  │
+│ │   enableVtpm: true                                                                      │  │
+│ │   enableIntegrityMonitoring: true                                                       │  │
+│ │ confidentialInstanceConfig:                                                             │  │
+│ │   enableConfidentialCompute: false                                                      │  │
+│ │                                                                                         │  │
+│ └─────────────────────────────────────────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
 
 
-┌────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Plan summary for provider google                                                                   │
-├────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ DEPLOY RESOURCES                                                                                   │
-├────────────────────┬───────────────────────────────────────────────────────────────────────────────┤
-│ VmInstance         │ web-server                                                                    │
-└────────────────────┴───────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────────────────┐
+│ Plan summary for provider google                                                      │
+├───────────────────────────────────────────────────────────────────────────────────────┤
+│ DEPLOY RESOURCES                                                                      │
+├────────────────────┬──────────────────────────────────────────────────────────────────┤
+│ VmInstance         │ web-server                                                       │
+└────────────────────┴──────────────────────────────────────────────────────────────────┘
 1 resource to deploy on 1 provider
 Command "gc plan" executed in 6s
 ```
@@ -581,14 +583,13 @@ Querying resources on 1 provider: google
   ✓ Listing 6/6
   ✓ Querying
     ✓ VmInstance 1/1
-┌────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│ Plan summary for provider google                                                                   │
-├────────────────────────────────────────────────────────────────────────────────────────────────────┤
-│ DEPLOY RESOURCES                                                                                   │
-├────────────────────┬───────────────────────────────────────────────────────────────────────────────┤
-│ VmInstance         │ web-server                                                                    │
-└────────────────────┴───────────────────────────────────────────────────────────────────────────────┘
-✔ Are you sure to deploy 1 resource, 1 type on 1 provider? … yes
+┌───────────────────────────────────────────────────────────────────────────────────────┐
+│ Plan summary for provider google                                                      │
+├───────────────────────────────────────────────────────────────────────────────────────┤
+│ DEPLOY RESOURCES                                                                      │
+├────────────────────┬──────────────────────────────────────────────────────────────────┤
+│ VmInstance         │ web-server                                                       │
+└────────────────────┴──────────────────────────────────────────────────────────────────┘
 Deploying resources on 1 provider: google
 ✓ google
   ✓ Initialising
@@ -596,7 +597,8 @@ Deploying resources on 1 provider: google
     ✓ VmInstance 1/1
 1 resource deployed of 1 type and 1 provider
 Running OnDeployedGlobal resources on 1 provider: google
-Command "gc a" executed in 21s
+Command "gc a -f" executed in 29s
+
 ```
 
 Congratulations! Your first cloud resource deployed automativally with GruCloud.
@@ -841,6 +843,48 @@ Command "gc l -t ServiceAccount" executed in 5s
 
 Notice here GCP has created a default service account for the compute engine.
 
+### Update
+
+The machine type selected in the first place may be over-sized or under-sized. Let's modify the `machineType` to `e2-micro`, and execute the `apply` or `plan` command:
+
+```sh
+gc plan
+```
+
+```txt
+Querying resources on 1 provider: google
+✓ google
+  ✓ Initialising
+  ✓ Listing 6/6
+  ✓ Querying
+    ✓ VmInstance 1/1
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 VmInstance from google                                                                     │
+├──────────────────────────────────────────────────────────────────────────────────────────────┤
+│ ┌─────────────────────────────────────────────────────────────────────────────────────────┐  │
+│ │ UPDATE: name: web-server, id: 8693552609646106284                                       │  │
+│ ├─────────────────────────────────────────────────────────────────────────────────────────┤  │
+│ │ Key: machineType                                                                        │  │
+│ ├────────────────────────────────────────────┬────────────────────────────────────────────┤  │
+│ │ - f1-micro                                 │ + f2-micro                                 │  │
+│ └────────────────────────────────────────────┴────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+┌───────────────────────────────────────────────────────────────────────────────────────┐
+│ Plan summary for provider google                                                      │
+├───────────────────────────────────────────────────────────────────────────────────────┤
+│ DEPLOY RESOURCES                                                                      │
+├────────────────────┬──────────────────────────────────────────────────────────────────┤
+│ VmInstance         │ web-server                                                       │
+└────────────────────┴──────────────────────────────────────────────────────────────────┘
+1 resource to deploy on 1 provider
+Command "gc p" executed in 6s
+
+```
+
+A difference between the live server and its desired state has been detected.
+
 ### Output
 
 In the previous step, the machine's public IP address was discovered with _gcloud_, then it was manually cut and pasted to infer to ping command.
@@ -874,13 +918,95 @@ Find Deletable resources on 1 provider: google
 ✓ google
   ✓ Initialising
   ✓ Listing 6/6
-  [TRUNCATED]
-┌───────────────────────────────────────────────────────────────────────┐
-│ Destroy summary for provider google                                   │
-├────────────────────┬──────────────────────────────────────────────────┤
-│ VmInstance         │ web-server                                       │
-└────────────────────┴──────────────────────────────────────────────────┘
-✔ Are you sure to destroy 1 resource, 1 type on 1 provider? … yes
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 VmInstance from google                                                                     │
+├──────────────────────────────────────────────────────────────────────────────────────────────┤
+│ ┌─────────────────────────────────────────────────────────────────────────────────────────┐  │
+│ │ DESTROY web-server                                                                      │  │
+│ ├─────────────────────────────────────────────────────────────────────────────────────────┤  │
+│ │ id: 4915621396658280948                                                                 │  │
+│ │ creationTimestamp: 2021-05-01T16:41:16.034-07:00                                        │  │
+│ │ name: web-server                                                                        │  │
+│ │ tags:                                                                                   │  │
+│ │   fingerprint: 42WmSpB8rSM=                                                             │  │
+│ │ machineType: https://www.googleapis.com/compute/v1/projects/vm-tuto1/zones/southameric… │  │
+│ │ status: RUNNING                                                                         │  │
+│ │ zone: https://www.googleapis.com/compute/v1/projects/vm-tuto1/zones/southamerica-east1… │  │
+│ │ canIpForward: false                                                                     │  │
+│ │ networkInterfaces:                                                                      │  │
+│ │   - network: https://www.googleapis.com/compute/v1/projects/vm-tuto1/global/networks/d… │  │
+│ │     subnetwork: https://www.googleapis.com/compute/v1/projects/vm-tuto1/regions/southa… │  │
+│ │     networkIP: 10.158.0.6                                                               │  │
+│ │     name: nic0                                                                          │  │
+│ │     accessConfigs:                                                                      │  │
+│ │       - type: ONE_TO_ONE_NAT                                                            │  │
+│ │         name: External NAT                                                              │  │
+│ │         natIP: 35.198.52.62                                                             │  │
+│ │         networkTier: PREMIUM                                                            │  │
+│ │         kind: compute#accessConfig                                                      │  │
+│ │     fingerprint: GzKDoyPVgZI=                                                           │  │
+│ │     kind: compute#networkInterface                                                      │  │
+│ │ disks:                                                                                  │  │
+│ │   - type: PERSISTENT                                                                    │  │
+│ │     mode: READ_WRITE                                                                    │  │
+│ │     source: https://www.googleapis.com/compute/v1/projects/vm-tuto1/zones/southamerica… │  │
+│ │     deviceName: web-server-managed-by-gru                                               │  │
+│ │     index: 0                                                                            │  │
+│ │     boot: true                                                                          │  │
+│ │     autoDelete: true                                                                    │  │
+│ │     licenses:                                                                           │  │
+│ │       - "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/license… │  │
+│ │     interface: SCSI                                                                     │  │
+│ │     guestOsFeatures:                                                                    │  │
+│ │       - type: VIRTIO_SCSI_MULTIQUEUE                                                    │  │
+│ │       - type: SEV_CAPABLE                                                               │  │
+│ │       - type: UEFI_COMPATIBLE                                                           │  │
+│ │     diskSizeGb: 20                                                                      │  │
+│ │     kind: compute#attachedDisk                                                          │  │
+│ │ metadata:                                                                               │  │
+│ │   fingerprint: xJ9rqloLGTU=                                                             │  │
+│ │   items:                                                                                │  │
+│ │     - key: enable-oslogin                                                               │  │
+│ │       value: True                                                                       │  │
+│ │   kind: compute#metadata                                                                │  │
+│ │ selfLink: https://www.googleapis.com/compute/v1/projects/vm-tuto1/zones/southamerica-e… │  │
+│ │ scheduling:                                                                             │  │
+│ │   onHostMaintenance: MIGRATE                                                            │  │
+│ │   automaticRestart: true                                                                │  │
+│ │   preemptible: false                                                                    │  │
+│ │ cpuPlatform: Intel Broadwell                                                            │  │
+│ │ labels:                                                                                 │  │
+│ │   managed-by: grucloud                                                                  │  │
+│ │   stage: dev                                                                            │  │
+│ │ labelFingerprint: 2XCNew8FA10=                                                          │  │
+│ │ startRestricted: false                                                                  │  │
+│ │ deletionProtection: false                                                               │  │
+│ │ reservationAffinity:                                                                    │  │
+│ │   consumeReservationType: ANY_RESERVATION                                               │  │
+│ │ displayDevice:                                                                          │  │
+│ │   enableDisplay: false                                                                  │  │
+│ │ shieldedInstanceConfig:                                                                 │  │
+│ │   enableSecureBoot: false                                                               │  │
+│ │   enableVtpm: true                                                                      │  │
+│ │   enableIntegrityMonitoring: true                                                       │  │
+│ │ shieldedInstanceIntegrityPolicy:                                                        │  │
+│ │   updateAutoLearnPolicy: true                                                           │  │
+│ │ confidentialInstanceConfig:                                                             │  │
+│ │   enableConfidentialCompute: false                                                      │  │
+│ │ fingerprint: Xh4hKPeAOUk=                                                               │  │
+│ │ lastStartTimestamp: 2021-05-01T16:41:25.313-07:00                                       │  │
+│ │ kind: compute#instance                                                                  │  │
+│ │                                                                                         │  │
+│ └─────────────────────────────────────────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+┌───────────────────────────────────────────────────────────────────────────────────────┐
+│ Destroy summary for provider google                                                   │
+├────────────────────┬──────────────────────────────────────────────────────────────────┤
+│ VmInstance         │ web-server                                                       │
+└────────────────────┴──────────────────────────────────────────────────────────────────┘
+? Are you sure to destroy 1 resource, 1 type on 1 provider? › (y/N)
 Destroying resources on 1 provider: google
 ✓ google
   ✓ Initialising
@@ -888,7 +1014,7 @@ Destroying resources on 1 provider: google
     ✓ VmInstance 1/1
 1 resource destroyed, 1 type on 1 provider
 Running OnDestroyedGlobal resources on 1 provider: google
-Command "gc destroy" executed in 1m 20s
+Command "gc destroy" executed in 46s
 ```
 
 If the `destroy` command is executed again, no resources should be destroyed.

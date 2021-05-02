@@ -14,6 +14,7 @@ const {
   or,
   omit,
   assign,
+  any,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -22,6 +23,7 @@ const {
   pluck,
   flatten,
   forEach,
+
   find,
   identity,
   includes,
@@ -274,18 +276,45 @@ exports.AwsEC2 = ({ spec, config }) => {
         }),
     ])();
 
-  const update = async ({ name, live: { InstanceId }, diff }) =>
+  const update = async ({
+    name,
+    payload,
+    live: { InstanceId },
+    diff,
+    dependencies,
+    resolvedDependencies,
+  }) =>
     pipe([
       tap(() => {
         logger.info(`update ec2 ${tos({ name, InstanceId, diff })}`);
       }),
-      () => instanceStop({ InstanceId }),
-      () =>
-        updateInstanceType({
-          InstanceId,
-          updated: diff.liveDiff.updated,
-        }),
-      () => instanceStart({ InstanceId }),
+      () => diff,
+      switchCase([
+        get("updateNeedDestroy"),
+        pipe([
+          tap(() => {
+            logger.info(`ec2 updateNeedDestroy ${name}`);
+          }),
+          () => destroy({ id: InstanceId }),
+          () => create({ name, payload, resolvedDependencies }),
+        ]),
+        get("updateNeedRestart"),
+        pipe([
+          () => instanceStop({ InstanceId }),
+          () =>
+            updateInstanceType({
+              InstanceId,
+              updated: diff.liveDiff.updated,
+            }),
+          () => instanceStart({ InstanceId }),
+        ]),
+        () => {
+          throw Error(
+            `Either updateNeedDestroy or updateNeedRestart is required`
+          );
+        },
+      ]),
+
       tap(() => {
         logger.info(`ec2 updated ${name}`);
       }),
@@ -542,6 +571,21 @@ exports.compareEC2Instance = pipe([
       () => detailedDiff(live, target),
       omit(["added", "deleted"]),
     ])(),
+  }),
+  tap((diff) => {
+    logger.debug(`compareEC2Instance ${tos(diff)}`);
+  }),
+  assign({
+    updateNeedDestroy: pipe([
+      get("liveDiff.updated"),
+      Object.keys,
+      or([find((key) => includes(key)(["ImageId"]))]),
+    ]),
+    updateNeedRestart: pipe([
+      get("liveDiff.updated"),
+      Object.keys,
+      or([find((key) => includes(key)(["InstanceType"]))]),
+    ]),
   }),
   tap((diff) => {
     logger.debug(`compareEC2Instance ${tos(diff)}`);

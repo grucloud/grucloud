@@ -1,18 +1,37 @@
 const assert = require("assert");
 const path = require("path");
 
-const { get, eq, switchCase, pipe, tap, map, omit, assign } = require("rubico");
-const { defaultsDeep, pluck, find } = require("rubico/x");
+const {
+  get,
+  eq,
+  switchCase,
+  pipe,
+  tap,
+  map,
+  omit,
+  assign,
+  tryCatch,
+  or,
+} = require("rubico");
+const { defaultsDeep, pluck, find, includes } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GcpVmInstance" });
 const { tos } = require("@grucloud/core/tos");
+
 const GoogleClient = require("../../GoogleClient");
-const { buildLabel } = require("../../GoogleCommon");
+const { buildLabel, createAxiosMakerGoogle } = require("../../GoogleCommon");
 const { toTagName } = require("@grucloud/core/TagName");
 const { getField } = require("@grucloud/core/ProviderCommon");
-const { isUpByIdCore } = require("@grucloud/core/Common");
+const {
+  isUpByIdCore,
+  isDownByIdCore,
+  axiosErrorToJSON,
+} = require("@grucloud/core/Common");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
+const { retryCall } = require("@grucloud/core//Retry");
+
+// https://cloud.google.com/compute/docs/reference/rest/v1
 
 exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
   assert(spec);
@@ -22,6 +41,15 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
   assert(providerName);
   const { projectId, region, zone, managedByTag } = configProvider;
   assert(projectId);
+
+  const url = `/projects/${projectId(configProvider)}/zones/${zone}/instances`;
+
+  const axios = createAxiosMakerGoogle({
+    baseURL: GCP_COMPUTE_BASE_URL,
+    url,
+    config: configProvider,
+  });
+
   const findDependencies = ({ live, lives }) => [
     {
       type: "Network",
@@ -164,6 +192,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
   };
 
   const isInstanceUp = eq(get("status"), "RUNNING");
+  const isInstanceDown = pipe([eq(get("status"), "TERMINATED")]);
 
   const isUpByIdFactory = ({ getById }) =>
     isUpByIdCore({
@@ -171,15 +200,109 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
       getById,
     });
 
-  return GoogleClient({
+  const isDownByIdFactory = ({ getById }) =>
+    isDownByIdCore({
+      isInstanceDown,
+      getById,
+    });
+
+  const client = GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
     url: `/projects/${projectId(configProvider)}/zones/${zone}/instances`,
     config: configProvider,
     isUpByIdFactory,
+    isDownByIdFactory,
     configDefault,
     findDependencies,
   });
+
+  const instanceStop = ({ name, id }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`instanceStop ${name}, id: ${id}`);
+      }),
+      () => axios.post(`${name}/stop`),
+      tap(() =>
+        retryCall({
+          name: `instance isDownById name: ${name}`,
+          fn: () => client.isDownById({ id, name }),
+          config: configProvider,
+        })
+      ),
+      tap(() => {
+        logger.debug(`instanceStop done`);
+      }),
+    ])();
+
+  const instanceStart = ({ name, id }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`instanceStart ${name}`);
+      }),
+      () => axios.post(`${name}/start`),
+      tap(() =>
+        retryCall({
+          name: `instance isDownById name: ${name}`,
+          fn: () => client.isUpById({ id, name }),
+          config: configProvider,
+        })
+      ),
+      tap(() => {
+        logger.debug(`instanceStart done`);
+      }),
+    ])();
+
+  const update = async ({ name, payload, dependencies, diff, live, id }) =>
+    tryCatch(
+      pipe([
+        tap(() => {
+          logger.debug(
+            `update ${name}, payload: ${tos({ payload, diff, live, id })}`
+          );
+          assert(name);
+          assert(payload);
+          assert(!spec.singleton);
+          assert(!spec.listOnly);
+        }),
+        () => diff,
+        switchCase([
+          get("updateNeedRestart"),
+          pipe([
+            tap(() => {
+              logger.debug(`updateNeedRestart`);
+            }),
+            () => instanceStop({ name, id }),
+            () => client.getById({ id }),
+            ({ fingerprint }) =>
+              axios.put(name, {
+                ...payload,
+                fingerprint,
+              }),
+            () => instanceStart({ name, id }),
+          ]),
+          get("updateNeedRefresh"),
+          pipe([
+            tap(() => {
+              logger.debug(`updateNeedRefresh`);
+            }),
+            () =>
+              axios.put(name, {
+                ...payload,
+                fingerprint: live.fingerprint,
+              }),
+          ]),
+          () => {
+            throw Error("TODO update vm");
+          },
+        ]),
+      ]),
+      (error) => {
+        throw axiosErrorToJSON(error);
+      }
+    )();
+
+  return { ...client, update };
 };
 
 const filterItem = ({ config, item }) =>
@@ -204,6 +327,28 @@ const filterItem = ({ config, item }) =>
     }),
   ])();
 
+// See https://cloud.google.com/compute/docs/instances/update-instance-properties#updatable-properties
+const VM_INSTANCE_ATTRIBUTES_RESTART = [
+  "reservationAffinity",
+  "disk",
+  "displayDevice",
+  "guestAccelerator",
+  "machineType",
+  "minCpuPlatform",
+  "scheduling",
+  "serviceAccount",
+  "shieldedInstanceConfig",
+];
+
+const VM_INSTANCE_ATTRIBUTES_REFRESH = [
+  "deletionProtection",
+  "description",
+  "disk",
+  "labels",
+  "metadata",
+  "tags",
+];
+
 exports.compareVmInstance = pipe([
   tap((xxx) => {
     assert(true);
@@ -221,6 +366,24 @@ exports.compareVmInstance = pipe([
       () => detailedDiff(live, target),
       omit(["added", "deleted"]),
     ])(),
+  }),
+  assign({
+    // TODO change image ?
+    // updateNeedDestroy: pipe([
+    //   get("liveDiff.updated"),
+    //   Object.keys,
+    //   or([find((key) => includes(key)(["ImageId"]))]),
+    // ]),
+    updateNeedRefresh: pipe([
+      get("liveDiff.updated"),
+      Object.keys,
+      or([find((key) => includes(key)(VM_INSTANCE_ATTRIBUTES_REFRESH))]),
+    ]),
+    updateNeedRestart: pipe([
+      get("liveDiff.updated"),
+      Object.keys,
+      or([find((key) => includes(key)(VM_INSTANCE_ATTRIBUTES_RESTART))]),
+    ]),
   }),
   tap((diff) => {
     logger.debug(`compareVmInstance ${tos(diff)}`);

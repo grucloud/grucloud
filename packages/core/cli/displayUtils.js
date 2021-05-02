@@ -12,6 +12,7 @@ const {
   not,
   get,
   eq,
+  and,
 } = require("rubico");
 const { isEmpty, forEach, pluck, size, find, groupBy } = require("rubico/x");
 
@@ -349,31 +350,62 @@ const displayLiveItem = ({ table, resource, tableDefinitions }) => {
   ])();
 };
 
-const displayPlanItemUpdate = ({ tableItem, resource }) =>
+const displayPlanItemUpdate = ({
+  tableItem,
+  resource: { diff, resource, id, action },
+}) =>
   pipe([
     tap(() => {
-      assert(true);
+      assert(diff.targetDiff);
+      assert(diff.targetDiff.updated);
     }),
-    () =>
+    () => diff,
+    tap(() =>
       tableItem.push([
         {
           colSpan: 2,
           content: colors.green(
-            YAML.stringify({
-              [resource.action]: resource.resource.displayName,
-            })
+            `${action}: name: ${resource.displayName}, id: ${id}`
           ),
         },
-      ]),
-    () =>
+      ])
+    ),
+    tap.if(get("updateNeedDestroy"), () =>
       tableItem.push([
         {
-          content: colors.red(YAML.stringify(resource.diff.targetDiff)),
+          colSpan: 2,
+          content: colors.red(`REQUIRES DESTROYING AND CREATING`),
+        },
+      ])
+    ),
+    tap.if(and([get("updateNeedRestart"), not(get("updateNeedDestroy"))]), () =>
+      tableItem.push([
+        {
+          colSpan: 2,
+          content: colors.yellow(`REQUIRES STOPPING AND STARTING`),
+        },
+      ])
+    ),
+    () => diff.targetDiff.updated,
+    map.entries(([key, value]) => {
+      tableItem.push([
+        {
+          colSpan: 2,
+          content: colors.yellow(`Key: ${key}`),
+        },
+      ]);
+      tableItem.push([
+        {
+          content: colors.red(`- ${YAML.stringify(value)}`),
         },
         {
-          content: colors.green(YAML.stringify(resource.diff.liveDiff)),
+          content: colors.green(
+            `+ ${YAML.stringify(diff.liveDiff.updated[key])}`
+          ),
         },
-      ]),
+      ]);
+      return [key, value];
+    }),
   ])();
 
 const displayPlanItemCreate = ({ tableItem, resource }) =>

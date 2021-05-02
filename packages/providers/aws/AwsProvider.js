@@ -1,7 +1,7 @@
 process.env.AWS_SDK_LOAD_CONFIG = "true";
 const AWS = require("aws-sdk");
 const assert = require("assert");
-const { map, pipe, get, filter, not, reduce, tap } = require("rubico");
+const { omit, pipe, get, filter, not, reduce, tap } = require("rubico");
 const { first, pluck, defaultsDeep, isFunction, isEmpty } = require("rubico/x");
 const { tos } = require("@grucloud/core/tos");
 
@@ -143,7 +143,7 @@ exports.AwsProvider = ({
   const info = () => ({
     accountId,
     zone,
-    config: mergedConfig,
+    config: omit(["accountId", "zone"])(mergedConfig),
   });
 
   return CoreProvider({

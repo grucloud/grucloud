@@ -15,7 +15,7 @@ main({
   onExit: async ({ code }) => {
     logger.info(`onExit ${code}`);
 
-    setTimeout(() => logger.logger.end(), 100);
+    setTimeout(() => logger.logger.end(), 1000);
 
     await new Promise(() => {
       logger.logger.on("finish", function () {

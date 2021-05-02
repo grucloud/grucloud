@@ -228,6 +228,7 @@ exports.ResourceMaker = ({
                     resource: resource.toJSON(),
                     target,
                     live,
+                    id: client.findId(live),
                     diff,
                     providerName: resource.toJSON().providerName,
                   },
