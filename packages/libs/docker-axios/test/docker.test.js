@@ -63,19 +63,19 @@ describe("DockerClient", function () {
           },
         },
       };
-      const result = await docker.containerCreate(createParam);
+      const result = await docker.container.create(createParam);
       assert(result.Id);
     }
     {
       const startParam = {
         name: containerName,
-        body: { output: "/dev/null" },
+        //body: { output: "/dev/null" },
       };
-      const result = await docker.containerStart(startParam);
+      const result = await docker.container.start(startParam);
       assert(true);
     }
     {
-      const result = await docker.containerList({
+      const result = await docker.container.list({
         filters: `{"name": ["${containerName}"]}`,
       });
       assert.equal(result.length, 1);
@@ -84,13 +84,20 @@ describe("DockerClient", function () {
       const waitParam = {
         name: containerName,
       };
-      const result = await docker.containerWait(waitParam);
+      const result = await docker.container.wait(waitParam);
       assert.equal(result.StatusCode, 0);
       assert(
         await fileExist({
           fileName: outputGcListLocalPath,
         })
       );
+    }
+    {
+      const deleteParam = {
+        name: containerName,
+      };
+      const result = await docker.container.delete(deleteParam);
+      assert(true);
     }
   });
 });

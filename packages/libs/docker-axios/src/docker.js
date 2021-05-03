@@ -1,89 +1,62 @@
 const assert = require("assert");
 const Axios = require("axios");
-
-const { pipe, tap, switchCase, tryCatch, eq, get } = require("rubico");
+const { pipe, tap, switchCase, tryCatch, eq, get, map } = require("rubico");
 const { includes, defaultsDeep } = require("rubico/x");
 
 const configDefault = {
   baseURL: "http://localhost/v1.40",
   socketPath: "/var/run/docker.sock",
   timeout: 15e3,
-  withCredentials: true,
 };
 
-exports.DockerClient = ({ config = {} }) => {
-  const axios = Axios.create(defaultsDeep(configDefault)(config));
+const containersSpec = () => ({
+  create: {
+    method: "post",
+    url: ({ name }) => `/containers/create?name=${name}`,
+  },
+  start: {
+    method: "post",
+    url: ({ name }) => `/containers/${name}/start`,
+  },
+  wait: {
+    method: "post",
+    url: ({ name }) => `/containers/${name}/wait`,
+  },
+  delete: {
+    method: "delete",
+    url: ({ name }) => `/containers/${name}`,
+  },
+  list: {
+    method: "get",
+    url: ({ filters }) => `/containers/json?filters=${filters}`, //TODO
+  },
+});
 
-  const handleError = ({ name }) => (error) => {
-    console.error("Error", name, error);
-    throw error;
-  };
-
-  const containerCreate = ({ name, body }) =>
+const opsFromSpec = ({ axios }) =>
+  map.entries(([opName, spec]) => [
+    opName,
     tryCatch(
       pipe([
-        () => axios.post(`/containers/create?name=${name}`, body),
+        switchCase([
+          eq(spec.method, "get"),
+          (params) => axios.get(spec.url(params)),
+          (params) => axios[spec.method](spec.url(params), params.body),
+        ]),
         get("data"),
-        tap((response) => {
-          assert(true);
-        }),
       ]),
-      handleError({ name: "create" })
-    )();
-
-  const containerStart = ({ name }) =>
-    tryCatch(
       pipe([
-        () => axios.post(`/containers/${name}/start`),
-        get("data"),
-        tap((response) => {
-          assert(true);
+        tap((error) => {
+          console.error("Error", opName, error);
         }),
-      ]),
-      handleError({ name: "start" })
-    )();
+        (error) => {
+          throw error;
+        },
+      ])
+    ),
+  ]);
 
-  const containerWait = ({ name }) =>
-    tryCatch(
-      pipe([
-        () => axios.post(`/containers/${name}/wait`),
-        get("data"),
-        tap((response) => {
-          assert(true);
-        }),
-      ]),
-      handleError({ name: "wait" })
-    )();
-
-  const containerList = ({ filters } = {}) =>
-    tryCatch(
-      pipe([
-        () => axios.get(`/containers/json?filters=${filters}`),
-        get("data"),
-        tap((response) => {
-          assert(true);
-        }),
-      ]),
-      handleError({ name: "list" })
-    )();
-
-  const containerDelete = ({ name }) =>
-    tryCatch(
-      pipe([
-        () => axios.delete(`/containers/${name}`),
-        get("data"),
-        tap((response) => {
-          assert(true);
-        }),
-      ]),
-      handleError({ name: "containerDelete" })
-    )();
-
-  return {
-    containerList,
-    containerCreate,
-    containerStart,
-    containerWait,
-    containerDelete,
-  };
-};
+exports.DockerClient = pipe([
+  defaultsDeep(configDefault),
+  (config) => Axios.create(config),
+  (axios) => ({ container: opsFromSpec({ axios })(containersSpec()) }),
+]);
