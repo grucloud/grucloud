@@ -3,7 +3,7 @@ FROM node:14-alpine as base
 ENV GIT_SSH_COMMAND "ssh -i ~/.ssh/id_ecdsa -o BatchMode=yes -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 
 RUN apk update && apk upgrade && \
-    apk add --no-cache bash git openssh
+    apk add --no-cache bash git openssh graphviz
 
 WORKDIR /app
 

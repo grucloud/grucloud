@@ -42,6 +42,14 @@ For all gc commands:
 - The environment is taken from the file `aws.env`
 - The `volume` directory is mounted where the results will be written.
 
+### Version
+
+Get the `gc` version from the image:
+
+```sh
+npm run gc:version
+```
+
 ### Info
 
 The command is a wrapper to the `docker run` command, and will execute `gc info`:
