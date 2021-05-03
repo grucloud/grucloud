@@ -1,4 +1,3 @@
-process.env.AWS_SDK_LOAD_CONFIG = "true";
 const AWS = require("aws-sdk");
 const assert = require("assert");
 const { omit, pipe, get, filter, not, reduce, tap } = require("rubico");
