@@ -676,9 +676,11 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
             ])(),
         }),
       get("results"),
-      filter(not(get("error"))),
       tap((results) => {
-        logger.info(`filterProviderUp #providers ${results.length}`);
+        assert(true);
+      }),
+      tap((results) => {
+        logger.info(`filterProviderUp #providers ${size(results)}`);
       }),
     ])();
 
