@@ -1104,6 +1104,9 @@ const listDoOk = ({ commandOptions, programOptions }) =>
                   }),
               ])({}),
           }),
+        tap((xxx) => {
+          assert(true);
+        }),
         (lives) => lives.json,
         tap((lives) => {
           doGraphLive({ providerGru, lives, commandOptions });
