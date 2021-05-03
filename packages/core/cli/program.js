@@ -25,6 +25,18 @@ const optionExcludesByTypes = [
   "Exclude by type, multiple values allowed",
   collect,
 ];
+
+const optionDotFileTarget = [
+  "--dot-file <dotFile>",
+  "output 'dot' file name for the target diagam",
+  "diagram-target.dot",
+];
+const optionDotFileLive = [
+  "--dot-file <dotFile>",
+  "output 'dot' file name for the live diagram",
+  "diagram-live.dot",
+];
+
 const handleError = (error) => {
   if (!error.error?.displayed) {
     console.error(YAML.stringify(error));
@@ -153,6 +165,7 @@ exports.createProgram = ({ version, commands }) => {
     )
     .option(...optionFilteredByProvider)
     .option(...optionFilteredByTypes)
+    .option(...optionDotFileLive)
     .option("--title <value>", "diagram title", defautTitle)
     .action(runCommand({ commandName: "list", program }));
 
@@ -173,11 +186,7 @@ exports.createProgram = ({ version, commands }) => {
     )
     .alias("gt")
     .alias("g")
-    .option(
-      "-f, --file <file>",
-      "write result to the given file name",
-      "diagram-target.dot"
-    )
+    .option(...optionDotFileTarget)
     .option("--title <value>", "diagram title", defautTitle)
     .option("-t, --type <type>", "file type: png, svg", "svg")
     .option(...optionFilteredByProvider)

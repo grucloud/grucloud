@@ -1255,24 +1255,25 @@ exports.unInit = async ({ infra, commandOptions = {}, programOptions = {} }) =>
     DisplayAndThrow({ name: "UnInit" })
   )(infra);
 
-const graphOutputFileName = (commandOptions) =>
-  `${path.parse(commandOptions.file).name}.${commandOptions.type}`;
+const graphOutputFileName = ({ dotFile, type }) =>
+  pipe([
+    () => path.parse(dotFile),
+    ({ name, dir }) => path.resolve(dir, `${name}.${type}`),
+  ])();
 
-const dotToSvg = ({
-  result,
-  commandOptions: { file = "diagram-live.dot", type = "svg" },
-}) =>
+const dotToSvg = ({ result, commandOptions: { dotFile, type = "svg" } }) =>
   pipe([
     tap(() => {
+      assert(dotFile);
       logger.debug(`writeDotToFile`);
     }),
-    tap(() => fs.writeFileSync(file, result)),
+    tap(() => fs.writeFileSync(dotFile, result)),
     tap(() => {
       //console.log(`dot file written to: ${file}`);
     }),
     tap(() => {
-      const output = graphOutputFileName({ file, type });
-      const command = `dot  -T${type} ${file} -o ${output}`;
+      const output = graphOutputFileName({ dotFile, type });
+      const command = `dot  -T${type} ${dotFile} -o ${output}`;
 
       const { stdout, stderr, code } = shell.exec(command, {
         silent: true,
@@ -1288,7 +1289,7 @@ const dotToSvg = ({
       //console.log(`output saved to: ${output}`);
     }),
     tap(() => {
-      shell.exec(`open ${graphOutputFileName({ file, type })}`, {
+      shell.exec(`open ${graphOutputFileName({ dotFile, type })}`, {
         silent: true,
       });
     }),
