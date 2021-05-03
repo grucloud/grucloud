@@ -21,7 +21,7 @@
     "type": "git",
     "url": "git+https://github.com/grucloud/grucloud.git"
   },
-  "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/tools/docker-axios",
+  "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/libs/docker-axios#readme.md",
   "keywords": [
     "docker",
     "node",
