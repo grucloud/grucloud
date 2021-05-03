@@ -11,9 +11,9 @@ npm i @grucloud/docker-axios
 
 ## Setup
 
-### Create a Docket client
+### Create a Docker client
 
-Import the `DockerClient` from `@grucloud/docker-axios`.
+Import the `DockerClient` from [@grucloud/docker-axios](https://www.npmjs.com/package/@grucloud/docker-axios).
 
 Create a client with _options_. These options are forwarded to [axios](https://github.com/axios/axios#request-config)
 
@@ -102,6 +102,24 @@ const result = await docker.container.list({
   filters: `{"name": ["${containerName}"]}`,
 });
 assert.equal(result.length, 1);
+```
+
+### Retrieve container logs
+
+Obtaint the logs from the container by name. See all options at [ContainerLogs](https://docs.docker.com/engine/api/v1.41/#operation/ContainerLogs)
+
+```js
+const logParam = {
+  name: containerName,
+  options: {
+    stdout: 1,
+    stderr: 1,
+    //tail: 100,
+    //follow: 0,
+  },
+};
+const result = await docker.container.log(logParam);
+console.log(result);
 ```
 
 ### Destroy a container

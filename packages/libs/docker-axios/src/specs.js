@@ -1,3 +1,5 @@
+const querystring = require("querystring");
+
 exports.containersSpec = () => ({
   create: {
     method: "post",
@@ -17,6 +19,11 @@ exports.containersSpec = () => ({
   },
   list: {
     method: "get",
-    url: ({ filters }) => `/containers/json?filters=${filters}`, //TODO
+    url: (options = {}) => `/containers/json?${querystring.stringify(options)}`,
+  },
+  log: {
+    method: "get",
+    url: ({ name, options }) =>
+      `/containers/${name}/logs?${querystring.stringify(options)}`,
   },
 });
