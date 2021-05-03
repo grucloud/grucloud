@@ -37,7 +37,7 @@ describe("DockerClient", function () {
     await docker.containerList();
     assert(true);
   });
-  it.only("containerCreate", async () => {
+  it("create, list, start, wait, delete", async () => {
     const docker = DockerClient({});
     const containerImage = "grucloud-aws";
     const outputGcList = "gc-list.json";
@@ -49,7 +49,7 @@ describe("DockerClient", function () {
     } catch (error) {
       assert(true);
     }
-
+    // Create
     const containerName = `${containerImage}-${uuidv4()}`;
     {
       const createParam = {
@@ -66,6 +66,7 @@ describe("DockerClient", function () {
       const result = await docker.container.create(createParam);
       assert(result.Id);
     }
+    // Start
     {
       const startParam = {
         name: containerName,
@@ -74,12 +75,14 @@ describe("DockerClient", function () {
       const result = await docker.container.start(startParam);
       assert(true);
     }
+    // List
     {
       const result = await docker.container.list({
         filters: `{"name": ["${containerName}"]}`,
       });
       assert.equal(result.length, 1);
     }
+    // Wait
     {
       const waitParam = {
         name: containerName,
@@ -92,6 +95,7 @@ describe("DockerClient", function () {
         })
       );
     }
+    // Delete
     {
       const deleteParam = {
         name: containerName,
