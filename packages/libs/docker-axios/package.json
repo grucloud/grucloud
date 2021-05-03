@@ -16,5 +16,17 @@
   "devDependencies": {
     "mocha": "^8.3.2",
     "uuid": "^8.3.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grucloud/grucloud.git"
+  },
+  "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/tools/docker-axios",
+  "keywords": [
+    "docker",
+    "node",
+    "javascript",
+    "axios",
+    "rubico"
+  ]
 }

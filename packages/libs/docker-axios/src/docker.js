@@ -1,36 +1,26 @@
-const assert = require("assert");
 const Axios = require("axios");
 const { pipe, tap, switchCase, tryCatch, eq, get, map } = require("rubico");
-const { includes, defaultsDeep } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
+const { containersSpec } = require("./specs");
 
+// See https://github.com/axios/axios#request-config
 const configDefault = {
   baseURL: "http://localhost/v1.40",
   socketPath: "/var/run/docker.sock",
   timeout: 15e3,
 };
 
-const containersSpec = () => ({
-  create: {
-    method: "post",
-    url: ({ name }) => `/containers/create?name=${name}`,
-  },
-  start: {
-    method: "post",
-    url: ({ name }) => `/containers/${name}/start`,
-  },
-  wait: {
-    method: "post",
-    url: ({ name }) => `/containers/${name}/wait`,
-  },
-  delete: {
-    method: "delete",
-    url: ({ name }) => `/containers/${name}`,
-  },
-  list: {
-    method: "get",
-    url: ({ filters }) => `/containers/json?filters=${filters}`, //TODO
-  },
-});
+// Example of a spec:
+// const containersSpec = () => ({
+//   create: {
+//     method: "post",
+//     url: ({ name }) => `/containers/create?name=${name}`,
+//   },
+//   start: {
+//     method: "post",
+//     url: ({ name }) => `/containers/${name}/start`,
+//   },
+// })
 
 const opsFromSpec = ({ axios }) =>
   map.entries(([opName, spec]) => [
@@ -45,9 +35,7 @@ const opsFromSpec = ({ axios }) =>
         get("data"),
       ]),
       pipe([
-        tap((error) => {
-          console.error("Error", opName, error);
-        }),
+        //TODO convert axios error
         (error) => {
           throw error;
         },
