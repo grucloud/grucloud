@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-azure",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.14.0",
-    "@grucloud/provider-azure": "^1.14.0",
+    "@grucloud/core": "^1.15.0",
+    "@grucloud/provider-azure": "^1.15.0",
     "ping": "^0.4.1",
     "rubico": "^1.6.23",
     "ssh2": "^0.8.9"

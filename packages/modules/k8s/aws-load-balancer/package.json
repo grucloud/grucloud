@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-k8s-aws-load-balancer-controller",
-  "version": "1.14.1",
+  "version": "1.15.0",
   "description": "GruCloud module for the AWS Load Balancer Controller running on K8s",
   "main": "iac.js",
   "scripts": {
@@ -12,11 +12,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.14.0",
-    "@grucloud/module-aws-eks": "^1.14.1",
-    "@grucloud/module-k8s-cert-manager": "^1.14.0",
-    "@grucloud/provider-aws": "^1.14.1",
-    "@grucloud/provider-k8s": "^1.14.0",
+    "@grucloud/core": "^1.15.0",
+    "@grucloud/module-aws-eks": "^1.15.0",
+    "@grucloud/module-k8s-cert-manager": "^1.15.0",
+    "@grucloud/provider-aws": "^1.15.0",
+    "@grucloud/provider-k8s": "^1.15.0",
     "rubico": "^1.6.21"
   },
   "devDependencies": {

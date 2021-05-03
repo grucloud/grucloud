@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-azure",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "The GruCloud Azure provider",
   "main": "AzureProvider.js",
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/azure",
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.14.0",
+    "@grucloud/core": "^1.15.0",
     "axios": "^0.21.1",
     "rubico": "^1.6.23"
   },
