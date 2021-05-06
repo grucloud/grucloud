@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-mock-multi",
-  "version": "1.15.1",
+  "version": "1.15.2",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.15.1",
-    "@grucloud/provider-mock": "^1.15.1",
+    "@grucloud/core": "^1.15.2",
+    "@grucloud/provider-mock": "^1.15.2",
     "rubico": "^1.6.23",
     "url-join": "^4.0.1"
   }

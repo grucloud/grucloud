@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-ec2-vpc",
-  "version": "1.15.1",
+  "version": "1.15.2",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.15.1",
-    "@grucloud/provider-aws": "^1.15.1",
+    "@grucloud/core": "^1.15.2",
+    "@grucloud/provider-aws": "^1.15.2",
     "ping": "^0.4.1",
     "rubico": "^1.6.23",
     "ssh2": "^0.8.9"
