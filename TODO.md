@@ -4,6 +4,8 @@
 - code coverage with monorepo
 - check stage for all providers
 
+## Diagram
+
 ## Common:
 
 - gc graph: wrong namespace, it is default, should be myapp

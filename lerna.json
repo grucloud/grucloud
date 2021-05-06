@@ -3,7 +3,7 @@
     "packages/**/*",
     "examples/**/*"
   ],
-  "version": "1.15.0",
+  "version": "1.15.1",
   "command": {
     "publish": {
       "ignoreChanges": [
