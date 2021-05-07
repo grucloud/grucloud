@@ -1,3 +1,4 @@
+process.env.AWS_SDK_LOAD_CONFIG = 1;
 const AWS = require("aws-sdk");
 const assert = require("assert");
 const { omit, pipe, get, filter, not, reduce, tap } = require("rubico");
@@ -18,7 +19,6 @@ const AwsEKS = require("./EKS");
 //const AwsELB = require("./ELB");
 const AwsELBv2 = require("./ELBv2");
 const AutoScaling = require("./Autoscaling");
-const defaultRegion = "eu-west-2";
 
 const fnSpecs = () => [
   ...AwsS3,
@@ -103,7 +103,7 @@ exports.AwsProvider = ({
   let zones;
   let region;
 
-  const getRegionDefault = () => region || AWS.config.region || defaultRegion;
+  const getRegionDefault = () => region || AWS.config.region;
 
   const getRegion = (config) => config.region || getRegionDefault();
   const getZone = ({ zones, config }) => config.zone() || first(zones);

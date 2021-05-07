@@ -93,7 +93,7 @@ describe("AwsEC2", async function () {
     //assert.equal(config.KeyName, keyPair.name);
   });
 
-  it.only("ec2 apply plan", async function () {
+  it("ec2 apply plan", async function () {
     // Step 1
     {
       const {
