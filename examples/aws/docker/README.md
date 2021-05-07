@@ -16,7 +16,7 @@ AWSRegion=us-east-1
 
 ## Build the docker image
 
-Build the image named `grucloud-aws`:
+Build the image named `grucloud-cli`:
 
 ```sh
 npm run docker:build
@@ -25,12 +25,12 @@ npm run docker:build
 Verify the newly created images:
 
 ```sh
-docker images grucloud-aws
+docker images grucloud-cli
 ```
 
 ```txt
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-grucloud-aws        latest              24fa2a869648        43 minutes ago      227MB
+grucloud-cli        latest              24fa2a869648        43 minutes ago      227MB
 ```
 
 > The build process is multi-stage, which produces a lean image.
@@ -73,5 +73,5 @@ The result of the list command is written in `volume/gc-list.json`.
 Run a shell inside a container to inspect its content:
 
 ```sh
-docker run --entrypoint /bin/sh -it grucloud-aws
+docker run --entrypoint /bin/sh -it grucloud-cli
 ```
