@@ -23,7 +23,7 @@ const image = await provider.useImage({
       },
       {
         Name: "description",
-        Values: ["Ubuntu Server 20.04 LTS*"],
+        Values: ["Canonical, Ubuntu, 20.04 LTS, amd64 focal*"],
       },
     ],
   }),
