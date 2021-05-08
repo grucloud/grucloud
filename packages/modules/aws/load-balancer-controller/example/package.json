@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-module-aws-load-balancer-controller",
-  "version": "1.17.0",
+  "version": "1.17.1",
   "description": "The example tthe AWS Load Balancer Controller GruCloud Module",
   "main": "iac.js",
   "private": true,
@@ -13,9 +13,9 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.16.0",
-    "@grucloud/module-aws-eks": "^1.17.0",
-    "@grucloud/module-aws-load-balancer-controller": "^1.17.0",
-    "@grucloud/module-aws-vpc": "^1.17.0",
-    "@grucloud/provider-aws": "^1.17.0"
+    "@grucloud/module-aws-eks": "^1.17.1",
+    "@grucloud/module-aws-load-balancer-controller": "^1.17.1",
+    "@grucloud/module-aws-vpc": "^1.17.1",
+    "@grucloud/provider-aws": "^1.17.1"
   }
 }

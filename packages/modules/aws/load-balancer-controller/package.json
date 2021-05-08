@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-aws-load-balancer-controller",
-  "version": "1.17.0",
+  "version": "1.17.1",
   "description": "AWS resources to support the Load Balancer Controller running on Kubernetes",
   "main": "iac.js",
   "scripts": {
@@ -17,8 +17,8 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.16.0",
-    "@grucloud/module-aws-eks": "^1.17.0",
-    "@grucloud/provider-aws": "^1.17.0"
+    "@grucloud/module-aws-eks": "^1.17.1",
+    "@grucloud/provider-aws": "^1.17.1"
   },
   "devDependencies": {
     "mocha": "^8.3.2"
