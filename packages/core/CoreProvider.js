@@ -875,9 +875,6 @@ function CoreProvider({
       }),
     ])();
 
-  checkEnv(mandatoryEnvs);
-  checkConfig(config, mandatoryConfigKeys);
-
   const toType = () => type || providerName;
 
   const register = ({ resources, hooks = [] }) =>
@@ -1714,10 +1711,9 @@ function CoreProvider({
     runOnDestroyed,
     hookAdd,
     info: pipe([
-      () => startBase({ onStateChange: identity }),
       () => ({
         provider: toString(),
-        //stage: providerConfig.stage,
+        stage: providerConfig.stage,
         ...info(),
       }),
       tap((info) => {

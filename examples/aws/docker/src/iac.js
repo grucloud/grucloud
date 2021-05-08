@@ -1,9 +1,26 @@
-require("@grucloud/core"); // TODO still need this?
 const { AwsProvider } = require("@grucloud/provider-aws");
-const config = () => ({ region: process.env.AWSRegion });
+const { GoogleProvider } = require("@grucloud/provider-google");
+const { AzureProvider } = require("@grucloud/provider-azure");
+const { K8sProvider } = require("@grucloud/provider-k8s");
+
 exports.createStack = async () => {
-  const provider = AwsProvider({ config });
   return {
-    provider,
+    stacks: [
+      {
+        provider: AwsProvider({
+          config: () => ({ region: process.env.AWSRegion }),
+        }),
+      },
+      {
+        provider: GoogleProvider({
+          config: () => ({
+            projectName: () => "project",
+            projectId: () => "project",
+          }),
+        }),
+      },
+      { provider: AzureProvider({ config: () => ({}) }) },
+      { provider: K8sProvider({ config: () => ({}) }) },
+    ],
   };
 };
