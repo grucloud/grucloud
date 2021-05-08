@@ -11,6 +11,7 @@ This will create a volume and attached it to the EC2 instance.
 const Device = "/dev/sdf";
 const deviceMounted = "/dev/xvdf";
 const mountPoint = "/data";
+const AvailabilityZone = "us-east-1a";
 
 const volume = await provider.makeVolume({
   name: "volume",
@@ -18,15 +19,17 @@ const volume = await provider.makeVolume({
     Size: 5,
     VolumeType: "standard",
     Device,
+    AvailabilityZone,
   }),
 });
 
 const server = await provider.makeEC2({
   name: "server",
+  dependencies: { volumes: [volume] },
   properties: () => ({
     UserData: volume.spec.setupEbsVolume({ deviceMounted, mountPoint }),
+    Placement: { AvailabilityZone },
   }),
-  dependencies: { volumes: [volume] },
 });
 ```
 
