@@ -13,3 +13,4 @@ coverage
 example
 aws-load-balancer-controller.yaml
 *.dot
+*.svg
