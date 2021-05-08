@@ -23,7 +23,7 @@ const {
   pluck,
   flatten,
   forEach,
-
+  size,
   find,
   identity,
   includes,
@@ -36,6 +36,7 @@ const {
   getByNameCore,
   isUpByIdCore,
   isDownByIdCore,
+  convertError,
 } = require("@grucloud/core/Common");
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
@@ -177,34 +178,39 @@ exports.AwsEC2 = ({ spec, config }) => {
 
   const volumesAttach = ({ InstanceId, volumes = [] }) =>
     pipe([
+      () => volumes,
       tap(() => {
         logger.debug(
-          `volumesAttach InstanceId: ${InstanceId}, #volumes: ${volumes.length}`
+          `volumesAttach InstanceId: ${InstanceId}, #volumes: ${size(volumes)}`
         );
       }),
-      forEach(
+      map((volume) =>
         tryCatch(
-          (volume) =>
+          () =>
             ec2().attachVolume({
               Device: volume.config.Device,
               InstanceId,
               VolumeId: volume.live.VolumeId,
             }),
-          (error, volume) =>
-            pipe([
-              tap(() => {
-                logger.error(
-                  `error attaching volume ${volume}, error: ${tos(error)}`
-                );
-              }),
-              () => ({ error, volume }),
-            ])()
-        )
+          pipe([
+            (error) => convertError({ error }),
+            tap((error) => {
+              logger.error(
+                `error attaching volume ${volume}, error: ${tos(error)}`
+              );
+            }),
+            (error) => ({ error, volume }),
+          ])
+        )()
       ),
+      filter(get("error")),
+      tap.if(not(isEmpty), (errors) => {
+        throw Error(`cannot attach volume: ${tos(errors)}`);
+      }),
       tap(() => {
         logger.debug(`volumes attached InstanceId: ${InstanceId}`);
       }),
-    ])(volumes);
+    ])();
 
   const associateAddress = ({ InstanceId, eip }) =>
     pipe([
@@ -549,10 +555,17 @@ exports.isOurMinionEC2Instance = (item) =>
     }),
   ])();
 
-const filterTarget = ({ config, target }) =>
-  pipe([() => target, omit(["TagSpecifications", "MinCount", "MaxCount"])])();
+const filterTarget = ({ target }) =>
+  pipe([
+    () => target,
+    omit(["NetworkInterfaces", "TagSpecifications", "MinCount", "MaxCount"]),
+  ])();
 
-const filterLive = ({ live, item }) => pipe([() => live])();
+const filterLive = ({ live }) =>
+  pipe([
+    () => live, //
+    omit(["NetworkInterfaces"]),
+  ])();
 
 exports.compareEC2Instance = pipe([
   tap((xxx) => {
