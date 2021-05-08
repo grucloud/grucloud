@@ -8,7 +8,7 @@
     "docker:build": "docker build -t grucloud-cli .",
     "docker:tag": "docker tag grucloud-cli fredericheem/grucloud-cli:v1.16.0",
     "docker:push": "docker push fredericheem/grucloud-cli:v1.16.0",
-    "gc:list": "docker run --mount type=bind,source=$PWD/volume,target=/app/output --env-file=aws.env grucloud-cli list --json output/gc-list.json --graph --all --dot-file output/gc.dot",
+    "gc:list": "docker run --mount type=bind,source=$PWD/volume,target=/app/output --env-file=aws.env grucloud-cli list -p aws --json output/gc-list.json --graph --all --dot-file output/gc.dot",
     "gc:info": "docker run --env-file=aws.env grucloud-cli info",
     "gc:version": "docker run --env-file=aws.env grucloud-cli --version"
   },

@@ -5,7 +5,6 @@
 - gc a: when an assert is thrown, it does not exit but ask for deployment confirmation.
 - code coverage with monorepo
 - check stage for all providers
-- AWSRegion => AWS_REGION
 
 ## Diagram
 

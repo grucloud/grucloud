@@ -8,7 +8,7 @@ exports.createStack = async () => {
     stacks: [
       {
         provider: AwsProvider({
-          config: () => ({ region: process.env.AWSRegion }),
+          config: () => ({ region: process.env.AWS_REGION }),
         }),
       },
       {
