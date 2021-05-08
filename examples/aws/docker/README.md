@@ -11,7 +11,7 @@ Create a file `aws.env` with the AWS access and secret key, as well as the regio
 ```txt
 AWSAccessKeyId=AAAAAASSSSSSCCCCCCXXXX
 AWSSecretKey=EErr4455gfderttgdbgyfdovksfbokdfo
-AWSRegion=us-east-1
+AWS_REGION=us-east-1
 ```
 
 ## Build the docker image
