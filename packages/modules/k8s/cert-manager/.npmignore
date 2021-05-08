@@ -12,3 +12,4 @@ coverage
 **/test/*
 cert-manager.yaml
 *.dot
+*.svg

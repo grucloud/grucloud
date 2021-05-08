@@ -10,3 +10,5 @@ coverage
 .circleci
 .github
 **/test/*
+*.dot
+*.svg

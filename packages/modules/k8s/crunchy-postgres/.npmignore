@@ -9,4 +9,6 @@ coverage
 .github
 **/test/*
 *.dot
-examples/
+example
+*.dot
+*.svg
