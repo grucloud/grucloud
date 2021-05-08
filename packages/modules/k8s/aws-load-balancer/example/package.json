@@ -3,6 +3,7 @@
   "version": "1.16.0",
   "description": "Example of the Kubernetes GruCloud Module for the AWS Load Balancer Controller",
   "main": "iac.js",
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
