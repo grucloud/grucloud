@@ -4,14 +4,18 @@ const hook = require("./hook");
 const Device = "/dev/sdf";
 const deviceMounted = "/dev/xvdf";
 const mountPoint = "/data";
+const formatName = (name) => `${name}-test-volume`;
+const createResources = async ({ provider, resources: {} }) => {
+  const { config } = provider;
+  const AvailabilityZone = `${config.region}${config.availabilityZoneSuffix}`;
 
-const createResources = async ({ provider, resources: { keyPair } }) => {
   const volume = await provider.makeVolume({
-    name: "volume",
+    name: formatName("volume"),
     properties: () => ({
       Size: 2,
       VolumeType: "standard",
       Device,
+      AvailabilityZone,
     }),
   });
 
@@ -32,11 +36,12 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
   });
 
   const server = await provider.makeEC2({
-    name: "server-4-volume",
-    dependencies: { image, keyPair, volumes: [volume] },
+    name: formatName("server-4"),
+    dependencies: { image, volumes: [volume] },
     properties: () => ({
       UserData: volume.spec.setupEbsVolume({ deviceMounted, mountPoint }),
       InstanceType: "t2.micro",
+      Placement: { AvailabilityZone },
     }),
   });
 
@@ -50,10 +55,8 @@ exports.createResources = createResources;
 
 exports.createStack = async () => {
   const provider = AwsProvider({ config: require("./config") });
-  const keyPair = await provider.useKeyPair({
-    name: "kp",
-  });
-  const resources = await createResources({ provider, resources: { keyPair } });
+
+  const resources = await createResources({ provider, resources: {} });
 
   return {
     provider,
