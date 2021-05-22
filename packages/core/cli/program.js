@@ -85,6 +85,7 @@ exports.createProgram = ({ version, commands }) => {
   program
     .command("info")
     .description("Get Information about the current project")
+    .option(...optionFilteredByProvider)
     .action(runCommand({ commandName: "info", program }));
 
   program

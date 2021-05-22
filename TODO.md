@@ -1,24 +1,17 @@
 ## Bugs
 
-- docker image for all providers
-
 - gc a: when an assert is thrown, it does not exit but ask for deployment confirmation.
 - code coverage with monorepo
 - check stage for all providers
 
 ## Diagram
 
-install on demo.grucloud.com
-mount volume for postgres data.
+add gcp and azure, and k8s
+
+add link to profile when click on the nav bar picture
 backup data.
-delete users
-github auth
 privacy policy
 resource table styling
-footer:
-
-- show version on mouse over
-- add twitter and email
 
 remove title from diagram
 
