@@ -6,11 +6,13 @@
   "main": "index.js",
   "scripts": {
     "docker:build": "docker build -t grucloud-cli .",
-    "docker:tag": "docker tag grucloud-cli fredericheem/grucloud-cli:v1.16.0",
-    "docker:push": "docker push fredericheem/grucloud-cli:v1.16.0",
-    "gc:list": "docker run --mount type=bind,source=$PWD/volume,target=/app/output --env-file=aws.env grucloud-cli list -p aws --json output/gc-list.json --graph --all --dot-file output/gc.dot",
-    "gc:info": "docker run --env-file=aws.env grucloud-cli info",
-    "gc:version": "docker run --env-file=aws.env grucloud-cli --version"
+    "docker:tag": "docker tag grucloud-cli fredericheem/grucloud-cli:v1.17.1",
+    "docker:push": "docker push fredericheem/grucloud-cli:v1.17.1",
+    "gc:list:aws": "docker run --mount type=bind,source=$PWD/volume,target=/app/output --env-file=aws.env grucloud-cli list -p aws --json output/gc-list.json --graph --all --dot-file output/gc.dot",
+    "gc:info:aws": "docker run --env-file=aws.env grucloud-cli info",
+    "gc:version:aws": "docker run --env-file=aws.env grucloud-cli --version",
+    "gc:info:gcp": "docker run  --mount type=bind,source=$PWD/volume,target=/app/output  grucloud-cli info --provider google",
+    "gc:version:gcp": "docker run  grucloud-cli --version"
   },
   "author": "",
   "license": "ISC",

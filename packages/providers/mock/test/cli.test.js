@@ -65,6 +65,9 @@ describe("cli", function () {
   it("info", async function () {
     await runProgram({ cmds: ["info"] });
   });
+  it("info mock", async function () {
+    await runProgram({ cmds: ["info", "--provider", "mock"] });
+  });
   it("graph", async function () {
     if (!process.env.CONTINUOUS_INTEGRATION) {
       await runProgram({ cmds: ["graph"] });
