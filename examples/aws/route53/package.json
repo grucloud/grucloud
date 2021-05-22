@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-route53",
-  "version": "1.17.2",
+  "version": "1.17.3",
   "description": "",
   "private": true,
   "main": "index.js",
@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.17.2",
-    "@grucloud/provider-aws": "^1.17.2",
+    "@grucloud/provider-aws": "^1.17.3",
     "mime-types": "^2.1.27"
   }
 }
