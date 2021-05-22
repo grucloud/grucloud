@@ -10,7 +10,6 @@ const { Ec2New } = require("../AwsCommon");
 exports.AwsClientKeyPair = ({ spec, config }) => {
   assert(spec);
   assert(config);
-  assert(config.region, "config.region");
   const ec2 = Ec2New(config);
 
   const findName = get("KeyName");
