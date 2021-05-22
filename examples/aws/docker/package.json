@@ -17,7 +17,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.17.1",
+    "@grucloud/core": "^1.16.0",
     "@grucloud/provider-aws": "^1.17.1",
     "@grucloud/provider-azure": "^1.17.1",
     "@grucloud/provider-google": "^1.17.1",
