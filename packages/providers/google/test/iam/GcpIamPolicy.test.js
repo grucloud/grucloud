@@ -18,7 +18,7 @@ describe.skip("GcpIamPolicy", async function () {
 
   const bindingEditor = {
     role: "roles/editor",
-    members: ["serviceAccount:grucloud@grucloud-e2e.iam.gserviceaccount.com"],
+    members: ["serviceAccount:grucloud@grucloud-test.iam.gserviceaccount.com"],
   };
   before(async function () {
     try {
@@ -29,8 +29,7 @@ describe.skip("GcpIamPolicy", async function () {
 
     provider = GoogleProvider({
       config: () => ({
-        projectId: () => "grucloud-e2e",
-        projectName: () => "grucloud-e2e",
+        projectId: "grucloud-test",
       }),
     });
     await provider.start();

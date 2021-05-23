@@ -111,7 +111,6 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## TODO Goggle
 
-- infer projectId from projectName
 - The field 'entity.managedZone.dnsName' cannot be modified.
 - gcp object path properties
 
@@ -137,7 +136,7 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 "Input": {
 "data": [undefined]
-"url": "delete https://compute.googleapis.com/compute/v1/projects/grucloud-e2e/global/networks/99300703649411466"
+"url": "delete https://compute.googleapis.com/compute/v1/projects/grucloud-test/global/networks/99300703649411466"
 }
 "Message": "Request failed with status code 400"
 "Output": {
@@ -146,11 +145,11 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 "errors": [
 {
 "domain": "global"
-"message": "The resource 'projects/grucloud-e2e/global/networks/vpc-dev' is not ready"
+"message": "The resource 'projects/grucloud-test/global/networks/vpc-dev' is not ready"
 "reason": "resourceNotReady"
 }
 ]
-"message": "The resource 'projects/grucloud-e2e/global/networks/vpc-dev' is not ready"
+"message": "The resource 'projects/grucloud-test/global/networks/vpc-dev' is not ready"
 }
 }
 

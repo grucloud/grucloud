@@ -13,8 +13,7 @@ describe("GoogleProviderInit", async function () {
     }
     provider = GoogleProvider({
       config: () => ({
-        projectId: () => "grucloud-e2e",
-        projectName: () => "grucloud-e2e",
+        projectId: "grucloud-test",
       }),
     });
 

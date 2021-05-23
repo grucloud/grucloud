@@ -38,7 +38,7 @@ exports.GcpServiceAccount = ({ spec, config }) => {
   const { projectId, managedByDescription } = config;
 
   const baseURL = `https://iam.googleapis.com/v1`;
-  const url = `/projects/${projectId(config)}/serviceAccounts`;
+  const url = `/projects/${projectId}/serviceAccounts`;
 
   const axios = createAxiosMakerGoogle({
     baseURL: baseURL,

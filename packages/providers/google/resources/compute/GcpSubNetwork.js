@@ -44,7 +44,7 @@ exports.GcpSubNetwork = ({ spec, config }) => {
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${projectId(config)}/regions/${region}/subnetworks`,
+    url: `/projects/${projectId}/regions/${region}/subnetworks`,
     config,
     configDefault,
     isDefault,

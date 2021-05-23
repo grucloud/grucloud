@@ -32,7 +32,7 @@ exports.GcpAddress = ({ spec, config }) => {
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${projectId(config)}/regions/${region}/addresses/`,
+    url: `/projects/${projectId}/regions/${region}/addresses/`,
     config,
     isInstanceUp,
     isUpByIdFactory,

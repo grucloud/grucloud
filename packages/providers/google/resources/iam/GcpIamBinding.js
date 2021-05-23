@@ -54,7 +54,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
 
   const axios = createAxiosMakerGoogle({
     baseURL: `https://cloudresourcemanager.googleapis.com/v1`,
-    url: `/projects/${projectId(config)}`,
+    url: `/projects/${projectId}`,
     config,
   });
 

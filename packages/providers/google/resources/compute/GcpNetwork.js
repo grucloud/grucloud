@@ -24,7 +24,7 @@ exports.GcpNetwork = ({ spec, config }) => {
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${projectId(config)}/global/networks`,
+    url: `/projects/${projectId}/global/networks`,
     config,
     configDefault,
     isDefault,

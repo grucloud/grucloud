@@ -10,4 +10,4 @@ cp secrets/default.env examples/multi/
 cp secrets/default.env examples/azure/
 cp secrets/default.env examples/scaleway/
 
-openssl aes-256-cbc -md sha256 -d -out $HOME/.config/gcloud/grucloud-e2e.json  -in secrets/grucloud-e2e.json.enc -pass pass:$KEY
+openssl aes-256-cbc -md sha256 -d -out $HOME/.config/gcloud/grucloud-test.json  -in secrets/grucloud-test.json.enc -pass pass:$KEY

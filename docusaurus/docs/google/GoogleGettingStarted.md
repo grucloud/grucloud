@@ -148,8 +148,7 @@ The configuration is defined in [config.js](https://github.com/grucloud/grucloud
 ```js
 // config.js
 module.exports = ({ stage }) => ({
-  projectName: () => "vm-tuto1",
-  projectId: () => "vm-tuto1",
+  projectId: "vm-tuto1-must-be-globally-unique",
   vm: {
     name: "web-server",
     properties: {
@@ -172,7 +171,7 @@ module.exports = ({ stage }) => ({
 
 #### Project Name and Id
 
-Set the `projectName` and `projectId`.
+Set the `projectId` and eventually ther `projectName`.
 
 GruCloud will take care of creating the project if necessary.
 
@@ -345,7 +344,7 @@ gcloud iam service-accounts list
 
 ```txt
 DISPLAY NAME              EMAIL                                                    DISABLED
-grucloud service account  grucloud@grucloud-e2e.iam.gserviceaccount.com            False
+grucloud service account  grucloud@grucloud-test.iam.gserviceaccount.com            False
 ```
 
 Bingo, the service account has been created successfully.

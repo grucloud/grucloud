@@ -56,7 +56,7 @@ exports.GcpDomain = ({ spec, config }) => {
 
   const axios = createAxiosMakerGoogle({
     baseURL: GCP_DOMAIN_BASE_URL,
-    url: `/projects/${projectId(config)}`,
+    url: `/projects/${projectId}`,
     config,
   });
 

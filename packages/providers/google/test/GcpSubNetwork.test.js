@@ -26,8 +26,7 @@ describe("GcpSubNetwork", async function () {
     provider = GoogleProvider({
       name: "google",
       config: () => ({
-        projectId: () => "grucloud-e2e",
-        projectName: () => "grucloud-e2e",
+        projectId: "grucloud-test",
       }),
     });
 
