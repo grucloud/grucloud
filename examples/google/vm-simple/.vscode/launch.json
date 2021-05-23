@@ -13,11 +13,22 @@
       "port": 9229
     },
     {
-      "name": "List",
+      "name": "List -g",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
       "runtimeArgs": ["list", "-g"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
+      "name": "List --config",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["list", "--config", "config.js"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",

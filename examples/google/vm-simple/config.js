@@ -1,5 +1,6 @@
 module.exports = ({ stage }) => ({
-  projectId: "vm-tuto1",
+  //credentialFile: "grucloud-vm-tuto-1.json",
+  projectId: "grucloud-vm-tuto-1",
   vm: {
     name: "web-server",
     properties: {

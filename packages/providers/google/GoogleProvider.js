@@ -25,6 +25,7 @@ const {
   isDeepEqual,
   first,
   isFunction,
+  identity,
 } = require("rubico/x");
 const { JWT } = require("google-auth-library");
 const shell = require("shelljs");
@@ -1042,6 +1043,7 @@ const unInit = async ({
 exports.GoogleProvider = ({
   name = "google",
   config: createConfig,
+  stage,
   ...other
 }) => {
   assert(isFunction(createConfig), "config must be a function");
@@ -1049,26 +1051,25 @@ exports.GoogleProvider = ({
   const gcloudConfig = getConfig();
 
   const config = pipe([
+    () => createConfig({ stage }),
+    defaultsDeep(computeDefault),
     defaultsDeep({
       managedByTag: "-managed-by-gru",
       managedByKey: "managed-by",
       managedByValue: "grucloud",
       accessToken: () => serviceAccountAccessToken,
     }),
-    (config) => {
-      if (gcloudConfig.config) {
-        return pipe([
-          defaultsDeep(
-            pick(["region", "zone"])(gcloudConfig.config.properties.compute) ||
-              {}
-          ),
-        ])(config);
-      } else {
-        return config;
-      }
-    },
-    defaultsDeep(computeDefault),
-    (config) => defaultsDeep(config)(createConfig(config)),
+    switchCase([
+      get("credentialFile"),
+      identity,
+      (config) =>
+        pipe([
+          () => gcloudConfig,
+          get("config.properties.compute", {}),
+          pick(["region", "zone"]),
+          (computeConfig) => defaultsDeep(computeConfig)(config),
+        ])(),
+    ]),
   ])({});
 
   const { projectId } = config;
@@ -1077,10 +1078,15 @@ exports.GoogleProvider = ({
   const projectName = get("projectName", projectId)(config);
   logger.debug(`projectName: ${projectName}`);
 
-  const applicationCredentialsFile = ApplicationCredentialsFile({
-    configDir: gcloudConfig.config?.paths.global_config_dir,
-    projectId,
-  });
+  const applicationCredentialsFile = switchCase([
+    () => config.credentialFile,
+    () => path.resolve(config.credentialFile),
+    () =>
+      ApplicationCredentialsFile({
+        configDir: gcloudConfig.config?.paths.global_config_dir,
+        projectId,
+      }),
+  ])();
 
   let serviceAccountAccessToken;
 
