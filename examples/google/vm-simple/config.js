@@ -1,6 +1,5 @@
 module.exports = ({ stage }) => ({
-  projectName: () => "vm-tuto1",
-  projectId: () => "vm-tuto1",
+  projectId: "vm-tuto1",
   vm: {
     name: "web-server",
     properties: {

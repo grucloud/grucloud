@@ -1,11 +1,10 @@
-//require("dotenv").config();
+const path = require("path");
 const { Command } = require("commander");
 const { pipe, tryCatch } = require("rubico");
 const { last } = require("rubico/x");
 
 const { createInfra } = require("./infra");
 const YAML = require("./json2yaml");
-const path = require("path");
 
 const collect = (value, previous = []) => previous.concat([value]);
 

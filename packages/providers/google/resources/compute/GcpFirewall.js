@@ -39,7 +39,7 @@ exports.GcpFirewall = ({ spec, config }) => {
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${projectId(config)}/global/firewalls`,
+    url: `/projects/${projectId}/global/firewalls`,
     config,
     configDefault,
     findDependencies,

@@ -3,7 +3,7 @@ const { GoogleProvider } = require("@grucloud/provider-google");
 const { AzureProvider } = require("@grucloud/provider-azure");
 const { K8sProvider } = require("@grucloud/provider-k8s");
 
-exports.createStack = async () => {
+exports.createStack = async ({ config }) => {
   return {
     stacks: [
       {
@@ -14,8 +14,7 @@ exports.createStack = async () => {
       {
         provider: GoogleProvider({
           config: () => ({
-            projectName: () => "project",
-            projectId: () => "project",
+            projectId: "project",
           }),
         }),
       },

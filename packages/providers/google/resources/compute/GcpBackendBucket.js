@@ -29,7 +29,7 @@ exports.GcpBackendBucket = ({ spec, config }) => {
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${projectId(config)}/global/backendBuckets`,
+    url: `/projects/${projectId}/global/backendBuckets`,
     config: { ...config, repeatCount: 1 },
     configDefault,
     isInstanceUp,

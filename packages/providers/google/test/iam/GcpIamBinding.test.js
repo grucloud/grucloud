@@ -26,8 +26,7 @@ describe("GcpIamBinding", async function () {
 
     provider = GoogleProvider({
       config: () => ({
-        projectId: () => "grucloud-e2e",
-        projectName: () => "grucloud-e2e",
+        projectId: "grucloud-test",
       }),
     });
     await provider.start();
@@ -64,8 +63,7 @@ describe("GcpIamBinding", async function () {
     {
       const provider = GoogleProvider({
         config: () => ({
-          projectId: () => "grucloud-e2e",
-          projectName: () => "grucloud-e2e",
+          projectId: "grucloud-test",
         }),
       });
 
@@ -102,8 +100,7 @@ describe("GcpIamBinding", async function () {
   it("iamBindingEmail", async function () {
     const provider = GoogleProvider({
       config: () => ({
-        projectId: () => "grucloud-e2e",
-        projectName: () => "grucloud-e2e",
+        projectId: "grucloud-test",
       }),
     });
 

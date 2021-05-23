@@ -30,7 +30,7 @@ exports.GcpSslCertificate = ({ spec, config }) => {
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${projectId(config)}/global/sslCertificates`,
+    url: `/projects/${projectId}/global/sslCertificates`,
     config,
     configDefault,
     isInstanceUp,

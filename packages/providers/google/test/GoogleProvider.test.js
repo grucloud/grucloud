@@ -25,8 +25,7 @@ describe("GoogleProvider", async function () {
     }
     provider = GoogleProvider({
       config: () => ({
-        projectId: () => "grucloud-e2e",
-        projectName: () => "grucloud-e2e",
+        projectId: "grucloud-test",
       }),
     });
 
@@ -79,9 +78,7 @@ describe("GoogleProvider", async function () {
     const { projectId, zone } = provider.config;
     assert.equal(
       config.machineType,
-      `https://www.googleapis.com/compute/v1/projects/${projectId(
-        provider.config
-      )}/zones/${zone}/machineTypes/f1-micro`
+      `https://www.googleapis.com/compute/v1/projects/${projectId}/zones/${zone}/machineTypes/f1-micro`
     );
     assert.equal(config.disks[0].initializeParams.diskSizeGb, "20");
     assert.equal(config.name, "web-server");

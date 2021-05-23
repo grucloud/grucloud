@@ -103,7 +103,7 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
 
   const axios = createAxiosMakerGoogle({
     baseURL: GCP_DNS_BASE_URL,
-    url: `/projects/${projectId(config)}/managedZones`,
+    url: `/projects/${projectId}/managedZones`,
     config,
   });
 

@@ -29,9 +29,7 @@ exports.GcpHttpsTargetProxy = ({ spec, config }) => {
     return defaultsDeep({
       name,
       description: managedByDescription,
-      urlMap: `projects/${projectId(config)}/global/urlMaps/${
-        urlMap.resource.name
-      }`,
+      urlMap: `projects/${projectId}/global/urlMaps/${urlMap.resource.name}`,
       sslCertificates: [getField(sslCertificate, "selfLink")],
     })(properties);
   };
@@ -39,7 +37,7 @@ exports.GcpHttpsTargetProxy = ({ spec, config }) => {
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${projectId(config)}/global/targetHttpsProxies`,
+    url: `/projects/${projectId}/global/targetHttpsProxies`,
     config,
     isInstanceUp,
     isUpByIdFactory,

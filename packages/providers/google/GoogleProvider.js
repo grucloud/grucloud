@@ -100,7 +100,7 @@ const fnSpecs = (config) => [
   ...GcpCompute(config),
   ...GcpDns(config),
 ];
-const ProjectId = ({ projectName }) => `grucloud-${projectName}`;
+//const ProjectId = ({ projectName }) => `grucloud-${projectName}`;
 
 const ApplicationCredentialsFile = ({
   configDir = path.resolve(os.homedir(), ".config/gcloud"),
@@ -1071,17 +1071,11 @@ exports.GoogleProvider = ({
     (config) => defaultsDeep(config)(createConfig(config)),
   ])({});
 
-  const projectName = config.projectName(config);
-  assert(projectName, "missing projectName");
+  const { projectId } = config;
+  assert(projectId, "missing projectId");
 
-  logger.debug(`config: ${tos(config)}`);
-  const projectId = switchCase([
-    () => config.projectId,
-    () => config.projectId(config),
-    () => ProjectId({ projectName }),
-  ])();
-
-  logger.debug(`projectId: ${projectId}`);
+  const projectName = get("projectName", projectId)(config);
+  logger.debug(`projectName: ${projectName}`);
 
   const applicationCredentialsFile = ApplicationCredentialsFile({
     configDir: gcloudConfig.config?.paths.global_config_dir,

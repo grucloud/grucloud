@@ -34,7 +34,7 @@ exports.GcpGlobalForwardingRule = ({ spec, config }) => {
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${projectId(config)}/global/forwardingRules`,
+    url: `/projects/${projectId}/global/forwardingRules`,
     config,
     configDefault,
     isInstanceUp,

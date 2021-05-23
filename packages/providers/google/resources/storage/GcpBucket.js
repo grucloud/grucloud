@@ -28,7 +28,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
   assert(spec);
   assert(configProvider);
   const { projectId, region } = configProvider;
-  const queryParam = () => `/?project=${projectId(configProvider)}`;
+  const queryParam = () => `/?project=${projectId}`;
   const pathList = queryParam;
   const pathCreate = queryParam;
 

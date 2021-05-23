@@ -42,7 +42,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
   const { projectId, region, zone, managedByTag } = configProvider;
   assert(projectId);
 
-  const url = `/projects/${projectId(configProvider)}/zones/${zone}/instances`;
+  const url = `/projects/${projectId}/zones/${zone}/instances`;
 
   const axios = createAxiosMakerGoogle({
     baseURL: GCP_COMPUTE_BASE_URL,
@@ -117,12 +117,8 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
     const config = defaultsDeep({
       kind: "compute#instance",
       name,
-      zone: `${GCP_COMPUTE_BASE_URL}/projects/${projectId(
-        configProvider
-      )}/zones/${zone}`,
-      machineType: `${GCP_COMPUTE_BASE_URL}/projects/${projectId(
-        configProvider
-      )}/zones/${zone}/machineTypes/${machineType}`,
+      zone: `${GCP_COMPUTE_BASE_URL}/projects/${projectId}/zones/${zone}`,
+      machineType: `${GCP_COMPUTE_BASE_URL}/projects/${projectId}/zones/${zone}/machineTypes/${machineType}`,
       labels: buildLabel(configProvider),
       metadata: defaultsDeep({
         kind: "compute#metadata",
@@ -138,9 +134,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
           deviceName: toTagName(name, managedByTag),
           initializeParams: {
             sourceImage,
-            diskType: `projects/${projectId(
-              configProvider
-            )}/zones/${zone}/diskTypes/${diskType}`,
+            diskType: `projects/${projectId}/zones/${zone}/diskTypes/${diskType}`,
             diskSizeGb,
           },
           diskEncryptionKey: {},
@@ -149,9 +143,9 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
       networkInterfaces: [
         {
           kind: "compute#networkInterface",
-          subnetwork: `projects/${projectId(
-            configProvider
-          )}/regions/${region}/subnetworks/${buildSubNetwork(subNetwork)}`,
+          subnetwork: `projects/${projectId}/regions/${region}/subnetworks/${buildSubNetwork(
+            subNetwork
+          )}`,
           accessConfigs: [
             {
               ...(ip && { natIP: getField(ip, "address") }),
@@ -209,7 +203,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
   const client = GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
-    url: `/projects/${projectId(configProvider)}/zones/${zone}/instances`,
+    url: `/projects/${projectId}/zones/${zone}/instances`,
     config: configProvider,
     isUpByIdFactory,
     isDownByIdFactory,
@@ -316,9 +310,7 @@ const filterItem = ({ config, item }) =>
     assign({
       machineType: ({ machineType }) =>
         machineType.replace(
-          `${GCP_COMPUTE_BASE_URL}/projects/${config.projectId()}/zones/${
-            config.zone
-          }/machineTypes/`,
+          `${GCP_COMPUTE_BASE_URL}/projects/${config.projectId}/zones/${config.zone}/machineTypes/`,
           ""
         ),
     }),
