@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-module-aws-eks",
-  "version": "1.17.3",
+  "version": "1.17.4",
   "description": "Example for the AWS EKS GruCloud Module",
   "main": "iac.js",
   "private": true,
@@ -12,10 +12,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.17.2",
-    "@grucloud/module-aws-eks": "^1.17.3",
-    "@grucloud/module-aws-vpc": "^1.17.3",
-    "@grucloud/provider-aws": "^1.17.3",
+    "@grucloud/core": "^1.17.4",
+    "@grucloud/module-aws-eks": "^1.17.4",
+    "@grucloud/module-aws-vpc": "^1.17.4",
+    "@grucloud/provider-aws": "^1.17.4",
     "rubico": "^1.6.23"
   }
 }
