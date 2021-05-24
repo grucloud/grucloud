@@ -17,7 +17,13 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
-      "runtimeArgs": ["list", "--provider", "google"],
+      "runtimeArgs": [
+        "list",
+        "--provider",
+        "google",
+        "--config",
+        "../input/config.js"
+      ],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/src",

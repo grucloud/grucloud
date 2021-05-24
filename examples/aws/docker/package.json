@@ -8,12 +8,12 @@
     "docker:build": "docker build -t grucloud-cli .",
     "docker:tag": "docker tag grucloud-cli fredericheem/grucloud-cli:v1.17.3",
     "docker:push": "docker push fredericheem/grucloud-cli:v1.17.3",
-    "gc:list:aws": "docker run --mount type=bind,source=$PWD/volume,target=/app/output --env-file=aws.env grucloud-cli list -p aws --json output/gc-list.json --graph --all --dot-file output/gc.dot",
+    "gc:list:aws": "docker run --mount type=bind,source=$PWD/output,target=/app/output --env-file=aws.env grucloud-cli list -p aws --json output/gc-list.json --graph --all --dot-file output/gc.dot",
     "gc:info:aws": "docker run --env-file=aws.env grucloud-cli info",
     "gc:version:aws": "docker run --env-file=aws.env grucloud-cli --version",
-    "gc:info:gcp": "docker run  --mount type=bind,source=$PWD/volume,target=/app/output  grucloud-cli info --provider google",
+    "gc:info:gcp": "docker run --mount type=bind,source=$PWD/input,target=/app/input --mount type=bind,source=$PWD/output,target=/app/output  grucloud-cli info --provider google --config input/config.js",
     "gc:version:gcp": "docker run  grucloud-cli --version",
-    "gc:list:gcp": "docker run --mount type=bind,source=$PWD/volume,target=/app/output  grucloud-cli list -p google --json output/gc-list.json --graph --all --dot-file output/gc.dot"
+    "gc:list:gcp": "docker run --mount type=bind,source=$PWD/output,target=/app/output  grucloud-cli list -p google --json output/gc-list.json --graph --all --dot-file output/gc.dot"
   },
   "author": "",
   "license": "ISC",

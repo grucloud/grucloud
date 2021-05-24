@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { readFileSync } = require("fs");
 const fs = require("fs").promises;
 const path = require("path");
 const os = require("os");
@@ -1061,7 +1062,15 @@ exports.GoogleProvider = ({
     }),
     switchCase([
       get("credentialFile"),
-      identity,
+      (config) =>
+        pipe([
+          tap(() => {
+            logger.debug(``);
+          }),
+          () => readFileSync(config.credentialFile, "utf-8"),
+          JSON.parse,
+          ({ project_id }) => ({ ...config, projectId: project_id }),
+        ])(),
       (config) =>
         pipe([
           () => gcloudConfig,
