@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-k8s-starhackit-base",
-  "version": "1.17.4",
+  "version": "1.17.5",
   "description": "deploying starhackit on kubernetes",
   "main": "index.js",
   "private": true,
@@ -10,11 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.17.4",
-    "@grucloud/module-k8s-postgres": "^1.17.4",
-    "@grucloud/module-k8s-redis": "^1.17.4",
-    "@grucloud/module-k8s-web-ui-dashboard": "^1.17.4",
-    "@grucloud/provider-k8s": "^1.17.4",
+    "@grucloud/core": "^1.17.5",
+    "@grucloud/module-k8s-postgres": "^1.17.5",
+    "@grucloud/module-k8s-redis": "^1.17.5",
+    "@grucloud/module-k8s-web-ui-dashboard": "^1.17.5",
+    "@grucloud/provider-k8s": "^1.17.5",
     "axios": "^0.21.1",
     "rubico": "^1.6.23"
   }

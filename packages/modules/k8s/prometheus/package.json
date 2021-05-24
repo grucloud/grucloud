@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-k8s-prometheus",
-  "version": "1.17.4",
+  "version": "1.17.5",
   "description": "GruCloud Module for prometheus",
   "main": "iac.js",
   "scripts": {
@@ -12,9 +12,9 @@
     "url": "git+ssh://git@github.com/grucloud/grucloud.git"
   },
   "dependencies": {
-    "@grucloud/core": "^1.17.4",
+    "@grucloud/core": "^1.17.5",
     "@grucloud/k8s-manifest2code": "^1.14.0",
-    "@grucloud/provider-k8s": "^1.17.4",
+    "@grucloud/provider-k8s": "^1.17.5",
     "js-yaml": "^4.1.0",
     "rubico": "*"
   },
