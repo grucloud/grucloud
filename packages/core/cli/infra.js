@@ -21,6 +21,7 @@ const logger = require("../logger")({ prefix: "Infra" });
 
 const creatInfraFromFile = async ({
   commandOptions,
+  programOptions,
   infraFileName,
   config,
   stage,
@@ -61,28 +62,27 @@ const requireConfig = ({ fileName, stage }) => {
   return config;
 };
 
-exports.createInfra = ({ commandOptions }) => async ({
-  infraFileName,
-  configFileName,
-  stage = "dev",
-}) => {
-  const infraFileNameFull = resolveFilename({
-    fileName: infraFileName,
-    defaultName: "iac.js",
-  });
-  //console.log(`Using ${infraFileNameFull}`);
-  checkFileExist({ fileName: infraFileNameFull });
+exports.createInfra =
+  ({ commandOptions, programOptions }) =>
+  async ({ infraFileName, configFileName, stage = "dev" }) => {
+    const infraFileNameFull = resolveFilename({
+      fileName: infraFileName,
+      defaultName: "iac.js",
+    });
+    //console.log(`Using ${infraFileNameFull}`);
+    checkFileExist({ fileName: infraFileNameFull });
 
-  const config = requireConfig({ fileName: configFileName, stage });
-  //assert(isFunction(config));
-  return {
-    config,
-    stage,
-    infra: await creatInfraFromFile({
-      commandOptions,
-      infraFileName: infraFileNameFull,
+    const config = requireConfig({ fileName: configFileName, stage });
+    //assert(isFunction(config));
+    return {
       config,
       stage,
-    }),
+      infra: await creatInfraFromFile({
+        commandOptions,
+        programOptions,
+        infraFileName: infraFileNameFull,
+        config,
+        stage,
+      }),
+    };
   };
-};
