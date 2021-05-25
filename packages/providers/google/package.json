@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-google",
-  "version": "1.17.7",
+  "version": "1.17.8",
   "description": "The GruCloud Google Cloud Platform provider",
   "main": "GoogleProvider.js",
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/google",
