@@ -1091,7 +1091,7 @@ exports.GoogleProvider = ({
 
   const applicationCredentialsFile = switchCase([
     () => mergedConfig.credentialFile,
-    () => path.resolve(config.credentialFile),
+    () => path.resolve(mergedConfig.credentialFile),
     () =>
       ApplicationCredentialsFile({
         configDir: gcloudConfig.config?.paths.global_config_dir,
