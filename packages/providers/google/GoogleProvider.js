@@ -1086,11 +1086,8 @@ exports.GoogleProvider = ({
 
   const mergedConfig = mergeConfig({ config, configs });
 
-  const { projectId } = mergedConfig;
-  assert(projectId, "missing projectId");
-
-  const projectName = get("projectName", projectId)(mergedConfig);
-  logger.debug(`projectName: ${projectName}`);
+  const projectId = () => get("projectId")(mergedConfig);
+  const projectName = () => get("projectName", projectId())(mergedConfig);
 
   const applicationCredentialsFile = switchCase([
     () => mergedConfig.credentialFile,
@@ -1098,7 +1095,7 @@ exports.GoogleProvider = ({
     () =>
       ApplicationCredentialsFile({
         configDir: gcloudConfig.config?.paths.global_config_dir,
-        projectId,
+        projectId: projectId(),
       }),
   ])();
 
@@ -1108,8 +1105,8 @@ exports.GoogleProvider = ({
     if (!serviceAccountAccessToken) {
       serviceAccountAccessToken = await authorize({
         gcloudConfig,
-        projectId,
-        projectName,
+        projectId: projectId(),
+        projectName: projectName(),
         applicationCredentialsFile,
       });
     }
@@ -1130,8 +1127,8 @@ exports.GoogleProvider = ({
         options,
         config: mergedConfig,
         gcloudConfig,
-        projectName,
-        projectId,
+        projectName: projectName(),
+        projectId: projectId(),
         applicationCredentialsFile,
         serviceAccountName: ServiceAccountName,
       }),
@@ -1139,8 +1136,8 @@ exports.GoogleProvider = ({
       init({
         options,
         gcloudConfig,
-        projectName,
-        projectId,
+        projectName: projectName(),
+        projectId: projectId(),
         applicationCredentialsFile,
         serviceAccountName: ServiceAccountName,
       }),
@@ -1148,8 +1145,8 @@ exports.GoogleProvider = ({
       unInit({
         options,
         gcloudConfig,
-        projectName,
-        projectId,
+        projectName: projectName(),
+        projectId: projectId(),
         applicationCredentialsFile,
         serviceAccountName: ServiceAccountName,
       }),
