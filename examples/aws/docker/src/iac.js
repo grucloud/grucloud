@@ -5,7 +5,6 @@ const { AzureProvider } = require("@grucloud/provider-azure");
 const { K8sProvider } = require("@grucloud/provider-k8s");
 
 exports.createStack = async ({ config }) => {
-  assert(config);
   return {
     stacks: [
       {
@@ -15,11 +14,17 @@ exports.createStack = async ({ config }) => {
       },
       {
         provider: GoogleProvider({
-          config,
+          configs: [config, () => ({ region: process.env.GCP_REGION })],
         }),
       },
-      { provider: AzureProvider({ config: () => ({}) }) },
-      { provider: K8sProvider({ config: () => ({}) }) },
+      {
+        provider: AzureProvider({
+          config: () => ({
+            location: process.env.LOCATION,
+          }),
+        }),
+      },
+      { provider: K8sProvider({ config }) },
     ],
   };
 };

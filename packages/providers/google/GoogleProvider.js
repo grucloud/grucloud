@@ -16,6 +16,7 @@ const {
   eq,
   not,
   omit,
+  reduce,
 } = require("rubico");
 const {
   defaultsDeep,
@@ -1043,52 +1044,56 @@ const unInit = async ({
 
 exports.GoogleProvider = ({
   name = "google",
-  config: createConfig,
+  config,
+  configs = [],
   stage,
   ...other
 }) => {
-  assert(isFunction(createConfig), "config must be a function");
-
   const gcloudConfig = getConfig();
 
-  const config = pipe([
-    () => createConfig({ stage }),
-    defaultsDeep(computeDefault),
-    defaultsDeep({
-      managedByTag: "-managed-by-gru",
-      managedByKey: "managed-by",
-      managedByValue: "grucloud",
-      accessToken: () => serviceAccountAccessToken,
-    }),
-    switchCase([
-      get("credentialFile"),
-      (config) =>
-        pipe([
-          tap(() => {
-            logger.debug(``);
-          }),
-          () => readFileSync(config.credentialFile, "utf-8"),
-          JSON.parse,
-          ({ project_id }) => ({ ...config, projectId: project_id }),
-        ])(),
-      (config) =>
-        pipe([
-          () => gcloudConfig,
-          get("config.properties.compute", {}),
-          pick(["region", "zone"]),
-          (computeConfig) => defaultsDeep(computeConfig)(config),
-        ])(),
-    ]),
-  ])({});
+  const mergeConfig = ({ config, configs }) =>
+    pipe([
+      () => [...configs, config],
+      filter((x) => x),
+      reduce((acc, config) => defaultsDeep(acc)(config(acc)), {
+        stage,
+        managedByTag: "-managed-by-gru",
+        managedByKey: "managed-by",
+        managedByValue: "grucloud",
+        ...computeDefault,
+        accessToken: () => serviceAccountAccessToken,
+      }),
+      switchCase([
+        get("credentialFile"),
+        (config) =>
+          pipe([
+            tap(() => {
+              logger.debug(``);
+            }),
+            () => readFileSync(config.credentialFile, "utf-8"),
+            JSON.parse,
+            ({ project_id }) => ({ ...config, projectId: project_id }),
+          ])(),
+        (config) =>
+          pipe([
+            () => gcloudConfig,
+            get("config.properties.compute", {}),
+            pick(["region", "zone"]),
+            (computeConfig) => defaultsDeep(computeConfig)(config),
+          ])(),
+      ]),
+    ])();
 
-  const { projectId } = config;
+  const mergedConfig = mergeConfig({ config, configs });
+
+  const { projectId } = mergedConfig;
   assert(projectId, "missing projectId");
 
-  const projectName = get("projectName", projectId)(config);
+  const projectName = get("projectName", projectId)(mergedConfig);
   logger.debug(`projectName: ${projectName}`);
 
   const applicationCredentialsFile = switchCase([
-    () => config.credentialFile,
+    () => mergedConfig.credentialFile,
     () => path.resolve(config.credentialFile),
     () =>
       ApplicationCredentialsFile({
@@ -1116,14 +1121,14 @@ exports.GoogleProvider = ({
     type: "google",
     name,
     get config() {
-      return config;
+      return mergedConfig;
     },
     fnSpecs,
     start,
     info: ({ options } = {}) =>
       info({
         options,
-        config,
+        config: mergedConfig,
         gcloudConfig,
         projectName,
         projectId,
