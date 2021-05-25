@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/docker-cli",
-  "version": "1.17.6",
+  "version": "1.17.7",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -24,7 +24,7 @@
     "@grucloud/core": "^1.17.5",
     "@grucloud/provider-aws": "^1.17.5",
     "@grucloud/provider-azure": "^1.17.5",
-    "@grucloud/provider-google": "^1.17.6",
+    "@grucloud/provider-google": "^1.17.7",
     "@grucloud/provider-k8s": "^1.17.5"
   }
 }
