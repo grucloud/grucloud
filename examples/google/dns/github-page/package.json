@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-google-dns-github-page",
-  "version": "1.17.5",
+  "version": "1.17.6",
   "private": true,
   "description": "setup dns for github page",
   "main": "index.js",
@@ -13,6 +13,6 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.17.5",
-    "@grucloud/provider-google": "^1.17.5"
+    "@grucloud/provider-google": "^1.17.6"
   }
 }
