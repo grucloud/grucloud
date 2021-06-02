@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/docker-cli",
-  "version": "1.17.8",
+  "version": "1.17.9",
   "private": true,
   "description": "",
   "main": "index.js",
