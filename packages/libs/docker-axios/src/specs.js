@@ -27,3 +27,10 @@ exports.containersSpec = () => ({
       `/containers/${name}/logs?${querystring.stringify(options)}`,
   },
 });
+
+exports.imagesSpec = () => ({
+  pull: {
+    method: "post",
+    url: ({ image }) => `/images/create?fromImage=${image}`,
+  },
+});

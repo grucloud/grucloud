@@ -1,7 +1,7 @@
 const Axios = require("axios");
 const { pipe, tap, switchCase, tryCatch, eq, get, map } = require("rubico");
 const { defaultsDeep } = require("rubico/x");
-const { containersSpec } = require("./specs");
+const { containersSpec, imagesSpec } = require("./specs");
 
 // See https://github.com/axios/axios#request-config
 const configDefault = {
@@ -46,5 +46,8 @@ const opsFromSpec = ({ axios }) =>
 exports.DockerClient = pipe([
   defaultsDeep(configDefault),
   (config) => Axios.create(config),
-  (axios) => ({ container: opsFromSpec({ axios })(containersSpec()) }),
+  (axios) => ({
+    container: opsFromSpec({ axios })(containersSpec()),
+    image: opsFromSpec({ axios })(imagesSpec()),
+  }),
 ]);

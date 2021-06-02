@@ -33,7 +33,7 @@ const fileExist = ({ fileName }) =>
     ])
   )();
 
-describe("DockerClient", function () {
+describe("container", function () {
   before(async () => {
     assert(true);
   });
