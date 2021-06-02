@@ -6,8 +6,8 @@
   "main": "index.js",
   "scripts": {
     "docker:build": "docker build -t grucloud-cli .",
-    "docker:tag": "docker tag grucloud-cli fredericheem/grucloud-cli:v1.17.7",
-    "docker:push": "docker push fredericheem/grucloud-cli:v1.17.7",
+    "docker:tag": "docker tag grucloud-cli fredericheem/grucloud-cli:v1.17.8",
+    "docker:push": "docker push fredericheem/grucloud-cli:v1.17.8",
     "gc:list:aws": "docker run --mount type=bind,source=$PWD/output,target=/app/output --env-file=aws.env grucloud-cli list -p aws --json output/gc-list.json --graph --all --dot-file output/gc.dot",
     "gc:info:aws": "docker run --env-file=aws.env grucloud-cli --infra iac_aws.js info",
     "gc:version:aws": "docker run --env-file=aws.env grucloud-cli --infra iac_aws.js --version",
