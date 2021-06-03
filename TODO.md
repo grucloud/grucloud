@@ -7,18 +7,12 @@
 
 ## Diagram
 
-add gcp and azure, and k8s
-
-add link to profile when click on the nav bar picture
+add k8s
 backup data.
 privacy policy
 resource table styling
 
-remove title from diagram
-
 ## Common:
-
-- gc graph: wrong namespace, it is default, should be myapp
 
 - gc info with config for gcp and azure
 - https://stackshare.io/terraform/alternatives
@@ -56,13 +50,13 @@ remove title from diagram
 
 ## Kubernetes
 
+- gc graph: wrong namespace, it is default, should be myapp
 - minikite gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404
 - cert-manager example
 - kubectl cluster-info
 
 ## Azure
 
-- list ec2 instance in stopped state
 - remove NetworkWatcherRG from list
 - check resource group name
 - check machine type: https://docs.microsoft.com/en-us/rest/api/compute/availabilitysets/listavailablesizes#virtualmachinesize
@@ -71,6 +65,7 @@ remove title from diagram
 
 ## Aws
 
+- list ec2 instance in stopped state
 - ec2 update: handle UserData
 
 - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
