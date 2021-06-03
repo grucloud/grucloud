@@ -52,7 +52,23 @@ exports.formatNodeName = ({ name }) =>
 
 exports.formatNamespace = switchCase([isEmpty, () => "", identity]);
 
-const rootTitle = ({ title }) => `Project ${title}`;
+const rootTitle = ({ titleLabel, title, titleKind, kind }) =>
+  !isEmpty(title)
+    ? `label=<<table border="0">
+  <tr>
+  <td align="text"><FONT color='${titleLabel.fontColor}' POINT-SIZE="${
+        titleLabel.pointSize
+      }"><B>Project ${title}</B></FONT><br align="left" />
+  </td>
+</tr>
+<tr><td align="text"><FONT color='${titleKind.fontColor}' POINT-SIZE="${
+        titleKind.pointSize
+      }"><B>${changeCase.pascalCase(
+        kind
+      )} Diagram</B></FONT><br align="left" /></td></tr>
+  </table>>
+  `
+    : "";
 
 const providerTitle = ({ providerName }) => `Provider ${providerName}`;
 
@@ -64,22 +80,12 @@ exports.buildGraphRootLabel = ({
     kind,
   },
 }) =>
-  `
-    rankdir=LR; 
+  `rankdir=LR; 
     labelloc=t;
     fontname=${fontName};
     bgcolor="${root.bgColor}";
-    label=<
-    <table  border="0">
-       <tr><td align="text"><FONT color='${titleLabel.fontColor}' POINT-SIZE="${
-    titleLabel.pointSize
-  }"><B>${rootTitle({ title })}</B></FONT><br align="left" /></td></tr>
-  <tr><td align="text"><FONT color='${titleKind.fontColor}' POINT-SIZE="${
-    titleKind.pointSize
-  }"><B>${changeCase.pascalCase(
-    kind
-  )} Diagram</B></FONT><br align="left" /></td></tr>
-    </table>>`;
+    ${rootTitle({ titleLabel, title, titleKind, kind })}
+   `;
 
 const buildClusterProviderLabel = ({
   options: {
@@ -102,9 +108,10 @@ const buildClusterProviderLabel = ({
   })}</B></FONT><br align="left" /></td></tr>
   </table>>`;
 
-exports.buildSubGraphClusterProvider = ({ providerName, options }) => (
-  content
-) => `subgraph "cluster_${providerName}" {
+exports.buildSubGraphClusterProvider =
+  ({ providerName, options }) =>
+  (content) =>
+    `subgraph "cluster_${providerName}" {
     ${buildClusterProviderLabel({ options, providerName })};
     ${content}}
 `;
@@ -115,18 +122,17 @@ const labelClusterNamespace = ({ namespace, options: { cluster } }) =>
       }' POINT-SIZE="${1}"> </FONT>>;`
     : `label=<<FONT color='${cluster.namespace.fontColor}' POINT-SIZE="${cluster.namespace.pointSize}"><B>${namespace}</B></FONT>>;`;
 
-exports.buildSubGraphClusterNamespace = ({
-  options: { fontName, cluster },
-  providerName,
-  namespace,
-}) => (content) => `subgraph "cluster_${providerName}_${namespace}" {
+exports.buildSubGraphClusterNamespace =
+  ({ options: { fontName, cluster }, providerName, namespace }) =>
+  (content) =>
+    `subgraph "cluster_${providerName}_${namespace}" {
         fontname=${fontName}
         style=filled;
         color="${cluster.namespace.color}";
         fillcolor="${cluster.namespace.fillColor}";
         ${labelClusterNamespace({ options: { fontName, cluster }, namespace })}
         node [shape=box style=filled fontname=${fontName} fillcolor="${
-  cluster.node.fillColor
-}" color="${cluster.node.color}"]
+      cluster.node.fillColor
+    }" color="${cluster.node.color}"]
         ${content}}
         `;
