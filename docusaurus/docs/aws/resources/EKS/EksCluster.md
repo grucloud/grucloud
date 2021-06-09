@@ -19,14 +19,16 @@ In order to create an EKS Cluster, a few resources need to be created before:
 - route tables and routes.
 - a security group
 - an Iam role
+- a customer master key
 
 ```js
 const cluster = await provider.makeEKSCluster({
   name: "cluster",
   dependencies: {
-    subnets: [subnetPublics, subnetPrivates],
+    subnets: [...subnetPublics, ...subnetPrivates],
     securityGroups: [securityGroup],
     role,
+    key,
   },
 });
 ```
@@ -63,6 +65,7 @@ kubectl config delete-cluster arn:aws:eks:eu-west-2:840541460064:cluster/myClust
 - [Subnet](../EC2/Subnet)
 - [SecurityGroup](../EC2/SecurityGroup)
 - [Role](../Iam/IamRole)
+- [Key](../KMS/KmsKey)
 
 ## List
 
