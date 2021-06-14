@@ -268,6 +268,12 @@ const createResources = async ({
     }
   );
 
+  // Asymmetric Key
+  const key = await provider.makeKmsKey({
+    name: formatName(config.eks.key.name, config),
+    properties: () => ({}),
+  });
+
   // define the EKS cluster
   const cluster = await provider.makeEKSCluster({
     name: formatName(clusterName, config),
@@ -276,6 +282,7 @@ const createResources = async ({
       subnets: [...subnetsPublic, ...pluck("subnet")(privates)],
       securityGroups: [securityGroupCluster, securityGroupNodes],
       role: roleCluster,
+      key,
     },
   });
 

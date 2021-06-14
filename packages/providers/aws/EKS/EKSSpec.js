@@ -8,7 +8,7 @@ const isOurMinion = ({ live, config }) =>
 module.exports = [
   {
     type: "EKSCluster",
-    dependsOn: ["SecurityGroup", "Subnet", "InternetGateway"],
+    dependsOn: ["SecurityGroup", "Subnet", "InternetGateway", "KmsKey"],
     Client: EKSCluster,
     isOurMinion,
   },

@@ -24,6 +24,8 @@ const {
 const logger = require("@grucloud/core/logger")({ prefix: "EKSCluster" });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
+const { getField } = require("@grucloud/core/ProviderCommon");
+
 const {
   getByNameCore,
   isUpByIdCore,
@@ -125,7 +127,7 @@ exports.EKSCluster = ({ spec, config }) => {
   const create = async ({
     name,
     payload = {},
-    resolvedDependencies: { subnets, securityGroups, role },
+    resolvedDependencies: { subnets, securityGroups, role, key },
   }) =>
     pipe([
       tap(() => {
@@ -144,6 +146,11 @@ exports.EKSCluster = ({ spec, config }) => {
             subnetIds: pluck("live.SubnetId")(subnets),
           },
           roleArn: role.live.Arn,
+          ...(key && {
+            encryptionConfig: [
+              { provider: { keyArn: key.live.Arn }, resources: ["secrets"] },
+            ],
+          }),
         })(payload),
       tap((params) => {
         logger.debug(`create cluster: ${name}, params: ${tos(params)}`);
@@ -183,10 +190,29 @@ exports.EKSCluster = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, namespace, properties, dependencies }) =>
-    defaultsDeep({ name, tags: buildTagsObject({ config, namespace, name }) })(
-      properties
-    );
+  const configDefault = async ({
+    name,
+    namespace,
+    properties,
+    dependencies: { subnets, securityGroups, role, key },
+  }) =>
+    defaultsDeep({
+      resourcesVpcConfig: {
+        securityGroupIds: map((sg) => getField(sg, "GroupId"))(securityGroups),
+        subnetIds: map((subnet) => getField(subnet, "SubnetId"))(subnets),
+      },
+      roleArn: getField(role, "Arn"),
+      ...(key && {
+        encryptionConfig: [
+          {
+            provider: { keyArn: getField(key, "Arn") },
+            resources: ["secrets"],
+          },
+        ],
+      }),
+      name,
+      tags: buildTagsObject({ config, namespace, name }),
+    })(properties);
 
   const hook = ({ resource }) => ({
     name: "cluster",

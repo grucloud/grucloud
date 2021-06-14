@@ -49,12 +49,14 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
   },
 });
 
-const createEndpoint = ({ endpointName }) => (config) =>
-  pipe([
-    tap(() => AWS.config.update(config)),
-    () => new AWS[endpointName]({ region: config.region }),
-    (endpoint) => new Proxy({}, proxyHandler({ endpointName, endpoint })),
-  ])();
+const createEndpoint =
+  ({ endpointName }) =>
+  (config) =>
+    pipe([
+      tap(() => AWS.config.update(config)),
+      () => new AWS[endpointName]({ region: config.region }),
+      (endpoint) => new Proxy({}, proxyHandler({ endpointName, endpoint })),
+    ])();
 
 exports.Ec2New = (config) => () =>
   createEndpoint({ endpointName: "EC2" })(config);
@@ -89,6 +91,9 @@ exports.ELBv2New = (config) => () =>
 exports.AutoScalingNew = (config) => () =>
   createEndpoint({ endpointName: "AutoScaling" })(config);
 
+exports.KmsNew = (config) => () =>
+  createEndpoint({ endpointName: "KMS" })(config);
+
 exports.shouldRetryOnException = ({ error, name }) =>
   pipe([
     tap(() => {
@@ -118,64 +123,68 @@ const findValueInTags = ({ key }) =>
 
 exports.findValueInTags = findValueInTags;
 
-const findEksCluster = ({ config, key = "aws:eks:cluster-name" }) => ({
-  live,
-  lives,
-}) =>
-  pipe([
-    tap(() => {
-      assert(lives, "lives");
-    }),
-    () =>
-      lives.getByType({
-        type: "EKSCluster",
-        providerName: config.providerName,
+const findEksCluster =
+  ({ config, key = "aws:eks:cluster-name" }) =>
+  ({ live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(lives, "lives");
       }),
-    get("resources"),
-    find(eq(get("name"), findValueInTags({ key })(live))),
-    tap((cluster) => {
-      logger.debug(`findEksCluster ${!!cluster}`);
-    }),
-  ])();
+      () =>
+        lives.getByType({
+          type: "EKSCluster",
+          providerName: config.providerName,
+        }),
+      get("resources"),
+      find(eq(get("name"), findValueInTags({ key })(live))),
+      tap((cluster) => {
+        logger.debug(`findEksCluster ${!!cluster}`);
+      }),
+    ])();
 
 exports.findEksCluster = findEksCluster;
 
-const findNamespaceEksCluster = ({ config, key = "aws:eks:cluster-name" }) => ({
-  live,
-  lives,
-}) =>
-  pipe([
-    tap(() => {
-      assert(lives, "lives");
-    }),
-    () => findEksCluster({ config, key })({ live, lives }),
-    findNamespaceInTagsObject(config),
-    tap((namespace) => {
-      logger.debug(`findNamespace`, namespace);
-    }),
-  ])();
+const findNamespaceEksCluster =
+  ({ config, key = "aws:eks:cluster-name" }) =>
+  ({ live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(lives, "lives");
+      }),
+      () => findEksCluster({ config, key })({ live, lives }),
+      findNamespaceInTagsObject(config),
+      tap((namespace) => {
+        logger.debug(`findNamespace`, namespace);
+      }),
+    ])();
 
-exports.findNamespaceInTagsOrEksCluster = ({ config, key }) => ({
-  live,
-  lives,
-}) =>
-  pipe([
-    tap(() => {
-      assert(lives, "lives");
-    }),
-    () => findNamespaceInTags(config)({ live }),
-    switchCase([
-      isEmpty,
-      () =>
-        findNamespaceEksCluster({ config, key })({
-          live,
-          lives,
-        }),
-      identity,
-    ]),
-  ])();
+exports.findNamespaceInTagsOrEksCluster =
+  ({ config, key }) =>
+  ({ live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(lives, "lives");
+      }),
+      () => findNamespaceInTags(config)({ live }),
+      switchCase([
+        isEmpty,
+        () =>
+          findNamespaceEksCluster({ config, key })({
+            live,
+            lives,
+          }),
+        identity,
+      ]),
+    ])();
 
-exports.buildTags = ({ name, config, namespace, UserTags = [] }) => {
+exports.buildTags = ({
+  name,
+  config,
+  namespace,
+  UserTags = [],
+  key = "Key",
+  value = "Value",
+}) => {
   const {
     managedByKey,
     managedByValue,
@@ -196,22 +205,22 @@ exports.buildTags = ({ name, config, namespace, UserTags = [] }) => {
     () => [
       ...UserTags,
       {
-        Key: KeyName,
-        Value: name,
+        [key]: KeyName,
+        [value]: name,
       },
       {
-        Key: managedByKey,
-        Value: managedByValue,
+        [key]: managedByKey,
+        [value]: managedByValue,
       },
       {
-        Key: createdByProviderKey,
-        Value: providerName,
+        [key]: createdByProviderKey,
+        [value]: providerName,
       },
       {
-        Key: stageTagKey,
-        Value: stage,
+        [key]: stageTagKey,
+        [value]: stage,
       },
-      { Key: "projectName", Value: projectName },
+      { [key]: "projectName", [value]: projectName },
     ],
     switchCase([
       () => isEmpty(namespace),
@@ -219,75 +228,79 @@ exports.buildTags = ({ name, config, namespace, UserTags = [] }) => {
       (tags) => [
         ...tags,
         {
-          Key: namespaceKey,
-          Value: namespace,
+          [key]: namespaceKey,
+          [value]: namespace,
         },
       ],
     ]),
   ])();
 };
 
-exports.isOurMinion = ({ live, config }) => {
-  const {
-    createdByProviderKey,
-    providerName,
-    stageTagKey,
-    stage,
-    projectName,
-  } = config;
-  return pipe([
-    tap(() => {
-      assert(createdByProviderKey);
-      assert(live);
-      assert(stage);
-    }),
-    () => live,
-    get("Tags"),
-    switchCase([
+const isOurMinionFactory =
+  ({ key = "Key", value = "Value" } = {}) =>
+  ({ live, config }) => {
+    const {
+      createdByProviderKey,
+      providerName,
+      stageTagKey,
+      stage,
+      projectName,
+    } = config;
+    return pipe([
+      tap(() => {
+        assert(createdByProviderKey);
+        assert(live);
+        assert(stage);
+      }),
+      () => live,
+      get("Tags"),
       and([
-        find(
-          and([eq(get("Key"), "projectName"), eq(get("Value"), projectName)])
-        ),
-        find(and([eq(get("Key"), stageTagKey), eq(get("Value"), stage)])),
+        find(and([eq(get(key), "projectName"), eq(get(value), projectName)])),
+        find(and([eq(get(key), stageTagKey), eq(get(value), stage)])),
       ]),
-      () => true,
-      () => false,
-    ]),
-    tap((minion) => {
-      logger.debug(
-        `isOurMinion ${minion}, ${JSON.stringify({
-          stage,
-          projectName,
-        })}`
-      );
-    }),
-  ])();
-};
-const findNamespaceInTags = (config) => ({ live }) =>
-  pipe([
-    tap(() => {
-      assert(live);
-    }),
-    () => live,
-    get("Tags"),
-    find(eq(get("Key"), config.namespaceKey)),
-    get("Value", ""),
-  ])();
+      tap((minion) => {
+        logger.debug(
+          `isOurMinion ${minion}, ${JSON.stringify({
+            stage,
+            projectName,
+          })}`
+        );
+      }),
+    ])();
+  };
+
+exports.isOurMinionFactory = isOurMinionFactory;
+exports.isOurMinion = isOurMinionFactory({});
+
+const findNamespaceInTags =
+  (config) =>
+  ({ live }) =>
+    pipe([
+      tap(() => {
+        assert(live);
+      }),
+      () => live,
+      get("Tags"),
+      find(eq(get("Key"), config.namespaceKey)),
+      get("Value", ""),
+    ])();
 
 exports.findNamespaceInTags = findNamespaceInTags;
 
-const findNamespaceInTagsObject = (config) => ({ live } = {}) =>
-  pipe([
-    tap(() => {
-      assert(config.namespaceKey);
-    }),
-    () => live,
-    get("tags"),
-    get(config.namespaceKey, ""),
-    tap(() => {
-      assert(true);
-    }),
-  ])();
+const findNamespaceInTagsObject =
+  (config) =>
+  ({ live } = {}) =>
+    pipe([
+      tap(() => {
+        assert(config.namespaceKey);
+      }),
+      () => live,
+      get("tags"),
+      get(config.namespaceKey, ""),
+      tap(() => {
+        assert(true);
+      }),
+    ])();
 
 exports.findNamespaceInTagsObject = findNamespaceInTagsObject;
 
@@ -318,9 +331,10 @@ exports.findNameInTags = findNameInTags;
 
 exports.findNameInTagsOrId = ({ item, findId }) =>
   pipe([
+    () => item,
     findNameInTags,
     switchCase([isEmpty, () => findId(item), (name) => name]),
-  ])(item);
+  ])();
 
 exports.findNameInDescription = ({ Description = "" }) => {
   const tags = Description.split("tags:")[1];
@@ -357,33 +371,37 @@ exports.getByIdCore = ({ fieldIds, getList }) =>
     }
   );
 
-exports.revokeSecurityGroupIngress = ({ ec2 }) => (params) =>
-  tryCatch(
-    () => ec2().revokeSecurityGroupIngress(params),
-    tap.if(
-      ({ code }) =>
-        !includes(code)([
-          "InvalidPermission.NotFound",
-          "InvalidGroup.NotFound",
-        ]),
-      (error) => {
-        throw error;
-      }
-    )
-  )();
+exports.revokeSecurityGroupIngress =
+  ({ ec2 }) =>
+  (params) =>
+    tryCatch(
+      () => ec2().revokeSecurityGroupIngress(params),
+      tap.if(
+        ({ code }) =>
+          !includes(code)([
+            "InvalidPermission.NotFound",
+            "InvalidGroup.NotFound",
+          ]),
+        (error) => {
+          throw error;
+        }
+      )
+    )();
 
-exports.removeRoleFromInstanceProfile = ({ iam }) => (params) =>
-  tryCatch(
-    () => iam().removeRoleFromInstanceProfile(params),
-    switchCase([
-      eq(get("code"), "NoSuchEntity"),
-      () => undefined,
-      (error) => {
-        logger.error(`iam role removeRoleFromInstanceProfile ${tos(error)}`);
-        throw error;
-      },
-    ])
-  )();
+exports.removeRoleFromInstanceProfile =
+  ({ iam }) =>
+  (params) =>
+    tryCatch(
+      () => iam().removeRoleFromInstanceProfile(params),
+      switchCase([
+        eq(get("code"), "NoSuchEntity"),
+        () => undefined,
+        (error) => {
+          logger.error(`iam role removeRoleFromInstanceProfile ${tos(error)}`);
+          throw error;
+        },
+      ])
+    )();
 
 exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
   pipe([

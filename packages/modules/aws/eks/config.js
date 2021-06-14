@@ -5,6 +5,9 @@ module.exports = ({}) => ({
     cluster: {
       name: clusterName,
     },
+    key: {
+      name: "eks-key",
+    },
     roleCluster: { name: `role-cluster` },
     roleNodeGroup: { name: `role-node-group` },
     securityGroupCluster: { name: "security-group-cluster" },

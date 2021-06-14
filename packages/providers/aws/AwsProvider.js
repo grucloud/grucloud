@@ -16,9 +16,9 @@ const AwsRoute53Domain = require("./Route53Domain");
 const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
 const AwsEKS = require("./EKS");
-//const AwsELB = require("./ELB");
 const AwsELBv2 = require("./ELBv2");
 const AutoScaling = require("./Autoscaling");
+const AwsKMS = require("./KMS");
 
 const fnSpecs = () => [
   ...AwsS3,
@@ -29,9 +29,9 @@ const fnSpecs = () => [
   ...AwsCertificateManager,
   ...AwsCloudFront,
   ...AwsEKS,
-  //...AwsELB,
   ...AwsELBv2,
   ...AutoScaling,
+  ...AwsKMS,
 ];
 
 const getAvailabilityZonesName = ({ region }) =>
@@ -72,6 +72,7 @@ exports.AwsProvider = ({
 }) => {
   assert(config ? isFunction(config) : true, "config must be a function");
 
+  //TODO alphabetical order
   AWS.config.apiVersions = {
     ec2: "2016-11-15",
     resourcegroupstaggingapi: "2017-01-26",
@@ -85,6 +86,7 @@ exports.AwsProvider = ({
     elb: "2012-06-01",
     elbv2: "2015-12-01",
     autoscaling: "2011-01-01",
+    kms: "2014-11-01",
   };
 
   const { AWSAccessKeyId, AWSSecretKey } = process.env;
