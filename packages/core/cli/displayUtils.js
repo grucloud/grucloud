@@ -273,6 +273,7 @@ exports.displayPlan = async (plan) => {
         });
         table.push([
           {
+            colSpan: 3,
             content: colors.yellow(
               `${resources.length} ${type} from ${plan.providerName}`
             ),
@@ -518,6 +519,7 @@ const displayTablePerType = ({
       () =>
         table.push([
           {
+            colSpan: 3,
             content: colors.yellow(
               `${resources.length} ${type} from ${providerName}`
             ),
