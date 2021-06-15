@@ -10,10 +10,12 @@ const {
   tryCatch,
   or,
   omit,
+  pick,
   switchCase,
 } = require("rubico");
-const { find, first, defaultsDeep, isEmpty, size } = require("rubico/x");
+const { find, first, defaultsDeep, isEmpty, size, pluck } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "DBInstance",
@@ -27,6 +29,8 @@ const {
   shouldRetryOnException,
 } = require("../AwsCommon");
 
+const omitParams = ["Engine", "MasterUsername", "Tags"];
+
 const findId = get("DBInstanceIdentifier");
 const findName = findId;
 
@@ -37,6 +41,10 @@ exports.DBInstance = ({ spec, config }) => {
     {
       type: "DBSubnetGroup",
       ids: [get("DBSubnetGroup.DBSubnetGroupName")(live)],
+    },
+    {
+      type: "SecurityGroup",
+      ids: pipe([get("VpcSecurityGroups"), pluck("VpcSecurityGroupId")])(live),
     },
   ];
 
@@ -113,14 +121,21 @@ exports.DBInstance = ({ spec, config }) => {
       }),
     ])();
 
-  //TODO
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#modifyDBInstance-property
   const update = async ({ name, payload, diff, live }) =>
     pipe([
       tap(() => {
         logger.info(`update: ${name}`);
         logger.debug(tos({ payload, diff, live }));
       }),
-      () => live,
+      () => ({
+        ...diff.liveDiff.updated,
+        ...pick(["DBInstanceIdentifier"])(live),
+      }),
+      tap((params) => {
+        logger.debug(tos(params));
+      }),
+      (params) => rds().modifyDBInstance(params),
       tap(() => {
         logger.info(`updated`);
       }),
@@ -135,11 +150,13 @@ exports.DBInstance = ({ spec, config }) => {
           tap(() => {
             logger.info(`destroy ${JSON.stringify({ id })}`);
           }),
-          () =>
+          () => live,
+          tap.if(not(eq(get("DBInstanceStatus"), "deleting")), () =>
             rds().deleteDBInstance({
               DBInstanceIdentifier: id,
               SkipFinalSnapshot: true,
-            }),
+            })
+          ),
           tap(() =>
             retryCall({
               name: `isDownById ${id}`,
@@ -157,13 +174,16 @@ exports.DBInstance = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { dbSubnetGroup },
+    dependencies: { dbSubnetGroup, dbSecurityGroups },
   }) =>
     pipe([
       () => properties,
       defaultsDeep({
         DBInstanceIdentifier: name,
         DBSubnetGroupName: dbSubnetGroup.config.DBSubnetGroupName,
+        VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
+          dbSecurityGroups
+        ),
         Tags: buildTags({ config, namespace, name }),
       }),
     ])();
@@ -184,8 +204,8 @@ exports.DBInstance = ({ spec, config }) => {
   };
 };
 
-const filterTarget = ({ target }) => pipe([() => target, omit(["Tags"])])();
-const filterLive = ({ live }) => pipe([() => live, omit(["Tags"])])();
+const filterTarget = ({ target }) => pipe([() => target, omit(omitParams)])();
+const filterLive = ({ live }) => pipe([() => live, omit(omitParams)])();
 
 exports.compareDBInstance = pipe([
   assign({
