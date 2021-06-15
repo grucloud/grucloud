@@ -2,7 +2,6 @@
 
 - ✖ Subnet 3/4 Network interface 'eni-04fe6bd0ed8822529' is currently in use.
 - gc a: when an assert is thrown, it does not exit but ask for deployment confirmation.
-- code coverage with monorepo
 - check stage for all providers
 
 ## Diagram
@@ -149,4 +148,6 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 }
 }
 
-## Bugs
+## Nice to have
+
+- code coverage with monorepo

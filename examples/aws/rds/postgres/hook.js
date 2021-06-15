@@ -2,7 +2,8 @@ const assert = require("assert");
 const path = require("path");
 const { Client } = require("pg");
 
-// dbCluster
+// psql postgresql://postgres:peggywenttothemarket@db-instance.cwzy9iilw73e.eu-west-2.rds.amazonaws.com:5432
+
 module.exports = ({ resources: { dbInstance }, provider }) => {
   return {
     onDeployed: {
@@ -13,7 +14,7 @@ module.exports = ({ resources: { dbInstance }, provider }) => {
           user: dbInstanceLive.MasterUsername,
           host: dbInstanceLive.Endpoint.Address,
           //database: "dev",
-          password: "peggywenttothemarket",
+          password: process.env.MASTER_USER_PASSWORD,
           port: dbInstanceLive.Endpoint.Port,
         });
 
