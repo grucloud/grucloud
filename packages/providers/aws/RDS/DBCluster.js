@@ -15,6 +15,7 @@ const {
 const { find, first, defaultsDeep, isEmpty, size } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
+const { getField } = require("@grucloud/core/ProviderCommon");
 const logger = require("@grucloud/core/logger")({
   prefix: "DBCluster",
 });
@@ -157,13 +158,16 @@ exports.DBCluster = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { dbSubnetGroup },
+    dependencies: { dbSubnetGroup, dbSecurityGroups },
   }) =>
     pipe([
       () => properties,
       defaultsDeep({
         DBClusterIdentifier: name,
         DBSubnetGroupName: dbSubnetGroup.config.DBSubnetGroupName,
+        VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
+          dbSecurityGroups
+        ),
         Tags: buildTags({ config, namespace, name }),
       }),
     ])();

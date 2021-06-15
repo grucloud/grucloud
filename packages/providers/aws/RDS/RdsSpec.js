@@ -13,7 +13,7 @@ module.exports = [
   },
   {
     type: "DBCluster",
-    dependsOn: ["DBSubnetGroup"],
+    dependsOn: ["DBSubnetGroup", "SecurityGroup"],
     Client: DBCluster,
     isOurMinion: isOurMinionFactory({ tags: "TagList" }),
     //TODO compare

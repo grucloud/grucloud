@@ -39,10 +39,17 @@ module.exports = ({ stage, region }) => ({
           MinCapacity: 2,
           MaxCapacity: 4,
         },
-        MasterUsername: "postgres",
-        MasterUserPassword: "peggywenttothemarket",
-        AvailabilityZones: [`${region}a`, `${region}b`],
+        MasterUsername: process.env.MASTER_USERNAME,
+        MasterUserPassword: process.env.MASTER_USER_PASSWORD,
       },
     },
+  },
+  keyPair: { name: "kp" },
+  eip: { name: "eip" },
+  ec2Instance: {
+    name: "bastion",
+    properties: () => ({
+      InstanceType: "t2.micro",
+    }),
   },
 });

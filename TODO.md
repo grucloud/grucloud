@@ -11,6 +11,9 @@ backup data.
 privacy policy
 resource table styling
 
+- DBInstance : findDependencies KmsKeyId
+- SecurityGroup self
+
 ## Common:
 
 - gc info with config for gcp and azure
