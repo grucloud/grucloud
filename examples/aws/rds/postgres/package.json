@@ -12,6 +12,7 @@
   "dependencies": {
     "@grucloud/core": "^1.18.0",
     "@grucloud/provider-aws": "^1.18.0",
+    "pg": "^8.6.0",
     "rubico": "^1.6.26"
   }
 }

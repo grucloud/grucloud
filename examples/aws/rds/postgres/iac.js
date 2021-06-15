@@ -12,9 +12,45 @@ const createResources = async ({ provider }) => {
     }),
   });
 
-  const ig = await provider.makeInternetGateway({
+  const internetGateway = await provider.makeInternetGateway({
     name: "ig",
     dependencies: { vpc },
+  });
+
+  const securityGroup = await provider.makeSecurityGroup({
+    name: "security-group",
+    dependencies: { vpc },
+    properties: () => ({
+      create: {
+        Description: "Security Group Postgres",
+      },
+    }),
+  });
+
+  const sgRuleIngressPostgres = await provider.makeSecurityGroupRuleIngress({
+    name: "sg-rule-ingress-postgres",
+    dependencies: {
+      securityGroup,
+    },
+    properties: () => ({
+      IpPermissions: [
+        {
+          FromPort: 5432,
+          IpProtocol: "tcp",
+          IpRanges: [
+            {
+              CidrIp: "0.0.0.0/0",
+            },
+          ],
+          Ipv6Ranges: [
+            {
+              CidrIpv6: "::/0",
+            },
+          ],
+          ToPort: 5432,
+        },
+      ],
+    }),
   });
 
   const subnets = await map((subnet) =>
@@ -25,6 +61,16 @@ const createResources = async ({ provider }) => {
     })
   )(config.rds.subnets);
 
+  const routeTablePublic = await provider.makeRouteTable({
+    name: "route-table-public",
+    dependencies: { vpc, subnets },
+  });
+
+  await provider.makeRoute({
+    name: "route-public",
+    dependencies: { routeTable: routeTablePublic, ig: internetGateway },
+  });
+
   const dbSubnetGroup = await provider.makeDBSubnetGroup({
     name: config.rds.subnetGroup.name,
     dependencies: { subnets },
@@ -34,7 +80,7 @@ const createResources = async ({ provider }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBInstance-property
   const dbInstance = await provider.makeDBInstance({
     name: config.rds.instance.name,
-    dependencies: { dbSubnetGroup },
+    dependencies: { dbSubnetGroup, dbSecurityGroups: [securityGroup] },
     properties: () => config.rds.instance.properties,
   });
 
@@ -50,5 +96,6 @@ exports.createStack = async ({ config, stage }) => {
   return {
     provider,
     resources,
+    hooks: [require("./hook")],
   };
 };

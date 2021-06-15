@@ -35,6 +35,7 @@ module.exports = ({ stage, region }) => ({
         MasterUserPassword: "peggywenttothemarket",
         AllocatedStorage: 20,
         MaxAllocatedStorage: 1000,
+        PubliclyAccessible: true,
       },
     },
   },

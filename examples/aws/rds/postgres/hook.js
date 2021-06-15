@@ -1,30 +1,46 @@
 const assert = require("assert");
 const path = require("path");
-const { retryCall } = require("@grucloud/core").Retry;
-
-// psql --host=cluster.cluster-cwzy9iilw73e.eu-west-2.rds.amazonaws.com --port=5432 --username=postgres --password --dbname=dev
+const { Client } = require("pg");
 
 // dbCluster
-module.exports = ({ resources: { dbCluster }, provider }) => {
+module.exports = ({ resources: { dbInstance }, provider }) => {
   return {
     onDeployed: {
       init: async () => {
-        const dbClusterLive = await dbCluster.getLive();
+        const dbInstanceLive = await dbInstance.getLive();
+
+        const client = new Client({
+          user: dbInstanceLive.MasterUsername,
+          host: dbInstanceLive.Endpoint.Address,
+          //database: "dev",
+          password: "peggywenttothemarket",
+          port: dbInstanceLive.Endpoint.Port,
+        });
+
+        await client.connect();
         return {
-          dbClusterLive,
+          client,
+          dbInstanceLive,
         };
       },
       actions: [
         {
-          name: "postgres",
-          command: async ({ dbClusterLive }) => {},
+          name: "create database",
+          command: async ({ client }) => {
+            const db = "dbdev";
+            try {
+              await client.query(`CREATE DATABASE ${db}`);
+            } catch (error) {
+              if (error.message !== `database "${db}" already exists`) {
+                throw error;
+              }
+            }
+          },
         },
       ],
     },
     onDestroyed: {
-      init: () => {
-        //console.log("ec2 onDestroyed");
-      },
+      init: () => {},
     },
   };
 };
