@@ -1,13 +1,20 @@
+const assert = require("assert");
 const { AwsProvider } = require("@grucloud/provider-aws");
 const hooks = [require("./hook")];
 
 const createResources = async ({ provider, resources: { keyPair } }) => {
+  const { config } = provider;
+
   const Device = "/dev/sdf";
   const deviceMounted = "/dev/xvdf";
   const mountPoint = "/data";
 
+  assert(config.region);
+  assert(config.availabilityZoneSuffix);
+  const AvailabilityZone = `${config.region}${config.availabilityZoneSuffix}`;
+
   const vpc = await provider.makeVpc({
-    name: "vpc",
+    name: "vpc-ec2-example",
     properties: () => ({
       CidrBlock: "10.1.0.0/16",
     }),
@@ -22,6 +29,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     dependencies: { vpc },
     properties: () => ({
       CidrBlock: "10.1.0.1/24",
+      AvailabilityZone,
     }),
   });
   const routeTable = await provider.makeRouteTable({
@@ -108,6 +116,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
       Size: 5,
       VolumeType: "standard",
       Device,
+      AvailabilityZone,
     }),
   });
 
@@ -141,6 +150,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     properties: () => ({
       UserData: volume.spec.setupEbsVolume({ deviceMounted, mountPoint }),
       InstanceType: "t2.micro",
+      Placement: { AvailabilityZone },
     }),
   });
   return { vpc, ig, subnet, routeTable, routeIg, sg, eip, server };

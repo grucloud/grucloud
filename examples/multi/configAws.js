@@ -3,6 +3,7 @@ module.exports = ({ region }) => ({
   projectName: pkg.name,
   rootDomainName: "grucloud.org",
   domainName: "multi-test.grucloud.org",
+  availabilityZoneSuffix: "a",
   vpc: {
     CidrBlock: "192.168.0.0/16",
     subnetsPublic: [

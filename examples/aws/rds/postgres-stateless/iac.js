@@ -5,6 +5,9 @@ const { pluck } = require("rubico/x");
 const { AwsProvider } = require("@grucloud/provider-aws");
 const ModuleAwsVpc = require("@grucloud/module-aws-vpc");
 
+const configs = [require("./config"), ModuleAwsVpc.config];
+exports.configs = configs;
+
 const createResourcesRds = async ({
   provider,
   resources: { vpcResources, bastionResources },
@@ -90,7 +93,7 @@ const createResourcesBastion = async ({
   });
 
   const sgRuleIngressSsh = await provider.makeSecurityGroupRuleIngress({
-    name: "sg-rule-ingress-ssh",
+    name: "sg-rule-ingress-ssh-bastion",
     dependencies: {
       securityGroup,
     },
@@ -117,7 +120,7 @@ const createResourcesBastion = async ({
 
   assert(config.eip);
   const eip = await provider.makeElasticIpAddress({
-    name: config.eip.name,
+    name: config.rds.eip.name,
   });
 
   const image = await provider.useImage({
@@ -140,7 +143,7 @@ const createResourcesBastion = async ({
     eip,
     securityGroup,
     ec2Instance: await provider.makeEC2({
-      name: config.ec2Instance.name,
+      name: config.rds.ec2Instance.name,
       dependencies: {
         keyPair,
         eip,
@@ -148,25 +151,15 @@ const createResourcesBastion = async ({
         securityGroups: [securityGroup],
         subnet: vpcResources.subnetsPublic[0],
       },
-      properties: config.ec2Instance.properties,
+      properties: config.rds.ec2Instance.properties,
     }),
   };
 };
 
-exports.createStack = async ({ config, stage }) => {
-  const provider = AwsProvider({
-    configs: [config, ModuleAwsVpc.config],
-    stage,
-  });
-
-  const vpcResources = await ModuleAwsVpc.createResources({
-    provider,
-  });
-
-  const keyPair = await provider.useKeyPair({
-    name: provider.config.keyPair.name,
-  });
-
+const createResources = async ({
+  provider,
+  resources: { keyPair, vpcResources },
+}) => {
   const bastionResources = await createResourcesBastion({
     provider,
     resources: { keyPair, vpcResources },
@@ -176,10 +169,31 @@ exports.createStack = async ({ config, stage }) => {
     provider,
     resources: { vpcResources, bastionResources },
   });
+  return { rds: resourcesRds, bastion: bastionResources };
+};
+
+exports.createResources = createResources;
+
+exports.createStack = async ({ stage }) => {
+  const provider = AwsProvider({
+    configs,
+    stage,
+  });
+
+  const keyPair = await provider.useKeyPair({
+    name: provider.config.keyPair.name,
+  });
+
+  const vpcResources = await ModuleAwsVpc.createResources({
+    provider,
+  });
 
   return {
     provider,
-    resources: { rds: resourcesRds, bastion: bastionResources },
+    resources: await createResources({
+      provider,
+      resources: { vpcResources, keyPair },
+    }),
     hooks: [require("./hook")],
   };
 };

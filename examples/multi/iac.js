@@ -14,6 +14,8 @@ const AwsStackWebSite = require("../aws/website-https/iac");
 const AwsHooksWebSite = require("../aws/website-https/hook");
 const AwsConfigWebSite = require("../aws/website-https/config");
 
+const AwsStackRdsPostgresStateless = require("../aws/rds/postgres-stateless");
+
 const AwsStackEC2 = require("../aws/ec2/iac");
 
 const AwsStackEC2Vpc = require("../aws/ec2-vpc/iac");
@@ -38,18 +40,34 @@ const MockStack = require("../mock/mock/iac");
 
 const createAws = async ({}) => {
   const provider = AwsProvider({
-    configs: [require("./configAws"), AwsStackEC2.config, AwsStackEKS.config],
+    configs: [
+      require("./configAws"),
+      AwsStackEC2.config,
+      AwsStackEKS.config,
+      ...AwsStackRdsPostgresStateless.configs,
+    ],
   });
 
   const keyPair = await provider.useKeyPair({
     name: "kp",
   });
 
+  const vpcResources = await ModuleAwsVpc.createResources({
+    provider,
+  });
+
   // Aws stack ec2
   const ec2 = await AwsStackEC2.createResources({
     provider,
-    resources: { keyPair },
+    resources: { vpcResources, keyPair },
   });
+
+  // Aws stack rds postgres stateless
+  const rdsPostgresStateless =
+    await AwsStackRdsPostgresStateless.createResources({
+      provider,
+      resources: { keyPair, vpcResources },
+    });
 
   // Aws stack ec2-vpc
   const ec2Vpc = await AwsStackEC2Vpc.createResources({

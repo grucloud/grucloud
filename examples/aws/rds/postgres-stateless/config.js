@@ -43,13 +43,13 @@ module.exports = ({ stage, region }) => ({
         MasterUserPassword: process.env.MASTER_USER_PASSWORD,
       },
     },
+    eip: { name: "eip-bastion" },
+    ec2Instance: {
+      name: "bastion",
+      properties: () => ({
+        InstanceType: "t2.micro",
+      }),
+    },
   },
   keyPair: { name: "kp" },
-  eip: { name: "eip" },
-  ec2Instance: {
-    name: "bastion",
-    properties: () => ({
-      InstanceType: "t2.micro",
-    }),
-  },
 });
