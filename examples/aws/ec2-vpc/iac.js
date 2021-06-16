@@ -80,6 +80,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
       ],
     }),
   });
+
   const sgRuleIngressIcmp = await provider.makeSecurityGroupRuleIngress({
     name: "sg-rule-ingress-icmp",
     dependencies: {
@@ -105,6 +106,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
       ],
     }),
   });
+
   const eip = await provider.makeElasticIpAddress({
     name: "myip",
     properties: () => ({}),
