@@ -35,7 +35,7 @@ describe("EKSCluster", async function () {
   it("cluster resolveConfig", async function () {
     assert.equal(cluster.name, clusterName);
     const config = await cluster.resolveConfig();
-    //assert.equal(config.DomainName, domainName);
+    assert.equal(config.name, clusterName);
   });
   it.skip("cluster apply plan", async function () {
     await testPlanDeploy({

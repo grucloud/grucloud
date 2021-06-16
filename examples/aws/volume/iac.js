@@ -1,3 +1,4 @@
+const assert = require("assert");
 const { AwsProvider } = require("@grucloud/provider-aws");
 const hook = require("./hook");
 
@@ -7,6 +8,8 @@ const mountPoint = "/data";
 const formatName = (name) => `${name}-test-volume`;
 const createResources = async ({ provider, resources: {} }) => {
   const { config } = provider;
+  assert(config.region);
+  assert(config.availabilityZoneSuffix);
   const AvailabilityZone = `${config.region}${config.availabilityZoneSuffix}`;
 
   const volume = await provider.makeVolume({

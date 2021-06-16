@@ -58,7 +58,7 @@ exports.nextStateOnError = (error) => (error ? "ERROR" : "DONE");
 
 exports.isValidPlan = not(isEmpty);
 
-exports.getField = ({ resource, live }, field) =>
+exports.getField = ({ resource = {}, live } = {}, field) =>
   get(field, notAvailable(resource.name, field))(live);
 
 exports.clientByType = ({ type }) => find(eq(get("spec.type"), type));

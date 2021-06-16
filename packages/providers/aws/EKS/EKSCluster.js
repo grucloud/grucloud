@@ -201,7 +201,7 @@ exports.EKSCluster = ({ spec, config }) => {
         securityGroupIds: map((sg) => getField(sg, "GroupId"))(securityGroups),
         subnetIds: map((subnet) => getField(subnet, "SubnetId"))(subnets),
       },
-      roleArn: getField(role, "Arn"),
+      ...(role && { roleArn: getField(role, "Arn") }),
       ...(key && {
         encryptionConfig: [
           {

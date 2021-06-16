@@ -58,6 +58,8 @@ const createEndpoint =
       (endpoint) => new Proxy({}, proxyHandler({ endpointName, endpoint })),
     ])();
 
+exports.createEndpoint = createEndpoint;
+
 exports.Ec2New = (config) => () =>
   createEndpoint({ endpointName: "EC2" })(config);
 
@@ -237,7 +239,7 @@ exports.buildTags = ({
 };
 
 const isOurMinionFactory =
-  ({ key = "Key", value = "Value" } = {}) =>
+  ({ key = "Key", value = "Value", tags = "Tags" } = {}) =>
   ({ live, config }) => {
     const {
       createdByProviderKey,
@@ -253,7 +255,7 @@ const isOurMinionFactory =
         assert(stage);
       }),
       () => live,
-      get("Tags"),
+      get(tags),
       and([
         find(and([eq(get(key), "projectName"), eq(get(value), projectName)])),
         find(and([eq(get(key), stageTagKey), eq(get(value), stage)])),

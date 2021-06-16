@@ -143,8 +143,8 @@ describe("AwsProvider", async function () {
   });
   it("aws info", async function () {
     const info = await provider.info();
-    assert(info.accountId);
-    assert(info.region);
+    assert(info.stage);
+    assert(info.config.region);
   });
   it.skip("server resolveDependencies", async function () {
     const dependencies = await server.resolveDependencies({

@@ -8,17 +8,19 @@ const { tos } = require("@grucloud/core/tos");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsProvider" });
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const { Ec2New } = require("./AwsCommon");
-const AwsS3 = require("./S3");
-const AwsEC2 = require("./EC2");
-const AwsIam = require("./IAM");
-const AwsRoute53 = require("./Route53");
-const AwsRoute53Domain = require("./Route53Domain");
+
+const AutoScaling = require("./Autoscaling");
 const AwsCertificateManager = require("./ACM");
 const AwsCloudFront = require("./CloudFront");
+const AwsEC2 = require("./EC2");
 const AwsEKS = require("./EKS");
 const AwsELBv2 = require("./ELBv2");
-const AutoScaling = require("./Autoscaling");
+const AwsIam = require("./IAM");
 const AwsKMS = require("./KMS");
+const AwsRDS = require("./RDS");
+const AwsRoute53 = require("./Route53");
+const AwsRoute53Domain = require("./Route53Domain");
+const AwsS3 = require("./S3");
 
 const fnSpecs = () => [
   ...AwsS3,
@@ -30,6 +32,7 @@ const fnSpecs = () => [
   ...AwsCloudFront,
   ...AwsEKS,
   ...AwsELBv2,
+  ...AwsRDS,
   ...AutoScaling,
   ...AwsKMS,
 ];
@@ -72,21 +75,21 @@ exports.AwsProvider = ({
 }) => {
   assert(config ? isFunction(config) : true, "config must be a function");
 
-  //TODO alphabetical order
   AWS.config.apiVersions = {
-    ec2: "2016-11-15",
-    resourcegroupstaggingapi: "2017-01-26",
-    s3: "2006-03-01",
-    iam: "2010-05-08",
-    route53: "2013-04-01",
-    route53domains: "2014-05-15",
     acm: "2015-12-08",
+    autoscaling: "2011-01-01",
     cloudfront: "2020-05-31",
+    ec2: "2016-11-15",
     eks: "2017-11-01",
     elb: "2012-06-01",
     elbv2: "2015-12-01",
-    autoscaling: "2011-01-01",
+    iam: "2010-05-08",
     kms: "2014-11-01",
+    rds: "2014-10-31",
+    resourcegroupstaggingapi: "2017-01-26",
+    route53: "2013-04-01",
+    route53domains: "2014-05-15",
+    s3: "2006-03-01",
   };
 
   const { AWSAccessKeyId, AWSSecretKey } = process.env;

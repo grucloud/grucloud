@@ -123,7 +123,7 @@ describe("AwsEC2", async function () {
       await testPlanDeploy({ provider, types, destroy: false });
 
       const serverLive = await server.getLive();
-      assert.equal(serverLive, "t3.micro");
+      assert.equal(serverLive.InstanceType, "t3.micro");
     }
 
     // Step 3: Change the ImageId

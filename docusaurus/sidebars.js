@@ -41,7 +41,7 @@ module.exports = {
           items: [
             {
               type: "category",
-              label: "AWS Resources",
+              label: "Resources",
               collapsed: true,
               items: [
                 {
