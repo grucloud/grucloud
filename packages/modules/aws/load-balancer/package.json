@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-aws-load-balancer",
-  "version": "1.18.0",
+  "version": "1.18.1",
   "description": "GruCloud Module to create load balancer, target group and rule",
   "main": "iac.js",
   "scripts": {
@@ -22,9 +22,9 @@
     "mocha": "^8.3.2"
   },
   "dependencies": {
-    "@grucloud/core": "^1.18.0",
-    "@grucloud/module-aws-certificate": "^1.18.0",
-    "@grucloud/module-aws-vpc": "^1.18.0",
-    "@grucloud/provider-aws": "^1.18.0"
+    "@grucloud/core": "^1.18.1",
+    "@grucloud/module-aws-certificate": "^1.18.1",
+    "@grucloud/module-aws-vpc": "^1.18.1",
+    "@grucloud/provider-aws": "^1.18.1"
   }
 }

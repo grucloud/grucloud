@@ -1,8 +1,8 @@
 {
-  "name": "kms-symmetric",
+  "name": "lambda-nodejs-helloworld",
   "version": "1.18.1",
-  "private": true,
   "description": "",
+  "private": true,
   "main": "iac.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.18.1",
-    "@grucloud/provider-aws": "^1.18.1"
+    "@grucloud/provider-aws": "^1.18.1",
+    "rubico": "^1.6.26"
   }
 }

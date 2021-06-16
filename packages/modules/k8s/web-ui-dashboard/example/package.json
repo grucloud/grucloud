@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-module-k8s-web-ui-dashboard",
-  "version": "1.18.0",
+  "version": "1.18.1",
   "description": "Example for the GruCloud module for the Kubernetes Web UI Dashboard",
   "main": "iac.js",
   "private": true,
@@ -25,8 +25,8 @@
   },
   "homepage": "https://github.com/grucloud/grucloud#readme",
   "dependencies": {
-    "@grucloud/core": "^1.18.0",
-    "@grucloud/module-k8s-web-ui-dashboard": "^1.18.0",
-    "@grucloud/provider-k8s": "^1.18.0"
+    "@grucloud/core": "^1.18.1",
+    "@grucloud/module-k8s-web-ui-dashboard": "^1.18.1",
+    "@grucloud/provider-k8s": "^1.18.1"
   }
 }
