@@ -17,24 +17,27 @@ const AwsEKS = require("./EKS");
 const AwsELBv2 = require("./ELBv2");
 const AwsIam = require("./IAM");
 const AwsKMS = require("./KMS");
+const AwsLambda = require("./Lambda");
+
 const AwsRDS = require("./RDS");
 const AwsRoute53 = require("./Route53");
 const AwsRoute53Domain = require("./Route53Domain");
 const AwsS3 = require("./S3");
 
 const fnSpecs = () => [
-  ...AwsS3,
-  ...AwsEC2,
-  ...AwsIam,
-  ...AwsRoute53,
-  ...AwsRoute53Domain,
+  ...AutoScaling,
   ...AwsCertificateManager,
   ...AwsCloudFront,
+  ...AwsEC2,
   ...AwsEKS,
   ...AwsELBv2,
-  ...AwsRDS,
-  ...AutoScaling,
+  ...AwsIam,
   ...AwsKMS,
+  ...AwsLambda,
+  ...AwsRoute53,
+  ...AwsRoute53Domain,
+  ...AwsRDS,
+  ...AwsS3,
 ];
 
 const getAvailabilityZonesName = ({ region }) =>
@@ -85,6 +88,7 @@ exports.AwsProvider = ({
     elbv2: "2015-12-01",
     iam: "2010-05-08",
     kms: "2014-11-01",
+    lambda: "2015-03-31",
     rds: "2014-10-31",
     resourcegroupstaggingapi: "2017-01-26",
     route53: "2013-04-01",
