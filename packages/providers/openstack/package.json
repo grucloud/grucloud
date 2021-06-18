@@ -2,7 +2,7 @@
   "name": "@grucloud/provider-openstack",
   "version": "1.18.1",
   "description": "The GruCloud OpenStack provider",
-  "main": "OpenstackProvider.js",
+  "main": "OpenStackProvider.js",
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/openstack",
   "scripts": {
     "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",

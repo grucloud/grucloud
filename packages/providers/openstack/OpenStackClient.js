@@ -1,19 +1,11 @@
 const assert = require("assert");
-const path = require("path");
 const CoreClient = require("@grucloud/core/CoreClient");
 const AxiosMaker = require("@grucloud/core/AxiosMaker");
-const logger = require("@grucloud/core/logger")({ prefix: "OpenStackClient" });
-//const {tos} = require("@grucloud/core")
-
-const onResponseList = ({ value = [] }) => ({
-  total: value.length,
-  items: value,
-});
+const logger = require("@grucloud/core/logger")({ prefix: "OpenStack" });
 
 module.exports = OpenStackClient = ({
   spec,
   pathBase,
-  pathSuffix,
   pathSuffixList,
   isUpByIdFactory,
   isInstanceUp,
@@ -22,28 +14,34 @@ module.exports = OpenStackClient = ({
   isDefault,
   cannotBeDeleted,
   findDependencies,
+  onResponseList,
+  findName,
 }) => {
   assert(pathBase);
   assert(spec);
   assert(spec.type);
   assert(config);
   assert(config.bearerToken);
+  assert(onResponseList);
 
-  const pathGet = ({ id }) => path.join(`/${id}`);
-  const pathCreate = ({ dependencies, name }) =>
-    path.join(
-      pathBase,
-      pathSuffix ? `${pathSuffix({ dependencies })}/${name}` : ""
-    );
-  const pathDelete = ({ id }) => path.join(`/${id}`);
+  const pathGet = ({ id }) => `/${id}`;
+  const pathCreate = () => pathBase;
+  const pathDelete = ({ id }) => `/${id}`;
   const pathList = () => `${pathBase}${pathSuffixList()}`;
 
-  const core = CoreClient({
+  const axios = AxiosMaker({
+    onHeaders: () => ({
+      "X-Auth-Token": `${config.bearerToken()}`,
+    }),
+  });
+
+  return CoreClient({
     type: "openstack",
     spec,
     config,
     findDependencies,
-    onResponseList,
+    onResponseList: (data) => onResponseList({ axios, data }),
+    findName,
     configDefault,
     pathGet,
     pathCreate,
@@ -53,12 +51,6 @@ module.exports = OpenStackClient = ({
     isInstanceUp,
     isDefault,
     cannotBeDeleted,
-    axios: AxiosMaker({
-      onHeaders: () => ({
-        "X-Auth-Token": `${config.bearerToken()}`,
-      }),
-    }),
+    axios,
   });
-
-  return core;
 };

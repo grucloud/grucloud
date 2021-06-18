@@ -1,7 +1,13 @@
 const assert = require("assert");
 const Axios = require("axios");
 
-exports.OpenStackAuthorize = async ({ baseURL, username, password }) => {
+exports.OpenStackAuthorize = async ({
+  baseURL,
+  username,
+  password,
+  projectId,
+  projectName,
+}) => {
   assert(username);
   assert(password);
   const axios = Axios.create({ baseURL });
@@ -20,6 +26,13 @@ exports.OpenStackAuthorize = async ({ baseURL, username, password }) => {
           },
         },
       },
+      scope: {
+        project: {
+          domain: { name: "Default" },
+          id: projectId,
+          name: projectName,
+        },
+      },
     },
   };
 
@@ -27,6 +40,7 @@ exports.OpenStackAuthorize = async ({ baseURL, username, password }) => {
   return headers["x-subject-token"];
 };
 
+//TODO
 exports.OpenStackListServices = async ({ baseURL, token }) => {
   assert(token);
   const axios = Axios.create({

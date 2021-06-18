@@ -20,7 +20,7 @@ describe("OpenStackProvider", async function () {
     });
   });
   after(async () => {});
-  it("openstack apply and destroy", async function () {
+  it("openstack list", async function () {
     const result = await cliCommands.list({
       infra: { provider },
       commandOptions: { all: true },

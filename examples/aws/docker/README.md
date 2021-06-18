@@ -1,17 +1,44 @@
-# Dockerize the AWS GruCloud Provider
+# Dockerize the GruCloud Providers
 
-The objective is to run `gc list` on any AWS account, without the need for writing any infrastrucure code. This code should run on servers as well, not only on local computer. hence GruCloud will be dockerized.
+The objective is to run `gc list` on any cloud provider, without the need for writing any infrastrucure code. This code should run on servers as well, not only on local computer. Hence GruCloud will be dockerized.
 
-A docker image will be created with the GruCloud CLI, the AWS Provider with no resources defined. See [iac.js](./iac.js)
+A docker image will be created with the GruCloud CLI, the AWS Provider without resource defined. See [iac.js](./iac.js)
 
 ## Configuration
 
-Create a file `aws.env` with the AWS access and secret key, as well as the region:
+### AWS configuration
 
-```txt
+Create the file `aws.env` with the AWS access and secret key, as well as the region:
+
+```sh
 AWSAccessKeyId=AAAAAASSSSSSCCCCCCXXXX
 AWSSecretKey=EErr4455gfderttgdbgyfdovksfbokdfo
 AWS_REGION=us-east-1
+```
+
+### Azure configuration
+
+Create the file `azure.env`:
+
+```sh
+TENANT_ID=f5252b5d-13f4-45e9-ad17-aaaaaaaaa
+SUBSCRIPTION_ID=8e0e234e-8384-438d-a652-aaaaaaaaa
+APP_ID=4c5c4428-e25a-42dd-9506-aaaaaaaaa
+PASSWORD=Fye-0irzz9xxmrcsq8enX2Y_aaaaaaaaa
+LOCATION=uksouth
+```
+
+### OpenStack OVH configuration
+
+Create the file `openstack.env`:
+
+```sh
+OS_REGION_NAME=UK1
+OS_AUTH_URL=https://auth.cloud.ovh.net/v3
+OS_PROJECT_ID=
+OS_PROJECT_NAME=
+OS_USERNAME=
+OS_PASSWORD=
 ```
 
 ## Build the docker image

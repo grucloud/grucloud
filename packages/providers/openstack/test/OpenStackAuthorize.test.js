@@ -23,6 +23,8 @@ describe("OpenStackAuthorize", async function () {
         baseURL: process.env.OS_AUTH_URL,
         username: process.env.OS_USERNAME,
         password: process.env.OS_PASSWORD,
+        projectId: process.env.OS_PROJECT_ID,
+        projectName: process.env.OS_PROJECT_NAME,
       });
       assert(token);
 
