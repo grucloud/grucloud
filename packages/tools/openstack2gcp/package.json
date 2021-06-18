@@ -1,0 +1,24 @@
+{
+  "name": "openstack2gcp",
+  "version": "1.0.0",
+  "description": "Migrate OpenStack to GCP",
+  "bin": {
+    "openstack2gcp": "./index.js"
+  },
+  "main": "OpenStack2Gcp.js",
+  "scripts": {
+    "generate": "node index.js --input example/gc-list-ovh.json --output example/iac.js && gc --infra example/iac.js graph",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "change-case": "^4.1.2",
+    "commander": "^7.2.0",
+    "prettier": "^2.3.1",
+    "rubico": "^1.6.29"
+  },
+  "devDependencies": {
+    "mocha": "^9.0.1"
+  }
+}
