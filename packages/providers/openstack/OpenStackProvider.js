@@ -1,7 +1,14 @@
 const assert = require("assert");
 const { pipe, eq, get, tap, filter, map } = require("rubico");
 
-const { defaultsDeep, isFunction, pluck, find, size } = require("rubico/x");
+const {
+  defaultsDeep,
+  isFunction,
+  pluck,
+  find,
+  size,
+  keys,
+} = require("rubico/x");
 
 const CoreProvider = require("@grucloud/core/CoreProvider");
 const OpenStackClient = require("./OpenStackClient");
@@ -111,48 +118,44 @@ const fnSpecs = (config) => {
           pathSuffixList: () => `/${projectId}/servers`,
           onResponseList: ({ axios, data }) =>
             pipe([
-              tap((xxx) => {
-                logger.debug(``);
-              }),
               () => data,
               get("servers"),
               map(
                 pipe([
                   get("links"),
                   find(eq(get("rel"), "self")),
-                  tap((xxx) => {
-                    logger.debug(``);
-                  }),
                   get("href"),
-                  tap((xxx) => {
-                    logger.debug(``);
-                  }),
                   (href) => axios.get(href),
-                  tap((xxx) => {
-                    logger.debug(``);
-                  }),
                   get("data.server"),
-                  tap((xxx) => {
-                    logger.debug(``);
-                  }),
                 ])
               ),
-              tap((xxx) => {
-                logger.debug(``);
-              }),
               (servers) => ({
                 total: size(servers),
                 items: servers,
-              }),
-              tap((xxx) => {
-                logger.debug(``);
               }),
             ])(),
           isUpByIdFactory,
           isInstanceUp,
           config,
           configDefault: ({ properties }) => defaultsDeep({})(properties),
-          findDependencies: ({ live }) => [],
+          findDependencies: ({ live, lives }) => [
+            {
+              type: "Network",
+              ids: pipe([
+                () => live,
+                get("addresses"),
+                keys,
+                map((network) =>
+                  lives.getByName({
+                    providerName,
+                    type: "Network",
+                    name: network,
+                  })
+                ),
+                pluck("id"),
+              ])(),
+            },
+          ],
         }),
       isOurMinion,
     },
