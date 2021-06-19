@@ -1,13 +1,15 @@
-exports.iacTpl = ({ resources }) => `
+exports.iacTpl = ({ resourcesCode, resourcesVarNames = [] }) => `
 const assert = require("assert");
 const { GoogleProvider } = require("@grucloud/provider-google");
 
 const createResources = async ({ provider, resources: { serviceAccount } }) => {
   const { stage } = provider.config;
-  ${resources}
+  ${resourcesCode}
   return {
+    ${resourcesVarNames.join(",")}
   };
 };
+
 exports.createResources = createResources;
 
 exports.createStack = async () => {

@@ -9,8 +9,32 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
     properties: () => ({ autoCreateSubnetworks: false }),
   });
 
-  return {};
+  const s1_2Uk1 = await provider.makeVmInstance({
+    name: "s1-2-uk1",
+    dependencies: { subNetwork },
+
+    properties: () => ({
+      diskSizeGb: "20",
+      machineType: "f1-micro",
+      sourceImage:
+        "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
+      metadata: {
+        items: [
+          {
+            key: "enable-oslogin",
+            value: "True",
+          },
+        ],
+      },
+    }),
+  });
+
+  return {
+    extNet,
+    s1_2Uk1,
+  };
 };
+
 exports.createResources = createResources;
 
 exports.createStack = async () => {
