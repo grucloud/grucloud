@@ -1,12 +1,12 @@
 exports.subNetworkTpl = ({
   resourceVarName,
   resourceName,
-  dependencyNames,
+  dependencies: { network },
   resource,
 }) => `
 const ${resourceVarName} = await provider.makeSubNetwork({
   name: "${resourceName}",
-  dependencies: { ${dependencyNames.join(",")} },
+  dependencies: { network: ${network} },
   properties: () => ({
     ipCidrRange: "${resource.live.cidr}",
   }),

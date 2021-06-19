@@ -13,6 +13,7 @@ const {
   filter,
   and,
   tryCatch,
+  not,
 } = require("rubico");
 const {
   first,
@@ -89,14 +90,21 @@ const writeNetwork = ({ resource, lives }) =>
     tap(() => {
       //console.log(`writeNetwork`, resource);
     }),
-    () => ResourceVarName(resource.name),
-    (resourceVarName) => ({
-      resourceVarName,
-      code: networkTpl({
-        resourceVarName,
-        resourceName: resource.name,
-      }),
-    }),
+    () => resource,
+    switchCase([
+      not(eq(get("live.provider:network_type"), "bgp")),
+      pipe([
+        () => ResourceVarName(resource.name),
+        (resourceVarName) => ({
+          resourceVarName,
+          code: networkTpl({
+            resourceVarName,
+            resourceName: resource.name,
+          }),
+        }),
+      ]),
+      () => undefined,
+    ]),
     tap((xxx) => {
       //console.log(`writeNetwork`, xxx);
     }),
@@ -145,6 +153,8 @@ const findSubnetDependencyNames = ({ type, resource, lives }) =>
 
 const ResourceVarNameSubnet = (resource) =>
   `subnet_${ResourceVarName(resource.name)}`;
+const ResourceNameSubnet = (resource) =>
+  ResourceVarNameSubnet(resource).replace(/_/g, "-");
 
 const writeSubNetwork = ({ resource, lives }) =>
   switchCase([
@@ -157,12 +167,14 @@ const writeSubNetwork = ({ resource, lives }) =>
         code: subNetworkTpl({
           resource,
           resourceVarName,
-          resourceName: resource.name,
-          dependencyNames: findSubnetDependencyNames({
-            type: "Network",
-            resource,
-            lives,
-          }),
+          resourceName: ResourceNameSubnet(resource),
+          dependencies: {
+            network: findSubnetDependencyNames({
+              type: "Network",
+              resource,
+              lives,
+            }),
+          },
         }),
       }),
     ]),
@@ -193,8 +205,8 @@ const writeVirtualMachine = ({ resource, lives }) =>
         resource,
         resourceVarName,
         resourceName: resource.name,
-        dependencyNames: [
-          pipe([
+        dependencies: {
+          subNetwork: pipe([
             () => resource,
             get("live.addresses"),
             values,
@@ -233,7 +245,7 @@ const writeVirtualMachine = ({ resource, lives }) =>
                 }),
               ])(),
           ])(),
-        ],
+        },
       }),
     }),
     tap((xxx) => {

@@ -5,19 +5,14 @@ const { GoogleProvider } = require("@grucloud/provider-google");
 const createResources = async ({ provider, resources: { serviceAccount } }) => {
   const { stage } = provider.config;
 
-  const extNet = await provider.makeNetwork({
-    name: "Ext-Net",
-    properties: () => ({ autoCreateSubnetworks: false }),
-  });
-
   const rhmig = await provider.makeNetwork({
     name: "rhmig",
     properties: () => ({ autoCreateSubnetworks: false }),
   });
 
   const subnet_10_0_0_0_16 = await provider.makeSubNetwork({
-    name: "::10.0.0.0/16",
-    dependencies: { rhmig },
+    name: "subnet-10-0-0-0-16",
+    dependencies: { network: rhmig },
     properties: () => ({
       ipCidrRange: "10.0.0.0/16",
     }),
@@ -25,7 +20,7 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
 
   const s1_2Uk1 = await provider.makeVmInstance({
     name: "s1-2-uk1",
-    dependencies: { subnet_10_0_0_0_16 },
+    dependencies: { subNetwork: subnet_10_0_0_0_16 },
 
     properties: () => ({
       diskSizeGb: "20",
@@ -44,7 +39,6 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
   });
 
   return {
-    extNet,
     rhmig,
     subnet_10_0_0_0_16,
     s1_2Uk1,

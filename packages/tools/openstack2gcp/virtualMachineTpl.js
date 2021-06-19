@@ -1,11 +1,11 @@
 exports.virtualMachineTpl = ({
   resourceVarName,
   resourceName,
-  dependencyNames,
+  dependencies: { subNetwork },
 }) => `
 const ${resourceVarName} = await provider.makeVmInstance({
   name: "${resourceName}",
-  dependencies: { ${dependencyNames.join(",")} },
+  dependencies: {subNetwork: ${subNetwork} },
 
   properties: () => ({
     diskSizeGb: "20",
