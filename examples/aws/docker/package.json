@@ -14,9 +14,9 @@
     "gc:info:gcp": "docker run --mount type=bind,source=$PWD/input,target=/app/input --mount type=bind,source=$PWD/output,target=/app/output  grucloud-cli --infra iac_google.js  info --provider google --config input/config.js",
     "gc:version:gcp": "docker run  grucloud-cli --version",
     "gc:list:gcp": "docker run --mount type=bind,source=$PWD/input,target=/app/input --mount type=bind,source=$PWD/output,target=/app/output  grucloud-cli --infra iac_google.js list -p google --config input/config.js --json output/gc-list.json --graph --all --dot-file output/gc.dot",
-    "gc:info:azure": "docker run --env-file=azure.env --mount type=bind,source=$PWD/input,target=/app/input --mount type=bind,source=$PWD/output,target=/app/output  grucloud-cli --infra iac_azure.js info --provider azure",
-    "gc:version:azure": "docker run --env-file=azure.env  grucloud-cli --infra iac_azure.js --version",
-    "gc:list:azure": "docker run --env-file=azure.env --mount type=bind,source=$PWD/input,target=/app/input --mount type=bind,source=$PWD/output,target=/app/output  grucloud-cli --infra iac_azure.js list -p azure --json output/gc-list.json --graph --all --dot-file output/gc.dot"
+    "gc:info:os": "docker run --env-file=openstack.env --mount type=bind,source=$PWD/input,target=/app/input --mount type=bind,source=$PWD/output,target=/app/output  grucloud-cli --infra iac_openstack.js info --provider openstack",
+    "gc:version:os": "docker run --env-file=openstack.env  grucloud-cli --infra iac_openstack.js --version",
+    "gc:list:os": "docker run --env-file=openstack.env --mount type=bind,source=$PWD/input,target=/app/input --mount type=bind,source=$PWD/output,target=/app/output  grucloud-cli --infra iac_openstack.js list -p openstack --json output/gc-list.json --graph --all --dot-file output/gc.dot"
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +25,7 @@
     "@grucloud/provider-aws": "^1.18.1",
     "@grucloud/provider-azure": "^1.18.1",
     "@grucloud/provider-google": "^1.18.1",
+    "@grucloud/provider-openstack": "^1.18.1",
     "@grucloud/provider-k8s": "^1.18.1"
   }
 }

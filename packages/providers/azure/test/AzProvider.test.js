@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { AzureProvider } = require("../AzureProvider");
-const { ConfigLoader } = require("@grucloud/core");
+const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 
 const {
   testPlanDeploy,
@@ -19,7 +19,8 @@ describe("AzProvider", async function () {
 
   before(async function () {
     try {
-      config = ConfigLoader({ path: "examples/multi" });
+      config = ConfigLoader({ path: "../../../examples/multi" });
+      assert(config);
     } catch (error) {
       this.skip();
     }
@@ -134,7 +135,7 @@ describe("AzProvider", async function () {
     });
   });
   after(async () => {});
-  itp("az info", async function () {
+  it("az info", async function () {
     const info = await provider.info();
     assert(info.subscriptionId);
     assert(info.tenantId);
