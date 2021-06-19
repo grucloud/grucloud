@@ -95,10 +95,24 @@ const fnSpecs = (config) => {
           spec,
           pathBase: `https://volume.compute.uk1.cloud.ovh.net/v3`,
           pathSuffixList: () => `/${projectId}/volumes`,
-          onResponseList: ({ data: { volumes } }) => ({
-            total: size(volumes),
-            items: volumes,
-          }),
+          onResponseList: ({ axios, data }) =>
+            pipe([
+              () => data,
+              get("volumes"),
+              map(
+                pipe([
+                  get("links"),
+                  find(eq(get("rel"), "self")),
+                  get("href"),
+                  (href) => axios.get(href),
+                  get("data.volume"),
+                ])
+              ),
+              (volumes) => ({
+                total: size(volumes),
+                items: volumes,
+              }),
+            ])(),
           isUpByIdFactory,
           isInstanceUp,
           config,
@@ -152,6 +166,14 @@ const fnSpecs = (config) => {
                     name: network,
                   })
                 ),
+                pluck("id"),
+              ])(),
+            },
+            {
+              type: "Volume",
+              ids: pipe([
+                () => live,
+                get("os-extended-volumes:volumes_attached"),
                 pluck("id"),
               ])(),
             },
