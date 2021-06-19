@@ -31,18 +31,15 @@ module.exports = ({ resources, provider }) => {
               // cannot ping from circleci container
               return;
             }
-            const alive = await retryCall({
+            await retryCall({
               name: `ping ${host}`,
               fn: async () => {
-                const { alive } = await testPing({ host });
-                if (!alive) {
-                  throw Error(`cannot ping ${host} yet`);
-                }
-                return alive;
+                await testPing({ host });
+                return true;
               },
-              config: { retryCount: 50, retryDelay: 2e3 },
+              shouldRetryOnException: () => true,
+              config: { retryCount: 40, retryDelay: 5e3 },
             });
-            assert(alive, `cannot ping ${host}`);
           },
         },
       ],

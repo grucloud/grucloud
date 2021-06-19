@@ -32,10 +32,22 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
       ],
     }),
   });
+
+  const disk = await provider.makeDisk({
+    name: `disk-${stage}`,
+    properties: () => ({
+      sizeGb: "20",
+    }),
+  });
+
   // Allocate a server
   const server = await provider.makeVmInstance({
     name: `webserver-${stage}`,
-    dependencies: { ip, serviceAccount },
+    dependencies: {
+      //TODO broken with serviceAccount
+      ip /*serviceAccount */,
+      disks: [disk],
+    },
     properties: () => ({
       diskSizeGb: "20",
       machineType: "f1-micro",

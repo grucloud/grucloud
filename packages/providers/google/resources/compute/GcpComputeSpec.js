@@ -14,6 +14,7 @@ const { GcpBackendBucket } = require("./GcpBackendBucket");
 const { GcpHttpsTargetProxy } = require("./GcpHttpsTargetProxy");
 const { GcpUrlMap } = require("./GcpUrlMap");
 const { GcpGlobalForwardingRule } = require("./GcpGlobalForwardingRule");
+const { GcpDisk } = require("./GcpDisk");
 
 module.exports = (config) => {
   const isOurMinion = GoogleTag.isOurMinion;
@@ -107,8 +108,23 @@ module.exports = (config) => {
       isOurMinion,
     },
     {
+      type: "Disk",
+      Client: ({ spec }) =>
+        GcpDisk({
+          spec,
+          config,
+        }),
+      isOurMinion,
+    },
+    {
       type: "VmInstance",
-      dependsOn: ["ServiceAccount", "Address", "SubNetwork", "Firewall"],
+      dependsOn: [
+        "ServiceAccount",
+        "Address",
+        "SubNetwork",
+        "Firewall",
+        "Disk",
+      ],
       Client: ({ spec }) =>
         GoogleVmInstance({
           spec,
