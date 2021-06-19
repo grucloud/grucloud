@@ -1,10 +1,23 @@
 #!/usr/bin/env node
 const fs = require("fs").promises;
 const path = require("path");
-const { pipe, tap, get, eq, map, flatMap, fork } = require("rubico");
-const { first, find, callProp, pluck } = require("rubico/x");
+const {
+  pipe,
+  tap,
+  get,
+  eq,
+  map,
+  flatMap,
+  fork,
+  switchCase,
+  filter,
+  and,
+  tryCatch,
+} = require("rubico");
+const { first, find, callProp, pluck, identity } = require("rubico/x");
 const { camelCase } = require("change-case");
 const prettier = require("prettier");
+const ipaddr = require("ipaddr.js");
 
 const { iacTpl } = require("./iacTpl");
 const { networkTpl } = require("./networkTpl");
@@ -26,40 +39,57 @@ const readModel = pipe([
   }),
 ]);
 
-const writeResources = ({ type, writeResource }) =>
-  pipe([
-    tap((models) => {
-      console.log(`writeResources ${type} `);
-    }),
-    find(eq(get("type"), type)),
-    get("resources"),
-    map(
-      pipe([
-        tap((network) => {
-          console.log(`writeNetwork`);
-        }),
-        //get("live"),
-        writeResource,
-      ])
-    ),
-  ]);
+const writeResources =
+  ({ type, writeResource }) =>
+  (lives) =>
+    pipe([
+      tap(() => {
+        //console.log(`writeResources ${type} `);
+      }),
+      () => lives,
+      find(eq(get("type"), type)),
+      get("resources"),
+      map(
+        pipe([
+          tap((network) => {
+            //console.log(`writeResources`);
+          }),
+          (resource) => writeResource({ resource, lives }),
+        ])
+      ),
+    ])();
+
+const findLiveById =
+  ({ lives, type }) =>
+  (id) =>
+    pipe([
+      () => lives,
+      find(eq(get("type"), type)),
+      get("resources"),
+      find(eq(get("id"), id)),
+      tap((xxx) => {
+        //console.log(`findName`);
+      }),
+    ])();
+
+const ResourceVarName = (name) => camelCase(name);
 
 // Network
-const writeNetwork = (network) =>
+const writeNetwork = ({ resource, lives }) =>
   pipe([
     tap(() => {
-      console.log(`writeNetwork`, network);
+      //console.log(`writeNetwork`, resource);
     }),
-    () => camelCase(network.name),
+    () => ResourceVarName(resource.name),
     (resourceVarName) => ({
       resourceVarName,
       code: networkTpl({
         resourceVarName,
-        resourceName: network.name,
+        resourceName: resource.name,
       }),
     }),
     tap((xxx) => {
-      console.log(`writeNetwork`, xxx);
+      //console.log(`writeNetwork`, xxx);
     }),
   ])();
 
@@ -69,23 +99,78 @@ const writeNetworks = writeResources({
 });
 
 // SubNetwork
-const writeSubNetwork = (subNetwork) =>
+const isIpv4 = eq(get("live.ip_version"), 4);
+const isIpv6 = eq(get("live.ip_version"), 6);
+
+const isSubnetPrivate = pipe([
+  tap((xxx) => {
+    //console.log(`isSubnetPrivate`);
+  }),
+  get("live.cidr"),
+  (cidr) =>
+    tryCatch(
+      pipe([
+        (cidr) => {
+          return ipaddr.IPv4.networkAddressFromCIDR(cidr);
+        },
+        eq(callProp("range"), "private"),
+      ]),
+      (error, cidr) => {
+        console.log(cidr, error);
+      }
+    )(cidr),
+]);
+
+const findDependencyNames = ({ type, resource, lives }) =>
   pipe([
-    tap(() => {
-      console.log(`writeSubNetwork`, subNetwork);
-    }),
-    () => camelCase(subNetwork.name),
-    (resourceVarName) => ({
-      resourceVarName,
-      code: subNetworkTpl({
-        resourceVarName,
-        resourceName: subNetwork.name,
-      }),
-    }),
+    () => resource.dependencies,
+    find(eq(get("type"), type)),
+    get("ids"),
+    map(findLiveById({ type, lives })),
+    pluck("name"),
+    map(ResourceVarName),
     tap((xxx) => {
-      console.log(`writeSubNetwork`, xxx);
+      //console.log(`writeSubNetwork`);
     }),
   ])();
+
+const writeSubNetwork = ({ resource, lives }) =>
+  switchCase([
+    and([isIpv4, isSubnetPrivate]),
+    pipe([
+      tap(() => {}),
+      () => `subnet_${ResourceVarName(resource.name)}`,
+      (resourceVarName) => ({
+        resourceVarName,
+        code: subNetworkTpl({
+          resource,
+          resourceVarName,
+          resourceName: resource.name,
+          dependencyNames: pipe([
+            () => resource.dependencies,
+            find(eq(get("type"), "Network")),
+            get("ids"),
+            map(findLiveById({ type: "Network", lives })),
+            pluck("name"),
+            map(ResourceVarName),
+            tap((xxx) => {
+              //console.log(`writeSubNetwork`);
+            }),
+          ])(),
+        }),
+      }),
+      tap((xxx) => {
+        //console.log(`writeSubNetwork`, xxx);
+      }),
+    ]),
+    and([isIpv6]),
+    () => {
+      //console.log("TODO IPv6");
+    },
+    () => {
+      //console.log("not valid");
+    },
+  ])(resource);
 
 const writeSubNetworks = writeResources({
   type: "Subnet",
@@ -93,17 +178,18 @@ const writeSubNetworks = writeResources({
 });
 
 // Virtual Machine
-const writeVirtualMachine = (virtualMachine) =>
+const writeVirtualMachine = ({ resource, lives }) =>
   pipe([
     tap(() => {
-      console.log(`writeVirtualMachine`, virtualMachine);
+      console.log(`writeVirtualMachine`, resource);
     }),
-    () => camelCase(virtualMachine.name),
+    () => ResourceVarName(resource.name),
     (resourceVarName) => ({
       resourceVarName,
       code: virtualMachineTpl({
+        resource,
         resourceVarName,
-        resourceName: virtualMachine.name,
+        resourceName: resource.name,
       }),
     }),
     tap((xxx) => {
@@ -137,6 +223,7 @@ exports.main = async (options) =>
         writeSubNetworks,
         writeVirtualMachines,
       ]),
+    filter(identity),
     tap((xxx) => {
       console.log("OpenStack2Gcp");
     }),

@@ -10,116 +10,16 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
     properties: () => ({ autoCreateSubnetworks: false }),
   });
 
-  const extNet_51_77_108_0_22 = await provider.makeSubNetwork({
-    name: "Ext-Net::51.77.108.0/22",
-    dependencies: { network },
-    properties: () => ({
-      ipCidrRange: "10.164.0.0/20",
-    }),
+  const rhmig = await provider.makeNetwork({
+    name: "rhmig",
+    properties: () => ({ autoCreateSubnetworks: false }),
   });
 
-  const extNet_51_89_228_0_22 = await provider.makeSubNetwork({
-    name: "Ext-Net::51.89.228.0/22",
-    dependencies: { network },
+  const subnet_10_0_0_0_16 = await provider.makeSubNetwork({
+    name: "::10.0.0.0/16",
+    dependencies: { rhmig },
     properties: () => ({
-      ipCidrRange: "10.164.0.0/20",
-    }),
-  });
-
-  const extNet_51_89_175_0_24 = await provider.makeSubNetwork({
-    name: "Ext-Net::51.89.175.0/24",
-    dependencies: { network },
-    properties: () => ({
-      ipCidrRange: "10.164.0.0/20",
-    }),
-  });
-
-  const extNet_51_89_136_0_23 = await provider.makeSubNetwork({
-    name: "Ext-Net::51.89.136.0/23",
-    dependencies: { network },
-    properties: () => ({
-      ipCidrRange: "10.164.0.0/20",
-    }),
-  });
-
-  const subnet_2001_41d0_801_1000_56_2001_41d0_801_1000_56 =
-    await provider.makeSubNetwork({
-      name: "subnet_2001:41d0:801:1000::/56::2001:41d0:801:1000::/56",
-      dependencies: { network },
-      properties: () => ({
-        ipCidrRange: "10.164.0.0/20",
-      }),
-    });
-
-  const extNet_198_244_140_0_23 = await provider.makeSubNetwork({
-    name: "Ext-Net::198.244.140.0/23",
-    dependencies: { network },
-    properties: () => ({
-      ipCidrRange: "10.164.0.0/20",
-    }),
-  });
-
-  const extNet_51_195_232_0_23 = await provider.makeSubNetwork({
-    name: "Ext-Net::51.195.232.0/23",
-    dependencies: { network },
-    properties: () => ({
-      ipCidrRange: "10.164.0.0/20",
-    }),
-  });
-
-  const extNet_51_89_224_0_22 = await provider.makeSubNetwork({
-    name: "Ext-Net::51.89.224.0/22",
-    dependencies: { network },
-    properties: () => ({
-      ipCidrRange: "10.164.0.0/20",
-    }),
-  });
-
-  const extNet_51_75_168_0_24 = await provider.makeSubNetwork({
-    name: "Ext-Net::51.75.168.0/24",
-    dependencies: { network },
-    properties: () => ({
-      ipCidrRange: "10.164.0.0/20",
-    }),
-  });
-
-  const extNet_198_244_142_0_23 = await provider.makeSubNetwork({
-    name: "Ext-Net::198.244.142.0/23",
-    dependencies: { network },
-    properties: () => ({
-      ipCidrRange: "10.164.0.0/20",
-    }),
-  });
-
-  const extNet_51_75_169_0_24 = await provider.makeSubNetwork({
-    name: "Ext-Net::51.75.169.0/24",
-    dependencies: { network },
-    properties: () => ({
-      ipCidrRange: "10.164.0.0/20",
-    }),
-  });
-
-  const subnet_54_37_0_0_21_54_37_0_0_21 = await provider.makeSubNetwork({
-    name: "subnet_54.37.0.0/21::54.37.0.0/21",
-    dependencies: { network },
-    properties: () => ({
-      ipCidrRange: "10.164.0.0/20",
-    }),
-  });
-
-  const extNet_198_244_152_0_21 = await provider.makeSubNetwork({
-    name: "Ext-Net::198.244.152.0/21",
-    dependencies: { network },
-    properties: () => ({
-      ipCidrRange: "10.164.0.0/20",
-    }),
-  });
-
-  const extNet_51_68_221_0_24 = await provider.makeSubNetwork({
-    name: "Ext-Net::51.68.221.0/24",
-    dependencies: { network },
-    properties: () => ({
-      ipCidrRange: "10.164.0.0/20",
+      ipCidrRange: "10.0.0.0/16",
     }),
   });
 
@@ -145,20 +45,8 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
 
   return {
     extNet,
-    extNet_51_77_108_0_22,
-    extNet_51_89_228_0_22,
-    extNet_51_89_175_0_24,
-    extNet_51_89_136_0_23,
-    subnet_2001_41d0_801_1000_56_2001_41d0_801_1000_56,
-    extNet_198_244_140_0_23,
-    extNet_51_195_232_0_23,
-    extNet_51_89_224_0_22,
-    extNet_51_75_168_0_24,
-    extNet_198_244_142_0_23,
-    extNet_51_75_169_0_24,
-    subnet_54_37_0_0_21_54_37_0_0_21,
-    extNet_198_244_152_0_21,
-    extNet_51_68_221_0_24,
+    rhmig,
+    subnet_10_0_0_0_16,
     s1_2Uk1,
   };
 };

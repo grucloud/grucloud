@@ -3,10 +3,11 @@
     "commandOptions": {
         "dotFile": "diagram-live.dot",
         "title": "server",
-        "all": true
+        "all": true,
+        "graph": true
     },
     "programOptions": {
-        "json": "gc-list-ovh-1.json"
+        "json": "gc-list-ovh-2.json"
     },
     "result": {
         "error": false,
@@ -16,6 +17,104 @@
                 "kind": "livesPerType",
                 "error": false,
                 "results": [
+                    {
+                        "type": "Network",
+                        "resources": [
+                            {
+                                "uri": "openstack::Network::6011fbc9-4cbf-46a4-8452-6890a340b60b",
+                                "name": "Ext-Net",
+                                "displayName": "Ext-Net",
+                                "id": "6011fbc9-4cbf-46a4-8452-6890a340b60b",
+                                "providerName": "openstack",
+                                "type": "Network",
+                                "live": {
+                                    "status": "ACTIVE",
+                                    "subnets": [
+                                        "d1be9f1a-1935-46c6-9101-0a15de354542",
+                                        "52032c36-d882-46f4-92a9-a982824872ad",
+                                        "f9597c7b-7eda-4cd3-94a6-6093469bcb44",
+                                        "bc646bbb-f400-425c-b56b-1a40a4c68925",
+                                        "1ee592b5-6297-4bf3-9999-4582ba544ecd",
+                                        "d88fd0df-7438-43d1-a1d2-f9e68f322934",
+                                        "a52ad8ee-b9ef-4f8f-9f34-320400b84676",
+                                        "eb0e5ee7-23fb-4b8f-8984-309e9d0b4ce5",
+                                        "0e119f62-b864-4773-bf62-4f87dfeb8263",
+                                        "4580ccc5-9c0c-4bdc-ac21-eeb9dc7ee9a4",
+                                        "a9b2fe89-4635-42d0-8c79-687c73e30ef4",
+                                        "61ec11cf-d70f-46d3-a523-98f193a53a65",
+                                        "d5ded9b4-9814-45b0-9b45-097a081e1036",
+                                        "e5d870eb-17f3-486a-8117-490d5951eb99"
+                                    ],
+                                    "availability_zone_hints": [],
+                                    "availability_zones": [],
+                                    "description": "",
+                                    "name": "Ext-Net",
+                                    "tags": [],
+                                    "tenant_id": "9386d7837e514fc080082efe4892af59",
+                                    "created_at": "2017-10-10T14:10:42Z",
+                                    "admin_state_up": true,
+                                    "updated_at": "2021-06-09T07:33:22Z",
+                                    "provider:network_type": "bgp",
+                                    "ipv6_address_scope": null,
+                                    "qos_policy_id": null,
+                                    "mtu": 1500,
+                                    "revision_number": 56,
+                                    "ipv4_address_scope": null,
+                                    "shared": true,
+                                    "project_id": "9386d7837e514fc080082efe4892af59",
+                                    "id": "6011fbc9-4cbf-46a4-8452-6890a340b60b",
+                                    "provider:segmentation_id": 42110
+                                },
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByUs": false,
+                                "show": true
+                            },
+                            {
+                                "uri": "openstack::Network::dfb3e958-5c68-4137-9ffa-f02fdc6a0b16",
+                                "name": "rhmig",
+                                "displayName": "rhmig",
+                                "id": "dfb3e958-5c68-4137-9ffa-f02fdc6a0b16",
+                                "providerName": "openstack",
+                                "type": "Network",
+                                "live": {
+                                    "status": "ACTIVE",
+                                    "subnets": [
+                                        "7704de0b-5838-4eaf-9be5-9e136f460951"
+                                    ],
+                                    "availability_zone_hints": [],
+                                    "availability_zones": [
+                                        "nova"
+                                    ],
+                                    "description": "",
+                                    "name": "rhmig",
+                                    "tags": [],
+                                    "tenant_id": "291a80ce2c8d490fb030c3a3b76eeb02",
+                                    "created_at": "2021-06-19T07:54:15Z",
+                                    "admin_state_up": true,
+                                    "updated_at": "2021-06-19T07:54:22Z",
+                                    "provider:network_type": "vrack",
+                                    "ipv6_address_scope": null,
+                                    "qos_policy_id": null,
+                                    "mtu": 9000,
+                                    "revision_number": 4,
+                                    "ipv4_address_scope": null,
+                                    "shared": false,
+                                    "project_id": "291a80ce2c8d490fb030c3a3b76eeb02",
+                                    "id": "dfb3e958-5c68-4137-9ffa-f02fdc6a0b16",
+                                    "provider:segmentation_id": 0
+                                },
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByUs": false,
+                                "show": true
+                            }
+                        ]
+                    },
                     {
                         "type": "Subnet",
                         "resources": [
@@ -261,6 +360,56 @@
                                         "type": "Network",
                                         "ids": [
                                             "6011fbc9-4cbf-46a4-8452-6890a340b60b"
+                                        ]
+                                    }
+                                ],
+                                "managedByUs": false,
+                                "show": true
+                            },
+                            {
+                                "uri": "openstack::Subnet::7704de0b-5838-4eaf-9be5-9e136f460951",
+                                "name": "::10.0.0.0/16",
+                                "displayName": "::10.0.0.0/16",
+                                "id": "7704de0b-5838-4eaf-9be5-9e136f460951",
+                                "providerName": "openstack",
+                                "type": "Subnet",
+                                "live": {
+                                    "service_types": [],
+                                    "description": "",
+                                    "enable_dhcp": true,
+                                    "network_id": "dfb3e958-5c68-4137-9ffa-f02fdc6a0b16",
+                                    "tenant_id": "291a80ce2c8d490fb030c3a3b76eeb02",
+                                    "created_at": "2021-06-19T07:54:22Z",
+                                    "dns_nameservers": [
+                                        "0.0.0.0"
+                                    ],
+                                    "updated_at": "2021-06-19T07:54:22Z",
+                                    "gateway_ip": null,
+                                    "ipv6_ra_mode": null,
+                                    "allocation_pools": [
+                                        {
+                                            "start": "10.0.182.220",
+                                            "end": "10.0.219.108"
+                                        }
+                                    ],
+                                    "host_routes": [],
+                                    "revision_number": 2,
+                                    "ip_version": 4,
+                                    "ipv6_address_mode": null,
+                                    "cidr": "10.0.0.0/16",
+                                    "project_id": "291a80ce2c8d490fb030c3a3b76eeb02",
+                                    "id": "7704de0b-5838-4eaf-9be5-9e136f460951",
+                                    "subnetpool_id": null,
+                                    "name": ""
+                                },
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Network",
+                                        "ids": [
+                                            "dfb3e958-5c68-4137-9ffa-f02fdc6a0b16"
                                         ]
                                     }
                                 ],
@@ -720,70 +869,13 @@
                         ]
                     },
                     {
-                        "type": "Network",
-                        "resources": [
-                            {
-                                "uri": "openstack::Network::6011fbc9-4cbf-46a4-8452-6890a340b60b",
-                                "name": "Ext-Net",
-                                "displayName": "Ext-Net",
-                                "id": "6011fbc9-4cbf-46a4-8452-6890a340b60b",
-                                "providerName": "openstack",
-                                "type": "Network",
-                                "live": {
-                                    "status": "ACTIVE",
-                                    "subnets": [
-                                        "d88fd0df-7438-43d1-a1d2-f9e68f322934",
-                                        "61ec11cf-d70f-46d3-a523-98f193a53a65",
-                                        "4580ccc5-9c0c-4bdc-ac21-eeb9dc7ee9a4",
-                                        "a9b2fe89-4635-42d0-8c79-687c73e30ef4",
-                                        "eb0e5ee7-23fb-4b8f-8984-309e9d0b4ce5",
-                                        "d5ded9b4-9814-45b0-9b45-097a081e1036",
-                                        "1ee592b5-6297-4bf3-9999-4582ba544ecd",
-                                        "e5d870eb-17f3-486a-8117-490d5951eb99",
-                                        "52032c36-d882-46f4-92a9-a982824872ad",
-                                        "f9597c7b-7eda-4cd3-94a6-6093469bcb44",
-                                        "d1be9f1a-1935-46c6-9101-0a15de354542",
-                                        "a52ad8ee-b9ef-4f8f-9f34-320400b84676",
-                                        "bc646bbb-f400-425c-b56b-1a40a4c68925",
-                                        "0e119f62-b864-4773-bf62-4f87dfeb8263"
-                                    ],
-                                    "availability_zone_hints": [],
-                                    "availability_zones": [],
-                                    "description": "",
-                                    "name": "Ext-Net",
-                                    "tags": [],
-                                    "tenant_id": "9386d7837e514fc080082efe4892af59",
-                                    "created_at": "2017-10-10T14:10:42Z",
-                                    "admin_state_up": true,
-                                    "updated_at": "2021-06-09T07:33:22Z",
-                                    "provider:network_type": "bgp",
-                                    "ipv6_address_scope": null,
-                                    "qos_policy_id": null,
-                                    "mtu": 1500,
-                                    "revision_number": 56,
-                                    "ipv4_address_scope": null,
-                                    "shared": true,
-                                    "project_id": "9386d7837e514fc080082efe4892af59",
-                                    "id": "6011fbc9-4cbf-46a4-8452-6890a340b60b",
-                                    "provider:segmentation_id": 42110
-                                },
-                                "cannotBeDeleted": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "managedByUs": false,
-                                "show": true
-                            }
-                        ]
-                    },
-                    {
                         "type": "Server",
                         "resources": [
                             {
-                                "uri": "openstack::Server::c26f0f65-19dd-4063-b35c-6d6a98448f7c",
+                                "uri": "openstack::Server::52e66539-1d09-4af8-8af3-ec7b87747efd",
                                 "name": "s1-2-uk1",
                                 "displayName": "s1-2-uk1",
-                                "id": "c26f0f65-19dd-4063-b35c-6d6a98448f7c",
+                                "id": "52e66539-1d09-4af8-8af3-ec7b87747efd",
                                 "providerName": "openstack",
                                 "type": "Server",
                                 "live": {
@@ -791,26 +883,34 @@
                                     "addresses": {
                                         "Ext-Net": [
                                             {
-                                                "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:13:37:b6",
+                                                "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:c3:96:99",
                                                 "version": 6,
-                                                "addr": "2001:41d0:801:1000::1c9",
+                                                "addr": "2001:41d0:801:1000::27f",
                                                 "OS-EXT-IPS:type": "fixed"
                                             },
                                             {
-                                                "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:13:37:b6",
+                                                "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:c3:96:99",
                                                 "version": 4,
-                                                "addr": "51.89.226.241",
+                                                "addr": "51.195.233.192",
+                                                "OS-EXT-IPS:type": "fixed"
+                                            }
+                                        ],
+                                        "rhmig": [
+                                            {
+                                                "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:42:f8:c1",
+                                                "version": 4,
+                                                "addr": "10.0.186.35",
                                                 "OS-EXT-IPS:type": "fixed"
                                             }
                                         ]
                                     },
                                     "links": [
                                         {
-                                            "href": "https://compute.uk1.cloud.ovh.net/v2.1/291a80ce2c8d490fb030c3a3b76eeb02/servers/c26f0f65-19dd-4063-b35c-6d6a98448f7c",
+                                            "href": "https://compute.uk1.cloud.ovh.net/v2.1/291a80ce2c8d490fb030c3a3b76eeb02/servers/52e66539-1d09-4af8-8af3-ec7b87747efd",
                                             "rel": "self"
                                         },
                                         {
-                                            "href": "https://compute.uk1.cloud.ovh.net/291a80ce2c8d490fb030c3a3b76eeb02/servers/c26f0f65-19dd-4063-b35c-6d6a98448f7c",
+                                            "href": "https://compute.uk1.cloud.ovh.net/291a80ce2c8d490fb030c3a3b76eeb02/servers/52e66539-1d09-4af8-8af3-ec7b87747efd",
                                             "rel": "bookmark"
                                         }
                                     ],
@@ -824,7 +924,7 @@
                                         ]
                                     },
                                     "OS-EXT-STS:vm_state": "active",
-                                    "OS-SRV-USG:launched_at": "2021-06-18T15:46:18.000000",
+                                    "OS-SRV-USG:launched_at": "2021-06-19T08:20:48.000000",
                                     "flavor": {
                                         "id": "e9d6fb38-9bf0-44ac-adbf-30fee3c96096",
                                         "links": [
@@ -834,8 +934,11 @@
                                             }
                                         ]
                                     },
-                                    "id": "c26f0f65-19dd-4063-b35c-6d6a98448f7c",
+                                    "id": "52e66539-1d09-4af8-8af3-ec7b87747efd",
                                     "security_groups": [
+                                        {
+                                            "name": "default"
+                                        },
                                         {
                                             "name": "default"
                                         }
@@ -849,12 +952,12 @@
                                     "OS-EXT-AZ:availability_zone": "nova",
                                     "metadata": {},
                                     "status": "ACTIVE",
-                                    "updated": "2021-06-18T15:46:18Z",
-                                    "hostId": "fd297947bd36b7fef5b9d0f9238f83538b9ce36abca1f06914370207",
+                                    "updated": "2021-06-19T08:20:48Z",
+                                    "hostId": "a06957c2a6fbf84b2df3f6d07e62ebe7a982a28f2a157d56c99ff185",
                                     "OS-SRV-USG:terminated_at": null,
                                     "key_name": "main",
                                     "name": "s1-2-uk1",
-                                    "created": "2021-06-18T15:45:24Z",
+                                    "created": "2021-06-19T08:20:24Z",
                                     "tenant_id": "291a80ce2c8d490fb030c3a3b76eeb02",
                                     "os-extended-volumes:volumes_attached": [],
                                     "config_drive": ""
@@ -862,7 +965,15 @@
                                 "cannotBeDeleted": false,
                                 "isDefault": false,
                                 "namespace": "",
-                                "dependencies": [],
+                                "dependencies": [
+                                    {
+                                        "type": "Network",
+                                        "ids": [
+                                            "6011fbc9-4cbf-46a4-8452-6890a340b60b",
+                                            "dfb3e958-5c68-4137-9ffa-f02fdc6a0b16"
+                                        ]
+                                    }
+                                ],
                                 "managedByUs": false,
                                 "show": true
                             }
