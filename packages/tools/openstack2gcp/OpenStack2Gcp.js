@@ -8,6 +8,8 @@ const prettier = require("prettier");
 
 const { iacTpl } = require("./iacTpl");
 const { networkTpl } = require("./networkTpl");
+const { subNetworkTpl } = require("./subNetworkTpl");
+
 const { virtualMachineTpl } = require("./virtualMachineTpl");
 
 const readModel = pipe([
@@ -24,6 +26,25 @@ const readModel = pipe([
   }),
 ]);
 
+const writeResources = ({ type, writeResource }) =>
+  pipe([
+    tap((models) => {
+      console.log(`writeResources ${type} `);
+    }),
+    find(eq(get("type"), type)),
+    get("resources"),
+    map(
+      pipe([
+        tap((network) => {
+          console.log(`writeNetwork`);
+        }),
+        //get("live"),
+        writeResource,
+      ])
+    ),
+  ]);
+
+// Network
 const writeNetwork = (network) =>
   pipe([
     tap(() => {
@@ -42,29 +63,36 @@ const writeNetwork = (network) =>
     }),
   ])();
 
-const writeNetworks = pipe([
-  tap((models) => {
-    console.log(`writeNetwork`);
-  }),
-  find(eq(get("type"), "Network")),
-  get("resources"),
-  map(
-    pipe([
-      tap((network) => {
-        console.log(`writeNetwork`);
-      }),
-      get("live"),
-      writeNetwork,
-      tap((network) => {
-        console.log(`writeNetwork`);
-      }),
-    ])
-  ),
-  tap((networks) => {
-    console.log(`writeNetwork`);
-  }),
-]);
+const writeNetworks = writeResources({
+  type: "Network",
+  writeResource: writeNetwork,
+});
 
+// SubNetwork
+const writeSubNetwork = (subNetwork) =>
+  pipe([
+    tap(() => {
+      console.log(`writeSubNetwork`, subNetwork);
+    }),
+    () => camelCase(subNetwork.name),
+    (resourceVarName) => ({
+      resourceVarName,
+      code: subNetworkTpl({
+        resourceVarName,
+        resourceName: subNetwork.name,
+      }),
+    }),
+    tap((xxx) => {
+      console.log(`writeSubNetwork`, xxx);
+    }),
+  ])();
+
+const writeSubNetworks = writeResources({
+  type: "Subnet",
+  writeResource: writeSubNetwork,
+});
+
+// Virtual Machine
 const writeVirtualMachine = (virtualMachine) =>
   pipe([
     tap(() => {
@@ -83,25 +111,10 @@ const writeVirtualMachine = (virtualMachine) =>
     }),
   ])();
 
-const writeVirtualMachines = pipe([
-  tap((models) => {
-    console.log(`writeVMs`);
-  }),
-  find(eq(get("type"), "Server")),
-  get("resources"),
-  map(
-    pipe([
-      tap((network) => {
-        console.log(`writeVMs`);
-      }),
-      get("live"),
-      writeVirtualMachine,
-    ])
-  ),
-  tap((networks) => {
-    console.log(`writeVMs`);
-  }),
-]);
+const writeVirtualMachines = writeResources({
+  type: "Server",
+  writeResource: writeVirtualMachine,
+});
 
 const writeOutput = ({ options, content }) =>
   pipe([
@@ -121,6 +134,7 @@ exports.main = async (options) =>
     (models) =>
       flatMap((writeResource) => writeResource(models))([
         writeNetworks,
+        writeSubNetworks,
         writeVirtualMachines,
       ]),
     tap((xxx) => {
