@@ -14,7 +14,16 @@ const {
   and,
   tryCatch,
 } = require("rubico");
-const { first, find, callProp, pluck, identity } = require("rubico/x");
+const {
+  first,
+  find,
+  callProp,
+  pluck,
+  identity,
+  values,
+  flatten,
+  size,
+} = require("rubico/x");
 const { camelCase } = require("change-case");
 const prettier = require("prettier");
 const ipaddr = require("ipaddr.js");
@@ -121,7 +130,7 @@ const isSubnetPrivate = pipe([
     )(cidr),
 ]);
 
-const findDependencyNames = ({ type, resource, lives }) =>
+const findSubnetDependencyNames = ({ type, resource, lives }) =>
   pipe([
     () => resource.dependencies,
     find(eq(get("type"), type)),
@@ -134,33 +143,27 @@ const findDependencyNames = ({ type, resource, lives }) =>
     }),
   ])();
 
+const ResourceVarNameSubnet = (resource) =>
+  `subnet_${ResourceVarName(resource.name)}`;
+
 const writeSubNetwork = ({ resource, lives }) =>
   switchCase([
     and([isIpv4, isSubnetPrivate]),
     pipe([
       tap(() => {}),
-      () => `subnet_${ResourceVarName(resource.name)}`,
+      () => ResourceVarNameSubnet(resource),
       (resourceVarName) => ({
         resourceVarName,
         code: subNetworkTpl({
           resource,
           resourceVarName,
           resourceName: resource.name,
-          dependencyNames: pipe([
-            () => resource.dependencies,
-            find(eq(get("type"), "Network")),
-            get("ids"),
-            map(findLiveById({ type: "Network", lives })),
-            pluck("name"),
-            map(ResourceVarName),
-            tap((xxx) => {
-              //console.log(`writeSubNetwork`);
-            }),
-          ])(),
+          dependencyNames: findSubnetDependencyNames({
+            type: "Network",
+            resource,
+            lives,
+          }),
         }),
-      }),
-      tap((xxx) => {
-        //console.log(`writeSubNetwork`, xxx);
       }),
     ]),
     and([isIpv6]),
@@ -190,6 +193,47 @@ const writeVirtualMachine = ({ resource, lives }) =>
         resource,
         resourceVarName,
         resourceName: resource.name,
+        dependencyNames: [
+          pipe([
+            () => resource,
+            get("live.addresses"),
+            values,
+            flatten,
+            filter(eq(get("version"), 4)),
+            find(
+              pipe([
+                get("addr"),
+                (addr) => {
+                  return ipaddr.IPv4.parse(addr);
+                },
+                eq(callProp("range"), "private"),
+              ])
+            ),
+            get("addr"),
+            (addrStr) => {
+              return ipaddr.IPv4.parse(addrStr);
+            },
+            (addr) =>
+              pipe([
+                () => lives,
+                find(eq(get("type"), "Subnet")),
+                get("resources"),
+                filter(isIpv4),
+                find(
+                  pipe([
+                    get("live.cidr"),
+                    (cidr) => {
+                      return addr.match(ipaddr.parseCIDR(cidr));
+                    },
+                  ])
+                ),
+                ResourceVarNameSubnet,
+                tap((matched) => {
+                  console.log(`writeVirtualMachine matched `, matched);
+                }),
+              ])(),
+          ])(),
+        ],
       }),
     }),
     tap((xxx) => {
