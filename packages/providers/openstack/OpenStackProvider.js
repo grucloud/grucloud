@@ -1,5 +1,14 @@
 const assert = require("assert");
-const { pipe, eq, get, tap, filter, map } = require("rubico");
+const {
+  pipe,
+  eq,
+  get,
+  tap,
+  assign,
+  map,
+  tryCatch,
+  switchCase,
+} = require("rubico");
 
 const {
   defaultsDeep,
@@ -42,6 +51,31 @@ const fnSpecs = (config) => {
       isInstanceUp,
       getById,
     });
+
+  const getHref = ({ field, axios, type = "bookmark" }) =>
+    pipe([
+      get("links"),
+      find(eq(get("rel"), type)),
+      get("href"),
+      (href) =>
+        tryCatch(
+          pipe([() => axios.get(href), get(`data.${field}`)]),
+          switchCase([
+            eq(get("response.status"), 300),
+            pipe([
+              get("response.data.choices"),
+              find(eq(get("status"), "CURRENT")),
+              getHref({ field, axios, type: "self" }),
+            ]),
+            (error) => {
+              throw error;
+            },
+          ])
+        )(),
+      tap((xxx) => {
+        //logger.debug(``);
+      }),
+    ]);
 
   return [
     {
@@ -99,15 +133,7 @@ const fnSpecs = (config) => {
             pipe([
               () => data,
               get("volumes"),
-              map(
-                pipe([
-                  get("links"),
-                  find(eq(get("rel"), "self")),
-                  get("href"),
-                  (href) => axios.get(href),
-                  get("data.volume"),
-                ])
-              ),
+              map(getHref({ field: "volume", axios, type: "self" })),
               (volumes) => ({
                 total: size(volumes),
                 items: volumes,
@@ -136,11 +162,20 @@ const fnSpecs = (config) => {
               get("servers"),
               map(
                 pipe([
-                  get("links"),
-                  find(eq(get("rel"), "self")),
-                  get("href"),
-                  (href) => axios.get(href),
-                  get("data.server"),
+                  getHref({ field: "server", axios, type: "self" }),
+                  assign({
+                    image: pipe([
+                      get("image"),
+                      getHref({ field: "image", axios }),
+                    ]),
+                    flavor: pipe([
+                      get("flavor"),
+                      getHref({ field: "flavor", axios }),
+                    ]),
+                  }),
+                  tap((xxx) => {
+                    //logger.debug(``);
+                  }),
                 ])
               ),
               (servers) => ({
