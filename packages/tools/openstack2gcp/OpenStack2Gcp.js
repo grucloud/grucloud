@@ -31,11 +31,11 @@ const { camelCase } = require("change-case");
 const prettier = require("prettier");
 const ipaddr = require("ipaddr.js");
 
-const { iacTpl } = require("./iacTpl");
-const { networkTpl } = require("./networkTpl");
-const { diskTpl } = require("./diskTpl");
-const { subNetworkTpl } = require("./subNetworkTpl");
-const { virtualMachineTpl } = require("./virtualMachineTpl");
+const { iacTpl } = require("./template/gcp/iacTpl");
+const { networkTpl } = require("./template/gcp/networkTpl");
+const { diskTpl } = require("./template/gcp/diskTpl");
+const { subNetworkTpl } = require("./template/gcp/subNetworkTpl");
+const { virtualMachineTpl } = require("./template/gcp/virtualMachineTpl");
 
 const readModel = pipe([
   tap((options) => {

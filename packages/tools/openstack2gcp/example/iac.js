@@ -26,7 +26,6 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
   const s1_2Uk1 = await provider.makeVmInstance({
     name: "s1-2-uk1",
     dependencies: { subNetwork: subnet_10_0_0_0_16, disks: [extraDisk] },
-
     properties: () => ({
       diskSizeGb: "20",
       machineType: "e2-small",
