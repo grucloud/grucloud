@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 309)">
 <title>graphname</title>
 <polygon fill="#fafafa" stroke="transparent" points="-4,4 -4,-309 490,-309 490,4 -4,4"/>
-<text text-anchor="start" x="123" y="-280.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project openstack2gcp</text>
+<text text-anchor="start" x="159" y="-280.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project example</text>
 <text text-anchor="start" x="239" y="-264.8" font-family="Helvetica,sans-Serif" font-size="14.00"> &#160;</text>
-<text text-anchor="start" x="123" y="-243.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
+<text text-anchor="start" x="159" y="-243.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
 <g id="clust1" class="cluster">
 <title>cluster_google</title>
 <polygon fill="#f5f5f5" stroke="#f5f5f5" points="8,-8 8,-221 478,-221 478,-8 8,-8"/>
@@ -45,22 +45,28 @@
 <!-- Disk::extra&#45;disk -->
 <g id="node3" class="node">
 <title>Disk::extra&#45;disk</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="129,-205 34,-205 34,-147 129,-147 129,-205"/>
-<text text-anchor="start" x="46.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Disk</text>
-<text text-anchor="start" x="46.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">extra&#45;disk</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="304,-205 209,-205 209,-147 304,-147 304,-205"/>
+<text text-anchor="start" x="221.5" y="-185.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Disk</text>
+<text text-anchor="start" x="221.5" y="-160.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">extra&#45;disk</text>
 </g>
 <!-- VmInstance::s1&#45;2&#45;uk1 -->
 <g id="node4" class="node">
 <title>VmInstance::s1&#45;2&#45;uk1</title>
-<polygon fill="#e5e5e5" stroke="#dddddd" points="139,-129 24,-129 24,-71 139,-71 139,-129"/>
-<text text-anchor="start" x="36.5" y="-109.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">VmInstance</text>
-<text text-anchor="start" x="36.5" y="-84.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">s1&#45;2&#45;uk1</text>
+<polygon fill="#e5e5e5" stroke="#dddddd" points="139,-167 24,-167 24,-109 139,-109 139,-167"/>
+<text text-anchor="start" x="36.5" y="-147.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">VmInstance</text>
+<text text-anchor="start" x="36.5" y="-122.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">s1&#45;2&#45;uk1</text>
 </g>
 <!-- VmInstance::s1&#45;2&#45;uk1&#45;&gt;SubNetwork::subnet&#45;10&#45;0&#45;0&#45;0&#45;16 -->
 <g id="edge2" class="edge">
 <title>VmInstance::s1&#45;2&#45;uk1&#45;&gt;SubNetwork::subnet&#45;10&#45;0&#45;0&#45;0&#45;16</title>
-<path fill="none" stroke="#707070" d="M139.15,-100C147.36,-100 155.99,-100 164.67,-100"/>
-<polygon fill="#707070" stroke="#707070" points="164.87,-103.5 174.87,-100 164.87,-96.5 164.87,-103.5"/>
+<path fill="none" stroke="#707070" d="M139.15,-125.56C147.45,-123.73 156.18,-121.82 164.96,-119.89"/>
+<polygon fill="#707070" stroke="#707070" points="165.86,-123.27 174.87,-117.71 164.35,-116.44 165.86,-123.27"/>
+</g>
+<!-- VmInstance::s1&#45;2&#45;uk1&#45;&gt;Disk::extra&#45;disk -->
+<g id="edge3" class="edge">
+<title>VmInstance::s1&#45;2&#45;uk1&#45;&gt;Disk::extra&#45;disk</title>
+<path fill="none" stroke="#707070" d="M139.15,-150.44C158.36,-154.66 179.82,-159.38 199.02,-163.59"/>
+<polygon fill="#707070" stroke="#707070" points="198.32,-167.02 208.84,-165.75 199.82,-160.19 198.32,-167.02"/>
 </g>
 </g>
 </svg>

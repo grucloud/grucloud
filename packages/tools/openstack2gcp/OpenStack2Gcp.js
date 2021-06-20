@@ -31,8 +31,8 @@ const ipaddr = require("ipaddr.js");
 
 const { iacTpl } = require("./iacTpl");
 const { networkTpl } = require("./networkTpl");
+const { diskTpl } = require("./diskTpl");
 const { subNetworkTpl } = require("./subNetworkTpl");
-
 const { virtualMachineTpl } = require("./virtualMachineTpl");
 
 const readModel = pipe([
@@ -113,6 +113,30 @@ const writeNetwork = ({ resource, lives }) =>
 const writeNetworks = writeResources({
   type: "Network",
   writeResource: writeNetwork,
+});
+
+// Volume
+const writeVolume = ({ resource, lives }) =>
+  pipe([
+    tap(() => {
+      //console.log(`writeVolume`, resource);
+    }),
+    () => ResourceVarName(resource.name),
+    (resourceVarName) => ({
+      resourceVarName,
+      code: diskTpl({
+        resourceVarName,
+        resourceName: resource.name,
+      }),
+    }),
+    tap((xxx) => {
+      //console.log(`writeVolume`, xxx);
+    }),
+  ])();
+
+const writeVolumes = writeResources({
+  type: "Volume",
+  writeResource: writeVolume,
 });
 
 // SubNetwork
@@ -206,6 +230,20 @@ const writeVirtualMachine = ({ resource, lives }) =>
         resourceVarName,
         resourceName: resource.name,
         dependencies: {
+          disks: pipe([
+            () => resource,
+            get("live.os-extended-volumes:volumes_attached"),
+            pluck("id"),
+            map((volumeId) =>
+              pipe([
+                () => lives,
+                find(eq(get("type"), "Volume")),
+                get("resources"),
+                find(eq(get("id"), volumeId)),
+                (resource) => ResourceVarName(resource.name),
+              ])()
+            ),
+          ])(),
           subNetwork: pipe([
             () => resource,
             get("live.addresses"),
@@ -277,6 +315,7 @@ exports.main = async (options) =>
       flatMap((writeResource) => writeResource(models))([
         writeNetworks,
         writeSubNetworks,
+        writeVolumes,
         writeVirtualMachines,
       ]),
     filter(identity),
