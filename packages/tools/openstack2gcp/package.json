@@ -5,13 +5,14 @@
   "bin": {
     "openstack2gcp": "./index.js"
   },
+  "license": "Proprietary",
+  "private": true,
   "main": "OpenStack2Gcp.js",
   "scripts": {
     "generate": "node index.js --input example/gc-list-ovh.json --output example/iac.js && gc --infra example/iac.js graph",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Frederic Heem",
   "dependencies": {
     "change-case": "^4.1.2",
     "commander": "^7.2.0",
