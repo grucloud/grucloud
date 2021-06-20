@@ -29,6 +29,7 @@ module.exports = GoogleClient = ({
   isUpByIdFactory,
   isDownByIdFactory,
   onResponseGet,
+  isDefault,
   onResponseList = onResponseListDefault,
   cannotBeDeleted = () => false,
   onCreateExpectedException = (error) => {
@@ -77,6 +78,7 @@ module.exports = GoogleClient = ({
     onResponseList,
     onResponseDelete,
     configDefault,
+    isDefault,
     findTargetId,
     cannotBeDeleted,
     shouldRetryOnException,
