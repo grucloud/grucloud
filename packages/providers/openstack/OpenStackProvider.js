@@ -93,6 +93,12 @@ const fnSpecs = (config) => {
           isInstanceUp,
           config,
           configDefault: ({ properties }) => defaultsDeep({})(properties),
+          isDefault: pipe([
+            tap((xxx) => {
+              //logger.debug(``);
+            }),
+            eq(get("live.name"), "Ext-Net"),
+          ]),
         }),
       isOurMinion,
     },
@@ -118,6 +124,16 @@ const fnSpecs = (config) => {
               ids: [live.network_id],
             },
           ],
+          isDefault: ({ live, lives }) =>
+            pipe([
+              () =>
+                lives.getById({
+                  type: "Network",
+                  providerName,
+                  id: live.network_id,
+                }),
+              get("isDefault"),
+            ])(),
         }),
       isOurMinion,
     },
