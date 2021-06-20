@@ -1,0 +1,18 @@
+{
+  "virtualMachine": {
+    "machineType": {
+      "s1-2": "e2-small",
+      "s1-4": "e2-medium",
+      "s1-8": "e2-custom-2-8192",
+      "d2-2": "e2-small",
+      "d2-4": "e2-medium",
+      "d2-8": "e2-custom-2-8192"
+    }
+  },
+  "default": {
+    "virtualMachine": {
+      "machineType": "e2-medium",
+      "diskSizeGb": 20
+    }
+  }
+}

@@ -9,6 +9,8 @@ const createProgram = ({ version }) => {
   program.version(version);
   program.requiredOption("-i, --input <file>", "lives resources");
   program.option("-o, --output <file>", "iac.js output", "iac.js");
+  program.option("-m, --mapping <file>", "mapping file", "mapping.json");
+
   program.parse(process.argv);
 
   return program;

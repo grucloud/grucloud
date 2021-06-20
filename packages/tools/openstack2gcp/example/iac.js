@@ -29,7 +29,7 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
 
     properties: () => ({
       diskSizeGb: "10",
-      machineType: "f1-micro",
+      machineType: "e2-small",
       sourceImage:
         "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
       metadata: {

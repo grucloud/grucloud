@@ -24,6 +24,7 @@ const {
   values,
   flatten,
   size,
+  defaultsDeep,
 } = require("rubico/x");
 const { camelCase } = require("change-case");
 const prettier = require("prettier");
@@ -49,9 +50,18 @@ const readModel = pipe([
   }),
 ]);
 
+const readMapping = (options) =>
+  pipe([
+    tap(() => {
+      //console.log("readMapping", options.mapping);
+    }),
+    () => fs.readFile(path.resolve(options.mapping), "utf-8"),
+    JSON.parse,
+  ]);
+
 const writeResources =
   ({ type, writeResource }) =>
-  (lives) =>
+  ({ lives, mapping }) =>
     pipe([
       tap(() => {
         //console.log(`writeResources ${type} `);
@@ -64,7 +74,7 @@ const writeResources =
           tap((network) => {
             //console.log(`writeResources`);
           }),
-          (resource) => writeResource({ resource, lives }),
+          (resource) => writeResource({ resource, lives, mapping }),
         ])
       ),
     ])();
@@ -217,7 +227,7 @@ const writeSubNetworks = writeResources({
 });
 
 // Virtual Machine
-const writeVirtualMachine = ({ resource, lives }) =>
+const writeVirtualMachine = ({ resource, lives, mapping }) =>
   pipe([
     tap(() => {
       console.log(`writeVirtualMachine`, resource);
@@ -229,7 +239,17 @@ const writeVirtualMachine = ({ resource, lives }) =>
         resource,
         resourceVarName,
         resourceName: resource.name,
-        properties: { diskSizeGb: get("live.flavor.disk")(resource) },
+        properties: pipe([
+          () => ({
+            diskSizeGb: get("live.flavor.disk")(resource),
+            machineType:
+              mapping.virtualMachine.machineType[
+                get("live.flavor.name")(resource)
+              ],
+          }),
+          defaultsDeep(mapping.default.virtualMachine),
+        ])(),
+
         dependencies: {
           disks: pipe([
             () => resource,
@@ -311,9 +331,9 @@ exports.main = async (options) =>
       console.log("OpenStack2Gcp");
     }),
     () => options,
-    readModel,
-    (models) =>
-      flatMap((writeResource) => writeResource(models))([
+    fork({ lives: readModel, mapping: readMapping(options) }),
+    ({ lives, mapping }) =>
+      flatMap((writeResource) => writeResource({ lives, mapping }))([
         writeNetworks,
         writeSubNetworks,
         writeVolumes,
