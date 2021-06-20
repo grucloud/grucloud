@@ -9,9 +9,9 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 309)">
 <title>graphname</title>
 <polygon fill="#fafafa" stroke="transparent" points="-4,4 -4,-309 490,-309 490,4 -4,4"/>
-<text text-anchor="start" x="159" y="-280.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project example</text>
-<text text-anchor="start" x="239" y="-264.8" font-family="Helvetica,sans-Serif" font-size="14.00"> &#160;</text>
-<text text-anchor="start" x="159" y="-243.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
+<text text-anchor="start" x="156" y="-280.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="22.00" fill="#383838">Project gcp&#45;infra</text>
+<text text-anchor="start" x="239.5" y="-264.8" font-family="Helvetica,sans-Serif" font-size="14.00"> &#160;</text>
+<text text-anchor="start" x="156" y="-243.2" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00" fill="#707070">Target Diagram</text>
 <g id="clust1" class="cluster">
 <title>cluster_google</title>
 <polygon fill="#f5f5f5" stroke="#f5f5f5" points="8,-8 8,-221 478,-221 478,-8 8,-8"/>

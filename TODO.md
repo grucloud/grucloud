@@ -109,6 +109,7 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## TODO Goggle
 
+- network and subnet isDefault
 - vminstance with service account
 - The field 'entity.managedZone.dnsName' cannot be modified.
 - gcp object path properties

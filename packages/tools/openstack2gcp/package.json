@@ -9,7 +9,7 @@
   "private": true,
   "main": "OpenStack2Gcp.js",
   "scripts": {
-    "generate": "node index.js --input openstack-inventory/gc-list.json --output example/iac.js --mapping example/mapping.json && gc --infra example/iac.js graph",
+    "generate": "node index.js --input openstack-inventory/gc-list.json --output gcp-infra/iac.js --mapping mapping.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Frederic Heem",
