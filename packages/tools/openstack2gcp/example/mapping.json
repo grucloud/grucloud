@@ -9,10 +9,14 @@
       "d2-8": "e2-custom-2-8192"
     }
   },
+  "image": {
+    "Centos 8": "projects/centos-cloud/global/images/centos-8-v20210609",
+    "Ubuntu 20.04": "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20210610"
+  },
   "default": {
     "virtualMachine": {
-      "machineType": "e2-medium",
-      "diskSizeGb": 20
+      "image": "projects/rhel-cloud/global/images/rhel-7-v20210609",
+      "machineType": "e2-medium"
     }
   }
 }

@@ -14,6 +14,7 @@ const {
   and,
   tryCatch,
   not,
+  assign,
 } = require("rubico");
 const {
   first,
@@ -242,12 +243,16 @@ const writeVirtualMachine = ({ resource, lives, mapping }) =>
         properties: pipe([
           () => ({
             diskSizeGb: get("live.flavor.disk")(resource),
+            sourceImage: mapping.image[get("live.image.name")(resource)],
             machineType:
               mapping.virtualMachine.machineType[
                 get("live.flavor.name")(resource)
               ],
           }),
           defaultsDeep(mapping.default.virtualMachine),
+          assign({
+            diskSizeGb: ({ diskSizeGb }) => (diskSizeGb < 20 ? 20 : diskSizeGb),
+          }),
         ])(),
 
         dependencies: {
