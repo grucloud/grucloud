@@ -229,6 +229,7 @@ const writeVirtualMachine = ({ resource, lives }) =>
         resource,
         resourceVarName,
         resourceName: resource.name,
+        properties: { diskSizeGb: get("live.flavor.disk")(resource) },
         dependencies: {
           disks: pipe([
             () => resource,

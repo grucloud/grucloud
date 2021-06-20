@@ -28,7 +28,7 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
     dependencies: { subNetwork: subnet_10_0_0_0_16, disks: [extraDisk] },
 
     properties: () => ({
-      diskSizeGb: "20",
+      diskSizeGb: "10",
       machineType: "f1-micro",
       sourceImage:
         "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",

@@ -3,11 +3,10 @@
     "commandOptions": {
         "dotFile": "diagram-live.dot",
         "title": "server",
-        "all": true,
-        "graph": true
+        "all": true
     },
     "programOptions": {
-        "json": "gc-list-ovh-vm-disk.json"
+        "json": "gc-list-ovh-vm-disk-1.json"
     },
     "result": {
         "error": false,
@@ -17,6 +16,104 @@
                 "kind": "livesPerType",
                 "error": false,
                 "results": [
+                    {
+                        "type": "Network",
+                        "resources": [
+                            {
+                                "uri": "openstack::Network::6011fbc9-4cbf-46a4-8452-6890a340b60b",
+                                "name": "Ext-Net",
+                                "displayName": "Ext-Net",
+                                "id": "6011fbc9-4cbf-46a4-8452-6890a340b60b",
+                                "providerName": "openstack",
+                                "type": "Network",
+                                "live": {
+                                    "status": "ACTIVE",
+                                    "subnets": [
+                                        "d1be9f1a-1935-46c6-9101-0a15de354542",
+                                        "4580ccc5-9c0c-4bdc-ac21-eeb9dc7ee9a4",
+                                        "f9597c7b-7eda-4cd3-94a6-6093469bcb44",
+                                        "a9b2fe89-4635-42d0-8c79-687c73e30ef4",
+                                        "0e119f62-b864-4773-bf62-4f87dfeb8263",
+                                        "61ec11cf-d70f-46d3-a523-98f193a53a65",
+                                        "d88fd0df-7438-43d1-a1d2-f9e68f322934",
+                                        "eb0e5ee7-23fb-4b8f-8984-309e9d0b4ce5",
+                                        "1ee592b5-6297-4bf3-9999-4582ba544ecd",
+                                        "a52ad8ee-b9ef-4f8f-9f34-320400b84676",
+                                        "52032c36-d882-46f4-92a9-a982824872ad",
+                                        "d5ded9b4-9814-45b0-9b45-097a081e1036",
+                                        "bc646bbb-f400-425c-b56b-1a40a4c68925",
+                                        "e5d870eb-17f3-486a-8117-490d5951eb99"
+                                    ],
+                                    "availability_zone_hints": [],
+                                    "availability_zones": [],
+                                    "description": "",
+                                    "name": "Ext-Net",
+                                    "tags": [],
+                                    "tenant_id": "9386d7837e514fc080082efe4892af59",
+                                    "created_at": "2017-10-10T14:10:42Z",
+                                    "admin_state_up": true,
+                                    "updated_at": "2021-06-09T07:33:22Z",
+                                    "provider:network_type": "bgp",
+                                    "ipv6_address_scope": null,
+                                    "qos_policy_id": null,
+                                    "mtu": 1500,
+                                    "revision_number": 56,
+                                    "ipv4_address_scope": null,
+                                    "shared": true,
+                                    "project_id": "9386d7837e514fc080082efe4892af59",
+                                    "id": "6011fbc9-4cbf-46a4-8452-6890a340b60b",
+                                    "provider:segmentation_id": 42110
+                                },
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByUs": false,
+                                "show": true
+                            },
+                            {
+                                "uri": "openstack::Network::dfb3e958-5c68-4137-9ffa-f02fdc6a0b16",
+                                "name": "rhmig",
+                                "displayName": "rhmig",
+                                "id": "dfb3e958-5c68-4137-9ffa-f02fdc6a0b16",
+                                "providerName": "openstack",
+                                "type": "Network",
+                                "live": {
+                                    "status": "ACTIVE",
+                                    "subnets": [
+                                        "7704de0b-5838-4eaf-9be5-9e136f460951"
+                                    ],
+                                    "availability_zone_hints": [],
+                                    "availability_zones": [
+                                        "nova"
+                                    ],
+                                    "description": "",
+                                    "name": "rhmig",
+                                    "tags": [],
+                                    "tenant_id": "291a80ce2c8d490fb030c3a3b76eeb02",
+                                    "created_at": "2021-06-19T07:54:15Z",
+                                    "admin_state_up": true,
+                                    "updated_at": "2021-06-19T07:54:22Z",
+                                    "provider:network_type": "vrack",
+                                    "ipv6_address_scope": null,
+                                    "qos_policy_id": null,
+                                    "mtu": 9000,
+                                    "revision_number": 4,
+                                    "ipv4_address_scope": null,
+                                    "shared": false,
+                                    "project_id": "291a80ce2c8d490fb030c3a3b76eeb02",
+                                    "id": "dfb3e958-5c68-4137-9ffa-f02fdc6a0b16",
+                                    "provider:segmentation_id": 0
+                                },
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByUs": false,
+                                "show": true
+                            }
+                        ]
+                    },
                     {
                         "type": "Subnet",
                         "resources": [
@@ -771,104 +868,6 @@
                         ]
                     },
                     {
-                        "type": "Network",
-                        "resources": [
-                            {
-                                "uri": "openstack::Network::6011fbc9-4cbf-46a4-8452-6890a340b60b",
-                                "name": "Ext-Net",
-                                "displayName": "Ext-Net",
-                                "id": "6011fbc9-4cbf-46a4-8452-6890a340b60b",
-                                "providerName": "openstack",
-                                "type": "Network",
-                                "live": {
-                                    "status": "ACTIVE",
-                                    "subnets": [
-                                        "52032c36-d882-46f4-92a9-a982824872ad",
-                                        "eb0e5ee7-23fb-4b8f-8984-309e9d0b4ce5",
-                                        "bc646bbb-f400-425c-b56b-1a40a4c68925",
-                                        "1ee592b5-6297-4bf3-9999-4582ba544ecd",
-                                        "d88fd0df-7438-43d1-a1d2-f9e68f322934",
-                                        "a52ad8ee-b9ef-4f8f-9f34-320400b84676",
-                                        "0e119f62-b864-4773-bf62-4f87dfeb8263",
-                                        "d5ded9b4-9814-45b0-9b45-097a081e1036",
-                                        "e5d870eb-17f3-486a-8117-490d5951eb99",
-                                        "4580ccc5-9c0c-4bdc-ac21-eeb9dc7ee9a4",
-                                        "a9b2fe89-4635-42d0-8c79-687c73e30ef4",
-                                        "61ec11cf-d70f-46d3-a523-98f193a53a65",
-                                        "f9597c7b-7eda-4cd3-94a6-6093469bcb44",
-                                        "d1be9f1a-1935-46c6-9101-0a15de354542"
-                                    ],
-                                    "availability_zone_hints": [],
-                                    "availability_zones": [],
-                                    "description": "",
-                                    "name": "Ext-Net",
-                                    "tags": [],
-                                    "tenant_id": "9386d7837e514fc080082efe4892af59",
-                                    "created_at": "2017-10-10T14:10:42Z",
-                                    "admin_state_up": true,
-                                    "updated_at": "2021-06-09T07:33:22Z",
-                                    "provider:network_type": "bgp",
-                                    "ipv6_address_scope": null,
-                                    "qos_policy_id": null,
-                                    "mtu": 1500,
-                                    "revision_number": 56,
-                                    "ipv4_address_scope": null,
-                                    "shared": true,
-                                    "project_id": "9386d7837e514fc080082efe4892af59",
-                                    "id": "6011fbc9-4cbf-46a4-8452-6890a340b60b",
-                                    "provider:segmentation_id": 42110
-                                },
-                                "cannotBeDeleted": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "managedByUs": false,
-                                "show": true
-                            },
-                            {
-                                "uri": "openstack::Network::dfb3e958-5c68-4137-9ffa-f02fdc6a0b16",
-                                "name": "rhmig",
-                                "displayName": "rhmig",
-                                "id": "dfb3e958-5c68-4137-9ffa-f02fdc6a0b16",
-                                "providerName": "openstack",
-                                "type": "Network",
-                                "live": {
-                                    "status": "ACTIVE",
-                                    "subnets": [
-                                        "7704de0b-5838-4eaf-9be5-9e136f460951"
-                                    ],
-                                    "availability_zone_hints": [],
-                                    "availability_zones": [
-                                        "nova"
-                                    ],
-                                    "description": "",
-                                    "name": "rhmig",
-                                    "tags": [],
-                                    "tenant_id": "291a80ce2c8d490fb030c3a3b76eeb02",
-                                    "created_at": "2021-06-19T07:54:15Z",
-                                    "admin_state_up": true,
-                                    "updated_at": "2021-06-19T07:54:22Z",
-                                    "provider:network_type": "vrack",
-                                    "ipv6_address_scope": null,
-                                    "qos_policy_id": null,
-                                    "mtu": 9000,
-                                    "revision_number": 4,
-                                    "ipv4_address_scope": null,
-                                    "shared": false,
-                                    "project_id": "291a80ce2c8d490fb030c3a3b76eeb02",
-                                    "id": "dfb3e958-5c68-4137-9ffa-f02fdc6a0b16",
-                                    "provider:segmentation_id": 0
-                                },
-                                "cannotBeDeleted": false,
-                                "isDefault": false,
-                                "namespace": "",
-                                "dependencies": [],
-                                "managedByUs": false,
-                                "show": true
-                            }
-                        ]
-                    },
-                    {
                         "type": "Volume",
                         "resources": [
                             {
@@ -978,24 +977,66 @@
                                         }
                                     ],
                                     "image": {
-                                        "id": "98db0d6e-c5d4-4206-8faf-32bf475dffde",
+                                        "status": "ACTIVE",
+                                        "updated": "2021-06-03T14:06:55Z",
                                         "links": [
+                                            {
+                                                "href": "https://compute.uk1.cloud.ovh.net/v2.1/291a80ce2c8d490fb030c3a3b76eeb02/images/98db0d6e-c5d4-4206-8faf-32bf475dffde",
+                                                "rel": "self"
+                                            },
                                             {
                                                 "href": "https://compute.uk1.cloud.ovh.net/291a80ce2c8d490fb030c3a3b76eeb02/images/98db0d6e-c5d4-4206-8faf-32bf475dffde",
                                                 "rel": "bookmark"
+                                            },
+                                            {
+                                                "href": "https://image.compute.uk1.cloud.ovh.net/images/98db0d6e-c5d4-4206-8faf-32bf475dffde",
+                                                "type": "application/vnd.openstack.image",
+                                                "rel": "alternate"
                                             }
-                                        ]
+                                        ],
+                                        "id": "98db0d6e-c5d4-4206-8faf-32bf475dffde",
+                                        "OS-EXT-IMG-SIZE:size": 8388608000,
+                                        "name": "Centos 8",
+                                        "created": "2021-06-03T14:04:08Z",
+                                        "minDisk": 0,
+                                        "progress": 100,
+                                        "minRam": 0,
+                                        "metadata": {
+                                            "build_id": "4014ecf9-d7ca-4e8a-a8ec-e57e4bf6559c",
+                                            "support_rtm": "yes",
+                                            "hypervisor_type": "qemu",
+                                            "hw_qemu_guest_agent": "yes",
+                                            "image_build_date": "2021-06-01 10:54:03",
+                                            "hw_scsi_model": "virtio-scsi",
+                                            "image_original_user": "centos",
+                                            "distro_family": "centos",
+                                            "data": "/home/glance/images/Centos-8.raw",
+                                            "hw_disk_bus": "scsi"
+                                        }
                                     },
                                     "OS-EXT-STS:vm_state": "active",
                                     "OS-SRV-USG:launched_at": "2021-06-19T17:01:36.000000",
                                     "flavor": {
-                                        "id": "e9d6fb38-9bf0-44ac-adbf-30fee3c96096",
+                                        "name": "s1-2",
                                         "links": [
+                                            {
+                                                "href": "https://compute.uk1.cloud.ovh.net/v2.1/291a80ce2c8d490fb030c3a3b76eeb02/flavors/e9d6fb38-9bf0-44ac-adbf-30fee3c96096",
+                                                "rel": "self"
+                                            },
                                             {
                                                 "href": "https://compute.uk1.cloud.ovh.net/291a80ce2c8d490fb030c3a3b76eeb02/flavors/e9d6fb38-9bf0-44ac-adbf-30fee3c96096",
                                                 "rel": "bookmark"
                                             }
-                                        ]
+                                        ],
+                                        "ram": 2000,
+                                        "OS-FLV-DISABLED:disabled": false,
+                                        "vcpus": 1,
+                                        "swap": "",
+                                        "os-flavor-access:is_public": true,
+                                        "rxtx_factor": 1,
+                                        "OS-FLV-EXT-DATA:ephemeral": 0,
+                                        "disk": 10,
+                                        "id": "e9d6fb38-9bf0-44ac-adbf-30fee3c96096"
                                     },
                                     "id": "8c60fd39-294c-4d5c-b31e-8cd2a9a68d1c",
                                     "security_groups": [
