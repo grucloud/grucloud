@@ -1,5 +1,5 @@
 {
-  "name": "openstack2gcp",
+  "name": "@grucloud/openstack2gcp",
   "version": "1.19.0",
   "description": "Migrate OpenStack to GCP",
   "bin": {
@@ -9,8 +9,7 @@
   "private": true,
   "main": "OpenStack2Gcp.js",
   "scripts": {
-    "generate": "node index.js --input openstack-inventory/gc-list.json --output gcp-infra/iac.js --mapping mapping.json",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "generate": "node index.js --input example/gc-list-ovh.json --output example/iac.js && gc --infra example/iac.js graph"
   },
   "author": "Frederic Heem",
   "dependencies": {
