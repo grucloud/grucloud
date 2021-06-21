@@ -16,7 +16,7 @@ Since the infrastructure is now described as code, updating and destroying the i
 
 Instructions are provided in the [openstack-inventory README](./openstack-inventory/README.md)
 
-At the end of this process, the live infra is described in a file such as [gc-list.json](./openstack-inventory/gc-list.json)
+At the end of this process, the live infra is described in a file such as `gc-list.json`
 
 ![diagram-live](openstack-inventory/diagram-live.svg)
 
