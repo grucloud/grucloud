@@ -14,25 +14,25 @@ Since the infrastructure is now described as code, updating and destroying the i
 
 ## Step 1: OpenStack Inventory
 
-Instructions are provided in the [openstack-inventory README](openstack-inventory/README)
+Instructions are provided in the [openstack-inventory README](./openstack-inventory/README.md)
 
-At the end of this process, the live infra is described in a file such as [gc-list.json](openstack-inventory/iac.js)
+At the end of this process, the live infra is described in a file such as `gc-list.json`
 
 ![diagram-live](openstack-inventory/diagram-live.svg)
 
 ## Step 2: Transform OpenStack Inventory into GrucCloud GCP code
 
-The step tranforms the OpenStack inventory [gc-list.json](openstack-inventory/iac.js) into [iac.js](gcp-infra/iac.js): the GruCloud code describing the GCP infra that will be used later on by the GruCloud CLI.
+The step tranforms the OpenStack inventory `gc-list.json` into [iac.js](./gcp-infra/iac.js): the GruCloud code describing the GCP infra that will be used later on by the GruCloud CLI.
 
 ```sh
 npm run generate
 ```
 
-> The file [mapping.json](./mappings) defines the mappings between machine type and image OS between the 2 clouds.
+> The file [mapping.json](./mappings.json) defines the mappings between machine type and image OS between the 2 clouds.
 
 ## Step 3: Deploy the GCP infa
 
-In addition to the generated file [iac.js], the directory _gcp-infra_ contains the other files required to deploy the infra.
+In addition to the generated file _iac.js_, the directory [gcp-infra](./gcp-infra) contains the other files required to deploy the infra.
 
 For a detailed guide on how to prepare the deployment, see [Google Getting Started](https://www.grucloud.com/docs/google/GoogleGettingStarted)
 
