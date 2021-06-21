@@ -205,3 +205,4 @@ const server = await provider.makeVmInstance({
 - [Address](./Address)
 - [Service Account](../IAM/ServiceAccount)
 - [SubNetwork](./SubNetwork)
+- [Disk](./Disk)

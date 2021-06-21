@@ -12,8 +12,17 @@ const {
   assign,
   tryCatch,
   or,
+  filter,
+  not,
 } = require("rubico");
-const { defaultsDeep, pluck, find, includes } = require("rubico/x");
+const {
+  defaultsDeep,
+  pluck,
+  find,
+  includes,
+  size,
+  isEmpty,
+} = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GcpVmInstance" });
@@ -247,6 +256,57 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
       }),
     ])();
 
+  const disksAttach = ({ disks = [], name }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`disksAttach ${name} #disks: ${size(disks)}`);
+      }),
+      () => disks,
+      map(
+        tryCatch(
+          pipe([
+            tap((disk) => {
+              logger.debug(`disksAttach disks ${disk.name}`);
+            }),
+            (disk) => ({
+              source: `/compute/v1/projects/${projectId}/zones/${zone}/disks/${disk.name}`,
+            }),
+            (params) => axios.post(`${name}/attachDisk`, params),
+          ]),
+          (error, disk) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `disksAttach error disks ${disk.name}, ${tos(error)}`
+                );
+              }),
+              () => ({ error, disk }),
+            ])()
+        )
+      ),
+      filter(get("error")),
+      tap.if(not(isEmpty), (errors) => {
+        throw Error(`cannot attach volume: ${tos(errors)}`);
+      }),
+    ])();
+
+  const create = async ({ name, payload, dependencies }) =>
+    tryCatch(
+      pipe([
+        tap(() => {
+          logger.debug(`create ${name}, payload: ${tos({ payload })}`);
+        }),
+        () => client.create({ name, payload, dependencies }),
+        tap(() => disksAttach({ disks: dependencies.disks, name })),
+        tap(({ id }) => {
+          logger.debug(`created vm ${name}, id: ${id}`);
+        }),
+      ]),
+      (error) => {
+        throw axiosErrorToJSON(error);
+      }
+    )();
+
   const update = async ({ name, payload, dependencies, diff, live, id }) =>
     tryCatch(
       pipe([
@@ -296,7 +356,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
       }
     )();
 
-  return { ...client, update };
+  return { ...client, update, create };
 };
 
 const filterItem = ({ config, item }) =>
