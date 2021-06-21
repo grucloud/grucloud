@@ -4,7 +4,9 @@
   "description": "",
   "main": "iac.js",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "graph-live": "gc list --graph --default-exclude"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
