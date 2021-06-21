@@ -1,6 +1,6 @@
 {
   "name": "kms-symmetric",
-  "version": "1.18.1",
+  "version": "1.19.0",
   "private": true,
   "description": "",
   "main": "iac.js",
@@ -11,6 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.18.1",
-    "@grucloud/provider-aws": "^1.18.1"
+    "@grucloud/provider-aws": "^1.19.0"
   }
 }

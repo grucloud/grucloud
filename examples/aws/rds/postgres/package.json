@@ -1,6 +1,6 @@
 {
   "name": "rds-postgres",
-  "version": "1.18.1",
+  "version": "1.19.0",
   "description": "",
   "private": true,
   "main": "iac.js",
@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.18.1",
-    "@grucloud/provider-aws": "^1.18.1",
+    "@grucloud/provider-aws": "^1.19.0",
     "pg": "^8.6.0",
     "rubico": "^1.6.26"
   }

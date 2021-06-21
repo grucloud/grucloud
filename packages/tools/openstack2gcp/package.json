@@ -1,6 +1,6 @@
 {
   "name": "openstack2gcp",
-  "version": "1.0.0",
+  "version": "1.19.0",
   "description": "Migrate OpenStack to GCP",
   "bin": {
     "openstack2gcp": "./index.js"
