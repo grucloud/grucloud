@@ -1,10 +1,6 @@
-# Deploying a server on OVH with GruCloud
+# OpenStack inventory with GruCloud
 
-The purpose of this example is to deploy automatically a server on the OVH Cloud provider
-
-![diagram-target](diagram-target.svg)
-
-The infrastructure is described in [iac.js](./iac.js), and configured in [config.js](./config.js).
+The purpose of this project is to fetch the live inventory of an OpenStack infrastruture such as _OVH_ or _RedHat_
 
 ## Requirements
 
@@ -67,18 +63,16 @@ Let's install the npm dependencies such as the [@grucloud/provider-openstack](ht
 npm i
 ```
 
-## Workflow
+## List the inventory
 
-### Target Diagram
-
-Based on the infrastructure code [iac.js](./iac.js), GruCloud is able to create a diagram of the target resources showing their dependencies.
+Run the following command to retrieve the live inventory:
 
 ```sh
-gc graph
+gc list --graph --default-exclude --all --json gc-list.json
 ```
 
-### List
+For instance, here is an example of a server running inside a private network, with an extra disk attached to it:
 
-```sh
-gc list --all
-```
+![diagram-live](diagram-live.svg)
+
+The inventory file is written to `gc-list.json` and will be used by `openstack2gcp`, a tool to generate the GCP infrastructure code from an OpenStack deployment.

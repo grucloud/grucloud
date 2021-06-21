@@ -1,17 +1,16 @@
 exports.virtualMachineTpl = ({
   resourceVarName,
   resourceName,
-  dependencies: { subNetwork },
+  properties: { diskSizeGb, machineType, sourceImage },
+  dependencies: { subNetwork, disks = [] },
 }) => `
 const ${resourceVarName} = await provider.makeVmInstance({
   name: "${resourceName}",
-  dependencies: {subNetwork: ${subNetwork} },
-
+  dependencies: {subNetwork: ${subNetwork}, disks: [${disks.join(",")}] },
   properties: () => ({
-    diskSizeGb: "20",
-    machineType: "f1-micro",
-    sourceImage:
-      "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
+    diskSizeGb: "${diskSizeGb}",
+    machineType: "${machineType}",
+    sourceImage: "${sourceImage}",
     metadata: {
       items: [
         {

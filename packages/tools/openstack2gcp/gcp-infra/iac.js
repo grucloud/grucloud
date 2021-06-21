@@ -18,15 +18,18 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
     }),
   });
 
+  const extraDisk = await provider.makeDisk({
+    name: "extra-disk",
+    properties: () => ({}),
+  });
+
   const s1_2Uk1 = await provider.makeVmInstance({
     name: "s1-2-uk1",
-    dependencies: { subNetwork: subnet_10_0_0_0_16 },
-
+    dependencies: { subNetwork: subnet_10_0_0_0_16, disks: [extraDisk] },
     properties: () => ({
       diskSizeGb: "20",
-      machineType: "f1-micro",
-      sourceImage:
-        "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
+      machineType: "e2-small",
+      sourceImage: "projects/centos-cloud/global/images/centos-8-v20210609",
       metadata: {
         items: [
           {
@@ -41,6 +44,7 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
   return {
     rhmig,
     subnet_10_0_0_0_16,
+    extraDisk,
     s1_2Uk1,
   };
 };

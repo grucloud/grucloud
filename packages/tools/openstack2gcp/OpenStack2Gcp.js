@@ -14,6 +14,7 @@ const {
   and,
   tryCatch,
   not,
+  assign,
 } = require("rubico");
 const {
   first,
@@ -24,16 +25,17 @@ const {
   values,
   flatten,
   size,
+  defaultsDeep,
 } = require("rubico/x");
 const { camelCase } = require("change-case");
 const prettier = require("prettier");
 const ipaddr = require("ipaddr.js");
 
-const { iacTpl } = require("./iacTpl");
-const { networkTpl } = require("./networkTpl");
-const { subNetworkTpl } = require("./subNetworkTpl");
-
-const { virtualMachineTpl } = require("./virtualMachineTpl");
+const { iacTpl } = require("./template/gcp/iacTpl");
+const { networkTpl } = require("./template/gcp/networkTpl");
+const { diskTpl } = require("./template/gcp/diskTpl");
+const { subNetworkTpl } = require("./template/gcp/subNetworkTpl");
+const { virtualMachineTpl } = require("./template/gcp/virtualMachineTpl");
 
 const readModel = pipe([
   tap((options) => {
@@ -49,9 +51,18 @@ const readModel = pipe([
   }),
 ]);
 
+const readMapping = (options) =>
+  pipe([
+    tap(() => {
+      //console.log("readMapping", options.mapping);
+    }),
+    () => fs.readFile(path.resolve(options.mapping), "utf-8"),
+    JSON.parse,
+  ]);
+
 const writeResources =
   ({ type, writeResource }) =>
-  (lives) =>
+  ({ lives, mapping }) =>
     pipe([
       tap(() => {
         //console.log(`writeResources ${type} `);
@@ -64,7 +75,7 @@ const writeResources =
           tap((network) => {
             //console.log(`writeResources`);
           }),
-          (resource) => writeResource({ resource, lives }),
+          (resource) => writeResource({ resource, lives, mapping }),
         ])
       ),
     ])();
@@ -113,6 +124,30 @@ const writeNetwork = ({ resource, lives }) =>
 const writeNetworks = writeResources({
   type: "Network",
   writeResource: writeNetwork,
+});
+
+// Volume
+const writeVolume = ({ resource, lives }) =>
+  pipe([
+    tap(() => {
+      //console.log(`writeVolume`, resource);
+    }),
+    () => ResourceVarName(resource.name),
+    (resourceVarName) => ({
+      resourceVarName,
+      code: diskTpl({
+        resourceVarName,
+        resourceName: resource.name,
+      }),
+    }),
+    tap((xxx) => {
+      //console.log(`writeVolume`, xxx);
+    }),
+  ])();
+
+const writeVolumes = writeResources({
+  type: "Volume",
+  writeResource: writeVolume,
 });
 
 // SubNetwork
@@ -193,7 +228,7 @@ const writeSubNetworks = writeResources({
 });
 
 // Virtual Machine
-const writeVirtualMachine = ({ resource, lives }) =>
+const writeVirtualMachine = ({ resource, lives, mapping }) =>
   pipe([
     tap(() => {
       console.log(`writeVirtualMachine`, resource);
@@ -205,7 +240,36 @@ const writeVirtualMachine = ({ resource, lives }) =>
         resource,
         resourceVarName,
         resourceName: resource.name,
+        properties: pipe([
+          () => ({
+            diskSizeGb: get("live.flavor.disk")(resource),
+            sourceImage: mapping.image[get("live.image.name")(resource)],
+            machineType:
+              mapping.virtualMachine.machineType[
+                get("live.flavor.name")(resource)
+              ],
+          }),
+          defaultsDeep(mapping.default.virtualMachine),
+          assign({
+            diskSizeGb: ({ diskSizeGb }) => (diskSizeGb < 20 ? 20 : diskSizeGb),
+          }),
+        ])(),
+
         dependencies: {
+          disks: pipe([
+            () => resource,
+            get("live.os-extended-volumes:volumes_attached"),
+            pluck("id"),
+            map((volumeId) =>
+              pipe([
+                () => lives,
+                find(eq(get("type"), "Volume")),
+                get("resources"),
+                find(eq(get("id"), volumeId)),
+                (resource) => ResourceVarName(resource.name),
+              ])()
+            ),
+          ])(),
           subNetwork: pipe([
             () => resource,
             get("live.addresses"),
@@ -272,11 +336,12 @@ exports.main = async (options) =>
       console.log("OpenStack2Gcp");
     }),
     () => options,
-    readModel,
-    (models) =>
-      flatMap((writeResource) => writeResource(models))([
+    fork({ lives: readModel, mapping: readMapping(options) }),
+    ({ lives, mapping }) =>
+      flatMap((writeResource) => writeResource({ lives, mapping }))([
         writeNetworks,
         writeSubNetworks,
+        writeVolumes,
         writeVirtualMachines,
       ]),
     filter(identity),

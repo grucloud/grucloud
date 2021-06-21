@@ -1,0 +1,15 @@
+{
+  "name": "@grucloud/openstack-inventory",
+  "version": "1.18.1",
+  "private": true,
+  "description": "List the live inventory of a OpenStack cloud provider infrastructure",
+  "scripts": {
+    "graph-live": "gc list --graph --default-exclude --all --json gc-list.json"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "^1.18.1",
+    "@grucloud/provider-openstack": "^1.18.1"
+  }
+}

@@ -1,5 +1,14 @@
 const assert = require("assert");
-const { pipe, eq, get, tap, filter, map } = require("rubico");
+const {
+  pipe,
+  eq,
+  get,
+  tap,
+  assign,
+  map,
+  tryCatch,
+  switchCase,
+} = require("rubico");
 
 const {
   defaultsDeep,
@@ -43,6 +52,31 @@ const fnSpecs = (config) => {
       getById,
     });
 
+  const getHref = ({ field, axios, type = "bookmark" }) =>
+    pipe([
+      get("links"),
+      find(eq(get("rel"), type)),
+      get("href"),
+      (href) =>
+        tryCatch(
+          pipe([() => axios.get(href), get(`data.${field}`)]),
+          switchCase([
+            eq(get("response.status"), 300),
+            pipe([
+              get("response.data.choices"),
+              find(eq(get("status"), "CURRENT")),
+              getHref({ field, axios, type: "self" }),
+            ]),
+            (error) => {
+              throw error;
+            },
+          ])
+        )(),
+      tap((xxx) => {
+        //logger.debug(``);
+      }),
+    ]);
+
   return [
     {
       type: "Network",
@@ -59,6 +93,12 @@ const fnSpecs = (config) => {
           isInstanceUp,
           config,
           configDefault: ({ properties }) => defaultsDeep({})(properties),
+          isDefault: pipe([
+            tap((xxx) => {
+              //logger.debug(``);
+            }),
+            eq(get("live.name"), "Ext-Net"),
+          ]),
         }),
       isOurMinion,
     },
@@ -84,6 +124,16 @@ const fnSpecs = (config) => {
               ids: [live.network_id],
             },
           ],
+          isDefault: ({ live, lives }) =>
+            pipe([
+              () =>
+                lives.getById({
+                  type: "Network",
+                  providerName,
+                  id: live.network_id,
+                }),
+              get("isDefault"),
+            ])(),
         }),
       isOurMinion,
     },
@@ -95,10 +145,16 @@ const fnSpecs = (config) => {
           spec,
           pathBase: `https://volume.compute.uk1.cloud.ovh.net/v3`,
           pathSuffixList: () => `/${projectId}/volumes`,
-          onResponseList: ({ data: { volumes } }) => ({
-            total: size(volumes),
-            items: volumes,
-          }),
+          onResponseList: ({ axios, data }) =>
+            pipe([
+              () => data,
+              get("volumes"),
+              map(getHref({ field: "volume", axios, type: "self" })),
+              (volumes) => ({
+                total: size(volumes),
+                items: volumes,
+              }),
+            ])(),
           isUpByIdFactory,
           isInstanceUp,
           config,
@@ -122,11 +178,20 @@ const fnSpecs = (config) => {
               get("servers"),
               map(
                 pipe([
-                  get("links"),
-                  find(eq(get("rel"), "self")),
-                  get("href"),
-                  (href) => axios.get(href),
-                  get("data.server"),
+                  getHref({ field: "server", axios, type: "self" }),
+                  assign({
+                    image: pipe([
+                      get("image"),
+                      getHref({ field: "image", axios }),
+                    ]),
+                    flavor: pipe([
+                      get("flavor"),
+                      getHref({ field: "flavor", axios }),
+                    ]),
+                  }),
+                  tap((xxx) => {
+                    //logger.debug(``);
+                  }),
                 ])
               ),
               (servers) => ({
@@ -152,6 +217,14 @@ const fnSpecs = (config) => {
                     name: network,
                   })
                 ),
+                pluck("id"),
+              ])(),
+            },
+            {
+              type: "Volume",
+              ids: pipe([
+                () => live,
+                get("os-extended-volumes:volumes_attached"),
                 pluck("id"),
               ])(),
             },

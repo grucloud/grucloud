@@ -92,6 +92,22 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
         ),
       ])(),
     },
+    {
+      type: "Disk",
+      ids: pipe([
+        () => live,
+        get("disks"),
+        pluck("source"),
+        map((source) =>
+          pipe([
+            () => lives.getByType({ type: "Disk", providerName }),
+            get("resources", []),
+            find(eq(get("live.selfLink"), source)),
+            get("id"),
+          ])()
+        ),
+      ])(),
+    },
   ];
 
   const configDefault = ({ name, properties, dependencies }) => {

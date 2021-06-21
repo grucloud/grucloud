@@ -17,7 +17,7 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
-      "runtimeArgs": ["list", "-a", "-g"],
+      "runtimeArgs": ["list", "-a", "-g", "--default-exclude"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
