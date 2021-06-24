@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-website-https",
-  "version": "1.19.0",
+  "version": "1.19.1",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.18.1",
-    "@grucloud/provider-aws": "^1.19.0",
+    "@grucloud/core": "^1.19.1",
+    "@grucloud/provider-aws": "^1.19.1",
     "axios": "^0.21.1",
     "mime-types": "^2.1.27",
     "rubico": "^1.6.23"

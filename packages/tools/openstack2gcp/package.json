@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/openstack2gcp",
-  "version": "1.19.0",
+  "version": "1.19.1",
   "description": "Migrate OpenStack to GCP",
   "bin": {
     "openstack2gcp": "./index.js"
