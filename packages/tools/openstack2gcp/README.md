@@ -28,7 +28,7 @@ The step tranforms the OpenStack inventory `gc-list.json` into [iac.js](./gcp-in
 npm run generate
 ```
 
-> The file [mapping.json](./mappings.json) defines the mappings between machine type and image OS between the 2 clouds.
+> The file [mapping.json](./mapping.json) defines the mappings between machine type and image OS between the 2 clouds.
 
 ## Step 3: Deploy the GCP infa
 
