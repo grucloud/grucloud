@@ -27,7 +27,6 @@ const {
   size,
   defaultsDeep,
 } = require("rubico/x");
-const { camelCase } = require("change-case");
 const prettier = require("prettier");
 const ipaddr = require("ipaddr.js");
 
@@ -36,64 +35,29 @@ const { networkTpl } = require("./template/gcp/networkTpl");
 const { diskTpl } = require("./template/gcp/diskTpl");
 const { subNetworkTpl } = require("./template/gcp/subNetworkTpl");
 const { virtualMachineTpl } = require("./template/gcp/virtualMachineTpl");
+const {
+  readModel,
+  readMapping,
+  writeResources,
+  findLiveById,
+  ResourceVarName,
+} = require("./generatorUtils");
 
-const readModel = pipe([
-  tap((options) => {
-    console.log(`readModel`, options);
-  }),
-  (options) => fs.readFile(path.resolve(options.input), "utf-8"),
-  JSON.parse,
-  get("result.results"),
-  first,
-  get("results"),
-  tap((xxx) => {
-    console.log("");
-  }),
-]);
+const { Command } = require("commander");
 
-const readMapping = (options) =>
-  pipe([
-    tap(() => {
-      //console.log("readMapping", options.mapping);
-    }),
-    () => fs.readFile(path.resolve(options.mapping), "utf-8"),
-    JSON.parse,
-  ]);
+const createProgram = ({ version }) => {
+  const program = new Command();
+  program.storeOptionsAsProperties(false);
+  program.allowUnknownOption(); // For testing
+  program.version(version);
+  program.requiredOption("-i, --input <file>", "lives resources");
+  program.option("-o, --output <file>", "iac.js output", "iac.js");
+  program.option("-m, --mapping <file>", "mapping file", "mapping.json");
 
-const writeResources =
-  ({ type, writeResource }) =>
-  ({ lives, mapping }) =>
-    pipe([
-      tap(() => {
-        //console.log(`writeResources ${type} `);
-      }),
-      () => lives,
-      find(eq(get("type"), type)),
-      get("resources"),
-      map(
-        pipe([
-          tap((network) => {
-            //console.log(`writeResources`);
-          }),
-          (resource) => writeResource({ resource, lives, mapping }),
-        ])
-      ),
-    ])();
+  program.parse(process.argv);
 
-const findLiveById =
-  ({ lives, type }) =>
-  (id) =>
-    pipe([
-      () => lives,
-      find(eq(get("type"), type)),
-      get("resources"),
-      find(eq(get("id"), id)),
-      tap((xxx) => {
-        //console.log(`findName`);
-      }),
-    ])();
-
-const ResourceVarName = (name) => camelCase(name);
+  return program;
+};
 
 // Network
 const writeNetwork = ({ resource, lives }) =>
@@ -188,6 +152,7 @@ const findSubnetDependencyNames = ({ type, resource, lives }) =>
 
 const ResourceVarNameSubnet = (resource) =>
   `subnet_${ResourceVarName(resource.name)}`;
+
 const ResourceNameSubnet = (resource) =>
   ResourceVarNameSubnet(resource).replace(/_/g, "-");
 
@@ -330,13 +295,12 @@ const writeOutput = ({ options, content }) =>
     }),
   ])();
 
-exports.main = async (options) =>
+const main = async (options) =>
   pipe([
     tap((xxx) => {
       console.log("OpenStack2Gcp");
     }),
-    () => options,
-    fork({ lives: readModel, mapping: readMapping(options) }),
+    fork({ lives: readModel(options), mapping: readMapping(options) }),
     ({ lives, mapping }) =>
       flatMap((writeResource) => writeResource({ lives, mapping }))([
         writeNetworks,
@@ -364,3 +328,15 @@ exports.main = async (options) =>
     }),
     (content) => writeOutput({ options, content }),
   ])();
+
+//TODO read version from package.json
+const program = createProgram({ version: "1.0" });
+const options = program.opts();
+
+main(options)
+  .then(() => {})
+  .catch((error) => {
+    console.error("error");
+    console.error(error);
+    throw error;
+  });

@@ -1,15 +1,15 @@
 {
   "name": "@grucloud/openstack2gcp",
   "version": "1.19.1",
-  "description": "Migrate OpenStack to GCP",
+  "description": "Generate infrastructure as code from live resources",
   "bin": {
-    "openstack2gcp": "./index.js"
+    "openstack2gcp": "./OpenStack2Gcp.js"
   },
   "license": "Proprietary",
   "private": true,
   "main": "OpenStack2Gcp.js",
   "scripts": {
-    "generate": "node index.js --input openstack-inventory/gc-list.json --output gcp-infra/iac.js --mapping mapping.json"
+    "openstack2gcp": "node OpenStack2Gcp.js --input openstack-inventory/gc-list.json --output gcp-infra/iac.js --mapping mapping.json"
   },
   "author": "Frederic Heem",
   "dependencies": {
