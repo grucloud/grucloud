@@ -50,10 +50,12 @@ const {
 const { convertError, HookType } = require("../Common");
 const { tos } = require("../tos");
 
-const DisplayAndThrow = ({ name }) => (error) => {
-  displayError({ name, error });
-  throw { code: 422, error: { ...error, displayed: true } };
-};
+const DisplayAndThrow =
+  ({ name }) =>
+  (error) => {
+    displayError({ name, error });
+    throw { code: 422, error: { ...error, displayed: true } };
+  };
 
 const throwIfError = tap.if(get("error"), (result) => {
   throw result;
@@ -560,62 +562,61 @@ const displayDeploySuccess = pipe([
     ),
 ]);
 
-const doPlansDeploy = ({ commandOptions, programOptions, providerGru }) => ({
-  resultQuery,
-  lives,
-}) =>
-  pipe([
-    tap(() => {
-      logger.debug("doPlansDeploy ");
-      assert(resultQuery);
-    }),
-    () => resultQuery,
-    ({ results }) =>
-      runAsyncCommand({
-        text: displayCommandHeader({
-          providers: providerGru.getProviders(),
-          verb: "Deploying",
-        }),
-        command: ({ onStateChange }) =>
-          pipe([
-            tap(
-              pipe([
-                () => results,
-                filter(not(get("error"))),
-                map.series((plan) =>
-                  providerGru
-                    .getProvider({ providerName: plan.providerName })
-                    .spinnersStartDeploy({
-                      onStateChange,
-                      plan,
-                    })
-                ),
-              ])
-            ),
-            () =>
-              providerGru.planApply({
-                onStateChange,
-                plan: resultQuery,
-                lives,
-                onProviderEnd: ({ provider, error }) =>
-                  provider.spinnersStopProvider({
-                    onStateChange,
-                    error,
-                  }),
-              }),
-            tap((xxx) => {
-              assert(xxx);
-            }),
-          ])(),
+const doPlansDeploy =
+  ({ commandOptions, programOptions, providerGru }) =>
+  ({ resultQuery, lives }) =>
+    pipe([
+      tap(() => {
+        logger.debug("doPlansDeploy ");
+        assert(resultQuery);
       }),
-    tap((result) =>
-      saveToJson({ command: "apply", commandOptions, programOptions, result })
-    ),
-    tap((xxx) => {
-      logger.debug("doPlansDeploy");
-    }),
-    tap(() => displayDeploySuccess(resultQuery.results)),
-  ])();
+      () => resultQuery,
+      ({ results }) =>
+        runAsyncCommand({
+          text: displayCommandHeader({
+            providers: providerGru.getProviders(),
+            verb: "Deploying",
+          }),
+          command: ({ onStateChange }) =>
+            pipe([
+              tap(
+                pipe([
+                  () => results,
+                  filter(not(get("error"))),
+                  map.series((plan) =>
+                    providerGru
+                      .getProvider({ providerName: plan.providerName })
+                      .spinnersStartDeploy({
+                        onStateChange,
+                        plan,
+                      })
+                  ),
+                ])
+              ),
+              () =>
+                providerGru.planApply({
+                  onStateChange,
+                  plan: resultQuery,
+                  lives,
+                  onProviderEnd: ({ provider, error }) =>
+                    provider.spinnersStopProvider({
+                      onStateChange,
+                      error,
+                    }),
+                }),
+              tap((xxx) => {
+                assert(xxx);
+              }),
+            ])(),
+        }),
+      tap((result) =>
+        saveToJson({ command: "apply", commandOptions, programOptions, result })
+      ),
+      tap((xxx) => {
+        logger.debug("doPlansDeploy");
+      }),
+      tap(() => displayDeploySuccess(resultQuery.results)),
+    ])();
 
 const processDeployPlans = ({ commandOptions, programOptions, providerGru }) =>
   switchCase([
@@ -654,23 +655,28 @@ const doPlanApply = async ({
     assign({ error: any(get("error")) }),
     tap((result) => {
       logger.info(`doPlanApply done`);
+      logger.debug(tos(result));
     }),
   ])();
 
-const applyNeedsRetry = and([
-  () => true, //TODO
+const applyNeedsRetry = pipe([
+  tap((result) => {
+    assert(result);
+    //assert(result.resultDeploy);
+    //assert(result.resultDeploy.results);
+    assert(result.resultQuery);
+    assert(result.resultQuery.results);
+  }),
   or([
-    and([
-      pipe([
-        get("resultDeploy.results"),
-        pluck("resultCreate"),
-        pluck("results"),
-        flatten,
-        find(eq(get("error.errorClass"), "Dependency")),
-        tap((hasError) => {
-          logger.info(`has dependency error: ${hasError}`);
-        }),
-      ]),
+    pipe([
+      get("resultDeploy.results"),
+      pluck("resultCreate"),
+      pluck("results"),
+      flatten,
+      find(eq(get("error.errorClass"), "Dependency")),
+      tap((hasError) => {
+        logger.info(`has dependency error: ${hasError}`);
+      }),
     ]),
     and([
       pipe([

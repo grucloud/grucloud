@@ -111,25 +111,22 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
     provider.register({ resources, hooks })
   )(stacks);
 
-  const onStateChangeDefault = ({ onStateChange }) => ({
-    key,
-    error,
-    result,
-    nextState,
-  }) =>
-    pipe([
-      tap.if(
-        () => includes(nextState)(["DONE", "ERROR"]),
-        pipe([
-          () => getProvider({ providerName: key }),
-          (provider) =>
-            provider.spinnersStopProvider({
-              onStateChange,
-              error: result?.error || error,
-            }),
-        ])
-      ),
-    ])();
+  const onStateChangeDefault =
+    ({ onStateChange }) =>
+    ({ key, error, result, nextState }) =>
+      pipe([
+        tap.if(
+          () => includes(nextState)(["DONE", "ERROR"]),
+          pipe([
+            () => getProvider({ providerName: key }),
+            (provider) =>
+              provider.spinnersStopProvider({
+                onStateChange,
+                error: result?.error || error,
+              }),
+          ])
+        ),
+      ])();
 
   const getStack = ({ providerName }) =>
     pipe([
@@ -300,128 +297,135 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
   };
 
   // Add namespace and dependencies.
-  const resourceDecorate = ({ lives, commandOptions }) => (resource) =>
-    pipe([
-      tap(() => {
-        assert(resource.providerName);
-        assert(resource.type);
-        assert(lives);
-      }),
-      // Use Lister
-      () => getProvider({ providerName: resource.providerName }),
-      (provider) =>
-        pipe([
-          () => provider.clientByType({ type: resource.type }),
-          (client) => ({
-            ...resource,
-            get isDefault() {
-              return client.isDefault({ live: resource.live, lives });
-            },
-            get namespace() {
-              return client.findNamespace({ live: resource.live, lives });
-            },
-            get dependencies() {
-              return client.findDependencies({
-                live: resource.live,
-                lives,
-              });
-            },
-            get managedByUs() {
-              return client.spec.isOurMinion({
-                resource: provider.getResourceFromLive({
-                  client,
+  const resourceDecorate =
+    ({ lives, commandOptions }) =>
+    (resource) =>
+      pipe([
+        tap(() => {
+          assert(resource.providerName);
+          assert(resource.type);
+          assert(lives);
+        }),
+        // Use Lister
+        () => getProvider({ providerName: resource.providerName }),
+        (provider) =>
+          pipe([
+            () => provider.clientByType({ type: resource.type }),
+            (client) => ({
+              ...resource,
+              get isDefault() {
+                return client.isDefault({ live: resource.live, lives });
+              },
+              get namespace() {
+                return client.findNamespace({ live: resource.live, lives });
+              },
+              get dependencies() {
+                return client.findDependencies({
                   live: resource.live,
+                  lives,
+                });
+              },
+              get managedByUs() {
+                return client.spec.isOurMinion({
+                  resource: provider.getResourceFromLive({
+                    client,
+                    live: resource.live,
+                  }),
+                  live: resource.live,
+                  lives,
+                  //TODO remove resourceNames
+                  resourceNames: provider.resourceNames(),
+                  resources: provider.getResourcesByType({
+                    type: client.spec.type,
+                  }),
+                  config: provider.config,
+                });
+              },
+            }),
+            tap((resource) =>
+              Object.defineProperty(resource, "show", {
+                enumerable: true,
+                get: () => showLive({ commandOptions })(resource),
+              })
+            ),
+          ])(),
+        tap((resource) => {
+          assert(true);
+        }),
+      ])();
+
+  const showLive =
+    ({ commandOptions = {} } = {}) =>
+    (resource) =>
+      pipe([
+        () => resource,
+        and([
+          (resource) =>
+            switchCase([not(isEmpty), includes(resource.type), () => true])(
+              commandOptions.types
+            ),
+          (resource) => !includes(resource.type)(commandOptions.typesExclude),
+          (resource) =>
+            commandOptions.defaultExclude ? !resource.isDefault : true,
+          (resource) => (commandOptions.our ? resource.managedByUs : true),
+          (resource) =>
+            commandOptions.name ? resource.name === commandOptions.name : true,
+          (resource) =>
+            commandOptions.id ? resource.id === commandOptions.id : true,
+          (resource) =>
+            commandOptions.providerName &&
+            !isEmpty(commandOptions.providerNames)
+              ? includes(resource.providerName)(commandOptions.providerNames)
+              : true,
+          (resource) =>
+            commandOptions.canBeDeleted ? !resource.cannotBeDeleted : true,
+        ]),
+        tap((show) => {
+          logger.debug(`showLive ${resource.name} show: ${show}`);
+        }),
+      ])();
+
+  const decorateListResult =
+    ({}) =>
+    (perProvider) =>
+      pipe([
+        tap((xxx) => {
+          assert(true);
+        }),
+        () => createLives(),
+        tap((lives) =>
+          map(
+            assign({
+              results: pipe([
+                get("results"),
+                tap((results) => {
+                  logger.debug(`decorateListResult #types: ${size(results)}`);
                 }),
-                live: resource.live,
-                lives,
-                //TODO remove resourceNames
-                resourceNames: provider.resourceNames(),
-                resources: provider.getResourcesByType({
-                  type: client.spec.type,
-                }),
-                config: provider.config,
-              });
-            },
-          }),
-          tap((resource) =>
-            Object.defineProperty(resource, "show", {
-              enumerable: true,
-              get: () => showLive({ commandOptions })(resource),
+                map(
+                  assign({
+                    resources: ({ providerName, resources, type, error }) =>
+                      pipe([
+                        () => resources,
+                        map(resourceDecorate({ lives, commandOptions })),
+                        tap((resources) => {
+                          lives.addResources({
+                            providerName,
+                            type,
+                            resources,
+                            error,
+                          });
+                        }),
+                      ])(),
+                  })
+                ),
+              ]),
             })
-          ),
-        ])(),
-      tap((resource) => {
-        assert(true);
-      }),
-    ])();
-
-  const showLive = ({ commandOptions = {} } = {}) => (resource) =>
-    pipe([
-      () => resource,
-      and([
-        (resource) =>
-          switchCase([not(isEmpty), includes(resource.type), () => true])(
-            commandOptions.types
-          ),
-        (resource) => !includes(resource.type)(commandOptions.typesExclude),
-        (resource) =>
-          commandOptions.defaultExclude ? !resource.isDefault : true,
-        (resource) => (commandOptions.our ? resource.managedByUs : true),
-        (resource) =>
-          commandOptions.name ? resource.name === commandOptions.name : true,
-        (resource) =>
-          commandOptions.id ? resource.id === commandOptions.id : true,
-        (resource) =>
-          commandOptions.providerName && !isEmpty(commandOptions.providerNames)
-            ? includes(resource.providerName)(commandOptions.providerNames)
-            : true,
-        (resource) =>
-          commandOptions.canBeDeleted ? !resource.cannotBeDeleted : true,
-      ]),
-      tap((show) => {
-        logger.debug(`showLive ${resource.name} show: ${show}`);
-      }),
-    ])();
-
-  const decorateListResult = ({}) => (perProvider) =>
-    pipe([
-      tap((xxx) => {
-        assert(true);
-      }),
-      () => createLives(),
-      tap((lives) =>
-        map(
-          assign({
-            results: pipe([
-              get("results"),
-              tap((results) => {
-                logger.debug(`decorateListResult #types: ${size(results)}`);
-              }),
-              map(
-                assign({
-                  resources: ({ providerName, resources, type, error }) =>
-                    pipe([
-                      () => resources,
-                      map(resourceDecorate({ lives, commandOptions })),
-                      tap((resources) => {
-                        lives.addResources({
-                          providerName,
-                          type,
-                          resources,
-                          error,
-                        });
-                      }),
-                    ])(),
-                })
-              ),
-            ]),
-          })
-        )(perProvider)
-      ),
-      tap((lives) => {
-        assert(true);
-      }),
-    ])();
+          )(perProvider)
+        ),
+        tap((lives) => {
+          assert(true);
+        }),
+      ])();
 
   const listLives = async ({
     onStateChange,
@@ -602,7 +606,9 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
                       resultHooks: () =>
                         provider.runOnDeployed({ onStateChange }),
                     }),
-                    assign({ error: any(get("error")) }),
+                    assign({
+                      error: pipe([omit(["lives"]), any(get("error"))]),
+                    }),
                     tap((xxx) => {
                       assert(xxx);
                     }),
