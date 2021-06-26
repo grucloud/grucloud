@@ -27,7 +27,7 @@ const virtualNetwork = await provider.makeVirtualNetwork({
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/iac.js#14)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/vm/iac.js#14)
 
 ### Properties
 

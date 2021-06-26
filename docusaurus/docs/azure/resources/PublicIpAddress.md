@@ -21,7 +21,7 @@ const publicIpAddress = await provider.makePublicIpAddress({
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/iac.js#L58)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/vm/iac.js#L58)
 
 ### Properties
 
