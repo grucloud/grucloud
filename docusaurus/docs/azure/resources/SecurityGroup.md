@@ -46,7 +46,7 @@ const sg = provider.makeSecurityGroup({
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/iac.js#L33)
+- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/azure/vmiac.js#L33)
 
 ### Properties
 
