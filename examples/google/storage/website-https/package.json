@@ -14,6 +14,7 @@
   "dependencies": {
     "@grucloud/core": "^1.19.1",
     "@grucloud/provider-google": "^1.19.1",
-    "mime-types": "^2.1.27"
+    "mime-types": "^2.1.27",
+    "rubico": "^1.6.29"
   }
 }
