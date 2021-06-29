@@ -28,7 +28,7 @@ async function getFilesWalk(dir) {
 exports.createStack = async () => {
   const provider = GoogleProvider({ config: require("./config") });
 
-  const { bucketName, websiteDir } = config;
+  const { bucketName, websiteDir } = provider.config;
   assert(bucketName);
   assert(websiteDir);
 
