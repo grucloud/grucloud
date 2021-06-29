@@ -1,6 +1,7 @@
-# Route53
+# DNS validation with a TXT record
 
-The purpose of this example is to create an hosted zone and add some records.
+The purpose of this example is to validate a website domain by DNS validation.
+A TXT record will be created for that purpose.
 
 ## Resources
 

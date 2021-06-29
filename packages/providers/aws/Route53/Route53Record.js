@@ -17,7 +17,14 @@ const {
   omit,
   and,
 } = require("rubico");
-const { find, pluck, defaultsDeep, isEmpty, isDeepEqual } = require("rubico/x");
+const {
+  find,
+  pluck,
+  defaultsDeep,
+  isEmpty,
+  isDeepEqual,
+  callProp,
+} = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
 const logger = require("@grucloud/core/logger")({ prefix: "Route53Record" });
@@ -28,6 +35,10 @@ const { filterEmptyResourceRecords } = require("./Route53Utils");
 const omitFieldRecord = omit(["Tags", "hostedZoneId", "namespace"]);
 
 const liveToResourceSet = pipe([omitFieldRecord, filterEmptyResourceRecords]);
+const RecordKeyPrefix = "gc::record-";
+const buildRecordTagKey = (name) => `${RecordKeyPrefix}${name}`;
+const getNameFromTagKey = (key = "") => key.replace(RecordKeyPrefix, "");
+const buildRecordTagValue = ({ Name, Type }) => `${Name}::${Type}`;
 
 const findName = pipe([
   tap((live) => {
@@ -35,13 +46,15 @@ const findName = pipe([
     assert(live.Name);
     assert(live.Tags);
   }),
-  ({ Name, Tags }) => find(eq(get("Key"), Name))(Tags),
+  ({ Name, Type, Tags }) =>
+    find(eq(get("Value"), buildRecordTagValue({ Name, Type })))(Tags),
   tap((tag) => {
     logger.debug(`findName tag ${tos(tag)}`);
   }),
-  get("Value"),
-  tap((Value) => {
-    logger.info(`findName name: ${tos(Value)}`);
+  get("Key"),
+  getNameFromTagKey,
+  tap((Key) => {
+    logger.info(`findName name: ${tos(Key)}`);
   }),
 ]);
 
@@ -89,12 +102,31 @@ exports.Route53Record = ({ spec, config }) => {
         logger.debug(`findRecordInZone ${tos({ name, hostedZone })}`);
       }),
       get("Tags", []),
-      find(eq(get("Value"), name)),
-      get("Key"),
+      find(eq(get("Key"), buildRecordTagKey(name))),
+      get("Value"),
       tap((xxx) => {
         assert(true);
       }),
-      (name) => find(eq(get("Name"), name))(hostedZone.RecordSet),
+      tryCatch(
+        pipe([
+          callProp("split", "::"),
+          tap((xxx) => {
+            logger.debug(`findRecordInZone ${xxx}`);
+          }),
+          ([Name, Type] = []) =>
+            find(
+              and([
+                //
+                eq(get("Name"), Name),
+                eq(get("Type"), Type),
+              ])
+            )(hostedZone.RecordSet),
+        ]),
+        (error) => {
+          logger.debug(`findRecordInZone ${name}, cannot find record in tags`);
+        }
+      ),
+
       tap((xxx) => {
         assert(true);
       }),
@@ -200,10 +232,16 @@ exports.Route53Record = ({ spec, config }) => {
             Changes: [Change],
           },
         }),
+      // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#changeTagsForResource-property
       () =>
         route53().changeTagsForResource({
           ResourceId: hostedZone.live.Id,
-          AddTags: [{ Key: payload.Name, Value: name }],
+          AddTags: [
+            {
+              Key: buildRecordTagKey(name),
+              Value: buildRecordTagValue(payload),
+            },
+          ],
           ResourceType: "hostedzone",
         }),
       tap((result) => {
@@ -227,18 +265,27 @@ exports.Route53Record = ({ spec, config }) => {
           () => live,
           switchCase([
             not(isEmpty),
-            (live) =>
-              route53().changeResourceRecordSets({
-                HostedZoneId: hostedZone.Id,
-                ChangeBatch: {
-                  Changes: [
-                    {
-                      Action: "DELETE",
-                      ResourceRecordSet: liveToResourceSet(live),
-                    },
-                  ],
-                },
-              }),
+            pipe([
+              (live) =>
+                route53().changeResourceRecordSets({
+                  HostedZoneId: hostedZone.Id,
+                  ChangeBatch: {
+                    Changes: [
+                      {
+                        Action: "DELETE",
+                        ResourceRecordSet: liveToResourceSet(live),
+                      },
+                    ],
+                  },
+                }),
+              // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#changeTagsForResource-property
+              () =>
+                route53().changeTagsForResource({
+                  ResourceId: hostedZone.Id,
+                  RemoveTagKeys: [buildRecordTagKey(name)],
+                  ResourceType: "hostedzone",
+                }),
+            ]),
             () => {
               logger.error(`no live record for ${name}`);
             },
