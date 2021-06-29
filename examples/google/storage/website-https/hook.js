@@ -3,8 +3,8 @@ const { Resolver } = require("dns").promises;
 
 const { retryCallOnError, retryCall } = require("@grucloud/core").Retry;
 const Axios = require("axios");
-const { pipe, get } = require("rubico");
-const { first, find } = require("rubico/x");
+const { pipe, get, fork, any, tap } = require("rubico");
+const { first, find, isEmpty } = require("rubico/x");
 
 const checkDig = async ({ nameServer, domain, type = "A" }) => {
   let commandParam = [domain, type];
@@ -48,13 +48,15 @@ module.exports = ({ resources, provider }) => {
 
   return {
     onDeployed: {
-      init: async () => {
-        const dnsManagedZoneLive = await resources.dnsManagedZone.getLive();
-        assert(dnsManagedZoneLive.nameServers);
-
-        const sslCertificateLive = await resources.sslCertificate.getLive();
-        return { dnsManagedZoneLive, sslCertificateLive };
-      },
+      init: pipe([
+        fork({
+          dnsManagedZone: () => resources.dnsManagedZone.getLive(),
+          sslCertificate: () => resources.sslCertificate.getLive(),
+        }),
+        tap.if(any(isEmpty), (result) => {
+          throw Error(`cannot get live resources`);
+        }),
+      ]),
       actions: [
         {
           name: `get ${bucketUrlIndex}`,
@@ -97,17 +99,14 @@ module.exports = ({ resources, provider }) => {
         },
         {
           name: `ssl certificate ready`,
-          command: async ({ sslCertificateLive }) => {
-            assert(
-              sslCertificateLive.certificate,
-              "ssl certificate not yet ready"
-            );
+          command: async ({ sslCertificate }) => {
+            assert(sslCertificate.certificate, "ssl certificate not yet ready");
           },
         },
         {
           name: `dig nameservers managedZone ${resources.bucketPublic.name}`,
-          command: async ({ dnsManagedZoneLive }) => {
-            const nameServer = dnsManagedZoneLive.nameServers[0];
+          command: async ({ dnsManagedZone }) => {
+            const nameServer = dnsManagedZone.nameServers[0];
             await checkDig({
               nameServer,
               domain: resources.bucketPublic.name,
@@ -116,12 +115,12 @@ module.exports = ({ resources, provider }) => {
         },
         {
           name: `dig nameservers recordSet ${resources.bucketPublic.name}`,
-          command: async ({ dnsManagedZoneLive }) => {
+          command: async ({ dnsManagedZone }) => {
             const nameServer = pipe([
               find((record) => record.type === "NS"),
               get("rrdatas"),
               first,
-            ])(dnsManagedZoneLive.recordSet);
+            ])(dnsManagedZone.recordSet);
             await checkDig({
               nameServer,
               domain: resources.bucketPublic.name,
