@@ -3,7 +3,7 @@ const { Resolver } = require("dns").promises;
 
 const { retryCallOnError, retryCall } = require("@grucloud/core").Retry;
 const Axios = require("axios");
-const { pipe, get, fork, any, tap } = require("rubico");
+const { pipe, get, fork, any, tap, switchCase } = require("rubico");
 const { first, find, isEmpty } = require("rubico/x");
 
 const checkDig = async ({ nameServer, domain, type = "A" }) => {
