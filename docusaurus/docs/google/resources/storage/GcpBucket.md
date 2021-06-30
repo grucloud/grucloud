@@ -20,7 +20,7 @@ const bucket = await provider.makeBucket({
 
 ```js
 const bucketPublic = await provider.makeBucket({
-  name: "demo.yourwebite.com",
+  name: "demo.yourwebsite.com",
   properties: () => ({
     iamConfiguration: {
       uniformBucketLevelAccess: {
