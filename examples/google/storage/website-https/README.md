@@ -1,10 +1,12 @@
 # Hosting a secure static website on GCP, domain managed by AWS Route53
 
-The example automates the deployment of a static website served with HTTPS on GCP, the domain and DNS settings handled by AWS Route53.
+The goal of this example is to automate with [GruCloud](https://grucloud.com), the deployment of a static website served with HTTPS on GCP, the Google Cloud Platform.
+
+The domain and DNS settings are handled by AWS Route53.
 
 See the manual way at [hosting static website](https://cloud.google.com/storage/docs/hosting-static-website)
 
-[Google Domain](https://domains.google/) does not provide API, and the other google DNS service [Cloud Domain](https://cloud.google.com/domains/docs/overview) does not support transfering a domain.
+[Google Domain](https://domains.google/) does not provide API, and the other google DNS service [Cloud Domain](https://cloud.google.com/domains/docs/overview) does not support transferring a domain.
 
 For this reason, this example uses _AWS Route53_.
 
@@ -28,9 +30,9 @@ Below are the links to the resource documentation:
 
 ## Hooks
 
-The file [hook.js](./hook.js) contains actions to perform after the infrastrucure is deployed and after it is destroyed.
+The file [hook.js](./hook.js) contains actions to perform after the infrastructure is deployed and after it is destroyed.
 
-The file [route53Utils.js](./route53Utils.js) contains function to adds and removes a DNS record of type A to map the domain name to the load balancer's IP address by calling the AWS CLI.
+The file [route53Utils.js](./route53Utils.js) contains functions to add and remove a DNS record of type A to map the domain name to the load balancer's IP address by calling the AWS CLI.
 
 - `aws route53 list-hosted-zones-by-name --dns-name ${domainName}`
 - `aws route53 list-resource-record-sets --hosted-zone-id ${hostedZoneId}`
@@ -58,7 +60,7 @@ Install **gc**, the GruCloud CLI:
 npm i -g @grucloud/core
 ```
 
-Check **gc** is installed correclty:
+Check **gc** is installed correctly:
 
 ```sh
 gc -v
@@ -86,7 +88,7 @@ gsutil 4.54
 
 ### AWS CLI
 
-Enure the AWS CLI is installed as it will be invoked in the [hook.js](./hook.js) to add and remove a dns record to map the domain name to the load balancer's IP address.
+Ensure the AWS CLI is installed as it will be invoked in the [hook.js](./hook.js) to add and remove a DNS record to map the domain name to the load balancer's IP address.
 
 ```sh
 aws --version
@@ -98,7 +100,7 @@ aws-cli/2.0.10 Python/3.7.4 Darwin/19.3.0 botocore/2.0.0dev14
 
 ### Route53 Domain
 
-Let's verify that the aws account has a domain name registered:
+Let's verify that the AWS account has a domain name registered:
 
 ```sh
 aws route53domains list-domains --region us-east-1
@@ -121,7 +123,7 @@ Alternatively, see the [Route53 Domain Listing](https://console.aws.amazon.com/r
 
 ### Route53 Hosted Zone
 
-Create an Hosted Zone to later on add the DNS record of type A:
+Create a Hosted Zone, later on, a DNS record of type A will be created in this zone:
 
 ```sh
 aws route53 create-hosted-zone --name grucloud.org --caller-reference 2021-06-30-2
@@ -148,7 +150,7 @@ Edit [config.js](config.js) and set the following variables:
 
 ## Initialise
 
-The _init_ command will create the project, setup the billing, enable the api services, create the service account and its credentials file, and bind the IAM roles to this service account
+The _init_ command will create the project, set up the billing, enable the API services, create the service account and its credentials file, and bind the IAM roles to this service account
 
 ```
 gc init
@@ -156,7 +158,7 @@ gc init
 
 ## Add the service account as the domain owner
 
-The service account operating by grucloud need to be added as the domain owner.
+The service account operating by _grucloud_ needs to be added as the domain owner.
 
 This service account created previously with the **init** command is in the form of grucloud@**YourProjectId**.iam.gserviceaccount.com
 
@@ -193,7 +195,7 @@ Follow the manual steps at the [domain name verification documentation](https://
 
 ### Deploy
 
-Deploy this infrastucture with the _apply_ command
+Deploy this infrastructure with the _apply_ command
 
 ```sh
 gc apply
@@ -261,7 +263,7 @@ First, a DNS type A record is added to map the domain name to the load balancer'
 The SSL certificate is waiting for this record to verify the ownership of the domain. It may take a few minutes for the SSL certificate to be ready.
 
 The last stage is to get the webpage with HTTPS.
-It ensures the deployment is completed successfuly.
+It ensures the deployment is completed successfully.
 
 ### List the resources.
 
@@ -586,7 +588,7 @@ Command "gc list" executed in 4s
 
 ### Update
 
-Let's deploy a new version of the website, in this very simple example, edit [website/simple/index.html], change something and save the file.
+Let's deploy a new version of the website, in this very simple example, edit [website/simple/index.html], change something, and save the file.
 
 The _plan_ command helps to find out what is going to be deployed:
 
@@ -631,12 +633,12 @@ Querying resources on 1 provider: google
 Command "gc p" executed in 4s
 ```
 
-In this case, _gc_ computes the MD5 hash of the file and compare it with the live version.
+In this case, _gc_ computes the MD5 hash of the file and compares it with the live version.
 Next, use the _apply_ command to effectively deploy.
 
 ### Destroy
 
-Dispose the infrastructure in the right order with:
+Dispose of the infrastructure in the right order with:
 
 ```
 gc destroy
@@ -674,3 +676,10 @@ Destroying resources on 1 provider: google
 Running OnDestroyedGlobal resources on 1 provider: google
 Command "gc d -f" executed in 56s
 ```
+
+## Links
+
+- [GitHub](https://github.com/grucloud/grucloud)
+- [Documentation](https://www.grucloud.com/docs/Introduction)
+- [Website](https://www.grucloud.com)
+- [Twitter](https://twitter.com/grucloud_iac)
