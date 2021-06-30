@@ -240,7 +240,7 @@ Would you like to deploy a [full stack application](https://github.com/FredericH
 
 - Load balancer resources created inside the cluster with the AWS Load Balancer Controller: [eks-lbc](https://github.com/grucloud/grucloud/tree/main/examples/starhackit/eks-lbc).
 
-- A leaner solution where the load balancer resources are created by GruCLoud outside the cluster: [eks-lean](https://github.com/grucloud/grucloud/tree/main/examples/starhackit/eks-lean).
+- A leaner solution where the load balancer resources are created by GruCloud outside the cluster: [eks-lean](https://github.com/grucloud/grucloud/tree/main/examples/starhackit/eks-lean).
 
 ## Links
 

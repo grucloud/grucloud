@@ -1,14 +1,12 @@
-# Hosting a secure static website on GCP
+# Hosting a secure static website on GCP, domain managed by AWS Route53
 
-The example automates the deployment of a static website served with HTTPS on GCP.
+The example automates the deployment of a static website served with HTTPS on GCP, the domain and DNS settings handled by AWS Route53.
 
 See the manual way at [hosting static website](https://cloud.google.com/storage/docs/hosting-static-website)
 
 [Google Domain](https://domains.google/) does not provide API, and the other google DNS service [Cloud Domain](https://cloud.google.com/domains/docs/overview) does not support transfering a domain.
 
 For this reason, this example uses _AWS Route53_.
-
-The [hook.js](./hook.js) file adds and removes a dns record of type A to map the domain name to the load balancer's IP address.
 
 ## Resources
 
@@ -28,6 +26,16 @@ Below are the links to the resource documentation:
 - [SSL Certificate](https://www.grucloud.com/docs/google/resources/Compute/SslCertificate)
 - [Url Map](https://www.grucloud.com/docs/google/resources/Compute/UrlMap)
 
+## Hooks
+
+The file [hook.js](./hook.js) contains actions to perform after the infrastrucure is deployed and after it is destroyed.
+
+The file [route53Utils.js](./route53Utils.js) contains function to adds and removes a DNS record of type A to map the domain name to the load balancer's IP address by calling the AWS CLI.
+
+- `aws route53 list-hosted-zones-by-name --dns-name ${domainName}`
+- `aws route53 list-resource-record-sets --hosted-zone-id ${hostedZoneId}`
+- `aws route53 change-resource-record-sets --hosted-zone-id ${hostedZoneId} --change-batch '${changeBatch}'`
+
 ## Requirements
 
 ### Node
@@ -42,7 +50,7 @@ node -v
 v14.15.3
 ```
 
-### GruCLoud CLI
+### GruCloud CLI
 
 Install **gc**, the GruCloud CLI:
 
