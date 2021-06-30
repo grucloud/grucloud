@@ -35,7 +35,7 @@ const backendBucket = await provider.makeBackendBucket({
 
 ### Depends On
 
-- [Bucket](../storage/Bucket.md)
+- [Bucket](../storage/GcpBucket.md)
 
 ### Used By
 
