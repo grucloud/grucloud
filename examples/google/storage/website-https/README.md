@@ -4,19 +4,31 @@ The example automates the deployment of a static website served with HTTPS on GC
 
 See the manual way at [hosting static website](https://cloud.google.com/storage/docs/hosting-static-website)
 
-This deployment is composed of the resources depicted in the following diagram:
-
-![GraphTarget](diagram-target.svg)
-
-> The command `gc graph` generates this diagram from the target code.
-
-## Requirements
-
 [Google Domain](https://domains.google/) does not provide API, and the other google DNS service [Cloud Domain](https://cloud.google.com/domains/docs/overview) does not support transfering a domain.
 
 For this reason, this example uses _AWS Route53_.
 
 The [hook.js](./hook.js) file adds and removes a dns record of type A to map the domain name to the load balancer's IP address.
+
+## Resources
+
+This deployment is composed of the resources depicted in the following diagram:
+
+![GraphTarget](diagram-target.svg)
+
+> The command `gc graph` generates this diagram from the code [iac.js](./iac.js).
+
+Below are the links to the resource documentation:
+
+- [Object](https://www.grucloud.com/docs/google/resources/storage/GcpObject)
+- [Bucket](https://www.grucloud.com/docs/google/resources/storage/GcpBucket)
+- [BackendBucket](https://www.grucloud.com/docs/google/resources/Compute/BackendBucket)
+- [Global Forwarding Rule](https://www.grucloud.com/docs/google/resources/Compute/GlobalForwardingRule)
+- [Https Target Proxy](https://www.grucloud.com/docs/google/resources/Compute/HttpsTargetProxy)
+- [SSL Certificate](https://www.grucloud.com/docs/google/resources/Compute/SslCertificate)
+- [UrlMap](https://www.grucloud.com/docs/google/resources/Compute/UrlMap)
+
+## Requirements
 
 ### Node
 
@@ -48,7 +60,7 @@ gc -v
 1.19.1
 ```
 
-### gcloud CLI
+### gcloud CLI
 
 Ensure the [gcloud CLI](https://cloud.google.com/sdk/docs/install) is installed:
 

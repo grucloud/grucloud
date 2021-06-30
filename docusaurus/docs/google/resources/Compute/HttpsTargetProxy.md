@@ -58,3 +58,46 @@ const httpsTargetProxy = await provider.makeHttpsTargetProxy({
 ## Used by
 
 - [GlobalForwardingRule](./GlobalForwardingRule.md)
+
+## List
+
+List all Https Target Proxies with the **HttpsTargetProxy** type
+
+```sh
+gc l -t HttpsTargetProxy
+```
+
+```txt
+Listing resources on 1 provider: google
+✓ google
+  ✓ Initialising
+  ✓ Listing 4/4
+┌────────────────────────────────────────────────────────────────────────────────┐
+│ 1 HttpsTargetProxy from google                                                 │
+├────────────────────┬────────────────────────────────────────────────────┬──────┤
+│ Name               │ Data                                               │ Our  │
+├────────────────────┼────────────────────────────────────────────────────┼──────┤
+│ https-target-proxy │ id: 6271089959767242210                            │ Yes  │
+│                    │ creationTimestamp: 2021-06-30T03:44:29.553-07:00   │      │
+│                    │ name: https-target-proxy                           │      │
+│                    │ description: Managed By GruCloud                   │      │
+│                    │ selfLink: https://www.googleapis.com/compute/v1/p… │      │
+│                    │ urlMap: https://www.googleapis.com/compute/v1/pro… │      │
+│                    │ sslCertificates:                                   │      │
+│                    │   - "https://www.googleapis.com/compute/v1/projec… │      │
+│                    │ fingerprint: _7WjZisemFI=                          │      │
+│                    │ kind: compute#targetHttpsProxy                     │      │
+│                    │                                                    │      │
+└────────────────────┴────────────────────────────────────────────────────┴──────┘
+
+
+List Summary:
+Provider: google
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ google                                                                        │
+├────────────────────┬──────────────────────────────────────────────────────────┤
+│ HttpsTargetProxy   │ https-target-proxy                                       │
+└────────────────────┴──────────────────────────────────────────────────────────┘
+1 resource, 4 types, 1 provider
+Command "gc l -t HttpsTargetProxy" executed in 4s
+```
