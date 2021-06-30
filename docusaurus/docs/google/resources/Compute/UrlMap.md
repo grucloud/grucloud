@@ -3,7 +3,7 @@ id: UrlMap
 title: Url Map
 ---
 
-Provides a [URL Map](https://cloud.google.com/load-balancing/docs/url-map-concepts) used by the HTTPS load balancer
+Provides a [URL Map](https://console.cloud.google.com/net-services/loadbalancing/loadBalancers/list) used by the HTTPS load balancer
 
 ### Code
 

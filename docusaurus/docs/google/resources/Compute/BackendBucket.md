@@ -3,7 +3,7 @@ id: BackendBucket
 title: Backend Bucket
 ---
 
-Provides a backend bucket.
+Provides a [backend bucket](https://console.cloud.google.com/net-services/loadbalancing/backends/list).
 
 ### Code
 

@@ -3,7 +3,7 @@ id: HttpsTargetProxy
 title: Https Target Proxy
 ---
 
-Provides a HTTPS load balancer.
+Provides a [Https Target Proxy](https://console.cloud.google.com/net-services/loadbalancing/advanced/targetProxies/list) required by an HTTPS load balancer.
 
 ```js
 const bucketName = "mybucketname";

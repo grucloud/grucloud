@@ -3,7 +3,7 @@ id: GlobalForwardingRule
 title: Global Forwarding Rule
 ---
 
-Provides global forwaring rule need by the HTTPS load balancer
+Provides [global forwarding rule](https://console.cloud.google.com/net-services/loadbalancing/frontends/list) needed by the HTTPS load balancer
 
 ```js
 const bucketName = "mybucketname";

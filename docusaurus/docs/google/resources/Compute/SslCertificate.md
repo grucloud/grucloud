@@ -3,7 +3,7 @@ id: SslCertificate
 title: SSL Certificate
 ---
 
-Provides a managed SSL certificate.
+Provides a managed [SSL certificate](https://console.cloud.google.com/net-services/loadbalancing/advanced/sslCertificates/list).
 
 ```js
 const sslCertificate = await provider.makeSslCertificate({
