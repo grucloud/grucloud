@@ -1,15 +1,15 @@
 ## Bugs
 
-- ✖ Subnet 3/4 Network interface 'eni-04fe6bd0ed8822529' is currently in use.
 - gc a: when an assert is thrown, it does not exit but ask for deployment confirmation.
 - check stage for all providers
 
 ## Diagram
 
-add k8s
-backup data.
-privacy policy
-resource table styling
+- check git repo from frontend https://isomorphic-git.org/docs/en/getRemoteInfo
+  add k8s
+  backup data.
+  privacy policy
+  resource table styling
 
 - DBInstance : findDependencies KmsKeyId
 - SecurityGroup self
@@ -109,7 +109,7 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 
 ## TODO Goggle
 
-- network and subnet isDefault
+- ✖ VmInstance 0/1 Request failed with status code 400 Invalid value for field 'resource.networkInterfaces[0].subnetwork': 'projects/grucloud-test/regions/europe-west4/subnetworks/default'. The referenced subnetwork resource cannot be found.
 - vminstance with service account
 - The field 'entity.managedZone.dnsName' cannot be modified.
 - gcp object path properties
@@ -122,8 +122,6 @@ aws iam put-user-policy --user-name terraform-user --policy-name least-privilege
 - validate config: check project and region
 
 - https://medium.com/faun/creating-reusable-infrastructure-with-terraform-on-gcp-e17745ac4ff2
-
-- rename in gcp
 
 ## TODO Mock
 

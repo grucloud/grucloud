@@ -87,7 +87,7 @@ const retryCall = async ({
         )
       ),
       catchError(({ hasMaxCount, error }) => {
-        if (!hasMaxCount && error.code == 503) {
+        if (!hasMaxCount && error?.code == 503) {
           return of(error.result);
         } else {
           return throwError(error);

@@ -20,6 +20,7 @@ const {
   pluck,
   defaultsDeep,
   isEmpty,
+  identity,
   differenceWith,
   isDeepEqual,
   flatten,
@@ -28,5 +29,5 @@ const {
 exports.filterEmptyResourceRecords = switchCase([
   pipe([get("ResourceRecords"), isEmpty]),
   omit(["ResourceRecords"]),
-  (ResourceRecordSet) => ResourceRecordSet,
+  identity,
 ]);

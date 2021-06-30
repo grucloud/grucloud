@@ -102,34 +102,9 @@ exports.createStack = async () => {
     properties: () => ({}),
   });
 
-  const dnsManagedZone = await provider.makeDnsManagedZone({
-    name: "dns-managed-zone",
-    dependencies: { globalForwardingRule },
-
-    properties: ({ dependencies: { globalForwardingRule } }) => {
-      return {
-        dnsName: `${domain}.`,
-        recordSet: [
-          {
-            name: `${domain}.`,
-            rrdatas: [globalForwardingRule.live?.IPAddress],
-            ttl: 86400,
-            type: "A",
-          },
-          {
-            name: `www.${domain}.`,
-            rrdatas: [globalForwardingRule.live?.IPAddress],
-            ttl: 86400,
-            type: "A",
-          },
-        ],
-      };
-    },
-  });
-
   return {
     provider,
-    resources: { bucketPublic, dnsManagedZone, sslCertificate },
+    resources: { bucketPublic, sslCertificate, globalForwardingRule },
     hooks: [hook],
   };
 };
