@@ -143,6 +143,7 @@ Edit [config.js](config.js) and set the following variables:
 
 - _projectId_: the project Id, must be unique, see restrictions [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects#:~:text=The%20project%20ID%20must%20be,used%20for%20a%20deleted%20project.)
 - _bucketName_: the bucket name which is also the domain name, i.e. mywebsite.com or subdomain.mywebsite.com, see the [bucket naming guideline](https://cloud.google.com/storage/docs/naming-buckets)
+- _hostedZoneName_: the hosted zone name in Route53, i.e. mywebsite.com
 - _websiteDir_: the directory containing the static website.
 
 ## Initialise
@@ -583,9 +584,59 @@ Command "gc list" executed in 4s
 
 ![GraphLive](diagram-live.svg)
 
+### Update
+
+Let's deploy a new version of the website, in this very simple example, edit [website/simple/index.html], change something and save the file.
+
+The _plan_ command helps to find out what is going to be deployed:
+
+```sh
+gc plan
+```
+
+```txt
+Querying resources on 1 provider: google
+✓ google
+  ✓ Initialising
+  ✓ Listing 7/7
+  ✓ Querying
+    ✓ Bucket 1/1
+    ✓ Object 1/1
+    ✓ SslCertificate 1/1
+    ✓ BackendBucket 1/1
+    ✓ UrlMap 1/1
+    ✓ HttpsTargetProxy 1/1
+    ✓ GlobalForwardingRule 1/1
+┌───────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 Object from google                                                                                  │
+├───────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐   │
+│ │ UPDATE: name: index.html, id: grucloud.org/index.html/1625068113228566                          │   │
+│ ├─────────────────────────────────────────────────────────────────────────────────────────────────┤   │
+│ │ Key: md5                                                                                        │   │
+│ ├────────────────────────────────────────────────┬────────────────────────────────────────────────┤   │
+│ │ - nnLSNGP9RyK8uy7mni91nA==                     │ + tVxlJ6kUMyBVNUg4XlUdJA==                     │   │
+│ └────────────────────────────────────────────────┴────────────────────────────────────────────────┘   │
+└───────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Plan summary for provider google                                                               │
+├────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ DEPLOY RESOURCES                                                                               │
+├────────────────────┬───────────────────────────────────────────────────────────────────────────┤
+│ Object             │ index.html                                                                │
+└────────────────────┴───────────────────────────────────────────────────────────────────────────┘
+1 resource to deploy on 1 provider
+Command "gc p" executed in 4s
+```
+
+In this case, _gc_ computes the MD5 hash of the file and compare it with the live version.
+Next, use the _apply_ command to effectively deploy.
+
 ### Destroy
 
-Dispose the infrastructure with:
+Dispose the infrastructure in the right order with:
 
 ```
 gc destroy

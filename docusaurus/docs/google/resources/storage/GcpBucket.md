@@ -3,7 +3,7 @@ id: GcpBucket
 title: Bucket
 ---
 
-Provides a bucket storage for a project.
+Provides a [bucket storage](https://console.cloud.google.com/storage/browser/) for a project.
 
 ## Examples
 

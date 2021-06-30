@@ -90,12 +90,12 @@ const resourceRecordFind = ({ hostedZoneId, name, type }) =>
     }),
   ])();
 
-const findHostedZoneId = ({ domainName }) =>
+const findHostedZoneId = ({ hostedZoneName }) =>
   pipe([
     tap((result) => {
       assert(true);
     }),
-    () => `aws route53 list-hosted-zones-by-name --dns-name ${domainName}`,
+    () => `aws route53 list-hosted-zones-by-name --dns-name ${hostedZoneName}`,
     (command) =>
       shell.exec(command, {
         silent: true,
@@ -148,7 +148,7 @@ exports.dnsEntryAdd = ({ config, globalForwardingRule }) =>
         }),
       ]),
       hostedZoneId: pipe([
-        () => findHostedZoneId({ domainName: config.bucketName }),
+        () => findHostedZoneId(config),
         tap.if(isEmpty, () => {
           throw Error("cannot get hostedZoneId");
         }),
@@ -180,7 +180,7 @@ exports.dnsEntryRemove = ({ config }) =>
   pipe([
     assign({
       hostedZoneId: pipe([
-        () => findHostedZoneId({ domainName: config.bucketName }),
+        () => findHostedZoneId(config),
         tap.if(isEmpty, () => {
           throw Error("cannot get hostedZoneId");
         }),
