@@ -22,11 +22,11 @@ Below are the links to the resource documentation:
 
 - [Object](https://www.grucloud.com/docs/google/resources/storage/GcpObject)
 - [Bucket](https://www.grucloud.com/docs/google/resources/storage/GcpBucket)
-- [BackendBucket](https://www.grucloud.com/docs/google/resources/Compute/BackendBucket)
+- [Backend Bucket](https://www.grucloud.com/docs/google/resources/Compute/BackendBucket)
 - [Global Forwarding Rule](https://www.grucloud.com/docs/google/resources/Compute/GlobalForwardingRule)
 - [Https Target Proxy](https://www.grucloud.com/docs/google/resources/Compute/HttpsTargetProxy)
 - [SSL Certificate](https://www.grucloud.com/docs/google/resources/Compute/SslCertificate)
-- [UrlMap](https://www.grucloud.com/docs/google/resources/Compute/UrlMap)
+- [Url Map](https://www.grucloud.com/docs/google/resources/Compute/UrlMap)
 
 ## Requirements
 
