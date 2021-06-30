@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { get } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { get, pipe, eq, map, tap } = require("rubico");
+const { defaultsDeep, find } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "GcpAddress" });
 const { tos } = require("@grucloud/core/tos");
@@ -13,7 +13,7 @@ exports.GcpAddress = ({ spec, config }) => {
   assert(spec);
   assert(config);
   assert(config.stage);
-  const { projectId, region, managedByDescription } = config;
+  const { projectId, region, managedByDescription, providerName } = config;
 
   const configDefault = ({ name, properties }) =>
     defaultsDeep({

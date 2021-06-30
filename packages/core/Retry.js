@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { of, iif, throwError } = require("rxjs");
 const { pipe, tryCatch, switchCase, or, tap } = require("rubico");
-const { identity } = require("rubico");
+const { identity } = require("rubico/x");
 const {
   retryWhen,
   repeatWhen,
