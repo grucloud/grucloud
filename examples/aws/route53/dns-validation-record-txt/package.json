@@ -1,9 +1,9 @@
 {
-  "name": "@grucloud/example-aws-route53",
+  "name": "@grucloud/example-aws-route53-dns-validation-record-txt",
   "version": "1.19.1",
-  "description": "",
+  "description": "Add TXT record for a website validation by DNS ",
   "private": true,
-  "main": "index.js",
+  "main": "iac.js",
   "scripts": {
     "graph-target": "gc graph",
     "graph-live": "gc list --graph",

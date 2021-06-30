@@ -1,5 +1,6 @@
 module.exports = () => ({
   projectId: "grucloud-test",
-  bucketName: "gcp.grucloud.com",
-  websiteDir: "../../../../docusaurus/build/",
+  //bucketName: "gcp-demo-static-website.grucloud.org",
+  bucketName: "grucloud.org",
+  websiteDir: "./websites/simple",
 });

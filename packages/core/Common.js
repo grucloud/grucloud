@@ -87,7 +87,7 @@ exports.convertError = ({ error, name, procedure, params }) => {
     const { baseURL = "", url, method } = error.config;
     return {
       Command: name,
-      Message: error.message,
+      Message: `${error.message} ${get("response.data.error.message", "")(error)}`,
       Status: error.response?.status,
       Code: error.code,
       Output: error.response?.data,

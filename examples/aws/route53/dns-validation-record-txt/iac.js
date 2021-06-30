@@ -2,43 +2,32 @@ const assert = require("assert");
 const { AwsProvider } = require("@grucloud/provider-aws");
 const hook = require("./hook");
 
-const makeDomainName = ({ domainName, stage }) =>
-  `${stage == "production" ? "" : `${stage}.`}${domainName}`;
-
-exports.makeDomainName = makeDomainName;
-
 const createResources = async ({ provider }) => {
-  const config = provider.config;
-  const { stage } = config;
-
-  assert(config.domainName);
-  assert(stage);
-
-  const domainName = makeDomainName({
-    domainName: config.topLevelDomain,
-    stage,
-  });
+  const { config } = provider;
+  const { topLevelDomain, subDomainName = "", recordTxtValue } = config;
+  assert(topLevelDomain);
+  assert(recordTxtValue);
 
   const hostedZone = await provider.makeHostedZone({
-    name: `${domainName}.`,
+    name: `${topLevelDomain}.`,
     dependencies: {},
   });
 
-  const recordA = await provider.makeRoute53Record({
-    name: `a.sub.${domainName}.`,
+  const recordTxt = await provider.makeRoute53Record({
+    name: `txt.${subDomainName}${topLevelDomain}.`,
     dependencies: { hostedZone },
     properties: () => ({
-      Name: `sub.${domainName}.`,
+      Name: `${subDomainName}${topLevelDomain}.`,
       ResourceRecords: [
         {
-          Value: "192.0.2.45",
+          Value: `"${recordTxtValue}"`,
         },
       ],
       TTL: 60,
-      Type: "A",
+      Type: "TXT",
     }),
   });
-  return { hostedZone, recordA };
+  return { hostedZone, recordTxt };
 };
 
 exports.createResources = createResources;

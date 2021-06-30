@@ -1,61 +1,212 @@
 const assert = require("assert");
 const { Resolver } = require("dns").promises;
+const shell = require("shelljs");
 
 const { retryCallOnError, retryCall } = require("@grucloud/core").Retry;
 const Axios = require("axios");
-const { pipe, get } = require("rubico");
-const { first, find } = require("rubico/x");
+const {
+  pipe,
+  get,
+  fork,
+  any,
+  tap,
+  switchCase,
+  eq,
+  assign,
+  and,
+  not,
+  filter,
+  or,
+} = require("rubico");
+const { first, find, isEmpty, callProp } = require("rubico/x");
 
-const checkDig = async ({ nameServer, domain, type = "A" }) => {
-  let commandParam = [domain, type];
-  const resolver = new Resolver();
-
-  if (nameServer) {
-    const ipDns = await resolver.resolve4(nameServer);
-    resolver.setServers(ipDns);
-  }
-
-  await retryCall({
-    name: `dig ${commandParam}`,
-    fn: switchCase([
-      () => type === "A",
-      () => resolver.resolve4(domain),
-      () => {
-        //TODO
+const buildChangeCreate = pipe([
+  ({ bucketName, IPAddress, resourceRecord }) => ({
+    Comment: "delete current, create new",
+    Changes: filter(not(isEmpty))([
+      ...(resourceRecord
+        ? [
+            {
+              Action: "DELETE",
+              ResourceRecordSet: resourceRecord,
+            },
+          ]
+        : []),
+      {
+        Action: "CREATE",
+        ResourceRecordSet: {
+          Name: bucketName,
+          Type: "A",
+          TTL: 300,
+          ResourceRecords: [{ Value: IPAddress }],
+        },
       },
     ]),
-    shouldRetryOnException: ({ error, name }) => {
-      return true;
-    },
-    isExpectedResult: (digResult) => {
-      return !isEmpty(digResult);
-    },
-    config: { retryCount: 200, retryDelay: 5e3 },
-  });
-};
+  }),
+  JSON.stringify,
+  tap((command) => {
+    assert(command);
+  }),
+]);
+
+const buildChangeDelete = pipe([
+  tap(({ resourceRecord }) => {
+    //assert(resourceRecord);
+  }),
+
+  ({ resourceRecord }) => ({
+    Comment: "delete current",
+    Changes: [
+      {
+        Action: "DELETE",
+        ResourceRecordSet: resourceRecord,
+      },
+    ],
+  }),
+  JSON.stringify,
+  tap((command) => {
+    assert(command);
+  }),
+]);
+
+const resourceRecordFind = ({ hostedZoneId, name, type }) =>
+  pipe([
+    () =>
+      `aws route53 list-resource-record-sets --hosted-zone-id ${hostedZoneId}`,
+    tap((command) => {
+      assert(command, name, type);
+    }),
+    (command) =>
+      shell.exec(command, {
+        silent: true,
+      }),
+    tap((result) => {
+      assert(result);
+    }),
+    JSON.parse,
+    tap((result) => {
+      assert(result);
+    }),
+    get("ResourceRecordSets"),
+    find(and([eq(get("Name"), name), eq(get("Type"), type)])),
+    tap((result) => {
+      //assert(result);
+    }),
+  ])();
+
+const findHostedZoneId = ({ domainName }) =>
+  pipe([
+    tap((result) => {
+      assert(true);
+    }),
+    () => `aws route53 list-hosted-zones-by-name --dns-name ${domainName}`,
+    (command) =>
+      shell.exec(command, {
+        silent: true,
+      }),
+    tap((result) => {
+      assert(result);
+    }),
+    JSON.parse,
+    tap((result) => {
+      assert(result);
+    }),
+    get("HostedZones[0].Id", ""),
+    callProp("replace", "/hostedzone/", ""),
+    tap((result) => {
+      assert(true);
+    }),
+  ])();
+
+const awsRoute53ChangeResourceRecordSets = ({ hostedZoneId, changeBatch }) =>
+  pipe([
+    () =>
+      `aws route53 change-resource-record-sets --hosted-zone-id ${hostedZoneId} --change-batch '${changeBatch}'`,
+    (command) =>
+      shell.exec(command, {
+        silent: true,
+      }),
+    tap((result) => {
+      //console.log(result);
+    }),
+    switchCase([
+      eq(get("code"), 0),
+      pipe([get("stdout"), (stdout) => {}]),
+      ({ stderr }) => {
+        throw Error(stderr);
+      },
+    ]),
+  ])();
 
 module.exports = ({ resources, provider }) => {
+  const { config } = provider;
   const bucketUrl = `https://${resources.bucketPublic.name}`;
   const bucketStorageUrl = `https://storage.googleapis.com/${resources.bucketPublic.name}`;
   const bucketUrlIndex = `${bucketStorageUrl}/index.html`;
   const bucketUrl404 = `${bucketStorageUrl}/404.html`;
-  assert(resources.dnsManagedZone);
+  assert(resources.globalForwardingRule);
 
   const axios = Axios.create({
-    timeout: 15e3,
+    timeout: 5e3,
     withCredentials: true,
   });
 
   return {
     onDeployed: {
-      init: async () => {
-        const dnsManagedZoneLive = await resources.dnsManagedZone.getLive();
-        assert(dnsManagedZoneLive.nameServers);
-
-        const sslCertificateLive = await resources.sslCertificate.getLive();
-        return { dnsManagedZoneLive, sslCertificateLive };
-      },
+      init: pipe([
+        fork({
+          sslCertificate: () => resources.sslCertificate.getLive(),
+          globalForwardingRule: () => resources.globalForwardingRule.getLive(),
+        }),
+        tap.if(any(isEmpty), (result) => {
+          throw Error(`cannot get live resources`);
+        }),
+      ]),
       actions: [
+        {
+          name: `add dns record for the load balancer`,
+          command: ({ globalForwardingRule }) =>
+            pipe([
+              tap((command) => {
+                assert(true);
+              }),
+              fork({
+                IPAddress: pipe([
+                  () => globalForwardingRule,
+                  get("IPAddress"),
+                  tap.if(isEmpty, () => {
+                    throw Error("cannot get load balancer IPAddress");
+                  }),
+                ]),
+                hostedZoneId: pipe([
+                  () => findHostedZoneId({ domainName: config.bucketName }),
+                  tap.if(isEmpty, () => {
+                    throw Error("cannot get hostedZoneId");
+                  }),
+                ]),
+              }),
+              assign({
+                resourceRecord: pipe([
+                  ({ hostedZoneId }) =>
+                    resourceRecordFind({
+                      hostedZoneId,
+                      type: "A",
+                      name: `${config.bucketName}.`,
+                    }),
+                ]),
+              }),
+              tap(({ IPAddress, hostedZoneId, resourceRecord }) =>
+                awsRoute53ChangeResourceRecordSets({
+                  hostedZoneId,
+                  changeBatch: buildChangeCreate({
+                    bucketName: config.bucketName,
+                    IPAddress,
+                    resourceRecord,
+                  }),
+                })
+              ),
+            ])(),
+        },
         {
           name: `get ${bucketUrlIndex}`,
           command: async ({}) => {
@@ -82,58 +233,33 @@ module.exports = ({ resources, provider }) => {
             });
           },
         },
-        {
-          name: `get ${bucketUrl404}`,
-          command: async ({}) => {
-            await retryCallOnError({
-              name: `get  ${bucketUrl404}`,
-              fn: () => axios.get(bucketUrl404),
-              shouldRetryOnException: ({ error }) => {
-                return [404].includes(error.response?.status);
-              },
-              config: { retryCount: 20, retryDelay: 5e3 },
-            });
-          },
-        },
+        // {
+        //   name: `get ${bucketUrl404}`,
+        //   command: async ({}) => {
+        //     await retryCallOnError({
+        //       name: `get  ${bucketUrl404}`,
+        //       fn: () => axios.get(bucketUrl404),
+        //       shouldRetryOnException: ({ error }) => {
+        //         return [404].includes(error.response?.status);
+        //       },
+        //       config: { retryCount: 20, retryDelay: 5e3 },
+        //     });
+        //   },
+        // },
         {
           name: `ssl certificate ready`,
-          command: async ({ sslCertificateLive }) => {
-            assert(
-              sslCertificateLive.certificate,
-              "ssl certificate not yet ready"
-            );
-          },
-        },
-        {
-          name: `dig nameservers managedZone ${resources.bucketPublic.name}`,
-          command: async ({ dnsManagedZoneLive }) => {
-            const nameServer = dnsManagedZoneLive.nameServers[0];
-            await checkDig({
-              nameServer,
-              domain: resources.bucketPublic.name,
-            });
-          },
-        },
-        {
-          name: `dig nameservers recordSet ${resources.bucketPublic.name}`,
-          command: async ({ dnsManagedZoneLive }) => {
-            const nameServer = pipe([
-              find((record) => record.type === "NS"),
-              get("rrdatas"),
-              first,
-            ])(dnsManagedZoneLive.recordSet);
-            await checkDig({
-              nameServer,
-              domain: resources.bucketPublic.name,
-            });
-          },
-        },
-        {
-          name: `dig default nameserver ${resources.bucketPublic.name}`,
-          command: async ({ dnsManagedZoneLive }) => {
-            await checkDig({
-              domain: resources.bucketPublic.name,
-              dnsManagedZoneLive,
+          command: async ({ sslCertificate }) => {
+            await retryCall({
+              name: `check certificate status`,
+              fn: pipe([
+                () => resources.sslCertificate.getLive(),
+                tap((result) => {
+                  //console.log("certificate", result);
+                }),
+                get("certificate"),
+              ]),
+              isExpectedResult: not(isEmpty),
+              config: { retryCount: 500, retryDelay: 10e3 },
             });
           },
         },
@@ -143,12 +269,65 @@ module.exports = ({ resources, provider }) => {
             await retryCallOnError({
               name: `get  ${bucketUrl}`,
               fn: () => axios.get(bucketUrl),
-              shouldRetryOnException: ({ error }) => {
-                return [404].includes(error.response?.status);
-              },
-              config: { retryCount: 200, retryDelay: 5e3 },
+              shouldRetryOnException: ({ error }) =>
+                pipe([
+                  tap(() => {
+                    assert(true);
+                  }),
+                  () => error,
+                  or([
+                    eq(get("response.status"), 404),
+                    eq(get("code"), "EPROTO"),
+                  ]),
+                  tap((xxx) => {
+                    assert(true);
+                  }),
+                ])(),
+              config: { retryCount: 500, retryDelay: 5e3 },
             });
           },
+        },
+      ],
+    },
+    onDestroyed: {
+      init: pipe([() => ({})]),
+      actions: [
+        {
+          name: `remove the load balancer A DNS record`,
+          command: () =>
+            pipe([
+              assign({
+                hostedZoneId: pipe([
+                  () => findHostedZoneId({ domainName: config.bucketName }),
+                  tap.if(isEmpty, () => {
+                    throw Error("cannot get hostedZoneId");
+                  }),
+                ]),
+              }),
+              assign({
+                resourceRecord: pipe([
+                  ({ hostedZoneId }) =>
+                    resourceRecordFind({
+                      hostedZoneId,
+                      type: "A",
+                      name: `${config.bucketName}.`,
+                    }),
+                ]),
+              }),
+              tap(({ hostedZoneId, resourceRecord }) =>
+                pipe([
+                  () => resourceRecord,
+                  tap.if(not(isEmpty), () =>
+                    awsRoute53ChangeResourceRecordSets({
+                      hostedZoneId,
+                      changeBatch: buildChangeDelete({
+                        resourceRecord,
+                      }),
+                    })
+                  ),
+                ])
+              ),
+            ])({}),
         },
       ],
     },

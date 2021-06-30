@@ -5,6 +5,7 @@ const querystring = require("querystring");
 const {
   pipe,
   tap,
+  eq,
   map,
   get,
   filter,
@@ -46,6 +47,8 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
   assert(spec);
   assert(configProvider);
 
+  const { providerName } = configProvider;
+
   const axios = createAxiosMakerGoogle({
     baseURL: GCP_STORAGE_BASE_URL,
     url: "/b",
@@ -56,6 +59,24 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
     config: configProvider,
     contentType: "application/x-www-form-urlencoded",
   });
+
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "Bucket",
+      ids: pipe([
+        () => live,
+        get("bucket"),
+        (bucket) => [
+          pipe([
+            () => lives.getByType({ type: "Bucket", providerName }),
+            get("resources", []),
+            find(eq(get("live.name"), bucket)),
+            get("id"),
+          ])(),
+        ],
+      ])(),
+    },
+  ];
 
   const getBucket = ({ name, dependencies = {} }) => {
     assert(name);
@@ -247,6 +268,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
     destroy,
     getByName,
     configDefault,
+    findDependencies,
   };
 };
 

@@ -52,24 +52,24 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
 
   const { axios } = client;
 
-  const getIam = assign({
-    iam: pipe([
-      tap((item) => {
-        assert(item.name, "item.name");
-        logger.debug(`getIam name: ${tos(item.name)}`);
+  const getIam = pipe([
+    tap((item) => {
+      assert(item.name, "item.name");
+      logger.debug(`getIam name: ${tos(item.name)}`);
+    }),
+    (item) =>
+      retryCallOnError({
+        name: `getIam ${item.name}`,
+        fn: () => axios.get(`/${item.name}/iam`),
+        config: configProvider,
       }),
-      (item) =>
-        retryCallOnError({
-          name: `getIam ${item.name}`,
-          fn: () => axios.get(`/${item.name}/iam`),
-          config: configProvider,
-        }),
-      get("data"),
-      tap((result) => {
-        logger.debug(`getIam result: ${tos(result)}`);
-      }),
-    ]),
-  });
+    get("data"),
+    tap((result) => {
+      logger.debug(`getIam result: ${tos(result)}`);
+    }),
+  ]);
+
+  const assignIam = assign({ iam: getIam });
 
   const getById = async ({ id, name, deep }) =>
     pipe([
@@ -77,7 +77,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
         logger.info(`getById ${JSON.stringify({ id, name })}`);
       }),
       () => client.getById({ id, name }),
-      switchCase([(result) => result && deep, getIam, (result) => result]),
+      switchCase([(result) => result && deep, assignIam, (result) => result]),
       tap((result) => {
         logger.debug(`getById result: ${tos(result)}`);
       }),
@@ -95,17 +95,31 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
       tap((result) => {
         logger.debug(`created bucket ${name}`);
       }),
-      // TODO get a 400 now: A policy to update must be provided.
       // https://cloud.google.com/storage/docs/json_api/v1/buckets/setIamPolicy
-      // tap.if(
-      //   () => payload.iam,
-      //   () =>
-      //     retryCallOnError({
-      //       name: `setIam ${name}`,
-      //       fn: () => axios.put(`/${name}/iam`, { data: payload.iam }),
-      //       config: configProvider,
-      //     })
-      // ),
+      tap.if(
+        () => payload.iam,
+        pipe([
+          getIam,
+          tap((iamCurrent) => {
+            logger.info(`create bucket ${name}`);
+            logger.debug(`bucket ${name} assignIam ${tos(iamCurrent)}`);
+          }),
+          (iamCurrent) => ({
+            ...iamCurrent,
+            bindings: [...iamCurrent.bindings, ...payload.iam.bindings],
+          }),
+          tap((updatedIam) => {
+            logger.info(`create bucket ${name}`);
+            logger.debug(`bucket ${name} updatedIam ${tos(updatedIam)}`);
+          }),
+          (data) =>
+            retryCallOnError({
+              name: `setIam ${name}`,
+              fn: () => axios.put(`/${name}/iam`, data),
+              config: configProvider,
+            }),
+        ])
+      ),
     ])();
 
   const getList = async ({ deep }) =>
@@ -121,7 +135,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
         () => deep,
         pipe([
           get("items"),
-          map.pool(mapPoolSize, getIam),
+          map.pool(mapPoolSize, assignIam),
           (items) => ({ items, total: items.length }),
         ]),
         (result) => result,

@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { get } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { get, pipe, eq, map, tap } = require("rubico");
+const { defaultsDeep, find } = require("rubico/x");
 const GoogleClient = require("../../GoogleClient");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
 const { isUpByIdCore } = require("@grucloud/core/Common");
@@ -10,7 +10,7 @@ exports.GcpBackendBucket = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const { projectId, managedByDescription } = config;
+  const { projectId, managedByDescription, providerName } = config;
 
   const isInstanceUp = get("selfLink");
 
@@ -26,6 +26,24 @@ exports.GcpBackendBucket = ({ spec, config }) => {
       description: managedByDescription,
     })(properties);
 
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "Bucket",
+      ids: pipe([
+        () => live,
+        get("bucketName"),
+        (bucketName) => [
+          pipe([
+            () => lives.getByType({ type: "Bucket", providerName }),
+            get("resources", []),
+            find(eq(get("live.name"), bucketName)),
+            get("id"),
+          ])(),
+        ],
+      ])(),
+    },
+  ];
+
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
@@ -34,5 +52,6 @@ exports.GcpBackendBucket = ({ spec, config }) => {
     configDefault,
     isInstanceUp,
     isUpByIdFactory,
+    findDependencies,
   });
 };

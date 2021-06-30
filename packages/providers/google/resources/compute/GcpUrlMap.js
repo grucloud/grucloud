@@ -1,5 +1,6 @@
 const assert = require("assert");
-const { defaultsDeep } = require("rubico/x");
+const { get, pipe, eq, map, tap } = require("rubico");
+const { defaultsDeep, find } = require("rubico/x");
 
 const GoogleClient = require("../../GoogleClient");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
@@ -10,7 +11,7 @@ exports.GcpUrlMap = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const { projectId, managedByDescription } = config;
+  const { projectId, managedByDescription, providerName } = config;
 
   const configDefault = ({ name, properties, dependencies }) => {
     const { service } = dependencies;
@@ -21,11 +22,29 @@ exports.GcpUrlMap = ({ spec, config }) => {
     })(properties);
   };
 
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "BackendBucket",
+      ids: pipe([
+        () => live,
+        get("defaultService"),
+        (defaultService) => [
+          pipe([
+            () => lives.getByType({ type: "BackendBucket", providerName }),
+            get("resources", []),
+            find(eq(get("live.selfLink"), defaultService)),
+            get("id"),
+          ])(),
+        ],
+      ])(),
+    },
+  ];
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
     url: `/projects/${projectId}/global/urlMaps`,
     config,
     configDefault,
+    findDependencies,
   });
 };

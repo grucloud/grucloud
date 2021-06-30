@@ -26,6 +26,7 @@ const {
   differenceWith,
   isDeepEqual,
   flatten,
+  identity,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "HostedZone" });
@@ -248,11 +249,7 @@ exports.AwsHostedZone = ({ spec, config }) => {
         `findOrCreateReusableDelegationSet DelegationSetId: ${DelegationSetId}`
       );
     }),
-    switchCase([
-      (DelegationSetId) => DelegationSetId,
-      (DelegationSetId) => DelegationSetId,
-      createReusableDelegationSet,
-    ]),
+    switchCase([isEmpty, createReusableDelegationSet, identity]),
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#createHostedZone-property
@@ -294,6 +291,7 @@ exports.AwsHostedZone = ({ spec, config }) => {
           ),
           tap(({ HostedZone }) =>
             pipe([
+              () => payload.RecordSet,
               map((ResourceRecordSet) => ({
                 Action: "CREATE",
                 ResourceRecordSet,
@@ -306,7 +304,7 @@ exports.AwsHostedZone = ({ spec, config }) => {
                   },
                 })
               ),
-            ])(payload.RecordSet)
+            ])()
           ),
           tap.if(
             ({ DelegationSet }) =>
@@ -410,9 +408,8 @@ exports.AwsHostedZone = ({ spec, config }) => {
             () =>
               map((ResourceRecordSet) => ({
                 Action: "DELETE",
-                ResourceRecordSet: filterEmptyResourceRecords(
-                  ResourceRecordSet
-                ),
+                ResourceRecordSet:
+                  filterEmptyResourceRecords(ResourceRecordSet),
               }))(diff.deletions),
             tap((Changes) => {
               logger.debug(`update changes ${tos(Changes)}`);

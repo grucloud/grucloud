@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { get } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { get, pipe, eq, map, tap } = require("rubico");
+const { defaultsDeep, find } = require("rubico/x");
 const GoogleClient = require("../../GoogleClient");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -11,7 +11,7 @@ exports.GcpGlobalForwardingRule = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const { projectId, managedByDescription } = config;
+  const { projectId, managedByDescription, providerName } = config;
 
   const configDefault = ({ name, properties, dependencies }) => {
     const { httpsTargetProxy } = dependencies;
@@ -31,6 +31,23 @@ exports.GcpGlobalForwardingRule = ({ spec, config }) => {
       getById,
     });
 
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "HttpsTargetProxy",
+      ids: pipe([
+        () => live,
+        get("target"),
+        (target) => [
+          pipe([
+            () => lives.getByType({ type: "HttpsTargetProxy", providerName }),
+            get("resources", []),
+            find(eq(get("live.selfLink"), target)),
+            get("id"),
+          ])(),
+        ],
+      ])(),
+    },
+  ];
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
@@ -39,5 +56,6 @@ exports.GcpGlobalForwardingRule = ({ spec, config }) => {
     configDefault,
     isInstanceUp,
     isUpByIdFactory,
+    findDependencies,
   });
 };

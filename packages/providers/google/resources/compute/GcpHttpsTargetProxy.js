@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { get } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { get, pipe, eq, map, tap } = require("rubico");
+const { defaultsDeep, find } = require("rubico/x");
 const GoogleClient = require("../../GoogleClient");
 const { GCP_COMPUTE_BASE_URL } = require("./GcpComputeCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -11,7 +11,7 @@ exports.GcpHttpsTargetProxy = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const { projectId, managedByDescription } = config;
+  const { projectId, managedByDescription, providerName } = config;
 
   const isInstanceUp = get("selfLink");
 
@@ -34,6 +34,40 @@ exports.GcpHttpsTargetProxy = ({ spec, config }) => {
     })(properties);
   };
 
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "SslCertificate",
+      ids: pipe([
+        () => live,
+        get("sslCertificates"),
+        map((sslCertificateLink) =>
+          pipe([
+            () => lives.getByType({ type: "SslCertificate", providerName }),
+            get("resources", []),
+            find(eq(get("live.selfLink"), sslCertificateLink)),
+            get("id"),
+          ])()
+        ),
+      ])(),
+    },
+    {
+      type: "UrlMap",
+      ids: [
+        pipe([
+          () => live,
+          get("urlMap"),
+          (urlMap) =>
+            pipe([
+              () => lives.getByType({ type: "UrlMap", providerName }),
+              get("resources", []),
+              find(eq(get("live.selfLink"), urlMap)),
+              get("id"),
+            ])(),
+        ])(),
+      ],
+    },
+  ];
+
   return GoogleClient({
     spec,
     baseURL: GCP_COMPUTE_BASE_URL,
@@ -42,5 +76,6 @@ exports.GcpHttpsTargetProxy = ({ spec, config }) => {
     isInstanceUp,
     isUpByIdFactory,
     configDefault,
+    findDependencies,
   });
 };

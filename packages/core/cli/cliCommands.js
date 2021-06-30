@@ -22,6 +22,7 @@ const {
   tryCatch,
   get,
   eq,
+  gte,
 } = require("rubico");
 const {
   find,
@@ -32,6 +33,7 @@ const {
   uniq,
   size,
   first,
+  identity,
 } = require("rubico/x");
 
 const logger = require("../logger")({ prefix: "CliCommands" });
@@ -659,34 +661,50 @@ const doPlanApply = async ({
     }),
   ])();
 
-const applyNeedsRetry = pipe([
-  tap((result) => {
-    assert(result);
-    //assert(result.resultDeploy);
-    //assert(result.resultDeploy.results);
-    assert(result.resultQuery);
-    assert(result.resultQuery.results);
-  }),
-  or([
-    pipe([
-      get("resultDeploy.results"),
-      pluck("resultCreate"),
-      pluck("results"),
-      flatten,
-      find(eq(get("error.errorClass"), "Dependency")),
-      tap((hasError) => {
-        logger.info(`has dependency error: ${hasError}`);
-      }),
-    ]),
+const isMultiProvider = ({ infra }) =>
+  pipe([
+    () => infra,
+    get("providers"),
+    size,
+    gte(identity, 2),
+    tap((result) => {
+      logger.debug(`isMultiProvider ${result}`);
+    }),
+  ])();
+
+const applyNeedsRetry = ({ infra }) =>
+  pipe([
+    tap((result) => {
+      assert(result);
+      assert(infra);
+      //assert(result.resultDeploy);
+      //assert(result.resultDeploy.results);
+      assert(result.resultQuery);
+      assert(result.resultQuery.results);
+    }),
     and([
-      pipe([
-        get("resultQuery.results"),
-        find(eq(get("errorClass"), "Dependency")),
+      () => isMultiProvider({ infra }),
+      or([
+        pipe([
+          get("resultDeploy.results"),
+          pluck("resultCreate"),
+          pluck("results"),
+          flatten,
+          find(eq(get("error.errorClass"), "Dependency")),
+          tap((hasError) => {
+            logger.info(`has dependency error: ${hasError}`);
+          }),
+        ]),
+        and([
+          pipe([
+            get("resultQuery.results"),
+            find(eq(get("errorClass"), "Dependency")),
+          ]),
+          not(get("resultDeploy.error")),
+        ]),
       ]),
-      not(get("resultDeploy.error")),
     ]),
-  ]),
-]);
+  ]);
 
 const planApply = async ({ infra, commandOptions = {}, programOptions = {} }) =>
   tryCatch(
@@ -704,7 +722,7 @@ const planApply = async ({ infra, commandOptions = {}, programOptions = {} }) =>
                 () =>
                   doPlanApply({ providerGru, commandOptions, programOptions }),
                 switchCase([
-                  applyNeedsRetry,
+                  applyNeedsRetry({ infra }),
                   pipe([
                     tap(() => {
                       logger.info(
