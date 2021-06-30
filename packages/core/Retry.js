@@ -1,13 +1,12 @@
 const assert = require("assert");
 const { of, iif, throwError } = require("rxjs");
-const { pipe, tryCatch, switchCase, or } = require("rubico");
-
+const { pipe, tryCatch, switchCase, or, tap } = require("rubico");
+const { identity } = require("rubico");
 const {
   retryWhen,
   repeatWhen,
   mergeMap,
   concatMap,
-  tap,
   take,
   delay,
   catchError,
@@ -42,29 +41,50 @@ const retryCall = async ({
       mergeMap(
         tryCatch(
           pipe([
+            tap(() => {
+              logger.debug(`retryCall ${name} invoking`);
+            }),
             () => fn(),
             switchCase([
               isExpectedResult,
-              (result) => {
-                logger.info(`retryCall ${name}, success`);
-                return result;
-              },
-              (result) => {
-                throw {
-                  code: 503,
-                  type: "retryCall",
-                  message: "not expected result",
-                  result,
-                };
-              },
+              pipe([
+                tap((result) => {
+                  logger.info(`retryCall ${name}, expected result`);
+                }),
+                identity,
+              ]),
+              pipe([
+                tap((result) => {
+                  logger.info(`${name} not an expected result`);
+                }),
+                (result) => {
+                  throw {
+                    code: 503,
+                    type: "retryCall",
+                    message: "not expected result",
+                    result,
+                  };
+                },
+              ]),
             ]),
           ]),
-          (error) => {
-            if (!isExpectedException(error)) {
-              throw error;
-            }
-            return error;
-          }
+          switchCase([
+            isExpectedException,
+            pipe([
+              tap((error) => {
+                logger.info(`${name} expected exception`);
+              }),
+              identity,
+            ]),
+            pipe([
+              tap((error) => {
+                logger.info(`${name} not an expected exception`);
+              }),
+              (error) => {
+                throw error;
+              },
+            ]),
+          ])
         )
       ),
 
