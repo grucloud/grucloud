@@ -1,8 +1,8 @@
-# Hosting a secure static website on GCP, domain managed by AWS Route53
+## Hosting a secure static website on GCP, domain managed by AWS Route53
 
 The goal of this example is to automate with [GruCloud](https://grucloud.com), the deployment of a static website served with HTTPS on GCP, the Google Cloud Platform.
 
-The domain and DNS settings are handled by AWS Route53.
+The domain and DNS settings are handled by _AWS Route53_.
 
 See the manual way at [hosting static website](https://cloud.google.com/storage/docs/hosting-static-website)
 
@@ -14,9 +14,9 @@ For this reason, this example uses _AWS Route53_.
 
 This deployment is composed of the resources depicted in the following diagram:
 
-![GraphTarget](diagram-target.svg)
+![GraphTarget](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/storage/website-https/diagram-target.svg)
 
-> The command `gc graph` generates this diagram from the code [iac.js](./iac.js).
+> The command `gc graph` generates this diagram from the code [iac.js](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https/iac.js).
 
 Below are the links to the resource documentation:
 
@@ -30,9 +30,9 @@ Below are the links to the resource documentation:
 
 ## Hooks
 
-The file [hook.js](./hook.js) contains actions to perform after the infrastructure is deployed and after it is destroyed.
+The file [hook.js](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https/hook.js) contains actions to perform after the infrastructure is deployed and after it is destroyed.
 
-The file [route53Utils.js](./route53Utils.js) contains functions to add and remove a DNS record of type A to map the domain name to the load balancer's IP address by calling the AWS CLI.
+The file [route53Utils.js](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https/route53Utils.js) contains functions to add and remove a DNS record of type A to map the domain name to the load balancer's IP address by calling the AWS CLI.
 
 - `aws route53 list-hosted-zones-by-name --dns-name ${domainName}`
 - `aws route53 list-resource-record-sets --hosted-zone-id ${hostedZoneId}`
@@ -88,7 +88,7 @@ gsutil 4.54
 
 ### AWS CLI
 
-Ensure the AWS CLI is installed as it will be invoked in the [hook.js](./hook.js) to add and remove a DNS record to map the domain name to the load balancer's IP address.
+Ensure the AWS CLI is installed as it will be invoked in the [hook.js](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https/hook.js) to add and remove a DNS record to map the domain name to the load balancer's IP address.
 
 ```sh
 aws --version
@@ -141,7 +141,7 @@ npm install
 
 ## Config
 
-Edit [config.js](config.js) and set the following variables:
+Edit [config.js](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https/config.js) and set the following variables:
 
 - _projectId_: the project Id, must be unique, see restrictions [here](https://cloud.google.com/resource-manager/docs/creating-managing-projects#:~:text=The%20project%20ID%20must%20be,used%20for%20a%20deleted%20project.)
 - _bucketName_: the bucket name which is also the domain name, i.e. mywebsite.com or subdomain.mywebsite.com, see the [bucket naming guideline](https://cloud.google.com/storage/docs/naming-buckets)
@@ -584,11 +584,11 @@ Provider: google
 Command "gc list" executed in 4s
 ```
 
-![GraphLive](diagram-live.svg)
+![GraphLive](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/storage/website-https/diagram-live.svg)
 
 ### Update
 
-Let's deploy a new version of the website, in this very simple example, edit [website/simple/index.html], change something, and save the file.
+Let's deploy a new version of the website, in this very simple example, edit [website/simple/index.html](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https/websites/simple/index.html), change something, and save the file.
 
 The _plan_ command helps to find out what is going to be deployed:
 
