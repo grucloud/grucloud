@@ -3,7 +3,9 @@ id: UrlMap
 title: Url Map
 ---
 
-Provides a URL Map used by the HTTPS load balancer.
+Provides a [URL Map](https://cloud.google.com/load-balancing/docs/url-map-concepts) used by the HTTPS load balancer
+
+### Code
 
 ```js
 const bucketName = "mybucketname";
@@ -29,23 +31,21 @@ const urlMap = await provider.makeUrlMap({
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https/iac.js#L7)
+- [Https Website](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https)
+
+![website-https/diagram-target.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/storage/website-https/diagram-target.svg)
 
 ### Properties
 
 - [all properties](https://cloud.google.com/compute/docs/reference/rest/v1/urlMaps/insert)
 
-## Dependencies
+### Dependencies
 
 - [BackendBucket](./BackendBucket.md)
 
-## Used By
+### Used By
 
 - [HttpsTargetProxy](./HttpsTargetProxy.md)
-
-## GCloud docs
-
-- [Url Map concepts](https://cloud.google.com/load-balancing/docs/url-map-concepts)
 
 ## List
 

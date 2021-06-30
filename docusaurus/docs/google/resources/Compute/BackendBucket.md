@@ -5,6 +5,8 @@ title: Backend Bucket
 
 Provides a backend bucket.
 
+### Code
+
 ```js
 const bucketName = "myfancybucketname";
 
@@ -23,11 +25,17 @@ const backendBucket = await provider.makeBackendBucket({
 
 ### Examples
 
-- [basic example](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https/iac.js#L7)
+- [Https Website](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https)
+
+![website-https/diagram-target.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/storage/website-https/diagram-target.svg)
 
 ### Properties
 
 - [all properties](https://cloud.google.com/compute/docs/reference/rest/v1/backendBuckets/insert)
+
+### Depends On
+
+- [Bucket](../storage/Bucket.md)
 
 ### Used By
 
