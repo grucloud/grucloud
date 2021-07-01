@@ -28,6 +28,8 @@ else (no)
   :Choose an existing account or log in with a new account;
 endif
 : Create a new project;
+: ""gcloud info"";
+
 }
 
 end
