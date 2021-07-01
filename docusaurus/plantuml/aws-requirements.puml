@@ -13,7 +13,7 @@ repeat while (has access?) is (no)
 }
 
 partition "AWS CLI" {
-repeat :""aws version"";
+repeat :""aws --version"";
 backward:  [[https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html Download the AWS CLI v2]];
 repeat while (version >= 2 ?) is (no) 
 ->yes;

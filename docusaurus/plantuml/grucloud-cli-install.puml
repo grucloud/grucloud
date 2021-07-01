@@ -7,7 +7,7 @@ card "GruCloud CLI Installation"{
 start 
 partition "Node.js" {
 repeat :""node --version"";
-backward: [[https://nodejs.og Install Node]];
+backward: [[https://nodejs.org Install Node]];
 repeat while (version >= 14?) is (no) 
 ->yes;
 }

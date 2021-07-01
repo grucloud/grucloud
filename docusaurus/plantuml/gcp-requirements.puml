@@ -1,0 +1,37 @@
+@startuml gcp-requirements
+!theme plain
+
+skinparam svgLinkTarget _blank
+
+card "GCP Requirements" {
+start
+partition "GCP Account" {
+repeat :Access to the [[console.cloud.google.com/home/dashboard Google Cloud Console]];
+backward: Create GCP Account;
+repeat while (has access?) is (no) 
+->yes;
+}
+
+partition "gcloud CLI" {
+repeat :""gcloud version"";
+backward:  [[https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html Install the gcloud CLI]];
+repeat while (version >= 318 ?) is (no) 
+->yes;
+}
+
+partition "gcloud init" {
+: ""gcloud init"";
+if (first time ?) then (yes)
+: Authenticate account;
+else (no)
+  :Re-initialize this configuration [default] with new settings;
+  :Choose an existing account or log in with a new account;
+endif
+: Create a new project;
+}
+
+end
+
+
+}
+@enduml
