@@ -114,6 +114,8 @@ The _init_ command will create the project, set up the billing, enable the API s
 gc init
 ```
 
+![gc-init-gcp](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gcp-provider-init.svg)
+
 ## Add the service account as the domain owner
 
 The service account operating by _grucloud_ needs to be added as the domain owner.
