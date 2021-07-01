@@ -42,25 +42,17 @@ The file [route53Utils.js](https://github.com/grucloud/grucloud/blob/main/exampl
 
 ### GruCloud CLI
 
+Ensure **gc**, the GruCloud CLI is installed:
+
 ![cli](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/grucloud-cli-install.svg)
 
-### gcloud CLI
+### GCP
 
-Ensure the [gcloud CLI](https://cloud.google.com/sdk/docs/install) is installed:
+Follow this flowchart to install and configure the `gcloud` CLI.
 
-```sh
-gcloud --version
-```
+![gcp-requirements](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gcp-requirements.svg)
 
-```txt
-Google Cloud SDK 318.0.0
-beta 2020.11.06
-bq 2.0.62
-core 2020.11.06
-gsutil 4.54
-```
-
-### AWS CLI
+### AWS
 
 Ensure the AWS CLI is installed as it will be invoked in the [hook.js](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https/hook.js) to add and remove a DNS record to map the domain name to the load balancer's IP address.
 
@@ -157,7 +149,11 @@ gc info
 
 Follow the manual steps at the [domain name verification documentation](https://cloud.google.com/storage/docs/domain-name-verification).
 
-## Workflow
+## GruCloud CLI Workflow
+
+This chart shows the GruCloud CLI main command:
+
+![gc-work-flow](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/grucloud-cli-commands.svg)
 
 ### Deploy
 
