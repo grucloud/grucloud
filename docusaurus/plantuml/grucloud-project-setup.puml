@@ -2,7 +2,7 @@
 !theme plain
 skinparam svgLinkTarget _blank
 
-card "Get an source code example and install the dependencies" {
+card "Get a source code example and install the dependencies" {
 start 
 
 :""git clone https://github.com/grucloud/grucloud.git"";

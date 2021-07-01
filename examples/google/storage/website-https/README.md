@@ -40,35 +40,9 @@ The file [route53Utils.js](https://github.com/grucloud/grucloud/blob/main/exampl
 
 ## Requirements
 
-### Node
-
-The GruCloud CLI is written in Javascript and runs with [Node.js](https://nodejs.org)
-
-```sh
-node -v
-```
-
-```
-v14.15.3
-```
-
 ### GruCloud CLI
 
-Install **gc**, the GruCloud CLI:
-
-```sh
-npm i -g @grucloud/core
-```
-
-Check **gc** is installed correctly:
-
-```sh
-gc -v
-```
-
-```
-1.19.1
-```
+![cli](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/grucloud-cli-install.svg)
 
 ### gcloud CLI
 
@@ -90,13 +64,7 @@ gsutil 4.54
 
 Ensure the AWS CLI is installed as it will be invoked in the [hook.js](https://github.com/grucloud/grucloud/blob/main/examples/google/storage/website-https/hook.js) to add and remove a DNS record to map the domain name to the load balancer's IP address.
 
-```sh
-aws --version
-```
-
-```txt
-aws-cli/2.0.10 Python/3.7.4 Darwin/19.3.0 botocore/2.0.0dev14
-```
+![AWS Requirements](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/aws-requirements.svg)
 
 ### Route53 Domain
 
@@ -133,20 +101,9 @@ You could also visit the [Route53 Dashboard](https://console.aws.amazon.com/rout
 
 ## Getting the source code
 
-Clone the source code and change to this example directory:
+![project-setup](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/grucloud-project-setup.svg)
 
-```sh
-git clone https://github.com/grucloud/grucloud.git
-cd grucloud/examples/google/storage/website-https
-```
-
-## Install
-
-Install the npm dependencies:
-
-```sh
-npm install
-```
+> This example is located at `examples/google/storage/website-https`
 
 ## Config
 

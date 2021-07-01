@@ -1,7 +1,7 @@
 @startuml grucloud-cli-commands
 !theme plain
 
-partition "GruCloud CLI main commands" {
+card "GruCloud CLI main commands" {
 start
 partition "Informative *" {
 :""gc info"";
