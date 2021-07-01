@@ -6,7 +6,7 @@ skinparam svgLinkTarget _blank
 card "GCP Requirements" {
 start
 partition "GCP Account" {
-repeat :Access to the [[console.cloud.google.com/home/dashboard Google Cloud Console]];
+repeat :Access to the [[https://console.cloud.google.com/home/dashboard Google Cloud Console]];
 backward: Create GCP Account;
 repeat while (has access?) is (no) 
 ->yes;
@@ -14,7 +14,7 @@ repeat while (has access?) is (no)
 
 partition "gcloud CLI" {
 repeat :""gcloud version"";
-backward:  [[https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html Install the gcloud CLI]];
+backward:  [[https://cloud.google.com/sdk/docs/install Install the gcloud CLI]];
 repeat while (version >= 318 ?) is (no) 
 ->yes;
 }
