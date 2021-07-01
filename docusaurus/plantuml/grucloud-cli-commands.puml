@@ -1,0 +1,60 @@
+@startuml grucloud-cli-commands
+!theme plain
+
+partition "GruCloud CLI main commands" {
+start
+partition "Informative *" {
+:""gc info"";
+note right
+Get information about the project
+end note
+:""gc graph"";
+note right
+Generate an SVG diagram of the target code ""iac.js""
+end note
+}
+
+partition "Planning *" {
+:""gc plan"";
+note right
+Query the provider API to retrieve the live resources.
+Find out which resources need to be created/updated/destroyed
+end note
+}
+
+partition "Deploy" {
+:""gc apply"";
+note right
+Deploy the resources
+end note
+:""gc list --graph"";
+note right
+List the live resources.
+Generate an SVG diagram for these live resources.
+end note
+}
+
+partition "Update" {
+: Update ""iac.js"" or ""config.js"";
+note right
+The infrastructure is
+* described in ""iac.js"", 
+* configured in ""config.js""
+end note
+:""gc apply"";
+note right
+Create/update/destroy the resources
+end note
+:""gc list"";
+}
+
+partition "Destroy" {
+: ""gc destroy"";
+note right
+Destroy the live resources for that project
+end note
+}
+end
+}
+
+@enduml

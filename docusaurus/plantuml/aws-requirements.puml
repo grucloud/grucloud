@@ -1,0 +1,42 @@
+@startuml aws-requirements
+!theme plain
+
+skinparam svgLinkTarget _blank
+
+card "AWS Requirements" {
+start
+partition "AWS Account" {
+repeat :Access to the [[https://console.aws.amazon.com/console AWS Management Console]];
+backward: Create Account;
+repeat while (has access?) is (no) 
+->yes;
+}
+
+partition "AWS CLI" {
+repeat :""aws version"";
+backward:  [[https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html Download the AWS CLI v2]];
+repeat while (version >= 2 ?) is (no) 
+->yes;
+}
+
+partition "AWS Access and Secret Key" {
+if (Possession of AWS Access and Secret Key?) then (yes)
+else (no)
+  :Visit the [[https://console.aws.amazon.com/iam/home#/security_credentials Security Credentials]] page;
+  :Select <b>Access keys (access key ID and secret access key)</b>;
+  :Click on <b>Create New Access Key</b>;
+endif
+}
+
+partition "AWS CLI configuration" {
+  :""aws configure"";
+  note left 
+  Provides:
+  * Access Key
+  * Secret Key 
+  * Region
+  end note
+}
+end
+}
+@enduml

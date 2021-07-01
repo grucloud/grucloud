@@ -1,0 +1,23 @@
+@startuml grucloud-cli-install
+!theme plain
+skinparam svgLinkTarget _blank
+
+
+card "GruCloud CLI Installation"{
+start 
+partition "Node.js" {
+repeat :""node --version"";
+backward: [[https://nodejs.og Install Node]];
+repeat while (version >= 14?) is (no) 
+->yes;
+}
+
+partition "GruCloud CLI" {
+repeat :""gc --version"";
+backward: ""npm install -g @grucloud/core"";
+repeat while (version >= 1.20) is (no) 
+->yes;
+}
+end
+}
+@enduml

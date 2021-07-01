@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="1189px" preserveAspectRatio="none" style="width:534px;height:1189px;background:#FFFFFF;" version="1.1" viewBox="0 0 534 1189" width="534px" zoomAndPan="magnify"><defs/><g><rect fill="#FFFFFF" height="1177.7124" style="stroke:#000000;stroke-width:2.0;" width="521" x="6" y="6"/><line style="stroke:#000000;stroke-width:2.0;" x1="6" x2="527" y1="27.0146" y2="27.0146"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="137" x="198" y="22.0752">AWS Requirements</text><ellipse cx="236.5" cy="53.0146" fill="#000000" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><rect fill="#FFFFFF" height="211.5986" style="stroke:#000000;stroke-width:2.0;" width="422" x="95" y="98.0146"/><path d="M200,98.0146 L200,108.0293 L190,118.0293 L95,118.0293 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="95" x="98" y="113.0898">AWS Account</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="263" x="105" y="135.0293"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="79" x="115" y="157.0938">Access to the</text><a href="https://console.aws.amazon.com/console" target="_blank" title="https://console.aws.amazon.com/console" xlink:actuate="onRequest" xlink:href="https://console.aws.amazon.com/console" xlink:show="new" xlink:title="https://console.aws.amazon.com/console" xlink:type="simple"><text fill="#0000FF" font-family="Verdana" font-size="12" lengthAdjust="spacing" text-decoration="underline" textLength="160" x="198" y="157.0938">AWS Management Console</text></a><polygon fill="#FFFFFF" points="202.5,265.6133,270.5,265.6133,282.5,277.6133,270.5,289.6133,202.5,289.6133,190.5,277.6133,202.5,265.6133" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="68" x="202.5" y="281.988">has access?</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="14" x="282.5" y="275.3037">no</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="115" x="392" y="195.0293"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="91" x="406" y="217.0938">Create Account</text><rect fill="#FFFFFF" height="209.0146" style="stroke:#000000;stroke-width:2.0;" width="338" x="172" y="357.9819"/><path d="M245,357.9819 L245,367.9966 L235,377.9966 L172,377.9966 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="63" x="175" y="373.0571">AWS CLI</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="97" x="188" y="394.9966"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="77" x="198" y="414.0435">aws version</text><polygon fill="#FFFFFF" points="194,522.9966,279,522.9966,291,534.9966,279,546.9966,194,546.9966,182,534.9966,194,522.9966" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="85" x="194" y="539.3713">version &gt;= 2 ?</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="14" x="291" y="532.687">no</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="185" x="315" y="453.7046"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="0" x="333" y="475.769"/><a href="https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html" target="_blank" title="https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html" xlink:actuate="onRequest" xlink:href="https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html" xlink:show="new" xlink:title="https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html" xlink:type="simple"><text fill="#0000FF" font-family="Verdana" font-size="12" lengthAdjust="spacing" text-decoration="underline" textLength="157" x="333" y="475.769">Download the AWS CLI v2</text></a><rect fill="#FFFFFF" height="328.1353" style="stroke:#000000;stroke-width:2.0;" width="453" x="16" y="615.3652"/><path d="M223,615.3652 L223,625.3799 L213,635.3799 L16,635.3799 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="197" x="19" y="630.4404">AWS Access and Secret Key</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="224" x="124.5" y="701.0642"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="49" x="134.5" y="723.1287">Visit the</text><a href="https://console.aws.amazon.com/iam/home#/security_credentials" target="_blank" title="https://console.aws.amazon.com/iam/home#/security_credentials" xlink:actuate="onRequest" xlink:href="https://console.aws.amazon.com/iam/home#/security_credentials" xlink:show="new" xlink:title="https://console.aws.amazon.com/iam/home#/security_credentials" xlink:type="simple"><text fill="#0000FF" font-family="Verdana" font-size="12" lengthAdjust="spacing" text-decoration="underline" textLength="119" x="187.5" y="723.1287">Security Credentials</text></a><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="28" x="310.5" y="723.1287">page</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="401" x="36" y="770.6482"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="36" x="46" y="792.7126">Select</text><text fill="#000000" font-family="Verdana" font-size="12" font-weight="bold" lengthAdjust="spacing" textLength="341" x="86" y="792.7126">Access keys (access key ID and secret access key)</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="226" x="123.5" y="840.2322"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="46" x="133.5" y="862.2966">Click on</text><text fill="#000000" font-family="Verdana" font-size="12" font-weight="bold" lengthAdjust="spacing" textLength="156" x="183.5" y="862.2966">Create New Access Key</text><polygon fill="#FFFFFF" points="112,652.3799,361,652.3799,373,664.3799,361,676.3799,112,676.3799,100,664.3799,112,652.3799" style="stroke:#000000;stroke-width:1.5;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="14" x="240.5" y="687.439">no</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="249" x="112" y="668.7546">Possession of AWS Access and Secret Key?</text><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="20" x="373" y="662.0703">yes</text><polygon fill="#FFFFFF" points="236.5,899.5005,248.5,911.5005,236.5,923.5005,224.5,911.5005,236.5,899.5005" style="stroke:#000000;stroke-width:1.5;"/><rect fill="#FFFFFF" height="130.2119" style="stroke:#000000;stroke-width:2.0;" width="260" x="42" y="978.5005"/><path d="M212,978.5005 L212,988.5151 L202,998.5151 L42,998.5151 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="160" x="45" y="993.5757">AWS CLI configuration</text><path d="M52,1015.5151 L52,1088.7124 A0,0 0 0 0 52,1088.7124 L161,1088.7124 A0,0 0 0 0 161,1088.7124 L161,1056.1138 L181,1052.1138 L161,1048.1138 L161,1025.5151 L151,1015.5151 L52,1015.5151 A0,0 0 0 0 52,1015.5151 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M151,1015.5151 L151,1025.5151 L161,1025.5151 L151,1015.5151 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="63" x="58" y="1033.585">Provides:</text><ellipse cx="63.5" cy="1044.6138" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="75" x="71" y="1049.3843">Access Key</text><ellipse cx="63.5" cy="1060.4131" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="73" x="71" y="1065.1836">Secret Key</text><ellipse cx="63.5" cy="1076.2124" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="45" x="71" y="1080.9829">Region</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="111" x="181" y="1036.1138"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="91" x="191" y="1055.1606">aws configure</text><ellipse cx="236.5" cy="1153.7124" fill="#FFFFFF" rx="10" ry="10" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:2.5;" x1="230.3128" x2="242.6872" y1="1147.5252" y2="1159.8996"/><line style="stroke:#000000;stroke-width:2.5;" x1="242.6872" x2="230.3128" y1="1147.5252" y2="1159.8996"/><line style="stroke:#000000;stroke-width:1.5;" x1="236.5" x2="236.5" y1="169.6133" y2="265.6133"/><polygon fill="#000000" points="232.5,255.6133,236.5,265.6133,240.5,255.6133,236.5,259.6133" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="282.5" x2="449.5" y1="277.6133" y2="277.6133"/><line style="stroke:#000000;stroke-width:1.5;" x1="449.5" x2="449.5" y1="229.6133" y2="277.6133"/><polygon fill="#000000" points="445.5,239.6133,449.5,229.6133,453.5,239.6133,449.5,235.6133" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="449.5" x2="449.5" y1="152.3213" y2="195.0293"/><line style="stroke:#000000;stroke-width:1.5;" x1="449.5" x2="368" y1="152.3213" y2="152.3213"/><polygon fill="#000000" points="378,148.3213,368,152.3213,378,156.3213,374,152.3213" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="236.5" x2="236.5" y1="63.0146" y2="135.0293"/><polygon fill="#000000" points="232.5,125.0293,236.5,135.0293,240.5,125.0293,236.5,129.0293" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="236.5" x2="236.5" y1="426.9966" y2="522.9966"/><polygon fill="#000000" points="232.5,512.9966,236.5,522.9966,240.5,512.9966,236.5,516.9966" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="291" x2="407.5" y1="534.9966" y2="534.9966"/><line style="stroke:#000000;stroke-width:1.5;" x1="407.5" x2="407.5" y1="488.2886" y2="534.9966"/><polygon fill="#000000" points="403.5,498.2886,407.5,488.2886,411.5,498.2886,407.5,494.2886" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="407.5" x2="407.5" y1="410.9966" y2="453.7046"/><line style="stroke:#000000;stroke-width:1.5;" x1="407.5" x2="285" y1="410.9966" y2="410.9966"/><polygon fill="#000000" points="295,406.9966,285,410.9966,295,414.9966,291,410.9966" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="236.5" x2="236.5" y1="289.6133" y2="394.9966"/><polygon fill="#000000" points="232.5,384.9966,236.5,394.9966,240.5,384.9966,236.5,388.9966" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="20" x="240.5" y="346.6797">yes</text><line style="stroke:#000000;stroke-width:1.5;" x1="236.5" x2="236.5" y1="735.6482" y2="770.6482"/><polygon fill="#000000" points="232.5,760.6482,236.5,770.6482,240.5,760.6482,236.5,764.6482" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="236.5" x2="236.5" y1="805.2322" y2="840.2322"/><polygon fill="#000000" points="232.5,830.2322,236.5,840.2322,240.5,830.2322,236.5,834.2322" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="236.5" x2="236.5" y1="676.3799" y2="701.0642"/><polygon fill="#000000" points="232.5,691.0642,236.5,701.0642,240.5,691.0642,236.5,695.0642" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="373" x2="447" y1="664.3799" y2="664.3799"/><polygon fill="#000000" points="443,777.9402,447,787.9402,451,777.9402,447,781.9402" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:1.5;" x1="447" x2="447" y1="664.3799" y2="911.5005"/><line style="stroke:#000000;stroke-width:1.5;" x1="447" x2="248.5" y1="911.5005" y2="911.5005"/><polygon fill="#000000" points="258.5,907.5005,248.5,911.5005,258.5,915.5005,254.5,911.5005" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="236.5" x2="236.5" y1="874.8162" y2="899.5005"/><polygon fill="#000000" points="232.5,889.5005,236.5,899.5005,240.5,889.5005,236.5,893.5005" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="236.5" x2="236.5" y1="546.9966" y2="652.3799"/><polygon fill="#000000" points="232.5,642.3799,236.5,652.3799,240.5,642.3799,236.5,646.3799" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="11" lengthAdjust="spacing" textLength="20" x="240.5" y="604.063">yes</text><line style="stroke:#000000;stroke-width:1.5;" x1="236.5" x2="236.5" y1="923.5005" y2="1036.1138"/><polygon fill="#000000" points="232.5,1026.1138,236.5,1036.1138,240.5,1026.1138,236.5,1030.1138" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="236.5" x2="236.5" y1="1068.1138" y2="1143.7124"/><polygon fill="#000000" points="232.5,1133.7124,236.5,1143.7124,240.5,1133.7124,236.5,1137.7124" style="stroke:#000000;stroke-width:1.0;"/><!--MD5=[6c857eab246dbd6801449b1bf8198763]
+@startuml aws-requirements
+!theme plain
+
+skinparam svgLinkTarget _blank
+
+card "AWS Requirements" {
+start
+partition "AWS Account" {
+repeat :Access to the [[https://console.aws.amazon.com/console AWS Management Console]];
+backward: Create Account;
+repeat while (has access?) is (no) 
+->yes;
+}
+
+partition "AWS CLI" {
+repeat :""aws version"";
+backward:  [[https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html Download the AWS CLI v2]];
+repeat while (version >= 2 ?) is (no) 
+->yes;
+}
+
+partition "AWS Access and Secret Key" {
+if (Possession of AWS Access and Secret Key?) then (yes)
+else (no)
+  :Visit the [[https://console.aws.amazon.com/iam/home#/security_credentials Security Credentials]] page;
+  :Select <b>Access keys (access key ID and secret access key)</b>;
+  :Click on <b>Create New Access Key</b>;
+endif
+}
+
+partition "AWS CLI configuration" {
+  :""aws configure"";
+  note left 
+  Provides:
+  * Access Key
+  * Secret Key 
+  * Region
+  end note
+}
+end
+}
+@enduml
+
+@startuml aws-requirements
+
+
+
+
+
+
+
+<style>
+  root {
+    BackgroundColor white
+    FontColor black
+    FontName Verdana
+    HyperLinkColor blue
+    LineColor black
+    LineThickness 1
+    Margin 5
+  }
+  caption {
+    LineThickness 0
+  }
+  footer {
+    LineThickness 0
+  }
+  header {
+    LineThickness 0
+  }
+  node {
+    MaximumWidth 300
+  }
+  title {
+    FontSize 22
+    LineThickness 0
+  }
+</style>
+
+skinparam ArrowLollipopColor black
+skinparam BackgroundColor white
+skinparam DefaultFontName Verdana
+skinparam DefaultMonospacedFontName Courier
+skinparam LifelineStrategy nosolid
+skinparam ParticipantPadding 10
+skinparam SequenceLifeLineBorderColor black
+skinparam Shadowing false
+skinparam UseBetaStyle true
+
+skinparam Activity {
+  BackgroundColor white
+  BarColor black
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam Boundary {
+  FontColor black
+}
+skinparam Box {
+  Padding 5
+}
+skinparam CircledCharacter {
+  FontColor black
+  FontName Courier
+  Radius 9
+}
+skinparam Class {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassAttribute {
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassStereotype {
+  FontColor black
+  FontName Verdana
+}
+skinparam Footer {
+  FontColor black
+  FontName Verdana
+}
+skinparam Header {
+  FontColor black
+  FontName Verdana
+}
+skinparam Hyperlink {
+  Color blue
+}
+skinparam IconPackage {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPrivate {
+  Color black
+  BackgroundColor white
+}
+skinparam IconProtected {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPublic {
+  Color black
+  BackgroundColor white
+}
+skinparam Note {
+  FontColor black
+  FontName Verdana
+}
+skinparam Package {
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam State {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeA {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeC {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeE {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeI {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeN {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam UseCaseStereoType {
+  FontColor black
+  FontName Verdana
+}
+
+skinparam svgLinkTarget _blank
+
+card "AWS Requirements" {
+start
+partition "AWS Account" {
+repeat :Access to the [[https://console.aws.amazon.com/console AWS Management Console]];
+backward: Create Account;
+repeat while (has access?) is (no) 
+->yes;
+}
+
+partition "AWS CLI" {
+repeat :""aws version"";
+backward:  [[https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html Download the AWS CLI v2]];
+repeat while (version >= 2 ?) is (no) 
+->yes;
+}
+
+partition "AWS Access and Secret Key" {
+if (Possession of AWS Access and Secret Key?) then (yes)
+else (no)
+  :Visit the [[https://console.aws.amazon.com/iam/home#/security_credentials Security Credentials]] page;
+  :Select <b>Access keys (access key ID and secret access key)</b>;
+  :Click on <b>Create New Access Key</b>;
+endif
+}
+
+partition "AWS CLI configuration" {
+  :""aws configure"";
+  note left 
+  Provides:
+  * Access Key
+  * Secret Key 
+  * Region
+  end note
+}
+end
+}
+@enduml
+
+PlantUML version 1.2021.7(Sun May 23 14:40:07 CEST 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

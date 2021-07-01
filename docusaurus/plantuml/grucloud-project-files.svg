@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="209px" preserveAspectRatio="none" style="width:886px;height:209px;background:#FFFFFF;" version="1.1" viewBox="0 0 886 209" width="886px" zoomAndPan="magnify"><defs/><g><!--MD5=[0bb5a60a53c4cceb180dd1832927a14d]
+cluster GruCloud infrastructure directory--><polygon fill="#FFFFFF" points="21,11,289,11,296,34.0146,869,34.0146,869,202,21,202,21,11" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.0;" x1="21" x2="296" y1="34.0146" y2="34.0146"/><text fill="#000000" font-family="Verdana" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="262" x="25" y="27.0752">GruCloud infrastructure directory</text><!--MD5=[df76fcb9adf7cf8b75c600f482bc0e61]
+entity .vscode/settings.json--><polygon fill="#FFFFFF" points="685,47,685,84.0146,853,84.0146,853,57,843,47,685,47" style="stroke:#000000;stroke-width:1.0;"/><path d="M843,47 L843,57 L853,57 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="148" x="695" y="71.0752">.vscode/settings.json</text><path d="M695.5,152 L695.5,177.7993 A0,0 0 0 0 695.5,177.7993 L852.5,177.7993 A0,0 0 0 0 852.5,177.7993 L852.5,162 L842.5,152 L777.37,152 L769.92,84.38 L769.37,152 L695.5,152 A0,0 0 0 0 695.5,152 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M842.5,152 L842.5,162 L852.5,162 L842.5,152 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="136" x="701.5" y="170.0698">Debug with VS Code</text><!--MD5=[4fde075a24f3471be24e36bc159e68ec]
+entity package.json--><polygon fill="#FFFFFF" points="538.5,47,538.5,84.0146,649.5,84.0146,649.5,57,639.5,47,538.5,47" style="stroke:#000000;stroke-width:1.0;"/><path d="M639.5,47 L639.5,57 L649.5,57 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="91" x="548.5" y="71.0752">package.json</text><path d="M547.5,152 L547.5,177.7993 A0,0 0 0 0 547.5,177.7993 L660.5,177.7993 A0,0 0 0 0 660.5,177.7993 L660.5,162 L650.5,152 L606.75,152 L595.83,84.38 L598.75,152 L547.5,152 A0,0 0 0 0 547.5,152 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M650.5,152 L650.5,162 L660.5,162 L650.5,152 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="92" x="553.5" y="170.0698">Dependencies</text><!--MD5=[05ecc3f82ea2a824e61fa3b4e13bdd72]
+entity       hook.js      --><polygon fill="#FFFFFF" points="355,47,355,84.0146,485,84.0146,485,57,475,47,355,47" style="stroke:#000000;stroke-width:1.0;"/><path d="M475,47 L475,57 L485,57 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="50" x="395" y="71.0752">hook.js</text><path d="M327.5,144 L327.5,185.5986 A0,0 0 0 0 327.5,185.5986 L512.5,185.5986 A0,0 0 0 0 512.5,185.5986 L512.5,154 L502.5,144 L424,144 L420,84.38 L416,144 L327.5,144 A0,0 0 0 0 327.5,144 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M502.5,144 L502.5,154 L512.5,154 L502.5,144 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="88" x="333.5" y="162.0698">Execute code</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="164" x="333.5" y="177.8691">after/before deployment</text><!--MD5=[ac7116f9593d8ea8eff1929b5da36bba]
+entity     config.js    --><polygon fill="#FFFFFF" points="176.5,47,176.5,84.0146,295.5,84.0146,295.5,57,285.5,47,176.5,47" style="stroke:#000000;stroke-width:1.0;"/><path d="M285.5,47 L285.5,57 L295.5,57 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="59" x="206.5" y="71.0752">config.js</text><path d="M180,144 L180,185.5986 A0,0 0 0 0 180,185.5986 L292,185.5986 A0,0 0 0 0 292,185.5986 L292,154 L282,144 L240,144 L236,84.38 L232,144 L180,144 A0,0 0 0 0 180,144 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M282,144 L282,154 L292,154 L282,144 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="90" x="186" y="162.0698">Configure the</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="91" x="186" y="177.8691">infrastructure</text><!--MD5=[95d99e855e1800afde76882471acb9b0]
+entity    iac.js     --><polygon fill="#FFFFFF" points="43,47,43,84.0146,139,84.0146,139,57,129,47,43,47" style="stroke:#000000;stroke-width:1.0;"/><path d="M129,47 L129,57 L139,57 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="36" x="68" y="71.0752">iac.js</text><path d="M37.5,144 L37.5,185.5986 A0,0 0 0 0 37.5,185.5986 L144.5,185.5986 A0,0 0 0 0 144.5,185.5986 L144.5,154 L134.5,144 L95,144 L91,84.38 L87,144 L37.5,144 A0,0 0 0 0 37.5,144 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M134.5,144 L134.5,154 L144.5,154 L134.5,144 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="69" x="43.5" y="162.0698">Define the</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="86" x="43.5" y="177.8691">infrastrucure</text><!--MD5=[f1a943329aae4073395d7abbaec3bc0e]
+@startuml grucloud-project-files
+!theme plain
+skinparam svgLinkTarget _blank
+
+folder "GruCloud infrastructure directory" {
+
+
+file ".vscode/settings.json"
+note bottom
+Debug with VS Code
+end note
+
+file package.json 
+
+note bottom 
+Dependencies
+end note
+
+file "      hook.js      "
+note bottom
+Execute code 
+after/before deployment
+end note
+
+file "    config.js    "
+note bottom
+Configure the
+infrastructure
+end note
+
+file "   iac.js     "
+note bottom
+Define the
+infrastrucure
+end note
+
+
+}
+
+
+@enduml
+
+@startuml grucloud-project-files
+
+
+
+
+
+
+
+<style>
+  root {
+    BackgroundColor white
+    FontColor black
+    FontName Verdana
+    HyperLinkColor blue
+    LineColor black
+    LineThickness 1
+    Margin 5
+  }
+  caption {
+    LineThickness 0
+  }
+  footer {
+    LineThickness 0
+  }
+  header {
+    LineThickness 0
+  }
+  node {
+    MaximumWidth 300
+  }
+  title {
+    FontSize 22
+    LineThickness 0
+  }
+</style>
+
+skinparam ArrowLollipopColor black
+skinparam BackgroundColor white
+skinparam DefaultFontName Verdana
+skinparam DefaultMonospacedFontName Courier
+skinparam LifelineStrategy nosolid
+skinparam ParticipantPadding 10
+skinparam SequenceLifeLineBorderColor black
+skinparam Shadowing false
+skinparam UseBetaStyle true
+
+skinparam Activity {
+  BackgroundColor white
+  BarColor black
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam Boundary {
+  FontColor black
+}
+skinparam Box {
+  Padding 5
+}
+skinparam CircledCharacter {
+  FontColor black
+  FontName Courier
+  Radius 9
+}
+skinparam Class {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassAttribute {
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassStereotype {
+  FontColor black
+  FontName Verdana
+}
+skinparam Footer {
+  FontColor black
+  FontName Verdana
+}
+skinparam Header {
+  FontColor black
+  FontName Verdana
+}
+skinparam Hyperlink {
+  Color blue
+}
+skinparam IconPackage {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPrivate {
+  Color black
+  BackgroundColor white
+}
+skinparam IconProtected {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPublic {
+  Color black
+  BackgroundColor white
+}
+skinparam Note {
+  FontColor black
+  FontName Verdana
+}
+skinparam Package {
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam State {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeA {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeC {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeE {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeI {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeN {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam UseCaseStereoType {
+  FontColor black
+  FontName Verdana
+}
+skinparam svgLinkTarget _blank
+
+folder "GruCloud infrastructure directory" {
+
+
+file ".vscode/settings.json"
+note bottom
+Debug with VS Code
+end note
+
+file package.json 
+
+note bottom 
+Dependencies
+end note
+
+file "      hook.js      "
+note bottom
+Execute code 
+after/before deployment
+end note
+
+file "    config.js    "
+note bottom
+Configure the
+infrastructure
+end note
+
+file "   iac.js     "
+note bottom
+Define the
+infrastrucure
+end note
+
+
+}
+
+
+@enduml
+
+PlantUML version 1.2021.7(Sun May 23 14:40:07 CEST 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

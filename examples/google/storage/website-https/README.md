@@ -131,6 +131,15 @@ aws route53 create-hosted-zone --name grucloud.org --caller-reference 2021-06-30
 
 You could also visit the [Route53 Dashboard](https://console.aws.amazon.com/route53/v2/home#Dashboard)
 
+## Getting the source code
+
+Clone the source code and change to this example directory:
+
+```sh
+git clone https://github.com/grucloud/grucloud.git
+cd grucloud/examples/google/storage/website-https
+```
+
 ## Install
 
 Install the npm dependencies:
@@ -272,6 +281,8 @@ Verity the state of the resource with the **gc list** command, the _--graph_ gen
 ```sh
 gc list --graph
 ```
+
+![GraphLive](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/storage/website-https/diagram-live.svg)
 
 ```
 Listing resources on 1 provider: google
@@ -583,8 +594,6 @@ Provider: google
 7 resources, 7 types, 1 provider
 Command "gc list" executed in 4s
 ```
-
-![GraphLive](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/google/storage/website-https/diagram-live.svg)
 
 ### Update
 

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="345px" preserveAspectRatio="none" style="width:760px;height:345px;background:#FFFFFF;" version="1.1" viewBox="0 0 760 345" width="760px" zoomAndPan="magnify"><defs/><g><rect fill="#FFFFFF" height="333.0146" style="stroke:#000000;stroke-width:2.0;" width="747" x="6" y="6"/><line style="stroke:#000000;stroke-width:2.0;" x1="6" x2="753" y1="27.0146" y2="27.0146"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="404" x="177.5" y="22.0752">Get an source code example and install the dependencies</text><ellipse cx="201" cy="53.0146" fill="#000000" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><path d="M406,101.115 L406,110.0146 L386,114.0146 L406,118.0146 L406,126.9143 A0,0 0 0 0 406,126.9143 L743,126.9143 A0,0 0 0 0 743,126.9143 L743,111.115 L733,101.115 L406,101.115 A0,0 0 0 0 406,101.115 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M733,101.115 L733,111.115 L743,111.115 L733,101.115 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="63" x="412" y="119.1848">Clone the</text><a href="https://github.com/grucloud/grucloud" target="_blank" title="https://github.com/grucloud/grucloud" xlink:actuate="onRequest" xlink:href="https://github.com/grucloud/grucloud" xlink:show="new" xlink:title="https://github.com/grucloud/grucloud" xlink:type="simple"><text fill="#0000FF" font-family="Verdana" font-size="13" lengthAdjust="spacing" text-decoration="underline" textLength="80" x="480" y="119.1848">source code</text></a><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="163" x="565" y="119.1848">containing the examples</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="370" x="16" y="98.0146"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="350" x="26" y="117.0615">git clone https://github.com/grucloud/grucloud.git</text><path d="M385,168.115 L385,177.0146 L365,181.0146 L385,185.0146 L385,193.9143 A0,0 0 0 0 385,193.9143 L633,193.9143 A0,0 0 0 0 633,193.9143 L633,178.115 L623,168.115 L385,168.115 A0,0 0 0 0 385,168.115 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M623,168.115 L623,178.115 L633,178.115 L623,168.115 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="93" x="391" y="186.1848">Change to the</text><a href="https://github.com/grucloud/grucloud/tree/main/examples" target="_blank" title="https://github.com/grucloud/grucloud/tree/main/examples" xlink:actuate="onRequest" xlink:href="https://github.com/grucloud/grucloud/tree/main/examples" xlink:show="new" xlink:title="https://github.com/grucloud/grucloud/tree/main/examples" xlink:type="simple"><text fill="#0000FF" font-family="Verdana" font-size="13" lengthAdjust="spacing" text-decoration="underline" textLength="129" x="489" y="186.1848">examples directory</text></a><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="328" x="37" y="165.0146"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="308" x="47" y="184.0615">cd grucloud/examples/&lt;provider&gt;/&lt;my-example&gt;</text><path d="M273,235.115 L273,244.0146 L253,248.0146 L273,252.0146 L273,260.9143 A0,0 0 0 0 273,260.9143 L518,260.9143 A0,0 0 0 0 518,260.9143 L518,245.115 L508,235.115 L273,235.115 A0,0 0 0 0 273,235.115 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M508,235.115 L508,245.115 L518,245.115 L508,235.115 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="195" x="279" y="253.1848">Install the dependencies with</text><text fill="#000000" font-family="Courier" font-size="13" lengthAdjust="spacing" textLength="24" x="479" y="252.7151">npm</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="104" x="149" y="232.0146"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="77" x="159" y="251.0615">npm install</text><ellipse cx="201" cy="309.0146" fill="#FFFFFF" rx="10" ry="10" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:2.5;" x1="194.8128" x2="207.1872" y1="302.8275" y2="315.2018"/><line style="stroke:#000000;stroke-width:2.5;" x1="207.1872" x2="194.8128" y1="302.8275" y2="315.2018"/><line style="stroke:#000000;stroke-width:1.5;" x1="201" x2="201" y1="63.0146" y2="98.0146"/><polygon fill="#000000" points="197,88.0146,201,98.0146,205,88.0146,201,92.0146" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="201" x2="201" y1="130.0146" y2="165.0146"/><polygon fill="#000000" points="197,155.0146,201,165.0146,205,155.0146,201,159.0146" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="201" x2="201" y1="197.0146" y2="232.0146"/><polygon fill="#000000" points="197,222.0146,201,232.0146,205,222.0146,201,226.0146" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="201" x2="201" y1="264.0146" y2="299.0146"/><polygon fill="#000000" points="197,289.0146,201,299.0146,205,289.0146,201,293.0146" style="stroke:#000000;stroke-width:1.0;"/><!--MD5=[621e5a0580023fc443a37cce010d3f93]
+@startuml grucloud-project-setup
+!theme plain
+skinparam svgLinkTarget _blank
+
+card "Get an source code example and install the dependencies" {
+start 
+
+:""git clone https://github.com/grucloud/grucloud.git"";
+note right
+Clone the [[https://github.com/grucloud/grucloud source code]] containing the examples
+end note
+:""cd grucloud/examples/<provider>/<my-example>"";
+note right
+Change to the [[https://github.com/grucloud/grucloud/tree/main/examples examples directory]]
+end note
+:""npm install "";
+note right
+Install the dependencies with ""npm""
+end note
+end
+}
+
+@enduml
+
+@startuml grucloud-project-setup
+
+
+
+
+
+
+
+<style>
+  root {
+    BackgroundColor white
+    FontColor black
+    FontName Verdana
+    HyperLinkColor blue
+    LineColor black
+    LineThickness 1
+    Margin 5
+  }
+  caption {
+    LineThickness 0
+  }
+  footer {
+    LineThickness 0
+  }
+  header {
+    LineThickness 0
+  }
+  node {
+    MaximumWidth 300
+  }
+  title {
+    FontSize 22
+    LineThickness 0
+  }
+</style>
+
+skinparam ArrowLollipopColor black
+skinparam BackgroundColor white
+skinparam DefaultFontName Verdana
+skinparam DefaultMonospacedFontName Courier
+skinparam LifelineStrategy nosolid
+skinparam ParticipantPadding 10
+skinparam SequenceLifeLineBorderColor black
+skinparam Shadowing false
+skinparam UseBetaStyle true
+
+skinparam Activity {
+  BackgroundColor white
+  BarColor black
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam Boundary {
+  FontColor black
+}
+skinparam Box {
+  Padding 5
+}
+skinparam CircledCharacter {
+  FontColor black
+  FontName Courier
+  Radius 9
+}
+skinparam Class {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassAttribute {
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassStereotype {
+  FontColor black
+  FontName Verdana
+}
+skinparam Footer {
+  FontColor black
+  FontName Verdana
+}
+skinparam Header {
+  FontColor black
+  FontName Verdana
+}
+skinparam Hyperlink {
+  Color blue
+}
+skinparam IconPackage {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPrivate {
+  Color black
+  BackgroundColor white
+}
+skinparam IconProtected {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPublic {
+  Color black
+  BackgroundColor white
+}
+skinparam Note {
+  FontColor black
+  FontName Verdana
+}
+skinparam Package {
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam State {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeA {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeC {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeE {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeI {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeN {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam UseCaseStereoType {
+  FontColor black
+  FontName Verdana
+}
+skinparam svgLinkTarget _blank
+
+card "Get an source code example and install the dependencies" {
+start 
+
+:""git clone https://github.com/grucloud/grucloud.git"";
+note right
+Clone the [[https://github.com/grucloud/grucloud source code]] containing the examples
+end note
+:""cd grucloud/examples/<provider>/<my-example>"";
+note right
+Change to the [[https://github.com/grucloud/grucloud/tree/main/examples examples directory]]
+end note
+:""npm install "";
+note right
+Install the dependencies with ""npm""
+end note
+end
+}
+
+@enduml
+
+PlantUML version 1.2021.7(Sun May 23 14:40:07 CEST 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

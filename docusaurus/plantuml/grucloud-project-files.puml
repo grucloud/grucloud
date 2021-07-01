@@ -1,0 +1,41 @@
+@startuml grucloud-project-files
+!theme plain
+skinparam svgLinkTarget _blank
+
+folder "GruCloud infrastructure directory" {
+
+
+file ".vscode/settings.json"
+note bottom
+Debug with VS Code
+end note
+
+file package.json 
+
+note bottom 
+Dependencies
+end note
+
+file "      hook.js      "
+note bottom
+Execute code 
+after/before deployment
+end note
+
+file "    config.js    "
+note bottom
+Configure the
+infrastructure
+end note
+
+file "   iac.js     "
+note bottom
+Define the
+infrastrucure
+end note
+
+
+}
+
+
+@enduml
