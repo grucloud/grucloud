@@ -61,7 +61,7 @@ module.exports = [
   },
   {
     type: "Subnet",
-    dependsOn: ["Vpc", "NetworkInterface"],
+    dependsOn: ["Vpc", "InternetGateway", "NetworkInterface"],
     Client: AwsSubnet,
     isOurMinion,
   },
@@ -79,7 +79,7 @@ module.exports = [
   },
   {
     type: "SecurityGroup",
-    dependsOn: ["Vpc", "NetworkInterface"],
+    dependsOn: ["Vpc", "NetworkInterface", "Subnet"],
     Client: AwsSecurityGroup,
     isOurMinion,
   },
