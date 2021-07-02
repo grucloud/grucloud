@@ -1,6 +1,8 @@
-# Full Stack Application on AWS EKS, Load Balancer by GrouCloud.
+# Full Stack Application on AWS EKS
 
-This example deploys a full-stack application with Kubernetes on AWS using their managed control plane called [Elastic Kubernetes Service](https://aws.amazon.com/eks/)
+This example automatically deploys a full-stack application with Kubernetes on AWS using their managed control plane called [Elastic Kubernetes Service](https://aws.amazon.com/eks/)
+
+Autamation is performed with [GruCloud](https://grucloud.com), an infrastructure as code tool written in Javascript.
 
 ## High-level description
 
@@ -24,7 +26,9 @@ Fewer pods mean we can choose a cheaper worker node.
 
 ### Modules for K8s resources
 
-The local module defining the app on the k8s side is located at [base](../base)
+The local module defining the app on the k8s side is located at [base](../base).
+
+There is no trace of manifests in YAML, instead, Kubernetes manifests are described in Javascript, allowing the use of variables, conditionals, loops, importing code, and even the use of a debugger. Therefore, GruCloud is an alternative to _helm_.
 
 ### Resources
 
