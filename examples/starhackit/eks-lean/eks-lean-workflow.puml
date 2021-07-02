@@ -1,0 +1,64 @@
+@startuml eks-lean-workflow
+!theme plain
+
+card "Full Stack App on EKS" {
+start
+partition "Requirements" {
+:""AWS CLI"";
+note right
+Install and configure the AWS CLI
+end note
+:""GruCloud CLI"";
+note right
+Install ""node.js"" and ""gc""
+end note
+:Download the source code
+& install dependencies;
+}
+
+partition "Configuration" {
+
+:Configure AWS resources;
+note right
+Edit ""configAWS.js""
+end note
+
+:Configure K8S resources;
+note right
+Edit ""configK8s.js""
+end note
+}
+
+partition "Deployment" {
+:""gc apply"";
+note right
+Deploy
+end note
+:Check deployment;
+note right
+Visit ""https://yourdomain.com""
+end note
+}
+
+partition "Update" {
+:Update the container version;
+note right
+Edit ""configK8s.js""
+end note
+:""gc apply"";
+:Check update;
+note right
+Visit ""https://yourdomain.com""
+end note
+}
+
+partition "Destroy" {
+:""gc destroy"";
+note right
+K8s and AWS resources will be destroyed
+end note
+}
+end
+}
+
+@enduml
