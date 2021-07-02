@@ -66,6 +66,8 @@ The second part is the Kubernetes deployment of the full-stack application compo
 
 Configuration for the K8s resources is located at [configK8s.js](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/configK8s.js)
 
+> When the backend container is changed to another backend, do not forget to change target group health check in **configAWS.js**
+
 ### GruCloud workflow
 
 This chart depicts the workflow with the main **gc** commands:
@@ -171,6 +173,73 @@ Let's update the cluster with another version of the front end.
 Edit [configK8s.js](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/configK8s.js) and change the frontend version.
 
 The `gc apply` command will find out the difference between the expected version and the deployed version.
+
+```txt
+Querying resources on 2 providers: aws, k8s
+✓ aws
+  ✓ Initialising
+  ✓ Listing 30/30
+  ✓ Querying
+    ✓ HostedZone 1/1
+    ✓ Certificate 1/1
+    ✓ Route53Record 2/2
+    ✓ Vpc 1/1
+    ✓ InternetGateway 1/1
+    ✓ Subnet 4/4
+    ✓ RouteTable 3/3
+    ✓ Route 3/3
+    ✓ ElasticIpAddress 1/1
+    ✓ NatGateway 1/1
+    ✓ IamRole 2/2
+    SecurityGroup 3/4
+    ✓ SecurityGroupRuleIngress 6/6
+    ✓ SecurityGroupRuleEgress 1/1
+    ✓ KmsKey 1/1
+    ✓ EKSCluster 1/1
+    ✓ EKSNodeGroup 1/1
+    ✓ LoadBalancer 1/1
+    ✓ TargetGroup 2/2
+    ✓ Listener 2/2
+    ✓ Rule 3/3
+✓ k8s
+  ✓ Initialising
+  ✓ Listing 8/8
+  ✓ Querying
+    ✓ Namespace 1/1
+    ✓ ConfigMap 2/2
+    ✓ StatefulSet 2/2
+    ✓ Service 4/4
+    ✓ Deployment 2/2
+┌────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ 1 Deployment from k8s                                                                              │
+├────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ ┌───────────────────────────────────────────────────────────────────────────────────────────────┐  │
+│ │ UPDATE: name: default::web, id: web                                                           │  │
+│ ├───────────────────────────────────────────────────────────────────────────────────────────────┤  │
+│ │ Key: spec                                                                                     │  │
+│ ├───────────────────────────────────────────────┬───────────────────────────────────────────────┤  │
+│ │ - template:                                   │ + template:                                   │  │
+│ │   spec:                                       │   spec:                                       │  │
+│ │     containers:                               │     containers:                               │  │
+│ │       0:                                      │       0:                                      │  │
+│ │         image: fredericheem/ui:v10.14.0       │         image: fredericheem/ui:v10.15.0       │  │
+│ │                                               │                                               │  │
+│ └───────────────────────────────────────────────┴───────────────────────────────────────────────┘  │
+└────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Plan summary for provider aws                                                               │
+└─────────────────────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Plan summary for provider k8s                                                               │
+├─────────────────────────────────────────────────────────────────────────────────────────────┤
+│ DEPLOY RESOURCES                                                                            │
+├────────────────────┬────────────────────────────────────────────────────────────────────────┤
+│ Deployment         │ default::web                                                           │
+└────────────────────┴────────────────────────────────────────────────────────────────────────┘
+? Are you sure to deploy 1 resource, 1 type on 1 provider? › (y/N)
+```
 
 It is the equivalent of `kubectl apply`, except that `kubectl` is "fire and forget", but _gc_ apply the changes and waits for the resources to be ready before returning.
 
