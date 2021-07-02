@@ -1,35 +1,25 @@
 digraph graphname {
   subgraph "cluster_mock-1" {
-label=AWS;
-"VPC"
-"EKS"
-"Certificate"
-"Load Balancer"
-"Load Balancer Route53 Record"
-"ListenerHTTP"
-"ListenerHTTPS"
-"TargetGroupWeb"
-"RuleHTTPWeb"
-"RuleHTTPSWeb"
+    label=AWS;
+    "VPC"
+    "EKS"
+    "Certificate"
+    "Load Balancer"
+  }
+  "Load Balancer" -> "VPC"
+  "Load Balancer" -> "Certificate"
+  "EKS" -> "Load Balancer"
+  "EKS" -> "VPC"
 
-}
+  subgraph "cluster_k8s-2" {
+    label=K8S
+    "Frontend"
+    "Backend"
+    "Postgres"
+    "Redis"
+  }
 
-subgraph "cluster_k8s-2" {
-label=K8S
-"Full Stack App"
-"ServiceWeb"
-}
-"RuleHTTPSWeb"->"ListenerHTTPS"
-"RuleHTTPSWeb"->"TargetGroupWeb"
-"ListenerHTTPS"->"Certificate"
-"ListenerHTTPS"->"Load Balancer"
-"TargetGroupWeb"->"ServiceWeb"
-"RuleHTTPWeb"->"ListenerHTTP"
-"RuleHTTPWeb"->"TargetGroupWeb"
-"ListenerHTTP"->"Load Balancer"
-"Load Balancer"->"VPC"
-"EKS" -> "VPC"
-"Load Balancer Route53 Record"->"Load Balancer" 
-
-
+  "Frontend" ->  "Backend"
+  "Backend" -> "Postgres"
+  "Backend" -> "Redis"
 }

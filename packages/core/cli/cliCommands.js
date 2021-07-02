@@ -663,9 +663,15 @@ const doPlanApply = async ({
 
 const isMultiProvider = ({ infra }) =>
   pipe([
+    tap(() => {
+      logger.debug(`isMultiProvider`);
+    }),
     () => infra,
-    get("providers"),
+    get("stacks"),
     size,
+    tap((providerSize) => {
+      logger.debug(`isMultiProvider #providers ${providerSize}`);
+    }),
     gte(identity, 2),
     tap((result) => {
       logger.debug(`isMultiProvider ${result}`);

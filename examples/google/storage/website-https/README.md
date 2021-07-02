@@ -153,7 +153,7 @@ Follow the manual steps at the [domain name verification documentation](https://
 
 ## GruCloud CLI Workflow
 
-This chart shows the GruCloud CLI main command:
+This chart shows the GruCloud CLI main commands:
 
 ![gc-work-flow](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/grucloud-cli-commands.svg)
 
