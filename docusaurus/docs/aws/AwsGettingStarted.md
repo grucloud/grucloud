@@ -6,6 +6,15 @@ Instead of manually creating, updating, and destroying EC2 instances, the infras
 
 ## Requirements
 
+The following chart explains the AWS requirements:
+
+- AWS Account
+- AWS CLI
+- Access and Secret Key
+- Configure the AWS CLI
+
+![AWS Requirements](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/aws-requirements.svg)
+
 ### AWS Account
 
 Ensure access to the [Amazon Console](https://console.aws.amazon.com) and create an account if necessary.
@@ -41,7 +50,11 @@ aws configure
 
 ### Getting the GruCloud CLI
 
-GruCloud is written in Javascript running on [Node.js](https://nodejs.org/). Check if `node` is present on your system:
+This chart describes the way to install **gc**, the GruCloud CLI:
+
+![gc-cli-install](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/grucloud-cli-install.svg)
+
+GruCloud is written in Javascript running on [Node.js](https://nodejs.org/). Check if `node` is present on your system
 
 ```
 node --version
@@ -65,9 +78,13 @@ gc --version
 
 In this section, we'll create the files needed to describe an infrastructure with GruCloud:
 
-- [package.json](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/package.json): specifies the npm dependencies and other information.
-- [config.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/config.js): the config function.
+![grucloud-files](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/grucloud-project-files.svg)
+
 - [iac.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/iac.js): exports _createStack_ with provider and resources associated
+- [config.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/config.js): the config function.
+
+- [package.json](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/package.json): specifies the npm dependencies and other information.
+
 - [hooks.js](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-simple/hook.js): optionally provides hook functions called after deployment or destruction.
 
 > The [source code](https://github.com/grucloud/grucloud/tree/main/examples/aws/ec2-simple) for this example in on GitHub.
@@ -152,7 +169,17 @@ exports.createStack = async ({ stage }) => {
 };
 ```
 
-## GruCloud CLI
+## GruCloud Workflow
+
+This chart depicts the workflow with the main **gc** commands:
+
+- gc info
+- gc graph
+- gc apply
+- gc list
+- gc destroy
+
+![grucloud commands](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/grucloud-cli-commands.svg)
 
 ### Info
 
@@ -232,7 +259,7 @@ Querying resources on 1 provider: aws
 ? Are you sure to deploy 1 resource, 1 type on 1 provider? › (y/N)
 ```
 
-At this point, you are given the opportunity to look at what is going to be deployed.
+At this point, you are allowed to look at what is going to be deployed.
 Type `y` to accept:
 
 ```
@@ -523,7 +550,7 @@ Find Deletable resources on 1 provider: aws
 
 ```
 
-Once again, you are given the opportunity to look at what is going to be destroyed.
+Once again, you are allowed to look at what is going to be destroyed.
 Type 'y' to confirm the destruction:
 
 ```
@@ -557,7 +584,7 @@ Provider: aws
 Command "gc list -t EC2" executed in 3s
 ```
 
-This example demonstrates how to code a very basic infrastructure with one EC2 instance, and how can we use the `gc apply`, `gc list`, `gc destroy` and `gc graph` to manage the infrastructure.
+This example demonstrates how to code a very basic infrastructure with one EC2 instance, and how can we use the `gc apply`, `gc list`, `gc destroy`, and `gc graph` to manage the infrastructure.
 
 It paves the way for more [AWS examples](https://www.grucloud.com/docs/aws/AwsExamples)
 
