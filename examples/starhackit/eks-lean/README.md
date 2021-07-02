@@ -52,6 +52,12 @@ The next flowchart tells the actions to perform to configure, deploy, update and
 
 ![gc-cli-install](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/grucloud-cli-install.svg)
 
+#### Getting the source code
+
+![project-setup](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/grucloud-project-setup.svg)
+
+> This example is located at `examples/starhackit/eks-lean`
+
 ### Configuration
 
 #### Amazon EKS
