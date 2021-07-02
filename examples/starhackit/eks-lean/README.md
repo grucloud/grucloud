@@ -1,6 +1,8 @@
-# Full Stack Application on AWS EKS, Load Balancer by GrouCloud.
+# Full Stack Application on AWS EKS
 
-This example deploys a full-stack application with Kubernetes on AWS using their managed control plane called [Elastic Kubernetes Service](https://aws.amazon.com/eks/)
+This example automatically deploys a full-stack application with Kubernetes on AWS using their managed control plane called [Elastic Kubernetes Service](https://aws.amazon.com/eks/)
+
+Automation is performed with [GruCloud](https://grucloud.com), which is an infrastructure as code tool written in Javascript.
 
 ## High-level description
 
@@ -24,7 +26,9 @@ Fewer pods mean we can choose a cheaper worker node.
 
 ### Modules for K8s resources
 
-The local module defining the app on the k8s side is located at [base](../base)
+The local module defining the app on the k8s side is located at [base](https://github.com/grucloud/grucloud/tree/main/examples/starhackit/base).
+
+There is no trace of manifests in YAML, instead, Kubernetes manifests are described in Javascript, allowing the use of variables, conditionals, loops, importing code, and even the use of a debugger. Therefore, GruCloud is an alternative to _helm_.
 
 ### Resources
 
@@ -48,6 +52,12 @@ The next flowchart tells the actions to perform to configure, deploy, update and
 
 ![gc-cli-install](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/grucloud-cli-install.svg)
 
+#### Getting the source code
+
+![project-setup](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/grucloud-project-setup.svg)
+
+> This example is located at `examples/starhackit/eks-lean`
+
 ### Configuration
 
 #### Amazon EKS
@@ -66,7 +76,7 @@ The second part is the Kubernetes deployment of the full-stack application compo
 
 Configuration for the K8s resources is located at [configK8s.js](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/configK8s.js)
 
-> When the backend container is changed to another backend, do not forget to change target group health check in **configAWS.js**
+> When the backend container is changed to another backend, do not forget to change the target group health check in **configAWS.js**
 
 ### GruCloud workflow
 
@@ -163,7 +173,7 @@ Let's list and produce a diagram of the AWS resources freshly created:
 gc list -p aws --graph -a --default-exclude --types-exclude Certificate --types-exclude Route53Domain --types-exclude NetworkInterface
 ```
 
-![diagram-live.svg](./diagram-live.svg)
+![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/diagram-live.svg)
 
 Notice that the _NodeGroup_ has created an _AutoScaling Group_, which in turn creates EC2 instances, instance profiles, and volumes.
 
