@@ -455,8 +455,15 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
             (NetworkInterfaceId) =>
               ec2().deleteNetworkInterface({ NetworkInterfaceId }),
             switchCase([
-              eq(get("code"), "InvalidNetworkInterfaceID.NotFound"),
-              () => undefined,
+              or([
+                eq(get("code"), "InvalidNetworkInterfaceID.NotFound"),
+                eq(get("code"), "InvalidParameterValue"),
+              ]),
+              (error) => {
+                logger.error(
+                  `deleteNetworkInterface ignore error code: ${error.code}`
+                );
+              },
               (error) => {
                 logger.error(
                   `deleteNetworkInterface error code: ${error.code}`
