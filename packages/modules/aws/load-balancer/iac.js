@@ -1,6 +1,7 @@
 const assert = require("assert");
 const { get, pipe, tap, and, eq } = require("rubico");
-const { find } = require("rubico/x");
+const { defaultsDeep } = require("rubico/x");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 exports.config = require("./config");
 
@@ -121,7 +122,7 @@ exports.createResources = async ({
         autoScalingGroup,
         nodeGroup,
       },
-      properties: config.elb.targetGroups.web.properties,
+      properties: () => config.elb.targetGroups.web.properties,
     }),
     rest: await provider.makeTargetGroup({
       name: config.elb.targetGroups.rest.name,
@@ -131,7 +132,7 @@ exports.createResources = async ({
         nodeGroup,
         vpc,
       },
-      properties: config.elb.targetGroups.rest.properties,
+      properties: () => config.elb.targetGroups.rest.properties,
     }),
   };
 
@@ -153,7 +154,7 @@ exports.createResources = async ({
         Protocol: "HTTP",
         DefaultActions: [
           {
-            TargetGroupArn: targetGroup?.live?.TargetGroupArn,
+            TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
             Type: "forward",
           },
         ],
@@ -177,12 +178,12 @@ exports.createResources = async ({
         Protocol: "HTTPS",
         Certificates: [
           {
-            CertificateArn: certificate?.live?.CertificateArn,
+            CertificateArn: getField(certificate, "CertificateArn"),
           },
         ],
         DefaultActions: [
           {
-            TargetGroupArn: targetGroup?.live?.TargetGroupArn,
+            TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
             Type: "forward",
           },
         ],
@@ -197,7 +198,7 @@ exports.createResources = async ({
       dependencies: {
         listener: listeners.http,
       },
-      properties: config.elb.rules.http2https.properties,
+      properties: () => config.elb.rules.http2https.properties,
     }),
     https: {
       web: await provider.makeRule({
@@ -207,7 +208,15 @@ exports.createResources = async ({
           listener: listeners.https,
           targetGroup: targetGroups.web,
         },
-        properties: config.elb.rules.https.web.properties,
+        properties: ({ dependencies: { targetGroup } }) =>
+          defaultsDeep({
+            Actions: [
+              {
+                TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
+                Type: "forward",
+              },
+            ],
+          })(config.elb.rules.https.web.properties),
       }),
       rest: await provider.makeRule({
         name: config.elb.rules.https.rest.name,
@@ -216,7 +225,15 @@ exports.createResources = async ({
           listener: listeners.https,
           targetGroup: targetGroups.rest,
         },
-        properties: config.elb.rules.https.rest.properties,
+        properties: ({ dependencies: { targetGroup } }) =>
+          defaultsDeep({
+            Actions: [
+              {
+                TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
+                Type: "forward",
+              },
+            ],
+          })(config.elb.rules.https.rest.properties),
       }),
     },
   };
@@ -239,7 +256,7 @@ exports.createResources = async ({
         Name: hostedZone.name,
         Type: "A",
         AliasTarget: {
-          HostedZoneId: loadBalancer.live?.CanonicalHostedZoneId,
+          HostedZoneId: getField(loadBalancer, "CanonicalHostedZoneId"),
           DNSName: `${hostname}.`,
           EvaluateTargetHealth: false,
         },

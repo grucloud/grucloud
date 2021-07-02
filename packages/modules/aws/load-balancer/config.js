@@ -1,35 +1,31 @@
 const pkg = require("./package.json");
 
 module.exports = ({ stage }) => ({
-  eks: { cluster: { name: `cluster` } },
   elb: {
     loadBalancer: { name: `load-balancer` },
     targetGroups: {
       web: {
         name: `target-group-web`,
-        properties: () => ({
+        properties: {
           Port: 30010,
-        }),
+        },
       },
       rest: {
         name: `target-group-rest`,
-        properties: () => ({
+        properties: {
           Port: 30020,
           HealthCheckPath: "/api/v1/version",
-        }),
+        },
       },
     },
     listeners: {
-      http: { name: `listener-http`, port: 80, rules: [] },
-      https: {
-        name: `listener-https`,
-        port: 443,
-      },
+      http: { name: `listener-http` },
+      https: { name: `listener-https` },
     },
     rules: {
       http2https: {
         name: `rule-http-redirect-https`,
-        properties: () => ({
+        properties: {
           Actions: [
             {
               Type: "redirect",
@@ -51,18 +47,12 @@ module.exports = ({ stage }) => ({
             },
           ],
           Priority: 1,
-        }),
+        },
       },
       https: {
         rest: {
           name: `rule-rest-https`,
-          properties: ({ dependencies: { targetGroup } }) => ({
-            Actions: [
-              {
-                TargetGroupArn: targetGroup.live?.TargetGroupArn,
-                Type: "forward",
-              },
-            ],
+          properties: {
             Conditions: [
               {
                 Field: "path-pattern",
@@ -70,17 +60,11 @@ module.exports = ({ stage }) => ({
               },
             ],
             Priority: 10,
-          }),
+          },
         },
         web: {
           name: `rule-web-https`,
-          properties: ({ dependencies: { targetGroup } }) => ({
-            Actions: [
-              {
-                TargetGroupArn: targetGroup.live?.TargetGroupArn,
-                Type: "forward",
-              },
-            ],
+          properties: {
             Conditions: [
               {
                 Field: "path-pattern",
@@ -88,7 +72,7 @@ module.exports = ({ stage }) => ({
               },
             ],
             Priority: 11,
-          }),
+          },
         },
       },
     },
