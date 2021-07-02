@@ -8,8 +8,9 @@ const {
   assign,
   tryCatch,
   switchCase,
+  filter,
 } = require("rubico");
-const { first, defaultsDeep, pluck } = require("rubico/x");
+const { includes, first, defaultsDeep, pluck, callProp } = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const logger = require("@grucloud/core/logger")({
@@ -32,8 +33,8 @@ const findId = get("LoadBalancerArn");
 
 exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const elb = ELBv2New(config);
-
-  const findDependencies = ({ live }) => [
+  const { providerName } = config;
+  const findDependencies = ({ live, lives }) => [
     {
       type: "Vpc",
       ids: [live.VpcId],
@@ -45,6 +46,21 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     {
       type: "SecurityGroup",
       ids: live.SecurityGroups,
+    },
+    {
+      type: "NetworkInterface",
+      ids: pipe([
+        () => lives.getByType({ type: "NetworkInterface", providerName }),
+        get("resources", []),
+        filter(
+          pipe([
+            get("live.Description"),
+            callProp("replace", "ELB ", ""),
+            (description) => includes(description)(live.LoadBalancerArn),
+          ])
+        ),
+        pluck("id"),
+      ])(),
     },
   ];
 
