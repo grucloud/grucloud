@@ -2,7 +2,7 @@
 
 This example automatically deploys a full-stack application with Kubernetes on AWS using their managed control plane called [Elastic Kubernetes Service](https://aws.amazon.com/eks/)
 
-Autamation is performed with [GruCloud](https://grucloud.com), an infrastructure as code tool written in Javascript.
+Automation is performed with [GruCloud](https://grucloud.com), which is an infrastructure as code tool written in Javascript.
 
 ## High-level description
 
@@ -70,7 +70,7 @@ The second part is the Kubernetes deployment of the full-stack application compo
 
 Configuration for the K8s resources is located at [configK8s.js](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/configK8s.js)
 
-> When the backend container is changed to another backend, do not forget to change target group health check in **configAWS.js**
+> When the backend container is changed to another backend, do not forget to change the target group health check in **configAWS.js**
 
 ### GruCloud workflow
 
