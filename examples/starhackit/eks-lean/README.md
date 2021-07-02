@@ -26,7 +26,7 @@ Fewer pods mean we can choose a cheaper worker node.
 
 ### Modules for K8s resources
 
-The local module defining the app on the k8s side is located at [base](../base).
+The local module defining the app on the k8s side is located at [base](https://github.com/grucloud/grucloud/tree/main/examples/starhackit/base).
 
 There is no trace of manifests in YAML, instead, Kubernetes manifests are described in Javascript, allowing the use of variables, conditionals, loops, importing code, and even the use of a debugger. Therefore, GruCloud is an alternative to _helm_.
 
@@ -173,7 +173,7 @@ Let's list and produce a diagram of the AWS resources freshly created:
 gc list -p aws --graph -a --default-exclude --types-exclude Certificate --types-exclude Route53Domain --types-exclude NetworkInterface
 ```
 
-![diagram-live.svg](./diagram-live.svg)
+![diagram-live.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/diagram-live.svg)
 
 Notice that the _NodeGroup_ has created an _AutoScaling Group_, which in turn creates EC2 instances, instance profiles, and volumes.
 
