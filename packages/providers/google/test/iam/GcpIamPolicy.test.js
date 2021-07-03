@@ -35,7 +35,7 @@ describe.skip("GcpIamPolicy", async function () {
     await provider.start();
 
     const saName = `sa-${chance.guid().slice(0, 15)}`;
-    serviceAccount = await provider.makeServiceAccount({
+    serviceAccount = await provider.iam.makeServiceAccount({
       name: saName,
       properties: () => ({
         accountId: saName,
@@ -44,7 +44,7 @@ describe.skip("GcpIamPolicy", async function () {
         },
       }),
     });
-    iamPolicy = await provider.iam.makeIamPolicy({
+    iamPolicy = await provider.iam.makePolicy({
       name: "iam-policy",
       dependencies: { serviceAccount },
       properties: ({ dependencies: { serviceAccount } }) => ({

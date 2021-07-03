@@ -19,7 +19,7 @@ const certificate = await provider.acm.makeCertificate({
   properties: () => ({}),
 });
 
-const domain = await provider.route53Domain.useRoute53Domain({
+const domain = await provider.route53Domain.useDomain({
   name: domainName,
 });
 const hostedZone = await provider.route53.makeHostedZone({
@@ -27,7 +27,7 @@ const hostedZone = await provider.route53.makeHostedZone({
   dependencies: { domain },
 });
 
-const recordValidation = await provider.route53.makeRoute53Record({
+const recordValidation = await provider.route53.makeRecord({
   name: `certificate-validation-${domainName}.`,
   dependencies: { hostedZone, certificate },
   properties: ({ dependencies: { certificate } }) => {

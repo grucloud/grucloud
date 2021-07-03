@@ -42,7 +42,7 @@ const createResources = async ({
   const clusterName = config.eks.cluster.name;
   assert(clusterName);
 
-  const iamPolicyEKSCluster = await provider.iam.useIamPolicy({
+  const iamPolicyEKSCluster = await provider.iam.usePolicy({
     name: "AmazonEKSClusterPolicy",
     namespace,
     properties: () => ({
@@ -50,7 +50,7 @@ const createResources = async ({
     }),
   });
 
-  const iamPolicyEKSVPCResourceController = await provider.iam.useIamPolicy({
+  const iamPolicyEKSVPCResourceController = await provider.iam.usePolicy({
     name: "AmazonEKSVPCResourceController",
     namespace,
     properties: () => ({
@@ -58,7 +58,7 @@ const createResources = async ({
     }),
   });
 
-  const roleCluster = await provider.iam.makeIamRole({
+  const roleCluster = await provider.iam.makeRole({
     name: formatName(config.eks.roleCluster.name, config),
     namespace,
     dependencies: {
@@ -80,7 +80,7 @@ const createResources = async ({
     }),
   });
 
-  const iamPolicyEKSWorkerNode = await provider.iam.useIamPolicy({
+  const iamPolicyEKSWorkerNode = await provider.iam.usePolicy({
     name: "AmazonEKSWorkerNodePolicy",
     namespace,
     properties: () => ({
@@ -88,17 +88,15 @@ const createResources = async ({
     }),
   });
 
-  const iamPolicyEC2ContainerRegistryReadOnly = await provider.iam.useIamPolicy(
-    {
-      name: "AmazonEC2ContainerRegistryReadOnly",
-      namespace,
-      properties: () => ({
-        Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-      }),
-    }
-  );
+  const iamPolicyEC2ContainerRegistryReadOnly = await provider.iam.usePolicy({
+    name: "AmazonEC2ContainerRegistryReadOnly",
+    namespace,
+    properties: () => ({
+      Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    }),
+  });
 
-  const iamPolicyEKS_CNI = await provider.iam.useIamPolicy({
+  const iamPolicyEKS_CNI = await provider.iam.usePolicy({
     name: "AmazonEKS_CNI_Policy",
     namespace,
     properties: () => ({
@@ -106,7 +104,7 @@ const createResources = async ({
     }),
   });
 
-  const roleNodeGroup = await provider.iam.makeIamRole({
+  const roleNodeGroup = await provider.iam.makeRole({
     name: formatName(config.eks.roleNodeGroup.name, config),
     namespace,
     dependencies: {
@@ -277,7 +275,7 @@ const createResources = async ({
   });
 
   // define the EKS cluster
-  const cluster = await provider.eks.makeEKSCluster({
+  const cluster = await provider.eks.makeCluster({
     name: formatName(clusterName, config),
     namespace,
     dependencies: {
@@ -291,7 +289,7 @@ const createResources = async ({
   // defines a bunch of Node Groups on public subnets
   /*
   const nodeGroupsPublic = await map((nodeGroup) =>
-    provider.eks.makeEKSNodeGroup({
+    provider.eks.makeNodeGroup({
       name: nodeGroup.name,
       dependencies: {
         subnets: subnetsPublic,
@@ -304,7 +302,7 @@ const createResources = async ({
 */
   // Create a bunch of Node Groups on private subnets
   const nodeGroupsPrivate = await map((nodeGroup) =>
-    provider.eks.makeEKSNodeGroup({
+    provider.eks.makeNodeGroup({
       name: formatName(nodeGroup.name, config),
       namespace,
       dependencies: {

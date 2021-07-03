@@ -148,7 +148,7 @@ We'll first import _AwsProvider_ from [@grucloud/provider-aws](https://www.npmjs
 
 Then, instantiate _AwsProvider_ by providing the _config_ function.
 
-In the case, an [EC2 Instance](https://www.grucloud.com/docs/aws/resources/EC2/EC2) is defined with `provider.ec2.makeEC2`.
+In the case, an [EC2 Instance](https://www.grucloud.com/docs/aws/resources/EC2/EC2) is defined with `provider.ec2.makeInstance`.
 
 ```js
 // iac.js
@@ -157,7 +157,7 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 exports.createStack = async ({ stage }) => {
   const provider = AwsProvider({ config: require("./config"), stage });
   const { config } = provider;
-  const ec2Instance = await provider.ec2.makeEC2({
+  const ec2Instance = await provider.ec2.makeInstance({
     name: config.ec2Instance.name,
     properties: () => config.ec2Instance.properties,
   });
@@ -495,7 +495,7 @@ gc apply
 Trust but verify, hence, list the EC2 instances and check the `InstanceType` has been changed.
 
 ```sh
-gc l -t EC2
+gc l -t Instance
 ```
 
 ### Output
@@ -503,7 +503,7 @@ gc l -t EC2
 Another useful command is _gc output_, which extract information for a specific field of a given resource
 
 ```
-gc output -t EC2 --name web-server -f InstanceType
+gc output -t Instance --name web-server -f InstanceType
 ```
 
 ```txt
@@ -513,7 +513,7 @@ t3.micro
 Nested field can be accessed too, for example, let's retrieve the public IP address attached to the EC2 instance:
 
 ```sh
-gc output -t EC2 --name web-server -f 'NetworkInterfaces[0].Association.PublicIp'
+gc output -t Instance --name web-server -f 'NetworkInterfaces[0].Association.PublicIp'
 ```
 
 ```txt
@@ -523,7 +523,7 @@ gc output -t EC2 --name web-server -f 'NetworkInterfaces[0].Association.PublicIp
 The temptation to ping is high:
 
 ```sh
-ping `gc output -t EC2 --name web-server -f 'NetworkInterfaces[0].Association.PublicIp'`
+ping `gc output -t Instance --name web-server -f 'NetworkInterfaces[0].Association.PublicIp'`
 ```
 
 ```txt
@@ -564,10 +564,11 @@ Running OnDestroyedGlobal resources on 1 provider: aws
 Command "gc destroy" executed in 1m 29s
 ```
 
-Let's run the `gc list` command with the `E2` filter to verify the EC2 is gone:
+Let's run the `gc list` command with the `Instance` filter to verify the I
+ec2 instance is gone:
 
 ```
-gc l -t EC2
+gc l -t Instance
 ```
 
 ```
@@ -581,7 +582,7 @@ Provider: aws
 │ aws                                                                     │
 └─────────────────────────────────────────────────────────────────────────┘
 0 resources, 0 types, 1 provider
-Command "gc list -t EC2" executed in 3s
+Command "gc list -t Instance" executed in 3s
 ```
 
 This example demonstrates how to code a very basic infrastructure with one EC2 instance, and how can we use the `gc apply`, `gc list`, `gc destroy`, and `gc graph` to manage the infrastructure.

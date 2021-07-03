@@ -84,7 +84,7 @@ describe("AwsImage", async function () {
       }),
     });
 
-    const server = await provider.ec2.makeEC2({
+    const server = await provider.ec2.makeInstance({
       name: formatName("myserver"),
       dependencies: {
         image,

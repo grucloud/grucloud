@@ -25,14 +25,14 @@ module.exports = () =>
       isOurMinion: isOurMinionServiceAccount,
     },
     {
-      type: "IamPolicy",
+      type: "Policy",
       singleton: true,
       Client: GcpIamPolicy,
       isOurMinion: () => true,
       compare: compareIamPolicy,
     },
     {
-      type: "IamBinding",
+      type: "Binding",
       Client: GcpIamBinding,
       isOurMinion: isOurMinionIamBinding,
       compare: compareIamBinding,

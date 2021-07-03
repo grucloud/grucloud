@@ -48,7 +48,7 @@ module.exports = () =>
     },
     {
       type: "Vpc",
-      dependsOn: ["IamUser", "IamGroup"],
+      dependsOn: ["User", "Group"],
       Client: AwsVpc,
       isOurMinion,
     },
@@ -107,7 +107,7 @@ module.exports = () =>
       isOurMinion,
     },
     {
-      type: "EC2",
+      type: "Instance",
       dependsOn: [
         "SecurityGroup",
         "Subnet",

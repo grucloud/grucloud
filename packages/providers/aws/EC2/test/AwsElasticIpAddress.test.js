@@ -29,7 +29,7 @@ describe("AwsElasticIpAddress", async function () {
       properties: () => ({}),
     });
 
-    server = await provider.ec2.makeEC2({
+    server = await provider.ec2.makeInstance({
       name: "ec2",
       dependencies: { eip },
       properties: () => ({}),

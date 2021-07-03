@@ -194,7 +194,7 @@ describe("AwsLoadBalancerV2", async function () {
       name: `${domainName}.`,
     });
 
-    const loadBalancerRecord = await provider.route53.makeRoute53Record({
+    const loadBalancerRecord = await provider.route53.makeRecord({
       name: `dns-record-alias-load-balancer-${hostedZoneName}`,
       dependencies: { hostedZone, loadBalancerReadOnly, loadBalancer },
       properties: ({ dependencies }) => {

@@ -17,7 +17,7 @@ describe("AwsDomain", async function () {
 
     await provider.start();
 
-    domain = await provider.route53Domain.useRoute53Domain({
+    domain = await provider.route53Domain.useDomain({
       name: domainName,
     });
 

@@ -17,7 +17,7 @@ const createResources = async ({ provider }) => {
   const files = await getFiles(websiteDir);
   const bucketName = `${DomainName}-${stage}`;
 
-  const websiteBucket = await provider.s3.makeS3Bucket({
+  const websiteBucket = await provider.s3.makeBucket({
     name: bucketName,
     properties: () => ({
       ACL: "public-read",
@@ -33,7 +33,7 @@ const createResources = async ({ provider }) => {
   });
 
   await map((file) =>
-    provider.makeS3Object({
+    provider.makeObject({
       name: file,
       dependencies: { bucket: websiteBucket },
       properties: () => ({
@@ -56,7 +56,7 @@ const createResources = async ({ provider }) => {
     }),
   });
 
-  const domain = await provider.route53Domain.useRoute53Domain({
+  const domain = await provider.route53Domain.useDomain({
     name: rootDomainName,
   });
 
@@ -66,7 +66,7 @@ const createResources = async ({ provider }) => {
     properties: ({}) => ({}),
   });
 
-  const recordValidation = await provider.route53.makeRoute53Record({
+  const recordValidation = await provider.route53.makeRecord({
     name: `validation-${domainName}.`,
     dependencies: { hostedZone, certificate },
     properties: ({ dependencies: { certificate } }) => {
@@ -138,7 +138,7 @@ const createResources = async ({ provider }) => {
     stage,
   })}.`;
 
-  const recordCloudFront = await provider.route53.makeRoute53Record({
+  const recordCloudFront = await provider.route53.makeRecord({
     name: hostedZoneName,
     dependencies: { hostedZone, distribution },
     //TODO this code should be handled by Route53Record

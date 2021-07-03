@@ -17,7 +17,7 @@ const {
   not,
   and,
   or,
-  transform,
+  pick,
   omit,
 } = require("rubico");
 
@@ -1054,10 +1054,12 @@ function CoreProvider({
         logger.info(`listLives #clients ${size(clients)}`);
       }),
       map((client) => ({
+        //TODO pick(["type", "group", "providerName"])(client.spec)
         meta: {
           type: client.spec.type,
           providerName: client.spec.providerName,
         },
+        //TODO  `${client.spec.providerName}::${client.spec.group}::${client.spec.type}`
         key: `${client.spec.providerName}::${client.spec.type}`,
         dependsOn: map(
           (dependOn) => `${client.spec.providerName}::${dependOn}`
@@ -1068,6 +1070,7 @@ function CoreProvider({
               client.getList({
                 lives,
                 deep: true,
+                //TODO resources: getResourcesByType(client.spec),
                 resources: getResourcesByType({ type: client.spec.type }),
               }),
             tap((result) => {
@@ -1618,7 +1621,7 @@ function CoreProvider({
       }),
     ])();
 
-  const destroyById = async ({ type, live, lives, name, meta }) => {
+  const destroyById = async ({ type, group, live, lives, name, meta }) => {
     logger.debug(`destroyById: ${JSON.stringify({ type, name })}`);
     const client = clientByType({ type });
     assert(client, `Cannot find endpoint type ${type}}`);
@@ -1632,7 +1635,7 @@ function CoreProvider({
       meta,
       live,
       lives,
-      resourcesPerType: getResourcesByType({ type }),
+      resourcesPerType: getResourcesByType({ type, group }),
     });
   };
 
@@ -1667,8 +1670,10 @@ function CoreProvider({
           executor: ({ item }) =>
             destroyById({
               providerName: item.providerName,
+              //TODO ...item.resource
               name: item.resource.name,
               meta: item.resource.meta,
+              group: item.resource.group,
               type: item.resource.type,
               live: item.live,
               lives,

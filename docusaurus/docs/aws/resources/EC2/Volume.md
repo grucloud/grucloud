@@ -23,7 +23,7 @@ const volume = await provider.ec2.makeVolume({
   }),
 });
 
-const server = await provider.ec2.makeEC2({
+const server = await provider.ec2.makeInstance({
   name: "server",
   dependencies: { volumes: [volume] },
   properties: () => ({

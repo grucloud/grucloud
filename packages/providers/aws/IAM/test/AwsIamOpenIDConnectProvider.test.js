@@ -29,7 +29,7 @@ describe("AwsIamOpenIDConnectProvider", async function () {
 
     await provider.start();
 
-    iamOpenIdConnectProvider = await provider.iam.makeIamOpenIDConnectProvider({
+    iamOpenIdConnectProvider = await provider.iam.makeOpenIDConnectProvider({
       name: iamOpenIdConnectProviderName,
       properties: () => ({
         Url: oidcUrl,

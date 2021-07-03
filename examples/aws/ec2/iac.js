@@ -29,7 +29,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
 
   return {
     eip,
-    ec2Instance: await provider.ec2.makeEC2({
+    ec2Instance: await provider.ec2.makeInstance({
       name: config.ec2Instance.name,
       dependencies: { keyPair, eip, image },
       properties: config.ec2Instance.properties,

@@ -35,7 +35,7 @@ const createAwsStack = async ({ stage }) => {
   assert(domainName);
   assert(rootDomainName);
 
-  const domain = await provider.route53Domain.useRoute53Domain({
+  const domain = await provider.route53Domain.useDomain({
     name: rootDomainName,
   });
 
@@ -167,7 +167,7 @@ exports.createStack = async ({ stage }) => {
       ])(),
   });
 
-  const loadBalancerRecord = await stackAws.provider.makeRoute53Record({
+  const loadBalancerRecord = await stackAws.provider.makeRecord({
     name: `dns-record-alias-load-balancer-${hostedZone.name}`,
     dependencies: { hostedZone, loadBalancer },
     properties: ({ dependencies }) => {

@@ -7,7 +7,7 @@ const GROUP = "route53Domain";
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
-      type: "Route53Domain",
+      type: "Domain",
       Client: AwsDomain,
       listOnly: true,
       isOurMinion,

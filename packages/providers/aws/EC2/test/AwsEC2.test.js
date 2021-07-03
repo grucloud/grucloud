@@ -59,7 +59,7 @@ describe("AwsEC2", async function () {
       properties: imageProperties.properties,
     });
 
-    const server = await provider.ec2.makeEC2({
+    const server = await provider.ec2.makeInstance({
       name: serverName,
       properties: serverProperties,
       dependencies: { image, keyPair },

@@ -11,14 +11,20 @@ const GROUP = "eks";
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
-      type: "EKSCluster",
+      type: "Cluster",
       dependsOn: ["SecurityGroup", "Subnet", "InternetGateway", "KmsKey"],
       Client: EKSCluster,
       isOurMinion,
     },
     {
-      type: "EKSNodeGroup",
-      dependsOn: ["EKSCluster", "Subnet", "IamRole", "AutoScalingGroup", "EC2"],
+      type: "NodeGroup",
+      dependsOn: [
+        "Cluster",
+        "Subnet",
+        "IamRole",
+        "AutoScalingGroup",
+        "Instance",
+      ],
       Client: EKSNodeGroup,
       isOurMinion,
       compare: compareNodeGroup,

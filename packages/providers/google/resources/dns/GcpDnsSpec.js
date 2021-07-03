@@ -16,7 +16,7 @@ const {
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
-      type: "DnsManagedZone",
+      type: "ManagedZone",
       Client: GcpDnsManagedZone,
       isOurMinion: GoogleTag.isOurMinion,
       compare: compareDnsManagedZone,

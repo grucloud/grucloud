@@ -19,36 +19,36 @@ const GROUP = "iam";
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
-      type: "IamOpenIDConnectProvider",
+      type: "OpenIDConnectProvider",
       Client: AwsIamOpenIDConnectProvider,
       isOurMinion,
     },
     {
-      type: "IamUser",
-      dependsOn: ["IamPolicy", "IamGroup"],
+      type: "User",
+      dependsOn: ["Policy", "Group"],
       Client: AwsIamUser,
       isOurMinion,
     },
     {
-      type: "IamGroup",
-      dependsOn: ["IamPolicy"],
+      type: "Group",
+      dependsOn: ["Policy"],
       Client: AwsIamGroup,
       isOurMinion: isOurMinionIamGroup,
     },
     {
-      type: "IamRole",
-      dependsOn: ["IamPolicy"],
+      type: "Role",
+      dependsOn: ["Policy"],
       Client: AwsIamRole,
       isOurMinion,
     },
     {
-      type: "IamPolicy",
+      type: "Policy",
       Client: AwsIamPolicy,
       isOurMinion: isOurMinionIamPolicy,
     },
     {
-      type: "IamInstanceProfile",
-      dependsOn: ["IamRole"],
+      type: "InstanceProfile",
+      dependsOn: ["Role"],
       Client: AwsIamInstanceProfile,
       isOurMinion: isOurMinionInstanceProfile,
     },

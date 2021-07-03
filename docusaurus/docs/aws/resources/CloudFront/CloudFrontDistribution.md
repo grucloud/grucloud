@@ -17,7 +17,7 @@ const certificate = await providerUsEast.makeCertificate({
   }),
 });
 
-const websiteBucket = await provider.s3.makeS3Bucket({
+const websiteBucket = await provider.s3.makeBucket({
   name: `${domainName}-bucket`,
   properties: () => ({
     ACL: "public-read",

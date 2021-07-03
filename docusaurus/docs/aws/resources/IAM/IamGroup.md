@@ -8,7 +8,7 @@ Provides an Iam Group.
 This example creates a group called Admin, creates a user and add it to the group, create a policy and attach it to the group.
 
 ```js
-const iamPolicy = await provider.iam.makeIamPolicy({
+const iamPolicy = await provider.iam.makePolicy({
   name: "policy-ec2-describe",
   properties: () => ({
     PolicyDocument: {
@@ -25,13 +25,13 @@ const iamPolicy = await provider.iam.makeIamPolicy({
   }),
 });
 
-const iamGroup = await provider.iam.makeIamGroup({
+const iamGroup = await provider.iam.makeGroup({
   name: "Admin",
   dependencies: { policies: [iamPolicy] },
   properties: () => ({}),
 });
 
-const iamUser = await provider.iam.makeIamUser({
+const iamUser = await provider.iam.makeUser({
   name: "Alice",
   dependencies: { iamGroups: [iamGroup] },
   properties: () => ({}),

@@ -139,7 +139,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
   });
 
   // Allocate a server
-  const server = await provider.ec2.makeEC2({
+  const server = await provider.ec2.makeInstance({
     name: "web-server",
     dependencies: {
       keyPair,

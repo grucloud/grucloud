@@ -17,7 +17,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     ],
   };
 
-  const iamPolicy = await provider.iam.makeIamPolicy({
+  const iamPolicy = await provider.iam.makePolicy({
     name: policyName,
     properties: () => ({
       PolicyDocument,
@@ -25,14 +25,14 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
-  const iamPolicyEKSWorkerNode = await provider.iam.useIamPolicy({
+  const iamPolicyEKSWorkerNode = await provider.iam.usePolicy({
     name: "AmazonEKSWorkerNodePolicy",
     properties: () => ({
       Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
     }),
   });
 
-  const iamRole = await provider.iam.makeIamRole({
+  const iamRole = await provider.iam.makeRole({
     name: roleName,
     dependencies: { policies: [iamPolicy, iamPolicyEKSWorkerNode] },
     properties: () => ({

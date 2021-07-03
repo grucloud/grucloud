@@ -105,7 +105,7 @@ const hostedZone = await provider.route53.makeHostedZone({
   name: `${domainName}.`,
 });
 
-const loadBalancerRecord = await provider.route53.makeRoute53Record({
+const loadBalancerRecord = await provider.route53.makeRecord({
   name: `dns-record-alias-load-balancer-${hostedZoneName}`,
   dependencies: { hostedZone, loadBalancer },
   properties: ({ dependencies }) => {

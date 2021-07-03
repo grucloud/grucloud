@@ -9,13 +9,13 @@ module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "HostedZone",
-      dependsOn: ["Route53Domain"],
+      dependsOn: ["Domain"],
       Client: AwsHostedZone,
       isOurMinion,
       compare: compareHostedZone,
     },
     {
-      type: "Route53Record",
+      type: "Record",
       dependsOn: ["HostedZone", "Certificate"],
       Client: Route53Record,
       isOurMinion: () => true,

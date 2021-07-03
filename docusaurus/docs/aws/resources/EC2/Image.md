@@ -29,7 +29,7 @@ const image = await provider.ec2.useImage({
   }),
 });
 
-const server = await provider.ec2.makeEC2({
+const server = await provider.ec2.makeInstance({
   name: "myserver",
   dependencies: {
     image,

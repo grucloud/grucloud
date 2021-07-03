@@ -8,13 +8,13 @@ const {
 const { CheckAwsTags } = require("../../AwsTagCheck");
 
 describe("AwsVolume", async function () {
-  const types = ["Volume", "EC2"];
+  const types = ["Volume", "Instance"];
   let config;
   let provider;
   let volume;
   let server;
   const serverName = "ec2-volume-test";
-  const volumeName = "volume";
+  const volumeName = "volume-test";
   const Device = "/dev/sdf";
   const deviceMounted = "/dev/xvdf";
   const mountPoint = "/data";
@@ -55,7 +55,7 @@ describe("AwsVolume", async function () {
       }),
     });
 
-    server = await provider.ec2.makeEC2({
+    server = await provider.ec2.makeInstance({
       name: serverName,
       properties: () => ({
         UserData: volume.spec.setupEbsVolume({ deviceMounted, mountPoint }),
@@ -71,19 +71,23 @@ describe("AwsVolume", async function () {
     assert(config.AvailabilityZone);
     assert(config.VolumeType);
   });
-  it("volume apply and destroy", async function () {
-    await testPlanDeploy({ provider, types });
+  it.only("volume apply and destroy", async function () {
+    try {
+      await testPlanDeploy({ provider, types });
 
-    const volumeLive = await volume.getLive();
+      const volumeLive = await volume.getLive();
 
-    assert(
-      CheckAwsTags({
-        config: provider.config,
-        tags: volumeLive.Tags,
-        name: volume.name,
-      })
-    );
+      assert(
+        CheckAwsTags({
+          config: provider.config,
+          tags: volumeLive.Tags,
+          name: volume.name,
+        })
+      );
 
-    await testPlanDestroy({ provider, types });
+      await testPlanDestroy({ provider, types });
+    } catch (error) {
+      throw error;
+    }
   });
 });

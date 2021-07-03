@@ -38,7 +38,7 @@ const createResources = async ({ provider, resources: {} }) => {
     }),
   });
 
-  const server = await provider.ec2.makeEC2({
+  const server = await provider.ec2.makeInstance({
     name: formatName("server-4"),
     dependencies: { image, volumes: [volume] },
     properties: () => ({

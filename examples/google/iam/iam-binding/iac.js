@@ -3,7 +3,7 @@ const { GoogleProvider } = require("@grucloud/provider-google");
 const hook = require("./hook");
 
 const createResources = async ({ provider, resources: { serviceAccount } }) => {
-  const iamBinding = await provider.makeIamBinding({
+  const iamBinding = await provider.iam.makeBinding({
     name: "roles/firebasenotifications.viewer",
     dependencies: { serviceAccounts: [serviceAccount] },
     properties: () => ({}),

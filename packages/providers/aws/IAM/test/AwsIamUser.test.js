@@ -25,7 +25,7 @@ describe("AwsIamUser", async function () {
 
     await provider.start();
 
-    iamUser = await provider.iam.makeIamUser({
+    iamUser = await provider.iam.makeUser({
       name: iamUserName,
       properties: () => ({
         UserName: iamUserName,

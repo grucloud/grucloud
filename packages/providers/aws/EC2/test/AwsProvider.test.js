@@ -126,7 +126,7 @@ describe("AwsProvider", async function () {
       }),
     });
 
-    server = await provider.ec2.makeEC2({
+    server = await provider.ec2.makeInstance({
       name: formatName(serverName),
       properties: () => ({}),
       dependencies: { image, keyPair, subnet, securityGroups: [sg], eip },

@@ -239,7 +239,7 @@ exports.createResources = async ({
   };
 
   // The load balancer DNS record
-  const loadBalancerDnsRecord = await provider.route53.makeRoute53Record({
+  const loadBalancerDnsRecord = await provider.route53.makeRecord({
     name: `load-balancer-dns-record-alias-${hostedZone.name}`,
     namespace,
     dependencies: { hostedZone, loadBalancer },

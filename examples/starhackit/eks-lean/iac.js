@@ -31,7 +31,7 @@ const createAwsStack = async ({ stage }) => {
   assert(domainName);
   assert(rootDomainName);
 
-  const domain = await provider.route53Domain.useRoute53Domain({
+  const domain = await provider.route53Domain.useDomain({
     name: rootDomainName,
   });
 

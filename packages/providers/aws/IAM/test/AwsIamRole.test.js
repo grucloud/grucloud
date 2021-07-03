@@ -25,7 +25,7 @@ describe("AwsIamRole", async function () {
 
     await provider.start();
 
-    iamRole = await provider.iam.makeIamRole({
+    iamRole = await provider.iam.makeRole({
       name: iamRoleName,
       properties: () => ({
         Path: "/",

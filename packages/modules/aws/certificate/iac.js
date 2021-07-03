@@ -26,7 +26,7 @@ const createResources = async ({
     namespace,
   });
 
-  const certificateRecordValidation = await provider.route53.makeRoute53Record({
+  const certificateRecordValidation = await provider.route53.makeRecord({
     name: `certificate-validation-${domainName}.`,
     namespace,
     dependencies: { hostedZone, certificate },

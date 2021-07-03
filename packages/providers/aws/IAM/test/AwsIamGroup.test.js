@@ -28,14 +28,14 @@ describe("AwsIamGroup", async function () {
 
     await provider.start();
 
-    iamGroup = await provider.iam.makeIamGroup({
+    iamGroup = await provider.iam.makeGroup({
       name: iamGroupName,
       properties: () => ({
         Path: "/",
       }),
     });
 
-    iamUser = await provider.iam.makeIamUser({
+    iamUser = await provider.iam.makeUser({
       name: userName,
       dependencies: { iamGroups: [iamGroup] },
       properties: () => ({}),

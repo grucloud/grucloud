@@ -144,7 +144,7 @@ const createResourcesBastion = async ({
   return {
     eip,
     securityGroup,
-    ec2Instance: await provider.ec2.makeEC2({
+    ec2Instance: await provider.ec2.makeInstance({
       name: config.rds.ec2Instance.name,
       dependencies: {
         keyPair,

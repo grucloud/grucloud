@@ -38,7 +38,7 @@ describe("GcpIamBinding", async function () {
         accountId: saName,
       }),
     });
-    iamBindingServiceAccount = await provider.makeIamBinding({
+    iamBindingServiceAccount = await provider.iam.makeBinding({
       name: roleEditor,
       dependencies: { serviceAccounts: [serviceAccount] },
       properties: ({}) => ({}),
@@ -74,7 +74,7 @@ describe("GcpIamBinding", async function () {
           accountId: saName,
         }),
       });
-      const iamBindingServiceAccount = await provider.makeIamBinding({
+      const iamBindingServiceAccount = await provider.iam.makeBinding({
         name: roleEditor,
         dependencies: { serviceAccounts: [serviceAccount] },
         properties: ({}) => ({}),
@@ -105,7 +105,7 @@ describe("GcpIamBinding", async function () {
     });
 
     const email = "user:joe@gmail.com";
-    const iamBindingEmail = await provider.makeIamBinding({
+    const iamBindingEmail = await provider.iam.makeBinding({
       name: roleEditor,
       properties: ({}) => ({ members: [email] }),
     });
