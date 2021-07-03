@@ -32,13 +32,13 @@ describe("AwsSubnet", async function () {
 
     await provider.start();
 
-    vpc = await provider.makeVpc({
+    vpc = await provider.ec2.makeVpc({
       name: "vpc-test-subnet",
       properties: () => ({
         CidrBlock: "192.168.1.1/16",
       }),
     });
-    subnet = await provider.makeSubnet({
+    subnet = await provider.ec2.makeSubnet({
       name: subnetName,
       dependencies: { vpc },
       attributes: () => ({

@@ -31,7 +31,7 @@ describe("AwsSecurityGroupDefault", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    vpcDefault = await provider.useVpc({
+    vpcDefault = await provider.ec2.useVpc({
       name: "vpc-default",
       filterLives: ({ items }) =>
         pipe([
@@ -43,7 +43,7 @@ describe("AwsSecurityGroupDefault", async function () {
         ])(),
     });
 
-    securityGroup = await provider.useSecurityGroup({
+    securityGroup = await provider.ec2.useSecurityGroup({
       name: "sgCluster-test",
       filterLives: ({ items }) =>
         pipe([
@@ -55,7 +55,7 @@ describe("AwsSecurityGroupDefault", async function () {
         ])(),
     });
 
-    sgRuleIngress = await provider.makeSecurityGroupRuleIngress({
+    sgRuleIngress = await provider.ec2.makeSecurityGroupRuleIngress({
       name: "sg-rule-ingress-test",
       dependencies: { securityGroup },
       properties: () => ({
@@ -78,7 +78,7 @@ describe("AwsSecurityGroupDefault", async function () {
         ],
       }),
     });
-    sgRuleEgress = await provider.makeSecurityGroupRuleEgress({
+    sgRuleEgress = await provider.ec2.makeSecurityGroupRuleEgress({
       name: "sg-rule-egress-test",
       dependencies: { securityGroup },
       properties: () => ({

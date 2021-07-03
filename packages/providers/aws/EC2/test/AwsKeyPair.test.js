@@ -19,7 +19,7 @@ describe.skip("AwsKeyPair", async function () {
 
     await provider.start();
 
-    keyPair = await provider.useKeyPair({
+    keyPair = await provider.ec2.useKeyPair({
       name: "kp",
     });
   });
@@ -33,7 +33,7 @@ describe.skip("AwsKeyPair", async function () {
   });
 
   it("keyPair name not found on server", async function () {
-    await provider.useKeyPair({
+    await provider.ec2.useKeyPair({
       name: "idonotexist",
     });
     // Shoult not throw at this time

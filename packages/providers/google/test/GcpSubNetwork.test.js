@@ -32,12 +32,12 @@ describe("GcpSubNetwork", async function () {
 
     await provider.start();
 
-    network = await provider.makeNetwork({
+    network = await provider.compute.makeNetwork({
       name: networkName,
       properties: () => ({ autoCreateSubnetworks: false }),
     });
 
-    subNetwork = await provider.makeSubNetwork({
+    subNetwork = await provider.compute.makeSubNetwork({
       name: subNetworkName,
       dependencies: { network },
       properties: () => ({

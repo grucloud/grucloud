@@ -40,23 +40,23 @@ describe("AwsProvider", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    keyPair = await provider.useKeyPair({
+    keyPair = await provider.ec2.useKeyPair({
       name: keyPairName,
     });
 
-    vpc = await provider.makeVpc({
+    vpc = await provider.ec2.makeVpc({
       name: formatName("vpc"),
       properties: () => ({
         CidrBlock: "10.1.0.1/16",
       }),
     });
 
-    ig = await provider.makeInternetGateway({
+    ig = await provider.ec2.makeInternetGateway({
       name: formatName("ig"),
       dependencies: { vpc },
     });
 
-    subnet = await provider.makeSubnet({
+    subnet = await provider.ec2.makeSubnet({
       name: formatName(subnetName),
       dependencies: { vpc },
       properties: () => ({
@@ -64,17 +64,17 @@ describe("AwsProvider", async function () {
       }),
     });
 
-    routeTable = await provider.makeRouteTable({
+    routeTable = await provider.ec2.makeRouteTable({
       name: formatName("rt"),
       dependencies: { vpc, subnets: [subnet] },
     });
 
-    routeIg = await provider.makeRoute({
+    routeIg = await provider.ec2.makeRoute({
       name: formatName("routeIg"),
       dependencies: { routeTable, ig },
     });
 
-    sg = await provider.makeSecurityGroup({
+    sg = await provider.ec2.makeSecurityGroup({
       name: formatName(securityGroupName),
       dependencies: { vpc },
       properties: () => ({
@@ -105,12 +105,12 @@ describe("AwsProvider", async function () {
       }),
     });
 
-    eip = await provider.makeElasticIpAddress({
+    eip = await provider.ec2.makeElasticIpAddress({
       name: formatName("myip"),
       properties: () => ({}),
     });
 
-    image = await provider.useImage({
+    image = await provider.ec2.useImage({
       name: "Amazon Linux 2",
       properties: () => ({
         Filters: [
@@ -126,7 +126,7 @@ describe("AwsProvider", async function () {
       }),
     });
 
-    server = await provider.makeEC2({
+    server = await provider.ec2.makeEC2({
       name: formatName(serverName),
       properties: () => ({}),
       dependencies: { image, keyPair, subnet, securityGroups: [sg], eip },

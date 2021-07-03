@@ -19,7 +19,7 @@ exports.createStack = async () => {
   const domain = bucketName;
   const files = await getFiles({ dir: websiteDir });
 
-  const bucketPublic = await provider.makeBucket({
+  const bucketPublic = await provider.storage.makeBucket({
     name: bucketName,
     properties: () => ({
       iamConfiguration: {
@@ -40,7 +40,7 @@ exports.createStack = async () => {
   });
 
   await map((file) =>
-    provider.makeObject({
+    provider.storage.makeObject({
       name: file,
       dependencies: { bucket: bucketPublic },
       properties: () => ({
@@ -51,7 +51,7 @@ exports.createStack = async () => {
     })
   )(files);
 
-  const sslCertificate = await provider.makeSslCertificate({
+  const sslCertificate = await provider.compute.makeSslCertificate({
     name: "ssl-certificate",
     properties: () => ({
       managed: {
@@ -60,7 +60,7 @@ exports.createStack = async () => {
     }),
   });
 
-  const backendBucket = await provider.makeBackendBucket({
+  const backendBucket = await provider.compute.makeBackendBucket({
     name: "backend-bucket",
     dependencies: { bucket: bucketPublic },
     properties: () => ({
@@ -68,19 +68,19 @@ exports.createStack = async () => {
     }),
   });
 
-  const urlMap = await provider.makeUrlMap({
+  const urlMap = await provider.compute.makeUrlMap({
     name: "url-map",
     dependencies: { service: backendBucket },
     properties: () => ({}),
   });
 
-  const httpsTargetProxy = await provider.makeHttpsTargetProxy({
+  const httpsTargetProxy = await provider.compute.makeHttpsTargetProxy({
     name: "https-target-proxy",
     dependencies: { sslCertificate, urlMap },
     properties: () => ({}),
   });
 
-  const globalForwardingRule = await provider.makeGlobalForwardingRule({
+  const globalForwardingRule = await provider.compute.makeGlobalForwardingRule({
     name: "global-forwarding-rule",
     dependencies: { httpsTargetProxy },
     properties: () => ({}),

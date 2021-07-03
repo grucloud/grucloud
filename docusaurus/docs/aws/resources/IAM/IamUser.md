@@ -6,7 +6,7 @@ title: Iam User
 Provides an Iam User
 
 ```js
-const iamUser = await provider.makeIamUser({
+const iamUser = await provider.iam.makeIamUser({
   name: "Alice",
   properties: () => ({}),
 });
@@ -15,12 +15,12 @@ const iamUser = await provider.makeIamUser({
 ### Add a user to groups
 
 ```js
-const iamGroup = await provider.makeIamGroup({
+const iamGroup = await provider.iam.makeIamGroup({
   name: "Admin",
   properties: () => ({}),
 });
 
-const iamUser = await provider.makeIamUser({
+const iamUser = await provider.iam.makeIamUser({
   name: "Alice",
   dependencies: { iamGroups: [iamGroup] },
   properties: () => ({}),

@@ -22,7 +22,7 @@ In order to create an EKS Cluster, a few resources need to be created before:
 - a customer master key
 
 ```js
-const cluster = await provider.makeEKSCluster({
+const cluster = await provider.eks.makeEKSCluster({
   name: "cluster",
   dependencies: {
     subnets: [...subnetPublics, ...subnetPrivates],

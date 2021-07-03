@@ -21,7 +21,7 @@ const iamBinding = await provider.makeIamBinding({
 ### Bind a service account to a role
 
 ```js
-const serviceAccount = await provider.makeServiceAccount({
+const serviceAccount = await provider.iam.makeServiceAccount({
   name: "sa",
   properties: () => ({
     accountId: "sa",

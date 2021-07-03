@@ -42,7 +42,7 @@ const createResources = async ({
   const clusterName = config.eks.cluster.name;
   assert(clusterName);
 
-  const iamPolicyEKSCluster = await provider.useIamPolicy({
+  const iamPolicyEKSCluster = await provider.iam.useIamPolicy({
     name: "AmazonEKSClusterPolicy",
     namespace,
     properties: () => ({
@@ -50,7 +50,7 @@ const createResources = async ({
     }),
   });
 
-  const iamPolicyEKSVPCResourceController = await provider.useIamPolicy({
+  const iamPolicyEKSVPCResourceController = await provider.iam.useIamPolicy({
     name: "AmazonEKSVPCResourceController",
     namespace,
     properties: () => ({
@@ -58,7 +58,7 @@ const createResources = async ({
     }),
   });
 
-  const roleCluster = await provider.makeIamRole({
+  const roleCluster = await provider.iam.makeIamRole({
     name: formatName(config.eks.roleCluster.name, config),
     namespace,
     dependencies: {
@@ -80,7 +80,7 @@ const createResources = async ({
     }),
   });
 
-  const iamPolicyEKSWorkerNode = await provider.useIamPolicy({
+  const iamPolicyEKSWorkerNode = await provider.iam.useIamPolicy({
     name: "AmazonEKSWorkerNodePolicy",
     namespace,
     properties: () => ({
@@ -88,15 +88,17 @@ const createResources = async ({
     }),
   });
 
-  const iamPolicyEC2ContainerRegistryReadOnly = await provider.useIamPolicy({
-    name: "AmazonEC2ContainerRegistryReadOnly",
-    namespace,
-    properties: () => ({
-      Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-    }),
-  });
+  const iamPolicyEC2ContainerRegistryReadOnly = await provider.iam.useIamPolicy(
+    {
+      name: "AmazonEC2ContainerRegistryReadOnly",
+      namespace,
+      properties: () => ({
+        Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+      }),
+    }
+  );
 
-  const iamPolicyEKS_CNI = await provider.useIamPolicy({
+  const iamPolicyEKS_CNI = await provider.iam.useIamPolicy({
     name: "AmazonEKS_CNI_Policy",
     namespace,
     properties: () => ({
@@ -104,7 +106,7 @@ const createResources = async ({
     }),
   });
 
-  const roleNodeGroup = await provider.makeIamRole({
+  const roleNodeGroup = await provider.iam.makeIamRole({
     name: formatName(config.eks.roleNodeGroup.name, config),
     namespace,
     dependencies: {
@@ -130,7 +132,7 @@ const createResources = async ({
     }),
   });
 
-  const securityGroupCluster = await provider.makeSecurityGroup({
+  const securityGroupCluster = await provider.ec2.makeSecurityGroup({
     name: formatName(config.eks.securityGroupCluster.name, config),
     namespace,
     dependencies: { vpc },
@@ -142,8 +144,8 @@ const createResources = async ({
     }),
   });
 
-  const sgClusterRuleIngressHttps = await provider.makeSecurityGroupRuleIngress(
-    {
+  const sgClusterRuleIngressHttps =
+    await provider.ec2.makeSecurityGroupRuleIngress({
       name: formatName("sg-cluster-rule-ingress-https", config),
       namespace,
       dependencies: {
@@ -168,9 +170,8 @@ const createResources = async ({
           },
         ],
       }),
-    }
-  );
-  const sgClusterRuleEgress = await provider.makeSecurityGroupRuleEgress({
+    });
+  const sgClusterRuleEgress = await provider.ec2.makeSecurityGroupRuleEgress({
     name: formatName("sg-cluster-rule-egress", config),
     namespace,
     dependencies: {
@@ -197,7 +198,7 @@ const createResources = async ({
     }),
   });
 
-  const securityGroupNodes = await provider.makeSecurityGroup({
+  const securityGroupNodes = await provider.ec2.makeSecurityGroup({
     name: formatName(config.eks.securityGroupNode.name, config),
     namespace,
     dependencies: { vpc },
@@ -211,34 +212,36 @@ const createResources = async ({
     }),
   });
 
-  const sgNodesRuleIngressAll = await provider.makeSecurityGroupRuleIngress({
-    name: formatName("sg-nodes-rule-ingress-all", config),
-    namespace,
-    dependencies: {
-      securityGroup: securityGroupNodes,
-    },
-    properties: () => ({
-      IpPermissions: [
-        {
-          FromPort: 0,
-          IpProtocol: "-1",
-          IpRanges: [
-            {
-              CidrIp: "0.0.0.0/0",
-            },
-          ],
-          Ipv6Ranges: [
-            {
-              CidrIpv6: "::/0",
-            },
-          ],
-          ToPort: 65535,
-        },
-      ],
-    }),
-  });
-  const sgNodesRuleIngressCluster = await provider.makeSecurityGroupRuleIngress(
+  const sgNodesRuleIngressAll = await provider.ec2.makeSecurityGroupRuleIngress(
     {
+      name: formatName("sg-nodes-rule-ingress-all", config),
+      namespace,
+      dependencies: {
+        securityGroup: securityGroupNodes,
+      },
+      properties: () => ({
+        IpPermissions: [
+          {
+            FromPort: 0,
+            IpProtocol: "-1",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+            ToPort: 65535,
+          },
+        ],
+      }),
+    }
+  );
+  const sgNodesRuleIngressCluster =
+    await provider.ec2.makeSecurityGroupRuleIngress({
       name: formatName("sg-nodes-rule-ingress-cluster", config),
       namespace,
       dependencies: {
@@ -265,17 +268,16 @@ const createResources = async ({
           },
         ],
       }),
-    }
-  );
+    });
 
   // Asymmetric Key
-  const key = await provider.makeKmsKey({
+  const key = await provider.kms.makeKmsKey({
     name: formatName(config.eks.key.name, config),
     properties: () => ({}),
   });
 
   // define the EKS cluster
-  const cluster = await provider.makeEKSCluster({
+  const cluster = await provider.eks.makeEKSCluster({
     name: formatName(clusterName, config),
     namespace,
     dependencies: {
@@ -289,7 +291,7 @@ const createResources = async ({
   // defines a bunch of Node Groups on public subnets
   /*
   const nodeGroupsPublic = await map((nodeGroup) =>
-    provider.makeEKSNodeGroup({
+    provider.eks.makeEKSNodeGroup({
       name: nodeGroup.name,
       dependencies: {
         subnets: subnetsPublic,
@@ -302,7 +304,7 @@ const createResources = async ({
 */
   // Create a bunch of Node Groups on private subnets
   const nodeGroupsPrivate = await map((nodeGroup) =>
-    provider.makeEKSNodeGroup({
+    provider.eks.makeEKSNodeGroup({
       name: formatName(nodeGroup.name, config),
       namespace,
       dependencies: {

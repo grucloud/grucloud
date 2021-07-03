@@ -24,7 +24,7 @@ describe("GcpNetwork", async function () {
         projectId: "grucloud-test",
       }),
     });
-    network = await provider.makeNetwork({ name: networkName });
+    network = await provider.compute.makeNetwork({ name: networkName });
   });
   after(async () => {});
   it("network config", async function () {

@@ -27,14 +27,14 @@ describe("AwsInternetGateway", async function () {
 
     await provider.start();
 
-    vpc = await provider.makeVpc({
+    vpc = await provider.ec2.makeVpc({
       name: "vpc",
       properties: () => ({
         CidrBlock: "10.1.0.1/16",
       }),
     });
 
-    ig = await provider.makeInternetGateway({
+    ig = await provider.ec2.makeInternetGateway({
       name: resourceName,
       dependencies: { vpc },
       properties: () => ({}),

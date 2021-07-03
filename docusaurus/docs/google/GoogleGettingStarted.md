@@ -230,7 +230,7 @@ const { GoogleProvider } = require("@grucloud/provider-google");
 
 const createResources = async ({ provider }) => {
   const { config } = provider;
-  const server = await provider.makeVmInstance({
+  const server = await provider.compute.makeVmInstance({
     name: config.vm.name,
     properties: () => config.vm.properties,
   });

@@ -29,7 +29,7 @@ describe("AwsVolume", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    const image = await provider.useImage({
+    const image = await provider.ec2.useImage({
       name: "Amazon Linux 2",
       properties: () => ({
         Filters: [
@@ -45,7 +45,7 @@ describe("AwsVolume", async function () {
       }),
     });
 
-    volume = await provider.makeVolume({
+    volume = await provider.ec2.makeVolume({
       name: volumeName,
 
       properties: () => ({
@@ -55,7 +55,7 @@ describe("AwsVolume", async function () {
       }),
     });
 
-    server = await provider.makeEC2({
+    server = await provider.ec2.makeEC2({
       name: serverName,
       properties: () => ({
         UserData: volume.spec.setupEbsVolume({ deviceMounted, mountPoint }),

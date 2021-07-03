@@ -8,7 +8,7 @@ Provides [global forwarding rule](https://console.cloud.google.com/net-services/
 ```js
 const bucketName = "mybucketname";
 
-const sslCertificate = await provider.makeSslCertificate({
+const sslCertificate = await provider.compute.makeSslCertificate({
   name: "ssl-certificate",
   properties: () => ({
     managed: {
@@ -17,31 +17,31 @@ const sslCertificate = await provider.makeSslCertificate({
   }),
 });
 
-const myBucket = await provider.makeBucket({
+const myBucket = await provider.storage.makeBucket({
   name: bucketName,
   properties: () => ({}),
 });
 
-const backendBucket = await provider.makeBackendBucket({
+const backendBucket = await provider.compute.makeBackendBucket({
   name: "backend-bucket",
   properties: () => ({
     bucketName,
   }),
 });
 
-const urlMap = await provider.makeUrlMap({
+const urlMap = await provider.compute.makeUrlMap({
   name: "url-map",
   dependencies: { service: backendBucket },
   properties: () => ({}),
 });
 
-const httpsTargetProxy = await provider.makeHttpsTargetProxy({
+const httpsTargetProxy = await provider.compute.makeHttpsTargetProxy({
   name: "https-target-proxy",
   dependencies: { sslCertificate, urlMap },
   properties: () => ({}),
 });
 
-const globalForwardingRule = await provider.makeGlobalForwardingRule({
+const globalForwardingRule = await provider.compute.makeGlobalForwardingRule({
   name: "global-forwarding-rule",
   dependencies: { httpsTargetProxy },
   properties: () => ({}),

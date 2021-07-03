@@ -10,19 +10,19 @@ Create a route and associate it to an internet gateway or NAT gateway.
 ### Attach a route to an internet gateway
 
 ```js
-const vpc = await provider.makeVpc({
+const vpc = await provider.ec2.makeVpc({
   name: "vpc",
   properties: () => ({
     CidrBlock: "10.1.0.0/16",
   }),
 });
 
-const ig = await provider.makeInternetGateway({
+const ig = await provider.ec2.makeInternetGateway({
   name: "ig",
   dependencies: { vpc },
 });
 
-const subnet = await provider.makeSubnet({
+const subnet = await provider.ec2.makeSubnet({
   name: "subnet",
   dependencies: { vpc },
   properties: () => ({
@@ -30,12 +30,12 @@ const subnet = await provider.makeSubnet({
   }),
 });
 
-const routeTable = await provider.makeRouteTable({
+const routeTable = await provider.ec2.makeRouteTable({
   name: "route-table",
   dependencies: { vpc, subnets: [subnet] },
 });
 
-const route = await provider.makeRoute({
+const route = await provider.ec2.makeRoute({
   name: "route-ig",
   dependencies: { routeTable, ig },
 });
@@ -44,14 +44,14 @@ const route = await provider.makeRoute({
 ### Attach a route to a NAT gateway
 
 ```js
-const vpc = await provider.makeVpc({
+const vpc = await provider.ec2.makeVpc({
   name: "vpc",
   properties: () => ({
     CidrBlock: "10.1.0.0/16",
   }),
 });
 
-const subnetPublic = await provider.makeSubnet({
+const subnetPublic = await provider.ec2.makeSubnet({
   name: "subnet-public",
   dependencies: { vpc },
   properties: () => ({
@@ -59,16 +59,16 @@ const subnetPublic = await provider.makeSubnet({
   }),
 });
 
-const eip = await provider.makeElasticIpAddress({
+const eip = await provider.ec2.makeElasticIpAddress({
   name: "myip",
 });
 
-const natGateway = await provider.makeNatGateway({
+const natGateway = await provider.ec2.makeNatGateway({
   name: "nat-gateway",
   dependencies: { subnet: subnetPublic, eip },
 });
 
-const subnetPrivate = await provider.makeSubnet({
+const subnetPrivate = await provider.ec2.makeSubnet({
   name: "subnet-private",
   dependencies: { vpc },
   properties: () => ({
@@ -76,12 +76,12 @@ const subnetPrivate = await provider.makeSubnet({
   }),
 });
 
-const routeTablePrivate = await provider.makeRouteTable({
+const routeTablePrivate = await provider.ec2.makeRouteTable({
   name: "route-table-private",
   dependencies: { vpc, subnets: [subnetPrivate] },
 });
 
-const routeNat = await provider.makeRoute({
+const routeNat = await provider.ec2.makeRoute({
   name: "route-nat",
   dependencies: { routeTable: routeTablePrivate, natGateway },
 });

@@ -30,7 +30,7 @@ describe("AwsS3Bucket", async function () {
   after(async () => {});
 
   it.skip("s3Bucket apply and destroy", async function () {
-    const s3Bucket = await provider.makeS3Bucket({
+    const s3Bucket = await provider.s3.makeS3Bucket({
       name: `${bucketPrefix}-basic`,
       properties: () => ({}),
     });

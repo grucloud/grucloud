@@ -21,7 +21,7 @@ exports.createStack = async () => {
   const { stage } = provider.config;
   assert(stage, "missing stage");
 
-  const serviceAccount = await provider.makeServiceAccount({
+  const serviceAccount = await provider.iam.makeServiceAccount({
     name: `sa-${stage}`,
     properties: () => ({
       serviceAccount: {

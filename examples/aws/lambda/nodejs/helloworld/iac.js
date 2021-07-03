@@ -7,12 +7,12 @@ const lambdaAssumePolicy = require("./lambdaAssumePolicy.json");
 const createResources = async ({ provider }) => {
   const { config } = provider;
 
-  const iamPolicy = await provider.makeIamPolicy({
+  const iamPolicy = await provider.iam.makeIamPolicy({
     name: "lambda-policy",
     properties: () => lambdaPolicy,
   });
 
-  const iamRole = await provider.makeIamRole({
+  const iamRole = await provider.iam.makeIamRole({
     name: "lambda-role",
     dependencies: { policies: [iamPolicy] },
     properties: () => lambdaAssumePolicy,

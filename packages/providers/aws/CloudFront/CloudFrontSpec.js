@@ -2,12 +2,12 @@ const { pipe, assign, map } = require("rubico");
 const { isOurMinion } = require("../AwsCommon");
 const { AwsDistribution, compareDistribution } = require("./AwsDistribution");
 
-const GROUP = "CloudFront";
+const GROUP = "cloudFront";
 
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
-      type: "CloudFrontDistribution",
+      type: "Distribution",
       dependsOn: ["Certificate", "S3Bucket"],
       Client: AwsDistribution,
       isOurMinion,

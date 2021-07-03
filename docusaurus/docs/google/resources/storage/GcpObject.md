@@ -10,12 +10,12 @@ Provides an Object storage.
 ### Simple Object
 
 ```js
-const bucket = await provider.makeBucket({
+const bucket = await provider.storage.makeBucket({
   name: "myuniquebucketname",
   properties: () => ({ storageClass: "STANDARD" }),
 });
 
-const Object = await provider.makeObject({
+const Object = await provider.storage.makeObject({
   name: "myname",
   dependencies: { bucket: bucket },
   properties: () => ({

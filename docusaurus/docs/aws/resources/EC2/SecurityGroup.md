@@ -8,7 +8,7 @@ Create a security group, used to restrict network access to the EC2 instances.
 Add new ingress and egress rules with [SecurityGroupRuleIngress](./SecurityGroupRuleIngress) and [SecurityGroupRuleEgress](./SecurityGroupRuleEgress)
 
 ```js
-const sg = await provider.makeSecurityGroup({
+const sg = await provider.ec2.makeSecurityGroup({
   name: "securityGroup",
   dependencies: { vpc },
   properties: () => ({

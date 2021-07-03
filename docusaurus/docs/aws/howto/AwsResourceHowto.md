@@ -306,7 +306,7 @@ describe("AwsLoadBalancer", async function () {
 
     await provider.start();
 
-    loadBalancer = await provider.makeLoadBalancer({
+    loadBalancer = await provider.elb.makeLoadBalancer({
       name: loadBalancerName,
       properties: () => ({
         // TODO

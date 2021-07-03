@@ -8,17 +8,18 @@ Provides an Iam Open ID Connect Provider.
 The following example creates a Open ID Connect Provider for an EKS Cluster.
 
 ```js
-const iamOpenIdConnectProvider = await provider.makeIamOpenIDConnectProvider({
-  name: "oidp-eks",
-  dependencies: { cluster },
-  properties: ({ dependencies: { cluster } }) => ({
-    Url: get(
-      "live.identity.oidc.issuer",
-      "oidc.issuer not available yet"
-    )(cluster),
-    ClientIDList: ["sts.amazonaws.com"],
-  }),
-});
+const iamOpenIdConnectProvider =
+  await provider.iam.makeIamOpenIDConnectProvider({
+    name: "oidp-eks",
+    dependencies: { cluster },
+    properties: ({ dependencies: { cluster } }) => ({
+      Url: get(
+        "live.identity.oidc.issuer",
+        "oidc.issuer not available yet"
+      )(cluster),
+      ClientIDList: ["sts.amazonaws.com"],
+    }),
+  });
 ```
 
 ### Examples

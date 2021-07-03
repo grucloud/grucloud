@@ -24,12 +24,12 @@ describe("AwsElasticIpAddress", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    eip = await provider.makeElasticIpAddress({
+    eip = await provider.ec2.makeElasticIpAddress({
       name: resourceName,
       properties: () => ({}),
     });
 
-    server = await provider.makeEC2({
+    server = await provider.ec2.makeEC2({
       name: "ec2",
       dependencies: { eip },
       properties: () => ({}),

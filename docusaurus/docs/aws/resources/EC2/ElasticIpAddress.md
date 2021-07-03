@@ -6,7 +6,7 @@ title: Elastic Ip Address
 Provides an [Elastic Ip Address](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html) to be associated to an EC2 instance
 
 ```js
-const ip = await provider.makeElasticIpAddress({
+const ip = await provider.ec2.makeElasticIpAddress({
   name: "myip",
 });
 ```

@@ -29,7 +29,7 @@ describe("AwsIamOpenIDConnectProvider", async function () {
 
     await provider.start();
 
-    iamOpenIdConnectProvider = await provider.makeIamOpenIDConnectProvider({
+    iamOpenIdConnectProvider = await provider.iam.makeIamOpenIDConnectProvider({
       name: iamOpenIdConnectProviderName,
       properties: () => ({
         Url: oidcUrl,
@@ -57,7 +57,8 @@ describe("AwsIamOpenIDConnectProvider", async function () {
       planResult: { create: 1, destroy: 0 },
     });
 
-    const iamOpenIdConnectProviderLive = await iamOpenIdConnectProvider.getLive();
+    const iamOpenIdConnectProviderLive =
+      await iamOpenIdConnectProvider.getLive();
     assert(iamOpenIdConnectProviderLive);
     await testPlanDestroy({ provider, types });
   });

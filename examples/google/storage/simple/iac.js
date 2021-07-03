@@ -5,12 +5,12 @@ const { GoogleProvider } = require("@grucloud/provider-google");
 exports.createStack = async () => {
   const provider = GoogleProvider({ config: require("./config") });
 
-  const myBucket = await provider.makeBucket({
+  const myBucket = await provider.storage.makeBucket({
     name: `grucloud-test`,
     properties: () => ({}),
   });
 
-  const file = await provider.makeObject({
+  const file = await provider.storage.makeObject({
     name: `myfile`,
     dependencies: { bucket: myBucket },
     properties: () => ({

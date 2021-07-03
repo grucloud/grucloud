@@ -96,9 +96,11 @@ const createResourceMakers = ({ specs, config: configProvider, provider }) =>
     () => specs,
     filter(not(get("listOnly"))),
     reduce((acc, spec) => {
-      assert(spec.group, `no group for ${tos(spec)}`);
       assert(spec.type);
-      acc[`make${spec.type}`] = async ({
+      if (!acc[spec.group] && spec.group) {
+        acc[spec.group] = {};
+      }
+      const makeResource = async ({
         name,
         meta,
         namespace,
@@ -131,6 +133,12 @@ const createResourceMakers = ({ specs, config: configProvider, provider }) =>
 
         return resource;
       };
+      //TODO remove
+      acc[`make${spec.type}`] = makeResource;
+      if (spec.group) {
+        acc[spec.group][`make${spec.type}`] = makeResource;
+      }
+
       return acc;
     }, {}),
   ])();
@@ -144,7 +152,10 @@ const createResourceMakersListOnly = ({
     () => specs,
     reduce((acc, spec) => {
       assert(spec.type);
-      acc[`use${spec.type}`] = async ({
+      if (!acc[spec.group] && spec.group) {
+        acc[spec.group] = {};
+      }
+      const useResource = async ({
         name,
         meta,
         namespace,
@@ -176,6 +187,11 @@ const createResourceMakersListOnly = ({
 
         return resource;
       };
+
+      acc[`use${spec.type}`] = useResource;
+      if (spec.group) {
+        acc[spec.group][`use${spec.type}`] = useResource;
+      }
       return acc;
     }, {}),
   ])();
@@ -1729,20 +1745,24 @@ function CoreProvider({
     specs,
     mapNameToResource,
   };
-  const enhanceProvider = {
-    ...provider,
-    get config() {
-      return providerConfig;
-    },
-    ...createResourceMakers({ provider, config: providerConfig, specs }),
-    ...createResourceMakersListOnly({
-      provider,
-      config: providerConfig,
-      specs,
-    }),
-  };
 
-  return enhanceProvider;
+  return pipe([
+    () => ({
+      ...provider,
+      get config() {
+        return providerConfig;
+      },
+    }),
+    defaultsDeep(
+      createResourceMakers({ provider, config: providerConfig, specs })
+    ),
+    defaultsDeep(
+      createResourceMakersListOnly({ provider, config: providerConfig, specs })
+    ),
+    tap((xxx) => {
+      assert(true);
+    }),
+  ])();
 }
 
 module.exports = CoreProvider;

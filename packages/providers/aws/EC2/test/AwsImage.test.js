@@ -26,7 +26,7 @@ describe("AwsImage", async function () {
   });
   after(async () => {});
   it.skip("find ubuntu 20.04", async function () {
-    const image = await provider.useImage({
+    const image = await provider.ec2.useImage({
       name: "ubuntu 20.04",
       properties: () => ({
         Filters: [
@@ -47,7 +47,7 @@ describe("AwsImage", async function () {
     assert(imageLive.ImageId);
   });
   it("image does not exist", async function () {
-    const image = await provider.useImage({
+    const image = await provider.ec2.useImage({
       name: "ubuntu 20.04",
       properties: () => ({
         Filters: [
@@ -68,7 +68,7 @@ describe("AwsImage", async function () {
   });
 
   it.skip("ec2 with image", async function () {
-    const image = await provider.useImage({
+    const image = await provider.ec2.useImage({
       name: "Amazon Linux 2 AMI",
       properties: () => ({
         Filters: [
@@ -84,7 +84,7 @@ describe("AwsImage", async function () {
       }),
     });
 
-    const server = await provider.makeEC2({
+    const server = await provider.ec2.makeEC2({
       name: formatName("myserver"),
       dependencies: {
         image,

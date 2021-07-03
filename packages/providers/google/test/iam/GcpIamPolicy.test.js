@@ -44,7 +44,7 @@ describe.skip("GcpIamPolicy", async function () {
         },
       }),
     });
-    iamPolicy = await provider.makeIamPolicy({
+    iamPolicy = await provider.iam.makeIamPolicy({
       name: "iam-policy",
       dependencies: { serviceAccount },
       properties: ({ dependencies: { serviceAccount } }) => ({

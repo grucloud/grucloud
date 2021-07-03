@@ -14,18 +14,18 @@ Add an A record to the hosted zone:
 ```js
 const domainName = "your.domain.name.com";
 
-const domain = await provider.useRoute53Domain({
+const domain = await provider.route53Domain.useRoute53Domain({
   name: domainName,
 });
 
 const hostedZoneName = `${domainName}.`;
-const hostedZone = await provider.makeHostedZone({
+const hostedZone = await provider.route53.makeHostedZone({
   name: hostedZoneName,
   dependencies: { domain },
   properties: ({}) => ({}),
 });
 
-const recordA = await provider.makeRoute53Record({
+const recordA = await provider.route53.makeRoute53Record({
   name: `${hostedZoneName}-ipv4`,
   dependencies: { hostedZone, eip },
   properties: ({ dependencies: { eip } }) => {
@@ -50,17 +50,17 @@ Verify a certificate with DNS validation by adding a CNAME record.
 ```js
 const domainName = "your.domain.name.com";
 
-const domain = await provider.useRoute53Domain({
+const domain = await provider.route53Domain.useRoute53Domain({
   name: domainName,
 });
 
-const hostedZone = await provider.makeHostedZone({
+const hostedZone = await provider.route53.makeHostedZone({
   name: `${domainName}.`,
   dependencies: { domain },
   properties: ({}) => ({}),
 });
 
-const recordValidation = await provider.makeRoute53Record({
+const recordValidation = await provider.route53.makeRoute53Record({
   name: `validation-${domainName}.`,
   dependencies: { hostedZone, certificate },
   properties: ({ dependencies: { certificate } }) => {

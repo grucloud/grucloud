@@ -10,12 +10,12 @@ Provides a [backend bucket](https://console.cloud.google.com/net-services/loadba
 ```js
 const bucketName = "myfancybucketname";
 
-const myBucket = await provider.makeBucket({
+const myBucket = await provider.storage.makeBucket({
   name: bucketName,
   properties: () => ({}),
 });
 
-const backendBucket = await provider.makeBackendBucket({
+const backendBucket = await provider.compute.makeBackendBucket({
   name: "backend-bucket",
   properties: () => ({
     bucketName,

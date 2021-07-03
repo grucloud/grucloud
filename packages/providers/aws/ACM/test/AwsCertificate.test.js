@@ -26,7 +26,7 @@ describe.skip("AwsCertificate", async function () {
 
     await provider.start();
 
-    certificate = await provider.makeCertificate({
+    certificate = await provider.acm.makeCertificate({
       name: certificateName,
       properties: () => ({ DomainName: domainName }),
     });

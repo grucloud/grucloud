@@ -1,5 +1,5 @@
 exports.diskTpl = ({ resourceVarName, resourceName }) => `
-const ${resourceVarName} = await provider.makeDisk({
+const ${resourceVarName} = await provider.compute.makeDisk({
   name: "${resourceName}",
   properties: () => ({  }),
 });

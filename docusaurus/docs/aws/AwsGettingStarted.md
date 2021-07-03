@@ -148,7 +148,7 @@ We'll first import _AwsProvider_ from [@grucloud/provider-aws](https://www.npmjs
 
 Then, instantiate _AwsProvider_ by providing the _config_ function.
 
-In the case, an [EC2 Instance](https://www.grucloud.com/docs/aws/resources/EC2/EC2) is defined with `provider.makeEC2`.
+In the case, an [EC2 Instance](https://www.grucloud.com/docs/aws/resources/EC2/EC2) is defined with `provider.ec2.makeEC2`.
 
 ```js
 // iac.js
@@ -157,7 +157,7 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 exports.createStack = async ({ stage }) => {
   const provider = AwsProvider({ config: require("./config"), stage });
   const { config } = provider;
-  const ec2Instance = await provider.makeEC2({
+  const ec2Instance = await provider.ec2.makeEC2({
     name: config.ec2Instance.name,
     properties: () => config.ec2Instance.properties,
   });

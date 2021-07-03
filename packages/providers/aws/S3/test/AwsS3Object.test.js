@@ -16,12 +16,12 @@ const createStack = async ({ config }) => {
     config: () => ({ projectName: "gru-test" }),
   });
 
-  const s3Bucket = await provider.makeS3Bucket({
+  const s3Bucket = await provider.s3.makeS3Bucket({
     name: bucketName,
     properties: () => ({}),
   });
 
-  const s3Object = await provider.makeS3Object({
+  const s3Object = await provider.s3.makeS3Object({
     name: `file-test`,
     dependencies: { bucket: s3Bucket },
     properties: () => ({
@@ -39,12 +39,12 @@ const createStackNext = async ({ config }) => {
     config: () => ({ projectName: "gru-test" }),
   });
 
-  const s3Bucket = await provider.makeS3Bucket({
+  const s3Bucket = await provider.s3.makeS3Bucket({
     name: bucketName,
     properties: () => ({}),
   });
 
-  const s3Object = await provider.makeS3Object({
+  const s3Object = await provider.s3.makeS3Object({
     name: `file-test`,
     dependencies: { bucket: s3Bucket },
     properties: () => ({

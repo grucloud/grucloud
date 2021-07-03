@@ -12,7 +12,7 @@ The examples below create or reference a policy, and add it to a role, a user or
 Let's create a policy and a user, the policy is attached to the user via the _dependencies_ field:
 
 ```js
-const iamPolicy = await provider.makeIamPolicy({
+const iamPolicy = await provider.iam.makeIamPolicy({
   name: "my-policy",
   properties: () => ({
     PolicyDocument: {
@@ -30,7 +30,7 @@ const iamPolicy = await provider.makeIamPolicy({
   }),
 });
 
-const iamRole = await provider.makeIamRole({
+const iamRole = await provider.iam.makeIamRole({
   name: "my-role",
   dependencies: { policies: [iamPolicy] },
 
@@ -57,14 +57,14 @@ const iamRole = await provider.makeIamRole({
 A policy can be referenced by its _Arn_, invoke _useIamPolicy_ instead of _makeIamPolicy_:
 
 ```js
-const iamPolicyEKSCluster = await provider.useIamPolicy({
+const iamPolicyEKSCluster = await provider.iam.useIamPolicy({
   name: "AmazonEKSClusterPolicy",
   properties: () => ({
     Arn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
   }),
 });
 
-const iamRole = await provider.makeIamRole({
+const iamRole = await provider.iam.makeIamRole({
   name: "my-role",
   dependencies: { policies: [iamPolicyEKSCluster] },
 
@@ -91,7 +91,7 @@ const iamRole = await provider.makeIamRole({
 Let's create a policy and attach it to the user:
 
 ```js
-const iamPolicy = await provider.makeIamPolicy({
+const iamPolicy = await provider.iam.makeIamPolicy({
   name: "my-policy",
   properties: () => ({
     PolicyDocument: {
@@ -109,7 +109,7 @@ const iamPolicy = await provider.makeIamPolicy({
   }),
 });
 
-const iamUser = await provider.makeIamUser({
+const iamUser = await provider.iam.makeIamUser({
   name: "Alice",
   dependencies: { policies: [iamPolicy] },
   properties: () => ({}),
@@ -121,7 +121,7 @@ const iamUser = await provider.makeIamUser({
 Let's create a policy and attach it to the group:
 
 ```js
-const iamPolicy = await provider.makeIamPolicy({
+const iamPolicy = await provider.iam.makeIamPolicy({
   name: "policy-ec2-describe",
   properties: () => ({
     PolicyDocument: {
@@ -138,7 +138,7 @@ const iamPolicy = await provider.makeIamPolicy({
   }),
 });
 
-const iamGroup = await provider.makeIamGroup({
+const iamGroup = await provider.iam.makeIamGroup({
   name: "Admin",
   dependencies: { policies: [iamPolicy] },
   properties: () => ({}),

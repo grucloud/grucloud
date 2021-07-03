@@ -10,14 +10,14 @@ Manage an AWS Load Balancer.
 ### Load Balancer in a VPC
 
 ```js
-const vpc = await provider.makeVpc({
+const vpc = await provider.ec2.makeVpc({
   name: "vpc",
   properties: () => ({
     CidrBlock: "10.1.0.0/16",
   }),
 });
 
-const subnetA = await provider.makeSubnet({
+const subnetA = await provider.ec2.makeSubnet({
   name: "subnetA",
   dependencies: { vpc },
   properties: () => ({
@@ -25,7 +25,7 @@ const subnetA = await provider.makeSubnet({
   }),
 });
 
-const subnetB = await provider.makeSubnet({
+const subnetB = await provider.ec2.makeSubnet({
   name: "subnetB",
   dependencies: { vpc },
   properties: () => ({
@@ -33,7 +33,7 @@ const subnetB = await provider.makeSubnet({
   }),
 });
 
-const securityGroup = await provider.makeSecurityGroup({
+const securityGroup = await provider.ec2.makeSecurityGroup({
   name: "security-group-balancer",
   dependencies: { vpc },
   properties: () => ({
@@ -62,7 +62,7 @@ const securityGroup = await provider.makeSecurityGroup({
   }),
 });
 
-const loadBalancer = await provider.makeLoadBalancer({
+const loadBalancer = await provider.elb.makeLoadBalancer({
   name: "load-balancer",
   dependencies: {
     subnets: [subnetA, subnetA],
@@ -79,7 +79,7 @@ When using the _AWS Load Balancer Controller_ to create the load balancer & asso
 const clusterName = "cluster";
 const domainName = "test-load-balancer.grucloud.org";
 
-const loadBalancer = await provider.useLoadBalancer({
+const loadBalancer = await provider.elb.useLoadBalancer({
   name: "load-balancer",
   filterLives: ({ items }) =>
     pipe([
@@ -101,11 +101,11 @@ const loadBalancer = await provider.useLoadBalancer({
     ])(),
 });
 
-const hostedZone = await provider.makeHostedZone({
+const hostedZone = await provider.route53.makeHostedZone({
   name: `${domainName}.`,
 });
 
-const loadBalancerRecord = await provider.makeRoute53Record({
+const loadBalancerRecord = await provider.route53.makeRoute53Record({
   name: `dns-record-alias-load-balancer-${hostedZoneName}`,
   dependencies: { hostedZone, loadBalancer },
   properties: ({ dependencies }) => {

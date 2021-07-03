@@ -28,7 +28,7 @@ describe("AwsVpc", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    vpc = await provider.makeVpc({
+    vpc = await provider.ec2.makeVpc({
       name: vpcName,
       properties: () => ({
         DnsHostnames: true,
@@ -36,7 +36,7 @@ describe("AwsVpc", async function () {
         Tags: [{ Key: k8sClusterTagKey, Value: "shared" }],
       }),
     });
-    vpcDefault = await provider.useVpc({
+    vpcDefault = await provider.ec2.useVpc({
       name: "vpc-default",
       filterLives: ({ items }) =>
         pipe([

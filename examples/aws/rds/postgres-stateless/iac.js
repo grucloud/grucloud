@@ -14,7 +14,7 @@ const createResourcesRds = async ({
 }) => {
   const { config } = provider;
 
-  const securityGroup = await provider.makeSecurityGroup({
+  const securityGroup = await provider.ec2.makeSecurityGroup({
     name: "security-group-postgres",
     dependencies: { vpc: vpcResources.vpc },
     properties: () => ({
@@ -24,46 +24,48 @@ const createResourcesRds = async ({
     }),
   });
 
-  const sgRuleIngressPostgres = await provider.makeSecurityGroupRuleIngress({
-    name: "sg-rule-ingress-postgres",
-    dependencies: {
-      securityGroup,
-      securityGroupPublic: bastionResources.securityGroup,
-    },
-    properties: () => ({
-      IpPermissions: [
-        {
-          FromPort: 5432,
-          IpProtocol: "tcp",
-          IpRanges: [
-            {
-              CidrIp: "0.0.0.0/0",
-            },
-          ],
-          Ipv6Ranges: [
-            {
-              CidrIpv6: "::/0",
-            },
-          ],
-          UserIdGroupPairs: [
-            { GroupId: bastionResources.securityGroup.live?.GroupId },
-          ],
-          ToPort: 5432,
-        },
-      ],
-    }),
-  });
+  const sgRuleIngressPostgres = await provider.ec2.makeSecurityGroupRuleIngress(
+    {
+      name: "sg-rule-ingress-postgres",
+      dependencies: {
+        securityGroup,
+        securityGroupPublic: bastionResources.securityGroup,
+      },
+      properties: () => ({
+        IpPermissions: [
+          {
+            FromPort: 5432,
+            IpProtocol: "tcp",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+            UserIdGroupPairs: [
+              { GroupId: bastionResources.securityGroup.live?.GroupId },
+            ],
+            ToPort: 5432,
+          },
+        ],
+      }),
+    }
+  );
 
   const subnets = pluck("subnet")(vpcResources.privates);
 
-  const dbSubnetGroup = await provider.makeDBSubnetGroup({
+  const dbSubnetGroup = await provider.rds.makeDBSubnetGroup({
     name: config.rds.subnetGroup.name,
     dependencies: { subnets },
     properties: () => ({ DBSubnetGroupDescription: "db subnet group" }),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBCluster-property
-  const dbCluster = await provider.makeDBCluster({
+  const dbCluster = await provider.rds.makeDBCluster({
     name: config.rds.cluster.name,
     dependencies: { dbSubnetGroup, dbSecurityGroups: [securityGroup] },
     properties: () => config.rds.cluster.properties,
@@ -80,7 +82,7 @@ const createResourcesBastion = async ({
 }) => {
   const { config } = provider;
 
-  const securityGroup = await provider.makeSecurityGroup({
+  const securityGroup = await provider.ec2.makeSecurityGroup({
     name: "security-group-public",
     dependencies: { vpc: vpcResources.vpc },
     properties: () => ({
@@ -92,7 +94,7 @@ const createResourcesBastion = async ({
     }),
   });
 
-  const sgRuleIngressSsh = await provider.makeSecurityGroupRuleIngress({
+  const sgRuleIngressSsh = await provider.ec2.makeSecurityGroupRuleIngress({
     name: "sg-rule-ingress-ssh-bastion",
     dependencies: {
       securityGroup,
@@ -119,11 +121,11 @@ const createResourcesBastion = async ({
   });
 
   assert(config.eip);
-  const eip = await provider.makeElasticIpAddress({
+  const eip = await provider.ec2.makeElasticIpAddress({
     name: config.rds.eip.name,
   });
 
-  const image = await provider.useImage({
+  const image = await provider.ec2.useImage({
     name: "Amazon Linux 2",
     properties: () => ({
       Filters: [
@@ -142,7 +144,7 @@ const createResourcesBastion = async ({
   return {
     eip,
     securityGroup,
-    ec2Instance: await provider.makeEC2({
+    ec2Instance: await provider.ec2.makeEC2({
       name: config.rds.ec2Instance.name,
       dependencies: {
         keyPair,
@@ -180,7 +182,7 @@ exports.createStack = async ({ stage }) => {
     stage,
   });
 
-  const keyPair = await provider.useKeyPair({
+  const keyPair = await provider.ec2.useKeyPair({
     name: provider.config.keyPair.name,
   });
 

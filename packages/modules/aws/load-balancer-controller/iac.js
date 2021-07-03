@@ -25,23 +25,24 @@ const createResources = async ({
   const { cluster } = resources;
   assert(cluster);
 
-  const iamOpenIdConnectProvider = await provider.makeIamOpenIDConnectProvider({
-    name: formatName(
-      awsLoadBalancerController.iamOpenIdConnectProvider.name,
-      config
-    ),
-    namespace,
-    dependencies: { cluster },
-    properties: ({ dependencies: { cluster } }) => ({
-      Url: get(
-        "live.identity.oidc.issuer",
-        "oidc.issuer not available yet"
-      )(cluster),
-      ClientIDList: ["sts.amazonaws.com"],
-    }),
-  });
+  const iamOpenIdConnectProvider =
+    await provider.iam.makeIamOpenIDConnectProvider({
+      name: formatName(
+        awsLoadBalancerController.iamOpenIdConnectProvider.name,
+        config
+      ),
+      namespace,
+      dependencies: { cluster },
+      properties: ({ dependencies: { cluster } }) => ({
+        Url: get(
+          "live.identity.oidc.issuer",
+          "oidc.issuer not available yet"
+        )(cluster),
+        ClientIDList: ["sts.amazonaws.com"],
+      }),
+    });
 
-  const iamLoadBalancerPolicy = await provider.makeIamPolicy({
+  const iamLoadBalancerPolicy = await provider.iam.makeIamPolicy({
     name: "AWSLoadBalancerControllerIAMPolicy",
     namespace,
     properties: () => ({
@@ -50,7 +51,7 @@ const createResources = async ({
     }),
   });
 
-  const roleLoadBalancer = await provider.makeIamRole({
+  const roleLoadBalancer = await provider.iam.makeIamRole({
     name: formatName(awsLoadBalancerController.role.name, config),
     namespace,
     dependencies: {

@@ -28,7 +28,7 @@ describe("AwsIamInstanceProfile", async function () {
 
     await provider.start();
 
-    iamRole = await provider.makeIamRole({
+    iamRole = await provider.iam.makeIamRole({
       name: iamRoleName,
       properties: () => ({
         Path: "/",
@@ -48,7 +48,7 @@ describe("AwsIamInstanceProfile", async function () {
       }),
     });
 
-    iamInstanceProfile = await provider.makeIamInstanceProfile({
+    iamInstanceProfile = await provider.iam.makeIamInstanceProfile({
       name: iamInstanceProfileName,
       dependencies: { iamRoles: [iamRole] },
       properties: () => ({

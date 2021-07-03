@@ -31,14 +31,14 @@ describe("AwsRouteTable", async function () {
 
     await provider.start();
 
-    vpc = await provider.makeVpc({
+    vpc = await provider.ec2.makeVpc({
       name: "vpc",
       properties: () => ({
         CidrBlock: "10.1.0.1/16",
       }),
     });
 
-    subnet = await provider.makeSubnet({
+    subnet = await provider.ec2.makeSubnet({
       name: "subnet",
       dependencies: { vpc },
       properties: () => ({
@@ -46,17 +46,17 @@ describe("AwsRouteTable", async function () {
       }),
     });
 
-    ig = await provider.makeInternetGateway({
+    ig = await provider.ec2.makeInternetGateway({
       name: "ig",
       dependencies: { vpc },
     });
 
-    routeTable = await provider.makeRouteTable({
+    routeTable = await provider.ec2.makeRouteTable({
       name: resourceName,
       dependencies: { vpc, subnets: [subnet] },
     });
 
-    routeIg = await provider.makeRoute({
+    routeIg = await provider.ec2.makeRoute({
       name: "route-ig",
       dependencies: { routeTable, ig },
     });

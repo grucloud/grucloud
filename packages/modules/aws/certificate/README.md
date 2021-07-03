@@ -87,11 +87,11 @@ exports.createStack = async ({ config }) => {
   assert(domainName);
   assert(rootDomainName);
 
-  const domain = await provider.useRoute53Domain({
+  const domain = await provider.route53Domain.useRoute53Domain({
     name: rootDomainName,
   });
 
-  const hostedZone = await provider.makeHostedZone({
+  const hostedZone = await provider.route53.makeHostedZone({
     name: `${domainName}.`,
     dependencies: { domain },
   });
