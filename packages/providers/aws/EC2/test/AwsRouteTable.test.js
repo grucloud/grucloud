@@ -8,6 +8,9 @@ const {
 const { CheckAwsTags } = require("../../AwsTagCheck");
 const cliCommands = require("@grucloud/core/cli/cliCommands");
 
+const testName = "rt";
+
+const buildName = (name) => `${testName}-${name}`;
 describe("AwsRouteTable", async function () {
   let config;
   let provider;
@@ -30,14 +33,14 @@ describe("AwsRouteTable", async function () {
     });
 
     vpc = provider.ec2.makeVpc({
-      name: "vpc",
+      name: buildName("vpc"),
       properties: () => ({
         CidrBlock: "10.1.0.1/16",
       }),
     });
 
     subnet = provider.ec2.makeSubnet({
-      name: "subnet",
+      name: buildName("subnet"),
       dependencies: { vpc },
       properties: () => ({
         CidrBlock: "10.1.0.1/24",
@@ -45,7 +48,7 @@ describe("AwsRouteTable", async function () {
     });
 
     ig = provider.ec2.makeInternetGateway({
-      name: "ig",
+      name: buildName("ig"),
       dependencies: { vpc },
     });
 
@@ -55,7 +58,7 @@ describe("AwsRouteTable", async function () {
     });
 
     routeIg = provider.ec2.makeRoute({
-      name: "route-ig",
+      name: buildName("route-ig"),
       dependencies: { routeTable, ig },
     });
 
@@ -63,26 +66,27 @@ describe("AwsRouteTable", async function () {
   });
   after(async () => {});
   it("rt apply and destroy", async function () {
-    await testPlanDeploy({ provider });
-    const rtLive = await routeTable.getLive();
-    const subnetLive = await subnet.getLive();
-    const vpcLive = await vpc.getLive();
+    try {
+      await testPlanDeploy({ provider });
+      const rtLive = await routeTable.getLive();
+      const subnetLive = await subnet.getLive();
+      const vpcLive = await vpc.getLive();
 
-    assert(
-      CheckAwsTags({
-        config: provider.config,
-        tags: rtLive.Tags,
-        name: routeTable.name,
-      })
-    );
+      assert(
+        CheckAwsTags({
+          config: provider.config,
+          tags: rtLive.Tags,
+          name: routeTable.name,
+        })
+      );
 
-    const result = await cliCommands.list({
-      infra: { provider },
-      commandOptions: { our: true, types: ["RouteTable"] },
-    });
-    assert(!result.error);
-    assert(result.results);
-    /*
+      const result = await cliCommands.list({
+        infra: { provider },
+        commandOptions: { our: true, types: ["RouteTable"] },
+      });
+      assert(!result.error);
+      assert(result.results);
+      /*
     const {
       results: [rts],
     } = provider.listLives({ options: { types: ["RouteTable"] } });
@@ -94,6 +98,9 @@ describe("AwsRouteTable", async function () {
       assert.equal(routeTable.Associations[0].SubnetId, subnetLive.SubnetId);
       assert.equal(routeTable.VpcId, vpcLive.VpcId);
     }*/
-    await testPlanDestroy({ provider });
+      await testPlanDestroy({ provider });
+    } catch (error) {
+      throw error;
+    }
   });
 });
