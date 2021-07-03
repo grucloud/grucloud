@@ -7,7 +7,7 @@ const GROUP = "kms";
 module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
-      type: "KmsKey",
+      type: "Key",
       Client: KmsKey,
       isOurMinion: isOurMinionFactory({ key: "TagKey", value: "TagValue" }),
       compare: compareKmsKey,

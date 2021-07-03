@@ -265,7 +265,7 @@ const createResources = async ({
   });
 
   // Asymmetric Key
-  const key = provider.kms.makeKmsKey({
+  const key = provider.kms.makeKey({
     name: formatName(config.eks.key.name, config),
     properties: () => ({}),
   });

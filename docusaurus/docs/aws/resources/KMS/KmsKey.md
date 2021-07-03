@@ -12,7 +12,7 @@ Manages a [Customer Master Key](https://docs.aws.amazon.com/kms/latest/developer
 Create a symmetric key, for instance used by an [EKS Cluster](../EKS/EksCluster)
 
 ```js
-const cmk = provider.kms.makeKmsKey({
+const cmk = provider.kms.makeKey({
   name: "my-secret-key",
   properties: () => ({}),
 });
@@ -34,7 +34,7 @@ const cmk = provider.kms.makeKmsKey({
 ## List
 
 ```sh
-gc l -t KmsKey
+gc l -t Key
 ```
 
 ```txt
@@ -43,7 +43,7 @@ Listing resources on 1 provider: aws
   ✓ Initialising
   ✓ Listing 1/1
 ┌─────────────────┬───────────────────────────────────────────────────────────────────────────┐
-│ 1 KmsKey from … │                                                                           │
+│ 1  Key from …   │                                                                           │
 ├─────────────────┼────────────────────────────────────────────────────────────────────┬──────┤
 │ Name            │ Data                                                               │ Our  │
 ├─────────────────┼────────────────────────────────────────────────────────────────────┼──────┤
@@ -81,8 +81,8 @@ Provider: aws
 ┌────────────────────────────────────────────────────────────────────────────────────────────┐
 │ aws                                                                                        │
 ├────────────────────┬───────────────────────────────────────────────────────────────────────┤
-│ KmsKey             │ secret-key-test                                                       │
+│ Key                │ secret-key-test                                                       │
 └────────────────────┴───────────────────────────────────────────────────────────────────────┘
 1 resource, 1 type, 1 provider
-Command "gc l -t KmsKey" executed in 2s
+Command "gc l -t Key" executed in 2s
 ```
