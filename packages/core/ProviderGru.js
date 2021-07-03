@@ -1097,10 +1097,9 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
     getProviders,
     runCommand,
     runCommandGlobal,
-    buildGraphTarget: ({ lives, options }) =>
+    buildGraphTarget: ({ options }) =>
       buildGraphTarget({
         providers: getProviders(),
-        lives,
         options: defaultsDeep(GraphCommon.optionsDefault({ kind: "target" }))(
           options
         ),
