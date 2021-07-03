@@ -6,7 +6,7 @@ title: Service Account
 Provides a [Service Account](https://cloud.google.com/compute/docs/access/service-accounts):
 
 ```js
-const sa = await provider.iam.makeServiceAccount({
+const sa = provider.iam.makeServiceAccount({
   name: "sa",
   properties: () => ({
     accountId: "sa-dev",

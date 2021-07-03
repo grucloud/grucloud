@@ -29,14 +29,14 @@ const createIamResources = async ({ provider }) => {
     })
   )(PolicyNames);
 
-  const iamGroup = await provider.iam.makeGroup({
+  const iamGroup = provider.iam.makeGroup({
     name: groupName,
     namespace,
     dependencies: { policies: policies },
     properties: () => ({}),
   });
 
-  const iamUser = await provider.iam.makeUser({
+  const iamUser = provider.iam.makeUser({
     name: userName,
     namespace,
     dependencies: { iamGroups: [iamGroup] },
@@ -52,18 +52,18 @@ const createRoute53Resources = async ({ provider }) => {
   assert(subDomainName);
 
   // Read Only Parent with useHostedZone
-  const hostedZoneParent = await provider.route53.useHostedZone({
+  const hostedZoneParent = provider.route53.useHostedZone({
     name: `${domainName}.`,
     namespace,
   });
 
-  const hostedZoneSub = await provider.route53.makeHostedZone({
+  const hostedZoneSub = provider.route53.makeHostedZone({
     name: `${subDomainName}.`,
     namespace,
   });
 
   // Add a NS record from the sub dns server to the parent.
-  const recordNS = await provider.route53.makeRecord({
+  const recordNS = provider.route53.makeRecord({
     name: `${subDomainName}-ns`,
     namespace,
     dependencies: { hostedZone: hostedZoneParent, hostedZoneSub },
@@ -87,7 +87,7 @@ const createRoute53Resources = async ({ provider }) => {
 
 const createS3Resources = async ({ provider }) => {
   const { config } = provider;
-  const s3Bucket = await provider.s3.makeBucket({
+  const s3Bucket = provider.s3.makeBucket({
     name: config.kops.subDomainName,
     namespace,
     properties: () => ({

@@ -12,7 +12,7 @@ Provides a DNS managed zone and resource record set.
 ```js
 const domain = "gcp.grucloud.com";
 
-const dnsManagedZone = await provider.dns.makeManagedZone({
+const dnsManagedZone = provider.dns.makeManagedZone({
   name: "dns-managed-zone",
   properties: () => ({
     dnsName: `${domain}.`,

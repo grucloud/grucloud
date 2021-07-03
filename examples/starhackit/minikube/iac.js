@@ -14,7 +14,7 @@ exports.createStack = async ({ config }) => {
 
   assert(provider.config.postgres.pvName);
 
-  const persistentVolume = await provider.makePersistentVolume({
+  const persistentVolume = provider.makePersistentVolume({
     name: provider.config.postgres.pvName,
     dependencies: { namespace: resources.namespace },
     properties: () => ({

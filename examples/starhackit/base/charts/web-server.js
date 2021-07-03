@@ -53,7 +53,7 @@ exports.createResourcesWebServer = async ({
     },
   });
 
-  const deployment = await provider.makeDeployment({
+  const deployment = provider.makeDeployment({
     name: ui.deploymentName,
     dependencies: { namespace },
     properties: () =>
@@ -65,7 +65,7 @@ exports.createResourcesWebServer = async ({
       }),
   });
 
-  const service = await provider.makeService({
+  const service = provider.makeService({
     name: ui.serviceName,
     dependencies: { namespace, deployment },
     properties: () => ({

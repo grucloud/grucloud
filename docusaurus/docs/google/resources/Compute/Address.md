@@ -5,7 +5,7 @@ title: Address
 Provides a public Ip address:
 
 ```js
-const ip = await provider.compute.makeAddress({ name: "ip-webserver" });
+const ip = provider.compute.makeAddress({ name: "ip-webserver" });
 ```
 
 ### Examples

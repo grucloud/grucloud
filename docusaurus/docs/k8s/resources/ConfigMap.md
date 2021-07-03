@@ -10,11 +10,11 @@ Provides a [Kubernetes ConfigMap](https://kubernetes.io/docs/concepts/configurat
 ### Create a config map
 
 ```js
-const namespace = await provider.makeNamespace({
+const namespace = provider.makeNamespace({
   name: "myNamespace",
 });
 
-const configMap = await provider.makeConfigMap({
+const configMap = provider.makeConfigMap({
   name: "myConfigMap",
   dependencies: { namespace },
   properties: () => ({

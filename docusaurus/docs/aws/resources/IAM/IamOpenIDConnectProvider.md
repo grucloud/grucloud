@@ -8,7 +8,7 @@ Provides an Iam Open ID Connect Provider.
 The following example creates a Open ID Connect Provider for an EKS Cluster.
 
 ```js
-const iamOpenIdConnectProvider = await provider.iam.makeOpenIDConnectProvider({
+const iamOpenIdConnectProvider = provider.iam.makeOpenIDConnectProvider({
   name: "oidp-eks",
   dependencies: { cluster },
   properties: ({ dependencies: { cluster } }) => ({

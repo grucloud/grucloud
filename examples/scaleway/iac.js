@@ -2,9 +2,9 @@ const assert = require("assert");
 const ScalewayProvider = require("@grucloud/core").ScalewayProvider;
 
 const createResources = async ({ provider }) => {
-  const ip = await provider.makeIp({ name: "ip-web-server" });
+  const ip = provider.makeIp({ name: "ip-web-server" });
   // Choose an image
-  const image = await provider.useImage({
+  const image = provider.useImage({
     name: "ubuntu",
     filterLives: ({ items: images }) => {
       const image = images.find(
@@ -18,7 +18,7 @@ const createResources = async ({ provider }) => {
   return {
     ip,
     image,
-    server: await provider.makeServer({
+    server: provider.makeServer({
       name: "web-server",
       dependencies: { image, ip },
       properties: () => ({

@@ -8,7 +8,7 @@ Provides a Virtual Machine:
 ```js
 const { MACHINE_ADMIN_USERNAME, MACHINE_ADMIN_PASSWORD } = process.env;
 
-const vm = await provider.makeVirtualMachine({
+const vm = provider.makeVirtualMachine({
   name: `vm`,
   dependencies: {
     resourceGroup,

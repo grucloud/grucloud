@@ -4,10 +4,10 @@ const hook = require("./hook");
 
 const createResources = async ({ provider }) => {
   // Ip
-  const ip = await provider.makeIp({ name: "myip" });
+  const ip = provider.makeIp({ name: "myip" });
 
   // Boot images
-  const image = await provider.useImage({
+  const image = provider.useImage({
     name: "ubuntu",
     filterLives: ({ items: images }) => {
       assert(images);
@@ -19,14 +19,14 @@ const createResources = async ({ provider }) => {
     },
   });
 
-  const volume = await provider.makeVolume({
+  const volume = provider.makeVolume({
     name: "volume1",
     properties: () => ({
       size: 20_000_000_000,
     }),
   });
   // SecurityGroup
-  const sg = await provider.makeSecurityGroup({
+  const sg = provider.makeSecurityGroup({
     name: "sg",
     properties: () => ({
       securityRules: [
@@ -47,7 +47,7 @@ const createResources = async ({ provider }) => {
     }),
   });
   //Server
-  const server = await provider.makeServer({
+  const server = provider.makeServer({
     name: "web-server",
     dependencies: { volume, sg: [sg], ip },
     properties: () => ({

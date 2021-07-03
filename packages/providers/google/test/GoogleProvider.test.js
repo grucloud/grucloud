@@ -29,21 +29,19 @@ describe("GoogleProvider", async function () {
       }),
     });
 
-    await provider.start();
-
-    network = await provider.compute.makeNetwork({
+    network = provider.compute.makeNetwork({
       name: "network-dev",
       properties: () => ({ autoCreateSubnetworks: false }),
     });
 
-    subNetwork = await provider.compute.makeSubNetwork({
+    subNetwork = provider.compute.makeSubNetwork({
       name: "subnet-dev",
       dependencies: { network },
       properties: () => ({
         ipCidrRange: "10.164.0.0/20",
       }),
     });
-    firewall = await provider.compute.makeFirewall({
+    firewall = provider.compute.makeFirewall({
       name: "firewall-dev",
       dependencies: { network },
       properties: () => ({
@@ -55,8 +53,8 @@ describe("GoogleProvider", async function () {
         ],
       }),
     });
-    ip = await provider.compute.makeAddress({ name: ipName });
-    server = await provider.compute.makeVmInstance({
+    ip = provider.compute.makeAddress({ name: ipName });
+    server = provider.compute.makeVmInstance({
       name: "web-server",
       dependencies: { ip },
       properties: () => ({
@@ -66,10 +64,12 @@ describe("GoogleProvider", async function () {
           "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
       }),
     });
+
+    await provider.start();
   });
   after(async () => {});
   it("gcp info", async function () {
-    const info = await provider.info();
+    const info = provider.info();
     assert(info.projectId);
     assert(info.config);
   });

@@ -5,7 +5,7 @@ const hook = require("./hook");
 //TODO do we use a name ?
 //TODO how do we prevent being created twice
 const createResources = async ({ provider, resources: { serviceAccount } }) => {
-  const iamPolicy = await provider.iam.makePolicy({
+  const iamPolicy = provider.iam.makePolicy({
     name: "policy",
     dependencies: { serviceAccount },
 
@@ -32,7 +32,7 @@ exports.createStack = async () => {
   const { stage } = provider.config;
   assert(stage, "missing stage");
 
-  const serviceAccount = await provider.iam.makeServiceAccount({
+  const serviceAccount = provider.iam.makeServiceAccount({
     name: `sa-${stage}`,
     properties: () => ({
       serviceAccount: {

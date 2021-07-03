@@ -30,12 +30,11 @@ describe.skip("K8sStatefulSet", async function () {
       config: config.k8s,
     });
 
-    await provider.start();
-    namespace = await provider.makeNamespace({
+    namespace = provider.makeNamespace({
       name: myNamespace,
     });
 
-    persistentVolume = await provider.makePersistentVolume({
+    persistentVolume = provider.makePersistentVolume({
       name: pv.name,
       dependencies: { namespace },
       properties: () => ({
@@ -110,7 +109,7 @@ describe.skip("K8sStatefulSet", async function () {
       },
     });
 
-    statefulSetPostgres = await provider.makeStatefulSet({
+    statefulSetPostgres = provider.makeStatefulSet({
       name: postgres.statefulSetName,
       dependencies: { namespace, persistentVolume },
       properties: ({ dependencies: {} }) =>
@@ -119,6 +118,7 @@ describe.skip("K8sStatefulSet", async function () {
           pvName: pv.name,
         }),
     });
+    await provider.start();
   });
   after(async () => {});
 

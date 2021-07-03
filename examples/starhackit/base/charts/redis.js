@@ -50,7 +50,7 @@ exports.createChartRedis = async ({
     },
   });
 
-  const statefulSet = await provider.makeStatefulSet({
+  const statefulSet = provider.makeStatefulSet({
     name: redis.statefulSetName,
     dependencies: { namespace },
     properties: ({}) =>
@@ -62,7 +62,7 @@ exports.createChartRedis = async ({
       }),
   });
 
-  const service = await provider.makeService({
+  const service = provider.makeService({
     name: redis.serviceName,
     dependencies: { namespace, statefulSet },
     properties: () => ({

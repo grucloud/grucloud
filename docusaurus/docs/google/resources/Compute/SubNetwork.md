@@ -6,7 +6,7 @@ title: SubNetwork
 Manages a [SubNetwork](https://cloud.google.com/compute/docs/reference/rest/v1/subnetworks)
 
 ```js
-const subNetwork = await provider.ec2.makeSubnetwork({
+const subNetwork = provider.ec2.makeSubnetwork({
   name: "subnetwork-dev",
   dependencies: { network },
   properties: () => ({

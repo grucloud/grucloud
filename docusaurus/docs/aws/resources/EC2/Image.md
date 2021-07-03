@@ -13,7 +13,7 @@ Provides an [Amazon Managed Image](https://docs.aws.amazon.com/AWSEC2/latest/Use
 - Provides the image as an EC2 dependency.
 
 ```js
-const image = await provider.ec2.useImage({
+const image = provider.ec2.useImage({
   name: "ubuntu 20.04",
   properties: () => ({
     Filters: [
@@ -29,7 +29,7 @@ const image = await provider.ec2.useImage({
   }),
 });
 
-const server = await provider.ec2.makeInstance({
+const server = provider.ec2.makeInstance({
   name: "myserver",
   dependencies: {
     image,
@@ -45,7 +45,7 @@ const server = await provider.ec2.makeInstance({
 Here is the Amazone Linux 2 image:
 
 ```js
-const image = await provider.ec2.useImage({
+const image = provider.ec2.useImage({
   name: "Amazon Linux 2",
   properties: () => ({
     Filters: [

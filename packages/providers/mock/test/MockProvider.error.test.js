@@ -32,8 +32,8 @@ describe("MockProvider errors", async function () {
 
     // Ip
     try {
-      const ip = await provider.makeIp({ name: "myip" });
-      const ip2 = await provider.makeIp({ name: "myip" });
+      const ip = provider.makeIp({ name: "myip" });
+      const ip2 = provider.makeIp({ name: "myip" });
       assert(false);
     } catch (error) {
       assert.equal(error.code, 400);
@@ -51,12 +51,12 @@ describe("MockProvider errors", async function () {
       config,
       mockCloud,
     });
-    await provider1.makeIp({ name: "myip" });
-    await provider2.makeIp({ name: "myip" });
+    provider1.makeIp({ name: "myip" });
+    provider2.makeIp({ name: "myip" });
     const providersGru = ProviderGru({
       stacks: [{ provider: provider1 }, { provider: provider2 }],
     });
-    const result = await providersGru.planQuery();
+    const result = providersGru.planQuery();
     assert(!result.error);
   });
 
@@ -69,14 +69,14 @@ describe("MockProvider errors", async function () {
         mockCloud,
       });
 
-      const volume = await provider.makeVolume({
+      const volume = provider.makeVolume({
         name: "volume1",
         properties: () => ({
           size: 20_000_000_000,
         }),
       });
 
-      await provider.makeServer({
+      provider.makeServer({
         name: "web-server",
         properties: () => ({
           diskSizeGb: "20",
@@ -84,12 +84,12 @@ describe("MockProvider errors", async function () {
         }),
       });
 
-      await provider.makeIp({
+      provider.makeIp({
         name: "ip",
         properties: () => ({}),
       });
       const providersGru = ProviderGru({ stacks: [{ provider }] });
-      const { error } = await providersGru.planQuery();
+      const { error } = providersGru.planQuery();
       assert(!error);
     }
     {
@@ -100,7 +100,7 @@ describe("MockProvider errors", async function () {
       });
       const providersGru = ProviderGru({ stacks: [{ provider }] });
 
-      const { error } = await providersGru.planQueryAndApply();
+      const { error } = providersGru.planQueryAndApply();
       assert(!error);
     }
   });

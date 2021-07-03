@@ -30,7 +30,7 @@ describe("GcpServiceAccount", async function () {
       }),
     });
 
-    serviceAccount = await provider.makeServiceAccount({
+    serviceAccount = provider.makeServiceAccount({
       name: serviceAccountName,
       properties: () => ({
         serviceAccount: {

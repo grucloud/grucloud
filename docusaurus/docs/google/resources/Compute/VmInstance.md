@@ -10,7 +10,7 @@ Provides a Virtual Machine instance.
 ### Simple VM
 
 ```js
-const server = await provider.compute.makeVmInstance({
+const server = provider.compute.makeVmInstance({
   name: "web-server",
   properties: () => ({
     diskSizeGb: "20",
@@ -38,11 +38,11 @@ gcloud compute images list
 ### Attach a public IP address
 
 ```js
-const ip = await provider.compute.makeAddress({
+const ip = provider.compute.makeAddress({
   name: `ip-webserver`,
 });
 
-const server = await provider.compute.makeVmInstance({
+const server = provider.compute.makeVmInstance({
   name: `webserver`,
   dependencies: { ip },
   properties: () => ({
@@ -65,7 +65,7 @@ const server = await provider.compute.makeVmInstance({
 ### Attach a service account
 
 ```js
-const serviceAccount = await provider.iam.makeServiceAccount({
+const serviceAccount = provider.iam.makeServiceAccount({
   name: `sa-dev`,
   properties: () => ({
     serviceAccount: {
@@ -75,7 +75,7 @@ const serviceAccount = await provider.iam.makeServiceAccount({
 });
 
 // Allocate a server
-const server = await provider.compute.makeVmInstance({
+const server = provider.compute.makeVmInstance({
   name: `webserver`,
   dependencies: { serviceAccount },
   properties: () => ({
@@ -102,11 +102,11 @@ const publicKey = fs.readFileSync(
   path.resolve(process.env.HOME, ".ssh/id_rsa.pub")
 );
 
-const ip = await provider.compute.makeAddress({
+const ip = provider.compute.makeAddress({
   name: `ip-webserver-ssh-keys`,
 });
 
-const firewall22 = await provider.compute.makeFirewall({
+const firewall22 = provider.compute.makeFirewall({
   name: `firewall-22`,
   properties: () => ({
     allowed: [
@@ -119,7 +119,7 @@ const firewall22 = await provider.compute.makeFirewall({
   }),
 });
 
-const server = await provider.compute.makeVmInstance({
+const server = provider.compute.makeVmInstance({
   name: `webserver-ssh-keys`,
   dependencies: { ip },
   properties: () => ({
@@ -142,7 +142,7 @@ const server = await provider.compute.makeVmInstance({
 ### Authenticate with oslogin
 
 ```js
-const server = await provider.compute.makeVmInstance({
+const server = provider.compute.makeVmInstance({
   name: `webserver`,
   properties: () => ({
     diskSizeGb: "20",
@@ -165,13 +165,13 @@ const server = await provider.compute.makeVmInstance({
 
 ```js
 // Vpc network
-const network = await provider.compute.makeNetwork({
+const network = provider.compute.makeNetwork({
   name: `vpc`,
   properties: () => ({ autoCreateSubnetworks: false }),
 });
 
 // Subnetwork
-const subNetwork = await provider.ec2.makeSubnetwork({
+const subNetwork = provider.ec2.makeSubnetwork({
   name: `subnetwork`,
   dependencies: { network },
   properties: () => ({
@@ -180,7 +180,7 @@ const subNetwork = await provider.ec2.makeSubnetwork({
 });
 
 // Allocate a server
-const server = await provider.compute.makeVmInstance({
+const server = provider.compute.makeVmInstance({
   name: `my-server`,
   dependencies: { subNetwork },
   properties: () => ({

@@ -22,8 +22,6 @@ describe("AwsS3BucketPerf", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    await provider.start();
-
     const maxBuckets = 10;
     await pipe([
       (maxBuckets) =>
@@ -34,14 +32,15 @@ describe("AwsS3BucketPerf", async function () {
             []
           ),
       async (buckets) =>
-        await map(
-          async (bucket) =>
-            await provider.s3.makeBucket({
-              name: bucket,
-              properties: () => ({}),
-            })
+        await map(async (bucket) =>
+          provider.s3.makeBucket({
+            name: bucket,
+            properties: () => ({}),
+          })
         )(buckets),
     ])(maxBuckets);
+
+    await provider.start();
 
     const resultApply = await cliCommands.planApply({
       infra: { provider },

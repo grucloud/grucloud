@@ -18,7 +18,7 @@ const createResources = async ({ provider, resources: { namespace } }) => {
   assert(redis.image);
   assert(redis.port);
 
-  const statefulSet = await provider.makeStatefulSet({
+  const statefulSet = provider.makeStatefulSet({
     name: redis.statefulSetName,
     dependencies: { namespace },
     properties: ({}) => ({
@@ -74,7 +74,7 @@ const createResources = async ({ provider, resources: { namespace } }) => {
     }),
   });
 
-  const service = await provider.makeService({
+  const service = provider.makeService({
     name: redis.serviceName,
     dependencies: { namespace, statefulSet },
     properties: () => ({
@@ -107,7 +107,7 @@ exports.createStack = async ({ config }) => {
     config,
   });
 
-  const namespace = await provider.makeNamespace({
+  const namespace = provider.makeNamespace({
     name: "redis",
   });
 

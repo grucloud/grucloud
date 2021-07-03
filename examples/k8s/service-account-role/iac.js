@@ -10,7 +10,7 @@ const podPolicy = require("./pod-policy.json");
 const createAwsStack = async ({ config }) => {
   const provider = AwsProvider({ config });
 
-  const iamPodPolicy = await provider.makeIamPolicy({
+  const iamPodPolicy = provider.makeIamPolicy({
     name: "PodPolicy",
     properties: () => ({
       PolicyDocument: podPolicy,
@@ -18,7 +18,7 @@ const createAwsStack = async ({ config }) => {
     }),
   });
 
-  const rolePod = await provider.makeIamRole({
+  const rolePod = provider.makeIamRole({
     name: "role-pod",
     dependencies: { policies: [iamPodPolicy] },
     properties: () => ({
@@ -56,11 +56,11 @@ const createK8sStack = async ({
 
   const serviceAccountName = "service-account-aws";
 
-  const namespace = await provider.makeNamespace({
+  const namespace = provider.makeNamespace({
     name: namespaceName,
   });
 
-  const serviceAccount = await provider.makeServiceAccount({
+  const serviceAccount = provider.makeServiceAccount({
     name: serviceAccountName,
     dependencies: { namespace, rolePod },
     properties: ({ dependencies: { rolePod } }) => ({
@@ -73,7 +73,7 @@ const createK8sStack = async ({
     }),
   });
 
-  const ingress = await provider.makeIngress({
+  const ingress = provider.makeIngress({
     name: "ingress",
     dependencies: {
       namespace,

@@ -50,16 +50,16 @@ describe("AwsEC2", async function () {
       config: () => ({ projectName: "ec2-test" }),
     });
 
-    const keyPair = await provider.ec2.useKeyPair({
+    const keyPair = provider.ec2.useKeyPair({
       name: keyPairName,
     });
 
-    const image = await provider.ec2.useImage({
+    const image = provider.ec2.useImage({
       name: imageProperties.name,
       properties: imageProperties.properties,
     });
 
-    const server = await provider.ec2.makeInstance({
+    const server = provider.ec2.makeInstance({
       name: serverName,
       properties: serverProperties,
       dependencies: { image, keyPair },

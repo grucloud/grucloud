@@ -23,7 +23,7 @@ describe("AwsS3BucketErrors", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    await provider.s3.makeBucket({
+    provider.s3.makeBucket({
       name: "bucket",
       properties: () => ({}),
     });
@@ -46,7 +46,7 @@ describe("AwsS3BucketErrors", async function () {
     const provider = AwsProvider({
       config: () => ({ projectName: "gru-test" }),
     });
-    await provider.s3.makeBucket({
+    provider.s3.makeBucket({
       name: `${bucketPrefix}-acl-accesscontrolpolicy`,
       properties: () => ({
         AccessControlPolicy: {
@@ -64,7 +64,7 @@ describe("AwsS3BucketErrors", async function () {
     });
 
     const region = provider.config.region;
-    await provider.s3.makeBucket({
+    provider.s3.makeBucket({
       name: `${bucketPrefix}-notification-configuration-invalid-topic`,
       properties: () => ({
         NotificationConfiguration: {
@@ -78,12 +78,12 @@ describe("AwsS3BucketErrors", async function () {
       }),
     });
 
-    const s3BucketReplicationDestination = await provider.s3.makeBucket({
+    const s3BucketReplicationDestination = provider.s3.makeBucket({
       name: "replication-configuration-destination",
       properties: () => ({}),
     });
 
-    await provider.s3.makeBucket({
+    provider.s3.makeBucket({
       name: `${bucketPrefix}-replication-configuration-invalid-iam`,
       dependencies: { bucket: s3BucketReplicationDestination },
 

@@ -6,7 +6,7 @@ title: IAM Policy
 Provides a IAM Policy for a project.
 
 ```js
-const iamPolicy = await provider.iam.makePolicy({
+const iamPolicy = provider.iam.makePolicy({
   name: "iam-policy",
   properties: () => ({
     policy: {

@@ -30,20 +30,20 @@ describe("GcpSubNetwork", async function () {
       }),
     });
 
-    await provider.start();
-
-    network = await provider.compute.makeNetwork({
+    network = provider.compute.makeNetwork({
       name: networkName,
       properties: () => ({ autoCreateSubnetworks: false }),
     });
 
-    subNetwork = await provider.compute.makeSubNetwork({
+    subNetwork = provider.compute.makeSubNetwork({
       name: subNetworkName,
       dependencies: { network },
       properties: () => ({
         ipCidrRange: "10.164.0.0/20",
       }),
     });
+
+    await provider.start();
   });
   after(async () => {});
   it.skip("subNetwork config", async function () {

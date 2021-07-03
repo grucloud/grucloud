@@ -29,20 +29,21 @@ describe("GcpIamBinding", async function () {
         projectId: "grucloud-test",
       }),
     });
-    await provider.start();
 
     const saName = `sa-${chance.guid().slice(0, 15)}`;
-    serviceAccount = await provider.makeServiceAccount({
+    serviceAccount = provider.makeServiceAccount({
       name: saName,
       properties: () => ({
         accountId: saName,
       }),
     });
-    iamBindingServiceAccount = await provider.iam.makeBinding({
+    iamBindingServiceAccount = provider.iam.makeBinding({
       name: roleEditor,
       dependencies: { serviceAccounts: [serviceAccount] },
       properties: ({}) => ({}),
     });
+
+    await provider.start();
   });
   after(async () => {});
   it("iamBinding config", async function () {
@@ -68,13 +69,13 @@ describe("GcpIamBinding", async function () {
       });
 
       const saName = `sa-${chance.guid().slice(0, 15)}`;
-      const serviceAccount = await provider.makeServiceAccount({
+      const serviceAccount = provider.makeServiceAccount({
         name: saName,
         properties: () => ({
           accountId: saName,
         }),
       });
-      const iamBindingServiceAccount = await provider.iam.makeBinding({
+      const iamBindingServiceAccount = provider.iam.makeBinding({
         name: roleEditor,
         dependencies: { serviceAccounts: [serviceAccount] },
         properties: ({}) => ({}),
@@ -105,7 +106,7 @@ describe("GcpIamBinding", async function () {
     });
 
     const email = "user:joe@gmail.com";
-    const iamBindingEmail = await provider.iam.makeBinding({
+    const iamBindingEmail = provider.iam.makeBinding({
       name: roleEditor,
       properties: ({}) => ({ members: [email] }),
     });

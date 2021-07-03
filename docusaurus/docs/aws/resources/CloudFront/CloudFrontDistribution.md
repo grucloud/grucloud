@@ -10,14 +10,14 @@ Provides a Cloud Front distribution.
 ```js
 const domainName = "your.domain.name.com";
 
-const certificate = await providerUsEast.makeCertificate({
+const certificate = providerUsEast.makeCertificate({
   name: `certificate-${domainName}`,
   properties: () => ({
     DomainName: domainName,
   }),
 });
 
-const websiteBucket = await provider.s3.makeBucket({
+const websiteBucket = provider.s3.makeBucket({
   name: `${domainName}-bucket`,
   properties: () => ({
     ACL: "public-read",
@@ -32,7 +32,7 @@ const websiteBucket = await provider.s3.makeBucket({
   }),
 });
 
-const distribution = await provider.cloudFront.makeDistribution({
+const distribution = provider.cloudFront.makeDistribution({
   name: `distribution-${domainName}`,
   dependencies: { websiteBucket, certificate },
   properties: ({ dependencies }) => {

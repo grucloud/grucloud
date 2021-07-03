@@ -29,16 +29,14 @@ describe("AwsRouteTable", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    await provider.start();
-
-    vpc = await provider.ec2.makeVpc({
+    vpc = provider.ec2.makeVpc({
       name: "vpc",
       properties: () => ({
         CidrBlock: "10.1.0.1/16",
       }),
     });
 
-    subnet = await provider.ec2.makeSubnet({
+    subnet = provider.ec2.makeSubnet({
       name: "subnet",
       dependencies: { vpc },
       properties: () => ({
@@ -46,20 +44,22 @@ describe("AwsRouteTable", async function () {
       }),
     });
 
-    ig = await provider.ec2.makeInternetGateway({
+    ig = provider.ec2.makeInternetGateway({
       name: "ig",
       dependencies: { vpc },
     });
 
-    routeTable = await provider.ec2.makeRouteTable({
+    routeTable = provider.ec2.makeRouteTable({
       name: resourceName,
       dependencies: { vpc, subnets: [subnet] },
     });
 
-    routeIg = await provider.ec2.makeRoute({
+    routeIg = provider.ec2.makeRoute({
       name: "route-ig",
       dependencies: { routeTable, ig },
     });
+
+    await provider.start();
   });
   after(async () => {});
   it("rt apply and destroy", async function () {
@@ -85,7 +85,7 @@ describe("AwsRouteTable", async function () {
     /*
     const {
       results: [rts],
-    } = await provider.listLives({ options: { types: ["RouteTable"] } });
+    } = provider.listLives({ options: { types: ["RouteTable"] } });
     assert.equal(rts.type, "RouteTable");
     {
       const { data: routeTable } = rts.resources.find(

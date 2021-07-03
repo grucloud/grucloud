@@ -23,15 +23,14 @@ describe("AwsIamUser", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    await provider.start();
-
-    iamUser = await provider.iam.makeUser({
+    iamUser = provider.iam.makeUser({
       name: iamUserName,
       properties: () => ({
         UserName: iamUserName,
         Path: "/",
       }),
     });
+    await provider.start();
   });
   after(async () => {});
   it("iamUser resolveConfig", async function () {

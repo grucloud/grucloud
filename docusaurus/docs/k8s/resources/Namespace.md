@@ -10,7 +10,7 @@ Provides a [Kubernetes Namespace](https://kubernetes.io/docs/concepts/overview/w
 ### Create a namespace
 
 ```js
-const namespace = await provider.makeNamespace({
+const namespace = provider.makeNamespace({
   name: "myNamespace",
 });
 ```

@@ -28,7 +28,7 @@ exports.createChartRestServer = async ({
 
   const configMapName = "rest-server";
 
-  const configMap = await provider.makeConfigMap({
+  const configMap = provider.makeConfigMap({
     name: configMapName,
     dependencies: { namespace },
     properties: () => ({
@@ -108,7 +108,7 @@ exports.createChartRestServer = async ({
     },
   });
 
-  const deployment = await provider.makeDeployment({
+  const deployment = provider.makeDeployment({
     name: restServer.deploymentName,
     dependencies: {
       namespace,
@@ -126,7 +126,7 @@ exports.createChartRestServer = async ({
       }),
   });
 
-  const service = await provider.makeService({
+  const service = provider.makeService({
     name: restServer.serviceName,
     dependencies: { namespace, deployment },
     properties: () => ({

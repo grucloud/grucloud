@@ -43,14 +43,12 @@ describe.skip("GcpWebSiteHttps", async function () {
       }),
     });
 
-    await provider.start();
-
-    myBucket = await provider.storage.makeBucket({
+    myBucket = provider.storage.makeBucket({
       name: bucketName,
       properties: () => ({}),
     });
 
-    sslCertificate = await provider.compute.makeSslCertificate({
+    sslCertificate = provider.compute.makeSslCertificate({
       name: certificateName,
       properties: () => ({
         managed: {
@@ -59,7 +57,7 @@ describe.skip("GcpWebSiteHttps", async function () {
       }),
     });
 
-    backendBucket = await provider.compute.makeBackendBucket({
+    backendBucket = provider.compute.makeBackendBucket({
       name: "backend-bucket",
       dependencies: { bucket: myBucket },
       properties: () => ({
@@ -67,23 +65,25 @@ describe.skip("GcpWebSiteHttps", async function () {
       }),
     });
 
-    urlMap = await provider.compute.makeUrlMap({
+    urlMap = provider.compute.makeUrlMap({
       name: "url-map",
       dependencies: { service: backendBucket },
       properties: () => ({}),
     });
 
-    httpsTargetProxy = await provider.compute.makeHttpsTargetProxy({
+    httpsTargetProxy = provider.compute.makeHttpsTargetProxy({
       name: "https-target-proxy",
       dependencies: { sslCertificate, urlMap },
       properties: () => ({}),
     });
 
-    globalForwardingRule = await provider.compute.makeGlobalForwardingRule({
+    globalForwardingRule = provider.compute.makeGlobalForwardingRule({
       name: "global-forwarding-rule",
       dependencies: { httpsTargetProxy },
       properties: () => ({}),
     });
+
+    await provider.start();
   });
   after(async () => {});
   it("ssl certificate config", async function () {

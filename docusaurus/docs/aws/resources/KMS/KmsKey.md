@@ -12,7 +12,7 @@ Manages a [Customer Master Key](https://docs.aws.amazon.com/kms/latest/developer
 Create a symmetric key, for instance used by an [EKS Cluster](../EKS/EksCluster)
 
 ```js
-const cmk = await provider.kms.makeKmsKey({
+const cmk = provider.kms.makeKmsKey({
   name: "my-secret-key",
   properties: () => ({}),
 });

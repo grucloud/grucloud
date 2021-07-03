@@ -10,19 +10,19 @@ Provides a [URL Map](https://console.cloud.google.com/net-services/loadbalancing
 ```js
 const bucketName = "mybucketname";
 
-const myBucket = await provider.storage.makeBucket({
+const myBucket = provider.storage.makeBucket({
   name: bucketName,
   properties: () => ({}),
 });
 
-const backendBucket = await provider.compute.makeBackendBucket({
+const backendBucket = provider.compute.makeBackendBucket({
   name: "backend-bucket",
   properties: () => ({
     bucketName,
   }),
 });
 
-const urlMap = await provider.compute.makeUrlMap({
+const urlMap = provider.compute.makeUrlMap({
   name: "url-map",
   dependencies: { service: backendBucket },
   properties: () => ({}),

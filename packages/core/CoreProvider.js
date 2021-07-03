@@ -100,7 +100,7 @@ const createResourceMakers = ({ specs, config: configProvider, provider }) =>
       if (!acc[spec.group] && spec.group) {
         acc[spec.group] = {};
       }
-      const makeResource = async ({
+      const makeResource = ({
         name,
         meta,
         namespace,
@@ -127,9 +127,9 @@ const createResourceMakers = ({ specs, config: configProvider, provider }) =>
 
         //TODO move it somewhere else to remove async.
 
-        if (resource.client.validate) {
-          await resource.client.validate({ name });
-        }
+        // if (resource.client.validate) {
+        //   await resource.client.validate({ name });
+        // }
 
         return resource;
       };
@@ -155,7 +155,7 @@ const createResourceMakersListOnly = ({
       if (!acc[spec.group] && spec.group) {
         acc[spec.group] = {};
       }
-      const useResource = async ({
+      const useResource = ({
         name,
         meta,
         namespace,
@@ -938,6 +938,39 @@ function CoreProvider({
 
   const getResourcesByType = ({ type }) => mapTypeToResources.get(type) || [];
 
+  const validate = pipe([
+    () => [...mapTypeToResources.values()],
+    flatten,
+    tap((xxx) => {
+      logger.debug(``);
+    }),
+    map(
+      tryCatch(
+        ({ name, client }) =>
+          tap.if(
+            () => client.validate,
+            () => client.validate({ name })
+          )(),
+        (error, resource) =>
+          pipe([
+            tap(() => {
+              logger.error(
+                `validate error for resource ${resource.toString()} ${tos(
+                  error
+                )}`
+              );
+            }),
+            () => ({ error, resource: resource.toString() }),
+          ])()
+      )
+    ),
+    filter(get("error")),
+    tap.if(not(isEmpty), (errors) => {
+      logger.error(`validate errors ${tos(errors)}`);
+      throw errors;
+    }),
+  ]);
+
   const startBase = ({ onStateChange = identity } = {}) =>
     tryCatch(
       pipe([
@@ -951,7 +984,8 @@ function CoreProvider({
             nextState: "RUNNING",
           })
         ),
-        () => start(),
+        validate,
+        start,
         tap(() =>
           onStateChange({
             context: contextFromProviderInit({ providerName }),

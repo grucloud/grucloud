@@ -12,7 +12,7 @@ const createResources = async ({ provider, resources: {} }) => {
   assert(config.availabilityZoneSuffix);
   const AvailabilityZone = `${config.region}${config.availabilityZoneSuffix}`;
 
-  const volume = await provider.ec2.makeVolume({
+  const volume = provider.ec2.makeVolume({
     name: formatName("volume"),
     properties: () => ({
       Size: 2,
@@ -22,7 +22,7 @@ const createResources = async ({ provider, resources: {} }) => {
     }),
   });
 
-  const image = await provider.ec2.useImage({
+  const image = provider.ec2.useImage({
     name: "Amazon Linux 2",
     properties: () => ({
       Filters: [
@@ -38,7 +38,7 @@ const createResources = async ({ provider, resources: {} }) => {
     }),
   });
 
-  const server = await provider.ec2.makeInstance({
+  const server = provider.ec2.makeInstance({
     name: formatName("server-4"),
     dependencies: { image, volumes: [volume] },
     properties: () => ({

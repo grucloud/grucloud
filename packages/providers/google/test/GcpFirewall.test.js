@@ -29,12 +29,12 @@ describe("GcpFirewall", async function () {
       }),
     });
 
-    network = await provider.compute.makeNetwork({
+    network = provider.compute.makeNetwork({
       name: "network",
       properties: () => ({ autoCreateSubnetworks: true }),
     });
 
-    firewall = await provider.compute.makeFirewall({
+    firewall = provider.compute.makeFirewall({
       name: firewallName,
       dependencies: { network },
       properties: () => ({

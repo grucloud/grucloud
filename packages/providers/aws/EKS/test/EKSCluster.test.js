@@ -26,7 +26,7 @@ describe("EKSCluster", async function () {
 
     await provider.start();
 
-    cluster = await provider.eks.makeCluster({
+    cluster = provider.eks.makeCluster({
       name: clusterName,
       properties: () => ({}),
     });

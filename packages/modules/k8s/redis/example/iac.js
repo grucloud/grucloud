@@ -9,7 +9,7 @@ exports.createStack = async ({ config }) => {
     configs: [config, RedisStack.config],
   });
 
-  const namespace = await provider.makeNamespace({
+  const namespace = provider.makeNamespace({
     name: "test-redis",
   });
 

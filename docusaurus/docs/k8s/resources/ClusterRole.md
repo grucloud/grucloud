@@ -10,7 +10,7 @@ Provides a [Kubernetes Cluster Role](https://kubernetes.io/docs/reference/access
 ### Create a Cluster Role
 
 ```js
-const clusterRole = await provider.makeClusterRole({
+const clusterRole = provider.makeClusterRole({
   name: "aws-load-balancer-controller-role",
   properties: () => ({
     metadata: {

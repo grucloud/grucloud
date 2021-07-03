@@ -24,12 +24,12 @@ describe.skip("AwsCertificate", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    await provider.start();
-
-    certificate = await provider.acm.makeCertificate({
+    certificate = provider.acm.makeCertificate({
       name: certificateName,
       properties: () => ({ DomainName: domainName }),
     });
+
+    await provider.start();
   });
   after(async () => {});
   it("certificate resolveConfig", async function () {

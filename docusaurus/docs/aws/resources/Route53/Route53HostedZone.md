@@ -16,12 +16,12 @@ Create a HostedZone with a Route53Domain as a dependency to update automatically
 ```js
 const domainName = "your.domain.name.com";
 
-const domain = await provider.route53Domain.useDomain({
+const domain = provider.route53Domain.useDomain({
   name: domainName,
 });
 
 const hostedZoneName = `${domainName}.`;
-const hostedZone = await provider.route53.makeHostedZone({
+const hostedZone = provider.route53.makeHostedZone({
   name: hostedZoneName,
   dependencies: { domain },
   properties: ({}) => ({}),

@@ -8,13 +8,13 @@ const createResources = async ({ provider }) => {
   const bucketPrefix = "grucloud-simple";
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property
-  const s3Bucket = await provider.s3.makeBucket({
+  const s3Bucket = provider.s3.makeBucket({
     name: `${bucketPrefix}-bucket`,
     namespace,
     properties: () => ({}),
   });
 
-  const s3Object = await provider.s3.makeObject({
+  const s3Object = provider.s3.makeObject({
     name: `${bucketPrefix}-file-test`,
     namespace,
     dependencies: { bucket: s3Bucket },

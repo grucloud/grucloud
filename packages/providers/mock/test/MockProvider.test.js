@@ -82,12 +82,12 @@ describe("MockProvider", async function () {
   });
 
   it("list config", async function () {
-    const configs = await provider.listConfig();
+    const configs = provider.listConfig();
     assert(configs);
   });
 
   it("list resources", async function () {
-    const resources = await provider.getTargetResources();
+    const resources = provider.getTargetResources();
     assert(resources);
     resources.map((resource) => {
       displayResource(resource);

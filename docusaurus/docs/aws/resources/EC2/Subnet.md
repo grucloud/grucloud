@@ -9,14 +9,14 @@ Provides an [AWS subnet](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Su
 ### Simple subnet
 
 ```js
-const vpc = await provider.ec2.makeVpc({
+const vpc = provider.ec2.makeVpc({
   name: "vpc",
   properties: () => ({
     CidrBlock: "10.1.0.0/16",
   }),
 });
 
-const subnet = await provider.ec2.makeSubnet({
+const subnet = provider.ec2.makeSubnet({
   name: "subnet",
   dependencies: { vpc },
   properties: () => ({
@@ -30,7 +30,7 @@ const subnet = await provider.ec2.makeSubnet({
 The list of attributes can found in [modifySubnetAttribute](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#modifySubnetAttribute-property) function parameter.
 
 ```js
-const vpc = await provider.ec2.makeVpc({
+const vpc = provider.ec2.makeVpc({
   name: "vpc",
   attributes: () => ({
     MapPublicIpOnLaunch: {
@@ -42,7 +42,7 @@ const vpc = await provider.ec2.makeVpc({
   }),
 });
 
-const subnet = await provider.ec2.makeSubnet({
+const subnet = provider.ec2.makeSubnet({
   name: "subnet",
   dependencies: { vpc },
   properties: () => ({
@@ -55,7 +55,7 @@ const subnet = await provider.ec2.makeSubnet({
 
 ```js
 const clusterName = "cluster";
-const vpc = await provider.ec2.makeVpc({
+const vpc = provider.ec2.makeVpc({
   name: "vpc-eks",
   properties: () => ({
     CidrBlock: "10.1.0.0/16",
@@ -63,7 +63,7 @@ const vpc = await provider.ec2.makeVpc({
   }),
 });
 
-const subnetPublic = await provider.ec2.makeSubnet({
+const subnetPublic = provider.ec2.makeSubnet({
   name: "subnet-public",
   dependencies: { vpc },
   attributes: () => ({
@@ -78,7 +78,7 @@ const subnetPublic = await provider.ec2.makeSubnet({
   }),
 });
 
-const subnetPrivate = await provider.ec2.makeSubnet({
+const subnetPrivate = provider.ec2.makeSubnet({
   name: "subnet-private",
   dependencies: { vpc },
   properties: () => ({

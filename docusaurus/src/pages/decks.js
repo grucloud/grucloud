@@ -134,7 +134,7 @@ if (ExecutionEnvironment.canUseDOM) {
 exports.createStack = async ({ config }) => {
   const provider = GoogleProvider({ config });
 
-  const server = await provider.compute.makeVmInstance({
+  const server = provider.compute.makeVmInstance({
     name: "webserver",
     properties: () => ({
       diskSizeGb: "20",

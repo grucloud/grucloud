@@ -33,12 +33,12 @@ describe("GcpBucket", async function () {
       }),
     });
 
-    bucket = await provider.storage.makeBucket({
+    bucket = provider.storage.makeBucket({
       name: bucketName,
       properties: () => ({}),
     });
 
-    bucketPublic = await provider.storage.makeBucket({
+    bucketPublic = provider.storage.makeBucket({
       name: bucketNamePublic,
       properties: () => ({
         iamConfiguration: {
@@ -57,7 +57,7 @@ describe("GcpBucket", async function () {
         website: { mainPageSuffix: "index.html", notFoundPage: "404.html" },
       }),
     });
-    file = await provider.storage.makeObject({
+    file = provider.storage.makeObject({
       name: objectName,
       dependencies: { bucket: bucket },
       properties: () => ({
@@ -88,12 +88,12 @@ describe("GcpBucket", async function () {
         }),
       });
 
-      const bucket = await provider.storage.makeBucket({
+      const bucket = provider.storage.makeBucket({
         name: bucketName,
         properties: () => ({}),
       });
 
-      const file = await provider.storage.makeObject({
+      const file = provider.storage.makeObject({
         name: objectName,
         dependencies: { bucket: bucket },
         properties: () => ({

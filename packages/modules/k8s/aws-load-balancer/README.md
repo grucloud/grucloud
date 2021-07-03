@@ -53,7 +53,7 @@ index d149bd7c..ae273988 100644
 +  const clusterName = provider.dependencies.aws.config.eks.cluster.name;
 +  assert(clusterName);
 
-   const kubeSystemawsLoadBalancerControllerDeployment = await provider.makeDeployment(
+   const kubeSystemawsLoadBalancerControllerDeployment = provider.makeDeployment(
      {
 @@ -591,7 +594,7 @@ exports.createResources = async ({ provider, resources }) => {
                containers: [
@@ -76,7 +76,7 @@ index ae273988..76cc1aa9 100644
    );
 
 +  assert(resources.lbc.roleLoadBalancer);
-   const kubeSystemawsLoadBalancerControllerServiceAccount = await provider.makeServiceAccount(
+   const kubeSystemawsLoadBalancerControllerServiceAccount = provider.makeServiceAccount(
      {
        name: "kube-system-aws-load-balancer-controller",
 -      properties: () => ({

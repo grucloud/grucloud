@@ -48,7 +48,7 @@ const createAws = async ({}) => {
     ],
   });
 
-  const keyPair = await provider.ec2.useKeyPair({
+  const keyPair = provider.ec2.useKeyPair({
     name: "kp",
   });
 
@@ -120,7 +120,7 @@ const createGoogle = async ({}) => {
   assert(stage, "missing stage");
 
   // Service Account
-  const serviceAccount = await provider.iam.makeServiceAccount({
+  const serviceAccount = provider.iam.makeServiceAccount({
     name: `sa-${stage}`,
     properties: () => ({
       serviceAccount: {

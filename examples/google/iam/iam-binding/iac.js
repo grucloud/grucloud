@@ -3,7 +3,7 @@ const { GoogleProvider } = require("@grucloud/provider-google");
 const hook = require("./hook");
 
 const createResources = async ({ provider, resources: { serviceAccount } }) => {
-  const iamBinding = await provider.iam.makeBinding({
+  const iamBinding = provider.iam.makeBinding({
     name: "roles/firebasenotifications.viewer",
     dependencies: { serviceAccounts: [serviceAccount] },
     properties: () => ({}),
@@ -21,7 +21,7 @@ exports.createStack = async () => {
   const { stage } = provider.config;
   assert(stage, "missing stage");
 
-  const serviceAccount = await provider.iam.makeServiceAccount({
+  const serviceAccount = provider.iam.makeServiceAccount({
     name: `sa-${stage}`,
     properties: () => ({
       serviceAccount: {

@@ -13,11 +13,11 @@ Provides a [Kubernetes StatefulSet](https://kubernetes.io/docs/concepts/workload
 const label = "myLabel";
 const pvName = "pv-db";
 
-const namespace = await provider.makeNamespace({
+const namespace = provider.makeNamespace({
   name: "myNamespace",
 });
 
-const persistentVolume = await provider.makePersistentVolume({
+const persistentVolume = provider.makePersistentVolume({
   name: pvName,
   dependencies: { namespace },
   properties: () => ({
@@ -33,7 +33,7 @@ const persistentVolume = await provider.makePersistentVolume({
   }),
 });
 
-const statefulSetPostgres = await provider.makeStatefulSet({
+const statefulSetPostgres = provider.makeStatefulSet({
   name: "myStatefulSet",
   dependencies: { namespace, persistentVolume },
   properties: () => ({

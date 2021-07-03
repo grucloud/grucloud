@@ -3,7 +3,7 @@ const CrunchyPostgres = require("../iac");
 
 exports.createStack = async () => {
   const provider = K8sProvider({});
-  const namespace = await provider.makeNamespace({
+  const namespace = provider.makeNamespace({
     name: "pgo",
   });
 

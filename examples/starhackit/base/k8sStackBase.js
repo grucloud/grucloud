@@ -13,7 +13,7 @@ const createResources = async ({ provider }) => {
   const { config } = provider;
   assert(config.namespaceName);
 
-  const namespace = await provider.makeNamespace({
+  const namespace = provider.makeNamespace({
     name: config.namespaceName,
   });
 

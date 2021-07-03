@@ -23,9 +23,7 @@ describe("AwsIamRole", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    await provider.start();
-
-    iamRole = await provider.iam.makeRole({
+    iamRole = provider.iam.makeRole({
       name: iamRoleName,
       properties: () => ({
         Path: "/",
@@ -44,6 +42,8 @@ describe("AwsIamRole", async function () {
         },
       }),
     });
+
+    await provider.start();
   });
   after(async () => {});
   it("iamRole resolveConfig", async function () {

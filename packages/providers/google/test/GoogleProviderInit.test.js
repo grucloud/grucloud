@@ -22,10 +22,10 @@ describe("GoogleProviderInit", async function () {
   after(async () => {});
 
   it("init and unit", async function () {
-    await provider.init();
-    await provider.unInit({});
-    await provider.unInit({});
-    await provider.init();
-    await provider.init();
+    provider.init();
+    provider.unInit({});
+    provider.unInit({});
+    provider.init();
+    provider.init();
   }).timeout(1000e3);
 });

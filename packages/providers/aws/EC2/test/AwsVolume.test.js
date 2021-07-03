@@ -29,7 +29,7 @@ describe("AwsVolume", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    const image = await provider.ec2.useImage({
+    const image = provider.ec2.useImage({
       name: "Amazon Linux 2",
       properties: () => ({
         Filters: [
@@ -45,7 +45,7 @@ describe("AwsVolume", async function () {
       }),
     });
 
-    volume = await provider.ec2.makeVolume({
+    volume = provider.ec2.makeVolume({
       name: volumeName,
 
       properties: () => ({
@@ -55,7 +55,7 @@ describe("AwsVolume", async function () {
       }),
     });
 
-    server = await provider.ec2.makeInstance({
+    server = provider.ec2.makeInstance({
       name: serverName,
       properties: () => ({
         UserData: volume.spec.setupEbsVolume({ deviceMounted, mountPoint }),
@@ -71,7 +71,7 @@ describe("AwsVolume", async function () {
     assert(config.AvailabilityZone);
     assert(config.VolumeType);
   });
-  it.only("volume apply and destroy", async function () {
+  it("volume apply and destroy", async function () {
     try {
       await testPlanDeploy({ provider, types });
 

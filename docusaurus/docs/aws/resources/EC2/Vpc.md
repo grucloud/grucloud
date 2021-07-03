@@ -10,7 +10,7 @@ Provide a Virtual Private Cloud:
 ### Simple Vpc
 
 ```js
-const vpc = await provider.ec2.makeVpc({
+const vpc = provider.ec2.makeVpc({
   name: "vpc",
   properties: () => ({
     CidrBlock: "10.1.0.0/16",
@@ -23,7 +23,7 @@ const vpc = await provider.ec2.makeVpc({
 ```js
 const clusterName = "cluster";
 
-const vpc = await provider.ec2.makeVpc({
+const vpc = provider.ec2.makeVpc({
   name: "vpc-eks",
   properties: () => ({
     CidrBlock: "10.1.0.0/16",
@@ -37,7 +37,7 @@ const vpc = await provider.ec2.makeVpc({
 ```js
 const clusterName = "cluster";
 
-const vpc = await provider.ec2.makeVpc({
+const vpc = provider.ec2.makeVpc({
   name: "vpc",
   properties: () => ({
     DnsHostnames: true,

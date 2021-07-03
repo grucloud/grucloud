@@ -19,7 +19,7 @@ const createResources = async ({ provider, resources: { namespace } }) => {
   assert(postgres.pvName);
 
   const configMapName = "postgres";
-  const configMap = await provider.makeConfigMap({
+  const configMap = provider.makeConfigMap({
     name: configMapName,
     dependencies: { namespace },
     properties: () => ({
@@ -27,7 +27,7 @@ const createResources = async ({ provider, resources: { namespace } }) => {
     }),
   });
 
-  const statefulSet = await provider.makeStatefulSet({
+  const statefulSet = provider.makeStatefulSet({
     name: postgres.statefulSetName,
     dependencies: { namespace, configMap },
     properties: () => ({
@@ -158,7 +158,7 @@ const createResources = async ({ provider, resources: { namespace } }) => {
     }),
   });
 
-  const service = await provider.makeService({
+  const service = provider.makeService({
     name: postgres.serviceName,
     dependencies: { namespace, statefulSet },
     properties: () => ({
@@ -192,7 +192,7 @@ exports.createStack = async ({ config }) => {
     config,
   });
 
-  const namespace = await provider.makeNamespace({
+  const namespace = provider.makeNamespace({
     name: "postgres",
   });
 

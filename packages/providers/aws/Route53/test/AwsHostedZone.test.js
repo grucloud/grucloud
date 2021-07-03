@@ -19,17 +19,17 @@ describe("AwsHostedZone", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    const domain = await provider.route53Domain.useDomain({
+    const domain = provider.route53Domain.useDomain({
       name: domainName,
     });
 
-    const hostedZone = await provider.route53.makeHostedZone({
+    const hostedZone = provider.route53.makeHostedZone({
       name: `${subDomainName}.`,
       dependencies: { domain },
       properties: () => ({}),
     });
 
-    const recordA = await provider.route53.makeRecord({
+    const recordA = provider.route53.makeRecord({
       name: `${subDomainName}.`,
       dependencies: { hostedZone },
       properties: () => ({
@@ -43,7 +43,7 @@ describe("AwsHostedZone", async function () {
       }),
     });
 
-    const recordNS = await provider.route53.makeRecord({
+    const recordNS = provider.route53.makeRecord({
       name: `validation.${subDomainName}.`,
       dependencies: { hostedZone },
       properties: () => ({
@@ -66,17 +66,17 @@ describe("AwsHostedZone", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    const domain = await provider.route53Domain.useDomain({
+    const domain = provider.route53Domain.useDomain({
       name: domainName,
     });
 
-    const hostedZone = await provider.route53.makeHostedZone({
+    const hostedZone = provider.route53.makeHostedZone({
       name: `${subDomainName}.`,
       dependencies: { domain },
       properties: () => ({}),
     });
 
-    const recordA = await provider.route53.makeRecord({
+    const recordA = provider.route53.makeRecord({
       name: `${subDomainName}.`,
       dependencies: { hostedZone },
       properties: () => ({

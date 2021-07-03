@@ -35,11 +35,11 @@ const createAwsStack = async ({ stage }) => {
   assert(domainName);
   assert(rootDomainName);
 
-  const domain = await provider.route53Domain.useDomain({
+  const domain = provider.route53Domain.useDomain({
     name: rootDomainName,
   });
 
-  const hostedZone = await provider.route53.makeHostedZone({
+  const hostedZone = provider.route53.makeHostedZone({
     name: `${domainName}.`,
     dependencies: { domain },
   });

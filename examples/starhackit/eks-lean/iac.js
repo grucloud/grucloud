@@ -31,11 +31,11 @@ const createAwsStack = async ({ stage }) => {
   assert(domainName);
   assert(rootDomainName);
 
-  const domain = await provider.route53Domain.useDomain({
+  const domain = provider.route53Domain.useDomain({
     name: rootDomainName,
   });
 
-  const hostedZone = await provider.route53.makeHostedZone({
+  const hostedZone = provider.route53.makeHostedZone({
     name: `${domainName}.`,
     dependencies: { domain },
   });
@@ -63,7 +63,7 @@ const createAwsStack = async ({ stage }) => {
   });
 
   // Use the security group created by EKS
-  const securityGroupEKSCluster = await provider.ec2.useSecurityGroup({
+  const securityGroupEKSCluster = provider.ec2.useSecurityGroup({
     name: "sg-eks-cluster",
     namespace: "EKS",
     filterLives: ({ items }) =>
@@ -98,7 +98,7 @@ const createAwsStack = async ({ stage }) => {
     ])();
 
   // Attach an Ingress Rule to the eks security group to allow traffic from the load balancer
-  const sgRuleIngressEks = await provider.ec2.makeSecurityGroupRuleIngress({
+  const sgRuleIngressEks = provider.ec2.makeSecurityGroupRuleIngress({
     name: "sg-rule-ingress-eks",
     namespace: "EKS",
     dependencies: {

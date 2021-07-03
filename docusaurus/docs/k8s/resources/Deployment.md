@@ -12,11 +12,11 @@ Provides a [Kubernetes Deployment](https://kubernetes.io/docs/concepts/workloads
 ```js
 const labelApp = "myApp";
 
-const namespace = await provider.makeNamespace({
+const namespace = provider.makeNamespace({
   name: "myNamespace",
 });
 
-const deployment = await provider.makeDeployment({
+const deployment = provider.makeDeployment({
   name: "myDeployment",
   dependencies: { namespace },
   properties: ({}) => ({
