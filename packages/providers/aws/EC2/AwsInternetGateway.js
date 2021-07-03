@@ -38,26 +38,28 @@ const {
 
 const findVpcId = pipe([get("Attachments"), first, get("VpcId")]);
 
-const isDefault = ({ providerName }) => ({ live, lives }) =>
-  pipe([
-    () => lives.getByType({ type: "Vpc", providerName }),
-    get("resources"),
-    tap((result) => {
-      logger.debug(`isDefault ${result}`);
-    }),
-    find(get("isDefault")),
-    tap((result) => {
-      logger.debug(`isDefault ${result}`);
-    }),
-    switchCase([
-      eq(get("live.VpcId"), findVpcId(live)),
-      () => true,
-      () => false,
-    ]),
-    tap((result) => {
-      logger.debug(`isDefault ${result}`);
-    }),
-  ])();
+const isDefault =
+  ({ providerName }) =>
+  ({ live, lives }) =>
+    pipe([
+      () => lives.getByType({ type: "Vpc", providerName }),
+      get("resources"),
+      tap((result) => {
+        logger.debug(`isDefault ${result}`);
+      }),
+      find(get("isDefault")),
+      tap((result) => {
+        logger.debug(`isDefault ${result}`);
+      }),
+      switchCase([
+        eq(get("live.VpcId"), findVpcId(live)),
+        () => true,
+        () => false,
+      ]),
+      tap((result) => {
+        logger.debug(`isDefault ${result}`);
+      }),
+    ])();
 
 exports.isDefault = isDefault;
 
@@ -222,7 +224,6 @@ exports.AwsInternetGateway = ({ spec, config }) => {
     pipe([() => live, eq(get("InternetGatewayId"), name)])();
 
   return {
-    type: "InternetGateway",
     spec,
     isDefault: isDefault(config),
     findId,

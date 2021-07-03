@@ -208,7 +208,6 @@ exports.AwsRoute = ({ spec, config }) => {
     defaultsDeep({ DestinationCidrBlock: "0.0.0.0/0" })(properties);
 
   return {
-    type: "Route",
     spec,
     findId,
     findDependencies,

@@ -262,7 +262,6 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     ])();
 
   return {
-    type: "TargetGroup",
     spec,
     findId,
     findNamespace,

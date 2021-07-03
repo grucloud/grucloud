@@ -173,7 +173,6 @@ exports.DBCluster = ({ spec, config }) => {
     ])();
 
   return {
-    type: "DBCluster",
     spec,
     findName,
     findId,

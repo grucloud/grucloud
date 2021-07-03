@@ -26,7 +26,7 @@ const AwsStackS3Multiple = require("../aws/s3-multiple/iac");
 
 const AwsStackIamUser = require("../aws/iam/iac");
 
-const AzureStack = require("../azure/iac");
+const AzureStack = require("../azure/vm/iac");
 
 const GoogleStackVm = require("../google/vm/iac");
 
@@ -185,7 +185,7 @@ exports.createStack = async ({ config }) => {
       await createAws({ config }),
       //await createAwsUsEast1({ config }),
       await createAzure({ config }),
-      //await createGoogle({ config }),
+      await createGoogle({ config }),
       //await createScaleway({ config }),
     ],
   };

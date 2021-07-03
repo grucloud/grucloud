@@ -131,7 +131,6 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
     })(properties);
 
   return {
-    type: "ElasticIpAddress",
     spec,
     findId,
     findDependencies,

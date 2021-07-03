@@ -117,7 +117,6 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
     ])();
 
   return {
-    type: "NetworkInterface",
     spec,
     findDependencies,
     findNamespace,

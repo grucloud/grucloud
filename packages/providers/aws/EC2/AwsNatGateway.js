@@ -198,7 +198,6 @@ exports.AwsNatGateway = ({ spec, config }) => {
     })(properties);
 
   return {
-    type: "NatGateway",
     spec,
     findId,
     getByName,

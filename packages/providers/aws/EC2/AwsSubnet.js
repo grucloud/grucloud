@@ -180,7 +180,6 @@ exports.AwsSubnet = ({ spec, config }) => {
     })(otherProps);
 
   return {
-    type: "Subnet",
     spec,
     isDefault,
     findId,

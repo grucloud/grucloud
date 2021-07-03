@@ -169,7 +169,6 @@ exports.AwsVolume = ({ spec, config }) => {
     ])();
 
   return {
-    type: "Volume",
     spec,
     findId,
     findNamespace,

@@ -96,6 +96,7 @@ const createResourceMakers = ({ specs, config: configProvider, provider }) =>
     () => specs,
     filter(not(get("listOnly"))),
     reduce((acc, spec) => {
+      assert(spec.group, `no group for ${tos(spec)}`);
       assert(spec.type);
       acc[`make${spec.type}`] = async ({
         name,
@@ -960,32 +961,34 @@ function CoreProvider({
       }
     )();
 
-  const decorateLive = ({ client }) => (live) =>
-    pipe([
-      () => live,
-      () => ({
-        uri: liveToUri({ client, live }),
-        name: client.findName(live),
-        displayName: client.displayName({
+  const decorateLive =
+    ({ client }) =>
+    (live) =>
+      pipe([
+        () => live,
+        () => ({
+          uri: liveToUri({ client, live }),
           name: client.findName(live),
+          displayName: client.displayName({
+            name: client.findName(live),
+            meta: client.findMeta(live),
+          }),
           meta: client.findMeta(live),
-        }),
-        meta: client.findMeta(live),
-        id: client.findId(live),
-        providerName: client.spec.providerName,
-        type: client.spec.type,
-        live,
-        cannotBeDeleted: client.cannotBeDeleted({
+          id: client.findId(live),
+          providerName: client.spec.providerName,
+          type: client.spec.type,
           live,
-          name: client.findName(live),
-          //TODO remove resourceNames
-          resourceNames: resourceNames(),
-          resources: getResourcesByType({ type: client.spec.type }),
-          resource: getResourceFromLive({ client, live }),
-          config: providerConfig,
+          cannotBeDeleted: client.cannotBeDeleted({
+            live,
+            name: client.findName(live),
+            //TODO remove resourceNames
+            resourceNames: resourceNames(),
+            resources: getResourcesByType({ type: client.spec.type }),
+            resource: getResourceFromLive({ client, live }),
+            config: providerConfig,
+          }),
         }),
-      }),
-    ])();
+      ])();
 
   const decorateLives = async ({ result, client }) =>
     switchCase([

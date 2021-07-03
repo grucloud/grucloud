@@ -349,7 +349,6 @@ exports.Route53Record = ({ spec, config }) => {
   };
 
   return {
-    type: "Route53Record",
     spec,
     findDependencies,
     findNamespace,

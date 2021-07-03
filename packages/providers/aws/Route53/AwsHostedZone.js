@@ -442,7 +442,6 @@ exports.AwsHostedZone = ({ spec, config }) => {
   };
 
   return {
-    type: "HostedZone",
     spec,
     findId,
     getByName,

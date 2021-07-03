@@ -86,7 +86,6 @@ exports.AwsDomain = ({ spec, config }) => {
   const isUpById = isUpByIdCore({ getById });
 
   return {
-    type: "Route53Domain",
     spec,
     isUpById,
     configDefault,

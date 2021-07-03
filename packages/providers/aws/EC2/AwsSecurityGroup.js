@@ -247,7 +247,6 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
   };
 
   return {
-    type: "SecurityGroup",
     spec,
     getByName,
     findId,

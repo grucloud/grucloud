@@ -317,7 +317,6 @@ exports.AwsIamUser = ({ spec, config }) => {
     })(properties);
 
   return {
-    type: "IamUser",
     spec,
     findId,
     findDependencies,

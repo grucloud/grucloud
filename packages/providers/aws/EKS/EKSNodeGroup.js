@@ -248,7 +248,6 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     })(properties);
 
   return {
-    type: "EKSNodeGroup",
     spec,
     findId,
     findDependencies,

@@ -44,7 +44,6 @@ exports.AwsNetworkAcl = ({ spec, config }) => {
     ])();
 
   return {
-    type: "NetworkAcl",
     spec,
     findId,
     isDefault,

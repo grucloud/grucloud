@@ -221,7 +221,6 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     ])();
 
   return {
-    type: "LoadBalancer",
     spec,
     findId,
     findDependencies,

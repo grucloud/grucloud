@@ -272,7 +272,6 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     })(properties);
 
   return {
-    type: "IamPolicy",
     spec,
     findId,
     findNamespace,

@@ -154,7 +154,6 @@ exports.DBSubnetGroup = ({ spec, config }) => {
     ])();
 
   return {
-    type: "DBSubnetGroup",
     spec,
     findName,
     findId,

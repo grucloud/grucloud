@@ -518,7 +518,6 @@ exports.AwsEC2 = ({ spec, config }) => {
   };
 
   return {
-    type: "EC2",
     spec,
     findId,
     findDependencies,
@@ -534,14 +533,16 @@ exports.AwsEC2 = ({ spec, config }) => {
   };
 };
 
-const isInOurCluster = ({ config }) => ({ live, lives }) =>
-  pipe([
-    () => ({ live, lives }),
-    findEksCluster({ config, key: "eks:cluster-name" }),
-    tap((cluster) => {
-      assert(true);
-    }),
-  ])();
+const isInOurCluster =
+  ({ config }) =>
+  ({ live, lives }) =>
+    pipe([
+      () => ({ live, lives }),
+      findEksCluster({ config, key: "eks:cluster-name" }),
+      tap((cluster) => {
+        assert(true);
+      }),
+    ])();
 
 exports.isOurMinionEC2Instance = (item) =>
   pipe([

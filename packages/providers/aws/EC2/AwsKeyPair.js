@@ -61,7 +61,6 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
     ])();
 
   return {
-    type: "KeyPair",
     spec,
     findName,
     findId,
