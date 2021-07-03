@@ -53,7 +53,7 @@ describe("AwsRouteTable", async function () {
     });
 
     routeTable = provider.ec2.makeRouteTable({
-      name: resourceName,
+      name: buildName(resourceName),
       dependencies: { vpc, subnets: [subnet] },
     });
 

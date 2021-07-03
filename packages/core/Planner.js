@@ -108,6 +108,7 @@ const findDependsOnType = ({ providerName, type, plans, dependsOnType }) =>
     get("dependsOn", []),
     flatMap((dependOn) =>
       pipe([
+        () => plans,
         tap((x) => {
           assert(dependOn.providerName);
           assert(dependOn.type);
@@ -120,7 +121,7 @@ const findDependsOnType = ({ providerName, type, plans, dependsOnType }) =>
           ])
         ),
         pluck("resource"),
-      ])(plans)
+      ])()
     ),
     tap((dependsOn) => {
       logger.debug(`findDependsOnType ${JSON.stringify({ type, dependsOn })}`);
@@ -271,12 +272,13 @@ exports.Planner = ({
 
   const findDependsOn = (item, dependencyTree) =>
     pipe([
+      () => dependencyTree,
       tap(() => {
         assert(item.resource.uri);
       }),
       find(eq(get("uri"), item.resource.uri)),
       get("dependsOn", []),
-    ])(dependencyTree);
+    ])();
 
   plans.map((item) => {
     const key = itemToKey(item);

@@ -25,6 +25,7 @@ const {
   first,
   isEmpty,
   isString,
+  callProp,
   flatten,
   pluck,
   forEach,
@@ -51,6 +52,7 @@ const {
   TitleDeploying,
   TitleDestroying,
   typeFromResources,
+  groupFromResources,
   planToResourcesPerType,
 } = require("./Common");
 const { Lister } = require("./Lister");
@@ -125,14 +127,9 @@ const createResourceMakers = ({ specs, config: configProvider, provider }) =>
         });
         provider.targetResourcesAdd(resource);
 
-        //TODO move it somewhere else to remove async.
-
-        // if (resource.client.validate) {
-        //   await resource.client.validate({ name });
-        // }
-
         return resource;
       };
+
       //TODO remove
       acc[`make${spec.type}`] = makeResource;
       if (spec.group) {
@@ -259,6 +256,7 @@ function CoreProvider({
         client.resourceKey({
           providerName: provider.name,
           type: client.spec.type,
+          group: client.spec.group,
           name: client.findName(live),
           //id: client.findId(live),
           meta: client.findMeta(live),
@@ -725,11 +723,12 @@ function CoreProvider({
       map((resources) => ({
         provider: providerName,
         type: typeFromResources(resources),
-        resources: map((resource) => ({
-          type: resource.type,
-          name: resource.name,
-        }))(resources),
+        group: groupFromResources(resources),
+        resources: map(callProp("toJSON"))(resources),
       })),
+      tap((xxx) => {
+        assert(true);
+      }),
       spinnersStartProvider({ onStateChange }),
       spinnersStartClient({
         onStateChange,
@@ -1027,6 +1026,7 @@ function CoreProvider({
           id: client.findId(live),
           providerName: client.spec.providerName,
           type: client.spec.type,
+          group: client.spec.group,
           live,
           cannotBeDeleted: client.cannotBeDeleted({
             live,
@@ -1051,11 +1051,12 @@ function CoreProvider({
         map(decorateLive({ client })),
         (resources) => ({
           type: client.spec.type,
+          group: client.spec.group,
           resources,
           providerName: client.providerName,
         }),
         tap((xxx) => {
-          assert(xxx);
+          assert(true);
         }),
       ]),
     ])(result);
@@ -1088,12 +1089,9 @@ function CoreProvider({
         logger.info(`listLives #clients ${size(clients)}`);
       }),
       map((client) => ({
-        //TODO pick(["type", "group", "providerName"])(client.spec)
-        meta: {
-          type: client.spec.type,
-          providerName: client.spec.providerName,
-        },
-        //TODO  `${client.spec.providerName}::${client.spec.group}::${client.spec.type}`
+        meta: pick(["type", "group", "providerName"])(client.spec),
+        //TODO
+        //key: `${client.spec.providerName}::${client.spec.group}::${client.spec.type}`,
         key: `${client.spec.providerName}::${client.spec.type}`,
         dependsOn: map(
           (dependOn) => `${client.spec.providerName}::${dependOn}`
@@ -1104,7 +1102,6 @@ function CoreProvider({
               client.getList({
                 lives,
                 deep: true,
-                //TODO resources: getResourcesByType(client.spec),
                 resources: getResourcesByType({ type: client.spec.type }),
               }),
             tap((result) => {
@@ -1655,23 +1652,29 @@ function CoreProvider({
       }),
     ])();
 
-  const destroyById = async ({ type, group, live, lives, name, meta }) => {
-    logger.debug(`destroyById: ${JSON.stringify({ type, name })}`);
-    const client = clientByType({ type });
-    assert(client, `Cannot find endpoint type ${type}}`);
-    assert(client.spec);
-    assert(live);
-    assert(lives);
-
-    return destroyByClient({
-      client,
-      name,
-      meta,
-      live,
-      lives,
-      resourcesPerType: getResourcesByType({ type, group }),
-    });
-  };
+  const destroyById = async ({ resource, live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(live);
+        assert(lives);
+        assert(resource);
+        logger.debug(`destroyById: ${resource.toString()}`);
+      }),
+      () => clientByType(resource),
+      tap((client) => {
+        assert(client, `Cannot find endpoint ${resource.toString()}}`);
+        assert(client.spec);
+      }),
+      (client) =>
+        destroyByClient({
+          client,
+          name: resource.name,
+          meta: resource.meta,
+          live,
+          lives,
+          resourcesPerType: getResourcesByType(resource),
+        }),
+    ])();
 
   const planDestroy = async ({
     plans,
@@ -1703,12 +1706,7 @@ function CoreProvider({
           dependsOnInstance: mapToGraph(getMapNameToResource()),
           executor: ({ item }) =>
             destroyById({
-              providerName: item.providerName,
-              //TODO ...item.resource
-              name: item.resource.name,
-              meta: item.resource.meta,
-              group: item.resource.group,
-              type: item.resource.type,
+              resource: item.resource,
               live: item.live,
               lives,
             }),

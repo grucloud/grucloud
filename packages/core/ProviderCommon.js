@@ -34,6 +34,7 @@ const {
   includes,
   identity,
   uniq,
+  callProp,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "ProviderCommon" });
@@ -45,6 +46,11 @@ const PlanDirection = {
 };
 
 exports.PlanDirection = PlanDirection;
+
+const displayType = ({ group, type }) =>
+  `${isEmpty(group) ? "" : `${group}::`}${type}`;
+
+exports.displayType = displayType;
 
 const notAvailable = (name, field) => {
   assert(field);
@@ -61,6 +67,7 @@ exports.isValidPlan = not(isEmpty);
 exports.getField = ({ resource = {}, live } = {}, field) =>
   get(field, notAvailable(resource.name, field))(live);
 
+//TODO group
 exports.clientByType = ({ type }) => find(eq(get("spec.type"), type));
 
 const liveToUri = ({ client, live }) =>
@@ -68,6 +75,7 @@ const liveToUri = ({ client, live }) =>
     live,
     providerName: client.spec.providerName,
     type: client.spec.type,
+    group: client.spec.group,
     name: client.findName(live),
     meta: client.findMeta(live),
     id: client.findId(live),
@@ -168,8 +176,9 @@ const filterByType = ({ types = [], targetTypes }) =>
   ]);
 
 const displayClientsType = pipe([
-  pluck("spec.type"),
-  (types) => types.join(", "),
+  pluck("spec"),
+  map(displayType),
+  callProp("join", ", "),
 ]);
 
 exports.filterReadClient = ({ options: { types, all } = {}, targetTypes }) =>
@@ -230,19 +239,19 @@ exports.filterReadWriteClient = ({
 exports.contextFromResource = ({ operation, resource }) => {
   assert(operation);
   assert(resource);
-  const { type, providerName } = resource;
+  const { type, group, providerName } = resource;
   assert(type);
   assert(
     providerName,
     `missing provider in resource: ${JSON.stringify(resource)}`
   );
 
-  const uri = `${providerName}::${operation}::${type}`;
+  const uri = `${providerName}::${operation}::${displayType({ group, type })}`;
   const displayText = (state) => {
     if (!state) {
       assert(state, `no state for ${uri}`);
     }
-    return `${type} ${state.completed}/${state.total}`;
+    return `${displayType({ group, type })} ${state.completed}/${state.total}`;
   };
 
   return {
@@ -273,7 +282,7 @@ exports.contextFromResource = ({ operation, resource }) => {
 
 exports.contextFromClient = ({ client, title }) => {
   assert(client, "client");
-  const { type, providerName } = client.spec;
+  const { type, providerName, group } = client.spec;
   assert(providerName);
 
   assert(type, "client.spec.type");
@@ -289,8 +298,8 @@ exports.contextFromClient = ({ client, title }) => {
 
   return {
     hide: true,
-    uri: `${providerName}::${title}::${type}`,
-    displayText: () => type,
+    uri: `${providerName}::${title}::${displayType({ group, type })}`,
+    displayText: () => displayType({ group, type }),
     onDone: ({ spinnerMap, spinnies }) => {
       const context = spinnerMap.get(uri);
       if (!context) {
@@ -343,11 +352,12 @@ exports.contextFromProviderInit = ({ providerName }) => {
 
 exports.contextFromResourceType = ({ operation, resourcesPerType }) => {
   assert(operation);
-  const { provider, type, resources } = resourcesPerType;
+  const { provider, type, group, resources } = resourcesPerType;
   assert(Array.isArray(resources), "Array.isArray(resources)");
   return {
-    uri: `${provider}::${operation}::${type}`,
-    displayText: (state) => `${type} ${state.completed}/${state.total}`,
+    uri: `${provider}::${operation}::${displayType({ group, type })}`,
+    displayText: (state) =>
+      `${displayType({ group, type })} ${state.completed}/${state.total}`,
     state: { completed: 0, total: resources.length },
   };
 };

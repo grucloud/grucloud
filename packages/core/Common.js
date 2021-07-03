@@ -40,6 +40,9 @@ exports.HookType = {
 const typeFromResources = pipe([first, get("type")]);
 exports.typeFromResources = typeFromResources;
 
+const groupFromResources = pipe([first, get("group")]);
+exports.groupFromResources = groupFromResources;
+
 exports.planToResourcesPerType = ({ providerName, plans = [] }) =>
   pipe([
     tap(() => {
@@ -52,6 +55,7 @@ exports.planToResourcesPerType = ({ providerName, plans = [] }) =>
     values,
     map((resources) => ({
       type: typeFromResources(resources),
+      group: groupFromResources(resources),
       provider: providerName,
       resources,
     })),
@@ -87,7 +91,10 @@ exports.convertError = ({ error, name, procedure, params }) => {
     const { baseURL = "", url, method } = error.config;
     return {
       Command: name,
-      Message: `${error.message} ${get("response.data.error.message", "")(error)}`,
+      Message: `${error.message} ${get(
+        "response.data.error.message",
+        ""
+      )(error)}`,
       Status: error.response?.status,
       Code: error.code,
       Output: error.response?.data,
@@ -165,70 +172,62 @@ const getByIdCore = async ({ type, name, id, findId, getList }) => {
 
 exports.getByIdCore = getByIdCore;
 
-exports.isUpByIdCore = ({ isInstanceUp, getById }) => async ({
-  id,
-  name,
-  type,
-  live,
-}) => {
-  logger.debug(`isUpById ${JSON.stringify({ type, name, id })}`);
-  assert(id || live, "isUpByIdCore id");
-  assert(getById, "isUpByIdCore getById");
-  let up = false;
-  const instance = await getById({ type, name, id, deep: false, live });
-  if (instance) {
-    //TODO use default isInstanceUp
-    if (isInstanceUp) {
-      up = await isInstanceUp(instance);
+exports.isUpByIdCore =
+  ({ isInstanceUp, getById }) =>
+  async ({ id, name, type, live }) => {
+    logger.debug(`isUpById ${JSON.stringify({ type, name, id })}`);
+    assert(id || live, "isUpByIdCore id");
+    assert(getById, "isUpByIdCore getById");
+    let up = false;
+    const instance = await getById({ type, name, id, deep: false, live });
+    if (instance) {
+      //TODO use default isInstanceUp
+      if (isInstanceUp) {
+        up = await isInstanceUp(instance);
+      } else {
+        up = true;
+      }
+    }
+    logger.info(
+      `isUpById ${JSON.stringify({ type, name, id })} ${up ? "UP" : "NOT UP"}`
+    );
+    return up ? instance : undefined;
+  };
+
+exports.isDownByIdCore =
+  ({ type, name, isInstanceDown, getById, getList, findId }) =>
+  async ({ id, live }) => {
+    logger.debug(`isDownById ${id}`);
+    assert(id || live, "isDownByIdCore id");
+    assert(getById, "isDownByIdCore getById");
+
+    let down = false;
+
+    const theGet = getList ? getByIdCore : getById;
+    const instance = await theGet({
+      type,
+      name,
+      id,
+      getList,
+      findId,
+      deep: false,
+      live,
+    });
+    if (instance) {
+      if (isInstanceDown) {
+        down = isInstanceDown(instance);
+      }
     } else {
-      up = true;
+      down = true;
     }
-  }
-  logger.info(
-    `isUpById ${JSON.stringify({ type, name, id })} ${up ? "UP" : "NOT UP"}`
-  );
-  return up ? instance : undefined;
-};
 
-exports.isDownByIdCore = ({
-  type,
-  name,
-  isInstanceDown,
-  getById,
-  getList,
-  findId,
-}) => async ({ id, live }) => {
-  logger.debug(`isDownById ${id}`);
-  assert(id || live, "isDownByIdCore id");
-  assert(getById, "isDownByIdCore getById");
-
-  let down = false;
-
-  const theGet = getList ? getByIdCore : getById;
-  const instance = await theGet({
-    type,
-    name,
-    id,
-    getList,
-    findId,
-    deep: false,
-    live,
-  });
-  if (instance) {
-    if (isInstanceDown) {
-      down = isInstanceDown(instance);
-    }
-  } else {
-    down = true;
-  }
-
-  logger.info(
-    `isDownById ${JSON.stringify({ type, name, id })} ${
-      down ? "DOWN" : "NOT DOWN"
-    }`
-  );
-  return down;
-};
+    logger.info(
+      `isDownById ${JSON.stringify({ type, name, id })} ${
+        down ? "DOWN" : "NOT DOWN"
+      }`
+    );
+    return down;
+  };
 
 const errorToString = (error) => {
   try {

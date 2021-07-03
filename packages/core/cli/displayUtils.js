@@ -10,18 +10,24 @@ const {
   reduce,
   filter,
   not,
+  or,
   get,
   eq,
   and,
 } = require("rubico");
-const { isEmpty, forEach, pluck, size, find, groupBy } = require("rubico/x");
+const { isEmpty, forEach, pluck, size, find } = require("rubico/x");
 
 const { planToResourcesPerType } = require("../Common");
 
-const hasPlan = (plan) => !isEmpty(plan.newOrUpdate) || !isEmpty(plan.destroy);
+const { displayType } = require("../ProviderCommon");
 
-const displayManagedByUs = (resource) =>
-  resource.managedByUs ? colors.green("Yes") : colors.red("NO");
+const hasPlan = or([
+  pipe([get("newOrUpdate"), not(isEmpty)]),
+  pipe([get("destroy"), not(isEmpty)]),
+]);
+
+const displayManagedByUs = ({ managedByUs }) =>
+  managedByUs ? colors.green("Yes") : colors.red("NO");
 
 exports.displayListSummary = pipe([
   tap((input) => {
@@ -63,7 +69,7 @@ exports.displayListSummary = pipe([
           ),
           () => results,
           filter(not(get("error"))),
-          forEach(({ type, resources }) =>
+          forEach(({ type, group, resources }) =>
             pipe([
               tap(() => {
                 assert(type);
@@ -76,7 +82,7 @@ exports.displayListSummary = pipe([
               tap.if(not(isEmpty), (content) =>
                 table.push([
                   {
-                    content: type,
+                    content: displayType({ type, group }),
                   },
                   { content },
                 ])
@@ -117,7 +123,9 @@ const displayResourcePerType = ({
       map((resourcesPerType) =>
         table.push([
           {
-            content: `${colors[colorName]["bold"](resourcesPerType.type)}`,
+            content: `${colors[colorName]["bold"](
+              displayType(resourcesPerType)
+            )}`,
           },
           {
             content: pipe([
@@ -222,30 +230,41 @@ exports.displayPlanDestroySummary = forEach(({ providerName, error, plans }) =>
 );
 
 const groupByType = (init = {}) =>
-  reduce((acc, item) => {
-    const type = item.resource?.type;
-    if (!type) {
-      return acc;
-    } else if (acc[type]) {
-      return {
-        ...acc,
-        [type]: [item, ...acc[type]],
-      };
-    } else {
-      return { ...acc, [item.resource.type]: [item] };
-    }
-  }, init);
+  pipe([
+    tap((xxx) => {
+      assert(true);
+    }),
+    filter(get("resource")),
+    reduce(
+      (acc, item) =>
+        pipe([
+          () => displayType(item.resource),
+          switchCase([
+            (fullType) => acc[fullType],
+            (fullType) => ({
+              ...acc,
+              [fullType]: [item, ...acc[fullType]],
+            }),
+            (fullType) => ({ ...acc, [fullType]: [item] }),
+          ]),
+        ])(),
+      init
+    ),
+    tap((xxx) => {
+      assert(true);
+    }),
+  ]);
 
 const tableSummaryDefs = {
   columns: ["Type", "Resources"],
   colWidths: ({ columns }) => {
-    const typeLength = 20;
+    const typeLength = 32;
     const resourceLength = columns - typeLength - 10;
     return [typeLength, resourceLength];
   },
   fields: [
     //
-    (item) => item.resource.type,
+    (item) => displayType(item.resource),
     (item) => item.resource.name,
   ],
 };
@@ -261,8 +280,8 @@ exports.displayPlan = async (plan) => {
     () => groupByType({})(plan.newOrUpdate),
     (result) => groupByType(result)(plan.destroy),
     (result) =>
-      map((type) => {
-        const resources = result[type];
+      map((fullType) => {
+        const resources = result[fullType];
         const columns = process.stdout.columns || 80;
         const table = new Table({
           colWidths: [columns - 2],
@@ -274,7 +293,7 @@ exports.displayPlan = async (plan) => {
         table.push([
           {
             content: colors.yellow(
-              `${resources.length} ${type} from ${plan.providerName}`
+              `${size(resources)} ${fullType} from ${plan.providerName}`
             ),
           },
         ]);
@@ -498,7 +517,7 @@ const displayPlanItem = ({ table, resource }) => {
 
 const displayTablePerType = ({
   providerName,
-  resourcesByType: { type, resources = [], error },
+  resourcesByType: { type, group, resources = [], error },
 }) => {
   assert(providerName);
   assert(type);
@@ -520,7 +539,10 @@ const displayTablePerType = ({
           {
             colSpan: 3,
             content: colors.yellow(
-              `${resources.length} ${type} from ${providerName}`
+              `${resources.length} ${displayType({
+                group,
+                type,
+              })} from ${providerName}`
             ),
           },
         ]),

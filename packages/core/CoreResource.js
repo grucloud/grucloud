@@ -41,7 +41,7 @@ const logger = require("./logger")({ prefix: "CoreResources" });
 const { tos } = require("./tos");
 const { retryCall } = require("./Retry");
 const { convertError } = require("./Common");
-
+const { displayType } = require("./ProviderCommon");
 const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
   pipe([
     () => spec.Client({ providerName, spec, config, mapTypeToResources }),
@@ -61,9 +61,8 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
             `no name or id in resource ${tos(resource)}`
           );
         }),
-        //TODO
-        ({ providerName, type, name, id }) =>
-          `${providerName}::${type}::${
+        ({ providerName, type, group, name, id }) =>
+          `${providerName}::${displayType({ group, type })}::${
             (isString(id) ? id : JSON.stringify(id)) || name
           }`,
       ]),
@@ -105,7 +104,7 @@ exports.ResourceMaker = ({
   provider,
   config,
 }) => {
-  const { type } = spec;
+  const { type, group } = spec;
   assert(resourceName, `missing 'name' property for type: ${type}`);
   logger.debug(
     `ResourceMaker: ${tos({ type, resourceName, namespace, meta })}`
@@ -563,6 +562,7 @@ exports.ResourceMaker = ({
     client.resourceKey({
       providerName: provider.name,
       type,
+      group,
       name: resourceName,
       meta,
       dependencies,
@@ -573,6 +573,7 @@ exports.ResourceMaker = ({
     () => ({
       providerName: provider.name,
       type,
+      group,
       namespace: client.findNamespaceFromTarget({ namespace, properties }),
       name: resourceName,
       meta,
@@ -595,6 +596,7 @@ exports.ResourceMaker = ({
 
   const resourceMaker = {
     type,
+    group,
     provider,
     name: resourceName,
     namespace,

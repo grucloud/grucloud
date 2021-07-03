@@ -49,6 +49,7 @@ exports.AwsRoute = ({ spec, config }) => {
         assert(Array.isArray(resources));
         logger.info(`getList route ${resources.length}`);
       }),
+      () => resources,
       map((resource) =>
         pipe([
           tap(() => {
@@ -64,22 +65,19 @@ exports.AwsRoute = ({ spec, config }) => {
               () => null,
               tryCatch(
                 pipe([
-                  () =>
-                    find(
-                      or([
-                        and([
-                          () => !isEmpty(ig?.live.InternetGatewayId),
-                          eq(get("GatewayId"), ig?.live.InternetGatewayId),
-                        ]),
-                        and([
-                          () => !isEmpty(natGateway?.live.NatGatewayId),
-                          eq(
-                            get("NatGatewayId"),
-                            natGateway?.live.NatGatewayId
-                          ),
-                        ]),
-                      ])
-                    )(routeTable.live.Routes),
+                  () => routeTable.live.Routes,
+                  find(
+                    or([
+                      and([
+                        () => !isEmpty(ig?.live?.InternetGatewayId),
+                        eq(get("GatewayId"), ig?.live?.InternetGatewayId),
+                      ]),
+                      and([
+                        () => !isEmpty(natGateway?.live?.NatGatewayId),
+                        eq(get("NatGatewayId"), natGateway?.live?.NatGatewayId),
+                      ]),
+                    ])
+                  ),
                   switchCase([
                     not(isEmpty),
                     assign({
@@ -103,7 +101,7 @@ exports.AwsRoute = ({ spec, config }) => {
                 })
               ),
             ])(),
-        ])(resource)
+        ])()
       ),
       filter(not(isEmpty)),
       tap((items) => {
@@ -116,7 +114,7 @@ exports.AwsRoute = ({ spec, config }) => {
       tap(({ total }) => {
         logger.info(`getList #route ${total}`);
       }),
-    ])(resources);
+    ])();
 
   const getByName = ({ name, lives, resources }) =>
     getByNameCore({ name, getList, findName, lives, resources });
