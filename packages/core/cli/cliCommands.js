@@ -1407,7 +1407,7 @@ exports.graphTree = ({ infra, config, commandOptions = {} }) =>
       tap((input) => {
         logger.debug(`graphTree ${JSON.stringify(commandOptions)}`);
         assert(input.providerGru);
-        assert(config);
+        //assert(config);
       }),
       ({ providerGru }) =>
         providerGru.buildGraphTree({ options: commandOptions }),

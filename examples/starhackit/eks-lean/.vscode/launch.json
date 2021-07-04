@@ -13,6 +13,17 @@
       "port": 9229
     },
     {
+      "name": "Resource Tree",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["tree" /*, "-p", "k8s"*/],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
       "name": "List",
       "type": "node",
       "request": "launch",

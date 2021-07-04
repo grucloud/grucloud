@@ -1,6 +1,23 @@
 const assert = require("assert");
-const { pipe, map, tap, filter, not, tryCatch, get } = require("rubico");
-const { callProp, pluck, groupBy, values, flatten } = require("rubico/x");
+const {
+  pipe,
+  map,
+  tap,
+  filter,
+  not,
+  tryCatch,
+  get,
+  switchCase,
+} = require("rubico");
+const {
+  callProp,
+  pluck,
+  groupBy,
+  values,
+  flatten,
+  isEmpty,
+  identity,
+} = require("rubico/x");
 const logger = require("./logger")({ prefix: "GraphTree" });
 const { tos } = require("./tos");
 
@@ -19,13 +36,7 @@ const buildPerType = ({ type, depth = 4, symbol, resources }) =>
     }),
   ])();
 
-const buildPerGroup = ({
-  options,
-  group = "Default",
-  resources,
-  depth = 3,
-  symbol,
-}) =>
+const buildPerGroup = ({ options, group, resources, depth = 3, symbol }) =>
   pipe([
     tap(() => {
       assert(resources);
@@ -37,12 +48,17 @@ const buildPerGroup = ({
       buildPerType({
         options,
         type,
+        depth: depth + 1,
         resources: resourcesPerType,
       }),
     ]),
     values,
     flatten,
-    (results) => [`${repeat({ depth, symbol })} ${group}`, ...results],
+    switchCase([
+      () => isEmpty(group),
+      identity,
+      (results) => [`${repeat({ depth, symbol })} ${group}`, ...results],
+    ]),
     tap((result) => {
       assert(result);
     }),
@@ -64,6 +80,7 @@ const buildPerProvider =
         group,
         buildPerGroup({
           group,
+          depth: depth + (isEmpty(group) ? 0 : 1),
           options,
           resources,
         }),
@@ -80,9 +97,12 @@ const buildPerProvider =
       (result) => `${repeat({ depth, symbol })} ${provider.name}\n${result}`,
     ])();
 
-const doBuildGraphTree = ({ providers, options }) =>
+const doBuildGraphTree = ({ root = "Infra", providers, options }) =>
   pipe([
-    () => ["+ Infra", ...map(buildPerProvider({ options }))(providers)],
+    () => [
+      `+ ${root}`,
+      ...map(buildPerProvider({ options, depth: 2 }))(providers),
+    ],
     callProp("join", "\n"),
   ])();
 
