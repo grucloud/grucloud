@@ -53,6 +53,7 @@ const { convertError } = require("./Common");
 const { displayLive } = require("./cli/displayUtils");
 const { buildGraphLive } = require("./GraphLive");
 const { buildGraphTarget } = require("./GraphTarget");
+const { buildGraphTree } = require("./GraphTree");
 
 const GraphCommon = require("./GraphCommon");
 
@@ -1119,6 +1120,11 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
         options: defaultsDeep(GraphCommon.optionsDefault({ kind: "live" }))(
           options
         ),
+      }),
+    buildGraphTree: ({ options }) =>
+      buildGraphTree({
+        providers: getProviders(),
+        options,
       }),
   };
 };

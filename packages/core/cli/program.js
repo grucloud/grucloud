@@ -1,6 +1,7 @@
+const assert = require("assert");
 const path = require("path");
 const { Command } = require("commander");
-const { pipe, tryCatch } = require("rubico");
+const { pipe, tryCatch, tap } = require("rubico");
 const { last } = require("rubico/x");
 
 const { createInfra } = require("./infra");
@@ -23,6 +24,12 @@ const optionExcludesByTypes = [
   "-e, --types-exclude <value>",
   "Exclude by type, multiple values allowed",
   collect,
+];
+
+const optionFileResourceTree = [
+  "--pumlFile <file>",
+  "plantuml output file name",
+  "resources-mindmap.puml",
 ];
 
 const optionDotFileTarget = [
@@ -63,23 +70,36 @@ exports.createProgram = ({ version, commands }) => {
     stage: stage || process.env.STAGE || "dev",
   });
 
-  const runCommand = ({ commandName, program }) => async (commandOptions) => {
-    const programOptions = program.opts();
-    return tryCatch(
+  const runCommand =
+    ({ commandName, program }) =>
+    (commandOptions) =>
       pipe([
-        infraOptions,
-        createInfra({ commandOptions }),
-        ({ infra, config }) =>
-          commands[commandName]({
-            infra,
-            config,
-            commandOptions,
-            programOptions,
-          }),
-      ]),
-      handleError
-    )(programOptions);
-  };
+        () => program.opts(),
+        (programOptions) =>
+          pipe([
+            () => programOptions,
+            tryCatch(
+              pipe([
+                infraOptions,
+                createInfra({ commandOptions }),
+                tap(() => {
+                  assert(
+                    commands[commandName],
+                    `${commandName} is not a function`
+                  );
+                }),
+                ({ infra, config }) =>
+                  commands[commandName]({
+                    infra,
+                    config,
+                    commandOptions,
+                    programOptions,
+                  }),
+              ]),
+              handleError
+            ),
+          ])(),
+      ])();
 
   program
     .command("info")
@@ -190,7 +210,17 @@ exports.createProgram = ({ version, commands }) => {
     .option("--title <value>", "diagram title", defautTitle)
     .option("-t, --type <type>", "file type: png, svg", "svg")
     .option(...optionFilteredByProvider)
-    .action(runCommand({ commandName: "graph", program }));
+    .action(runCommand({ commandName: "graphTarget", program }));
+
+  program
+    .command("tree")
+    .description("Output the target resources as a mind map tree")
+    .alias("t")
+    .option(...optionFileResourceTree)
+    .option("--title <value>", "title", defautTitle)
+    .option("-t, --type <type>", "file type: png, svg", "svg")
+    .option(...optionFilteredByProvider)
+    .action(runCommand({ commandName: "graphTree", program }));
 
   return program;
 };

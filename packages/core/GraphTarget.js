@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { pipe, map, tap, filter, not, tryCatch, get } = require("rubico");
 const { callProp, isEmpty, groupBy, values } = require("rubico/x");
-const logger = require("./logger")({ prefix: "Graph" });
+const logger = require("./logger")({ prefix: "GraphTarget" });
 const { tos } = require("./tos");
 
 const {
@@ -12,20 +12,21 @@ const {
   buildGraphRootLabel,
 } = require("./GraphCommon");
 
-const buildNode = ({ cluster }) => (resource) => `"${resource.type}::${
-  resource.name
-}" [label=<
+const buildNode =
+  ({ cluster }) =>
+  (resource) =>
+    `"${resource.type}::${resource.name}" [label=<
   <table color='${cluster.node.color}' border="0">
      <tr><td align="text"><FONT color='${
        cluster.node.type.fontColor
      }' POINT-SIZE="${cluster.node.type.pointSize}"><B>${
-  resource.type
-}</B></FONT><br align="left" /></td></tr>
+      resource.type
+    }</B></FONT><br align="left" /></td></tr>
      <tr><td align="text"><FONT color='${
        cluster.node.name.fontColor
      }' POINT-SIZE="${cluster.node.name.pointSize}">${formatNodeName({
-  name: resource.name,
-})}</FONT><br align="left" /></td></tr>
+      name: resource.name,
+    })}</FONT><br align="left" /></td></tr>
   </table>>];\n`;
 
 const buildNodes = ({ options }) =>
@@ -40,8 +41,10 @@ const buildNodes = ({ options }) =>
     }),
   ]);
 
-const buildEdge = ({ options: { edge }, resource }) => (dependency) =>
-  `"${resource.type}::${resource.name}" -> "${dependency.type}::${dependency.name}" [color="${edge.color}"];\n`;
+const buildEdge =
+  ({ options: { edge }, resource }) =>
+  (dependency) =>
+    `"${resource.type}::${resource.name}" -> "${dependency.type}::${dependency.name}" [color="${edge.color}"];\n`;
 
 const buildNamespaceGraph = ({ options, providerName, namespace, resources }) =>
   pipe([
@@ -64,7 +67,7 @@ const buildSubGraphTargetNode = ({ providerName, resources, options }) =>
     () => resources,
     groupBy("namespace"),
     tap((xxx) => {
-      logger.debug(`buildSubGraphTargetNode`);
+      assert(true);
     }),
     map.entries(([namespace, resources]) => [
       namespace,
@@ -79,7 +82,6 @@ const buildSubGraphTargetNode = ({ providerName, resources, options }) =>
     tap((xxx) => {
       assert(true);
     }),
-    //callProp("reverse"),
     callProp("join", "\n"),
     buildSubGraphClusterProvider({ options, providerName }),
     tap((result) => {
