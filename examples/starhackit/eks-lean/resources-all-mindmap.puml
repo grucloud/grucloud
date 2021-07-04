@@ -1,0 +1,102 @@
+@startmindmap
+title Resources for project eks-lean
+skinparam monochrome true
++ Infra
+++ aws
++++ route53Domain
+++++ Domain (1)
++++++ grucloud.org
++++ route53
+++++ HostedZone (1)
++++++ starhackit-eks-lean.grucloud.org.
+++++ Record (2)
++++++ certificate-validation-starhackit-eks-lean.grucloud.org.
++++++ load-balancer-dns-record-alias-starhackit-eks-lean.grucloud.org.
++++ acm
+++++ Certificate (1)
++++++ starhackit-eks-lean.grucloud.org
++++ ec2
+++++ Vpc (1)
++++++ vpc
+++++ InternetGateway (1)
++++++ internet-gateway
+++++ Subnet (4)
++++++ subnet-public-a
++++++ subnet-public-b
++++++ subnet-private-a
++++++ subnet-private-b
+++++ RouteTable (3)
++++++ route-table-public
++++++ route-table-private-a
++++++ route-table-private-b
+++++ Route (3)
++++++ route-public
++++++ route-private-a
++++++ route-private-b
+++++ ElasticIpAddress (1)
++++++ iep
+++++ NatGateway (1)
++++++ nat-gateway
+++++ SecurityGroup (4)
++++++ security-group-cluster
++++++ security-group-node
++++++ load-balancer-security-group
++++++ sg-eks-cluster
+++++ SecurityGroupRuleIngress (6)
++++++ sg-cluster-rule-ingress-https
++++++ sg-nodes-rule-ingress-all
++++++ sg-nodes-rule-ingress-cluster
++++++ sg-rule-ingress-lb-http
++++++ sg-rule-ingress-lb-https
++++++ sg-rule-ingress-eks
+++++ SecurityGroupRuleEgress (1)
++++++ sg-cluster-rule-egress
++++ iam
+++++ Policy (5)
++++++ AmazonEKSClusterPolicy
++++++ AmazonEKSVPCResourceController
++++++ AmazonEKSWorkerNodePolicy
++++++ AmazonEC2ContainerRegistryReadOnly
++++++ AmazonEKS_CNI_Policy
+++++ Role (2)
++++++ role-cluster
++++++ role-node-group
++++ kms
+++++ Key (1)
++++++ eks-key
++++ eks
+++++ Cluster (1)
++++++ cluster
+++++ NodeGroup (1)
++++++ node-group-private-cluster
++++ elb
+++++ LoadBalancer (1)
++++++ load-balancer
+++++ TargetGroup (2)
++++++ target-group-web
++++++ target-group-rest
+++++ Listener (2)
++++++ listener-http
++++++ listener-https
+++++ Rule (3)
++++++ rule-http-redirect-https
++++++ rule-web-https
++++++ rule-rest-https
+-- k8s
+--- Namespace (1)
+---- default
+--- ConfigMap (2)
+---- postgres
+---- rest-server
+--- StatefulSet (2)
+---- postgres
+---- redis
+--- Service (4)
+---- postgres
+---- redis
+---- rest
+---- web
+--- Deployment (2)
+---- rest
+---- web
+@endmindmap

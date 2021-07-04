@@ -5,6 +5,7 @@ const colors = require("colors/safe");
 const fs = require("fs");
 const path = require("path");
 const shell = require("shelljs");
+const os = require("os");
 
 const {
   map,
@@ -1288,9 +1289,12 @@ exports.unInit = async ({ infra, commandOptions = {}, programOptions = {} }) =>
     DisplayAndThrow({ name: "UnInit" })
   )(infra);
 
-const graphOutputFileName = ({ dotFile, type }) =>
+const graphOutputFileName = ({ file, type }) =>
   pipe([
-    () => path.parse(dotFile),
+    tap(() => {
+      assert(file);
+    }),
+    () => path.parse(file),
     ({ name, dir }) => path.resolve(dir, `${name}.${type}`),
   ])();
 
@@ -1298,15 +1302,15 @@ const dotToSvg = ({ result, commandOptions: { dotFile, type = "svg" } }) =>
   pipe([
     tap(() => {
       assert(dotFile);
-      logger.debug(`writeDotToFile`);
+      logger.debug(`dotToSvg`);
     }),
     tap(() => fs.writeFileSync(dotFile, result)),
     tap(() => {
       //console.log(`dot file written to: ${file}`);
     }),
     tap(() => {
-      const output = graphOutputFileName({ dotFile, type });
-      const command = `dot  -T${type} ${dotFile} -o ${output}`;
+      const output = graphOutputFileName({ file: dotFile, type });
+      const command = `dot -T${type} ${dotFile} -o ${output}`;
 
       const { stdout, stderr, code } = shell.exec(command, {
         silent: true,
@@ -1322,13 +1326,13 @@ const dotToSvg = ({ result, commandOptions: { dotFile, type = "svg" } }) =>
       //console.log(`output saved to: ${output}`);
     }),
     tap(() => {
-      shell.exec(`open ${graphOutputFileName({ dotFile, type })}`, {
+      shell.exec(`open ${graphOutputFileName({ file: dotFile, type })}`, {
         silent: true,
       });
     }),
   ])();
 
-exports.graph = async ({ infra, config, commandOptions = {} }) =>
+exports.graphTarget = async ({ infra, config, commandOptions = {} }) =>
   tryCatch(
     pipe([
       () => infra,
@@ -1342,5 +1346,76 @@ exports.graph = async ({ infra, config, commandOptions = {} }) =>
       // TODO add title from config.projectName
       (result) => dotToSvg({ commandOptions, result }),
     ]),
-    DisplayAndThrow({ name: "graph" })
+    DisplayAndThrow({ name: "graphTarget" })
+  )();
+
+const pumlToSvg =
+  ({
+    commandOptions: {
+      pumlFile,
+      type = "png",
+      plantumlJar = path.resolve(os.homedir(), "Downloads", "plantuml.jar"),
+    },
+  }) =>
+  (result) =>
+    pipe([
+      tap(() => {
+        assert(result);
+        assert(pumlFile);
+        logger.debug(`pumlToSvg`);
+      }),
+      tap(() => fs.writeFileSync(pumlFile, result)),
+      tap(() => {
+        console.log(`Resource tree file written to: ${pumlFile}`);
+      }),
+      () => `java -jar ${plantumlJar} -t${type} ${pumlFile}`,
+      (command) =>
+        shell.exec(command, {
+          silent: true,
+        }),
+      tap((result) => {
+        assert(true);
+      }),
+      switchCase([
+        eq(get("code"), 0),
+        pipe([
+          get("stdout"),
+          pipe([
+            (stdout) => {
+              assert(true);
+            },
+            () => graphOutputFileName({ file: pumlFile, type }),
+            tap((outputPicture) => {
+              shell.exec(`open ${outputPicture}`, { silent: true });
+            }),
+          ]),
+        ]),
+        pipe([
+          get("stderr"),
+          (stderr) => {
+            throw Error(stderr);
+          },
+        ]),
+      ]),
+    ])();
+
+exports.graphTree = ({ infra, config, commandOptions = {} }) =>
+  tryCatch(
+    pipe([
+      () => infra,
+      setupProviders({ commandOptions }),
+      tap((input) => {
+        logger.debug(`graphTree ${JSON.stringify(commandOptions)}`);
+        assert(input.providerGru);
+        //assert(config);
+      }),
+      ({ providerGru }) =>
+        providerGru.buildGraphTree({ options: commandOptions }),
+      tap((xxx) => {
+        assert(true);
+      }),
+      // TODO add title from config.projectName
+      pumlToSvg({ commandOptions }),
+    ]),
+    DisplayAndThrow({ name: "tree" })
   )();

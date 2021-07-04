@@ -68,9 +68,19 @@ describe("cli", function () {
   it("info mock", async function () {
     await runProgram({ cmds: ["info", "--provider", "mock"] });
   });
-  it("graph", async function () {
+  it("graph target ", async function () {
     if (!process.env.CONTINUOUS_INTEGRATION) {
       await runProgram({ cmds: ["graph"] });
+    }
+  });
+  it("resources type mind map", async function () {
+    if (!process.env.CONTINUOUS_INTEGRATION) {
+      await runProgram({ cmds: ["tree"] });
+    }
+  });
+  it("resources name mind map", async function () {
+    if (!process.env.CONTINUOUS_INTEGRATION) {
+      await runProgram({ cmds: ["tree", "--full"] });
     }
   });
   it("query plan", async function () {
