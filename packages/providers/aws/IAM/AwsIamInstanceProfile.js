@@ -233,7 +233,6 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     defaultsDeep({ InstanceProfileName: name })(properties);
 
   return {
-    type: "IamInstanceProfile",
     spec,
     findId,
     findDependencies,

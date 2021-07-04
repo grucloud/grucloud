@@ -226,7 +226,6 @@ exports.ELBListener = ({ spec, config }) => {
     ])();
 
   return {
-    type: "Listener",
     spec,
     findId,
     findDependencies,

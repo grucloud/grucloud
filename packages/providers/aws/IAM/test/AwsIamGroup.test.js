@@ -26,20 +26,20 @@ describe("AwsIamGroup", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    await provider.start();
-
-    iamGroup = await provider.makeIamGroup({
+    iamGroup = provider.iam.makeGroup({
       name: iamGroupName,
       properties: () => ({
         Path: "/",
       }),
     });
 
-    iamUser = await provider.makeIamUser({
+    iamUser = provider.iam.makeUser({
       name: userName,
       dependencies: { iamGroups: [iamGroup] },
       properties: () => ({}),
     });
+
+    await provider.start();
   });
   after(async () => {});
   it("iamGroup resolveConfig", async function () {

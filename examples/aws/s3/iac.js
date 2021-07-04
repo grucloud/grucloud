@@ -8,12 +8,12 @@ const createResources = async ({ provider }) => {
   const bucketLogDestination = `${bucketPrefix}-log-destination`;
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createBucket-property
-  const bucketBasic = await provider.makeS3Bucket({
+  const bucketBasic = provider.s3.makeBucket({
     name: bucketName,
     properties: () => ({}),
   });
 
-  const logDestination = await provider.makeS3Bucket({
+  const logDestination = provider.s3.makeBucket({
     name: bucketLogDestination,
     properties: () => ({
       ACL: "log-delivery-write",
@@ -21,7 +21,7 @@ const createResources = async ({ provider }) => {
   });
 
   /*
-  await provider.makeS3Bucket({
+  provider.s3.makeBucket({
     name: `${bucketName}-acl-grantread-log-delivery`,
     properties: () => ({
       GrantRead: "uri=http://acs.amazonaws.com/groups/s3/LogDelivery",
@@ -30,7 +30,7 @@ const createResources = async ({ provider }) => {
 */
   return {
     objects: {
-      fileTest: await provider.makeS3Object({
+      fileTest: provider.s3.makeObject({
         name: `file-test`,
         dependencies: { bucket: bucketBasic },
         properties: () => ({
@@ -45,7 +45,7 @@ const createResources = async ({ provider }) => {
       basic: bucketBasic,
       // Accelerate
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putBucketAccelerateConfiguration-property
-      acceleration: await provider.makeS3Bucket({
+      acceleration: provider.s3.makeBucket({
         name: `${bucketPrefix}-acceleration`,
         properties: () => ({
           AccelerateConfiguration: {
@@ -54,7 +54,7 @@ const createResources = async ({ provider }) => {
         }),
       }),
       // CORS
-      CORS: await provider.makeS3Bucket({
+      CORS: provider.s3.makeBucket({
         name: `${bucketPrefix}-cors`,
         properties: () => ({
           CORSConfiguration: {
@@ -70,7 +70,7 @@ const createResources = async ({ provider }) => {
         }),
       }),
       // Encryption
-      encryption: await provider.makeS3Bucket({
+      encryption: provider.s3.makeBucket({
         name: `${bucketPrefix}-encryption`,
         properties: () => ({
           ServerSideEncryptionConfiguration: {
@@ -85,7 +85,7 @@ const createResources = async ({ provider }) => {
         }),
       }),
       // LifecycleConfiguation
-      lifecycleConfiguation: await provider.makeS3Bucket({
+      lifecycleConfiguation: provider.s3.makeBucket({
         name: `${bucketPrefix}-lifecycleconfiguration`,
         properties: () => ({
           LifecycleConfiguration: {
@@ -113,7 +113,7 @@ const createResources = async ({ provider }) => {
       logDestination,
 
       /*
-        logged: await provider.makeS3Bucket({
+        logged: provider.s3.makeBucket({
           name: `${bucketPrefix}-logged`,
           dependencies: { bucket: logDestination },
           properties: () => ({
@@ -142,7 +142,7 @@ const createResources = async ({ provider }) => {
           }),
         }),*/
       /*
-        notificationConfiguration: await provider.makeS3Bucket({
+        notificationConfiguration: provider.s3.makeBucket({
           name: `${bucketPrefix}-notification-configuration`,
           properties: () => ({
             NotificationConfiguration: {
@@ -157,7 +157,7 @@ const createResources = async ({ provider }) => {
           }),
         }),*/
 
-      policy: await provider.makeS3Bucket({
+      policy: provider.s3.makeBucket({
         name: `${bucketPrefix}-policy`,
         properties: () => ({
           Policy: JSON.stringify({
@@ -179,7 +179,7 @@ const createResources = async ({ provider }) => {
       }),
       //TODO policy Status
       /*
-        replicationConfiguration: await provider.makeS3Bucket({
+        replicationConfiguration: provider.s3.makeBucket({
           name: `${bucketPrefix}-replication-configuration`,
           properties: () => ({
             ReplicationConfiguration: {
@@ -197,13 +197,13 @@ const createResources = async ({ provider }) => {
             },
           }),
         }),*/
-      requestPayment: await provider.makeS3Bucket({
+      requestPayment: provider.s3.makeBucket({
         name: `${bucketPrefix}-request-payment`,
         properties: () => ({
           RequestPaymentConfiguration: { Payer: "Requester" },
         }),
       }),
-      tag: await provider.makeS3Bucket({
+      tag: provider.s3.makeBucket({
         name: `${bucketPrefix}-tag`,
         properties: () => ({
           Tagging: {
@@ -221,7 +221,7 @@ const createResources = async ({ provider }) => {
         }),
       }),
       // Versioning
-      versioning: await provider.makeS3Bucket({
+      versioning: provider.s3.makeBucket({
         name: `${bucketPrefix}-versioning`,
         properties: () => ({
           VersioningConfiguration: {
@@ -231,7 +231,7 @@ const createResources = async ({ provider }) => {
         }),
       }),
       // Website
-      website: await provider.makeS3Bucket({
+      website: provider.s3.makeBucket({
         name: `${bucketPrefix}-website`,
         properties: () => ({
           ACL: "public-read",

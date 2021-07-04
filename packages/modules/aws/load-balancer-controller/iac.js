@@ -25,7 +25,7 @@ const createResources = async ({
   const { cluster } = resources;
   assert(cluster);
 
-  const iamOpenIdConnectProvider = await provider.makeIamOpenIDConnectProvider({
+  const iamOpenIdConnectProvider = provider.iam.makeOpenIDConnectProvider({
     name: formatName(
       awsLoadBalancerController.iamOpenIdConnectProvider.name,
       config
@@ -41,7 +41,7 @@ const createResources = async ({
     }),
   });
 
-  const iamLoadBalancerPolicy = await provider.makeIamPolicy({
+  const iamLoadBalancerPolicy = provider.iam.makePolicy({
     name: "AWSLoadBalancerControllerIAMPolicy",
     namespace,
     properties: () => ({
@@ -50,7 +50,7 @@ const createResources = async ({
     }),
   });
 
-  const roleLoadBalancer = await provider.makeIamRole({
+  const roleLoadBalancer = provider.iam.makeRole({
     name: formatName(awsLoadBalancerController.role.name, config),
     namespace,
     dependencies: {

@@ -27,14 +27,12 @@ describe("GcpDnsManagedZone", async function () {
       }),
     });
 
-    await provider.start();
-
-    dnsManagedZoneEmpty = await provider.makeDnsManagedZone({
+    dnsManagedZoneEmpty = provider.dns.makeManagedZone({
       name: "dns-managed-zone-empty",
       properties: () => ({ dnsName: `empty-${domain}` }),
     });
 
-    dnsManagedZone = await provider.makeDnsManagedZone({
+    dnsManagedZone = provider.dns.makeManagedZone({
       name: "dns-managed-zone-with-recordset",
       properties: () => ({
         dnsName: domain,
@@ -48,6 +46,8 @@ describe("GcpDnsManagedZone", async function () {
         ],
       }),
     });
+
+    await provider.start();
   });
   after(async () => {});
   it("dns managed zone config", async function () {

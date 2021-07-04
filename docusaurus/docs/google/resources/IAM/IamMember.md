@@ -6,7 +6,7 @@ title: IAM Member
 Provides a IAM Member for a project.
 
 ```js
-const serviceAccount = await provider.makeServiceAccount({
+const serviceAccount = provider.iam.makeServiceAccount({
   name: "sa",
   propertie: () => ({
     accountId: "sa-dev",
@@ -14,7 +14,7 @@ const serviceAccount = await provider.makeServiceAccount({
   }),
 });
 
-const iamMember = await provider.makeProjectIamMember({
+const iamMember = provider.makeProjectIamMember({
   name: "iam-member",
   dependencies: { serviceAccount },
   properties: () => ({

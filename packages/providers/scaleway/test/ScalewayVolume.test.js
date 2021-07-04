@@ -21,7 +21,7 @@ describe("ScalewayVolume", async function () {
       name: "scaleway",
       config: () => ({}),
     });
-    volume = await provider.makeVolume({
+    volume = provider.makeVolume({
       name: "volume1",
       config: () => ({
         size: 20_000_000_000,

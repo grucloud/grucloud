@@ -192,7 +192,6 @@ exports.KmsKey = ({ spec, config }) => {
   ]);
 
   return {
-    type: "KmsKey",
     spec,
     findName,
     findId,

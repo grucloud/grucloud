@@ -220,7 +220,6 @@ exports.AwsIamGroup = ({ spec, config }) => {
     defaultsDeep({ GroupName: name, Path: "/" })(properties);
 
   return {
-    type: "IamGroup",
     spec,
     findId,
     findDependencies,

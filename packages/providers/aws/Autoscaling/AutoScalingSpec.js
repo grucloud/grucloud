@@ -1,13 +1,18 @@
+const { pipe, assign, map } = require("rubico");
+
 const {
   AwsAutoScalingGroup,
   autoScalingGroupIsOurMinion,
 } = require("./AwsAutoScalingGroup");
 
-module.exports = [
-  {
-    type: "AutoScalingGroup",
-    dependsOn: ["LoadBalancer", "TargetGroup", "EKSCluster"],
-    Client: AwsAutoScalingGroup,
-    isOurMinion: autoScalingGroupIsOurMinion,
-  },
-];
+const GROUP = "autoscaling";
+
+module.exports = () =>
+  map(assign({ group: () => GROUP }))([
+    {
+      type: "AutoScalingGroup",
+      dependsOn: ["elb::LoadBalancer", "elb::TargetGroup", "eks::Cluster"],
+      Client: AwsAutoScalingGroup,
+      isOurMinion: autoScalingGroupIsOurMinion,
+    },
+  ]);

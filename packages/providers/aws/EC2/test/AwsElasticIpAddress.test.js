@@ -24,12 +24,12 @@ describe("AwsElasticIpAddress", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    eip = await provider.makeElasticIpAddress({
+    eip = provider.ec2.makeElasticIpAddress({
       name: resourceName,
       properties: () => ({}),
     });
 
-    server = await provider.makeEC2({
+    server = provider.ec2.makeInstance({
       name: "ec2",
       dependencies: { eip },
       properties: () => ({}),
@@ -61,7 +61,7 @@ describe("AwsElasticIpAddress", async function () {
     /*
     const {
       results: [eips],
-    } = await provider.listLives({ options: { types: ["ElasticIpAddress"] } });
+    } = provider.listLives({ options: { types: ["ElasticIpAddress"] } });
     const resource = eips.resources[0].data;
     assert.equal(eips.type, "ElasticIpAddress");
     assert.equal(resource.Domain, "vpc");

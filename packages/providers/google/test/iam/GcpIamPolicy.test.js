@@ -32,10 +32,9 @@ describe.skip("GcpIamPolicy", async function () {
         projectId: "grucloud-test",
       }),
     });
-    await provider.start();
 
     const saName = `sa-${chance.guid().slice(0, 15)}`;
-    serviceAccount = await provider.makeServiceAccount({
+    serviceAccount = provider.iam.makeServiceAccount({
       name: saName,
       properties: () => ({
         accountId: saName,
@@ -44,7 +43,7 @@ describe.skip("GcpIamPolicy", async function () {
         },
       }),
     });
-    iamPolicy = await provider.makeIamPolicy({
+    iamPolicy = provider.iam.makePolicy({
       name: "iam-policy",
       dependencies: { serviceAccount },
       properties: ({ dependencies: { serviceAccount } }) => ({
@@ -58,6 +57,8 @@ describe.skip("GcpIamPolicy", async function () {
         },
       }),
     });
+
+    await provider.start();
   });
   after(async () => {});
   it.skip("iamPolicy config", async function () {
@@ -70,7 +71,7 @@ describe.skip("GcpIamPolicy", async function () {
   });
 
   it.skip("plan", async function () {
-    const plan = await provider.planQuery();
+    const plan = provider.planQuery();
     assert.equal(plan.resultDestroy.length, 0);
     assert.equal(plan.resultCreate.length, 2);
     const planUpdate = plan.resultCreate[1];

@@ -29,21 +29,19 @@ describe("GoogleProvider", async function () {
       }),
     });
 
-    await provider.start();
-
-    network = await provider.makeNetwork({
+    network = provider.compute.makeNetwork({
       name: "network-dev",
       properties: () => ({ autoCreateSubnetworks: false }),
     });
 
-    subNetwork = await provider.makeSubNetwork({
+    subNetwork = provider.compute.makeSubNetwork({
       name: "subnet-dev",
       dependencies: { network },
       properties: () => ({
         ipCidrRange: "10.164.0.0/20",
       }),
     });
-    firewall = await provider.makeFirewall({
+    firewall = provider.compute.makeFirewall({
       name: "firewall-dev",
       dependencies: { network },
       properties: () => ({
@@ -55,8 +53,8 @@ describe("GoogleProvider", async function () {
         ],
       }),
     });
-    ip = await provider.makeAddress({ name: ipName });
-    server = await provider.makeVmInstance({
+    ip = provider.compute.makeAddress({ name: ipName });
+    server = provider.compute.makeVmInstance({
       name: "web-server",
       dependencies: { ip },
       properties: () => ({
@@ -66,10 +64,12 @@ describe("GoogleProvider", async function () {
           "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts",
       }),
     });
+
+    await provider.start();
   });
   after(async () => {});
   it("gcp info", async function () {
-    const info = await provider.info();
+    const info = provider.info();
     assert(info.projectId);
     assert(info.config);
   });
@@ -85,21 +85,25 @@ describe("GoogleProvider", async function () {
   });
 
   it("gcp apply and destroy", async function () {
-    await testPlanDeploy({ provider, types, full: false });
+    try {
+      await testPlanDeploy({ provider, types, full: false });
 
-    const serverLive = await server.getLive();
-    const { status, labels } = serverLive;
-    assert(status, "RUNNING");
-    const { managedByKey, managedByValue, stageTagKey } = provider.config;
-    assert(labels[managedByKey], managedByValue);
-    assert(labels[stageTagKey], provider.config.stage);
+      const serverLive = await server.getLive();
+      const { status, labels } = serverLive;
+      assert(status, "RUNNING");
+      const { managedByKey, managedByValue, stageTagKey } = provider.config;
+      assert(labels[managedByKey], managedByValue);
+      assert(labels[stageTagKey], provider.config.stage);
 
-    const ipLive = await ip.getLive();
-    assert.equal(
-      serverLive.networkInterfaces[0].accessConfigs[0].natIP,
-      ipLive.address
-    );
+      const ipLive = await ip.getLive();
+      assert.equal(
+        serverLive.networkInterfaces[0].accessConfigs[0].natIP,
+        ipLive.address
+      );
 
-    await testPlanDestroy({ provider, types, full: false });
+      await testPlanDestroy({ provider, types, full: false });
+    } catch (error) {
+      throw error;
+    }
   }).timeout(7 * 60e3);
 });

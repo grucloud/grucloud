@@ -21,8 +21,8 @@ describe("AwsAutoScalingGroup", async function () {
       this.skip();
     }
     provider = AwsProvider({ config });
-    await provider.start();
     autoSg = AwsAutoScalingGroup({ config: provider.config });
+    await provider.start();
   });
   after(async () => {});
   it("delete with invalid id", async function () {

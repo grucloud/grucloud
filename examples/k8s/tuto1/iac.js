@@ -4,11 +4,11 @@ const { K8sProvider } = require("@grucloud/provider-k8s");
 const createResource = async ({ provider }) => {
   const { config } = provider;
 
-  const namespace = await provider.makeNamespace({
+  const namespace = provider.makeNamespace({
     name: config.namespace,
   });
 
-  const service = await provider.makeService({
+  const service = provider.makeService({
     name: config.service.name,
     dependencies: { namespace },
     properties: () => ({
@@ -29,7 +29,7 @@ const createResource = async ({ provider }) => {
     }),
   });
 
-  const deployment = await provider.makeDeployment({
+  const deployment = provider.makeDeployment({
     name: config.deployment.name,
     dependencies: { namespace },
     properties: ({}) => ({

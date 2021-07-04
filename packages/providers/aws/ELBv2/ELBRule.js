@@ -67,24 +67,26 @@ exports.ELBRule = ({ spec, config }) => {
   //   key: "elbv2.k8s.aws/cluster",
   // });
 
-  const findNamespaceInListener = (config) => ({ live, lives }) =>
-    pipe([
-      () => live,
-      get("ListenerArn"),
-      (ListenerArn) =>
-        lives.getById({
-          providerName: config.providerName,
-          type: "Listener",
-          id: ListenerArn,
+  const findNamespaceInListener =
+    (config) =>
+    ({ live, lives }) =>
+      pipe([
+        () => live,
+        get("ListenerArn"),
+        (ListenerArn) =>
+          lives.getById({
+            providerName: config.providerName,
+            type: "Listener",
+            id: ListenerArn,
+          }),
+        tap((listener) => {
+          assert(listener);
         }),
-      tap((listener) => {
-        assert(listener);
-      }),
-      get("namespace"),
-      tap((namespace) => {
-        assert(true);
-      }),
-    ])();
+        get("namespace"),
+        tap((namespace) => {
+          assert(true);
+        }),
+      ])();
 
   const findNamespace = ({ live, lives }) =>
     pipe([
@@ -250,7 +252,6 @@ exports.ELBRule = ({ spec, config }) => {
   const cannotBeDeleted = get("live.IsDefault");
 
   return {
-    type: "Rule",
     spec,
     findId,
     findDependencies,

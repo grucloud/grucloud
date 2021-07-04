@@ -210,84 +210,84 @@ const SecurityGroupRuleBase = ({ config }) => {
       }),
     ])();
 
-  const create = ({ kind }) => async ({
-    payload,
-    name,
-    namespace,
-    resolvedDependencies: { securityGroup },
-  }) =>
-    pipe([
-      tap(() => {
-        logger.info(
-          `create sg rule ${JSON.stringify({ kind, name, namespace })}`
-        );
-        logger.debug(`${tos(payload)}`);
-      }),
-      () => ({
-        GroupId: findGroupId(securityGroup.live),
-        ...payload,
-      }),
-      switchCase([
-        eq(kind, "ingress"),
-        (params) => ec2().authorizeSecurityGroupIngress(params),
-        eq(kind, "egress"),
-        (params) => ec2().authorizeSecurityGroupEgress(params),
-        () => {
-          assert(`invalid kind: '${kind}'`);
-        },
-      ]),
-      () => addTags({ name, namespace, payload, securityGroup }),
-      tap(() => {
-        logger.info(`created sg rule ${kind} ${tos({ name })}`);
-      }),
-    ])();
+  const create =
+    ({ kind }) =>
+    async ({
+      payload,
+      name,
+      namespace,
+      resolvedDependencies: { securityGroup },
+    }) =>
+      pipe([
+        tap(() => {
+          logger.info(
+            `create sg rule ${JSON.stringify({ kind, name, namespace })}`
+          );
+          logger.debug(`${tos(payload)}`);
+        }),
+        () => ({
+          GroupId: findGroupId(securityGroup.live),
+          ...payload,
+        }),
+        switchCase([
+          eq(kind, "ingress"),
+          (params) => ec2().authorizeSecurityGroupIngress(params),
+          eq(kind, "egress"),
+          (params) => ec2().authorizeSecurityGroupEgress(params),
+          () => {
+            assert(`invalid kind: '${kind}'`);
+          },
+        ]),
+        () => addTags({ name, namespace, payload, securityGroup }),
+        tap(() => {
+          logger.info(`created sg rule ${kind} ${tos({ name })}`);
+        }),
+      ])();
 
-  const destroy = ({ kind, revokeSecurityGroup }) => async ({
-    name,
-    live,
-    resource,
-  }) =>
-    pipe([
-      tap(() => {
-        assert(live);
-        logger.info(`destroy sg rule ${kind} ${name}`);
-        logger.debug(`${kind} ${name}: ${JSON.stringify(live)}`);
-      }),
-      () => resource,
-      getSecurityGroup,
-      tap.if(isEmpty, () => {
-        throw Error(`cannot find security group ${kind}`);
-      }),
-      (securityGroup) =>
-        pipe([
-          () => ({
-            GroupId: findGroupId(securityGroup),
-            ...omit(["Tags"])(live),
-          }),
-          //TODO pass revokeSecurityGroupIngress or revokeSecurityGroupEgress from param
-          tryCatch(
-            switchCase([
-              eq(kind, "ingress"),
-              (params) => ec2().revokeSecurityGroupIngress(params),
-              eq(kind, "egress"),
-              (params) => ec2().revokeSecurityGroupEgress(params),
-              () => {
-                assert(`invalid kind: '${kind}'`);
-              },
-            ]),
-            tap.if(
-              not(eq(get("code"), "InvalidPermission.NotFound")),
-              (error) => {
-                throw error;
-              }
-            )
-          ),
-          () => removeTags({ name, securityGroup }),
-        ])(),
-      tap(() => {
-        logger.debug(`destroyed sg rule ${JSON.stringify({ kind, name })}`);
-      }),
-    ])();
+  const destroy =
+    ({ kind, revokeSecurityGroup }) =>
+    async ({ name, live, resource }) =>
+      pipe([
+        tap(() => {
+          assert(live);
+          logger.info(`destroy sg rule ${kind} ${name}`);
+          logger.debug(`${kind} ${name}: ${JSON.stringify(live)}`);
+        }),
+        () => resource,
+        getSecurityGroup,
+        tap.if(isEmpty, () => {
+          throw Error(`cannot find security group ${kind}`);
+        }),
+        (securityGroup) =>
+          pipe([
+            () => ({
+              GroupId: findGroupId(securityGroup),
+              ...omit(["Tags"])(live),
+            }),
+            //TODO pass revokeSecurityGroupIngress or revokeSecurityGroupEgress from param
+            tryCatch(
+              switchCase([
+                eq(kind, "ingress"),
+                (params) => ec2().revokeSecurityGroupIngress(params),
+                eq(kind, "egress"),
+                (params) => ec2().revokeSecurityGroupEgress(params),
+                () => {
+                  assert(`invalid kind: '${kind}'`);
+                },
+              ]),
+              tap.if(
+                not(eq(get("code"), "InvalidPermission.NotFound")),
+                (error) => {
+                  throw error;
+                }
+              )
+            ),
+            () => removeTags({ name, securityGroup }),
+          ])(),
+        tap(() => {
+          logger.debug(`destroyed sg rule ${JSON.stringify({ kind, name })}`);
+        }),
+      ])();
 
   return {
     findNamespace,
@@ -302,16 +302,10 @@ const SecurityGroupRuleBase = ({ config }) => {
 };
 
 exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
-  const {
-    getList,
-    getByName,
-    configDefault,
-    create,
-    destroy,
-    findNamespace,
-  } = SecurityGroupRuleBase({
-    config,
-  });
+  const { getList, getByName, configDefault, create, destroy, findNamespace } =
+    SecurityGroupRuleBase({
+      config,
+    });
 
   return {
     type: "SecurityGroupRuleIngress",
@@ -333,19 +327,12 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
   };
 };
 exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
-  const {
-    getList,
-    getByName,
-    configDefault,
-    create,
-    destroy,
-    findNamespace,
-  } = SecurityGroupRuleBase({
-    config,
-  });
+  const { getList, getByName, configDefault, create, destroy, findNamespace } =
+    SecurityGroupRuleBase({
+      config,
+    });
 
   return {
-    type: "SecurityGroupRuleEgress",
     spec,
     findId,
     findDependencies,

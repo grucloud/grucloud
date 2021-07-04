@@ -6,7 +6,7 @@ title: Resource Group
 A container for other resources:
 
 ```js
-const resourceGroup = await provider.makeResourceGroup({
+const resourceGroup = provider.makeResourceGroup({
   name: `resource-group`,
 });
 ```

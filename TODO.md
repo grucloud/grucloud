@@ -67,6 +67,8 @@
 
 ## Aws
 
+- eks-lean gc d -f: ✖ Subnet 0/4 You are not allowed to manage 'ela-attach' attachments.
+
 - list ec2 instance in stopped state
 - ec2 update: handle UserData
 

@@ -317,7 +317,6 @@ exports.AwsIamRole = ({ spec, config }) => {
     includes("/aws-service-role"),
   ]);
   return {
-    type: "IamRole",
     spec,
     findDependencies,
     findNamespace: findNamespaceInTags(config),

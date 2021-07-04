@@ -8,12 +8,12 @@ const createResources = async ({ provider }) => {
   assert(topLevelDomain);
   assert(recordTxtValue);
 
-  const hostedZone = await provider.makeHostedZone({
+  const hostedZone = provider.route53.makeHostedZone({
     name: `${topLevelDomain}.`,
     dependencies: {},
   });
 
-  const recordTxt = await provider.makeRoute53Record({
+  const recordTxt = provider.route53.makeRecord({
     name: `txt.${subDomainName}${topLevelDomain}.`,
     dependencies: { hostedZone },
     properties: () => ({

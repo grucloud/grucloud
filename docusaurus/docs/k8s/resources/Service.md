@@ -14,11 +14,11 @@ This example creates a NodePort service for use with a Deployment:
 ```js
 const appLabel = "myLabel";
 
-const namespace = await provider.makeNamespace({
+const namespace = provider.makeNamespace({
   name: "myNamespace",
 });
 
-const service = await provider.makeService({
+const service = provider.makeService({
   name: "myService",
   dependencies: { namespace },
   properties: () => ({
@@ -46,11 +46,11 @@ This example creates a Headless service for use with a StatefulSet:
 ```js
 const appLabel = "db";
 
-const namespace = await provider.makeNamespace({
+const namespace = provider.makeNamespace({
   name: "myNamespace",
 });
 
-const service = await provider.makeService({
+const service = provider.makeService({
   name: "postgres-service",
   dependencies: { namespace },
   properties: () => ({

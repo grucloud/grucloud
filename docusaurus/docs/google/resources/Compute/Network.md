@@ -6,7 +6,7 @@ title: Network
 Manages a [Virtual Private Clould Network](https://cloud.google.com/vpc/docs/vpc)
 
 ```js
-const network = await provider.makeNetwork({ name: "network" });
+const network = provider.compute.makeNetwork({ name: "network" });
 ```
 
 ### Examples

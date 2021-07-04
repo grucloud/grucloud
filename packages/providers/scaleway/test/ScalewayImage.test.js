@@ -23,7 +23,7 @@ describe("ScalewayImage", async function () {
       config: () => ({}),
     });
 
-    image = await provider.useImage({
+    image = provider.useImage({
       name: "ubuntu",
       config: ({ items: images }) => {
         assert(images);

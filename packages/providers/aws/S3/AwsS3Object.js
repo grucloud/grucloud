@@ -300,7 +300,6 @@ exports.AwsS3Object = ({ spec, config }) => {
     defaultsDeep({ Key: name })(properties);
 
   return {
-    type: "S3Object",
     spec,
     config: clientConfig,
     findNamespace,

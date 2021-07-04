@@ -10,11 +10,11 @@ exports.createStack = async () => {
     path.resolve(process.env.HOME, ".ssh/id_rsa.pub")
   );
 
-  const ip = await provider.makeAddress({
+  const ip = provider.compute.makeAddress({
     name: `ip-webserver-ssh-keys`,
   });
 
-  const firewall22 = await provider.makeFirewall({
+  const firewall22 = provider.compute.makeFirewall({
     name: `firewall-22`,
     properties: () => ({
       allowed: [
@@ -26,7 +26,7 @@ exports.createStack = async () => {
       ],
     }),
   });
-  const firewallIcmp = await provider.makeFirewall({
+  const firewallIcmp = provider.compute.makeFirewall({
     name: `firewall-icmp`,
     properties: () => ({
       allowed: [
@@ -38,7 +38,7 @@ exports.createStack = async () => {
     }),
   });
 
-  const server = await provider.makeVmInstance({
+  const server = provider.compute.makeVmInstance({
     name: `webserver-ssh-keys`,
     dependencies: { ip },
     properties: () => ({

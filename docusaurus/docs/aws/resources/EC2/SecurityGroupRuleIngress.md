@@ -11,14 +11,14 @@ Manages a security group ingress rule.
 The following example creates a security rule to allow ingress SSH traffic.
 
 ```js
-const vpc = await provider.makeVpc({
+const vpc = provider.ec2.makeVpc({
   name: "vpc",
   properties: () => ({
     CidrBlock: "10.1.0.0/16",
   }),
 });
 
-const sg = await provider.makeSecurityGroup({
+const sg = provider.ec2.makeSecurityGroup({
   name: "securityGroup",
   dependencies: { vpc },
   properties: () => ({
@@ -28,7 +28,7 @@ const sg = await provider.makeSecurityGroup({
   }),
 });
 
-const sgRuleIngressSsh = await provider.makeSecurityGroupRuleIngress({
+const sgRuleIngressSsh = provider.ec2.makeSecurityGroupRuleIngress({
   name: "sg-rule-ingress-ssh",
   dependencies: {
     securityGroup: sg,

@@ -256,6 +256,7 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
       addResources: ({
         providerName,
         type,
+        group,
         resources = [],
         error: latestError,
       }) => {
@@ -265,13 +266,14 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
         logger.debug(
           `live addResources ${JSON.stringify({
             providerName,
+            group,
             type,
             resourceCount: resources.length,
           })}`
         );
 
         const mapPerType = mapPerProvider.get(providerName) || new Map();
-        mapPerType.set(type, { type, resources, error: latestError });
+        mapPerType.set(type, { type, group, resources, error: latestError });
         mapPerProvider.set(providerName, mapPerType);
       },
       get json() {
@@ -403,7 +405,13 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
                 }),
                 map(
                   assign({
-                    resources: ({ providerName, resources, type, error }) =>
+                    resources: ({
+                      providerName,
+                      resources,
+                      type,
+                      group,
+                      error,
+                    }) =>
                       pipe([
                         () => resources,
                         map(resourceDecorate({ lives, commandOptions })),
@@ -411,6 +419,7 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
                           lives.addResources({
                             providerName,
                             type,
+                            group,
                             resources,
                             error,
                           });
@@ -1097,10 +1106,9 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
     getProviders,
     runCommand,
     runCommandGlobal,
-    buildGraphTarget: ({ lives, options }) =>
+    buildGraphTarget: ({ options }) =>
       buildGraphTarget({
         providers: getProviders(),
-        lives,
         options: defaultsDeep(GraphCommon.optionsDefault({ kind: "target" }))(
           options
         ),

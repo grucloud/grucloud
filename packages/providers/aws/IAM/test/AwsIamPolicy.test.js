@@ -29,7 +29,7 @@ describe("AwsIamPolicy", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    iamPolicyToUser = await provider.makeIamPolicy({
+    iamPolicyToUser = provider.iam.makePolicy({
       name: iamPolicyName,
       properties: () => ({
         PolicyName: iamPolicyName,
@@ -48,7 +48,7 @@ describe("AwsIamPolicy", async function () {
       }),
     });
 
-    iamUser = await provider.makeIamUser({
+    iamUser = provider.iam.makeUser({
       name: iamUserName,
       dependencies: { policies: [iamPolicyToUser] },
       properties: () => ({
@@ -57,7 +57,7 @@ describe("AwsIamPolicy", async function () {
       }),
     });
 
-    iamPolicyToRole = await provider.makeIamPolicy({
+    iamPolicyToRole = provider.iam.makePolicy({
       name: iamPolicyNameToRole,
       properties: () => ({
         PolicyDocument: {
@@ -75,7 +75,7 @@ describe("AwsIamPolicy", async function () {
       }),
     });
 
-    iamRole = await provider.makeIamRole({
+    iamRole = provider.iam.makeRole({
       name: iamRoleName,
       dependencies: { policies: [iamPolicyToRole] },
 

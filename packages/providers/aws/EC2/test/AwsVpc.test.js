@@ -28,7 +28,7 @@ describe("AwsVpc", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    vpc = await provider.makeVpc({
+    vpc = provider.ec2.makeVpc({
       name: vpcName,
       properties: () => ({
         DnsHostnames: true,
@@ -36,7 +36,7 @@ describe("AwsVpc", async function () {
         Tags: [{ Key: k8sClusterTagKey, Value: "shared" }],
       }),
     });
-    vpcDefault = await provider.useVpc({
+    vpcDefault = provider.ec2.useVpc({
       name: "vpc-default",
       filterLives: ({ items }) =>
         pipe([
@@ -54,7 +54,7 @@ describe("AwsVpc", async function () {
   });
 
   it.skip("vpc listLives canBeDeleted", async function () {
-    const { results } = await provider.listLives({
+    const { results } = provider.listLives({
       options: {
         types,
         canBeDeleted: true,

@@ -25,19 +25,19 @@ const AwsRoute53Domain = require("./Route53Domain");
 const AwsS3 = require("./S3");
 
 const fnSpecs = () => [
-  ...AutoScaling,
-  ...AwsCertificateManager,
-  ...AwsCloudFront,
-  ...AwsEC2,
-  ...AwsEKS,
-  ...AwsELBv2,
-  ...AwsIam,
-  ...AwsKMS,
-  ...AwsLambda,
-  ...AwsRoute53,
-  ...AwsRoute53Domain,
-  ...AwsRDS,
-  ...AwsS3,
+  ...AutoScaling(),
+  ...AwsCertificateManager(),
+  ...AwsCloudFront(),
+  ...AwsEC2(),
+  ...AwsEKS(),
+  ...AwsELBv2(),
+  ...AwsIam(),
+  ...AwsKMS(),
+  ...AwsLambda(),
+  ...AwsRDS(),
+  ...AwsRoute53(),
+  ...AwsRoute53Domain(),
+  ...AwsS3(),
 ];
 
 const getAvailabilityZonesName = ({ region }) =>

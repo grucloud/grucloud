@@ -6,7 +6,7 @@ title: Iam Role
 Provides an Iam Role.
 
 ```js
-const iamRole = await provider.makeIamRole({
+const iamRole = provider.iam.makeRole({
   name: "my-role",
   properties: () => ({
     AssumeRolePolicyDocument: {
@@ -29,7 +29,7 @@ const iamRole = await provider.makeIamRole({
 ### Add a policy to a role
 
 ```js
-const iamPolicy = await provider.makeIamPolicy({
+const iamPolicy = provider.iam.makePolicy({
   name: "my-policy",
   properties: () => ({
     PolicyDocument: {
@@ -47,7 +47,7 @@ const iamPolicy = await provider.makeIamPolicy({
   }),
 });
 
-const iamRole = await provider.makeIamRole({
+const iamRole = provider.iam.makeRole({
   name: "my-role",
   dependencies: { policies: [iamPolicy] },
 
@@ -72,7 +72,7 @@ const iamRole = await provider.makeIamRole({
 ### Add a role to an instance profile
 
 ```js
-const iamRole = await provider.makeIamRole({
+const iamRole = provider.iam.makeRole({
   name: "my-role",
   properties: () => ({
     AssumeRolePolicyDocument: {
@@ -91,7 +91,7 @@ const iamRole = await provider.makeIamRole({
   }),
 });
 
-const iamInstanceProfile = await provider.makeIamInstanceProfile({
+const iamInstanceProfile = provider.iam.makeInstanceProfile({
   name: "my-instance-profile",
   dependencies: { iamRoles: [iamRole] },
   properties: () => ({}),

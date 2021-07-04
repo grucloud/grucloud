@@ -6,14 +6,14 @@ title: Route Table
 Provides a [Route Table](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html)
 
 ```js
-const vpc = await provider.makeVpc({
+const vpc = provider.ec2.makeVpc({
   name: "vpc",
   properties: () => ({
     CidrBlock: "10.1.0.0/16",
   }),
 });
 
-const subnet = await provider.makeSubnet({
+const subnet = provider.ec2.makeSubnet({
   name: "subnet",
   dependencies: { vpc },
   properties: () => ({
@@ -21,7 +21,7 @@ const subnet = await provider.makeSubnet({
   }),
 });
 
-const routeTable = await provider.makeRouteTable({
+const routeTable = provider.ec2.makeRouteTable({
   name: "rt",
   dependencies: { vpc, subnets: [subnet] },
 });

@@ -22,7 +22,7 @@ describe("ScalewayIp", async function () {
       config: () => ({}),
     });
 
-    ip = await provider.makeIp({ name: "myip" });
+    ip = provider.makeIp({ name: "myip" });
   });
   after(async () => {});
 

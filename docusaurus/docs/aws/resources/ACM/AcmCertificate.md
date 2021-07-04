@@ -14,20 +14,20 @@ Provides an SSL certificate.
 ```js
 const domainName = "your.domain.name.com";
 
-const certificate = await provider.makeCertificate({
+const certificate = provider.acm.makeCertificate({
   name: domainName,
   properties: () => ({}),
 });
 
-const domain = await provider.useRoute53Domain({
+const domain = provider.route53Domain.useDomain({
   name: domainName,
 });
-const hostedZone = await provider.makeHostedZone({
+const hostedZone = provider.route53.makeHostedZone({
   name: `${domainName}.`,
   dependencies: { domain },
 });
 
-const recordValidation = await provider.makeRoute53Record({
+const recordValidation = provider.route53.makeRecord({
   name: `certificate-validation-${domainName}.`,
   dependencies: { hostedZone, certificate },
   properties: ({ dependencies: { certificate } }) => {

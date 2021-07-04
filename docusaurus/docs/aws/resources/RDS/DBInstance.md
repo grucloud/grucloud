@@ -10,7 +10,7 @@ Manages a [DB Instance](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/W
 Deploy a postgres database:
 
 ```js
-const dbCluster = await provider.makeDBInstance({
+const dbCluster = provider.rds.makeDBInstance({
   name: "instance-1",
   dependencies: { dbSubnetGroup },
   properties: () => ({

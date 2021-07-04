@@ -72,19 +72,17 @@ describe("K8sProvider", async function () {
       config: () => ({}),
     });
 
-    await provider.start();
-
-    namespace = await provider.makeNamespace({
+    namespace = provider.makeNamespace({
       name: myNamespace,
     });
 
-    serviceAccount = await provider.makeServiceAccount({
+    serviceAccount = provider.makeServiceAccount({
       name: serviceAccountName,
       dependencies: { namespace },
       properties: () => ({}),
     });
 
-    clusterRole = await provider.makeClusterRole({
+    clusterRole = provider.makeClusterRole({
       name: clusterRoleName,
       properties: () => ({
         apiVersion: "rbac.authorization.k8s.io/v1",
@@ -117,7 +115,7 @@ describe("K8sProvider", async function () {
       }),
     });
 
-    clusterRoleBinding = await provider.makeClusterRole({
+    clusterRoleBinding = provider.makeClusterRole({
       name: clusterRoleBindingName,
       dependencies: { clusterRole, serviceAccount },
       properties: () => ({
@@ -141,18 +139,18 @@ describe("K8sProvider", async function () {
       }),
     });
 
-    role = await provider.makeClusterRole({
+    role = provider.makeClusterRole({
       name: roleName,
       properties: () => ({}),
     });
 
-    secret = await provider.makeSecret({
+    secret = provider.makeSecret({
       name: secretName,
       dependencies: { namespace },
       properties: () => ({}),
     });
 
-    configMap = await provider.makeConfigMap({
+    configMap = provider.makeConfigMap({
       name: configMapName,
       dependencies: { namespace },
       properties: () => ({
@@ -164,7 +162,7 @@ describe("K8sProvider", async function () {
       }),
     });
 
-    storageClass = await provider.makeStorageClass({
+    storageClass = provider.makeStorageClass({
       name: storageClassName,
       properties: () => ({
         provisioner: "kubernetes.io/no-provisioner",
@@ -172,7 +170,7 @@ describe("K8sProvider", async function () {
       }),
     });
 
-    serviceWeb = await provider.makeService({
+    serviceWeb = provider.makeService({
       name: serviceWebName,
       properties: () => ({
         spec: {
@@ -190,7 +188,7 @@ describe("K8sProvider", async function () {
       }),
     });
 
-    ingress = await provider.makeIngress({
+    ingress = provider.makeIngress({
       name: "ingress",
       dependencies: { namespace, serviceWeb },
       properties: () => ({
@@ -219,7 +217,7 @@ describe("K8sProvider", async function () {
       }),
     });
 
-    persistentVolume = await provider.makePersistentVolume({
+    persistentVolume = provider.makePersistentVolume({
       name: pv.name,
       dependencies: { namespace },
       properties: () => ({
@@ -271,7 +269,7 @@ describe("K8sProvider", async function () {
       },
     });
 
-    deployment = await provider.makeDeployment({
+    deployment = provider.makeDeployment({
       name: deploymentWebName,
       dependencies: { namespace, configMap },
       properties: ({ dependencies: { configMap } }) =>
@@ -367,7 +365,7 @@ describe("K8sProvider", async function () {
       },
     });
 
-    statefulSetPostgres = await provider.makeStatefulSet({
+    statefulSetPostgres = provider.makeStatefulSet({
       name: postgres.statefulSetName,
       dependencies: { namespace, configMap, persistentVolume },
       properties: ({ dependencies: { configMap } }) =>
@@ -377,6 +375,7 @@ describe("K8sProvider", async function () {
           pvName: pv.name,
         }),
     });
+    await provider.start();
   });
   after(async () => {});
 

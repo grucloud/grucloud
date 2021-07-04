@@ -22,7 +22,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     ],
   };
 
-  const iamPolicyToUser = await provider.makeIamPolicy({
+  const iamPolicyToUser = provider.iam.makePolicy({
     name: policyNameToUser,
     properties: () => ({
       PolicyDocument,
@@ -30,7 +30,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
-  const iamPolicyToRole = await provider.makeIamPolicy({
+  const iamPolicyToRole = provider.iam.makePolicy({
     name: policyNameToRole,
     properties: () => ({
       PolicyDocument,
@@ -38,7 +38,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
-  const iamPolicyToGroup = await provider.makeIamPolicy({
+  const iamPolicyToGroup = provider.iam.makePolicy({
     name: policyNameToGroup,
     properties: () => ({
       PolicyDocument,
@@ -46,26 +46,26 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
-  const iamPolicyEKSWorkerNode = await provider.useIamPolicy({
+  const iamPolicyEKSWorkerNode = provider.iam.usePolicy({
     name: "AmazonEKSWorkerNodePolicy",
     properties: () => ({
       Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
     }),
   });
 
-  const iamGroup = await provider.makeIamGroup({
+  const iamGroup = provider.iam.makeGroup({
     name: groupName,
     dependencies: { policies: [iamPolicyToGroup] },
     properties: () => ({}),
   });
 
-  const iamUser = await provider.makeIamUser({
+  const iamUser = provider.iam.makeUser({
     name: userName,
     dependencies: { iamGroups: [iamGroup], policies: [iamPolicyToUser] },
     properties: () => ({}),
   });
 
-  const iamRole = await provider.makeIamRole({
+  const iamRole = provider.iam.makeRole({
     name: roleName,
     dependencies: { policies: [iamPolicyToRole, iamPolicyEKSWorkerNode] },
     properties: () => ({
@@ -86,13 +86,13 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
-  const iamInstanceProfile = await provider.makeIamInstanceProfile({
+  const iamInstanceProfile = provider.iam.makeInstanceProfile({
     name: iamInstanceProfileName,
     dependencies: { iamRoles: [iamRole] },
     properties: () => ({}),
   });
 
-  const image = await provider.useImage({
+  const image = provider.ec2.useImage({
     name: "Amazon Linux 2",
     properties: () => ({
       Filters: [
@@ -108,7 +108,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
     }),
   });
 
-  const server = await provider.makeEC2({
+  const server = provider.ec2.makeInstance({
     name: "web-iam",
     dependencies: { image, keyPair, iamInstanceProfile },
     properties: () => ({
@@ -132,7 +132,7 @@ exports.createResources = createResources;
 exports.createStack = async () => {
   // Create a AWS provider
   const provider = AwsProvider({ config: require("./config") });
-  const keyPair = await provider.useKeyPair({
+  const keyPair = provider.ec2.useKeyPair({
     name: "kp",
   });
 

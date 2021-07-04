@@ -196,7 +196,6 @@ exports.AwsRouteTable = ({ spec, config }) => {
     pipe([() => live, eq(get("RouteTableId"), name)])();
 
   return {
-    type: "RouteTable",
     spec,
     isDefault,
     findId,

@@ -1,3 +1,4 @@
+const { pipe, assign, map } = require("rubico");
 const { compare } = require("@grucloud/core/Utils");
 const logger = require("@grucloud/core/logger")({ prefix: "GcpComputeSpec" });
 
@@ -16,120 +17,78 @@ const { GcpUrlMap } = require("./GcpUrlMap");
 const { GcpGlobalForwardingRule } = require("./GcpGlobalForwardingRule");
 const { GcpDisk } = require("./GcpDisk");
 
-module.exports = (config) => {
+const GROUP = "compute";
+
+module.exports = () => {
   const isOurMinion = GoogleTag.isOurMinion;
 
-  return [
+  return map(assign({ group: () => GROUP }))([
     {
       type: "SslCertificate",
-      Client: ({ spec }) =>
-        GcpSslCertificate({
-          spec,
-          config,
-        }),
+      Client: GcpSslCertificate,
       isOurMinion,
     },
     {
       type: "BackendBucket",
-      Client: ({ spec }) =>
-        GcpBackendBucket({
-          spec,
-          config,
-        }),
+      Client: GcpBackendBucket,
       isOurMinion,
     },
 
     {
       type: "UrlMap",
-      dependsOn: ["BackendBucket"],
-      Client: ({ spec }) =>
-        GcpUrlMap({
-          spec,
-          config,
-        }),
+      dependsOn: ["compute::BackendBucket"],
+      Client: GcpUrlMap,
       isOurMinion,
     },
     {
       type: "HttpsTargetProxy",
-      dependsOn: ["UrlMap", "SslCertificate"],
-      Client: ({ spec }) =>
-        GcpHttpsTargetProxy({
-          spec,
-          config,
-        }),
+      dependsOn: ["compute::UrlMap", "compute::SslCertificate"],
+      Client: GcpHttpsTargetProxy,
       isOurMinion,
     },
     {
       type: "GlobalForwardingRule",
-      dependsOn: ["HttpsTargetProxy"],
-      Client: ({ spec }) =>
-        GcpGlobalForwardingRule({
-          spec,
-          config,
-        }),
+      dependsOn: ["compute::HttpsTargetProxy"],
+      Client: GcpGlobalForwardingRule,
       isOurMinion,
     },
     {
       type: "Network",
-      Client: ({ spec }) =>
-        GcpNetwork({
-          spec,
-          config,
-        }),
+      Client: GcpNetwork,
       isOurMinion,
     },
     {
       type: "SubNetwork",
-      dependsOn: ["Network"],
-      Client: ({ spec }) =>
-        GcpSubNetwork({
-          spec,
-          config,
-        }),
+      dependsOn: ["compute::Network"],
+      Client: GcpSubNetwork,
       isOurMinion,
     },
     {
       type: "Firewall",
-      dependsOn: ["Network"],
-      Client: ({ spec }) =>
-        GcpFirewall({
-          spec,
-          config,
-        }),
+      dependsOn: ["compute::Network"],
+      Client: GcpFirewall,
       isOurMinion,
     },
     {
       type: "Address",
-      Client: ({ spec }) =>
-        GcpAddress({
-          spec,
-          config,
-        }),
+      Client: GcpAddress,
       isOurMinion,
     },
     {
       type: "Disk",
-      Client: ({ spec }) =>
-        GcpDisk({
-          spec,
-          config,
-        }),
+      Client: GcpDisk,
       isOurMinion,
     },
     {
       type: "VmInstance",
       dependsOn: [
-        "ServiceAccount",
-        "Address",
-        "SubNetwork",
-        "Firewall",
-        "Disk",
+        "iam::ServiceAccount",
+        "compute::Address",
+        "compute::SubNetwork",
+        "compute::Firewall",
+        "compute::Disk",
       ],
-      Client: ({ spec }) =>
-        GoogleVmInstance({
-          spec,
-          config,
-        }),
+      Client: GoogleVmInstance,
       propertiesDefault: {
         machineType: "f1-micro",
         diskSizeGb: "10",
@@ -140,5 +99,5 @@ module.exports = (config) => {
       isOurMinion,
       compare: compareVmInstance,
     },
-  ];
+  ]);
 };

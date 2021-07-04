@@ -10,11 +10,11 @@ Provides a [Kubernetes Secret](https://kubernetes.io/docs/concepts/configuration
 ### Create a secret
 
 ```js
-const namespace = await provider.makeNamespace({
+const namespace = provider.makeNamespace({
   name: "myNamespace",
 });
 
-const secret = await provider.makeSecret({
+const secret = provider.makeSecret({
   name: secretName,
   dependencies: { namespace },
   properties: () => ({}),

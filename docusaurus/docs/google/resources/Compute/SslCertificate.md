@@ -6,7 +6,7 @@ title: SSL Certificate
 Provides a managed [SSL certificate](https://console.cloud.google.com/net-services/loadbalancing/advanced/sslCertificates/list).
 
 ```js
-const sslCertificate = await provider.makeSslCertificate({
+const sslCertificate = provider.compute.makeSslCertificate({
   name: "ssl-certificate",
   properties: () => ({
     managed: {

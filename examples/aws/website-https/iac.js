@@ -17,7 +17,7 @@ const createResources = async ({ provider }) => {
   const files = await getFiles(websiteDir);
   const bucketName = `${DomainName}-${stage}`;
 
-  const websiteBucket = await provider.makeS3Bucket({
+  const websiteBucket = provider.s3.makeBucket({
     name: bucketName,
     properties: () => ({
       ACL: "public-read",
@@ -33,7 +33,7 @@ const createResources = async ({ provider }) => {
   });
 
   await map((file) =>
-    provider.makeS3Object({
+    provider.makeObject({
       name: file,
       dependencies: { bucket: websiteBucket },
       properties: () => ({
@@ -49,24 +49,24 @@ const createResources = async ({ provider }) => {
     stage,
   });
 
-  const certificate = await provider.makeCertificate({
+  const certificate = provider.acm.makeCertificate({
     name: `certificate-${DomainName}-${stage}`,
     properties: () => ({
       DomainName: domainName,
     }),
   });
 
-  const domain = await provider.useRoute53Domain({
+  const domain = provider.route53Domain.useDomain({
     name: rootDomainName,
   });
 
-  const hostedZone = await provider.makeHostedZone({
+  const hostedZone = provider.route53.makeHostedZone({
     name: `${domainName}.`,
     dependencies: { domain },
     properties: ({}) => ({}),
   });
 
-  const recordValidation = await provider.makeRoute53Record({
+  const recordValidation = provider.route53.makeRecord({
     name: `validation-${domainName}.`,
     dependencies: { hostedZone, certificate },
     properties: ({ dependencies: { certificate } }) => {
@@ -94,7 +94,7 @@ const createResources = async ({ provider }) => {
     },
   });
 
-  const distribution = await provider.makeCloudFrontDistribution({
+  const distribution = provider.cloudFront.makeDistribution({
     name: `distribution-${bucketName}`,
     dependencies: { websiteBucket, certificate },
     properties: ({}) => {
@@ -138,7 +138,7 @@ const createResources = async ({ provider }) => {
     stage,
   })}.`;
 
-  const recordCloudFront = await provider.makeRoute53Record({
+  const recordCloudFront = provider.route53.makeRecord({
     name: hostedZoneName,
     dependencies: { hostedZone, distribution },
     //TODO this code should be handled by Route53Record

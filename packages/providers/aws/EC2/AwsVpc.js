@@ -299,7 +299,6 @@ exports.AwsVpc = ({ spec, config }) => {
     })(otherProps);
 
   return {
-    type: "Vpc",
     spec,
     isDefault,
     findId,

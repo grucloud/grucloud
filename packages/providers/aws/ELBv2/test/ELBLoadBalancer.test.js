@@ -33,13 +33,13 @@ describe("AwsLoadBalancerV2", async function () {
     });
     assert(provider.config.region);
 
-    const vpc = await provider.makeVpc({
+    const vpc = provider.ec2.makeVpc({
       name: formatName("vpc"),
       properties: () => ({
         CidrBlock: "192.168.0.0/16",
       }),
     });
-    const securityGroupLoadBalancer = await provider.makeSecurityGroup({
+    const securityGroupLoadBalancer = provider.ec2.makeSecurityGroup({
       name: formatName("load-balancer-security-group-test"),
       dependencies: { vpc },
       properties: () => ({
@@ -49,7 +49,7 @@ describe("AwsLoadBalancerV2", async function () {
       }),
     });
 
-    const sgRuleIngressHttp = await provider.makeSecurityGroupRuleIngress({
+    const sgRuleIngressHttp = provider.ec2.makeSecurityGroupRuleIngress({
       name: formatName("sg-rule-ingress-http"),
       dependencies: {
         securityGroup: securityGroupLoadBalancer,
@@ -74,7 +74,7 @@ describe("AwsLoadBalancerV2", async function () {
         ],
       }),
     });
-    const sgRuleIngressHttps = await provider.makeSecurityGroupRuleIngress({
+    const sgRuleIngressHttps = provider.ec2.makeSecurityGroupRuleIngress({
       name: formatName("sg-rule-ingress-https"),
       dependencies: {
         securityGroup: securityGroupLoadBalancer,
@@ -100,12 +100,12 @@ describe("AwsLoadBalancerV2", async function () {
       }),
     });
 
-    const internetGateway = await provider.makeInternetGateway({
+    const internetGateway = provider.ec2.makeInternetGateway({
       name: formatName("ig"),
       dependencies: { vpc },
     });
 
-    const subnet1 = await provider.makeSubnet({
+    const subnet1 = provider.ec2.makeSubnet({
       name: formatName("subnet1"),
       dependencies: { vpc },
       properties: () => ({
@@ -113,7 +113,7 @@ describe("AwsLoadBalancerV2", async function () {
         AvailabilityZone: `${provider.config.region}a`,
       }),
     });
-    const subnet2 = await provider.makeSubnet({
+    const subnet2 = provider.ec2.makeSubnet({
       name: formatName("subnet2"),
       dependencies: { vpc },
       properties: () => ({
@@ -122,7 +122,7 @@ describe("AwsLoadBalancerV2", async function () {
       }),
     });
 
-    loadBalancer = await provider.makeLoadBalancer({
+    loadBalancer = provider.elb.makeLoadBalancer({
       name: formatName(loadBalancerName),
       dependencies: {
         subnets: [subnet1, subnet2],
@@ -131,7 +131,7 @@ describe("AwsLoadBalancerV2", async function () {
       properties: () => ({}),
     });
 
-    targetGroup = await provider.makeTargetGroup({
+    targetGroup = provider.elb.makeTargetGroup({
       name: formatName(targetGroupName),
       dependencies: {
         vpc,
@@ -141,7 +141,7 @@ describe("AwsLoadBalancerV2", async function () {
       }),
     });
 
-    listenerHttp = await provider.makeListener({
+    listenerHttp = provider.elb.makeListener({
       name: formatName(listenerHttpName),
       dependencies: {
         loadBalancer,
@@ -165,7 +165,7 @@ describe("AwsLoadBalancerV2", async function () {
   });
   after(async () => {});
   it("load balancer v2 apply plan", async function () {
-    const loadBalancerReadOnly = await provider.useLoadBalancer({
+    const loadBalancerReadOnly = provider.elb.useLoadBalancer({
       name: "load-balancer-k8s-readonly",
       filterLives: ({ items }) =>
         pipe([
@@ -190,11 +190,11 @@ describe("AwsLoadBalancerV2", async function () {
     const domainName = "test-load-balancer.grucloud.org";
     const hostedZoneName = "hostedZoneNameTODO";
 
-    const hostedZone = await provider.makeHostedZone({
+    const hostedZone = provider.route53.makeHostedZone({
       name: `${domainName}.`,
     });
 
-    const loadBalancerRecord = await provider.makeRoute53Record({
+    const loadBalancerRecord = provider.route53.makeRecord({
       name: `dns-record-alias-load-balancer-${hostedZoneName}`,
       dependencies: { hostedZone, loadBalancerReadOnly, loadBalancer },
       properties: ({ dependencies }) => {

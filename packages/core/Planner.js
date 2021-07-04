@@ -19,17 +19,21 @@ const {
 } = require("rubico");
 
 const {
+  first,
+  size,
   isEmpty,
   isFunction,
   pluck,
+  identity,
   find,
-  forEach,
+  callProp,
   isString,
   uniq,
   isDeepEqual,
+  includes,
 } = require("rubico/x");
 const { logError, convertError } = require("./Common");
-
+const { displayType } = require("./ProviderCommon");
 const STATES = {
   WAITING: "WAITING",
   RUNNING: "RUNNING",
@@ -72,27 +76,71 @@ exports.mapToGraph = pipe([
   }),
 ]);
 
+const parseFullType = (fullType) =>
+  pipe([
+    () => fullType,
+    callProp("split", "::"),
+    switchCase([
+      eq(size, 1), //
+      (aType) => [undefined, first(aType)],
+      identity,
+    ]),
+  ])();
+
 const dependsOnTypeForward = (dependsOnType) =>
-  map((spec) => ({
-    providerName: spec.providerName,
-    type: spec.type,
-    dependsOn: map((type) => ({ type, providerName: spec.providerName }))(
-      spec.dependsOn
-    ),
-  }))(dependsOnType);
+  pipe([
+    tap((xxx) => {
+      assert(true);
+    }),
+    () => dependsOnType,
+    map((spec) => ({
+      providerName: spec.providerName,
+      type: spec.type,
+      group: spec.group,
+      dependsOn: pipe([
+        () => spec.dependsOn,
+        map(
+          pipe([
+            (fullType) => parseFullType(fullType),
+            ([group, type]) => ({
+              type,
+              group,
+              providerName: spec.providerName,
+            }),
+          ])
+        ),
+      ])(),
+    })),
+    tap((xxx) => {
+      assert(true);
+    }),
+  ])();
 
 const dependsOnTypeReverse = (dependsOnType) =>
-  map((spec) => ({
-    providerName: spec.providerName,
-    type: spec.type,
-    dependsOn: pipe([
-      () => dependsOnType,
-      filter(({ dependsOn = [] }) => dependsOn.includes(spec.type)),
-      map(pick(["providerName", "type"])),
-    ])(),
-  }))(dependsOnType);
+  pipe([
+    () => dependsOnType,
+    map((spec) => ({
+      providerName: spec.providerName,
+      type: spec.type,
+      group: spec.group,
+      dependsOn: pipe([
+        () => dependsOnType,
+        filter(pipe([get("dependsOn", []), includes(displayType(spec))])),
+        map(pick(["providerName", "type", "group"])),
+      ])(),
+    })),
+    tap((xxx) => {
+      assert(true);
+    }),
+  ])();
 
-const findDependsOnType = ({ providerName, type, plans, dependsOnType }) =>
+const findDependsOnType = ({
+  providerName,
+  group,
+  type,
+  plans,
+  dependsOnType,
+}) =>
   pipe([
     tap(() => {
       assert(providerName);
@@ -101,6 +149,7 @@ const findDependsOnType = ({ providerName, type, plans, dependsOnType }) =>
       assert(Array.isArray(dependsOnType));
     }),
     () => dependsOnType,
+    //TODO group
     find(and([eq(get("providerName"), providerName), eq(get("type"), type)])),
     tap((x) => {
       assert(x);
@@ -108,6 +157,7 @@ const findDependsOnType = ({ providerName, type, plans, dependsOnType }) =>
     get("dependsOn", []),
     flatMap((dependOn) =>
       pipe([
+        () => plans,
         tap((x) => {
           assert(dependOn.providerName);
           assert(dependOn.type);
@@ -115,12 +165,12 @@ const findDependsOnType = ({ providerName, type, plans, dependsOnType }) =>
         filter(
           pipe([
             get("resource"),
-            pick(["providerName", "type"]),
+            pick(["providerName", "type", "group"]),
             (resource) => isDeepEqual(resource, dependOn),
           ])
         ),
         pluck("resource"),
-      ])(plans)
+      ])()
     ),
     tap((dependsOn) => {
       logger.debug(`findDependsOnType ${JSON.stringify({ type, dependsOn })}`);
@@ -128,9 +178,10 @@ const findDependsOnType = ({ providerName, type, plans, dependsOnType }) =>
   ])();
 
 const dependsOnInstanceReverse = (dependsOnInstance) =>
-  map(({ uri, type, providerName }) => ({
+  map(({ uri, type, group, providerName }) => ({
     uri,
     providerName,
+    group,
     type,
     dependsOn: pipe([
       () => dependsOnInstance,
@@ -186,11 +237,12 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
       pipe([
         () => plans,
         pluck("resource"),
-        map(({ name, providerName, type, uri }) => ({
+        map(({ name, providerName, type, group, uri }) => ({
           name,
           uri,
           dependsOn: uniq([
             ...findDependsOnType({
+              group,
               providerName,
               type,
               plans,
@@ -212,12 +264,13 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
       pipe([
         () => plans,
         pluck("resource"),
-        map(({ name, providerName, type, uri }) => ({
+        map(({ name, providerName, group, type, uri }) => ({
           name,
           uri,
           dependsOn: uniq([
             ...findDependsOnType({
               providerName,
+              group,
               type,
               plans,
               dependsOnType: dependsOnTypeForward(dependsOnType),
@@ -271,12 +324,13 @@ exports.Planner = ({
 
   const findDependsOn = (item, dependencyTree) =>
     pipe([
+      () => dependencyTree,
       tap(() => {
         assert(item.resource.uri);
       }),
       find(eq(get("uri"), item.resource.uri)),
       get("dependsOn", []),
-    ])(dependencyTree);
+    ])();
 
   plans.map((item) => {
     const key = itemToKey(item);
@@ -429,9 +483,9 @@ exports.Planner = ({
           map(
             tryCatch(
               (entry) => runItem(entry, onEnd),
-              (error) => {
+              (error, entry) => {
                 logger.error(`Planner error ${tos(error)}`);
-                return { error };
+                return { error, entry };
               }
             )
           ),

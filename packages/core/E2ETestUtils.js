@@ -17,7 +17,7 @@ const isPlanEmpty = switchCase([
 exports.isPlanEmpty = isPlanEmpty;
 
 const testList = async ({ provider }) => {
-  const { results: livesAll } = await provider.listLives();
+  const { results: livesAll } = provider.listLives();
   assert(!isEmpty(livesAll));
 
   await testListByName({ provider, livesAll });
@@ -32,7 +32,7 @@ const testListByName = async ({ provider, livesAll }) => {
   )[0];
   assert(name);
   //TODO
-  const { results: liveByName } = await provider.listLives({
+  const { results: liveByName } = provider.listLives({
     options: {
       name,
     },
@@ -45,7 +45,7 @@ const testListById = async ({ provider, livesAll }) => {
   //Filter By Id
   const { id } = livesAll[0].resources[0];
   assert(id);
-  const { results: live } = await provider.listLives({
+  const { results: live } = provider.listLives({
     options: {
       id,
     },
@@ -57,7 +57,7 @@ const testListById = async ({ provider, livesAll }) => {
 const testListByType = async ({ provider, livesAll }) => {
   //Filter By Type
   const { type } = livesAll[0];
-  const { results: liveByType } = await provider.listLives({
+  const { results: liveByType } = provider.listLives({
     options: { types: [type] },
   });
   assert.equal(liveByType.length, 1, tos(liveByType));
@@ -68,7 +68,7 @@ const testDestroyByName = async ({ provider, lives }) => {
   const { name } = lives.results[0].resources[0];
   assert(name);
   //TODO
-  const plans = await provider.planFindDestroy({
+  const plans = provider.planFindDestroy({
     lives,
     options: {
       name,
@@ -81,7 +81,7 @@ const testDestroyByName = async ({ provider, lives }) => {
 const testDestroyById = async ({ provider, lives }) => {
   const { id } = lives.results[0].resources[0];
   assert(id);
-  const plans = await provider.planFindDestroy({
+  const plans = provider.planFindDestroy({
     lives,
     options: {
       id,
@@ -93,7 +93,7 @@ const testDestroyById = async ({ provider, lives }) => {
 
 const testDestroyByType = async ({ provider, lives }) => {
   const { type } = lives.results[0];
-  const plans = await provider.planFindDestroy({
+  const plans = provider.planFindDestroy({
     lives,
     options: {
       types: [type],
@@ -108,7 +108,7 @@ const testPlanDestroy = async ({ provider, types = [], full = false }) => {
   const infra = { provider };
 
   if (full) {
-    const lives = await provider.listLives({
+    const lives = provider.listLives({
       options: {
         our: true,
         canBeDeleted: true,
@@ -209,7 +209,7 @@ exports.testPlanDeploy = async ({
   if (full) {
     await testList({ provider });
     {
-      const targets = await provider.listTargets();
+      const targets = provider.listTargets();
       // must be our minion
     }
   }

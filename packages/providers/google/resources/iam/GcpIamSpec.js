@@ -1,3 +1,4 @@
+const { pipe, assign, map } = require("rubico");
 const { tos } = require("@grucloud/core/tos");
 
 const {
@@ -14,35 +15,26 @@ const {
 
 const logger = require("@grucloud/core/logger")({ prefix: "GcpIamSpec" });
 
-module.exports = (config) => [
-  {
-    type: "ServiceAccount",
-    Client: ({ spec }) =>
-      GcpServiceAccount({
-        spec,
-        config,
-      }),
-    isOurMinion: isOurMinionServiceAccount,
-  },
-  {
-    type: "IamPolicy",
-    singleton: true,
-    Client: ({ spec }) =>
-      GcpIamPolicy({
-        spec,
-        config,
-      }),
-    isOurMinion: () => true,
-    compare: compareIamPolicy,
-  },
-  {
-    type: "IamBinding",
-    Client: ({ spec }) =>
-      GcpIamBinding({
-        spec,
-        config,
-      }),
-    isOurMinion: isOurMinionIamBinding,
-    compare: compareIamBinding,
-  },
-];
+const GROUP = "iam";
+
+module.exports = () =>
+  map(assign({ group: () => GROUP }))([
+    {
+      type: "ServiceAccount",
+      Client: GcpServiceAccount,
+      isOurMinion: isOurMinionServiceAccount,
+    },
+    {
+      type: "Policy",
+      singleton: true,
+      Client: GcpIamPolicy,
+      isOurMinion: () => true,
+      compare: compareIamPolicy,
+    },
+    {
+      type: "Binding",
+      Client: GcpIamBinding,
+      isOurMinion: isOurMinionIamBinding,
+      compare: compareIamBinding,
+    },
+  ]);

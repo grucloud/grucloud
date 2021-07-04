@@ -10,7 +10,7 @@ Provides a [Kubernetes Role](https://kubernetes.io/docs/reference/access-authn-a
 ### Create a Role
 
 ```js
-const role = await provider.makeRole({
+const role = provider.makeRole({
   name: "aws-load-balancer-controller-leader-election-role",
   properties: () => ({
     metadata: {

@@ -6,7 +6,7 @@ title: Virtual Network
 Provides a virtual network.
 
 ```js
-const virtualNetwork = await provider.makeVirtualNetwork({
+const virtualNetwork = provider.makeVirtualNetwork({
   name: `virtual-network`,
   dependencies: { resourceGroup },
   properties: () => ({

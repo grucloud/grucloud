@@ -8,7 +8,7 @@ exports.createStack = async ({ config }) => {
     manifests: await Prometheus.loadManifest(),
   });
 
-  const namespace = await provider.makeNamespace({
+  const namespace = provider.makeNamespace({
     name: "pgo",
   });
 

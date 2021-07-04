@@ -9,11 +9,11 @@ exports.createStack = async ({ config }) => {
     configs: [config, PostgresStack.config],
   });
 
-  const namespace = await provider.makeNamespace({
+  const namespace = provider.makeNamespace({
     name: "test-postgres",
   });
 
-  const persistentVolume = await provider.makePersistentVolume({
+  const persistentVolume = provider.makePersistentVolume({
     name: provider.config.postgres.pvName,
     dependencies: { namespace },
     properties: () => ({

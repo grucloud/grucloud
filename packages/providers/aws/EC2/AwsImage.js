@@ -113,7 +113,6 @@ exports.AwsImage = ({ spec, config }) => {
     defaultsDeep({})(properties);
 
   return {
-    type: "Image",
     spec,
     findId,
     getByName,

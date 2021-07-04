@@ -7,12 +7,12 @@ const lambdaAssumePolicy = require("./lambdaAssumePolicy.json");
 const createResources = async ({ provider }) => {
   const { config } = provider;
 
-  const iamPolicy = await provider.makeIamPolicy({
+  const iamPolicy = provider.iam.makePolicy({
     name: "lambda-policy",
     properties: () => lambdaPolicy,
   });
 
-  const iamRole = await provider.makeIamRole({
+  const iamRole = provider.iam.makeRole({
     name: "lambda-role",
     dependencies: { policies: [iamPolicy] },
     properties: () => lambdaAssumePolicy,
@@ -21,7 +21,7 @@ const createResources = async ({ provider }) => {
   const zip = new AdmZip();
   zip.addLocalFile("helloworld.js");
 
-  const lambda = await provider.makeFunction({
+  const lambda = provider.makeFunction({
     name: "lambda-hello-world-1",
     dependencies: { role: iamRole },
     properties: () => ({

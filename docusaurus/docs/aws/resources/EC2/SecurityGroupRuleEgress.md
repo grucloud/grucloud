@@ -11,14 +11,14 @@ Manages a security group egress rule.
 The following example creates a security rule to allow egress traffic.
 
 ```js
-const vpc = await provider.makeVpc({
+const vpc = provider.ec2.makeVpc({
   name: "vpc",
   properties: () => ({
     CidrBlock: "10.1.0.0/16",
   }),
 });
 
-const sg = await provider.makeSecurityGroup({
+const sg = provider.ec2.makeSecurityGroup({
   name: "securityGroup",
   dependencies: { vpc },
   properties: () => ({
@@ -28,7 +28,7 @@ const sg = await provider.makeSecurityGroup({
   }),
 });
 
-const sgRuleEgress = await provider.makeSecurityGroupRuleEgress({
+const sgRuleEgress = provider.ec2.makeSecurityGroupRuleEgress({
   name: "sg-rule-egress",
   dependencies: {
     securityGroup: sg,

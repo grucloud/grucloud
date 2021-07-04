@@ -10,7 +10,7 @@ Provides a [Kubernetes Service Account](https://kubernetes.io/docs/tasks/configu
 ### Create a Service Account
 
 ```js
-const serviceAccount = await provider.makeServiceAccount({
+const serviceAccount = provider.makeServiceAccount({
   name: "aws-load-balancer-controller",
   dependencies: { role: resources.roleLoadBalancer },
   properties: ({ dependencies: { role } }) => ({

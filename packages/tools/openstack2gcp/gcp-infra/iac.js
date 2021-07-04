@@ -5,12 +5,12 @@ const { GoogleProvider } = require("@grucloud/provider-google");
 const createResources = async ({ provider }) => {
   const { stage } = provider.config;
 
-  const rhmig = await provider.makeNetwork({
+  const rhmig = provider.compute.makeNetwork({
     name: "rhmig",
     properties: () => ({ autoCreateSubnetworks: false }),
   });
 
-  const subnet_10_0_0_0_16 = await provider.makeSubNetwork({
+  const subnet_10_0_0_0_16 = provider.compute.makeSubNetwork({
     name: "subnet-10-0-0-0-16",
     dependencies: { network: rhmig },
     properties: () => ({
@@ -18,12 +18,12 @@ const createResources = async ({ provider }) => {
     }),
   });
 
-  const extraDisk = await provider.makeDisk({
+  const extraDisk = provider.compute.makeDisk({
     name: "extra-disk",
     properties: () => ({}),
   });
 
-  const s1_2Uk1 = await provider.makeVmInstance({
+  const s1_2Uk1 = provider.compute.makeVmInstance({
     name: "s1-2-uk1",
     dependencies: { subNetwork: subnet_10_0_0_0_16, disks: [extraDisk] },
     properties: () => ({

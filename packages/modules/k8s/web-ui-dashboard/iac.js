@@ -4,7 +4,7 @@ exports.hooks = [];
 exports.createResources = async ({ provider }) => {
   const adminUsername = "dashboard-admin-user";
 
-  const serviceAccountAdminUser = await provider.makeServiceAccount({
+  const serviceAccountAdminUser = provider.makeServiceAccount({
     name: adminUsername,
     properties: () => ({
       metadata: {
@@ -13,7 +13,7 @@ exports.createResources = async ({ provider }) => {
     }),
   });
 
-  const clusterRoleBindingAdminUser = await provider.makeClusterRoleBinding({
+  const clusterRoleBindingAdminUser = provider.makeClusterRoleBinding({
     name: adminUsername,
     properties: () => ({
       roleRef: {

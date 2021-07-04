@@ -79,12 +79,12 @@ exports.createStack = async ({ config, stage }) => {
   const provider = AzureProvider({ config });
 
   // https://docs.microsoft.com/en-us/rest/api/apimanagement/2019-12-01/apimanagementservice/createorupdate
-  const rg = await provider.makeResourceGroup({
+  const rg = provider.makeResourceGroup({
     name: `resource-group-${stage}`,
   });
 
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtualnetworks/createorupdate#request-body
-  const vnet = await provider.makeVirtualNetwork({
+  const vnet = provider.makeVirtualNetwork({
     name: `virtual-network-${stage}`,
     dependencies: { resourceGroup: rg },
     properties: () => ({
@@ -103,7 +103,7 @@ exports.createStack = async ({ config, stage }) => {
   });
 
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networksecuritygroups/createorupdate#request-body
-  const sg = await provider.makeSecurityGroup({
+  const sg = provider.makeSecurityGroup({
     name: `security-group-${stage}`,
     dependencies: { resourceGroup: rg },
     properties: () => ({
@@ -128,7 +128,7 @@ exports.createStack = async ({ config, stage }) => {
   });
 
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/publicipaddresses/createorupdate#request-body
-  const publicIpAddress = await provider.makePublicIpAddress({
+  const publicIpAddress = provider.makePublicIpAddress({
     name: `ip-${stage}`,
     dependencies: {
       resourceGroup: rg,
@@ -140,7 +140,7 @@ exports.createStack = async ({ config, stage }) => {
     }),
   });
   // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networkinterfaces/createorupdate#request-body
-  const networkInterface = await provider.makeNetworkInterface({
+  const networkInterface = provider.makeNetworkInterface({
     name: `network-interface-${stage}`,
     dependencies: {
       resourceGroup: rg,
@@ -168,7 +168,7 @@ exports.createStack = async ({ config, stage }) => {
   assert(MACHINE_ADMIN_PASSWORD);
 
   // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/createorupdate
-  const vm = await provider.makeVirtualMachine({
+  const vm = provider.makeVirtualMachine({
     name: `vm-${stage}`,
     dependencies: {
       resourceGroup: rg,

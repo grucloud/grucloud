@@ -54,7 +54,6 @@ exports.AwsIamPolicyReadOnly = ({ spec, config }) => {
     getByNameCore({ name, resources, getList, findName });
 
   return {
-    type: "IamPolicyReadOnly",
     spec,
     getList,
     findName,

@@ -43,7 +43,8 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const RESOURCE_TYPE = "CloudFrontDistribution";
+//TODO look in spec.type instead
+const RESOURCE_TYPE = "Distribution";
 const findName = findNameInTags;
 const findId = get("Id");
 
@@ -402,7 +403,6 @@ exports.AwsDistribution = ({ spec, config }) => {
       ),
     ])();
   return {
-    type: RESOURCE_TYPE,
     spec,
     findId,
     findDependencies,

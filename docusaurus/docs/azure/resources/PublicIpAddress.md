@@ -6,7 +6,7 @@ title: Public Ip Address
 Provides a Public Ip Address:
 
 ```js
-const publicIpAddress = await provider.makePublicIpAddress({
+const publicIpAddress = provider.makePublicIpAddress({
   name: `ip`,
   dependencies: {
     resourceGroup,

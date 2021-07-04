@@ -6,13 +6,14 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
   const { stage } = provider.config;
 
   // Vpc network
-  const network = await provider.makeNetwork({
+  const network = provider.compute.makeNetwork({
     name: `vpc-${stage}`,
     properties: () => ({ autoCreateSubnetworks: false }),
   });
 
   // Subnetwork
-  const subNetwork = await provider.makeSubNetwork({
+
+  const subNetwork = provider.compute.makeSubNetwork({
     name: `subnetwork-${stage}`,
     dependencies: { network },
     properties: () => ({
@@ -20,7 +21,7 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
     }),
   });
 
-  const firewall = await provider.makeFirewall({
+  const firewall = provider.compute.makeFirewall({
     name: `firewall-${stage}`,
     dependencies: { network },
     properties: () => ({
@@ -35,7 +36,7 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
   });
 
   // Allocate a server
-  const server = await provider.makeVmInstance({
+  const server = provider.compute.makeVmInstance({
     name: `db-${stage}`,
     dependencies: { subNetwork },
 
@@ -69,7 +70,7 @@ exports.createStack = async () => {
   const provider = GoogleProvider({ config: require("./config") });
   const { stage } = provider.config;
   assert(stage, "missing stage");
-  const serviceAccount = await provider.makeServiceAccount({
+  const serviceAccount = provider.iam.makeServiceAccount({
     name: `sa-${stage}`,
     properties: () => ({
       serviceAccount: {

@@ -161,7 +161,6 @@ exports.Function = ({ spec, config }) => {
     ])();
 
   return {
-    type: "Function",
     spec,
     findName,
     findId,

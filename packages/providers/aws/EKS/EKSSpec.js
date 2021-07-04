@@ -1,3 +1,4 @@
+const { pipe, assign, map } = require("rubico");
 const { isOurMinionObject } = require("@grucloud/core/Common");
 const { EKSCluster } = require("./EKSCluster");
 const { EKSNodeGroup, compareNodeGroup } = require("./EKSNodeGroup");
@@ -5,18 +6,32 @@ const { EKSNodeGroup, compareNodeGroup } = require("./EKSNodeGroup");
 const isOurMinion = ({ live, config }) =>
   isOurMinionObject({ tags: live.tags, config });
 
-module.exports = [
-  {
-    type: "EKSCluster",
-    dependsOn: ["SecurityGroup", "Subnet", "InternetGateway", "KmsKey"],
-    Client: EKSCluster,
-    isOurMinion,
-  },
-  {
-    type: "EKSNodeGroup",
-    dependsOn: ["EKSCluster", "Subnet", "IamRole", "AutoScalingGroup", "EC2"],
-    Client: EKSNodeGroup,
-    isOurMinion,
-    compare: compareNodeGroup,
-  },
-];
+const GROUP = "eks";
+
+module.exports = () =>
+  map(assign({ group: () => GROUP }))([
+    {
+      type: "Cluster",
+      dependsOn: [
+        "ec2::SecurityGroup",
+        "ec2::Subnet",
+        "ec2::InternetGateway",
+        "kms::Key",
+      ],
+      Client: EKSCluster,
+      isOurMinion,
+    },
+    {
+      type: "NodeGroup",
+      dependsOn: [
+        "eks::Cluster",
+        "ec2::Subnet",
+        "iam::Role",
+        "autoscaling::AutoScalingGroup",
+        "ec2::Instance",
+      ],
+      Client: EKSNodeGroup,
+      isOurMinion,
+      compare: compareNodeGroup,
+    },
+  ]);

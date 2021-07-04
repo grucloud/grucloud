@@ -26,9 +26,9 @@ describe("GoogleAddress", async function () {
       }),
     });
 
-    await provider.start();
+    address = provider.compute.makeAddress({ name: addressName });
 
-    address = await provider.makeAddress({ name: addressName });
+    await provider.start();
   });
   after(async () => {});
   it("address config", async function () {

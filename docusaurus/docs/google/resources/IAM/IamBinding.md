@@ -10,7 +10,7 @@ Provides a IAM Binding for a project.
 ### Bind a user to a role
 
 ```js
-const iamBinding = await provider.makeIamBinding({
+const iamBinding = provider.iam.makeBinding({
   name: "roles/editor",
   properties: () => ({
     members: ["user:jane@example.com"],
@@ -21,14 +21,14 @@ const iamBinding = await provider.makeIamBinding({
 ### Bind a service account to a role
 
 ```js
-const serviceAccount = await provider.makeServiceAccount({
+const serviceAccount = provider.iam.makeServiceAccount({
   name: "sa",
   properties: () => ({
     accountId: "sa",
   }),
 });
 
-const iamBinding = await provider.makeIamBinding({
+const iamBinding = provider.iam.makeBinding({
   name: "roles/editor",
   dependencies: { serviceAccounts: [serviceAccount] },
   properties: ({}) => ({}),

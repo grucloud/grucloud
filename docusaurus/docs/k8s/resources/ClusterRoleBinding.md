@@ -10,7 +10,7 @@ Provides a [Kubernetes Cluster Role Binding](https://kubernetes.io/docs/referenc
 ### Create a Cluster Role Binding
 
 ```js
-const clusterRoleBinding = await provider.makeClusterRoleBinding({
+const clusterRoleBinding = provider.makeClusterRoleBinding({
   name: "aws-load-balancer-controller-rolebinding",
   properties: () => ({
     metadata: {

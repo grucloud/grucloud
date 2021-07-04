@@ -5,11 +5,11 @@ const hook = require("./hook");
 const createResources = async ({ provider, resources: { serviceAccount } }) => {
   const { stage } = provider.config;
   // Allocate public Ip address
-  const ip = await provider.makeAddress({
+  const ip = provider.compute.makeAddress({
     name: `ip-webserver-${stage}`,
   });
 
-  const firewall22_80_433 = await provider.makeFirewall({
+  const firewall22_80_433 = provider.compute.makeFirewall({
     name: `firewall-22-80-433-${stage}`,
     properties: () => ({
       allowed: [
@@ -21,7 +21,7 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
       ],
     }),
   });
-  const firewallIcmp = await provider.makeFirewall({
+  const firewallIcmp = provider.compute.makeFirewall({
     name: `firewall-icmp-${stage}`,
     properties: () => ({
       allowed: [
@@ -33,7 +33,7 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
     }),
   });
 
-  const disk = await provider.makeDisk({
+  const disk = provider.compute.makeDisk({
     name: `disk-${stage}`,
     properties: () => ({
       sizeGb: "20",
@@ -41,7 +41,7 @@ const createResources = async ({ provider, resources: { serviceAccount } }) => {
   });
 
   // Allocate a server
-  const server = await provider.makeVmInstance({
+  const server = provider.compute.makeVmInstance({
     name: `webserver-${stage}`,
     dependencies: {
       //TODO broken with serviceAccount
@@ -78,7 +78,7 @@ exports.createStack = async () => {
   const { stage } = provider.config;
   assert(stage, "missing stage");
 
-  const serviceAccount = await provider.makeServiceAccount({
+  const serviceAccount = provider.iam.makeServiceAccount({
     name: `sa-${stage}`,
     properties: () => ({
       serviceAccount: {

@@ -35,11 +35,11 @@ const createAwsStack = async ({ stage }) => {
   assert(domainName);
   assert(rootDomainName);
 
-  const domain = await provider.useRoute53Domain({
+  const domain = provider.route53Domain.useDomain({
     name: rootDomainName,
   });
 
-  const hostedZone = await provider.makeHostedZone({
+  const hostedZone = provider.route53.makeHostedZone({
     name: `${domainName}.`,
     dependencies: { domain },
   });
@@ -142,7 +142,7 @@ exports.createStack = async ({ stage }) => {
   const { ingress } = stackK8s.resources;
   assert(ingress);
 
-  const loadBalancer = await stackAws.provider.useLoadBalancer({
+  const loadBalancer = await stackAws.provider.elb.useLoadBalancer({
     name: "load-balancer",
     filterLives: ({ items }) =>
       pipe([
@@ -167,7 +167,7 @@ exports.createStack = async ({ stage }) => {
       ])(),
   });
 
-  const loadBalancerRecord = await stackAws.provider.makeRoute53Record({
+  const loadBalancerRecord = await stackAws.provider.makeRecord({
     name: `dns-record-alias-load-balancer-${hostedZone.name}`,
     dependencies: { hostedZone, loadBalancer },
     properties: ({ dependencies }) => {

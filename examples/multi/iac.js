@@ -26,7 +26,7 @@ const AwsStackS3Multiple = require("../aws/s3-multiple/iac");
 
 const AwsStackIamUser = require("../aws/iam/iac");
 
-const AzureStack = require("../azure/iac");
+const AzureStack = require("../azure/vm/iac");
 
 const GoogleStackVm = require("../google/vm/iac");
 
@@ -48,7 +48,7 @@ const createAws = async ({}) => {
     ],
   });
 
-  const keyPair = await provider.useKeyPair({
+  const keyPair = provider.ec2.useKeyPair({
     name: "kp",
   });
 
@@ -120,7 +120,7 @@ const createGoogle = async ({}) => {
   assert(stage, "missing stage");
 
   // Service Account
-  const serviceAccount = await provider.makeServiceAccount({
+  const serviceAccount = provider.iam.makeServiceAccount({
     name: `sa-${stage}`,
     properties: () => ({
       serviceAccount: {
@@ -185,7 +185,7 @@ exports.createStack = async ({ config }) => {
       await createAws({ config }),
       //await createAwsUsEast1({ config }),
       await createAzure({ config }),
-      //await createGoogle({ config }),
+      await createGoogle({ config }),
       //await createScaleway({ config }),
     ],
   };

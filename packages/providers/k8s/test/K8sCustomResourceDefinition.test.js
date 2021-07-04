@@ -28,82 +28,79 @@ describe.skip("K8sCustomResourceDefinition", async function () {
       config: () => ({}),
     });
 
-    await provider.start();
-    namespace = await provider.makeNamespace({
+    namespace = provider.makeNamespace({
       name: myNamespace,
     });
 
-    mutatingWebhookConfiguration = await provider.makeMutatingWebhookConfiguration(
-      {
-        name: mutatingWebhookConfigurationName,
-        properties: () => ({
-          metadata: {
-            annotations: {
-              "cert-manager.io/inject-ca-from":
-                "kube-system/aws-load-balancer-serving-cert",
-            },
-            creationTimestamp: null,
-            labels: {
-              "app.kubernetes.io/name": "aws-load-balancer-controller",
-            },
+    mutatingWebhookConfiguration = provider.makeMutatingWebhookConfiguration({
+      name: mutatingWebhookConfigurationName,
+      properties: () => ({
+        metadata: {
+          annotations: {
+            "cert-manager.io/inject-ca-from":
+              "kube-system/aws-load-balancer-serving-cert",
           },
-          webhooks: [
-            {
-              clientConfig: {
-                caBundle: "Cg==",
-                service: {
-                  name: "aws-load-balancer-webhook-service",
-                  namespace: "kube-system",
-                  path: "/mutate-v1-pod",
-                },
+          creationTimestamp: null,
+          labels: {
+            "app.kubernetes.io/name": "aws-load-balancer-controller",
+          },
+        },
+        webhooks: [
+          {
+            clientConfig: {
+              caBundle: "Cg==",
+              service: {
+                name: "aws-load-balancer-webhook-service",
+                namespace: "kube-system",
+                path: "/mutate-v1-pod",
               },
-              failurePolicy: "Fail",
-              name: "mpod.elbv2.k8s.aws",
-              namespaceSelector: {
-                matchExpressions: [
-                  {
-                    key: "elbv2.k8s.aws/pod-readiness-gate-inject",
-                    operator: "In",
-                    values: ["enabled"],
-                  },
-                ],
-              },
-              rules: [
+            },
+            failurePolicy: "Fail",
+            name: "mpod.elbv2.k8s.aws",
+            namespaceSelector: {
+              matchExpressions: [
                 {
-                  apiGroups: [""],
-                  apiVersions: ["v1"],
-                  operations: ["CREATE"],
-                  resources: ["pods"],
+                  key: "elbv2.k8s.aws/pod-readiness-gate-inject",
+                  operator: "In",
+                  values: ["enabled"],
                 },
               ],
-              sideEffects: "None",
             },
-            {
-              clientConfig: {
-                caBundle: "Cg==",
-                service: {
-                  name: "aws-load-balancer-webhook-service",
-                  namespace: "kube-system",
-                  path: "/mutate-elbv2-k8s-aws-v1beta1-targetgroupbinding",
-                },
+            rules: [
+              {
+                apiGroups: [""],
+                apiVersions: ["v1"],
+                operations: ["CREATE"],
+                resources: ["pods"],
               },
-              failurePolicy: "Fail",
-              name: "mtargetgroupbinding.elbv2.k8s.aws",
-              rules: [
-                {
-                  apiGroups: ["elbv2.k8s.aws"],
-                  apiVersions: ["v1beta1"],
-                  operations: ["CREATE", "UPDATE"],
-                  resources: ["targetgroupbindings"],
-                },
-              ],
-              sideEffects: "None",
+            ],
+            sideEffects: "None",
+          },
+          {
+            clientConfig: {
+              caBundle: "Cg==",
+              service: {
+                name: "aws-load-balancer-webhook-service",
+                namespace: "kube-system",
+                path: "/mutate-elbv2-k8s-aws-v1beta1-targetgroupbinding",
+              },
             },
-          ],
-        }),
-      }
-    );
-    customResourceDefinition = await provider.makeCustomResourceDefinition({
+            failurePolicy: "Fail",
+            name: "mtargetgroupbinding.elbv2.k8s.aws",
+            rules: [
+              {
+                apiGroups: ["elbv2.k8s.aws"],
+                apiVersions: ["v1beta1"],
+                operations: ["CREATE", "UPDATE"],
+                resources: ["targetgroupbindings"],
+              },
+            ],
+            sideEffects: "None",
+          },
+        ],
+      }),
+    });
+    customResourceDefinition = provider.makeCustomResourceDefinition({
       name: customResourceDefinitionName,
       properties: ({}) => ({
         metadata: {
@@ -347,6 +344,8 @@ describe.skip("K8sCustomResourceDefinition", async function () {
         },
       }),
     });
+
+    await provider.start();
   });
   after(async () => {});
 

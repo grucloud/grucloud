@@ -6,7 +6,7 @@ title: Project
 Manages a [Project](https://cloud.google.com/resource-manager/reference/rest/v1/projects)
 
 ```js
-const project = await provider.makeProject({ name: "myproject" });
+const project = provider.makeProject({ name: "myproject" });
 ```
 
 ### Examples

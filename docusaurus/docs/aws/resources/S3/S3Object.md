@@ -10,12 +10,12 @@ Manages a [S3 Object](https://docs.aws.amazon.com/s3/index.html)
 ### Basic
 
 ```js
-const s3Bucket = await provider.makeS3Bucket({
+const s3Bucket = provider.s3.makeBucket({
   name: `myBucket`,
   properties: () => ({}),
 });
 
-const s3Object = await provider.makeS3Object({
+const s3Object = provider.s3.makeObject({
   name: `file-test`,
   dependencies: { bucket: s3Bucket },
   properties: () => ({

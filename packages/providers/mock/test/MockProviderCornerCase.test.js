@@ -12,7 +12,7 @@ describe("MockProviderCornerCase", async function () {
       config: () => ({}),
     });
     try {
-      await provider.makeServer({
+      provider.makeServer({
         name: "web-server",
         dependencies: { volume: undefined },
         properties: () => ({}),
@@ -26,12 +26,12 @@ describe("MockProviderCornerCase", async function () {
     const provider = MockProvider({
       config: () => ({}),
     });
-    await provider.makeServer({
+    provider.makeServer({
       name: "web-server",
       dependencies: {},
       properties: () => ({}),
     });
-    await provider.makeIp({
+    provider.makeIp({
       name: "web-server",
       dependencies: {},
       properties: () => ({}),

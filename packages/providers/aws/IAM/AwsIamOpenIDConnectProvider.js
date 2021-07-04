@@ -278,7 +278,6 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
     })(properties);
 
   return {
-    type: "IamOpenIDConnectProvider",
     spec,
     findNamespace,
     findId,

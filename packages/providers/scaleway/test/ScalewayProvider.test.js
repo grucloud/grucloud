@@ -26,8 +26,8 @@ describe("ScalewayProvider", async function () {
       config: () => ({}),
     });
 
-    ip = await provider.makeIp({ name: "myip" });
-    image = await provider.useImage({
+    ip = provider.makeIp({ name: "myip" });
+    image = provider.useImage({
       name: "ubuntu",
       config: ({ items: images }) => {
         assert(images);
@@ -39,7 +39,7 @@ describe("ScalewayProvider", async function () {
         return image;
       },
     });
-    server = await provider.makeServer({
+    server = provider.makeServer({
       name: "web-server",
       dependencies: { image, ip },
       properties: () => ({
@@ -56,12 +56,12 @@ describe("ScalewayProvider", async function () {
   after(async () => {});
 
   it("list all config", async function () {
-    const configs = await provider.listConfig();
+    const configs = provider.listConfig();
     //console.log(JSON.stringify(configs, null, 4));
     assert(configs);
   });
   it("list targets", async function () {
-    const result = await provider.listTargets();
+    const result = provider.listTargets();
     assert(result);
   });
   it.skip("plan", async function () {

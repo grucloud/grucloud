@@ -57,12 +57,12 @@ const fnSpecs = (config) => {
 
   return [
     {
-      // https://docs.microsoft.com/en-us/rest/api/resources/resourcegroups
+      // https://docs.microsoft.com/en-us/rest/api/resources/resource-groups
       // GET    https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}?api-version=2019-10-01
       // PUT    https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}?api-version=2019-10-01
       // DELETE https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}?api-version=2019-10-01
       // LIST   https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups?api-version=2019-10-01
-
+      group: "resourceManagement",
       type: "ResourceGroup",
       Client: ({ spec }) =>
         AzClient({
@@ -84,12 +84,12 @@ const fnSpecs = (config) => {
       isOurMinion,
     },
     {
-      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtualnetworks
+      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/virtual-networks
       // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{virtualNetworkName}?api-version=2020-05-01
       // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2020-05-01
-
+      group: "virtualNetworks",
       type: "VirtualNetwork",
-      dependsOn: ["ResourceGroup"],
+      dependsOn: ["resourceManagement::ResourceGroup"],
       Client: ({ spec }) =>
         AzClient({
           spec,
@@ -115,11 +115,12 @@ const fnSpecs = (config) => {
       isOurMinion,
     },
     {
-      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networksecuritygroups
+      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups
       // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkSecurityGroups/{networkSecurityGroupName}?api-version=2020-05-01
       // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2020-05-01
+      group: "virtualNetworks",
       type: "SecurityGroup",
-      dependsOn: ["ResourceGroup"],
+      dependsOn: ["resourceManagement::ResourceGroup"],
       Client: ({ spec }) =>
         AzClient({
           spec,
@@ -147,12 +148,12 @@ const fnSpecs = (config) => {
       isOurMinion,
     },
     {
-      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/publicipaddresses
+      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses
       // GET, PUT, DELETE, LIST https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/publicIPAddresses/{publicIpAddressName}?api-version=2020-05-01
       // LISTALL                https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/publicIPAddresses?api-version=2020-05-01
-
+      group: "virtualNetworks",
       type: "PublicIpAddress",
-      dependsOn: ["ResourceGroup"],
+      dependsOn: ["resourceManagement::ResourceGroup"],
       Client: ({ spec }) =>
         AzClient({
           spec,
@@ -181,15 +182,16 @@ const fnSpecs = (config) => {
       isOurMinion,
     },
     {
-      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/networkinterfaces
+      // https://docs.microsoft.com/en-us/rest/api/virtualnetwork/network-interfaces
       // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkInterfaces/{networkInterfaceName}?api-version=2020-05-01
       // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2020-05-01
+      group: "virtualNetworks",
       type: "NetworkInterface",
       dependsOn: [
-        "ResourceGroup",
-        "VirtualNetwork",
-        "SecurityGroup",
-        "PublicIpAddress",
+        "resourceManagement::ResourceGroup",
+        "virtualNetworks::VirtualNetwork",
+        "virtualNetworks::SecurityGroup",
+        "virtualNetworks::PublicIpAddress",
       ],
       Client: ({ spec }) =>
         AzClient({
@@ -235,12 +237,8 @@ const fnSpecs = (config) => {
           ],
           config,
           configDefault: async ({ properties, dependencies }) => {
-            const {
-              securityGroup,
-              virtualNetwork,
-              subnet,
-              publicIpAddress,
-            } = dependencies;
+            const { securityGroup, virtualNetwork, subnet, publicIpAddress } =
+              dependencies;
             assert(virtualNetwork, "dependencies is missing virtualNetwork");
             assert(subnet, "dependencies is missing subnet");
             assert(publicIpAddress, "dependencies is missing publicIpAddress");
@@ -306,12 +304,15 @@ const fnSpecs = (config) => {
     },
 
     {
-      // https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines
+      // https://docs.microsoft.com/en-us/rest/api/compute/virtual-machines
       // GET, PUT, DELETE, LIST: https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}?api-version=2019-12-01
       // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-12-01
-
+      group: "compute",
       type: "VirtualMachine",
-      dependsOn: ["ResourceGroup", "NetworkInterface"],
+      dependsOn: [
+        "resourceManagement::ResourceGroup",
+        "virtualNetworks::NetworkInterface",
+      ],
       Client: ({ spec }) =>
         AzClient({
           spec,

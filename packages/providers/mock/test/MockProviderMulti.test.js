@@ -20,7 +20,7 @@ describe("MockProviderMulti", async function () {
       config: () => ({}),
     });
 
-    volume1 = await provider1.makeVolume({
+    volume1 = provider1.makeVolume({
       name: "volume1",
       properties: () => ({
         size: 10_000_000_000,
@@ -33,7 +33,7 @@ describe("MockProviderMulti", async function () {
       dependencies: { provider1 },
     });
 
-    volume2 = await provider2.makeVolume({
+    volume2 = provider2.makeVolume({
       name: "volume2",
       properties: () => ({
         size: 10_000_000_000,

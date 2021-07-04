@@ -32,13 +32,13 @@ describe("AwsSubnet", async function () {
 
     await provider.start();
 
-    vpc = await provider.makeVpc({
+    vpc = provider.ec2.makeVpc({
       name: "vpc-test-subnet",
       properties: () => ({
         CidrBlock: "192.168.1.1/16",
       }),
     });
-    subnet = await provider.makeSubnet({
+    subnet = provider.ec2.makeSubnet({
       name: subnetName,
       dependencies: { vpc },
       attributes: () => ({
@@ -89,7 +89,7 @@ describe("AwsSubnet", async function () {
     /*
     const {
       results: [subnets],
-    } = await provider.listLives({ options: { types: ["Subnet"] } });
+    } = provider.listLives({ options: { types: ["Subnet"] } });
     assert(subnets);
     const subnetDefault = subnets.resources.find(
       (subnet) => subnet.live.DefaultForAz

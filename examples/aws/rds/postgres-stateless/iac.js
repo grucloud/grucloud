@@ -14,7 +14,7 @@ const createResourcesRds = async ({
 }) => {
   const { config } = provider;
 
-  const securityGroup = await provider.makeSecurityGroup({
+  const securityGroup = provider.ec2.makeSecurityGroup({
     name: "security-group-postgres",
     dependencies: { vpc: vpcResources.vpc },
     properties: () => ({
@@ -24,7 +24,7 @@ const createResourcesRds = async ({
     }),
   });
 
-  const sgRuleIngressPostgres = await provider.makeSecurityGroupRuleIngress({
+  const sgRuleIngressPostgres = provider.ec2.makeSecurityGroupRuleIngress({
     name: "sg-rule-ingress-postgres",
     dependencies: {
       securityGroup,
@@ -56,14 +56,14 @@ const createResourcesRds = async ({
 
   const subnets = pluck("subnet")(vpcResources.privates);
 
-  const dbSubnetGroup = await provider.makeDBSubnetGroup({
+  const dbSubnetGroup = provider.rds.makeDBSubnetGroup({
     name: config.rds.subnetGroup.name,
     dependencies: { subnets },
     properties: () => ({ DBSubnetGroupDescription: "db subnet group" }),
   });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBCluster-property
-  const dbCluster = await provider.makeDBCluster({
+  const dbCluster = provider.rds.makeDBCluster({
     name: config.rds.cluster.name,
     dependencies: { dbSubnetGroup, dbSecurityGroups: [securityGroup] },
     properties: () => config.rds.cluster.properties,
@@ -80,7 +80,7 @@ const createResourcesBastion = async ({
 }) => {
   const { config } = provider;
 
-  const securityGroup = await provider.makeSecurityGroup({
+  const securityGroup = provider.ec2.makeSecurityGroup({
     name: "security-group-public",
     dependencies: { vpc: vpcResources.vpc },
     properties: () => ({
@@ -92,7 +92,7 @@ const createResourcesBastion = async ({
     }),
   });
 
-  const sgRuleIngressSsh = await provider.makeSecurityGroupRuleIngress({
+  const sgRuleIngressSsh = provider.ec2.makeSecurityGroupRuleIngress({
     name: "sg-rule-ingress-ssh-bastion",
     dependencies: {
       securityGroup,
@@ -119,11 +119,11 @@ const createResourcesBastion = async ({
   });
 
   assert(config.eip);
-  const eip = await provider.makeElasticIpAddress({
+  const eip = provider.ec2.makeElasticIpAddress({
     name: config.rds.eip.name,
   });
 
-  const image = await provider.useImage({
+  const image = provider.ec2.useImage({
     name: "Amazon Linux 2",
     properties: () => ({
       Filters: [
@@ -142,7 +142,7 @@ const createResourcesBastion = async ({
   return {
     eip,
     securityGroup,
-    ec2Instance: await provider.makeEC2({
+    ec2Instance: provider.ec2.makeInstance({
       name: config.rds.ec2Instance.name,
       dependencies: {
         keyPair,
@@ -180,7 +180,7 @@ exports.createStack = async ({ stage }) => {
     stage,
   });
 
-  const keyPair = await provider.useKeyPair({
+  const keyPair = provider.ec2.useKeyPair({
     name: provider.config.keyPair.name,
   });
 

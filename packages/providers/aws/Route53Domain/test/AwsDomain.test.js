@@ -15,11 +15,11 @@ describe("AwsDomain", async function () {
       config: () => ({}),
     });
 
-    await provider.start();
-
-    domain = await provider.useRoute53Domain({
+    domain = provider.route53Domain.useDomain({
       name: domainName,
     });
+
+    await provider.start();
 
     return provider;
   };

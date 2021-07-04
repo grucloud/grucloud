@@ -6,14 +6,14 @@ title: Internet Gateway
 Provides an [Internet Gateway](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html)
 
 ```js
-const vpc = await provider.makeVpc({
+const vpc = provider.ec2.makeVpc({
   name: "vpc",
   properties: () => ({
     CidrBlock: "10.1.0.0/16",
   }),
 });
 
-const ig = await provider.makeInternetGateway({
+const ig = provider.ec2.makeInternetGateway({
   name: "ig",
   dependencies: { vpc },
 });

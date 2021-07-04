@@ -16,7 +16,7 @@ const createAxios = ({ url }) => {
 
 const createResources1 = async ({ provider }) => {
   // Ip
-  const volume = await provider.makeVolume({
+  const volume = provider.makeVolume({
     name: "volume1",
     properties: () => ({
       size: 20_000_000_000,
@@ -28,7 +28,7 @@ const createResources1 = async ({ provider }) => {
 
 const createResources2 = async ({ provider }) => {
   // Ip
-  const volume = await provider.makeVolume({
+  const volume = provider.makeVolume({
     name: "volume2",
     properties: () => ({
       size: 20_000_000_000,

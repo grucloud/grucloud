@@ -278,7 +278,6 @@ exports.EKSCluster = ({ spec, config }) => {
   });
 
   return {
-    type: "EKSCluster",
     spec,
     findId,
     findDependencies,

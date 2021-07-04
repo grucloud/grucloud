@@ -40,23 +40,23 @@ describe("AwsProvider", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    keyPair = await provider.useKeyPair({
+    keyPair = provider.ec2.useKeyPair({
       name: keyPairName,
     });
 
-    vpc = await provider.makeVpc({
+    vpc = provider.ec2.makeVpc({
       name: formatName("vpc"),
       properties: () => ({
         CidrBlock: "10.1.0.1/16",
       }),
     });
 
-    ig = await provider.makeInternetGateway({
+    ig = provider.ec2.makeInternetGateway({
       name: formatName("ig"),
       dependencies: { vpc },
     });
 
-    subnet = await provider.makeSubnet({
+    subnet = provider.ec2.makeSubnet({
       name: formatName(subnetName),
       dependencies: { vpc },
       properties: () => ({
@@ -64,17 +64,17 @@ describe("AwsProvider", async function () {
       }),
     });
 
-    routeTable = await provider.makeRouteTable({
+    routeTable = provider.ec2.makeRouteTable({
       name: formatName("rt"),
       dependencies: { vpc, subnets: [subnet] },
     });
 
-    routeIg = await provider.makeRoute({
+    routeIg = provider.ec2.makeRoute({
       name: formatName("routeIg"),
       dependencies: { routeTable, ig },
     });
 
-    sg = await provider.makeSecurityGroup({
+    sg = provider.ec2.makeSecurityGroup({
       name: formatName(securityGroupName),
       dependencies: { vpc },
       properties: () => ({
@@ -105,12 +105,12 @@ describe("AwsProvider", async function () {
       }),
     });
 
-    eip = await provider.makeElasticIpAddress({
+    eip = provider.ec2.makeElasticIpAddress({
       name: formatName("myip"),
       properties: () => ({}),
     });
 
-    image = await provider.useImage({
+    image = provider.ec2.useImage({
       name: "Amazon Linux 2",
       properties: () => ({
         Filters: [
@@ -126,7 +126,7 @@ describe("AwsProvider", async function () {
       }),
     });
 
-    server = await provider.makeEC2({
+    server = provider.ec2.makeInstance({
       name: formatName(serverName),
       properties: () => ({}),
       dependencies: { image, keyPair, subnet, securityGroups: [sg], eip },
@@ -142,7 +142,7 @@ describe("AwsProvider", async function () {
     //assert.equal(config.KeyName, keyPair.name);
   });
   it("aws info", async function () {
-    const info = await provider.info();
+    const info = provider.info();
     assert(info.stage);
     assert(info.config.region);
   });

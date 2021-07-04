@@ -27,15 +27,15 @@ describe("AwsIamOpenIDConnectProvider", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    await provider.start();
-
-    iamOpenIdConnectProvider = await provider.makeIamOpenIDConnectProvider({
+    iamOpenIdConnectProvider = provider.iam.makeOpenIDConnectProvider({
       name: iamOpenIdConnectProviderName,
       properties: () => ({
         Url: oidcUrl,
         ClientIDList: ["sts.amazonaws.com"],
       }),
     });
+
+    await provider.start();
   });
   after(async () => {});
   it("fetchThumbprint", async function () {
@@ -57,7 +57,8 @@ describe("AwsIamOpenIDConnectProvider", async function () {
       planResult: { create: 1, destroy: 0 },
     });
 
-    const iamOpenIdConnectProviderLive = await iamOpenIdConnectProvider.getLive();
+    const iamOpenIdConnectProviderLive =
+      await iamOpenIdConnectProvider.getLive();
     assert(iamOpenIdConnectProviderLive);
     await testPlanDestroy({ provider, types });
   });

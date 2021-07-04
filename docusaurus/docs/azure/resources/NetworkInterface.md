@@ -6,7 +6,7 @@ title: Network Interface
 Provides a Network Interface:
 
 ```js
-const networkInterface = await provider.makeNetworkInterface({
+const networkInterface = provider.makeNetworkInterface({
   name: `network-interface`,
   dependencies: {
     resourceGroup,

@@ -15,7 +15,7 @@ const createAxios = ({ url }) => {
 
 const createResources = async ({ provider }) => {
   //Server
-  const server = await provider.makeServer({
+  const server = provider.makeServer({
     name: "db-server",
     properties: () => ({
       diskSizeGb: "50",

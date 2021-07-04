@@ -392,9 +392,8 @@ exports.AwsS3Bucket = ({ spec, config }) => {
                   }),
                   ACL: getACL({ name, params }),
                   CORSConfiguration: getCORSConfiguration({ name, params }),
-                  ServerSideEncryptionConfiguration: getServerSideEncryptionConfiguration(
-                    { name, params }
-                  ),
+                  ServerSideEncryptionConfiguration:
+                    getServerSideEncryptionConfiguration({ name, params }),
                   LocationConstraint: getLocationConstraint({ name, params }),
                   BucketLoggingStatus: getBucketLoggingStatus({ name, params }),
                   NotificationConfiguration: getNotificationConfiguration({
@@ -813,7 +812,6 @@ exports.AwsS3Bucket = ({ spec, config }) => {
     defaultsDeep({ Bucket: name })(properties);
 
   return {
-    type: "S3Bucket",
     spec,
     config: clientConfig,
     findNamespace,

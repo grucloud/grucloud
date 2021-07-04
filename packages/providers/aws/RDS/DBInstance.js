@@ -189,7 +189,6 @@ exports.DBInstance = ({ spec, config }) => {
     ])();
 
   return {
-    type: "DBInstance",
     spec,
     findName,
     findId,

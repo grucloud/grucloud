@@ -22,7 +22,7 @@ describe("AzResourceGroup", async function () {
       name: "azure",
       config,
     });
-    rg = await provider.makeResourceGroup({ name: rgName });
+    rg = provider.makeResourceGroup({ name: rgName });
   });
   after(async () => {});
   it("config", async function () {

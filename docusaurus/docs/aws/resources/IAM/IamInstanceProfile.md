@@ -8,7 +8,7 @@ Provides an Iam Instance Profile.
 The following example create an instance profile, a role attached to this instance profile, and create an ec2 instance under this profile:
 
 ```js
-const iamRole = await provider.makeIamRole({
+const iamRole = provider.iam.makeRole({
   name: "my-role",
   properties: () => ({
     Path: "/",
@@ -28,7 +28,7 @@ const iamRole = await provider.makeIamRole({
   }),
 });
 
-const iamInstanceProfile = await provider.makeIamInstanceProfile({
+const iamInstanceProfile = provider.iam.makeInstanceProfile({
   name: "my-instance-profile",
   dependencies: { iamRoles: [iamRoles] },
   properties: () => ({
@@ -36,7 +36,7 @@ const iamInstanceProfile = await provider.makeIamInstanceProfile({
   }),
 });
 
-const image = await provider.useImage({
+const image = provider.ec2.useImage({
   name: "Amazon Linux 2",
   properties: () => ({
     Filters: [
@@ -52,7 +52,7 @@ const image = await provider.useImage({
   }),
 });
 
-const server = await provider.makeEC2({
+const server = provider.ec2.makeInstance({
   name: "web-iam",
   dependencies: { image, keyPair, iamInstanceProfile },
   properties: () => ({
