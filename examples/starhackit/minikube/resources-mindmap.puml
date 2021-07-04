@@ -1,0 +1,26 @@
+@startmindmap
+title Resources for project minikube
+skinparam monochrome true
++ Infra
+++ k8s
++++ Namespace (1)
+++++ starhackit
++++ ConfigMap (2)
+++++ postgres
+++++ rest-server
++++ StatefulSet (2)
+++++ postgres
+++++ redis
++++ Service (4)
+++++ postgres
+++++ redis
+++++ rest
+++++ web
++++ Deployment (2)
+++++ rest
+++++ web
++++ PersistentVolume (1)
+++++ pv-db
++++ Ingress (1)
+++++ ingress
+@endmindmap

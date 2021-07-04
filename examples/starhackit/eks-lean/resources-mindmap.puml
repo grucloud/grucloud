@@ -1,0 +1,43 @@
+@startmindmap
+title Resources for project eks-lean
+skinparam monochrome true
++ Infra
+++ aws
++++ route53Domain
+++++ Domain (1)
++++ route53
+++++ HostedZone (1)
+++++ Record (2)
++++ acm
+++++ Certificate (1)
++++ ec2
+++++ Vpc (1)
+++++ InternetGateway (1)
+++++ Subnet (4)
+++++ RouteTable (3)
+++++ Route (3)
+++++ ElasticIpAddress (1)
+++++ NatGateway (1)
+++++ SecurityGroup (4)
+++++ SecurityGroupRuleIngress (6)
+++++ SecurityGroupRuleEgress (1)
++++ iam
+++++ Policy (5)
+++++ Role (2)
++++ kms
+++++ Key (1)
++++ eks
+++++ Cluster (1)
+++++ NodeGroup (1)
++++ elb
+++++ LoadBalancer (1)
+++++ TargetGroup (2)
+++++ Listener (2)
+++++ Rule (3)
+-- k8s
+--- Namespace (1)
+--- ConfigMap (2)
+--- StatefulSet (2)
+--- Service (4)
+--- Deployment (2)
+@endmindmap

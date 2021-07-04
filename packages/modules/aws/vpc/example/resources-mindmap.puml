@@ -1,0 +1,28 @@
+@startmindmap
+title Resources for project example
+skinparam monochrome true
++ Infra
+++ aws
++++ ec2
+++++ Vpc
++++++ vpc
+++++ InternetGateway
++++++ internet-gateway
+++++ Subnet
++++++ subnet-public-a
++++++ subnet-public-b
++++++ subnet-private-a
++++++ subnet-private-b
+++++ RouteTable
++++++ route-table-public
++++++ route-table-private-a
++++++ route-table-private-b
+++++ Route
++++++ route-public
++++++ route-private-a
++++++ route-private-b
+++++ ElasticIpAddress
++++++ iep
+++++ NatGateway
++++++ nat-gateway
+@endmindmap

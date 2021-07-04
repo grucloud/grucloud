@@ -1,0 +1,53 @@
+@startmindmap
+title Resources for project multi
+skinparam monochrome true
++ Infra
+++ aws
++++ ec2
+++++ KeyPair (1)
+++++ Vpc (2)
+++++ InternetGateway (2)
+++++ Subnet (5)
+++++ RouteTable (4)
+++++ Route (4)
+++++ ElasticIpAddress (4)
+++++ NatGateway (1)
+++++ Image (1)
+++++ Instance (4)
+++++ SecurityGroup (3)
+++++ SecurityGroupRuleIngress (4)
+++++ Volume (1)
++++ rds
+++++ DBSubnetGroup (1)
+++++ DBCluster (1)
++++ s3
+++++ Bucket (13)
+++++ Object (1)
++++ iam
+++++ Policy (4)
+++++ Group (1)
+++++ User (1)
+++++ Role (1)
+++++ InstanceProfile (1)
+-- azure
+--- resourceManagement
+---- ResourceGroup (1)
+--- virtualNetworks
+---- VirtualNetwork (1)
+---- SecurityGroup (1)
+---- PublicIpAddress (1)
+---- NetworkInterface (1)
+--- compute
+---- VirtualMachine (1)
+++ google
++++ iam
+++++ ServiceAccount (1)
+++++ Binding (1)
++++ compute
+++++ Address (1)
+++++ Firewall (3)
+++++ Disk (1)
+++++ VmInstance (2)
+++++ Network (1)
+++++ SubNetwork (1)
+@endmindmap

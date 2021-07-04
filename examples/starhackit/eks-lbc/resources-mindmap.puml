@@ -1,0 +1,158 @@
+@startmindmap
+title Resources for project eks-lbc
+skinparam monochrome true
++ Infra
+++ aws
++++ route53Domain
+++++ Domain (1)
++++++ grucloud.org
++++ route53
+++++ HostedZone (1)
++++++ starhackit-eks-lbc.grucloud.org.
+++++ Record (2)
++++++ certificate-validation-starhackit-eks-lbc.grucloud.org.
++++++ dns-record-alias-load-balancer-starhackit-eks-lbc.grucloud.org.
++++ acm
+++++ Certificate (1)
++++++ starhackit-eks-lbc.grucloud.org
++++ ec2
+++++ Vpc (1)
++++++ vpc
+++++ InternetGateway (1)
++++++ internet-gateway
+++++ Subnet (4)
++++++ subnet-public-a
++++++ subnet-public-b
++++++ subnet-private-a
++++++ subnet-private-b
+++++ RouteTable (3)
++++++ route-table-public
++++++ route-table-private-a
++++++ route-table-private-b
+++++ Route (3)
++++++ route-public
++++++ route-private-a
++++++ route-private-b
+++++ ElasticIpAddress (1)
++++++ iep
+++++ NatGateway (1)
++++++ nat-gateway
+++++ SecurityGroup (2)
++++++ security-group-cluster
++++++ security-group-node
+++++ SecurityGroupRuleIngress (3)
++++++ sg-cluster-rule-ingress-https
++++++ sg-nodes-rule-ingress-all
++++++ sg-nodes-rule-ingress-cluster
+++++ SecurityGroupRuleEgress (1)
++++++ sg-cluster-rule-egress
++++ iam
+++++ Policy (6)
++++++ AmazonEKSClusterPolicy
++++++ AmazonEKSVPCResourceController
++++++ AmazonEKSWorkerNodePolicy
++++++ AmazonEC2ContainerRegistryReadOnly
++++++ AmazonEKS_CNI_Policy
++++++ AWSLoadBalancerControllerIAMPolicy
+++++ Role (3)
++++++ role-cluster
++++++ role-node-group
++++++ role-load-balancer
+++++ OpenIDConnectProvider (1)
++++++ oidc-eks
++++ kms
+++++ Key (1)
++++++ eks-key
++++ eks
+++++ Cluster (1)
++++++ cluster
+++++ NodeGroup (1)
++++++ node-group-private-cluster
++++ elb
+++++ LoadBalancer (1)
++++++ load-balancer
+-- k8s
+--- CustomResourceDefinition (7)
+---- certificaterequests.cert-manager.io
+---- certificates.cert-manager.io
+---- challenges.acme.cert-manager.io
+---- clusterissuers.cert-manager.io
+---- issuers.cert-manager.io
+---- orders.acme.cert-manager.io
+---- targetgroupbindings.elbv2.k8s.aws
+--- Namespace (2)
+---- cert-manager
+---- default
+--- ServiceAccount (4)
+---- cert-manager-cert-manager-cainjector
+---- cert-manager-cert-manager
+---- cert-manager-cert-manager-webhook
+---- kube-system-aws-load-balancer-controller
+--- ClusterRole (12)
+---- cert-manager-cainjector
+---- cert-manager-controller-issuers
+---- cert-manager-controller-clusterissuers
+---- cert-manager-controller-certificates
+---- cert-manager-controller-orders
+---- cert-manager-controller-challenges
+---- cert-manager-controller-ingress-shim
+---- cert-manager-view
+---- cert-manager-edit
+---- cert-manager-controller-approve:cert-manager-io
+---- cert-manager-webhook:subjectaccessreviews
+---- aws-load-balancer-controller-role
+--- ClusterRoleBinding (10)
+---- cert-manager-cainjector
+---- cert-manager-controller-issuers
+---- cert-manager-controller-clusterissuers
+---- cert-manager-controller-certificates
+---- cert-manager-controller-orders
+---- cert-manager-controller-challenges
+---- cert-manager-controller-ingress-shim
+---- cert-manager-controller-approve:cert-manager-io
+---- cert-manager-webhook:subjectaccessreviews
+---- aws-load-balancer-controller-rolebinding
+--- Role (4)
+---- kube-system-cert-manager-cainjector:leaderelection
+---- kube-system-cert-manager:leaderelection
+---- cert-manager-cert-manager-webhook:dynamic-serving
+---- kube-system-aws-load-balancer-controller-leader-election-role
+--- RoleBinding (4)
+---- kube-system-cert-manager-cainjector:leaderelection
+---- kube-system-cert-manager:leaderelection
+---- cert-manager-cert-manager-webhook:dynamic-serving
+---- kube-system-aws-load-balancer-controller-leader-election-rolebinding
+--- Service (7)
+---- cert-manager-cert-manager
+---- cert-manager-cert-manager-webhook
+---- kube-system-aws-load-balancer-webhook-service
+---- postgres
+---- redis
+---- rest
+---- web
+--- Deployment (6)
+---- cert-manager-cert-manager-cainjector
+---- cert-manager-cert-manager
+---- cert-manager-cert-manager-webhook
+---- kube-system-aws-load-balancer-controller
+---- rest
+---- web
+--- MutatingWebhookConfiguration (2)
+---- cert-manager-webhook
+---- aws-load-balancer-webhook
+--- ValidatingWebhookConfiguration (2)
+---- cert-manager-webhook
+---- aws-load-balancer-webhook
+--- Certificate (1)
+---- kube-system-aws-load-balancer-serving-cert
+--- Issuer (1)
+---- kube-system-aws-load-balancer-selfsigned-issuer
+--- ConfigMap (2)
+---- postgres
+---- rest-server
+--- StatefulSet (2)
+---- postgres
+---- redis
+--- Ingress (1)
+---- ingress
+@endmindmap
