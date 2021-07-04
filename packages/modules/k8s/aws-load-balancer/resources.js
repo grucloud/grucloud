@@ -321,11 +321,11 @@ exports.createResources = async ({ provider, resources }) => {
       }),
     });
 
-  assert(resources.lbc.roleLoadBalancer);
+  assert(resources.roleLoadBalancer);
   const kubeSystemawsLoadBalancerControllerServiceAccount =
     provider.makeServiceAccount({
       name: "kube-system-aws-load-balancer-controller",
-      dependencies: { role: resources.lbc.roleLoadBalancer },
+      dependencies: { role: resources.roleLoadBalancer },
       properties: ({ dependencies: { role } }) => ({
         apiVersion: "v1",
         metadata: {
