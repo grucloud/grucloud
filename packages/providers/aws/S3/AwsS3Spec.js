@@ -14,7 +14,7 @@ module.exports = () =>
     },
     {
       type: "Object",
-      dependsOn: ["Bucket"],
+      dependsOn: ["s3::Bucket"],
       Client: AwsS3Object,
       compare: compareS3Object,
       isOurMinion,

@@ -89,7 +89,7 @@ const fnSpecs = (config) => {
       // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2020-05-01
       group: "virtualNetworks",
       type: "VirtualNetwork",
-      dependsOn: ["ResourceGroup"],
+      dependsOn: ["resourceManagement::ResourceGroup"],
       Client: ({ spec }) =>
         AzClient({
           spec,
@@ -120,7 +120,7 @@ const fnSpecs = (config) => {
       // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2020-05-01
       group: "virtualNetworks",
       type: "SecurityGroup",
-      dependsOn: ["ResourceGroup"],
+      dependsOn: ["resourceManagement::ResourceGroup"],
       Client: ({ spec }) =>
         AzClient({
           spec,
@@ -153,7 +153,7 @@ const fnSpecs = (config) => {
       // LISTALL                https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Network/publicIPAddresses?api-version=2020-05-01
       group: "virtualNetworks",
       type: "PublicIpAddress",
-      dependsOn: ["ResourceGroup"],
+      dependsOn: ["resourceManagement::ResourceGroup"],
       Client: ({ spec }) =>
         AzClient({
           spec,
@@ -188,10 +188,10 @@ const fnSpecs = (config) => {
       group: "virtualNetworks",
       type: "NetworkInterface",
       dependsOn: [
-        "ResourceGroup",
-        "VirtualNetwork",
-        "SecurityGroup",
-        "PublicIpAddress",
+        "resourceManagement::ResourceGroup",
+        "virtualNetworks::VirtualNetwork",
+        "virtualNetworks::SecurityGroup",
+        "virtualNetworks::PublicIpAddress",
       ],
       Client: ({ spec }) =>
         AzClient({
@@ -309,7 +309,10 @@ const fnSpecs = (config) => {
       // LISTALL                 https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-12-01
       group: "compute",
       type: "VirtualMachine",
-      dependsOn: ["ResourceGroup", "NetworkInterface"],
+      dependsOn: [
+        "resourceManagement::ResourceGroup",
+        "virtualNetworks::NetworkInterface",
+      ],
       Client: ({ spec }) =>
         AzClient({
           spec,

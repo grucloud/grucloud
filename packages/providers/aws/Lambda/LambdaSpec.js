@@ -8,7 +8,7 @@ module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "Function",
-      dependsOn: ["IamRole"],
+      dependsOn: ["iam::Role"],
       Client: Function,
       isOurMinion,
       //TODO compare:

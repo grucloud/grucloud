@@ -8,7 +8,7 @@ module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "Distribution",
-      dependsOn: ["Certificate", "S3Bucket"],
+      dependsOn: ["acm::Certificate", "s3::Bucket"],
       Client: AwsDistribution,
       isOurMinion,
       compare: compareDistribution,

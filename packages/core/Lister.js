@@ -80,6 +80,7 @@ exports.Lister = ({ inputs, onStateChange }) => {
         () => isUp(),
         map((entry) =>
           pipe([
+            () => entry,
             get("dependsOn"),
             // Remove from the dependsOn array the one that just ended
             filter(not(includes(key))),
@@ -90,10 +91,11 @@ exports.Lister = ({ inputs, onStateChange }) => {
               entry.dependsOn = updatedDependsOn;
             }),
             tap.if(isEmpty, () => runItem({ inputsFiltered, entry, onEnd })),
-          ])(entry)
+          ])()
         ),
         map((entry) =>
           pipe([
+            () => entry,
             tap(() => {
               logger.debug(`Lister ${key} is not up`, entry);
               assert(entry.key);
@@ -104,7 +106,7 @@ exports.Lister = ({ inputs, onStateChange }) => {
                 error: `Dependency ${key} is not up`,
                 errorClass: "Dependency",
               }),
-          ])(entry)
+          ])()
         ),
       ]),
       tap((result) => {
@@ -116,10 +118,10 @@ exports.Lister = ({ inputs, onStateChange }) => {
     () => inputs,
     map(
       assign({
-        dependsOn: ({ dependsOn }) =>
-          filter((dependsOn) => find(eq(get("key"), dependsOn))(inputs))(
-            dependsOn
-          ),
+        dependsOn: pipe([
+          get("dependsOn"),
+          filter((dependsOn) => find(eq(get("key"), dependsOn))(inputs)),
+        ]),
       })
     ),
     (inputsFiltered) =>

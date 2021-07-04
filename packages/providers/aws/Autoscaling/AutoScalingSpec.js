@@ -11,7 +11,7 @@ module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "AutoScalingGroup",
-      dependsOn: ["LoadBalancer", "TargetGroup", "Cluster"],
+      dependsOn: ["elb::LoadBalancer", "elb::TargetGroup", "eks::Cluster"],
       Client: AwsAutoScalingGroup,
       isOurMinion: autoScalingGroupIsOurMinion,
     },

@@ -1090,9 +1090,7 @@ function CoreProvider({
       }),
       map((client) => ({
         meta: pick(["type", "group", "providerName"])(client.spec),
-        //TODO
-        //key: `${client.spec.providerName}::${client.spec.group}::${client.spec.type}`,
-        key: `${client.spec.providerName}::${client.spec.type}`,
+        key: `${client.spec.providerName}::${client.spec.group}::${client.spec.type}`,
         dependsOn: map(
           (dependOn) => `${client.spec.providerName}::${dependOn}`
         )(client.spec.dependsOn),
@@ -1128,7 +1126,6 @@ function CoreProvider({
             assert(meta.type);
             assert(meta.providerName);
             if (error) {
-              assert(true);
               lives.addResources({ ...meta, error });
             }
             onStateChange({

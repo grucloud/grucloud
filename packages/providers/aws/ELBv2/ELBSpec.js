@@ -11,25 +11,29 @@ module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "LoadBalancer",
-      dependsOn: ["Subnet", "InternetGateway", "NetworkInterface"],
+      dependsOn: [
+        "ec2::Subnet",
+        "ec2::InternetGateway",
+        "ec2::NetworkInterface",
+      ],
       Client: ELBLoadBalancerV2,
       isOurMinion,
     },
     {
       type: "TargetGroup",
-      dependsOn: ["Vpc"],
+      dependsOn: ["ec2::Vpc"],
       Client: ELBTargetGroup,
       isOurMinion,
     },
     {
       type: "Listener",
-      dependsOn: ["LoadBalancer", "TargetGroup", "Certificate"],
+      dependsOn: ["elb::LoadBalancer", "elb::TargetGroup", "acm::Certificate"],
       Client: ELBListener,
       isOurMinion,
     },
     {
       type: "Rule",
-      dependsOn: ["Listener", "TargetGroup"],
+      dependsOn: ["elb::Listener", "elb::TargetGroup"],
       Client: ELBRule,
       isOurMinion,
     },

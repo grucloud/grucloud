@@ -10,14 +10,14 @@ module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "DBSubnetGroup",
-      dependsOn: ["Subnet"],
+      dependsOn: ["ec2::Subnet"],
       Client: DBSubnetGroup,
       isOurMinion,
       //TODO compare:
     },
     {
       type: "DBCluster",
-      dependsOn: ["DBSubnetGroup", "SecurityGroup"],
+      dependsOn: ["rds::DBSubnetGroup", "ec2::SecurityGroup"],
       Client: DBCluster,
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),
       //TODO compare
@@ -25,10 +25,10 @@ module.exports = () =>
     {
       type: "DBInstance",
       dependsOn: [
-        "DBSubnetGroup",
-        "DBCluster",
-        "InternetGateway",
-        "SecurityGroup",
+        "rds::DBSubnetGroup",
+        "rds::DBCluster",
+        "ec2::InternetGateway",
+        "ec2::SecurityGroup",
       ],
       Client: DBInstance,
       isOurMinion: isOurMinionFactory({ tags: "TagList" }),

@@ -12,18 +12,23 @@ module.exports = () =>
   map(assign({ group: () => GROUP }))([
     {
       type: "Cluster",
-      dependsOn: ["SecurityGroup", "Subnet", "InternetGateway", "KmsKey"],
+      dependsOn: [
+        "ec2::SecurityGroup",
+        "ec2::Subnet",
+        "ec2::InternetGateway",
+        "kms::Key",
+      ],
       Client: EKSCluster,
       isOurMinion,
     },
     {
       type: "NodeGroup",
       dependsOn: [
-        "Cluster",
-        "Subnet",
-        "IamRole",
-        "AutoScalingGroup",
-        "Instance",
+        "eks::Cluster",
+        "ec2::Subnet",
+        "iam::Role",
+        "autoscaling::AutoScalingGroup",
+        "ec2::Instance",
       ],
       Client: EKSNodeGroup,
       isOurMinion,

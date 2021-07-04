@@ -25,19 +25,19 @@ module.exports = () =>
     },
     {
       type: "User",
-      dependsOn: ["Policy", "Group"],
+      dependsOn: ["iam::Policy", "iam::Group"],
       Client: AwsIamUser,
       isOurMinion,
     },
     {
       type: "Group",
-      dependsOn: ["Policy"],
+      dependsOn: ["iam::Policy"],
       Client: AwsIamGroup,
       isOurMinion: isOurMinionIamGroup,
     },
     {
       type: "Role",
-      dependsOn: ["Policy"],
+      dependsOn: ["iam::Policy"],
       Client: AwsIamRole,
       isOurMinion,
     },
@@ -48,7 +48,7 @@ module.exports = () =>
     },
     {
       type: "InstanceProfile",
-      dependsOn: ["Role"],
+      dependsOn: ["iam::Role"],
       Client: AwsIamInstanceProfile,
       isOurMinion: isOurMinionInstanceProfile,
     },

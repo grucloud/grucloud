@@ -36,19 +36,19 @@ module.exports = () => {
 
     {
       type: "UrlMap",
-      dependsOn: ["BackendBucket"],
+      dependsOn: ["compute::BackendBucket"],
       Client: GcpUrlMap,
       isOurMinion,
     },
     {
       type: "HttpsTargetProxy",
-      dependsOn: ["UrlMap", "SslCertificate"],
+      dependsOn: ["compute::UrlMap", "compute::SslCertificate"],
       Client: GcpHttpsTargetProxy,
       isOurMinion,
     },
     {
       type: "GlobalForwardingRule",
-      dependsOn: ["HttpsTargetProxy"],
+      dependsOn: ["compute::HttpsTargetProxy"],
       Client: GcpGlobalForwardingRule,
       isOurMinion,
     },
@@ -59,13 +59,13 @@ module.exports = () => {
     },
     {
       type: "SubNetwork",
-      dependsOn: ["Network"],
+      dependsOn: ["compute::Network"],
       Client: GcpSubNetwork,
       isOurMinion,
     },
     {
       type: "Firewall",
-      dependsOn: ["Network"],
+      dependsOn: ["compute::Network"],
       Client: GcpFirewall,
       isOurMinion,
     },
@@ -82,11 +82,11 @@ module.exports = () => {
     {
       type: "VmInstance",
       dependsOn: [
-        "ServiceAccount",
-        "Address",
-        "SubNetwork",
-        "Firewall",
-        "Disk",
+        "iam::ServiceAccount",
+        "compute::Address",
+        "compute::SubNetwork",
+        "compute::Firewall",
+        "compute::Disk",
       ],
       Client: GoogleVmInstance,
       propertiesDefault: {

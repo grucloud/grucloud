@@ -18,7 +18,7 @@ module.exports = () =>
     },
     {
       type: "Object",
-      dependsOn: ["Bucket"],
+      dependsOn: ["storage::Bucket"],
       Client: GcpObject,
       compare: async ({ target, live }) => {
         logger.debug(`compare object`);
