@@ -1,7 +1,7 @@
 {
   "name": "starhackit-eks-lean",
   "projectName": "starhackit",
-  "version": "1.21.0",
+  "version": "1.22.0",
   "private": true,
   "description": "Deploying starhackit on AWS EKS without the Load Balancer Controller",
   "main": "index.js",
@@ -14,13 +14,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.21.0",
-    "@grucloud/module-aws-certificate": "^1.21.0",
-    "@grucloud/module-aws-eks": "^1.21.0",
-    "@grucloud/module-aws-load-balancer": "^1.21.0",
-    "@grucloud/module-aws-vpc": "^1.21.0",
-    "@grucloud/provider-aws": "^1.21.0",
-    "@grucloud/provider-k8s": "^1.21.0",
+    "@grucloud/core": "^1.22.0",
+    "@grucloud/module-aws-certificate": "^1.22.0",
+    "@grucloud/module-aws-eks": "^1.22.0",
+    "@grucloud/module-aws-load-balancer": "^1.22.0",
+    "@grucloud/module-aws-vpc": "^1.22.0",
+    "@grucloud/provider-aws": "^1.22.0",
+    "@grucloud/provider-k8s": "^1.22.0",
     "axios": "^0.21.1",
     "rubico": "^1.6.23"
   }

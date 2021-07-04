@@ -1,6 +1,6 @@
 {
   "name": "starhackit-eks-lbc",
-  "version": "1.21.0",
+  "version": "1.22.0",
   "private": true,
   "description": "deploying starhackit on AWS EKS with the Load Balancer Controller",
   "main": "index.js",
@@ -13,15 +13,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.21.0",
-    "@grucloud/module-aws-certificate": "^1.21.0",
-    "@grucloud/module-aws-eks": "^1.21.0",
-    "@grucloud/module-aws-load-balancer-controller": "^1.21.0",
-    "@grucloud/module-aws-vpc": "^1.21.0",
-    "@grucloud/module-k8s-aws-load-balancer-controller": "^1.21.0",
-    "@grucloud/module-k8s-cert-manager": "^1.21.0",
-    "@grucloud/provider-aws": "^1.21.0",
-    "@grucloud/provider-k8s": "^1.21.0",
+    "@grucloud/core": "^1.22.0",
+    "@grucloud/module-aws-certificate": "^1.22.0",
+    "@grucloud/module-aws-eks": "^1.22.0",
+    "@grucloud/module-aws-load-balancer-controller": "^1.22.0",
+    "@grucloud/module-aws-vpc": "^1.22.0",
+    "@grucloud/module-k8s-aws-load-balancer-controller": "^1.22.0",
+    "@grucloud/module-k8s-cert-manager": "^1.22.0",
+    "@grucloud/provider-aws": "^1.22.0",
+    "@grucloud/provider-k8s": "^1.22.0",
     "rubico": "^1.6.23"
   }
 }
