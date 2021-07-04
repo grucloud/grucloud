@@ -219,6 +219,8 @@ exports.createProgram = ({ version, commands }) => {
     .option(...optionFileResourceTree)
     .option("--title <value>", "title", defautTitle)
     .option("-t, --type <type>", "file type: png, svg", "svg")
+    .option("-f, --full", "display resources name")
+
     .option(...optionFilteredByProvider)
     .action(runCommand({ commandName: "graphTree", program }));
 

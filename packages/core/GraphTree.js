@@ -3,6 +3,7 @@ const {
   pipe,
   map,
   tap,
+  fork,
   filter,
   not,
   tryCatch,
@@ -17,6 +18,7 @@ const {
   flatten,
   isEmpty,
   identity,
+  size,
 } = require("rubico/x");
 const logger = require("./logger")({ prefix: "GraphTree" });
 const { tos } = require("./tos");
@@ -25,14 +27,24 @@ const { tos } = require("./tos");
 const repeat = ({ depth, symbol = "+" }) =>
   new Array(depth).fill(symbol).join("");
 
-const buildPerType = ({ type, depth = 4, symbol, resources }) =>
+const buildPerType = ({ options, type, depth = 4, symbol, resources }) =>
   pipe([
     () => resources,
-    pluck("name"),
-    map((name) => `${repeat({ depth: depth + 1, symbol })} ${name}`),
-    (results) => [`${repeat({ depth, symbol })} ${type}`, ...results],
-    tap((names) => {
-      assert(names);
+    fork({
+      typeLabel: (resources) =>
+        `${repeat({ depth, symbol })} ${type} (${size(resources)})`,
+      resourcesLabel: pipe([
+        pluck("name"),
+        map((name) => `${repeat({ depth: depth + 1, symbol })} ${name}`),
+      ]),
+    }),
+    switchCase([
+      () => options.full,
+      ({ typeLabel, resourcesLabel }) => [typeLabel, ...resourcesLabel],
+      ({ typeLabel }) => [typeLabel],
+    ]),
+    tap((xxx) => {
+      assert(true);
     }),
   ])();
 
@@ -49,6 +61,7 @@ const buildPerGroup = ({ options, group, resources, depth = 3, symbol }) =>
         options,
         type,
         depth: depth + 1,
+        symbol,
         resources: resourcesPerType,
       }),
     ]),
@@ -65,11 +78,11 @@ const buildPerGroup = ({ options, group, resources, depth = 3, symbol }) =>
   ])();
 
 const buildPerProvider =
-  ({ options, depth = 2, symbol }) =>
+  ({ options, depth = 2, symbol, index }) =>
   (provider) =>
     pipe([
       tap(() => {
-        logger.debug(provider.name);
+        logger.debug(`${provider.name} ${index}`);
       }),
       () => provider.getTargetResources(),
       groupBy("group"),
@@ -81,6 +94,7 @@ const buildPerProvider =
         buildPerGroup({
           group,
           depth: depth + (isEmpty(group) ? 0 : 1),
+          symbol,
           options,
           resources,
         }),
@@ -101,7 +115,11 @@ const doBuildGraphTree = ({ root = "Infra", providers, options }) =>
   pipe([
     () => [
       `+ ${root}`,
-      ...map(buildPerProvider({ options, depth: 2 }))(providers),
+      ...map.withIndex((provider, index) =>
+        buildPerProvider({ options, depth: 2, symbol: index % 2 ? "-" : "+" })(
+          provider
+        )
+      )(providers),
     ],
     callProp("join", "\n"),
   ])();
