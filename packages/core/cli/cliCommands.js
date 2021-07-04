@@ -1399,7 +1399,7 @@ const pumlToSvg =
       ]),
     ])();
 
-exports.graphTree = async ({ infra, config, commandOptions = {} }) =>
+exports.graphTree = ({ infra, config, commandOptions = {} }) =>
   tryCatch(
     pipe([
       () => infra,
@@ -1407,6 +1407,7 @@ exports.graphTree = async ({ infra, config, commandOptions = {} }) =>
       tap((input) => {
         logger.debug(`graphTree ${JSON.stringify(commandOptions)}`);
         assert(input.providerGru);
+        assert(config);
       }),
       ({ providerGru }) =>
         providerGru.buildGraphTree({ options: commandOptions }),

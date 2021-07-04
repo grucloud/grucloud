@@ -5,19 +5,27 @@ const logger = require("./logger")({ prefix: "GraphTree" });
 const { tos } = require("./tos");
 
 // https://plantuml.com/mindmap-diagram
+const repeat = ({ depth, symbol = "+" }) =>
+  new Array(depth).fill(symbol).join("");
 
-const buildPerType = ({ type, resources }) =>
+const buildPerType = ({ type, depth = 4, symbol, resources }) =>
   pipe([
     () => resources,
     pluck("name"),
-    map((name) => `+++++ ${name}`),
-    (results) => [`++++ ${type}`, ...results],
+    map((name) => `${repeat({ depth: depth + 1, symbol })} ${name}`),
+    (results) => [`${repeat({ depth, symbol })} ${type}`, ...results],
     tap((names) => {
       assert(names);
     }),
   ])();
 
-const buildPerGroup = ({ options, group = "Default", resources }) =>
+const buildPerGroup = ({
+  options,
+  group = "Default",
+  resources,
+  depth = 3,
+  symbol,
+}) =>
   pipe([
     tap(() => {
       assert(resources);
@@ -34,14 +42,14 @@ const buildPerGroup = ({ options, group = "Default", resources }) =>
     ]),
     values,
     flatten,
-    (results) => [`+++ ${group}`, ...results],
+    (results) => [`${repeat({ depth, symbol })} ${group}`, ...results],
     tap((result) => {
       assert(result);
     }),
   ])();
 
 const buildPerProvider =
-  ({ options }) =>
+  ({ options, depth = 2, symbol }) =>
   (provider) =>
     pipe([
       tap(() => {
@@ -69,13 +77,12 @@ const buildPerProvider =
       tap((result) => {
         assert(true);
       }),
-      (result) => `++ ${provider.name}\n${result}`,
+      (result) => `${repeat({ depth, symbol })} ${provider.name}\n${result}`,
     ])();
 
 const doBuildGraphTree = ({ providers, options }) =>
   pipe([
-    () => "+ Infra",
-    (content) => [content, ...map(buildPerProvider({ options }))(providers)],
+    () => ["+ Infra", ...map(buildPerProvider({ options }))(providers)],
     callProp("join", "\n"),
   ])();
 
