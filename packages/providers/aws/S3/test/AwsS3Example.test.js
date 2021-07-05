@@ -7,7 +7,7 @@ const {
 const { createStack } = require("../../../../../examples/aws/s3/iac");
 describe.skip("AwsS3Bucket Example", async function () {
   let config;
-  const types = ["S3Bucket"];
+  const types = ["Bucket"];
   before(async function () {
     try {
       config = ConfigLoader({ path: "examples/aws/s3" });

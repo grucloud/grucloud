@@ -12,7 +12,7 @@ describe("AwsIamOpenIDConnectProvider", async function () {
   let config;
   let provider;
   let iamOpenIdConnectProvider;
-  const types = ["IamOpenIDConnectProvider"];
+  const types = ["OpenIDConnectProvider"];
   const oidcUrl =
     "https://oidc.eks.eu-west-2.amazonaws.com/id/E4E702DA316D71C017B623B18414E97C";
   const iamOpenIdConnectProviderName = "oidc-eks";

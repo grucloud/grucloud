@@ -9,7 +9,7 @@ const {
 const cliCommands = require("@grucloud/core/cli/cliCommands");
 
 const bucketName = "grucloud-s3bucket-test-update";
-const types = ["S3Bucket", "S3Object"];
+const types = ["Bucket", "Object"];
 
 const createStack = async ({ config }) => {
   const provider = AwsProvider({

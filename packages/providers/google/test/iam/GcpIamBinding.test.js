@@ -14,7 +14,7 @@ describe("GcpIamBinding", async function () {
   let provider;
   let iamBindingServiceAccount;
   let serviceAccount;
-  const types = ["IamBinding"];
+  const types = ["Binding"];
   const roleEditor = "roles/editor";
 
   before(async function () {

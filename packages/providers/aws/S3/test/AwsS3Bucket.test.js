@@ -11,7 +11,7 @@ const { CheckAwsTags } = require("../../AwsTagCheck");
 describe("AwsS3Bucket", async function () {
   let config;
   let provider;
-  const types = ["S3Bucket"];
+  const types = ["Bucket"];
   const bucketPrefix = "grucloud-t-";
 
   before(async function () {

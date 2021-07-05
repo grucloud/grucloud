@@ -49,38 +49,40 @@ exports.AwsCertificate = ({ spec, config }) => {
   const acm = ACMNew(config);
 
   //TODO
-  const findRecordId = ({ config, lives }) => ({ Type, Name }) =>
-    pipe([
-      tap(() => {
-        logger.debug(`findRecordId ${JSON.stringify({ Type, Name })}`);
-      }),
-      () =>
-        lives.getByType({
-          providerName: config.providerName,
-          type: "Route53Record",
+  const findRecordId =
+    ({ config, lives }) =>
+    ({ Type, Name }) =>
+      pipe([
+        tap(() => {
+          logger.debug(`findRecordId ${JSON.stringify({ Type, Name })}`);
         }),
-      get("resources"),
-      pluck("live"),
-      tap((xxx) => {
-        logger.debug(``);
-      }),
-      map(
-        find(
-          and([
-            eq(get("Name"), Name), //
-            eq(get("Type"), Type),
-          ])
-        )
-      ),
-      filter(not(isEmpty)),
-      tap((records) => {
-        logger.debug(
-          `findRecordId ${JSON.stringify({ Type, Name })} #records ${size(
-            records
-          )}`
-        );
-      }),
-    ])();
+        () =>
+          lives.getByType({
+            providerName: config.providerName,
+            type: "Route53Record",
+          }),
+        get("resources"),
+        pluck("live"),
+        tap((xxx) => {
+          logger.debug(``);
+        }),
+        map(
+          find(
+            and([
+              eq(get("Name"), Name), //
+              eq(get("Type"), Type),
+            ])
+          )
+        ),
+        filter(not(isEmpty)),
+        tap((records) => {
+          logger.debug(
+            `findRecordId ${JSON.stringify({ Type, Name })} #records ${size(
+              records
+            )}`
+          );
+        }),
+      ])();
 
   const findDependencies = ({ live, lives }) => [
     {
