@@ -1,19 +1,20 @@
 const isEmpty = require("rubico/x/isEmpty");
 const AWS = require("aws-sdk");
 const assert = require("assert");
-const { KeyName } = require("./AwsCommon");
 const { tos } = require("@grucloud/core/tos");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsTagResource" });
 const { retryCall } = require("@grucloud/core/Retry");
 
 exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
   const {
+    nameKey,
     createdByProviderKey,
     providerName,
     managedByKey,
     managedByValue,
     region,
     stageTagKey,
+    projectNameKey,
     stage,
     projectName,
   } = config;
@@ -34,12 +35,12 @@ exports.tagResource = async ({ config, resourceType, resourceId, name }) => {
   const params = {
     ResourceARNList: [arnId],
     Tags: {
-      [KeyName]: name,
+      [nameKey]: name,
       [managedByKey]: managedByValue,
       [createdByProviderKey]: providerName,
       [stageTagKey]: stage,
+      [projectNameKey]: projectName,
       id: resourceId,
-      projectName,
       arnId,
       fqn,
     },

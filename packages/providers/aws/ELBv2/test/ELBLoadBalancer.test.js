@@ -10,6 +10,7 @@ const {
 } = require("@grucloud/core/E2ETestUtils");
 
 const formatName = (name) => `${name}-test-load-balancer`;
+
 describe("AwsLoadBalancerV2", async function () {
   let config;
   let provider;
@@ -165,6 +166,8 @@ describe("AwsLoadBalancerV2", async function () {
   });
   after(async () => {});
   it("load balancer v2 apply plan", async function () {
+    const { config } = provider;
+    assert(config.nameKey);
     const loadBalancerReadOnly = provider.elb.useLoadBalancer({
       name: "load-balancer-k8s-readonly",
       filterLives: ({ items }) =>
@@ -175,7 +178,7 @@ describe("AwsLoadBalancerV2", async function () {
               get("Tags"),
               find(
                 and([
-                  eq(get("Key"), "Name"), //
+                  eq(get("Key"), config.nameKey),
                   eq(get("Value"), loadBalancer.name),
                 ])
               ),

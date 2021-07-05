@@ -4,10 +4,9 @@ const { find } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsTagCheck" });
 const { tos } = require("@grucloud/core/tos");
 
-const { KeyName } = require("./AwsCommon");
-
 exports.CheckAwsTags = ({ config, tags, name }) => {
   const {
+    nameKey,
     managedByKey,
     managedByValue,
     stageTagKey,
@@ -22,7 +21,7 @@ exports.CheckAwsTags = ({ config, tags, name }) => {
         pipe([find(eq(get("Key"), managedByKey)), get("Value")]),
         managedByValue
       ),
-      //eq(pipe([find(eq(get("Key"), KeyName)), get("Value")]), name),
+      //eq(pipe([find(eq(get("Key"), nameKey)), get("Value")]), name),
       eq(pipe([find(eq(get("Key"), stageTagKey)), get("Value")]), stage),
       eq(
         pipe([find(eq(get("Key"), createdByProviderKey)), get("Value")]),

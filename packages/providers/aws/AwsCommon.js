@@ -23,7 +23,7 @@ const {
 const logger = require("@grucloud/core/logger")({ prefix: "AwsCommon" });
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
-const { KeyName } = require("@grucloud/core/Common");
+const { configProviderDefault } = require("@grucloud/core/Common");
 
 exports.getNewCallerReference = () => `grucloud-${new Date()}`;
 
@@ -188,10 +188,12 @@ exports.buildTags = ({
   value = "Value",
 }) => {
   const {
+    nameKey,
     managedByKey,
     managedByValue,
     stageTagKey,
     createdByProviderKey,
+    projectNameKey,
     stage,
     providerName,
     projectName,
@@ -199,15 +201,17 @@ exports.buildTags = ({
   } = config;
 
   assert(name);
+  assert(nameKey);
   assert(providerName);
   assert(stage);
   assert(projectName);
+  assert(projectNameKey);
 
   return pipe([
     () => [
       ...UserTags,
       {
-        [key]: KeyName,
+        [key]: nameKey,
         [value]: name,
       },
       {
@@ -222,7 +226,7 @@ exports.buildTags = ({
         [key]: stageTagKey,
         [value]: stage,
       },
-      { [key]: "projectName", [value]: projectName },
+      { [key]: projectNameKey, [value]: projectName },
     ],
     switchCase([
       () => isEmpty(namespace),
@@ -244,6 +248,7 @@ const isOurMinionFactory =
     const {
       createdByProviderKey,
       providerName,
+      projectNameKey,
       stageTagKey,
       stage,
       projectName,
@@ -257,7 +262,7 @@ const isOurMinionFactory =
       () => live,
       get(tags),
       and([
-        find(and([eq(get(key), "projectName"), eq(get(value), projectName)])),
+        find(and([eq(get(key), projectNameKey), eq(get(value), projectName)])),
         find(and([eq(get(key), stageTagKey), eq(get(value), stage)])),
       ]),
       tap((minion) => {
@@ -313,7 +318,7 @@ const findNameInTags = (item) =>
     }),
     () => item,
     get("Tags"),
-    find(eq(get("Key"), KeyName)),
+    find(eq(get("Key"), configProviderDefault.nameKey)),
     get("Value"),
     switchCase([
       isEmpty,
@@ -343,7 +348,9 @@ exports.findNameInDescription = ({ Description = "" }) => {
   if (tags) {
     try {
       const tagsJson = JSON.parse(tags);
-      const tag = tagsJson.find((tag) => tag.Key === KeyName);
+      const tag = tagsJson.find(
+        (tag) => tag.Key === configProviderDefault.nameKey
+      );
       if (tag?.Value) {
         logger.debug(`findNameInDescription ${tag.Value}`);
         return tag.Value;
