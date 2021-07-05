@@ -10,7 +10,7 @@ describe("AwsIamRole", async function () {
   let config;
   let provider;
   let iamRole;
-  const types = ["IamRole"];
+  const types = ["Role"];
   const iamRoleName = "role-example";
   before(async function () {
     try {

@@ -6,7 +6,7 @@ const cliCommands = require("@grucloud/core/cli/cliCommands");
 
 describe("AwsS3BucketPerf", async function () {
   let config;
-  const types = ["S3Bucket"];
+  const types = ["Bucket"];
   before(async function () {
     try {
       config = ConfigLoader({ path: "../../../examples/multi" });

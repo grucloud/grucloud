@@ -13,7 +13,7 @@ describe("AwsIamPolicy", async function () {
   let iamRole;
   let iamPolicyToUser;
   let iamPolicyToRole;
-  const types = ["IamPolicy", "IamRole", "IamUser"];
+  const types = ["Policy", "Role", "User"];
   const iamUserName = "alice";
   const iamRoleName = "role-example";
   const iamPolicyName = "policy-example-to-user";

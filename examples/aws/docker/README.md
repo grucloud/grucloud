@@ -1,6 +1,6 @@
 # Dockerize the GruCloud Providers
 
-The objective is to run `gc list` on any cloud provider, without the need for writing any infrastrucure code. This code should run on servers as well, not only on local computer. Hence GruCloud will be dockerized.
+The objective is to run `gc list` on any cloud provider, without the need for writing any infrastructure code. This code should run on servers as well, not only on local computer. Hence GruCloud will be dockerized.
 
 A docker image will be created with the GruCloud CLI, the AWS Provider without resource defined. See [iac.js](./iac.js)
 

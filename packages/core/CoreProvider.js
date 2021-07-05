@@ -54,6 +54,7 @@ const {
   typeFromResources,
   groupFromResources,
   planToResourcesPerType,
+  configProviderDefault,
 } = require("./Common");
 const { Lister } = require("./Lister");
 const { Planner, mapToGraph } = require("./Planner");
@@ -79,19 +80,6 @@ const {
 } = require("./ProviderCommon");
 
 const { ResourceMaker, createClient } = require("./CoreResource");
-
-const configProviderDefault = {
-  tag: "ManagedByGru",
-  managedByKey: "ManagedBy",
-  managedByValue: "GruCloud",
-  managedByDescription: "Managed By GruCloud",
-  createdByProviderKey: "CreatedByProvider",
-  stageTagKey: "stage",
-  namespaceKey: "namespace",
-  stage: "dev",
-  retryCount: 30,
-  retryDelay: 10e3,
-};
 
 const createResourceMakers = ({ specs, config: configProvider, provider }) =>
   pipe([
@@ -258,7 +246,7 @@ function CoreProvider({
           type: client.spec.type,
           group: client.spec.group,
           name: client.findName(live),
-          //id: client.findId(live),
+          id: client.findId(live),
           meta: client.findMeta(live),
         }),
       tap((key) => {

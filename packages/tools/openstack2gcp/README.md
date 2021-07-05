@@ -38,7 +38,7 @@ For a detailed guide on how to prepare the deployment, see [Google Getting Start
 
 TL;DR
 
-The following commands are used to managed the infrastrucure:
+The following commands are used to managed the infrastructure:
 
 - gc graph
 - gc apply

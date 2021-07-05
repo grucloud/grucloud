@@ -10,7 +10,7 @@ describe("AwsIamUser", async function () {
   let config;
   let provider;
   let iamUser;
-  const types = ["IamUser"];
+  const types = ["User"];
   const iamUserName = "Alice";
   before(async function () {
     try {

@@ -10,7 +10,7 @@ const formatName = (name) => `${name}-image-test`;
 describe("AwsImage", async function () {
   let config;
   let provider;
-  const types = ["EC2", "Image"];
+  const types = ["Instance", "Image"];
 
   before(async function () {
     try {

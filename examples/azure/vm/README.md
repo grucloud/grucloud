@@ -145,7 +145,7 @@ Command "gc a -f" executed in 1m 47s
 
 Your server should be up and running, reachable through ping and SSH.
 
-Try to run the **gc apply** command again. Nothing should be deployed, indeed, the target infrastructure is the same as the live infrastrucure.
+Try to run the **gc apply** command again. Nothing should be deployed, indeed, the target infrastructure is the same as the live infrastructure.
 
 ```sh
 gc apply

@@ -32,6 +32,14 @@ const {
   isFunction,
 } = require("rubico/x");
 
+exports.writeOutput = ({ options, content }) =>
+  pipe([
+    () => fs.writeFile(options.output, content),
+    tap(() => {
+      console.log(`infrastructure written to ${options.output}`);
+    }),
+  ])();
+
 exports.ResourceVarName = (name) => camelCase(name);
 
 exports.findLiveById =

@@ -4,7 +4,7 @@ const { AwsProvider } = require("../../AwsProvider");
 const cliCommands = require("@grucloud/core/cli/cliCommands");
 const chance = require("chance")();
 
-const types = ["S3Bucket"];
+const types = ["Bucket"];
 const bucketPrefix = `grucloud-${chance.guid().slice(0, 8)}`;
 
 describe("AwsS3BucketErrors", async function () {

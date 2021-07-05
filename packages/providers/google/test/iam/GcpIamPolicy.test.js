@@ -14,7 +14,7 @@ describe.skip("GcpIamPolicy", async function () {
   let provider;
   let iamPolicy;
   let serviceAccount;
-  const types = ["IamPolicy", "ServiceAccount"];
+  const types = ["Policy", "ServiceAccount"];
 
   const bindingEditor = {
     role: "roles/editor",

@@ -23,8 +23,22 @@ const {
 const logger = require("./logger")({ prefix: "Common" });
 const { tos } = require("./tos");
 
-const KeyName = "Name";
-exports.KeyName = KeyName;
+const configProviderDefault = {
+  tag: "gc-managed-by-gru",
+  managedByKey: "gc-managed-by",
+  managedByValue: "grucloud",
+  managedByDescription: "Managed By GruCloud",
+  createdByProviderKey: "gc-created-by-provider",
+  projectNameKey: "gc-provider-name",
+  stageTagKey: "gc-stage",
+  nameKey: "gc-name",
+  namespaceKey: "gc-namespace",
+  stage: "dev",
+  retryCount: 30,
+  retryDelay: 10e3,
+};
+
+exports.configProviderDefault = configProviderDefault;
 
 exports.mapPoolSize = 20;
 exports.TitleDeploying = "Deploying";
@@ -263,12 +277,14 @@ exports.md5FileBase64 = pipe([
 
 exports.buildTagsObject = ({ name, namespace, config }) => {
   const {
+    nameKey,
     managedByKey,
     managedByValue,
     stageTagKey,
     createdByProviderKey,
     stage,
     providerName,
+    projectNameKey,
     projectName,
     namespaceKey,
   } = config;
@@ -277,7 +293,7 @@ exports.buildTagsObject = ({ name, namespace, config }) => {
   assert(providerName);
   assert(stage);
   return {
-    [KeyName]: name,
+    [nameKey]: name,
     [managedByKey]: managedByValue,
     [createdByProviderKey]: providerName,
     ...(namespace && {
@@ -285,13 +301,20 @@ exports.buildTagsObject = ({ name, namespace, config }) => {
     }),
     [stageTagKey]: stage,
     ...(projectName && {
-      projectName,
+      projectNameKey: projectName,
     }),
   };
 };
 
 exports.isOurMinionObject = ({ tags, config }) => {
-  const { stage, projectName, providerName, createdByProviderKey } = config;
+  const {
+    stage,
+    projectName,
+    stageTagKey,
+    projectNameKey,
+    providerName,
+    createdByProviderKey,
+  } = config;
   return pipe([
     () => tags,
     tap(() => {
@@ -303,7 +326,7 @@ exports.isOurMinionObject = ({ tags, config }) => {
     switchCase([
       and([
         //eq(get("projectName"), projectName),
-        eq(get("stage"), stage),
+        eq(get(stageTagKey), stage),
         eq(get(createdByProviderKey), providerName),
       ]),
       () => true,

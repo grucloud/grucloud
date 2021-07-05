@@ -11,7 +11,7 @@ describe("AwsIamInstanceProfile", async function () {
   let provider;
   let iamRole;
   let iamInstanceProfile;
-  const types = ["IamInstanceProfile", "IamRole"];
+  const types = ["InstanceProfile", "Role"];
   const iamRoleName = "role-example-for-instance-profile";
   const iamInstanceProfileName = "instance-profile-example";
 

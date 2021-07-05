@@ -4,7 +4,7 @@ exports.subNetworkTpl = ({
   dependencies: { network },
   resource,
 }) => `
-const ${resourceVarName} = provider.ec2.makeSubnetwork({
+const ${resourceVarName} = provider.compute.makeSubNetwork({
   name: "${resourceName}",
   dependencies: { network: ${network} },
   properties: () => ({

@@ -275,6 +275,9 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
 exports.isGcpObjectOurMinion = ({ resource, config }) => {
   const { managedByKey, managedByValue } = config;
   assert(managedByKey);
+  if (!resource) {
+    return;
+  }
   const { metadata = {} } = resource;
 
   const isGruLabel = (key, value) =>

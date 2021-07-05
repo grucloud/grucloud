@@ -11,7 +11,7 @@ describe("AwsIamGroup", async function () {
   let provider;
   let iamGroup;
   let iamUser;
-  const types = ["IamGroup", "IamUser"];
+  const types = ["Group", "User"];
   const userName = "Bob";
   const iamGroupName = "Admin";
 

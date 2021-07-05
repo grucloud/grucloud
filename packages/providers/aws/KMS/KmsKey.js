@@ -21,13 +21,13 @@ const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { getByNameCore, isUpByIdCore } = require("@grucloud/core/Common");
 const { KmsNew, buildTags, shouldRetryOnException } = require("../AwsCommon");
-const { KeyName } = require("@grucloud/core/Common");
+const { configProviderDefault } = require("@grucloud/core/Common");
 
 const findId = get("Arn");
 
 const findNameInTags = pipe([
   get("Tags"),
-  find(eq(get("TagKey"), KeyName)),
+  find(eq(get("TagKey"), configProviderDefault.nameKey)),
   get("TagValue"),
 ]);
 
