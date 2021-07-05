@@ -1,4 +1,4 @@
-exports.subnetTpl = ({
+exports.subnetCodeTpl = ({
   resourceVarName,
   dependencies: { vpc },
   resource: { name, live, namespace },

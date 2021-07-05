@@ -27,20 +27,13 @@ const {
   defaultsDeep,
 } = require("rubico/x");
 const prettier = require("prettier");
-const ipaddr = require("ipaddr.js");
+//const ipaddr = require("ipaddr.js");
+const { iacTpl } = require("./src/aws/iacTpl");
 
-const { iacTpl } = require("./template/aws/iacTpl");
-const { vpcTpl } = require("./template/aws/ec2/vpcTpl");
-const { subnetTpl } = require("./template/aws/ec2/subnetTpl");
+const { writeVpcs } = require("./src/aws/ec2/vpc/vpcGen");
+const { writeSubnets } = require("./src/aws/ec2/subnet/subnetGen");
 
-const {
-  readModel,
-  readMapping,
-  writeResources,
-  findLiveById,
-  ResourceVarName,
-  writeOutput,
-} = require("./generatorUtils");
+const { readModel, readMapping, writeOutput } = require("./generatorUtils");
 
 const { Command } = require("commander");
 
@@ -58,93 +51,8 @@ const createProgram = ({ version }) => {
   return program;
 };
 
-// Vpc
-const writeVpc = ({ resource, lives }) =>
-  pipe([
-    tap(() => {
-      console.log(`writeVpc`, resource, size(lives));
-    }),
-    () => resource,
-    switchCase([
-      not(get("isDefault")),
-      pipe([
-        () => ResourceVarName(resource.name),
-        (resourceVarName) => ({
-          resourceVarName,
-          code: vpcTpl({
-            resourceVarName,
-            resource,
-          }),
-        }),
-      ]),
-      () => undefined,
-    ]),
-    tap((xxx) => {
-      assert(true);
-    }),
-  ])();
-
-const writeVpcs = writeResources({
-  group: "ec2",
-  type: "Vpc",
-  writeResource: writeVpc,
-});
-
-const findSubnetDependencyNames = ({ type, resource, lives }) =>
-  pipe([
-    () => resource.dependencies,
-    find(eq(get("type"), type)),
-    get("ids"),
-    map(findLiveById({ type, lives })),
-    pluck("name"),
-    map(ResourceVarName),
-    tap((xxx) => {
-      assert(true);
-    }),
-  ])();
-
-const ResourceVarNameSubnet = (resource) => `${ResourceVarName(resource.name)}`;
-
-const ResourceNameSubnet = (resource) =>
-  ResourceVarNameSubnet(resource).replace(/_/g, "-");
-
-const writeSubnet = ({ resource, lives }) =>
-  pipe([
-    () => resource,
-    switchCase([
-      not(get("isDefault")),
-      pipe([
-        tap(() => {}),
-        () => ResourceVarNameSubnet(resource),
-        (resourceVarName) => ({
-          resourceVarName,
-          code: subnetTpl({
-            resource,
-            resourceVarName,
-            resourceName: ResourceNameSubnet(resource),
-            dependencies: {
-              vpc: findSubnetDependencyNames({
-                type: "Vpc",
-                resource,
-                lives,
-              }),
-            },
-          }),
-        }),
-      ]),
-      () => {
-        //console.log("default subnet");
-      },
-    ]),
-  ])();
-
-const writeSubnets = writeResources({
-  type: "Subnet",
-  writeResource: writeSubnet,
-});
-
 //TODO
-
+const writers = [writeVpcs, writeSubnets];
 const main = async (options) =>
   pipe([
     tap((xxx) => {
@@ -152,12 +60,7 @@ const main = async (options) =>
     }),
     fork({ lives: readModel(options), mapping: () => ({}) }),
     ({ lives, mapping }) =>
-      flatMap((writeResource) => writeResource({ lives, mapping }))([
-        writeVpcs,
-        writeSubnets,
-        // writeVolumes,
-        // writeVirtualMachines,
-      ]),
+      flatMap((writeResource) => writeResource({ lives, mapping }))(writers),
     filter(identity),
     tap((xxx) => {
       assert(true);
