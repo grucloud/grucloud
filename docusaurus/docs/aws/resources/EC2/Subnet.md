@@ -32,11 +32,6 @@ The list of attributes can found in [modifySubnetAttribute](https://docs.aws.ama
 ```js
 const vpc = provider.ec2.makeVpc({
   name: "vpc",
-  attributes: () => ({
-    MapPublicIpOnLaunch: {
-      Value: true,
-    },
-  }),
   properties: () => ({
     CidrBlock: "10.1.0.0/16",
   }),
@@ -45,6 +40,11 @@ const vpc = provider.ec2.makeVpc({
 const subnet = provider.ec2.makeSubnet({
   name: "subnet",
   dependencies: { vpc },
+  attributes: () => ({
+    MapPublicIpOnLaunch: {
+      Value: true,
+    },
+  }),
   properties: () => ({
     CidrBlock: "10.1.0.1/24",
   }),
