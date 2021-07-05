@@ -1,0 +1,21 @@
+{
+  "name": "@grucloud/example-aws-ec2-generated",
+  "version": "1.23.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "graph-target": "gc graph",
+    "graph-live": "gc list --graph --types-exclude KeyPair",
+    "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grucloud/core": "^1.23.0",
+    "@grucloud/provider-aws": "^1.23.0",
+    "ping": "^0.4.1",
+    "rubico": "^1.6.23",
+    "ssh2": "^0.8.9"
+  }
+}

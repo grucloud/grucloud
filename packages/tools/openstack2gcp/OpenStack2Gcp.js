@@ -41,6 +41,7 @@ const {
   writeResources,
   findLiveById,
   ResourceVarName,
+  writeOutput,
 } = require("./generatorUtils");
 
 const { Command } = require("commander");
@@ -286,14 +287,6 @@ const writeVirtualMachines = writeResources({
   type: "Server",
   writeResource: writeVirtualMachine,
 });
-
-const writeOutput = ({ options, content }) =>
-  pipe([
-    () => fs.writeFile(options.output, content),
-    tap(() => {
-      console.log(`infrastrucure written to ${options.output}`);
-    }),
-  ])();
 
 const main = async (options) =>
   pipe([

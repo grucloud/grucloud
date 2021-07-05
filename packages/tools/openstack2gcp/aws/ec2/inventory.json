@@ -1,0 +1,1562 @@
+{
+    "command": "list",
+    "commandOptions": {
+        "dotFile": "diagram-live.dot",
+        "title": "ec2-vpc",
+        "graph": true
+    },
+    "programOptions": {
+        "json": "inventory-aws-ec2-vpc.json"
+    },
+    "result": {
+        "error": false,
+        "results": [
+            {
+                "providerName": "aws",
+                "kind": "livesPerType",
+                "error": false,
+                "results": [
+                    {
+                        "type": "KeyPair",
+                        "group": "ec2",
+                        "resources": [
+                            {
+                                "uri": "aws::ec2::KeyPair::kp",
+                                "name": "kp",
+                                "displayName": "kp",
+                                "id": "kp",
+                                "providerName": "aws",
+                                "type": "KeyPair",
+                                "group": "ec2",
+                                "live": {
+                                    "KeyPairId": "key-03d67e8e3990df776",
+                                    "KeyFingerprint": "29:88:c1:d1:9a:6b:05:66:65:fe:cd:1d:be:30:ee:6c:08:95:d5:ae",
+                                    "KeyName": "kp",
+                                    "Tags": []
+                                },
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByUs": false,
+                                "show": true
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Volume",
+                        "group": "ec2",
+                        "resources": [
+                            {
+                                "uri": "aws::ec2::Volume::vol-0b9f83a9d3d0ee391",
+                                "name": "vol-0b9f83a9d3d0ee391",
+                                "displayName": "vol-0b9f83a9d3d0ee391",
+                                "id": "vol-0b9f83a9d3d0ee391",
+                                "providerName": "aws",
+                                "type": "Volume",
+                                "group": "ec2",
+                                "live": {
+                                    "Attachments": [
+                                        {
+                                            "AttachTime": "2021-07-03T13:59:59.000Z",
+                                            "Device": "/dev/sda1",
+                                            "InstanceId": "i-033d678d655328e84",
+                                            "State": "attached",
+                                            "VolumeId": "vol-0b9f83a9d3d0ee391",
+                                            "DeleteOnTermination": true
+                                        }
+                                    ],
+                                    "AvailabilityZone": "eu-west-2a",
+                                    "CreateTime": "2021-07-03T14:00:00.085Z",
+                                    "Encrypted": false,
+                                    "Size": 8,
+                                    "SnapshotId": "snap-07d9eda1bd056c7f8",
+                                    "State": "in-use",
+                                    "VolumeId": "vol-0b9f83a9d3d0ee391",
+                                    "Iops": 100,
+                                    "Tags": [],
+                                    "VolumeType": "gp2",
+                                    "MultiAttachEnabled": false
+                                },
+                                "cannotBeDeleted": true,
+                                "isDefault": false,
+                                "dependencies": [],
+                                "managedByUs": false,
+                                "show": true
+                            },
+                            {
+                                "uri": "aws::ec2::Volume::vol-08038ec71225782ec",
+                                "name": "volume",
+                                "displayName": "volume",
+                                "id": "vol-08038ec71225782ec",
+                                "providerName": "aws",
+                                "type": "Volume",
+                                "group": "ec2",
+                                "live": {
+                                    "Attachments": [
+                                        {
+                                            "AttachTime": "2021-07-05T11:13:58.000Z",
+                                            "Device": "/dev/sdf",
+                                            "InstanceId": "i-063ec9e6e25bdcac9",
+                                            "State": "attached",
+                                            "VolumeId": "vol-08038ec71225782ec",
+                                            "DeleteOnTermination": false
+                                        }
+                                    ],
+                                    "AvailabilityZone": "eu-west-2a",
+                                    "CreateTime": "2021-07-05T11:12:52.321Z",
+                                    "Encrypted": false,
+                                    "Size": 5,
+                                    "SnapshotId": "",
+                                    "State": "in-use",
+                                    "VolumeId": "vol-08038ec71225782ec",
+                                    "Tags": [
+                                        {
+                                            "Key": "CreatedByProvider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "volume"
+                                        },
+                                        {
+                                            "Key": "projectName",
+                                            "Value": "@grucloud/example-aws-ec2-vpc"
+                                        },
+                                        {
+                                            "Key": "ManagedBy",
+                                            "Value": "GruCloud"
+                                        },
+                                        {
+                                            "Key": "stage",
+                                            "Value": "dev"
+                                        }
+                                    ],
+                                    "VolumeType": "standard",
+                                    "MultiAttachEnabled": false
+                                },
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "dependencies": [],
+                                "managedByUs": true,
+                                "show": true
+                            },
+                            {
+                                "uri": "aws::ec2::Volume::vol-09a2fcdb826ec012c",
+                                "name": "vol-09a2fcdb826ec012c",
+                                "displayName": "vol-09a2fcdb826ec012c",
+                                "id": "vol-09a2fcdb826ec012c",
+                                "providerName": "aws",
+                                "type": "Volume",
+                                "group": "ec2",
+                                "live": {
+                                    "Attachments": [
+                                        {
+                                            "AttachTime": "2021-07-05T11:13:05.000Z",
+                                            "Device": "/dev/xvda",
+                                            "InstanceId": "i-063ec9e6e25bdcac9",
+                                            "State": "attached",
+                                            "VolumeId": "vol-09a2fcdb826ec012c",
+                                            "DeleteOnTermination": true
+                                        }
+                                    ],
+                                    "AvailabilityZone": "eu-west-2a",
+                                    "CreateTime": "2021-07-05T11:13:05.054Z",
+                                    "Encrypted": false,
+                                    "Size": 2,
+                                    "SnapshotId": "snap-0ae6866d9aefc55f2",
+                                    "State": "in-use",
+                                    "VolumeId": "vol-09a2fcdb826ec012c",
+                                    "Tags": [],
+                                    "VolumeType": "standard",
+                                    "MultiAttachEnabled": false
+                                },
+                                "cannotBeDeleted": true,
+                                "isDefault": false,
+                                "dependencies": [],
+                                "managedByUs": false,
+                                "show": true
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Vpc",
+                        "group": "ec2",
+                        "resources": [
+                            {
+                                "uri": "aws::ec2::Vpc::vpc-09eb7353a39d2154f",
+                                "name": "vpc-ec2-example",
+                                "displayName": "vpc-ec2-example",
+                                "id": "vpc-09eb7353a39d2154f",
+                                "providerName": "aws",
+                                "type": "Vpc",
+                                "group": "ec2",
+                                "live": {
+                                    "CidrBlock": "10.1.0.0/16",
+                                    "DhcpOptionsId": "dopt-bb663fd3",
+                                    "State": "available",
+                                    "VpcId": "vpc-09eb7353a39d2154f",
+                                    "OwnerId": "840541460064",
+                                    "InstanceTenancy": "default",
+                                    "Ipv6CidrBlockAssociationSet": [],
+                                    "CidrBlockAssociationSet": [
+                                        {
+                                            "AssociationId": "vpc-cidr-assoc-086666fe4b93e3832",
+                                            "CidrBlock": "10.1.0.0/16",
+                                            "CidrBlockState": {
+                                                "State": "associated"
+                                            }
+                                        }
+                                    ],
+                                    "IsDefault": false,
+                                    "Tags": [
+                                        {
+                                            "Key": "projectName",
+                                            "Value": "@grucloud/example-aws-ec2-vpc"
+                                        },
+                                        {
+                                            "Key": "stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "CreatedByProvider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "ManagedBy",
+                                            "Value": "GruCloud"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "vpc-ec2-example"
+                                        }
+                                    ],
+                                    "DnsSupport": true,
+                                    "DnsHostnames": false
+                                },
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByUs": true,
+                                "show": true
+                            },
+                            {
+                                "uri": "aws::ec2::Vpc::vpc-bbbafcd3",
+                                "name": "default",
+                                "displayName": "default",
+                                "id": "vpc-bbbafcd3",
+                                "providerName": "aws",
+                                "type": "Vpc",
+                                "group": "ec2",
+                                "live": {
+                                    "CidrBlock": "172.31.0.0/16",
+                                    "DhcpOptionsId": "dopt-bb663fd3",
+                                    "State": "available",
+                                    "VpcId": "vpc-bbbafcd3",
+                                    "OwnerId": "840541460064",
+                                    "InstanceTenancy": "default",
+                                    "Ipv6CidrBlockAssociationSet": [],
+                                    "CidrBlockAssociationSet": [
+                                        {
+                                            "AssociationId": "vpc-cidr-assoc-1c035a74",
+                                            "CidrBlock": "172.31.0.0/16",
+                                            "CidrBlockState": {
+                                                "State": "associated"
+                                            }
+                                        }
+                                    ],
+                                    "IsDefault": true,
+                                    "Tags": [
+                                        {
+                                            "Key": "Name",
+                                            "Value": "Default"
+                                        }
+                                    ],
+                                    "DnsSupport": true,
+                                    "DnsHostnames": true
+                                },
+                                "cannotBeDeleted": true,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByUs": false,
+                                "show": true
+                            }
+                        ]
+                    },
+                    {
+                        "type": "InternetGateway",
+                        "group": "ec2",
+                        "resources": [
+                            {
+                                "uri": "aws::ec2::InternetGateway::igw-041e0d42bb3b4149c",
+                                "name": "igw-041e0d42bb3b4149c",
+                                "displayName": "igw-041e0d42bb3b4149c",
+                                "id": "igw-041e0d42bb3b4149c",
+                                "providerName": "aws",
+                                "type": "InternetGateway",
+                                "group": "ec2",
+                                "live": {
+                                    "Attachments": [
+                                        {
+                                            "State": "available",
+                                            "VpcId": "vpc-bbbafcd3"
+                                        }
+                                    ],
+                                    "InternetGatewayId": "igw-041e0d42bb3b4149c",
+                                    "OwnerId": "840541460064",
+                                    "Tags": []
+                                },
+                                "cannotBeDeleted": true,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "ids": [
+                                            "vpc-bbbafcd3"
+                                        ]
+                                    }
+                                ],
+                                "managedByUs": false,
+                                "show": true
+                            },
+                            {
+                                "uri": "aws::ec2::InternetGateway::igw-042491cc45286b8a2",
+                                "name": "ig",
+                                "displayName": "ig",
+                                "id": "igw-042491cc45286b8a2",
+                                "providerName": "aws",
+                                "type": "InternetGateway",
+                                "group": "ec2",
+                                "live": {
+                                    "Attachments": [
+                                        {
+                                            "State": "available",
+                                            "VpcId": "vpc-09eb7353a39d2154f"
+                                        }
+                                    ],
+                                    "InternetGatewayId": "igw-042491cc45286b8a2",
+                                    "OwnerId": "840541460064",
+                                    "Tags": [
+                                        {
+                                            "Key": "CreatedByProvider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "ManagedBy",
+                                            "Value": "GruCloud"
+                                        },
+                                        {
+                                            "Key": "projectName",
+                                            "Value": "@grucloud/example-aws-ec2-vpc"
+                                        },
+                                        {
+                                            "Key": "stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "ig"
+                                        }
+                                    ]
+                                },
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "ids": [
+                                            "vpc-09eb7353a39d2154f"
+                                        ]
+                                    }
+                                ],
+                                "managedByUs": true,
+                                "show": true
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Subnet",
+                        "group": "ec2",
+                        "resources": [
+                            {
+                                "uri": "aws::ec2::Subnet::subnet-09b896d625fcc3a01",
+                                "name": "subnet",
+                                "displayName": "subnet",
+                                "id": "subnet-09b896d625fcc3a01",
+                                "providerName": "aws",
+                                "type": "Subnet",
+                                "group": "ec2",
+                                "live": {
+                                    "AvailabilityZone": "eu-west-2a",
+                                    "AvailabilityZoneId": "euw2-az2",
+                                    "AvailableIpAddressCount": 250,
+                                    "CidrBlock": "10.1.0.0/24",
+                                    "DefaultForAz": false,
+                                    "MapPublicIpOnLaunch": false,
+                                    "MapCustomerOwnedIpOnLaunch": false,
+                                    "State": "available",
+                                    "SubnetId": "subnet-09b896d625fcc3a01",
+                                    "VpcId": "vpc-09eb7353a39d2154f",
+                                    "OwnerId": "840541460064",
+                                    "AssignIpv6AddressOnCreation": false,
+                                    "Ipv6CidrBlockAssociationSet": [],
+                                    "Tags": [
+                                        {
+                                            "Key": "Name",
+                                            "Value": "subnet"
+                                        },
+                                        {
+                                            "Key": "projectName",
+                                            "Value": "@grucloud/example-aws-ec2-vpc"
+                                        },
+                                        {
+                                            "Key": "stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "ManagedBy",
+                                            "Value": "GruCloud"
+                                        },
+                                        {
+                                            "Key": "CreatedByProvider",
+                                            "Value": "aws"
+                                        }
+                                    ],
+                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-09b896d625fcc3a01"
+                                },
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "ids": [
+                                            "vpc-09eb7353a39d2154f"
+                                        ]
+                                    }
+                                ],
+                                "managedByUs": true,
+                                "show": true
+                            },
+                            {
+                                "uri": "aws::ec2::Subnet::subnet-0f6f085fc384bf8ce",
+                                "name": "default",
+                                "displayName": "default",
+                                "id": "subnet-0f6f085fc384bf8ce",
+                                "providerName": "aws",
+                                "type": "Subnet",
+                                "group": "ec2",
+                                "live": {
+                                    "AvailabilityZone": "eu-west-2a",
+                                    "AvailabilityZoneId": "euw2-az2",
+                                    "AvailableIpAddressCount": 4090,
+                                    "CidrBlock": "172.31.0.0/20",
+                                    "DefaultForAz": true,
+                                    "MapPublicIpOnLaunch": true,
+                                    "MapCustomerOwnedIpOnLaunch": false,
+                                    "State": "available",
+                                    "SubnetId": "subnet-0f6f085fc384bf8ce",
+                                    "VpcId": "vpc-bbbafcd3",
+                                    "OwnerId": "840541460064",
+                                    "AssignIpv6AddressOnCreation": false,
+                                    "Ipv6CidrBlockAssociationSet": [],
+                                    "Tags": [],
+                                    "SubnetArn": "arn:aws:ec2:eu-west-2:840541460064:subnet/subnet-0f6f085fc384bf8ce"
+                                },
+                                "cannotBeDeleted": true,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "ids": [
+                                            "vpc-bbbafcd3"
+                                        ]
+                                    }
+                                ],
+                                "managedByUs": false,
+                                "show": true
+                            }
+                        ]
+                    },
+                    {
+                        "type": "ElasticIpAddress",
+                        "group": "ec2",
+                        "resources": [
+                            {
+                                "uri": "aws::ec2::ElasticIpAddress::eipalloc-09f646b7f15d4bb4e",
+                                "name": "myip",
+                                "displayName": "myip",
+                                "id": "eipalloc-09f646b7f15d4bb4e",
+                                "providerName": "aws",
+                                "type": "ElasticIpAddress",
+                                "group": "ec2",
+                                "live": {
+                                    "InstanceId": "i-063ec9e6e25bdcac9",
+                                    "PublicIp": "18.169.206.149",
+                                    "AllocationId": "eipalloc-09f646b7f15d4bb4e",
+                                    "AssociationId": "eipassoc-0bbdcda983c617968",
+                                    "Domain": "vpc",
+                                    "NetworkInterfaceId": "eni-03843e10e95046a40",
+                                    "NetworkInterfaceOwnerId": "840541460064",
+                                    "PrivateIpAddress": "10.1.0.141",
+                                    "Tags": [
+                                        {
+                                            "Key": "projectName",
+                                            "Value": "@grucloud/example-aws-ec2-vpc"
+                                        },
+                                        {
+                                            "Key": "ManagedBy",
+                                            "Value": "GruCloud"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "myip"
+                                        },
+                                        {
+                                            "Key": "CreatedByProvider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "stage",
+                                            "Value": "dev"
+                                        }
+                                    ],
+                                    "PublicIpv4Pool": "amazon",
+                                    "NetworkBorderGroup": "eu-west-2"
+                                },
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "NetworkInterface",
+                                        "ids": [
+                                            "eni-03843e10e95046a40"
+                                        ]
+                                    },
+                                    {
+                                        "type": "EC2",
+                                        "ids": [
+                                            "i-063ec9e6e25bdcac9"
+                                        ]
+                                    }
+                                ],
+                                "managedByUs": true,
+                                "show": true
+                            }
+                        ]
+                    },
+                    {
+                        "type": "RouteTable",
+                        "group": "ec2",
+                        "resources": [
+                            {
+                                "uri": "aws::ec2::RouteTable::rtb-0a76e9a21ae95be9d",
+                                "name": "route-table",
+                                "displayName": "route-table",
+                                "id": "rtb-0a76e9a21ae95be9d",
+                                "providerName": "aws",
+                                "type": "RouteTable",
+                                "group": "ec2",
+                                "live": {
+                                    "Associations": [
+                                        {
+                                            "Main": false,
+                                            "RouteTableAssociationId": "rtbassoc-0759746eb08300512",
+                                            "RouteTableId": "rtb-0a76e9a21ae95be9d",
+                                            "SubnetId": "subnet-09b896d625fcc3a01",
+                                            "AssociationState": {
+                                                "State": "associated"
+                                            }
+                                        }
+                                    ],
+                                    "PropagatingVgws": [],
+                                    "RouteTableId": "rtb-0a76e9a21ae95be9d",
+                                    "Routes": [
+                                        {
+                                            "DestinationCidrBlock": "10.1.0.0/16",
+                                            "GatewayId": "local",
+                                            "Origin": "CreateRouteTable",
+                                            "State": "active"
+                                        },
+                                        {
+                                            "DestinationCidrBlock": "0.0.0.0/0",
+                                            "GatewayId": "igw-042491cc45286b8a2",
+                                            "Origin": "CreateRoute",
+                                            "State": "active"
+                                        }
+                                    ],
+                                    "Tags": [
+                                        {
+                                            "Key": "projectName",
+                                            "Value": "@grucloud/example-aws-ec2-vpc"
+                                        },
+                                        {
+                                            "Key": "ManagedBy",
+                                            "Value": "GruCloud"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "route-table"
+                                        },
+                                        {
+                                            "Key": "CreatedByProvider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "stage",
+                                            "Value": "dev"
+                                        }
+                                    ],
+                                    "VpcId": "vpc-09eb7353a39d2154f",
+                                    "OwnerId": "840541460064"
+                                },
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "ids": [
+                                            "vpc-09eb7353a39d2154f"
+                                        ]
+                                    },
+                                    {
+                                        "type": "InternetGateway",
+                                        "ids": [
+                                            "igw-042491cc45286b8a2"
+                                        ]
+                                    }
+                                ],
+                                "managedByUs": true,
+                                "show": true
+                            },
+                            {
+                                "uri": "aws::ec2::RouteTable::rtb-668fbc0e",
+                                "name": "rtb-668fbc0e",
+                                "displayName": "rtb-668fbc0e",
+                                "id": "rtb-668fbc0e",
+                                "providerName": "aws",
+                                "type": "RouteTable",
+                                "group": "ec2",
+                                "live": {
+                                    "Associations": [
+                                        {
+                                            "Main": true,
+                                            "RouteTableAssociationId": "rtbassoc-90bf06fb",
+                                            "RouteTableId": "rtb-668fbc0e",
+                                            "AssociationState": {
+                                                "State": "associated"
+                                            }
+                                        }
+                                    ],
+                                    "PropagatingVgws": [],
+                                    "RouteTableId": "rtb-668fbc0e",
+                                    "Routes": [
+                                        {
+                                            "DestinationCidrBlock": "172.31.0.0/16",
+                                            "GatewayId": "local",
+                                            "Origin": "CreateRouteTable",
+                                            "State": "active"
+                                        },
+                                        {
+                                            "DestinationCidrBlock": "0.0.0.0/0",
+                                            "GatewayId": "igw-041e0d42bb3b4149c",
+                                            "Origin": "CreateRoute",
+                                            "State": "active"
+                                        }
+                                    ],
+                                    "Tags": [],
+                                    "VpcId": "vpc-bbbafcd3",
+                                    "OwnerId": "840541460064"
+                                },
+                                "cannotBeDeleted": true,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "ids": [
+                                            "vpc-bbbafcd3"
+                                        ]
+                                    },
+                                    {
+                                        "type": "InternetGateway",
+                                        "ids": [
+                                            "igw-041e0d42bb3b4149c"
+                                        ]
+                                    }
+                                ],
+                                "managedByUs": false,
+                                "show": true
+                            },
+                            {
+                                "uri": "aws::ec2::RouteTable::rtb-0eb9a23d1b62fbb9b",
+                                "name": "rtb-0eb9a23d1b62fbb9b",
+                                "displayName": "rtb-0eb9a23d1b62fbb9b",
+                                "id": "rtb-0eb9a23d1b62fbb9b",
+                                "providerName": "aws",
+                                "type": "RouteTable",
+                                "group": "ec2",
+                                "live": {
+                                    "Associations": [
+                                        {
+                                            "Main": true,
+                                            "RouteTableAssociationId": "rtbassoc-09cb51fecd204be36",
+                                            "RouteTableId": "rtb-0eb9a23d1b62fbb9b",
+                                            "AssociationState": {
+                                                "State": "associated"
+                                            }
+                                        }
+                                    ],
+                                    "PropagatingVgws": [],
+                                    "RouteTableId": "rtb-0eb9a23d1b62fbb9b",
+                                    "Routes": [
+                                        {
+                                            "DestinationCidrBlock": "10.1.0.0/16",
+                                            "GatewayId": "local",
+                                            "Origin": "CreateRouteTable",
+                                            "State": "active"
+                                        }
+                                    ],
+                                    "Tags": [],
+                                    "VpcId": "vpc-09eb7353a39d2154f",
+                                    "OwnerId": "840541460064"
+                                },
+                                "cannotBeDeleted": true,
+                                "isDefault": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "ids": [
+                                            "vpc-09eb7353a39d2154f"
+                                        ]
+                                    },
+                                    {
+                                        "type": "InternetGateway",
+                                        "ids": []
+                                    }
+                                ],
+                                "managedByUs": false,
+                                "show": true
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Route",
+                        "group": "ec2",
+                        "resources": [
+                            {
+                                "uri": "aws::ec2::Route::route-ig",
+                                "name": "route-ig",
+                                "displayName": "route-ig",
+                                "id": "route-ig",
+                                "providerName": "aws",
+                                "type": "Route",
+                                "group": "ec2",
+                                "live": {
+                                    "DestinationCidrBlock": "0.0.0.0/0",
+                                    "GatewayId": "igw-042491cc45286b8a2",
+                                    "Origin": "CreateRoute",
+                                    "State": "active",
+                                    "name": "route-ig",
+                                    "RouteTableId": "rtb-0a76e9a21ae95be9d",
+                                    "Tags": [
+                                        {
+                                            "Key": "Name",
+                                            "Value": "route-ig"
+                                        },
+                                        {
+                                            "Key": "ManagedBy",
+                                            "Value": "GruCloud"
+                                        },
+                                        {
+                                            "Key": "CreatedByProvider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "projectName",
+                                            "Value": "@grucloud/example-aws-ec2-vpc"
+                                        }
+                                    ]
+                                },
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "RouteTable",
+                                        "ids": [
+                                            "rtb-0a76e9a21ae95be9d"
+                                        ]
+                                    },
+                                    {
+                                        "type": "InternetGateway",
+                                        "ids": [
+                                            "igw-042491cc45286b8a2"
+                                        ]
+                                    },
+                                    {
+                                        "type": "NatGateway",
+                                        "ids": []
+                                    }
+                                ],
+                                "managedByUs": true,
+                                "show": true
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Image",
+                        "group": "ec2",
+                        "resources": [
+                            {
+                                "uri": "aws::ec2::Image::ami-00f61f0016c09a299",
+                                "name": "Amazon Linux 2",
+                                "displayName": "Amazon Linux 2",
+                                "id": "ami-00f61f0016c09a299",
+                                "providerName": "aws",
+                                "type": "Image",
+                                "group": "ec2",
+                                "live": {
+                                    "Architecture": "x86_64",
+                                    "CreationDate": "2021-06-17T17:58:21.000Z",
+                                    "ImageId": "ami-00f61f0016c09a299",
+                                    "ImageLocation": "amazon/amzn2-ami-minimal-hvm-2.0.20210617.0-x86_64-ebs",
+                                    "ImageType": "machine",
+                                    "Public": true,
+                                    "OwnerId": "137112412989",
+                                    "PlatformDetails": "Linux/UNIX",
+                                    "UsageOperation": "RunInstances",
+                                    "ProductCodes": [],
+                                    "State": "available",
+                                    "BlockDeviceMappings": [
+                                        {
+                                            "DeviceName": "/dev/xvda",
+                                            "Ebs": {
+                                                "DeleteOnTermination": true,
+                                                "SnapshotId": "snap-0ae6866d9aefc55f2",
+                                                "VolumeSize": 2,
+                                                "VolumeType": "standard",
+                                                "Encrypted": false
+                                            }
+                                        }
+                                    ],
+                                    "Description": "Amazon Linux 2 AMI 2.0.20210617.0 x86_64 Minimal HVM ebs",
+                                    "EnaSupport": true,
+                                    "Hypervisor": "xen",
+                                    "ImageOwnerAlias": "amazon",
+                                    "Name": "amzn2-ami-minimal-hvm-2.0.20210617.0-x86_64-ebs",
+                                    "RootDeviceName": "/dev/xvda",
+                                    "RootDeviceType": "ebs",
+                                    "SriovNetSupport": "simple",
+                                    "Tags": [
+                                        {
+                                            "Key": "Name",
+                                            "Value": "Amazon Linux 2"
+                                        },
+                                        {
+                                            "Key": "ManagedBy",
+                                            "Value": "GruCloud"
+                                        },
+                                        {
+                                            "Key": "CreatedByProvider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "projectName",
+                                            "Value": "@grucloud/example-aws-ec2-vpc"
+                                        }
+                                    ],
+                                    "VirtualizationType": "hvm"
+                                },
+                                "cannotBeDeleted": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByUs": true,
+                                "show": true
+                            }
+                        ]
+                    },
+                    {
+                        "type": "SecurityGroup",
+                        "group": "ec2",
+                        "resources": [
+                            {
+                                "uri": "aws::ec2::SecurityGroup::sg-028dc686ea47c8102",
+                                "name": "security-group",
+                                "displayName": "security-group",
+                                "id": "sg-028dc686ea47c8102",
+                                "providerName": "aws",
+                                "type": "SecurityGroup",
+                                "group": "ec2",
+                                "live": {
+                                    "Description": "Security Group Description",
+                                    "GroupName": "security-group",
+                                    "IpPermissions": [
+                                        {
+                                            "FromPort": 22,
+                                            "IpProtocol": "tcp",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [
+                                                {
+                                                    "CidrIpv6": "::/0"
+                                                }
+                                            ],
+                                            "PrefixListIds": [],
+                                            "ToPort": 22,
+                                            "UserIdGroupPairs": []
+                                        },
+                                        {
+                                            "FromPort": -1,
+                                            "IpProtocol": "icmp",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [
+                                                {
+                                                    "CidrIpv6": "::/0"
+                                                }
+                                            ],
+                                            "PrefixListIds": [],
+                                            "ToPort": -1,
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "OwnerId": "840541460064",
+                                    "GroupId": "sg-028dc686ea47c8102",
+                                    "IpPermissionsEgress": [
+                                        {
+                                            "IpProtocol": "-1",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "Tags": [
+                                        {
+                                            "Key": "ManagedBy",
+                                            "Value": "GruCloud"
+                                        },
+                                        {
+                                            "Key": "projectName",
+                                            "Value": "@grucloud/example-aws-ec2-vpc"
+                                        },
+                                        {
+                                            "Key": "sg-rule-ingress-icmp",
+                                            "Value": "{\"IpPermissions\":[{\"FromPort\":-1,\"IpProtocol\":\"icmp\",\"IpRanges\":[{\"CidrIp\":\"0.0.0.0/0\"}],\"Ipv6Ranges\":[{\"CidrIpv6\":\"::/0\"}],\"ToPort\":-1}]}"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "security-group"
+                                        },
+                                        {
+                                            "Key": "sg-rule-ingress-ssh::namespace",
+                                            "Value": ""
+                                        },
+                                        {
+                                            "Key": "CreatedByProvider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "sg-rule-ingress-icmp::namespace",
+                                            "Value": ""
+                                        },
+                                        {
+                                            "Key": "sg-rule-ingress-ssh",
+                                            "Value": "{\"IpPermissions\":[{\"FromPort\":22,\"IpProtocol\":\"tcp\",\"IpRanges\":[{\"CidrIp\":\"0.0.0.0/0\"}],\"Ipv6Ranges\":[{\"CidrIpv6\":\"::/0\"}],\"ToPort\":22}]}"
+                                        },
+                                        {
+                                            "Key": "stage",
+                                            "Value": "dev"
+                                        }
+                                    ],
+                                    "VpcId": "vpc-09eb7353a39d2154f"
+                                },
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "ids": [
+                                            "vpc-09eb7353a39d2154f"
+                                        ]
+                                    },
+                                    {
+                                        "type": "SecurityGroup",
+                                        "ids": []
+                                    }
+                                ],
+                                "managedByUs": true,
+                                "show": true
+                            },
+                            {
+                                "uri": "aws::ec2::SecurityGroup::sg-029ab217e9f58f905",
+                                "name": "default",
+                                "displayName": "default",
+                                "id": "sg-029ab217e9f58f905",
+                                "providerName": "aws",
+                                "type": "SecurityGroup",
+                                "group": "ec2",
+                                "live": {
+                                    "Description": "default VPC security group",
+                                    "GroupName": "default",
+                                    "IpPermissions": [
+                                        {
+                                            "IpProtocol": "-1",
+                                            "IpRanges": [],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "UserIdGroupPairs": [
+                                                {
+                                                    "GroupId": "sg-029ab217e9f58f905",
+                                                    "UserId": "840541460064"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "OwnerId": "840541460064",
+                                    "GroupId": "sg-029ab217e9f58f905",
+                                    "IpPermissionsEgress": [
+                                        {
+                                            "IpProtocol": "-1",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "Tags": [],
+                                    "VpcId": "vpc-09eb7353a39d2154f"
+                                },
+                                "cannotBeDeleted": true,
+                                "isDefault": true,
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "ids": [
+                                            "vpc-09eb7353a39d2154f"
+                                        ]
+                                    },
+                                    {
+                                        "type": "SecurityGroup",
+                                        "ids": [
+                                            "sg-029ab217e9f58f905"
+                                        ]
+                                    }
+                                ],
+                                "managedByUs": false,
+                                "show": true
+                            },
+                            {
+                                "uri": "aws::ec2::SecurityGroup::sg-f4139a96",
+                                "name": "default",
+                                "displayName": "default",
+                                "id": "sg-f4139a96",
+                                "providerName": "aws",
+                                "type": "SecurityGroup",
+                                "group": "ec2",
+                                "live": {
+                                    "Description": "default VPC security group",
+                                    "GroupName": "default",
+                                    "IpPermissions": [
+                                        {
+                                            "IpProtocol": "-1",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "UserIdGroupPairs": []
+                                        },
+                                        {
+                                            "FromPort": 22,
+                                            "IpProtocol": "tcp",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [
+                                                {
+                                                    "CidrIpv6": "::/0"
+                                                }
+                                            ],
+                                            "PrefixListIds": [],
+                                            "ToPort": 22,
+                                            "UserIdGroupPairs": []
+                                        },
+                                        {
+                                            "FromPort": -1,
+                                            "IpProtocol": "icmp",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [
+                                                {
+                                                    "CidrIpv6": "::/0"
+                                                }
+                                            ],
+                                            "PrefixListIds": [],
+                                            "ToPort": -1,
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "OwnerId": "840541460064",
+                                    "GroupId": "sg-f4139a96",
+                                    "IpPermissionsEgress": [
+                                        {
+                                            "IpProtocol": "-1",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "UserIdGroupPairs": []
+                                        },
+                                        {
+                                            "FromPort": 1024,
+                                            "IpProtocol": "tcp",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [
+                                                {
+                                                    "CidrIpv6": "::/0"
+                                                }
+                                            ],
+                                            "PrefixListIds": [],
+                                            "ToPort": 65535,
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "Tags": [
+                                        {
+                                            "Key": "sg-rule-egress-test",
+                                            "Value": "{\"IpPermissions\":[{\"FromPort\":1024,\"IpProtocol\":\"tcp\",\"IpRanges\":[{\"CidrIp\":\"0.0.0.0/0\"}],\"Ipv6Ranges\":[{\"CidrIpv6\":\"::/0\"}],\"ToPort\":65535}]}"
+                                        },
+                                        {
+                                            "Key": "sg-rule-egress-test::namespace",
+                                            "Value": ""
+                                        }
+                                    ],
+                                    "VpcId": "vpc-bbbafcd3"
+                                },
+                                "cannotBeDeleted": true,
+                                "isDefault": true,
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "ids": [
+                                            "vpc-bbbafcd3"
+                                        ]
+                                    },
+                                    {
+                                        "type": "SecurityGroup",
+                                        "ids": []
+                                    }
+                                ],
+                                "managedByUs": false,
+                                "show": true
+                            }
+                        ]
+                    },
+                    {
+                        "type": "SecurityGroupRuleIngress",
+                        "group": "ec2",
+                        "resources": [
+                            {
+                                "uri": "aws::ec2::SecurityGroupRuleIngress::sg-rule-ingress-ssh",
+                                "name": "sg-rule-ingress-ssh",
+                                "displayName": "sg-rule-ingress-ssh",
+                                "id": "sg-rule-ingress-ssh",
+                                "providerName": "aws",
+                                "type": "SecurityGroupRuleIngress",
+                                "group": "ec2",
+                                "live": {
+                                    "IpPermissions": [
+                                        {
+                                            "FromPort": 22,
+                                            "IpProtocol": "tcp",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [
+                                                {
+                                                    "CidrIpv6": "::/0"
+                                                }
+                                            ],
+                                            "ToPort": 22
+                                        }
+                                    ],
+                                    "Tags": [
+                                        {
+                                            "Key": "Name",
+                                            "Value": "sg-rule-ingress-ssh"
+                                        },
+                                        {
+                                            "Key": "ManagedBy",
+                                            "Value": "GruCloud"
+                                        },
+                                        {
+                                            "Key": "CreatedByProvider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "projectName",
+                                            "Value": "@grucloud/example-aws-ec2-vpc"
+                                        }
+                                    ],
+                                    "GroupId": "sg-028dc686ea47c8102"
+                                },
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "SecurityGroup",
+                                        "ids": [
+                                            "sg-028dc686ea47c8102"
+                                        ]
+                                    }
+                                ],
+                                "managedByUs": true,
+                                "show": true
+                            },
+                            {
+                                "uri": "aws::ec2::SecurityGroupRuleIngress::sg-rule-ingress-icmp",
+                                "name": "sg-rule-ingress-icmp",
+                                "displayName": "sg-rule-ingress-icmp",
+                                "id": "sg-rule-ingress-icmp",
+                                "providerName": "aws",
+                                "type": "SecurityGroupRuleIngress",
+                                "group": "ec2",
+                                "live": {
+                                    "IpPermissions": [
+                                        {
+                                            "FromPort": -1,
+                                            "IpProtocol": "icmp",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [
+                                                {
+                                                    "CidrIpv6": "::/0"
+                                                }
+                                            ],
+                                            "ToPort": -1
+                                        }
+                                    ],
+                                    "Tags": [
+                                        {
+                                            "Key": "Name",
+                                            "Value": "sg-rule-ingress-icmp"
+                                        },
+                                        {
+                                            "Key": "ManagedBy",
+                                            "Value": "GruCloud"
+                                        },
+                                        {
+                                            "Key": "CreatedByProvider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "projectName",
+                                            "Value": "@grucloud/example-aws-ec2-vpc"
+                                        }
+                                    ],
+                                    "GroupId": "sg-028dc686ea47c8102"
+                                },
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "SecurityGroup",
+                                        "ids": [
+                                            "sg-028dc686ea47c8102"
+                                        ]
+                                    }
+                                ],
+                                "managedByUs": true,
+                                "show": true
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Instance",
+                        "group": "ec2",
+                        "resources": [
+                            {
+                                "uri": "aws::ec2::Instance::i-063ec9e6e25bdcac9",
+                                "name": "web-server",
+                                "displayName": "web-server",
+                                "id": "i-063ec9e6e25bdcac9",
+                                "providerName": "aws",
+                                "type": "Instance",
+                                "group": "ec2",
+                                "live": {
+                                    "AmiLaunchIndex": 0,
+                                    "ImageId": "ami-00f61f0016c09a299",
+                                    "InstanceId": "i-063ec9e6e25bdcac9",
+                                    "InstanceType": "t2.micro",
+                                    "KeyName": "kp",
+                                    "LaunchTime": "2021-07-05T11:13:04.000Z",
+                                    "Monitoring": {
+                                        "State": "disabled"
+                                    },
+                                    "Placement": {
+                                        "AvailabilityZone": "eu-west-2a",
+                                        "GroupName": "",
+                                        "Tenancy": "default"
+                                    },
+                                    "PrivateDnsName": "ip-10-1-0-141.eu-west-2.compute.internal",
+                                    "PrivateIpAddress": "10.1.0.141",
+                                    "ProductCodes": [],
+                                    "PublicDnsName": "",
+                                    "PublicIpAddress": "18.169.206.149",
+                                    "State": {
+                                        "Code": 16,
+                                        "Name": "running"
+                                    },
+                                    "StateTransitionReason": "",
+                                    "SubnetId": "subnet-09b896d625fcc3a01",
+                                    "VpcId": "vpc-09eb7353a39d2154f",
+                                    "Architecture": "x86_64",
+                                    "BlockDeviceMappings": [
+                                        {
+                                            "DeviceName": "/dev/xvda",
+                                            "Ebs": {
+                                                "AttachTime": "2021-07-05T11:13:05.000Z",
+                                                "DeleteOnTermination": true,
+                                                "Status": "attached",
+                                                "VolumeId": "vol-09a2fcdb826ec012c"
+                                            }
+                                        },
+                                        {
+                                            "DeviceName": "/dev/sdf",
+                                            "Ebs": {
+                                                "AttachTime": "2021-07-05T11:13:58.000Z",
+                                                "DeleteOnTermination": false,
+                                                "Status": "attached",
+                                                "VolumeId": "vol-08038ec71225782ec"
+                                            }
+                                        }
+                                    ],
+                                    "ClientToken": "f1de0c01-b4af-4220-a68e-8a0dec231a11",
+                                    "EbsOptimized": false,
+                                    "EnaSupport": true,
+                                    "Hypervisor": "xen",
+                                    "ElasticGpuAssociations": [],
+                                    "ElasticInferenceAcceleratorAssociations": [],
+                                    "NetworkInterfaces": [
+                                        {
+                                            "Association": {
+                                                "IpOwnerId": "840541460064",
+                                                "PublicDnsName": "",
+                                                "PublicIp": "18.169.206.149"
+                                            },
+                                            "Attachment": {
+                                                "AttachTime": "2021-07-05T11:13:04.000Z",
+                                                "AttachmentId": "eni-attach-07192fdfb932d6162",
+                                                "DeleteOnTermination": true,
+                                                "DeviceIndex": 0,
+                                                "Status": "attached",
+                                                "NetworkCardIndex": 0
+                                            },
+                                            "Description": "",
+                                            "Groups": [
+                                                {
+                                                    "GroupName": "security-group",
+                                                    "GroupId": "sg-028dc686ea47c8102"
+                                                }
+                                            ],
+                                            "Ipv6Addresses": [],
+                                            "MacAddress": "06:cd:43:9d:02:a6",
+                                            "NetworkInterfaceId": "eni-03843e10e95046a40",
+                                            "OwnerId": "840541460064",
+                                            "PrivateIpAddress": "10.1.0.141",
+                                            "PrivateIpAddresses": [
+                                                {
+                                                    "Association": {
+                                                        "IpOwnerId": "840541460064",
+                                                        "PublicDnsName": "",
+                                                        "PublicIp": "18.169.206.149"
+                                                    },
+                                                    "Primary": true,
+                                                    "PrivateIpAddress": "10.1.0.141"
+                                                }
+                                            ],
+                                            "SourceDestCheck": true,
+                                            "Status": "in-use",
+                                            "SubnetId": "subnet-09b896d625fcc3a01",
+                                            "VpcId": "vpc-09eb7353a39d2154f",
+                                            "InterfaceType": "interface"
+                                        }
+                                    ],
+                                    "RootDeviceName": "/dev/xvda",
+                                    "RootDeviceType": "ebs",
+                                    "SecurityGroups": [
+                                        {
+                                            "GroupName": "security-group",
+                                            "GroupId": "sg-028dc686ea47c8102"
+                                        }
+                                    ],
+                                    "SourceDestCheck": true,
+                                    "Tags": [
+                                        {
+                                            "Key": "projectName",
+                                            "Value": "@grucloud/example-aws-ec2-vpc"
+                                        },
+                                        {
+                                            "Key": "ManagedBy",
+                                            "Value": "GruCloud"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "web-server"
+                                        },
+                                        {
+                                            "Key": "stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "CreatedByProvider",
+                                            "Value": "aws"
+                                        }
+                                    ],
+                                    "VirtualizationType": "hvm",
+                                    "CpuOptions": {
+                                        "CoreCount": 1,
+                                        "ThreadsPerCore": 1
+                                    },
+                                    "CapacityReservationSpecification": {
+                                        "CapacityReservationPreference": "open"
+                                    },
+                                    "HibernationOptions": {
+                                        "Configured": false
+                                    },
+                                    "Licenses": [],
+                                    "MetadataOptions": {
+                                        "State": "applied",
+                                        "HttpTokens": "optional",
+                                        "HttpPutResponseHopLimit": 1,
+                                        "HttpEndpoint": "enabled"
+                                    },
+                                    "EnclaveOptions": {
+                                        "Enabled": false
+                                    }
+                                },
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Image",
+                                        "ids": [
+                                            "ami-00f61f0016c09a299"
+                                        ]
+                                    },
+                                    {
+                                        "type": "KeyPair",
+                                        "ids": [
+                                            "kp"
+                                        ]
+                                    },
+                                    {
+                                        "type": "Vpc",
+                                        "ids": [
+                                            "vpc-09eb7353a39d2154f"
+                                        ]
+                                    },
+                                    {
+                                        "type": "Subnet",
+                                        "ids": [
+                                            "subnet-09b896d625fcc3a01"
+                                        ]
+                                    },
+                                    {
+                                        "type": "Volume",
+                                        "ids": [
+                                            "vol-09a2fcdb826ec012c",
+                                            "vol-08038ec71225782ec"
+                                        ]
+                                    },
+                                    {
+                                        "type": "NetworkInterface",
+                                        "ids": [
+                                            "eni-03843e10e95046a40"
+                                        ]
+                                    },
+                                    {
+                                        "type": "SecurityGroup",
+                                        "ids": [
+                                            "sg-028dc686ea47c8102"
+                                        ]
+                                    },
+                                    {
+                                        "type": "IamInstanceProfile",
+                                        "ids": []
+                                    }
+                                ],
+                                "managedByUs": true,
+                                "show": true
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "kind": "livesPerProvider"
+    }
+}
