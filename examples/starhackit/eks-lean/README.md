@@ -32,7 +32,18 @@ There is no trace of manifests in YAML, instead, Kubernetes manifests are descri
 
 ### Resources
 
-The following [diagram](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/diagram-target.svg) shows the necessary AWS and K8s resources to deploy an application:
+From the infrastructure code, 2 kind of visual representation can be generated with the GruCloud CLI **gc**:
+
+- a mind map indicating the resources type: `gc tree`
+- a diagram showing the relashionship between the resources: `gc graph`
+
+#### Mindmap
+
+![resources-mindmap.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/resources-mindmap.svg)
+
+#### Diagram
+
+The following [diagram](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/diagram-target.svg) shows the AWS and K8s resources and their relashionship:
 
 ![diagram-target.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/examples/starhackit/eks-lean/diagram-target.svg)
 
