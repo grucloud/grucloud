@@ -32,10 +32,10 @@ There is no trace of manifests in YAML, instead, Kubernetes manifests are descri
 
 ### Resources
 
-From the infrastructure code, 2 kind of visual representation can be generated with the GruCloud CLI **gc**:
+From the infrastructure code, 2 kinds of visual representation can be generated with the GruCloud CLI **gc**:
 
-- a mind map indicating the resources type: `gc tree`
-- a diagram showing the relashionship between the resources: `gc graph`
+- a mind map indicating the type of the resource: `gc tree`
+- a diagram showing the relationship between the resources: `gc graph`
 
 #### Mindmap
 
