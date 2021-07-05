@@ -4,10 +4,6 @@ exports.vpcCodeTpl = ({
 }) => `
 const ${resourceVarName} = provider.ec2.makeVpc({
   name: "${name}",${namespace ? `\nnamespace: ${namespace}` : ""}
-  properties: () => ({ 
-    CidrBlock: "${live.CidrBlock}",
-    DnsSupport: ${live.DnsSupport},
-    DnsHostnames: ${live.DnsHostnames}
-  }),
+  properties: () => config.${resourceVarName}.properties,
 });
 `;

@@ -32,11 +32,11 @@ const {
   isFunction,
 } = require("rubico/x");
 
-exports.writeOutput = ({ options, content }) =>
+exports.writeToFile = ({ filename, content }) =>
   pipe([
-    () => fs.writeFile(options.output, content),
+    () => fs.writeFile(filename, content),
     tap(() => {
-      console.log(`infrastructure written to ${options.output}`);
+      console.log(`written to ${filename}`);
     }),
   ])();
 

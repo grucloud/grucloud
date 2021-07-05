@@ -20,6 +20,7 @@ const {
   ResourceVarName,
 } = require("../../../../generatorUtils");
 const { vpcCodeTpl } = require("./vpcCodeTpl");
+const { vpcConfigTpl } = require("./vpcConfigTpl");
 
 // Vpc
 const writeVpc = ({ resource, lives }) =>
@@ -34,6 +35,10 @@ const writeVpc = ({ resource, lives }) =>
         () => ResourceVarName(resource.name),
         (resourceVarName) => ({
           resourceVarName,
+          config: vpcConfigTpl({
+            resourceVarName,
+            resource,
+          }),
           code: vpcCodeTpl({
             resourceVarName,
             resource,

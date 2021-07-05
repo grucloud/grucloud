@@ -9,7 +9,7 @@
   "private": true,
   "main": "OpenStack2Gcp.js",
   "scripts": {
-    "aws2gc": "node aws2gc.js --input aws/ec2/inventory.json --output aws/ec2/iac.js",
+    "aws2gc": "node aws2gc.js --input aws/ec2/inventory.json --outputCode aws/ec2/iac.js --outputConfig aws/ec2/config.js",
     "openstack2gcp": "node OpenStack2Gcp.js --input openstack-inventory/gc-list.json --output gcp-infra/iac.js --mapping mapping.json"
   },
   "author": "Frederic Heem",

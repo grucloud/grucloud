@@ -8,6 +8,7 @@ const {
   ResourceVarName,
 } = require("../../../../generatorUtils");
 const { subnetCodeTpl } = require("./subnetCodeTpl");
+const { subnetConfigTpl } = require("./subnetConfigTpl");
 
 const findSubnetDependencyNames = ({ type, resource, lives }) =>
   pipe([
@@ -37,6 +38,10 @@ const writeSubnet = ({ resource, lives }) =>
         () => ResourceVarNameSubnet(resource),
         (resourceVarName) => ({
           resourceVarName,
+          config: subnetConfigTpl({
+            resourceVarName,
+            resource,
+          }),
           code: subnetCodeTpl({
             resource,
             resourceVarName,

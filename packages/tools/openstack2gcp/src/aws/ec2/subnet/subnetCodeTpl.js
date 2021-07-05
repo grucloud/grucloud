@@ -2,8 +2,7 @@ exports.subnetCodeTpl = ({
   resourceVarName,
   dependencies: { vpc },
   resource: { name, live, namespace },
-}) => `
-const ${resourceVarName} = provider.ec2.makeSubnet({
+}) => `const ${resourceVarName} = provider.ec2.makeSubnet({
   name: "${name}",${namespace ? `\nnamespace: ${namespace}` : ""}
   dependencies: { vpc: ${vpc} },
   attributes: () => ({
@@ -15,8 +14,6 @@ const ${resourceVarName} = provider.ec2.makeSubnet({
         : ""
     }
   }),
-  properties: () => ({
-    CidrBlock: "${live.CidrBlock}",
-  }),
+  properties: () => config.${resourceVarName}.properties,
 });
 `;

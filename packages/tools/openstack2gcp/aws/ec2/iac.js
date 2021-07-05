@@ -3,24 +3,18 @@ const assert = require("assert");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = async ({ provider }) => {
-  const { stage } = provider.config;
+  const { config } = provider;
 
   const vpcEc2Example = provider.ec2.makeVpc({
     name: "vpc-ec2-example",
-    properties: () => ({
-      CidrBlock: "10.1.0.0/16",
-      DnsSupport: true,
-      DnsHostnames: false,
-    }),
+    properties: () => config.vpcEc2Example.properties,
   });
 
   const subnet = provider.ec2.makeSubnet({
     name: "subnet",
     dependencies: { vpc: vpcEc2Example },
     attributes: () => ({}),
-    properties: () => ({
-      CidrBlock: "10.1.0.0/24",
-    }),
+    properties: () => config.subnet.properties,
   });
 
   return {

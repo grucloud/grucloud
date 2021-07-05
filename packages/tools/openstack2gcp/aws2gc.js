@@ -33,7 +33,7 @@ const { iacTpl } = require("./src/aws/iacTpl");
 const { writeVpcs } = require("./src/aws/ec2/vpc/vpcGen");
 const { writeSubnets } = require("./src/aws/ec2/subnet/subnetGen");
 
-const { readModel, readMapping, writeOutput } = require("./generatorUtils");
+const { readModel, readMapping, writeToFile } = require("./generatorUtils");
 
 const { Command } = require("commander");
 
@@ -43,7 +43,9 @@ const createProgram = ({ version }) => {
   program.allowUnknownOption(); // For testing
   program.version(version);
   program.requiredOption("-i, --input <file>", "lives resources");
-  program.option("-o, --output <file>", "iac.js output", "iac.js");
+  program.option("-o, --outputCode <file>", "iac.js output", "iac.js");
+  program.option("-c, --outputConfig <file>", "config.js output", "config.js");
+
   program.option("-m, --mapping <file>", "mapping file", "mapping.json");
 
   program.parse(process.argv);
@@ -51,8 +53,58 @@ const createProgram = ({ version }) => {
   return program;
 };
 
-//TODO
 const writers = [writeVpcs, writeSubnets];
+
+const configTpl = (content) => `const pkg = require("./package.json");
+module.exports = ({ stage }) => ({
+  projectName: pkg.name,
+  ${content}
+});`;
+
+const writeIac =
+  ({ filename }) =>
+  (resources) =>
+    pipe([
+      () => resources,
+      fork({
+        resourcesVarNames: pluck("resourceVarName"),
+        resourcesCode: pipe([pluck("code"), callProp("join", "\n")]),
+      }),
+      tap((xxx) => {
+        console.log("");
+      }),
+      ({ resourcesVarNames, resourcesCode }) =>
+        iacTpl({ resourcesVarNames, resourcesCode }),
+      // TODO: No parser and no filepath given, using 'babel' the parser now but this will throw an error in the future. Please specify a parser or a filepath so one can be inferred.
+      prettier.format,
+      tap((xxx) => {
+        console.log("");
+      }),
+      (content) => writeToFile({ filename, content }),
+    ])();
+
+const writeConfig =
+  ({ filename }) =>
+  (resources) =>
+    pipe([
+      () => resources,
+      pluck("config"),
+      callProp("join", "\n"),
+      tap((xxx) => {
+        assert(true);
+      }),
+      configTpl,
+      tap((xxx) => {
+        assert(true);
+      }),
+      // TODO: No parser and no filepath given, using 'babel' the parser now but this will throw an error in the future. Please specify a parser or a filepath so one can be inferred.
+      prettier.format,
+      tap((xxx) => {
+        assert(true);
+      }),
+      (content) => writeToFile({ filename, content }),
+    ])();
+
 const main = async (options) =>
   pipe([
     tap((xxx) => {
@@ -66,20 +118,12 @@ const main = async (options) =>
       assert(true);
     }),
     fork({
-      resourcesVarNames: pluck("resourceVarName"),
-      resourcesCode: pipe([pluck("code"), callProp("join", "\n")]),
+      iac: writeIac({ filename: options.outputCode }),
+      config: writeConfig({ filename: options.outputConfig }),
     }),
     tap((xxx) => {
       console.log("");
     }),
-    ({ resourcesVarNames, resourcesCode }) =>
-      iacTpl({ resourcesVarNames, resourcesCode }),
-    // TODO: No parser and no filepath given, using 'babel' the parser now but this will throw an error in the future. Please specify a parser or a filepath so one can be inferred.
-    prettier.format,
-    tap((xxx) => {
-      console.log("");
-    }),
-    (content) => writeOutput({ options, content }),
   ])();
 
 //TODO read version from package.json
