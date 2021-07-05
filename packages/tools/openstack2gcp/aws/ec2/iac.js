@@ -13,7 +13,7 @@ const createResources = async ({ provider }) => {
   const subnet = provider.ec2.makeSubnet({
     name: "subnet",
     dependencies: { vpc: vpcEc2Example },
-    attributes: () => ({}),
+    attributes: () => config.subnet.attributes,
     properties: () => config.subnet.properties,
   });
 

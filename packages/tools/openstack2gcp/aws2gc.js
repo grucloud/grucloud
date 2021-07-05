@@ -97,6 +97,7 @@ const writeConfig =
       tap((xxx) => {
         assert(true);
       }),
+      // Common put it in writeToFile
       // TODO: No parser and no filepath given, using 'babel' the parser now but this will throw an error in the future. Please specify a parser or a filepath so one can be inferred.
       prettier.format,
       tap((xxx) => {

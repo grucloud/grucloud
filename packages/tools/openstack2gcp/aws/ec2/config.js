@@ -11,8 +11,12 @@ module.exports = ({ stage }) => ({
   },
   subnet: {
     name: "subnet",
+    attributes: {
+      MapPublicIpOnLaunch: "false",
+    },
     properties: {
       CidrBlock: "10.1.0.0/24",
+      AvailabilityZone: "eu-west-2a",
     },
   },
 });

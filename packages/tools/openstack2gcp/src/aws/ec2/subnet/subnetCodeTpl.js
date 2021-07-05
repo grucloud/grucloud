@@ -5,15 +5,7 @@ exports.subnetCodeTpl = ({
 }) => `const ${resourceVarName} = provider.ec2.makeSubnet({
   name: "${name}",${namespace ? `\nnamespace: ${namespace}` : ""}
   dependencies: { vpc: ${vpc} },
-  attributes: () => ({
-    ${
-      live.MapPublicIpOnLaunch
-        ? `MapPublicIpOnLaunch: {
-      Value: true,
-    },`
-        : ""
-    }
-  }),
+  attributes: () => config.${resourceVarName}.attributes,
   properties: () => config.${resourceVarName}.properties,
 });
 `;
