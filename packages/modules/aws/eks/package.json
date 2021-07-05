@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-aws-eks",
-  "version": "1.23.0",
+  "version": "1.24.0",
   "description": "Grucloud module to manage an EKS Cluster",
   "main": "iac.js",
   "scripts": {
@@ -10,9 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.23.0",
-    "@grucloud/module-aws-vpc": "^1.23.0",
-    "@grucloud/provider-aws": "^1.23.0",
+    "@grucloud/core": "^1.24.0",
+    "@grucloud/module-aws-vpc": "^1.24.0",
+    "@grucloud/provider-aws": "^1.24.0",
     "rubico": "^1.6.23"
   },
   "devDependencies": {

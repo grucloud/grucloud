@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/module-aws-certificate",
-  "version": "1.23.0",
+  "version": "1.24.0",
   "description": "provides an AWS SSL certificate and the associated Route53 resources to validate the certificate",
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/modules/aws/certificate",
   "main": "iac.js",
@@ -16,8 +16,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.23.0",
-    "@grucloud/provider-aws": "^1.23.0"
+    "@grucloud/core": "^1.24.0",
+    "@grucloud/provider-aws": "^1.24.0"
   },
   "devDependencies": {
     "mocha": "^8.3.2"

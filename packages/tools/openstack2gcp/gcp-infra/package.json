@@ -1,6 +1,6 @@
 {
   "name": "gcp-vm",
-  "version": "1.23.0",
+  "version": "1.24.0",
   "description": "",
   "main": "iac.js",
   "private": true,
@@ -10,6 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/provider-google": "^1.23.0"
+    "@grucloud/provider-google": "^1.24.0"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/provider-aws",
-  "version": "1.23.0",
+  "version": "1.24.0",
   "description": "The GruCloud AWS provider",
   "main": "AwsProvider.js",
   "homepage": "https://github.com/grucloud/grucloud/tree/main/packages/providers/aws",
@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.23.0",
+    "@grucloud/core": "^1.24.0",
     "aws-sdk": "^2.888.0",
     "chance": "^1.1.7",
     "deep-object-diff": "^1.1.0",
