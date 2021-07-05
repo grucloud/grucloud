@@ -11,7 +11,7 @@ const {
   tryCatch,
   assign,
 } = require("rubico");
-const { isEmpty, defaultsDeep } = require("rubico/x");
+const { isEmpty, defaultsDeep, identity, size } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsVpc" });
 const { tos } = require("@grucloud/core/tos");
 const { retryCall } = require("@grucloud/core/Retry");
@@ -72,13 +72,13 @@ exports.AwsVpc = ({ spec, config }) => {
             ]),
           })
         ),
-        (items) => items,
+        identity,
       ]),
       tap((items) => {
         logger.debug(`getList vpc result: ${tos(items)}`);
       }),
       (items) => ({
-        total: items.length,
+        total: size(items),
         items,
       }),
       tap(({ total }) => {
@@ -102,7 +102,10 @@ exports.AwsVpc = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createVpc-property
 
-  const create = async ({ payload: { DnsHostnames, ...vpcPayload }, name }) =>
+  const create = async ({
+    payload: { DnsHostnames, DnsSupport, ...vpcPayload },
+    name,
+  }) =>
     pipe([
       tap(() => {
         logger.info(`create vpc ${JSON.stringify({ name })}`);
@@ -115,6 +118,21 @@ exports.AwsVpc = ({ spec, config }) => {
           fn: () => isUpById({ id: VpcId, name }),
           config,
         })
+      ),
+      tap.if(
+        () => DnsSupport,
+        pipe([
+          tap(() => {
+            logger.info(`create vpc modifyVpcAttribute DnsSupport`);
+          }),
+          (VpcId) =>
+            ec2().modifyVpcAttribute({
+              EnableDnsSupport: {
+                Value: true,
+              },
+              VpcId,
+            }),
+        ])
       ),
       tap.if(
         () => DnsHostnames,
