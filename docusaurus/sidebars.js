@@ -124,6 +124,7 @@ module.exports = {
         "cli/PlanQuery",
         "cli/PlanApply",
         "cli/List",
+        "cli/Tree",
         "cli/PlanDestroy",
         "cli/Hook",
       ],
