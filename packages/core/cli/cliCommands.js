@@ -5,7 +5,6 @@ const colors = require("colors/safe");
 const fs = require("fs");
 const path = require("path");
 const shell = require("shelljs");
-const os = require("os");
 
 const {
   map,
@@ -1350,13 +1349,7 @@ exports.graphTarget = async ({ infra, config, commandOptions = {} }) =>
   )();
 
 const pumlToSvg =
-  ({
-    commandOptions: {
-      pumlFile,
-      type = "png",
-      plantumlJar = path.resolve(os.homedir(), "Downloads", "plantuml.jar"),
-    },
-  }) =>
+  ({ commandOptions: { pumlFile, type = "png", plantumlJar } }) =>
   (result) =>
     pipe([
       tap(() => {
@@ -1369,6 +1362,9 @@ const pumlToSvg =
         console.log(`Resource tree file written to: ${pumlFile}`);
       }),
       () => `java -jar ${plantumlJar} -t${type} ${pumlFile}`,
+      tap((command) => {
+        console.log(`Executing: '${command}'`);
+      }),
       (command) =>
         shell.exec(command, {
           silent: true,

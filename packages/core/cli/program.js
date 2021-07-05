@@ -3,6 +3,7 @@ const path = require("path");
 const { Command } = require("commander");
 const { pipe, tryCatch, tap } = require("rubico");
 const { last } = require("rubico/x");
+const os = require("os");
 
 const { createInfra } = require("./infra");
 const YAML = require("./json2yaml");
@@ -220,7 +221,11 @@ exports.createProgram = ({ version, commands }) => {
     .option("--title <value>", "title", defautTitle)
     .option("-t, --type <type>", "file type: png, svg", "svg")
     .option("-f, --full", "display resources name")
-
+    .option(
+      "-j, --plantumlJar <type>",
+      "plantuml.jar location",
+      path.resolve(os.homedir(), "Downloads", "plantuml.jar")
+    )
     .option(...optionFilteredByProvider)
     .action(runCommand({ commandName: "graphTree", program }));
 
