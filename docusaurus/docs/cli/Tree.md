@@ -9,7 +9,7 @@ The **tree** commands generates a [mind map](https://plantuml.com/mindmap-diagra
 gc tree
 ```
 
-## Requirements
+## Requirements
 
 The conversion from \*.puml to SVG/PNG is performed by [plantuml](https://plantuml.com/download).
 Do not forget to download the [plantuml.jar](https://plantuml.com/download).
