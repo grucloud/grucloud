@@ -19,4 +19,11 @@ module.exports = ({ stage }) => ({
       AvailabilityZone: "eu-west-2a",
     },
   },
+  webServer: {
+    name: "web-server",
+    properties: {
+      InstanceType: "t2.micro",
+      ImageId: "ami-00f61f0016c09a299",
+    },
+  },
 });

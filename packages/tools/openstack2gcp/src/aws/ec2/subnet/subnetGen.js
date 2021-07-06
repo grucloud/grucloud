@@ -4,24 +4,11 @@ const { find, pluck, size } = require("rubico/x");
 
 const {
   writeResources,
-  findLiveById,
   ResourceVarName,
+  findDependencyNames,
 } = require("../../../../generatorUtils");
 const { subnetCodeTpl } = require("./subnetCodeTpl");
 const { subnetConfigTpl } = require("./subnetConfigTpl");
-
-const findSubnetDependencyNames = ({ type, resource, lives }) =>
-  pipe([
-    () => resource.dependencies,
-    find(eq(get("type"), type)),
-    get("ids"),
-    map(findLiveById({ type, lives })),
-    pluck("name"),
-    map(ResourceVarName),
-    tap((xxx) => {
-      assert(true);
-    }),
-  ])();
 
 const ResourceVarNameSubnet = (resource) => `${ResourceVarName(resource.name)}`;
 
@@ -47,7 +34,7 @@ const writeSubnet = ({ resource, lives }) =>
             resourceVarName,
             resourceName: ResourceNameSubnet(resource),
             dependencies: {
-              vpc: findSubnetDependencyNames({
+              vpc: findDependencyNames({
                 type: "Vpc",
                 resource,
                 lives,

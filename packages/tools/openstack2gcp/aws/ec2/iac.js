@@ -17,9 +17,22 @@ const createResources = async ({ provider }) => {
     properties: () => config.subnet.properties,
   });
 
+  const webServer = provider.ec2.makeSubnet({
+    name: "web-server",
+    dependencies: {
+      subnet: subnet,
+      keyPair: kp,
+      securityGroups: [securityGroup],
+
+      volumes: [volume],
+    },
+    properties: () => config.webServer.properties,
+  });
+
   return {
     vpcEc2Example,
     subnet,
+    webServer,
   };
 };
 

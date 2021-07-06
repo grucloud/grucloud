@@ -130,9 +130,10 @@ exports.generatorMain = ({ name, options, writers, iacTpl, configTpl }) =>
     }),
   ])();
 
-exports.ResourceVarName = (name) => camelCase(name);
+const ResourceVarName = (name) => camelCase(name);
+exports.ResourceVarName = ResourceVarName;
 
-exports.findLiveById =
+const findLiveById =
   ({ lives, type }) =>
   (id) =>
     pipe([
@@ -149,6 +150,8 @@ exports.findLiveById =
         //console.log(`findName`);
       }),
     ])();
+
+exports.findLiveById = findLiveById;
 
 exports.writeResources =
   ({ type, writeResource }) =>
@@ -170,3 +173,25 @@ exports.writeResources =
         ])
       ),
     ])();
+
+exports.findDependencyNames = ({
+  type,
+  resource,
+  lives,
+  filterDependency = () => true,
+}) =>
+  pipe([
+    () => resource.dependencies,
+    find(eq(get("type"), type)),
+    get("ids"),
+    map(findLiveById({ type, lives })),
+    tap((xxx) => {
+      assert(true);
+    }),
+    filter(filterDependency),
+    pluck("name"),
+    map(ResourceVarName),
+    tap((xxx) => {
+      assert(true);
+    }),
+  ])();

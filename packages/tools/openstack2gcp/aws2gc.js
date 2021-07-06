@@ -6,8 +6,9 @@ const { configTpl } = require("./src/configTpl");
 const { iacTpl } = require("./src/aws/iacTpl");
 const { writeVpcs } = require("./src/aws/ec2/vpc/vpcGen");
 const { writeSubnets } = require("./src/aws/ec2/subnet/subnetGen");
+const { writeInstances } = require("./src/aws/ec2/instance/instanceGen");
 
-const writers = [writeVpcs, writeSubnets];
+const writers = [writeVpcs, writeSubnets, writeInstances];
 
 //TODO read version from package.json
 const options = createProgramOptions({ version: "1.0" });
