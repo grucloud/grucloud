@@ -1,6 +1,9 @@
 const pkg = require("./package.json");
 module.exports = ({ stage }) => ({
   projectName: pkg.name,
+  kp: {
+    name: "kp",
+  },
   vpcEc2Example: {
     name: "vpc-ec2-example",
     properties: {

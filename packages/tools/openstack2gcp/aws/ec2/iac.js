@@ -5,6 +5,10 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const createResources = async ({ provider }) => {
   const { config } = provider;
 
+  const kp = provider.ec2.useKeyPair({
+    name: "kp",
+  });
+
   const vpcEc2Example = provider.ec2.makeVpc({
     name: "vpc-ec2-example",
     properties: () => config.vpcEc2Example.properties,
@@ -30,6 +34,7 @@ const createResources = async ({ provider }) => {
   });
 
   return {
+    kp,
     vpcEc2Example,
     subnet,
     webServer,
