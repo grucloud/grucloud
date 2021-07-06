@@ -19,12 +19,18 @@ const writeToFile =
   ({ filename }) =>
   (content) =>
     pipe([
+      tap(() => {
+        assert(filename);
+        assert(content);
+      }),
       () => prettier.format(content, { parser: "babel" }),
       (formatted) => fs.writeFile(filename, formatted),
       tap(() => {
         console.log(`written to ${filename}`);
       }),
     ])();
+
+exports.writeToFile = writeToFile;
 
 const readModel = (options) =>
   pipe([
@@ -52,7 +58,7 @@ exports.readModel = readModel;
 const readMapping = (options) =>
   pipe([
     tap(() => {
-      //console.log("readMapping", options.mapping);
+      console.log("readMapping", options.mapping);
     }),
     () => fs.readFile(path.resolve(options.mapping), "utf-8"),
     JSON.parse,
@@ -111,7 +117,7 @@ exports.generatorMain = ({ name, options, writers, iacTpl, configTpl }) =>
     tap((xxx) => {
       console.log(name);
     }),
-    fork({ lives: readModel(options), mapping: () => ({}) }),
+    fork({ lives: readModel(options), mapping: readMapping(options) }),
     ({ lives, mapping }) =>
       flatMap((writeResource) => writeResource({ lives, mapping }))(writers),
     filter(identity),

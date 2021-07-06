@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-const fs = require("fs").promises;
-const path = require("path");
 const {
   pipe,
   tap,
@@ -27,38 +25,22 @@ const {
   size,
   defaultsDeep,
 } = require("rubico/x");
-const prettier = require("prettier");
 const ipaddr = require("ipaddr.js");
 
-const { iacTpl } = require("./template/gcp/iacTpl");
-const { networkTpl } = require("./template/gcp/networkTpl");
-const { diskTpl } = require("./template/gcp/diskTpl");
-const { subNetworkTpl } = require("./template/gcp/subNetworkTpl");
-const { virtualMachineTpl } = require("./template/gcp/virtualMachineTpl");
+const { iacTpl } = require("./src/gcp/iacTpl");
+const { networkTpl } = require("./src/gcp/networkTpl");
+const { diskTpl } = require("./src/gcp/diskTpl");
+const { subNetworkTpl } = require("./src/gcp/subNetworkTpl");
+const { virtualMachineTpl } = require("./src/gcp/virtualMachineTpl");
 const {
   readModel,
   readMapping,
   writeResources,
   findLiveById,
   ResourceVarName,
-  writeOutput,
+  writeToFile,
+  createProgramOptions,
 } = require("./generatorUtils");
-
-const { Command } = require("commander");
-
-const createProgram = ({ version }) => {
-  const program = new Command();
-  program.storeOptionsAsProperties(false);
-  program.allowUnknownOption(); // For testing
-  program.version(version);
-  program.requiredOption("-i, --input <file>", "lives resources");
-  program.option("-o, --output <file>", "iac.js output", "iac.js");
-  program.option("-m, --mapping <file>", "mapping file", "mapping.json");
-
-  program.parse(process.argv);
-
-  return program;
-};
 
 // Network
 const writeNetwork = ({ resource, lives }) =>
@@ -315,16 +297,11 @@ const main = async (options) =>
     ({ resourcesVarNames, resourcesCode }) =>
       iacTpl({ resourcesVarNames, resourcesCode }),
     // TODO: No parser and no filepath given, using 'babel' the parser now but this will throw an error in the future. Please specify a parser or a filepath so one can be inferred.
-    prettier.format,
-    tap((xxx) => {
-      console.log("");
-    }),
-    (content) => writeOutput({ options, content }),
+    writeToFile({ filename: options.outputCode }),
   ])();
 
 //TODO read version from package.json
-const program = createProgram({ version: "1.0" });
-const options = program.opts();
+const options = createProgramOptions({ version: "1.0" });
 
 main(options)
   .then(() => {})
