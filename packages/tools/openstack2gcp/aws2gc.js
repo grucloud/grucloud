@@ -26,16 +26,13 @@ const {
   size,
   defaultsDeep,
 } = require("rubico/x");
-const prettier = require("prettier");
-//const ipaddr = require("ipaddr.js");
-const { iacTpl } = require("./src/aws/iacTpl");
-
-const { writeVpcs } = require("./src/aws/ec2/vpc/vpcGen");
-const { writeSubnets } = require("./src/aws/ec2/subnet/subnetGen");
+const { Command } = require("commander");
 
 const { readModel, readMapping, writeToFile } = require("./generatorUtils");
 
-const { Command } = require("commander");
+const { iacTpl } = require("./src/aws/iacTpl");
+const { writeVpcs } = require("./src/aws/ec2/vpc/vpcGen");
+const { writeSubnets } = require("./src/aws/ec2/subnet/subnetGen");
 
 const createProgram = ({ version }) => {
   const program = new Command();
@@ -45,7 +42,6 @@ const createProgram = ({ version }) => {
   program.requiredOption("-i, --input <file>", "lives resources");
   program.option("-o, --outputCode <file>", "iac.js output", "iac.js");
   program.option("-c, --outputConfig <file>", "config.js output", "config.js");
-
   program.option("-m, --mapping <file>", "mapping file", "mapping.json");
 
   program.parse(process.argv);
@@ -71,16 +67,11 @@ const writeIac =
         resourcesCode: pipe([pluck("code"), callProp("join", "\n")]),
       }),
       tap((xxx) => {
-        console.log("");
+        assert(true);
       }),
       ({ resourcesVarNames, resourcesCode }) =>
         iacTpl({ resourcesVarNames, resourcesCode }),
-      // TODO: No parser and no filepath given, using 'babel' the parser now but this will throw an error in the future. Please specify a parser or a filepath so one can be inferred.
-      prettier.format,
-      tap((xxx) => {
-        console.log("");
-      }),
-      (content) => writeToFile({ filename, content }),
+      writeToFile({ filename }),
     ])();
 
 const writeConfig =
@@ -94,16 +85,7 @@ const writeConfig =
         assert(true);
       }),
       configTpl,
-      tap((xxx) => {
-        assert(true);
-      }),
-      // Common put it in writeToFile
-      // TODO: No parser and no filepath given, using 'babel' the parser now but this will throw an error in the future. Please specify a parser or a filepath so one can be inferred.
-      prettier.format,
-      tap((xxx) => {
-        assert(true);
-      }),
-      (content) => writeToFile({ filename, content }),
+      writeToFile({ filename }),
     ])();
 
 const main = async (options) =>
@@ -121,9 +103,6 @@ const main = async (options) =>
     fork({
       iac: writeIac({ filename: options.outputCode }),
       config: writeConfig({ filename: options.outputConfig }),
-    }),
-    tap((xxx) => {
-      console.log("");
     }),
   ])();
 

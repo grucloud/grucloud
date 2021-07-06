@@ -2,43 +2,20 @@ const assert = require("assert");
 const path = require("path");
 const fs = require("fs").promises;
 const { camelCase } = require("change-case");
+const prettier = require("prettier");
+const { pipe, tap, get, eq, map, tryCatch, not, assign } = require("rubico");
+const { first, find, callProp, pluck, isFunction } = require("rubico/x");
 
-const {
-  pipe,
-  tap,
-  get,
-  eq,
-  map,
-  flatMap,
-  fork,
-  switchCase,
-  filter,
-  and,
-  tryCatch,
-  not,
-  assign,
-} = require("rubico");
-
-const {
-  first,
-  find,
-  callProp,
-  pluck,
-  identity,
-  values,
-  flatten,
-  size,
-  defaultsDeep,
-  isFunction,
-} = require("rubico/x");
-
-exports.writeToFile = ({ filename, content }) =>
-  pipe([
-    () => fs.writeFile(filename, content),
-    tap(() => {
-      console.log(`written to ${filename}`);
-    }),
-  ])();
+exports.writeToFile =
+  ({ filename }) =>
+  (content) =>
+    pipe([
+      () => prettier.format(content, { parser: "babel" }),
+      (formatted) => fs.writeFile(filename, formatted),
+      tap(() => {
+        console.log(`written to ${filename}`);
+      }),
+    ])();
 
 exports.ResourceVarName = (name) => camelCase(name);
 
