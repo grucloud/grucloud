@@ -1,19 +1,14 @@
-const assert = require("assert");
 const { pipe, tap, get, eq, map, switchCase, or, not, any } = require("rubico");
-const { find, pluck, size, includes } = require("rubico/x");
-const identity = require("rubico/x/identity");
+const { identity } = require("rubico/x");
 
 const {
   writeResources,
   ResourceVarName,
-  findDependencyNames,
   findLiveById,
   configTpl,
   codeTpl,
 } = require("../../../generatorUtils");
 const pickProperties = ["Size", "VolumeType", "Device"];
-
-const ResourceVarNameVolume = (resource) => `${ResourceVarName(resource.name)}`;
 
 const isRootDevice = ({ lives }) =>
   pipe([
@@ -39,7 +34,7 @@ const writeVolume = ({ resource, lives }) =>
         //console.log("volume has root device");
       },
       pipe([
-        () => ResourceVarNameVolume(resource),
+        () => ResourceVarName(resource.name),
         (resourceVarName) => ({
           resourceVarName,
           config: configTpl({

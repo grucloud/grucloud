@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, map, switchCase, not } = require("rubico");
-const { find, pluck, size, includes } = require("rubico/x");
+const { pluck, includes } = require("rubico/x");
 
 const {
   writeResources,
@@ -16,12 +16,9 @@ const pickProperties = [
   "Placement.AvailabilityZone",
 ];
 
-const ResourceVarNameInstance = (resource) =>
-  `${ResourceVarName(resource.name)}`;
-
 const writeInstance = ({ resource, lives }) =>
   pipe([
-    () => ResourceVarNameInstance(resource),
+    () => ResourceVarName(resource.name),
     (resourceVarName) => ({
       resourceVarName,
       config: configTpl({

@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, map, switchCase, not } = require("rubico");
-const { find, pluck, size } = require("rubico/x");
 
 const {
   writeResources,
@@ -12,8 +11,6 @@ const {
 
 const pickProperties = ["CidrBlock", "AvailabilityZone", "MapPublicIpOnLaunch"];
 
-const ResourceVarNameSubnet = (resource) => `${ResourceVarName(resource.name)}`;
-
 const writeSubnet = ({ resource, lives }) =>
   pipe([
     () => resource,
@@ -21,7 +18,7 @@ const writeSubnet = ({ resource, lives }) =>
       not(get("isDefault")),
       pipe([
         tap(() => {}),
-        () => ResourceVarNameSubnet(resource),
+        () => ResourceVarName(resource.name),
         (resourceVarName) => ({
           resourceVarName,
           config: configTpl({

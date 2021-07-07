@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { pipe, tap, get, eq, map, switchCase, not } = require("rubico");
-const { find, pluck, size, includes } = require("rubico/x");
 
 const {
   writeResources,
