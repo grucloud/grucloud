@@ -6,5 +6,6 @@ exports.instanceConfigTpl = ({
   properties: { 
     InstanceType: "${live.InstanceType}",
     ImageId: "${live.ImageId}",
+    Placement: { AvailabilityZone: "${live.AvailabilityZone}"},
   },
 },`;

@@ -9,8 +9,15 @@ const { writeVpcs } = require("./src/aws/ec2/vpc/vpcGen");
 const { writeSubnets } = require("./src/aws/ec2/subnet/subnetGen");
 const { writeInstances } = require("./src/aws/ec2/instance/instanceGen");
 const { writeKeyPairs } = require("./src/aws/ec2/keyPair/keyPairGen");
+const { writeVolumes } = require("./src/aws/ec2/volume/volumeGen");
 
-const writers = [writeKeyPairs, writeVpcs, writeSubnets, writeInstances];
+const writers = [
+  writeVpcs,
+  writeSubnets,
+  writeKeyPairs,
+  writeVolumes,
+  writeInstances,
+];
 
 //TODO read version from package.json
 const options = createProgramOptions({ version: "1.0" });

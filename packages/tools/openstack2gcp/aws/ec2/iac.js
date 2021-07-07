@@ -5,24 +5,34 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const createResources = async ({ provider }) => {
   const { config } = provider;
 
-  const kp = provider.ec2.useKeyPair({
-    name: "kp",
-  });
-
   const vpcEc2Example = provider.ec2.makeVpc({
-    name: "vpc-ec2-example",
+    name: config.vpcEc2Example.name,
     properties: () => config.vpcEc2Example.properties,
   });
 
   const subnet = provider.ec2.makeSubnet({
-    name: "subnet",
+    name: config.subnet.name,
     dependencies: { vpc: vpcEc2Example },
     attributes: () => config.subnet.attributes,
     properties: () => config.subnet.properties,
   });
 
+  const kp = provider.ec2.useKeyPair({
+    name: config.kp.name,
+  });
+
+  const vol_0b9f83a9d3d0ee391 = provider.ec2.makeVolume({
+    name: config.vol_0b9f83a9d3d0ee391.name,
+    properties: () => config.vol_0b9f83a9d3d0ee391.properties,
+  });
+
+  const volume = provider.ec2.makeVolume({
+    name: config.volume.name,
+    properties: () => config.volume.properties,
+  });
+
   const webServer = provider.ec2.makeSubnet({
-    name: "web-server",
+    name: config.webServer.name,
     dependencies: {
       subnet: subnet,
       keyPair: kp,
@@ -34,9 +44,11 @@ const createResources = async ({ provider }) => {
   });
 
   return {
-    kp,
     vpcEc2Example,
     subnet,
+    kp,
+    vol_0b9f83a9d3d0ee391,
+    volume,
     webServer,
   };
 };

@@ -9,7 +9,9 @@ exports.instanceCodeTpl = ({
   },
   resource: { name, namespace },
 }) => `const ${resourceVarName} = provider.ec2.makeSubnet({
-  name: "${name}",${namespace ? `\nnamespace: ${namespace}` : ""}
+  name: config.${resourceVarName}.name,${
+  namespace ? `\nnamespace: ${namespace}` : ""
+}
   dependencies: { 
     subnet: ${subnet},
     ${keyPair ? `keyPair: ${keyPair},` : ""}
