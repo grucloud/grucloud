@@ -1,4 +1,4 @@
-const { pipe, tap, get, eq, map, switchCase, or, not, any } = require("rubico");
+const { pipe, tap, get, eq, map, switchCase, fork, any } = require("rubico");
 const { identity } = require("rubico/x");
 
 const {
@@ -7,7 +7,9 @@ const {
   findLiveById,
   configTpl,
   codeTpl,
+  buildPropertyList,
 } = require("../../../generatorUtils");
+
 const pickProperties = ["Size", "VolumeType", "Device"];
 
 const isRootDevice = ({ lives }) =>
@@ -34,13 +36,16 @@ const writeVolume = ({ resource, lives }) =>
         //console.log("volume has root device");
       },
       pipe([
-        () => ResourceVarName(resource.name),
-        (resourceVarName) => ({
+        fork({
+          resourceVarName: () => ResourceVarName(resource.name),
+          propertyList: () => buildPropertyList({ resource, pickProperties }),
+        }),
+        ({ resourceVarName, propertyList }) => ({
           resourceVarName,
           config: configTpl({
             resourceVarName,
             resource,
-            pickProperties,
+            propertyList,
           }),
           code: codeTpl({
             group: "ec2",

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, map, switchCase, not } = require("rubico");
+const { pipe, tap, get, eq, fork, switchCase, not } = require("rubico");
 
 const {
   writeResources,
@@ -7,6 +7,7 @@ const {
   findDependencyNames,
   configTpl,
   codeTpl,
+  buildPropertyList,
 } = require("../../../generatorUtils");
 
 const pickProperties = ["CidrBlock", "AvailabilityZone", "MapPublicIpOnLaunch"];
@@ -18,13 +19,16 @@ const writeSubnet = ({ resource, lives }) =>
       not(get("isDefault")),
       pipe([
         tap(() => {}),
-        () => ResourceVarName(resource.name),
-        (resourceVarName) => ({
+        fork({
+          resourceVarName: () => ResourceVarName(resource.name),
+          propertyList: () => buildPropertyList({ resource, pickProperties }),
+        }),
+        ({ resourceVarName, propertyList }) => ({
           resourceVarName,
           config: configTpl({
             resourceVarName,
             resource,
-            pickProperties,
+            propertyList,
           }),
           code: codeTpl({
             group: "ec2",

@@ -41,24 +41,28 @@ const propertyValue = switchCase([
   identity,
 ]);
 
-exports.configTpl = ({
-  resourceVarName,
-  resource: { name, live },
-  pickProperties,
-}) =>
+exports.buildPropertyList = ({ resource: { live }, pickProperties }) =>
   pipe([
     () => live,
     pick(pickProperties),
     tap((xxx) => {
-      assert(pickProperties);
+      assert(true);
     }),
     map.entries(([key, value]) => [key, `${key}: ${propertyValue(value)}`]),
     values,
+    tap((xxx) => {
+      assert(true);
+    }),
+  ])();
+
+exports.configTpl = ({ resourceVarName, resource: { name }, propertyList }) =>
+  pipe([
+    () => propertyList,
     callProp("join", ","),
-    (properties) => `${resourceVarName}: {
+    (propertyListJoined) => `${resourceVarName}: {
       name: "${name}",
       properties: { 
-        ${properties}
+        ${propertyListJoined}
       },
     },`,
   ])();

@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, map, switchCase, not } = require("rubico");
+const { pipe, tap, get, fork, map, switchCase, not } = require("rubico");
 const { pluck, includes } = require("rubico/x");
 
 const {
@@ -8,6 +8,7 @@ const {
   findDependencyNames,
   configTpl,
   codeTpl,
+  buildPropertyList,
 } = require("../../../generatorUtils");
 
 const pickProperties = [
@@ -18,13 +19,16 @@ const pickProperties = [
 
 const writeInstance = ({ resource, lives }) =>
   pipe([
-    () => ResourceVarName(resource.name),
-    (resourceVarName) => ({
+    fork({
+      resourceVarName: () => ResourceVarName(resource.name),
+      propertyList: () => buildPropertyList({ resource, pickProperties }),
+    }),
+    ({ resourceVarName, propertyList }) => ({
       resourceVarName,
       config: configTpl({
         resourceVarName,
         resource,
-        pickProperties,
+        propertyList,
       }),
       code: codeTpl({
         group: "ec2",

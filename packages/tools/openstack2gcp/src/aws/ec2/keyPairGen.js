@@ -1,11 +1,12 @@
 const assert = require("assert");
-const { pipe, tap, get, eq, map, switchCase, not } = require("rubico");
+const { pipe, tap, get, eq, fork, switchCase, not } = require("rubico");
 
 const {
   writeResources,
   ResourceVarName,
   findDependencyNames,
   configTpl,
+  buildPropertyList,
 } = require("../../../generatorUtils");
 
 const keyPairCodeTpl = ({
@@ -27,8 +28,11 @@ const keyPairConfigTpl = ({
 
 const writeKeyPair = ({ resource, lives }) =>
   pipe([
-    () => ResourceVarName(resource.name),
-    (resourceVarName) => ({
+    fork({
+      resourceVarName: () => ResourceVarName(resource.name),
+      propertyList: () => buildPropertyList({ resource, pickProperties: [] }),
+    }),
+    ({ resourceVarName, propertyList }) => ({
       resourceVarName,
       config: keyPairConfigTpl({
         resourceVarName,

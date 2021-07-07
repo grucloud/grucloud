@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap, get, map, switchCase, not, pick } = require("rubico");
+const { pipe, tap, get, map, switchCase, not, fork } = require("rubico");
 const { size } = require("rubico/x");
 
 const {
@@ -7,6 +7,7 @@ const {
   ResourceVarName,
   configTpl,
   codeTpl,
+  buildPropertyList,
 } = require("../../../generatorUtils");
 
 const pickProperties = ["CidrBlock", "DnsSupport", "DnsHostnames"];
@@ -21,13 +22,16 @@ const writeVpc = ({ resource, lives }) =>
     switchCase([
       not(get("isDefault")),
       pipe([
-        () => ResourceVarName(resource.name),
-        (resourceVarName) => ({
+        fork({
+          resourceVarName: () => ResourceVarName(resource.name),
+          propertyList: () => buildPropertyList({ resource, pickProperties }),
+        }),
+        ({ resourceVarName, propertyList }) => ({
           resourceVarName,
           config: configTpl({
             resourceVarName,
             resource,
-            pickProperties,
+            propertyList,
           }),
           code: codeTpl({
             group: "ec2",
