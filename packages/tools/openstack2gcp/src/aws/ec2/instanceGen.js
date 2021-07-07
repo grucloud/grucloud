@@ -7,6 +7,7 @@ const {
   ResourceVarName,
   findDependencyNames,
   configTpl,
+  codeTpl,
 } = require("../../../generatorUtils");
 
 const pickProperties = [
@@ -15,36 +16,8 @@ const pickProperties = [
   "Placement.AvailabilityZone",
 ];
 
-const instanceCodeTpl = ({
-  resourceVarName,
-  dependencies: {
-    subnet,
-    keyPair,
-    securityGroups,
-    iamInstanceProfile,
-    volumes,
-  },
-  resource: { name, namespace },
-}) => `const ${resourceVarName} = provider.ec2.makeSubnet({
-  name: config.${resourceVarName}.name,${
-  namespace ? `\nnamespace: ${namespace}` : ""
-}
-  dependencies: { 
-    subnet: ${subnet},
-    ${keyPair ? `keyPair: ${keyPair},` : ""}
-    securityGroups: [${securityGroups}],
-    ${iamInstanceProfile ? `iamInstanceProfile: ${iamInstanceProfile},` : ""}
-    volumes: [${volumes}]
-  },
-  properties: () => config.${resourceVarName}.properties,
-});
-`;
-
 const ResourceVarNameInstance = (resource) =>
   `${ResourceVarName(resource.name)}`;
-
-const ResourceNameInstance = (resource) =>
-  ResourceVarNameInstance(resource).replace(/_/g, "-");
 
 const writeInstance = ({ resource, lives }) =>
   pipe([
@@ -56,10 +29,11 @@ const writeInstance = ({ resource, lives }) =>
         resource,
         pickProperties,
       }),
-      code: instanceCodeTpl({
+      code: codeTpl({
+        group: "ec2",
+        type: "Instance",
         resource,
         resourceVarName,
-        resourceName: ResourceNameInstance(resource),
         dependencies: {
           subnet: findDependencyNames({
             type: "Subnet",

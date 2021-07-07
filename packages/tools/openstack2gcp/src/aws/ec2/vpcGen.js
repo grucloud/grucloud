@@ -6,21 +6,10 @@ const {
   writeResources,
   ResourceVarName,
   configTpl,
+  codeTpl,
 } = require("../../../generatorUtils");
 
 const pickProperties = ["CidrBlock", "DnsSupport", "DnsHostnames"];
-
-const vpcCodeTpl = ({
-  resourceVarName,
-  resource: { name, namespace, live },
-}) => `
-const ${resourceVarName} = provider.ec2.makeVpc({
-  name: config.${resourceVarName}.name,${
-  namespace ? `\nnamespace: ${namespace}` : ""
-}
-  properties: () => config.${resourceVarName}.properties,
-});
-`;
 
 // Vpc
 const writeVpc = ({ resource, lives }) =>
@@ -40,7 +29,9 @@ const writeVpc = ({ resource, lives }) =>
             resource,
             pickProperties,
           }),
-          code: vpcCodeTpl({
+          code: codeTpl({
+            group: "ec2",
+            type: "Vpc",
             resourceVarName,
             resource,
           }),

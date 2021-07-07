@@ -7,28 +7,12 @@ const {
   ResourceVarName,
   findDependencyNames,
   configTpl,
+  codeTpl,
 } = require("../../../generatorUtils");
 
 const pickProperties = ["CidrBlock", "AvailabilityZone", "MapPublicIpOnLaunch"];
 
-const subnetCodeTpl = ({
-  resourceVarName,
-  dependencies: { vpc },
-  resource: { name, live, namespace },
-}) => `const ${resourceVarName} = provider.ec2.makeSubnet({
-  name: config.${resourceVarName}.name,${
-  namespace ? `\nnamespace: ${namespace}` : ""
-}
-  dependencies: { vpc: ${vpc} },
-  attributes: () => config.${resourceVarName}.attributes,
-  properties: () => config.${resourceVarName}.properties,
-});
-`;
-
 const ResourceVarNameSubnet = (resource) => `${ResourceVarName(resource.name)}`;
-
-const ResourceNameSubnet = (resource) =>
-  ResourceVarNameSubnet(resource).replace(/_/g, "-");
 
 const writeSubnet = ({ resource, lives }) =>
   pipe([
@@ -45,10 +29,11 @@ const writeSubnet = ({ resource, lives }) =>
             resource,
             pickProperties,
           }),
-          code: subnetCodeTpl({
+          code: codeTpl({
+            group: "ec2",
+            type: "Subnet",
             resource,
             resourceVarName,
-            resourceName: ResourceNameSubnet(resource),
             dependencies: {
               vpc: findDependencyNames({
                 type: "Vpc",

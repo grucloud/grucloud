@@ -15,11 +15,14 @@ const {
   filter,
   flatMap,
   switchCase,
+  not,
 } = require("rubico");
 
 const pick = require("rubico/pick");
+
 const {
   first,
+  isEmpty,
   find,
   callProp,
   pluck,
@@ -59,6 +62,42 @@ exports.configTpl = ({
       },
     },`,
   ])();
+
+const dependencyValue = ({ key, value }) =>
+  switchCase([() => key.endsWith("s"), () => `[${value}]`, () => value])();
+
+const buildDependencies = (dependencies = {}) =>
+  pipe([
+    () => dependencies,
+    map.entries(([key, value]) => [
+      key,
+      !isEmpty(value) && `${key}: ${dependencyValue({ key, value })}`,
+    ]),
+    values,
+    filter(identity),
+    switchCase([
+      isEmpty,
+      () => "",
+      (values) => `dependencies: { 
+       ${values.join(",\n")}
+     },`,
+    ]),
+  ])();
+
+exports.codeTpl = ({
+  group,
+  type,
+  resourceVarName,
+  dependencies,
+  resource: { namespace },
+}) => `
+  const ${resourceVarName} = provider.${group}.make${type}({
+    name: config.${resourceVarName}.name,${
+  namespace ? `\nnamespace: ${namespace},` : ""
+}${buildDependencies(dependencies)} 
+    properties: () => config.${resourceVarName}.properties,
+  });
+  `;
 
 const writeToFile =
   ({ filename }) =>
