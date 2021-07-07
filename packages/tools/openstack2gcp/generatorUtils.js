@@ -5,7 +5,19 @@ const { camelCase } = require("change-case");
 const prettier = require("prettier");
 const { Command } = require("commander");
 
-const { pipe, tap, get, eq, map, fork, filter, flatMap } = require("rubico");
+const {
+  pipe,
+  tap,
+  get,
+  eq,
+  map,
+  fork,
+  filter,
+  flatMap,
+  switchCase,
+} = require("rubico");
+
+const pick = require("rubico/pick");
 const {
   first,
   find,
@@ -13,7 +25,40 @@ const {
   pluck,
   isFunction,
   identity,
+  values,
+  isString,
+  isObject,
 } = require("rubico/x");
+
+const propertyValue = switchCase([
+  isString,
+  (value) => `"${value}"`,
+  isObject,
+  (value) => JSON.stringify(value, null, 4),
+  identity,
+]);
+
+exports.configTpl = ({
+  resourceVarName,
+  resource: { name, live },
+  pickProperties,
+}) =>
+  pipe([
+    () => live,
+    pick(pickProperties),
+    tap((xxx) => {
+      assert(pickProperties);
+    }),
+    map.entries(([key, value]) => [key, `${key}: ${propertyValue(value)}`]),
+    values,
+    callProp("join", ","),
+    (properties) => `${resourceVarName}: {
+      name: "${name}",
+      properties: { 
+        ${properties}
+      },
+    },`,
+  ])();
 
 const writeToFile =
   ({ filename }) =>

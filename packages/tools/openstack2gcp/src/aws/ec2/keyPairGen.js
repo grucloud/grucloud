@@ -6,9 +6,25 @@ const {
   writeResources,
   ResourceVarName,
   findDependencyNames,
-} = require("../../../../generatorUtils");
-const { keyPairCodeTpl } = require("./keyPairCodeTpl");
-const { keyPairConfigTpl } = require("./keyPairConfigTpl");
+  configTpl,
+} = require("../../../generatorUtils");
+
+const keyPairCodeTpl = ({
+  resourceVarName,
+  resource: { name, namespace },
+}) => `const ${resourceVarName} = provider.ec2.useKeyPair({
+  name: config.${resourceVarName}.name,${
+  namespace ? `\nnamespace: ${namespace}` : ""
+}
+});
+`;
+
+const keyPairConfigTpl = ({
+  resourceVarName,
+  resource: { name, live },
+}) => `${resourceVarName}: {
+  name: "${name}",
+},`;
 
 const writeKeyPair = ({ resource, lives }) =>
   pipe([

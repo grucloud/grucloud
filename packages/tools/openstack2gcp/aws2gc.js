@@ -5,11 +5,11 @@ const { createProgramOptions, generatorMain } = require("./generatorUtils");
 const { configTpl } = require("./src/configTpl");
 const { iacTpl } = require("./src/aws/iacTpl");
 
-const { writeVpcs } = require("./src/aws/ec2/vpc/vpcGen");
-const { writeSubnets } = require("./src/aws/ec2/subnet/subnetGen");
-const { writeInstances } = require("./src/aws/ec2/instance/instanceGen");
-const { writeKeyPairs } = require("./src/aws/ec2/keyPair/keyPairGen");
-const { writeVolumes } = require("./src/aws/ec2/volume/volumeGen");
+const { writeVpcs } = require("./src/aws/ec2/vpcGen");
+const { writeSubnets } = require("./src/aws/ec2/subnetGen");
+const { writeInstances } = require("./src/aws/ec2/instanceGen");
+const { writeKeyPairs } = require("./src/aws/ec2/keyPairGen");
+const { writeVolumes } = require("./src/aws/ec2/volumeGen");
 
 const writers = [
   writeVpcs,

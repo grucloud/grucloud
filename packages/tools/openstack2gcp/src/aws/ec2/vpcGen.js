@@ -1,26 +1,26 @@
 const assert = require("assert");
-const {
-  pipe,
-  tap,
-  get,
-  eq,
-  map,
-  fork,
-  switchCase,
-  filter,
-  and,
-  tryCatch,
-  not,
-  assign,
-} = require("rubico");
+const { pipe, tap, get, map, switchCase, not, pick } = require("rubico");
 const { size } = require("rubico/x");
 
 const {
   writeResources,
   ResourceVarName,
-} = require("../../../../generatorUtils");
-const { vpcCodeTpl } = require("./vpcCodeTpl");
-const { vpcConfigTpl } = require("./vpcConfigTpl");
+  configTpl,
+} = require("../../../generatorUtils");
+
+const pickProperties = ["CidrBlock", "DnsSupport", "DnsHostnames"];
+
+const vpcCodeTpl = ({
+  resourceVarName,
+  resource: { name, namespace, live },
+}) => `
+const ${resourceVarName} = provider.ec2.makeVpc({
+  name: config.${resourceVarName}.name,${
+  namespace ? `\nnamespace: ${namespace}` : ""
+}
+  properties: () => config.${resourceVarName}.properties,
+});
+`;
 
 // Vpc
 const writeVpc = ({ resource, lives }) =>
@@ -35,9 +35,10 @@ const writeVpc = ({ resource, lives }) =>
         () => ResourceVarName(resource.name),
         (resourceVarName) => ({
           resourceVarName,
-          config: vpcConfigTpl({
+          config: configTpl({
             resourceVarName,
             resource,
+            pickProperties,
           }),
           code: vpcCodeTpl({
             resourceVarName,

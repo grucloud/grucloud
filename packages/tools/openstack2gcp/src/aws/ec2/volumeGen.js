@@ -8,9 +8,20 @@ const {
   ResourceVarName,
   findDependencyNames,
   findLiveById,
-} = require("../../../../generatorUtils");
-const { volumeCodeTpl } = require("./volumeCodeTpl");
-const { volumeConfigTpl } = require("./volumeConfigTpl");
+  configTpl,
+} = require("../../../generatorUtils");
+const pickProperties = ["Size", "VolumeType", "Device"];
+
+const volumeCodeTpl = ({
+  resourceVarName,
+  resource: { name, namespace },
+}) => `const ${resourceVarName} = provider.ec2.makeVolume({
+  name: config.${resourceVarName}.name,${
+  namespace ? `\nnamespace: ${namespace}` : ""
+}
+  properties: () => config.${resourceVarName}.properties,
+});
+`;
 
 const ResourceVarNameVolume = (resource) => `${ResourceVarName(resource.name)}`;
 const ResourceNameVolume = ResourceVarNameVolume;
@@ -42,9 +53,10 @@ const writeVolume = ({ resource, lives }) =>
         () => ResourceVarNameVolume(resource),
         (resourceVarName) => ({
           resourceVarName,
-          config: volumeConfigTpl({
+          config: configTpl({
             resourceVarName,
             resource,
+            pickProperties,
           }),
           code: volumeCodeTpl({
             resource,
