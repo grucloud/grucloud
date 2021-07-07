@@ -15,9 +15,6 @@ const pickProperties = ["CidrBlock", "DnsSupport", "DnsHostnames"];
 // Vpc
 const writeVpc = ({ resource, lives }) =>
   pipe([
-    tap(() => {
-      console.log(`writeVpc`, resource, size(lives));
-    }),
     () => resource,
     switchCase([
       not(get("isDefault")),
@@ -43,9 +40,6 @@ const writeVpc = ({ resource, lives }) =>
       ]),
       () => undefined,
     ]),
-    tap((xxx) => {
-      assert(true);
-    }),
   ])();
 
 exports.writeVpcs = writeResources({

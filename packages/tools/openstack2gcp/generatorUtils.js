@@ -45,14 +45,8 @@ exports.buildPropertyList = ({ resource: { live }, pickProperties }) =>
   pipe([
     () => live,
     pick(pickProperties),
-    tap((xxx) => {
-      assert(true);
-    }),
     map.entries(([key, value]) => [key, `${key}: ${propertyValue(value)}`]),
     values,
-    tap((xxx) => {
-      assert(true);
-    }),
   ])();
 
 exports.configTpl = ({ resourceVarName, resource: { name }, propertyList }) =>
@@ -60,10 +54,13 @@ exports.configTpl = ({ resourceVarName, resource: { name }, propertyList }) =>
     () => propertyList,
     callProp("join", ","),
     (propertyListJoined) => `${resourceVarName}: {
-      name: "${name}",
-      properties: { 
-        ${propertyListJoined}
-      },
+      name: "${name}"${
+      !isEmpty(propertyListJoined)
+        ? `\n,properties: { 
+          ${propertyListJoined} 
+        }`
+        : ""
+    },
     },`,
   ])();
 
@@ -94,12 +91,17 @@ exports.codeTpl = ({
   resourceVarName,
   dependencies,
   resource: { namespace },
+  noProperties = false,
+  createPrefix = "make",
 }) => `
-  const ${resourceVarName} = provider.${group}.make${type}({
+  const ${resourceVarName} = provider.${group}.${createPrefix}${type}({
     name: config.${resourceVarName}.name,${
   namespace ? `\nnamespace: ${namespace},` : ""
-}${buildDependencies(dependencies)} 
-    properties: () => config.${resourceVarName}.properties,
+}${buildDependencies(dependencies)}${
+  !noProperties
+    ? `\nproperties: () => config.${resourceVarName}.properties,`
+    : ""
+}
   });
   `;
 

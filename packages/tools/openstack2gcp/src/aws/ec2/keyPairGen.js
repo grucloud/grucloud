@@ -4,27 +4,10 @@ const { pipe, tap, get, eq, fork, switchCase, not } = require("rubico");
 const {
   writeResources,
   ResourceVarName,
-  findDependencyNames,
   configTpl,
+  codeTpl,
   buildPropertyList,
 } = require("../../../generatorUtils");
-
-const keyPairCodeTpl = ({
-  resourceVarName,
-  resource: { name, namespace },
-}) => `const ${resourceVarName} = provider.ec2.useKeyPair({
-  name: config.${resourceVarName}.name,${
-  namespace ? `\nnamespace: ${namespace}` : ""
-}
-});
-`;
-
-const keyPairConfigTpl = ({
-  resourceVarName,
-  resource: { name, live },
-}) => `${resourceVarName}: {
-  name: "${name}",
-},`;
 
 const writeKeyPair = ({ resource, lives }) =>
   pipe([
@@ -34,14 +17,18 @@ const writeKeyPair = ({ resource, lives }) =>
     }),
     ({ resourceVarName, propertyList }) => ({
       resourceVarName,
-      config: keyPairConfigTpl({
+      config: configTpl({
         resourceVarName,
         resource,
+        propertyList,
       }),
-      code: keyPairCodeTpl({
+      code: codeTpl({
+        group: "ec2",
+        type: "KeyPair",
+        createPrefix: "use",
         resource,
         resourceVarName,
-        resourceName: ResourceVarName(resource.name),
+        noProperties: true,
       }),
     }),
   ])();
