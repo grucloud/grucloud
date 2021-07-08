@@ -22,11 +22,6 @@ const createResources = async ({ provider }) => {
     name: config.kp.name,
   });
 
-  const vol_0b9f83a9d3d0ee391 = provider.ec2.makeVolume({
-    name: config.vol_0b9f83a9d3d0ee391.name,
-    properties: () => config.vol_0b9f83a9d3d0ee391.properties,
-  });
-
   const volume = provider.ec2.makeVolume({
     name: config.volume.name,
     properties: () => config.volume.properties,
@@ -36,25 +31,25 @@ const createResources = async ({ provider }) => {
     name: config.myip.name,
   });
 
-  const webServer = provider.ec2.makeInstance({
-    name: config.webServer.name,
+  const webServerEc2Vpc = provider.ec2.makeInstance({
+    name: config.webServerEc2Vpc.name,
     dependencies: {
       subnet: subnet,
       keyPair: kp,
+      eip: myip,
       securityGroups: [securityGroup],
       volumes: [volume],
     },
-    properties: () => config.webServer.properties,
+    properties: () => config.webServerEc2Vpc.properties,
   });
 
   return {
     vpcEc2Example,
     subnet,
     kp,
-    vol_0b9f83a9d3d0ee391,
     volume,
     myip,
-    webServer,
+    webServerEc2Vpc,
   };
 };
 

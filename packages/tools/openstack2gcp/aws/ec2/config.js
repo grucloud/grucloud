@@ -20,13 +20,6 @@ module.exports = ({ stage }) => ({
   kp: {
     name: "kp",
   },
-  vol_0b9f83a9d3d0ee391: {
-    name: "vol-0b9f83a9d3d0ee391",
-    properties: {
-      Size: 8,
-      VolumeType: "gp2",
-    },
-  },
   volume: {
     name: "volume",
     properties: {
@@ -37,8 +30,8 @@ module.exports = ({ stage }) => ({
   myip: {
     name: "myip",
   },
-  webServer: {
-    name: "web-server",
+  webServerEc2Vpc: {
+    name: "web-server-ec2-vpc",
     properties: {
       InstanceType: "t2.micro",
       ImageId: "ami-00f61f0016c09a299",
