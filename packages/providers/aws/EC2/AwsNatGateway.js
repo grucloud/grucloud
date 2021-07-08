@@ -57,7 +57,6 @@ exports.AwsNatGateway = ({ spec, config }) => {
                   type: "ElasticIpAddress",
                   providerName: config.providerName,
                 }),
-              get("resources"),
               find(eq(get("live.AllocationId"), AllocationId)),
               tap((eips) => {
                 logger.debug(eips);

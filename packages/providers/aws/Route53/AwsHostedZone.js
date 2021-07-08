@@ -92,7 +92,6 @@ exports.AwsHostedZone = ({ spec, config }) => {
           logger.debug(``);
         }),
         () => lives.getByType({ type: "HostedZone", providerName }),
-        get("resources"),
         tap((xxx) => {
           logger.debug(``);
         }),

@@ -143,7 +143,6 @@ exports.AwsVolume = ({ spec, config }) => {
           type: "EC2",
           providerName: config.providerName,
         }),
-      get("resources"),
       find(eq(get("live.InstanceId"), findInstanceId(live))),
       switchCase([
         isEmpty,

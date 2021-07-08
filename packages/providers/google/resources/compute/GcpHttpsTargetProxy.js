@@ -43,7 +43,6 @@ exports.GcpHttpsTargetProxy = ({ spec, config }) => {
         map((sslCertificateLink) =>
           pipe([
             () => lives.getByType({ type: "SslCertificate", providerName }),
-            get("resources", []),
             find(eq(get("live.selfLink"), sslCertificateLink)),
             get("id"),
           ])()
@@ -59,7 +58,6 @@ exports.GcpHttpsTargetProxy = ({ spec, config }) => {
           (urlMap) =>
             pipe([
               () => lives.getByType({ type: "UrlMap", providerName }),
-              get("resources", []),
               find(eq(get("live.selfLink"), urlMap)),
               get("id"),
             ])(),

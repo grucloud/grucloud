@@ -155,11 +155,7 @@ exports.ResourceMaker = ({
           tap((xxx) => {
             logger.debug(`findLive`);
           }),
-          tap(({ type, resources }) => {
-            assert(type);
-            //assert(resources);
-          }),
-          ({ type, resources = [] }) =>
+          (resources) =>
             pipe([
               () => resources,
               find(({ live }) =>

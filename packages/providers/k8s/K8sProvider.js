@@ -70,7 +70,6 @@ const findDependenciesService = ({ live, lives, config }) =>
             providerName: config.providerName,
             type: "Service",
           }),
-        get("resources", []),
         pluck("live"),
         filter(eq(get("spec.selector.app"), label)),
         pluck("metadata"),

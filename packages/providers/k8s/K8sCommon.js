@@ -210,7 +210,6 @@ exports.isOurMinion = ({ live, lives, config }) =>
                 providerName: config.providerName,
                 type: kind,
               }),
-            get("resources"),
             find(eq(get("live.metadata.uid"), uid)),
             get("managedByUs"),
             tap((result) => {

@@ -51,7 +51,6 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
       type: "NetworkInterface",
       ids: pipe([
         () => lives.getByType({ type: "NetworkInterface", providerName }),
-        get("resources", []),
         filter(
           pipe([
             get("live.Description"),

@@ -137,7 +137,6 @@ const findEksCluster =
           type: "EKSCluster",
           providerName: config.providerName,
         }),
-      get("resources"),
       find(eq(get("name"), findValueInTags({ key })(live))),
       tap((cluster) => {
         logger.debug(`findEksCluster ${!!cluster}`);

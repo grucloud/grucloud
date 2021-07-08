@@ -43,7 +43,6 @@ const isDefault =
   ({ live, lives }) =>
     pipe([
       () => lives.getByType({ type: "Vpc", providerName }),
-      get("resources"),
       tap((result) => {
         logger.debug(`isDefault ${result}`);
       }),

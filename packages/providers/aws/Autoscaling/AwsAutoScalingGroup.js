@@ -42,7 +42,6 @@ const findClusterNameFromLives = ({ clusterName, clusters }) =>
       //assert(clusters);
     }),
     () => clusters,
-    get("resources"),
     find(eq(get("name"), clusterName)),
     tap((resource) => {
       assert(true);

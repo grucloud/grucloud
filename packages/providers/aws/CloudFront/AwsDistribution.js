@@ -363,7 +363,6 @@ exports.AwsDistribution = ({ spec, config }) => {
           providerName: config.providerName,
           type: RESOURCE_TYPE,
         }),
-      get("resources", []),
       tap((distributions) => {
         logger.info(`onDeployed ${tos({ distributions })}`);
       }),

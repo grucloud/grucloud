@@ -35,18 +35,6 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
         filter(not(isEmpty)),
       ])(),
     },
-    {
-      type: "EC2",
-      ids: pipe([
-        () => live,
-        get("InstanceId"),
-        (InstanceId) => [InstanceId],
-        filter(not(isEmpty)),
-        tap((xxx) => {
-          logger.debug(``);
-        }),
-      ])(),
-    },
   ];
 
   const getList = ({ params } = {}) =>

@@ -71,7 +71,6 @@ exports.AwsEC2 = ({ spec, config }) => {
       type: "Image",
       ids: pipe([
         () => lives.getByType({ type: "Image", providerName }),
-        get("resources", []),
         filter(eq(get("id"), live.ImageId)),
         pluck("id"),
       ])(),
@@ -103,7 +102,6 @@ exports.AwsEC2 = ({ spec, config }) => {
         (PublicIpAddress) =>
           pipe([
             () => lives.getByType({ type: "ElasticIpAddress", providerName }),
-            get("resources", []),
             filter(eq(get("live.PublicIp"), PublicIpAddress)),
             pluck("id"),
           ])(),

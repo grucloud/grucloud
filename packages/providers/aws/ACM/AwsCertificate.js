@@ -61,7 +61,6 @@ exports.AwsCertificate = ({ spec, config }) => {
             providerName: config.providerName,
             type: "Route53Record",
           }),
-        get("resources"),
         pluck("live"),
         tap((xxx) => {
           logger.debug(``);
