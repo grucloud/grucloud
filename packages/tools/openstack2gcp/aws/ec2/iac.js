@@ -32,6 +32,10 @@ const createResources = async ({ provider }) => {
     properties: () => config.volume.properties,
   });
 
+  const myip = provider.ec2.makeElasticIpAddress({
+    name: config.myip.name,
+  });
+
   const webServer = provider.ec2.makeInstance({
     name: config.webServer.name,
     dependencies: {
@@ -49,6 +53,7 @@ const createResources = async ({ provider }) => {
     kp,
     vol_0b9f83a9d3d0ee391,
     volume,
+    myip,
     webServer,
   };
 };

@@ -35,6 +35,7 @@ const writeInstance = ({ resource, lives }) =>
         type: "Instance",
         resource,
         resourceVarName,
+        propertyList,
         dependencies: {
           subnet: findDependencyNames({
             type: "Subnet",
@@ -43,6 +44,11 @@ const writeInstance = ({ resource, lives }) =>
           }),
           keyPair: findDependencyNames({
             type: "KeyPair",
+            resource,
+            lives,
+          }),
+          eip: findDependencyNames({
+            type: "ElasticIpAddress",
             resource,
             lives,
           }),

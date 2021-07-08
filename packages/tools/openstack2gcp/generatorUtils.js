@@ -91,14 +91,14 @@ exports.codeTpl = ({
   resourceVarName,
   dependencies,
   resource: { namespace },
-  noProperties = false,
+  propertyList,
   createPrefix = "make",
 }) => `
   const ${resourceVarName} = provider.${group}.${createPrefix}${type}({
     name: config.${resourceVarName}.name,${
   namespace ? `\nnamespace: ${namespace},` : ""
 }${buildDependencies(dependencies)}${
-  !noProperties
+  !isEmpty(propertyList)
     ? `\nproperties: () => config.${resourceVarName}.properties,`
     : ""
 }

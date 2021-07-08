@@ -28,7 +28,7 @@ const writeKeyPair = ({ resource, lives }) =>
         createPrefix: "use",
         resource,
         resourceVarName,
-        noProperties: true,
+        propertyList,
       }),
     }),
   ])();

@@ -34,6 +34,9 @@ module.exports = ({ stage }) => ({
       VolumeType: "standard",
     },
   },
+  myip: {
+    name: "myip",
+  },
   webServer: {
     name: "web-server",
     properties: {

@@ -10,9 +10,9 @@ const {
   buildPropertyList,
 } = require("../../../generatorUtils");
 
-const pickProperties = ["CidrBlock", "AvailabilityZone", "MapPublicIpOnLaunch"];
+const pickProperties = [""];
 
-const writeSubnet = ({ resource, lives }) =>
+const writeElasticIpAddress = ({ resource, lives }) =>
   pipe([
     () => resource,
     switchCase([
@@ -32,27 +32,20 @@ const writeSubnet = ({ resource, lives }) =>
           }),
           code: codeTpl({
             group: "ec2",
-            type: "Subnet",
+            type: "ElasticIpAddress",
             resource,
             resourceVarName,
-            dependencies: {
-              vpc: findDependencyNames({
-                type: "Vpc",
-                resource,
-                lives,
-              }),
-            },
             propertyList,
           }),
         }),
       ]),
       () => {
-        //console.log("default subnet");
+        //console.log("default elasticIpAddress");
       },
     ]),
   ])();
 
-exports.writeSubnets = writeResources({
-  type: "Subnet",
-  writeResource: writeSubnet,
+exports.writeElasticIpAddresses = writeResources({
+  type: "ElasticIpAddress",
+  writeResource: writeElasticIpAddress,
 });

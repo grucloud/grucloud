@@ -52,6 +52,7 @@ const writeVolume = ({ resource, lives }) =>
             type: "Volume",
             resource,
             resourceVarName,
+            propertyList,
           }),
         }),
       ]),

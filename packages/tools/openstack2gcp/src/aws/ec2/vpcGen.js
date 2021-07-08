@@ -35,6 +35,7 @@ const writeVpc = ({ resource, lives }) =>
             type: "Vpc",
             resourceVarName,
             resource,
+            propertyList,
           }),
         }),
       ]),

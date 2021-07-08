@@ -10,12 +10,16 @@ const { writeSubnets } = require("./src/aws/ec2/subnetGen");
 const { writeInstances } = require("./src/aws/ec2/instanceGen");
 const { writeKeyPairs } = require("./src/aws/ec2/keyPairGen");
 const { writeVolumes } = require("./src/aws/ec2/volumeGen");
+const {
+  writeElasticIpAddresses,
+} = require("./src/aws/ec2/elasticIpAddressGen");
 
 const writers = [
   writeVpcs,
   writeSubnets,
   writeKeyPairs,
   writeVolumes,
+  writeElasticIpAddresses,
   writeInstances,
 ];
 
