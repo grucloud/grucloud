@@ -10,29 +10,14 @@ const {
   buildPropertyList,
 } = require("../../../generatorUtils");
 
-const pickProperties = ["Size", "VolumeType", "Device"];
+const pickProperties = ["Size", "Device"];
 
-const isRootDevice = ({ lives }) =>
-  pipe([
-    get("live.Attachments"),
-    map(({ Device, InstanceId }) =>
-      pipe([
-        () => InstanceId,
-        findLiveById({ type: "Instance", lives }),
-        eq(get("live.RootDeviceName"), Device),
-      ])()
-    ),
-    any(identity),
-  ]);
-
-const writeVolume = ({ resource, lives }) =>
+const writeSecurityGroup = ({ resource, lives }) =>
   pipe([
     () => resource,
     switchCase([
-      isRootDevice({ lives }),
-      () => {
-        //console.log("volume has root device");
-      },
+      () => false,
+      () => {},
       pipe([
         fork({
           resourceVarName: () => ResourceVarName(resource.name),
@@ -47,7 +32,7 @@ const writeVolume = ({ resource, lives }) =>
           }),
           code: codeTpl({
             group: "ec2",
-            type: "Volume",
+            type: "SecurityGroup",
             resource,
             resourceVarName,
             propertyList,
@@ -57,7 +42,7 @@ const writeVolume = ({ resource, lives }) =>
     ]),
   ])();
 
-exports.writeVolumes = writeResources({
-  type: "Volume",
-  writeResource: writeVolume,
+exports.writeSecurityGroups = writeResources({
+  type: "SecurityGroup",
+  writeResource: writeSecurityGroup,
 });

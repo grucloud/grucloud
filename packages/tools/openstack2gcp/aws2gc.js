@@ -13,13 +13,14 @@ const { writeVolumes } = require("./src/aws/ec2/volumeGen");
 const {
   writeElasticIpAddresses,
 } = require("./src/aws/ec2/elasticIpAddressGen");
-
+const { writeSecurityGroups } = require("./src/aws/ec2/securityGroupGen");
 const writers = [
   writeVpcs,
   writeSubnets,
   writeKeyPairs,
   writeVolumes,
   writeElasticIpAddresses,
+  writeSecurityGroups,
   writeInstances,
 ];
 

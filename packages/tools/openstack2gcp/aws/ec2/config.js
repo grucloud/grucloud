@@ -30,6 +30,15 @@ module.exports = ({ stage }) => ({
   myip: {
     name: "myip",
   },
+  securityGroupDefault: {
+    name: "security-group-default",
+  },
+  securityGroup: {
+    name: "security-group",
+  },
+  securityGroupDefault: {
+    name: "security-group-default",
+  },
   webServerEc2Vpc: {
     name: "web-server-ec2-vpc",
     properties: {

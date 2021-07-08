@@ -31,6 +31,18 @@ const createResources = async ({ provider }) => {
     name: config.myip.name,
   });
 
+  const securityGroupDefault = provider.ec2.makeSecurityGroup({
+    name: config.securityGroupDefault.name,
+  });
+
+  const securityGroup = provider.ec2.makeSecurityGroup({
+    name: config.securityGroup.name,
+  });
+
+  const securityGroupDefault = provider.ec2.makeSecurityGroup({
+    name: config.securityGroupDefault.name,
+  });
+
   const webServerEc2Vpc = provider.ec2.makeInstance({
     name: config.webServerEc2Vpc.name,
     dependencies: {
@@ -49,6 +61,9 @@ const createResources = async ({ provider }) => {
     kp,
     volume,
     myip,
+    securityGroupDefault,
+    securityGroup,
+    securityGroupDefault,
     webServerEc2Vpc,
   };
 };
