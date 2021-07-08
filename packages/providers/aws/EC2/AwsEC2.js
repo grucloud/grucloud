@@ -96,6 +96,20 @@ exports.AwsEC2 = ({ spec, config }) => {
       ])(),
     },
     {
+      type: "ElasticIpAddress",
+      ids: pipe([
+        () => live,
+        get("PublicIpAddress"),
+        (PublicIpAddress) =>
+          pipe([
+            () => lives.getByType({ type: "ElasticIpAddress", providerName }),
+            get("resources", []),
+            filter(eq(get("live.PublicIp"), PublicIpAddress)),
+            pluck("id"),
+          ])(),
+      ])(),
+    },
+    {
       type: "SecurityGroup",
       ids: pipe([() => live, get("SecurityGroups"), pluck("GroupId")])(),
     },
