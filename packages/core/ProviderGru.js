@@ -332,6 +332,7 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
                   resource: provider.getResourceFromLive({
                     client,
                     live: resource.live,
+                    lives,
                   }),
                   live: resource.live,
                   lives,

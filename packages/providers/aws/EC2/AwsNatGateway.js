@@ -22,7 +22,7 @@ const {
 exports.AwsNatGateway = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
-  const findId = get("NatGatewayId");
+  const findId = get("live.NatGatewayId");
 
   const findName = (item) => findNameInTagsOrId({ item, findId });
 

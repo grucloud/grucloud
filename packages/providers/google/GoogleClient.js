@@ -1,5 +1,5 @@
 const assert = require("assert");
-const { pipe, tap } = require("rubico");
+const { get, pipe, tap } = require("rubico");
 const CoreClient = require("@grucloud/core/CoreClient");
 const logger = require("@grucloud/core/logger")({ prefix: "GoogleClient" });
 const { createAxiosMakerGoogle } = require("./GoogleCommon");
@@ -23,7 +23,7 @@ module.exports = GoogleClient = ({
   findId,
   pathList,
   pathCreate,
-  findTargetId = (item) => item.targetId,
+  findTargetId = get("targetId"),
   configDefault,
   isInstanceUp,
   isUpByIdFactory,

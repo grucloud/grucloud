@@ -54,7 +54,7 @@ exports.AwsS3Object = ({ spec, config }) => {
 
   const s3 = S3New(config);
 
-  const findName = get("Key");
+  const findName = get("live.Key");
   const findId = findName;
 
   const findNamespace = findNamespaceInTags(config);

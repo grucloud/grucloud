@@ -22,7 +22,7 @@ module.exports = ScalewayClient = ({
   assert(config);
   assert(process.env.SCW_SECRET_KEY);
 
-  const findName = get("title");
+  const findName = get("live.title");
 
   const core = CoreClient({
     type: "scaleway",

@@ -140,11 +140,12 @@ exports.AwsEC2 = ({ spec, config }) => {
 
   const findName = (item) =>
     pipe([
+      () => item,
       findNameInTags,
-      switchCase([isEmpty, () => findEksName(item), (name) => name]),
-    ])(item);
+      switchCase([isEmpty, () => findEksName(item.live), identity]),
+    ])();
 
-  const findId = get("InstanceId");
+  const findId = get("live.InstanceId");
 
   const getStateName = get("State.Name");
   const isInstanceUp = eq(getStateName, StateRunning);

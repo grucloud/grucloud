@@ -26,7 +26,7 @@ const { AwsSecurityGroup } = require("./AwsSecurityGroup");
 exports.AwsNetworkInterface = ({ spec, config }) => {
   const ec2 = Ec2New(config);
   const awsSecurityGroup = AwsSecurityGroup({ config, spec });
-  const findId = get("NetworkInterfaceId");
+  const findId = get("live.NetworkInterfaceId");
 
   const findName = (item) => findNameInTagsOrId({ item, findId });
   const findNamespace = ({ live, lives }) =>
@@ -90,7 +90,7 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
       tap(() => {
         logger.debug(`destroy network interface`);
       }),
-      () => ({ NetworkInterfaceId: findId(live) }),
+      () => ({ NetworkInterfaceId: findId({ live }) }),
       ({ NetworkInterfaceId }) =>
         pipe([
           tap(() => {}),

@@ -51,8 +51,8 @@ const {
 const { filterEmptyResourceRecords } = require("./Route53Utils");
 
 //Check for the final dot
-const findName = get("Name");
-const findId = get("Id");
+const findName = get("live.Name");
+const findId = get("live.Id");
 
 const canDeleteRecord = (zoneName) =>
   not(

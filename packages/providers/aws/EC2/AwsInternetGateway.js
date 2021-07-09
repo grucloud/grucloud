@@ -67,7 +67,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
   assert(config);
   const ec2 = Ec2New(config);
 
-  const findId = get("InternetGatewayId");
+  const findId = get("live.InternetGatewayId");
   const findName = (item) => findNameInTagsOrId({ item, findId });
 
   const findDependencies = ({ live }) => [
@@ -96,8 +96,10 @@ exports.AwsInternetGateway = ({ spec, config }) => {
         logger.info(`getList #ig ${total}`);
       }),
     ])();
+  //TODO getByName
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = ({ name, lives }) =>
+    getByNameCore({ name, lives, getList, findName });
   const getById = getByIdCore({ fieldIds: "InternetGatewayIds", getList });
 
   const getStateName = pipe([

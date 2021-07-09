@@ -46,7 +46,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 //TODO look in spec.type instead
 const RESOURCE_TYPE = "Distribution";
 const findName = findNameInTags;
-const findId = get("Id");
+const findId = get("live.Id");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
 exports.AwsDistribution = ({ spec, config }) => {

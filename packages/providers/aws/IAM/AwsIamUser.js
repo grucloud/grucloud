@@ -39,7 +39,7 @@ exports.AwsIamUser = ({ spec, config }) => {
 
   const iam = IAMNew(config);
 
-  const findId = get("UserName");
+  const findId = get("live.UserName");
   const findName = (item) => findNameInTagsOrId({ item, findId });
   const findDependencies = ({ live }) => [
     {

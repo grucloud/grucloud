@@ -51,7 +51,7 @@ exports.GcpDomain = ({ spec, config }) => {
       recordSet: [],
     })(properties);
 
-  const findName = get("name");
+  const findName = get("live.name");
   const findId = findName;
 
   const axios = createAxiosMakerGoogle({

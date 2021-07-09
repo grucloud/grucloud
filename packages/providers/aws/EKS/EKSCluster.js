@@ -38,8 +38,9 @@ const {
   findNamespaceInTagsObject,
 } = require("../AwsCommon");
 
-const findName = get("name");
+const findName = get("live.name");
 const findId = findName;
+
 const findDependencies = ({ live }) => [
   { type: "Vpc", ids: [get("resourcesVpcConfig.vpcId")(live)] },
   { type: "IamRole", ids: [live.roleArn] },

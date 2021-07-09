@@ -20,7 +20,7 @@ const {
   pluck,
   flatten,
   isEmpty,
-  includes,
+  identity,
 } = require("rubico/x");
 const {
   Ec2New,
@@ -42,13 +42,45 @@ const logger = require("@grucloud/core/logger")({ prefix: "AwsSecurityGroup" });
 const { tos } = require("@grucloud/core/tos");
 
 exports.AwsSecurityGroup = ({ spec, config }) => {
-  const { managedByDescription } = config;
+  const { managedByDescription, providerName } = config;
   assert(managedByDescription);
+  assert(providerName);
 
   const ec2 = Ec2New(config);
 
-  const findName = get("GroupName");
-  const findId = get("GroupId");
+  const findName = ({ live, lives }) =>
+    pipe([
+      tap((xxx) => {
+        logger.debug(``);
+
+        if (!lives) {
+          assert(lives);
+        }
+      }),
+      () => live,
+      get("GroupName"),
+      switchCase([
+        eq(identity, "default"),
+        pipe([
+          () => lives.getByType({ type: "Vpc", providerName }),
+          tap((xxx) => {
+            logger.debug(``);
+          }),
+          find(eq(get("live.VpcId"), live.VpcId)),
+          tap((xxx) => {
+            logger.debug(``);
+          }),
+          get("name"),
+          (vpcName) => `security-group-default-${vpcName}`,
+          tap((xxx) => {
+            logger.debug(``);
+          }),
+        ]),
+        identity,
+      ]),
+    ])();
+
+  const findId = get("live.GroupId");
   const findDependencies = ({ live }) => [
     { type: "Vpc", ids: [live.VpcId] },
     {
@@ -100,8 +132,10 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
         logger.info(`list #sg ${total}`);
       }),
     ])();
+  //TODO getByName
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = ({ name, live, lives }) =>
+    getByNameCore({ name, getList, findName, live, lives });
   const getById = getByIdCore({ fieldIds: "GroupIds", getList });
 
   const isUpById = isUpByIdCore({ getById });
@@ -182,9 +216,12 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       ),
     ])();
 
-  const destroy = async ({ live }) =>
+  const destroy = async ({ live, lives }) =>
     pipe([
-      () => ({ name: findName(live), GroupId: findId(live) }),
+      () => ({
+        name: findName({ live, lives }),
+        GroupId: findId({ live, lives }),
+      }),
       ({ name, GroupId }) =>
         pipe([
           tap(() => {

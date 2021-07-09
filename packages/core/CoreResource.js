@@ -149,6 +149,9 @@ exports.ResourceMaker = ({
         assert(lives);
       }),
       () => lives.getByType({ providerName: provider.name, type }),
+      tap((xxx) => {
+        assert(true);
+      }),
       switchCase([
         not(isEmpty),
         pipe([
@@ -160,7 +163,8 @@ exports.ResourceMaker = ({
               () => resources,
               find(({ live }) =>
                 pipe([
-                  () => provider.clientByType({ type }).findName(live),
+                  () =>
+                    provider.clientByType({ type }).findName({ live, lives }),
                   tap((liveName) => {
                     logger.debug(
                       `findLive ${JSON.stringify({ type, liveName })}`
@@ -171,8 +175,8 @@ exports.ResourceMaker = ({
               ),
             ])(),
         ]),
-        (result) => {
-          logger.error(`findLive cannot find type ${type}`);
+        () => {
+          logger.debug(`findLive cannot find type ${type}`);
         },
       ]),
       get("live"),
@@ -223,7 +227,7 @@ exports.ResourceMaker = ({
                     resource: resource.toJSON(),
                     target,
                     live,
-                    id: client.findId(live),
+                    id: client.findId({ live }),
                     diff,
                     providerName: resource.toJSON().providerName,
                   },
@@ -511,7 +515,7 @@ exports.ResourceMaker = ({
           diff,
           live,
           lives,
-          id: client.findId(live),
+          id: client.findId({ live }),
         }),
       shouldRetryOnException: client.shouldRetryOnException,
       config: provider.config,

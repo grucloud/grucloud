@@ -238,15 +238,18 @@ function CoreProvider({
   const mapNameToResource = new Map();
   const getMapNameToResource = () => mapNameToResource;
 
-  const getResourceFromLive = ({ live, client }) =>
+  const getResourceFromLive = ({ live, lives, client }) =>
     pipe([
+      tap(() => {
+        assert(lives);
+      }),
       () =>
         client.resourceKey({
           providerName: provider.name,
           type: client.spec.type,
           group: client.spec.group,
-          name: client.findName(live),
-          id: client.findId(live),
+          name: client.findName({ live, lives }),
+          id: client.findId({ live, lives }),
           meta: client.findMeta(live),
         }),
       tap((key) => {
@@ -999,36 +1002,36 @@ function CoreProvider({
     )();
 
   const decorateLive =
-    ({ client }) =>
+    ({ client, lives }) =>
     (live) =>
       pipe([
         () => live,
         () => ({
-          uri: liveToUri({ client, live }),
-          name: client.findName(live),
+          uri: liveToUri({ client, live, lives }),
+          name: client.findName({ live, lives }),
           displayName: client.displayName({
-            name: client.findName(live),
+            name: client.findName({ live, lives }),
             meta: client.findMeta(live),
           }),
           meta: client.findMeta(live),
-          id: client.findId(live),
+          id: client.findId({ live, lives }),
           providerName: client.spec.providerName,
           type: client.spec.type,
           group: client.spec.group,
           live,
           cannotBeDeleted: client.cannotBeDeleted({
             live,
-            name: client.findName(live),
+            name: client.findName({ live, lives }),
             //TODO remove resourceNames
             resourceNames: resourceNames(),
             resources: getResourcesByType({ type: client.spec.type }),
-            resource: getResourceFromLive({ client, live }),
+            resource: getResourceFromLive({ client, live, lives }),
             config: providerConfig,
           }),
         }),
       ])();
 
-  const decorateLives = async ({ result, client }) =>
+  const decorateLives = async ({ result, client, lives }) =>
     switchCase([
       get("error"),
       () => result,
@@ -1036,7 +1039,7 @@ function CoreProvider({
         tap((result) => {}),
         get("items"),
         filter(not(get("error"))),
-        map(decorateLive({ client })),
+        map(decorateLive({ client, lives })),
         (resources) => ({
           type: client.spec.type,
           group: client.spec.group,
@@ -1099,7 +1102,7 @@ function CoreProvider({
                 client,
                 onStateChange,
                 options,
-                //TODO live
+                lives,
               }),
             tap((result) => {
               lives.addResources(result);
@@ -1598,7 +1601,7 @@ function CoreProvider({
         assert(lives);
         //assert(name);
       }),
-      () => client.findId(live),
+      () => client.findId({ live, lives }),
       tap((id) => {
         assert(id, `destroyByClient missing id in live: ${tos(live)}`);
       }),

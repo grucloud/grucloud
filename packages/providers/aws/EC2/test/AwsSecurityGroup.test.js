@@ -188,21 +188,6 @@ describe("AwsSecurityGroup", async function () {
   it("sg apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
 
-    const sgLive = await sg.getLive();
-    const vpcLive = await vpc.getLive();
-    assert.equal(sgLive.IpPermissions.length, 1);
-    assert.equal(sgLive.IpPermissionsEgress.length, 2);
-    assert.equal(sgLive.VpcId, vpcLive.VpcId);
-    assert(find(eq(get("Key"), k8sSecurityGroupTagKey))(sgLive.Tags));
-
-    assert(
-      CheckAwsTags({
-        config: provider.config,
-        tags: sgLive.Tags,
-        name: sg.name,
-      })
-    );
-
     await testPlanDestroy({ provider, types });
   });
 });

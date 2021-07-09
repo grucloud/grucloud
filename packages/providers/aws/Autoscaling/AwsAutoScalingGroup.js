@@ -29,8 +29,8 @@ const {
 } = require("../AwsCommon");
 const { isOurMinionObject } = require("@grucloud/core/Common");
 
-const findName = get("AutoScalingGroupName");
-const findId = get("AutoScalingGroupName");
+const findName = get("live.AutoScalingGroupName");
+const findId = findName;
 
 const findClusterName = findValueInTags({ key: "eks:cluster-name" });
 
@@ -130,9 +130,9 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
     pipe([() => getByName({ name }), isEmpty])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#deleteAutoScalingGroup-property
-  const destroy = async ({ live }) =>
+  const destroy = async ({ live, lives }) =>
     pipe([
-      () => ({ name: findName(live) }),
+      () => ({ name: findName({ live, lives }) }),
       ({ name }) =>
         pipe([
           tap(() => {

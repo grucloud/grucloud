@@ -95,7 +95,7 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   const iam = IAMNew(config);
 
   const findName = findNameInTags;
-  const findId = get("Arn");
+  const findId = get("live.Arn");
 
   const findNamespace = (param) =>
     pipe([
@@ -237,8 +237,8 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
         logger.info(`destroy iam oidc`);
       }),
       () => ({
-        OpenIDConnectProviderArn: findId(live),
-        name: findName(live),
+        OpenIDConnectProviderArn: findId({ live }),
+        name: findName({ live }),
       }),
       ({ OpenIDConnectProviderArn, name }) =>
         pipe([

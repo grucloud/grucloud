@@ -80,7 +80,7 @@ module.exports = K8sClient = ({
   assert(providerName);
 
   const findName = pipe([
-    get("metadata.name"),
+    get("live.metadata.name"),
     tap((name) => {
       assert(name);
     }),
@@ -100,18 +100,20 @@ module.exports = K8sClient = ({
 
   const axios = () => createAxiosMakerK8s({ config });
 
-  const filterList = ({ type }) => (data) =>
-    pipe([
-      get("items"),
-      map(omit(["metadata.managedFields"])),
-      tap((items) => {
-        assert(true);
-      }),
-      (items) => assign({ type: () => type, items: () => items })(data),
-      tap((result) => {
-        //logger.debug(`filterList result ${tos(result)}`);
-      }),
-    ])(data);
+  const filterList =
+    ({ type }) =>
+    (data) =>
+      pipe([
+        get("items"),
+        map(omit(["metadata.managedFields"])),
+        tap((items) => {
+          assert(true);
+        }),
+        (items) => assign({ type: () => type, items: () => items })(data),
+        tap((result) => {
+          //logger.debug(`filterList result ${tos(result)}`);
+        }),
+      ])(data);
 
   const getList = tryCatch(
     pipe([
@@ -196,7 +198,7 @@ module.exports = K8sClient = ({
   const getById = ({ live }) =>
     getByKey({
       resolvePath: pathGetStatus || pathGet,
-      name: findName(live),
+      name: findName({ live }),
       namespace: get("namespace")(findMeta(live)),
     });
 
@@ -310,7 +312,10 @@ module.exports = K8sClient = ({
         tap(() => {
           assert(!isEmpty(live), `destroy invalid live`);
         }),
-        () => ({ name: findName(live), namespace: findMeta(live).namespace }),
+        () => ({
+          name: findName({ live }),
+          namespace: findMeta(live).namespace,
+        }),
         tap((params) => {
           logger.info(`destroy k8s ${JSON.stringify({ params })}`);
         }),
@@ -330,7 +335,7 @@ module.exports = K8sClient = ({
         }),
         tap(() =>
           retryCall({
-            name: `destroy ${type}, name: ${findName(live)}, isDownById`,
+            name: `destroy ${type}, name: ${findName({ live })}, isDownById`,
             fn: () => isDownById({ live }),
             config: { retryDelay: 5e3, retryCount: 5 * 12e3 },
           })

@@ -31,7 +31,7 @@ const findNameInTags = pipe([
   get("TagValue"),
 ]);
 
-const findNames = [findNameInTags, get("Alias"), findId];
+const findNames = [findNameInTags, get("live.Alias"), findId];
 
 const findName = (item) =>
   pipe([() => findNames, map((fn) => fn(item)), find(not(isEmpty))])();
@@ -154,7 +154,7 @@ exports.KmsKey = ({ spec, config }) => {
 
   const destroy = async ({ live }) =>
     pipe([
-      () => ({ id: findId(live), name: findName(live) }),
+      () => ({ id: findId({ live }), name: findName({ live }) }),
       ({ id, name }) =>
         pipe([
           tap(() => {

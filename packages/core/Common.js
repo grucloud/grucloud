@@ -160,10 +160,16 @@ exports.getByNameCore = async ({
       assert(name, "name");
       assert(findName, "findName");
       assert(getList, "getList");
+      if (!lives) {
+        //assert(lives);
+      }
     }),
     () => getList({ deep, lives, resources }),
     get("items"),
-    find((item) => isDeepEqual(name, findName(item))), //TODO check on meta
+    tap((items) => {
+      assert(items);
+    }),
+    find((live) => isDeepEqual(name, findName({ live, lives }))), //TODO check on meta
     tap((instance) => {
       logger.info(`getByName ${name}: ${instance ? "UP" : "DOWN"}`);
       logger.debug(`getByName ${name}: ${tos({ instance })}`);
@@ -171,18 +177,25 @@ exports.getByNameCore = async ({
   ])();
 
 //TODO merge with getByNameCore
-const getByIdCore = async ({ type, name, id, findId, getList }) => {
-  logger.info(`getById ${JSON.stringify({ type, name, id })}`);
-  assert(id, "getByIdCore id");
-  assert(findId, "getByIdCore findId");
-  assert(getList, "getByIdCore getList");
-  //TODO KEY
-  const { items } = await getList();
-  const instance = items.find((item) => findId(item) === id);
-  logger.debug(`getById ${id}: ${tos({ instance })}`);
 
-  return instance;
-};
+const getByIdCore = ({ type, name, id, findId, getList }) =>
+  pipe([
+    tap(() => {
+      logger.info(`getById ${JSON.stringify({ type, name, id })}`);
+      assert(id, "getByIdCore id");
+      assert(findId, "getByIdCore findId");
+      assert(getList, "getByIdCore getList");
+    }),
+    () => getList(),
+    tap((xxx) => {
+      assert(true);
+    }),
+    get("items"),
+    find((live) => findId({ live }) === id),
+    tap((live) => {
+      logger.debug(`getById ${id}: ${tos({ live })}`);
+    }),
+  ])();
 
 exports.getByIdCore = getByIdCore;
 

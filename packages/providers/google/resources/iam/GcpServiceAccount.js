@@ -11,7 +11,7 @@ const { createAxiosMakerGoogle } = require("../../GoogleCommon");
 const { retryCallOnError } = require("@grucloud/core/Retry");
 
 const findName = pipe([
-  get("email"), //
+  get("live.email"), //
   (email) => email.split("@"),
   first,
 ]);
@@ -64,8 +64,8 @@ exports.GcpServiceAccount = ({ spec, config }) => {
       },
     })(properties);
 
-  const findId = get("uniqueId");
-  const findTargetId = findId;
+  const findId = get("live.uniqueId");
+  const findTargetId = get("uniqueId");
 
   const onResponseGet = ({ data }) =>
     pipe([

@@ -34,7 +34,7 @@ module.exports = MockClient = ({
     return false;
   };
 
-  const findName = get("name");
+  const findName = get("live.name");
 
   const core = CoreClient({
     type: "mock",

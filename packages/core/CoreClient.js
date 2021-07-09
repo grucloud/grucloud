@@ -34,12 +34,10 @@ module.exports = CoreClient = ({
     name,
     ...properties,
   }),
-  findName = get("name"),
-  findId = (item) => {
-    return item.id;
-  },
-  findTargetId = (item) => item.id,
-  onResponseGet = ({ data }) => data,
+  findName = get("live.name"),
+  findId = get("live.id"),
+  findTargetId = get("id"),
+  onResponseGet = get("data"),
   onResponseList = identity,
   onResponseCreate = identity,
   onResponseDelete = identity,

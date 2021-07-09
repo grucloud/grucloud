@@ -43,8 +43,8 @@ exports.AwsIamRole = ({ spec, config }) => {
   const { providerName } = config;
   const iam = IAMNew(config);
 
-  const findName = get("RoleName");
-  const findId = get("Arn");
+  const findName = get("live.RoleName");
+  const findId = get("live.Arn");
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -227,7 +227,7 @@ exports.AwsIamRole = ({ spec, config }) => {
           () => iam().listRoleTags({ RoleName: name }),
           get("Tags"),
           (Tags) => {
-            assert(findNameInTags({ Tags }), "no tags");
+            assert(findNameInTags({ live: { Tags } }), "no tags");
           },
         ])
       ),

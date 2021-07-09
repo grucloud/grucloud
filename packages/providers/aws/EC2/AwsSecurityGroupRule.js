@@ -32,10 +32,13 @@ const findName = pipe([
 ]);
 const findId = findName;
 
-const getSecurityGroup = ({ name, dependencies = {} }) =>
+const getSecurityGroup = ({ resource: { name, dependencies = {} }, lives }) =>
   pipe([
     tap(() => {
       assert(name, "getSecurityGroup");
+      if (!lives) {
+        assert(lives);
+      }
     }),
     () => dependencies,
     get("securityGroup"),
@@ -49,7 +52,7 @@ const getSecurityGroup = ({ name, dependencies = {} }) =>
       },
       pipe([
         // TODO get from cache ?
-        (securityGroup) => securityGroup.getLive(),
+        (securityGroup) => securityGroup.getLive({ lives }),
         tap((live) => {
           logger.debug(`getSecurityGroup securityGroup ${tos(live)}`);
         }),
@@ -160,10 +163,11 @@ const SecurityGroupRuleBase = ({ config }) => {
       }),
     ])();
 
-  const getList = ({ resources = [] } = {}) =>
+  const getList = ({ resources = [], lives } = {}) =>
     pipe([
       tap(() => {
         logger.info(`list sg rule `);
+        assert(lives);
       }),
       () => resources,
       map((resource) =>
@@ -171,7 +175,7 @@ const SecurityGroupRuleBase = ({ config }) => {
           tap(() => {
             logger.debug(`getList secGroupRule resource ${resource.name}`);
           }),
-          () => getSecurityGroup(resource),
+          () => getSecurityGroup({ resource, lives }),
           switchCase([
             isEmpty,
             () => null,
@@ -193,13 +197,14 @@ const SecurityGroupRuleBase = ({ config }) => {
       }),
     ])();
 
-  const getByName = async ({ name, dependencies }) =>
+  const getByName = async ({ name, dependencies, lives }) =>
     pipe([
       tap(() => {
         logger.info(`getByName ${name}`);
         assert(dependencies, "dependencies");
+        assert(lives, "lives");
       }),
-      () => getSecurityGroup({ dependencies, name }),
+      () => getSecurityGroup({ resource: { dependencies, name }, lives }),
       switchCase([
         not(isEmpty),
         (securityGroup) => findRuleInSecurityGroup({ name, securityGroup }),
@@ -245,16 +250,16 @@ const SecurityGroupRuleBase = ({ config }) => {
       ])();
 
   const destroy =
-    ({ kind, revokeSecurityGroup }) =>
-    async ({ name, live, resource }) =>
+    ({ kind }) =>
+    async ({ name, live, lives, resource }) =>
       pipe([
         tap(() => {
           assert(live);
+          assert(lives);
           logger.info(`destroy sg rule ${kind} ${name}`);
           logger.debug(`${kind} ${name}: ${JSON.stringify(live)}`);
         }),
-        () => resource,
-        getSecurityGroup,
+        () => getSecurityGroup({ resource, lives }),
         tap.if(isEmpty, () => {
           throw Error(`cannot find security group ${kind}`);
         }),

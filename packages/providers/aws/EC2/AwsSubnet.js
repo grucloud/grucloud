@@ -37,12 +37,12 @@ exports.AwsSubnet = ({ spec, config }) => {
   const cannotBeDeleted = isDefault;
 
   const findName = switchCase([
-    get("DefaultForAz"),
-    () => "default",
+    get("live.DefaultForAz"),
+    () => "subnet-default",
     findNameInTags,
   ]);
 
-  const findId = get("SubnetId");
+  const findId = get("live.SubnetId");
 
   const findDependencies = ({ live }) => [
     {
@@ -50,8 +50,10 @@ exports.AwsSubnet = ({ spec, config }) => {
       ids: [live.VpcId],
     },
   ];
+  //TODO getByName
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = ({ name, lives }) =>
+    getByNameCore({ name, lives, getList, findName });
   const getById = ({ id }) => getByIdCore({ id, getList, findId });
 
   const isUpById = isUpByIdCore({ getById });

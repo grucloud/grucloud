@@ -41,11 +41,11 @@ exports.AwsIamPolicy = ({ spec, config }) => {
 
   const iam = IAMNew(config);
 
-  const findId = get("Arn");
+  const findId = get("live.Arn");
   const findName = (item) =>
     pipe([
       () => item,
-      get("name"),
+      get("live.name"),
       switchCase([
         isEmpty,
         () => findNameInTagsOrId({ item, findId }),

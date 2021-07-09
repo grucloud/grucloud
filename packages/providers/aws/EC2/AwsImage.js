@@ -31,7 +31,7 @@ exports.AwsImage = ({ spec, config }) => {
 
   const ec2 = Ec2New(config);
 
-  const findId = get("ImageId");
+  const findId = get("live.ImageId");
   const findName = (item) => {
     return findNameInTagsOrId({ item, findId });
   };

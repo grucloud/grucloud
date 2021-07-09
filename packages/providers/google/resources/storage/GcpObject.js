@@ -35,8 +35,8 @@ const { buildLabel } = require("../../GoogleCommon");
 const logger = require("@grucloud/core/logger")({ prefix: "GcpObject" });
 const { tos } = require("@grucloud/core/tos");
 
-const findName = get("name");
-const findId = get("id");
+const findName = get("live.name");
+const findId = get("live.id");
 
 const objectPath = (bucketName, name) => {
   assert(name);

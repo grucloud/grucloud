@@ -26,7 +26,7 @@ const {
   shouldRetryOnException,
 } = require("../../GoogleCommon");
 
-const findName = get("role");
+const findName = get("live.role");
 const findId = findName;
 
 // TODO use resources instead of resourceNames
@@ -38,7 +38,7 @@ const isOurMinionIamBinding = ({ name, live, resourceNames }) =>
       assert(Array.isArray(resourceNames), "resourceNames");
     }),
     () => resourceNames,
-    find((item) => isDeepEqual(item, findName(live))),
+    find((item) => isDeepEqual(item, findName({ live }))),
     tap((isOur) => {
       logger.debug(`isOurMinionIamBinding: ${name}: ${isOur}`);
     }),

@@ -41,6 +41,7 @@ const getNameFromTagKey = (key = "") => key.replace(RecordKeyPrefix, "");
 const buildRecordTagValue = ({ Name, Type }) => `${Name}::${Type}`;
 
 const findName = pipe([
+  get("live"),
   tap((live) => {
     logger.debug(`findName live ${tos(live)}`);
     assert(live.Name);
@@ -58,7 +59,7 @@ const findName = pipe([
   }),
 ]);
 
-const findId = ({ Name, Type }) => `${Type}::${Name}`;
+const findId = pipe([get("live"), ({ Name, Type }) => `${Type}::${Name}`]);
 
 const getHostedZone = ({ name, dependencies = {} }) =>
   pipe([

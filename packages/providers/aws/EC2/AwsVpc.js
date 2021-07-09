@@ -36,12 +36,12 @@ exports.AwsVpc = ({ spec, config }) => {
   const cannotBeDeleted = isDefault;
 
   const findName = switchCase([
-    get("IsDefault"),
-    () => "default",
+    get("live.IsDefault"),
+    () => "vpc-default",
     findNameInTags,
   ]);
 
-  const findId = get("VpcId");
+  const findId = get("live.VpcId");
 
   const getList = ({ params, deep } = {}) =>
     pipe([

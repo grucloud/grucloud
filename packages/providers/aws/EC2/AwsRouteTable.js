@@ -42,7 +42,7 @@ exports.AwsRouteTable = ({ spec, config }) => {
   assert(config);
 
   const ec2 = Ec2New(config);
-  const findId = get("RouteTableId");
+  const findId = get("live.RouteTableId");
   const findName = (item) => findNameInTagsOrId({ item, findId });
 
   const isDefault = ({ live, lives }) =>

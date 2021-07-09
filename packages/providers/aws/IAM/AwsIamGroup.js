@@ -26,7 +26,7 @@ const {
   shouldRetryOnExceptionDelete,
 } = require("../AwsCommon");
 
-const findName = get("GroupName");
+const findName = get("live.GroupName");
 const findId = findName;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html

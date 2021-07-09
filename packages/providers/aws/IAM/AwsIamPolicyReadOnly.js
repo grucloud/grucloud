@@ -26,8 +26,8 @@ exports.AwsIamPolicyReadOnly = ({ spec, config }) => {
   assert(spec);
   assert(config);
 
-  const findName = get("name");
-  const findId = get("Arn");
+  const findName = get("live.name");
+  const findId = get("live.Arn");
   const findNamespace = get("live.namespace", "");
 
   const getList = async ({ resources = [] } = {}) =>

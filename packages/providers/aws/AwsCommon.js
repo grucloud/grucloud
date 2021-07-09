@@ -316,6 +316,7 @@ const findNameInTags = (item) =>
       assert(item);
     }),
     () => item,
+    get("live"),
     get("Tags"),
     find(eq(get("Key"), configProviderDefault.nameKey)),
     get("Value"),
@@ -339,7 +340,12 @@ exports.findNameInTagsOrId = ({ item, findId }) =>
   pipe([
     () => item,
     findNameInTags,
-    switchCase([isEmpty, () => findId(item), (name) => name]),
+    switchCase([isEmpty, () => findId(item), identity]),
+    tap((name) => {
+      if (!name) {
+        assert(name, `cannot find name or id for ${tos(item)}`);
+      }
+    }),
   ])();
 
 exports.findNameInDescription = ({ Description = "" }) => {

@@ -12,7 +12,7 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
   assert(config);
   const ec2 = Ec2New(config);
 
-  const findName = get("KeyName");
+  const findName = get("live.KeyName");
   const findId = findName;
 
   const getByName = ({ name }) => getByNameCore({ name, getList, findName });

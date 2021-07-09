@@ -37,7 +37,7 @@ exports.AwsVolume = ({ spec, config }) => {
 
   const awsEC2 = AwsEC2({ config, spec });
 
-  const findId = get("VolumeId");
+  const findId = get("live.VolumeId");
   const findName = (item) => findNameInTagsOrId({ item, findId });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVolumes-property

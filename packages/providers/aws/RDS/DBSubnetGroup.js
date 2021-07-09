@@ -27,7 +27,7 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const findId = get("DBSubnetGroupName");
+const findId = get("live.DBSubnetGroupName");
 const findName = findId;
 
 exports.DBSubnetGroup = ({ spec, config }) => {
@@ -125,7 +125,7 @@ exports.DBSubnetGroup = ({ spec, config }) => {
 
   const destroy = async ({ live }) =>
     pipe([
-      () => ({ id: findId(live) }),
+      () => ({ id: findId({ live }) }),
       ({ id }) =>
         pipe([
           tap(() => {
