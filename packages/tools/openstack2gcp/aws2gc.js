@@ -15,11 +15,8 @@ const {
 } = require("./src/aws/ec2/elasticIpAddressGen");
 const { writeSecurityGroups } = require("./src/aws/ec2/securityGroupGen");
 const {
-  writeSecurityGroupRuleIngresses,
-} = require("./src/aws/ec2/securityGroupRuleIngressGen");
-const {
-  writeSecurityGroupRuleEgresses,
-} = require("./src/aws/ec2/securityGroupRuleEgressGen");
+  writeSecurityGroupRule,
+} = require("./src/aws/ec2/securityGroupRuleGen");
 const { writeInternetGateways } = require("./src/aws/ec2/internetGatewayGen");
 
 const writers = [
@@ -29,8 +26,8 @@ const writers = [
   writeVolumes,
   writeElasticIpAddresses,
   writeSecurityGroups,
-  writeSecurityGroupRuleIngresses,
-  writeSecurityGroupRuleEgresses,
+  writeSecurityGroupRule({ type: "SecurityGroupRuleIngress" }),
+  writeSecurityGroupRule({ type: "SecurityGroupRuleEgress" }),
   writeInstances,
   writeInternetGateways,
 ];
