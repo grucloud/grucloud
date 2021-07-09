@@ -24,6 +24,9 @@ const {
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecGroupRule" });
 const { tos } = require("@grucloud/core/tos");
 
+const GC_SG_PREFIX = "gc-sg-";
+const buildSgRuleTagKey = (name) => `${GC_SG_PREFIX}${name}`;
+
 const findName = pipe([
   findNameInTags,
   tap((name) => {
@@ -102,14 +105,17 @@ const SecurityGroupRuleBase = ({ config }) => {
         Resources: [findGroupId(securityGroup.live)],
         Tags: [
           {
-            Key: name,
+            Key: buildSgRuleTagKey(name),
             Value: JSON.stringify(payload),
           },
-          {
+          ...(namespace && {
             Key: buildKeyNamespace({ name }),
             Value: namespace,
-          },
+          }),
         ],
+      }),
+      tap((params) => {
+        assert(true);
       }),
       (params) => ec2().createTags(params),
     ])();
@@ -120,7 +126,7 @@ const SecurityGroupRuleBase = ({ config }) => {
         Resources: [findGroupId(securityGroup)],
         Tags: [
           {
-            Key: name,
+            Key: buildSgRuleTagKey(name),
           },
         ],
       }),
@@ -140,7 +146,7 @@ const SecurityGroupRuleBase = ({ config }) => {
           })}`
         );
       }),
-      findValueInTags({ key: name }),
+      findValueInTags({ key: buildSgRuleTagKey(name) }),
       tryCatch(
         pipe([
           JSON.parse,
@@ -217,12 +223,7 @@ const SecurityGroupRuleBase = ({ config }) => {
 
   const create =
     ({ kind }) =>
-    async ({
-      payload,
-      name,
-      namespace,
-      resolvedDependencies: { securityGroup },
-    }) =>
+    ({ payload, name, namespace, resolvedDependencies: { securityGroup } }) =>
       pipe([
         tap(() => {
           logger.info(

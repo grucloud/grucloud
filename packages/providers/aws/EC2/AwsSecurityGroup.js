@@ -50,12 +50,8 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
 
   const findName = ({ live, lives }) =>
     pipe([
-      tap((xxx) => {
-        logger.debug(``);
-
-        if (!lives) {
-          assert(lives);
-        }
+      tap(() => {
+        assert(lives);
       }),
       () => live,
       get("GroupName"),
@@ -63,17 +59,11 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
         eq(identity, "default"),
         pipe([
           () => lives.getByType({ type: "Vpc", providerName }),
-          tap((xxx) => {
-            logger.debug(``);
-          }),
           find(eq(get("live.VpcId"), live.VpcId)),
-          tap((xxx) => {
-            logger.debug(``);
-          }),
           get("name"),
-          (vpcName) => `security-group-default-${vpcName}`,
+          (vpcName) => `sg-default-${vpcName}`,
           tap((xxx) => {
-            logger.debug(``);
+            assert(true);
           }),
         ]),
         identity,
@@ -192,7 +182,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       tap((GroupId) => {
         logger.info(`created sg ${tos({ name, GroupId })}`);
       }),
-      (GroupId) => ({ id: GroupId }),
+      (id) => ({ id }),
     ])();
 
   const revokeIngressRules = (live) =>
