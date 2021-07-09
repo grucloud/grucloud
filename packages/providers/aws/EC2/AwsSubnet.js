@@ -8,8 +8,11 @@ const {
   tryCatch,
   any,
   eq,
+  omit,
+  pick,
+  filter,
 } = require("rubico");
-const { defaultsDeep, forEach } = require("rubico/x");
+const { defaultsDeep, forEach, size } = require("rubico/x");
 
 const { retryCall } = require("@grucloud/core/Retry");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSubnet" });
@@ -29,6 +32,14 @@ const {
   buildTags,
   destroyNetworkInterfaces,
 } = require("../AwsCommon");
+const identity = require("rubico/x/identity");
+
+const SubnetAttributes = [
+  "MapPublicIpOnLaunch",
+  "CustomerOwnedIpv4Pool",
+  "MapCustomerOwnedIpOnLaunch",
+  "MapPublicIpOnLaunch",
+];
 
 exports.AwsSubnet = ({ spec, config }) => {
   const ec2 = Ec2New(config);
@@ -62,7 +73,7 @@ exports.AwsSubnet = ({ spec, config }) => {
         logger.debug(`getList subnet result: ${tos(items)}`);
       }),
       (items) => ({
-        total: items.length,
+        total: size(items),
         items,
       }),
       tap(({ total }) => {
@@ -78,13 +89,15 @@ exports.AwsSubnet = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSubnet-property
 
-  const create = async ({ payload, attributes, name }) =>
+  const create = ({ payload, name }) =>
     pipe([
       tap(() => {
         logger.info(`create subnet ${JSON.stringify({ name })}`);
         logger.debug(tos({ payload }));
       }),
-      () => ec2().createSubnet(payload),
+      () => payload,
+      omit(SubnetAttributes),
+      (params) => ec2().createSubnet(params),
       get("Subnet.SubnetId"),
       tap((SubnetId) =>
         retryCall({
@@ -96,32 +109,42 @@ exports.AwsSubnet = ({ spec, config }) => {
       // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#modifySubnetAttribute-property
       tap((SubnetId) =>
         pipe([
-          () => Object.entries(attributes()),
-          forEach(
+          () => payload,
+          pick(SubnetAttributes),
+          tap((xxx) => {
+            logger.debug(``);
+          }),
+          filter(identity),
+          map.entries(
             tryCatch(
-              pipe([
-                ([key, value]) => ({ [key]: value, SubnetId }),
-                tap((params) => {
-                  logger.debug(
-                    `modifySubnetAttribute ${JSON.stringify(params)}`
-                  );
-                }),
-                (params) => ec2().modifySubnetAttribute(params),
-              ]),
-              (error, entry) =>
+              ([key, Value]) =>
+                pipe([
+                  () => ({ [key]: { Value }, SubnetId }),
+                  tap((params) => {
+                    logger.debug(
+                      `modifySubnetAttribute ${JSON.stringify(params)}`
+                    );
+                  }),
+                  (params) => ec2().modifySubnetAttribute(params),
+                  () => [key, Value],
+                ])(),
+              (error, [key]) =>
                 pipe([
                   tap(() => {
                     logger.error(
                       `modifySubnetAttribute ${JSON.stringify({
                         error,
-                        entry,
+                        key,
                       })}`
                     );
                   }),
-                  () => ({ error, entry }),
+                  () => [key, { error: { error } }],
                 ])()
             )
           ),
+          tap((xxx) => {
+            logger.debug(``);
+          }),
           tap.if(any(get("error")), (results) => {
             throw Error(`modifySubnetAttribute error: ${tos(results)}`);
           }),
@@ -149,7 +172,7 @@ exports.AwsSubnet = ({ spec, config }) => {
               () => true,
               () => false,
             ])(error),
-          config: { retryCount: 10, retryDelay: 5e2 },
+          config: { retryCount: 10, retryDelay: 5e3 },
         }),
       tap(() =>
         retryCall({
@@ -169,15 +192,18 @@ exports.AwsSubnet = ({ spec, config }) => {
     properties: { Tags, ...otherProps },
     dependencies: { vpc },
   }) =>
-    defaultsDeep({
-      ...(vpc && { VpcId: getField(vpc, "VpcId") }),
-      TagSpecifications: [
-        {
-          ResourceType: "subnet",
-          Tags: buildTags({ config, namespace, name, UserTags: Tags }),
-        },
-      ],
-    })(otherProps);
+    pipe([
+      () => otherProps,
+      defaultsDeep({
+        ...(vpc && { VpcId: getField(vpc, "VpcId") }),
+        TagSpecifications: [
+          {
+            ResourceType: "subnet",
+            Tags: buildTags({ config, namespace, name, UserTags: Tags }),
+          },
+        ],
+      }),
+    ])();
 
   return {
     spec,

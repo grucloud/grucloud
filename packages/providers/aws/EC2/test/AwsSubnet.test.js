@@ -41,14 +41,10 @@ describe("AwsSubnet", async function () {
     subnet = provider.ec2.makeSubnet({
       name: subnetName,
       dependencies: { vpc },
-      attributes: () => ({
-        MapPublicIpOnLaunch: {
-          Value: true,
-        },
-      }),
       properties: () => ({
         CidrBlock: "192.168.1.1/24",
         Tags: [{ Key: k8sSubnetTagKey, Value: "1" }],
+        MapPublicIpOnLaunch: true,
       }),
     });
   });
@@ -85,17 +81,7 @@ describe("AwsSubnet", async function () {
     });
     assert(!result.error);
     assert(result.results);
-    //TODO
-    /*
-    const {
-      results: [subnets],
-    } = provider.listLives({ options: { types: ["Subnet"] } });
-    assert(subnets);
-    const subnetDefault = subnets.resources.find(
-      (subnet) => subnet.live.DefaultForAz
-    );
-    assert(subnetDefault);
-*/
+
     await testPlanDestroy({ provider, types });
   });
 });
