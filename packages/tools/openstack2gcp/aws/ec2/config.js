@@ -41,12 +41,21 @@ module.exports = ({ stage }) => ({
   },
   securityGroup: {
     name: "security-group",
+    properties: {
+      Description: "Security Group Description",
+    },
   },
   sgDefaultVpcEc2Example: {
     name: "sg-default-vpc-ec2-example",
+    properties: {
+      Description: "default VPC security group",
+    },
   },
   sgDefaultVpcDefault: {
     name: "sg-default-vpc-default",
+    properties: {
+      Description: "default VPC security group",
+    },
   },
   webServerEc2Vpc: {
     name: "web-server-ec2-vpc",

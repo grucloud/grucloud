@@ -41,6 +41,7 @@ const createResources = async ({ provider }) => {
     dependencies: {
       vpc: vpcEc2Example,
     },
+    properties: () => config.securityGroup.properties,
   });
 
   const sgDefaultVpcEc2Example = provider.ec2.useSecurityGroup({
@@ -48,6 +49,7 @@ const createResources = async ({ provider }) => {
     dependencies: {
       vpc: vpcEc2Example,
     },
+    properties: () => config.sgDefaultVpcEc2Example.properties,
   });
 
   const sgDefaultVpcDefault = provider.ec2.useSecurityGroup({
@@ -55,6 +57,7 @@ const createResources = async ({ provider }) => {
     dependencies: {
       vpc: vpcDefault,
     },
+    properties: () => config.sgDefaultVpcDefault.properties,
   });
 
   const webServerEc2Vpc = provider.ec2.makeInstance({

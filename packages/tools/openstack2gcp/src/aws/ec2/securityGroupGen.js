@@ -9,7 +9,7 @@ const {
   findDependencyNames,
 } = require("../../../generatorUtils");
 
-const pickProperties = ["Size", "Device"];
+const pickProperties = ["Description"];
 
 const writeSecurityGroup = ({ resource, lives }) =>
   pipe([
