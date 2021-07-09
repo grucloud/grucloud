@@ -57,6 +57,50 @@ module.exports = ({ stage }) => ({
       Description: "default VPC security group",
     },
   },
+  sgRuleIngressSsh: {
+    name: "sg-rule-ingress-ssh",
+    properties: {
+      IpPermissions: [
+        {
+          FromPort: 22,
+          IpProtocol: "tcp",
+          IpRanges: [
+            {
+              CidrIp: "0.0.0.0/0",
+            },
+          ],
+          Ipv6Ranges: [
+            {
+              CidrIpv6: "::/0",
+            },
+          ],
+          ToPort: 22,
+        },
+      ],
+    },
+  },
+  sgRuleIngressIcmp: {
+    name: "sg-rule-ingress-icmp",
+    properties: {
+      IpPermissions: [
+        {
+          FromPort: -1,
+          IpProtocol: "icmp",
+          IpRanges: [
+            {
+              CidrIp: "0.0.0.0/0",
+            },
+          ],
+          Ipv6Ranges: [
+            {
+              CidrIpv6: "::/0",
+            },
+          ],
+          ToPort: -1,
+        },
+      ],
+    },
+  },
   webServerEc2Vpc: {
     name: "web-server-ec2-vpc",
     properties: {

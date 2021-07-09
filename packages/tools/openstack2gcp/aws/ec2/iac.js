@@ -60,6 +60,22 @@ const createResources = async ({ provider }) => {
     properties: () => config.sgDefaultVpcDefault.properties,
   });
 
+  const sgRuleIngressSsh = provider.ec2.makeSecurityGroupRuleIngress({
+    name: config.sgRuleIngressSsh.name,
+    dependencies: {
+      securityGroup: securityGroup,
+    },
+    properties: () => config.sgRuleIngressSsh.properties,
+  });
+
+  const sgRuleIngressIcmp = provider.ec2.makeSecurityGroupRuleIngress({
+    name: config.sgRuleIngressIcmp.name,
+    dependencies: {
+      securityGroup: securityGroup,
+    },
+    properties: () => config.sgRuleIngressIcmp.properties,
+  });
+
   const webServerEc2Vpc = provider.ec2.makeInstance({
     name: config.webServerEc2Vpc.name,
     dependencies: {
@@ -96,6 +112,8 @@ const createResources = async ({ provider }) => {
     securityGroup,
     sgDefaultVpcEc2Example,
     sgDefaultVpcDefault,
+    sgRuleIngressSsh,
+    sgRuleIngressIcmp,
     webServerEc2Vpc,
     igw_041e0d42bb3b4149c,
     ig,
