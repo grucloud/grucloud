@@ -243,21 +243,24 @@ function CoreProvider({
       tap(() => {
         assert(lives);
       }),
-      () =>
-        client.resourceKey({
-          providerName: provider.name,
-          type: client.spec.type,
-          group: client.spec.group,
-          name: client.findName({ live, lives }),
-          id: client.findId({ live, lives }),
-          meta: client.findMeta(live),
-        }),
+      () => ({
+        providerName: provider.name,
+        type: client.spec.type,
+        group: client.spec.group,
+        name: client.findName({ live, lives }),
+        id: client.findId({ live, lives }),
+        meta: client.findMeta(live),
+      }),
+      tap((params) => {
+        logger.debug(`getResourceFromLive ${JSON.stringify(params)}`);
+      }),
+      (params) => client.resourceKey(params),
       tap((key) => {
         logger.debug(`${key}`);
       }),
       (key) => mapNameToResource.get(key),
       tap((resource) => {
-        logger.debug(`${!!resource}`);
+        logger.debug(`getResourceFromLive: ${!!resource}`);
       }),
     ])();
 
@@ -1646,7 +1649,7 @@ function CoreProvider({
         assert(live);
         assert(lives);
         assert(resource);
-        logger.debug(`destroyById: ${resource.toString()}`);
+        logger.debug(`destroyById: ${tos(resource.toString())}`);
       }),
       () => clientByType(resource),
       tap((client) => {

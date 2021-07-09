@@ -63,7 +63,7 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
         }),
         ({ providerName, type, group, name, id }) =>
           `${providerName}::${displayType({ group, type })}::${
-            (isString(id) ? id : JSON.stringify(id)) || name
+            name || (isString(id) ? id : JSON.stringify(id))
           }`,
       ]),
       displayName: pipe([
