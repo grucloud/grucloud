@@ -31,7 +31,7 @@ const configProviderDefault = {
   createdByProviderKey: "gc-created-by-provider",
   projectNameKey: "gc-provider-name",
   stageTagKey: "gc-stage",
-  nameKey: "gc-name",
+  nameKey: "Name",
   namespaceKey: "gc-namespace",
   stage: "dev",
   retryCount: 30,
