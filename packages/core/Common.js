@@ -145,36 +145,30 @@ exports.convertError = ({ error, name, procedure, params }) => {
   }
 };
 
-exports.getByNameCore = async ({
-  name,
-  findName,
-  getList,
-  resources,
-  deep = true,
-  //TODO meta ?
-  lives,
-}) =>
-  pipe([
-    tap(() => {
-      logger.info(`getByName ${name}`);
-      assert(name, "name");
-      assert(findName, "findName");
-      assert(getList, "getList");
-      if (!lives) {
-        //assert(lives);
-      }
-    }),
-    () => getList({ deep, lives, resources }),
-    get("items"),
-    tap((items) => {
-      assert(items);
-    }),
-    find((live) => isDeepEqual(name, findName({ live, lives }))), //TODO check on meta
-    tap((instance) => {
-      logger.info(`getByName ${name}: ${instance ? "UP" : "DOWN"}`);
-      logger.debug(`getByName ${name}: ${tos({ instance })}`);
-    }),
-  ])();
+exports.getByNameCore =
+  ({ findName, getList, deep = true }) =>
+  ({ name, resources, lives }) =>
+    pipe([
+      tap(() => {
+        logger.info(`getByName ${name}`);
+        assert(name, "name");
+        assert(findName, "findName");
+        assert(getList, "getList");
+        if (!lives) {
+          //assert(lives);
+        }
+      }),
+      () => getList({ deep, lives, resources }),
+      get("items"),
+      tap((items) => {
+        assert(items);
+      }),
+      find((live) => isDeepEqual(name, findName({ live, lives }))), //TODO check on meta
+      tap((instance) => {
+        logger.info(`getByName ${name}: ${instance ? "UP" : "DOWN"}`);
+        logger.debug(`getByName ${name}: ${tos({ instance })}`);
+      }),
+    ])();
 
 //TODO merge with getByNameCore
 

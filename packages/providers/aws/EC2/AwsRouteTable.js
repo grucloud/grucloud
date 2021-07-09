@@ -89,13 +89,12 @@ exports.AwsRouteTable = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name, lives }) =>
-    getByNameCore({ name, getList, lives, findName });
+  const getByName = getByNameCore({ getList, findName });
   const getById = getByIdCore({ fieldIds: "RouteTableIds", getList });
 
-  const isUpById = isUpByIdCore({
-    getById,
-  });
+  // const isUpById = isUpByIdCore({
+  //   getById,
+  // });
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createRouteTable-property

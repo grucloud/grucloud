@@ -116,8 +116,7 @@ exports.AwsRoute = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name, lives, resources }) =>
-    getByNameCore({ name, getList, findName, lives, resources });
+  const getByName = getByNameCore({ getList, findName });
 
   const createRouteInternetGateway = ({ ig, RouteTableId, payload }) =>
     switchCase([

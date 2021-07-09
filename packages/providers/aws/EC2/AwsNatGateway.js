@@ -92,7 +92,7 @@ exports.AwsNatGateway = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
   const getById = getByIdCore({ fieldIds: "NatGatewayIds", getList });
 
   const isUpById = isUpByIdCore({

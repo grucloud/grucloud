@@ -132,10 +132,8 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
         logger.info(`list #sg ${total}`);
       }),
     ])();
-  //TODO getByName
 
-  const getByName = ({ name, live, lives }) =>
-    getByNameCore({ name, getList, findName, live, lives });
+  const getByName = getByNameCore({ getList, findName });
   const getById = getByIdCore({ fieldIds: "GroupIds", getList });
 
   const isUpById = isUpByIdCore({ getById });

@@ -50,9 +50,6 @@ module.exports = CoreClient = ({
   assert(type);
   assert(config, "config");
 
-  const getByName = ({ provider, name }) =>
-    getByNameCore({ provider, name, getList, findName });
-
   const getById = async ({ name, id }) =>
     tryCatch(
       pipe([
@@ -119,6 +116,7 @@ module.exports = CoreClient = ({
     }
   );
 
+  const getByName = getByNameCore({ getList, findName });
   const isUpById = isUpByIdFactory({ getById, getList, findId });
   const isDownById = isDownByIdFactory({ getById, getList, findId });
 

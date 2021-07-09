@@ -372,8 +372,7 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
       }
     )();
 
-  const getByName = ({ provider, name }) =>
-    getByNameCore({ provider, name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   const isDownById = isDownByIdCore({ getById, findId });
 

@@ -96,10 +96,8 @@ exports.AwsInternetGateway = ({ spec, config }) => {
         logger.info(`getList #ig ${total}`);
       }),
     ])();
-  //TODO getByName
 
-  const getByName = ({ name, lives }) =>
-    getByNameCore({ name, lives, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
   const getById = getByIdCore({ fieldIds: "InternetGatewayIds", getList });
 
   const getStateName = pipe([

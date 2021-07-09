@@ -62,7 +62,12 @@ exports.AwsEC2 = ({ spec, config }) => {
   assert(config);
   const { providerName } = config;
   assert(providerName);
-  const clientConfig = { ...config, retryDelay: 5000, repeatCount: 1 };
+  const clientConfig = {
+    ...config,
+    retryCount: 100,
+    retryDelay: 5e3,
+    repeatCount: 1,
+  };
 
   const ec2 = Ec2New(config);
 
@@ -176,7 +181,7 @@ exports.AwsEC2 = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
   const getById = getByIdCore({ fieldIds: "InstanceIds", getList });
 
   const isUpById = isUpByIdCore({

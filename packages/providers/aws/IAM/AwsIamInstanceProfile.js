@@ -116,7 +116,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   const getById = pipe([
     tap(({ id }) => {

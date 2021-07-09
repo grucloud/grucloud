@@ -55,9 +55,7 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
         logger.info(`getList #eip ${total}`);
       }),
     ])();
-  //TODO getByName
-  const getByName = ({ name, lives }) =>
-    getByNameCore({ name, lives, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
   const getById = getByIdCore({ fieldIds: "AllocationIds", getList });
   const isUpById = isUpByIdCore({ getById });
   const isDownById = isDownByIdCore({ getById });

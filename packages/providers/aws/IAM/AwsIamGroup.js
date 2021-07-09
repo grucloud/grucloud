@@ -95,7 +95,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   const getById = pipe([
     tap(({ id }) => {
@@ -119,7 +119,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
     }),
   ]);
 
-  const isUpById = isUpByIdCore({ getById });
+  //const isUpById = isUpByIdCore({ getById });
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createGroup-property

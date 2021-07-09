@@ -50,10 +50,27 @@ exports.AwsSubnet = ({ spec, config }) => {
       ids: [live.VpcId],
     },
   ];
-  //TODO getByName
 
-  const getByName = ({ name, lives }) =>
-    getByNameCore({ name, lives, getList, findName });
+  const getList = ({ params } = {}) =>
+    pipe([
+      tap(() => {
+        logger.info(`getList subnet ${JSON.stringify(params)}`);
+      }),
+      () => ec2().describeSubnets(params),
+      get("Subnets"),
+      tap((items) => {
+        logger.debug(`getList subnet result: ${tos(items)}`);
+      }),
+      (items) => ({
+        total: items.length,
+        items,
+      }),
+      tap(({ total }) => {
+        logger.info(`getList #subnet ${total}`);
+      }),
+    ])();
+
+  const getByName = getByNameCore({ getList, findName });
   const getById = ({ id }) => getByIdCore({ id, getList, findId });
 
   const isUpById = isUpByIdCore({ getById });
@@ -143,25 +160,6 @@ exports.AwsSubnet = ({ spec, config }) => {
       ),
       tap(() => {
         logger.info(`destroyed subnet ${JSON.stringify({ name, id })}`);
-      }),
-    ])();
-
-  const getList = ({ params } = {}) =>
-    pipe([
-      tap(() => {
-        logger.info(`getList subnet ${JSON.stringify(params)}`);
-      }),
-      () => ec2().describeSubnets(params),
-      get("Subnets"),
-      tap((items) => {
-        logger.debug(`getList subnet result: ${tos(items)}`);
-      }),
-      (items) => ({
-        total: items.length,
-        items,
-      }),
-      tap(({ total }) => {
-        logger.info(`getList #subnet ${total}`);
       }),
     ])();
 

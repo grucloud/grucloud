@@ -60,7 +60,7 @@ exports.AwsVolume = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
   const getById = getByIdCore({ fieldIds: "VolumeIds", getList });
   const isInstanceUp = eq(get("State"), "available");
   const isUpById = isUpByIdCore({

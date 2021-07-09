@@ -15,9 +15,6 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
   const findName = get("live.KeyName");
   const findId = findName;
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
-  const getById = ({ id }) => getByIdCore({ id, getList, findId });
-
   const getList = async ({ params } = {}) =>
     pipe([
       tap(() => {
@@ -36,6 +33,9 @@ exports.AwsClientKeyPair = ({ spec, config }) => {
         logger.info(`getList #keypair: ${total}`);
       }),
     ])();
+
+  const getByName = getByNameCore({ getList, findName });
+  //const getById = ({ id }) => getByIdCore({ id, getList, findId });
 
   const validate = async ({ name }) =>
     pipe([

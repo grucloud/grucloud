@@ -50,8 +50,7 @@ exports.AwsIamPolicyReadOnly = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name, properties, resources }) =>
-    getByNameCore({ name, resources, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   return {
     spec,

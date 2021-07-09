@@ -175,7 +175,7 @@ exports.AwsLoadBalancer = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   const getById = pipe([
     tap(({ id }) => {
@@ -216,9 +216,9 @@ exports.AwsLoadBalancer = ({ spec, config }) => {
       }),
     ])();
 
-  const destroy = async ({ live }) =>
+  const destroy = ({ live, lives }) =>
     pipe([
-      () => ({ id: findId({ live }), name: findName({ live }) }),
+      () => ({ id: findId({ live }), name: findName({ live, lives }) }),
       ({ id, name }) =>
         pipe([
           tap(() => {
