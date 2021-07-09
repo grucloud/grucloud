@@ -283,15 +283,23 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     configDefault,
     shouldRetryOnException,
     shouldRetryOnExceptionDelete,
-    cannotBeDeleted: get("resource.readOnly"),
+    cannotBeDeleted: pipe([
+      tap((params) => {
+        assert(params.resource);
+      }),
+      get("resource.readOnly"),
+    ]),
   };
 };
 
 exports.isOurMinionIamPolicy = (item) =>
   pipe([
     () => item,
+    tap(({ resource }) => {
+      assert(resource);
+    }),
     or([get("resource.readOnly"), isOurMinion]),
     tap((isOurMinion) => {
-      logger.debug(`isOurMinionIamPolicy ${isOurMinion}`);
+      logger.debug(`isOurMinionIamPolicy '${item.live.name}' ${isOurMinion}`);
     }),
   ])();
