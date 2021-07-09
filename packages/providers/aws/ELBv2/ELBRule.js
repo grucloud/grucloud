@@ -36,10 +36,10 @@ const {
 } = require("../AwsCommon");
 
 const findId = get("live.RuleArn");
+
 const findName = switchCase([
   get("live.IsDefault"),
-  () => "rule-default",
-  (live) => ({ live }),
+  () => "default",
   findNameInTagsOrId({ findId }),
 ]);
 
