@@ -15,7 +15,10 @@ const {
   filter,
   flatMap,
   switchCase,
+  assign,
   not,
+  omit,
+  or,
 } = require("rubico");
 
 const pick = require("rubico/pick");
@@ -44,14 +47,41 @@ const propertyValue = switchCase([
 exports.buildPropertyList = ({ resource: { live }, pickProperties }) =>
   pipe([
     () => live,
-    pick(pickProperties),
+    pick([...pickProperties, "Tags"]),
+    tap((params) => {
+      assert(true);
+    }),
+    assign({
+      Tags: pipe([
+        get("Tags", []),
+        filter(
+          pipe([
+            get("Key"),
+            not(or([callProp("startsWith", "gc-"), eq(identity, "Name")])),
+            tap((params) => {
+              assert(true);
+            }),
+          ])
+        ),
+      ]),
+    }),
+    switchCase([pipe([get("Tags"), isEmpty]), omit(["Tags"]), identity]),
+    tap((params) => {
+      assert(true);
+    }),
     map.entries(([key, value]) => [key, `${key}: ${propertyValue(value)}`]),
     values,
+    tap((params) => {
+      assert(true);
+    }),
   ])();
 
 exports.configTpl = ({ resourceVarName, resource: { name }, propertyList }) =>
   pipe([
     () => propertyList,
+    tap((params) => {
+      assert(name);
+    }),
     callProp("join", ","),
     (propertyListJoined) => `${resourceVarName}: {
       name: "${name}"${
@@ -90,11 +120,13 @@ exports.codeTpl = ({
   type,
   resourceVarName,
   dependencies,
-  resource: { namespace },
+  resource: { namespace, isDefault },
   propertyList,
   createPrefix = "make",
 }) => `
-  const ${resourceVarName} = provider.${group}.${createPrefix}${type}({
+  const ${resourceVarName} = provider.${group}.${
+  isDefault ? "use" : createPrefix
+}${type}({
     name: config.${resourceVarName}.name,${
   namespace ? `\nnamespace: ${namespace},` : ""
 }${buildDependencies(dependencies)}${

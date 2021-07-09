@@ -10,11 +10,22 @@ const {
   buildPropertyList,
 } = require("../../../generatorUtils");
 
-const pickProperties = ["CidrBlock", "AvailabilityZone", "MapPublicIpOnLaunch"];
+const pickProperties = [
+  "CidrBlock",
+  "Ipv6CidrBlock",
+  "AvailabilityZone",
+  "MapPublicIpOnLaunch",
+  "CustomerOwnedIpv4Pool",
+  "MapCustomerOwnedIpOnLaunch",
+  "MapPublicIpOnLaunch",
+];
 
 const writeSubnet = ({ resource, lives }) =>
   pipe([
     () => resource,
+    tap((params) => {
+      assert(true);
+    }),
     switchCase([
       not(get("isDefault")),
       pipe([

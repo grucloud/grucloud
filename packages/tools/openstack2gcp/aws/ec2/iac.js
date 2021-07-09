@@ -5,6 +5,11 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 const createResources = async ({ provider }) => {
   const { config } = provider;
 
+  const vpcDefault = provider.ec2.useVpc({
+    name: config.vpcDefault.name,
+    properties: () => config.vpcDefault.properties,
+  });
+
   const vpcEc2Example = provider.ec2.makeVpc({
     name: config.vpcEc2Example.name,
     properties: () => config.vpcEc2Example.properties,
@@ -31,16 +36,25 @@ const createResources = async ({ provider }) => {
     name: config.myip.name,
   });
 
-  const securityGroupDefault = provider.ec2.makeSecurityGroup({
-    name: config.securityGroupDefault.name,
-  });
-
   const securityGroup = provider.ec2.makeSecurityGroup({
     name: config.securityGroup.name,
+    dependencies: {
+      vpc: vpcEc2Example,
+    },
   });
 
-  const securityGroupDefault = provider.ec2.makeSecurityGroup({
-    name: config.securityGroupDefault.name,
+  const sgDefaultVpcEc2Example = provider.ec2.useSecurityGroup({
+    name: config.sgDefaultVpcEc2Example.name,
+    dependencies: {
+      vpc: vpcEc2Example,
+    },
+  });
+
+  const sgDefaultVpcDefault = provider.ec2.useSecurityGroup({
+    name: config.sgDefaultVpcDefault.name,
+    dependencies: {
+      vpc: vpcDefault,
+    },
   });
 
   const webServerEc2Vpc = provider.ec2.makeInstance({
@@ -55,16 +69,33 @@ const createResources = async ({ provider }) => {
     properties: () => config.webServerEc2Vpc.properties,
   });
 
+  const igw_041e0d42bb3b4149c = provider.ec2.useInternetGateway({
+    name: config.igw_041e0d42bb3b4149c.name,
+    dependencies: {
+      vpc: vpcDefault,
+    },
+  });
+
+  const ig = provider.ec2.makeInternetGateway({
+    name: config.ig.name,
+    dependencies: {
+      vpc: vpcEc2Example,
+    },
+  });
+
   return {
+    vpcDefault,
     vpcEc2Example,
     subnet,
     kp,
     volume,
     myip,
-    securityGroupDefault,
     securityGroup,
-    securityGroupDefault,
+    sgDefaultVpcEc2Example,
+    sgDefaultVpcDefault,
     webServerEc2Vpc,
+    igw_041e0d42bb3b4149c,
+    ig,
   };
 };
 

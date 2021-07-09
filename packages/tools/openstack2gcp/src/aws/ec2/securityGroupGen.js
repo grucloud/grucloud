@@ -1,13 +1,12 @@
 const { pipe, tap, get, eq, map, switchCase, fork, any } = require("rubico");
-const { identity } = require("rubico/x");
 
 const {
   writeResources,
   ResourceVarName,
-  findLiveById,
   configTpl,
   codeTpl,
   buildPropertyList,
+  findDependencyNames,
 } = require("../../../generatorUtils");
 
 const pickProperties = ["Size", "Device"];
@@ -36,6 +35,13 @@ const writeSecurityGroup = ({ resource, lives }) =>
             resource,
             resourceVarName,
             propertyList,
+            dependencies: {
+              vpc: findDependencyNames({
+                type: "Vpc",
+                resource,
+                lives,
+              }),
+            },
           }),
         }),
       ]),

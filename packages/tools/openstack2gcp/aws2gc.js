@@ -14,6 +14,8 @@ const {
   writeElasticIpAddresses,
 } = require("./src/aws/ec2/elasticIpAddressGen");
 const { writeSecurityGroups } = require("./src/aws/ec2/securityGroupGen");
+const { writeInternetGateways } = require("./src/aws/ec2/internetGatewayGen");
+
 const writers = [
   writeVpcs,
   writeSubnets,
@@ -22,6 +24,7 @@ const writers = [
   writeElasticIpAddresses,
   writeSecurityGroups,
   writeInstances,
+  writeInternetGateways,
 ];
 
 //TODO read version from package.json

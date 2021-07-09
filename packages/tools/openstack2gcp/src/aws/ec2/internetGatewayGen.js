@@ -1,6 +1,5 @@
-const assert = require("assert");
-const { pipe, tap, get, map, switchCase, not, fork } = require("rubico");
-const { size } = require("rubico/x");
+const { pipe, tap, get, eq, map, switchCase, fork, any } = require("rubico");
+const { identity } = require("rubico/x");
 
 const {
   writeResources,
@@ -8,17 +7,17 @@ const {
   configTpl,
   codeTpl,
   buildPropertyList,
+  findDependencyNames,
 } = require("../../../generatorUtils");
 
-const pickProperties = ["CidrBlock", "DnsSupport", "DnsHostnames"];
+const pickProperties = [];
 
-// Vpc
-const writeVpc = ({ resource, lives }) =>
+const writeInternetGateway = ({ resource, lives }) =>
   pipe([
     () => resource,
     switchCase([
-      //not(get("isDefault")),
-      () => true,
+      () => false,
+      () => {},
       pipe([
         fork({
           resourceVarName: () => ResourceVarName(resource.name),
@@ -33,19 +32,24 @@ const writeVpc = ({ resource, lives }) =>
           }),
           code: codeTpl({
             group: "ec2",
-            type: "Vpc",
-            resourceVarName,
+            type: "InternetGateway",
             resource,
+            resourceVarName,
             propertyList,
+            dependencies: {
+              vpc: findDependencyNames({
+                type: "Vpc",
+                resource,
+                lives,
+              }),
+            },
           }),
         }),
       ]),
-      () => undefined,
     ]),
   ])();
 
-exports.writeVpcs = writeResources({
-  group: "ec2",
-  type: "Vpc",
-  writeResource: writeVpc,
+exports.writeInternetGateways = writeResources({
+  type: "InternetGateway",
+  writeResource: writeInternetGateway,
 });
