@@ -90,7 +90,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeNodegroup-property
   const getById = ({ clusterName, nodegroupName }) =>
