@@ -14,7 +14,7 @@ exports.AwsNetworkAcl = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
   const findId = get("live.NetworkAclId");
-  const findName = (item) => findNameInTagsOrId({ item, findId });
+  const findName = findNameInTagsOrId({ findId });
   const isDefault = get("live.IsDefault");
   const findDependencies = ({ live }) => [
     { type: "Vpc", ids: [live.VpcId] },

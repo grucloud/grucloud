@@ -29,7 +29,7 @@ const {
 } = require("../AwsCommon");
 
 const findId = get("live.ListenerArn");
-const findName = (item) => findNameInTagsOrId({ item, findId });
+const findName = findNameInTagsOrId({ findId });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 

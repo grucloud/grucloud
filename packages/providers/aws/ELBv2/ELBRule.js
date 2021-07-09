@@ -39,7 +39,8 @@ const findId = get("live.RuleArn");
 const findName = switchCase([
   get("live.IsDefault"),
   () => "rule-default",
-  (item) => findNameInTagsOrId({ item, findId }),
+  (live) => ({ live }),
+  findNameInTagsOrId({ findId }),
 ]);
 
 const { ELBListener } = require("./ELBListener");

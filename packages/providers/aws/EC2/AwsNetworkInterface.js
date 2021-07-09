@@ -28,7 +28,7 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
   const awsSecurityGroup = AwsSecurityGroup({ config, spec });
   const findId = get("live.NetworkInterfaceId");
 
-  const findName = (item) => findNameInTagsOrId({ item, findId });
+  const findName = findNameInTagsOrId({ findId });
   const findNamespace = ({ live, lives }) =>
     pipe([
       () => live,

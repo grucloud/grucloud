@@ -48,7 +48,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       get("live.name"),
       switchCase([
         isEmpty,
-        () => findNameInTagsOrId({ item, findId }),
+        () => findNameInTagsOrId({ findId })(item),
         identity,
       ]),
       tap((name) => {

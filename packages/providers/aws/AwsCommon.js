@@ -310,13 +310,14 @@ const findNamespaceInTagsObject =
 
 exports.findNamespaceInTagsObject = findNamespaceInTagsObject;
 
-const findNameInTags = (item) =>
+const findNameInTags = ({ live }) =>
   pipe([
     tap(() => {
-      assert(item);
+      if (!live) {
+        assert(live);
+      }
     }),
-    () => item,
-    get("live"),
+    () => live,
     get("Tags"),
     find(eq(get("Key"), configProviderDefault.nameKey)),
     get("Value"),
@@ -324,7 +325,7 @@ const findNameInTags = (item) =>
       isEmpty,
       () => {
         logger.debug(
-          `findNameInTags: no name in tags: ${JSON.stringify(item.Tags)}`
+          `findNameInTags: no name in tags: ${JSON.stringify(live.Tags)}`
         );
       },
       (Value) => {
@@ -336,17 +337,24 @@ const findNameInTags = (item) =>
 
 exports.findNameInTags = findNameInTags;
 
-exports.findNameInTagsOrId = ({ item, findId }) =>
-  pipe([
-    () => item,
-    findNameInTags,
-    switchCase([isEmpty, () => findId(item), identity]),
-    tap((name) => {
-      if (!name) {
-        assert(name, `cannot find name or id for ${tos(item)}`);
-      }
-    }),
-  ])();
+exports.findNameInTagsOrId =
+  ({ findId }) =>
+  ({ live }) =>
+    pipe([
+      tap(() => {
+        if (!live) {
+          assert(live);
+        }
+      }),
+      () => ({ live }),
+      findNameInTags,
+      switchCase([isEmpty, () => findId({ live }), identity]),
+      tap((name) => {
+        if (!name) {
+          assert(name, `cannot find name or id for ${tos(live)}`);
+        }
+      }),
+    ])();
 
 exports.findNameInDescription = ({ Description = "" }) => {
   const tags = Description.split("tags:")[1];
