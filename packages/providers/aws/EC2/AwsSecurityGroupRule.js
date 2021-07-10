@@ -333,6 +333,23 @@ const SecurityGroupRuleBase = ({ config }) => {
       }),
     ])();
 
+  const filterLiveRule = pipe([
+    assign({
+      IpPermission: pipe([
+        get("IpPermission"),
+        switchCase([
+          pipe([get("UserIdGroupPairs"), isEmpty]),
+          identity,
+          assign({
+            UserIdGroupPairs: pipe([
+              get("UserIdGroupPairs"),
+              map(pick(["GroupId"])),
+            ]),
+          }),
+        ]),
+      ]),
+    }),
+  ]);
   const getList =
     ({ property }) =>
     ({ resources = [], lives } = {}) =>
@@ -341,8 +358,11 @@ const SecurityGroupRuleBase = ({ config }) => {
           assert(true);
         }),
         fork({
-          liveRules: () => getListFromSecurityGroup({ lives, property }),
-          targetRules: () => getListFromTarget({ resources, lives }),
+          liveRules: pipe([
+            () => getListFromSecurityGroup({ lives, property }),
+            map(filterLiveRule),
+          ]),
+          targetRules: pipe([() => getListFromTarget({ resources, lives })]),
         }),
         tap((params) => {
           assert(true);
@@ -361,25 +381,13 @@ const SecurityGroupRuleBase = ({ config }) => {
                 }),
                 find(
                   pipe([
-                    fork({
-                      targetRule: omit(["Tags"]), //
-                      liveRule: () =>
-                        assign({
-                          IpPermission: ({ IpPermission }) =>
-                            assign({
-                              UserIdGroupPairs: ({ UserIdGroupPairs }) =>
-                                map(pick(["GroupId"]))(UserIdGroupPairs),
-                            })(IpPermission),
-                        })(liveRule),
-                    }),
-
-                    tap(({ targetRule, liveRule }) => {
+                    omit(["Tags"]),
+                    tap((targetRule) => {
                       logger.debug("getList compare:");
                       logger.debug(`targetRule: ${tos(targetRule)}`);
                       logger.debug(`liveRule:   ${tos(liveRule)}`);
                     }),
-                    ({ targetRule, liveRule }) =>
-                      isDeepEqual(targetRule, liveRule),
+                    (targetRule) => isDeepEqual(targetRule, liveRule),
                     tap((equal) => {
                       logger.debug(`sg rule getList equal: ${equal}`);
                     }),
