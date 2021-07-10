@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-module-aws-certificate",
-  "version": "1.24.0",
+  "version": "1.25.0",
   "description": "Example deploy a certificate with DNS validation",
   "main": "iac.js",
   "private": true,
@@ -17,9 +17,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/core": "^1.24.0",
-    "@grucloud/module-aws-certificate": "^1.24.0",
-    "@grucloud/provider-aws": "^1.24.0"
+    "@grucloud/core": "^1.25.0",
+    "@grucloud/module-aws-certificate": "^1.25.0",
+    "@grucloud/provider-aws": "^1.25.0"
   },
   "devDependencies": {
     "mocha": "^8.3.2"
