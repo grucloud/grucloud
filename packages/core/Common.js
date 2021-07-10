@@ -29,7 +29,7 @@ const configProviderDefault = {
   managedByValue: "grucloud",
   managedByDescription: "Managed By GruCloud",
   createdByProviderKey: "gc-created-by-provider",
-  projectNameKey: "gc-provider-name",
+  projectNameKey: "gc-project-name",
   stageTagKey: "gc-stage",
   nameKey: "Name",
   namespaceKey: "gc-namespace",
@@ -308,7 +308,7 @@ exports.buildTagsObject = ({ name, namespace, config }) => {
     }),
     [stageTagKey]: stage,
     ...(projectName && {
-      projectNameKey: projectName,
+      [projectNameKey]: projectName,
     }),
   };
 };
