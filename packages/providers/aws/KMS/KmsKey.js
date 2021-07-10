@@ -106,7 +106,8 @@ exports.KmsKey = ({ spec, config }) => {
       }),
     ])();
 
-  const isInstanceUp = not(isEmpty);
+  const isInstanceUp = eq(get("Enabled"), true);
+
   const isUpById = isUpByIdCore({ isInstanceUp, getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#createKey-property
@@ -135,7 +136,7 @@ exports.KmsKey = ({ spec, config }) => {
   const update = async ({ name, payload, diff, live }) =>
     pipe([
       tap(() => {
-        logger.info(`update: ${name}`);
+        logger.info(`key update: ${name}`);
         logger.debug(tos({ payload, diff, live }));
       }),
       () => live,
@@ -145,10 +146,19 @@ exports.KmsKey = ({ spec, config }) => {
       ),
       tap.if(
         eq(get("Enabled"), false),
-        pipe([() => kms().enableKey({ KeyId: live.KeyId })])
+        pipe([
+          tap(() => kms().enableKey({ KeyId: live.KeyId })),
+          tap(({ KeyId }) =>
+            retryCall({
+              name: `key isUpById: ${name} id: ${KeyId}`,
+              fn: () => isUpById({ name, id: KeyId }),
+              config,
+            })
+          ),
+        ])
       ),
       tap(() => {
-        logger.info(`updated`);
+        logger.info(`key updated: ${name}`);
       }),
     ])();
 
