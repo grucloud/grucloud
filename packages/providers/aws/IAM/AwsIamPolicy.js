@@ -285,7 +285,8 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     shouldRetryOnExceptionDelete,
     cannotBeDeleted: pipe([
       tap((params) => {
-        assert(params.resource);
+        //TODO
+        //assert(params.resource);
       }),
       get("resource.readOnly"),
     ]),
@@ -296,7 +297,8 @@ exports.isOurMinionIamPolicy = (item) =>
   pipe([
     () => item,
     tap(({ resource }) => {
-      assert(resource);
+      //TODO
+      //assert(resource);
     }),
     or([get("resource.readOnly"), isOurMinion]),
     tap((isOurMinion) => {
