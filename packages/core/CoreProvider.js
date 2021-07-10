@@ -1610,6 +1610,10 @@ function CoreProvider({
       }),
       (id) =>
         pipe([
+          () => resourcesPerType,
+          tap((params) => {
+            assert(true);
+          }),
           find(eq(get("name"), name)),
           tap((resource) => {
             //assert(resource, `no resource for id ${id}`);
@@ -1632,7 +1636,7 @@ function CoreProvider({
               config: provider.config,
             })
           ),
-        ])(resourcesPerType),
+        ])(),
       tap(() => {
         logger.info(
           `destroyByClient: DONE ${JSON.stringify({

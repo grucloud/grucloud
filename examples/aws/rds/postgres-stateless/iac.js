@@ -31,26 +31,24 @@ const createResourcesRds = async ({
       securityGroupPublic: bastionResources.securityGroup,
     },
     properties: () => ({
-      IpPermissions: [
-        {
-          FromPort: 5432,
-          IpProtocol: "tcp",
-          IpRanges: [
-            {
-              CidrIp: "0.0.0.0/0",
-            },
-          ],
-          Ipv6Ranges: [
-            {
-              CidrIpv6: "::/0",
-            },
-          ],
-          UserIdGroupPairs: [
-            { GroupId: bastionResources.securityGroup.live?.GroupId },
-          ],
-          ToPort: 5432,
-        },
-      ],
+      IpPermission: {
+        FromPort: 5432,
+        IpProtocol: "tcp",
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+        UserIdGroupPairs: [
+          { GroupId: bastionResources.securityGroup.live?.GroupId },
+        ],
+        ToPort: 5432,
+      },
     }),
   });
 
@@ -98,23 +96,21 @@ const createResourcesBastion = async ({
       securityGroup,
     },
     properties: () => ({
-      IpPermissions: [
-        {
-          FromPort: 22,
-          IpProtocol: "tcp",
-          IpRanges: [
-            {
-              CidrIp: "0.0.0.0/0",
-            },
-          ],
-          Ipv6Ranges: [
-            {
-              CidrIpv6: "::/0",
-            },
-          ],
-          ToPort: 22,
-        },
-      ],
+      IpPermission: {
+        FromPort: 22,
+        IpProtocol: "tcp",
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+        ToPort: 22,
+      },
     }),
   });
 

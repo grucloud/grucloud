@@ -59,46 +59,42 @@ describe("AwsSecurityGroupDefault", async function () {
       name: "sg-rule-ingress-test",
       dependencies: { securityGroup },
       properties: () => ({
-        IpPermissions: [
-          {
-            FromPort: 22,
-            IpProtocol: "tcp",
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-            Ipv6Ranges: [
-              {
-                CidrIpv6: "::/0",
-              },
-            ],
-            ToPort: 22,
-          },
-        ],
+        IpPermission: {
+          FromPort: 22,
+          IpProtocol: "tcp",
+          IpRanges: [
+            {
+              CidrIp: "0.0.0.0/0",
+            },
+          ],
+          Ipv6Ranges: [
+            {
+              CidrIpv6: "::/0",
+            },
+          ],
+          ToPort: 22,
+        },
       }),
     });
     sgRuleEgress = provider.ec2.makeSecurityGroupRuleEgress({
       name: "sg-rule-egress-test",
       dependencies: { securityGroup },
       properties: () => ({
-        IpPermissions: [
-          {
-            FromPort: 1024,
-            IpProtocol: "tcp",
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-            Ipv6Ranges: [
-              {
-                CidrIpv6: "::/0",
-              },
-            ],
-            ToPort: 65535,
-          },
-        ],
+        IpPermission: {
+          FromPort: 1024,
+          IpProtocol: "tcp",
+          IpRanges: [
+            {
+              CidrIp: "0.0.0.0/0",
+            },
+          ],
+          Ipv6Ranges: [
+            {
+              CidrIpv6: "::/0",
+            },
+          ],
+          ToPort: 65535,
+        },
       }),
     });
   });

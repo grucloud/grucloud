@@ -167,7 +167,10 @@ exports.ResourceMaker = ({
                     provider.clientByType({ type }).findName({ live, lives }),
                   tap((liveName) => {
                     logger.debug(
-                      `findLive ${JSON.stringify({ type, liveName })}`
+                      `findLive ${type} ${JSON.stringify({
+                        resourceName,
+                        liveName,
+                      })}`
                     );
                   }),
                   (liveName) => isDeepEqual(resourceName, liveName),

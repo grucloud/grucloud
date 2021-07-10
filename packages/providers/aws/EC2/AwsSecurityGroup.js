@@ -60,7 +60,13 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
         pipe([
           () => lives.getByType({ type: "Vpc", providerName }),
           find(eq(get("live.VpcId"), live.VpcId)),
+          tap((vpc) => {
+            //assert(vpc);
+          }),
           get("name"),
+          tap((vpcName) => {
+            //assert(vpcName);
+          }),
           (vpcName) => `sg-default-${vpcName}`,
           tap((xxx) => {
             assert(true);
@@ -77,9 +83,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       type: "SecurityGroup",
       ids: pipe([
         () => live,
-        get("IpPermissions"),
-        pluck("UserIdGroupPairs"),
-        flatten,
+        get("IpPermission.UserIdGroupPairs"),
         pluck("GroupId"),
       ])(),
     },

@@ -34,23 +34,21 @@ const sgRuleIngressSsh = provider.ec2.makeSecurityGroupRuleIngress({
     securityGroup: sg,
   },
   properties: () => ({
-    IpPermissions: [
-      {
-        FromPort: 22,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        Ipv6Ranges: [
-          {
-            CidrIpv6: "::/0",
-          },
-        ],
-        ToPort: 22,
-      },
-    ],
+    IpPermission: {
+      FromPort: 22,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      Ipv6Ranges: [
+        {
+          CidrIpv6: "::/0",
+        },
+      ],
+      ToPort: 22,
+    },
   }),
 });
 ```

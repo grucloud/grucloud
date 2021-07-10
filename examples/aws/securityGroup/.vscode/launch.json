@@ -13,11 +13,11 @@
       "port": 9229
     },
     {
-      "name": "List",
+      "name": "List -g",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
-      "runtimeArgs": ["list", "-g"],
+      "runtimeArgs": ["list"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
@@ -46,28 +46,6 @@
       "port": 9229
     },
     {
-      "name": "onDeployed",
-      "type": "node",
-      "request": "launch",
-      "runtimeExecutable": "gc",
-      "runtimeArgs": ["run", "--onDeployed"],
-      "internalConsoleOptions": "openOnSessionStart",
-      "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
-      "port": 9229
-    },
-    {
-      "name": "onDestroyed",
-      "type": "node",
-      "request": "launch",
-      "runtimeExecutable": "gc",
-      "runtimeArgs": ["run", "--onDestroyed"],
-      "internalConsoleOptions": "openOnSessionStart",
-      "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}",
-      "port": 9229
-    },
-    {
       "name": "Destroy",
       "type": "node",
       "request": "launch",
@@ -77,13 +55,13 @@
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
       "port": 9229
-    },
+    }
     {
-      "name": "Info",
+      "name": "Destroy -a",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
-      "runtimeArgs": ["info"],
+      "runtimeArgs": ["destroy", "-f", "-a"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",

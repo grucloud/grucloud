@@ -121,7 +121,15 @@ exports.shouldRetryOnExceptionDelete = ({ error, name }) => {
 };
 
 const findValueInTags = ({ key }) =>
-  pipe([get("Tags"), find(eq(get("Key"), key)), get("Value")]);
+  pipe([
+    tap((live) => {
+      assert(key);
+      assert(live);
+    }),
+    get("Tags"),
+    find(eq(get("Key"), key)),
+    get("Value"),
+  ]);
 
 exports.findValueInTags = findValueInTags;
 

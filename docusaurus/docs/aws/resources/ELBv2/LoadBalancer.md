@@ -41,23 +41,21 @@ const securityGroup = provider.ec2.makeSecurityGroup({
       Description: "Load Balancer Security Group",
     },
     ingress: {
-      IpPermissions: [
-        {
-          FromPort: 80,
-          IpProtocol: "tcp",
-          IpRanges: [
-            {
-              CidrIp: "0.0.0.0/0",
-            },
-          ],
-          Ipv6Ranges: [
-            {
-              CidrIpv6: "::/0",
-            },
-          ],
-          ToPort: 80,
-        },
-      ],
+      IpPermission: {
+        FromPort: 80,
+        IpProtocol: "tcp",
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+        ToPort: 80,
+      },
     },
   }),
 });

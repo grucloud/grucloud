@@ -72,6 +72,9 @@ exports.Lister = ({ inputs, onStateChange }) => {
       //Exclude the current resource
       filter(not(eq(get("key"), key))),
       // Find resources that depends on the one that just ended
+      tap((params) => {
+        assert(true);
+      }),
       filter(pipe([get("dependsOn"), includes(key)])),
       tap((results) => {
         logger.debug(`Lister onEnd ${key}, #${results.length}`);

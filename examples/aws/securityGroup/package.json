@@ -1,16 +1,19 @@
 {
-  "name": "kms-symmetric",
+  "name": "@grucloud/example-aws-ec2-security-group",
   "version": "1.24.0",
   "private": true,
   "description": "",
-  "main": "iac.js",
+  "main": "index.js",
   "scripts": {
+    "graph-target": "gc graph",
+    "graph-live": "gc list --graph ",
     "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.24.0",
-    "@grucloud/provider-aws": "^1.24.0"
+    "@grucloud/provider-aws": "^1.24.0",
+    "rubico": "^1.6.23"
   }
 }
