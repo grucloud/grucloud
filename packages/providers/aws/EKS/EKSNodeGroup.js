@@ -215,7 +215,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
                   clusterName,
                   nodegroupName,
                 }),
-              config: { retryCount: 12 * 10, retryDelay: 5e3 },
+              config: { retryCount: 20 * 6, retryDelay: 10e3 },
             })
           ),
           tap(() => {
