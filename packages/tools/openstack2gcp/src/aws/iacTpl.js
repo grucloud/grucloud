@@ -4,7 +4,8 @@ const assert = require("assert");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = async ({ provider }) => {
-  const { stage } = provider.config;
+  const {config} = provider;
+  
   ${resourcesCode}
   return {
     ${resourcesVarNames.join(",")}

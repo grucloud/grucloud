@@ -62,7 +62,12 @@ exports.AwsEC2 = ({ spec, config }) => {
   assert(config);
   const { providerName } = config;
   assert(providerName);
-  const clientConfig = { ...config, retryDelay: 5000, repeatCount: 1 };
+  const clientConfig = {
+    ...config,
+    retryCount: 100,
+    retryDelay: 5e3,
+    repeatCount: 1,
+  };
 
   const ec2 = Ec2New(config);
 
@@ -71,7 +76,6 @@ exports.AwsEC2 = ({ spec, config }) => {
       type: "Image",
       ids: pipe([
         () => lives.getByType({ type: "Image", providerName }),
-        get("resources", []),
         filter(eq(get("id"), live.ImageId)),
         pluck("id"),
       ])(),
@@ -93,6 +97,19 @@ exports.AwsEC2 = ({ spec, config }) => {
         () => live,
         get("NetworkInterfaces"),
         pluck("NetworkInterfaceId"),
+      ])(),
+    },
+    {
+      type: "ElasticIpAddress",
+      ids: pipe([
+        () => live,
+        get("PublicIpAddress"),
+        (PublicIpAddress) =>
+          pipe([
+            () => lives.getByType({ type: "ElasticIpAddress", providerName }),
+            filter(eq(get("live.PublicIp"), PublicIpAddress)),
+            pluck("id"),
+          ])(),
       ])(),
     },
     {
@@ -128,11 +145,12 @@ exports.AwsEC2 = ({ spec, config }) => {
 
   const findName = (item) =>
     pipe([
+      () => item,
       findNameInTags,
-      switchCase([isEmpty, () => findEksName(item), (name) => name]),
-    ])(item);
+      switchCase([isEmpty, () => findEksName(item.live), identity]),
+    ])();
 
-  const findId = get("InstanceId");
+  const findId = get("live.InstanceId");
 
   const getStateName = get("State.Name");
   const isInstanceUp = eq(getStateName, StateRunning);
@@ -163,7 +181,7 @@ exports.AwsEC2 = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
   const getById = getByIdCore({ fieldIds: "InstanceIds", getList });
 
   const isUpById = isUpByIdCore({

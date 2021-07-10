@@ -31,10 +31,8 @@ exports.AwsImage = ({ spec, config }) => {
 
   const ec2 = Ec2New(config);
 
-  const findId = get("ImageId");
-  const findName = (item) => {
-    return findNameInTagsOrId({ item, findId });
-  };
+  const findId = get("live.ImageId");
+  const findName = findNameInTagsOrId({ findId });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeImages-property
   const getList = ({ resources = [] } = {}) =>

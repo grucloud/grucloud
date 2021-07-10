@@ -37,8 +37,8 @@ exports.AwsVolume = ({ spec, config }) => {
 
   const awsEC2 = AwsEC2({ config, spec });
 
-  const findId = get("VolumeId");
-  const findName = (item) => findNameInTagsOrId({ item, findId });
+  const findId = get("live.VolumeId");
+  const findName = findNameInTagsOrId({ findId });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVolumes-property
   const getList = ({ params } = {}) =>
@@ -60,7 +60,7 @@ exports.AwsVolume = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
   const getById = getByIdCore({ fieldIds: "VolumeIds", getList });
   const isInstanceUp = eq(get("State"), "available");
   const isUpById = isUpByIdCore({
@@ -143,7 +143,6 @@ exports.AwsVolume = ({ spec, config }) => {
           type: "EC2",
           providerName: config.providerName,
         }),
-      get("resources"),
       find(eq(get("live.InstanceId"), findInstanceId(live))),
       switchCase([
         isEmpty,

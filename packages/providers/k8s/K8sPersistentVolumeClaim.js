@@ -22,10 +22,6 @@ exports.isOurMinionPersistentVolumeClaim = ({ live, lives, config }) =>
               type: "PersistentVolume",
               providerName: config.providerName,
             }),
-          tap((xxx) => {
-            assert(true);
-          }),
-          get("resources"),
           find(eq(get("name"), volumeName)),
           get("managedByUs"),
           tap((managedByUs) => {

@@ -42,7 +42,7 @@ const {
 
 const findName = findNameInTags;
 
-const findId = get("CertificateArn");
+const findId = get("live.CertificateArn");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html
 exports.AwsCertificate = ({ spec, config }) => {
@@ -61,7 +61,6 @@ exports.AwsCertificate = ({ spec, config }) => {
             providerName: config.providerName,
             type: "Route53Record",
           }),
-        get("resources"),
         pluck("live"),
         tap((xxx) => {
           logger.debug(``);
@@ -146,7 +145,7 @@ exports.AwsCertificate = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#getCertificate-property
   const getById = pipe([
@@ -210,9 +209,9 @@ exports.AwsCertificate = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#deleteCertificate-property
-  const destroy = async ({ live }) =>
+  const destroy = async ({ live, lives }) =>
     pipe([
-      () => ({ id: findId(live), name: findName(live) }),
+      () => ({ id: findId({ live, lives }), name: findName({ live, lives }) }),
       ({ id, name }) =>
         pipe([
           tap(() => {

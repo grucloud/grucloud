@@ -1,0 +1,31 @@
+{
+  "name": "@grucloud/example-module-k8s-certmanager",
+  "version": "1.24.0",
+  "description": "Example of the GruCloud module for the Kubernetes Cert Manager",
+  "main": "iac.js",
+  "private": true,
+  "scripts": {
+    "graph-target": "gc graph --title 'Cert Manager'",
+    "graph-live": "gc list --graph --title 'Cert Manager'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grucloud/grucloud.git"
+  },
+  "keywords": [
+    "kubernetes",
+    "certmanager",
+    "grucloud"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/grucloud/grucloud/issues"
+  },
+  "homepage": "https://github.com/grucloud/grucloud#readme",
+  "dependencies": {
+    "@grucloud/core": "^1.24.0",
+    "@grucloud/module-k8s-crunchy-postgres": "^1.24.0",
+    "@grucloud/provider-k8s": "^1.24.0"
+  }
+}

@@ -36,7 +36,7 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const findName = get("nodegroupName");
+const findName = get("live.nodegroupName");
 const findId = findName;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html
@@ -90,7 +90,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeNodegroup-property
   const getById = ({ clusterName, nodegroupName }) =>
@@ -215,7 +215,7 @@ exports.EKSNodeGroup = ({ spec, config }) => {
                   clusterName,
                   nodegroupName,
                 }),
-              config: { retryCount: 12 * 10, retryDelay: 5e3 },
+              config: { retryCount: 20 * 6, retryDelay: 10e3 },
             })
           ),
           tap(() => {

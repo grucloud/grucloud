@@ -41,14 +41,14 @@ exports.AwsIamPolicy = ({ spec, config }) => {
 
   const iam = IAMNew(config);
 
-  const findId = get("Arn");
+  const findId = get("live.Arn");
   const findName = (item) =>
     pipe([
       () => item,
-      get("name"),
+      get("live.name"),
       switchCase([
         isEmpty,
-        () => findNameInTagsOrId({ item, findId }),
+        () => findNameInTagsOrId({ findId })(item),
         identity,
       ]),
       tap((name) => {
@@ -153,7 +153,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   const getById = pipe([
     tap(({ id }) => {
@@ -283,15 +283,25 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     configDefault,
     shouldRetryOnException,
     shouldRetryOnExceptionDelete,
-    cannotBeDeleted: get("resource.readOnly"),
+    cannotBeDeleted: pipe([
+      tap((params) => {
+        //TODO
+        //assert(params.resource);
+      }),
+      get("resource.readOnly"),
+    ]),
   };
 };
 
 exports.isOurMinionIamPolicy = (item) =>
   pipe([
     () => item,
+    tap(({ resource }) => {
+      //TODO
+      //assert(resource);
+    }),
     or([get("resource.readOnly"), isOurMinion]),
     tap((isOurMinion) => {
-      logger.debug(`isOurMinionIamPolicy ${isOurMinion}`);
+      logger.debug(`isOurMinionIamPolicy '${item.live.name}' ${isOurMinion}`);
     }),
   ])();

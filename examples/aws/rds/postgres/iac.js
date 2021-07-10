@@ -33,23 +33,21 @@ const createResources = async ({ provider }) => {
       securityGroup,
     },
     properties: () => ({
-      IpPermissions: [
-        {
-          FromPort: 5432,
-          IpProtocol: "tcp",
-          IpRanges: [
-            {
-              CidrIp: "0.0.0.0/0",
-            },
-          ],
-          Ipv6Ranges: [
-            {
-              CidrIpv6: "::/0",
-            },
-          ],
-          ToPort: 5432,
-        },
-      ],
+      IpPermission: {
+        FromPort: 5432,
+        IpProtocol: "tcp",
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+        ToPort: 5432,
+      },
     }),
   });
 

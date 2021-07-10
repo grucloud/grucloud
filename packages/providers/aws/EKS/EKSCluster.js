@@ -38,8 +38,9 @@ const {
   findNamespaceInTagsObject,
 } = require("../AwsCommon");
 
-const findName = get("name");
+const findName = get("live.name");
 const findId = findName;
+
 const findDependencies = ({ live }) => [
   { type: "Vpc", ids: [get("resourcesVpcConfig.vpcId")(live)] },
   { type: "IamRole", ids: [live.roleArn] },
@@ -93,7 +94,7 @@ exports.EKSCluster = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeCluster-property
   const getById = pipe([

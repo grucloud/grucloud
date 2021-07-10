@@ -149,23 +149,21 @@ const createResources = async ({
       securityGroup: securityGroupCluster,
     },
     properties: () => ({
-      IpPermissions: [
-        {
-          FromPort: 443,
-          IpProtocol: "tcp",
-          IpRanges: [
-            {
-              CidrIp: "0.0.0.0/0",
-            },
-          ],
-          Ipv6Ranges: [
-            {
-              CidrIpv6: "::/0",
-            },
-          ],
-          ToPort: 443,
-        },
-      ],
+      IpPermission: {
+        FromPort: 443,
+        IpProtocol: "tcp",
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+        ToPort: 443,
+      },
     }),
   });
   const sgClusterRuleEgress = provider.ec2.makeSecurityGroupRuleEgress({
@@ -175,23 +173,21 @@ const createResources = async ({
       securityGroup: securityGroupCluster,
     },
     properties: () => ({
-      IpPermissions: [
-        {
-          FromPort: 1024,
-          IpProtocol: "tcp",
-          IpRanges: [
-            {
-              CidrIp: "0.0.0.0/0",
-            },
-          ],
-          Ipv6Ranges: [
-            {
-              CidrIpv6: "::/0",
-            },
-          ],
-          ToPort: 65535,
-        },
-      ],
+      IpPermission: {
+        FromPort: 1024,
+        IpProtocol: "tcp",
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+        ToPort: 65535,
+      },
     }),
   });
 
@@ -216,51 +212,45 @@ const createResources = async ({
       securityGroup: securityGroupNodes,
     },
     properties: () => ({
-      IpPermissions: [
-        {
-          FromPort: 0,
-          IpProtocol: "-1",
-          IpRanges: [
-            {
-              CidrIp: "0.0.0.0/0",
-            },
-          ],
-          Ipv6Ranges: [
-            {
-              CidrIpv6: "::/0",
-            },
-          ],
-          ToPort: 65535,
-        },
-      ],
+      IpPermission: {
+        IpProtocol: "-1",
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+      },
     }),
   });
   const sgNodesRuleIngressCluster = provider.ec2.makeSecurityGroupRuleIngress({
-    name: formatName("sg-nodes-rule-ingress-cluster", config),
+    name: formatName("sg-rule-node-group-ingress-cluster", config),
     namespace,
     dependencies: {
       securityGroup: securityGroupNodes,
       securityGroupCluster,
     },
     properties: ({ dependencies: { securityGroupCluster } }) => ({
-      IpPermissions: [
-        {
-          FromPort: 1025,
-          IpProtocol: "tcp",
-          IpRanges: [
-            {
-              CidrIp: "0.0.0.0/0",
-            },
-          ],
-          Ipv6Ranges: [
-            {
-              CidrIpv6: "::/0",
-            },
-          ],
-          UserIdGroupPairs: [{ GroupId: securityGroupCluster.live?.GroupId }],
-          ToPort: 65535,
-        },
-      ],
+      IpPermission: {
+        FromPort: 1025,
+        IpProtocol: "tcp",
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+        UserIdGroupPairs: [{ GroupId: securityGroupCluster.live?.GroupId }],
+        ToPort: 65535,
+      },
     }),
   });
 

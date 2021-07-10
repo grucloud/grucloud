@@ -40,13 +40,9 @@ const vpc = provider.ec2.makeVpc({
 const subnet = provider.ec2.makeSubnet({
   name: "subnet",
   dependencies: { vpc },
-  attributes: () => ({
-    MapPublicIpOnLaunch: {
-      Value: true,
-    },
-  }),
   properties: () => ({
     CidrBlock: "10.1.0.1/24",
+    MapPublicIpOnLaunch: true,
   }),
 });
 ```
@@ -66,15 +62,11 @@ const vpc = provider.ec2.makeVpc({
 const subnetPublic = provider.ec2.makeSubnet({
   name: "subnet-public",
   dependencies: { vpc },
-  attributes: () => ({
-    MapPublicIpOnLaunch: {
-      Value: true,
-    },
-  }),
   properties: () => ({
     CidrBlock: "10.1.0.1/24",
     AvailabilityZone: "eu-west-2a",
     Tags: [{ Key: "kubernetes.io/role/elb", Value: "1" }],
+    MapPublicIpOnLaunch: true,
   }),
 });
 

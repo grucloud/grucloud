@@ -175,7 +175,7 @@ exports.AwsLoadBalancer = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   const getById = pipe([
     tap(({ id }) => {
@@ -216,9 +216,9 @@ exports.AwsLoadBalancer = ({ spec, config }) => {
       }),
     ])();
 
-  const destroy = async ({ live }) =>
+  const destroy = ({ live, lives }) =>
     pipe([
-      () => ({ id: findId(live), name: findName(live) }),
+      () => ({ id: findId({ live }), name: findName({ live, lives }) }),
       ({ id, name }) =>
         pipe([
           tap(() => {
@@ -536,13 +536,13 @@ Again by looking at the shape of the output of **LoadBalancerName**, we find the
 Hence the _findName_ function:
 
 ```js
-const findName = (live) => live.LoadBalancerName;
+const findName = ({ live }) => live.LoadBalancerName;
 ```
 
 Which could be simplify with _rubico_:
 
 ```js
-const findName = get("LoadBalancerName");
+const findName = get("live.LoadBalancerName");
 ```
 
 #### findId()
@@ -710,7 +710,7 @@ We'll use [deleteLoadBalancer](https://docs.aws.amazon.com/AWSJavaScriptSDK/late
 ```js
 const destroy = async ({ live }) =>
   pipe([
-    () => ({ id: findId(live), name: findName(live) }),
+    () => ({ id: findId({ live }), name: findName({ live }) }),
     ({ id, name }) =>
       pipe([
         tap(() => {

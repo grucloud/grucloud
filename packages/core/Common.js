@@ -29,9 +29,9 @@ const configProviderDefault = {
   managedByValue: "grucloud",
   managedByDescription: "Managed By GruCloud",
   createdByProviderKey: "gc-created-by-provider",
-  projectNameKey: "gc-provider-name",
+  projectNameKey: "gc-project-name",
   stageTagKey: "gc-stage",
-  nameKey: "gc-name",
+  nameKey: "Name",
   namespaceKey: "gc-namespace",
   stage: "dev",
   retryCount: 30,
@@ -145,44 +145,51 @@ exports.convertError = ({ error, name, procedure, params }) => {
   }
 };
 
-exports.getByNameCore = async ({
-  name,
-  findName,
-  getList,
-  resources,
-  deep = true,
-  //TODO meta ?
-  lives,
-}) =>
-  pipe([
-    tap(() => {
-      logger.info(`getByName ${name}`);
-      assert(name, "name");
-      assert(findName, "findName");
-      assert(getList, "getList");
-    }),
-    () => getList({ deep, lives, resources }),
-    get("items"),
-    find((item) => isDeepEqual(name, findName(item))), //TODO check on meta
-    tap((instance) => {
-      logger.info(`getByName ${name}: ${instance ? "UP" : "DOWN"}`);
-      logger.debug(`getByName ${name}: ${tos({ instance })}`);
-    }),
-  ])();
+exports.getByNameCore =
+  ({ findName, getList, deep = true }) =>
+  ({ name, resources, lives }) =>
+    pipe([
+      tap(() => {
+        logger.info(`getByName ${name}`);
+        assert(name, "name");
+        assert(findName, "findName");
+        assert(getList, "getList");
+        if (!lives) {
+          //assert(lives);
+        }
+      }),
+      () => getList({ deep, lives, resources }),
+      get("items"),
+      tap((items) => {
+        assert(items);
+      }),
+      find((live) => isDeepEqual(name, findName({ live, lives }))), //TODO check on meta
+      tap((instance) => {
+        logger.info(`getByName ${name}: ${instance ? "UP" : "DOWN"}`);
+        logger.debug(`getByName ${name}: ${tos({ instance })}`);
+      }),
+    ])();
 
 //TODO merge with getByNameCore
-const getByIdCore = async ({ type, name, id, findId, getList }) => {
-  logger.info(`getById ${JSON.stringify({ type, name, id })}`);
-  assert(id, "getByIdCore id");
-  assert(findId, "getByIdCore findId");
-  assert(getList, "getByIdCore getList");
-  //TODO KEY
-  const { items } = await getList();
-  const instance = items.find((item) => findId(item) === id);
-  logger.debug(`getById ${id}: ${tos({ instance })}`);
 
-  return instance;
-};
+const getByIdCore = ({ type, name, id, findId, getList }) =>
+  pipe([
+    tap(() => {
+      logger.info(`getById ${JSON.stringify({ type, name, id })}`);
+      assert(id, "getByIdCore id");
+      assert(findId, "getByIdCore findId");
+      assert(getList, "getByIdCore getList");
+    }),
+    () => getList(),
+    tap((xxx) => {
+      assert(true);
+    }),
+    get("items"),
+    find((live) => findId({ live }) === id),
+    tap((live) => {
+      logger.debug(`getById ${id}: ${tos({ live })}`);
+    }),
+  ])();
 
 exports.getByIdCore = getByIdCore;
 
@@ -301,7 +308,7 @@ exports.buildTagsObject = ({ name, namespace, config }) => {
     }),
     [stageTagKey]: stage,
     ...(projectName && {
-      projectNameKey: projectName,
+      [projectNameKey]: projectName,
     }),
   };
 };

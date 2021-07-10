@@ -21,7 +21,6 @@ const {
   buildTags,
   findNameInTagsOrId,
   findNamespaceInTags,
-
   shouldRetryOnException,
   shouldRetryOnExceptionDelete,
 } = require("../AwsCommon");
@@ -39,8 +38,9 @@ exports.AwsIamUser = ({ spec, config }) => {
 
   const iam = IAMNew(config);
 
-  const findId = get("UserName");
-  const findName = (item) => findNameInTagsOrId({ item, findId });
+  const findId = get("live.UserName");
+  const findName = findNameInTagsOrId({ findId });
+
   const findDependencies = ({ live }) => [
     {
       type: "IamPolicy",
@@ -51,6 +51,7 @@ exports.AwsIamUser = ({ spec, config }) => {
       ids: pipe([() => live, get("Groups"), pluck("GroupName")])(),
     },
   ];
+
   const fetchLoginProfile = ({ UserName }) =>
     tryCatch(
       pipe([() => iam().getLoginProfile({ UserName }), get("LoginProfile")]),
@@ -139,7 +140,7 @@ exports.AwsIamUser = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   const getById = pipe([
     tap(({ id }) => {
@@ -163,7 +164,7 @@ exports.AwsIamUser = ({ spec, config }) => {
     }),
   ]);
 
-  const isUpById = isUpByIdCore({ getById });
+  //const isUpById = isUpByIdCore({ getById });
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#createUser-property

@@ -83,28 +83,31 @@ describe("AwsProvider", async function () {
           Description: "Security Group Description",
         },
         // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
-        ingress: {
-          IpPermissions: [
+      }),
+    });
+    const sgRuleIngressSsh = provider.ec2.makeSecurityGroupRuleIngress({
+      name: "sg-rule-ingress-ssh",
+      dependencies: {
+        securityGroup: sg,
+      },
+      properties: () => ({
+        IpPermission: {
+          FromPort: 22,
+          IpProtocol: "tcp",
+          IpRanges: [
             {
-              FromPort: 22,
-              IpProtocol: "tcp",
-              IpRanges: [
-                {
-                  CidrIp: "0.0.0.0/0",
-                },
-              ],
-              Ipv6Ranges: [
-                {
-                  CidrIpv6: "::/0",
-                },
-              ],
-              ToPort: 22,
+              CidrIp: "0.0.0.0/0",
             },
           ],
+          Ipv6Ranges: [
+            {
+              CidrIpv6: "::/0",
+            },
+          ],
+          ToPort: 22,
         },
       }),
     });
-
     eip = provider.ec2.makeElasticIpAddress({
       name: formatName("myip"),
       properties: () => ({}),
@@ -157,7 +160,7 @@ describe("AwsProvider", async function () {
     assert(dependencies.securityGroups);
     assert(dependencies.keyPair);
   });
-  it.skip("aws apply plan", async function () {
+  it("aws apply plan", async function () {
     await testPlanDeploy({ provider });
 
     const serverLive = await server.getLive();
@@ -169,25 +172,6 @@ describe("AwsProvider", async function () {
         name: server.name,
       })
     );
-
-    //Check dependencies
-    const sgLive = await sg.getLive();
-    const igLive = await ig.getLive();
-    const rtLive = await routeTable.getLive();
-    const subnetLive = await subnet.getLive();
-    const vpcLive = await vpc.getLive();
-    const eipLive = await eip.getLive();
-
-    assert.equal(igLive.Attachments[0].VpcId, vpcLive.VpcId);
-    assert.equal(rtLive.VpcId, vpcLive.VpcId);
-    assert.equal(rtLive.Associations[0].SubnetId, subnetLive.SubnetId);
-
-    assert.equal(serverLive.VpcId, vpcLive.VpcId);
-    assert.equal(serverLive.PublicIpAddress, eipLive.PublicIp);
-
-    assert.equal(serverLive.SecurityGroups[0].GroupId, sgLive.GroupId);
-    assert.equal(subnetLive.VpcId, vpcLive.VpcId);
-    assert.equal(sgLive.VpcId, vpcLive.VpcId);
 
     await testPlanDestroy({ provider });
   });

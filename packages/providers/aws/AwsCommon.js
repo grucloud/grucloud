@@ -121,7 +121,15 @@ exports.shouldRetryOnExceptionDelete = ({ error, name }) => {
 };
 
 const findValueInTags = ({ key }) =>
-  pipe([get("Tags"), find(eq(get("Key"), key)), get("Value")]);
+  pipe([
+    tap((live) => {
+      assert(key);
+      assert(live);
+    }),
+    get("Tags"),
+    find(eq(get("Key"), key)),
+    get("Value"),
+  ]);
 
 exports.findValueInTags = findValueInTags;
 
@@ -137,7 +145,6 @@ const findEksCluster =
           type: "EKSCluster",
           providerName: config.providerName,
         }),
-      get("resources"),
       find(eq(get("name"), findValueInTags({ key })(live))),
       tap((cluster) => {
         logger.debug(`findEksCluster ${!!cluster}`);
@@ -311,12 +318,14 @@ const findNamespaceInTagsObject =
 
 exports.findNamespaceInTagsObject = findNamespaceInTagsObject;
 
-const findNameInTags = (item) =>
+const findNameInTags = ({ live }) =>
   pipe([
     tap(() => {
-      assert(item);
+      if (!live) {
+        assert(live);
+      }
     }),
-    () => item,
+    () => live,
     get("Tags"),
     find(eq(get("Key"), configProviderDefault.nameKey)),
     get("Value"),
@@ -324,7 +333,7 @@ const findNameInTags = (item) =>
       isEmpty,
       () => {
         logger.debug(
-          `findNameInTags: no name in tags: ${JSON.stringify(item.Tags)}`
+          `findNameInTags: no name in tags: ${JSON.stringify(live.Tags)}`
         );
       },
       (Value) => {
@@ -336,12 +345,24 @@ const findNameInTags = (item) =>
 
 exports.findNameInTags = findNameInTags;
 
-exports.findNameInTagsOrId = ({ item, findId }) =>
-  pipe([
-    () => item,
-    findNameInTags,
-    switchCase([isEmpty, () => findId(item), (name) => name]),
-  ])();
+exports.findNameInTagsOrId =
+  ({ findId }) =>
+  ({ live }) =>
+    pipe([
+      tap(() => {
+        if (!live) {
+          assert(live);
+        }
+      }),
+      () => ({ live }),
+      findNameInTags,
+      switchCase([isEmpty, () => findId({ live }), identity]),
+      tap((name) => {
+        if (!name) {
+          assert(name, `cannot find name or id for ${tos(live)}`);
+        }
+      }),
+    ])();
 
 exports.findNameInDescription = ({ Description = "" }) => {
   const tags = Description.split("tags:")[1];

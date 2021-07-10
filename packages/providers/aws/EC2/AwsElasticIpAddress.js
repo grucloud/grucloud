@@ -22,7 +22,7 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
   const findName = findNameInTags;
-  const findId = get("AllocationId");
+  const findId = get("live.AllocationId");
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeAddresses-property
 
   const findDependencies = ({ live }) => [
@@ -33,18 +33,6 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
         get("NetworkInterfaceId"),
         (NetworkInterfaceId) => [NetworkInterfaceId],
         filter(not(isEmpty)),
-      ])(),
-    },
-    {
-      type: "EC2",
-      ids: pipe([
-        () => live,
-        get("InstanceId"),
-        (InstanceId) => [InstanceId],
-        filter(not(isEmpty)),
-        tap((xxx) => {
-          logger.debug(``);
-        }),
       ])(),
     },
   ];
@@ -67,8 +55,7 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
         logger.info(`getList #eip ${total}`);
       }),
     ])();
-
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
   const getById = getByIdCore({ fieldIds: "AllocationIds", getList });
   const isUpById = isUpByIdCore({ getById });
   const isDownById = isDownByIdCore({ getById });

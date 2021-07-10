@@ -42,7 +42,7 @@ exports.AwsS3Bucket = ({ spec, config }) => {
 
   const s3 = S3New(config);
 
-  const findName = get("Name");
+  const findName = get("live.Name");
   const findId = findName;
   const findNamespace = findNamespaceInTags(config);
 

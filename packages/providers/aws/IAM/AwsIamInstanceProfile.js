@@ -47,8 +47,8 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
 
   const iam = IAMNew(config);
 
-  const findName = get("InstanceProfileName");
-  const findId = get("Arn");
+  const findName = get("live.InstanceProfileName");
+  const findId = get("live.Arn");
 
   const findDependencies = ({ live }) => [
     {
@@ -116,7 +116,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   const getById = pipe([
     tap(({ id }) => {
@@ -184,7 +184,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html#deleteInstanceProfile-property
   const destroy = async ({ live }) =>
     pipe([
-      () => findName(live),
+      () => findName({ live }),
       (InstanceProfileName) =>
         pipe([
           tap(() => {

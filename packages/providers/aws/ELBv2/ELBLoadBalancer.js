@@ -26,8 +26,8 @@ const {
   shouldRetryOnException,
 } = require("../AwsCommon");
 
-const findName = get("LoadBalancerName");
-const findId = get("LoadBalancerArn");
+const findName = get("live.LoadBalancerName");
+const findId = get("live.LoadBalancerArn");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 
@@ -51,7 +51,6 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
       type: "NetworkInterface",
       ids: pipe([
         () => lives.getByType({ type: "NetworkInterface", providerName }),
-        get("resources", []),
         filter(
           pipe([
             get("live.Description"),
@@ -170,7 +169,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#deleteLoadBalancer-property
   const destroy = async ({ live }) =>
     pipe([
-      () => ({ id: findId(live), name: findName(live) }),
+      () => ({ id: findId({ live }), name: findName({ live }) }),
       ({ id, name }) =>
         pipe([
           tap(() => {

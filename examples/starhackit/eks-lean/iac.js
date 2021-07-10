@@ -108,26 +108,24 @@ const createAwsStack = async ({ stage }) => {
     },
     properties: async ({ dependencies: { securityGroupLoadBalancer } }) => ({
       GroupId: await findGroupIdFromSecurityGroup({ securityGroupEKSCluster }),
-      IpPermissions: [
-        {
-          FromPort: 1025,
-          IpProtocol: "tcp",
-          IpRanges: [
-            {
-              CidrIp: "0.0.0.0/0",
-            },
-          ],
-          Ipv6Ranges: [
-            {
-              CidrIpv6: "::/0",
-            },
-          ],
-          UserIdGroupPairs: [
-            { GroupId: get("live.GroupId")(securityGroupLoadBalancer) },
-          ],
-          ToPort: 65535,
-        },
-      ],
+      IpPermission: {
+        FromPort: 1025,
+        IpProtocol: "tcp",
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+        UserIdGroupPairs: [
+          { GroupId: get("live.GroupId")(securityGroupLoadBalancer) },
+        ],
+        ToPort: 65535,
+      },
     }),
   });
 

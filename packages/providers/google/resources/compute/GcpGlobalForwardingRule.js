@@ -40,7 +40,6 @@ exports.GcpGlobalForwardingRule = ({ spec, config }) => {
         (target) => [
           pipe([
             () => lives.getByType({ type: "HttpsTargetProxy", providerName }),
-            get("resources", []),
             find(eq(get("live.selfLink"), target)),
             get("id"),
           ])(),

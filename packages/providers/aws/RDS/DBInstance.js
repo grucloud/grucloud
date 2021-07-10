@@ -31,7 +31,7 @@ const {
 
 const omitParams = ["Engine", "MasterUsername", "Tags"];
 
-const findId = get("DBInstanceIdentifier");
+const findId = get("live.DBInstanceIdentifier");
 const findName = findId;
 
 exports.DBInstance = ({ spec, config }) => {
@@ -68,7 +68,7 @@ exports.DBInstance = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   const getById = ({ id }) =>
     pipe([
@@ -144,7 +144,7 @@ exports.DBInstance = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#deleteDBInstance-property
   const destroy = async ({ live }) =>
     pipe([
-      () => ({ id: findId(live) }),
+      () => ({ id: findId({ live }) }),
       ({ id }) =>
         pipe([
           tap(() => {

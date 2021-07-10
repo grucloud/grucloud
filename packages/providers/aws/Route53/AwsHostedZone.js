@@ -51,8 +51,8 @@ const {
 const { filterEmptyResourceRecords } = require("./Route53Utils");
 
 //Check for the final dot
-const findName = get("Name");
-const findId = get("Id");
+const findName = get("live.Name");
+const findId = get("live.Id");
 
 const canDeleteRecord = (zoneName) =>
   not(
@@ -92,7 +92,6 @@ exports.AwsHostedZone = ({ spec, config }) => {
           logger.debug(``);
         }),
         () => lives.getByType({ type: "HostedZone", providerName }),
-        get("resources"),
         tap((xxx) => {
           logger.debug(``);
         }),
@@ -169,7 +168,7 @@ exports.AwsHostedZone = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#getHostedZone-property
   const getById = pipe([

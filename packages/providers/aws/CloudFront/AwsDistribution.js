@@ -46,7 +46,7 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 //TODO look in spec.type instead
 const RESOURCE_TYPE = "Distribution";
 const findName = findNameInTags;
-const findId = get("Id");
+const findId = get("live.Id");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html
 exports.AwsDistribution = ({ spec, config }) => {
@@ -117,7 +117,7 @@ exports.AwsDistribution = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/CloudFront.html#getDistribution-property
   const getById = pipe([
@@ -363,7 +363,6 @@ exports.AwsDistribution = ({ spec, config }) => {
           providerName: config.providerName,
           type: RESOURCE_TYPE,
         }),
-      get("resources", []),
       tap((distributions) => {
         logger.info(`onDeployed ${tos({ distributions })}`);
       }),

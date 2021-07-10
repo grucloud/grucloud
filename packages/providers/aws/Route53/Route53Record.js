@@ -35,12 +35,13 @@ const { filterEmptyResourceRecords } = require("./Route53Utils");
 const omitFieldRecord = omit(["Tags", "hostedZoneId", "namespace"]);
 
 const liveToResourceSet = pipe([omitFieldRecord, filterEmptyResourceRecords]);
-const RecordKeyPrefix = "gc::record-";
+const RecordKeyPrefix = "gc-record-";
 const buildRecordTagKey = (name) => `${RecordKeyPrefix}${name}`;
 const getNameFromTagKey = (key = "") => key.replace(RecordKeyPrefix, "");
 const buildRecordTagValue = ({ Name, Type }) => `${Name}::${Type}`;
 
 const findName = pipe([
+  get("live"),
   tap((live) => {
     logger.debug(`findName live ${tos(live)}`);
     assert(live.Name);
@@ -58,7 +59,7 @@ const findName = pipe([
   }),
 ]);
 
-const findId = ({ Name, Type }) => `${Type}::${Name}`;
+const findId = pipe([get("live"), ({ Name, Type }) => `${Type}::${Name}`]);
 
 const getHostedZone = ({ name, dependencies = {} }) =>
   pipe([

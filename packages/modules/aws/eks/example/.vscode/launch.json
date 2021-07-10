@@ -9,7 +9,7 @@
       "runtimeArgs": ["graph"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/example",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
@@ -20,7 +20,7 @@
       "runtimeArgs": ["list", "-g"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/example",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
@@ -31,7 +31,7 @@
       "runtimeArgs": ["plan"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/example",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
@@ -42,7 +42,7 @@
       "runtimeArgs": ["apply", "-f"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/example",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
@@ -53,7 +53,7 @@
       "runtimeArgs": ["run", "--onDeployed"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/example",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
@@ -64,7 +64,7 @@
       "runtimeArgs": ["run", "--onDestroyed"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/example",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
@@ -75,7 +75,7 @@
       "runtimeArgs": ["destroy", "-f"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/example",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
@@ -86,7 +86,7 @@
       "runtimeArgs": ["info"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
-      "cwd": "${workspaceRoot}/example",
+      "cwd": "${workspaceRoot}",
       "port": 9229
     }
   ]

@@ -35,7 +35,6 @@ exports.GcpBackendBucket = ({ spec, config }) => {
         (bucketName) => [
           pipe([
             () => lives.getByType({ type: "Bucket", providerName }),
-            get("resources", []),
             find(eq(get("live.name"), bucketName)),
             get("id"),
           ])(),

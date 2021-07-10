@@ -20,7 +20,7 @@ const {
   pluck,
   flatten,
   isEmpty,
-  includes,
+  identity,
 } = require("rubico/x");
 const {
   Ec2New,
@@ -42,22 +42,48 @@ const logger = require("@grucloud/core/logger")({ prefix: "AwsSecurityGroup" });
 const { tos } = require("@grucloud/core/tos");
 
 exports.AwsSecurityGroup = ({ spec, config }) => {
-  const { managedByDescription } = config;
+  const { managedByDescription, providerName } = config;
   assert(managedByDescription);
+  assert(providerName);
 
   const ec2 = Ec2New(config);
 
-  const findName = get("GroupName");
-  const findId = get("GroupId");
+  const findName = ({ live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(lives);
+      }),
+      () => live,
+      get("GroupName"),
+      switchCase([
+        eq(identity, "default"),
+        pipe([
+          () => lives.getByType({ type: "Vpc", providerName }),
+          find(eq(get("live.VpcId"), live.VpcId)),
+          tap((vpc) => {
+            //assert(vpc);
+          }),
+          get("name"),
+          tap((vpcName) => {
+            //assert(vpcName);
+          }),
+          (vpcName) => `sg-default-${vpcName}`,
+          tap((xxx) => {
+            assert(true);
+          }),
+        ]),
+        identity,
+      ]),
+    ])();
+
+  const findId = get("live.GroupId");
   const findDependencies = ({ live }) => [
     { type: "Vpc", ids: [live.VpcId] },
     {
       type: "SecurityGroup",
       ids: pipe([
         () => live,
-        get("IpPermissions"),
-        pluck("UserIdGroupPairs"),
-        flatten,
+        get("IpPermission.UserIdGroupPairs"),
         pluck("GroupId"),
       ])(),
     },
@@ -101,7 +127,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
   const getById = getByIdCore({ fieldIds: "GroupIds", getList });
 
   const isUpById = isUpByIdCore({ getById });
@@ -160,7 +186,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       tap((GroupId) => {
         logger.info(`created sg ${tos({ name, GroupId })}`);
       }),
-      (GroupId) => ({ id: GroupId }),
+      (id) => ({ id }),
     ])();
 
   const revokeIngressRules = (live) =>
@@ -182,9 +208,12 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       ),
     ])();
 
-  const destroy = async ({ live }) =>
+  const destroy = async ({ live, lives }) =>
     pipe([
-      () => ({ name: findName(live), GroupId: findId(live) }),
+      () => ({
+        name: findName({ live, lives }),
+        GroupId: findId({ live, lives }),
+      }),
       ({ name, GroupId }) =>
         pipe([
           tap(() => {

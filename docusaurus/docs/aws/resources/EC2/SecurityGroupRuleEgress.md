@@ -34,23 +34,21 @@ const sgRuleEgress = provider.ec2.makeSecurityGroupRuleEgress({
     securityGroup: sg,
   },
   properties: () => ({
-    IpPermissions: [
-      {
-        FromPort: 1024,
-        IpProtocol: "tcp",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        Ipv6Ranges: [
-          {
-            CidrIpv6: "::/0",
-          },
-        ],
-        ToPort: 65535,
-      },
-    ],
+    IpPermission: {
+      FromPort: 1024,
+      IpProtocol: "tcp",
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
+      Ipv6Ranges: [
+        {
+          CidrIpv6: "::/0",
+        },
+      ],
+      ToPort: 65535,
+    },
   }),
 });
 ```

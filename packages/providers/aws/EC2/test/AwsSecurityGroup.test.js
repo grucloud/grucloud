@@ -53,93 +53,41 @@ describe("AwsSecurityGroup", async function () {
       name: "sg-rule-ingress-port-22",
       dependencies: { securityGroup: sg },
       properties: () => ({
-        IpPermissions: [
-          {
-            FromPort: 22,
-            IpProtocol: "tcp",
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-            Ipv6Ranges: [
-              {
-                CidrIpv6: "::/0",
-              },
-            ],
-            ToPort: 22,
-          },
-        ],
+        IpPermission: {
+          FromPort: 22,
+          IpProtocol: "tcp",
+          IpRanges: [
+            {
+              CidrIp: "0.0.0.0/0",
+            },
+          ],
+          Ipv6Ranges: [
+            {
+              CidrIpv6: "::/0",
+            },
+          ],
+          ToPort: 22,
+        },
       }),
     });
     sgRuleEgress = provider.ec2.makeSecurityGroupRuleEgress({
       name: "sg-rule-egress-all",
       dependencies: { securityGroup: sg },
       properties: () => ({
-        IpPermissions: [
-          {
-            FromPort: 1024,
-            IpProtocol: "tcp",
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-            Ipv6Ranges: [
-              {
-                CidrIpv6: "::/0",
-              },
-            ],
-            ToPort: 65535,
-          },
-        ],
-      }),
-    });
-
-    const securityGroupNodes = provider.ec2.makeSecurityGroup({
-      name: "security-group-nodes-test",
-      dependencies: { vpc, securityGroup: sg },
-      properties: ({ dependencies: { securityGroup } }) => ({
-        Tags: [{ Key: `kubernetes.io/cluster/${clusterName}`, Value: "owned" }],
-        //https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createSecurityGroup-property
-        create: {
-          Description: "SG for the EKS Nodes",
-        },
-        // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#authorizeSecurityGroupIngress-property
-        ingress: {
-          IpPermissions: [
+        IpPermission: {
+          FromPort: 1024,
+          IpProtocol: "tcp",
+          IpRanges: [
             {
-              FromPort: 0,
-              IpProtocol: "-1",
-              IpRanges: [
-                {
-                  CidrIp: "0.0.0.0/0",
-                },
-              ],
-              Ipv6Ranges: [
-                {
-                  CidrIpv6: "::/0",
-                },
-              ],
-              ToPort: 65535,
-            },
-            {
-              FromPort: 1025,
-              IpProtocol: "tcp",
-              IpRanges: [
-                {
-                  CidrIp: "0.0.0.0/0",
-                },
-              ],
-              Ipv6Ranges: [
-                {
-                  CidrIpv6: "::/0",
-                },
-              ],
-              UserIdGroupPairs: [{ GroupId: securityGroup.live?.GroupId }],
-              ToPort: 65535,
+              CidrIp: "0.0.0.0/0",
             },
           ],
+          Ipv6Ranges: [
+            {
+              CidrIpv6: "::/0",
+            },
+          ],
+          ToPort: 65535,
         },
       }),
     });
@@ -181,27 +129,8 @@ describe("AwsSecurityGroup", async function () {
 
     await testPlanDestroy({ provider, types });
   });
-  it.skip("sg resolveConfig", async function () {
-    const config = await sg.resolveConfig();
-    assert.equal(config.ingress.IpPermissions[0].FromPort, 22);
-  });
   it("sg apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
-
-    const sgLive = await sg.getLive();
-    const vpcLive = await vpc.getLive();
-    assert.equal(sgLive.IpPermissions.length, 1);
-    assert.equal(sgLive.IpPermissionsEgress.length, 2);
-    assert.equal(sgLive.VpcId, vpcLive.VpcId);
-    assert(find(eq(get("Key"), k8sSecurityGroupTagKey))(sgLive.Tags));
-
-    assert(
-      CheckAwsTags({
-        config: provider.config,
-        tags: sgLive.Tags,
-        name: sg.name,
-      })
-    );
 
     await testPlanDestroy({ provider, types });
   });

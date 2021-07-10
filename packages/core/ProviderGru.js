@@ -182,12 +182,13 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
         tap.if(isEmpty, () => {
           logger.error(`cannot find type ${type} on provider ${providerName}`);
         }),
-        tap((results) => {
+        get("resources", []),
+        tap((resources) => {
           logger.debug(
             `getByType ${JSON.stringify({
               providerName,
               type,
-              count: pipe([get("resources"), size])(results),
+              count: size(resources),
             })}`
           );
         }),
@@ -199,7 +200,6 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
         tap.if(isEmpty, () => {
           logger.error(`cannot find type ${type} on provider ${providerName}`);
         }),
-        get("resources"),
         find(eq(get("id"), id)),
         tap((result) => {
           assert(true);
@@ -211,7 +211,6 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
         tap.if(isEmpty, () => {
           logger.error(`cannot find type ${type} on provider ${providerName}`);
         }),
-        get("resources"),
         find(eq(get("name"), name)),
         tap((result) => {
           assert(true);
@@ -333,6 +332,7 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
                   resource: provider.getResourceFromLive({
                     client,
                     live: resource.live,
+                    lives,
                   }),
                   live: resource.live,
                   lives,

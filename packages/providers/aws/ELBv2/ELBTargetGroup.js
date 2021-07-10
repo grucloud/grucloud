@@ -26,8 +26,9 @@ const {
   findNamespaceInTagsOrEksCluster,
   shouldRetryOnException,
 } = require("../AwsCommon");
-const findName = get("TargetGroupName");
-const findId = get("TargetGroupArn");
+
+const findName = get("live.TargetGroupName");
+const findId = get("live.TargetGroupArn");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 
@@ -85,7 +86,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
       }),
       () => elb().describeTargetGroups({}),
       get("TargetGroups"),
-      find(eq(findName, name)),
+      find(eq((live) => findName({ live }), name)),
       tap((result) => {
         logger.debug(`getByName ${name}, result: ${tos(result)}`);
       }),
@@ -218,7 +219,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#deleteTargetGroup-property
   const destroy = async ({ live }) =>
     pipe([
-      () => ({ id: findId(live), name: findName(live) }),
+      () => ({ id: findId({ live }), name: findName({ live }) }),
       ({ id, name }) =>
         pipe([
           tap(() => {

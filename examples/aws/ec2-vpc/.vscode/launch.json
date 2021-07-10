@@ -17,7 +17,11 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
-      "runtimeArgs": ["list", "-g"],
+      "runtimeArgs": [
+        "list",
+        "--json",
+        "../../../packages/tools/openstack2gcp/aws/ec2/inventory.json"
+      ],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}/",

@@ -34,12 +34,10 @@ module.exports = CoreClient = ({
     name,
     ...properties,
   }),
-  findName = get("name"),
-  findId = (item) => {
-    return item.id;
-  },
-  findTargetId = (item) => item.id,
-  onResponseGet = ({ data }) => data,
+  findName = get("live.name"),
+  findId = get("live.id"),
+  findTargetId = get("id"),
+  onResponseGet = get("data"),
   onResponseList = identity,
   onResponseCreate = identity,
   onResponseDelete = identity,
@@ -51,9 +49,6 @@ module.exports = CoreClient = ({
   assert(spec);
   assert(type);
   assert(config, "config");
-
-  const getByName = ({ provider, name }) =>
-    getByNameCore({ provider, name, getList, findName });
 
   const getById = async ({ name, id }) =>
     tryCatch(
@@ -121,6 +116,7 @@ module.exports = CoreClient = ({
     }
   );
 
+  const getByName = getByNameCore({ getList, findName });
   const isUpById = isUpByIdFactory({ getById, getList, findId });
   const isDownById = isDownByIdFactory({ getById, getList, findId });
 

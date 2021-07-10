@@ -28,7 +28,7 @@ const {
   shouldRetryOnException,
 } = require("../AwsCommon");
 
-const findId = get("DBClusterIdentifier");
+const findId = get("live.DBClusterIdentifier");
 const findName = findId;
 
 exports.DBCluster = ({ spec, config }) => {
@@ -61,7 +61,7 @@ exports.DBCluster = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   const getById = ({ id }) =>
     pipe([
@@ -130,7 +130,7 @@ exports.DBCluster = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#deleteDBCluster-property
   const destroy = async ({ live }) =>
     pipe([
-      () => ({ id: findId(live) }),
+      () => ({ id: findId({ live }) }),
       ({ id }) =>
         pipe([
           tap(() => {

@@ -22,9 +22,9 @@ const {
 exports.AwsNatGateway = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
-  const findId = get("NatGatewayId");
+  const findId = get("live.NatGatewayId");
 
-  const findName = (item) => findNameInTagsOrId({ item, findId });
+  const findName = findNameInTagsOrId({ findId });
 
   const findDependencies = ({ live, lives }) => [
     { type: "Vpc", ids: [live.VpcId] },
@@ -57,7 +57,6 @@ exports.AwsNatGateway = ({ spec, config }) => {
                   type: "ElasticIpAddress",
                   providerName: config.providerName,
                 }),
-              get("resources"),
               find(eq(get("live.AllocationId"), AllocationId)),
               tap((eips) => {
                 logger.debug(eips);
@@ -93,7 +92,7 @@ exports.AwsNatGateway = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
   const getById = getByIdCore({ fieldIds: "NatGatewayIds", getList });
 
   const isUpById = isUpByIdCore({

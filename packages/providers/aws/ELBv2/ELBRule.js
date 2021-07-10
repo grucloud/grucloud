@@ -35,13 +35,13 @@ const {
   findNameInTagsOrId,
 } = require("../AwsCommon");
 
-const findId = get("RuleArn");
-const findName = (item) =>
-  switchCase([
-    get("IsDefault"),
-    () => "default",
-    () => findNameInTagsOrId({ item, findId }),
-  ])(item);
+const findId = get("live.RuleArn");
+
+const findName = switchCase([
+  get("live.IsDefault"),
+  () => "default",
+  findNameInTagsOrId({ findId }),
+]);
 
 const { ELBListener } = require("./ELBListener");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
@@ -150,7 +150,7 @@ exports.ELBRule = ({ spec, config }) => {
         logger.info(`getByName ${name}`);
       }),
       describeAllRules,
-      find(eq(findName, name)),
+      find(eq((live) => findName({ live }), name)),
       tap((result) => {
         logger.debug(`getByName ${name}, result: ${tos(result)}`);
       }),
@@ -208,7 +208,7 @@ exports.ELBRule = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#deleteRule-property
   const destroy = async ({ live }) =>
     pipe([
-      () => ({ id: findId(live), name: findName(live) }),
+      () => ({ id: findId({ live }), name: findName({ live }) }),
       ({ id, name }) =>
         pipe([
           tap(() => {

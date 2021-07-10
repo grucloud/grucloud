@@ -25,7 +25,7 @@ const { Ec2New, shouldRetryOnException } = require("../AwsCommon");
 exports.AwsRoute = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
-  const findId = get("name");
+  const findId = get("live.name");
   const findName = findId;
 
   const findDependencies = ({ live }) => [
@@ -116,8 +116,7 @@ exports.AwsRoute = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name, lives, resources }) =>
-    getByNameCore({ name, getList, findName, lives, resources });
+  const getByName = getByNameCore({ getList, findName });
 
   const createRouteInternetGateway = ({ ig, RouteTableId, payload }) =>
     switchCase([

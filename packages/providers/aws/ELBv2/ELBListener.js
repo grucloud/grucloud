@@ -28,8 +28,8 @@ const {
   shouldRetryOnException,
 } = require("../AwsCommon");
 
-const findId = get("ListenerArn");
-const findName = (item) => findNameInTagsOrId({ item, findId });
+const findId = get("live.ListenerArn");
+const findName = findNameInTagsOrId({ findId });
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 
@@ -124,7 +124,7 @@ exports.ELBListener = ({ spec, config }) => {
         logger.info(`getByName ${name}`);
       }),
       describeAllListeners,
-      find(eq(findName, name)),
+      find(eq((live) => findName({ live }), name)),
       tap((result) => {
         logger.debug(`getByName ${name}, result: ${tos(result)}`);
       }),
@@ -184,7 +184,7 @@ exports.ELBListener = ({ spec, config }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#deleteListener-property
   const destroy = async ({ live }) =>
     pipe([
-      () => ({ id: findId(live), name: findName(live) }),
+      () => ({ id: findId({ live }), name: findName({ live }) }),
       ({ id, name }) =>
         pipe([
           tap(() => {

@@ -3,29 +3,120 @@ const assert = require("assert");
 const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = async ({ provider }) => {
-  const { stage } = provider.config;
+  const { config } = provider;
+
+  const vpcDefault = provider.ec2.useVpc({
+    name: config.vpcDefault.name,
+    properties: () => config.vpcDefault.properties,
+  });
 
   const vpcEc2Example = provider.ec2.makeVpc({
-    name: "vpc-ec2-example",
-    properties: () => ({
-      CidrBlock: "10.1.0.0/16",
-      DnsSupport: true,
-      DnsHostnames: false,
-    }),
+    name: config.vpcEc2Example.name,
+    properties: () => config.vpcEc2Example.properties,
   });
 
   const subnet = provider.ec2.makeSubnet({
-    name: "subnet",
-    dependencies: { vpc: vpcEc2Example },
-    attributes: () => ({}),
-    properties: () => ({
-      CidrBlock: "10.1.0.0/24",
-    }),
+    name: config.subnet.name,
+    dependencies: {
+      vpc: vpcEc2Example,
+    },
+    properties: () => config.subnet.properties,
+  });
+
+  const kp = provider.ec2.useKeyPair({
+    name: config.kp.name,
+  });
+
+  const volume = provider.ec2.makeVolume({
+    name: config.volume.name,
+    properties: () => config.volume.properties,
+  });
+
+  const myip = provider.ec2.makeElasticIpAddress({
+    name: config.myip.name,
+  });
+
+  const securityGroup = provider.ec2.makeSecurityGroup({
+    name: config.securityGroup.name,
+    dependencies: {
+      vpc: vpcEc2Example,
+    },
+    properties: () => config.securityGroup.properties,
+  });
+
+  const sgDefaultVpcEc2Example = provider.ec2.useSecurityGroup({
+    name: config.sgDefaultVpcEc2Example.name,
+    dependencies: {
+      vpc: vpcEc2Example,
+    },
+    properties: () => config.sgDefaultVpcEc2Example.properties,
+  });
+
+  const sgDefaultVpcDefault = provider.ec2.useSecurityGroup({
+    name: config.sgDefaultVpcDefault.name,
+    dependencies: {
+      vpc: vpcDefault,
+    },
+    properties: () => config.sgDefaultVpcDefault.properties,
+  });
+
+  const sgRuleIngressSsh = provider.ec2.makeSecurityGroupRuleIngress({
+    name: config.sgRuleIngressSsh.name,
+    dependencies: {
+      securityGroup: securityGroup,
+    },
+    properties: () => config.sgRuleIngressSsh.properties,
+  });
+
+  const sgRuleIngressIcmp = provider.ec2.makeSecurityGroupRuleIngress({
+    name: config.sgRuleIngressIcmp.name,
+    dependencies: {
+      securityGroup: securityGroup,
+    },
+    properties: () => config.sgRuleIngressIcmp.properties,
+  });
+
+  const webServerEc2Vpc = provider.ec2.makeInstance({
+    name: config.webServerEc2Vpc.name,
+    dependencies: {
+      subnet: subnet,
+      keyPair: kp,
+      eip: myip,
+      securityGroups: [securityGroup],
+      volumes: [volume],
+    },
+    properties: () => config.webServerEc2Vpc.properties,
+  });
+
+  const igw_041e0d42bb3b4149c = provider.ec2.useInternetGateway({
+    name: config.igw_041e0d42bb3b4149c.name,
+    dependencies: {
+      vpc: vpcDefault,
+    },
+  });
+
+  const ig = provider.ec2.makeInternetGateway({
+    name: config.ig.name,
+    dependencies: {
+      vpc: vpcEc2Example,
+    },
   });
 
   return {
+    vpcDefault,
     vpcEc2Example,
     subnet,
+    kp,
+    volume,
+    myip,
+    securityGroup,
+    sgDefaultVpcEc2Example,
+    sgDefaultVpcDefault,
+    sgRuleIngressSsh,
+    sgRuleIngressIcmp,
+    webServerEc2Vpc,
+    igw_041e0d42bb3b4149c,
+    ig,
   };
 };
 

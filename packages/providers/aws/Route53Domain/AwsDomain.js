@@ -22,7 +22,7 @@ const logger = require("@grucloud/core/logger")({ prefix: "Domain" });
 const { tos } = require("@grucloud/core/tos");
 const { isUpByIdCore } = require("@grucloud/core/Common");
 const { Route53DomainsNew } = require("../AwsCommon");
-const findName = get("DomainName");
+const findName = get("live.DomainName");
 const findId = findName;
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html

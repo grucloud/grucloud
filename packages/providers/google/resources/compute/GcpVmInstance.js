@@ -69,7 +69,6 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
         map((network) =>
           pipe([
             () => lives.getByType({ type: "Network", providerName }),
-            get("resources", []),
             find(eq(get("live.selfLink"), network)),
             get("id"),
           ])()
@@ -85,7 +84,6 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
         map((network) =>
           pipe([
             () => lives.getByType({ type: "SubNetwork", providerName }),
-            get("resources", []),
             find(eq(get("live.selfLink"), network)),
             get("id"),
           ])()
@@ -101,7 +99,6 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
         map((source) =>
           pipe([
             () => lives.getByType({ type: "Disk", providerName }),
-            get("resources", []),
             find(eq(get("live.selfLink"), source)),
             get("id"),
           ])()

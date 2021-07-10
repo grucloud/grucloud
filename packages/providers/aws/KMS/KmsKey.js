@@ -23,15 +23,15 @@ const { getByNameCore, isUpByIdCore } = require("@grucloud/core/Common");
 const { KmsNew, buildTags, shouldRetryOnException } = require("../AwsCommon");
 const { configProviderDefault } = require("@grucloud/core/Common");
 
-const findId = get("Arn");
+const findId = get("live.Arn");
 
 const findNameInTags = pipe([
-  get("Tags"),
+  get("live.Tags"),
   find(eq(get("TagKey"), configProviderDefault.nameKey)),
   get("TagValue"),
 ]);
 
-const findNames = [findNameInTags, get("Alias"), findId];
+const findNames = [findNameInTags, get("live.Alias"), findId];
 
 const findName = (item) =>
   pipe([() => findNames, map((fn) => fn(item)), find(not(isEmpty))])();
@@ -91,7 +91,7 @@ exports.KmsKey = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) => getByNameCore({ name, getList, findName });
+  const getByName = getByNameCore({ getList, findName });
 
   const getById = ({ id }) =>
     pipe([
@@ -106,7 +106,8 @@ exports.KmsKey = ({ spec, config }) => {
       }),
     ])();
 
-  const isInstanceUp = not(isEmpty);
+  const isInstanceUp = eq(get("Enabled"), true);
+
   const isUpById = isUpByIdCore({ isInstanceUp, getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/KMS.html#createKey-property
@@ -135,7 +136,7 @@ exports.KmsKey = ({ spec, config }) => {
   const update = async ({ name, payload, diff, live }) =>
     pipe([
       tap(() => {
-        logger.info(`update: ${name}`);
+        logger.info(`key update: ${name}`);
         logger.debug(tos({ payload, diff, live }));
       }),
       () => live,
@@ -145,16 +146,25 @@ exports.KmsKey = ({ spec, config }) => {
       ),
       tap.if(
         eq(get("Enabled"), false),
-        pipe([() => kms().enableKey({ KeyId: live.KeyId })])
+        pipe([
+          tap(() => kms().enableKey({ KeyId: live.KeyId })),
+          tap(({ KeyId }) =>
+            retryCall({
+              name: `key isUpById: ${name} id: ${KeyId}`,
+              fn: () => isUpById({ name, id: KeyId }),
+              config,
+            })
+          ),
+        ])
       ),
       tap(() => {
-        logger.info(`updated`);
+        logger.info(`key updated: ${name}`);
       }),
     ])();
 
   const destroy = async ({ live }) =>
     pipe([
-      () => ({ id: findId(live), name: findName(live) }),
+      () => ({ id: findId({ live }), name: findName({ live }) }),
       ({ id, name }) =>
         pipe([
           tap(() => {

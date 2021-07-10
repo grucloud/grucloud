@@ -32,7 +32,7 @@ const {
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const findId = get("FunctionName");
+const findId = get("live.FunctionName");
 const findName = findId;
 
 exports.Function = ({ spec, config }) => {
@@ -129,7 +129,7 @@ exports.Function = ({ spec, config }) => {
 
   const destroy = async ({ live }) =>
     pipe([
-      () => ({ id: findId(live) }),
+      () => ({ id: findId({ live }) }),
       ({ id }) =>
         pipe([
           tap(() => {
