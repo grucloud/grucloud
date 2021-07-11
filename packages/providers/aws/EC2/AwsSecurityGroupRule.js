@@ -472,46 +472,41 @@ const SecurityGroupRuleBase = ({ config }) => {
           logger.info(`destroy sg rule ${kind} ${name}`);
           logger.debug(`${kind} ${name}: ${JSON.stringify(live)}`);
         }),
-        () =>
-          pipe([
-            () => live.IpPermission,
-            omit([
-              "IpRanges",
-              "Ipv6Ranges",
-              "PrefixListIds",
-              "UserIdGroupPairs",
-            ]),
-            (IpPermission) => ({
-              GroupId: live.GroupId,
-              IpPermissions: [IpPermission],
-            }),
-            tap((params) => {
-              assert(true);
-            }),
-            //TODO pass revokeSecurityGroupIngress or revokeSecurityGroupEgress from param
-            tryCatch(
-              switchCase([
-                eq(kind, "ingress"),
-                (params) => ec2().revokeSecurityGroupIngress(params),
-                eq(kind, "egress"),
-                (params) => ec2().revokeSecurityGroupEgress(params),
-                () => {
-                  assert(`invalid kind: '${kind}'`);
-                },
-              ]),
-              (error, params) =>
-                tap.if(
-                  not(eq(get("code"), "InvalidPermission.NotFound")),
-                  (error) => {
-                    logger.error(
-                      `destroy sg rule error ${tos({ error, params })}`
-                    );
-                    throw { error, params };
-                  }
-                )(error)
-            ),
-            () => removeTags({ name, GroupId: live.GroupId }),
-          ])(),
+        () => live.IpPermission,
+        omit(["PrefixListIds", "UserIdGroupPairs"]),
+        (IpPermission) => ({
+          GroupId: live.GroupId,
+          IpPermissions: [IpPermission],
+        }),
+        tap((params) => {
+          assert(true);
+        }),
+        //TODO pass revokeSecurityGroupIngress or revokeSecurityGroupEgress from param
+        tryCatch(
+          switchCase([
+            eq(kind, "ingress"),
+            (params) => ec2().revokeSecurityGroupIngress(params),
+            eq(kind, "egress"),
+            (params) => ec2().revokeSecurityGroupEgress(params),
+            () => {
+              assert(`invalid kind: '${kind}'`);
+            },
+          ]),
+          (error, params) =>
+            pipe([
+              () => error,
+              tap((params) => {
+                logger.error(`destroy sg rule error ${tos({ error, params })}`);
+              }),
+              () => {
+                throw { error, params };
+              },
+            ])()
+        ),
+        tap((params) => {
+          assert(true);
+        }),
+        () => removeTags({ name, GroupId: live.GroupId }),
         tap(() => {
           logger.debug(`destroyed sg rule ${JSON.stringify({ kind, name })}`);
         }),
