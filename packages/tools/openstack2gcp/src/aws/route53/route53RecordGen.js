@@ -19,34 +19,37 @@ const writeRecord = ({ resource, lives }) =>
       assert(true);
     }),
     () => resource,
-    //switchCase([get("cannotBeDeleted")]),
-    pipe([
-      fork({
-        resourceVarName: () => ResourceVarName(resource.name),
-        propertyList: () => buildPropertyList({ resource, pickProperties }),
-      }),
-      ({ resourceVarName, propertyList }) => ({
-        resourceVarName,
-        config: configTpl({
-          resourceVarName,
-          resource,
-          propertyList,
+    switchCase([
+      not(get("cannotBeDeleted")),
+      pipe([
+        fork({
+          resourceVarName: () => ResourceVarName(resource.name),
+          propertyList: () => buildPropertyList({ resource, pickProperties }),
         }),
-        code: codeTpl({
-          group: "route53",
-          type: "Record",
-          resource,
+        ({ resourceVarName, propertyList }) => ({
           resourceVarName,
-          propertyList,
-          dependencies: {
-            hostedZone: findDependencyNames({
-              type: "HostedZone",
-              resource,
-              lives,
-            }),
-          },
+          config: configTpl({
+            resourceVarName,
+            resource,
+            propertyList,
+          }),
+          code: codeTpl({
+            group: "route53",
+            type: "Record",
+            resource,
+            resourceVarName,
+            propertyList,
+            dependencies: {
+              hostedZone: findDependencyNames({
+                type: "HostedZone",
+                resource,
+                lives,
+              }),
+            },
+          }),
         }),
-      }),
+      ]),
+      () => undefined,
     ]),
   ])();
 

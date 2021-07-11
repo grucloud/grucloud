@@ -1,5 +1,6 @@
 ## Bugs
 
+- gc l -t Record is broken, it does not fetch the dependencies
 - gc a: when an assert is thrown, it does not exit but ask for deployment confirmation.
 - check stage for all providers
 

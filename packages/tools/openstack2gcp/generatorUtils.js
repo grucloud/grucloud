@@ -294,11 +294,7 @@ exports.writeResources =
           tap((params) => {
             assert(true);
           }),
-          switchCase([
-            not(get("cannotBeDeleted")),
-            (resource) => writeResource({ resource, lives, mapping }),
-            () => undefined,
-          ]),
+          (resource) => writeResource({ resource, lives, mapping }),
         ])
       ),
     ])();
