@@ -2,7 +2,7 @@
 const assert = require("assert");
 exports.createResources = async ({ provider, resources }) => {
   const monitoringmainAlertmanager = provider.makeAlertmanager({
-    name: "monitoring-main",
+    name: "main",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -51,9 +51,9 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const monitoringalertmanagerMainPodDisruptionBudget =
-    provider.makePodDisruptionBudget({
-      name: "monitoring-alertmanager-main",
+  const monitoringalertmanagerMainPodDisruptionBudget = provider.makePodDisruptionBudget(
+    {
+      name: "alertmanager-main",
       properties: () => ({
         apiVersion: "policy/v1beta1",
         metadata: {
@@ -78,11 +78,12 @@ exports.createResources = async ({ provider, resources }) => {
           },
         },
       }),
-    });
+    }
+  );
 
-  const monitoringalertmanagerMainRulesPrometheusRule =
-    provider.makePrometheusRule({
-      name: "monitoring-alertmanager-main-rules",
+  const monitoringalertmanagerMainRulesPrometheusRule = provider.makePrometheusRule(
+    {
+      name: "alertmanager-main-rules",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -112,7 +113,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Reloading an Alertmanager configuration has failed.",
                   },
-                  expr: '# Without max_over_time, failed scrapes could create false negatives, see\n# https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.\nmax_over_time(alertmanager_config_last_reload_successful{job="alertmanager-main",namespace="monitoring"}[5m]) == 0\n',
+                  expr:
+                    '# Without max_over_time, failed scrapes could create false negatives, see\n# https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.\nmax_over_time(alertmanager_config_last_reload_successful{job="alertmanager-main",namespace="monitoring"}[5m]) == 0\n',
                   for: "10m",
                   labels: {
                     severity: "critical",
@@ -128,7 +130,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "A member of an Alertmanager cluster has not found all other cluster members.",
                   },
-                  expr: '# Without max_over_time, failed scrapes could create false negatives, see\n# https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.\n  max_over_time(alertmanager_cluster_members{job="alertmanager-main",namespace="monitoring"}[5m])\n< on (namespace,service) group_left\n  count by (namespace,service) (max_over_time(alertmanager_cluster_members{job="alertmanager-main",namespace="monitoring"}[5m]))\n',
+                  expr:
+                    '# Without max_over_time, failed scrapes could create false negatives, see\n# https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.\n  max_over_time(alertmanager_cluster_members{job="alertmanager-main",namespace="monitoring"}[5m])\n< on (namespace,service) group_left\n  count by (namespace,service) (max_over_time(alertmanager_cluster_members{job="alertmanager-main",namespace="monitoring"}[5m]))\n',
                   for: "10m",
                   labels: {
                     severity: "critical",
@@ -144,7 +147,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "An Alertmanager instance failed to send notifications.",
                   },
-                  expr: '(\n  rate(alertmanager_notifications_failed_total{job="alertmanager-main",namespace="monitoring"}[5m])\n/\n  rate(alertmanager_notifications_total{job="alertmanager-main",namespace="monitoring"}[5m])\n)\n> 0.01\n',
+                  expr:
+                    '(\n  rate(alertmanager_notifications_failed_total{job="alertmanager-main",namespace="monitoring"}[5m])\n/\n  rate(alertmanager_notifications_total{job="alertmanager-main",namespace="monitoring"}[5m])\n)\n> 0.01\n',
                   for: "5m",
                   labels: {
                     severity: "warning",
@@ -160,7 +164,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "All Alertmanager instances in a cluster failed to send notifications to a critical integration.",
                   },
-                  expr: 'min by (namespace,service, integration) (\n  rate(alertmanager_notifications_failed_total{job="alertmanager-main",namespace="monitoring", integration=~`.*`}[5m])\n/\n  rate(alertmanager_notifications_total{job="alertmanager-main",namespace="monitoring", integration=~`.*`}[5m])\n)\n> 0.01\n',
+                  expr:
+                    'min by (namespace,service, integration) (\n  rate(alertmanager_notifications_failed_total{job="alertmanager-main",namespace="monitoring", integration=~`.*`}[5m])\n/\n  rate(alertmanager_notifications_total{job="alertmanager-main",namespace="monitoring", integration=~`.*`}[5m])\n)\n> 0.01\n',
                   for: "5m",
                   labels: {
                     severity: "critical",
@@ -176,7 +181,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "All Alertmanager instances in a cluster failed to send notifications to a non-critical integration.",
                   },
-                  expr: 'min by (namespace,service, integration) (\n  rate(alertmanager_notifications_failed_total{job="alertmanager-main",namespace="monitoring", integration!~`.*`}[5m])\n/\n  rate(alertmanager_notifications_total{job="alertmanager-main",namespace="monitoring", integration!~`.*`}[5m])\n)\n> 0.01\n',
+                  expr:
+                    'min by (namespace,service, integration) (\n  rate(alertmanager_notifications_failed_total{job="alertmanager-main",namespace="monitoring", integration!~`.*`}[5m])\n/\n  rate(alertmanager_notifications_total{job="alertmanager-main",namespace="monitoring", integration!~`.*`}[5m])\n)\n> 0.01\n',
                   for: "5m",
                   labels: {
                     severity: "warning",
@@ -192,7 +198,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Alertmanager instances within the same cluster have different configurations.",
                   },
-                  expr: 'count by (namespace,service) (\n  count_values by (namespace,service) ("config_hash", alertmanager_config_hash{job="alertmanager-main",namespace="monitoring"})\n)\n!= 1\n',
+                  expr:
+                    'count by (namespace,service) (\n  count_values by (namespace,service) ("config_hash", alertmanager_config_hash{job="alertmanager-main",namespace="monitoring"})\n)\n!= 1\n',
                   for: "20m",
                   labels: {
                     severity: "critical",
@@ -208,7 +215,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Half or more of the Alertmanager instances within the same cluster are down.",
                   },
-                  expr: '(\n  count by (namespace,service) (\n    avg_over_time(up{job="alertmanager-main",namespace="monitoring"}[5m]) < 0.5\n  )\n/\n  count by (namespace,service) (\n    up{job="alertmanager-main",namespace="monitoring"}\n  )\n)\n>= 0.5\n',
+                  expr:
+                    '(\n  count by (namespace,service) (\n    avg_over_time(up{job="alertmanager-main",namespace="monitoring"}[5m]) < 0.5\n  )\n/\n  count by (namespace,service) (\n    up{job="alertmanager-main",namespace="monitoring"}\n  )\n)\n>= 0.5\n',
                   for: "5m",
                   labels: {
                     severity: "critical",
@@ -224,7 +232,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Half or more of the Alertmanager instances within the same cluster are crashlooping.",
                   },
-                  expr: '(\n  count by (namespace,service) (\n    changes(process_start_time_seconds{job="alertmanager-main",namespace="monitoring"}[10m]) > 4\n  )\n/\n  count by (namespace,service) (\n    up{job="alertmanager-main",namespace="monitoring"}\n  )\n)\n>= 0.5\n',
+                  expr:
+                    '(\n  count by (namespace,service) (\n    changes(process_start_time_seconds{job="alertmanager-main",namespace="monitoring"}[10m]) > 4\n  )\n/\n  count by (namespace,service) (\n    up{job="alertmanager-main",namespace="monitoring"}\n  )\n)\n>= 0.5\n',
                   for: "5m",
                   labels: {
                     severity: "critical",
@@ -235,10 +244,11 @@ exports.createResources = async ({ provider, resources }) => {
           ],
         },
       }),
-    });
+    }
+  );
 
   const monitoringalertmanagerMainSecret = provider.makeSecret({
-    name: "monitoring-alertmanager-main",
+    name: "alertmanager-main",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -261,7 +271,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringalertmanagerMainService = provider.makeService({
-    name: "monitoring-alertmanager-main",
+    name: "alertmanager-main",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -296,7 +306,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringalertmanagerMainServiceAccount = provider.makeServiceAccount({
-    name: "monitoring-alertmanager-main",
+    name: "alertmanager-main",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -314,7 +324,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringalertmanagerServiceMonitor = provider.makeServiceMonitor({
-    name: "monitoring-alertmanager",
+    name: "alertmanager",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -390,9 +400,9 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const monitoringblackboxExporterConfigurationConfigMap =
-    provider.makeConfigMap({
-      name: "monitoring-blackbox-exporter-configuration",
+  const monitoringblackboxExporterConfigurationConfigMap = provider.makeConfigMap(
+    {
+      name: "blackbox-exporter-configuration",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -410,10 +420,11 @@ exports.createResources = async ({ provider, resources }) => {
           namespace: "monitoring",
         },
       }),
-    });
+    }
+  );
 
   const monitoringblackboxExporterDeployment = provider.makeDeployment({
-    name: "monitoring-blackbox-exporter",
+    name: "blackbox-exporter",
     properties: () => ({
       apiVersion: "apps/v1",
       metadata: {
@@ -566,7 +577,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringblackboxExporterService = provider.makeService({
-    name: "monitoring-blackbox-exporter",
+    name: "blackbox-exporter",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -602,7 +613,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringblackboxExporterServiceAccount = provider.makeServiceAccount({
-    name: "monitoring-blackbox-exporter",
+    name: "blackbox-exporter",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -613,7 +624,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringblackboxExporterServiceMonitor = provider.makeServiceMonitor({
-    name: "monitoring-blackbox-exporter",
+    name: "blackbox-exporter",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -652,7 +663,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringgrafanaDatasourcesSecret = provider.makeSecret({
-    name: "monitoring-grafana-datasources",
+    name: "grafana-datasources",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -674,7 +685,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringgrafanaDashboardApiserverConfigMap = provider.makeConfigMap({
-    name: "monitoring-grafana-dashboard-apiserver",
+    name: "grafana-dashboard-apiserver",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -694,9 +705,9 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const monitoringgrafanaDashboardClusterTotalConfigMap =
-    provider.makeConfigMap({
-      name: "monitoring-grafana-dashboard-cluster-total",
+  const monitoringgrafanaDashboardClusterTotalConfigMap = provider.makeConfigMap(
+    {
+      name: "grafana-dashboard-cluster-total",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -714,11 +725,12 @@ exports.createResources = async ({ provider, resources }) => {
           namespace: "monitoring",
         },
       }),
-    });
+    }
+  );
 
-  const monitoringgrafanaDashboardControllerManagerConfigMap =
-    provider.makeConfigMap({
-      name: "monitoring-grafana-dashboard-controller-manager",
+  const monitoringgrafanaDashboardControllerManagerConfigMap = provider.makeConfigMap(
+    {
+      name: "grafana-dashboard-controller-manager",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -736,11 +748,12 @@ exports.createResources = async ({ provider, resources }) => {
           namespace: "monitoring",
         },
       }),
-    });
+    }
+  );
 
-  const monitoringgrafanaDashboardK8sResourcesClusterConfigMap =
-    provider.makeConfigMap({
-      name: "monitoring-grafana-dashboard-k8s-resources-cluster",
+  const monitoringgrafanaDashboardK8sResourcesClusterConfigMap = provider.makeConfigMap(
+    {
+      name: "grafana-dashboard-k8s-resources-cluster",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -758,11 +771,12 @@ exports.createResources = async ({ provider, resources }) => {
           namespace: "monitoring",
         },
       }),
-    });
+    }
+  );
 
-  const monitoringgrafanaDashboardK8sResourcesNamespaceConfigMap =
-    provider.makeConfigMap({
-      name: "monitoring-grafana-dashboard-k8s-resources-namespace",
+  const monitoringgrafanaDashboardK8sResourcesNamespaceConfigMap = provider.makeConfigMap(
+    {
+      name: "grafana-dashboard-k8s-resources-namespace",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -780,11 +794,12 @@ exports.createResources = async ({ provider, resources }) => {
           namespace: "monitoring",
         },
       }),
-    });
+    }
+  );
 
-  const monitoringgrafanaDashboardK8sResourcesNodeConfigMap =
-    provider.makeConfigMap({
-      name: "monitoring-grafana-dashboard-k8s-resources-node",
+  const monitoringgrafanaDashboardK8sResourcesNodeConfigMap = provider.makeConfigMap(
+    {
+      name: "grafana-dashboard-k8s-resources-node",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -802,11 +817,12 @@ exports.createResources = async ({ provider, resources }) => {
           namespace: "monitoring",
         },
       }),
-    });
+    }
+  );
 
-  const monitoringgrafanaDashboardK8sResourcesPodConfigMap =
-    provider.makeConfigMap({
-      name: "monitoring-grafana-dashboard-k8s-resources-pod",
+  const monitoringgrafanaDashboardK8sResourcesPodConfigMap = provider.makeConfigMap(
+    {
+      name: "grafana-dashboard-k8s-resources-pod",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -824,11 +840,12 @@ exports.createResources = async ({ provider, resources }) => {
           namespace: "monitoring",
         },
       }),
-    });
+    }
+  );
 
-  const monitoringgrafanaDashboardK8sResourcesWorkloadConfigMap =
-    provider.makeConfigMap({
-      name: "monitoring-grafana-dashboard-k8s-resources-workload",
+  const monitoringgrafanaDashboardK8sResourcesWorkloadConfigMap = provider.makeConfigMap(
+    {
+      name: "grafana-dashboard-k8s-resources-workload",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -846,11 +863,12 @@ exports.createResources = async ({ provider, resources }) => {
           namespace: "monitoring",
         },
       }),
-    });
+    }
+  );
 
-  const monitoringgrafanaDashboardK8sResourcesWorkloadsNamespaceConfigMap =
-    provider.makeConfigMap({
-      name: "monitoring-grafana-dashboard-k8s-resources-workloads-namespace",
+  const monitoringgrafanaDashboardK8sResourcesWorkloadsNamespaceConfigMap = provider.makeConfigMap(
+    {
+      name: "grafana-dashboard-k8s-resources-workloads-namespace",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -868,10 +886,11 @@ exports.createResources = async ({ provider, resources }) => {
           namespace: "monitoring",
         },
       }),
-    });
+    }
+  );
 
   const monitoringgrafanaDashboardKubeletConfigMap = provider.makeConfigMap({
-    name: "monitoring-grafana-dashboard-kubelet",
+    name: "grafana-dashboard-kubelet",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -891,9 +910,9 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const monitoringgrafanaDashboardNamespaceByPodConfigMap =
-    provider.makeConfigMap({
-      name: "monitoring-grafana-dashboard-namespace-by-pod",
+  const monitoringgrafanaDashboardNamespaceByPodConfigMap = provider.makeConfigMap(
+    {
+      name: "grafana-dashboard-namespace-by-pod",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -911,11 +930,12 @@ exports.createResources = async ({ provider, resources }) => {
           namespace: "monitoring",
         },
       }),
-    });
+    }
+  );
 
-  const monitoringgrafanaDashboardNamespaceByWorkloadConfigMap =
-    provider.makeConfigMap({
-      name: "monitoring-grafana-dashboard-namespace-by-workload",
+  const monitoringgrafanaDashboardNamespaceByWorkloadConfigMap = provider.makeConfigMap(
+    {
+      name: "grafana-dashboard-namespace-by-workload",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -933,11 +953,12 @@ exports.createResources = async ({ provider, resources }) => {
           namespace: "monitoring",
         },
       }),
-    });
+    }
+  );
 
-  const monitoringgrafanaDashboardNodeClusterRsrcUseConfigMap =
-    provider.makeConfigMap({
-      name: "monitoring-grafana-dashboard-node-cluster-rsrc-use",
+  const monitoringgrafanaDashboardNodeClusterRsrcUseConfigMap = provider.makeConfigMap(
+    {
+      name: "grafana-dashboard-node-cluster-rsrc-use",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -955,11 +976,12 @@ exports.createResources = async ({ provider, resources }) => {
           namespace: "monitoring",
         },
       }),
-    });
+    }
+  );
 
   const monitoringgrafanaDashboardNodeRsrcUseConfigMap = provider.makeConfigMap(
     {
-      name: "monitoring-grafana-dashboard-node-rsrc-use",
+      name: "grafana-dashboard-node-rsrc-use",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -981,7 +1003,7 @@ exports.createResources = async ({ provider, resources }) => {
   );
 
   const monitoringgrafanaDashboardNodesConfigMap = provider.makeConfigMap({
-    name: "monitoring-grafana-dashboard-nodes",
+    name: "grafana-dashboard-nodes",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -1001,9 +1023,9 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const monitoringgrafanaDashboardPersistentvolumesusageConfigMap =
-    provider.makeConfigMap({
-      name: "monitoring-grafana-dashboard-persistentvolumesusage",
+  const monitoringgrafanaDashboardPersistentvolumesusageConfigMap = provider.makeConfigMap(
+    {
+      name: "grafana-dashboard-persistentvolumesusage",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -1021,10 +1043,11 @@ exports.createResources = async ({ provider, resources }) => {
           namespace: "monitoring",
         },
       }),
-    });
+    }
+  );
 
   const monitoringgrafanaDashboardPodTotalConfigMap = provider.makeConfigMap({
-    name: "monitoring-grafana-dashboard-pod-total",
+    name: "grafana-dashboard-pod-total",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -1044,9 +1067,9 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const monitoringgrafanaDashboardPrometheusRemoteWriteConfigMap =
-    provider.makeConfigMap({
-      name: "monitoring-grafana-dashboard-prometheus-remote-write",
+  const monitoringgrafanaDashboardPrometheusRemoteWriteConfigMap = provider.makeConfigMap(
+    {
+      name: "grafana-dashboard-prometheus-remote-write",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -1064,10 +1087,11 @@ exports.createResources = async ({ provider, resources }) => {
           namespace: "monitoring",
         },
       }),
-    });
+    }
+  );
 
   const monitoringgrafanaDashboardPrometheusConfigMap = provider.makeConfigMap({
-    name: "monitoring-grafana-dashboard-prometheus",
+    name: "grafana-dashboard-prometheus",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -1088,7 +1112,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringgrafanaDashboardProxyConfigMap = provider.makeConfigMap({
-    name: "monitoring-grafana-dashboard-proxy",
+    name: "grafana-dashboard-proxy",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -1109,7 +1133,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringgrafanaDashboardSchedulerConfigMap = provider.makeConfigMap({
-    name: "monitoring-grafana-dashboard-scheduler",
+    name: "grafana-dashboard-scheduler",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -1131,7 +1155,7 @@ exports.createResources = async ({ provider, resources }) => {
 
   const monitoringgrafanaDashboardStatefulsetConfigMap = provider.makeConfigMap(
     {
-      name: "monitoring-grafana-dashboard-statefulset",
+      name: "grafana-dashboard-statefulset",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -1152,9 +1176,9 @@ exports.createResources = async ({ provider, resources }) => {
     }
   );
 
-  const monitoringgrafanaDashboardWorkloadTotalConfigMap =
-    provider.makeConfigMap({
-      name: "monitoring-grafana-dashboard-workload-total",
+  const monitoringgrafanaDashboardWorkloadTotalConfigMap = provider.makeConfigMap(
+    {
+      name: "grafana-dashboard-workload-total",
       properties: () => ({
         apiVersion: "v1",
         data: {
@@ -1172,10 +1196,11 @@ exports.createResources = async ({ provider, resources }) => {
           namespace: "monitoring",
         },
       }),
-    });
+    }
+  );
 
   const monitoringgrafanaDashboardsConfigMap = provider.makeConfigMap({
-    name: "monitoring-grafana-dashboards",
+    name: "grafana-dashboards",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -1196,7 +1221,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringgrafanaDeployment = provider.makeDeployment({
-    name: "monitoring-grafana",
+    name: "grafana",
     properties: () => ({
       apiVersion: "apps/v1",
       metadata: {
@@ -1578,7 +1603,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringgrafanaService = provider.makeService({
-    name: "monitoring-grafana",
+    name: "grafana",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -1609,7 +1634,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringgrafanaServiceAccount = provider.makeServiceAccount({
-    name: "monitoring-grafana",
+    name: "grafana",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -1620,7 +1645,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringgrafanaServiceMonitor = provider.makeServiceMonitor({
-    name: "monitoring-grafana",
+    name: "grafana",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -1649,9 +1674,9 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const monitoringkubePrometheusRulesPrometheusRule =
-    provider.makePrometheusRule({
-      name: "monitoring-kube-prometheus-rules",
+  const monitoringkubePrometheusRulesPrometheusRule = provider.makePrometheusRule(
+    {
+      name: "kube-prometheus-rules",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -1679,7 +1704,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/targetdown",
                     summary: "One or more targets are unreachable.",
                   },
-                  expr: "100 * (count(up == 0) BY (job, namespace, service) / count(up) BY (job, namespace, service)) > 10",
+                  expr:
+                    "100 * (count(up == 0) BY (job, namespace, service) / count(up) BY (job, namespace, service)) > 10",
                   for: "10m",
                   labels: {
                     severity: "warning",
@@ -1713,7 +1739,8 @@ exports.createResources = async ({ provider, resources }) => {
                     runbook_url:
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/nodenetworkinterfaceflapping",
                   },
-                  expr: 'changes(node_network_up{job="node-exporter",device!~"veth.+"}[2m]) > 2\n',
+                  expr:
+                    'changes(node_network_up{job="node-exporter",device!~"veth.+"}[2m]) > 2\n',
                   for: "2m",
                   labels: {
                     severity: "warning",
@@ -1725,27 +1752,33 @@ exports.createResources = async ({ provider, resources }) => {
               name: "kube-prometheus-node-recording.rules",
               rules: [
                 {
-                  expr: 'sum(rate(node_cpu_seconds_total{mode!="idle",mode!="iowait",mode!="steal"}[3m])) BY (instance)',
+                  expr:
+                    'sum(rate(node_cpu_seconds_total{mode!="idle",mode!="iowait",mode!="steal"}[3m])) BY (instance)',
                   record: "instance:node_cpu:rate:sum",
                 },
                 {
-                  expr: "sum(rate(node_network_receive_bytes_total[3m])) BY (instance)",
+                  expr:
+                    "sum(rate(node_network_receive_bytes_total[3m])) BY (instance)",
                   record: "instance:node_network_receive_bytes:rate:sum",
                 },
                 {
-                  expr: "sum(rate(node_network_transmit_bytes_total[3m])) BY (instance)",
+                  expr:
+                    "sum(rate(node_network_transmit_bytes_total[3m])) BY (instance)",
                   record: "instance:node_network_transmit_bytes:rate:sum",
                 },
                 {
-                  expr: 'sum(rate(node_cpu_seconds_total{mode!="idle",mode!="iowait",mode!="steal"}[5m])) WITHOUT (cpu, mode) / ON(instance) GROUP_LEFT() count(sum(node_cpu_seconds_total) BY (instance, cpu)) BY (instance)',
+                  expr:
+                    'sum(rate(node_cpu_seconds_total{mode!="idle",mode!="iowait",mode!="steal"}[5m])) WITHOUT (cpu, mode) / ON(instance) GROUP_LEFT() count(sum(node_cpu_seconds_total) BY (instance, cpu)) BY (instance)',
                   record: "instance:node_cpu:ratio",
                 },
                 {
-                  expr: 'sum(rate(node_cpu_seconds_total{mode!="idle",mode!="iowait",mode!="steal"}[5m]))',
+                  expr:
+                    'sum(rate(node_cpu_seconds_total{mode!="idle",mode!="iowait",mode!="steal"}[5m]))',
                   record: "cluster:node_cpu:sum_rate5m",
                 },
                 {
-                  expr: "cluster:node_cpu_seconds_total:rate5m / count(sum(node_cpu_seconds_total) BY (instance, cpu))",
+                  expr:
+                    "cluster:node_cpu_seconds_total:rate5m / count(sum(node_cpu_seconds_total) BY (instance, cpu))",
                   record: "cluster:node_cpu:ratio",
                 },
               ],
@@ -1766,7 +1799,8 @@ exports.createResources = async ({ provider, resources }) => {
           ],
         },
       }),
-    });
+    }
+  );
 
   const kubeStateMetricsClusterRole = provider.makeClusterRole({
     name: "kube-state-metrics",
@@ -1896,7 +1930,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringkubeStateMetricsDeployment = provider.makeDeployment({
-    name: "monitoring-kube-state-metrics",
+    name: "kube-state-metrics",
     properties: () => ({
       apiVersion: "apps/v1",
       metadata: {
@@ -2029,9 +2063,9 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const monitoringkubeStateMetricsRulesPrometheusRule =
-    provider.makePrometheusRule({
-      name: "monitoring-kube-state-metrics-rules",
+  const monitoringkubeStateMetricsRulesPrometheusRule = provider.makePrometheusRule(
+    {
+      name: "kube-state-metrics-rules",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -2061,7 +2095,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "kube-state-metrics is experiencing errors in list operations.",
                   },
-                  expr: '(sum(rate(kube_state_metrics_list_total{job="kube-state-metrics",result="error"}[5m]))\n  /\nsum(rate(kube_state_metrics_list_total{job="kube-state-metrics"}[5m])))\n> 0.01\n',
+                  expr:
+                    '(sum(rate(kube_state_metrics_list_total{job="kube-state-metrics",result="error"}[5m]))\n  /\nsum(rate(kube_state_metrics_list_total{job="kube-state-metrics"}[5m])))\n> 0.01\n',
                   for: "15m",
                   labels: {
                     severity: "critical",
@@ -2077,7 +2112,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "kube-state-metrics is experiencing errors in watch operations.",
                   },
-                  expr: '(sum(rate(kube_state_metrics_watch_total{job="kube-state-metrics",result="error"}[5m]))\n  /\nsum(rate(kube_state_metrics_watch_total{job="kube-state-metrics"}[5m])))\n> 0.01\n',
+                  expr:
+                    '(sum(rate(kube_state_metrics_watch_total{job="kube-state-metrics",result="error"}[5m]))\n  /\nsum(rate(kube_state_metrics_watch_total{job="kube-state-metrics"}[5m])))\n> 0.01\n',
                   for: "15m",
                   labels: {
                     severity: "critical",
@@ -2088,10 +2124,11 @@ exports.createResources = async ({ provider, resources }) => {
           ],
         },
       }),
-    });
+    }
+  );
 
   const monitoringkubeStateMetricsService = provider.makeService({
-    name: "monitoring-kube-state-metrics",
+    name: "kube-state-metrics",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -2128,7 +2165,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringkubeStateMetricsServiceAccount = provider.makeServiceAccount({
-    name: "monitoring-kube-state-metrics",
+    name: "kube-state-metrics",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -2145,7 +2182,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringkubeStateMetricsServiceMonitor = provider.makeServiceMonitor({
-    name: "monitoring-kube-state-metrics",
+    name: "kube-state-metrics",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -2201,9 +2238,9 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const monitoringkubernetesMonitoringRulesPrometheusRule =
-    provider.makePrometheusRule({
-      name: "monitoring-kubernetes-monitoring-rules",
+  const monitoringkubernetesMonitoringRulesPrometheusRule = provider.makePrometheusRule(
+    {
+      name: "kubernetes-monitoring-rules",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -2230,7 +2267,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubepodcrashlooping",
                     summary: "Pod is crash looping.",
                   },
-                  expr: 'rate(kube_pod_container_status_restarts_total{job="kube-state-metrics"}[10m]) * 60 * 5 > 0\n',
+                  expr:
+                    'rate(kube_pod_container_status_restarts_total{job="kube-state-metrics"}[10m]) * 60 * 5 > 0\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2246,7 +2284,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Pod has been in a non-ready state for more than 15 minutes.",
                   },
-                  expr: 'sum by (namespace, pod) (\n  max by(namespace, pod) (\n    kube_pod_status_phase{job="kube-state-metrics", phase=~"Pending|Unknown"}\n  ) * on(namespace, pod) group_left(owner_kind) topk by(namespace, pod) (\n    1, max by(namespace, pod, owner_kind) (kube_pod_owner{owner_kind!="Job"})\n  )\n) > 0\n',
+                  expr:
+                    'sum by (namespace, pod) (\n  max by(namespace, pod) (\n    kube_pod_status_phase{job="kube-state-metrics", phase=~"Pending|Unknown"}\n  ) * on(namespace, pod) group_left(owner_kind) topk by(namespace, pod) (\n    1, max by(namespace, pod, owner_kind) (kube_pod_owner{owner_kind!="Job"})\n  )\n) > 0\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2262,7 +2301,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Deployment generation mismatch due to possible roll-back",
                   },
-                  expr: 'kube_deployment_status_observed_generation{job="kube-state-metrics"}\n  !=\nkube_deployment_metadata_generation{job="kube-state-metrics"}\n',
+                  expr:
+                    'kube_deployment_status_observed_generation{job="kube-state-metrics"}\n  !=\nkube_deployment_metadata_generation{job="kube-state-metrics"}\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2278,7 +2318,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Deployment has not matched the expected number of replicas.",
                   },
-                  expr: '(\n  kube_deployment_spec_replicas{job="kube-state-metrics"}\n    !=\n  kube_deployment_status_replicas_available{job="kube-state-metrics"}\n) and (\n  changes(kube_deployment_status_replicas_updated{job="kube-state-metrics"}[10m])\n    ==\n  0\n)\n',
+                  expr:
+                    '(\n  kube_deployment_spec_replicas{job="kube-state-metrics"}\n    !=\n  kube_deployment_status_replicas_available{job="kube-state-metrics"}\n) and (\n  changes(kube_deployment_status_replicas_updated{job="kube-state-metrics"}[10m])\n    ==\n  0\n)\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2294,7 +2335,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Deployment has not matched the expected number of replicas.",
                   },
-                  expr: '(\n  kube_statefulset_status_replicas_ready{job="kube-state-metrics"}\n    !=\n  kube_statefulset_status_replicas{job="kube-state-metrics"}\n) and (\n  changes(kube_statefulset_status_replicas_updated{job="kube-state-metrics"}[10m])\n    ==\n  0\n)\n',
+                  expr:
+                    '(\n  kube_statefulset_status_replicas_ready{job="kube-state-metrics"}\n    !=\n  kube_statefulset_status_replicas{job="kube-state-metrics"}\n) and (\n  changes(kube_statefulset_status_replicas_updated{job="kube-state-metrics"}[10m])\n    ==\n  0\n)\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2310,7 +2352,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "StatefulSet generation mismatch due to possible roll-back",
                   },
-                  expr: 'kube_statefulset_status_observed_generation{job="kube-state-metrics"}\n  !=\nkube_statefulset_metadata_generation{job="kube-state-metrics"}\n',
+                  expr:
+                    'kube_statefulset_status_observed_generation{job="kube-state-metrics"}\n  !=\nkube_statefulset_metadata_generation{job="kube-state-metrics"}\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2325,7 +2368,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubestatefulsetupdatenotrolledout",
                     summary: "StatefulSet update has not been rolled out.",
                   },
-                  expr: '(\n  max without (revision) (\n    kube_statefulset_status_current_revision{job="kube-state-metrics"}\n      unless\n    kube_statefulset_status_update_revision{job="kube-state-metrics"}\n  )\n    *\n  (\n    kube_statefulset_replicas{job="kube-state-metrics"}\n      !=\n    kube_statefulset_status_replicas_updated{job="kube-state-metrics"}\n  )\n)  and (\n  changes(kube_statefulset_status_replicas_updated{job="kube-state-metrics"}[5m])\n    ==\n  0\n)\n',
+                  expr:
+                    '(\n  max without (revision) (\n    kube_statefulset_status_current_revision{job="kube-state-metrics"}\n      unless\n    kube_statefulset_status_update_revision{job="kube-state-metrics"}\n  )\n    *\n  (\n    kube_statefulset_replicas{job="kube-state-metrics"}\n      !=\n    kube_statefulset_status_replicas_updated{job="kube-state-metrics"}\n  )\n)  and (\n  changes(kube_statefulset_status_replicas_updated{job="kube-state-metrics"}[5m])\n    ==\n  0\n)\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2340,7 +2384,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubedaemonsetrolloutstuck",
                     summary: "DaemonSet rollout is stuck.",
                   },
-                  expr: '(\n  (\n    kube_daemonset_status_current_number_scheduled{job="kube-state-metrics"}\n     !=\n    kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics"}\n  ) or (\n    kube_daemonset_status_number_misscheduled{job="kube-state-metrics"}\n     !=\n    0\n  ) or (\n    kube_daemonset_updated_number_scheduled{job="kube-state-metrics"}\n     !=\n    kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics"}\n  ) or (\n    kube_daemonset_status_number_available{job="kube-state-metrics"}\n     !=\n    kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics"}\n  )\n) and (\n  changes(kube_daemonset_updated_number_scheduled{job="kube-state-metrics"}[5m])\n    ==\n  0\n)\n',
+                  expr:
+                    '(\n  (\n    kube_daemonset_status_current_number_scheduled{job="kube-state-metrics"}\n     !=\n    kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics"}\n  ) or (\n    kube_daemonset_status_number_misscheduled{job="kube-state-metrics"}\n     !=\n    0\n  ) or (\n    kube_daemonset_updated_number_scheduled{job="kube-state-metrics"}\n     !=\n    kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics"}\n  ) or (\n    kube_daemonset_status_number_available{job="kube-state-metrics"}\n     !=\n    kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics"}\n  )\n) and (\n  changes(kube_daemonset_updated_number_scheduled{job="kube-state-metrics"}[5m])\n    ==\n  0\n)\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2355,7 +2400,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubecontainerwaiting",
                     summary: "Pod container waiting longer than 1 hour",
                   },
-                  expr: 'sum by (namespace, pod, container) (kube_pod_container_status_waiting_reason{job="kube-state-metrics"}) > 0\n',
+                  expr:
+                    'sum by (namespace, pod, container) (kube_pod_container_status_waiting_reason{job="kube-state-metrics"}) > 0\n',
                   for: "1h",
                   labels: {
                     severity: "warning",
@@ -2370,7 +2416,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubedaemonsetnotscheduled",
                     summary: "DaemonSet pods are not scheduled.",
                   },
-                  expr: 'kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics"}\n  -\nkube_daemonset_status_current_number_scheduled{job="kube-state-metrics"} > 0\n',
+                  expr:
+                    'kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics"}\n  -\nkube_daemonset_status_current_number_scheduled{job="kube-state-metrics"} > 0\n',
                   for: "10m",
                   labels: {
                     severity: "warning",
@@ -2385,7 +2432,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubedaemonsetmisscheduled",
                     summary: "DaemonSet pods are misscheduled.",
                   },
-                  expr: 'kube_daemonset_status_number_misscheduled{job="kube-state-metrics"} > 0\n',
+                  expr:
+                    'kube_daemonset_status_number_misscheduled{job="kube-state-metrics"} > 0\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2400,7 +2448,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubejobcompletion",
                     summary: "Job did not complete in time",
                   },
-                  expr: 'kube_job_spec_completions{job="kube-state-metrics"} - kube_job_status_succeeded{job="kube-state-metrics"}  > 0\n',
+                  expr:
+                    'kube_job_spec_completions{job="kube-state-metrics"} - kube_job_status_succeeded{job="kube-state-metrics"}  > 0\n',
                   for: "12h",
                   labels: {
                     severity: "warning",
@@ -2430,7 +2479,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubehpareplicasmismatch",
                     summary: "HPA has not matched descired number of replicas.",
                   },
-                  expr: '(kube_hpa_status_desired_replicas{job="kube-state-metrics"}\n  !=\nkube_hpa_status_current_replicas{job="kube-state-metrics"})\n  and\n(kube_hpa_status_current_replicas{job="kube-state-metrics"}\n  >\nkube_hpa_spec_min_replicas{job="kube-state-metrics"})\n  and\n(kube_hpa_status_current_replicas{job="kube-state-metrics"}\n  <\nkube_hpa_spec_max_replicas{job="kube-state-metrics"})\n  and\nchanges(kube_hpa_status_current_replicas{job="kube-state-metrics"}[15m]) == 0\n',
+                  expr:
+                    '(kube_hpa_status_desired_replicas{job="kube-state-metrics"}\n  !=\nkube_hpa_status_current_replicas{job="kube-state-metrics"})\n  and\n(kube_hpa_status_current_replicas{job="kube-state-metrics"}\n  >\nkube_hpa_spec_min_replicas{job="kube-state-metrics"})\n  and\n(kube_hpa_status_current_replicas{job="kube-state-metrics"}\n  <\nkube_hpa_spec_max_replicas{job="kube-state-metrics"})\n  and\nchanges(kube_hpa_status_current_replicas{job="kube-state-metrics"}[15m]) == 0\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2445,7 +2495,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubehpamaxedout",
                     summary: "HPA is running at max replicas",
                   },
-                  expr: 'kube_hpa_status_current_replicas{job="kube-state-metrics"}\n  ==\nkube_hpa_spec_max_replicas{job="kube-state-metrics"}\n',
+                  expr:
+                    'kube_hpa_status_current_replicas{job="kube-state-metrics"}\n  ==\nkube_hpa_spec_max_replicas{job="kube-state-metrics"}\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2465,7 +2516,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubecpuovercommit",
                     summary: "Cluster has overcommitted CPU resource requests.",
                   },
-                  expr: 'sum(namespace_cpu:kube_pod_container_resource_requests:sum{})\n  /\nsum(kube_node_status_allocatable{resource="cpu"})\n  >\n((count(kube_node_status_allocatable{resource="cpu"}) > 1) - 1) / count(kube_node_status_allocatable{resource="cpu"})\n',
+                  expr:
+                    'sum(namespace_cpu:kube_pod_container_resource_requests:sum{})\n  /\nsum(kube_node_status_allocatable{resource="cpu"})\n  >\n((count(kube_node_status_allocatable{resource="cpu"}) > 1) - 1) / count(kube_node_status_allocatable{resource="cpu"})\n',
                   for: "5m",
                   labels: {
                     severity: "warning",
@@ -2481,7 +2533,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Cluster has overcommitted memory resource requests.",
                   },
-                  expr: 'sum(namespace_memory:kube_pod_container_resource_requests:sum{})\n  /\nsum(kube_node_status_allocatable{resource="memory"})\n  >\n((count(kube_node_status_allocatable{resource="memory"}) > 1) - 1)\n  /\ncount(kube_node_status_allocatable{resource="memory"})\n',
+                  expr:
+                    'sum(namespace_memory:kube_pod_container_resource_requests:sum{})\n  /\nsum(kube_node_status_allocatable{resource="memory"})\n  >\n((count(kube_node_status_allocatable{resource="memory"}) > 1) - 1)\n  /\ncount(kube_node_status_allocatable{resource="memory"})\n',
                   for: "5m",
                   labels: {
                     severity: "warning",
@@ -2496,7 +2549,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubecpuquotaovercommit",
                     summary: "Cluster has overcommitted CPU resource requests.",
                   },
-                  expr: 'sum(kube_resourcequota{job="kube-state-metrics", type="hard", resource="cpu"})\n  /\nsum(kube_node_status_allocatable{resource="cpu"})\n  > 1.5\n',
+                  expr:
+                    'sum(kube_resourcequota{job="kube-state-metrics", type="hard", resource="cpu"})\n  /\nsum(kube_node_status_allocatable{resource="cpu"})\n  > 1.5\n',
                   for: "5m",
                   labels: {
                     severity: "warning",
@@ -2512,7 +2566,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Cluster has overcommitted memory resource requests.",
                   },
-                  expr: 'sum(kube_resourcequota{job="kube-state-metrics", type="hard", resource="memory"})\n  /\nsum(kube_node_status_allocatable{resource="memory",job="kube-state-metrics"})\n  > 1.5\n',
+                  expr:
+                    'sum(kube_resourcequota{job="kube-state-metrics", type="hard", resource="memory"})\n  /\nsum(kube_node_status_allocatable{resource="memory",job="kube-state-metrics"})\n  > 1.5\n',
                   for: "5m",
                   labels: {
                     severity: "warning",
@@ -2527,7 +2582,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubequotaalmostfull",
                     summary: "Namespace quota is going to be full.",
                   },
-                  expr: 'kube_resourcequota{job="kube-state-metrics", type="used"}\n  / ignoring(instance, job, type)\n(kube_resourcequota{job="kube-state-metrics", type="hard"} > 0)\n  > 0.9 < 1\n',
+                  expr:
+                    'kube_resourcequota{job="kube-state-metrics", type="used"}\n  / ignoring(instance, job, type)\n(kube_resourcequota{job="kube-state-metrics", type="hard"} > 0)\n  > 0.9 < 1\n',
                   for: "15m",
                   labels: {
                     severity: "info",
@@ -2542,7 +2598,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubequotafullyused",
                     summary: "Namespace quota is fully used.",
                   },
-                  expr: 'kube_resourcequota{job="kube-state-metrics", type="used"}\n  / ignoring(instance, job, type)\n(kube_resourcequota{job="kube-state-metrics", type="hard"} > 0)\n  == 1\n',
+                  expr:
+                    'kube_resourcequota{job="kube-state-metrics", type="used"}\n  / ignoring(instance, job, type)\n(kube_resourcequota{job="kube-state-metrics", type="hard"} > 0)\n  == 1\n',
                   for: "15m",
                   labels: {
                     severity: "info",
@@ -2557,7 +2614,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubequotaexceeded",
                     summary: "Namespace quota has exceeded the limits.",
                   },
-                  expr: 'kube_resourcequota{job="kube-state-metrics", type="used"}\n  / ignoring(instance, job, type)\n(kube_resourcequota{job="kube-state-metrics", type="hard"} > 0)\n  > 1\n',
+                  expr:
+                    'kube_resourcequota{job="kube-state-metrics", type="used"}\n  / ignoring(instance, job, type)\n(kube_resourcequota{job="kube-state-metrics", type="hard"} > 0)\n  > 1\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2572,7 +2630,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/cputhrottlinghigh",
                     summary: "Processes experience elevated CPU throttling.",
                   },
-                  expr: 'sum(increase(container_cpu_cfs_throttled_periods_total{container!="", }[5m])) by (container, pod, namespace)\n  /\nsum(increase(container_cpu_cfs_periods_total{}[5m])) by (container, pod, namespace)\n  > ( 25 / 100 )\n',
+                  expr:
+                    'sum(increase(container_cpu_cfs_throttled_periods_total{container!="", }[5m])) by (container, pod, namespace)\n  /\nsum(increase(container_cpu_cfs_periods_total{}[5m])) by (container, pod, namespace)\n  > ( 25 / 100 )\n',
                   for: "15m",
                   labels: {
                     severity: "info",
@@ -2592,7 +2651,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubepersistentvolumefillingup",
                     summary: "PersistentVolume is filling up.",
                   },
-                  expr: 'kubelet_volume_stats_available_bytes{job="kubelet", metrics_path="/metrics"}\n  /\nkubelet_volume_stats_capacity_bytes{job="kubelet", metrics_path="/metrics"}\n  < 0.03\n',
+                  expr:
+                    'kubelet_volume_stats_available_bytes{job="kubelet", metrics_path="/metrics"}\n  /\nkubelet_volume_stats_capacity_bytes{job="kubelet", metrics_path="/metrics"}\n  < 0.03\n',
                   for: "1m",
                   labels: {
                     severity: "critical",
@@ -2607,7 +2667,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubepersistentvolumefillingup",
                     summary: "PersistentVolume is filling up.",
                   },
-                  expr: '(\n  kubelet_volume_stats_available_bytes{job="kubelet", metrics_path="/metrics"}\n    /\n  kubelet_volume_stats_capacity_bytes{job="kubelet", metrics_path="/metrics"}\n) < 0.15\nand\npredict_linear(kubelet_volume_stats_available_bytes{job="kubelet", metrics_path="/metrics"}[6h], 4 * 24 * 3600) < 0\n',
+                  expr:
+                    '(\n  kubelet_volume_stats_available_bytes{job="kubelet", metrics_path="/metrics"}\n    /\n  kubelet_volume_stats_capacity_bytes{job="kubelet", metrics_path="/metrics"}\n) < 0.15\nand\npredict_linear(kubelet_volume_stats_available_bytes{job="kubelet", metrics_path="/metrics"}[6h], 4 * 24 * 3600) < 0\n',
                   for: "1h",
                   labels: {
                     severity: "warning",
@@ -2623,7 +2684,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "PersistentVolume is having issues with provisioning.",
                   },
-                  expr: 'kube_persistentvolume_status_phase{phase=~"Failed|Pending",job="kube-state-metrics"} > 0\n',
+                  expr:
+                    'kube_persistentvolume_status_phase{phase=~"Failed|Pending",job="kube-state-metrics"} > 0\n',
                   for: "5m",
                   labels: {
                     severity: "critical",
@@ -2644,7 +2706,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Different semantic versions of Kubernetes components running.",
                   },
-                  expr: 'count(count by (git_version) (label_replace(kubernetes_build_info{job!~"kube-dns|coredns"},"git_version","$1","git_version","(v[0-9]*.[0-9]*).*"))) > 1\n',
+                  expr:
+                    'count(count by (git_version) (label_replace(kubernetes_build_info{job!~"kube-dns|coredns"},"git_version","$1","git_version","(v[0-9]*.[0-9]*).*"))) > 1\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2660,7 +2723,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Kubernetes API server client is experiencing errors.",
                   },
-                  expr: '(sum(rate(rest_client_requests_total{code=~"5.."}[5m])) by (instance, job)\n  /\nsum(rate(rest_client_requests_total[5m])) by (instance, job))\n> 0.01\n',
+                  expr:
+                    '(sum(rate(rest_client_requests_total{code=~"5.."}[5m])) by (instance, job)\n  /\nsum(rate(rest_client_requests_total[5m])) by (instance, job))\n> 0.01\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2680,7 +2744,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubeapierrorbudgetburn",
                     summary: "The API server is burning too much error budget.",
                   },
-                  expr: "sum(apiserver_request:burnrate1h) > (14.40 * 0.01000)\nand\nsum(apiserver_request:burnrate5m) > (14.40 * 0.01000)\n",
+                  expr:
+                    "sum(apiserver_request:burnrate1h) > (14.40 * 0.01000)\nand\nsum(apiserver_request:burnrate5m) > (14.40 * 0.01000)\n",
                   for: "2m",
                   labels: {
                     long: "1h",
@@ -2697,7 +2762,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubeapierrorbudgetburn",
                     summary: "The API server is burning too much error budget.",
                   },
-                  expr: "sum(apiserver_request:burnrate6h) > (6.00 * 0.01000)\nand\nsum(apiserver_request:burnrate30m) > (6.00 * 0.01000)\n",
+                  expr:
+                    "sum(apiserver_request:burnrate6h) > (6.00 * 0.01000)\nand\nsum(apiserver_request:burnrate30m) > (6.00 * 0.01000)\n",
                   for: "15m",
                   labels: {
                     long: "6h",
@@ -2714,7 +2780,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubeapierrorbudgetburn",
                     summary: "The API server is burning too much error budget.",
                   },
-                  expr: "sum(apiserver_request:burnrate1d) > (3.00 * 0.01000)\nand\nsum(apiserver_request:burnrate2h) > (3.00 * 0.01000)\n",
+                  expr:
+                    "sum(apiserver_request:burnrate1d) > (3.00 * 0.01000)\nand\nsum(apiserver_request:burnrate2h) > (3.00 * 0.01000)\n",
                   for: "1h",
                   labels: {
                     long: "1d",
@@ -2731,7 +2798,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubeapierrorbudgetburn",
                     summary: "The API server is burning too much error budget.",
                   },
-                  expr: "sum(apiserver_request:burnrate3d) > (1.00 * 0.01000)\nand\nsum(apiserver_request:burnrate6h) > (1.00 * 0.01000)\n",
+                  expr:
+                    "sum(apiserver_request:burnrate3d) > (1.00 * 0.01000)\nand\nsum(apiserver_request:burnrate6h) > (1.00 * 0.01000)\n",
                   for: "3h",
                   labels: {
                     long: "3d",
@@ -2753,7 +2821,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubeclientcertificateexpiration",
                     summary: "Client certificate is about to expire.",
                   },
-                  expr: 'apiserver_client_certificate_expiration_seconds_count{job="apiserver"} > 0 and on(job) histogram_quantile(0.01, sum by (job, le) (rate(apiserver_client_certificate_expiration_seconds_bucket{job="apiserver"}[5m]))) < 604800\n',
+                  expr:
+                    'apiserver_client_certificate_expiration_seconds_count{job="apiserver"} > 0 and on(job) histogram_quantile(0.01, sum by (job, le) (rate(apiserver_client_certificate_expiration_seconds_bucket{job="apiserver"}[5m]))) < 604800\n',
                   labels: {
                     severity: "warning",
                   },
@@ -2767,7 +2836,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubeclientcertificateexpiration",
                     summary: "Client certificate is about to expire.",
                   },
-                  expr: 'apiserver_client_certificate_expiration_seconds_count{job="apiserver"} > 0 and on(job) histogram_quantile(0.01, sum by (job, le) (rate(apiserver_client_certificate_expiration_seconds_bucket{job="apiserver"}[5m]))) < 86400\n',
+                  expr:
+                    'apiserver_client_certificate_expiration_seconds_count{job="apiserver"} > 0 and on(job) histogram_quantile(0.01, sum by (job, le) (rate(apiserver_client_certificate_expiration_seconds_bucket{job="apiserver"}[5m]))) < 86400\n',
                   labels: {
                     severity: "critical",
                   },
@@ -2781,7 +2851,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/aggregatedapierrors",
                     summary: "An aggregated API has reported errors.",
                   },
-                  expr: "sum by(name, namespace)(increase(aggregator_unavailable_apiservice_total[10m])) > 4\n",
+                  expr:
+                    "sum by(name, namespace)(increase(aggregator_unavailable_apiservice_total[10m])) > 4\n",
                   labels: {
                     severity: "warning",
                   },
@@ -2795,7 +2866,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/aggregatedapidown",
                     summary: "An aggregated API is down.",
                   },
-                  expr: "(1 - max by(name, namespace)(avg_over_time(aggregator_unavailable_apiservice[10m]))) * 100 < 85\n",
+                  expr:
+                    "(1 - max by(name, namespace)(avg_over_time(aggregator_unavailable_apiservice[10m]))) * 100 < 85\n",
                   for: "5m",
                   labels: {
                     severity: "warning",
@@ -2827,7 +2899,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "The apiserver has terminated {{ $value | humanizePercentage }} of its incoming requests.",
                   },
-                  expr: 'sum(rate(apiserver_request_terminations_total{job="apiserver"}[10m]))  / (  sum(rate(apiserver_request_total{job="apiserver"}[10m])) + sum(rate(apiserver_request_terminations_total{job="apiserver"}[10m])) ) > 0.20\n',
+                  expr:
+                    'sum(rate(apiserver_request_terminations_total{job="apiserver"}[10m]))  / (  sum(rate(apiserver_request_total{job="apiserver"}[10m])) + sum(rate(apiserver_request_terminations_total{job="apiserver"}[10m])) ) > 0.20\n',
                   for: "5m",
                   labels: {
                     severity: "warning",
@@ -2847,7 +2920,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubenodenotready",
                     summary: "Node is not ready.",
                   },
-                  expr: 'kube_node_status_condition{job="kube-state-metrics",condition="Ready",status="true"} == 0\n',
+                  expr:
+                    'kube_node_status_condition{job="kube-state-metrics",condition="Ready",status="true"} == 0\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2862,7 +2936,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubenodeunreachable",
                     summary: "Node is unreachable.",
                   },
-                  expr: '(kube_node_spec_taint{job="kube-state-metrics",key="node.kubernetes.io/unreachable",effect="NoSchedule"} unless ignoring(key,value) kube_node_spec_taint{job="kube-state-metrics",key=~"ToBeDeletedByClusterAutoscaler|cloud.google.com/impending-node-termination|aws-node-termination-handler/spot-itn"}) == 1\n',
+                  expr:
+                    '(kube_node_spec_taint{job="kube-state-metrics",key="node.kubernetes.io/unreachable",effect="NoSchedule"} unless ignoring(key,value) kube_node_spec_taint{job="kube-state-metrics",key=~"ToBeDeletedByClusterAutoscaler|cloud.google.com/impending-node-termination|aws-node-termination-handler/spot-itn"}) == 1\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2877,7 +2952,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubelettoomanypods",
                     summary: "Kubelet is running at capacity.",
                   },
-                  expr: 'count by(node) (\n  (kube_pod_status_phase{job="kube-state-metrics",phase="Running"} == 1) * on(instance,pod,namespace,cluster) group_left(node) topk by(instance,pod,namespace,cluster) (1, kube_pod_info{job="kube-state-metrics"})\n)\n/\nmax by(node) (\n  kube_node_status_capacity{job="kube-state-metrics",resource="pods"} != 1\n) > 0.95\n',
+                  expr:
+                    'count by(node) (\n  (kube_pod_status_phase{job="kube-state-metrics",phase="Running"} == 1) * on(instance,pod,namespace,cluster) group_left(node) topk by(instance,pod,namespace,cluster) (1, kube_pod_info{job="kube-state-metrics"})\n)\n/\nmax by(node) (\n  kube_node_status_capacity{job="kube-state-metrics",resource="pods"} != 1\n) > 0.95\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2892,7 +2968,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubenodereadinessflapping",
                     summary: "Node readiness status is flapping.",
                   },
-                  expr: 'sum(changes(kube_node_status_condition{status="true",condition="Ready"}[15m])) by (node) > 2\n',
+                  expr:
+                    'sum(changes(kube_node_status_condition{status="true",condition="Ready"}[15m])) by (node) > 2\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2908,7 +2985,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Kubelet Pod Lifecycle Event Generator is taking too long to relist.",
                   },
-                  expr: 'node_quantile:kubelet_pleg_relist_duration_seconds:histogram_quantile{quantile="0.99"} >= 10\n',
+                  expr:
+                    'node_quantile:kubelet_pleg_relist_duration_seconds:histogram_quantile{quantile="0.99"} >= 10\n',
                   for: "5m",
                   labels: {
                     severity: "warning",
@@ -2923,7 +3001,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubeletpodstartuplatencyhigh",
                     summary: "Kubelet Pod startup latency is too high.",
                   },
-                  expr: 'histogram_quantile(0.99, sum(rate(kubelet_pod_worker_duration_seconds_bucket{job="kubelet", metrics_path="/metrics"}[5m])) by (instance, le)) * on(instance) group_left(node) kubelet_node_name{job="kubelet", metrics_path="/metrics"} > 60\n',
+                  expr:
+                    'histogram_quantile(0.99, sum(rate(kubelet_pod_worker_duration_seconds_bucket{job="kubelet", metrics_path="/metrics"}[5m])) by (instance, le)) * on(instance) group_left(node) kubelet_node_name{job="kubelet", metrics_path="/metrics"} > 60\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -2938,7 +3017,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubeletclientcertificateexpiration",
                     summary: "Kubelet client certificate is about to expire.",
                   },
-                  expr: "kubelet_certificate_manager_client_ttl_seconds < 604800\n",
+                  expr:
+                    "kubelet_certificate_manager_client_ttl_seconds < 604800\n",
                   labels: {
                     severity: "warning",
                   },
@@ -2952,7 +3032,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubeletclientcertificateexpiration",
                     summary: "Kubelet client certificate is about to expire.",
                   },
-                  expr: "kubelet_certificate_manager_client_ttl_seconds < 86400\n",
+                  expr:
+                    "kubelet_certificate_manager_client_ttl_seconds < 86400\n",
                   labels: {
                     severity: "critical",
                   },
@@ -2966,7 +3047,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubeletservercertificateexpiration",
                     summary: "Kubelet server certificate is about to expire.",
                   },
-                  expr: "kubelet_certificate_manager_server_ttl_seconds < 604800\n",
+                  expr:
+                    "kubelet_certificate_manager_server_ttl_seconds < 604800\n",
                   labels: {
                     severity: "warning",
                   },
@@ -2980,7 +3062,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/kubeletservercertificateexpiration",
                     summary: "Kubelet server certificate is about to expire.",
                   },
-                  expr: "kubelet_certificate_manager_server_ttl_seconds < 86400\n",
+                  expr:
+                    "kubelet_certificate_manager_server_ttl_seconds < 86400\n",
                   labels: {
                     severity: "critical",
                   },
@@ -2995,7 +3078,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Kubelet has failed to renew its client certificate.",
                   },
-                  expr: "increase(kubelet_certificate_manager_client_expiration_renew_errors[5m]) > 0\n",
+                  expr:
+                    "increase(kubelet_certificate_manager_client_expiration_renew_errors[5m]) > 0\n",
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -3011,7 +3095,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Kubelet has failed to renew its server certificate.",
                   },
-                  expr: "increase(kubelet_server_expiration_renew_errors[5m]) > 0\n",
+                  expr:
+                    "increase(kubelet_server_expiration_renew_errors[5m]) > 0\n",
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -3027,7 +3112,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Target disappeared from Prometheus target discovery.",
                   },
-                  expr: 'absent(up{job="kubelet", metrics_path="/metrics"} == 1)\n',
+                  expr:
+                    'absent(up{job="kubelet", metrics_path="/metrics"} == 1)\n',
                   for: "15m",
                   labels: {
                     severity: "critical",
@@ -3081,119 +3167,136 @@ exports.createResources = async ({ provider, resources }) => {
               name: "kube-apiserver.rules",
               rules: [
                 {
-                  expr: '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"LIST|GET"}[1d]))\n    -\n    (\n      (\n        sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope=~"resource|",le="0.1"}[1d]))\n        or\n        vector(0)\n      )\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="namespace",le="0.5"}[1d]))\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="cluster",le="5"}[1d]))\n    )\n  )\n  +\n  # errors\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET",code=~"5.."}[1d]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET"}[1d]))\n',
+                  expr:
+                    '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"LIST|GET"}[1d]))\n    -\n    (\n      (\n        sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope=~"resource|",le="0.1"}[1d]))\n        or\n        vector(0)\n      )\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="namespace",le="0.5"}[1d]))\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="cluster",le="5"}[1d]))\n    )\n  )\n  +\n  # errors\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET",code=~"5.."}[1d]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET"}[1d]))\n',
                   labels: {
                     verb: "read",
                   },
                   record: "apiserver_request:burnrate1d",
                 },
                 {
-                  expr: '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"LIST|GET"}[1h]))\n    -\n    (\n      (\n        sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope=~"resource|",le="0.1"}[1h]))\n        or\n        vector(0)\n      )\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="namespace",le="0.5"}[1h]))\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="cluster",le="5"}[1h]))\n    )\n  )\n  +\n  # errors\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET",code=~"5.."}[1h]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET"}[1h]))\n',
+                  expr:
+                    '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"LIST|GET"}[1h]))\n    -\n    (\n      (\n        sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope=~"resource|",le="0.1"}[1h]))\n        or\n        vector(0)\n      )\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="namespace",le="0.5"}[1h]))\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="cluster",le="5"}[1h]))\n    )\n  )\n  +\n  # errors\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET",code=~"5.."}[1h]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET"}[1h]))\n',
                   labels: {
                     verb: "read",
                   },
                   record: "apiserver_request:burnrate1h",
                 },
                 {
-                  expr: '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"LIST|GET"}[2h]))\n    -\n    (\n      (\n        sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope=~"resource|",le="0.1"}[2h]))\n        or\n        vector(0)\n      )\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="namespace",le="0.5"}[2h]))\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="cluster",le="5"}[2h]))\n    )\n  )\n  +\n  # errors\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET",code=~"5.."}[2h]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET"}[2h]))\n',
+                  expr:
+                    '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"LIST|GET"}[2h]))\n    -\n    (\n      (\n        sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope=~"resource|",le="0.1"}[2h]))\n        or\n        vector(0)\n      )\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="namespace",le="0.5"}[2h]))\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="cluster",le="5"}[2h]))\n    )\n  )\n  +\n  # errors\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET",code=~"5.."}[2h]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET"}[2h]))\n',
                   labels: {
                     verb: "read",
                   },
                   record: "apiserver_request:burnrate2h",
                 },
                 {
-                  expr: '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"LIST|GET"}[30m]))\n    -\n    (\n      (\n        sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope=~"resource|",le="0.1"}[30m]))\n        or\n        vector(0)\n      )\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="namespace",le="0.5"}[30m]))\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="cluster",le="5"}[30m]))\n    )\n  )\n  +\n  # errors\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET",code=~"5.."}[30m]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET"}[30m]))\n',
+                  expr:
+                    '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"LIST|GET"}[30m]))\n    -\n    (\n      (\n        sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope=~"resource|",le="0.1"}[30m]))\n        or\n        vector(0)\n      )\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="namespace",le="0.5"}[30m]))\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="cluster",le="5"}[30m]))\n    )\n  )\n  +\n  # errors\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET",code=~"5.."}[30m]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET"}[30m]))\n',
                   labels: {
                     verb: "read",
                   },
                   record: "apiserver_request:burnrate30m",
                 },
                 {
-                  expr: '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"LIST|GET"}[3d]))\n    -\n    (\n      (\n        sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope=~"resource|",le="0.1"}[3d]))\n        or\n        vector(0)\n      )\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="namespace",le="0.5"}[3d]))\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="cluster",le="5"}[3d]))\n    )\n  )\n  +\n  # errors\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET",code=~"5.."}[3d]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET"}[3d]))\n',
+                  expr:
+                    '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"LIST|GET"}[3d]))\n    -\n    (\n      (\n        sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope=~"resource|",le="0.1"}[3d]))\n        or\n        vector(0)\n      )\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="namespace",le="0.5"}[3d]))\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="cluster",le="5"}[3d]))\n    )\n  )\n  +\n  # errors\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET",code=~"5.."}[3d]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET"}[3d]))\n',
                   labels: {
                     verb: "read",
                   },
                   record: "apiserver_request:burnrate3d",
                 },
                 {
-                  expr: '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"LIST|GET"}[5m]))\n    -\n    (\n      (\n        sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope=~"resource|",le="0.1"}[5m]))\n        or\n        vector(0)\n      )\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="namespace",le="0.5"}[5m]))\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="cluster",le="5"}[5m]))\n    )\n  )\n  +\n  # errors\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET",code=~"5.."}[5m]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET"}[5m]))\n',
+                  expr:
+                    '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"LIST|GET"}[5m]))\n    -\n    (\n      (\n        sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope=~"resource|",le="0.1"}[5m]))\n        or\n        vector(0)\n      )\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="namespace",le="0.5"}[5m]))\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="cluster",le="5"}[5m]))\n    )\n  )\n  +\n  # errors\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET",code=~"5.."}[5m]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET"}[5m]))\n',
                   labels: {
                     verb: "read",
                   },
                   record: "apiserver_request:burnrate5m",
                 },
                 {
-                  expr: '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"LIST|GET"}[6h]))\n    -\n    (\n      (\n        sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope=~"resource|",le="0.1"}[6h]))\n        or\n        vector(0)\n      )\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="namespace",le="0.5"}[6h]))\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="cluster",le="5"}[6h]))\n    )\n  )\n  +\n  # errors\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET",code=~"5.."}[6h]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET"}[6h]))\n',
+                  expr:
+                    '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"LIST|GET"}[6h]))\n    -\n    (\n      (\n        sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope=~"resource|",le="0.1"}[6h]))\n        or\n        vector(0)\n      )\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="namespace",le="0.5"}[6h]))\n      +\n      sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="cluster",le="5"}[6h]))\n    )\n  )\n  +\n  # errors\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET",code=~"5.."}[6h]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET"}[6h]))\n',
                   labels: {
                     verb: "read",
                   },
                   record: "apiserver_request:burnrate6h",
                 },
                 {
-                  expr: '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[1d]))\n    -\n    sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",le="1"}[1d]))\n  )\n  +\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",code=~"5.."}[1d]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[1d]))\n',
+                  expr:
+                    '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[1d]))\n    -\n    sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",le="1"}[1d]))\n  )\n  +\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",code=~"5.."}[1d]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[1d]))\n',
                   labels: {
                     verb: "write",
                   },
                   record: "apiserver_request:burnrate1d",
                 },
                 {
-                  expr: '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[1h]))\n    -\n    sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",le="1"}[1h]))\n  )\n  +\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",code=~"5.."}[1h]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[1h]))\n',
+                  expr:
+                    '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[1h]))\n    -\n    sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",le="1"}[1h]))\n  )\n  +\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",code=~"5.."}[1h]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[1h]))\n',
                   labels: {
                     verb: "write",
                   },
                   record: "apiserver_request:burnrate1h",
                 },
                 {
-                  expr: '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[2h]))\n    -\n    sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",le="1"}[2h]))\n  )\n  +\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",code=~"5.."}[2h]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[2h]))\n',
+                  expr:
+                    '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[2h]))\n    -\n    sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",le="1"}[2h]))\n  )\n  +\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",code=~"5.."}[2h]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[2h]))\n',
                   labels: {
                     verb: "write",
                   },
                   record: "apiserver_request:burnrate2h",
                 },
                 {
-                  expr: '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[30m]))\n    -\n    sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",le="1"}[30m]))\n  )\n  +\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",code=~"5.."}[30m]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[30m]))\n',
+                  expr:
+                    '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[30m]))\n    -\n    sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",le="1"}[30m]))\n  )\n  +\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",code=~"5.."}[30m]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[30m]))\n',
                   labels: {
                     verb: "write",
                   },
                   record: "apiserver_request:burnrate30m",
                 },
                 {
-                  expr: '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[3d]))\n    -\n    sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",le="1"}[3d]))\n  )\n  +\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",code=~"5.."}[3d]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[3d]))\n',
+                  expr:
+                    '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[3d]))\n    -\n    sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",le="1"}[3d]))\n  )\n  +\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",code=~"5.."}[3d]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[3d]))\n',
                   labels: {
                     verb: "write",
                   },
                   record: "apiserver_request:burnrate3d",
                 },
                 {
-                  expr: '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[5m]))\n    -\n    sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",le="1"}[5m]))\n  )\n  +\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",code=~"5.."}[5m]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[5m]))\n',
+                  expr:
+                    '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[5m]))\n    -\n    sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",le="1"}[5m]))\n  )\n  +\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",code=~"5.."}[5m]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[5m]))\n',
                   labels: {
                     verb: "write",
                   },
                   record: "apiserver_request:burnrate5m",
                 },
                 {
-                  expr: '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[6h]))\n    -\n    sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",le="1"}[6h]))\n  )\n  +\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",code=~"5.."}[6h]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[6h]))\n',
+                  expr:
+                    '(\n  (\n    # too slow\n    sum(rate(apiserver_request_duration_seconds_count{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[6h]))\n    -\n    sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",le="1"}[6h]))\n  )\n  +\n  sum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE",code=~"5.."}[6h]))\n)\n/\nsum(rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[6h]))\n',
                   labels: {
                     verb: "write",
                   },
                   record: "apiserver_request:burnrate6h",
                 },
                 {
-                  expr: 'sum by (code,resource) (rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET"}[5m]))\n',
+                  expr:
+                    'sum by (code,resource) (rate(apiserver_request_total{job="apiserver",verb=~"LIST|GET"}[5m]))\n',
                   labels: {
                     verb: "read",
                   },
                   record: "code_resource:apiserver_request_total:rate5m",
                 },
                 {
-                  expr: 'sum by (code,resource) (rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[5m]))\n',
+                  expr:
+                    'sum by (code,resource) (rate(apiserver_request_total{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[5m]))\n',
                   labels: {
                     verb: "write",
                   },
                   record: "code_resource:apiserver_request_total:rate5m",
                 },
                 {
-                  expr: 'histogram_quantile(0.99, sum by (le, resource) (rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET"}[5m]))) > 0\n',
+                  expr:
+                    'histogram_quantile(0.99, sum by (le, resource) (rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET"}[5m]))) > 0\n',
                   labels: {
                     quantile: "0.99",
                     verb: "read",
@@ -3202,7 +3305,8 @@ exports.createResources = async ({ provider, resources }) => {
                     "cluster_quantile:apiserver_request_duration_seconds:histogram_quantile",
                 },
                 {
-                  expr: 'histogram_quantile(0.99, sum by (le, resource) (rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[5m]))) > 0\n',
+                  expr:
+                    'histogram_quantile(0.99, sum by (le, resource) (rate(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"POST|PUT|PATCH|DELETE"}[5m]))) > 0\n',
                   labels: {
                     quantile: "0.99",
                     verb: "write",
@@ -3211,7 +3315,8 @@ exports.createResources = async ({ provider, resources }) => {
                     "cluster_quantile:apiserver_request_duration_seconds:histogram_quantile",
                 },
                 {
-                  expr: 'histogram_quantile(0.99, sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",subresource!="log",verb!~"LIST|WATCH|WATCHLIST|DELETECOLLECTION|PROXY|CONNECT"}[5m])) without(instance, pod))\n',
+                  expr:
+                    'histogram_quantile(0.99, sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",subresource!="log",verb!~"LIST|WATCH|WATCHLIST|DELETECOLLECTION|PROXY|CONNECT"}[5m])) without(instance, pod))\n',
                   labels: {
                     quantile: "0.99",
                   },
@@ -3219,7 +3324,8 @@ exports.createResources = async ({ provider, resources }) => {
                     "cluster_quantile:apiserver_request_duration_seconds:histogram_quantile",
                 },
                 {
-                  expr: 'histogram_quantile(0.9, sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",subresource!="log",verb!~"LIST|WATCH|WATCHLIST|DELETECOLLECTION|PROXY|CONNECT"}[5m])) without(instance, pod))\n',
+                  expr:
+                    'histogram_quantile(0.9, sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",subresource!="log",verb!~"LIST|WATCH|WATCHLIST|DELETECOLLECTION|PROXY|CONNECT"}[5m])) without(instance, pod))\n',
                   labels: {
                     quantile: "0.9",
                   },
@@ -3227,7 +3333,8 @@ exports.createResources = async ({ provider, resources }) => {
                     "cluster_quantile:apiserver_request_duration_seconds:histogram_quantile",
                 },
                 {
-                  expr: 'histogram_quantile(0.5, sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",subresource!="log",verb!~"LIST|WATCH|WATCHLIST|DELETECOLLECTION|PROXY|CONNECT"}[5m])) without(instance, pod))\n',
+                  expr:
+                    'histogram_quantile(0.5, sum(rate(apiserver_request_duration_seconds_bucket{job="apiserver",subresource!="log",verb!~"LIST|WATCH|WATCHLIST|DELETECOLLECTION|PROXY|CONNECT"}[5m])) without(instance, pod))\n',
                   labels: {
                     quantile: "0.5",
                   },
@@ -3241,135 +3348,165 @@ exports.createResources = async ({ provider, resources }) => {
               name: "kube-apiserver-availability.rules",
               rules: [
                 {
-                  expr: '1 - (\n  (\n    # write too slow\n    sum(increase(apiserver_request_duration_seconds_count{verb=~"POST|PUT|PATCH|DELETE"}[30d]))\n    -\n    sum(increase(apiserver_request_duration_seconds_bucket{verb=~"POST|PUT|PATCH|DELETE",le="1"}[30d]))\n  ) +\n  (\n    # read too slow\n    sum(increase(apiserver_request_duration_seconds_count{verb=~"LIST|GET"}[30d]))\n    -\n    (\n      (\n        sum(increase(apiserver_request_duration_seconds_bucket{verb=~"LIST|GET",scope=~"resource|",le="0.1"}[30d]))\n        or\n        vector(0)\n      )\n      +\n      sum(increase(apiserver_request_duration_seconds_bucket{verb=~"LIST|GET",scope="namespace",le="0.5"}[30d]))\n      +\n      sum(increase(apiserver_request_duration_seconds_bucket{verb=~"LIST|GET",scope="cluster",le="5"}[30d]))\n    )\n  ) +\n  # errors\n  sum(code:apiserver_request_total:increase30d{code=~"5.."} or vector(0))\n)\n/\nsum(code:apiserver_request_total:increase30d)\n',
+                  expr:
+                    '1 - (\n  (\n    # write too slow\n    sum(increase(apiserver_request_duration_seconds_count{verb=~"POST|PUT|PATCH|DELETE"}[30d]))\n    -\n    sum(increase(apiserver_request_duration_seconds_bucket{verb=~"POST|PUT|PATCH|DELETE",le="1"}[30d]))\n  ) +\n  (\n    # read too slow\n    sum(increase(apiserver_request_duration_seconds_count{verb=~"LIST|GET"}[30d]))\n    -\n    (\n      (\n        sum(increase(apiserver_request_duration_seconds_bucket{verb=~"LIST|GET",scope=~"resource|",le="0.1"}[30d]))\n        or\n        vector(0)\n      )\n      +\n      sum(increase(apiserver_request_duration_seconds_bucket{verb=~"LIST|GET",scope="namespace",le="0.5"}[30d]))\n      +\n      sum(increase(apiserver_request_duration_seconds_bucket{verb=~"LIST|GET",scope="cluster",le="5"}[30d]))\n    )\n  ) +\n  # errors\n  sum(code:apiserver_request_total:increase30d{code=~"5.."} or vector(0))\n)\n/\nsum(code:apiserver_request_total:increase30d)\n',
                   labels: {
                     verb: "all",
                   },
                   record: "apiserver_request:availability30d",
                 },
                 {
-                  expr: '1 - (\n  sum(increase(apiserver_request_duration_seconds_count{job="apiserver",verb=~"LIST|GET"}[30d]))\n  -\n  (\n    # too slow\n    (\n      sum(increase(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope=~"resource|",le="0.1"}[30d]))\n      or\n      vector(0)\n    )\n    +\n    sum(increase(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="namespace",le="0.5"}[30d]))\n    +\n    sum(increase(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="cluster",le="5"}[30d]))\n  )\n  +\n  # errors\n  sum(code:apiserver_request_total:increase30d{verb="read",code=~"5.."} or vector(0))\n)\n/\nsum(code:apiserver_request_total:increase30d{verb="read"})\n',
+                  expr:
+                    '1 - (\n  sum(increase(apiserver_request_duration_seconds_count{job="apiserver",verb=~"LIST|GET"}[30d]))\n  -\n  (\n    # too slow\n    (\n      sum(increase(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope=~"resource|",le="0.1"}[30d]))\n      or\n      vector(0)\n    )\n    +\n    sum(increase(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="namespace",le="0.5"}[30d]))\n    +\n    sum(increase(apiserver_request_duration_seconds_bucket{job="apiserver",verb=~"LIST|GET",scope="cluster",le="5"}[30d]))\n  )\n  +\n  # errors\n  sum(code:apiserver_request_total:increase30d{verb="read",code=~"5.."} or vector(0))\n)\n/\nsum(code:apiserver_request_total:increase30d{verb="read"})\n',
                   labels: {
                     verb: "read",
                   },
                   record: "apiserver_request:availability30d",
                 },
                 {
-                  expr: '1 - (\n  (\n    # too slow\n    sum(increase(apiserver_request_duration_seconds_count{verb=~"POST|PUT|PATCH|DELETE"}[30d]))\n    -\n    sum(increase(apiserver_request_duration_seconds_bucket{verb=~"POST|PUT|PATCH|DELETE",le="1"}[30d]))\n  )\n  +\n  # errors\n  sum(code:apiserver_request_total:increase30d{verb="write",code=~"5.."} or vector(0))\n)\n/\nsum(code:apiserver_request_total:increase30d{verb="write"})\n',
+                  expr:
+                    '1 - (\n  (\n    # too slow\n    sum(increase(apiserver_request_duration_seconds_count{verb=~"POST|PUT|PATCH|DELETE"}[30d]))\n    -\n    sum(increase(apiserver_request_duration_seconds_bucket{verb=~"POST|PUT|PATCH|DELETE",le="1"}[30d]))\n  )\n  +\n  # errors\n  sum(code:apiserver_request_total:increase30d{verb="write",code=~"5.."} or vector(0))\n)\n/\nsum(code:apiserver_request_total:increase30d{verb="write"})\n',
                   labels: {
                     verb: "write",
                   },
                   record: "apiserver_request:availability30d",
                 },
                 {
-                  expr: "avg_over_time(code_verb:apiserver_request_total:increase1h[30d]) * 24 * 30\n",
+                  expr:
+                    "avg_over_time(code_verb:apiserver_request_total:increase1h[30d]) * 24 * 30\n",
                   record: "code_verb:apiserver_request_total:increase30d",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="LIST",code=~"2.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="LIST",code=~"2.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="GET",code=~"2.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="GET",code=~"2.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="POST",code=~"2.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="POST",code=~"2.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="PUT",code=~"2.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="PUT",code=~"2.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="PATCH",code=~"2.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="PATCH",code=~"2.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="DELETE",code=~"2.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="DELETE",code=~"2.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="LIST",code=~"3.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="LIST",code=~"3.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="GET",code=~"3.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="GET",code=~"3.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="POST",code=~"3.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="POST",code=~"3.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="PUT",code=~"3.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="PUT",code=~"3.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="PATCH",code=~"3.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="PATCH",code=~"3.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="DELETE",code=~"3.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="DELETE",code=~"3.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="LIST",code=~"4.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="LIST",code=~"4.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="GET",code=~"4.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="GET",code=~"4.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="POST",code=~"4.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="POST",code=~"4.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="PUT",code=~"4.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="PUT",code=~"4.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="PATCH",code=~"4.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="PATCH",code=~"4.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="DELETE",code=~"4.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="DELETE",code=~"4.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="LIST",code=~"5.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="LIST",code=~"5.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="GET",code=~"5.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="GET",code=~"5.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="POST",code=~"5.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="POST",code=~"5.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="PUT",code=~"5.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="PUT",code=~"5.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="PATCH",code=~"5.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="PATCH",code=~"5.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="DELETE",code=~"5.."}[1h]))\n',
+                  expr:
+                    'sum by (code, verb) (increase(apiserver_request_total{job="apiserver",verb="DELETE",code=~"5.."}[1h]))\n',
                   record: "code_verb:apiserver_request_total:increase1h",
                 },
                 {
-                  expr: 'sum by (code) (code_verb:apiserver_request_total:increase30d{verb=~"LIST|GET"})\n',
+                  expr:
+                    'sum by (code) (code_verb:apiserver_request_total:increase30d{verb=~"LIST|GET"})\n',
                   labels: {
                     verb: "read",
                   },
                   record: "code:apiserver_request_total:increase30d",
                 },
                 {
-                  expr: 'sum by (code) (code_verb:apiserver_request_total:increase30d{verb=~"POST|PUT|PATCH|DELETE"})\n',
+                  expr:
+                    'sum by (code) (code_verb:apiserver_request_total:increase30d{verb=~"POST|PUT|PATCH|DELETE"})\n',
                   labels: {
                     verb: "write",
                   },
@@ -3381,53 +3518,63 @@ exports.createResources = async ({ provider, resources }) => {
               name: "k8s.rules",
               rules: [
                 {
-                  expr: 'sum by (cluster, namespace, pod, container) (\n  rate(container_cpu_usage_seconds_total{job="kubelet", metrics_path="/metrics/cadvisor", image!=""}[5m])\n) * on (cluster, namespace, pod) group_left(node) topk by (cluster, namespace, pod) (\n  1, max by(cluster, namespace, pod, node) (kube_pod_info{node!=""})\n)\n',
+                  expr:
+                    'sum by (cluster, namespace, pod, container) (\n  rate(container_cpu_usage_seconds_total{job="kubelet", metrics_path="/metrics/cadvisor", image!=""}[5m])\n) * on (cluster, namespace, pod) group_left(node) topk by (cluster, namespace, pod) (\n  1, max by(cluster, namespace, pod, node) (kube_pod_info{node!=""})\n)\n',
                   record:
                     "node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate",
                 },
                 {
-                  expr: 'container_memory_working_set_bytes{job="kubelet", metrics_path="/metrics/cadvisor", image!=""}\n* on (namespace, pod) group_left(node) topk by(namespace, pod) (1,\n  max by(namespace, pod, node) (kube_pod_info{node!=""})\n)\n',
+                  expr:
+                    'container_memory_working_set_bytes{job="kubelet", metrics_path="/metrics/cadvisor", image!=""}\n* on (namespace, pod) group_left(node) topk by(namespace, pod) (1,\n  max by(namespace, pod, node) (kube_pod_info{node!=""})\n)\n',
                   record:
                     "node_namespace_pod_container:container_memory_working_set_bytes",
                 },
                 {
-                  expr: 'container_memory_rss{job="kubelet", metrics_path="/metrics/cadvisor", image!=""}\n* on (namespace, pod) group_left(node) topk by(namespace, pod) (1,\n  max by(namespace, pod, node) (kube_pod_info{node!=""})\n)\n',
+                  expr:
+                    'container_memory_rss{job="kubelet", metrics_path="/metrics/cadvisor", image!=""}\n* on (namespace, pod) group_left(node) topk by(namespace, pod) (1,\n  max by(namespace, pod, node) (kube_pod_info{node!=""})\n)\n',
                   record: "node_namespace_pod_container:container_memory_rss",
                 },
                 {
-                  expr: 'container_memory_cache{job="kubelet", metrics_path="/metrics/cadvisor", image!=""}\n* on (namespace, pod) group_left(node) topk by(namespace, pod) (1,\n  max by(namespace, pod, node) (kube_pod_info{node!=""})\n)\n',
+                  expr:
+                    'container_memory_cache{job="kubelet", metrics_path="/metrics/cadvisor", image!=""}\n* on (namespace, pod) group_left(node) topk by(namespace, pod) (1,\n  max by(namespace, pod, node) (kube_pod_info{node!=""})\n)\n',
                   record: "node_namespace_pod_container:container_memory_cache",
                 },
                 {
-                  expr: 'container_memory_swap{job="kubelet", metrics_path="/metrics/cadvisor", image!=""}\n* on (namespace, pod) group_left(node) topk by(namespace, pod) (1,\n  max by(namespace, pod, node) (kube_pod_info{node!=""})\n)\n',
+                  expr:
+                    'container_memory_swap{job="kubelet", metrics_path="/metrics/cadvisor", image!=""}\n* on (namespace, pod) group_left(node) topk by(namespace, pod) (1,\n  max by(namespace, pod, node) (kube_pod_info{node!=""})\n)\n',
                   record: "node_namespace_pod_container:container_memory_swap",
                 },
                 {
-                  expr: 'sum by (namespace, cluster) (\n    sum by (namespace, pod, cluster) (\n        max by (namespace, pod, container, cluster) (\n          kube_pod_container_resource_requests{resource="memory",job="kube-state-metrics"}\n        ) * on(namespace, pod, cluster) group_left() max by (namespace, pod) (\n          kube_pod_status_phase{phase=~"Pending|Running"} == 1\n        )\n    )\n)\n',
+                  expr:
+                    'sum by (namespace, cluster) (\n    sum by (namespace, pod, cluster) (\n        max by (namespace, pod, container, cluster) (\n          kube_pod_container_resource_requests{resource="memory",job="kube-state-metrics"}\n        ) * on(namespace, pod, cluster) group_left() max by (namespace, pod) (\n          kube_pod_status_phase{phase=~"Pending|Running"} == 1\n        )\n    )\n)\n',
                   record:
                     "namespace_memory:kube_pod_container_resource_requests:sum",
                 },
                 {
-                  expr: 'sum by (namespace, cluster) (\n    sum by (namespace, pod, cluster) (\n        max by (namespace, pod, container, cluster) (\n          kube_pod_container_resource_requests{resource="cpu",job="kube-state-metrics"}\n        ) * on(namespace, pod, cluster) group_left() max by (namespace, pod) (\n          kube_pod_status_phase{phase=~"Pending|Running"} == 1\n        )\n    )\n)\n',
+                  expr:
+                    'sum by (namespace, cluster) (\n    sum by (namespace, pod, cluster) (\n        max by (namespace, pod, container, cluster) (\n          kube_pod_container_resource_requests{resource="cpu",job="kube-state-metrics"}\n        ) * on(namespace, pod, cluster) group_left() max by (namespace, pod) (\n          kube_pod_status_phase{phase=~"Pending|Running"} == 1\n        )\n    )\n)\n',
                   record:
                     "namespace_cpu:kube_pod_container_resource_requests:sum",
                 },
                 {
-                  expr: 'max by (cluster, namespace, workload, pod) (\n  label_replace(\n    label_replace(\n      kube_pod_owner{job="kube-state-metrics", owner_kind="ReplicaSet"},\n      "replicaset", "$1", "owner_name", "(.*)"\n    ) * on(replicaset, namespace) group_left(owner_name) topk by(replicaset, namespace) (\n      1, max by (replicaset, namespace, owner_name) (\n        kube_replicaset_owner{job="kube-state-metrics"}\n      )\n    ),\n    "workload", "$1", "owner_name", "(.*)"\n  )\n)\n',
+                  expr:
+                    'max by (cluster, namespace, workload, pod) (\n  label_replace(\n    label_replace(\n      kube_pod_owner{job="kube-state-metrics", owner_kind="ReplicaSet"},\n      "replicaset", "$1", "owner_name", "(.*)"\n    ) * on(replicaset, namespace) group_left(owner_name) topk by(replicaset, namespace) (\n      1, max by (replicaset, namespace, owner_name) (\n        kube_replicaset_owner{job="kube-state-metrics"}\n      )\n    ),\n    "workload", "$1", "owner_name", "(.*)"\n  )\n)\n',
                   labels: {
                     workload_type: "deployment",
                   },
                   record: "namespace_workload_pod:kube_pod_owner:relabel",
                 },
                 {
-                  expr: 'max by (cluster, namespace, workload, pod) (\n  label_replace(\n    kube_pod_owner{job="kube-state-metrics", owner_kind="DaemonSet"},\n    "workload", "$1", "owner_name", "(.*)"\n  )\n)\n',
+                  expr:
+                    'max by (cluster, namespace, workload, pod) (\n  label_replace(\n    kube_pod_owner{job="kube-state-metrics", owner_kind="DaemonSet"},\n    "workload", "$1", "owner_name", "(.*)"\n  )\n)\n',
                   labels: {
                     workload_type: "daemonset",
                   },
                   record: "namespace_workload_pod:kube_pod_owner:relabel",
                 },
                 {
-                  expr: 'max by (cluster, namespace, workload, pod) (\n  label_replace(\n    kube_pod_owner{job="kube-state-metrics", owner_kind="StatefulSet"},\n    "workload", "$1", "owner_name", "(.*)"\n  )\n)\n',
+                  expr:
+                    'max by (cluster, namespace, workload, pod) (\n  label_replace(\n    kube_pod_owner{job="kube-state-metrics", owner_kind="StatefulSet"},\n    "workload", "$1", "owner_name", "(.*)"\n  )\n)\n',
                   labels: {
                     workload_type: "statefulset",
                   },
@@ -3439,7 +3586,8 @@ exports.createResources = async ({ provider, resources }) => {
               name: "kube-scheduler.rules",
               rules: [
                 {
-                  expr: 'histogram_quantile(0.99, sum(rate(scheduler_e2e_scheduling_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
+                  expr:
+                    'histogram_quantile(0.99, sum(rate(scheduler_e2e_scheduling_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
                   labels: {
                     quantile: "0.99",
                   },
@@ -3447,7 +3595,8 @@ exports.createResources = async ({ provider, resources }) => {
                     "cluster_quantile:scheduler_e2e_scheduling_duration_seconds:histogram_quantile",
                 },
                 {
-                  expr: 'histogram_quantile(0.99, sum(rate(scheduler_scheduling_algorithm_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
+                  expr:
+                    'histogram_quantile(0.99, sum(rate(scheduler_scheduling_algorithm_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
                   labels: {
                     quantile: "0.99",
                   },
@@ -3455,7 +3604,8 @@ exports.createResources = async ({ provider, resources }) => {
                     "cluster_quantile:scheduler_scheduling_algorithm_duration_seconds:histogram_quantile",
                 },
                 {
-                  expr: 'histogram_quantile(0.99, sum(rate(scheduler_binding_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
+                  expr:
+                    'histogram_quantile(0.99, sum(rate(scheduler_binding_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
                   labels: {
                     quantile: "0.99",
                   },
@@ -3463,7 +3613,8 @@ exports.createResources = async ({ provider, resources }) => {
                     "cluster_quantile:scheduler_binding_duration_seconds:histogram_quantile",
                 },
                 {
-                  expr: 'histogram_quantile(0.9, sum(rate(scheduler_e2e_scheduling_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
+                  expr:
+                    'histogram_quantile(0.9, sum(rate(scheduler_e2e_scheduling_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
                   labels: {
                     quantile: "0.9",
                   },
@@ -3471,7 +3622,8 @@ exports.createResources = async ({ provider, resources }) => {
                     "cluster_quantile:scheduler_e2e_scheduling_duration_seconds:histogram_quantile",
                 },
                 {
-                  expr: 'histogram_quantile(0.9, sum(rate(scheduler_scheduling_algorithm_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
+                  expr:
+                    'histogram_quantile(0.9, sum(rate(scheduler_scheduling_algorithm_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
                   labels: {
                     quantile: "0.9",
                   },
@@ -3479,7 +3631,8 @@ exports.createResources = async ({ provider, resources }) => {
                     "cluster_quantile:scheduler_scheduling_algorithm_duration_seconds:histogram_quantile",
                 },
                 {
-                  expr: 'histogram_quantile(0.9, sum(rate(scheduler_binding_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
+                  expr:
+                    'histogram_quantile(0.9, sum(rate(scheduler_binding_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
                   labels: {
                     quantile: "0.9",
                   },
@@ -3487,7 +3640,8 @@ exports.createResources = async ({ provider, resources }) => {
                     "cluster_quantile:scheduler_binding_duration_seconds:histogram_quantile",
                 },
                 {
-                  expr: 'histogram_quantile(0.5, sum(rate(scheduler_e2e_scheduling_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
+                  expr:
+                    'histogram_quantile(0.5, sum(rate(scheduler_e2e_scheduling_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
                   labels: {
                     quantile: "0.5",
                   },
@@ -3495,7 +3649,8 @@ exports.createResources = async ({ provider, resources }) => {
                     "cluster_quantile:scheduler_e2e_scheduling_duration_seconds:histogram_quantile",
                 },
                 {
-                  expr: 'histogram_quantile(0.5, sum(rate(scheduler_scheduling_algorithm_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
+                  expr:
+                    'histogram_quantile(0.5, sum(rate(scheduler_scheduling_algorithm_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
                   labels: {
                     quantile: "0.5",
                   },
@@ -3503,7 +3658,8 @@ exports.createResources = async ({ provider, resources }) => {
                     "cluster_quantile:scheduler_scheduling_algorithm_duration_seconds:histogram_quantile",
                 },
                 {
-                  expr: 'histogram_quantile(0.5, sum(rate(scheduler_binding_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
+                  expr:
+                    'histogram_quantile(0.5, sum(rate(scheduler_binding_duration_seconds_bucket{job="kube-scheduler"}[5m])) without(instance, pod))\n',
                   labels: {
                     quantile: "0.5",
                   },
@@ -3516,15 +3672,18 @@ exports.createResources = async ({ provider, resources }) => {
               name: "node.rules",
               rules: [
                 {
-                  expr: 'topk by(namespace, pod) (1,\n  max by (node, namespace, pod) (\n    label_replace(kube_pod_info{job="kube-state-metrics",node!=""}, "pod", "$1", "pod", "(.*)")\n))\n',
+                  expr:
+                    'topk by(namespace, pod) (1,\n  max by (node, namespace, pod) (\n    label_replace(kube_pod_info{job="kube-state-metrics",node!=""}, "pod", "$1", "pod", "(.*)")\n))\n',
                   record: "node_namespace_pod:kube_pod_info:",
                 },
                 {
-                  expr: 'count by (cluster, node) (sum by (node, cpu) (\n  node_cpu_seconds_total{job="node-exporter"}\n* on (namespace, pod) group_left(node)\n  topk by(namespace, pod) (1, node_namespace_pod:kube_pod_info:)\n))\n',
+                  expr:
+                    'count by (cluster, node) (sum by (node, cpu) (\n  node_cpu_seconds_total{job="node-exporter"}\n* on (namespace, pod) group_left(node)\n  topk by(namespace, pod) (1, node_namespace_pod:kube_pod_info:)\n))\n',
                   record: "node:node_num_cpu:sum",
                 },
                 {
-                  expr: 'sum(\n  node_memory_MemAvailable_bytes{job="node-exporter"} or\n  (\n    node_memory_Buffers_bytes{job="node-exporter"} +\n    node_memory_Cached_bytes{job="node-exporter"} +\n    node_memory_MemFree_bytes{job="node-exporter"} +\n    node_memory_Slab_bytes{job="node-exporter"}\n  )\n) by (cluster)\n',
+                  expr:
+                    'sum(\n  node_memory_MemAvailable_bytes{job="node-exporter"} or\n  (\n    node_memory_Buffers_bytes{job="node-exporter"} +\n    node_memory_Cached_bytes{job="node-exporter"} +\n    node_memory_MemFree_bytes{job="node-exporter"} +\n    node_memory_Slab_bytes{job="node-exporter"}\n  )\n) by (cluster)\n',
                   record: ":node_memory_MemAvailable_bytes:sum",
                 },
               ],
@@ -3533,7 +3692,8 @@ exports.createResources = async ({ provider, resources }) => {
               name: "kubelet.rules",
               rules: [
                 {
-                  expr: 'histogram_quantile(0.99, sum(rate(kubelet_pleg_relist_duration_seconds_bucket[5m])) by (instance, le) * on(instance) group_left(node) kubelet_node_name{job="kubelet", metrics_path="/metrics"})\n',
+                  expr:
+                    'histogram_quantile(0.99, sum(rate(kubelet_pleg_relist_duration_seconds_bucket[5m])) by (instance, le) * on(instance) group_left(node) kubelet_node_name{job="kubelet", metrics_path="/metrics"})\n',
                   labels: {
                     quantile: "0.99",
                   },
@@ -3541,7 +3701,8 @@ exports.createResources = async ({ provider, resources }) => {
                     "node_quantile:kubelet_pleg_relist_duration_seconds:histogram_quantile",
                 },
                 {
-                  expr: 'histogram_quantile(0.9, sum(rate(kubelet_pleg_relist_duration_seconds_bucket[5m])) by (instance, le) * on(instance) group_left(node) kubelet_node_name{job="kubelet", metrics_path="/metrics"})\n',
+                  expr:
+                    'histogram_quantile(0.9, sum(rate(kubelet_pleg_relist_duration_seconds_bucket[5m])) by (instance, le) * on(instance) group_left(node) kubelet_node_name{job="kubelet", metrics_path="/metrics"})\n',
                   labels: {
                     quantile: "0.9",
                   },
@@ -3549,7 +3710,8 @@ exports.createResources = async ({ provider, resources }) => {
                     "node_quantile:kubelet_pleg_relist_duration_seconds:histogram_quantile",
                 },
                 {
-                  expr: 'histogram_quantile(0.5, sum(rate(kubelet_pleg_relist_duration_seconds_bucket[5m])) by (instance, le) * on(instance) group_left(node) kubelet_node_name{job="kubelet", metrics_path="/metrics"})\n',
+                  expr:
+                    'histogram_quantile(0.5, sum(rate(kubelet_pleg_relist_duration_seconds_bucket[5m])) by (instance, le) * on(instance) group_left(node) kubelet_node_name{job="kubelet", metrics_path="/metrics"})\n',
                   labels: {
                     quantile: "0.5",
                   },
@@ -3561,10 +3723,11 @@ exports.createResources = async ({ provider, resources }) => {
           ],
         },
       }),
-    });
+    }
+  );
 
   const monitoringkubeApiserverServiceMonitor = provider.makeServiceMonitor({
-    name: "monitoring-kube-apiserver",
+    name: "kube-apiserver",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -3676,7 +3839,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringcorednsServiceMonitor = provider.makeServiceMonitor({
-    name: "monitoring-coredns",
+    name: "coredns",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -3708,9 +3871,9 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const monitoringkubeControllerManagerServiceMonitor =
-    provider.makeServiceMonitor({
-      name: "monitoring-kube-controller-manager",
+  const monitoringkubeControllerManagerServiceMonitor = provider.makeServiceMonitor(
+    {
+      name: "kube-controller-manager",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -3799,10 +3962,11 @@ exports.createResources = async ({ provider, resources }) => {
           },
         },
       }),
-    });
+    }
+  );
 
   const monitoringkubeSchedulerServiceMonitor = provider.makeServiceMonitor({
-    name: "monitoring-kube-scheduler",
+    name: "kube-scheduler",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -3839,7 +4003,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringkubeletServiceMonitor = provider.makeServiceMonitor({
-    name: "monitoring-kubelet",
+    name: "kubelet",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -4034,7 +4198,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringnodeExporterDaemonSet = provider.makeDaemonSet({
-    name: "monitoring-node-exporter",
+    name: "node-exporter",
     properties: () => ({
       apiVersion: "apps/v1",
       metadata: {
@@ -4190,7 +4354,7 @@ exports.createResources = async ({ provider, resources }) => {
 
   const monitoringnodeExporterRulesPrometheusRule = provider.makePrometheusRule(
     {
-      name: "monitoring-node-exporter-rules",
+      name: "node-exporter-rules",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -4220,7 +4384,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Filesystem is predicted to run out of space within the next 24 hours.",
                   },
-                  expr: '(\n  node_filesystem_avail_bytes{job="node-exporter",fstype!=""} / node_filesystem_size_bytes{job="node-exporter",fstype!=""} * 100 < 40\nand\n  predict_linear(node_filesystem_avail_bytes{job="node-exporter",fstype!=""}[6h], 24*60*60) < 0\nand\n  node_filesystem_readonly{job="node-exporter",fstype!=""} == 0\n)\n',
+                  expr:
+                    '(\n  node_filesystem_avail_bytes{job="node-exporter",fstype!=""} / node_filesystem_size_bytes{job="node-exporter",fstype!=""} * 100 < 40\nand\n  predict_linear(node_filesystem_avail_bytes{job="node-exporter",fstype!=""}[6h], 24*60*60) < 0\nand\n  node_filesystem_readonly{job="node-exporter",fstype!=""} == 0\n)\n',
                   for: "1h",
                   labels: {
                     severity: "warning",
@@ -4236,7 +4401,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Filesystem is predicted to run out of space within the next 4 hours.",
                   },
-                  expr: '(\n  node_filesystem_avail_bytes{job="node-exporter",fstype!=""} / node_filesystem_size_bytes{job="node-exporter",fstype!=""} * 100 < 15\nand\n  predict_linear(node_filesystem_avail_bytes{job="node-exporter",fstype!=""}[6h], 4*60*60) < 0\nand\n  node_filesystem_readonly{job="node-exporter",fstype!=""} == 0\n)\n',
+                  expr:
+                    '(\n  node_filesystem_avail_bytes{job="node-exporter",fstype!=""} / node_filesystem_size_bytes{job="node-exporter",fstype!=""} * 100 < 15\nand\n  predict_linear(node_filesystem_avail_bytes{job="node-exporter",fstype!=""}[6h], 4*60*60) < 0\nand\n  node_filesystem_readonly{job="node-exporter",fstype!=""} == 0\n)\n',
                   for: "1h",
                   labels: {
                     severity: "critical",
@@ -4251,7 +4417,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/nodefilesystemalmostoutofspace",
                     summary: "Filesystem has less than 5% space left.",
                   },
-                  expr: '(\n  node_filesystem_avail_bytes{job="node-exporter",fstype!=""} / node_filesystem_size_bytes{job="node-exporter",fstype!=""} * 100 < 5\nand\n  node_filesystem_readonly{job="node-exporter",fstype!=""} == 0\n)\n',
+                  expr:
+                    '(\n  node_filesystem_avail_bytes{job="node-exporter",fstype!=""} / node_filesystem_size_bytes{job="node-exporter",fstype!=""} * 100 < 5\nand\n  node_filesystem_readonly{job="node-exporter",fstype!=""} == 0\n)\n',
                   for: "1h",
                   labels: {
                     severity: "warning",
@@ -4266,7 +4433,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/nodefilesystemalmostoutofspace",
                     summary: "Filesystem has less than 3% space left.",
                   },
-                  expr: '(\n  node_filesystem_avail_bytes{job="node-exporter",fstype!=""} / node_filesystem_size_bytes{job="node-exporter",fstype!=""} * 100 < 3\nand\n  node_filesystem_readonly{job="node-exporter",fstype!=""} == 0\n)\n',
+                  expr:
+                    '(\n  node_filesystem_avail_bytes{job="node-exporter",fstype!=""} / node_filesystem_size_bytes{job="node-exporter",fstype!=""} * 100 < 3\nand\n  node_filesystem_readonly{job="node-exporter",fstype!=""} == 0\n)\n',
                   for: "1h",
                   labels: {
                     severity: "critical",
@@ -4282,7 +4450,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Filesystem is predicted to run out of inodes within the next 24 hours.",
                   },
-                  expr: '(\n  node_filesystem_files_free{job="node-exporter",fstype!=""} / node_filesystem_files{job="node-exporter",fstype!=""} * 100 < 40\nand\n  predict_linear(node_filesystem_files_free{job="node-exporter",fstype!=""}[6h], 24*60*60) < 0\nand\n  node_filesystem_readonly{job="node-exporter",fstype!=""} == 0\n)\n',
+                  expr:
+                    '(\n  node_filesystem_files_free{job="node-exporter",fstype!=""} / node_filesystem_files{job="node-exporter",fstype!=""} * 100 < 40\nand\n  predict_linear(node_filesystem_files_free{job="node-exporter",fstype!=""}[6h], 24*60*60) < 0\nand\n  node_filesystem_readonly{job="node-exporter",fstype!=""} == 0\n)\n',
                   for: "1h",
                   labels: {
                     severity: "warning",
@@ -4298,7 +4467,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Filesystem is predicted to run out of inodes within the next 4 hours.",
                   },
-                  expr: '(\n  node_filesystem_files_free{job="node-exporter",fstype!=""} / node_filesystem_files{job="node-exporter",fstype!=""} * 100 < 20\nand\n  predict_linear(node_filesystem_files_free{job="node-exporter",fstype!=""}[6h], 4*60*60) < 0\nand\n  node_filesystem_readonly{job="node-exporter",fstype!=""} == 0\n)\n',
+                  expr:
+                    '(\n  node_filesystem_files_free{job="node-exporter",fstype!=""} / node_filesystem_files{job="node-exporter",fstype!=""} * 100 < 20\nand\n  predict_linear(node_filesystem_files_free{job="node-exporter",fstype!=""}[6h], 4*60*60) < 0\nand\n  node_filesystem_readonly{job="node-exporter",fstype!=""} == 0\n)\n',
                   for: "1h",
                   labels: {
                     severity: "critical",
@@ -4313,7 +4483,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/nodefilesystemalmostoutoffiles",
                     summary: "Filesystem has less than 5% inodes left.",
                   },
-                  expr: '(\n  node_filesystem_files_free{job="node-exporter",fstype!=""} / node_filesystem_files{job="node-exporter",fstype!=""} * 100 < 5\nand\n  node_filesystem_readonly{job="node-exporter",fstype!=""} == 0\n)\n',
+                  expr:
+                    '(\n  node_filesystem_files_free{job="node-exporter",fstype!=""} / node_filesystem_files{job="node-exporter",fstype!=""} * 100 < 5\nand\n  node_filesystem_readonly{job="node-exporter",fstype!=""} == 0\n)\n',
                   for: "1h",
                   labels: {
                     severity: "warning",
@@ -4328,7 +4499,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/nodefilesystemalmostoutoffiles",
                     summary: "Filesystem has less than 3% inodes left.",
                   },
-                  expr: '(\n  node_filesystem_files_free{job="node-exporter",fstype!=""} / node_filesystem_files{job="node-exporter",fstype!=""} * 100 < 3\nand\n  node_filesystem_readonly{job="node-exporter",fstype!=""} == 0\n)\n',
+                  expr:
+                    '(\n  node_filesystem_files_free{job="node-exporter",fstype!=""} / node_filesystem_files{job="node-exporter",fstype!=""} * 100 < 3\nand\n  node_filesystem_readonly{job="node-exporter",fstype!=""} == 0\n)\n',
                   for: "1h",
                   labels: {
                     severity: "critical",
@@ -4344,7 +4516,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Network interface is reporting many receive errors.",
                   },
-                  expr: "rate(node_network_receive_errs_total[2m]) / rate(node_network_receive_packets_total[2m]) > 0.01\n",
+                  expr:
+                    "rate(node_network_receive_errs_total[2m]) / rate(node_network_receive_packets_total[2m]) > 0.01\n",
                   for: "1h",
                   labels: {
                     severity: "warning",
@@ -4360,7 +4533,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Network interface is reporting many transmit errors.",
                   },
-                  expr: "rate(node_network_transmit_errs_total[2m]) / rate(node_network_transmit_packets_total[2m]) > 0.01\n",
+                  expr:
+                    "rate(node_network_transmit_errs_total[2m]) / rate(node_network_transmit_packets_total[2m]) > 0.01\n",
                   for: "1h",
                   labels: {
                     severity: "warning",
@@ -4376,7 +4550,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Number of conntrack are getting close to the limit.",
                   },
-                  expr: "(node_nf_conntrack_entries / node_nf_conntrack_entries_limit) > 0.75\n",
+                  expr:
+                    "(node_nf_conntrack_entries / node_nf_conntrack_entries_limit) > 0.75\n",
                   labels: {
                     severity: "warning",
                   },
@@ -4391,7 +4566,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Node Exporter text file collector failed to scrape.",
                   },
-                  expr: 'node_textfile_scrape_error{job="node-exporter"} == 1\n',
+                  expr:
+                    'node_textfile_scrape_error{job="node-exporter"} == 1\n',
                   labels: {
                     severity: "warning",
                   },
@@ -4405,7 +4581,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/nodeclockskewdetected",
                     summary: "Clock skew detected.",
                   },
-                  expr: "(\n  node_timex_offset_seconds > 0.05\nand\n  deriv(node_timex_offset_seconds[5m]) >= 0\n)\nor\n(\n  node_timex_offset_seconds < -0.05\nand\n  deriv(node_timex_offset_seconds[5m]) <= 0\n)\n",
+                  expr:
+                    "(\n  node_timex_offset_seconds > 0.05\nand\n  deriv(node_timex_offset_seconds[5m]) >= 0\n)\nor\n(\n  node_timex_offset_seconds < -0.05\nand\n  deriv(node_timex_offset_seconds[5m]) <= 0\n)\n",
                   for: "10m",
                   labels: {
                     severity: "warning",
@@ -4420,7 +4597,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/nodeclocknotsynchronising",
                     summary: "Clock not synchronising.",
                   },
-                  expr: "min_over_time(node_timex_sync_status[5m]) == 0\nand\nnode_timex_maxerror_seconds >= 16\n",
+                  expr:
+                    "min_over_time(node_timex_sync_status[5m]) == 0\nand\nnode_timex_maxerror_seconds >= 16\n",
                   for: "10m",
                   labels: {
                     severity: "warning",
@@ -4435,7 +4613,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/noderaiddegraded",
                     summary: "RAID Array is degraded",
                   },
-                  expr: 'node_md_disks_required - ignoring (state) (node_md_disks{state="active"}) > 0\n',
+                  expr:
+                    'node_md_disks_required - ignoring (state) (node_md_disks{state="active"}) > 0\n',
                   for: "15m",
                   labels: {
                     severity: "critical",
@@ -4461,51 +4640,62 @@ exports.createResources = async ({ provider, resources }) => {
               name: "node-exporter.rules",
               rules: [
                 {
-                  expr: 'count without (cpu) (\n  count without (mode) (\n    node_cpu_seconds_total{job="node-exporter"}\n  )\n)\n',
+                  expr:
+                    'count without (cpu) (\n  count without (mode) (\n    node_cpu_seconds_total{job="node-exporter"}\n  )\n)\n',
                   record: "instance:node_num_cpu:sum",
                 },
                 {
-                  expr: '1 - avg without (cpu, mode) (\n  rate(node_cpu_seconds_total{job="node-exporter", mode="idle"}[5m])\n)\n',
+                  expr:
+                    '1 - avg without (cpu, mode) (\n  rate(node_cpu_seconds_total{job="node-exporter", mode="idle"}[5m])\n)\n',
                   record: "instance:node_cpu_utilisation:rate5m",
                 },
                 {
-                  expr: '(\n  node_load1{job="node-exporter"}\n/\n  instance:node_num_cpu:sum{job="node-exporter"}\n)\n',
+                  expr:
+                    '(\n  node_load1{job="node-exporter"}\n/\n  instance:node_num_cpu:sum{job="node-exporter"}\n)\n',
                   record: "instance:node_load1_per_cpu:ratio",
                 },
                 {
-                  expr: '1 - (\n  node_memory_MemAvailable_bytes{job="node-exporter"}\n/\n  node_memory_MemTotal_bytes{job="node-exporter"}\n)\n',
+                  expr:
+                    '1 - (\n  node_memory_MemAvailable_bytes{job="node-exporter"}\n/\n  node_memory_MemTotal_bytes{job="node-exporter"}\n)\n',
                   record: "instance:node_memory_utilisation:ratio",
                 },
                 {
-                  expr: 'rate(node_vmstat_pgmajfault{job="node-exporter"}[5m])\n',
+                  expr:
+                    'rate(node_vmstat_pgmajfault{job="node-exporter"}[5m])\n',
                   record: "instance:node_vmstat_pgmajfault:rate5m",
                 },
                 {
-                  expr: 'rate(node_disk_io_time_seconds_total{job="node-exporter", device=~"mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+"}[5m])\n',
+                  expr:
+                    'rate(node_disk_io_time_seconds_total{job="node-exporter", device=~"mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+"}[5m])\n',
                   record: "instance_device:node_disk_io_time_seconds:rate5m",
                 },
                 {
-                  expr: 'rate(node_disk_io_time_weighted_seconds_total{job="node-exporter", device=~"mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+"}[5m])\n',
+                  expr:
+                    'rate(node_disk_io_time_weighted_seconds_total{job="node-exporter", device=~"mmcblk.p.+|nvme.+|rbd.+|sd.+|vd.+|xvd.+|dm-.+|dasd.+"}[5m])\n',
                   record:
                     "instance_device:node_disk_io_time_weighted_seconds:rate5m",
                 },
                 {
-                  expr: 'sum without (device) (\n  rate(node_network_receive_bytes_total{job="node-exporter", device!="lo"}[5m])\n)\n',
+                  expr:
+                    'sum without (device) (\n  rate(node_network_receive_bytes_total{job="node-exporter", device!="lo"}[5m])\n)\n',
                   record:
                     "instance:node_network_receive_bytes_excluding_lo:rate5m",
                 },
                 {
-                  expr: 'sum without (device) (\n  rate(node_network_transmit_bytes_total{job="node-exporter", device!="lo"}[5m])\n)\n',
+                  expr:
+                    'sum without (device) (\n  rate(node_network_transmit_bytes_total{job="node-exporter", device!="lo"}[5m])\n)\n',
                   record:
                     "instance:node_network_transmit_bytes_excluding_lo:rate5m",
                 },
                 {
-                  expr: 'sum without (device) (\n  rate(node_network_receive_drop_total{job="node-exporter", device!="lo"}[5m])\n)\n',
+                  expr:
+                    'sum without (device) (\n  rate(node_network_receive_drop_total{job="node-exporter", device!="lo"}[5m])\n)\n',
                   record:
                     "instance:node_network_receive_drop_excluding_lo:rate5m",
                 },
                 {
-                  expr: 'sum without (device) (\n  rate(node_network_transmit_drop_total{job="node-exporter", device!="lo"}[5m])\n)\n',
+                  expr:
+                    'sum without (device) (\n  rate(node_network_transmit_drop_total{job="node-exporter", device!="lo"}[5m])\n)\n',
                   record:
                     "instance:node_network_transmit_drop_excluding_lo:rate5m",
                 },
@@ -4518,7 +4708,7 @@ exports.createResources = async ({ provider, resources }) => {
   );
 
   const monitoringnodeExporterService = provider.makeService({
-    name: "monitoring-node-exporter",
+    name: "node-exporter",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -4550,7 +4740,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringnodeExporterServiceAccount = provider.makeServiceAccount({
-    name: "monitoring-node-exporter",
+    name: "node-exporter",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -4567,7 +4757,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringnodeExporterServiceMonitor = provider.makeServiceMonitor({
-    name: "monitoring-node-exporter",
+    name: "node-exporter",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -4718,8 +4908,8 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const resourceMetricsSystemAuthDelegatorClusterRoleBinding =
-    provider.makeClusterRoleBinding({
+  const resourceMetricsSystemAuthDelegatorClusterRoleBinding = provider.makeClusterRoleBinding(
+    {
       name: "resource-metrics:system:auth-delegator",
       properties: () => ({
         apiVersion: "rbac.authorization.k8s.io/v1",
@@ -4745,7 +4935,8 @@ exports.createResources = async ({ provider, resources }) => {
           },
         ],
       }),
-    });
+    }
+  );
 
   const resourceMetricsServerResourcesClusterRole = provider.makeClusterRole({
     name: "resource-metrics-server-resources",
@@ -4771,7 +4962,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringadapterConfigConfigMap = provider.makeConfigMap({
-    name: "monitoring-adapter-config",
+    name: "adapter-config",
     properties: () => ({
       apiVersion: "v1",
       data: {
@@ -4792,7 +4983,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringprometheusAdapterDeployment = provider.makeDeployment({
-    name: "monitoring-prometheus-adapter",
+    name: "prometheus-adapter",
     properties: () => ({
       apiVersion: "apps/v1",
       metadata: {
@@ -4892,9 +5083,9 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const kubeSystemresourceMetricsAuthReaderRoleBinding =
-    provider.makeRoleBinding({
-      name: "kube-system-resource-metrics-auth-reader",
+  const kubeSystemresourceMetricsAuthReaderRoleBinding = provider.makeRoleBinding(
+    {
+      name: "resource-metrics-auth-reader",
       properties: () => ({
         apiVersion: "rbac.authorization.k8s.io/v1",
         metadata: {
@@ -4920,10 +5111,11 @@ exports.createResources = async ({ provider, resources }) => {
           },
         ],
       }),
-    });
+    }
+  );
 
   const monitoringprometheusAdapterService = provider.makeService({
-    name: "monitoring-prometheus-adapter",
+    name: "prometheus-adapter",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -4955,7 +5147,7 @@ exports.createResources = async ({ provider, resources }) => {
 
   const monitoringprometheusAdapterServiceAccount = provider.makeServiceAccount(
     {
-      name: "monitoring-prometheus-adapter",
+      name: "prometheus-adapter",
       properties: () => ({
         apiVersion: "v1",
         metadata: {
@@ -4974,7 +5166,7 @@ exports.createResources = async ({ provider, resources }) => {
 
   const monitoringprometheusAdapterServiceMonitor = provider.makeServiceMonitor(
     {
-      name: "monitoring-prometheus-adapter",
+      name: "prometheus-adapter",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -5067,9 +5259,9 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const monitoringprometheusOperatorRulesPrometheusRule =
-    provider.makePrometheusRule({
-      name: "monitoring-prometheus-operator-rules",
+  const monitoringprometheusOperatorRulesPrometheusRule = provider.makePrometheusRule(
+    {
+      name: "prometheus-operator-rules",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -5099,7 +5291,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Errors while performing list operations in controller.",
                   },
-                  expr: '(sum by (controller,namespace) (rate(prometheus_operator_list_operations_failed_total{job="prometheus-operator",namespace="monitoring"}[10m])) / sum by (controller,namespace) (rate(prometheus_operator_list_operations_total{job="prometheus-operator",namespace="monitoring"}[10m]))) > 0.4\n',
+                  expr:
+                    '(sum by (controller,namespace) (rate(prometheus_operator_list_operations_failed_total{job="prometheus-operator",namespace="monitoring"}[10m])) / sum by (controller,namespace) (rate(prometheus_operator_list_operations_total{job="prometheus-operator",namespace="monitoring"}[10m]))) > 0.4\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -5115,7 +5308,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Errors while performing watch operations in controller.",
                   },
-                  expr: '(sum by (controller,namespace) (rate(prometheus_operator_watch_operations_failed_total{job="prometheus-operator",namespace="monitoring"}[10m])) / sum by (controller,namespace) (rate(prometheus_operator_watch_operations_total{job="prometheus-operator",namespace="monitoring"}[10m]))) > 0.4\n',
+                  expr:
+                    '(sum by (controller,namespace) (rate(prometheus_operator_watch_operations_failed_total{job="prometheus-operator",namespace="monitoring"}[10m])) / sum by (controller,namespace) (rate(prometheus_operator_watch_operations_total{job="prometheus-operator",namespace="monitoring"}[10m]))) > 0.4\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -5130,7 +5324,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/prometheusoperatorsyncfailed",
                     summary: "Last controller reconciliation failed",
                   },
-                  expr: 'min_over_time(prometheus_operator_syncs{status="failed",job="prometheus-operator",namespace="monitoring"}[5m]) > 0\n',
+                  expr:
+                    'min_over_time(prometheus_operator_syncs{status="failed",job="prometheus-operator",namespace="monitoring"}[5m]) > 0\n',
                   for: "10m",
                   labels: {
                     severity: "warning",
@@ -5145,7 +5340,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/prometheusoperatorreconcileerrors",
                     summary: "Errors while reconciling controller.",
                   },
-                  expr: '(sum by (controller,namespace) (rate(prometheus_operator_reconcile_errors_total{job="prometheus-operator",namespace="monitoring"}[5m]))) / (sum by (controller,namespace) (rate(prometheus_operator_reconcile_operations_total{job="prometheus-operator",namespace="monitoring"}[5m]))) > 0.1\n',
+                  expr:
+                    '(sum by (controller,namespace) (rate(prometheus_operator_reconcile_errors_total{job="prometheus-operator",namespace="monitoring"}[5m]))) / (sum by (controller,namespace) (rate(prometheus_operator_reconcile_operations_total{job="prometheus-operator",namespace="monitoring"}[5m]))) > 0.1\n',
                   for: "10m",
                   labels: {
                     severity: "warning",
@@ -5160,7 +5356,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/prometheusoperatornodelookuperrors",
                     summary: "Errors while reconciling Prometheus.",
                   },
-                  expr: 'rate(prometheus_operator_node_address_lookup_errors_total{job="prometheus-operator",namespace="monitoring"}[5m]) > 0.1\n',
+                  expr:
+                    'rate(prometheus_operator_node_address_lookup_errors_total{job="prometheus-operator",namespace="monitoring"}[5m]) > 0.1\n',
                   for: "10m",
                   labels: {
                     severity: "warning",
@@ -5175,7 +5372,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/prometheusoperatornotready",
                     summary: "Prometheus operator not ready",
                   },
-                  expr: 'min by(namespace, controller) (max_over_time(prometheus_operator_ready{job="prometheus-operator",namespace="monitoring"}[5m]) == 0)\n',
+                  expr:
+                    'min by(namespace, controller) (max_over_time(prometheus_operator_ready{job="prometheus-operator",namespace="monitoring"}[5m]) == 0)\n',
                   for: "5m",
                   labels: {
                     severity: "warning",
@@ -5190,7 +5388,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/prometheusoperatorrejectedresources",
                     summary: "Resources rejected by Prometheus operator",
                   },
-                  expr: 'min_over_time(prometheus_operator_managed_resources{state="rejected",job="prometheus-operator",namespace="monitoring"}[5m]) > 0\n',
+                  expr:
+                    'min_over_time(prometheus_operator_managed_resources{state="rejected",job="prometheus-operator",namespace="monitoring"}[5m]) > 0\n',
                   for: "5m",
                   labels: {
                     severity: "warning",
@@ -5201,11 +5400,12 @@ exports.createResources = async ({ provider, resources }) => {
           ],
         },
       }),
-    });
+    }
+  );
 
-  const monitoringprometheusOperatorServiceMonitor =
-    provider.makeServiceMonitor({
-      name: "monitoring-prometheus-operator",
+  const monitoringprometheusOperatorServiceMonitor = provider.makeServiceMonitor(
+    {
+      name: "prometheus-operator",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -5241,11 +5441,12 @@ exports.createResources = async ({ provider, resources }) => {
           },
         },
       }),
-    });
+    }
+  );
 
-  const monitoringprometheusK8sPodDisruptionBudget =
-    provider.makePodDisruptionBudget({
-      name: "monitoring-prometheus-k8s",
+  const monitoringprometheusK8sPodDisruptionBudget = provider.makePodDisruptionBudget(
+    {
+      name: "prometheus-k8s",
       properties: () => ({
         apiVersion: "policy/v1beta1",
         metadata: {
@@ -5270,10 +5471,11 @@ exports.createResources = async ({ provider, resources }) => {
           },
         },
       }),
-    });
+    }
+  );
 
   const monitoringk8sPrometheus = provider.makePrometheus({
-    name: "monitoring-k8s",
+    name: "k8s",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -5340,9 +5542,9 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const monitoringprometheusK8sPrometheusRulesPrometheusRule =
-    provider.makePrometheusRule({
-      name: "monitoring-prometheus-k8s-prometheus-rules",
+  const monitoringprometheusK8sPrometheusRulesPrometheusRule = provider.makePrometheusRule(
+    {
+      name: "prometheus-k8s-prometheus-rules",
       properties: () => ({
         apiVersion: "monitoring.coreos.com/v1",
         metadata: {
@@ -5371,7 +5573,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/prometheusbadconfig",
                     summary: "Failed Prometheus configuration reload.",
                   },
-                  expr: '# Without max_over_time, failed scrapes could create false negatives, see\n# https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.\nmax_over_time(prometheus_config_last_reload_successful{job="prometheus-k8s",namespace="monitoring"}[5m]) == 0\n',
+                  expr:
+                    '# Without max_over_time, failed scrapes could create false negatives, see\n# https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.\nmax_over_time(prometheus_config_last_reload_successful{job="prometheus-k8s",namespace="monitoring"}[5m]) == 0\n',
                   for: "10m",
                   labels: {
                     severity: "critical",
@@ -5387,7 +5590,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Prometheus alert notification queue predicted to run full in less than 30m.",
                   },
-                  expr: '# Without min_over_time, failed scrapes could create false negatives, see\n# https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.\n(\n  predict_linear(prometheus_notifications_queue_length{job="prometheus-k8s",namespace="monitoring"}[5m], 60 * 30)\n>\n  min_over_time(prometheus_notifications_queue_capacity{job="prometheus-k8s",namespace="monitoring"}[5m])\n)\n',
+                  expr:
+                    '# Without min_over_time, failed scrapes could create false negatives, see\n# https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.\n(\n  predict_linear(prometheus_notifications_queue_length{job="prometheus-k8s",namespace="monitoring"}[5m], 60 * 30)\n>\n  min_over_time(prometheus_notifications_queue_capacity{job="prometheus-k8s",namespace="monitoring"}[5m])\n)\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -5403,7 +5607,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Prometheus has encountered more than 1% errors sending alerts to a specific Alertmanager.",
                   },
-                  expr: '(\n  rate(prometheus_notifications_errors_total{job="prometheus-k8s",namespace="monitoring"}[5m])\n/\n  rate(prometheus_notifications_sent_total{job="prometheus-k8s",namespace="monitoring"}[5m])\n)\n* 100\n> 1\n',
+                  expr:
+                    '(\n  rate(prometheus_notifications_errors_total{job="prometheus-k8s",namespace="monitoring"}[5m])\n/\n  rate(prometheus_notifications_sent_total{job="prometheus-k8s",namespace="monitoring"}[5m])\n)\n* 100\n> 1\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -5419,7 +5624,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Prometheus is not connected to any Alertmanagers.",
                   },
-                  expr: '# Without max_over_time, failed scrapes could create false negatives, see\n# https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.\nmax_over_time(prometheus_notifications_alertmanagers_discovered{job="prometheus-k8s",namespace="monitoring"}[5m]) < 1\n',
+                  expr:
+                    '# Without max_over_time, failed scrapes could create false negatives, see\n# https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.\nmax_over_time(prometheus_notifications_alertmanagers_discovered{job="prometheus-k8s",namespace="monitoring"}[5m]) < 1\n',
                   for: "10m",
                   labels: {
                     severity: "warning",
@@ -5435,7 +5641,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Prometheus has issues reloading blocks from disk.",
                   },
-                  expr: 'increase(prometheus_tsdb_reloads_failures_total{job="prometheus-k8s",namespace="monitoring"}[3h]) > 0\n',
+                  expr:
+                    'increase(prometheus_tsdb_reloads_failures_total{job="prometheus-k8s",namespace="monitoring"}[3h]) > 0\n',
                   for: "4h",
                   labels: {
                     severity: "warning",
@@ -5450,7 +5657,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/prometheustsdbcompactionsfailing",
                     summary: "Prometheus has issues compacting blocks.",
                   },
-                  expr: 'increase(prometheus_tsdb_compactions_failed_total{job="prometheus-k8s",namespace="monitoring"}[3h]) > 0\n',
+                  expr:
+                    'increase(prometheus_tsdb_compactions_failed_total{job="prometheus-k8s",namespace="monitoring"}[3h]) > 0\n',
                   for: "4h",
                   labels: {
                     severity: "warning",
@@ -5465,7 +5673,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/prometheusnotingestingsamples",
                     summary: "Prometheus is not ingesting samples.",
                   },
-                  expr: '(\n  rate(prometheus_tsdb_head_samples_appended_total{job="prometheus-k8s",namespace="monitoring"}[5m]) <= 0\nand\n  (\n    sum without(scrape_job) (prometheus_target_metadata_cache_entries{job="prometheus-k8s",namespace="monitoring"}) > 0\n  or\n    sum without(rule_group) (prometheus_rule_group_rules{job="prometheus-k8s",namespace="monitoring"}) > 0\n  )\n)\n',
+                  expr:
+                    '(\n  rate(prometheus_tsdb_head_samples_appended_total{job="prometheus-k8s",namespace="monitoring"}[5m]) <= 0\nand\n  (\n    sum without(scrape_job) (prometheus_target_metadata_cache_entries{job="prometheus-k8s",namespace="monitoring"}) > 0\n  or\n    sum without(rule_group) (prometheus_rule_group_rules{job="prometheus-k8s",namespace="monitoring"}) > 0\n  )\n)\n',
                   for: "10m",
                   labels: {
                     severity: "warning",
@@ -5481,7 +5690,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Prometheus is dropping samples with duplicate timestamps.",
                   },
-                  expr: 'rate(prometheus_target_scrapes_sample_duplicate_timestamp_total{job="prometheus-k8s",namespace="monitoring"}[5m]) > 0\n',
+                  expr:
+                    'rate(prometheus_target_scrapes_sample_duplicate_timestamp_total{job="prometheus-k8s",namespace="monitoring"}[5m]) > 0\n',
                   for: "10m",
                   labels: {
                     severity: "warning",
@@ -5497,7 +5707,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Prometheus drops samples with out-of-order timestamps.",
                   },
-                  expr: 'rate(prometheus_target_scrapes_sample_out_of_order_total{job="prometheus-k8s",namespace="monitoring"}[5m]) > 0\n',
+                  expr:
+                    'rate(prometheus_target_scrapes_sample_out_of_order_total{job="prometheus-k8s",namespace="monitoring"}[5m]) > 0\n',
                   for: "10m",
                   labels: {
                     severity: "warning",
@@ -5513,7 +5724,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Prometheus fails to send samples to remote storage.",
                   },
-                  expr: '(\n  (rate(prometheus_remote_storage_failed_samples_total{job="prometheus-k8s",namespace="monitoring"}[5m]) or rate(prometheus_remote_storage_samples_failed_total{job="prometheus-k8s",namespace="monitoring"}[5m]))\n/\n  (\n    (rate(prometheus_remote_storage_failed_samples_total{job="prometheus-k8s",namespace="monitoring"}[5m]) or rate(prometheus_remote_storage_samples_failed_total{job="prometheus-k8s",namespace="monitoring"}[5m]))\n  +\n    (rate(prometheus_remote_storage_succeeded_samples_total{job="prometheus-k8s",namespace="monitoring"}[5m]) or rate(prometheus_remote_storage_samples_total{job="prometheus-k8s",namespace="monitoring"}[5m]))\n  )\n)\n* 100\n> 1\n',
+                  expr:
+                    '(\n  (rate(prometheus_remote_storage_failed_samples_total{job="prometheus-k8s",namespace="monitoring"}[5m]) or rate(prometheus_remote_storage_samples_failed_total{job="prometheus-k8s",namespace="monitoring"}[5m]))\n/\n  (\n    (rate(prometheus_remote_storage_failed_samples_total{job="prometheus-k8s",namespace="monitoring"}[5m]) or rate(prometheus_remote_storage_samples_failed_total{job="prometheus-k8s",namespace="monitoring"}[5m]))\n  +\n    (rate(prometheus_remote_storage_succeeded_samples_total{job="prometheus-k8s",namespace="monitoring"}[5m]) or rate(prometheus_remote_storage_samples_total{job="prometheus-k8s",namespace="monitoring"}[5m]))\n  )\n)\n* 100\n> 1\n',
                   for: "15m",
                   labels: {
                     severity: "critical",
@@ -5528,7 +5740,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/prometheusremotewritebehind",
                     summary: "Prometheus remote write is behind.",
                   },
-                  expr: '# Without max_over_time, failed scrapes could create false negatives, see\n# https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.\n(\n  max_over_time(prometheus_remote_storage_highest_timestamp_in_seconds{job="prometheus-k8s",namespace="monitoring"}[5m])\n- ignoring(remote_name, url) group_right\n  max_over_time(prometheus_remote_storage_queue_highest_sent_timestamp_seconds{job="prometheus-k8s",namespace="monitoring"}[5m])\n)\n> 120\n',
+                  expr:
+                    '# Without max_over_time, failed scrapes could create false negatives, see\n# https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.\n(\n  max_over_time(prometheus_remote_storage_highest_timestamp_in_seconds{job="prometheus-k8s",namespace="monitoring"}[5m])\n- ignoring(remote_name, url) group_right\n  max_over_time(prometheus_remote_storage_queue_highest_sent_timestamp_seconds{job="prometheus-k8s",namespace="monitoring"}[5m])\n)\n> 120\n',
                   for: "15m",
                   labels: {
                     severity: "critical",
@@ -5544,7 +5757,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Prometheus remote write desired shards calculation wants to run more than configured max shards.",
                   },
-                  expr: '# Without max_over_time, failed scrapes could create false negatives, see\n# https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.\n(\n  max_over_time(prometheus_remote_storage_shards_desired{job="prometheus-k8s",namespace="monitoring"}[5m])\n>\n  max_over_time(prometheus_remote_storage_shards_max{job="prometheus-k8s",namespace="monitoring"}[5m])\n)\n',
+                  expr:
+                    '# Without max_over_time, failed scrapes could create false negatives, see\n# https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0 for details.\n(\n  max_over_time(prometheus_remote_storage_shards_desired{job="prometheus-k8s",namespace="monitoring"}[5m])\n>\n  max_over_time(prometheus_remote_storage_shards_max{job="prometheus-k8s",namespace="monitoring"}[5m])\n)\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -5559,7 +5773,8 @@ exports.createResources = async ({ provider, resources }) => {
                       "https://github.com/prometheus-operator/kube-prometheus/wiki/prometheusrulefailures",
                     summary: "Prometheus is failing rule evaluations.",
                   },
-                  expr: 'increase(prometheus_rule_evaluation_failures_total{job="prometheus-k8s",namespace="monitoring"}[5m]) > 0\n',
+                  expr:
+                    'increase(prometheus_rule_evaluation_failures_total{job="prometheus-k8s",namespace="monitoring"}[5m]) > 0\n',
                   for: "15m",
                   labels: {
                     severity: "critical",
@@ -5575,7 +5790,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Prometheus is missing rule evaluations due to slow rule group evaluation.",
                   },
-                  expr: 'increase(prometheus_rule_group_iterations_missed_total{job="prometheus-k8s",namespace="monitoring"}[5m]) > 0\n',
+                  expr:
+                    'increase(prometheus_rule_group_iterations_missed_total{job="prometheus-k8s",namespace="monitoring"}[5m]) > 0\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -5591,7 +5807,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Prometheus has dropped targets because some scrape configs have exceeded the targets limit.",
                   },
-                  expr: 'increase(prometheus_target_scrape_pool_exceeded_target_limit_total{job="prometheus-k8s",namespace="monitoring"}[5m]) > 0\n',
+                  expr:
+                    'increase(prometheus_target_scrape_pool_exceeded_target_limit_total{job="prometheus-k8s",namespace="monitoring"}[5m]) > 0\n',
                   for: "15m",
                   labels: {
                     severity: "warning",
@@ -5607,7 +5824,8 @@ exports.createResources = async ({ provider, resources }) => {
                     summary:
                       "Prometheus encounters more than 3% errors sending alerts to any Alertmanager.",
                   },
-                  expr: 'min without (alertmanager) (\n  rate(prometheus_notifications_errors_total{job="prometheus-k8s",namespace="monitoring",alertmanager!~``}[5m])\n/\n  rate(prometheus_notifications_sent_total{job="prometheus-k8s",namespace="monitoring",alertmanager!~``}[5m])\n)\n* 100\n> 3\n',
+                  expr:
+                    'min without (alertmanager) (\n  rate(prometheus_notifications_errors_total{job="prometheus-k8s",namespace="monitoring",alertmanager!~``}[5m])\n/\n  rate(prometheus_notifications_sent_total{job="prometheus-k8s",namespace="monitoring",alertmanager!~``}[5m])\n)\n* 100\n> 3\n',
                   for: "15m",
                   labels: {
                     severity: "critical",
@@ -5618,10 +5836,11 @@ exports.createResources = async ({ provider, resources }) => {
           ],
         },
       }),
-    });
+    }
+  );
 
   const monitoringprometheusK8sConfigRoleBinding = provider.makeRoleBinding({
-    name: "monitoring-prometheus-k8s-config",
+    name: "prometheus-k8s-config",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -5650,7 +5869,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const defaultprometheusK8sRoleBinding = provider.makeRoleBinding({
-    name: "default-prometheus-k8s",
+    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -5679,7 +5898,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const kubeSystemprometheusK8sRoleBinding = provider.makeRoleBinding({
-    name: "kube-system-prometheus-k8s",
+    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -5708,7 +5927,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringprometheusK8sRoleBinding = provider.makeRoleBinding({
-    name: "monitoring-prometheus-k8s",
+    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -5737,7 +5956,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringprometheusK8sConfigRole = provider.makeRole({
-    name: "monitoring-prometheus-k8s-config",
+    name: "prometheus-k8s-config",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -5761,7 +5980,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const defaultprometheusK8sRole = provider.makeRole({
-    name: "default-prometheus-k8s",
+    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -5795,7 +6014,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const kubeSystemprometheusK8sRole = provider.makeRole({
-    name: "kube-system-prometheus-k8s",
+    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -5829,7 +6048,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringprometheusK8sRole = provider.makeRole({
-    name: "monitoring-prometheus-k8s",
+    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -5863,7 +6082,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringprometheusK8sService = provider.makeService({
-    name: "monitoring-prometheus-k8s",
+    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -5898,7 +6117,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringprometheusK8sServiceAccount = provider.makeServiceAccount({
-    name: "monitoring-prometheus-k8s",
+    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -5915,7 +6134,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringprometheusK8sServiceMonitor = provider.makeServiceMonitor({
-    name: "monitoring-prometheus-k8s",
+    name: "prometheus-k8s",
     properties: () => ({
       apiVersion: "monitoring.coreos.com/v1",
       metadata: {
@@ -5957,8 +6176,8 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const alertmanagerconfigsMonitoringCoreosComCustomResourceDefinition =
-    provider.makeCustomResourceDefinition({
+  const alertmanagerconfigsMonitoringCoreosComCustomResourceDefinition = provider.makeCustomResourceDefinition(
+    {
       name: "alertmanagerconfigs.monitoring.coreos.com",
       properties: () => ({
         apiVersion: "apiextensions.k8s.io/v1",
@@ -8827,10 +9046,11 @@ exports.createResources = async ({ provider, resources }) => {
           storedVersions: [],
         },
       }),
-    });
+    }
+  );
 
-  const alertmanagersMonitoringCoreosComCustomResourceDefinition =
-    provider.makeCustomResourceDefinition({
+  const alertmanagersMonitoringCoreosComCustomResourceDefinition = provider.makeCustomResourceDefinition(
+    {
       name: "alertmanagers.monitoring.coreos.com",
       properties: () => ({
         apiVersion: "apiextensions.k8s.io/v1",
@@ -8911,178 +9131,176 @@ exports.createResources = async ({ provider, resources }) => {
                               description:
                                 "Describes node affinity scheduling rules for the pod.",
                               properties: {
-                                preferredDuringSchedulingIgnoredDuringExecution:
-                                  {
+                                preferredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    'The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node matches the corresponding matchExpressions; the node(s) with the highest sum are the most preferred.',
+                                  items: {
                                     description:
-                                      'The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node matches the corresponding matchExpressions; the node(s) with the highest sum are the most preferred.',
-                                    items: {
-                                      description:
-                                        "An empty preferred scheduling term matches all objects with implicit weight 0 (i.e. it's a no-op). A null preferred scheduling term matches no objects (i.e. is also a no-op).",
-                                      properties: {
-                                        preference: {
-                                          description:
-                                            "A node selector term, associated with the corresponding weight.",
-                                          properties: {
-                                            matchExpressions: {
-                                              description:
-                                                "A list of node selector requirements by node's labels.",
-                                              items: {
-                                                description:
-                                                  "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "The label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
-                                                },
-                                                required: ["key", "operator"],
-                                                type: "object",
-                                              },
-                                              type: "array",
-                                            },
-                                            matchFields: {
-                                              description:
-                                                "A list of node selector requirements by node's fields.",
-                                              items: {
-                                                description:
-                                                  "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "The label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
-                                                },
-                                                required: ["key", "operator"],
-                                                type: "object",
-                                              },
-                                              type: "array",
-                                            },
-                                          },
-                                          type: "object",
-                                        },
-                                        weight: {
-                                          description:
-                                            "Weight associated with matching the corresponding nodeSelectorTerm, in the range 1-100.",
-                                          format: "int32",
-                                          type: "integer",
-                                        },
-                                      },
-                                      required: ["preference", "weight"],
-                                      type: "object",
-                                    },
-                                    type: "array",
-                                  },
-                                requiredDuringSchedulingIgnoredDuringExecution:
-                                  {
-                                    description:
-                                      "If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to an update), the system may or may not try to eventually evict the pod from its node.",
+                                      "An empty preferred scheduling term matches all objects with implicit weight 0 (i.e. it's a no-op). A null preferred scheduling term matches no objects (i.e. is also a no-op).",
                                     properties: {
-                                      nodeSelectorTerms: {
+                                      preference: {
                                         description:
-                                          "Required. A list of node selector terms. The terms are ORed.",
-                                        items: {
-                                          description:
-                                            "A null or empty node selector term matches no objects. The requirements of them are ANDed. The TopologySelectorTerm type implements a subset of the NodeSelectorTerm.",
-                                          properties: {
-                                            matchExpressions: {
+                                          "A node selector term, associated with the corresponding weight.",
+                                        properties: {
+                                          matchExpressions: {
+                                            description:
+                                              "A list of node selector requirements by node's labels.",
+                                            items: {
                                               description:
-                                                "A list of node selector requirements by node's labels.",
-                                              items: {
-                                                description:
-                                                  "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "The label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
+                                                "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "The label key that the selector applies to.",
+                                                  type: "string",
                                                 },
-                                                required: ["key", "operator"],
-                                                type: "object",
-                                              },
-                                              type: "array",
-                                            },
-                                            matchFields: {
-                                              description:
-                                                "A list of node selector requirements by node's fields.",
-                                              items: {
-                                                description:
-                                                  "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "The label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
+                                                operator: {
+                                                  description:
+                                                    "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
+                                                  type: "string",
                                                 },
-                                                required: ["key", "operator"],
-                                                type: "object",
+                                                values: {
+                                                  description:
+                                                    "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
+                                                  },
+                                                  type: "array",
+                                                },
                                               },
-                                              type: "array",
+                                              required: ["key", "operator"],
+                                              type: "object",
                                             },
+                                            type: "array",
                                           },
-                                          type: "object",
+                                          matchFields: {
+                                            description:
+                                              "A list of node selector requirements by node's fields.",
+                                            items: {
+                                              description:
+                                                "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "The label key that the selector applies to.",
+                                                  type: "string",
+                                                },
+                                                operator: {
+                                                  description:
+                                                    "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
+                                                  type: "string",
+                                                },
+                                                values: {
+                                                  description:
+                                                    "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
+                                                  },
+                                                  type: "array",
+                                                },
+                                              },
+                                              required: ["key", "operator"],
+                                              type: "object",
+                                            },
+                                            type: "array",
+                                          },
                                         },
-                                        type: "array",
+                                        type: "object",
+                                      },
+                                      weight: {
+                                        description:
+                                          "Weight associated with matching the corresponding nodeSelectorTerm, in the range 1-100.",
+                                        format: "int32",
+                                        type: "integer",
                                       },
                                     },
-                                    required: ["nodeSelectorTerms"],
+                                    required: ["preference", "weight"],
                                     type: "object",
                                   },
+                                  type: "array",
+                                },
+                                requiredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    "If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to an update), the system may or may not try to eventually evict the pod from its node.",
+                                  properties: {
+                                    nodeSelectorTerms: {
+                                      description:
+                                        "Required. A list of node selector terms. The terms are ORed.",
+                                      items: {
+                                        description:
+                                          "A null or empty node selector term matches no objects. The requirements of them are ANDed. The TopologySelectorTerm type implements a subset of the NodeSelectorTerm.",
+                                        properties: {
+                                          matchExpressions: {
+                                            description:
+                                              "A list of node selector requirements by node's labels.",
+                                            items: {
+                                              description:
+                                                "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "The label key that the selector applies to.",
+                                                  type: "string",
+                                                },
+                                                operator: {
+                                                  description:
+                                                    "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
+                                                  type: "string",
+                                                },
+                                                values: {
+                                                  description:
+                                                    "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
+                                                  },
+                                                  type: "array",
+                                                },
+                                              },
+                                              required: ["key", "operator"],
+                                              type: "object",
+                                            },
+                                            type: "array",
+                                          },
+                                          matchFields: {
+                                            description:
+                                              "A list of node selector requirements by node's fields.",
+                                            items: {
+                                              description:
+                                                "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "The label key that the selector applies to.",
+                                                  type: "string",
+                                                },
+                                                operator: {
+                                                  description:
+                                                    "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
+                                                  type: "string",
+                                                },
+                                                values: {
+                                                  description:
+                                                    "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
+                                                  },
+                                                  type: "array",
+                                                },
+                                              },
+                                              required: ["key", "operator"],
+                                              type: "object",
+                                            },
+                                            type: "array",
+                                          },
+                                        },
+                                        type: "object",
+                                      },
+                                      type: "array",
+                                    },
+                                  },
+                                  required: ["nodeSelectorTerms"],
+                                  type: "object",
+                                },
                               },
                               type: "object",
                             },
@@ -9090,169 +9308,164 @@ exports.createResources = async ({ provider, resources }) => {
                               description:
                                 "Describes pod affinity scheduling rules (e.g. co-locate this pod in the same node, zone, etc. as some other pod(s)).",
                               properties: {
-                                preferredDuringSchedulingIgnoredDuringExecution:
-                                  {
+                                preferredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    'The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred.',
+                                  items: {
                                     description:
-                                      'The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred.',
-                                    items: {
-                                      description:
-                                        "The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s)",
-                                      properties: {
-                                        podAffinityTerm: {
-                                          description:
-                                            "Required. A pod affinity term, associated with the corresponding weight.",
-                                          properties: {
-                                            labelSelector: {
-                                              description:
-                                                "A label query over a set of resources, in this case pods.",
-                                              properties: {
-                                                matchExpressions: {
+                                      "The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s)",
+                                    properties: {
+                                      podAffinityTerm: {
+                                        description:
+                                          "Required. A pod affinity term, associated with the corresponding weight.",
+                                        properties: {
+                                          labelSelector: {
+                                            description:
+                                              "A label query over a set of resources, in this case pods.",
+                                            properties: {
+                                              matchExpressions: {
+                                                description:
+                                                  "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+                                                items: {
                                                   description:
-                                                    "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
-                                                  items: {
-                                                    description:
-                                                      "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                    properties: {
-                                                      key: {
-                                                        description:
-                                                          "key is the label key that the selector applies to.",
-                                                        type: "string",
-                                                      },
-                                                      operator: {
-                                                        description:
-                                                          "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-                                                        type: "string",
-                                                      },
-                                                      values: {
-                                                        description:
-                                                          "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
-                                                        items: {
-                                                          type: "string",
-                                                        },
-                                                        type: "array",
-                                                      },
+                                                    "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                                  properties: {
+                                                    key: {
+                                                      description:
+                                                        "key is the label key that the selector applies to.",
+                                                      type: "string",
                                                     },
-                                                    required: [
-                                                      "key",
-                                                      "operator",
-                                                    ],
-                                                    type: "object",
+                                                    operator: {
+                                                      description:
+                                                        "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+                                                      type: "string",
+                                                    },
+                                                    values: {
+                                                      description:
+                                                        "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+                                                      items: {
+                                                        type: "string",
+                                                      },
+                                                      type: "array",
+                                                    },
+                                                  },
+                                                  required: ["key", "operator"],
+                                                  type: "object",
+                                                },
+                                                type: "array",
+                                              },
+                                              matchLabels: {
+                                                additionalProperties: {
+                                                  type: "string",
+                                                },
+                                                description:
+                                                  'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
+                                                type: "object",
+                                              },
+                                            },
+                                            type: "object",
+                                          },
+                                          namespaces: {
+                                            description:
+                                              'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
+                                            items: {
+                                              type: "string",
+                                            },
+                                            type: "array",
+                                          },
+                                          topologyKey: {
+                                            description:
+                                              "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                            type: "string",
+                                          },
+                                        },
+                                        required: ["topologyKey"],
+                                        type: "object",
+                                      },
+                                      weight: {
+                                        description:
+                                          "weight associated with matching the corresponding podAffinityTerm, in the range 1-100.",
+                                        format: "int32",
+                                        type: "integer",
+                                      },
+                                    },
+                                    required: ["podAffinityTerm", "weight"],
+                                    type: "object",
+                                  },
+                                  type: "array",
+                                },
+                                requiredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    "If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied.",
+                                  items: {
+                                    description:
+                                      "Defines a set of pods (namely those matching the labelSelector relative to the given namespace(s)) that this pod should be co-located (affinity) or not co-located (anti-affinity) with, where co-located is defined as running on a node whose value of the label with key <topologyKey> matches that of any node on which a pod of the set of pods is running",
+                                    properties: {
+                                      labelSelector: {
+                                        description:
+                                          "A label query over a set of resources, in this case pods.",
+                                        properties: {
+                                          matchExpressions: {
+                                            description:
+                                              "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+                                            items: {
+                                              description:
+                                                "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "key is the label key that the selector applies to.",
+                                                  type: "string",
+                                                },
+                                                operator: {
+                                                  description:
+                                                    "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+                                                  type: "string",
+                                                },
+                                                values: {
+                                                  description:
+                                                    "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
                                                   },
                                                   type: "array",
                                                 },
-                                                matchLabels: {
-                                                  additionalProperties: {
-                                                    type: "string",
-                                                  },
-                                                  description:
-                                                    'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
-                                                  type: "object",
-                                                },
                                               },
+                                              required: ["key", "operator"],
                                               type: "object",
                                             },
-                                            namespaces: {
-                                              description:
-                                                'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
-                                              items: {
-                                                type: "string",
-                                              },
-                                              type: "array",
-                                            },
-                                            topologyKey: {
-                                              description:
-                                                "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                            type: "array",
+                                          },
+                                          matchLabels: {
+                                            additionalProperties: {
                                               type: "string",
                                             },
+                                            description:
+                                              'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
+                                            type: "object",
                                           },
-                                          required: ["topologyKey"],
-                                          type: "object",
                                         },
-                                        weight: {
-                                          description:
-                                            "weight associated with matching the corresponding podAffinityTerm, in the range 1-100.",
-                                          format: "int32",
-                                          type: "integer",
-                                        },
+                                        type: "object",
                                       },
-                                      required: ["podAffinityTerm", "weight"],
-                                      type: "object",
-                                    },
-                                    type: "array",
-                                  },
-                                requiredDuringSchedulingIgnoredDuringExecution:
-                                  {
-                                    description:
-                                      "If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied.",
-                                    items: {
-                                      description:
-                                        "Defines a set of pods (namely those matching the labelSelector relative to the given namespace(s)) that this pod should be co-located (affinity) or not co-located (anti-affinity) with, where co-located is defined as running on a node whose value of the label with key <topologyKey> matches that of any node on which a pod of the set of pods is running",
-                                      properties: {
-                                        labelSelector: {
-                                          description:
-                                            "A label query over a set of resources, in this case pods.",
-                                          properties: {
-                                            matchExpressions: {
-                                              description:
-                                                "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
-                                              items: {
-                                                description:
-                                                  "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "key is the label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
-                                                },
-                                                required: ["key", "operator"],
-                                                type: "object",
-                                              },
-                                              type: "array",
-                                            },
-                                            matchLabels: {
-                                              additionalProperties: {
-                                                type: "string",
-                                              },
-                                              description:
-                                                'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
-                                              type: "object",
-                                            },
-                                          },
-                                          type: "object",
-                                        },
-                                        namespaces: {
-                                          description:
-                                            'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
-                                          items: {
-                                            type: "string",
-                                          },
-                                          type: "array",
-                                        },
-                                        topologyKey: {
-                                          description:
-                                            "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                      namespaces: {
+                                        description:
+                                          'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
+                                        items: {
                                           type: "string",
                                         },
+                                        type: "array",
                                       },
-                                      required: ["topologyKey"],
-                                      type: "object",
+                                      topologyKey: {
+                                        description:
+                                          "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                        type: "string",
+                                      },
                                     },
-                                    type: "array",
+                                    required: ["topologyKey"],
+                                    type: "object",
                                   },
+                                  type: "array",
+                                },
                               },
                               type: "object",
                             },
@@ -9260,169 +9473,164 @@ exports.createResources = async ({ provider, resources }) => {
                               description:
                                 "Describes pod anti-affinity scheduling rules (e.g. avoid putting this pod in the same node, zone, etc. as some other pod(s)).",
                               properties: {
-                                preferredDuringSchedulingIgnoredDuringExecution:
-                                  {
+                                preferredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    'The scheduler will prefer to schedule pods to nodes that satisfy the anti-affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling anti-affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred.',
+                                  items: {
                                     description:
-                                      'The scheduler will prefer to schedule pods to nodes that satisfy the anti-affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling anti-affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred.',
-                                    items: {
-                                      description:
-                                        "The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s)",
-                                      properties: {
-                                        podAffinityTerm: {
-                                          description:
-                                            "Required. A pod affinity term, associated with the corresponding weight.",
-                                          properties: {
-                                            labelSelector: {
-                                              description:
-                                                "A label query over a set of resources, in this case pods.",
-                                              properties: {
-                                                matchExpressions: {
+                                      "The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s)",
+                                    properties: {
+                                      podAffinityTerm: {
+                                        description:
+                                          "Required. A pod affinity term, associated with the corresponding weight.",
+                                        properties: {
+                                          labelSelector: {
+                                            description:
+                                              "A label query over a set of resources, in this case pods.",
+                                            properties: {
+                                              matchExpressions: {
+                                                description:
+                                                  "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+                                                items: {
                                                   description:
-                                                    "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
-                                                  items: {
-                                                    description:
-                                                      "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                    properties: {
-                                                      key: {
-                                                        description:
-                                                          "key is the label key that the selector applies to.",
-                                                        type: "string",
-                                                      },
-                                                      operator: {
-                                                        description:
-                                                          "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-                                                        type: "string",
-                                                      },
-                                                      values: {
-                                                        description:
-                                                          "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
-                                                        items: {
-                                                          type: "string",
-                                                        },
-                                                        type: "array",
-                                                      },
+                                                    "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                                  properties: {
+                                                    key: {
+                                                      description:
+                                                        "key is the label key that the selector applies to.",
+                                                      type: "string",
                                                     },
-                                                    required: [
-                                                      "key",
-                                                      "operator",
-                                                    ],
-                                                    type: "object",
+                                                    operator: {
+                                                      description:
+                                                        "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+                                                      type: "string",
+                                                    },
+                                                    values: {
+                                                      description:
+                                                        "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+                                                      items: {
+                                                        type: "string",
+                                                      },
+                                                      type: "array",
+                                                    },
+                                                  },
+                                                  required: ["key", "operator"],
+                                                  type: "object",
+                                                },
+                                                type: "array",
+                                              },
+                                              matchLabels: {
+                                                additionalProperties: {
+                                                  type: "string",
+                                                },
+                                                description:
+                                                  'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
+                                                type: "object",
+                                              },
+                                            },
+                                            type: "object",
+                                          },
+                                          namespaces: {
+                                            description:
+                                              'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
+                                            items: {
+                                              type: "string",
+                                            },
+                                            type: "array",
+                                          },
+                                          topologyKey: {
+                                            description:
+                                              "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                            type: "string",
+                                          },
+                                        },
+                                        required: ["topologyKey"],
+                                        type: "object",
+                                      },
+                                      weight: {
+                                        description:
+                                          "weight associated with matching the corresponding podAffinityTerm, in the range 1-100.",
+                                        format: "int32",
+                                        type: "integer",
+                                      },
+                                    },
+                                    required: ["podAffinityTerm", "weight"],
+                                    type: "object",
+                                  },
+                                  type: "array",
+                                },
+                                requiredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    "If the anti-affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the anti-affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied.",
+                                  items: {
+                                    description:
+                                      "Defines a set of pods (namely those matching the labelSelector relative to the given namespace(s)) that this pod should be co-located (affinity) or not co-located (anti-affinity) with, where co-located is defined as running on a node whose value of the label with key <topologyKey> matches that of any node on which a pod of the set of pods is running",
+                                    properties: {
+                                      labelSelector: {
+                                        description:
+                                          "A label query over a set of resources, in this case pods.",
+                                        properties: {
+                                          matchExpressions: {
+                                            description:
+                                              "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+                                            items: {
+                                              description:
+                                                "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "key is the label key that the selector applies to.",
+                                                  type: "string",
+                                                },
+                                                operator: {
+                                                  description:
+                                                    "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+                                                  type: "string",
+                                                },
+                                                values: {
+                                                  description:
+                                                    "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
                                                   },
                                                   type: "array",
                                                 },
-                                                matchLabels: {
-                                                  additionalProperties: {
-                                                    type: "string",
-                                                  },
-                                                  description:
-                                                    'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
-                                                  type: "object",
-                                                },
                                               },
+                                              required: ["key", "operator"],
                                               type: "object",
                                             },
-                                            namespaces: {
-                                              description:
-                                                'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
-                                              items: {
-                                                type: "string",
-                                              },
-                                              type: "array",
-                                            },
-                                            topologyKey: {
-                                              description:
-                                                "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                            type: "array",
+                                          },
+                                          matchLabels: {
+                                            additionalProperties: {
                                               type: "string",
                                             },
+                                            description:
+                                              'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
+                                            type: "object",
                                           },
-                                          required: ["topologyKey"],
-                                          type: "object",
                                         },
-                                        weight: {
-                                          description:
-                                            "weight associated with matching the corresponding podAffinityTerm, in the range 1-100.",
-                                          format: "int32",
-                                          type: "integer",
-                                        },
+                                        type: "object",
                                       },
-                                      required: ["podAffinityTerm", "weight"],
-                                      type: "object",
-                                    },
-                                    type: "array",
-                                  },
-                                requiredDuringSchedulingIgnoredDuringExecution:
-                                  {
-                                    description:
-                                      "If the anti-affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the anti-affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied.",
-                                    items: {
-                                      description:
-                                        "Defines a set of pods (namely those matching the labelSelector relative to the given namespace(s)) that this pod should be co-located (affinity) or not co-located (anti-affinity) with, where co-located is defined as running on a node whose value of the label with key <topologyKey> matches that of any node on which a pod of the set of pods is running",
-                                      properties: {
-                                        labelSelector: {
-                                          description:
-                                            "A label query over a set of resources, in this case pods.",
-                                          properties: {
-                                            matchExpressions: {
-                                              description:
-                                                "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
-                                              items: {
-                                                description:
-                                                  "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "key is the label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
-                                                },
-                                                required: ["key", "operator"],
-                                                type: "object",
-                                              },
-                                              type: "array",
-                                            },
-                                            matchLabels: {
-                                              additionalProperties: {
-                                                type: "string",
-                                              },
-                                              description:
-                                                'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
-                                              type: "object",
-                                            },
-                                          },
-                                          type: "object",
-                                        },
-                                        namespaces: {
-                                          description:
-                                            'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
-                                          items: {
-                                            type: "string",
-                                          },
-                                          type: "array",
-                                        },
-                                        topologyKey: {
-                                          description:
-                                            "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                      namespaces: {
+                                        description:
+                                          'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
+                                        items: {
                                           type: "string",
                                         },
+                                        type: "array",
                                       },
-                                      required: ["topologyKey"],
-                                      type: "object",
+                                      topologyKey: {
+                                        description:
+                                          "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                        type: "string",
+                                      },
                                     },
-                                    type: "array",
+                                    required: ["topologyKey"],
+                                    type: "object",
                                   },
+                                  type: "array",
+                                },
                               },
                               type: "object",
                             },
@@ -13941,10 +14149,11 @@ exports.createResources = async ({ provider, resources }) => {
           storedVersions: [],
         },
       }),
-    });
+    }
+  );
 
-  const podmonitorsMonitoringCoreosComCustomResourceDefinition =
-    provider.makeCustomResourceDefinition({
+  const podmonitorsMonitoringCoreosComCustomResourceDefinition = provider.makeCustomResourceDefinition(
+    {
       name: "podmonitors.monitoring.coreos.com",
       properties: () => ({
         apiVersion: "apiextensions.k8s.io/v1",
@@ -14496,10 +14705,11 @@ exports.createResources = async ({ provider, resources }) => {
           storedVersions: [],
         },
       }),
-    });
+    }
+  );
 
-  const probesMonitoringCoreosComCustomResourceDefinition =
-    provider.makeCustomResourceDefinition({
+  const probesMonitoringCoreosComCustomResourceDefinition = provider.makeCustomResourceDefinition(
+    {
       name: "probes.monitoring.coreos.com",
       properties: () => ({
         apiVersion: "apiextensions.k8s.io/v1",
@@ -15033,10 +15243,11 @@ exports.createResources = async ({ provider, resources }) => {
           storedVersions: [],
         },
       }),
-    });
+    }
+  );
 
-  const prometheusesMonitoringCoreosComCustomResourceDefinition =
-    provider.makeCustomResourceDefinition({
+  const prometheusesMonitoringCoreosComCustomResourceDefinition = provider.makeCustomResourceDefinition(
+    {
       name: "prometheuses.monitoring.coreos.com",
       properties: () => ({
         apiVersion: "apiextensions.k8s.io/v1",
@@ -15177,178 +15388,176 @@ exports.createResources = async ({ provider, resources }) => {
                               description:
                                 "Describes node affinity scheduling rules for the pod.",
                               properties: {
-                                preferredDuringSchedulingIgnoredDuringExecution:
-                                  {
+                                preferredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    'The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node matches the corresponding matchExpressions; the node(s) with the highest sum are the most preferred.',
+                                  items: {
                                     description:
-                                      'The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node matches the corresponding matchExpressions; the node(s) with the highest sum are the most preferred.',
-                                    items: {
-                                      description:
-                                        "An empty preferred scheduling term matches all objects with implicit weight 0 (i.e. it's a no-op). A null preferred scheduling term matches no objects (i.e. is also a no-op).",
-                                      properties: {
-                                        preference: {
-                                          description:
-                                            "A node selector term, associated with the corresponding weight.",
-                                          properties: {
-                                            matchExpressions: {
-                                              description:
-                                                "A list of node selector requirements by node's labels.",
-                                              items: {
-                                                description:
-                                                  "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "The label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
-                                                },
-                                                required: ["key", "operator"],
-                                                type: "object",
-                                              },
-                                              type: "array",
-                                            },
-                                            matchFields: {
-                                              description:
-                                                "A list of node selector requirements by node's fields.",
-                                              items: {
-                                                description:
-                                                  "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "The label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
-                                                },
-                                                required: ["key", "operator"],
-                                                type: "object",
-                                              },
-                                              type: "array",
-                                            },
-                                          },
-                                          type: "object",
-                                        },
-                                        weight: {
-                                          description:
-                                            "Weight associated with matching the corresponding nodeSelectorTerm, in the range 1-100.",
-                                          format: "int32",
-                                          type: "integer",
-                                        },
-                                      },
-                                      required: ["preference", "weight"],
-                                      type: "object",
-                                    },
-                                    type: "array",
-                                  },
-                                requiredDuringSchedulingIgnoredDuringExecution:
-                                  {
-                                    description:
-                                      "If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to an update), the system may or may not try to eventually evict the pod from its node.",
+                                      "An empty preferred scheduling term matches all objects with implicit weight 0 (i.e. it's a no-op). A null preferred scheduling term matches no objects (i.e. is also a no-op).",
                                     properties: {
-                                      nodeSelectorTerms: {
+                                      preference: {
                                         description:
-                                          "Required. A list of node selector terms. The terms are ORed.",
-                                        items: {
-                                          description:
-                                            "A null or empty node selector term matches no objects. The requirements of them are ANDed. The TopologySelectorTerm type implements a subset of the NodeSelectorTerm.",
-                                          properties: {
-                                            matchExpressions: {
+                                          "A node selector term, associated with the corresponding weight.",
+                                        properties: {
+                                          matchExpressions: {
+                                            description:
+                                              "A list of node selector requirements by node's labels.",
+                                            items: {
                                               description:
-                                                "A list of node selector requirements by node's labels.",
-                                              items: {
-                                                description:
-                                                  "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "The label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
+                                                "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "The label key that the selector applies to.",
+                                                  type: "string",
                                                 },
-                                                required: ["key", "operator"],
-                                                type: "object",
-                                              },
-                                              type: "array",
-                                            },
-                                            matchFields: {
-                                              description:
-                                                "A list of node selector requirements by node's fields.",
-                                              items: {
-                                                description:
-                                                  "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "The label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
+                                                operator: {
+                                                  description:
+                                                    "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
+                                                  type: "string",
                                                 },
-                                                required: ["key", "operator"],
-                                                type: "object",
+                                                values: {
+                                                  description:
+                                                    "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
+                                                  },
+                                                  type: "array",
+                                                },
                                               },
-                                              type: "array",
+                                              required: ["key", "operator"],
+                                              type: "object",
                                             },
+                                            type: "array",
                                           },
-                                          type: "object",
+                                          matchFields: {
+                                            description:
+                                              "A list of node selector requirements by node's fields.",
+                                            items: {
+                                              description:
+                                                "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "The label key that the selector applies to.",
+                                                  type: "string",
+                                                },
+                                                operator: {
+                                                  description:
+                                                    "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
+                                                  type: "string",
+                                                },
+                                                values: {
+                                                  description:
+                                                    "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
+                                                  },
+                                                  type: "array",
+                                                },
+                                              },
+                                              required: ["key", "operator"],
+                                              type: "object",
+                                            },
+                                            type: "array",
+                                          },
                                         },
-                                        type: "array",
+                                        type: "object",
+                                      },
+                                      weight: {
+                                        description:
+                                          "Weight associated with matching the corresponding nodeSelectorTerm, in the range 1-100.",
+                                        format: "int32",
+                                        type: "integer",
                                       },
                                     },
-                                    required: ["nodeSelectorTerms"],
+                                    required: ["preference", "weight"],
                                     type: "object",
                                   },
+                                  type: "array",
+                                },
+                                requiredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    "If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to an update), the system may or may not try to eventually evict the pod from its node.",
+                                  properties: {
+                                    nodeSelectorTerms: {
+                                      description:
+                                        "Required. A list of node selector terms. The terms are ORed.",
+                                      items: {
+                                        description:
+                                          "A null or empty node selector term matches no objects. The requirements of them are ANDed. The TopologySelectorTerm type implements a subset of the NodeSelectorTerm.",
+                                        properties: {
+                                          matchExpressions: {
+                                            description:
+                                              "A list of node selector requirements by node's labels.",
+                                            items: {
+                                              description:
+                                                "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "The label key that the selector applies to.",
+                                                  type: "string",
+                                                },
+                                                operator: {
+                                                  description:
+                                                    "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
+                                                  type: "string",
+                                                },
+                                                values: {
+                                                  description:
+                                                    "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
+                                                  },
+                                                  type: "array",
+                                                },
+                                              },
+                                              required: ["key", "operator"],
+                                              type: "object",
+                                            },
+                                            type: "array",
+                                          },
+                                          matchFields: {
+                                            description:
+                                              "A list of node selector requirements by node's fields.",
+                                            items: {
+                                              description:
+                                                "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "The label key that the selector applies to.",
+                                                  type: "string",
+                                                },
+                                                operator: {
+                                                  description:
+                                                    "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
+                                                  type: "string",
+                                                },
+                                                values: {
+                                                  description:
+                                                    "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
+                                                  },
+                                                  type: "array",
+                                                },
+                                              },
+                                              required: ["key", "operator"],
+                                              type: "object",
+                                            },
+                                            type: "array",
+                                          },
+                                        },
+                                        type: "object",
+                                      },
+                                      type: "array",
+                                    },
+                                  },
+                                  required: ["nodeSelectorTerms"],
+                                  type: "object",
+                                },
                               },
                               type: "object",
                             },
@@ -15356,169 +15565,164 @@ exports.createResources = async ({ provider, resources }) => {
                               description:
                                 "Describes pod affinity scheduling rules (e.g. co-locate this pod in the same node, zone, etc. as some other pod(s)).",
                               properties: {
-                                preferredDuringSchedulingIgnoredDuringExecution:
-                                  {
+                                preferredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    'The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred.',
+                                  items: {
                                     description:
-                                      'The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred.',
-                                    items: {
-                                      description:
-                                        "The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s)",
-                                      properties: {
-                                        podAffinityTerm: {
-                                          description:
-                                            "Required. A pod affinity term, associated with the corresponding weight.",
-                                          properties: {
-                                            labelSelector: {
-                                              description:
-                                                "A label query over a set of resources, in this case pods.",
-                                              properties: {
-                                                matchExpressions: {
+                                      "The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s)",
+                                    properties: {
+                                      podAffinityTerm: {
+                                        description:
+                                          "Required. A pod affinity term, associated with the corresponding weight.",
+                                        properties: {
+                                          labelSelector: {
+                                            description:
+                                              "A label query over a set of resources, in this case pods.",
+                                            properties: {
+                                              matchExpressions: {
+                                                description:
+                                                  "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+                                                items: {
                                                   description:
-                                                    "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
-                                                  items: {
-                                                    description:
-                                                      "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                    properties: {
-                                                      key: {
-                                                        description:
-                                                          "key is the label key that the selector applies to.",
-                                                        type: "string",
-                                                      },
-                                                      operator: {
-                                                        description:
-                                                          "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-                                                        type: "string",
-                                                      },
-                                                      values: {
-                                                        description:
-                                                          "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
-                                                        items: {
-                                                          type: "string",
-                                                        },
-                                                        type: "array",
-                                                      },
+                                                    "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                                  properties: {
+                                                    key: {
+                                                      description:
+                                                        "key is the label key that the selector applies to.",
+                                                      type: "string",
                                                     },
-                                                    required: [
-                                                      "key",
-                                                      "operator",
-                                                    ],
-                                                    type: "object",
+                                                    operator: {
+                                                      description:
+                                                        "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+                                                      type: "string",
+                                                    },
+                                                    values: {
+                                                      description:
+                                                        "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+                                                      items: {
+                                                        type: "string",
+                                                      },
+                                                      type: "array",
+                                                    },
+                                                  },
+                                                  required: ["key", "operator"],
+                                                  type: "object",
+                                                },
+                                                type: "array",
+                                              },
+                                              matchLabels: {
+                                                additionalProperties: {
+                                                  type: "string",
+                                                },
+                                                description:
+                                                  'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
+                                                type: "object",
+                                              },
+                                            },
+                                            type: "object",
+                                          },
+                                          namespaces: {
+                                            description:
+                                              'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
+                                            items: {
+                                              type: "string",
+                                            },
+                                            type: "array",
+                                          },
+                                          topologyKey: {
+                                            description:
+                                              "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                            type: "string",
+                                          },
+                                        },
+                                        required: ["topologyKey"],
+                                        type: "object",
+                                      },
+                                      weight: {
+                                        description:
+                                          "weight associated with matching the corresponding podAffinityTerm, in the range 1-100.",
+                                        format: "int32",
+                                        type: "integer",
+                                      },
+                                    },
+                                    required: ["podAffinityTerm", "weight"],
+                                    type: "object",
+                                  },
+                                  type: "array",
+                                },
+                                requiredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    "If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied.",
+                                  items: {
+                                    description:
+                                      "Defines a set of pods (namely those matching the labelSelector relative to the given namespace(s)) that this pod should be co-located (affinity) or not co-located (anti-affinity) with, where co-located is defined as running on a node whose value of the label with key <topologyKey> matches that of any node on which a pod of the set of pods is running",
+                                    properties: {
+                                      labelSelector: {
+                                        description:
+                                          "A label query over a set of resources, in this case pods.",
+                                        properties: {
+                                          matchExpressions: {
+                                            description:
+                                              "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+                                            items: {
+                                              description:
+                                                "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "key is the label key that the selector applies to.",
+                                                  type: "string",
+                                                },
+                                                operator: {
+                                                  description:
+                                                    "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+                                                  type: "string",
+                                                },
+                                                values: {
+                                                  description:
+                                                    "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
                                                   },
                                                   type: "array",
                                                 },
-                                                matchLabels: {
-                                                  additionalProperties: {
-                                                    type: "string",
-                                                  },
-                                                  description:
-                                                    'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
-                                                  type: "object",
-                                                },
                                               },
+                                              required: ["key", "operator"],
                                               type: "object",
                                             },
-                                            namespaces: {
-                                              description:
-                                                'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
-                                              items: {
-                                                type: "string",
-                                              },
-                                              type: "array",
-                                            },
-                                            topologyKey: {
-                                              description:
-                                                "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                            type: "array",
+                                          },
+                                          matchLabels: {
+                                            additionalProperties: {
                                               type: "string",
                                             },
+                                            description:
+                                              'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
+                                            type: "object",
                                           },
-                                          required: ["topologyKey"],
-                                          type: "object",
                                         },
-                                        weight: {
-                                          description:
-                                            "weight associated with matching the corresponding podAffinityTerm, in the range 1-100.",
-                                          format: "int32",
-                                          type: "integer",
-                                        },
+                                        type: "object",
                                       },
-                                      required: ["podAffinityTerm", "weight"],
-                                      type: "object",
-                                    },
-                                    type: "array",
-                                  },
-                                requiredDuringSchedulingIgnoredDuringExecution:
-                                  {
-                                    description:
-                                      "If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied.",
-                                    items: {
-                                      description:
-                                        "Defines a set of pods (namely those matching the labelSelector relative to the given namespace(s)) that this pod should be co-located (affinity) or not co-located (anti-affinity) with, where co-located is defined as running on a node whose value of the label with key <topologyKey> matches that of any node on which a pod of the set of pods is running",
-                                      properties: {
-                                        labelSelector: {
-                                          description:
-                                            "A label query over a set of resources, in this case pods.",
-                                          properties: {
-                                            matchExpressions: {
-                                              description:
-                                                "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
-                                              items: {
-                                                description:
-                                                  "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "key is the label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
-                                                },
-                                                required: ["key", "operator"],
-                                                type: "object",
-                                              },
-                                              type: "array",
-                                            },
-                                            matchLabels: {
-                                              additionalProperties: {
-                                                type: "string",
-                                              },
-                                              description:
-                                                'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
-                                              type: "object",
-                                            },
-                                          },
-                                          type: "object",
-                                        },
-                                        namespaces: {
-                                          description:
-                                            'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
-                                          items: {
-                                            type: "string",
-                                          },
-                                          type: "array",
-                                        },
-                                        topologyKey: {
-                                          description:
-                                            "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                      namespaces: {
+                                        description:
+                                          'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
+                                        items: {
                                           type: "string",
                                         },
+                                        type: "array",
                                       },
-                                      required: ["topologyKey"],
-                                      type: "object",
+                                      topologyKey: {
+                                        description:
+                                          "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                        type: "string",
+                                      },
                                     },
-                                    type: "array",
+                                    required: ["topologyKey"],
+                                    type: "object",
                                   },
+                                  type: "array",
+                                },
                               },
                               type: "object",
                             },
@@ -15526,169 +15730,164 @@ exports.createResources = async ({ provider, resources }) => {
                               description:
                                 "Describes pod anti-affinity scheduling rules (e.g. avoid putting this pod in the same node, zone, etc. as some other pod(s)).",
                               properties: {
-                                preferredDuringSchedulingIgnoredDuringExecution:
-                                  {
+                                preferredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    'The scheduler will prefer to schedule pods to nodes that satisfy the anti-affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling anti-affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred.',
+                                  items: {
                                     description:
-                                      'The scheduler will prefer to schedule pods to nodes that satisfy the anti-affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling anti-affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred.',
-                                    items: {
-                                      description:
-                                        "The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s)",
-                                      properties: {
-                                        podAffinityTerm: {
-                                          description:
-                                            "Required. A pod affinity term, associated with the corresponding weight.",
-                                          properties: {
-                                            labelSelector: {
-                                              description:
-                                                "A label query over a set of resources, in this case pods.",
-                                              properties: {
-                                                matchExpressions: {
+                                      "The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s)",
+                                    properties: {
+                                      podAffinityTerm: {
+                                        description:
+                                          "Required. A pod affinity term, associated with the corresponding weight.",
+                                        properties: {
+                                          labelSelector: {
+                                            description:
+                                              "A label query over a set of resources, in this case pods.",
+                                            properties: {
+                                              matchExpressions: {
+                                                description:
+                                                  "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+                                                items: {
                                                   description:
-                                                    "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
-                                                  items: {
-                                                    description:
-                                                      "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                    properties: {
-                                                      key: {
-                                                        description:
-                                                          "key is the label key that the selector applies to.",
-                                                        type: "string",
-                                                      },
-                                                      operator: {
-                                                        description:
-                                                          "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-                                                        type: "string",
-                                                      },
-                                                      values: {
-                                                        description:
-                                                          "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
-                                                        items: {
-                                                          type: "string",
-                                                        },
-                                                        type: "array",
-                                                      },
+                                                    "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                                  properties: {
+                                                    key: {
+                                                      description:
+                                                        "key is the label key that the selector applies to.",
+                                                      type: "string",
                                                     },
-                                                    required: [
-                                                      "key",
-                                                      "operator",
-                                                    ],
-                                                    type: "object",
+                                                    operator: {
+                                                      description:
+                                                        "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+                                                      type: "string",
+                                                    },
+                                                    values: {
+                                                      description:
+                                                        "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+                                                      items: {
+                                                        type: "string",
+                                                      },
+                                                      type: "array",
+                                                    },
+                                                  },
+                                                  required: ["key", "operator"],
+                                                  type: "object",
+                                                },
+                                                type: "array",
+                                              },
+                                              matchLabels: {
+                                                additionalProperties: {
+                                                  type: "string",
+                                                },
+                                                description:
+                                                  'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
+                                                type: "object",
+                                              },
+                                            },
+                                            type: "object",
+                                          },
+                                          namespaces: {
+                                            description:
+                                              'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
+                                            items: {
+                                              type: "string",
+                                            },
+                                            type: "array",
+                                          },
+                                          topologyKey: {
+                                            description:
+                                              "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                            type: "string",
+                                          },
+                                        },
+                                        required: ["topologyKey"],
+                                        type: "object",
+                                      },
+                                      weight: {
+                                        description:
+                                          "weight associated with matching the corresponding podAffinityTerm, in the range 1-100.",
+                                        format: "int32",
+                                        type: "integer",
+                                      },
+                                    },
+                                    required: ["podAffinityTerm", "weight"],
+                                    type: "object",
+                                  },
+                                  type: "array",
+                                },
+                                requiredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    "If the anti-affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the anti-affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied.",
+                                  items: {
+                                    description:
+                                      "Defines a set of pods (namely those matching the labelSelector relative to the given namespace(s)) that this pod should be co-located (affinity) or not co-located (anti-affinity) with, where co-located is defined as running on a node whose value of the label with key <topologyKey> matches that of any node on which a pod of the set of pods is running",
+                                    properties: {
+                                      labelSelector: {
+                                        description:
+                                          "A label query over a set of resources, in this case pods.",
+                                        properties: {
+                                          matchExpressions: {
+                                            description:
+                                              "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+                                            items: {
+                                              description:
+                                                "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "key is the label key that the selector applies to.",
+                                                  type: "string",
+                                                },
+                                                operator: {
+                                                  description:
+                                                    "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+                                                  type: "string",
+                                                },
+                                                values: {
+                                                  description:
+                                                    "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
                                                   },
                                                   type: "array",
                                                 },
-                                                matchLabels: {
-                                                  additionalProperties: {
-                                                    type: "string",
-                                                  },
-                                                  description:
-                                                    'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
-                                                  type: "object",
-                                                },
                                               },
+                                              required: ["key", "operator"],
                                               type: "object",
                                             },
-                                            namespaces: {
-                                              description:
-                                                'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
-                                              items: {
-                                                type: "string",
-                                              },
-                                              type: "array",
-                                            },
-                                            topologyKey: {
-                                              description:
-                                                "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                            type: "array",
+                                          },
+                                          matchLabels: {
+                                            additionalProperties: {
                                               type: "string",
                                             },
+                                            description:
+                                              'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
+                                            type: "object",
                                           },
-                                          required: ["topologyKey"],
-                                          type: "object",
                                         },
-                                        weight: {
-                                          description:
-                                            "weight associated with matching the corresponding podAffinityTerm, in the range 1-100.",
-                                          format: "int32",
-                                          type: "integer",
-                                        },
+                                        type: "object",
                                       },
-                                      required: ["podAffinityTerm", "weight"],
-                                      type: "object",
-                                    },
-                                    type: "array",
-                                  },
-                                requiredDuringSchedulingIgnoredDuringExecution:
-                                  {
-                                    description:
-                                      "If the anti-affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the anti-affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied.",
-                                    items: {
-                                      description:
-                                        "Defines a set of pods (namely those matching the labelSelector relative to the given namespace(s)) that this pod should be co-located (affinity) or not co-located (anti-affinity) with, where co-located is defined as running on a node whose value of the label with key <topologyKey> matches that of any node on which a pod of the set of pods is running",
-                                      properties: {
-                                        labelSelector: {
-                                          description:
-                                            "A label query over a set of resources, in this case pods.",
-                                          properties: {
-                                            matchExpressions: {
-                                              description:
-                                                "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
-                                              items: {
-                                                description:
-                                                  "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "key is the label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
-                                                },
-                                                required: ["key", "operator"],
-                                                type: "object",
-                                              },
-                                              type: "array",
-                                            },
-                                            matchLabels: {
-                                              additionalProperties: {
-                                                type: "string",
-                                              },
-                                              description:
-                                                'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
-                                              type: "object",
-                                            },
-                                          },
-                                          type: "object",
-                                        },
-                                        namespaces: {
-                                          description:
-                                            'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
-                                          items: {
-                                            type: "string",
-                                          },
-                                          type: "array",
-                                        },
-                                        topologyKey: {
-                                          description:
-                                            "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                      namespaces: {
+                                        description:
+                                          'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
+                                        items: {
                                           type: "string",
                                         },
+                                        type: "array",
                                       },
-                                      required: ["topologyKey"],
-                                      type: "object",
+                                      topologyKey: {
+                                        description:
+                                          "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                        type: "string",
+                                      },
                                     },
-                                    type: "array",
+                                    required: ["topologyKey"],
+                                    type: "object",
                                   },
+                                  type: "array",
+                                },
                               },
                               type: "object",
                             },
@@ -22078,10 +22277,11 @@ exports.createResources = async ({ provider, resources }) => {
           storedVersions: [],
         },
       }),
-    });
+    }
+  );
 
-  const prometheusrulesMonitoringCoreosComCustomResourceDefinition =
-    provider.makeCustomResourceDefinition({
+  const prometheusrulesMonitoringCoreosComCustomResourceDefinition = provider.makeCustomResourceDefinition(
+    {
       name: "prometheusrules.monitoring.coreos.com",
       properties: () => ({
         apiVersion: "apiextensions.k8s.io/v1",
@@ -22212,10 +22412,11 @@ exports.createResources = async ({ provider, resources }) => {
           storedVersions: [],
         },
       }),
-    });
+    }
+  );
 
-  const servicemonitorsMonitoringCoreosComCustomResourceDefinition =
-    provider.makeCustomResourceDefinition({
+  const servicemonitorsMonitoringCoreosComCustomResourceDefinition = provider.makeCustomResourceDefinition(
+    {
       name: "servicemonitors.monitoring.coreos.com",
       properties: () => ({
         apiVersion: "apiextensions.k8s.io/v1",
@@ -22796,10 +22997,11 @@ exports.createResources = async ({ provider, resources }) => {
           storedVersions: [],
         },
       }),
-    });
+    }
+  );
 
-  const thanosrulersMonitoringCoreosComCustomResourceDefinition =
-    provider.makeCustomResourceDefinition({
+  const thanosrulersMonitoringCoreosComCustomResourceDefinition = provider.makeCustomResourceDefinition(
+    {
       name: "thanosrulers.monitoring.coreos.com",
       properties: () => ({
         apiVersion: "apiextensions.k8s.io/v1",
@@ -22852,178 +23054,176 @@ exports.createResources = async ({ provider, resources }) => {
                               description:
                                 "Describes node affinity scheduling rules for the pod.",
                               properties: {
-                                preferredDuringSchedulingIgnoredDuringExecution:
-                                  {
+                                preferredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    'The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node matches the corresponding matchExpressions; the node(s) with the highest sum are the most preferred.',
+                                  items: {
                                     description:
-                                      'The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node matches the corresponding matchExpressions; the node(s) with the highest sum are the most preferred.',
-                                    items: {
-                                      description:
-                                        "An empty preferred scheduling term matches all objects with implicit weight 0 (i.e. it's a no-op). A null preferred scheduling term matches no objects (i.e. is also a no-op).",
-                                      properties: {
-                                        preference: {
-                                          description:
-                                            "A node selector term, associated with the corresponding weight.",
-                                          properties: {
-                                            matchExpressions: {
-                                              description:
-                                                "A list of node selector requirements by node's labels.",
-                                              items: {
-                                                description:
-                                                  "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "The label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
-                                                },
-                                                required: ["key", "operator"],
-                                                type: "object",
-                                              },
-                                              type: "array",
-                                            },
-                                            matchFields: {
-                                              description:
-                                                "A list of node selector requirements by node's fields.",
-                                              items: {
-                                                description:
-                                                  "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "The label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
-                                                },
-                                                required: ["key", "operator"],
-                                                type: "object",
-                                              },
-                                              type: "array",
-                                            },
-                                          },
-                                          type: "object",
-                                        },
-                                        weight: {
-                                          description:
-                                            "Weight associated with matching the corresponding nodeSelectorTerm, in the range 1-100.",
-                                          format: "int32",
-                                          type: "integer",
-                                        },
-                                      },
-                                      required: ["preference", "weight"],
-                                      type: "object",
-                                    },
-                                    type: "array",
-                                  },
-                                requiredDuringSchedulingIgnoredDuringExecution:
-                                  {
-                                    description:
-                                      "If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to an update), the system may or may not try to eventually evict the pod from its node.",
+                                      "An empty preferred scheduling term matches all objects with implicit weight 0 (i.e. it's a no-op). A null preferred scheduling term matches no objects (i.e. is also a no-op).",
                                     properties: {
-                                      nodeSelectorTerms: {
+                                      preference: {
                                         description:
-                                          "Required. A list of node selector terms. The terms are ORed.",
-                                        items: {
-                                          description:
-                                            "A null or empty node selector term matches no objects. The requirements of them are ANDed. The TopologySelectorTerm type implements a subset of the NodeSelectorTerm.",
-                                          properties: {
-                                            matchExpressions: {
+                                          "A node selector term, associated with the corresponding weight.",
+                                        properties: {
+                                          matchExpressions: {
+                                            description:
+                                              "A list of node selector requirements by node's labels.",
+                                            items: {
                                               description:
-                                                "A list of node selector requirements by node's labels.",
-                                              items: {
-                                                description:
-                                                  "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "The label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
+                                                "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "The label key that the selector applies to.",
+                                                  type: "string",
                                                 },
-                                                required: ["key", "operator"],
-                                                type: "object",
-                                              },
-                                              type: "array",
-                                            },
-                                            matchFields: {
-                                              description:
-                                                "A list of node selector requirements by node's fields.",
-                                              items: {
-                                                description:
-                                                  "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "The label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
+                                                operator: {
+                                                  description:
+                                                    "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
+                                                  type: "string",
                                                 },
-                                                required: ["key", "operator"],
-                                                type: "object",
+                                                values: {
+                                                  description:
+                                                    "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
+                                                  },
+                                                  type: "array",
+                                                },
                                               },
-                                              type: "array",
+                                              required: ["key", "operator"],
+                                              type: "object",
                                             },
+                                            type: "array",
                                           },
-                                          type: "object",
+                                          matchFields: {
+                                            description:
+                                              "A list of node selector requirements by node's fields.",
+                                            items: {
+                                              description:
+                                                "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "The label key that the selector applies to.",
+                                                  type: "string",
+                                                },
+                                                operator: {
+                                                  description:
+                                                    "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
+                                                  type: "string",
+                                                },
+                                                values: {
+                                                  description:
+                                                    "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
+                                                  },
+                                                  type: "array",
+                                                },
+                                              },
+                                              required: ["key", "operator"],
+                                              type: "object",
+                                            },
+                                            type: "array",
+                                          },
                                         },
-                                        type: "array",
+                                        type: "object",
+                                      },
+                                      weight: {
+                                        description:
+                                          "Weight associated with matching the corresponding nodeSelectorTerm, in the range 1-100.",
+                                        format: "int32",
+                                        type: "integer",
                                       },
                                     },
-                                    required: ["nodeSelectorTerms"],
+                                    required: ["preference", "weight"],
                                     type: "object",
                                   },
+                                  type: "array",
+                                },
+                                requiredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    "If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to an update), the system may or may not try to eventually evict the pod from its node.",
+                                  properties: {
+                                    nodeSelectorTerms: {
+                                      description:
+                                        "Required. A list of node selector terms. The terms are ORed.",
+                                      items: {
+                                        description:
+                                          "A null or empty node selector term matches no objects. The requirements of them are ANDed. The TopologySelectorTerm type implements a subset of the NodeSelectorTerm.",
+                                        properties: {
+                                          matchExpressions: {
+                                            description:
+                                              "A list of node selector requirements by node's labels.",
+                                            items: {
+                                              description:
+                                                "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "The label key that the selector applies to.",
+                                                  type: "string",
+                                                },
+                                                operator: {
+                                                  description:
+                                                    "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
+                                                  type: "string",
+                                                },
+                                                values: {
+                                                  description:
+                                                    "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
+                                                  },
+                                                  type: "array",
+                                                },
+                                              },
+                                              required: ["key", "operator"],
+                                              type: "object",
+                                            },
+                                            type: "array",
+                                          },
+                                          matchFields: {
+                                            description:
+                                              "A list of node selector requirements by node's fields.",
+                                            items: {
+                                              description:
+                                                "A node selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "The label key that the selector applies to.",
+                                                  type: "string",
+                                                },
+                                                operator: {
+                                                  description:
+                                                    "Represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. Gt, and Lt.",
+                                                  type: "string",
+                                                },
+                                                values: {
+                                                  description:
+                                                    "An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. If the operator is Gt or Lt, the values array must have a single element, which will be interpreted as an integer. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
+                                                  },
+                                                  type: "array",
+                                                },
+                                              },
+                                              required: ["key", "operator"],
+                                              type: "object",
+                                            },
+                                            type: "array",
+                                          },
+                                        },
+                                        type: "object",
+                                      },
+                                      type: "array",
+                                    },
+                                  },
+                                  required: ["nodeSelectorTerms"],
+                                  type: "object",
+                                },
                               },
                               type: "object",
                             },
@@ -23031,169 +23231,164 @@ exports.createResources = async ({ provider, resources }) => {
                               description:
                                 "Describes pod affinity scheduling rules (e.g. co-locate this pod in the same node, zone, etc. as some other pod(s)).",
                               properties: {
-                                preferredDuringSchedulingIgnoredDuringExecution:
-                                  {
+                                preferredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    'The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred.',
+                                  items: {
                                     description:
-                                      'The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred.',
-                                    items: {
-                                      description:
-                                        "The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s)",
-                                      properties: {
-                                        podAffinityTerm: {
-                                          description:
-                                            "Required. A pod affinity term, associated with the corresponding weight.",
-                                          properties: {
-                                            labelSelector: {
-                                              description:
-                                                "A label query over a set of resources, in this case pods.",
-                                              properties: {
-                                                matchExpressions: {
+                                      "The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s)",
+                                    properties: {
+                                      podAffinityTerm: {
+                                        description:
+                                          "Required. A pod affinity term, associated with the corresponding weight.",
+                                        properties: {
+                                          labelSelector: {
+                                            description:
+                                              "A label query over a set of resources, in this case pods.",
+                                            properties: {
+                                              matchExpressions: {
+                                                description:
+                                                  "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+                                                items: {
                                                   description:
-                                                    "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
-                                                  items: {
-                                                    description:
-                                                      "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                    properties: {
-                                                      key: {
-                                                        description:
-                                                          "key is the label key that the selector applies to.",
-                                                        type: "string",
-                                                      },
-                                                      operator: {
-                                                        description:
-                                                          "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-                                                        type: "string",
-                                                      },
-                                                      values: {
-                                                        description:
-                                                          "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
-                                                        items: {
-                                                          type: "string",
-                                                        },
-                                                        type: "array",
-                                                      },
+                                                    "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                                  properties: {
+                                                    key: {
+                                                      description:
+                                                        "key is the label key that the selector applies to.",
+                                                      type: "string",
                                                     },
-                                                    required: [
-                                                      "key",
-                                                      "operator",
-                                                    ],
-                                                    type: "object",
+                                                    operator: {
+                                                      description:
+                                                        "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+                                                      type: "string",
+                                                    },
+                                                    values: {
+                                                      description:
+                                                        "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+                                                      items: {
+                                                        type: "string",
+                                                      },
+                                                      type: "array",
+                                                    },
+                                                  },
+                                                  required: ["key", "operator"],
+                                                  type: "object",
+                                                },
+                                                type: "array",
+                                              },
+                                              matchLabels: {
+                                                additionalProperties: {
+                                                  type: "string",
+                                                },
+                                                description:
+                                                  'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
+                                                type: "object",
+                                              },
+                                            },
+                                            type: "object",
+                                          },
+                                          namespaces: {
+                                            description:
+                                              'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
+                                            items: {
+                                              type: "string",
+                                            },
+                                            type: "array",
+                                          },
+                                          topologyKey: {
+                                            description:
+                                              "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                            type: "string",
+                                          },
+                                        },
+                                        required: ["topologyKey"],
+                                        type: "object",
+                                      },
+                                      weight: {
+                                        description:
+                                          "weight associated with matching the corresponding podAffinityTerm, in the range 1-100.",
+                                        format: "int32",
+                                        type: "integer",
+                                      },
+                                    },
+                                    required: ["podAffinityTerm", "weight"],
+                                    type: "object",
+                                  },
+                                  type: "array",
+                                },
+                                requiredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    "If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied.",
+                                  items: {
+                                    description:
+                                      "Defines a set of pods (namely those matching the labelSelector relative to the given namespace(s)) that this pod should be co-located (affinity) or not co-located (anti-affinity) with, where co-located is defined as running on a node whose value of the label with key <topologyKey> matches that of any node on which a pod of the set of pods is running",
+                                    properties: {
+                                      labelSelector: {
+                                        description:
+                                          "A label query over a set of resources, in this case pods.",
+                                        properties: {
+                                          matchExpressions: {
+                                            description:
+                                              "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+                                            items: {
+                                              description:
+                                                "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "key is the label key that the selector applies to.",
+                                                  type: "string",
+                                                },
+                                                operator: {
+                                                  description:
+                                                    "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+                                                  type: "string",
+                                                },
+                                                values: {
+                                                  description:
+                                                    "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
                                                   },
                                                   type: "array",
                                                 },
-                                                matchLabels: {
-                                                  additionalProperties: {
-                                                    type: "string",
-                                                  },
-                                                  description:
-                                                    'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
-                                                  type: "object",
-                                                },
                                               },
+                                              required: ["key", "operator"],
                                               type: "object",
                                             },
-                                            namespaces: {
-                                              description:
-                                                'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
-                                              items: {
-                                                type: "string",
-                                              },
-                                              type: "array",
-                                            },
-                                            topologyKey: {
-                                              description:
-                                                "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                            type: "array",
+                                          },
+                                          matchLabels: {
+                                            additionalProperties: {
                                               type: "string",
                                             },
+                                            description:
+                                              'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
+                                            type: "object",
                                           },
-                                          required: ["topologyKey"],
-                                          type: "object",
                                         },
-                                        weight: {
-                                          description:
-                                            "weight associated with matching the corresponding podAffinityTerm, in the range 1-100.",
-                                          format: "int32",
-                                          type: "integer",
-                                        },
+                                        type: "object",
                                       },
-                                      required: ["podAffinityTerm", "weight"],
-                                      type: "object",
-                                    },
-                                    type: "array",
-                                  },
-                                requiredDuringSchedulingIgnoredDuringExecution:
-                                  {
-                                    description:
-                                      "If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied.",
-                                    items: {
-                                      description:
-                                        "Defines a set of pods (namely those matching the labelSelector relative to the given namespace(s)) that this pod should be co-located (affinity) or not co-located (anti-affinity) with, where co-located is defined as running on a node whose value of the label with key <topologyKey> matches that of any node on which a pod of the set of pods is running",
-                                      properties: {
-                                        labelSelector: {
-                                          description:
-                                            "A label query over a set of resources, in this case pods.",
-                                          properties: {
-                                            matchExpressions: {
-                                              description:
-                                                "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
-                                              items: {
-                                                description:
-                                                  "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "key is the label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
-                                                },
-                                                required: ["key", "operator"],
-                                                type: "object",
-                                              },
-                                              type: "array",
-                                            },
-                                            matchLabels: {
-                                              additionalProperties: {
-                                                type: "string",
-                                              },
-                                              description:
-                                                'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
-                                              type: "object",
-                                            },
-                                          },
-                                          type: "object",
-                                        },
-                                        namespaces: {
-                                          description:
-                                            'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
-                                          items: {
-                                            type: "string",
-                                          },
-                                          type: "array",
-                                        },
-                                        topologyKey: {
-                                          description:
-                                            "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                      namespaces: {
+                                        description:
+                                          'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
+                                        items: {
                                           type: "string",
                                         },
+                                        type: "array",
                                       },
-                                      required: ["topologyKey"],
-                                      type: "object",
+                                      topologyKey: {
+                                        description:
+                                          "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                        type: "string",
+                                      },
                                     },
-                                    type: "array",
+                                    required: ["topologyKey"],
+                                    type: "object",
                                   },
+                                  type: "array",
+                                },
                               },
                               type: "object",
                             },
@@ -23201,169 +23396,164 @@ exports.createResources = async ({ provider, resources }) => {
                               description:
                                 "Describes pod anti-affinity scheduling rules (e.g. avoid putting this pod in the same node, zone, etc. as some other pod(s)).",
                               properties: {
-                                preferredDuringSchedulingIgnoredDuringExecution:
-                                  {
+                                preferredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    'The scheduler will prefer to schedule pods to nodes that satisfy the anti-affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling anti-affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred.',
+                                  items: {
                                     description:
-                                      'The scheduler will prefer to schedule pods to nodes that satisfy the anti-affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling anti-affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred.',
-                                    items: {
-                                      description:
-                                        "The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s)",
-                                      properties: {
-                                        podAffinityTerm: {
-                                          description:
-                                            "Required. A pod affinity term, associated with the corresponding weight.",
-                                          properties: {
-                                            labelSelector: {
-                                              description:
-                                                "A label query over a set of resources, in this case pods.",
-                                              properties: {
-                                                matchExpressions: {
+                                      "The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s)",
+                                    properties: {
+                                      podAffinityTerm: {
+                                        description:
+                                          "Required. A pod affinity term, associated with the corresponding weight.",
+                                        properties: {
+                                          labelSelector: {
+                                            description:
+                                              "A label query over a set of resources, in this case pods.",
+                                            properties: {
+                                              matchExpressions: {
+                                                description:
+                                                  "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+                                                items: {
                                                   description:
-                                                    "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
-                                                  items: {
-                                                    description:
-                                                      "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                    properties: {
-                                                      key: {
-                                                        description:
-                                                          "key is the label key that the selector applies to.",
-                                                        type: "string",
-                                                      },
-                                                      operator: {
-                                                        description:
-                                                          "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-                                                        type: "string",
-                                                      },
-                                                      values: {
-                                                        description:
-                                                          "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
-                                                        items: {
-                                                          type: "string",
-                                                        },
-                                                        type: "array",
-                                                      },
+                                                    "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                                  properties: {
+                                                    key: {
+                                                      description:
+                                                        "key is the label key that the selector applies to.",
+                                                      type: "string",
                                                     },
-                                                    required: [
-                                                      "key",
-                                                      "operator",
-                                                    ],
-                                                    type: "object",
+                                                    operator: {
+                                                      description:
+                                                        "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+                                                      type: "string",
+                                                    },
+                                                    values: {
+                                                      description:
+                                                        "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+                                                      items: {
+                                                        type: "string",
+                                                      },
+                                                      type: "array",
+                                                    },
+                                                  },
+                                                  required: ["key", "operator"],
+                                                  type: "object",
+                                                },
+                                                type: "array",
+                                              },
+                                              matchLabels: {
+                                                additionalProperties: {
+                                                  type: "string",
+                                                },
+                                                description:
+                                                  'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
+                                                type: "object",
+                                              },
+                                            },
+                                            type: "object",
+                                          },
+                                          namespaces: {
+                                            description:
+                                              'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
+                                            items: {
+                                              type: "string",
+                                            },
+                                            type: "array",
+                                          },
+                                          topologyKey: {
+                                            description:
+                                              "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                            type: "string",
+                                          },
+                                        },
+                                        required: ["topologyKey"],
+                                        type: "object",
+                                      },
+                                      weight: {
+                                        description:
+                                          "weight associated with matching the corresponding podAffinityTerm, in the range 1-100.",
+                                        format: "int32",
+                                        type: "integer",
+                                      },
+                                    },
+                                    required: ["podAffinityTerm", "weight"],
+                                    type: "object",
+                                  },
+                                  type: "array",
+                                },
+                                requiredDuringSchedulingIgnoredDuringExecution: {
+                                  description:
+                                    "If the anti-affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the anti-affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied.",
+                                  items: {
+                                    description:
+                                      "Defines a set of pods (namely those matching the labelSelector relative to the given namespace(s)) that this pod should be co-located (affinity) or not co-located (anti-affinity) with, where co-located is defined as running on a node whose value of the label with key <topologyKey> matches that of any node on which a pod of the set of pods is running",
+                                    properties: {
+                                      labelSelector: {
+                                        description:
+                                          "A label query over a set of resources, in this case pods.",
+                                        properties: {
+                                          matchExpressions: {
+                                            description:
+                                              "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+                                            items: {
+                                              description:
+                                                "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+                                              properties: {
+                                                key: {
+                                                  description:
+                                                    "key is the label key that the selector applies to.",
+                                                  type: "string",
+                                                },
+                                                operator: {
+                                                  description:
+                                                    "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
+                                                  type: "string",
+                                                },
+                                                values: {
+                                                  description:
+                                                    "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+                                                  items: {
+                                                    type: "string",
                                                   },
                                                   type: "array",
                                                 },
-                                                matchLabels: {
-                                                  additionalProperties: {
-                                                    type: "string",
-                                                  },
-                                                  description:
-                                                    'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
-                                                  type: "object",
-                                                },
                                               },
+                                              required: ["key", "operator"],
                                               type: "object",
                                             },
-                                            namespaces: {
-                                              description:
-                                                'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
-                                              items: {
-                                                type: "string",
-                                              },
-                                              type: "array",
-                                            },
-                                            topologyKey: {
-                                              description:
-                                                "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                            type: "array",
+                                          },
+                                          matchLabels: {
+                                            additionalProperties: {
                                               type: "string",
                                             },
+                                            description:
+                                              'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
+                                            type: "object",
                                           },
-                                          required: ["topologyKey"],
-                                          type: "object",
                                         },
-                                        weight: {
-                                          description:
-                                            "weight associated with matching the corresponding podAffinityTerm, in the range 1-100.",
-                                          format: "int32",
-                                          type: "integer",
-                                        },
+                                        type: "object",
                                       },
-                                      required: ["podAffinityTerm", "weight"],
-                                      type: "object",
-                                    },
-                                    type: "array",
-                                  },
-                                requiredDuringSchedulingIgnoredDuringExecution:
-                                  {
-                                    description:
-                                      "If the anti-affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the anti-affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied.",
-                                    items: {
-                                      description:
-                                        "Defines a set of pods (namely those matching the labelSelector relative to the given namespace(s)) that this pod should be co-located (affinity) or not co-located (anti-affinity) with, where co-located is defined as running on a node whose value of the label with key <topologyKey> matches that of any node on which a pod of the set of pods is running",
-                                      properties: {
-                                        labelSelector: {
-                                          description:
-                                            "A label query over a set of resources, in this case pods.",
-                                          properties: {
-                                            matchExpressions: {
-                                              description:
-                                                "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
-                                              items: {
-                                                description:
-                                                  "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
-                                                properties: {
-                                                  key: {
-                                                    description:
-                                                      "key is the label key that the selector applies to.",
-                                                    type: "string",
-                                                  },
-                                                  operator: {
-                                                    description:
-                                                      "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist.",
-                                                    type: "string",
-                                                  },
-                                                  values: {
-                                                    description:
-                                                      "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
-                                                    items: {
-                                                      type: "string",
-                                                    },
-                                                    type: "array",
-                                                  },
-                                                },
-                                                required: ["key", "operator"],
-                                                type: "object",
-                                              },
-                                              type: "array",
-                                            },
-                                            matchLabels: {
-                                              additionalProperties: {
-                                                type: "string",
-                                              },
-                                              description:
-                                                'matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.',
-                                              type: "object",
-                                            },
-                                          },
-                                          type: "object",
-                                        },
-                                        namespaces: {
-                                          description:
-                                            'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
-                                          items: {
-                                            type: "string",
-                                          },
-                                          type: "array",
-                                        },
-                                        topologyKey: {
-                                          description:
-                                            "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                      namespaces: {
+                                        description:
+                                          'namespaces specifies which namespaces the labelSelector applies to (matches against); null or empty list means "this pod\'s namespace"',
+                                        items: {
                                           type: "string",
                                         },
+                                        type: "array",
                                       },
-                                      required: ["topologyKey"],
-                                      type: "object",
+                                      topologyKey: {
+                                        description:
+                                          "This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed.",
+                                        type: "string",
+                                      },
                                     },
-                                    type: "array",
+                                    required: ["topologyKey"],
+                                    type: "object",
                                   },
+                                  type: "array",
+                                },
                               },
                               type: "object",
                             },
@@ -28101,7 +28291,8 @@ exports.createResources = async ({ provider, resources }) => {
           storedVersions: [],
         },
       }),
-    });
+    }
+  );
 
   const prometheusOperatorClusterRole = provider.makeClusterRole({
     name: "prometheus-operator",
@@ -28212,7 +28403,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringprometheusOperatorDeployment = provider.makeDeployment({
-    name: "monitoring-prometheus-operator",
+    name: "prometheus-operator",
     properties: () => ({
       apiVersion: "apps/v1",
       metadata: {
@@ -28320,7 +28511,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const monitoringprometheusOperatorService = provider.makeService({
-    name: "monitoring-prometheus-operator",
+    name: "prometheus-operator",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -28351,9 +28542,9 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const monitoringprometheusOperatorServiceAccount =
-    provider.makeServiceAccount({
-      name: "monitoring-prometheus-operator",
+  const monitoringprometheusOperatorServiceAccount = provider.makeServiceAccount(
+    {
+      name: "prometheus-operator",
       properties: () => ({
         apiVersion: "v1",
         metadata: {
@@ -28367,7 +28558,8 @@ exports.createResources = async ({ provider, resources }) => {
           namespace: "monitoring",
         },
       }),
-    });
+    }
+  );
 
   return {
     monitoringmainAlertmanager,

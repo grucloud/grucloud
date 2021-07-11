@@ -103,7 +103,7 @@ const createK8sStack = async ({ stackAws, stage }) => {
   const k8sLoadBalancerResources = await ModuleK8sAwsLoadBalancer.createResources(
     {
       provider,
-      resources: stackAws.resources.lbc,
+      resources: stackAws.resources,
     }
   );
 

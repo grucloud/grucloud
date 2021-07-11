@@ -22973,7 +22973,7 @@ exports.createResources = async ({ provider, resources }) => {
 
   const certManagercertManagerCainjectorServiceAccount = provider.makeServiceAccount(
     {
-      name: "cert-manager-cert-manager-cainjector",
+      name: "cert-manager-cainjector",
       properties: () => ({
         apiVersion: "v1",
         automountServiceAccountToken: true,
@@ -22992,7 +22992,7 @@ exports.createResources = async ({ provider, resources }) => {
   );
 
   const certManagercertManagerServiceAccount = provider.makeServiceAccount({
-    name: "cert-manager-cert-manager",
+    name: "cert-manager",
     properties: () => ({
       apiVersion: "v1",
       automountServiceAccountToken: true,
@@ -23011,7 +23011,7 @@ exports.createResources = async ({ provider, resources }) => {
 
   const certManagercertManagerWebhookServiceAccount = provider.makeServiceAccount(
     {
-      name: "cert-manager-cert-manager-webhook",
+      name: "cert-manager-webhook",
       properties: () => ({
         apiVersion: "v1",
         automountServiceAccountToken: true,
@@ -23782,7 +23782,7 @@ exports.createResources = async ({ provider, resources }) => {
   );
 
   const kubeSystemcertManagerCainjectorLeaderelectionRole = provider.makeRole({
-    name: "kube-system-cert-manager-cainjector:leaderelection",
+    name: "cert-manager-cainjector:leaderelection",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -23815,7 +23815,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const kubeSystemcertManagerLeaderelectionRole = provider.makeRole({
-    name: "kube-system-cert-manager:leaderelection",
+    name: "cert-manager:leaderelection",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -23845,7 +23845,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const certManagercertManagerWebhookDynamicServingRole = provider.makeRole({
-    name: "cert-manager-cert-manager-webhook:dynamic-serving",
+    name: "cert-manager-webhook:dynamic-serving",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
       metadata: {
@@ -23876,7 +23876,7 @@ exports.createResources = async ({ provider, resources }) => {
 
   const kubeSystemcertManagerCainjectorLeaderelectionRoleBinding = provider.makeRoleBinding(
     {
-      name: "kube-system-cert-manager-cainjector:leaderelection",
+      name: "cert-manager-cainjector:leaderelection",
       properties: () => ({
         apiVersion: "rbac.authorization.k8s.io/v1",
         metadata: {
@@ -23907,7 +23907,7 @@ exports.createResources = async ({ provider, resources }) => {
 
   const kubeSystemcertManagerLeaderelectionRoleBinding = provider.makeRoleBinding(
     {
-      name: "kube-system-cert-manager:leaderelection",
+      name: "cert-manager:leaderelection",
       properties: () => ({
         apiVersion: "rbac.authorization.k8s.io/v1",
         metadata: {
@@ -23939,7 +23939,7 @@ exports.createResources = async ({ provider, resources }) => {
 
   const certManagercertManagerWebhookDynamicServingRoleBinding = provider.makeRoleBinding(
     {
-      name: "cert-manager-cert-manager-webhook:dynamic-serving",
+      name: "cert-manager-webhook:dynamic-serving",
       properties: () => ({
         apiVersion: "rbac.authorization.k8s.io/v1",
         metadata: {
@@ -23970,7 +23970,7 @@ exports.createResources = async ({ provider, resources }) => {
   );
 
   const certManagercertManagerService = provider.makeService({
-    name: "cert-manager-cert-manager",
+    name: "cert-manager",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -24002,7 +24002,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const certManagercertManagerWebhookService = provider.makeService({
-    name: "cert-manager-cert-manager-webhook",
+    name: "cert-manager-webhook",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -24034,7 +24034,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const certManagercertManagerCainjectorDeployment = provider.makeDeployment({
-    name: "cert-manager-cert-manager-cainjector",
+    name: "cert-manager-cainjector",
     properties: () => ({
       apiVersion: "apps/v1",
       metadata: {
@@ -24093,7 +24093,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const certManagercertManagerDeployment = provider.makeDeployment({
-    name: "cert-manager-cert-manager",
+    name: "cert-manager",
     properties: () => ({
       apiVersion: "apps/v1",
       metadata: {
@@ -24167,7 +24167,7 @@ exports.createResources = async ({ provider, resources }) => {
   });
 
   const certManagercertManagerWebhookDeployment = provider.makeDeployment({
-    name: "cert-manager-cert-manager-webhook",
+    name: "cert-manager-webhook",
     properties: () => ({
       apiVersion: "apps/v1",
       metadata: {

@@ -84,7 +84,7 @@ exports.resourceKeyNamespace = pipe([
   }),
   ({ providerName, type, properties, name, live }) =>
     `${providerName}::${type}::${get("metadata.namespace")(
-      properties ? properties : live
+      properties ? properties({ dependencies: {} }) : live
     )}::${name}`,
 ]);
 
