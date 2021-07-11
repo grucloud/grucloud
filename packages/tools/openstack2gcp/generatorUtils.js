@@ -291,7 +291,14 @@ exports.writeResources =
           tap((network) => {
             //console.log(`writeResources`);
           }),
-          (resource) => writeResource({ resource, lives, mapping }),
+          tap((params) => {
+            assert(true);
+          }),
+          switchCase([
+            not(get("cannotBeDeleted")),
+            (resource) => writeResource({ resource, lives, mapping }),
+            () => undefined,
+          ]),
         ])
       ),
     ])();

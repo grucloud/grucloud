@@ -9,7 +9,8 @@
   "private": true,
   "main": "OpenStack2Gcp.js",
   "scripts": {
-    "aws2gc": "node aws2gc.js --input aws/ec2/inventory.json --outputCode aws/ec2/iac.js --outputConfig aws/ec2/config.js",
+    "aws2gc-ec2": "node aws2gc.js --input aws/ec2/inventory.json --outputCode aws/ec2/iac.js --outputConfig aws/ec2/config.js",
+    "aws2gc-route53-record-txt": "node aws2gc.js --input aws/route53/dns-validation-record-txt/inventory.json --outputCode aws/route53/dns-validation-record-txt/iac.js --outputConfig aws/route53/dns-validation-record-txt/config.js",
     "openstack2gcp": "node OpenStack2Gcp.js --input openstack-inventory/gc-list.json --outputCode gcp-infra/iac.js --mapping mapping.json"
   },
   "author": "Frederic Heem",

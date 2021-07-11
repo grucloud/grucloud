@@ -18,6 +18,8 @@ const {
   writeSecurityGroupRule,
 } = require("./src/aws/ec2/securityGroupRuleGen");
 const { writeInternetGateways } = require("./src/aws/ec2/internetGatewayGen");
+const { writeHostedZones } = require("./src/aws/route53/hostedZoneGen");
+const { writeRecords } = require("./src/aws/route53/route53RecordGen");
 
 const writers = [
   writeVpcs,
@@ -30,6 +32,8 @@ const writers = [
   writeSecurityGroupRule({ type: "SecurityGroupRuleEgress" }),
   writeInstances,
   writeInternetGateways,
+  writeHostedZones,
+  writeRecords,
 ];
 
 //TODO read version from package.json
