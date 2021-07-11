@@ -5,24 +5,29 @@ exports.createResources = async ({ provider, resources }) => {
     name: "kubernetes-dashboard",
     properties: () => ({
       apiVersion: "v1",
-      metadata: {},
-    }),
-  });
-
-  const kubernetesDashboardServiceAccount = provider.makeServiceAccount({
-    name: "kubernetes-dashboard",
-    properties: () => ({
-      apiVersion: "v1",
       metadata: {
-        labels: {
-          "k8s-app": "kubernetes-dashboard",
-        },
-        namespace: "kubernetes-dashboard",
+        name: "kubernetes-dashboard",
       },
     }),
   });
 
-  const kubernetesDashboardService = provider.makeService({
+  const kubernetesDashboardkubernetesDashboardServiceAccount = provider.makeServiceAccount(
+    {
+      name: "kubernetes-dashboard",
+      properties: () => ({
+        apiVersion: "v1",
+        metadata: {
+          labels: {
+            "k8s-app": "kubernetes-dashboard",
+          },
+          name: "kubernetes-dashboard",
+          namespace: "kubernetes-dashboard",
+        },
+      }),
+    }
+  );
+
+  const kubernetesDashboardkubernetesDashboardService = provider.makeService({
     name: "kubernetes-dashboard",
     properties: () => ({
       apiVersion: "v1",
@@ -30,6 +35,7 @@ exports.createResources = async ({ provider, resources }) => {
         labels: {
           "k8s-app": "kubernetes-dashboard",
         },
+        name: "kubernetes-dashboard",
         namespace: "kubernetes-dashboard",
       },
       spec: {
@@ -46,21 +52,24 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const kubernetesDashboardCertsSecret = provider.makeSecret({
-    name: "kubernetes-dashboard-certs",
-    properties: () => ({
-      apiVersion: "v1",
-      metadata: {
-        labels: {
-          "k8s-app": "kubernetes-dashboard",
+  const kubernetesDashboardkubernetesDashboardCertsSecret = provider.makeSecret(
+    {
+      name: "kubernetes-dashboard-certs",
+      properties: () => ({
+        apiVersion: "v1",
+        metadata: {
+          labels: {
+            "k8s-app": "kubernetes-dashboard",
+          },
+          name: "kubernetes-dashboard-certs",
+          namespace: "kubernetes-dashboard",
         },
-        namespace: "kubernetes-dashboard",
-      },
-      type: "Opaque",
-    }),
-  });
+        type: "Opaque",
+      }),
+    }
+  );
 
-  const kubernetesDashboardCsrfSecret = provider.makeSecret({
+  const kubernetesDashboardkubernetesDashboardCsrfSecret = provider.makeSecret({
     name: "kubernetes-dashboard-csrf",
     properties: () => ({
       apiVersion: "v1",
@@ -68,6 +77,7 @@ exports.createResources = async ({ provider, resources }) => {
         labels: {
           "k8s-app": "kubernetes-dashboard",
         },
+        name: "kubernetes-dashboard-csrf",
         namespace: "kubernetes-dashboard",
       },
       type: "Opaque",
@@ -77,34 +87,40 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const kubernetesDashboardKeyHolderSecret = provider.makeSecret({
-    name: "kubernetes-dashboard-key-holder",
-    properties: () => ({
-      apiVersion: "v1",
-      metadata: {
-        labels: {
-          "k8s-app": "kubernetes-dashboard",
+  const kubernetesDashboardkubernetesDashboardKeyHolderSecret = provider.makeSecret(
+    {
+      name: "kubernetes-dashboard-key-holder",
+      properties: () => ({
+        apiVersion: "v1",
+        metadata: {
+          labels: {
+            "k8s-app": "kubernetes-dashboard",
+          },
+          name: "kubernetes-dashboard-key-holder",
+          namespace: "kubernetes-dashboard",
         },
-        namespace: "kubernetes-dashboard",
-      },
-      type: "Opaque",
-    }),
-  });
+        type: "Opaque",
+      }),
+    }
+  );
 
-  const kubernetesDashboardSettingsConfigMap = provider.makeConfigMap({
-    name: "kubernetes-dashboard-settings",
-    properties: () => ({
-      apiVersion: "v1",
-      metadata: {
-        labels: {
-          "k8s-app": "kubernetes-dashboard",
+  const kubernetesDashboardkubernetesDashboardSettingsConfigMap = provider.makeConfigMap(
+    {
+      name: "kubernetes-dashboard-settings",
+      properties: () => ({
+        apiVersion: "v1",
+        metadata: {
+          labels: {
+            "k8s-app": "kubernetes-dashboard",
+          },
+          name: "kubernetes-dashboard-settings",
+          namespace: "kubernetes-dashboard",
         },
-        namespace: "kubernetes-dashboard",
-      },
-    }),
-  });
+      }),
+    }
+  );
 
-  const kubernetesDashboardRole = provider.makeRole({
+  const kubernetesDashboardkubernetesDashboardRole = provider.makeRole({
     name: "kubernetes-dashboard",
     properties: () => ({
       apiVersion: "rbac.authorization.k8s.io/v1",
@@ -112,6 +128,7 @@ exports.createResources = async ({ provider, resources }) => {
         labels: {
           "k8s-app": "kubernetes-dashboard",
         },
+        name: "kubernetes-dashboard",
         namespace: "kubernetes-dashboard",
       },
       rules: [
@@ -161,6 +178,7 @@ exports.createResources = async ({ provider, resources }) => {
         labels: {
           "k8s-app": "kubernetes-dashboard",
         },
+        name: "kubernetes-dashboard",
       },
       rules: [
         {
@@ -172,37 +190,42 @@ exports.createResources = async ({ provider, resources }) => {
     }),
   });
 
-  const kubernetesDashboardRoleBinding = provider.makeRoleBinding({
-    name: "kubernetes-dashboard",
-    properties: () => ({
-      apiVersion: "rbac.authorization.k8s.io/v1",
-      metadata: {
-        labels: {
-          "k8s-app": "kubernetes-dashboard",
-        },
-        namespace: "kubernetes-dashboard",
-      },
-      roleRef: {
-        apiGroup: "rbac.authorization.k8s.io",
-        kind: "Role",
-        name: "kubernetes-dashboard",
-      },
-      subjects: [
-        {
-          kind: "ServiceAccount",
+  const kubernetesDashboardkubernetesDashboardRoleBinding = provider.makeRoleBinding(
+    {
+      name: "kubernetes-dashboard",
+      properties: () => ({
+        apiVersion: "rbac.authorization.k8s.io/v1",
+        metadata: {
+          labels: {
+            "k8s-app": "kubernetes-dashboard",
+          },
           name: "kubernetes-dashboard",
           namespace: "kubernetes-dashboard",
         },
-      ],
-    }),
-  });
+        roleRef: {
+          apiGroup: "rbac.authorization.k8s.io",
+          kind: "Role",
+          name: "kubernetes-dashboard",
+        },
+        subjects: [
+          {
+            kind: "ServiceAccount",
+            name: "kubernetes-dashboard",
+            namespace: "kubernetes-dashboard",
+          },
+        ],
+      }),
+    }
+  );
 
   const kubernetesDashboardClusterRoleBinding = provider.makeClusterRoleBinding(
     {
       name: "kubernetes-dashboard",
       properties: () => ({
         apiVersion: "rbac.authorization.k8s.io/v1",
-        metadata: {},
+        metadata: {
+          name: "kubernetes-dashboard",
+        },
         roleRef: {
           apiGroup: "rbac.authorization.k8s.io",
           kind: "ClusterRole",
@@ -219,222 +242,231 @@ exports.createResources = async ({ provider, resources }) => {
     }
   );
 
-  const kubernetesDashboardDeployment = provider.makeDeployment({
-    name: "kubernetes-dashboard",
-    properties: () => ({
-      apiVersion: "apps/v1",
-      metadata: {
-        labels: {
-          "k8s-app": "kubernetes-dashboard",
-        },
-        namespace: "kubernetes-dashboard",
-      },
-      spec: {
-        replicas: 1,
-        revisionHistoryLimit: 10,
-        selector: {
-          matchLabels: {
+  const kubernetesDashboardkubernetesDashboardDeployment = provider.makeDeployment(
+    {
+      name: "kubernetes-dashboard",
+      properties: () => ({
+        apiVersion: "apps/v1",
+        metadata: {
+          labels: {
             "k8s-app": "kubernetes-dashboard",
           },
+          name: "kubernetes-dashboard",
+          namespace: "kubernetes-dashboard",
         },
-        template: {
-          metadata: {
-            labels: {
+        spec: {
+          replicas: 1,
+          revisionHistoryLimit: 10,
+          selector: {
+            matchLabels: {
               "k8s-app": "kubernetes-dashboard",
             },
           },
-          spec: {
-            containers: [
-              {
-                name: "kubernetes-dashboard",
-                image: "kubernetesui/dashboard:v2.2.0",
-                imagePullPolicy: "Always",
-                ports: [
-                  {
-                    containerPort: 8443,
-                    protocol: "TCP",
-                  },
-                ],
-                args: [
-                  "--auto-generate-certificates",
-                  "--namespace=kubernetes-dashboard",
-                ],
-                volumeMounts: [
-                  {
-                    name: "kubernetes-dashboard-certs",
-                    mountPath: "/certs",
-                  },
-                  {
-                    mountPath: "/tmp",
-                    name: "tmp-volume",
-                  },
-                ],
-                livenessProbe: {
-                  httpGet: {
-                    scheme: "HTTPS",
-                    path: "/",
-                    port: 8443,
-                  },
-                  initialDelaySeconds: 30,
-                  timeoutSeconds: 30,
-                },
-                securityContext: {
-                  allowPrivilegeEscalation: false,
-                  readOnlyRootFilesystem: true,
-                  runAsUser: 1001,
-                  runAsGroup: 2001,
-                },
+          template: {
+            metadata: {
+              labels: {
+                "k8s-app": "kubernetes-dashboard",
               },
-            ],
-            volumes: [
-              {
-                name: "kubernetes-dashboard-certs",
-                secret: {
-                  secretName: "kubernetes-dashboard-certs",
-                },
-              },
-              {
-                name: "tmp-volume",
-                emptyDir: {},
-              },
-            ],
-            serviceAccountName: "kubernetes-dashboard",
-            nodeSelector: {
-              "kubernetes.io/os": "linux",
             },
-            tolerations: [
-              {
-                key: "node-role.kubernetes.io/master",
-                effect: "NoSchedule",
+            spec: {
+              containers: [
+                {
+                  name: "kubernetes-dashboard",
+                  image: "kubernetesui/dashboard:v2.2.0",
+                  imagePullPolicy: "Always",
+                  ports: [
+                    {
+                      containerPort: 8443,
+                      protocol: "TCP",
+                    },
+                  ],
+                  args: [
+                    "--auto-generate-certificates",
+                    "--namespace=kubernetes-dashboard",
+                  ],
+                  volumeMounts: [
+                    {
+                      name: "kubernetes-dashboard-certs",
+                      mountPath: "/certs",
+                    },
+                    {
+                      mountPath: "/tmp",
+                      name: "tmp-volume",
+                    },
+                  ],
+                  livenessProbe: {
+                    httpGet: {
+                      scheme: "HTTPS",
+                      path: "/",
+                      port: 8443,
+                    },
+                    initialDelaySeconds: 30,
+                    timeoutSeconds: 30,
+                  },
+                  securityContext: {
+                    allowPrivilegeEscalation: false,
+                    readOnlyRootFilesystem: true,
+                    runAsUser: 1001,
+                    runAsGroup: 2001,
+                  },
+                },
+              ],
+              volumes: [
+                {
+                  name: "kubernetes-dashboard-certs",
+                  secret: {
+                    secretName: "kubernetes-dashboard-certs",
+                  },
+                },
+                {
+                  name: "tmp-volume",
+                  emptyDir: {},
+                },
+              ],
+              serviceAccountName: "kubernetes-dashboard",
+              nodeSelector: {
+                "kubernetes.io/os": "linux",
               },
-            ],
+              tolerations: [
+                {
+                  key: "node-role.kubernetes.io/master",
+                  effect: "NoSchedule",
+                },
+              ],
+            },
           },
         },
-      },
-    }),
-  });
+      }),
+    }
+  );
 
-  const dashboardMetricsScraperService = provider.makeService({
-    name: "dashboard-metrics-scraper",
-    properties: () => ({
-      apiVersion: "v1",
-      metadata: {
-        labels: {
-          "k8s-app": "dashboard-metrics-scraper",
-        },
-        namespace: "kubernetes-dashboard",
-      },
-      spec: {
-        ports: [
-          {
-            port: 8000,
-            targetPort: 8000,
+  const kubernetesDashboarddashboardMetricsScraperService = provider.makeService(
+    {
+      name: "dashboard-metrics-scraper",
+      properties: () => ({
+        apiVersion: "v1",
+        metadata: {
+          labels: {
+            "k8s-app": "dashboard-metrics-scraper",
           },
-        ],
-        selector: {
-          "k8s-app": "dashboard-metrics-scraper",
+          name: "dashboard-metrics-scraper",
+          namespace: "kubernetes-dashboard",
         },
-      },
-    }),
-  });
-
-  const dashboardMetricsScraperDeployment = provider.makeDeployment({
-    name: "dashboard-metrics-scraper",
-    properties: () => ({
-      apiVersion: "apps/v1",
-      metadata: {
-        labels: {
-          "k8s-app": "dashboard-metrics-scraper",
-        },
-        namespace: "kubernetes-dashboard",
-      },
-      spec: {
-        replicas: 1,
-        revisionHistoryLimit: 10,
-        selector: {
-          matchLabels: {
+        spec: {
+          ports: [
+            {
+              port: 8000,
+              targetPort: 8000,
+            },
+          ],
+          selector: {
             "k8s-app": "dashboard-metrics-scraper",
           },
         },
-        template: {
-          metadata: {
-            labels: {
+      }),
+    }
+  );
+
+  const kubernetesDashboarddashboardMetricsScraperDeployment = provider.makeDeployment(
+    {
+      name: "dashboard-metrics-scraper",
+      properties: () => ({
+        apiVersion: "apps/v1",
+        metadata: {
+          labels: {
+            "k8s-app": "dashboard-metrics-scraper",
+          },
+          name: "dashboard-metrics-scraper",
+          namespace: "kubernetes-dashboard",
+        },
+        spec: {
+          replicas: 1,
+          revisionHistoryLimit: 10,
+          selector: {
+            matchLabels: {
               "k8s-app": "dashboard-metrics-scraper",
             },
-            annotations: {
-              "seccomp.security.alpha.kubernetes.io/pod": "runtime/default",
-            },
           },
-          spec: {
-            containers: [
-              {
-                name: "dashboard-metrics-scraper",
-                image: "kubernetesui/metrics-scraper:v1.0.6",
-                ports: [
-                  {
-                    containerPort: 8000,
-                    protocol: "TCP",
-                  },
-                ],
-                livenessProbe: {
-                  httpGet: {
-                    scheme: "HTTP",
-                    path: "/",
-                    port: 8000,
-                  },
-                  initialDelaySeconds: 30,
-                  timeoutSeconds: 30,
-                },
-                volumeMounts: [
-                  {
-                    mountPath: "/tmp",
-                    name: "tmp-volume",
-                  },
-                ],
-                securityContext: {
-                  allowPrivilegeEscalation: false,
-                  readOnlyRootFilesystem: true,
-                  runAsUser: 1001,
-                  runAsGroup: 2001,
-                },
+          template: {
+            metadata: {
+              labels: {
+                "k8s-app": "dashboard-metrics-scraper",
               },
-            ],
-            serviceAccountName: "kubernetes-dashboard",
-            nodeSelector: {
-              "kubernetes.io/os": "linux",
+              annotations: {
+                "seccomp.security.alpha.kubernetes.io/pod": "runtime/default",
+              },
             },
-            tolerations: [
-              {
-                key: "node-role.kubernetes.io/master",
-                effect: "NoSchedule",
+            spec: {
+              containers: [
+                {
+                  name: "dashboard-metrics-scraper",
+                  image: "kubernetesui/metrics-scraper:v1.0.6",
+                  ports: [
+                    {
+                      containerPort: 8000,
+                      protocol: "TCP",
+                    },
+                  ],
+                  livenessProbe: {
+                    httpGet: {
+                      scheme: "HTTP",
+                      path: "/",
+                      port: 8000,
+                    },
+                    initialDelaySeconds: 30,
+                    timeoutSeconds: 30,
+                  },
+                  volumeMounts: [
+                    {
+                      mountPath: "/tmp",
+                      name: "tmp-volume",
+                    },
+                  ],
+                  securityContext: {
+                    allowPrivilegeEscalation: false,
+                    readOnlyRootFilesystem: true,
+                    runAsUser: 1001,
+                    runAsGroup: 2001,
+                  },
+                },
+              ],
+              serviceAccountName: "kubernetes-dashboard",
+              nodeSelector: {
+                "kubernetes.io/os": "linux",
               },
-            ],
-            volumes: [
-              {
-                name: "tmp-volume",
-                emptyDir: {},
-              },
-            ],
+              tolerations: [
+                {
+                  key: "node-role.kubernetes.io/master",
+                  effect: "NoSchedule",
+                },
+              ],
+              volumes: [
+                {
+                  name: "tmp-volume",
+                  emptyDir: {},
+                },
+              ],
+            },
           },
         },
-      },
-    }),
-  });
+      }),
+    }
+  );
 
   return {
     kubernetesDashboardNamespace,
-    kubernetesDashboardServiceAccount,
-    kubernetesDashboardService,
-    kubernetesDashboardCertsSecret,
-    kubernetesDashboardCsrfSecret,
-    kubernetesDashboardKeyHolderSecret,
-    kubernetesDashboardSettingsConfigMap,
-    kubernetesDashboardRole,
+    kubernetesDashboardkubernetesDashboardServiceAccount,
+    kubernetesDashboardkubernetesDashboardService,
+    kubernetesDashboardkubernetesDashboardCertsSecret,
+    kubernetesDashboardkubernetesDashboardCsrfSecret,
+    kubernetesDashboardkubernetesDashboardKeyHolderSecret,
+    kubernetesDashboardkubernetesDashboardSettingsConfigMap,
+    kubernetesDashboardkubernetesDashboardRole,
     kubernetesDashboardClusterRole,
-    kubernetesDashboardRoleBinding,
+    kubernetesDashboardkubernetesDashboardRoleBinding,
     kubernetesDashboardClusterRoleBinding,
-    kubernetesDashboardDeployment,
-    dashboardMetricsScraperService,
-    dashboardMetricsScraperDeployment,
+    kubernetesDashboardkubernetesDashboardDeployment,
+    kubernetesDashboarddashboardMetricsScraperService,
+    kubernetesDashboarddashboardMetricsScraperDeployment,
   };
 };

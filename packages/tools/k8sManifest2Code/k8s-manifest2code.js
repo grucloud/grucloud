@@ -38,8 +38,7 @@ const buildResourceVariableName = ({
   kind,
 }) => `${camelCase(namespace)}${camelCase(name)}${kind}`;
 
-const buildResourceName = ({ metadata: { name, namespace = "" } }) =>
-  switchCase([isEmpty, () => name, () => `${namespace}-${name}`])(namespace);
+const buildResourceName = ({ metadata: { name, namespace = "" } }) => name;
 
 const writeResources = map((manifest) =>
   pipe([

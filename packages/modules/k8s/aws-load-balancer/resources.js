@@ -321,11 +321,11 @@ exports.createResources = async ({ provider, resources }) => {
       }),
     });
 
-  assert(resources.roleLoadBalancer);
+  assert(resources.lbc.roleLoadBalancer);
   const kubeSystemawsLoadBalancerControllerServiceAccount =
     provider.makeServiceAccount({
-      name: "kube-system-aws-load-balancer-controller",
-      dependencies: { role: resources.roleLoadBalancer },
+      name: "aws-load-balancer-controller",
+      dependencies: { role: resources.lbc.roleLoadBalancer },
       properties: ({ dependencies: { role } }) => ({
         apiVersion: "v1",
         metadata: {
@@ -344,7 +344,7 @@ exports.createResources = async ({ provider, resources }) => {
 
   const kubeSystemawsLoadBalancerControllerLeaderElectionRoleRole =
     provider.makeRole({
-      name: "kube-system-aws-load-balancer-controller-leader-election-role",
+      name: "aws-load-balancer-controller-leader-election-role",
       properties: () => ({
         apiVersion: "rbac.authorization.k8s.io/v1",
         metadata: {
@@ -476,7 +476,7 @@ exports.createResources = async ({ provider, resources }) => {
 
   const kubeSystemawsLoadBalancerControllerLeaderElectionRolebindingRoleBinding =
     provider.makeRoleBinding({
-      name: "kube-system-aws-load-balancer-controller-leader-election-rolebinding",
+      name: "aws-load-balancer-controller-leader-election-rolebinding",
       properties: () => ({
         apiVersion: "rbac.authorization.k8s.io/v1",
         metadata: {
@@ -528,7 +528,7 @@ exports.createResources = async ({ provider, resources }) => {
     });
 
   const kubeSystemawsLoadBalancerWebhookServiceService = provider.makeService({
-    name: "kube-system-aws-load-balancer-webhook-service",
+    name: "aws-load-balancer-webhook-service",
     properties: () => ({
       apiVersion: "v1",
       metadata: {
@@ -558,7 +558,7 @@ exports.createResources = async ({ provider, resources }) => {
 
   const kubeSystemawsLoadBalancerControllerDeployment = provider.makeDeployment(
     {
-      name: "kube-system-aws-load-balancer-controller",
+      name: "aws-load-balancer-controller",
       properties: () => ({
         apiVersion: "apps/v1",
         metadata: {
@@ -657,7 +657,7 @@ exports.createResources = async ({ provider, resources }) => {
 
   const kubeSystemawsLoadBalancerServingCertCertificate =
     provider.makeCertificate({
-      name: "kube-system-aws-load-balancer-serving-cert",
+      name: "aws-load-balancer-serving-cert",
       properties: () => ({
         apiVersion: "cert-manager.io/v1alpha2",
         metadata: {
@@ -682,7 +682,7 @@ exports.createResources = async ({ provider, resources }) => {
     });
 
   const kubeSystemawsLoadBalancerSelfsignedIssuerIssuer = provider.makeIssuer({
-    name: "kube-system-aws-load-balancer-selfsigned-issuer",
+    name: "aws-load-balancer-selfsigned-issuer",
     properties: () => ({
       apiVersion: "cert-manager.io/v1alpha2",
       metadata: {

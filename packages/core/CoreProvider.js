@@ -274,6 +274,7 @@ function CoreProvider({
     assert(resource.spec.providerName);
 
     const resourceKey = resource.toString();
+    logger.debug(`targetResourcesAdd ${resourceKey}`);
     if (mapNameToResource.has(resourceKey) && !resource.spec.listOnly) {
       throw {
         code: 400,
