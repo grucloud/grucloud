@@ -77,7 +77,7 @@ const findDnsServers = (live) =>
   ])();
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
-exports.AwsHostedZone = ({ spec, config }) => {
+exports.Route53HostedZone = ({ spec, config }) => {
   assert(spec);
   assert(config);
   const { providerName } = config;
