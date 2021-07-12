@@ -81,15 +81,7 @@ const findDependencyNames = ({
     }),
   ])();
 
-const propertyValue = switchCase([
-  isString,
-  (value) => `"${value}"`,
-  isObject,
-  (value) => JSON.stringify(value, null, 4),
-  identity,
-]);
-
-const buildPropertyList = ({ resource: { live }, pickProperties }) =>
+const buildProperties = ({ resource: { live }, pickProperties }) =>
   pipe([
     tap(() => {
       assert(true);
@@ -117,30 +109,11 @@ const buildPropertyList = ({ resource: { live }, pickProperties }) =>
     tap((params) => {
       assert(true);
     }),
-    map.entries(([key, value]) => [key, `${key}: ${propertyValue(value)}`]),
-    values,
-    tap((params) => {
-      assert(true);
-    }),
   ])();
 
-//TODO PROPERTYLIST
-
-const configTpl = ({
-  resourceVarName,
-  resourceName,
-  resource: { name },
-  propertyList,
-  properties,
-}) =>
+const configTpl = ({ resourceVarName, resourceName, properties }) =>
   pipe([
-    () => propertyList,
-    tap(() => {
-      assert(properties);
-      assert(resourceName);
-    }),
-    callProp("join", ","),
-    (propertyListJoined) => `${resourceVarName}: {
+    () => `${resourceVarName}: {
       name: "${resourceName}"${
       !isEmpty(properties)
         ? `\n,properties: ${JSON.stringify(properties, null, 4)}`
@@ -201,7 +174,6 @@ const codeTpl = ({
   dependencies,
   resource,
   lives,
-  propertyList,
   properties,
   createPrefix = "make",
 }) => `(resources) =>
@@ -213,7 +185,7 @@ set(
   name: config.${group}.${type}.${resourceVarName}.name,${
   resource.namespace ? `\nnamespace: ${resource.namespace},` : ""
 }${buildDependencies({ resource, lives, dependencies })}${
-  !isEmpty(propertyList) || !isEmpty(properties)
+  !isEmpty(properties)
     ? `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`
     : ""
 }
@@ -424,24 +396,26 @@ const writeResource =
           fork({
             resourceVarName: () => resourceVarName(resource.name),
             resourceName: () => resourceName(resource.name),
-            properties: () => properties({ resource, mapping }),
-            propertyList: () =>
-              buildPropertyList({
-                resource,
-                pickProperties: pickProperties({ resource }),
-              }),
+            properties: pipe([
+              () => properties({ resource, mapping }),
+              defaultsDeep(
+                buildProperties({
+                  resource,
+                  pickProperties: pickProperties({ resource }),
+                })
+              ),
+            ]),
           }),
           tap((params) => {
             assert(true);
           }),
-          ({ resourceVarName, resourceName, propertyList, properties }) => ({
+          ({ resourceVarName, resourceName, properties }) => ({
             resourceVarName,
             config: configTpl({
               type: typeTarget || type,
               resourceName,
               resourceVarName,
               resource,
-              propertyList,
               properties,
             }),
             code: codeTpl({
@@ -449,7 +423,6 @@ const writeResource =
               type: typeTarget || type,
               resource,
               resourceVarName,
-              propertyList,
               dependencies: dependencies(),
               lives,
               createPrefix,
