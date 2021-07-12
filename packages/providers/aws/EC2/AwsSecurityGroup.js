@@ -83,7 +83,9 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       type: "SecurityGroup",
       ids: pipe([
         () => live,
-        get("IpPermission.UserIdGroupPairs"),
+        get("IpPermissions"),
+        pluck("UserIdGroupPairs"),
+        flatten,
         pluck("GroupId"),
       ])(),
     },
