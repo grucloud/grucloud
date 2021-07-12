@@ -112,6 +112,9 @@ exports.AwsIamPolicy = ({ spec, config }) => {
 
   const fetchPolicyDocument = ({ PolicyArn }) =>
     pipe([
+      tap(() => {
+        assert(PolicyArn, "PolicyArn");
+      }),
       () => iam().listPolicyVersions({ PolicyArn }),
       get("Versions"),
       tap((params) => {

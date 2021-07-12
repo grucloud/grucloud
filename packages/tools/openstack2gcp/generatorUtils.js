@@ -120,12 +120,12 @@ exports.codeTpl = ({
   type,
   resourceVarName,
   dependencies,
-  resource: { namespace, isDefault },
+  resource: { namespace, isDefault, cannotBeDeleted },
   propertyList,
   createPrefix = "make",
 }) => `
   const ${resourceVarName} = provider.${group}.${
-  isDefault ? "use" : createPrefix
+  isDefault || cannotBeDeleted ? "use" : createPrefix
 }${type}({
     name: config.${resourceVarName}.name,${
   namespace ? `\nnamespace: ${namespace},` : ""
@@ -252,7 +252,12 @@ exports.generatorMain = ({ name, options, writers, iacTpl, configTpl }) =>
     }),
   ])();
 
-const ResourceVarName = (name) => camelCase(name);
+const ResourceVarName = pipe([
+  tap((name) => {
+    assert(name, "missing resource name");
+  }),
+  (name) => camelCase(name),
+]);
 exports.ResourceVarName = ResourceVarName;
 
 const findLiveById =
@@ -306,6 +311,10 @@ exports.findDependencyNames = ({
   filterDependency = () => true,
 }) =>
   pipe([
+    tap(() => {
+      assert(type);
+      assert(lives);
+    }),
     () => resource.dependencies,
     find(eq(get("type"), type)),
     get("ids"),
@@ -313,7 +322,11 @@ exports.findDependencyNames = ({
     tap((xxx) => {
       assert(true);
     }),
+    filter(not(isEmpty)),
     filter(filterDependency),
+    tap((params) => {
+      assert(true);
+    }),
     pluck("name"),
     map(ResourceVarName),
     tap((xxx) => {

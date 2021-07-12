@@ -17,9 +17,12 @@ const { writeSecurityGroups } = require("./src/aws/ec2/securityGroupGen");
 const {
   writeSecurityGroupRule,
 } = require("./src/aws/ec2/securityGroupRuleGen");
+
 const { writeInternetGateways } = require("./src/aws/ec2/internetGatewayGen");
 const { writeHostedZones } = require("./src/aws/route53/hostedZoneGen");
 const { writeRecords } = require("./src/aws/route53/route53RecordGen");
+const { writeIamRoles } = require("./src/aws/iam/iamRoleGen");
+const { writeIamPolicies } = require("./src/aws/iam/iamPolicyGen");
 
 const writers = [
   writeVpcs,
@@ -34,6 +37,8 @@ const writers = [
   writeInternetGateways,
   writeHostedZones,
   writeRecords,
+  writeIamPolicies,
+  writeIamRoles,
 ];
 
 //TODO read version from package.json

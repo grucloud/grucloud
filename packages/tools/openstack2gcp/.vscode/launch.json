@@ -36,6 +36,23 @@
       "port": 9229
     },
     {
+      "name": "aws2gc-iam",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "aws2gc-iam",
+        "--",
+        "--trace-warnings",
+        "--inspect-brk=9229"
+      ],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
       "name": "openstack2gcp",
       "type": "node",
       "request": "launch",
