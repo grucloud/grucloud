@@ -1,4 +1,5 @@
 const assert = require("assert");
+const querystring = require("querystring");
 const {
   map,
   pipe,
@@ -13,7 +14,16 @@ const {
   pick,
   or,
 } = require("rubico");
-const { defaultsDeep, find, size, identity, isEmpty } = require("rubico/x");
+const {
+  defaultsDeep,
+  find,
+  size,
+  identity,
+  isEmpty,
+  last,
+  first,
+  keys,
+} = require("rubico/x");
 const moment = require("moment");
 const logger = require("@grucloud/core/logger")({ prefix: "IamPolicy" });
 const { retryCall } = require("@grucloud/core/Retry");
@@ -81,14 +91,44 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       }),
       () => resources,
       filter(get("readOnly")),
-      map((resource) => ({
-        name: resource.name,
-        namespace: resource.namespace,
-        ...resource.properties(),
-      })),
+      map(
+        pipe([
+          ({ name, namespace, properties }) => ({
+            name,
+            ...(namespace && { namespace }),
+            ...properties(),
+          }),
+          assign({
+            PolicyDocument: ({ Arn }) =>
+              fetchPolicyDocument({ PolicyArn: Arn }),
+          }),
+        ])
+      ),
       (readOnlyResources) => [...policies, ...readOnlyResources],
       tap((policiesAll) => {
         logger.info(`addTargets #policies  ${size(policiesAll)}`);
+      }),
+    ])();
+
+  const fetchPolicyDocument = ({ PolicyArn }) =>
+    pipe([
+      () => iam().listPolicyVersions({ PolicyArn }),
+      get("Versions"),
+      tap((params) => {
+        assert(true);
+      }),
+      last,
+      ({ VersionId }) =>
+        iam().getPolicyVersion({
+          PolicyArn,
+          VersionId,
+        }),
+      get("PolicyVersion.Document"),
+      (encoded) => querystring.decode(encoded),
+      keys,
+      first,
+      tryCatch(JSON.parse, (error, document) => {
+        logger.error(`${error}, ${document}`);
       }),
     ])();
 
@@ -110,19 +150,22 @@ exports.AwsIamPolicy = ({ spec, config }) => {
       map.pool(
         mapPoolSize,
         tryCatch(
-          pipe([
-            (policy) => iam().getPolicy({ PolicyArn: policy.Arn }),
-            get("Policy"),
-            assign({
-              EntitiesForPolicy: pipe([
-                ({ Arn }) =>
-                  iam().listEntitiesForPolicy({
-                    PolicyArn: Arn,
-                  }),
-                pick(["PolicyGroups", "PolicyUsers", "PolicyRoles"]),
-              ]),
-            }),
-          ]),
+          (policy) =>
+            pipe([
+              () => iam().getPolicy({ PolicyArn: policy.Arn }),
+              get("Policy"),
+              assign({
+                PolicyDocument: () =>
+                  fetchPolicyDocument({ PolicyArn: policy.Arn }),
+                EntitiesForPolicy: pipe([
+                  () =>
+                    iam().listEntitiesForPolicy({
+                      PolicyArn: policy.Arn,
+                    }),
+                  pick(["PolicyGroups", "PolicyUsers", "PolicyRoles"]),
+                ]),
+              }),
+            ])(),
           (error, policy) =>
             pipe([
               tap(() => {
@@ -138,7 +181,7 @@ exports.AwsIamPolicy = ({ spec, config }) => {
         )
       ),
       tap((policies) => {
-        logger.debug(`getList policy all: ${tos(policies)}`);
+        logger.debug(`getList policy managed: ${tos(policies)}`);
       }),
       (policies) => addTargets({ policies, resources }),
       tap((policies) => {
