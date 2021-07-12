@@ -36,16 +36,17 @@ const {
   isString,
   isObject,
   flatten,
+  defaultsDeep,
 } = require("rubico/x");
 
-const ResourceVarName = pipe([
+const ResourceVarNameDefault = pipe([
   tap((name) => {
     assert(name, "missing resource name");
   }),
   (name) => camelCase(name),
 ]);
 
-exports.ResourceVarName = ResourceVarName;
+exports.ResourceVarNameDefault = ResourceVarNameDefault;
 
 const findDependencyNames = ({
   type,
@@ -70,9 +71,10 @@ const findDependencyNames = ({
     tap((params) => {
       assert(true);
     }),
+    //TODO openstack should set its group
     map(
-      ({ group, type, name }) =>
-        `resources.${group}.${type}.${ResourceVarName(name)}`
+      ({ group = "compute", type, name }) =>
+        `resources.${group}.${type}.${ResourceVarNameDefault(name)}`
     ),
     tap((xxx) => {
       assert(true);
@@ -122,22 +124,32 @@ const buildPropertyList = ({ resource: { live }, pickProperties }) =>
     }),
   ])();
 
-const configTpl = ({ resourceVarName, resource: { name }, propertyList }) =>
+//TODO PROPERTYLIST
+
+const configTpl = ({
+  resourceVarName,
+  resourceName,
+  resource: { name },
+  propertyList,
+  properties,
+}) =>
   pipe([
     () => propertyList,
-    tap((params) => {
-      assert(name);
+    tap(() => {
+      assert(properties);
+      assert(resourceName);
     }),
     callProp("join", ","),
     (propertyListJoined) => `${resourceVarName}: {
-      name: "${name}"${
-      !isEmpty(propertyListJoined)
-        ? `\n,properties: { 
-          ${propertyListJoined} 
-        }`
+      name: "${resourceName}"${
+      !isEmpty(properties)
+        ? `\n,properties: ${JSON.stringify(properties, null, 4)}`
         : ""
     },
     },`,
+    tap((params) => {
+      assert(true);
+    }),
   ])();
 
 const dependencyValue = ({ key, value }) =>
@@ -152,8 +164,18 @@ const buildDependencies = ({ resource, lives, dependencies = {} }) =>
     () => dependencies,
     map.entries(([key, dependency]) => [
       key,
-      findDependencyNames({ resource, lives, ...dependency }),
+      pipe([
+        () => dependency,
+        defaultsDeep({
+          findDependencyNames,
+        }),
+        ({ findDependencyNames }) =>
+          findDependencyNames({ resource, lives, ...dependency }),
+      ])(),
     ]),
+    tap((params) => {
+      assert(true);
+    }),
     map.entries(([key, value]) => [
       key,
       !isEmpty(value) && `${key}: ${dependencyValue({ key, value })}`,
@@ -167,6 +189,9 @@ const buildDependencies = ({ resource, lives, dependencies = {} }) =>
        ${values.join(",\n")}
      },`,
     ]),
+    tap((params) => {
+      assert(true);
+    }),
   ])();
 
 const codeTpl = ({
@@ -177,6 +202,7 @@ const codeTpl = ({
   resource,
   lives,
   propertyList,
+  properties,
   createPrefix = "make",
 }) => `(resources) =>
 set(
@@ -187,7 +213,7 @@ set(
   name: config.${group}.${type}.${resourceVarName}.name,${
   resource.namespace ? `\nnamespace: ${resource.namespace},` : ""
 }${buildDependencies({ resource, lives, dependencies })}${
-  !isEmpty(propertyList)
+  !isEmpty(propertyList) || !isEmpty(properties)
     ? `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`
     : ""
 }
@@ -309,7 +335,7 @@ const writeConfig =
             assert(types);
           }),
           () => types,
-          map(({ type, resources }) =>
+          map(({ type, typeTarget, resources }) =>
             pipe([
               () => resources,
               pluck("config"),
@@ -319,7 +345,7 @@ const writeConfig =
                 () => undefined,
                 pipe([
                   callProp("join", "\n"),
-                  (configs) => `${type}: {
+                  (configs) => `${typeTarget || type}: {
                     ${configs}
                     },`,
                 ]),
@@ -370,13 +396,17 @@ exports.findLiveById = findLiveById;
 const writeResource =
   ({
     type,
+    typeTarget,
     group,
     createPrefix,
+    resourceVarName = ResourceVarNameDefault,
+    resourceName = identity,
     pickProperties = always([]),
+    properties = always({}),
     dependencies = always({}),
     ignoreResource = () => always(false),
   }) =>
-  ({ resource, lives }) =>
+  ({ resource, lives, mapping }) =>
     pipe([
       tap((params) => {
         assert(true);
@@ -392,7 +422,9 @@ const writeResource =
             assert(true);
           }),
           fork({
-            resourceVarName: () => ResourceVarName(resource.name),
+            resourceVarName: () => resourceVarName(resource.name),
+            resourceName: () => resourceName(resource.name),
+            properties: () => properties({ resource, mapping }),
             propertyList: () =>
               buildPropertyList({
                 resource,
@@ -402,22 +434,26 @@ const writeResource =
           tap((params) => {
             assert(true);
           }),
-          ({ resourceVarName, propertyList }) => ({
+          ({ resourceVarName, resourceName, propertyList, properties }) => ({
             resourceVarName,
             config: configTpl({
+              type: typeTarget || type,
+              resourceName,
               resourceVarName,
               resource,
               propertyList,
+              properties,
             }),
             code: codeTpl({
               group,
-              type,
+              type: typeTarget || type,
               resource,
               resourceVarName,
               propertyList,
               dependencies: dependencies(),
               lives,
               createPrefix,
+              properties,
             }),
           }),
         ]),
@@ -427,11 +463,15 @@ const writeResource =
 const writeResources =
   ({
     type,
+    typeTarget,
     group,
     pickProperties,
+    properties,
     dependencies,
     createPrefix,
     ignoreResource,
+    resourceVarName,
+    resourceName,
   }) =>
   ({ lives, mapping }) =>
     pipe([
@@ -451,11 +491,15 @@ const writeResources =
           (resource) =>
             writeResource({
               type,
+              typeTarget,
               group,
+              properties,
               pickProperties,
               dependencies,
               createPrefix,
               ignoreResource,
+              resourceVarName,
+              resourceName,
             })({
               resource,
               lives,
@@ -486,9 +530,11 @@ exports.generatorMain = ({ name, options, writersSpec, iacTpl, configTpl }) =>
             }),
             map((spec) => ({
               type: spec.type,
+              typeTarget: spec.typeTarget,
               resources: pipe([
                 () => ({ lives, mapping }),
                 writeResources({
+                  mapping,
                   group,
                   ...spec,
                 }),
