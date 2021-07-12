@@ -74,45 +74,114 @@ module.exports = ({ stage }) => ({
       sgRuleIngressSsh: {
         name: "sg-rule-ingress-ssh",
         properties: {
-          IpPermissions: [
-            {
-              FromPort: 22,
-              IpProtocol: "tcp",
-              IpRanges: [
-                {
-                  CidrIp: "0.0.0.0/0",
-                },
-              ],
-              Ipv6Ranges: [
-                {
-                  CidrIpv6: "::/0",
-                },
-              ],
-              ToPort: 22,
-            },
-          ],
+          IpPermission: {
+            FromPort: 22,
+            IpProtocol: "tcp",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+            ToPort: 22,
+          },
         },
       },
       sgRuleIngressIcmp: {
         name: "sg-rule-ingress-icmp",
         properties: {
-          IpPermissions: [
-            {
-              FromPort: -1,
-              IpProtocol: "icmp",
-              IpRanges: [
-                {
-                  CidrIp: "0.0.0.0/0",
-                },
-              ],
-              Ipv6Ranges: [
-                {
-                  CidrIpv6: "::/0",
-                },
-              ],
-              ToPort: -1,
-            },
-          ],
+          IpPermission: {
+            FromPort: -1,
+            IpProtocol: "icmp",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+            ToPort: -1,
+          },
+        },
+      },
+      sgDefaultVpcEc2ExampleRuleIngressAll: {
+        name: "sg-default-vpc-ec2-example-rule-ingress-all",
+        properties: {
+          IpPermission: {
+            IpProtocol: "-1",
+            IpRanges: [],
+            Ipv6Ranges: [],
+            UserIdGroupPairs: [
+              {
+                GroupId: "sg-05abd72c4d45078fa",
+              },
+            ],
+          },
+        },
+      },
+      sgDefaultVpcDefaultRuleIngressAll: {
+        name: "sg-default-vpc-default-rule-ingress-all",
+        properties: {
+          IpPermission: {
+            IpProtocol: "-1",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [],
+          },
+        },
+      },
+    },
+    SecurityGroupRuleEgress: {
+      securityGroupRuleEgressAll: {
+        name: "security-group-rule-egress-all",
+        properties: {
+          IpPermission: {
+            IpProtocol: "-1",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [],
+          },
+        },
+      },
+      sgDefaultVpcEc2ExampleRuleEgressAll: {
+        name: "sg-default-vpc-ec2-example-rule-egress-all",
+        properties: {
+          IpPermission: {
+            IpProtocol: "-1",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [],
+          },
+        },
+      },
+      sgDefaultVpcDefaultRuleEgressAll: {
+        name: "sg-default-vpc-default-rule-egress-all",
+        properties: {
+          IpPermission: {
+            IpProtocol: "-1",
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [],
+          },
         },
       },
     },

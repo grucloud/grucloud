@@ -70,8 +70,10 @@ const findDependencyNames = ({
     tap((params) => {
       assert(true);
     }),
-    pluck("name"),
-    map(ResourceVarName),
+    map(
+      ({ group, type, name }) =>
+        `resources.${group}.${type}.${ResourceVarName(name)}`
+    ),
     tap((xxx) => {
       assert(true);
     }),
@@ -176,19 +178,21 @@ const codeTpl = ({
   lives,
   propertyList,
   createPrefix = "make",
-}) => `
-  const ${resourceVarName} = provider.${group}.${
+}) => `(resources) =>
+set(
+  "${group}.${type}.${resourceVarName}",
+  provider.${group}.${
   resource.isDefault || resource.cannotBeDeleted ? "use" : createPrefix
 }${type}({
-    name: config.${group}.${type}.${resourceVarName}.name,${
+  name: config.${group}.${type}.${resourceVarName}.name,${
   resource.namespace ? `\nnamespace: ${resource.namespace},` : ""
 }${buildDependencies({ resource, lives, dependencies })}${
   !isEmpty(propertyList)
     ? `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`
     : ""
 }
-  });
-  `;
+  })
+)(resources),`;
 
 const writeToFile =
   ({ filename }) =>

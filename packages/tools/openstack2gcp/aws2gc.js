@@ -65,14 +65,14 @@ const writersSpec = [
       },
       {
         type: "SecurityGroupRuleIngress",
-        pickProperties: () => ["IpPermissions"],
+        pickProperties: () => ["IpPermission"],
         dependencies: () => ({
           securityGroup: { type: "SecurityGroup", group: "ec2" },
         }),
       },
       {
         type: "SecurityGroupRuleEgress",
-        pickProperties: () => ["IpPermissions"],
+        pickProperties: () => ["IpPermission"],
         dependencies: () => ({
           securityGroup: { type: "SecurityGroup", group: "ec2" },
         }),

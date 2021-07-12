@@ -140,7 +140,7 @@ const findGroupId = (live) =>
     }),
   ])();
 
-const buildKeyNamespace = ({ name }) => `${name}::namespace`;
+const buildKeyNamespace = ({ name }) => `gc-sg-rule-${name}::namespace`;
 
 const findDependencies = ({ live }) => [
   {
@@ -177,15 +177,10 @@ const SecurityGroupRuleBase = ({ config }) => {
             Key: buildSgRuleTagKey(name),
             Value: JSON.stringify(payload),
           },
-          {
+          ...(namespace && {
             Key: buildKeyNamespace({ name }),
             Value: namespace,
-          },
-          //TODO
-          // ...(namespace && {
-          //   Key: buildKeyNamespace({ name }),
-          //   Value: namespace,
-          // }),
+          }),
         ],
       }),
       tap((params) => {
