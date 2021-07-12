@@ -52,7 +52,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
 
   const findDependencies = ({ live }) => [
     {
-      type: "IamRole",
+      type: "Role",
       ids: pipe([() => live, get("Roles"), pluck("Arn")])(),
     },
   ];

@@ -19,6 +19,7 @@ const {
   not,
   omit,
   or,
+  always,
 } = require("rubico");
 
 const pick = require("rubico/pick");
@@ -36,6 +37,45 @@ const {
   isObject,
 } = require("rubico/x");
 
+const ResourceVarName = pipe([
+  tap((name) => {
+    assert(name, "missing resource name");
+  }),
+  (name) => camelCase(name),
+]);
+
+exports.ResourceVarName = ResourceVarName;
+
+const findDependencyNames = ({
+  type,
+  resource,
+  lives,
+  filterDependency = () => () => true,
+}) =>
+  pipe([
+    tap(() => {
+      assert(type);
+      assert(lives);
+    }),
+    () => resource.dependencies,
+    find(eq(get("type"), type)),
+    get("ids"),
+    map(findLiveById({ type, lives })),
+    tap((xxx) => {
+      assert(true);
+    }),
+    filter(not(isEmpty)),
+    filter(filterDependency({ resource })),
+    tap((params) => {
+      assert(true);
+    }),
+    pluck("name"),
+    map(ResourceVarName),
+    tap((xxx) => {
+      assert(true);
+    }),
+  ])();
+
 const propertyValue = switchCase([
   isString,
   (value) => `"${value}"`,
@@ -44,8 +84,11 @@ const propertyValue = switchCase([
   identity,
 ]);
 
-exports.buildPropertyList = ({ resource: { live }, pickProperties }) =>
+const buildPropertyList = ({ resource: { live }, pickProperties }) =>
   pipe([
+    tap(() => {
+      assert(true);
+    }),
     () => live,
     pick([...pickProperties, "Tags"]),
     tap((params) => {
@@ -76,7 +119,7 @@ exports.buildPropertyList = ({ resource: { live }, pickProperties }) =>
     }),
   ])();
 
-exports.configTpl = ({ resourceVarName, resource: { name }, propertyList }) =>
+const configTpl = ({ resourceVarName, resource: { name }, propertyList }) =>
   pipe([
     () => propertyList,
     tap((params) => {
@@ -97,9 +140,17 @@ exports.configTpl = ({ resourceVarName, resource: { name }, propertyList }) =>
 const dependencyValue = ({ key, value }) =>
   switchCase([() => key.endsWith("s"), () => `[${value}]`, () => value])();
 
-const buildDependencies = (dependencies = {}) =>
+const buildDependencies = ({ resource, lives, dependencies = {} }) =>
   pipe([
+    tap(() => {
+      assert(resource);
+      assert(lives);
+    }),
     () => dependencies,
+    map.entries(([key, dependency]) => [
+      key,
+      findDependencyNames({ resource, lives, ...dependency }),
+    ]),
     map.entries(([key, value]) => [
       key,
       !isEmpty(value) && `${key}: ${dependencyValue({ key, value })}`,
@@ -115,21 +166,22 @@ const buildDependencies = (dependencies = {}) =>
     ]),
   ])();
 
-exports.codeTpl = ({
+const codeTpl = ({
   group,
   type,
   resourceVarName,
   dependencies,
-  resource: { namespace, isDefault },
+  resource,
+  lives,
   propertyList,
   createPrefix = "make",
 }) => `
   const ${resourceVarName} = provider.${group}.${
-  isDefault ? "use" : createPrefix
+  resource.isDefault || resource.cannotBeDeleted ? "use" : createPrefix
 }${type}({
     name: config.${resourceVarName}.name,${
-  namespace ? `\nnamespace: ${namespace},` : ""
-}${buildDependencies(dependencies)}${
+  resource.namespace ? `\nnamespace: ${resource.namespace},` : ""
+}${buildDependencies({ resource, lives, dependencies })}${
   !isEmpty(propertyList)
     ? `\nproperties: () => config.${resourceVarName}.properties,`
     : ""
@@ -252,9 +304,6 @@ exports.generatorMain = ({ name, options, writers, iacTpl, configTpl }) =>
     }),
   ])();
 
-const ResourceVarName = (name) => camelCase(name);
-exports.ResourceVarName = ResourceVarName;
-
 const findLiveById =
   ({ lives, type }) =>
   (id) =>
@@ -275,45 +324,100 @@ const findLiveById =
 
 exports.findLiveById = findLiveById;
 
+const writeResource =
+  ({
+    type,
+    group,
+    createPrefix,
+    pickProperties = always([]),
+    dependencies = always({}),
+    ignoreResource = () => always(false),
+  }) =>
+  ({ resource, lives }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      () => resource,
+      switchCase([
+        ignoreResource({ lives }),
+        () => {
+          assert(true);
+        },
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          fork({
+            resourceVarName: () => ResourceVarName(resource.name),
+            propertyList: () =>
+              buildPropertyList({
+                resource,
+                pickProperties: pickProperties({ resource }),
+              }),
+          }),
+          tap((params) => {
+            assert(true);
+          }),
+          ({ resourceVarName, propertyList }) => ({
+            resourceVarName,
+            config: configTpl({
+              resourceVarName,
+              resource,
+              propertyList,
+            }),
+            code: codeTpl({
+              group,
+              type,
+              resource,
+              resourceVarName,
+              propertyList,
+              dependencies: dependencies(),
+              lives,
+              createPrefix,
+            }),
+          }),
+        ]),
+      ]),
+    ])();
+
 exports.writeResources =
-  ({ type, writeResource }) =>
+  ({
+    type,
+    group,
+    pickProperties,
+    dependencies,
+    createPrefix,
+    ignoreResource,
+  }) =>
   ({ lives, mapping }) =>
     pipe([
       tap(() => {
         assert(type);
-        assert(isFunction(writeResource));
+        assert(group);
+        assert(isFunction(pickProperties));
       }),
       () => lives,
       find(eq(get("type"), type)),
       get("resources"),
       map(
         pipe([
-          tap((network) => {
-            //console.log(`writeResources`);
+          tap((params) => {
+            assert(true);
           }),
-          (resource) => writeResource({ resource, lives, mapping }),
+          (resource) =>
+            writeResource({
+              type,
+              group,
+              pickProperties,
+              dependencies,
+              createPrefix,
+              ignoreResource,
+            })({
+              resource,
+              lives,
+              mapping,
+            }),
         ])
       ),
     ])();
-
-exports.findDependencyNames = ({
-  type,
-  resource,
-  lives,
-  filterDependency = () => true,
-}) =>
-  pipe([
-    () => resource.dependencies,
-    find(eq(get("type"), type)),
-    get("ids"),
-    map(findLiveById({ type, lives })),
-    tap((xxx) => {
-      assert(true);
-    }),
-    filter(filterDependency),
-    pluck("name"),
-    map(ResourceVarName),
-    tap((xxx) => {
-      assert(true);
-    }),
-  ])();

@@ -16,6 +16,7 @@ const {
   eq,
   omit,
   and,
+  flatMap,
 } = require("rubico");
 const {
   find,
@@ -24,6 +25,8 @@ const {
   isEmpty,
   isDeepEqual,
   callProp,
+  size,
+  includes,
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
@@ -32,7 +35,7 @@ const { tos } = require("@grucloud/core/tos");
 const { Route53New, shouldRetryOnException } = require("../AwsCommon");
 const { filterEmptyResourceRecords } = require("./Route53Utils");
 
-const omitFieldRecord = omit(["Tags", "hostedZoneId", "namespace"]);
+const omitFieldRecord = omit(["Tags", "HostedZoneId", "namespace"]);
 
 const liveToResourceSet = pipe([omitFieldRecord, filterEmptyResourceRecords]);
 const RecordKeyPrefix = "gc-record-";
@@ -40,12 +43,12 @@ const buildRecordTagKey = (name) => `${RecordKeyPrefix}${name}`;
 const getNameFromTagKey = (key = "") => key.replace(RecordKeyPrefix, "");
 const buildRecordTagValue = ({ Name, Type }) => `${Name}::${Type}`;
 
-const findName = pipe([
+const findNameInTags = pipe([
   get("live"),
   tap((live) => {
     logger.debug(`findName live ${tos(live)}`);
     assert(live.Name);
-    assert(live.Tags);
+    //assert(live.Tags);
   }),
   ({ Name, Type, Tags }) =>
     find(eq(get("Value"), buildRecordTagValue({ Name, Type })))(Tags),
@@ -59,7 +62,7 @@ const findName = pipe([
   }),
 ]);
 
-const findId = pipe([get("live"), ({ Name, Type }) => `${Type}::${Name}`]);
+const findId = pipe([get("live"), buildRecordTagValue]);
 
 const getHostedZone = ({ name, dependencies = {} }) =>
   pipe([
@@ -86,13 +89,31 @@ const getHostedZone = ({ name, dependencies = {} }) =>
 exports.Route53Record = ({ spec, config }) => {
   assert(spec);
   assert(config);
-
+  const { providerName } = config;
   const route53 = Route53New(config);
 
   const findDependencies = ({ live }) => [
     // TODO findDependencies
-    { type: "HostedZone", ids: [live.hostedZoneId] },
+    { type: "HostedZone", ids: [live.HostedZoneId] },
   ];
+
+  const findName = ({ live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(true);
+      }),
+      () => {
+        for (fn of [findNameInTags, findId]) {
+          const name = fn({ live, lives, config });
+          if (!isEmpty(name)) {
+            return name;
+          }
+        }
+      },
+      tap((name) => {
+        assert(true);
+      }),
+    ])();
 
   const findNamespace = get("live.namespace", "");
 
@@ -137,7 +158,7 @@ exports.Route53Record = ({ spec, config }) => {
         (record) => ({
           ...record,
           Tags: hostedZone.Tags,
-          hostedZoneId: hostedZone.Id,
+          HostedZoneId: hostedZone.Id,
           namespace,
         }),
       ]),
@@ -146,21 +167,39 @@ exports.Route53Record = ({ spec, config }) => {
       }),
     ])();
 
-  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZones-property
-  const getList = async ({ resources = [] } = {}) =>
+  const getListFromLive = async ({ lives }) =>
     pipe([
       tap(() => {
-        logger.info(`getList Route53Record #resources ${resources.length}`);
+        logger.info(`getListFromLive`);
+        assert(lives);
+      }),
+      () => lives.getByType({ providerName, type: "HostedZone" }),
+      flatMap((hostedZone) =>
+        pipe([
+          () => hostedZone,
+          get("live.RecordSet"),
+          map(assign({ HostedZoneId: () => hostedZone.id })),
+        ])()
+      ),
+      tap((records) => {
+        logger.debug(`getListFromLive result: ${tos(records)}`);
+      }),
+    ])();
+
+  const getListFromTarget = async ({ resources = [] } = {}) =>
+    pipe([
+      tap(() => {
+        logger.info(`getListFromTarget #resources ${size(resources)}`);
       }),
       () => resources,
       map((resource) =>
         pipe([
           tap(() => {
-            logger.debug(`getList Route53Record resource ${resource.name}`);
+            logger.debug(`getListFromTarget resource ${resource.name}`);
           }),
           () => getHostedZone(resource),
           tap((hostedZone) => {
-            logger.debug(`getList Route53Record, hostedZone: ${hostedZone}`);
+            logger.debug(`getListFromTarget, hostedZone: ${hostedZone}`);
           }),
           switchCase([
             isEmpty,
@@ -178,8 +217,72 @@ exports.Route53Record = ({ spec, config }) => {
       tap((records) => {
         logger.debug(`getList route53 records result: ${tos(records)}`);
       }),
+    ])();
+
+  // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZones-property
+  const getList = async ({ resources = [], lives }) =>
+    pipe([
+      tap(() => {
+        logger.info(`getList Route53Record #resources ${resources.length}`);
+      }),
+      fork({
+        recordsLive: () => getListFromLive({ lives }),
+        recordsTarget: () => getListFromTarget({ resources }),
+      }),
+      tap(({ recordsLive, recordsTarget }) => {
+        logger.debug(
+          `getList route53 records result: ${tos({
+            recordsLive,
+            recordsTarget,
+          })}`
+        );
+      }),
+      ({ recordsLive, recordsTarget }) =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          () => recordsLive,
+          flatMap((recordLive) =>
+            pipe([
+              tap((params) => {
+                assert(true);
+              }),
+              () => recordsTarget,
+              map((recordTarget) =>
+                pipe([
+                  fork({
+                    recordTargetFiltered: () =>
+                      omit(["Tags", "namespace"])(recordTarget),
+                    recordLiveFiltered: () =>
+                      omit(["Tags", "namespace"])(recordLive),
+                  }),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                  ({ recordTargetFiltered, recordLiveFiltered }) =>
+                    switchCase([
+                      () =>
+                        isDeepEqual(recordTargetFiltered, recordLiveFiltered),
+                      () => recordTarget,
+                      () => recordLive,
+                    ])(),
+                  tap((params) => {
+                    assert(true);
+                  }),
+                ])()
+              ),
+            ])()
+          ),
+          tap((params) => {
+            assert(true);
+          }),
+        ])(),
+      tap((records) => {
+        logger.debug(`getList route53 records result: ${tos(records)}`);
+      }),
       (records) => ({
-        total: records.length,
+        total: size(records),
         items: records,
       }),
       tap(({ total }) => {
@@ -251,47 +354,44 @@ exports.Route53Record = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#deleteHostedZone-property
-  const destroy = async ({ id, name, live, resource }) =>
+  const destroy = async ({ id, name, live, lives, resource }) =>
     pipe([
       tap(() => {
         logger.info(`destroy Route53Record ${tos({ name, id, live })}`);
         assert(!isEmpty(id), `destroy invalid id`);
         assert(name, "destroy name");
-        assert(resource, "resource");
+        //assert(resource, "resource");
+        assert(lives);
+        assert(live);
       }),
-      () => resource,
-      getHostedZone,
-      (hostedZone) =>
+      () => live,
+      switchCase([
+        not(isEmpty),
         pipe([
-          () => live,
-          switchCase([
-            not(isEmpty),
-            pipe([
-              (live) =>
-                route53().changeResourceRecordSets({
-                  HostedZoneId: hostedZone.Id,
-                  ChangeBatch: {
-                    Changes: [
-                      {
-                        Action: "DELETE",
-                        ResourceRecordSet: liveToResourceSet(live),
-                      },
-                    ],
+          (live) =>
+            route53().changeResourceRecordSets({
+              HostedZoneId: live.HostedZoneId,
+              ChangeBatch: {
+                Changes: [
+                  {
+                    Action: "DELETE",
+                    ResourceRecordSet: liveToResourceSet(live),
                   },
-                }),
-              // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#changeTagsForResource-property
-              () =>
-                route53().changeTagsForResource({
-                  ResourceId: hostedZone.Id,
-                  RemoveTagKeys: [buildRecordTagKey(name)],
-                  ResourceType: "hostedzone",
-                }),
-            ]),
-            () => {
-              logger.error(`no live record for ${name}`);
-            },
-          ]),
-        ])(),
+                ],
+              },
+            }),
+          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#changeTagsForResource-property
+          () =>
+            route53().changeTagsForResource({
+              ResourceId: live.HostedZoneId,
+              RemoveTagKeys: [buildRecordTagKey(name)],
+              ResourceType: "hostedzone",
+            }),
+        ]),
+        () => {
+          logger.error(`no live record for ${name}`);
+        },
+      ]),
       tap((result) => {
         logger.debug(`destroy Route53Record done, ${tos({ name, id })}`);
       }),
@@ -349,6 +449,14 @@ exports.Route53Record = ({ spec, config }) => {
     return defaultsDeep({ Name: name })(properties);
   };
 
+  const cannotBeDeleted = pipe([
+    get("live.Type"),
+    tap((Type) => {
+      assert(Type);
+    }),
+    (Type) => pipe([() => ["SOA", "NS"], includes(Type)])(),
+  ]);
+
   return {
     spec,
     findDependencies,
@@ -361,6 +469,7 @@ exports.Route53Record = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    cannotBeDeleted,
     shouldRetryOnException,
   };
 };

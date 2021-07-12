@@ -48,11 +48,11 @@ exports.AwsIamRole = ({ spec, config }) => {
 
   const findDependencies = ({ live, lives }) => [
     {
-      type: "IamPolicy",
+      type: "Policy",
       ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
     },
     {
-      type: "IamOpenIDConnectProvider",
+      type: "OpenIDConnectProvider",
       ids: pipe([
         () => live,
         get("AssumeRolePolicyDocument.Statement"),

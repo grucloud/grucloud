@@ -21,7 +21,18 @@ describe("AwsLoadBalancerV2", async function () {
   const loadBalancerName = "load-balancer";
   const targetGroupName = "targetGroup";
   const listenerHttpName = "listener-http";
-  const types = ["LoadBalancer", "TargetGroup", "Listener", "Rule"];
+  const types = [
+    "LoadBalancer",
+    "TargetGroup",
+    "Listener",
+    "Rule",
+    "InternetGateway",
+    "SecurityGroup",
+    "SecurityGroupRuleIngress",
+    "Record",
+    "Subnet",
+    "Vpc",
+  ];
 
   before(async function () {
     try {

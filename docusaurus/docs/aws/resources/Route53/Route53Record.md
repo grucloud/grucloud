@@ -3,7 +3,7 @@ id: Route53Record
 title: Route53 Record
 ---
 
-Provides a single Route53 Record.
+Provides a single [Route53 Record](https://console.aws.amazon.com/route53/v2/home#Dashboard)
 
 ## Examples
 
@@ -102,3 +102,54 @@ const recordValidation = provider.route53.makeRecord({
 ## Dependencies
 
 - [Route53 HostedZone](./Route53HostedZone)
+
+## List
+
+```txt
+┌────────────────────────────────────────────────────────────────────────────┐
+│ 3 route53::Record from aws                                                 │
+├────────────────────┬────────────────────────────────────────────────┬──────┤
+│ Name               │ Data                                           │ Our  │
+├────────────────────┼────────────────────────────────────────────────┼──────┤
+│ grucloud.org.::NS  │ Name: grucloud.org.                            │ Yes  │
+│                    │ Type: NS                                       │      │
+│                    │ TTL: 172800                                    │      │
+│                    │ ResourceRecords:                               │      │
+│                    │   - Value: ns-1907.awsdns-46.co.uk.            │      │
+│                    │   - Value: ns-15.awsdns-01.com.                │      │
+│                    │   - Value: ns-1423.awsdns-49.org.              │      │
+│                    │   - Value: ns-514.awsdns-00.net.               │      │
+│                    │ HostedZoneId: /hostedzone/Z0064831PNCGMBFQ0H7Y │      │
+│                    │                                                │      │
+├────────────────────┼────────────────────────────────────────────────┼──────┤
+│ grucloud.org.::SOA │ Name: grucloud.org.                            │ Yes  │
+│                    │ Type: SOA                                      │      │
+│                    │ TTL: 900                                       │      │
+│                    │ ResourceRecords:                               │      │
+│                    │   - Value: ns-1907.awsdns-46.co.uk. awsdns-ho… │      │
+│                    │ HostedZoneId: /hostedzone/Z0064831PNCGMBFQ0H7Y │      │
+│                    │                                                │      │
+├────────────────────┼────────────────────────────────────────────────┼──────┤
+│ txt.grucloud.org.  │ Name: grucloud.org.                            │ Yes  │
+│                    │ Type: TXT                                      │      │
+│                    │ TTL: 60                                        │      │
+│                    │ ResourceRecords:                               │      │
+│                    │   - Value: "google-site-verification=q_tZuuK8… │      │
+│                    │ Tags:                                          │      │
+│                    │   - Key: gc-managed-by                         │      │
+│                    │     Value: grucloud                            │      │
+│                    │   - Key: gc-project-name                       │      │
+│                    │     Value: @grucloud/example-aws-route53-dns-… │      │
+│                    │   - Key: gc-stage                              │      │
+│                    │     Value: dev                                 │      │
+│                    │   - Key: gc-record-txt.grucloud.org.           │      │
+│                    │     Value: grucloud.org.::TXT                  │      │
+│                    │   - Key: gc-created-by-provider                │      │
+│                    │     Value: aws                                 │      │
+│                    │   - Key: Name                                  │      │
+│                    │     Value: grucloud.org.                       │      │
+│                    │ HostedZoneId: /hostedzone/Z0064831PNCGMBFQ0H7Y │      │
+│                    │ namespace:                                     │      │
+│                    │                                                │      │
+└────────────────────┴────────────────────────────────────────────────┴──────┘
+```

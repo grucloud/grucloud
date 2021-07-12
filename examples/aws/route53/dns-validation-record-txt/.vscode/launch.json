@@ -17,7 +17,12 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
-      "runtimeArgs": ["list", "-g"],
+      "runtimeArgs": [
+        "list",
+        "-g",
+        "--json",
+        "../../../../packages/tools/openstack2gcp/aws/route53/dns-validation-record-txt/inventory.json"
+      ],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",

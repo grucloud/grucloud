@@ -1,6 +1,6 @@
 const { pipe, assign, map } = require("rubico");
 const { isOurMinion } = require("../AwsCommon");
-const { AwsHostedZone, compareHostedZone } = require("./AwsHostedZone");
+const { Route53HostedZone, compareHostedZone } = require("./Route53HostedZone");
 const { Route53Record, compareRoute53Record } = require("./Route53Record");
 
 const GROUP = "route53";
@@ -10,7 +10,7 @@ module.exports = () =>
     {
       type: "HostedZone",
       dependsOn: ["route53Domain::Domain"],
-      Client: AwsHostedZone,
+      Client: Route53HostedZone,
       isOurMinion,
       compare: compareHostedZone,
     },
