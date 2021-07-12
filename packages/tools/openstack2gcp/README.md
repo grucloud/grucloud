@@ -4,6 +4,8 @@ This project automatically migrates an [OpenStack](https://www.openstack.org/) i
 
 Numerous cloud providers implement the [OpenStack API](https://docs.openstack.org/api-quick-start/) such as RedHat, OVH, IBM, HP etc ... Find out the list of [public clouds](https://www.openstack.org/marketplace/public-clouds/) and [private clouds](https://www.openstack.org/marketplace/hosted-private-clouds/).
 
+![OpenStac2Gcp](./OpenStack2GCP.svg)
+
 The migration is a 3 step process:
 
 - Step 1: Retrieve the live inventory of the OpenStack infrastructure: networks, subnetworks, virtual machines and disks.
@@ -22,7 +24,7 @@ At the end of this process, the live infra is described in a file such as `gc-li
 
 ## Step 2: Transform OpenStack Inventory into GrucCloud GCP code
 
-The step tranforms the OpenStack inventory `gc-list.json` into [iac.js](./gcp-infra/iac.js): the GruCloud code describing the GCP infra that will be used later on by the GruCloud CLI.
+The step tranforms the OpenStack inventory `gc-list.json` into [iac.js](./gcp-infra/iac.js) and [config.js](./gcp-infra/config.js): the GruCloud code describing the GCP infra that will be used later on by the GruCloud CLI.
 
 ```sh
 npm run generate
