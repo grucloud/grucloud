@@ -1,0 +1,19 @@
+@startmindmap
+title Resources for project ec2
+skinparam monochrome true
++ Infra
+++ aws
++++ ec2
+++++ Vpc (2)
+++++ Subnet (1)
+++++ KeyPair (1)
+++++ Volume (1)
+++++ ElasticIpAddress (1)
+++++ InternetGateway (1)
+++++ RouteTable (1)
+++++ Route (1)
+++++ SecurityGroup (3)
+++++ SecurityGroupRuleIngress (4)
+++++ SecurityGroupRuleEgress (3)
+++++ Instance (1)
+@endmindmap

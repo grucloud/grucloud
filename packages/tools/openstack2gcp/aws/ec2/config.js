@@ -3,20 +3,20 @@ module.exports = ({ stage }) => ({
   projectName: pkg.name,
   ec2: {
     Vpc: {
-      vpcDefault: {
-        name: "vpc-default",
-        properties: {
-          CidrBlock: "172.31.0.0/16",
-          DnsSupport: true,
-          DnsHostnames: true,
-        },
-      },
       vpcEc2Example: {
         name: "vpc-ec2-example",
         properties: {
           CidrBlock: "10.1.0.0/16",
           DnsSupport: true,
           DnsHostnames: false,
+        },
+      },
+      vpcDefault: {
+        name: "vpc-default",
+        properties: {
+          CidrBlock: "172.31.0.0/16",
+          DnsSupport: true,
+          DnsHostnames: true,
         },
       },
     },
@@ -48,6 +48,24 @@ module.exports = ({ stage }) => ({
     ElasticIpAddress: {
       myip: {
         name: "myip",
+      },
+    },
+    InternetGateway: {
+      ig: {
+        name: "ig",
+      },
+    },
+    RouteTable: {
+      routeTable: {
+        name: "route-table",
+      },
+    },
+    Route: {
+      routeIg: {
+        name: "route-ig",
+        properties: {
+          DestinationCidrBlock: "0.0.0.0/0",
+        },
       },
     },
     SecurityGroup: {
@@ -120,7 +138,7 @@ module.exports = ({ stage }) => ({
             Ipv6Ranges: [],
             UserIdGroupPairs: [
               {
-                GroupId: "sg-05abd72c4d45078fa",
+                GroupId: "sg-083566611ce48f8f7",
               },
             ],
           },
@@ -183,11 +201,6 @@ module.exports = ({ stage }) => ({
             Ipv6Ranges: [],
           },
         },
-      },
-    },
-    InternetGateway: {
-      ig: {
-        name: "ig",
       },
     },
     Instance: {
