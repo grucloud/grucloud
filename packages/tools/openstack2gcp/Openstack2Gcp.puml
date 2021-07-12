@@ -1,0 +1,50 @@
+@startuml OpenStack2GCP
+!theme plain
+
+skinparam svgLinkTarget _blank
+
+card "OpenStack to GCP" {
+start
+
+partition "Openstack Inventory" {
+: Retrieve live inventory;
+note right
+Network, Subnet, Server, Disk etc ...
+end note
+}
+
+partition "Convert OpenStack Inventory into GCP code" {
+  :""os2gcp "";
+note left
+Input: 
+* inventory.json
+* mapping.json
+end note
+note right
+output: 
+* iac.js
+* config.js
+end note
+}
+
+partition "Deploy to GCP" {
+  :""gc init"";
+note right
+* Project Creation
+* Billing, 
+* Service API,
+* Credential File 
+end note
+:""gc apply"";
+note right
+Deploy the Infrastructure
+end note
+}
+
+partition "Generate Terraform code from live *" {
+  :""terracognita"";
+}
+
+end
+}
+@enduml

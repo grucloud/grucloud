@@ -1,5 +1,5 @@
 {
-  "name": "gcp-vm",
+  "name": "grucloud-test",
   "version": "1.26.0",
   "description": "",
   "main": "iac.js",
@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grucloud/provider-google": "^1.26.0"
+    "@grucloud/provider-google": "^1.26.0",
+    "rubico": "^1.7.0"
   }
 }

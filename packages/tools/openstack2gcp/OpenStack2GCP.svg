@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="796px" preserveAspectRatio="none" style="width:607px;height:796px;background:#FFFFFF;" version="1.1" viewBox="0 0 607 796" width="607px" zoomAndPan="magnify"><defs/><g><rect fill="#FFFFFF" height="784.2524" style="stroke:#000000;stroke-width:2.0;" width="594.5" x="6" y="6"/><line style="stroke:#000000;stroke-width:2.0;" x1="6" x2="600.5" y1="27.0146" y2="27.0146"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="129" x="238.75" y="22.0752">OpenStack to GCP</text><ellipse cx="209.5" cy="53.0146" fill="#000000" rx="10" ry="10" style="stroke:none;stroke-width:1.0;"/><rect fill="#FFFFFF" height="91.5986" style="stroke:#000000;stroke-width:2.0;" width="470" x="120.5" y="98.0146"/><path d="M276.5,98.0146 L276.5,108.0293 L266.5,118.0293 L120.5,118.0293 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="146" x="123.5" y="113.0898">Openstack Inventory</text><path d="M308.5,139.4216 L308.5,148.3213 L288.5,152.3213 L308.5,156.3213 L308.5,165.2209 A0,0 0 0 0 308.5,165.2209 L580.5,165.2209 A0,0 0 0 0 580.5,165.2209 L580.5,149.4216 L570.5,139.4216 L308.5,139.4216 A0,0 0 0 0 308.5,139.4216 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M570.5,139.4216 L570.5,149.4216 L580.5,149.4216 L570.5,139.4216 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="251" x="314.5" y="157.4915">Network, Subnet, Server, Disk etc ...</text><rect fill="#FFFFFF" height="34.584" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="158" x="130.5" y="135.0293"/><text fill="#000000" font-family="Verdana" font-size="12" lengthAdjust="spacing" textLength="134" x="144.5" y="157.0938">Retrieve live inventory</text><rect fill="#FFFFFF" height="134.4126" style="stroke:#000000;stroke-width:2.0;" width="348" x="16" y="224.6133"/><path d="M338,224.6133 L338,234.6279 L328,244.6279 L16,244.6279 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="312" x="19" y="239.6885">Convert OpenStack Inventory into GCP code</text><path d="M36,271.6279 L36,329.0259 L165,329.0259 L165,281.6279 L155,271.6279 L36,271.6279 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M155,271.6279 L155,281.6279 L165,281.6279 L155,271.6279 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="40" x="42" y="289.6978">Input:</text><ellipse cx="47.5" cy="300.7266" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="95" x="55" y="305.4971">inventory.json</text><ellipse cx="47.5" cy="316.5259" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="89" x="55" y="321.2964">mapping.json</text><path d="M254,271.6279 L254,329.0259 L344,329.0259 L344,281.6279 L334,271.6279 L254,271.6279 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M334,271.6279 L334,281.6279 L344,281.6279 L334,271.6279 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="48" x="260" y="289.6978">output:</text><ellipse cx="265.5" cy="300.7266" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="35" x="273" y="305.4971">iac.js</text><ellipse cx="265.5" cy="316.5259" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="56" x="273" y="321.2964">config.js</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="69" x="175" y="284.3269"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="42" x="185" y="303.3738">os2gcp</text><rect fill="#FFFFFF" height="197.2119" style="stroke:#000000;stroke-width:2.0;" width="306" x="161.5" y="394.0259"/><path d="M272.5,394.0259 L272.5,404.0405 L262.5,414.0405 L161.5,414.0405 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="101" x="164.5" y="409.1011">Deploy to GCP</text><path d="M264,431.0405 L264,463.6392 L244,467.6392 L264,471.6392 L264,504.2378 A0,0 0 0 0 264,504.2378 L405,504.2378 A0,0 0 0 0 405,504.2378 L405,441.0405 L395,431.0405 L264,431.0405 A0,0 0 0 0 264,431.0405 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M395,431.0405 L395,441.0405 L405,441.0405 L395,431.0405 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><ellipse cx="275.5" cy="444.3398" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="107" x="283" y="449.1104">Project Creation</text><ellipse cx="275.5" cy="460.1392" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="46" x="283" y="464.9097">Billing,</text><ellipse cx="275.5" cy="475.9385" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="82" x="283" y="480.709">Service API,</text><ellipse cx="275.5" cy="491.7378" fill="#000000" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:0.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="96" x="283" y="496.5083">Credential File</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="69" x="175" y="451.6392"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="49" x="185" y="470.686">gc init</text><path d="M267.5,542.3381 L267.5,551.2378 L247.5,555.2378 L267.5,559.2378 L267.5,568.1375 A0,0 0 0 0 267.5,568.1375 L457.5,568.1375 A0,0 0 0 0 457.5,568.1375 L457.5,552.3381 L447.5,542.3381 L267.5,542.3381 A0,0 0 0 0 267.5,542.3381 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><path d="M447.5,542.3381 L447.5,552.3381 L457.5,552.3381 L447.5,542.3381 " fill="#FFFFFF" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="169" x="273.5" y="560.408">Deploy the Infrastructure</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="76" x="171.5" y="539.2378"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="56" x="181.5" y="558.2847">gc apply</text><rect fill="#FFFFFF" height="89.0146" style="stroke:#000000;stroke-width:2.0;" width="277" x="71" y="626.2378"/><path d="M338,626.2378 L338,636.2524 L328,646.2524 L71,646.2524 " fill="none" style="stroke:#000000;stroke-width:2.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="257" x="74" y="641.313">Generate Terraform code from live *</text><rect fill="#FFFFFF" height="32" rx="12.5" ry="12.5" style="stroke:#000000;stroke-width:1.0;" width="104" x="157.5" y="663.2524"/><text fill="#000000" font-family="Courier" font-size="12" lengthAdjust="spacing" textLength="84" x="167.5" y="682.2993">terracognita</text><ellipse cx="209.5" cy="760.2524" fill="#FFFFFF" rx="10" ry="10" style="stroke:#000000;stroke-width:1.5;"/><line style="stroke:#000000;stroke-width:2.5;" x1="203.3128" x2="215.6872" y1="754.0653" y2="766.4396"/><line style="stroke:#000000;stroke-width:2.5;" x1="215.6872" x2="203.3128" y1="754.0653" y2="766.4396"/><line style="stroke:#000000;stroke-width:1.5;" x1="209.5" x2="209.5" y1="63.0146" y2="135.0293"/><polygon fill="#000000" points="205.5,125.0293,209.5,135.0293,213.5,125.0293,209.5,129.0293" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="209.5" x2="209.5" y1="169.6133" y2="284.3269"/><polygon fill="#000000" points="205.5,274.3269,209.5,284.3269,213.5,274.3269,209.5,278.3269" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="209.5" x2="209.5" y1="483.6392" y2="539.2378"/><polygon fill="#000000" points="205.5,529.2378,209.5,539.2378,213.5,529.2378,209.5,533.2378" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="209.5" x2="209.5" y1="316.3269" y2="451.6392"/><polygon fill="#000000" points="205.5,441.6392,209.5,451.6392,213.5,441.6392,209.5,445.6392" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="209.5" x2="209.5" y1="571.2378" y2="663.2524"/><polygon fill="#000000" points="205.5,653.2524,209.5,663.2524,213.5,653.2524,209.5,657.2524" style="stroke:#000000;stroke-width:1.0;"/><line style="stroke:#000000;stroke-width:1.5;" x1="209.5" x2="209.5" y1="695.2524" y2="750.2524"/><polygon fill="#000000" points="205.5,740.2524,209.5,750.2524,213.5,740.2524,209.5,744.2524" style="stroke:#000000;stroke-width:1.0;"/><!--MD5=[b70edbdb1abffbdc1f32f5198e3d65f2]
+@startuml OpenStack2GCP
+!theme plain
+
+skinparam svgLinkTarget _blank
+
+card "OpenStack to GCP" {
+start
+
+partition "Openstack Inventory" {
+: Retrieve live inventory;
+note right
+Network, Subnet, Server, Disk etc ...
+end note
+}
+
+partition "Convert OpenStack Inventory into GCP code" {
+  :""os2gcp "";
+note left
+Input: 
+* inventory.json
+* mapping.json
+end note
+note right
+output: 
+* iac.js
+* config.js
+end note
+}
+
+partition "Deploy to GCP" {
+  :""gc init"";
+note right
+* Project Creation
+* Billing, 
+* Service API,
+* Credential File 
+end note
+:""gc apply"";
+note right
+Deploy the Infrastructure
+end note
+}
+
+partition "Generate Terraform code from live *" {
+  :""terracognita"";
+}
+
+end
+}
+@enduml
+
+@startuml OpenStack2GCP
+
+
+
+
+
+
+
+<style>
+  root {
+    BackgroundColor white
+    FontColor black
+    FontName Verdana
+    HyperLinkColor blue
+    LineColor black
+    LineThickness 1
+    Margin 5
+  }
+  caption {
+    LineThickness 0
+  }
+  footer {
+    LineThickness 0
+  }
+  header {
+    LineThickness 0
+  }
+  node {
+    MaximumWidth 300
+  }
+  title {
+    FontSize 22
+    LineThickness 0
+  }
+</style>
+
+skinparam ArrowLollipopColor black
+skinparam BackgroundColor white
+skinparam DefaultFontName Verdana
+skinparam DefaultMonospacedFontName Courier
+skinparam LifelineStrategy nosolid
+skinparam ParticipantPadding 10
+skinparam SequenceLifeLineBorderColor black
+skinparam Shadowing false
+skinparam UseBetaStyle true
+
+skinparam Activity {
+  BackgroundColor white
+  BarColor black
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam Boundary {
+  FontColor black
+}
+skinparam Box {
+  Padding 5
+}
+skinparam CircledCharacter {
+  FontColor black
+  FontName Courier
+  Radius 9
+}
+skinparam Class {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassAttribute {
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassStereotype {
+  FontColor black
+  FontName Verdana
+}
+skinparam Footer {
+  FontColor black
+  FontName Verdana
+}
+skinparam Header {
+  FontColor black
+  FontName Verdana
+}
+skinparam Hyperlink {
+  Color blue
+}
+skinparam IconPackage {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPrivate {
+  Color black
+  BackgroundColor white
+}
+skinparam IconProtected {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPublic {
+  Color black
+  BackgroundColor white
+}
+skinparam Note {
+  FontColor black
+  FontName Verdana
+}
+skinparam Package {
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam State {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeA {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeC {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeE {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeI {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeN {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam UseCaseStereoType {
+  FontColor black
+  FontName Verdana
+}
+
+skinparam svgLinkTarget _blank
+
+card "OpenStack to GCP" {
+start
+
+partition "Openstack Inventory" {
+: Retrieve live inventory;
+note right
+Network, Subnet, Server, Disk etc ...
+end note
+}
+
+partition "Convert OpenStack Inventory into GCP code" {
+  :""os2gcp "";
+note left
+Input: 
+* inventory.json
+* mapping.json
+end note
+note right
+output: 
+* iac.js
+* config.js
+end note
+}
+
+partition "Deploy to GCP" {
+  :""gc init"";
+note right
+* Project Creation
+* Billing, 
+* Service API,
+* Credential File 
+end note
+:""gc apply"";
+note right
+Deploy the Infrastructure
+end note
+}
+
+partition "Generate Terraform code from live *" {
+  :""terracognita"";
+}
+
+end
+}
+@enduml
+
+PlantUML version 1.2021.7(Sun May 23 14:40:07 CEST 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: GB
+--></g></svg>

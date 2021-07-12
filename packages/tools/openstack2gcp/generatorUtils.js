@@ -35,16 +35,18 @@ const {
   values,
   isString,
   isObject,
+  flatten,
+  defaultsDeep,
 } = require("rubico/x");
 
-const ResourceVarName = pipe([
+const ResourceVarNameDefault = pipe([
   tap((name) => {
     assert(name, "missing resource name");
   }),
   (name) => camelCase(name),
 ]);
 
-exports.ResourceVarName = ResourceVarName;
+exports.ResourceVarNameDefault = ResourceVarNameDefault;
 
 const findDependencyNames = ({
   type,
@@ -69,22 +71,17 @@ const findDependencyNames = ({
     tap((params) => {
       assert(true);
     }),
-    pluck("name"),
-    map(ResourceVarName),
+    //TODO openstack should set its group
+    map(
+      ({ group = "compute", type, name }) =>
+        `resources.${group}.${type}.${ResourceVarNameDefault(name)}`
+    ),
     tap((xxx) => {
       assert(true);
     }),
   ])();
 
-const propertyValue = switchCase([
-  isString,
-  (value) => `"${value}"`,
-  isObject,
-  (value) => JSON.stringify(value, null, 4),
-  identity,
-]);
-
-const buildPropertyList = ({ resource: { live }, pickProperties }) =>
+const buildProperties = ({ resource: { live }, pickProperties }) =>
   pipe([
     tap(() => {
       assert(true);
@@ -112,29 +109,20 @@ const buildPropertyList = ({ resource: { live }, pickProperties }) =>
     tap((params) => {
       assert(true);
     }),
-    map.entries(([key, value]) => [key, `${key}: ${propertyValue(value)}`]),
-    values,
-    tap((params) => {
-      assert(true);
-    }),
   ])();
 
-const configTpl = ({ resourceVarName, resource: { name }, propertyList }) =>
+const configTpl = ({ resourceVarName, resourceName, properties }) =>
   pipe([
-    () => propertyList,
-    tap((params) => {
-      assert(name);
-    }),
-    callProp("join", ","),
-    (propertyListJoined) => `${resourceVarName}: {
-      name: "${name}"${
-      !isEmpty(propertyListJoined)
-        ? `\n,properties: { 
-          ${propertyListJoined} 
-        }`
+    () => `${resourceVarName}: {
+      name: "${resourceName}"${
+      !isEmpty(properties)
+        ? `\n,properties: ${JSON.stringify(properties, null, 4)}`
         : ""
     },
     },`,
+    tap((params) => {
+      assert(true);
+    }),
   ])();
 
 const dependencyValue = ({ key, value }) =>
@@ -149,8 +137,18 @@ const buildDependencies = ({ resource, lives, dependencies = {} }) =>
     () => dependencies,
     map.entries(([key, dependency]) => [
       key,
-      findDependencyNames({ resource, lives, ...dependency }),
+      pipe([
+        () => dependency,
+        defaultsDeep({
+          findDependencyNames,
+        }),
+        ({ findDependencyNames }) =>
+          findDependencyNames({ resource, lives, ...dependency }),
+      ])(),
     ]),
+    tap((params) => {
+      assert(true);
+    }),
     map.entries(([key, value]) => [
       key,
       !isEmpty(value) && `${key}: ${dependencyValue({ key, value })}`,
@@ -164,6 +162,9 @@ const buildDependencies = ({ resource, lives, dependencies = {} }) =>
        ${values.join(",\n")}
      },`,
     ]),
+    tap((params) => {
+      assert(true);
+    }),
   ])();
 
 const codeTpl = ({
@@ -173,21 +174,23 @@ const codeTpl = ({
   dependencies,
   resource,
   lives,
-  propertyList,
+  properties,
   createPrefix = "make",
-}) => `
-  const ${resourceVarName} = provider.${group}.${
+}) => `(resources) =>
+set(
+  "${group}.${type}.${resourceVarName}",
+  provider.${group}.${
   resource.isDefault || resource.cannotBeDeleted ? "use" : createPrefix
 }${type}({
-    name: config.${resourceVarName}.name,${
+  name: config.${group}.${type}.${resourceVarName}.name,${
   resource.namespace ? `\nnamespace: ${resource.namespace},` : ""
 }${buildDependencies({ resource, lives, dependencies })}${
-  !isEmpty(propertyList)
-    ? `\nproperties: () => config.${resourceVarName}.properties,`
+  !isEmpty(properties)
+    ? `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`
     : ""
 }
-  });
-  `;
+  })
+)(resources),`;
 
 const writeToFile =
   ({ filename }) =>
@@ -257,9 +260,26 @@ exports.createProgramOptions = ({ version }) => {
 
 const writeIac =
   ({ filename, iacTpl }) =>
-  (resources) =>
+  (resourceMap) =>
     pipe([
-      () => resources,
+      () => resourceMap,
+      tap(() => {
+        assert(true);
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+      pluck("types"),
+      flatten,
+      tap((params) => {
+        assert(true);
+      }),
+      pluck("resources"),
+      flatten,
+      tap((params) => {
+        assert(true);
+      }),
+      filter(not(isEmpty)),
       fork({
         resourcesVarNames: pluck("resourceVarName"),
         resourcesCode: pipe([pluck("code"), callProp("join", "\n")]),
@@ -274,35 +294,56 @@ const writeIac =
 
 const writeConfig =
   ({ filename, configTpl }) =>
-  (resources) =>
+  (resourceMap) =>
     pipe([
-      () => resources,
-      pluck("config"),
-      callProp("join", "\n"),
-      tap((xxx) => {
+      tap(() => {
+        assert(true);
+      }),
+      () => resourceMap,
+      map(({ group, types }) =>
+        pipe([
+          tap(() => {
+            assert(group);
+            assert(types);
+          }),
+          () => types,
+          map(({ type, typeTarget, resources }) =>
+            pipe([
+              () => resources,
+              pluck("config"),
+              filter(not(isEmpty)),
+              switchCase([
+                isEmpty,
+                () => undefined,
+                pipe([
+                  callProp("join", "\n"),
+                  (configs) => `${typeTarget || type}: {
+                    ${configs}
+                    },`,
+                ]),
+              ]),
+            ])()
+          ),
+          filter(not(isEmpty)),
+          switchCase([
+            isEmpty,
+            () => undefined,
+            pipe([
+              callProp("join", "\n"),
+              (configs) => `${group}: {
+                ${configs}
+              }`,
+            ]),
+          ]),
+        ])()
+      ),
+      filter(not(isEmpty)),
+      tap((params) => {
         assert(true);
       }),
       configTpl,
       writeToFile({ filename }),
     ])();
-
-exports.generatorMain = ({ name, options, writers, iacTpl, configTpl }) =>
-  pipe([
-    tap((xxx) => {
-      console.log(name);
-    }),
-    fork({ lives: readModel(options), mapping: readMapping(options) }),
-    ({ lives, mapping }) =>
-      flatMap((writeResource) => writeResource({ lives, mapping }))(writers),
-    filter(identity),
-    tap((xxx) => {
-      assert(true);
-    }),
-    fork({
-      iac: writeIac({ filename: options.outputCode, iacTpl }),
-      config: writeConfig({ filename: options.outputConfig, configTpl }),
-    }),
-  ])();
 
 const findLiveById =
   ({ lives, type }) =>
@@ -327,13 +368,17 @@ exports.findLiveById = findLiveById;
 const writeResource =
   ({
     type,
+    typeTarget,
     group,
     createPrefix,
+    resourceVarName = ResourceVarNameDefault,
+    resourceName = identity,
     pickProperties = always([]),
+    properties = always({}),
     dependencies = always({}),
     ignoreResource = () => always(false),
   }) =>
-  ({ resource, lives }) =>
+  ({ resource, lives, mapping }) =>
     pipe([
       tap((params) => {
         assert(true);
@@ -349,53 +394,64 @@ const writeResource =
             assert(true);
           }),
           fork({
-            resourceVarName: () => ResourceVarName(resource.name),
-            propertyList: () =>
-              buildPropertyList({
-                resource,
-                pickProperties: pickProperties({ resource }),
-              }),
+            resourceVarName: () => resourceVarName(resource.name),
+            resourceName: () => resourceName(resource.name),
+            properties: pipe([
+              () => properties({ resource, mapping }),
+              defaultsDeep(
+                buildProperties({
+                  resource,
+                  pickProperties: pickProperties({ resource }),
+                })
+              ),
+            ]),
           }),
           tap((params) => {
             assert(true);
           }),
-          ({ resourceVarName, propertyList }) => ({
+          ({ resourceVarName, resourceName, properties }) => ({
             resourceVarName,
             config: configTpl({
+              type: typeTarget || type,
+              resourceName,
               resourceVarName,
               resource,
-              propertyList,
+              properties,
             }),
             code: codeTpl({
               group,
-              type,
+              type: typeTarget || type,
               resource,
               resourceVarName,
-              propertyList,
               dependencies: dependencies(),
               lives,
               createPrefix,
+              properties,
             }),
           }),
         ]),
       ]),
     ])();
 
-exports.writeResources =
+const writeResources =
   ({
     type,
+    typeTarget,
     group,
     pickProperties,
+    properties,
     dependencies,
     createPrefix,
     ignoreResource,
+    resourceVarName,
+    resourceName,
   }) =>
   ({ lives, mapping }) =>
     pipe([
       tap(() => {
         assert(type);
         assert(group);
-        assert(isFunction(pickProperties));
+        //assert(isFunction(pickProperties));
       }),
       () => lives,
       find(eq(get("type"), type)),
@@ -408,11 +464,15 @@ exports.writeResources =
           (resource) =>
             writeResource({
               type,
+              typeTarget,
               group,
+              properties,
               pickProperties,
               dependencies,
               createPrefix,
               ignoreResource,
+              resourceVarName,
+              resourceName,
             })({
               resource,
               lives,
@@ -421,3 +481,50 @@ exports.writeResources =
         ])
       ),
     ])();
+
+exports.generatorMain = ({ name, options, writersSpec, iacTpl, configTpl }) =>
+  pipe([
+    tap((xxx) => {
+      console.log(name);
+    }),
+    fork({ lives: readModel(options), mapping: readMapping(options) }),
+    ({ lives, mapping }) =>
+      pipe([
+        () => writersSpec,
+        tap((params) => {
+          assert(true);
+        }),
+        map(({ group, types }) => ({
+          group,
+          types: pipe([
+            () => types,
+            tap((params) => {
+              assert(true);
+            }),
+            map((spec) => ({
+              type: spec.type,
+              typeTarget: spec.typeTarget,
+              resources: pipe([
+                () => ({ lives, mapping }),
+                writeResources({
+                  mapping,
+                  group,
+                  ...spec,
+                }),
+                filter(not(isEmpty)),
+              ])(),
+            })),
+          ])(),
+        })),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
+    tap((xxx) => {
+      assert(true);
+    }),
+    fork({
+      iac: writeIac({ filename: options.outputCode, iacTpl }),
+      config: writeConfig({ filename: options.outputConfig, configTpl }),
+    }),
+  ])();

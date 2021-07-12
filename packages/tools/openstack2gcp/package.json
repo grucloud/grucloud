@@ -12,17 +12,17 @@
     "aws2gc-ec2": "node aws2gc.js --input aws/ec2/inventory.json --outputCode aws/ec2/iac.js --outputConfig aws/ec2/config.js",
     "aws2gc-route53-record-txt": "node aws2gc.js --input aws/route53/dns-validation-record-txt/inventory.json --outputCode aws/route53/dns-validation-record-txt/iac.js --outputConfig aws/route53/dns-validation-record-txt/config.js",
     "aws2gc-iam": "node aws2gc.js --input aws/iam/inventory.json --outputCode aws/iam/iac.js --outputConfig aws/iam/config.js",
-    "openstack2gcp": "node OpenStack2Gcp.js --input openstack-inventory/gc-list.json --outputCode gcp-infra/iac.js --mapping mapping.json"
+    "openstack2gcp": "node os2gcp.js --input openstack-inventory/gc-list.json --outputCode gcp-infra/iac.js --outputConfig gcp-infra/config.js --mapping mapping.json"
   },
   "author": "Frederic Heem",
   "dependencies": {
     "change-case": "^4.1.2",
-    "commander": "^7.2.0",
+    "commander": "^8.0.0",
     "ipaddr.js": "^2.0.1",
-    "prettier": "^2.3.1",
-    "rubico": "^1.6.29"
+    "prettier": "^2.3.2",
+    "rubico": "^1.7.0"
   },
   "devDependencies": {
-    "mocha": "^9.0.1"
+    "mocha": "^9.0.2"
   }
 }
