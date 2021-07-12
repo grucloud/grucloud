@@ -35,6 +35,7 @@ const {
   values,
   isString,
   isObject,
+  flatten,
 } = require("rubico/x");
 
 const ResourceVarName = pipe([
@@ -179,11 +180,11 @@ const codeTpl = ({
   const ${resourceVarName} = provider.${group}.${
   resource.isDefault || resource.cannotBeDeleted ? "use" : createPrefix
 }${type}({
-    name: config.${resourceVarName}.name,${
+    name: config.${group}.${type}.${resourceVarName}.name,${
   resource.namespace ? `\nnamespace: ${resource.namespace},` : ""
 }${buildDependencies({ resource, lives, dependencies })}${
   !isEmpty(propertyList)
-    ? `\nproperties: () => config.${resourceVarName}.properties,`
+    ? `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`
     : ""
 }
   });
@@ -257,9 +258,26 @@ exports.createProgramOptions = ({ version }) => {
 
 const writeIac =
   ({ filename, iacTpl }) =>
-  (resources) =>
+  (resourceMap) =>
     pipe([
-      () => resources,
+      () => resourceMap,
+      tap(() => {
+        assert(true);
+      }),
+      tap((params) => {
+        assert(true);
+      }),
+      pluck("types"),
+      flatten,
+      tap((params) => {
+        assert(true);
+      }),
+      pluck("resources"),
+      flatten,
+      tap((params) => {
+        assert(true);
+      }),
+      filter(not(isEmpty)),
       fork({
         resourcesVarNames: pluck("resourceVarName"),
         resourcesCode: pipe([pluck("code"), callProp("join", "\n")]),
@@ -274,35 +292,56 @@ const writeIac =
 
 const writeConfig =
   ({ filename, configTpl }) =>
-  (resources) =>
+  (resourceMap) =>
     pipe([
-      () => resources,
-      pluck("config"),
-      callProp("join", "\n"),
-      tap((xxx) => {
+      tap(() => {
+        assert(true);
+      }),
+      () => resourceMap,
+      map(({ group, types }) =>
+        pipe([
+          tap(() => {
+            assert(group);
+            assert(types);
+          }),
+          () => types,
+          map(({ type, resources }) =>
+            pipe([
+              () => resources,
+              pluck("config"),
+              filter(not(isEmpty)),
+              switchCase([
+                isEmpty,
+                () => undefined,
+                pipe([
+                  callProp("join", "\n"),
+                  (configs) => `${type}: {
+                    ${configs}
+                    },`,
+                ]),
+              ]),
+            ])()
+          ),
+          filter(not(isEmpty)),
+          switchCase([
+            isEmpty,
+            () => undefined,
+            pipe([
+              callProp("join", "\n"),
+              (configs) => `${group}: {
+                ${configs}
+              }`,
+            ]),
+          ]),
+        ])()
+      ),
+      filter(not(isEmpty)),
+      tap((params) => {
         assert(true);
       }),
       configTpl,
       writeToFile({ filename }),
     ])();
-
-exports.generatorMain = ({ name, options, writers, iacTpl, configTpl }) =>
-  pipe([
-    tap((xxx) => {
-      console.log(name);
-    }),
-    fork({ lives: readModel(options), mapping: readMapping(options) }),
-    ({ lives, mapping }) =>
-      flatMap((writeResource) => writeResource({ lives, mapping }))(writers),
-    filter(identity),
-    tap((xxx) => {
-      assert(true);
-    }),
-    fork({
-      iac: writeIac({ filename: options.outputCode, iacTpl }),
-      config: writeConfig({ filename: options.outputConfig, configTpl }),
-    }),
-  ])();
 
 const findLiveById =
   ({ lives, type }) =>
@@ -381,7 +420,7 @@ const writeResource =
       ]),
     ])();
 
-exports.writeResources =
+const writeResources =
   ({
     type,
     group,
@@ -395,7 +434,7 @@ exports.writeResources =
       tap(() => {
         assert(type);
         assert(group);
-        assert(isFunction(pickProperties));
+        //assert(isFunction(pickProperties));
       }),
       () => lives,
       find(eq(get("type"), type)),
@@ -421,3 +460,48 @@ exports.writeResources =
         ])
       ),
     ])();
+
+exports.generatorMain = ({ name, options, writersSpec, iacTpl, configTpl }) =>
+  pipe([
+    tap((xxx) => {
+      console.log(name);
+    }),
+    fork({ lives: readModel(options), mapping: readMapping(options) }),
+    ({ lives, mapping }) =>
+      pipe([
+        () => writersSpec,
+        tap((params) => {
+          assert(true);
+        }),
+        map(({ group, types }) => ({
+          group,
+          types: pipe([
+            () => types,
+            tap((params) => {
+              assert(true);
+            }),
+            map((spec) => ({
+              type: spec.type,
+              resources: pipe([
+                () => ({ lives, mapping }),
+                writeResources({
+                  group,
+                  ...spec,
+                }),
+                filter(not(isEmpty)),
+              ])(),
+            })),
+          ])(),
+        })),
+        tap((params) => {
+          assert(true);
+        }),
+      ])(),
+    tap((xxx) => {
+      assert(true);
+    }),
+    fork({
+      iac: writeIac({ filename: options.outputCode, iacTpl }),
+      config: writeConfig({ filename: options.outputConfig, configTpl }),
+    }),
+  ])();

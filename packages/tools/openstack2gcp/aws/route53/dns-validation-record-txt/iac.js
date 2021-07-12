@@ -6,16 +6,16 @@ const createResources = async ({ provider }) => {
   const { config } = provider;
 
   const grucloudOrg = provider.route53.makeHostedZone({
-    name: config.grucloudOrg.name,
-    properties: () => config.grucloudOrg.properties,
+    name: config.route53.HostedZone.grucloudOrg.name,
+    properties: () => config.route53.HostedZone.grucloudOrg.properties,
   });
 
   const txtGrucloudOrg = provider.route53.makeRecord({
-    name: config.txtGrucloudOrg.name,
+    name: config.route53.Record.txtGrucloudOrg.name,
     dependencies: {
       hostedZone: grucloudOrg,
     },
-    properties: () => config.txtGrucloudOrg.properties,
+    properties: () => config.route53.Record.txtGrucloudOrg.properties,
   });
 
   return {

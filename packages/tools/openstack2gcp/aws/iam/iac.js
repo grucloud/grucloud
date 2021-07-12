@@ -6,43 +6,43 @@ const createResources = async ({ provider }) => {
   const { config } = provider;
 
   const kp = provider.ec2.useKeyPair({
-    name: config.kp.name,
+    name: config.ec2.KeyPair.kp.name,
   });
 
   const webIam = provider.ec2.makeInstance({
-    name: config.webIam.name,
+    name: config.ec2.Instance.webIam.name,
     dependencies: {
       keyPair: kp,
     },
-    properties: () => config.webIam.properties,
+    properties: () => config.ec2.Instance.webIam.properties,
   });
 
   const myPolicyToUser = provider.iam.makePolicy({
-    name: config.myPolicyToUser.name,
-    properties: () => config.myPolicyToUser.properties,
+    name: config.iam.Policy.myPolicyToUser.name,
+    properties: () => config.iam.Policy.myPolicyToUser.properties,
   });
 
   const myPolicyToRole = provider.iam.makePolicy({
-    name: config.myPolicyToRole.name,
-    properties: () => config.myPolicyToRole.properties,
+    name: config.iam.Policy.myPolicyToRole.name,
+    properties: () => config.iam.Policy.myPolicyToRole.properties,
   });
 
   const myPolicyToGroup = provider.iam.makePolicy({
-    name: config.myPolicyToGroup.name,
-    properties: () => config.myPolicyToGroup.properties,
+    name: config.iam.Policy.myPolicyToGroup.name,
+    properties: () => config.iam.Policy.myPolicyToGroup.properties,
   });
 
   const amazonEksWorkerNodePolicy = provider.iam.usePolicy({
-    name: config.amazonEksWorkerNodePolicy.name,
-    properties: () => config.amazonEksWorkerNodePolicy.properties,
+    name: config.iam.Policy.amazonEksWorkerNodePolicy.name,
+    properties: () => config.iam.Policy.amazonEksWorkerNodePolicy.properties,
   });
 
   const roleAllowAssumeRole = provider.iam.makeRole({
-    name: config.roleAllowAssumeRole.name,
+    name: config.iam.Role.roleAllowAssumeRole.name,
     dependencies: {
       policies: [myPolicyToRole, amazonEksWorkerNodePolicy],
     },
-    properties: () => config.roleAllowAssumeRole.properties,
+    properties: () => config.iam.Role.roleAllowAssumeRole.properties,
   });
 
   return {

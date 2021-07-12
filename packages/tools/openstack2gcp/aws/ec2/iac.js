@@ -6,78 +6,88 @@ const createResources = async ({ provider }) => {
   const { config } = provider;
 
   const vpcDefault = provider.ec2.useVpc({
-    name: config.vpcDefault.name,
-    properties: () => config.vpcDefault.properties,
+    name: config.ec2.Vpc.vpcDefault.name,
+    properties: () => config.ec2.Vpc.vpcDefault.properties,
   });
 
   const vpcEc2Example = provider.ec2.makeVpc({
-    name: config.vpcEc2Example.name,
-    properties: () => config.vpcEc2Example.properties,
+    name: config.ec2.Vpc.vpcEc2Example.name,
+    properties: () => config.ec2.Vpc.vpcEc2Example.properties,
   });
 
   const subnet = provider.ec2.makeSubnet({
-    name: config.subnet.name,
+    name: config.ec2.Subnet.subnet.name,
     dependencies: {
       vpc: vpcEc2Example,
     },
-    properties: () => config.subnet.properties,
+    properties: () => config.ec2.Subnet.subnet.properties,
   });
 
   const kp = provider.ec2.useKeyPair({
-    name: config.kp.name,
+    name: config.ec2.KeyPair.kp.name,
   });
 
   const volume = provider.ec2.makeVolume({
-    name: config.volume.name,
-    properties: () => config.volume.properties,
+    name: config.ec2.Volume.volume.name,
+    properties: () => config.ec2.Volume.volume.properties,
   });
 
   const myip = provider.ec2.makeElasticIpAddress({
-    name: config.myip.name,
+    name: config.ec2.ElasticIpAddress.myip.name,
   });
 
   const securityGroup = provider.ec2.makeSecurityGroup({
-    name: config.securityGroup.name,
+    name: config.ec2.SecurityGroup.securityGroup.name,
     dependencies: {
       vpc: vpcEc2Example,
     },
-    properties: () => config.securityGroup.properties,
+    properties: () => config.ec2.SecurityGroup.securityGroup.properties,
   });
 
   const sgDefaultVpcEc2Example = provider.ec2.useSecurityGroup({
-    name: config.sgDefaultVpcEc2Example.name,
+    name: config.ec2.SecurityGroup.sgDefaultVpcEc2Example.name,
     dependencies: {
       vpc: vpcEc2Example,
     },
-    properties: () => config.sgDefaultVpcEc2Example.properties,
+    properties: () =>
+      config.ec2.SecurityGroup.sgDefaultVpcEc2Example.properties,
   });
 
   const sgDefaultVpcDefault = provider.ec2.useSecurityGroup({
-    name: config.sgDefaultVpcDefault.name,
+    name: config.ec2.SecurityGroup.sgDefaultVpcDefault.name,
     dependencies: {
       vpc: vpcDefault,
     },
-    properties: () => config.sgDefaultVpcDefault.properties,
+    properties: () => config.ec2.SecurityGroup.sgDefaultVpcDefault.properties,
   });
 
   const sgRuleIngressSsh = provider.ec2.makeSecurityGroupRuleIngress({
-    name: config.sgRuleIngressSsh.name,
+    name: config.ec2.SecurityGroupRuleIngress.sgRuleIngressSsh.name,
     dependencies: {
       securityGroup: securityGroup,
     },
-    properties: () => config.sgRuleIngressSsh.properties,
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress.sgRuleIngressSsh.properties,
   });
 
   const sgRuleIngressIcmp = provider.ec2.makeSecurityGroupRuleIngress({
-    name: config.sgRuleIngressIcmp.name,
+    name: config.ec2.SecurityGroupRuleIngress.sgRuleIngressIcmp.name,
     dependencies: {
       securityGroup: securityGroup,
     },
-    properties: () => config.sgRuleIngressIcmp.properties,
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress.sgRuleIngressIcmp.properties,
+  });
+
+  const ig = provider.ec2.makeInternetGateway({
+    name: config.ec2.InternetGateway.ig.name,
+    dependencies: {
+      vpc: vpcEc2Example,
+    },
   });
 
   const webServerEc2Vpc = provider.ec2.makeInstance({
-    name: config.webServerEc2Vpc.name,
+    name: config.ec2.Instance.webServerEc2Vpc.name,
     dependencies: {
       subnet: subnet,
       keyPair: kp,
@@ -85,21 +95,7 @@ const createResources = async ({ provider }) => {
       securityGroups: [securityGroup],
       volumes: [volume],
     },
-    properties: () => config.webServerEc2Vpc.properties,
-  });
-
-  const igw_041e0d42bb3b4149c = provider.ec2.useInternetGateway({
-    name: config.igw_041e0d42bb3b4149c.name,
-    dependencies: {
-      vpc: vpcDefault,
-    },
-  });
-
-  const ig = provider.ec2.makeInternetGateway({
-    name: config.ig.name,
-    dependencies: {
-      vpc: vpcEc2Example,
-    },
+    properties: () => config.ec2.Instance.webServerEc2Vpc.properties,
   });
 
   return {
@@ -114,9 +110,8 @@ const createResources = async ({ provider }) => {
     sgDefaultVpcDefault,
     sgRuleIngressSsh,
     sgRuleIngressIcmp,
-    webServerEc2Vpc,
-    igw_041e0d42bb3b4149c,
     ig,
+    webServerEc2Vpc,
   };
 };
 
