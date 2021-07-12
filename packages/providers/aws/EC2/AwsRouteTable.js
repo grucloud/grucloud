@@ -59,12 +59,12 @@ exports.AwsRouteTable = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     { type: "Vpc", ids: [live.VpcId] },
     {
-      type: "InternetGateway",
+      type: "Subnet",
       ids: pipe([
         () => live,
-        get("Routes"),
-        pluck("GatewayId"),
-        filter(includes("igw-")),
+        get("Associations"),
+        pluck("SubnetId"),
+        filter(not(isEmpty)),
       ])(),
     },
   ];

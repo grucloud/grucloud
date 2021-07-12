@@ -19,6 +19,7 @@
       "runtimeExecutable": "gc",
       "runtimeArgs": [
         "list",
+        "-g",
         "--json",
         "../../../packages/tools/openstack2gcp/aws/ec2/inventory.json"
       ],
