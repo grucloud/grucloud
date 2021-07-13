@@ -3,17 +3,17 @@
 
 skinparam svgLinkTarget _blank
 
-card "OpenStack to GCP" {
+card "OpenStack to GCP Migration" {
 start
 
-partition "Openstack Inventory" {
+partition "STEP 1: Openstack Inventory" {
 : Retrieve live inventory;
 note right
 Network, Subnet, Server, Disk etc ...
 end note
 }
 
-partition "Convert OpenStack Inventory into GCP code" {
+partition "STEP 2: Convert OpenStack Inventory into GCP code" {
   :""os2gcp "";
 note left
 Input: 
@@ -27,7 +27,7 @@ output:
 end note
 }
 
-partition "Deploy to GCP" {
+partition "STEP 3: Deploy to GCP" {
   :""gc init"";
 note right
 * Project Creation
@@ -41,7 +41,7 @@ Deploy the Infrastructure
 end note
 }
 
-partition "Generate Terraform code from live *" {
+partition "STEP 4: Generate Terraform code from live *" {
   :""terracognita"";
 }
 
