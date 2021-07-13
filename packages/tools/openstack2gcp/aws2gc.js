@@ -59,6 +59,31 @@ const writersSpec = [
         pickProperties: () => [],
       },
       {
+        type: "InternetGateway",
+        pickProperties: () => [],
+        dependencies: () => ({ vpc: { type: "Vpc", group: "ec2" } }),
+        ignoreResource: () => get("isDefault"),
+      },
+      {
+        type: "RouteTable",
+        pickProperties: () => [],
+        ignoreResource: () => get("isDefault"),
+        dependencies: () => ({
+          vpc: { type: "Vpc", group: "ec2" },
+          subnets: { type: "Subnet", group: "ec2" },
+        }),
+      },
+      {
+        type: "Route",
+        pickProperties: () => ["DestinationCidrBlock"],
+        ignoreResource: () => get("isDefault"),
+        dependencies: () => ({
+          routeTable: { type: "RouteTable", group: "ec2" },
+          ig: { type: "InternetGateway", group: "ec2" },
+          natGateway: { type: "NatGateway", group: "ec2" },
+        }),
+      },
+      {
         type: "SecurityGroup",
         pickProperties: () => ["Description"],
         dependencies: () => ({ vpc: { type: "Vpc", group: "ec2" } }),
@@ -77,12 +102,7 @@ const writersSpec = [
           securityGroup: { type: "SecurityGroup", group: "ec2" },
         }),
       },
-      {
-        type: "InternetGateway",
-        pickProperties: () => [],
-        dependencies: () => ({ vpc: { type: "Vpc", group: "ec2" } }),
-        ignoreResource: () => get("isDefault"),
-      },
+
       {
         type: "Instance",
         pickProperties: () => [

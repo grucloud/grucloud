@@ -5,6 +5,10 @@ title: Route Table
 
 Provides a [Route Table](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html)
 
+## Code
+
+### Route Table associated with a subnet
+
 ```js
 const vpc = provider.ec2.makeVpc({
   name: "vpc",
@@ -27,12 +31,12 @@ const routeTable = provider.ec2.makeRouteTable({
 });
 ```
 
-### Examples
+## Examples
 
 - [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/ec2-vpc/iac.js)
 - [EKS](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/eks/iac.js)
 
-### Dependencies
+## Dependencies
 
 - [Vpc](./Vpc)
 - [Subnet](./Subnet)

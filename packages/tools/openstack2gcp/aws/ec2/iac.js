@@ -8,18 +8,18 @@ const createResources = async ({ provider }) => {
     () => ({}),
     (resources) =>
       set(
-        "ec2.Vpc.vpcDefault",
-        provider.ec2.useVpc({
-          name: config.ec2.Vpc.vpcDefault.name,
-          properties: () => config.ec2.Vpc.vpcDefault.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
         "ec2.Vpc.vpcEc2Example",
         provider.ec2.makeVpc({
           name: config.ec2.Vpc.vpcEc2Example.name,
           properties: () => config.ec2.Vpc.vpcEc2Example.properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "ec2.Vpc.vpcDefault",
+        provider.ec2.useVpc({
+          name: config.ec2.Vpc.vpcDefault.name,
+          properties: () => config.ec2.Vpc.vpcDefault.properties,
         })
       )(resources),
     (resources) =>
@@ -53,6 +53,39 @@ const createResources = async ({ provider }) => {
         "ec2.ElasticIpAddress.myip",
         provider.ec2.makeElasticIpAddress({
           name: config.ec2.ElasticIpAddress.myip.name,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "ec2.InternetGateway.ig",
+        provider.ec2.makeInternetGateway({
+          name: config.ec2.InternetGateway.ig.name,
+          dependencies: {
+            vpc: resources.ec2.Vpc.vpcEc2Example,
+          },
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "ec2.RouteTable.routeTable",
+        provider.ec2.makeRouteTable({
+          name: config.ec2.RouteTable.routeTable.name,
+          dependencies: {
+            vpc: resources.ec2.Vpc.vpcEc2Example,
+            subnets: [resources.ec2.Subnet.subnet],
+          },
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "ec2.Route.routeIg",
+        provider.ec2.makeRoute({
+          name: config.ec2.Route.routeIg.name,
+          dependencies: {
+            routeTable: resources.ec2.RouteTable.routeTable,
+            ig: resources.ec2.InternetGateway.ig,
+          },
+          properties: () => config.ec2.Route.routeIg.properties,
         })
       )(resources),
     (resources) =>
@@ -182,16 +215,6 @@ const createResources = async ({ provider }) => {
           properties: () =>
             config.ec2.SecurityGroupRuleEgress.sgDefaultVpcDefaultRuleEgressAll
               .properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.InternetGateway.ig",
-        provider.ec2.makeInternetGateway({
-          name: config.ec2.InternetGateway.ig.name,
-          dependencies: {
-            vpc: resources.ec2.Vpc.vpcEc2Example,
-          },
         })
       )(resources),
     (resources) =>
