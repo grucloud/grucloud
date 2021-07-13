@@ -27,6 +27,7 @@ const {
   callProp,
   size,
   includes,
+  identity,
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
@@ -239,17 +240,11 @@ exports.Route53Record = ({ spec, config }) => {
       }),
       ({ recordsLive, recordsTarget }) =>
         pipe([
-          tap((params) => {
-            assert(true);
-          }),
           () => recordsLive,
-          flatMap((recordLive) =>
+          map((recordLive) =>
             pipe([
-              tap((params) => {
-                assert(true);
-              }),
               () => recordsTarget,
-              map((recordTarget) =>
+              find((recordTarget) =>
                 pipe([
                   fork({
                     recordTargetFiltered: () =>
@@ -257,26 +252,13 @@ exports.Route53Record = ({ spec, config }) => {
                     recordLiveFiltered: () =>
                       omit(["Tags", "namespace"])(recordLive),
                   }),
-                  tap((params) => {
-                    assert(true);
-                  }),
                   ({ recordTargetFiltered, recordLiveFiltered }) =>
-                    switchCase([
-                      () =>
-                        isDeepEqual(recordTargetFiltered, recordLiveFiltered),
-                      () => recordTarget,
-                      () => recordLive,
-                    ])(),
-                  tap((params) => {
-                    assert(true);
-                  }),
+                    isDeepEqual(recordTargetFiltered, recordLiveFiltered),
                 ])()
               ),
+              switchCase([isEmpty, () => recordLive, identity]),
             ])()
           ),
-          tap((params) => {
-            assert(true);
-          }),
         ])(),
       tap((records) => {
         logger.debug(`getList route53 records result: ${tos(records)}`);
@@ -357,7 +339,7 @@ exports.Route53Record = ({ spec, config }) => {
   const destroy = async ({ id, name, live, lives, resource }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy Route53Record ${tos({ name, id, live })}`);
+        logger.info(`destroy Route53Record ${name}, ${id} ${tos({ live })}`);
         assert(!isEmpty(id), `destroy invalid id`);
         assert(name, "destroy name");
         //assert(resource, "resource");
@@ -367,33 +349,53 @@ exports.Route53Record = ({ spec, config }) => {
       () => live,
       switchCase([
         not(isEmpty),
-        pipe([
-          (live) =>
-            route53().changeResourceRecordSets({
-              HostedZoneId: live.HostedZoneId,
-              ChangeBatch: {
-                Changes: [
-                  {
-                    Action: "DELETE",
-                    ResourceRecordSet: liveToResourceSet(live),
-                  },
-                ],
-              },
-            }),
-          // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#changeTagsForResource-property
-          () =>
-            route53().changeTagsForResource({
-              ResourceId: live.HostedZoneId,
-              RemoveTagKeys: [buildRecordTagKey(name)],
-              ResourceType: "hostedzone",
-            }),
-        ]),
+        tryCatch(
+          pipe([
+            (live) =>
+              route53().changeResourceRecordSets({
+                HostedZoneId: live.HostedZoneId,
+                ChangeBatch: {
+                  Changes: [
+                    {
+                      Action: "DELETE",
+                      ResourceRecordSet: liveToResourceSet(live),
+                    },
+                  ],
+                },
+              }),
+            // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#changeTagsForResource-property
+            () =>
+              route53().changeTagsForResource({
+                ResourceId: live.HostedZoneId,
+                RemoveTagKeys: [buildRecordTagKey(name)],
+                ResourceType: "hostedzone",
+              }),
+          ]),
+          (error) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `error destroy Route53Record ${error}, live: ${tos(live)}`
+                );
+              }),
+              () => error,
+              switchCase([
+                pipe([get("message"), includes("but it was not found")]),
+                () => undefined,
+                () => {
+                  throw error;
+                },
+              ]),
+            ])()
+        ),
         () => {
           logger.error(`no live record for ${name}`);
         },
       ]),
       tap((result) => {
-        logger.debug(`destroy Route53Record done, ${tos({ name, id })}`);
+        logger.debug(
+          `destroyed Route53Record, ${JSON.stringify({ name, id })}`
+        );
       }),
     ])();
 

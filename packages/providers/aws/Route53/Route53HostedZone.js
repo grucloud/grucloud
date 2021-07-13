@@ -255,7 +255,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy ${tos({ name, id })}`);
+        logger.info(`destroy hostedZone ${JSON.stringify({ name, id })}`);
         assert(!isEmpty(id), `destroy invalid id`);
         assert(name, "destroy name");
       }),
@@ -295,7 +295,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
         })
       ),
       tap(() => {
-        logger.info(`destroy done, ${tos({ name, id })}`);
+        logger.info(`destroy hostedZone done, ${JSON.stringify({ name, id })}`);
       }),
     ])();
 
