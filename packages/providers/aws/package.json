@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.27.0",
-    "aws-sdk": "^2.943.0",
+    "aws-sdk": "^2.944.0",
     "chance": "^1.1.7",
     "deep-object-diff": "^1.1.0",
     "moment": "^2.29.1",
