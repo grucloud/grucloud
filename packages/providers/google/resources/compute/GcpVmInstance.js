@@ -131,9 +131,9 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
     };
 
     const buildSubNetwork = switchCase([
-      (subNetwork) => subNetwork,
-      (subNetwork) => subNetwork.resource.name,
+      isEmpty,
       () => "default",
+      get("resource.name"),
     ]);
 
     const config = defaultsDeep({

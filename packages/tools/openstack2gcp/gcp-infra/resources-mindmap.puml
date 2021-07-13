@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project gcp-infra
+skinparam monochrome true
++ Infra
+++ google
++++ compute
+++++ Network (1)
++++++ rhmig
+++++ SubNetwork (1)
++++++ subnet-10-0-0-0-16
+++++ Disk (1)
++++++ extra-disk
+++++ VmInstance (1)
++++++ s1-2-uk1
+@endmindmap

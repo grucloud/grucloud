@@ -40,7 +40,7 @@ const createResources = async ({ provider }) => {
           name: config.compute.VmInstance.s1_2Uk1.name,
           dependencies: {
             disks: [resources.compute.Disk.extraDisk],
-            subNetwork: resources.compute.Network.subnet_10_0_0_0_16,
+            subNetwork: resources.compute.SubNetwork.subnet_10_0_0_0_16,
           },
           properties: () => config.compute.VmInstance.s1_2Uk1.properties,
         })
