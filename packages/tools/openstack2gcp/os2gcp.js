@@ -179,7 +179,7 @@ const writersSpec = [
                     ),
                     get("name"),
                     ResourceVarNameSubnet,
-                    (name) => `resources.compute.Network.${name}`,
+                    (name) => `resources.compute.SubNetwork.${name}`,
                   ])(),
               ])(),
           },

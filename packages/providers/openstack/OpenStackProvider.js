@@ -17,6 +17,8 @@ const {
   find,
   size,
   keys,
+  identity,
+  isEmpty,
 } = require("rubico/x");
 
 const CoreProvider = require("@grucloud/core/CoreProvider");
@@ -30,14 +32,7 @@ const { isOurMinion } = require("./OpenStackTag");
 const { OpenStackAuthorize } = require("./OpenStackUtils");
 
 const fnSpecs = (config) => {
-  const {
-    managedByKey,
-    managedByValue,
-    stageTagKey,
-    stage,
-    projectId,
-    providerName,
-  } = config;
+  const { projectId, providerName } = config;
 
   assert(providerName);
   assert(projectId);
@@ -118,6 +113,15 @@ const fnSpecs = (config) => {
           isInstanceUp,
           config,
           configDefault: ({ properties }) => defaultsDeep({})(properties),
+          findName: ({ live }) =>
+            pipe([
+              () => live,
+              get("name"),
+              switchCase([isEmpty, () => live.cidr, identity]),
+              tap((name) => {
+                assert(name, `missing name in ${tos(live)}`);
+              }),
+            ])(),
           findDependencies: ({ live }) => [
             {
               type: "Network",

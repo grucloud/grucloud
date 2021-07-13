@@ -199,7 +199,8 @@ exports.AwsInternetGateway = ({ spec, config }) => {
         ]),
         tap.if(
           ({ code }) => !includes(code)(["AuthFailure"]),
-          () => {
+          (error) => {
+            logger.error(`error destroying ig ${tos({ name, id, error })}`);
             throw error;
           }
         )

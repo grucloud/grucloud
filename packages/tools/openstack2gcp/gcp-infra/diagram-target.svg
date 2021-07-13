@@ -57,13 +57,13 @@
 <text text-anchor="start" x="36.5" y="-122.2" font-family="Helvetica,sans-Serif" font-size="16.00" fill="#383838">s1&#45;2&#45;uk1</text>
 </g>
 <!-- VmInstance::s1&#45;2&#45;uk1&#45;&gt;SubNetwork::subnet&#45;10&#45;0&#45;0&#45;0&#45;16 -->
-<g id="edge2" class="edge">
+<g id="edge3" class="edge">
 <title>VmInstance::s1&#45;2&#45;uk1&#45;&gt;SubNetwork::subnet&#45;10&#45;0&#45;0&#45;0&#45;16</title>
 <path fill="none" stroke="#707070" d="M139.15,-125.56C147.45,-123.73 156.18,-121.82 164.96,-119.89"/>
 <polygon fill="#707070" stroke="#707070" points="165.86,-123.27 174.87,-117.71 164.35,-116.44 165.86,-123.27"/>
 </g>
 <!-- VmInstance::s1&#45;2&#45;uk1&#45;&gt;Disk::extra&#45;disk -->
-<g id="edge3" class="edge">
+<g id="edge2" class="edge">
 <title>VmInstance::s1&#45;2&#45;uk1&#45;&gt;Disk::extra&#45;disk</title>
 <path fill="none" stroke="#707070" d="M139.15,-150.44C158.36,-154.66 179.82,-159.38 199.02,-163.59"/>
 <polygon fill="#707070" stroke="#707070" points="198.32,-167.02 208.84,-165.75 199.82,-160.19 198.32,-167.02"/>
