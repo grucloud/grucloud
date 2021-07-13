@@ -34,7 +34,12 @@ module.exports = CoreClient = ({
     name,
     ...properties,
   }),
-  findName = get("live.name"),
+  findName = pipe([
+    get("live.name"),
+    tap((name) => {
+      assert(name, "missing name");
+    }),
+  ]),
   findId = get("live.id"),
   findTargetId = get("id"),
   onResponseGet = get("data"),
