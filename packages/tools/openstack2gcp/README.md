@@ -38,6 +38,16 @@ In addition to the generated file _iac.js_, the directory [gcp-infra](./gcp-infr
 
 For a detailed guide on how to prepare the deployment, see [Google Getting Started](https://www.grucloud.com/docs/google/GoogleGettingStarted)
 
+### Requirements
+
+![gcp-requirements-compute](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gcp-requirements-compute.svg)
+
+### Initialisation
+
+![gcp-provider-init.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/gcp-provider-init.svg)
+
+### Workflow
+
 TL;DR
 
 The following commands are used to managed the infrastructure:
@@ -47,6 +57,18 @@ The following commands are used to managed the infrastructure:
 - gc list
 - gc destroy
 
+![grucloud-cli-commands.svg](https://raw.githubusercontent.com/grucloud/grucloud/main/docusaurus/plantuml/grucloud-cli-commands.svg)
+
+### Resources Tree
+
+The `tree` command generates a mind map of the reosurces tpye and name:
+
+```sh
+gc tree --full
+```
+
+![diagram-tree](gcp-infra/resources-mindmap.svg)
+
 ### Target Diagram
 
 The graph command generates a graph of the target resources based only on the code:
@@ -55,7 +77,7 @@ The graph command generates a graph of the target resources based only on the co
 gc graph
 ```
 
-![diagram-target](gcp-infra/diagram-target.svg)
+![diagram-target](./gcp-infra/diagram-target.svg)
 
 ### Deploying
 
