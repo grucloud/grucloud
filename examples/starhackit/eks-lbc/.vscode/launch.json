@@ -13,12 +13,16 @@
       "port": 9229
     },
     {
-      "name": "List",
+      "name": "List AWS",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
       "runtimeArgs": [
         "list",
+        "--json",
+        "../../../packages/tools/openstack2gcp/aws/eks-lbc/inventory.json",
+        "-p",
+        "aws",
         "-g",
         "-a",
         "--default-exclude",
@@ -27,7 +31,9 @@
         "--types-exclude",
         "Route53Domain",
         "--types-exclude",
-        "NetworkInterface"
+        "NetworkInterface",
+        "--types-exclude",
+        "Key"
       ],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
@@ -35,7 +41,7 @@
       "port": 9229
     },
     {
-      "name": "List AWS",
+      "name": "List",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "gc",
@@ -51,9 +57,7 @@
         "--types-exclude",
         "NetworkInterface",
         "--types-exclude",
-        "KeyPair",
-        "-p",
-        "aws"
+        "KeyPair"
       ],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",

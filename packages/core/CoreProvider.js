@@ -1023,6 +1023,7 @@ function CoreProvider({
           type: client.spec.type,
           group: client.spec.group,
           live,
+          managedByOther: client.managedByOther({ live, lives }),
           cannotBeDeleted: client.cannotBeDeleted({
             live,
             name: client.findName({ live, lives }),

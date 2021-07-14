@@ -27,7 +27,6 @@ exports.AwsNatGateway = ({ spec, config }) => {
   const findName = findNameInTagsOrId({ findId });
 
   const findDependencies = ({ live, lives }) => [
-    { type: "Vpc", ids: [live.VpcId] },
     {
       type: "Subnet",
       ids: [live.SubnetId],

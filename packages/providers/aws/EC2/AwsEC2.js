@@ -51,6 +51,8 @@ const {
   findEksCluster,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { hasKeyInTags } = require("../AwsCommon");
+
 const { CheckAwsTags } = require("../AwsTagCheck");
 
 const StateRunning = "running";
@@ -70,6 +72,10 @@ exports.AwsEC2 = ({ spec, config }) => {
   };
 
   const ec2 = Ec2New(config);
+
+  const managedByOther = hasKeyInTags({
+    key: "eks:cluster-name",
+  });
 
   const findDependencies = ({ live, lives }) => [
     {
@@ -548,6 +554,7 @@ exports.AwsEC2 = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    managedByOther,
   };
 };
 

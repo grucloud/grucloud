@@ -84,6 +84,7 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
       findNamespaceFromTarget: get("namespace"),
       cannotBeDeleted: () => false,
       isDefault: () => false,
+      managedByOther: () => false,
       configDefault: () => ({}),
       isInstanceUp: not(isEmpty),
       providerName,
