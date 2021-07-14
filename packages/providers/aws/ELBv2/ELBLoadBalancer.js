@@ -36,10 +36,6 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const { providerName } = config;
   const findDependencies = ({ live, lives }) => [
     {
-      type: "Vpc",
-      ids: [live.VpcId],
-    },
-    {
       type: "Subnet",
       ids: pipe([() => live, get("AvailabilityZones"), pluck("SubnetId")])(),
     },

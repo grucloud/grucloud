@@ -37,10 +37,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
   const autoScaling = AutoScalingNew(config);
 
   // TODO findDependencies
-  const findDependencies = ({ live }) => [
-    { type: "Vpc", ids: [live.VpcId] },
-    { type: "LoadBalancer", ids: live.LoadBalancerArns },
-  ];
+  const findDependencies = ({ live }) => [{ type: "Vpc", ids: [live.VpcId] }];
 
   const findNamespace = findNamespaceInTagsOrEksCluster({
     config,

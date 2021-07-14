@@ -32,6 +32,7 @@ const {
 } = require("../AwsCommon");
 const { retryCall } = require("@grucloud/core/Retry");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { hasKeyInTags } = require("../AwsCommon");
 
 const {
   getByNameCore,
@@ -47,6 +48,15 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
   assert(providerName);
 
   const ec2 = Ec2New(config);
+
+  const managedByOther = or([
+    hasKeyInTags({
+      key: "aws:eks:cluster-name",
+    }),
+    hasKeyInTags({
+      key: "elbv2.k8s.aws/cluster",
+    }),
+  ]);
 
   const findName = ({ live, lives }) =>
     pipe([
@@ -291,5 +301,6 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     destroy,
     configDefault,
     shouldRetryOnException,
+    managedByOther,
   };
 };

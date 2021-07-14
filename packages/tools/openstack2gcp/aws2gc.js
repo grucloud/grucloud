@@ -163,6 +163,108 @@ const writersSpec = [
     ],
   },
   {
+    group: "acm",
+    types: [
+      {
+        type: "Certificate",
+        pickProperties: () => ["DomainName", "SubjectAlternativeNames"],
+      },
+    ],
+  },
+  {
+    group: "elb",
+    types: [
+      {
+        type: "LoadBalancer",
+        pickProperties: () => ["Scheme", "Type", "IpAddressType"],
+        dependencies: () => ({
+          subnets: { type: "Subnet", group: "ec2" },
+          securityGroups: { type: "SecurityGroup", group: "ec2" },
+          role: { type: "Role", group: "iam" },
+          key: { type: "Key", group: "kms" },
+        }),
+      },
+      {
+        type: "TargetGroup",
+        pickProperties: () => [
+          "Protocol",
+          "Port",
+          "HealthCheckProtocol",
+          "HealthCheckPort",
+          "HealthCheckEnabled",
+          "HealthCheckIntervalSeconds",
+          "HealthCheckTimeoutSeconds",
+          "HealthyThresholdCount",
+          "HealthCheckPath",
+          "Matcher",
+          "TargetType",
+          "ProtocolVersion",
+        ],
+        dependencies: () => ({
+          vpc: { type: "Vpc", group: "ec2" },
+          nodeGroup: { type: "NodeGroup", group: "eks" },
+        }),
+      },
+      {
+        type: "Listener",
+        pickProperties: () => ["Port", "Protocol", "DefaultActions"],
+        dependencies: () => ({
+          loadBalancer: { type: "LoadBalancer", group: "elb" },
+          targetGroups: { type: "TargetGroup", group: "elb" },
+          certificate: { type: "Certificate", group: "acm" },
+        }),
+      },
+      {
+        type: "Rule",
+        pickProperties: () => ["Priority", "Conditions", "Actions"],
+        dependencies: () => ({
+          listener: { type: "Listener", group: "elb" },
+          targetGroup: { type: "TargetGroup", group: "elb" },
+        }),
+      },
+    ],
+  },
+  {
+    group: "kms",
+    types: [
+      {
+        type: "Key",
+        pickProperties: () => [],
+      },
+    ],
+  },
+  {
+    group: "eks",
+    types: [
+      {
+        type: "Cluster",
+        pickProperties: () => ["version"],
+        dependencies: () => ({
+          subnets: { type: "Subnet", group: "ec2" },
+          securityGroups: { type: "SecurityGroup", group: "ec2" },
+          role: { type: "Role", group: "iam" },
+          key: { type: "Key", group: "kms" },
+        }),
+      },
+      {
+        type: "NodeGroup",
+        pickProperties: () => [
+          "capacityType",
+          "scalingConfig",
+          "instanceTypes",
+          "amiType",
+          "labels",
+          "diskSize",
+        ],
+        dependencies: () => ({
+          cluster: { type: "Cluster", group: "eks" },
+          subnets: { type: "Subnet", group: "ec2" },
+          role: { type: "Role", group: "iam" },
+        }),
+      },
+    ],
+  },
+  {
     group: "route53",
     types: [
       {
@@ -171,14 +273,23 @@ const writersSpec = [
       },
       {
         type: "Record",
-        pickProperties: () => ["Name", "Type", "TTL", "ResourceRecords"],
+        pickProperties: () => [
+          "Name",
+          "Type",
+          "TTL",
+          "ResourceRecords",
+          "AliasTarget",
+        ],
         dependencies: () => ({
           hostedZone: { type: "HostedZone", group: "route53" },
+          loadBalancer: { type: "LoadBalancer", group: "elb" },
+          certificate: { type: "Certificate", group: "acm" },
         }),
         ignoreResource: () => get("cannotBeDeleted"),
       },
     ],
   },
+
   {
     group: "iam",
     types: [
@@ -186,7 +297,7 @@ const writersSpec = [
         type: "Policy",
         pickProperties: switchCase([
           get("resource.cannotBeDeleted"),
-          () => ["Arn", "name"],
+          () => ["Arn"],
           () => ["PolicyName", "PolicyDocument", "Path", "Description"],
         ]),
       },

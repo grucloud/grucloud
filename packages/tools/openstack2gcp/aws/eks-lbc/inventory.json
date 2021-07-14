@@ -10,7 +10,6 @@
         "all": true,
         "defaultExclude": true,
         "typesExclude": [
-            "Certificate",
             "Route53Domain",
             "NetworkInterface",
             "Key"
@@ -27,6 +26,11 @@
                 "kind": "livesPerType",
                 "error": false,
                 "results": [
+                    {
+                        "type": "NetworkAcl",
+                        "group": "ec2",
+                        "resources": []
+                    },
                     {
                         "type": "KeyPair",
                         "group": "ec2",
@@ -54,11 +58,6 @@
                                 "show": true
                             }
                         ]
-                    },
-                    {
-                        "type": "NetworkAcl",
-                        "group": "ec2",
-                        "resources": []
                     },
                     {
                         "type": "NetworkInterface",
@@ -218,6 +217,307 @@
                         ]
                     },
                     {
+                        "type": "Key",
+                        "group": "kms",
+                        "resources": []
+                    },
+                    {
+                        "type": "Certificate",
+                        "group": "acm",
+                        "resources": [
+                            {
+                                "uri": "aws::acm::Certificate::starhackit-eks-lean.grucloud.org",
+                                "name": "starhackit-eks-lean.grucloud.org",
+                                "displayName": "starhackit-eks-lean.grucloud.org",
+                                "id": "arn:aws:acm:eu-west-2:840541460064:certificate/a201cef0-2158-4252-868c-d4cfba95e1b8",
+                                "providerName": "aws",
+                                "type": "Certificate",
+                                "group": "acm",
+                                "live": {
+                                    "CertificateArn": "arn:aws:acm:eu-west-2:840541460064:certificate/a201cef0-2158-4252-868c-d4cfba95e1b8",
+                                    "DomainName": "starhackit-eks-lean.grucloud.org",
+                                    "SubjectAlternativeNames": [
+                                        "starhackit-eks-lean.grucloud.org"
+                                    ],
+                                    "DomainValidationOptions": [
+                                        {
+                                            "DomainName": "starhackit-eks-lean.grucloud.org",
+                                            "ValidationDomain": "starhackit-eks-lean.grucloud.org",
+                                            "ValidationStatus": "SUCCESS",
+                                            "ResourceRecord": {
+                                                "Name": "_de3ed2bdc7b02cea1eae6ba1796ed059.starhackit-eks-lean.grucloud.org.",
+                                                "Type": "CNAME",
+                                                "Value": "_7e4dce3ad999c34be58c7b1f150f002b.bbfvkzsszw.acm-validations.aws."
+                                            },
+                                            "ValidationMethod": "DNS"
+                                        }
+                                    ],
+                                    "Serial": "01:54:7c:e1:d6:ea:53:d8:85:e2:15:37:17:0d:d9:bd",
+                                    "Subject": "CN=starhackit-eks-lean.grucloud.org",
+                                    "Issuer": "Amazon",
+                                    "CreatedAt": "2021-04-18T00:27:39.000Z",
+                                    "IssuedAt": "2021-04-18T00:28:01.000Z",
+                                    "Status": "ISSUED",
+                                    "NotBefore": "2021-04-18T00:00:00.000Z",
+                                    "NotAfter": "2022-05-17T23:59:59.000Z",
+                                    "KeyAlgorithm": "RSA-2048",
+                                    "SignatureAlgorithm": "SHA256WITHRSA",
+                                    "InUseBy": [],
+                                    "Type": "AMAZON_ISSUED",
+                                    "KeyUsages": [
+                                        {
+                                            "Name": "DIGITAL_SIGNATURE"
+                                        },
+                                        {
+                                            "Name": "KEY_ENCIPHERMENT"
+                                        }
+                                    ],
+                                    "ExtendedKeyUsages": [
+                                        {
+                                            "Name": "TLS_WEB_SERVER_AUTHENTICATION",
+                                            "OID": "1.3.6.1.5.5.7.3.1"
+                                        },
+                                        {
+                                            "Name": "TLS_WEB_CLIENT_AUTHENTICATION",
+                                            "OID": "1.3.6.1.5.5.7.3.2"
+                                        }
+                                    ],
+                                    "RenewalEligibility": "INELIGIBLE",
+                                    "Options": {
+                                        "CertificateTransparencyLoggingPreference": "ENABLED"
+                                    },
+                                    "Tags": [
+                                        {
+                                            "Key": "namespace",
+                                            "Value": "Certificate"
+                                        },
+                                        {
+                                            "Key": "ManagedBy",
+                                            "Value": "GruCloud"
+                                        },
+                                        {
+                                            "Key": "stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "projectName",
+                                            "Value": "starhackit"
+                                        },
+                                        {
+                                            "Key": "CreatedByProvider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "starhackit-eks-lean.grucloud.org"
+                                        }
+                                    ]
+                                },
+                                "managedByOther": false,
+                                "cannotBeDeleted": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByUs": false,
+                                "show": true
+                            },
+                            {
+                                "uri": "aws::acm::Certificate::starhackit-eks-lbc.grucloud.org",
+                                "name": "starhackit-eks-lbc.grucloud.org",
+                                "displayName": "starhackit-eks-lbc.grucloud.org",
+                                "id": "arn:aws:acm:eu-west-2:840541460064:certificate/9cfee81f-b945-40cb-a0bb-79bf8ebb0ec4",
+                                "providerName": "aws",
+                                "type": "Certificate",
+                                "group": "acm",
+                                "live": {
+                                    "CertificateArn": "arn:aws:acm:eu-west-2:840541460064:certificate/9cfee81f-b945-40cb-a0bb-79bf8ebb0ec4",
+                                    "DomainName": "starhackit-eks-lbc.grucloud.org",
+                                    "SubjectAlternativeNames": [
+                                        "starhackit-eks-lbc.grucloud.org"
+                                    ],
+                                    "DomainValidationOptions": [
+                                        {
+                                            "DomainName": "starhackit-eks-lbc.grucloud.org",
+                                            "ValidationDomain": "starhackit-eks-lbc.grucloud.org",
+                                            "ValidationStatus": "SUCCESS",
+                                            "ResourceRecord": {
+                                                "Name": "_b4c084392d6f4726727d69dfaf665819.starhackit-eks-lbc.grucloud.org.",
+                                                "Type": "CNAME",
+                                                "Value": "_009ebaa39ee9a4d18d0ebd96e91635bf.bbfvkzsszw.acm-validations.aws."
+                                            },
+                                            "ValidationMethod": "DNS"
+                                        }
+                                    ],
+                                    "Serial": "03:b6:1c:38:56:8c:a1:9e:d0:db:04:7b:06:a8:01:86",
+                                    "Subject": "CN=starhackit-eks-lbc.grucloud.org",
+                                    "Issuer": "Amazon",
+                                    "CreatedAt": "2021-04-20T06:33:46.000Z",
+                                    "IssuedAt": "2021-04-20T06:34:07.000Z",
+                                    "Status": "ISSUED",
+                                    "NotBefore": "2021-04-20T00:00:00.000Z",
+                                    "NotAfter": "2022-05-19T23:59:59.000Z",
+                                    "KeyAlgorithm": "RSA-2048",
+                                    "SignatureAlgorithm": "SHA256WITHRSA",
+                                    "InUseBy": [
+                                        "arn:aws:elasticloadbalancing:eu-west-2:840541460064:loadbalancer/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f"
+                                    ],
+                                    "Type": "AMAZON_ISSUED",
+                                    "KeyUsages": [
+                                        {
+                                            "Name": "DIGITAL_SIGNATURE"
+                                        },
+                                        {
+                                            "Name": "KEY_ENCIPHERMENT"
+                                        }
+                                    ],
+                                    "ExtendedKeyUsages": [
+                                        {
+                                            "Name": "TLS_WEB_SERVER_AUTHENTICATION",
+                                            "OID": "1.3.6.1.5.5.7.3.1"
+                                        },
+                                        {
+                                            "Name": "TLS_WEB_CLIENT_AUTHENTICATION",
+                                            "OID": "1.3.6.1.5.5.7.3.2"
+                                        }
+                                    ],
+                                    "RenewalEligibility": "ELIGIBLE",
+                                    "Options": {
+                                        "CertificateTransparencyLoggingPreference": "ENABLED"
+                                    },
+                                    "Tags": [
+                                        {
+                                            "Key": "namespace",
+                                            "Value": "Certificate"
+                                        },
+                                        {
+                                            "Key": "ManagedBy",
+                                            "Value": "GruCloud"
+                                        },
+                                        {
+                                            "Key": "stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "projectName",
+                                            "Value": "starhackit-eks-lbc"
+                                        },
+                                        {
+                                            "Key": "CreatedByProvider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "starhackit-eks-lbc.grucloud.org"
+                                        }
+                                    ]
+                                },
+                                "managedByOther": false,
+                                "cannotBeDeleted": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByUs": false,
+                                "show": true
+                            },
+                            {
+                                "uri": "aws::acm::Certificate::mod-aws-load-balancer.grucloud.org",
+                                "name": "mod-aws-load-balancer.grucloud.org",
+                                "displayName": "mod-aws-load-balancer.grucloud.org",
+                                "id": "arn:aws:acm:eu-west-2:840541460064:certificate/671fde3d-3ae7-4667-996a-6592c20021c6",
+                                "providerName": "aws",
+                                "type": "Certificate",
+                                "group": "acm",
+                                "live": {
+                                    "CertificateArn": "arn:aws:acm:eu-west-2:840541460064:certificate/671fde3d-3ae7-4667-996a-6592c20021c6",
+                                    "DomainName": "mod-aws-load-balancer.grucloud.org",
+                                    "SubjectAlternativeNames": [
+                                        "mod-aws-load-balancer.grucloud.org"
+                                    ],
+                                    "DomainValidationOptions": [
+                                        {
+                                            "DomainName": "mod-aws-load-balancer.grucloud.org",
+                                            "ValidationDomain": "mod-aws-load-balancer.grucloud.org",
+                                            "ValidationStatus": "SUCCESS",
+                                            "ResourceRecord": {
+                                                "Name": "_6f8d6c4e82e97e8725d21b378879a611.mod-aws-load-balancer.grucloud.org.",
+                                                "Type": "CNAME",
+                                                "Value": "_fa7bdd29ae00fbf3af72fa37f171acd7.bbfvkzsszw.acm-validations.aws."
+                                            },
+                                            "ValidationMethod": "DNS"
+                                        }
+                                    ],
+                                    "Serial": "0d:75:63:ac:e4:19:74:02:b8:81:62:30:c4:46:6f:b0",
+                                    "Subject": "CN=mod-aws-load-balancer.grucloud.org",
+                                    "Issuer": "Amazon",
+                                    "CreatedAt": "2021-04-20T16:14:17.000Z",
+                                    "IssuedAt": "2021-04-20T16:14:44.000Z",
+                                    "Status": "ISSUED",
+                                    "NotBefore": "2021-04-20T00:00:00.000Z",
+                                    "NotAfter": "2022-05-19T23:59:59.000Z",
+                                    "KeyAlgorithm": "RSA-2048",
+                                    "SignatureAlgorithm": "SHA256WITHRSA",
+                                    "InUseBy": [],
+                                    "Type": "AMAZON_ISSUED",
+                                    "KeyUsages": [
+                                        {
+                                            "Name": "DIGITAL_SIGNATURE"
+                                        },
+                                        {
+                                            "Name": "KEY_ENCIPHERMENT"
+                                        }
+                                    ],
+                                    "ExtendedKeyUsages": [
+                                        {
+                                            "Name": "TLS_WEB_SERVER_AUTHENTICATION",
+                                            "OID": "1.3.6.1.5.5.7.3.1"
+                                        },
+                                        {
+                                            "Name": "TLS_WEB_CLIENT_AUTHENTICATION",
+                                            "OID": "1.3.6.1.5.5.7.3.2"
+                                        }
+                                    ],
+                                    "RenewalEligibility": "INELIGIBLE",
+                                    "Options": {
+                                        "CertificateTransparencyLoggingPreference": "ENABLED"
+                                    },
+                                    "Tags": [
+                                        {
+                                            "Key": "namespace",
+                                            "Value": "Certificate"
+                                        },
+                                        {
+                                            "Key": "ManagedBy",
+                                            "Value": "GruCloud"
+                                        },
+                                        {
+                                            "Key": "stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "projectName",
+                                            "Value": "load-balancer-example"
+                                        },
+                                        {
+                                            "Key": "CreatedByProvider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "mod-aws-load-balancer.grucloud.org"
+                                        }
+                                    ]
+                                },
+                                "managedByOther": false,
+                                "cannotBeDeleted": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByUs": false,
+                                "show": true
+                            }
+                        ]
+                    },
+                    {
                         "type": "Domain",
                         "group": "route53Domain",
                         "resources": [
@@ -313,16 +613,6 @@
                                 "show": true
                             }
                         ]
-                    },
-                    {
-                        "type": "Key",
-                        "group": "kms",
-                        "resources": []
-                    },
-                    {
-                        "type": "Certificate",
-                        "group": "acm",
-                        "resources": []
                     },
                     {
                         "type": "OpenIDConnectProvider",
@@ -505,6 +795,36 @@
                                         "PrivateZone": false
                                     },
                                     "ResourceRecordSetCount": 4,
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "starhackit-eks-lbc"
+                                        },
+                                        {
+                                            "Key": "gc-record-certificate-validation-starhackit-eks-lbc.grucloud.org.",
+                                            "Value": "_b4c084392d6f4726727d69dfaf665819.starhackit-eks-lbc.grucloud.org.::CNAME"
+                                        },
+                                        {
+                                            "Key": "gc-record-dns-record-alias-load-balancer-starhackit-eks-lbc.grucloud.org.",
+                                            "Value": "starhackit-eks-lbc.grucloud.org.::A"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "starhackit-eks-lbc.grucloud.org."
+                                        }
+                                    ],
                                     "RecordSet": [
                                         {
                                             "Name": "starhackit-eks-lbc.grucloud.org.",
@@ -554,36 +874,6 @@
                                                     "Value": "_009ebaa39ee9a4d18d0ebd96e91635bf.bbfvkzsszw.acm-validations.aws."
                                                 }
                                             ]
-                                        }
-                                    ],
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "starhackit-eks-lbc"
-                                        },
-                                        {
-                                            "Key": "gc-record-certificate-validation-starhackit-eks-lbc.grucloud.org.",
-                                            "Value": "_b4c084392d6f4726727d69dfaf665819.starhackit-eks-lbc.grucloud.org.::CNAME"
-                                        },
-                                        {
-                                            "Key": "gc-record-dns-record-alias-load-balancer-starhackit-eks-lbc.grucloud.org.",
-                                            "Value": "starhackit-eks-lbc.grucloud.org.::A"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "starhackit-eks-lbc.grucloud.org."
                                         }
                                     ]
                                 },
@@ -1167,9 +1457,20 @@
                                 "dependencies": [
                                     {
                                         "type": "HostedZone",
+                                        "group": "route53",
                                         "ids": [
                                             "/hostedzone/Z08038692T3OTE1GQC7YZ"
                                         ]
+                                    },
+                                    {
+                                        "type": "LoadBalancer",
+                                        "group": "elb",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "Certificate",
+                                        "group": "acm",
+                                        "ids": []
                                     }
                                 ],
                                 "managedByUs": true,
@@ -1201,9 +1502,20 @@
                                 "dependencies": [
                                     {
                                         "type": "HostedZone",
+                                        "group": "route53",
                                         "ids": [
                                             "/hostedzone/Z08038692T3OTE1GQC7YZ"
                                         ]
+                                    },
+                                    {
+                                        "type": "LoadBalancer",
+                                        "group": "elb",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "Certificate",
+                                        "group": "acm",
+                                        "ids": []
                                     }
                                 ],
                                 "managedByUs": true,
@@ -1244,9 +1556,20 @@
                                 "dependencies": [
                                     {
                                         "type": "HostedZone",
+                                        "group": "route53",
                                         "ids": [
                                             "/hostedzone/Z08038692T3OTE1GQC7YZ"
                                         ]
+                                    },
+                                    {
+                                        "type": "LoadBalancer",
+                                        "group": "elb",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "Certificate",
+                                        "group": "acm",
+                                        "ids": []
                                     }
                                 ],
                                 "managedByUs": true,
@@ -1309,9 +1632,22 @@
                                 "dependencies": [
                                     {
                                         "type": "HostedZone",
+                                        "group": "route53",
                                         "ids": [
                                             "/hostedzone/Z08753398RS8A4T49FQY"
                                         ]
+                                    },
+                                    {
+                                        "type": "LoadBalancer",
+                                        "group": "elb",
+                                        "ids": [
+                                            "arn:aws:elasticloadbalancing:eu-west-2:840541460064:loadbalancer/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f"
+                                        ]
+                                    },
+                                    {
+                                        "type": "Certificate",
+                                        "group": "acm",
+                                        "ids": []
                                     }
                                 ],
                                 "managedByUs": true,
@@ -1352,9 +1688,20 @@
                                 "dependencies": [
                                     {
                                         "type": "HostedZone",
+                                        "group": "route53",
                                         "ids": [
                                             "/hostedzone/Z08753398RS8A4T49FQY"
                                         ]
+                                    },
+                                    {
+                                        "type": "LoadBalancer",
+                                        "group": "elb",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "Certificate",
+                                        "group": "acm",
+                                        "ids": []
                                     }
                                 ],
                                 "managedByUs": true,
@@ -1386,9 +1733,20 @@
                                 "dependencies": [
                                     {
                                         "type": "HostedZone",
+                                        "group": "route53",
                                         "ids": [
                                             "/hostedzone/Z08753398RS8A4T49FQY"
                                         ]
+                                    },
+                                    {
+                                        "type": "LoadBalancer",
+                                        "group": "elb",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "Certificate",
+                                        "group": "acm",
+                                        "ids": []
                                     }
                                 ],
                                 "managedByUs": true,
@@ -1451,8 +1809,21 @@
                                 "dependencies": [
                                     {
                                         "type": "HostedZone",
+                                        "group": "route53",
                                         "ids": [
                                             "/hostedzone/Z08753398RS8A4T49FQY"
+                                        ]
+                                    },
+                                    {
+                                        "type": "LoadBalancer",
+                                        "group": "elb",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "Certificate",
+                                        "group": "acm",
+                                        "ids": [
+                                            "arn:aws:acm:eu-west-2:840541460064:certificate/9cfee81f-b945-40cb-a0bb-79bf8ebb0ec4"
                                         ]
                                     }
                                 ],
@@ -1519,6 +1890,7 @@
                                         }
                                     ],
                                     "Policies": [],
+                                    "InstanceProfiles": [],
                                     "AttachedPolicies": [
                                         {
                                             "PolicyName": "AmazonEKSClusterPolicy",
@@ -1528,8 +1900,7 @@
                                             "PolicyName": "AmazonEKSVPCResourceController",
                                             "PolicyArn": "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
                                         }
-                                    ],
-                                    "InstanceProfiles": []
+                                    ]
                                 },
                                 "managedByOther": false,
                                 "cannotBeDeleted": false,
@@ -1605,14 +1976,14 @@
                                             "Value": "LoadBalancerControllerRole"
                                         }
                                     ],
-                                    "Policies": [],
+                                    "InstanceProfiles": [],
                                     "AttachedPolicies": [
                                         {
                                             "PolicyName": "AWSLoadBalancerControllerIAMPolicy",
                                             "PolicyArn": "arn:aws:iam::840541460064:policy/AWSLoadBalancerControllerIAMPolicy"
                                         }
                                     ],
-                                    "InstanceProfiles": []
+                                    "Policies": []
                                 },
                                 "managedByOther": false,
                                 "cannotBeDeleted": false,
@@ -1785,8 +2156,8 @@
                                             "Value": "grucloud"
                                         }
                                     ],
-                                    "DnsSupport": true,
-                                    "DnsHostnames": true
+                                    "DnsHostnames": true,
+                                    "DnsSupport": true
                                 },
                                 "managedByOther": false,
                                 "cannotBeDeleted": false,
@@ -1855,72 +2226,6 @@
                                         "type": "Vpc",
                                         "ids": [
                                             "vpc-0d4505481912f5ccc"
-                                        ]
-                                    }
-                                ],
-                                "managedByUs": true,
-                                "show": true
-                            }
-                        ]
-                    },
-                    {
-                        "type": "ElasticIpAddress",
-                        "group": "ec2",
-                        "resources": [
-                            {
-                                "uri": "aws::ec2::ElasticIpAddress::iep",
-                                "name": "iep",
-                                "displayName": "iep",
-                                "id": "eipalloc-0dba8a8424cac54b1",
-                                "providerName": "aws",
-                                "type": "ElasticIpAddress",
-                                "group": "ec2",
-                                "live": {
-                                    "PublicIp": "18.169.251.118",
-                                    "AllocationId": "eipalloc-0dba8a8424cac54b1",
-                                    "AssociationId": "eipassoc-0e56edbb226000f34",
-                                    "Domain": "vpc",
-                                    "NetworkInterfaceId": "eni-0a4c1152a85f5d775",
-                                    "NetworkInterfaceOwnerId": "840541460064",
-                                    "PrivateIpAddress": "192.168.22.205",
-                                    "Tags": [
-                                        {
-                                            "Key": "Name",
-                                            "Value": "iep"
-                                        },
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "starhackit-eks-lbc"
-                                        },
-                                        {
-                                            "Key": "gc-namespace",
-                                            "Value": "VPC"
-                                        }
-                                    ],
-                                    "PublicIpv4Pool": "amazon",
-                                    "NetworkBorderGroup": "eu-west-2"
-                                },
-                                "managedByOther": false,
-                                "cannotBeDeleted": false,
-                                "isDefault": false,
-                                "namespace": "VPC",
-                                "dependencies": [
-                                    {
-                                        "type": "NetworkInterface",
-                                        "ids": [
-                                            "eni-0a4c1152a85f5d775"
                                         ]
                                     }
                                 ],
@@ -2366,130 +2671,53 @@
                         ]
                     },
                     {
-                        "type": "InstanceProfile",
-                        "group": "iam",
-                        "resources": [
-                            {
-                                "uri": "aws::iam::InstanceProfile::eks-68bd50a8-4f88-2fe8-5184-62f3ade5695d",
-                                "name": "eks-68bd50a8-4f88-2fe8-5184-62f3ade5695d",
-                                "displayName": "eks-68bd50a8-4f88-2fe8-5184-62f3ade5695d",
-                                "id": "arn:aws:iam::840541460064:instance-profile/eks-68bd50a8-4f88-2fe8-5184-62f3ade5695d",
-                                "providerName": "aws",
-                                "type": "InstanceProfile",
-                                "group": "iam",
-                                "live": {
-                                    "Path": "/",
-                                    "InstanceProfileName": "eks-68bd50a8-4f88-2fe8-5184-62f3ade5695d",
-                                    "InstanceProfileId": "AIPA4HNBM2ZQPLUV326HL",
-                                    "Arn": "arn:aws:iam::840541460064:instance-profile/eks-68bd50a8-4f88-2fe8-5184-62f3ade5695d",
-                                    "CreateDate": "2021-07-13T19:21:03.000Z",
-                                    "Roles": [
-                                        {
-                                            "Path": "/",
-                                            "RoleName": "role-node-group",
-                                            "RoleId": "AROA4HNBM2ZQA7U6T7YIU",
-                                            "Arn": "arn:aws:iam::840541460064:role/role-node-group",
-                                            "CreateDate": "2021-07-13T19:10:41.000Z",
-                                            "AssumeRolePolicyDocument": "%7B%22Version%22%3A%222012-10-17%22%2C%22Statement%22%3A%5B%7B%22Effect%22%3A%22Allow%22%2C%22Principal%22%3A%7B%22Service%22%3A%22ec2.amazonaws.com%22%7D%2C%22Action%22%3A%22sts%3AAssumeRole%22%7D%5D%7D",
-                                            "Tags": [
-                                                {
-                                                    "Key": "Name",
-                                                    "Value": "role-node-group"
-                                                },
-                                                {
-                                                    "Key": "gc-managed-by",
-                                                    "Value": "grucloud"
-                                                },
-                                                {
-                                                    "Key": "gc-created-by-provider",
-                                                    "Value": "aws"
-                                                },
-                                                {
-                                                    "Key": "gc-stage",
-                                                    "Value": "dev"
-                                                },
-                                                {
-                                                    "Key": "gc-project-name",
-                                                    "Value": "starhackit-eks-lbc"
-                                                },
-                                                {
-                                                    "Key": "gc-namespace",
-                                                    "Value": "EKS"
-                                                }
-                                            ]
-                                        }
-                                    ],
-                                    "Tags": []
-                                },
-                                "managedByOther": false,
-                                "cannotBeDeleted": false,
-                                "isDefault": false,
-                                "namespace": "EKS",
-                                "dependencies": [
-                                    {
-                                        "type": "Role",
-                                        "ids": [
-                                            "arn:aws:iam::840541460064:role/role-node-group"
-                                        ]
-                                    }
-                                ],
-                                "show": true
-                            }
-                        ]
-                    },
-                    {
-                        "type": "NatGateway",
+                        "type": "ElasticIpAddress",
                         "group": "ec2",
                         "resources": [
                             {
-                                "uri": "aws::ec2::NatGateway::nat-gateway",
-                                "name": "nat-gateway",
-                                "displayName": "nat-gateway",
-                                "id": "nat-09fca38e4f570aead",
+                                "uri": "aws::ec2::ElasticIpAddress::iep",
+                                "name": "iep",
+                                "displayName": "iep",
+                                "id": "eipalloc-0dba8a8424cac54b1",
                                 "providerName": "aws",
-                                "type": "NatGateway",
+                                "type": "ElasticIpAddress",
                                 "group": "ec2",
                                 "live": {
-                                    "CreateTime": "2021-07-13T19:10:43.000Z",
-                                    "NatGatewayAddresses": [
-                                        {
-                                            "AllocationId": "eipalloc-0dba8a8424cac54b1",
-                                            "NetworkInterfaceId": "eni-0a4c1152a85f5d775",
-                                            "PrivateIp": "192.168.22.205",
-                                            "PublicIp": "18.169.251.118"
-                                        }
-                                    ],
-                                    "NatGatewayId": "nat-09fca38e4f570aead",
-                                    "State": "available",
-                                    "SubnetId": "subnet-04542909cc0c2e53e",
-                                    "VpcId": "vpc-0d4505481912f5ccc",
+                                    "PublicIp": "18.169.251.118",
+                                    "AllocationId": "eipalloc-0dba8a8424cac54b1",
+                                    "AssociationId": "eipassoc-0e56edbb226000f34",
+                                    "Domain": "vpc",
+                                    "NetworkInterfaceId": "eni-0a4c1152a85f5d775",
+                                    "NetworkInterfaceOwnerId": "840541460064",
+                                    "PrivateIpAddress": "192.168.22.205",
                                     "Tags": [
                                         {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "starhackit-eks-lbc"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "gc-namespace",
-                                            "Value": "VPC"
+                                            "Key": "Name",
+                                            "Value": "iep"
                                         },
                                         {
                                             "Key": "gc-created-by-provider",
                                             "Value": "aws"
                                         },
                                         {
-                                            "Key": "Name",
-                                            "Value": "nat-gateway"
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "starhackit-eks-lbc"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
                                         }
                                     ],
-                                    "ConnectivityType": "public"
+                                    "PublicIpv4Pool": "amazon",
+                                    "NetworkBorderGroup": "eu-west-2"
                                 },
                                 "managedByOther": false,
                                 "cannotBeDeleted": false,
@@ -2497,22 +2725,408 @@
                                 "namespace": "VPC",
                                 "dependencies": [
                                     {
-                                        "type": "Subnet",
-                                        "ids": [
-                                            "subnet-04542909cc0c2e53e"
-                                        ]
-                                    },
-                                    {
                                         "type": "NetworkInterface",
                                         "ids": [
                                             "eni-0a4c1152a85f5d775"
                                         ]
+                                    }
+                                ],
+                                "managedByUs": true,
+                                "show": true
+                            }
+                        ]
+                    },
+                    {
+                        "type": "SecurityGroup",
+                        "group": "ec2",
+                        "resources": [
+                            {
+                                "uri": "aws::ec2::SecurityGroup::eks-cluster-sg-cluster-872092154",
+                                "name": "eks-cluster-sg-cluster-872092154",
+                                "displayName": "eks-cluster-sg-cluster-872092154",
+                                "id": "sg-0597ff1fba046c593",
+                                "providerName": "aws",
+                                "type": "SecurityGroup",
+                                "group": "ec2",
+                                "live": {
+                                    "Description": "EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.",
+                                    "GroupName": "eks-cluster-sg-cluster-872092154",
+                                    "IpPermissions": [
+                                        {
+                                            "FromPort": 0,
+                                            "IpProtocol": "tcp",
+                                            "IpRanges": [],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "ToPort": 65535,
+                                            "UserIdGroupPairs": [
+                                                {
+                                                    "Description": "elbv2.k8s.aws/targetGroupBinding=shared",
+                                                    "GroupId": "sg-0a9cd455a84357fe5",
+                                                    "UserId": "840541460064"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "IpProtocol": "-1",
+                                            "IpRanges": [],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "UserIdGroupPairs": [
+                                                {
+                                                    "GroupId": "sg-0597ff1fba046c593",
+                                                    "UserId": "840541460064"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "OwnerId": "840541460064",
+                                    "GroupId": "sg-0597ff1fba046c593",
+                                    "IpPermissionsEgress": [
+                                        {
+                                            "IpProtocol": "-1",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "Tags": [
+                                        {
+                                            "Key": "kubernetes.io/cluster/cluster",
+                                            "Value": "owned"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "eks-cluster-sg-cluster-872092154"
+                                        },
+                                        {
+                                            "Key": "aws:eks:cluster-name",
+                                            "Value": "cluster"
+                                        }
+                                    ],
+                                    "VpcId": "vpc-0d4505481912f5ccc"
+                                },
+                                "managedByOther": true,
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "ids": [
+                                            "vpc-0d4505481912f5ccc"
+                                        ]
                                     },
                                     {
-                                        "type": "ElasticIpAddress",
+                                        "type": "SecurityGroup",
                                         "ids": [
-                                            "eipalloc-0dba8a8424cac54b1"
+                                            "sg-0a9cd455a84357fe5",
+                                            "sg-0597ff1fba046c593"
                                         ]
+                                    }
+                                ],
+                                "managedByUs": false,
+                                "show": true
+                            },
+                            {
+                                "uri": "aws::ec2::SecurityGroup::security-group-node",
+                                "name": "security-group-node",
+                                "displayName": "security-group-node",
+                                "id": "sg-064cac9917e2bd0c1",
+                                "providerName": "aws",
+                                "type": "SecurityGroup",
+                                "group": "ec2",
+                                "live": {
+                                    "Description": "SG for the EKS Nodes",
+                                    "GroupName": "security-group-node",
+                                    "IpPermissions": [
+                                        {
+                                            "IpProtocol": "-1",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [
+                                                {
+                                                    "CidrIpv6": "::/0"
+                                                }
+                                            ],
+                                            "PrefixListIds": [],
+                                            "UserIdGroupPairs": []
+                                        },
+                                        {
+                                            "FromPort": 1025,
+                                            "IpProtocol": "tcp",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [
+                                                {
+                                                    "CidrIpv6": "::/0"
+                                                }
+                                            ],
+                                            "PrefixListIds": [],
+                                            "ToPort": 65535,
+                                            "UserIdGroupPairs": [
+                                                {
+                                                    "GroupId": "sg-0f832b6fcf1981925",
+                                                    "UserId": "840541460064"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "OwnerId": "840541460064",
+                                    "GroupId": "sg-064cac9917e2bd0c1",
+                                    "IpPermissionsEgress": [
+                                        {
+                                            "IpProtocol": "-1",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "EKS"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "kubernetes.io/cluster/cluster",
+                                            "Value": "owned"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "starhackit-eks-lbc"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "security-group-node"
+                                        }
+                                    ],
+                                    "VpcId": "vpc-0d4505481912f5ccc"
+                                },
+                                "managedByOther": false,
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "EKS",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "ids": [
+                                            "vpc-0d4505481912f5ccc"
+                                        ]
+                                    },
+                                    {
+                                        "type": "SecurityGroup",
+                                        "ids": [
+                                            "sg-0f832b6fcf1981925"
+                                        ]
+                                    }
+                                ],
+                                "managedByUs": true,
+                                "show": true
+                            },
+                            {
+                                "uri": "aws::ec2::SecurityGroup::k8s-default-ingress-05be0614e6",
+                                "name": "k8s-default-ingress-05be0614e6",
+                                "displayName": "k8s-default-ingress-05be0614e6",
+                                "id": "sg-0a9cd455a84357fe5",
+                                "providerName": "aws",
+                                "type": "SecurityGroup",
+                                "group": "ec2",
+                                "live": {
+                                    "Description": "[k8s] Managed SecurityGroup for LoadBalancer",
+                                    "GroupName": "k8s-default-ingress-05be0614e6",
+                                    "IpPermissions": [
+                                        {
+                                            "FromPort": 80,
+                                            "IpProtocol": "tcp",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0",
+                                                    "Description": ""
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "ToPort": 80,
+                                            "UserIdGroupPairs": []
+                                        },
+                                        {
+                                            "FromPort": 443,
+                                            "IpProtocol": "tcp",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0",
+                                                    "Description": ""
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "ToPort": 443,
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "OwnerId": "840541460064",
+                                    "GroupId": "sg-0a9cd455a84357fe5",
+                                    "IpPermissionsEgress": [
+                                        {
+                                            "IpProtocol": "-1",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "Tags": [
+                                        {
+                                            "Key": "ingress.k8s.aws/resource",
+                                            "Value": "ManagedLBSecurityGroup"
+                                        },
+                                        {
+                                            "Key": "ingress.k8s.aws/stack",
+                                            "Value": "default/ingress"
+                                        },
+                                        {
+                                            "Key": "elbv2.k8s.aws/cluster",
+                                            "Value": "cluster"
+                                        }
+                                    ],
+                                    "VpcId": "vpc-0d4505481912f5ccc"
+                                },
+                                "managedByOther": true,
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "ids": [
+                                            "vpc-0d4505481912f5ccc"
+                                        ]
+                                    },
+                                    {
+                                        "type": "SecurityGroup",
+                                        "ids": []
+                                    }
+                                ],
+                                "managedByUs": false,
+                                "show": true
+                            },
+                            {
+                                "uri": "aws::ec2::SecurityGroup::security-group-cluster",
+                                "name": "security-group-cluster",
+                                "displayName": "security-group-cluster",
+                                "id": "sg-0f832b6fcf1981925",
+                                "providerName": "aws",
+                                "type": "SecurityGroup",
+                                "group": "ec2",
+                                "live": {
+                                    "Description": "EKS Cluster Security Group",
+                                    "GroupName": "security-group-cluster",
+                                    "IpPermissions": [
+                                        {
+                                            "FromPort": 443,
+                                            "IpProtocol": "tcp",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [
+                                                {
+                                                    "CidrIpv6": "::/0"
+                                                }
+                                            ],
+                                            "PrefixListIds": [],
+                                            "ToPort": 443,
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "OwnerId": "840541460064",
+                                    "GroupId": "sg-0f832b6fcf1981925",
+                                    "IpPermissionsEgress": [
+                                        {
+                                            "IpProtocol": "-1",
+                                            "IpRanges": [
+                                                {
+                                                    "CidrIp": "0.0.0.0/0"
+                                                }
+                                            ],
+                                            "Ipv6Ranges": [],
+                                            "PrefixListIds": [],
+                                            "UserIdGroupPairs": []
+                                        }
+                                    ],
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "starhackit-eks-lbc"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "security-group-cluster"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "EKS"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        }
+                                    ],
+                                    "VpcId": "vpc-0d4505481912f5ccc"
+                                },
+                                "managedByOther": false,
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "EKS",
+                                "dependencies": [
+                                    {
+                                        "type": "Vpc",
+                                        "ids": [
+                                            "vpc-0d4505481912f5ccc"
+                                        ]
+                                    },
+                                    {
+                                        "type": "SecurityGroup",
+                                        "ids": []
                                     }
                                 ],
                                 "managedByUs": true,
@@ -2795,6 +3409,89 @@
                         ]
                     },
                     {
+                        "type": "NatGateway",
+                        "group": "ec2",
+                        "resources": [
+                            {
+                                "uri": "aws::ec2::NatGateway::nat-gateway",
+                                "name": "nat-gateway",
+                                "displayName": "nat-gateway",
+                                "id": "nat-09fca38e4f570aead",
+                                "providerName": "aws",
+                                "type": "NatGateway",
+                                "group": "ec2",
+                                "live": {
+                                    "CreateTime": "2021-07-13T19:10:43.000Z",
+                                    "NatGatewayAddresses": [
+                                        {
+                                            "AllocationId": "eipalloc-0dba8a8424cac54b1",
+                                            "NetworkInterfaceId": "eni-0a4c1152a85f5d775",
+                                            "PrivateIp": "192.168.22.205",
+                                            "PublicIp": "18.169.251.118"
+                                        }
+                                    ],
+                                    "NatGatewayId": "nat-09fca38e4f570aead",
+                                    "State": "available",
+                                    "SubnetId": "subnet-04542909cc0c2e53e",
+                                    "VpcId": "vpc-0d4505481912f5ccc",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "starhackit-eks-lbc"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-namespace",
+                                            "Value": "VPC"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "nat-gateway"
+                                        }
+                                    ],
+                                    "ConnectivityType": "public"
+                                },
+                                "managedByOther": false,
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "VPC",
+                                "dependencies": [
+                                    {
+                                        "type": "Subnet",
+                                        "ids": [
+                                            "subnet-04542909cc0c2e53e"
+                                        ]
+                                    },
+                                    {
+                                        "type": "NetworkInterface",
+                                        "ids": [
+                                            "eni-0a4c1152a85f5d775"
+                                        ]
+                                    },
+                                    {
+                                        "type": "ElasticIpAddress",
+                                        "ids": [
+                                            "eipalloc-0dba8a8424cac54b1"
+                                        ]
+                                    }
+                                ],
+                                "managedByUs": true,
+                                "show": true
+                            }
+                        ]
+                    },
+                    {
                         "type": "Route",
                         "group": "ec2",
                         "resources": [
@@ -3002,404 +3699,6 @@
                         ]
                     },
                     {
-                        "type": "SecurityGroup",
-                        "group": "ec2",
-                        "resources": [
-                            {
-                                "uri": "aws::ec2::SecurityGroup::eks-cluster-sg-cluster-872092154",
-                                "name": "eks-cluster-sg-cluster-872092154",
-                                "displayName": "eks-cluster-sg-cluster-872092154",
-                                "id": "sg-0597ff1fba046c593",
-                                "providerName": "aws",
-                                "type": "SecurityGroup",
-                                "group": "ec2",
-                                "live": {
-                                    "Description": "EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.",
-                                    "GroupName": "eks-cluster-sg-cluster-872092154",
-                                    "IpPermissions": [
-                                        {
-                                            "FromPort": 0,
-                                            "IpProtocol": "tcp",
-                                            "IpRanges": [],
-                                            "Ipv6Ranges": [],
-                                            "PrefixListIds": [],
-                                            "ToPort": 65535,
-                                            "UserIdGroupPairs": [
-                                                {
-                                                    "Description": "elbv2.k8s.aws/targetGroupBinding=shared",
-                                                    "GroupId": "sg-0a9cd455a84357fe5",
-                                                    "UserId": "840541460064"
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "IpProtocol": "-1",
-                                            "IpRanges": [],
-                                            "Ipv6Ranges": [],
-                                            "PrefixListIds": [],
-                                            "UserIdGroupPairs": [
-                                                {
-                                                    "GroupId": "sg-0597ff1fba046c593",
-                                                    "UserId": "840541460064"
-                                                }
-                                            ]
-                                        }
-                                    ],
-                                    "OwnerId": "840541460064",
-                                    "GroupId": "sg-0597ff1fba046c593",
-                                    "IpPermissionsEgress": [
-                                        {
-                                            "IpProtocol": "-1",
-                                            "IpRanges": [
-                                                {
-                                                    "CidrIp": "0.0.0.0/0"
-                                                }
-                                            ],
-                                            "Ipv6Ranges": [],
-                                            "PrefixListIds": [],
-                                            "UserIdGroupPairs": []
-                                        }
-                                    ],
-                                    "Tags": [
-                                        {
-                                            "Key": "kubernetes.io/cluster/cluster",
-                                            "Value": "owned"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "eks-cluster-sg-cluster-872092154"
-                                        },
-                                        {
-                                            "Key": "aws:eks:cluster-name",
-                                            "Value": "cluster"
-                                        }
-                                    ],
-                                    "VpcId": "vpc-0d4505481912f5ccc"
-                                },
-                                "managedByOther": false,
-                                "cannotBeDeleted": false,
-                                "isDefault": false,
-                                "dependencies": [
-                                    {
-                                        "type": "Vpc",
-                                        "ids": [
-                                            "vpc-0d4505481912f5ccc"
-                                        ]
-                                    },
-                                    {
-                                        "type": "SecurityGroup",
-                                        "ids": [
-                                            "sg-0a9cd455a84357fe5",
-                                            "sg-0597ff1fba046c593"
-                                        ]
-                                    }
-                                ],
-                                "managedByUs": false,
-                                "show": true
-                            },
-                            {
-                                "uri": "aws::ec2::SecurityGroup::security-group-node",
-                                "name": "security-group-node",
-                                "displayName": "security-group-node",
-                                "id": "sg-064cac9917e2bd0c1",
-                                "providerName": "aws",
-                                "type": "SecurityGroup",
-                                "group": "ec2",
-                                "live": {
-                                    "Description": "SG for the EKS Nodes",
-                                    "GroupName": "security-group-node",
-                                    "IpPermissions": [
-                                        {
-                                            "IpProtocol": "-1",
-                                            "IpRanges": [
-                                                {
-                                                    "CidrIp": "0.0.0.0/0"
-                                                }
-                                            ],
-                                            "Ipv6Ranges": [
-                                                {
-                                                    "CidrIpv6": "::/0"
-                                                }
-                                            ],
-                                            "PrefixListIds": [],
-                                            "UserIdGroupPairs": []
-                                        },
-                                        {
-                                            "FromPort": 1025,
-                                            "IpProtocol": "tcp",
-                                            "IpRanges": [
-                                                {
-                                                    "CidrIp": "0.0.0.0/0"
-                                                }
-                                            ],
-                                            "Ipv6Ranges": [
-                                                {
-                                                    "CidrIpv6": "::/0"
-                                                }
-                                            ],
-                                            "PrefixListIds": [],
-                                            "ToPort": 65535,
-                                            "UserIdGroupPairs": [
-                                                {
-                                                    "GroupId": "sg-0f832b6fcf1981925",
-                                                    "UserId": "840541460064"
-                                                }
-                                            ]
-                                        }
-                                    ],
-                                    "OwnerId": "840541460064",
-                                    "GroupId": "sg-064cac9917e2bd0c1",
-                                    "IpPermissionsEgress": [
-                                        {
-                                            "IpProtocol": "-1",
-                                            "IpRanges": [
-                                                {
-                                                    "CidrIp": "0.0.0.0/0"
-                                                }
-                                            ],
-                                            "Ipv6Ranges": [],
-                                            "PrefixListIds": [],
-                                            "UserIdGroupPairs": []
-                                        }
-                                    ],
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-namespace",
-                                            "Value": "EKS"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "kubernetes.io/cluster/cluster",
-                                            "Value": "owned"
-                                        },
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "starhackit-eks-lbc"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "security-group-node"
-                                        }
-                                    ],
-                                    "VpcId": "vpc-0d4505481912f5ccc"
-                                },
-                                "managedByOther": false,
-                                "cannotBeDeleted": false,
-                                "isDefault": false,
-                                "namespace": "EKS",
-                                "dependencies": [
-                                    {
-                                        "type": "Vpc",
-                                        "ids": [
-                                            "vpc-0d4505481912f5ccc"
-                                        ]
-                                    },
-                                    {
-                                        "type": "SecurityGroup",
-                                        "ids": [
-                                            "sg-0f832b6fcf1981925"
-                                        ]
-                                    }
-                                ],
-                                "managedByUs": true,
-                                "show": true
-                            },
-                            {
-                                "uri": "aws::ec2::SecurityGroup::k8s-default-ingress-05be0614e6",
-                                "name": "k8s-default-ingress-05be0614e6",
-                                "displayName": "k8s-default-ingress-05be0614e6",
-                                "id": "sg-0a9cd455a84357fe5",
-                                "providerName": "aws",
-                                "type": "SecurityGroup",
-                                "group": "ec2",
-                                "live": {
-                                    "Description": "[k8s] Managed SecurityGroup for LoadBalancer",
-                                    "GroupName": "k8s-default-ingress-05be0614e6",
-                                    "IpPermissions": [
-                                        {
-                                            "FromPort": 80,
-                                            "IpProtocol": "tcp",
-                                            "IpRanges": [
-                                                {
-                                                    "CidrIp": "0.0.0.0/0",
-                                                    "Description": ""
-                                                }
-                                            ],
-                                            "Ipv6Ranges": [],
-                                            "PrefixListIds": [],
-                                            "ToPort": 80,
-                                            "UserIdGroupPairs": []
-                                        },
-                                        {
-                                            "FromPort": 443,
-                                            "IpProtocol": "tcp",
-                                            "IpRanges": [
-                                                {
-                                                    "CidrIp": "0.0.0.0/0",
-                                                    "Description": ""
-                                                }
-                                            ],
-                                            "Ipv6Ranges": [],
-                                            "PrefixListIds": [],
-                                            "ToPort": 443,
-                                            "UserIdGroupPairs": []
-                                        }
-                                    ],
-                                    "OwnerId": "840541460064",
-                                    "GroupId": "sg-0a9cd455a84357fe5",
-                                    "IpPermissionsEgress": [
-                                        {
-                                            "IpProtocol": "-1",
-                                            "IpRanges": [
-                                                {
-                                                    "CidrIp": "0.0.0.0/0"
-                                                }
-                                            ],
-                                            "Ipv6Ranges": [],
-                                            "PrefixListIds": [],
-                                            "UserIdGroupPairs": []
-                                        }
-                                    ],
-                                    "Tags": [
-                                        {
-                                            "Key": "ingress.k8s.aws/resource",
-                                            "Value": "ManagedLBSecurityGroup"
-                                        },
-                                        {
-                                            "Key": "ingress.k8s.aws/stack",
-                                            "Value": "default/ingress"
-                                        },
-                                        {
-                                            "Key": "elbv2.k8s.aws/cluster",
-                                            "Value": "cluster"
-                                        }
-                                    ],
-                                    "VpcId": "vpc-0d4505481912f5ccc"
-                                },
-                                "managedByOther": false,
-                                "cannotBeDeleted": false,
-                                "isDefault": false,
-                                "dependencies": [
-                                    {
-                                        "type": "Vpc",
-                                        "ids": [
-                                            "vpc-0d4505481912f5ccc"
-                                        ]
-                                    },
-                                    {
-                                        "type": "SecurityGroup",
-                                        "ids": []
-                                    }
-                                ],
-                                "managedByUs": false,
-                                "show": true
-                            },
-                            {
-                                "uri": "aws::ec2::SecurityGroup::security-group-cluster",
-                                "name": "security-group-cluster",
-                                "displayName": "security-group-cluster",
-                                "id": "sg-0f832b6fcf1981925",
-                                "providerName": "aws",
-                                "type": "SecurityGroup",
-                                "group": "ec2",
-                                "live": {
-                                    "Description": "EKS Cluster Security Group",
-                                    "GroupName": "security-group-cluster",
-                                    "IpPermissions": [
-                                        {
-                                            "FromPort": 443,
-                                            "IpProtocol": "tcp",
-                                            "IpRanges": [
-                                                {
-                                                    "CidrIp": "0.0.0.0/0"
-                                                }
-                                            ],
-                                            "Ipv6Ranges": [
-                                                {
-                                                    "CidrIpv6": "::/0"
-                                                }
-                                            ],
-                                            "PrefixListIds": [],
-                                            "ToPort": 443,
-                                            "UserIdGroupPairs": []
-                                        }
-                                    ],
-                                    "OwnerId": "840541460064",
-                                    "GroupId": "sg-0f832b6fcf1981925",
-                                    "IpPermissionsEgress": [
-                                        {
-                                            "IpProtocol": "-1",
-                                            "IpRanges": [
-                                                {
-                                                    "CidrIp": "0.0.0.0/0"
-                                                }
-                                            ],
-                                            "Ipv6Ranges": [],
-                                            "PrefixListIds": [],
-                                            "UserIdGroupPairs": []
-                                        }
-                                    ],
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "starhackit-eks-lbc"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "security-group-cluster"
-                                        },
-                                        {
-                                            "Key": "gc-namespace",
-                                            "Value": "EKS"
-                                        },
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        }
-                                    ],
-                                    "VpcId": "vpc-0d4505481912f5ccc"
-                                },
-                                "managedByOther": false,
-                                "cannotBeDeleted": false,
-                                "isDefault": false,
-                                "namespace": "EKS",
-                                "dependencies": [
-                                    {
-                                        "type": "Vpc",
-                                        "ids": [
-                                            "vpc-0d4505481912f5ccc"
-                                        ]
-                                    },
-                                    {
-                                        "type": "SecurityGroup",
-                                        "ids": []
-                                    }
-                                ],
-                                "managedByUs": true,
-                                "show": true
-                            }
-                        ]
-                    },
-                    {
                         "type": "LoadBalancer",
                         "group": "elb",
                         "resources": [
@@ -3481,8 +3780,8 @@
                                     {
                                         "type": "NetworkInterface",
                                         "ids": [
-                                            "eni-0c6194ffe711e047e",
                                             "eni-0bf0c421dee46cc84",
+                                            "eni-0c6194ffe711e047e",
                                             "eni-0c906a609a261e3d5"
                                         ]
                                     }
@@ -3669,7 +3968,8 @@
                                     {
                                         "type": "SecurityGroup",
                                         "ids": [
-                                            "sg-064cac9917e2bd0c1"
+                                            "sg-064cac9917e2bd0c1",
+                                            "sg-0f832b6fcf1981925"
                                         ]
                                     }
                                 ],
@@ -3677,9 +3977,9 @@
                                 "show": true
                             },
                             {
-                                "uri": "aws::ec2::SecurityGroupRuleIngress::k8s-default-ingress-05be0614e6-rule-ingress-tcp-80",
-                                "name": "k8s-default-ingress-05be0614e6-rule-ingress-tcp-80",
-                                "displayName": "k8s-default-ingress-05be0614e6-rule-ingress-tcp-80",
+                                "uri": "aws::ec2::SecurityGroupRuleIngress::k8s-default-ingress-05be0614e6-rule-ingress-tcp-80-v4",
+                                "name": "k8s-default-ingress-05be0614e6-rule-ingress-tcp-80-v4",
+                                "displayName": "k8s-default-ingress-05be0614e6-rule-ingress-tcp-80-v4",
                                 "id": "sgr-0cae6d7b24d1c5832",
                                 "providerName": "aws",
                                 "type": "SecurityGroupRuleIngress",
@@ -3696,7 +3996,7 @@
                                     "Description": "",
                                     "Tags": []
                                 },
-                                "managedByOther": false,
+                                "managedByOther": true,
                                 "cannotBeDeleted": false,
                                 "isDefault": false,
                                 "namespace": "",
@@ -3712,9 +4012,9 @@
                                 "show": true
                             },
                             {
-                                "uri": "aws::ec2::SecurityGroupRuleIngress::eks-cluster-sg-cluster-872092154-rule-ingress-tcp-0-65535",
-                                "name": "eks-cluster-sg-cluster-872092154-rule-ingress-tcp-0-65535",
-                                "displayName": "eks-cluster-sg-cluster-872092154-rule-ingress-tcp-0-65535",
+                                "uri": "aws::ec2::SecurityGroupRuleIngress::eks-cluster-sg-cluster-872092154-rule-ingress-tcp-0-65535-",
+                                "name": "eks-cluster-sg-cluster-872092154-rule-ingress-tcp-0-65535-",
+                                "displayName": "eks-cluster-sg-cluster-872092154-rule-ingress-tcp-0-65535-",
                                 "id": "sgr-060d2d62f3e8e17ee",
                                 "providerName": "aws",
                                 "type": "SecurityGroupRuleIngress",
@@ -3734,7 +4034,7 @@
                                     "Description": "elbv2.k8s.aws/targetGroupBinding=shared",
                                     "Tags": []
                                 },
-                                "managedByOther": false,
+                                "managedByOther": true,
                                 "cannotBeDeleted": false,
                                 "isDefault": false,
                                 "namespace": "",
@@ -3742,7 +4042,8 @@
                                     {
                                         "type": "SecurityGroup",
                                         "ids": [
-                                            "sg-0597ff1fba046c593"
+                                            "sg-0597ff1fba046c593",
+                                            "sg-0a9cd455a84357fe5"
                                         ]
                                     }
                                 ],
@@ -3986,9 +4287,9 @@
                                 "show": true
                             },
                             {
-                                "uri": "aws::ec2::SecurityGroupRuleIngress::k8s-default-ingress-05be0614e6-rule-ingress-tcp-443",
-                                "name": "k8s-default-ingress-05be0614e6-rule-ingress-tcp-443",
-                                "displayName": "k8s-default-ingress-05be0614e6-rule-ingress-tcp-443",
+                                "uri": "aws::ec2::SecurityGroupRuleIngress::k8s-default-ingress-05be0614e6-rule-ingress-tcp-443-v4",
+                                "name": "k8s-default-ingress-05be0614e6-rule-ingress-tcp-443-v4",
+                                "displayName": "k8s-default-ingress-05be0614e6-rule-ingress-tcp-443-v4",
                                 "id": "sgr-0d6d35ec5b5689af1",
                                 "providerName": "aws",
                                 "type": "SecurityGroupRuleIngress",
@@ -4005,7 +4306,7 @@
                                     "Description": "",
                                     "Tags": []
                                 },
-                                "managedByOther": false,
+                                "managedByOther": true,
                                 "cannotBeDeleted": false,
                                 "isDefault": false,
                                 "namespace": "",
@@ -4018,6 +4319,83 @@
                                     }
                                 ],
                                 "managedByUs": false,
+                                "show": true
+                            }
+                        ]
+                    },
+                    {
+                        "type": "SecurityGroupRuleEgress",
+                        "group": "ec2",
+                        "resources": []
+                    },
+                    {
+                        "type": "InstanceProfile",
+                        "group": "iam",
+                        "resources": [
+                            {
+                                "uri": "aws::iam::InstanceProfile::eks-68bd50a8-4f88-2fe8-5184-62f3ade5695d",
+                                "name": "eks-68bd50a8-4f88-2fe8-5184-62f3ade5695d",
+                                "displayName": "eks-68bd50a8-4f88-2fe8-5184-62f3ade5695d",
+                                "id": "arn:aws:iam::840541460064:instance-profile/eks-68bd50a8-4f88-2fe8-5184-62f3ade5695d",
+                                "providerName": "aws",
+                                "type": "InstanceProfile",
+                                "group": "iam",
+                                "live": {
+                                    "Path": "/",
+                                    "InstanceProfileName": "eks-68bd50a8-4f88-2fe8-5184-62f3ade5695d",
+                                    "InstanceProfileId": "AIPA4HNBM2ZQPLUV326HL",
+                                    "Arn": "arn:aws:iam::840541460064:instance-profile/eks-68bd50a8-4f88-2fe8-5184-62f3ade5695d",
+                                    "CreateDate": "2021-07-13T19:21:03.000Z",
+                                    "Roles": [
+                                        {
+                                            "Path": "/",
+                                            "RoleName": "role-node-group",
+                                            "RoleId": "AROA4HNBM2ZQA7U6T7YIU",
+                                            "Arn": "arn:aws:iam::840541460064:role/role-node-group",
+                                            "CreateDate": "2021-07-13T19:10:41.000Z",
+                                            "AssumeRolePolicyDocument": "%7B%22Version%22%3A%222012-10-17%22%2C%22Statement%22%3A%5B%7B%22Effect%22%3A%22Allow%22%2C%22Principal%22%3A%7B%22Service%22%3A%22ec2.amazonaws.com%22%7D%2C%22Action%22%3A%22sts%3AAssumeRole%22%7D%5D%7D",
+                                            "Tags": [
+                                                {
+                                                    "Key": "Name",
+                                                    "Value": "role-node-group"
+                                                },
+                                                {
+                                                    "Key": "gc-managed-by",
+                                                    "Value": "grucloud"
+                                                },
+                                                {
+                                                    "Key": "gc-created-by-provider",
+                                                    "Value": "aws"
+                                                },
+                                                {
+                                                    "Key": "gc-stage",
+                                                    "Value": "dev"
+                                                },
+                                                {
+                                                    "Key": "gc-project-name",
+                                                    "Value": "starhackit-eks-lbc"
+                                                },
+                                                {
+                                                    "Key": "gc-namespace",
+                                                    "Value": "EKS"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "Tags": []
+                                },
+                                "managedByOther": false,
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "namespace": "EKS",
+                                "dependencies": [
+                                    {
+                                        "type": "Role",
+                                        "ids": [
+                                            "arn:aws:iam::840541460064:role/role-node-group"
+                                        ]
+                                    }
+                                ],
                                 "show": true
                             }
                         ]
@@ -4404,11 +4782,6 @@
                         ]
                     },
                     {
-                        "type": "SecurityGroupRuleEgress",
-                        "group": "ec2",
-                        "resources": []
-                    },
-                    {
                         "type": "Cluster",
                         "group": "eks",
                         "resources": [
@@ -4529,6 +4902,109 @@
                                     }
                                 ],
                                 "managedByUs": true,
+                                "show": true
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Listener",
+                        "group": "elb",
+                        "resources": [
+                            {
+                                "uri": "aws::elb::Listener::arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/1c2bf011d1ce0636",
+                                "name": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/1c2bf011d1ce0636",
+                                "displayName": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/1c2bf011d1ce0636",
+                                "id": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/1c2bf011d1ce0636",
+                                "providerName": "aws",
+                                "type": "Listener",
+                                "group": "elb",
+                                "live": {
+                                    "ListenerArn": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/1c2bf011d1ce0636",
+                                    "LoadBalancerArn": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:loadbalancer/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f",
+                                    "Port": 443,
+                                    "Protocol": "HTTPS",
+                                    "Certificates": [
+                                        {
+                                            "CertificateArn": "arn:aws:acm:eu-west-2:840541460064:certificate/9cfee81f-b945-40cb-a0bb-79bf8ebb0ec4"
+                                        }
+                                    ],
+                                    "SslPolicy": "ELBSecurityPolicy-2016-08",
+                                    "DefaultActions": [
+                                        {
+                                            "Type": "fixed-response",
+                                            "Order": 1,
+                                            "FixedResponseConfig": {
+                                                "StatusCode": "404",
+                                                "ContentType": "text/plain"
+                                            }
+                                        }
+                                    ],
+                                    "AlpnPolicy": [],
+                                    "Tags": []
+                                },
+                                "managedByOther": false,
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "dependencies": [
+                                    {
+                                        "type": "LoadBalancer",
+                                        "ids": [
+                                            "arn:aws:elasticloadbalancing:eu-west-2:840541460064:loadbalancer/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f"
+                                        ]
+                                    },
+                                    {
+                                        "type": "Certificate",
+                                        "ids": [
+                                            "arn:aws:acm:eu-west-2:840541460064:certificate/9cfee81f-b945-40cb-a0bb-79bf8ebb0ec4"
+                                        ]
+                                    }
+                                ],
+                                "managedByUs": false,
+                                "show": true
+                            },
+                            {
+                                "uri": "aws::elb::Listener::arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/690b1d1f19ebc2cc",
+                                "name": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/690b1d1f19ebc2cc",
+                                "displayName": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/690b1d1f19ebc2cc",
+                                "id": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/690b1d1f19ebc2cc",
+                                "providerName": "aws",
+                                "type": "Listener",
+                                "group": "elb",
+                                "live": {
+                                    "ListenerArn": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/690b1d1f19ebc2cc",
+                                    "LoadBalancerArn": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:loadbalancer/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f",
+                                    "Port": 80,
+                                    "Protocol": "HTTP",
+                                    "Certificates": [],
+                                    "DefaultActions": [
+                                        {
+                                            "Type": "fixed-response",
+                                            "Order": 1,
+                                            "FixedResponseConfig": {
+                                                "StatusCode": "404",
+                                                "ContentType": "text/plain"
+                                            }
+                                        }
+                                    ],
+                                    "AlpnPolicy": [],
+                                    "Tags": []
+                                },
+                                "managedByOther": false,
+                                "cannotBeDeleted": false,
+                                "isDefault": false,
+                                "dependencies": [
+                                    {
+                                        "type": "LoadBalancer",
+                                        "ids": [
+                                            "arn:aws:elasticloadbalancing:eu-west-2:840541460064:loadbalancer/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f"
+                                        ]
+                                    },
+                                    {
+                                        "type": "Certificate",
+                                        "ids": []
+                                    }
+                                ],
+                                "managedByUs": false,
                                 "show": true
                             }
                         ]
@@ -4668,109 +5144,6 @@
                         ]
                     },
                     {
-                        "type": "Listener",
-                        "group": "elb",
-                        "resources": [
-                            {
-                                "uri": "aws::elb::Listener::arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/1c2bf011d1ce0636",
-                                "name": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/1c2bf011d1ce0636",
-                                "displayName": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/1c2bf011d1ce0636",
-                                "id": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/1c2bf011d1ce0636",
-                                "providerName": "aws",
-                                "type": "Listener",
-                                "group": "elb",
-                                "live": {
-                                    "ListenerArn": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/1c2bf011d1ce0636",
-                                    "LoadBalancerArn": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:loadbalancer/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f",
-                                    "Port": 443,
-                                    "Protocol": "HTTPS",
-                                    "Certificates": [
-                                        {
-                                            "CertificateArn": "arn:aws:acm:eu-west-2:840541460064:certificate/9cfee81f-b945-40cb-a0bb-79bf8ebb0ec4"
-                                        }
-                                    ],
-                                    "SslPolicy": "ELBSecurityPolicy-2016-08",
-                                    "DefaultActions": [
-                                        {
-                                            "Type": "fixed-response",
-                                            "Order": 1,
-                                            "FixedResponseConfig": {
-                                                "StatusCode": "404",
-                                                "ContentType": "text/plain"
-                                            }
-                                        }
-                                    ],
-                                    "AlpnPolicy": [],
-                                    "Tags": []
-                                },
-                                "managedByOther": false,
-                                "cannotBeDeleted": false,
-                                "isDefault": false,
-                                "dependencies": [
-                                    {
-                                        "type": "LoadBalancer",
-                                        "ids": [
-                                            "arn:aws:elasticloadbalancing:eu-west-2:840541460064:loadbalancer/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f"
-                                        ]
-                                    },
-                                    {
-                                        "type": "Certificate",
-                                        "ids": [
-                                            "arn:aws:acm:eu-west-2:840541460064:certificate/9cfee81f-b945-40cb-a0bb-79bf8ebb0ec4"
-                                        ]
-                                    }
-                                ],
-                                "managedByUs": false,
-                                "show": true
-                            },
-                            {
-                                "uri": "aws::elb::Listener::arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/690b1d1f19ebc2cc",
-                                "name": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/690b1d1f19ebc2cc",
-                                "displayName": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/690b1d1f19ebc2cc",
-                                "id": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/690b1d1f19ebc2cc",
-                                "providerName": "aws",
-                                "type": "Listener",
-                                "group": "elb",
-                                "live": {
-                                    "ListenerArn": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f/690b1d1f19ebc2cc",
-                                    "LoadBalancerArn": "arn:aws:elasticloadbalancing:eu-west-2:840541460064:loadbalancer/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f",
-                                    "Port": 80,
-                                    "Protocol": "HTTP",
-                                    "Certificates": [],
-                                    "DefaultActions": [
-                                        {
-                                            "Type": "fixed-response",
-                                            "Order": 1,
-                                            "FixedResponseConfig": {
-                                                "StatusCode": "404",
-                                                "ContentType": "text/plain"
-                                            }
-                                        }
-                                    ],
-                                    "AlpnPolicy": [],
-                                    "Tags": []
-                                },
-                                "managedByOther": false,
-                                "cannotBeDeleted": false,
-                                "isDefault": false,
-                                "dependencies": [
-                                    {
-                                        "type": "LoadBalancer",
-                                        "ids": [
-                                            "arn:aws:elasticloadbalancing:eu-west-2:840541460064:loadbalancer/app/k8s-default-ingress-e514cce9f1/aa285e7cb708074f"
-                                        ]
-                                    },
-                                    {
-                                        "type": "Certificate",
-                                        "ids": []
-                                    }
-                                ],
-                                "managedByUs": false,
-                                "show": true
-                            }
-                        ]
-                    },
-                    {
                         "type": "NodeGroup",
                         "group": "eks",
                         "resources": [
@@ -4789,7 +5162,7 @@
                                     "version": "1.19",
                                     "releaseVersion": "1.19.6-20210628",
                                     "createdAt": "2021-07-13T19:20:54.996Z",
-                                    "modifiedAt": "2021-07-13T22:51:07.898Z",
+                                    "modifiedAt": "2021-07-14T19:51:08.018Z",
                                     "status": "ACTIVE",
                                     "capacityType": "ON_DEMAND",
                                     "scalingConfig": {
