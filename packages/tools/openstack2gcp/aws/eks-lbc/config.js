@@ -148,23 +148,6 @@ module.exports = ({ stage }) => ({
       },
     },
     SecurityGroup: {
-      eksClusterSgCluster_872092154: {
-        name: "eks-cluster-sg-cluster-872092154",
-        properties: {
-          Description:
-            "EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.",
-          Tags: [
-            {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "owned",
-            },
-            {
-              Key: "aws:eks:cluster-name",
-              Value: "cluster",
-            },
-          ],
-        },
-      },
       securityGroupNode: {
         name: "security-group-node",
         properties: {
@@ -177,26 +160,6 @@ module.exports = ({ stage }) => ({
           ],
         },
       },
-      k8sDefaultIngress_05be0614e6: {
-        name: "k8s-default-ingress-05be0614e6",
-        properties: {
-          Description: "[k8s] Managed SecurityGroup for LoadBalancer",
-          Tags: [
-            {
-              Key: "ingress.k8s.aws/resource",
-              Value: "ManagedLBSecurityGroup",
-            },
-            {
-              Key: "ingress.k8s.aws/stack",
-              Value: "default/ingress",
-            },
-            {
-              Key: "elbv2.k8s.aws/cluster",
-              Value: "cluster",
-            },
-          ],
-        },
-      },
       securityGroupCluster: {
         name: "security-group-cluster",
         properties: {
@@ -204,104 +167,99 @@ module.exports = ({ stage }) => ({
         },
       },
     },
-    SecurityGroupRuleIngress: {
-      sgClusterRuleIngressHttps: {
-        name: "sg-cluster-rule-ingress-https",
+  },
+  acm: {
+    Certificate: {
+      starhackitEksLeanGrucloudOrg: {
+        name: "starhackit-eks-lean.grucloud.org",
         properties: {
-          IpProtocol: "tcp",
-          FromPort: 443,
-          ToPort: 443,
-          CidrIpv4: "0.0.0.0/0",
+          DomainName: "starhackit-eks-lean.grucloud.org",
+          SubjectAlternativeNames: ["starhackit-eks-lean.grucloud.org"],
+          Tags: [
+            {
+              Key: "namespace",
+              Value: "Certificate",
+            },
+            {
+              Key: "ManagedBy",
+              Value: "GruCloud",
+            },
+            {
+              Key: "stage",
+              Value: "dev",
+            },
+            {
+              Key: "projectName",
+              Value: "starhackit",
+            },
+            {
+              Key: "CreatedByProvider",
+              Value: "aws",
+            },
+          ],
         },
       },
-      sgNodesRuleIngressAll: {
-        name: "sg-nodes-rule-ingress-all",
+      starhackitEksLbcGrucloudOrg: {
+        name: "starhackit-eks-lbc.grucloud.org",
         properties: {
-          IpProtocol: "-1",
-          FromPort: -1,
-          ToPort: -1,
-          CidrIpv6: "::/0",
+          DomainName: "starhackit-eks-lbc.grucloud.org",
+          SubjectAlternativeNames: ["starhackit-eks-lbc.grucloud.org"],
         },
       },
-      sgRuleNodeGroupIngressCluster: {
-        name: "sg-rule-node-group-ingress-cluster",
+      modAwsLoadBalancerGrucloudOrg: {
+        name: "mod-aws-load-balancer.grucloud.org",
         properties: {
-          IpProtocol: "tcp",
-          FromPort: 1025,
-          ToPort: 65535,
-          ReferencedGroupInfo: {
-            GroupId: "sg-0f832b6fcf1981925",
-            UserId: "840541460064",
+          DomainName: "mod-aws-load-balancer.grucloud.org",
+          SubjectAlternativeNames: ["mod-aws-load-balancer.grucloud.org"],
+          Tags: [
+            {
+              Key: "namespace",
+              Value: "Certificate",
+            },
+            {
+              Key: "ManagedBy",
+              Value: "GruCloud",
+            },
+            {
+              Key: "stage",
+              Value: "dev",
+            },
+            {
+              Key: "projectName",
+              Value: "load-balancer-example",
+            },
+            {
+              Key: "CreatedByProvider",
+              Value: "aws",
+            },
+          ],
+        },
+      },
+    },
+  },
+  eks: {
+    Cluster: {
+      cluster: {
+        name: "cluster",
+        properties: {
+          version: "1.19",
+        },
+      },
+    },
+    NodeGroup: {
+      nodeGroupPrivateCluster: {
+        name: "node-group-private-cluster",
+        properties: {
+          capacityType: "ON_DEMAND",
+          scalingConfig: {
+            minSize: 1,
+            maxSize: 1,
+            desiredSize: 1,
           },
-        },
-      },
-      k8sDefaultIngress_05be0614e6RuleIngressTcp_80: {
-        name: "k8s-default-ingress-05be0614e6-rule-ingress-tcp-80",
-        properties: {
-          IpProtocol: "tcp",
-          FromPort: 80,
-          ToPort: 80,
-          CidrIpv4: "0.0.0.0/0",
-          Description: "",
-        },
-      },
-      eksClusterSgCluster_872092154RuleIngressTcp_0_65535: {
-        name: "eks-cluster-sg-cluster-872092154-rule-ingress-tcp-0-65535",
-        properties: {
-          IpProtocol: "tcp",
-          FromPort: 0,
-          ToPort: 65535,
-          ReferencedGroupInfo: {
-            GroupId: "sg-0a9cd455a84357fe5",
-            UserId: "840541460064",
-          },
-          Description: "elbv2.k8s.aws/targetGroupBinding=shared",
-        },
-      },
-      sgRuleNodeGroupIngressCluster: {
-        name: "sg-rule-node-group-ingress-cluster",
-        properties: {
-          IpProtocol: "tcp",
-          FromPort: 1025,
-          ToPort: 65535,
-          CidrIpv4: "0.0.0.0/0",
-        },
-      },
-      sgRuleNodeGroupIngressCluster: {
-        name: "sg-rule-node-group-ingress-cluster",
-        properties: {
-          IpProtocol: "tcp",
-          FromPort: 1025,
-          ToPort: 65535,
-          CidrIpv6: "::/0",
-        },
-      },
-      sgNodesRuleIngressAll: {
-        name: "sg-nodes-rule-ingress-all",
-        properties: {
-          IpProtocol: "-1",
-          FromPort: -1,
-          ToPort: -1,
-          CidrIpv4: "0.0.0.0/0",
-        },
-      },
-      sgClusterRuleIngressHttps: {
-        name: "sg-cluster-rule-ingress-https",
-        properties: {
-          IpProtocol: "tcp",
-          FromPort: 443,
-          ToPort: 443,
-          CidrIpv6: "::/0",
-        },
-      },
-      k8sDefaultIngress_05be0614e6RuleIngressTcp_443: {
-        name: "k8s-default-ingress-05be0614e6-rule-ingress-tcp-443",
-        properties: {
-          IpProtocol: "tcp",
-          FromPort: 443,
-          ToPort: 443,
-          CidrIpv4: "0.0.0.0/0",
-          Description: "",
+          instanceTypes: ["t2.medium"],
+          amiType: "AL2_x86_64",
+          labels: {},
+          diskSize: 20,
         },
       },
     },
@@ -328,6 +286,12 @@ module.exports = ({ stage }) => ({
           Name: "starhackit-eks-lbc.grucloud.org.",
           Type: "A",
           ResourceRecords: [],
+          AliasTarget: {
+            HostedZoneId: "ZHURV8PSTC4K8",
+            DNSName:
+              "k8s-default-ingress-e514cce9f1-2096522338.eu-west-2.elb.amazonaws.com.",
+            EvaluateTargetHealth: false,
+          },
         },
       },
       certificateValidationStarhackitEksLbcGrucloudOrg: {
@@ -546,35 +510,30 @@ module.exports = ({ stage }) => ({
         name: "AmazonEKSClusterPolicy",
         properties: {
           Arn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
-          name: "AmazonEKSClusterPolicy",
         },
       },
       amazonEksvpcResourceController: {
         name: "AmazonEKSVPCResourceController",
         properties: {
           Arn: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
-          name: "AmazonEKSVPCResourceController",
         },
       },
       amazonEksWorkerNodePolicy: {
         name: "AmazonEKSWorkerNodePolicy",
         properties: {
           Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-          name: "AmazonEKSWorkerNodePolicy",
         },
       },
       amazonEc2ContainerRegistryReadOnly: {
         name: "AmazonEC2ContainerRegistryReadOnly",
         properties: {
           Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-          name: "AmazonEC2ContainerRegistryReadOnly",
         },
       },
       amazonEksCniPolicy: {
         name: "AmazonEKS_CNI_Policy",
         properties: {
           Arn: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
-          name: "AmazonEKS_CNI_Policy",
         },
       },
     },

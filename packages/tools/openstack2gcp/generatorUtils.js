@@ -183,7 +183,7 @@ set(
   resource.isDefault || resource.cannotBeDeleted ? "use" : createPrefix
 }${type}({
   name: config.${group}.${type}.${resourceVarName}.name,${
-  resource.namespace ? `\nnamespace: ${resource.namespace},` : ""
+  resource.namespace ? `\nnamespace: "${resource.namespace}",` : ""
 }${buildDependencies({ resource, lives, dependencies })}${
   !isEmpty(properties)
     ? `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`
