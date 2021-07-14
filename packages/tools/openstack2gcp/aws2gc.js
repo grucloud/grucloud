@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const assert = require("assert");
-const { pipe, tap, get, eq, map, switchCase, any, not } = require("rubico");
+const { pipe, tap, get, eq, map, switchCase, any, not, or } = require("rubico");
 const { identity, pluck, includes } = require("rubico/x");
 const { createProgramOptions, generatorMain } = require("./generatorUtils");
 
@@ -9,6 +9,15 @@ const { iacTpl } = require("./src/aws/iacTpl");
 
 const { findLiveById } = require("./generatorUtils");
 
+const securityGroupRulePickProperties = () => [
+  "IpProtocol",
+  "FromPort",
+  "ToPort",
+  "CidrIpv4",
+  "CidrIpv6",
+  "ReferencedGroupInfo",
+  "Description",
+];
 const writersSpec = [
   {
     group: "ec2",
@@ -43,15 +52,20 @@ const writersSpec = [
           (resource) =>
             pipe([
               () => resource,
-              get("live.Attachments"),
-              map(({ Device, InstanceId }) =>
+              or([
+                get("managedByOther"),
                 pipe([
-                  () => InstanceId,
-                  findLiveById({ type: "Instance", lives }),
-                  eq(get("live.RootDeviceName"), Device),
-                ])()
-              ),
-              any(identity),
+                  get("live.Attachments"),
+                  map(({ Device, InstanceId }) =>
+                    pipe([
+                      () => InstanceId,
+                      findLiveById({ type: "Instance", lives }),
+                      eq(get("live.RootDeviceName"), Device),
+                    ])()
+                  ),
+                  any(identity),
+                ]),
+              ]),
             ])(),
       },
       {
@@ -62,6 +76,15 @@ const writersSpec = [
         type: "InternetGateway",
         pickProperties: () => [],
         dependencies: () => ({ vpc: { type: "Vpc", group: "ec2" } }),
+        ignoreResource: () => get("isDefault"),
+      },
+      {
+        type: "NatGateway",
+        pickProperties: () => [],
+        dependencies: () => ({
+          subnet: { type: "Subnet", group: "ec2" },
+          eip: { type: "ElasticIpAddress", group: "ec2" },
+        }),
         ignoreResource: () => get("isDefault"),
       },
       {
@@ -90,14 +113,14 @@ const writersSpec = [
       },
       {
         type: "SecurityGroupRuleIngress",
-        pickProperties: () => ["IpPermission"],
+        pickProperties: securityGroupRulePickProperties,
         dependencies: () => ({
           securityGroup: { type: "SecurityGroup", group: "ec2" },
         }),
       },
       {
         type: "SecurityGroupRuleEgress",
-        pickProperties: () => ["IpPermission"],
+        pickProperties: securityGroupRulePickProperties,
         dependencies: () => ({
           securityGroup: { type: "SecurityGroup", group: "ec2" },
         }),
@@ -171,6 +194,14 @@ const writersSpec = [
         type: "Role",
         pickProperties: () => ["RoleName", "Path", "AssumeRolePolicyDocument"],
         dependencies: () => ({ policies: { type: "Policy", group: "iam" } }),
+      },
+      {
+        type: "OpenIDConnectProvider",
+        pickProperties: () => ["ClientIDList"],
+        dependencies: () => ({
+          cluster: { type: "Cluster", group: "eks" },
+          role: { type: "Role", group: "iam" },
+        }),
       },
     ],
   },

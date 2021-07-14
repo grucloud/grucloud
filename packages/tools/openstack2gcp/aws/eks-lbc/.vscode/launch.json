@@ -2,85 +2,55 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "aws2gc-ec2",
+      "name": "Graph",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "aws2gc-ec2",
-        "--",
-        "--trace-warnings",
-        "--inspect-brk=9229"
-      ],
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["graph"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
-      "name": "aws2gc-route53-record-txt",
+      "name": "List -g -o",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "aws2gc-route53-record-txt",
-        "--",
-        "--trace-warnings",
-        "--inspect-brk=9229"
-      ],
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["list", "-g", "-o"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
-      "name": "aws2gc-eks-lbc",
+      "name": "Plan",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "aws2gc-eks-lbc",
-        "--",
-        "--trace-warnings",
-        "--inspect-brk=9229"
-      ],
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["plan"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
-      "name": "aws2gc-iam",
+      "name": "Apply",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "aws2gc-iam",
-        "--",
-        "--trace-warnings",
-        "--inspect-brk=9229"
-      ],
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["apply", "-f"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
       "port": 9229
     },
     {
-      "name": "openstack2gcp",
+      "name": "Destroy",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "openstack2gcp",
-        "--",
-        "--trace-warnings",
-        "--inspect-brk=9229"
-      ],
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["destroy", "-f"],
       "internalConsoleOptions": "openOnSessionStart",
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",

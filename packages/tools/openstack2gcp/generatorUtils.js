@@ -376,7 +376,7 @@ const writeResource =
     pickProperties = always([]),
     properties = always({}),
     dependencies = always({}),
-    ignoreResource = () => always(false),
+    ignoreResource = () => get("managedByOther"),
   }) =>
   ({ resource, lives, mapping }) =>
     pipe([
