@@ -10,6 +10,7 @@ const {
   assign,
   pick,
   not,
+  filter,
 } = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck, find } = require("rubico/x");
 const tls = require("tls");
@@ -91,11 +92,48 @@ exports.fetchThumbprint = fetchThumbprint;
 exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
   assert(spec);
   assert(config);
-
+  const { providerName } = config;
   const iam = IAMNew(config);
 
   const findName = findNameInTags;
   const findId = get("live.Arn");
+
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "Cluster",
+      group: "eks",
+      ids: [
+        pipe([
+          () =>
+            lives.getByType({
+              type: "Cluster",
+              providerName,
+            }),
+          find(eq(get("live.identity.oidc.issuer"), `https://${live.Url}`)),
+          get("id"),
+        ])(),
+      ],
+    },
+    {
+      type: "Role",
+      group: "iam",
+      ids: pipe([
+        () =>
+          lives.getByType({
+            type: "Role",
+            providerName,
+          }),
+        filter((role) =>
+          pipe([
+            () => role,
+            get("live.AssumeRolePolicyDocument.Statement"),
+            find(eq(get("Principal.Federated"), live.Arn)),
+          ])()
+        ),
+        pluck("id"),
+      ])(),
+    },
+  ];
 
   const findNamespace = (param) =>
     pipe([
@@ -281,6 +319,7 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
     spec,
     findNamespace,
     findId,
+    findDependencies,
     getByName,
     findName,
     create,
