@@ -232,9 +232,9 @@ const createResources = async ({
     namespace,
     dependencies: {
       securityGroup: securityGroupNodes,
-      securityGroupCluster,
+      securityGroupFrom: securityGroupCluster,
     },
-    properties: ({ dependencies: { securityGroupCluster } }) => ({
+    properties: () => ({
       IpPermission: {
         FromPort: 1025,
         IpProtocol: "tcp",
@@ -248,7 +248,6 @@ const createResources = async ({
             CidrIpv6: "::/0",
           },
         ],
-        UserIdGroupPairs: [{ GroupId: securityGroupCluster.live?.GroupId }],
         ToPort: 65535,
       },
     }),

@@ -28,7 +28,7 @@ const createResourcesRds = async ({
     name: "sg-rule-ingress-postgres",
     dependencies: {
       securityGroup,
-      securityGroupPublic: bastionResources.securityGroup,
+      securityGroupFrom: bastionResources.securityGroup,
     },
     properties: () => ({
       IpPermission: {
@@ -43,9 +43,6 @@ const createResourcesRds = async ({
           {
             CidrIpv6: "::/0",
           },
-        ],
-        UserIdGroupPairs: [
-          { GroupId: bastionResources.securityGroup.live?.GroupId },
         ],
         ToPort: 5432,
       },

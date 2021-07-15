@@ -156,17 +156,34 @@ const SecurityGroupRuleBase = ({ config }) => {
       get("managedByOther"),
     ])();
 
+  const securityFromConfig = ({ securityGroupFrom }) =>
+    pipe([
+      () => securityGroupFrom,
+      switchCase([
+        isEmpty,
+        () => ({}),
+        () => ({
+          IpPermission: {
+            UserIdGroupPairs: [
+              { GroupId: getField(securityGroupFrom, "GroupId") },
+            ],
+          },
+        }),
+      ]),
+    ])();
+
   const configDefault = async ({
     name,
     namespace,
     properties: { Tags, IpPermission, ...otherProps },
-    dependencies: { securityGroup },
+    dependencies: { securityGroup, securityGroupFrom },
   }) =>
     pipe([
       tap(() => {
         assert(securityGroup, "missing securityGroup dependency");
       }),
       () => otherProps,
+      defaultsDeep(securityFromConfig({ securityGroupFrom })),
       defaultsDeep({
         GroupId: getField(securityGroup, "GroupId"),
         IpPermissions: [IpPermission],

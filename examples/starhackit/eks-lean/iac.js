@@ -104,7 +104,7 @@ const createAwsStack = async ({ stage }) => {
     dependencies: {
       cluster: resourcesEks.cluster, // Wait until the cluster is up
       securityGroup: securityGroupEKSCluster,
-      securityGroupLoadBalancer: resourcesLb.securityGroupLoadBalancer,
+      securityGroupFrom: resourcesLb.securityGroupLoadBalancer,
     },
     properties: async ({ dependencies: { securityGroupLoadBalancer } }) => ({
       GroupId: await findGroupIdFromSecurityGroup({ securityGroupEKSCluster }),
@@ -120,9 +120,6 @@ const createAwsStack = async ({ stage }) => {
           {
             CidrIpv6: "::/0",
           },
-        ],
-        UserIdGroupPairs: [
-          { GroupId: get("live.GroupId")(securityGroupLoadBalancer) },
         ],
         ToPort: 65535,
       },
