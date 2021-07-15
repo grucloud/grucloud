@@ -14,6 +14,7 @@ const {
   get,
   eq,
   and,
+  fork,
 } = require("rubico");
 const { isEmpty, forEach, pluck, size, find } = require("rubico/x");
 
@@ -308,171 +309,161 @@ exports.displayPlan = async (plan) => {
   return plan;
 };
 
-const computeLength = ({ field, maxLength, minLength = 8 }) =>
-  pipe([
-    pluck(field),
-    filter((name) => name),
-    map(size),
-    (lengths) => Math.max(...lengths),
-    (max) => Math.min(maxLength, max),
-    (min) => Math.max(min, minLength),
-  ]);
-
 const tablePerTypeDefinitions = [
   {
     type: "ServiceAccount",
-    colWidths: ({ resources, columns }) => {
-      const emailLength =
-        computeLength({ field: "data.email", maxLength: 60 })(resources) + 2;
-      const managedByUs = 6;
-      const dataLength = columns - emailLength - managedByUs - 10;
-      return [emailLength, dataLength, managedByUs];
-    },
-    columns: ["Email", "Data", "Our"],
     fields: [
-      get("data.email"),
-      pipe([get("live"), YAML.stringify]),
-      displayManagedByUs,
+      pipe([
+        fork({
+          name: get("data.email"),
+          managedByUs: displayManagedByUs,
+          live: get("live"),
+        }),
+        YAML.stringify,
+      ]),
     ],
   },
 ];
 
 const tablePerTypeDefault = {
-  columns: ["Name", "Data", "Our"],
-  colWidths: ({ resources, columns }) => {
-    const nameLength =
-      computeLength({ field: "displayName", maxLength: 40 })(resources) + 2;
-    const managedByUs = 6;
-    const dataLength = columns - nameLength - managedByUs - 10;
-    return [nameLength, dataLength, managedByUs];
-  },
   fields: [
-    get("displayName"),
-    pipe([get("live"), YAML.stringify]),
-    displayManagedByUs,
+    pipe([
+      fork({
+        name: get("displayName"),
+        managedByUs: displayManagedByUs,
+        live: get("live"),
+      }),
+      YAML.stringify,
+    ]),
   ],
 };
 
-const displayLiveItem = ({ table, resource, tableDefinitions }) => {
-  assert(resource);
-  assert(tableDefinitions);
-  switchCase([
-    () => resource.error,
-    () =>
-      table.push([
-        {
-          colSpan: 3,
-          content: colors.red(YAML.stringify(resource)),
-        },
-      ]),
-    () => table.push(tableDefinitions.fields.map((field) => field(resource))),
-  ])();
-};
+const displayLiveItem =
+  ({ table, tableDefinitions }) =>
+  (resource) => {
+    assert(resource);
+    assert(tableDefinitions);
+    switchCase([
+      () => resource.error,
+      () =>
+        table.push([
+          {
+            content: colors.red(YAML.stringify(resource)),
+          },
+        ]),
+      () => table.push(tableDefinitions.fields.map((field) => field(resource))),
+    ])();
+  };
 
-const displayPlanItemUpdate = ({
-  tableItem,
-  resource: { diff, resource, id, action },
-}) =>
-  pipe([
-    tap(() => {
-      assert(diff.targetDiff);
-      assert(diff.targetDiff.updated);
-    }),
-    () => diff,
-    tap(() =>
-      tableItem.push([
-        {
-          colSpan: 2,
-          content: colors.green(
-            `${action}: name: ${resource.displayName}, id: ${id}`
-          ),
-        },
-      ])
-    ),
-    tap.if(get("updateNeedDestroy"), () =>
-      tableItem.push([
-        {
-          colSpan: 2,
-          content: colors.red(`REQUIRES DESTROYING AND CREATING`),
-        },
-      ])
-    ),
-    tap.if(and([get("updateNeedRestart"), not(get("updateNeedDestroy"))]), () =>
-      tableItem.push([
-        {
-          colSpan: 2,
-          content: colors.yellow(`REQUIRES STOPPING AND STARTING`),
-        },
-      ])
-    ),
-    () => diff.targetDiff.updated,
-    map.entries(([key, value]) => {
-      tableItem.push([
-        {
-          colSpan: 2,
-          content: colors.yellow(`Key: ${key}`),
-        },
-      ]);
-      tableItem.push([
-        {
-          content: colors.red(`- ${YAML.stringify(value)}`),
-        },
-        {
-          content: colors.green(
-            `+ ${YAML.stringify(diff.liveDiff.updated[key])}`
-          ),
-        },
-      ]);
-      return [key, value];
-    }),
-  ])();
+const displayPlanItemUpdate =
+  ({ tableItem }) =>
+  ({ diff, resource, id, action }) =>
+    pipe([
+      tap(() => {
+        assert(diff.targetDiff);
+        assert(diff.targetDiff.updated);
+      }),
+      () => diff,
+      tap(() =>
+        tableItem.push([
+          {
+            colSpan: 2,
+            content: colors.green(
+              `${action}: name: ${resource.displayName}, id: ${id}`
+            ),
+          },
+        ])
+      ),
+      tap.if(get("updateNeedDestroy"), () =>
+        tableItem.push([
+          {
+            colSpan: 2,
+            content: colors.red(`REQUIRES DESTROYING AND CREATING`),
+          },
+        ])
+      ),
+      tap.if(
+        and([get("updateNeedRestart"), not(get("updateNeedDestroy"))]),
+        () =>
+          tableItem.push([
+            {
+              colSpan: 2,
+              content: colors.yellow(`REQUIRES STOPPING AND STARTING`),
+            },
+          ])
+      ),
+      () => diff.targetDiff.updated,
+      map.entries(([key, value]) => {
+        tableItem.push([
+          {
+            colSpan: 2,
+            content: colors.yellow(`Key: ${key}`),
+          },
+        ]);
+        tableItem.push([
+          {
+            content: colors.red(`- ${YAML.stringify(value)}`),
+          },
+          {
+            content: colors.green(
+              `+ ${YAML.stringify(diff.liveDiff.updated[key])}`
+            ),
+          },
+        ]);
+        return [key, value];
+      }),
+    ])();
 
-const displayPlanItemCreate = ({ tableItem, resource }) =>
-  pipe([
-    tap(() => {
-      assert(true);
-    }),
-    () =>
-      tableItem.push([
-        {
-          colSpan: 2,
-          content: colors.green(
-            `${resource.action}: ${resource.resource.displayName}`
-          ),
-        },
-      ]),
+const displayPlanItemCreate =
+  ({ tableItem }) =>
+  (resource) =>
+    pipe([
+      tap(() => {
+        assert(true);
+      }),
+      () =>
+        tableItem.push([
+          {
+            colSpan: 2,
+            content: colors.green(
+              `${resource.action}: ${resource.resource.displayName}`
+            ),
+          },
+        ]),
 
-    () =>
-      tableItem.push([
-        {
-          colSpan: 2,
-          content: colors.green(YAML.stringify(resource.target)),
-        },
-      ]),
-  ])();
+      () =>
+        tableItem.push([
+          {
+            colSpan: 2,
+            content: colors.green(YAML.stringify(resource.target)),
+          },
+        ]),
+    ])();
 
-const displayPlanItemDestroy = ({ tableItem, resource }) =>
-  pipe([
-    tap(() => {
-      assert(true);
-    }),
-    () =>
-      tableItem.push([
-        {
-          colSpan: 2,
-          content: colors.red(
-            `${resource.action} ${resource.resource.displayName}`
-          ),
-        },
-      ]),
-    () =>
-      tableItem.push([
-        {
-          colSpan: 2,
-          content: colors.red(YAML.stringify(resource.live)),
-        },
-      ]),
-  ])();
+const displayPlanItemDestroy =
+  ({ tableItem }) =>
+  (resource) =>
+    pipe([
+      tap(() => {
+        assert(true);
+      }),
+      () =>
+        tableItem.push([
+          {
+            colSpan: 2,
+            content: colors.red(
+              `${resource.action} ${resource.resource.displayName}`
+            ),
+          },
+        ]),
+      () =>
+        tableItem.push([
+          {
+            colSpan: 2,
+            content: colors.red(YAML.stringify(resource.live)),
+          },
+        ]),
+    ])();
 
 const displayPlanItem = ({ table, resource }) => {
   assert(resource);
@@ -495,11 +486,11 @@ const displayPlanItem = ({ table, resource }) => {
       () => resource,
       switchCase([
         eq(get("action"), "UPDATE"),
-        (resource) => displayPlanItemUpdate({ tableItem, resource }),
+        displayPlanItemUpdate({ tableItem }),
         eq(get("action"), "CREATE"),
-        (resource) => displayPlanItemCreate({ tableItem, resource }),
+        displayPlanItemCreate({ tableItem }),
         eq(get("action"), "DESTROY"),
-        (resource) => displayPlanItemDestroy({ tableItem, resource }),
+        displayPlanItemDestroy({ tableItem }),
         (resource) => {
           throw Error(
             `not a valid action in resource ${JSON.stringify(
@@ -525,10 +516,7 @@ const displayTablePerType = ({
     find(eq(get("type")))(tablePerTypeDefinitions) || tablePerTypeDefault;
 
   const table = new Table({
-    colWidths: tableDefinitions.colWidths({
-      resources,
-      columns: process.stdout.columns || 80,
-    }),
+    colWidths: [(process.stdout.columns || 80) - 4],
     style: { head: [], border: [] },
   });
   tap.if(
@@ -537,7 +525,6 @@ const displayTablePerType = ({
       () =>
         table.push([
           {
-            colSpan: 3,
             content: colors.yellow(
               `${resources.length} ${displayType({
                 group,
@@ -546,22 +533,17 @@ const displayTablePerType = ({
             ),
           },
         ]),
-      () =>
-        table.push(tableDefinitions.columns.map((item) => colors.red(item))),
       switchCase([
         () => error,
         () =>
           table.push([
             {
-              colSpan: 3,
               content: colors.red(YAML.stringify(error)),
             },
           ]),
         pipe([
           () => resources,
-          forEach((resource) =>
-            displayLiveItem({ table, resource, tableDefinitions })
-          ),
+          forEach(displayLiveItem({ table, tableDefinitions })),
         ]),
       ]),
       () => {
