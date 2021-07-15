@@ -502,6 +502,13 @@ const createResources = async ({ provider }) => {
       )(resources),
     (resources) =>
       set(
+        "route53Domain.Domain.grucloudOrg",
+        provider.route53Domain.useDomain({
+          name: config.route53Domain.Domain.grucloudOrg.name,
+        })
+      )(resources),
+    (resources) =>
+      set(
         "route53.HostedZone.grucloudOrg",
         provider.route53.makeHostedZone({
           name: config.route53.HostedZone.grucloudOrg.name,

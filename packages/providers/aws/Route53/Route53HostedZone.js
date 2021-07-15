@@ -86,6 +86,22 @@ exports.Route53HostedZone = ({ spec, config }) => {
 
   const findDependencies = ({ live, lives }) => [
     {
+      type: "Domain",
+      group: "route53Domain",
+      ids: pipe([
+        () =>
+          lives.getByType({
+            type: "Domain",
+            group: "route53Domain",
+            providerName,
+          }),
+        tap((params) => {
+          assert(true);
+        }),
+        filter(eq(get("live.DomainName"), live.Name.slice(0, -1))),
+      ])(),
+    },
+    {
       type: "HostedZone",
       ids: pipe([
         () => lives.getByType({ type: "HostedZone", providerName }),

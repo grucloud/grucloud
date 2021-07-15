@@ -334,6 +334,15 @@ const writersSpec = [
     ],
   },
   {
+    group: "route53Domain",
+    types: [
+      {
+        type: "Domain",
+        pickProperties: () => [],
+      },
+    ],
+  },
+  {
     group: "route53",
     types: [
       {
@@ -350,6 +359,7 @@ const writersSpec = [
           "AliasTarget",
         ],
         dependencies: () => ({
+          domain: { type: "Domain", group: "route53" },
           hostedZone: { type: "HostedZone", group: "route53" },
           loadBalancer: { type: "LoadBalancer", group: "elb" },
           certificate: { type: "Certificate", group: "acm" },
