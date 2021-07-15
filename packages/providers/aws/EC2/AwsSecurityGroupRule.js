@@ -11,7 +11,7 @@ const {
   not,
   map,
 } = require("rubico");
-const { size, includes, defaultsDeep, isEmpty } = require("rubico/x");
+const { size, includes, defaultsDeep, isEmpty, identity } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecGroupRule" });
 const { tos } = require("@grucloud/core/tos");
 
@@ -53,15 +53,31 @@ const groupNameFromId = ({ GroupId, lives, config }) =>
 const ipVersion = ({ CidrIpv4, CidrIpv6 }) =>
   switchCase([
     () => CidrIpv4,
-    () => "v4",
+    () => "-v4",
     () => CidrIpv6,
-    () => "v6",
+    () => "-v6",
     () => "",
+  ])();
+
+//TODO fetch groupName from GroupId
+const fromSecurityGroup = ({ ReferencedGroupInfo }) =>
+  pipe([
+    () => ReferencedGroupInfo,
+    get("GroupId"),
+    switchCase([not(isEmpty), (GroupId) => `-from-${GroupId}`, () => ""]),
   ])();
 
 const ruleDefaultToName = ({
   kind,
-  live: { IpProtocol, FromPort, ToPort, GroupId, CidrIpv4, CidrIpv6 },
+  live: {
+    IpProtocol,
+    FromPort,
+    ToPort,
+    GroupId,
+    CidrIpv4,
+    CidrIpv6,
+    ReferencedGroupInfo,
+  },
   lives,
   config,
 }) =>
@@ -73,7 +89,19 @@ const ruleDefaultToName = ({
     IpProtocol,
     FromPort,
     ToPort,
-  })}-${ipVersion({ CidrIpv4, CidrIpv6 })}`;
+  })}${ipVersion({ CidrIpv4, CidrIpv6 })}${fromSecurityGroup({
+    ReferencedGroupInfo,
+  })}`;
+
+const findSgrNameInTags = ({ live }) =>
+  pipe([
+    () => ({ live }),
+    findNameInTags,
+    switchCase([isEmpty, identity, (name) => `${name}${ipVersion(live)}`]),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 const findName =
   ({ kind, config }) =>
@@ -83,7 +111,7 @@ const findName =
         assert(true);
       }),
       () => {
-        for (fn of [findNameInTags, ruleDefaultToName]) {
+        for (fn of [findSgrNameInTags, ruleDefaultToName]) {
           const name = fn({ live, lives, kind, config });
           if (!isEmpty(name)) {
             return name;
