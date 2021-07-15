@@ -42,7 +42,11 @@ exports.ELBTargetGroup = ({ spec, config }) => {
   });
 
   // TODO findDependencies
-  const findDependencies = ({ live }) => [{ type: "Vpc", ids: [live.VpcId] }];
+  const findDependencies = ({ live }) => [
+    { type: "Vpc", ids: [live.VpcId] },
+    { type: "LoadBalancer", ids: live.LoadBalancerArns },
+    // TODO eks.NodeGroup
+  ];
 
   const findNamespace = findNamespaceInTagsOrEksCluster({
     config,

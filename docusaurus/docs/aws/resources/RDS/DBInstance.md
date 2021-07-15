@@ -12,7 +12,7 @@ Deploy a postgres database:
 ```js
 const dbCluster = provider.rds.makeDBInstance({
   name: "instance-1",
-  dependencies: { dbSubnetGroup },
+  dependencies: { dbSubnetGroup, securityGroups },
   properties: () => ({
     DBInstanceClass: "db.t2.micro",
     Engine: "postgres",
@@ -36,6 +36,7 @@ const dbCluster = provider.rds.makeDBInstance({
 ## Dependencies
 
 - [DB Subnet Group](./DBSubnetGroup)
+- [Security Group](../EC2/SecurityGroup)
 
 ## List
 

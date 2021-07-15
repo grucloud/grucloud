@@ -78,7 +78,7 @@ const createResources = async ({ provider }) => {
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBInstance-property
   const dbInstance = provider.rds.makeDBInstance({
     name: config.rds.instance.name,
-    dependencies: { dbSubnetGroup, dbSecurityGroups: [securityGroup] },
+    dependencies: { dbSubnetGroup, securityGroups: [securityGroup] },
     properties: () => config.rds.instance.properties,
   });
 

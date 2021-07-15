@@ -68,6 +68,7 @@
 
 ## Aws
 
+- useCertificate or make Certificate ?
 - https://aws.amazon.com/blogs/aws/easily-manage-security-group-rules-with-the-new-security-group-rule-id/
 - eks-lean gc d -f: ✖ Subnet 0/4 You are not allowed to manage 'ela-attach' attachments.
 

@@ -18,6 +18,7 @@ const securityGroupRulePickProperties = () => [
   "ReferencedGroupInfo",
   "Description",
 ];
+
 const writersSpec = [
   {
     group: "iam",
@@ -266,7 +267,10 @@ const writersSpec = [
         ],
         dependencies: () => ({
           vpc: { type: "Vpc", group: "ec2" },
-          nodeGroup: { type: "NodeGroup", group: "eks" },
+          nodeGroup: {
+            type: "NodeGroup",
+            group: "eks",
+          },
           //TODO autoScalingGroup
         }),
       },
@@ -351,6 +355,50 @@ const writersSpec = [
           certificate: { type: "Certificate", group: "acm" },
         }),
         ignoreResource: () => get("cannotBeDeleted"),
+      },
+    ],
+  },
+  {
+    group: "rds",
+    types: [
+      {
+        type: "DBCluster",
+        pickProperties: () => [
+          "DatabaseName",
+          "Engine",
+          "EngineVersion",
+          "EngineMode",
+          "Port",
+          "ScalingConfiguration",
+          "MasterUsername",
+          "AvailabilityZones",
+        ],
+        dependencies: () => ({
+          dbSubnetGroup: { type: "DBSubnetGroup", group: "rds" },
+          securityGroups: { type: "SecurityGroup", group: "ec2" },
+          key: { type: "Key", group: "kms" },
+        }),
+      },
+      {
+        type: "DBInstance",
+        pickProperties: () => [
+          "DBInstanceClass",
+          "Engine",
+          "EngineVersion",
+          "AllocatedStorage",
+          "MaxAllocatedStorage",
+        ],
+        dependencies: () => ({
+          dbSubnetGroup: { type: "DBSubnetGroup", group: "rds" },
+          securityGroups: { type: "SecurityGroup", group: "ec2" },
+        }),
+      },
+      {
+        type: "DBSubnetGroup",
+        pickProperties: () => ["DBSubnetGroupDescription"],
+        dependencies: () => ({
+          subnets: { type: "Subnet", group: "ec2" },
+        }),
       },
     ],
   },

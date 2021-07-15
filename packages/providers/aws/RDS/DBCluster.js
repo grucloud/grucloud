@@ -37,7 +37,22 @@ exports.DBCluster = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "DBSubnetGroup",
+      group: "rds",
       ids: [get("DBSubnetGroup")(live)],
+    },
+    {
+      type: "SecurityGroup",
+      group: "ec2",
+      ids: pipe([
+        () => live,
+        get("VpcSecurityGroups"),
+        pluck("VpcSecurityGroupId"),
+      ])(),
+    },
+    {
+      type: "Key",
+      group: "kms",
+      ids: [get("KmsKeyId")(live)],
     },
   ];
 
@@ -158,7 +173,7 @@ exports.DBCluster = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { dbSubnetGroup, dbSecurityGroups },
+    dependencies: { dbSubnetGroup, securityGroups },
   }) =>
     pipe([
       () => properties,
@@ -166,7 +181,7 @@ exports.DBCluster = ({ spec, config }) => {
         DBClusterIdentifier: name,
         DBSubnetGroupName: dbSubnetGroup.config.DBSubnetGroupName,
         VpcSecurityGroupIds: map((sg) => getField(sg, "GroupId"))(
-          dbSecurityGroups
+          securityGroups
         ),
         Tags: buildTags({ config, namespace, name }),
       }),

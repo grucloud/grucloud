@@ -60,7 +60,7 @@ const createResourcesRds = async ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBCluster-property
   const dbCluster = provider.rds.makeDBCluster({
     name: config.rds.cluster.name,
-    dependencies: { dbSubnetGroup, dbSecurityGroups: [securityGroup] },
+    dependencies: { dbSubnetGroup, securityGroups: [securityGroup] },
     properties: () => config.rds.cluster.properties,
   });
 
