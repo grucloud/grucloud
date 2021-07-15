@@ -8,6 +8,132 @@ const createResources = async ({ provider }) => {
     () => ({}),
     (resources) =>
       set(
+        "iam.Policy.awsLoadBalancerControllerIamPolicy",
+        provider.iam.makePolicy({
+          name: config.iam.Policy.awsLoadBalancerControllerIamPolicy.name,
+          namespace: "LoadBalancerControllerRole",
+          properties: () =>
+            config.iam.Policy.awsLoadBalancerControllerIamPolicy.properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "iam.Policy.amazonEksClusterPolicy",
+        provider.iam.usePolicy({
+          name: config.iam.Policy.amazonEksClusterPolicy.name,
+          namespace: "EKS",
+          properties: () => config.iam.Policy.amazonEksClusterPolicy.properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "iam.Policy.amazonEksvpcResourceController",
+        provider.iam.usePolicy({
+          name: config.iam.Policy.amazonEksvpcResourceController.name,
+          namespace: "EKS",
+          properties: () =>
+            config.iam.Policy.amazonEksvpcResourceController.properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "iam.Policy.amazonEksWorkerNodePolicy",
+        provider.iam.usePolicy({
+          name: config.iam.Policy.amazonEksWorkerNodePolicy.name,
+          namespace: "EKS",
+          properties: () =>
+            config.iam.Policy.amazonEksWorkerNodePolicy.properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "iam.Policy.amazonEc2ContainerRegistryReadOnly",
+        provider.iam.usePolicy({
+          name: config.iam.Policy.amazonEc2ContainerRegistryReadOnly.name,
+          namespace: "EKS",
+          properties: () =>
+            config.iam.Policy.amazonEc2ContainerRegistryReadOnly.properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "iam.Policy.amazonEksCniPolicy",
+        provider.iam.usePolicy({
+          name: config.iam.Policy.amazonEksCniPolicy.name,
+          namespace: "EKS",
+          properties: () => config.iam.Policy.amazonEksCniPolicy.properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "iam.Role.roleCluster",
+        provider.iam.makeRole({
+          name: config.iam.Role.roleCluster.name,
+          namespace: "EKS",
+          dependencies: {
+            policies: [
+              resources.iam.Policy.amazonEksClusterPolicy,
+              resources.iam.Policy.amazonEksvpcResourceController,
+            ],
+          },
+          properties: () => config.iam.Role.roleCluster.properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "iam.Role.roleLoadBalancer",
+        provider.iam.makeRole({
+          name: config.iam.Role.roleLoadBalancer.name,
+          namespace: "LoadBalancerControllerRole",
+          dependencies: {
+            policies: [resources.iam.Policy.awsLoadBalancerControllerIamPolicy],
+          },
+          properties: () => config.iam.Role.roleLoadBalancer.properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "iam.Role.roleNodeGroup",
+        provider.iam.makeRole({
+          name: config.iam.Role.roleNodeGroup.name,
+          namespace: "EKS",
+          dependencies: {
+            policies: [
+              resources.iam.Policy.amazonEksWorkerNodePolicy,
+              resources.iam.Policy.amazonEc2ContainerRegistryReadOnly,
+              resources.iam.Policy.amazonEksCniPolicy,
+            ],
+          },
+          properties: () => config.iam.Role.roleNodeGroup.properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "iam.InstanceProfile.eks_68bd50a8_4f88_2fe8_5184_62f3ade5695d",
+        provider.iam.makeInstanceProfile({
+          name: config.iam.InstanceProfile
+            .eks_68bd50a8_4f88_2fe8_5184_62f3ade5695d.name,
+          namespace: "EKS",
+          dependencies: {
+            roles: [resources.iam.Role.roleNodeGroup],
+          },
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "iam.OpenIDConnectProvider.oidcEks",
+        provider.iam.makeOpenIDConnectProvider({
+          name: config.iam.OpenIDConnectProvider.oidcEks.name,
+          namespace: "LoadBalancerControllerRole",
+          dependencies: {
+            cluster: resources.eks.Cluster.cluster,
+            role: resources.iam.Role.roleLoadBalancer,
+          },
+          properties: () => config.iam.OpenIDConnectProvider.oidcEks.properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
         "ec2.Vpc.vpc",
         provider.ec2.makeVpc({
           name: config.ec2.Vpc.vpc.name,
@@ -207,6 +333,110 @@ const createResources = async ({ provider }) => {
       )(resources),
     (resources) =>
       set(
+        "ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps",
+        provider.ec2.makeSecurityGroupRuleIngress({
+          name: config.ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps
+            .name,
+          namespace: "EKS",
+          dependencies: {
+            securityGroup: resources.ec2.SecurityGroup.securityGroupCluster,
+          },
+          properties: () =>
+            config.ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps
+              .properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll",
+        provider.ec2.makeSecurityGroupRuleIngress({
+          name: config.ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll.name,
+          namespace: "EKS",
+          dependencies: {
+            securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
+          },
+          properties: () =>
+            config.ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll
+              .properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster",
+        provider.ec2.makeSecurityGroupRuleIngress({
+          name: config.ec2.SecurityGroupRuleIngress
+            .sgRuleNodeGroupIngressCluster.name,
+          namespace: "EKS",
+          dependencies: {
+            securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
+            securityGroupFrom: resources.ec2.SecurityGroup.securityGroupCluster,
+          },
+          properties: () =>
+            config.ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster
+              .properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster",
+        provider.ec2.makeSecurityGroupRuleIngress({
+          name: config.ec2.SecurityGroupRuleIngress
+            .sgRuleNodeGroupIngressCluster.name,
+          namespace: "EKS",
+          dependencies: {
+            securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
+          },
+          properties: () =>
+            config.ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster
+              .properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster",
+        provider.ec2.makeSecurityGroupRuleIngress({
+          name: config.ec2.SecurityGroupRuleIngress
+            .sgRuleNodeGroupIngressCluster.name,
+          namespace: "EKS",
+          dependencies: {
+            securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
+          },
+          properties: () =>
+            config.ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster
+              .properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll",
+        provider.ec2.makeSecurityGroupRuleIngress({
+          name: config.ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll.name,
+          namespace: "EKS",
+          dependencies: {
+            securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
+          },
+          properties: () =>
+            config.ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll
+              .properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps",
+        provider.ec2.makeSecurityGroupRuleIngress({
+          name: config.ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps
+            .name,
+          namespace: "EKS",
+          dependencies: {
+            securityGroup: resources.ec2.SecurityGroup.securityGroupCluster,
+          },
+          properties: () =>
+            config.ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps
+              .properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
         "acm.Certificate.starhackitEksLeanGrucloudOrg",
         provider.acm.useCertificate({
           name: config.acm.Certificate.starhackitEksLeanGrucloudOrg.name,
@@ -296,6 +526,8 @@ const createResources = async ({ provider }) => {
           dependencies: {
             hostedZone:
               resources.route53.HostedZone.starhackitEksLbcGrucloudOrg,
+            loadBalancer:
+              resources.elb.LoadBalancer.k8sDefaultIngressE514cce9f1,
           },
           properties: () =>
             config.route53.Record
@@ -317,120 +549,6 @@ const createResources = async ({ provider }) => {
           properties: () =>
             config.route53.Record
               .certificateValidationStarhackitEksLbcGrucloudOrg.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "iam.Policy.awsLoadBalancerControllerIamPolicy",
-        provider.iam.makePolicy({
-          name: config.iam.Policy.awsLoadBalancerControllerIamPolicy.name,
-          namespace: "LoadBalancerControllerRole",
-          properties: () =>
-            config.iam.Policy.awsLoadBalancerControllerIamPolicy.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "iam.Policy.amazonEksClusterPolicy",
-        provider.iam.usePolicy({
-          name: config.iam.Policy.amazonEksClusterPolicy.name,
-          namespace: "EKS",
-          properties: () => config.iam.Policy.amazonEksClusterPolicy.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "iam.Policy.amazonEksvpcResourceController",
-        provider.iam.usePolicy({
-          name: config.iam.Policy.amazonEksvpcResourceController.name,
-          namespace: "EKS",
-          properties: () =>
-            config.iam.Policy.amazonEksvpcResourceController.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "iam.Policy.amazonEksWorkerNodePolicy",
-        provider.iam.usePolicy({
-          name: config.iam.Policy.amazonEksWorkerNodePolicy.name,
-          namespace: "EKS",
-          properties: () =>
-            config.iam.Policy.amazonEksWorkerNodePolicy.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "iam.Policy.amazonEc2ContainerRegistryReadOnly",
-        provider.iam.usePolicy({
-          name: config.iam.Policy.amazonEc2ContainerRegistryReadOnly.name,
-          namespace: "EKS",
-          properties: () =>
-            config.iam.Policy.amazonEc2ContainerRegistryReadOnly.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "iam.Policy.amazonEksCniPolicy",
-        provider.iam.usePolicy({
-          name: config.iam.Policy.amazonEksCniPolicy.name,
-          namespace: "EKS",
-          properties: () => config.iam.Policy.amazonEksCniPolicy.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "iam.Role.roleCluster",
-        provider.iam.makeRole({
-          name: config.iam.Role.roleCluster.name,
-          namespace: "EKS",
-          dependencies: {
-            policies: [
-              resources.iam.Policy.amazonEksClusterPolicy,
-              resources.iam.Policy.amazonEksvpcResourceController,
-            ],
-          },
-          properties: () => config.iam.Role.roleCluster.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "iam.Role.roleLoadBalancer",
-        provider.iam.makeRole({
-          name: config.iam.Role.roleLoadBalancer.name,
-          namespace: "LoadBalancerControllerRole",
-          dependencies: {
-            policies: [resources.iam.Policy.awsLoadBalancerControllerIamPolicy],
-          },
-          properties: () => config.iam.Role.roleLoadBalancer.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "iam.Role.roleNodeGroup",
-        provider.iam.makeRole({
-          name: config.iam.Role.roleNodeGroup.name,
-          namespace: "EKS",
-          dependencies: {
-            policies: [
-              resources.iam.Policy.amazonEksWorkerNodePolicy,
-              resources.iam.Policy.amazonEc2ContainerRegistryReadOnly,
-              resources.iam.Policy.amazonEksCniPolicy,
-            ],
-          },
-          properties: () => config.iam.Role.roleNodeGroup.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "iam.OpenIDConnectProvider.oidcEks",
-        provider.iam.makeOpenIDConnectProvider({
-          name: config.iam.OpenIDConnectProvider.oidcEks.name,
-          namespace: "LoadBalancerControllerRole",
-          dependencies: {
-            cluster: resources.eks.Cluster.cluster,
-            role: resources.iam.Role.roleLoadBalancer,
-          },
-          properties: () => config.iam.OpenIDConnectProvider.oidcEks.properties,
         })
       )(resources),
   ])();

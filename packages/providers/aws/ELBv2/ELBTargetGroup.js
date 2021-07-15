@@ -25,6 +25,7 @@ const {
   buildTags,
   findNamespaceInTagsOrEksCluster,
   shouldRetryOnException,
+  hasKeyInTags,
 } = require("../AwsCommon");
 
 const findName = get("live.TargetGroupName");
@@ -35,6 +36,10 @@ const findId = get("live.TargetGroupArn");
 exports.ELBTargetGroup = ({ spec, config }) => {
   const elb = ELBv2New(config);
   const autoScaling = AutoScalingNew(config);
+
+  const managedByOther = hasKeyInTags({
+    key: "elbv2.k8s.aws/cluster",
+  });
 
   // TODO findDependencies
   const findDependencies = ({ live }) => [{ type: "Vpc", ids: [live.VpcId] }];
@@ -271,5 +276,6 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    managedByOther,
   };
 };

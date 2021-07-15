@@ -26,6 +26,7 @@ const {
   shouldRetryOnException,
   findValueInTags,
   findNamespaceInTagsOrEksCluster,
+  hasKeyInTags,
 } = require("../AwsCommon");
 const { isOurMinionObject } = require("@grucloud/core/Common");
 
@@ -79,6 +80,10 @@ exports.autoScalingGroupIsOurMinion = ({ live, lives, config }) =>
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html
 exports.AwsAutoScalingGroup = ({ spec, config }) => {
   const autoScaling = AutoScalingNew(config);
+
+  const managedByOther = hasKeyInTags({
+    key: "eks:cluster-name",
+  });
 
   const findDependencies = ({ live }) => [
     { type: "TargetGroup", ids: live.TargetGroupARNs },
@@ -188,5 +193,6 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    managedByOther,
   };
 };

@@ -20,6 +20,37 @@ const securityGroupRulePickProperties = () => [
 ];
 const writersSpec = [
   {
+    group: "iam",
+    types: [
+      {
+        type: "Policy",
+        pickProperties: switchCase([
+          get("resource.cannotBeDeleted"),
+          () => ["Arn"],
+          () => ["PolicyName", "PolicyDocument", "Path", "Description"],
+        ]),
+      },
+      {
+        type: "Role",
+        pickProperties: () => ["RoleName", "Path", "AssumeRolePolicyDocument"],
+        dependencies: () => ({ policies: { type: "Policy", group: "iam" } }),
+      },
+      {
+        type: "InstanceProfile",
+        pickProperties: () => [],
+        dependencies: () => ({ roles: { type: "Role", group: "iam" } }),
+      },
+      {
+        type: "OpenIDConnectProvider",
+        pickProperties: () => ["ClientIDList"],
+        dependencies: () => ({
+          cluster: { type: "Cluster", group: "eks" },
+          role: { type: "Role", group: "iam" },
+        }),
+      },
+    ],
+  },
+  {
     group: "ec2",
     types: [
       {
@@ -115,7 +146,31 @@ const writersSpec = [
         type: "SecurityGroupRuleIngress",
         pickProperties: securityGroupRulePickProperties,
         dependencies: () => ({
-          securityGroup: { type: "SecurityGroup", group: "ec2" },
+          securityGroup: {
+            type: "SecurityGroup",
+            group: "ec2",
+            filterDependency:
+              ({ resource }) =>
+              (dependency) =>
+                pipe([
+                  () => resource,
+                  eq(get("live.GroupId"), dependency.live.GroupId),
+                ])(),
+          },
+          securityGroupFrom: {
+            type: "SecurityGroup",
+            group: "ec2",
+            filterDependency:
+              ({ resource }) =>
+              (dependency) =>
+                pipe([
+                  () => resource,
+                  eq(
+                    get("live.ReferencedGroupInfo.GroupId"),
+                    dependency.live.GroupId
+                  ),
+                ])(),
+          },
         }),
       },
       {
@@ -172,6 +227,15 @@ const writersSpec = [
     ],
   },
   {
+    group: "autoscaling",
+    types: [
+      {
+        type: "AutoScalingGroup",
+        pickProperties: () => ["DomainName", "SubjectAlternativeNames"],
+      },
+    ],
+  },
+  {
     group: "elb",
     types: [
       {
@@ -203,6 +267,7 @@ const writersSpec = [
         dependencies: () => ({
           vpc: { type: "Vpc", group: "ec2" },
           nodeGroup: { type: "NodeGroup", group: "eks" },
+          //TODO autoScalingGroup
         }),
       },
       {
@@ -286,33 +351,6 @@ const writersSpec = [
           certificate: { type: "Certificate", group: "acm" },
         }),
         ignoreResource: () => get("cannotBeDeleted"),
-      },
-    ],
-  },
-
-  {
-    group: "iam",
-    types: [
-      {
-        type: "Policy",
-        pickProperties: switchCase([
-          get("resource.cannotBeDeleted"),
-          () => ["Arn"],
-          () => ["PolicyName", "PolicyDocument", "Path", "Description"],
-        ]),
-      },
-      {
-        type: "Role",
-        pickProperties: () => ["RoleName", "Path", "AssumeRolePolicyDocument"],
-        dependencies: () => ({ policies: { type: "Policy", group: "iam" } }),
-      },
-      {
-        type: "OpenIDConnectProvider",
-        pickProperties: () => ["ClientIDList"],
-        dependencies: () => ({
-          cluster: { type: "Cluster", group: "eks" },
-          role: { type: "Role", group: "iam" },
-        }),
       },
     ],
   },
