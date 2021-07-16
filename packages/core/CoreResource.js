@@ -149,7 +149,7 @@ exports.ResourceMaker = ({
       tap(() => {
         assert(lives);
       }),
-      () => lives.getByType({ providerName: provider.name, type }),
+      () => lives.getByType({ providerName: provider.name, type, group }),
       tap((xxx) => {
         assert(true);
       }),

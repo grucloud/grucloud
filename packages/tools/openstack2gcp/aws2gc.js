@@ -286,6 +286,22 @@ const writersSpec = [
       {
         type: "Rule",
         pickProperties: () => ["Priority", "Conditions", "Actions"],
+        configBuildProperties: ({ properties, lives }) =>
+          pipe([
+            tap(() => {
+              assert(lives);
+            }),
+            () => `\n,properties: ${JSON.stringify(properties, null, 4)}`,
+          ])(),
+        codeBuildProperties: ({ group, type, resourceVarName }) =>
+          pipe([
+            tap(() => {
+              assert(true);
+            }),
+            () =>
+              `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`,
+          ])(),
+
         dependencies: () => ({
           listener: { type: "Listener", group: "elb" },
           targetGroup: { type: "TargetGroup", group: "elb" },

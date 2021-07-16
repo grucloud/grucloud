@@ -48,7 +48,7 @@ const { ELBListener } = require("./ELBListener");
 exports.ELBRule = ({ spec, config }) => {
   const elb = ELBv2New(config);
   const elbListener = ELBListener({ spec, config });
-
+  const { providerName } = config;
   const managedByOther = ({ live, lives }) =>
     pipe([
       tap(() => {

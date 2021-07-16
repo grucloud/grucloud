@@ -81,7 +81,7 @@ const {
 
 const { ResourceMaker, createClient } = require("./CoreResource");
 
-const createResourceMakers = ({ specs, config: configProvider, provider }) =>
+const createResourceMakers = ({ specs, config, provider }) =>
   pipe([
     () => specs,
     filter(not(get("listOnly"))),
@@ -90,33 +90,13 @@ const createResourceMakers = ({ specs, config: configProvider, provider }) =>
       if (!acc[spec.group] && spec.group) {
         acc[spec.group] = {};
       }
-      const makeResource = ({
-        name,
-        meta,
-        namespace,
-        config: configUser = {},
-        dependencies,
-        properties,
-        attributes,
-        filterLives,
-      }) => {
-        const config = defaultsDeep(configProvider)(configUser);
-        const resource = ResourceMaker({
-          meta,
-          name,
-          namespace,
-          filterLives,
-          properties,
-          attributes,
-          dependencies,
-          spec: defaultsDeep(SpecDefault({ config }))(spec),
-          provider,
-          config,
-        });
-        provider.targetResourcesAdd(resource);
 
-        return resource;
-      };
+      const specAll = defaultsDeep(SpecDefault({ config }))(spec);
+
+      const makeResource = specAll.makeResource({
+        provider,
+        spec: specAll,
+      });
 
       //TODO remove
       acc[`make${spec.type}`] = makeResource;

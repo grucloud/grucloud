@@ -53,6 +53,23 @@
       "port": 9229
     },
     {
+      "name": "aws2gc-eks-lean",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "aws2gc-eks-lean",
+        "--",
+        "--trace-warnings",
+        "--inspect-brk=9229"
+      ],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
       "name": "aws2gc-iam",
       "type": "node",
       "request": "launch",

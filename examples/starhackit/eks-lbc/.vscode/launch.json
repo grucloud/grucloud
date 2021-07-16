@@ -98,6 +98,17 @@
       "port": 9229
     },
     {
+      "name": "Apply AWS",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["apply", "-f", "-p", "aws"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
       "name": "Apply",
       "type": "node",
       "request": "launch",
