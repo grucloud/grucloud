@@ -43,8 +43,8 @@ exports.ELBTargetGroup = ({ spec, config }) => {
 
   // TODO findDependencies
   const findDependencies = ({ live }) => [
-    { type: "Vpc", ids: [live.VpcId] },
-    { type: "LoadBalancer", ids: live.LoadBalancerArns },
+    { type: "Vpc", group: "ec2", ids: [live.VpcId] },
+    { type: "LoadBalancer", group: "elb", ids: live.LoadBalancerArns },
     // TODO eks.NodeGroup
   ];
 

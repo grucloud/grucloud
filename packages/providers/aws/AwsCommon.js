@@ -179,7 +179,8 @@ const findEksCluster =
       }),
       () =>
         lives.getByType({
-          type: "EKSCluster",
+          type: "Cluster",
+          group: "eks",
           providerName: config.providerName,
         }),
       find(eq(get("name"), findValueInTags({ key })(live))),
@@ -198,6 +199,9 @@ const findNamespaceEksCluster =
         assert(lives, "lives");
       }),
       () => findEksCluster({ config, key })({ live, lives }),
+      tap((param) => {
+        assert(true);
+      }),
       findNamespaceInTagsObject(config),
       tap((namespace) => {
         logger.debug(`findNamespace`, namespace);

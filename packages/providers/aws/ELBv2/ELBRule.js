@@ -80,9 +80,10 @@ exports.ELBRule = ({ spec, config }) => {
     ])();
 
   const findDependencies = ({ live }) => [
-    { type: "Listener", ids: [live.ListenerArn] },
+    { type: "Listener", group: "elb", ids: [live.ListenerArn] },
     {
       type: "TargetGroup",
+      group: "elb",
       ids: pipe([
         () => live,
         get("Actions"),
@@ -91,11 +92,6 @@ exports.ELBRule = ({ spec, config }) => {
       ])(),
     },
   ];
-
-  // const findNamespace = findNamespaceInTagsOrEksCluster({
-  //   config,
-  //   key: "elbv2.k8s.aws/cluster",
-  // });
 
   const findNamespaceInListener =
     (config) =>

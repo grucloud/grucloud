@@ -133,6 +133,7 @@ const findName =
 const findDependencies = ({ live }) => [
   {
     type: "SecurityGroup",
+    group: "ec2",
     ids: pipe([
       () => [get("GroupId"), get("ReferencedGroupInfo.GroupId")],
       map((fn) => fn(live)),

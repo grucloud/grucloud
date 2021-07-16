@@ -229,7 +229,8 @@ exports.Route53Record = ({ spec, config }) => {
         logger.info(`getListFromLive`);
         assert(lives);
       }),
-      () => lives.getByType({ providerName, type: "HostedZone" }),
+      () =>
+        lives.getByType({ providerName, type: "HostedZone", group: "route53" }),
       flatMap((hostedZone) =>
         pipe([
           () => hostedZone,

@@ -58,6 +58,7 @@ exports.AwsDistribution = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "Certificate",
+      group: "acm",
       ids: pipe([
         () => live,
         get("ViewerCertificate.ACMCertificateArn"),
@@ -69,7 +70,8 @@ exports.AwsDistribution = ({ spec, config }) => {
       ])(),
     },
     {
-      type: "S3Bucket",
+      type: "Bucket",
+      group: "s3",
       ids: pipe([
         () => live,
         get("Origins.Items", []),
@@ -362,6 +364,7 @@ exports.AwsDistribution = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: RESOURCE_TYPE,
+          group: "cloudfront",
         }),
       tap((distributions) => {
         logger.info(`onDeployed ${tos({ distributions })}`);

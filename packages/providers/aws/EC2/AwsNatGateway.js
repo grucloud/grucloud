@@ -29,10 +29,12 @@ exports.AwsNatGateway = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "Subnet",
+      group: "ec2",
       ids: [live.SubnetId],
     },
     {
       type: "NetworkInterface",
+      group: "ec2",
       ids: pipe([
         () => live,
         get("NatGatewayAddresses"),
@@ -41,6 +43,7 @@ exports.AwsNatGateway = ({ spec, config }) => {
     },
     {
       type: "ElasticIpAddress",
+      group: "ec2",
       ids: pipe([
         () => live,
         get("NatGatewayAddresses"),
@@ -54,6 +57,7 @@ exports.AwsNatGateway = ({ spec, config }) => {
               () =>
                 lives.getByType({
                   type: "ElasticIpAddress",
+                  group: "ec2",
                   providerName: config.providerName,
                 }),
               find(eq(get("live.AllocationId"), AllocationId)),

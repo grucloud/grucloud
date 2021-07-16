@@ -42,7 +42,7 @@ const isDefault =
   ({ providerName }) =>
   ({ live, lives }) =>
     pipe([
-      () => lives.getByType({ type: "Vpc", providerName }),
+      () => lives.getByType({ type: "Vpc", group: "ec2", providerName }),
       tap((result) => {
         logger.debug(`isDefault ${result}`);
       }),
@@ -73,6 +73,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "Vpc",
+      group: "ec2",
       ids: pipe([() => live, get("Attachments"), pluck("VpcId")])(),
     },
   ];

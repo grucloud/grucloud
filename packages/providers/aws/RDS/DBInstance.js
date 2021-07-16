@@ -40,10 +40,12 @@ exports.DBInstance = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "DBSubnetGroup",
+      group: "rds",
       ids: [get("DBSubnetGroup.DBSubnetGroupName")(live)],
     },
     {
       type: "SecurityGroup",
+      group: "ec2",
       ids: pipe([get("VpcSecurityGroups"), pluck("VpcSecurityGroupId")])(live),
     },
   ];

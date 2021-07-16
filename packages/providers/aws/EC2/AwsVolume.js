@@ -145,7 +145,8 @@ exports.AwsVolume = ({ spec, config }) => {
     pipe([
       () =>
         lives.getByType({
-          type: "EC2",
+          type: "Instance",
+          group: "ec2",
           providerName: config.providerName,
         }),
       find(eq(get("live.InstanceId"), findInstanceId(live))),

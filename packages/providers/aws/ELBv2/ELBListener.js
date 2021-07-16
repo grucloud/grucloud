@@ -78,10 +78,12 @@ exports.ELBListener = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "LoadBalancer",
+      group: "elb",
       ids: [live.LoadBalancerArn],
     },
     {
       type: "Certificate",
+      group: "acm",
       ids: pipe([() => live, get("Certificates"), pluck("CertificateArn")])(),
     },
   ];

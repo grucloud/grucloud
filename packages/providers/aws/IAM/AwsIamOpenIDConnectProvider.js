@@ -107,6 +107,7 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
           () =>
             lives.getByType({
               type: "Cluster",
+              group: "eks",
               providerName,
             }),
           find(eq(get("live.identity.oidc.issuer"), `https://${live.Url}`)),
@@ -121,6 +122,7 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
         () =>
           lives.getByType({
             type: "Role",
+            group: "iam",
             providerName,
           }),
         filter((role) =>

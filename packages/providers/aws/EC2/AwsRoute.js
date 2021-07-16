@@ -31,14 +31,17 @@ exports.AwsRoute = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "RouteTable",
+      group: "ec2",
       ids: [live.RouteTableId],
     },
     {
       type: "InternetGateway",
+      group: "ec2",
       ids: filter(not(isEmpty))([live.GatewayId]),
     },
     {
       type: "NatGateway",
+      group: "ec2",
       ids: filter(not(isEmpty))([live.NatGatewayId]),
     },
   ];

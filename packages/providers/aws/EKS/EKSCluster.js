@@ -42,14 +42,16 @@ const findName = get("live.name");
 const findId = findName;
 
 const findDependencies = ({ live }) => [
-  { type: "Vpc", ids: [get("resourcesVpcConfig.vpcId")(live)] },
-  { type: "IamRole", ids: [live.roleArn] },
+  { type: "Vpc", group: "ec2", ids: [get("resourcesVpcConfig.vpcId")(live)] },
+  { type: "Role", group: "iam", ids: [live.roleArn] },
   {
     type: "Subnet",
+    group: "ec2",
     ids: get("resourcesVpcConfig.subnetIds")(live),
   },
   {
     type: "SecurityGroup",
+    group: "ec2",
     ids: [
       get("resourcesVpcConfig.clusterSecurityGroupId")(live),
       ...get("resourcesVpcConfig.securityGroupIds")(live),

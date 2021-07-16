@@ -43,16 +43,24 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "Subnet",
+      group: "ec2",
       ids: pipe([() => live, get("AvailabilityZones"), pluck("SubnetId")])(),
     },
     {
       type: "SecurityGroup",
+      group: "ec2",
       ids: live.SecurityGroups,
     },
     {
       type: "NetworkInterface",
+      group: "ec2",
       ids: pipe([
-        () => lives.getByType({ type: "NetworkInterface", providerName }),
+        () =>
+          lives.getByType({
+            type: "NetworkInterface",
+            group: "ec2",
+            providerName,
+          }),
         filter(
           pipe([
             get("live.Description"),

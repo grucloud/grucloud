@@ -103,8 +103,14 @@ exports.Route53HostedZone = ({ spec, config }) => {
     },
     {
       type: "HostedZone",
+      group: "route53",
       ids: pipe([
-        () => lives.getByType({ type: "HostedZone", providerName }),
+        () =>
+          lives.getByType({
+            type: "HostedZone",
+            group: "route53",
+            providerName,
+          }),
         filter(not(eq(get("name"), live.Name))),
         filter(
           pipe([
