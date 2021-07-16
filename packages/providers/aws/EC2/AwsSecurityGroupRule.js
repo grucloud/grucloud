@@ -25,6 +25,13 @@ const {
   findNameInTags,
 } = require("../AwsCommon");
 
+exports.createResource = ({}) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
+
 const findId = get("live.SecurityGroupRuleId");
 
 const protocolFromToPortToName = ({ IpProtocol, FromPort, ToPort }) =>
@@ -97,7 +104,7 @@ const findSgrNameInTags = ({ live }) =>
   pipe([
     () => ({ live }),
     findNameInTags,
-    switchCase([isEmpty, identity, (name) => `${name}${ipVersion(live)}`]),
+    //switchCase([isEmpty, identity, (name) => `${name}${ipVersion(live)}`]),
     tap((params) => {
       assert(true);
     }),
@@ -163,11 +170,13 @@ const SecurityGroupRuleBase = ({ config }) => {
         isEmpty,
         () => ({}),
         () => ({
-          IpPermission: {
-            UserIdGroupPairs: [
-              { GroupId: getField(securityGroupFrom, "GroupId") },
-            ],
-          },
+          IpPermissions: [
+            {
+              UserIdGroupPairs: [
+                { GroupId: getField(securityGroupFrom, "GroupId") },
+              ],
+            },
+          ],
         }),
       ]),
     ])();
