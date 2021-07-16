@@ -364,7 +364,7 @@ exports.AwsDistribution = ({ spec, config }) => {
         lives.getByType({
           providerName: config.providerName,
           type: RESOURCE_TYPE,
-          group: "cloudfront",
+          group: "cloudFront",
         }),
       tap((distributions) => {
         logger.info(`onDeployed ${tos({ distributions })}`);

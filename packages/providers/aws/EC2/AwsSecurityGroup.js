@@ -239,20 +239,28 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
             retryCall({
               name: `deleteSecurityGroup: ${name}`,
               fn: () => ec2().deleteSecurityGroup({ GroupId }),
-              config: { retryCount: 5, repeatDelay: 2e3 },
+              config: { retryCount: 5, repeatDelay: 5e3 },
               isExpectedException: pipe([
                 tap((ex) => {
-                  logger.error(`delete sg isExpectedException ${tos(ex)}`);
+                  logger.error(
+                    `delete sg ${name} isExpectedException ? ${tos(ex)}`
+                  );
                 }),
                 eq(get("code"), "InvalidGroup.NotFound"),
               ]),
               shouldRetryOnException: ({ error, name }) =>
                 pipe([
+                  () => error,
                   tap(() => {
-                    logger.error(`delete shouldRetry ${tos({ name, error })}`);
+                    logger.error(
+                      `delete sg ${name} shouldRetryOnException ? ${tos({
+                        name,
+                        error,
+                      })}`
+                    );
                   }),
                   eq(get("code"), "DependencyViolation"),
-                ])(error),
+                ])(),
             }),
           tap(() =>
             retryCall({
