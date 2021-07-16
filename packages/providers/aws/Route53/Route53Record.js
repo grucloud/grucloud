@@ -536,7 +536,7 @@ exports.Route53Record = ({ spec, config }) => {
         isEmpty,
         () => ({}),
         () => ({
-          Name: hostedZone.name,
+          Name: hostedZone.config.Name,
           Type: "A",
           AliasTarget: {
             HostedZoneId: getField(loadBalancer, "CanonicalHostedZoneId"),
