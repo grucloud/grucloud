@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const assert = require("assert");
-const { pipe, tap, get, eq, map, switchCase, any, not } = require("rubico");
+const { pipe, tap, get, eq, map, switchCase, any, not, or } = require("rubico");
 const { identity, pluck, includes } = require("rubico/x");
 const { createProgramOptions, generatorMain } = require("./generatorUtils");
 
@@ -9,7 +9,48 @@ const { iacTpl } = require("./src/aws/iacTpl");
 
 const { findLiveById } = require("./generatorUtils");
 
+const securityGroupRulePickProperties = () => [
+  "IpProtocol",
+  "FromPort",
+  "ToPort",
+  "CidrIpv4",
+  "CidrIpv6",
+  "ReferencedGroupInfo",
+  "Description",
+];
+
 const writersSpec = [
+  {
+    group: "iam",
+    types: [
+      {
+        type: "Policy",
+        pickProperties: switchCase([
+          get("resource.cannotBeDeleted"),
+          () => ["Arn"],
+          () => ["PolicyName", "PolicyDocument", "Path", "Description"],
+        ]),
+      },
+      {
+        type: "Role",
+        pickProperties: () => ["RoleName", "Path", "AssumeRolePolicyDocument"],
+        dependencies: () => ({ policies: { type: "Policy", group: "iam" } }),
+      },
+      {
+        type: "InstanceProfile",
+        pickProperties: () => [],
+        dependencies: () => ({ roles: { type: "Role", group: "iam" } }),
+      },
+      {
+        type: "OpenIDConnectProvider",
+        pickProperties: () => ["ClientIDList"],
+        dependencies: () => ({
+          cluster: { type: "Cluster", group: "eks" },
+          role: { type: "Role", group: "iam" },
+        }),
+      },
+    ],
+  },
   {
     group: "ec2",
     types: [
@@ -43,15 +84,20 @@ const writersSpec = [
           (resource) =>
             pipe([
               () => resource,
-              get("live.Attachments"),
-              map(({ Device, InstanceId }) =>
+              or([
+                get("managedByOther"),
                 pipe([
-                  () => InstanceId,
-                  findLiveById({ type: "Instance", lives }),
-                  eq(get("live.RootDeviceName"), Device),
-                ])()
-              ),
-              any(identity),
+                  get("live.Attachments"),
+                  map(({ Device, InstanceId }) =>
+                    pipe([
+                      () => InstanceId,
+                      findLiveById({ type: "Instance", lives }),
+                      eq(get("live.RootDeviceName"), Device),
+                    ])()
+                  ),
+                  any(identity),
+                ]),
+              ]),
             ])(),
       },
       {
@@ -62,6 +108,15 @@ const writersSpec = [
         type: "InternetGateway",
         pickProperties: () => [],
         dependencies: () => ({ vpc: { type: "Vpc", group: "ec2" } }),
+        ignoreResource: () => get("isDefault"),
+      },
+      {
+        type: "NatGateway",
+        pickProperties: () => [],
+        dependencies: () => ({
+          subnet: { type: "Subnet", group: "ec2" },
+          eip: { type: "ElasticIpAddress", group: "ec2" },
+        }),
         ignoreResource: () => get("isDefault"),
       },
       {
@@ -90,14 +145,38 @@ const writersSpec = [
       },
       {
         type: "SecurityGroupRuleIngress",
-        pickProperties: () => ["IpPermission"],
+        pickProperties: securityGroupRulePickProperties,
         dependencies: () => ({
-          securityGroup: { type: "SecurityGroup", group: "ec2" },
+          securityGroup: {
+            type: "SecurityGroup",
+            group: "ec2",
+            filterDependency:
+              ({ resource }) =>
+              (dependency) =>
+                pipe([
+                  () => resource,
+                  eq(get("live.GroupId"), dependency.live.GroupId),
+                ])(),
+          },
+          securityGroupFrom: {
+            type: "SecurityGroup",
+            group: "ec2",
+            filterDependency:
+              ({ resource }) =>
+              (dependency) =>
+                pipe([
+                  () => resource,
+                  eq(
+                    get("live.ReferencedGroupInfo.GroupId"),
+                    dependency.live.GroupId
+                  ),
+                ])(),
+          },
         }),
       },
       {
         type: "SecurityGroupRuleEgress",
-        pickProperties: () => ["IpPermission"],
+        pickProperties: securityGroupRulePickProperties,
         dependencies: () => ({
           securityGroup: { type: "SecurityGroup", group: "ec2" },
         }),
@@ -140,6 +219,146 @@ const writersSpec = [
     ],
   },
   {
+    group: "acm",
+    types: [
+      {
+        type: "Certificate",
+        pickProperties: () => ["DomainName", "SubjectAlternativeNames"],
+      },
+    ],
+  },
+  {
+    group: "autoscaling",
+    types: [
+      {
+        type: "AutoScalingGroup",
+        pickProperties: () => ["DomainName", "SubjectAlternativeNames"],
+      },
+    ],
+  },
+  {
+    group: "elb",
+    types: [
+      {
+        type: "LoadBalancer",
+        pickProperties: () => ["Scheme", "Type", "IpAddressType"],
+        dependencies: () => ({
+          subnets: { type: "Subnet", group: "ec2" },
+          securityGroups: { type: "SecurityGroup", group: "ec2" },
+          role: { type: "Role", group: "iam" },
+          key: { type: "Key", group: "kms" },
+        }),
+      },
+      {
+        type: "TargetGroup",
+        pickProperties: () => [
+          "Protocol",
+          "Port",
+          "HealthCheckProtocol",
+          "HealthCheckPort",
+          "HealthCheckEnabled",
+          "HealthCheckIntervalSeconds",
+          "HealthCheckTimeoutSeconds",
+          "HealthyThresholdCount",
+          "HealthCheckPath",
+          "Matcher",
+          "TargetType",
+          "ProtocolVersion",
+        ],
+        dependencies: () => ({
+          vpc: { type: "Vpc", group: "ec2" },
+          nodeGroup: {
+            type: "NodeGroup",
+            group: "eks",
+          },
+          //TODO autoScalingGroup
+        }),
+      },
+      {
+        type: "Listener",
+        pickProperties: () => ["Port", "Protocol", "DefaultActions"],
+        dependencies: () => ({
+          loadBalancer: { type: "LoadBalancer", group: "elb" },
+          targetGroups: { type: "TargetGroup", group: "elb" },
+          certificate: { type: "Certificate", group: "acm" },
+        }),
+      },
+      {
+        type: "Rule",
+        pickProperties: () => ["Priority", "Conditions", "Actions"],
+        configBuildProperties: ({ properties, lives }) =>
+          pipe([
+            tap(() => {
+              assert(lives);
+            }),
+            () => `\n,properties: ${JSON.stringify(properties, null, 4)}`,
+          ])(),
+        codeBuildProperties: ({ group, type, resourceVarName }) =>
+          pipe([
+            tap(() => {
+              assert(true);
+            }),
+            () =>
+              `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`,
+          ])(),
+
+        dependencies: () => ({
+          listener: { type: "Listener", group: "elb" },
+          targetGroup: { type: "TargetGroup", group: "elb" },
+        }),
+      },
+    ],
+  },
+  {
+    group: "kms",
+    types: [
+      {
+        type: "Key",
+        pickProperties: () => [],
+      },
+    ],
+  },
+  {
+    group: "eks",
+    types: [
+      {
+        type: "Cluster",
+        pickProperties: () => ["version"],
+        dependencies: () => ({
+          subnets: { type: "Subnet", group: "ec2" },
+          securityGroups: { type: "SecurityGroup", group: "ec2" },
+          role: { type: "Role", group: "iam" },
+          key: { type: "Key", group: "kms" },
+        }),
+      },
+      {
+        type: "NodeGroup",
+        pickProperties: () => [
+          "capacityType",
+          "scalingConfig",
+          "instanceTypes",
+          "amiType",
+          "labels",
+          "diskSize",
+        ],
+        dependencies: () => ({
+          cluster: { type: "Cluster", group: "eks" },
+          subnets: { type: "Subnet", group: "ec2" },
+          role: { type: "Role", group: "iam" },
+        }),
+      },
+    ],
+  },
+  {
+    group: "route53Domain",
+    types: [
+      {
+        type: "Domain",
+        pickProperties: () => [],
+      },
+    ],
+  },
+  {
     group: "route53",
     types: [
       {
@@ -148,29 +367,64 @@ const writersSpec = [
       },
       {
         type: "Record",
-        pickProperties: () => ["Name", "Type", "TTL", "ResourceRecords"],
+        pickProperties: () => [
+          "Name",
+          "Type",
+          "TTL",
+          "ResourceRecords",
+          "AliasTarget",
+        ],
         dependencies: () => ({
+          domain: { type: "Domain", group: "route53" },
           hostedZone: { type: "HostedZone", group: "route53" },
+          loadBalancer: { type: "LoadBalancer", group: "elb" },
+          certificate: { type: "Certificate", group: "acm" },
         }),
         ignoreResource: () => get("cannotBeDeleted"),
       },
     ],
   },
   {
-    group: "iam",
+    group: "rds",
     types: [
       {
-        type: "Policy",
-        pickProperties: switchCase([
-          get("resource.cannotBeDeleted"),
-          () => ["Arn", "name"],
-          () => ["PolicyName", "PolicyDocument", "Path", "Description"],
-        ]),
+        type: "DBCluster",
+        pickProperties: () => [
+          "DatabaseName",
+          "Engine",
+          "EngineVersion",
+          "EngineMode",
+          "Port",
+          "ScalingConfiguration",
+          "MasterUsername",
+          "AvailabilityZones",
+        ],
+        dependencies: () => ({
+          dbSubnetGroup: { type: "DBSubnetGroup", group: "rds" },
+          securityGroups: { type: "SecurityGroup", group: "ec2" },
+          key: { type: "Key", group: "kms" },
+        }),
       },
       {
-        type: "Role",
-        pickProperties: () => ["RoleName", "Path", "AssumeRolePolicyDocument"],
-        dependencies: () => ({ policies: { type: "Policy", group: "iam" } }),
+        type: "DBInstance",
+        pickProperties: () => [
+          "DBInstanceClass",
+          "Engine",
+          "EngineVersion",
+          "AllocatedStorage",
+          "MaxAllocatedStorage",
+        ],
+        dependencies: () => ({
+          dbSubnetGroup: { type: "DBSubnetGroup", group: "rds" },
+          securityGroups: { type: "SecurityGroup", group: "ec2" },
+        }),
+      },
+      {
+        type: "DBSubnetGroup",
+        pickProperties: () => ["DBSubnetGroupDescription"],
+        dependencies: () => ({
+          subnets: { type: "Subnet", group: "ec2" },
+        }),
       },
     ],
   },

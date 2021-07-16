@@ -170,25 +170,6 @@ exports.createStack = async ({ stage }) => {
   const loadBalancerRecord = await stackAws.provider.makeRecord({
     name: `dns-record-alias-load-balancer-${hostedZone.name}`,
     dependencies: { hostedZone, loadBalancer },
-    properties: ({ dependencies }) => {
-      const hostname = dependencies.loadBalancer.live?.DNSName;
-      if (!hostname) {
-        return {
-          message: "loadBalancer not up yet",
-          Type: "A",
-          Name: hostedZone.name,
-        };
-      }
-      return {
-        Name: hostedZone.name,
-        Type: "A",
-        AliasTarget: {
-          HostedZoneId: dependencies.loadBalancer?.live.CanonicalHostedZoneId,
-          DNSName: `${hostname}.`,
-          EvaluateTargetHealth: false,
-        },
-      };
-    },
   });
 
   return {

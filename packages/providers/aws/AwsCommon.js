@@ -9,6 +9,7 @@ const {
   get,
   eq,
   or,
+  any,
   not,
 } = require("rubico");
 const {
@@ -120,6 +121,42 @@ exports.shouldRetryOnExceptionDelete = ({ error, name }) => {
   return retry;
 };
 
+const hasKeyValueInTags =
+  ({ key, value }) =>
+  ({ live }) =>
+    pipe([
+      tap(() => {
+        assert(key);
+        assert(live);
+      }),
+      () => live,
+      get("Tags"),
+      any(and([eq(get("Key"), key), eq(get("Value"), value)])),
+      tap((result) => {
+        assert(true);
+      }),
+    ])();
+
+exports.hasKeyValueInTags = hasKeyValueInTags;
+
+const hasKeyInTags =
+  ({ key }) =>
+  ({ live }) =>
+    pipe([
+      tap(() => {
+        assert(key);
+        assert(live);
+      }),
+      () => live,
+      get("Tags"),
+      any((tag) => new RegExp(`^${key}*`, "i").test(tag.Key)),
+      tap((result) => {
+        assert(true);
+      }),
+    ])();
+
+exports.hasKeyInTags = hasKeyInTags;
+
 const findValueInTags = ({ key }) =>
   pipe([
     tap((live) => {
@@ -142,7 +179,8 @@ const findEksCluster =
       }),
       () =>
         lives.getByType({
-          type: "EKSCluster",
+          type: "Cluster",
+          group: "eks",
           providerName: config.providerName,
         }),
       find(eq(get("name"), findValueInTags({ key })(live))),
@@ -161,6 +199,9 @@ const findNamespaceEksCluster =
         assert(lives, "lives");
       }),
       () => findEksCluster({ config, key })({ live, lives }),
+      tap((param) => {
+        assert(true);
+      }),
       findNamespaceInTagsObject(config),
       tap((namespace) => {
         logger.debug(`findNamespace`, namespace);

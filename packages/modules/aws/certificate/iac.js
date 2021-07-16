@@ -30,29 +30,6 @@ const createResources = async ({
     name: `certificate-validation-${domainName}.`,
     namespace,
     dependencies: { hostedZone, certificate },
-    properties: ({ dependencies: { certificate } }) => {
-      const domainValidationOption =
-        certificate?.live?.DomainValidationOptions[0];
-      const record = domainValidationOption?.ResourceRecord;
-      if (domainValidationOption) {
-        assert(
-          record,
-          `missing record in DomainValidationOptions, certificate ${JSON.stringify(
-            certificate.live
-          )}`
-        );
-      }
-      return {
-        Name: record?.Name,
-        ResourceRecords: [
-          {
-            Value: record?.Value,
-          },
-        ],
-        TTL: 300,
-        Type: "CNAME",
-      };
-    },
   });
 
   return { certificate, certificateRecordValidation };

@@ -28,7 +28,7 @@ const createResourcesRds = async ({
     name: "sg-rule-ingress-postgres",
     dependencies: {
       securityGroup,
-      securityGroupPublic: bastionResources.securityGroup,
+      securityGroupFrom: bastionResources.securityGroup,
     },
     properties: () => ({
       IpPermission: {
@@ -43,9 +43,6 @@ const createResourcesRds = async ({
           {
             CidrIpv6: "::/0",
           },
-        ],
-        UserIdGroupPairs: [
-          { GroupId: bastionResources.securityGroup.live?.GroupId },
         ],
         ToPort: 5432,
       },
@@ -63,7 +60,7 @@ const createResourcesRds = async ({
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/RDS.html#createDBCluster-property
   const dbCluster = provider.rds.makeDBCluster({
     name: config.rds.cluster.name,
-    dependencies: { dbSubnetGroup, dbSecurityGroups: [securityGroup] },
+    dependencies: { dbSubnetGroup, securityGroups: [securityGroup] },
     properties: () => config.rds.cluster.properties,
   });
 

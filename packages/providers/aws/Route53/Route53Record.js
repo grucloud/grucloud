@@ -33,6 +33,8 @@ const { detailedDiff } = require("deep-object-diff");
 
 const logger = require("@grucloud/core/logger")({ prefix: "Route53Record" });
 const { tos } = require("@grucloud/core/tos");
+const { getField } = require("@grucloud/core/ProviderCommon");
+
 const { Route53New, shouldRetryOnException } = require("../AwsCommon");
 const { filterEmptyResourceRecords } = require("./Route53Utils");
 
@@ -93,9 +95,62 @@ exports.Route53Record = ({ spec, config }) => {
   const { providerName } = config;
   const route53 = Route53New(config);
 
-  const findDependencies = ({ live }) => [
-    // TODO findDependencies
-    { type: "HostedZone", ids: [live.HostedZoneId] },
+  const findDependencies = ({ live, lives }) => [
+    { type: "HostedZone", group: "route53", ids: [live.HostedZoneId] },
+    {
+      type: "LoadBalancer",
+      group: "elb",
+      ids: pipe([
+        () => live,
+        get("AliasTarget.DNSName"),
+        tap((params) => {
+          assert(true);
+        }),
+        // Remove last dot
+        (DNSName = "") => DNSName.slice(0, -1),
+        (DNSName) =>
+          pipe([
+            () =>
+              lives.getByType({
+                type: "LoadBalancer",
+                group: "elb",
+                providerName,
+              }),
+            tap((params) => {
+              assert(true);
+            }),
+            filter(eq(get("live.DNSName"), DNSName)),
+            tap((params) => {
+              assert(true);
+            }),
+            pluck("id"),
+          ])(),
+      ])(),
+    },
+    {
+      type: "Certificate",
+      group: "acm",
+      ids: pipe([
+        () =>
+          lives.getByType({ type: "Certificate", group: "acm", providerName }),
+        tap((params) => {
+          assert(true);
+        }),
+        filter(
+          and([
+            eq(
+              get("live.DomainValidationOptions[0].ResourceRecord.Name"),
+              get("Name")(live)
+            ),
+            () => eq(get("Type"), "CNAME")(live),
+          ])
+        ),
+        tap((params) => {
+          assert(true);
+        }),
+        pluck("id"),
+      ])(),
+    },
   ];
 
   const findName = ({ live, lives }) =>
@@ -174,7 +229,8 @@ exports.Route53Record = ({ spec, config }) => {
         logger.info(`getListFromLive`);
         assert(lives);
       }),
-      () => lives.getByType({ providerName, type: "HostedZone" }),
+      () =>
+        lives.getByType({ providerName, type: "HostedZone", group: "route53" }),
       flatMap((hostedZone) =>
         pipe([
           () => hostedZone,
@@ -447,9 +503,65 @@ exports.Route53Record = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) => {
-    return defaultsDeep({ Name: name })(properties);
-  };
+  const certificateRecord = ({ certificate }) =>
+    pipe([
+      () => certificate,
+      switchCase([
+        isEmpty,
+        () => ({}),
+        pipe([
+          () => ({
+            Name: getField(
+              certificate,
+              "DomainValidationOptions[0].ResourceRecord.Name"
+            ),
+            ResourceRecords: [
+              {
+                Value: getField(
+                  certificate,
+                  "DomainValidationOptions[0].ResourceRecord.Value"
+                ),
+              },
+            ],
+            TTL: 300,
+            Type: "CNAME",
+          }),
+        ]),
+      ]),
+    ])();
+
+  const loadBalancerRecord = ({ loadBalancer, hostedZone }) =>
+    pipe([
+      () => loadBalancer,
+      switchCase([
+        isEmpty,
+        () => ({}),
+        () => ({
+          Name: hostedZone.config.Name,
+          Type: "A",
+          AliasTarget: {
+            HostedZoneId: getField(loadBalancer, "CanonicalHostedZoneId"),
+            DNSName: getField(loadBalancer, "DNSName"),
+            EvaluateTargetHealth: false,
+          },
+        }),
+      ]),
+    ])();
+
+  const configDefault = async ({
+    name,
+    properties,
+    dependencies: { certificate, loadBalancer, hostedZone },
+  }) =>
+    pipe([
+      tap(() => {
+        assert(hostedZone, "missing hostedZone dependencies");
+      }),
+      () => properties,
+      defaultsDeep(certificateRecord({ certificate })),
+      defaultsDeep(loadBalancerRecord({ loadBalancer, hostedZone })),
+      defaultsDeep({ Name: name }),
+    ])();
 
   const cannotBeDeleted = pipe([
     get("live.Type"),
@@ -475,6 +587,7 @@ exports.Route53Record = ({ spec, config }) => {
     shouldRetryOnException,
   };
 };
+//TODO ResourceRecords: [] ?
 const filterTarget = ({ config, target }) =>
   pipe([() => target, defaultsDeep({ ResourceRecords: [] })])();
 

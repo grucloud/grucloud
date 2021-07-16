@@ -49,39 +49,8 @@ exports.AwsIamRole = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "Policy",
+      group: "iam",
       ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
-    },
-    {
-      type: "OpenIDConnectProvider",
-      ids: pipe([
-        () => live,
-        get("AssumeRolePolicyDocument.Statement"),
-        map(
-          pipe([
-            get("Principal.Federated"),
-            tap((id) => {
-              assert(true);
-            }),
-            (id) =>
-              lives.getById({
-                type: "IamOpenIDConnectProvider",
-                providerName,
-                id,
-              }),
-            tap((id) => {
-              assert(true);
-            }),
-            get("id"),
-          ])
-        ),
-        tap((id) => {
-          assert(true);
-        }),
-        filter(not(isEmpty)),
-        tap((ids) => {
-          logger.debug(`IamOpenIDConnectProvider ${ids}`);
-        }),
-      ])(),
     },
   ];
 

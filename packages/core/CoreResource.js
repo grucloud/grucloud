@@ -84,6 +84,7 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
       findNamespaceFromTarget: get("namespace"),
       cannotBeDeleted: () => false,
       isDefault: () => false,
+      managedByOther: () => false,
       configDefault: () => ({}),
       isInstanceUp: not(isEmpty),
       providerName,
@@ -148,7 +149,7 @@ exports.ResourceMaker = ({
       tap(() => {
         assert(lives);
       }),
-      () => lives.getByType({ providerName: provider.name, type }),
+      () => lives.getByType({ providerName: provider.name, type, group }),
       tap((xxx) => {
         assert(true);
       }),

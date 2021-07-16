@@ -39,6 +39,7 @@ exports.AwsIamGroup = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "Policy",
+      group: "iam",
       ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
     },
   ];

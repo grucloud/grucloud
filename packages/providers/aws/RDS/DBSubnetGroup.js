@@ -36,6 +36,7 @@ exports.DBSubnetGroup = ({ spec, config }) => {
   const findDependencies = ({ live, lives }) => [
     {
       type: "Subnet",
+      group: "ec2",
       ids: pipe([() => live, get("Subnets"), pluck("SubnetIdentifier")])(),
     },
   ];

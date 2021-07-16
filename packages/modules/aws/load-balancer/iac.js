@@ -239,25 +239,6 @@ exports.createResources = async ({
     name: `load-balancer-dns-record-alias-${hostedZone.name}`,
     namespace,
     dependencies: { hostedZone, loadBalancer },
-    properties: ({ dependencies: { loadBalancer } }) => {
-      const hostname = loadBalancer.live?.DNSName;
-      if (!hostname) {
-        return {
-          message: "loadBalancer not up yet",
-          Type: "A",
-          Name: hostedZone.name,
-        };
-      }
-      return {
-        Name: hostedZone.name,
-        Type: "A",
-        AliasTarget: {
-          HostedZoneId: getField(loadBalancer, "CanonicalHostedZoneId"),
-          DNSName: `${hostname}.`,
-          EvaluateTargetHealth: false,
-        },
-      };
-    },
   });
 
   return {

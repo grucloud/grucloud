@@ -58,6 +58,7 @@ exports.AwsSubnet = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "Vpc",
+      group: "ec2",
       ids: [live.VpcId],
     },
   ];

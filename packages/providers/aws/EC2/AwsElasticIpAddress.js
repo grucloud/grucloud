@@ -28,6 +28,7 @@ exports.AwsElasticIpAddress = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "NetworkInterface",
+      group: "ec2",
       ids: pipe([
         () => live,
         get("NetworkInterfaceId"),

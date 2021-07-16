@@ -327,6 +327,9 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
                   lives,
                 });
               },
+              get managedByOther() {
+                return client.managedByOther({ live: resource.live, lives });
+              },
               get managedByUs() {
                 return client.spec.isOurMinion({
                   resource: provider.getResourceFromLive({

@@ -8,10 +8,10 @@ const {
   filter,
   switchCase,
   tryCatch,
-  pick,
-  omit,
+  not,
+  map,
 } = require("rubico");
-const { size, includes, defaultsDeep, isEmpty } = require("rubico/x");
+const { size, includes, defaultsDeep, isEmpty, identity } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecGroupRule" });
 const { tos } = require("@grucloud/core/tos");
 
@@ -24,6 +24,13 @@ const {
   findNamespaceInTags,
   findNameInTags,
 } = require("../AwsCommon");
+
+exports.createResource = ({}) =>
+  pipe([
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 const findId = get("live.SecurityGroupRuleId");
 
@@ -50,9 +57,34 @@ const groupNameFromId = ({ GroupId, lives, config }) =>
     get("name"),
   ])();
 
+const ipVersion = ({ CidrIpv4, CidrIpv6 }) =>
+  switchCase([
+    () => CidrIpv4,
+    () => "-v4",
+    () => CidrIpv6,
+    () => "-v6",
+    () => "",
+  ])();
+
+//TODO fetch groupName from GroupId
+const fromSecurityGroup = ({ ReferencedGroupInfo }) =>
+  pipe([
+    () => ReferencedGroupInfo,
+    get("GroupId"),
+    switchCase([not(isEmpty), (GroupId) => `-from-${GroupId}`, () => ""]),
+  ])();
+
 const ruleDefaultToName = ({
   kind,
-  live: { IpProtocol, FromPort, ToPort, GroupId },
+  live: {
+    IpProtocol,
+    FromPort,
+    ToPort,
+    GroupId,
+    CidrIpv4,
+    CidrIpv6,
+    ReferencedGroupInfo,
+  },
   lives,
   config,
 }) =>
@@ -64,7 +96,19 @@ const ruleDefaultToName = ({
     IpProtocol,
     FromPort,
     ToPort,
+  })}${ipVersion({ CidrIpv4, CidrIpv6 })}${fromSecurityGroup({
+    ReferencedGroupInfo,
   })}`;
+
+const findSgrNameInTags = ({ live }) =>
+  pipe([
+    () => ({ live }),
+    findNameInTags,
+    //switchCase([isEmpty, identity, (name) => `${name}${ipVersion(live)}`]),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
 
 const findName =
   ({ kind, config }) =>
@@ -74,7 +118,7 @@ const findName =
         assert(true);
       }),
       () => {
-        for (fn of [findNameInTags, ruleDefaultToName]) {
+        for (fn of [findSgrNameInTags, ruleDefaultToName]) {
           const name = fn({ live, lives, kind, config });
           if (!isEmpty(name)) {
             return name;
@@ -89,24 +133,67 @@ const findName =
 const findDependencies = ({ live }) => [
   {
     type: "SecurityGroup",
-    ids: [live.GroupId],
+    group: "ec2",
+    ids: pipe([
+      () => [get("GroupId"), get("ReferencedGroupInfo.GroupId")],
+      map((fn) => fn(live)),
+      filter(not(isEmpty)),
+    ])(),
   },
 ];
 
 const SecurityGroupRuleBase = ({ config }) => {
   const ec2 = Ec2New(config);
+  const { providerName } = config;
+
+  const managedByOther = ({ live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(lives);
+        assert(live.GroupId);
+      }),
+      () =>
+        lives.getById({
+          type: "SecurityGroup",
+          providerName,
+          id: live.GroupId,
+        }),
+      tap((securityGroup) => {
+        assert(securityGroup);
+      }),
+      get("managedByOther"),
+    ])();
+
+  const securityFromConfig = ({ securityGroupFrom }) =>
+    pipe([
+      () => securityGroupFrom,
+      switchCase([
+        isEmpty,
+        () => ({}),
+        () => ({
+          IpPermissions: [
+            {
+              UserIdGroupPairs: [
+                { GroupId: getField(securityGroupFrom, "GroupId") },
+              ],
+            },
+          ],
+        }),
+      ]),
+    ])();
 
   const configDefault = async ({
     name,
     namespace,
     properties: { Tags, IpPermission, ...otherProps },
-    dependencies: { securityGroup },
+    dependencies: { securityGroup, securityGroupFrom },
   }) =>
     pipe([
       tap(() => {
         assert(securityGroup, "missing securityGroup dependency");
       }),
       () => otherProps,
+      defaultsDeep(securityFromConfig({ securityGroupFrom })),
       defaultsDeep({
         GroupId: getField(securityGroup, "GroupId"),
         IpPermissions: [IpPermission],
@@ -236,6 +323,7 @@ const SecurityGroupRuleBase = ({ config }) => {
     getByName,
     create,
     destroy,
+    managedByOther,
     ec2,
   };
 };
@@ -257,6 +345,7 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
     destroy,
     findNamespace,
     ec2,
+    managedByOther,
   } = SecurityGroupRuleBase({
     config,
   });
@@ -286,7 +375,8 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
     configDefault,
     shouldRetryOnException,
     isDefault: cannotBeDeleted,
-    cannotBeDeleted: cannotBeDeleted,
+    cannotBeDeleted,
+    managedByOther,
   };
 };
 
@@ -298,6 +388,7 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
     create,
     destroy,
     findNamespace,
+    managedByOther,
     ec2,
   } = SecurityGroupRuleBase({
     config,
@@ -323,6 +414,7 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
     configDefault,
     shouldRetryOnException,
     isDefault: cannotBeDeleted,
-    cannotBeDeleted: cannotBeDeleted,
+    cannotBeDeleted,
+    managedByOther,
   };
 };

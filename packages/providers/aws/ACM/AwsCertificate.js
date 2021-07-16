@@ -48,64 +48,7 @@ const findId = get("live.CertificateArn");
 exports.AwsCertificate = ({ spec, config }) => {
   const acm = ACMNew(config);
 
-  //TODO
-  const findRecordId =
-    ({ config, lives }) =>
-    ({ Type, Name }) =>
-      pipe([
-        tap(() => {
-          logger.debug(`findRecordId ${JSON.stringify({ Type, Name })}`);
-        }),
-        () =>
-          lives.getByType({
-            providerName: config.providerName,
-            type: "Route53Record",
-          }),
-        pluck("live"),
-        tap((xxx) => {
-          logger.debug(``);
-        }),
-        map(
-          find(
-            and([
-              eq(get("Name"), Name), //
-              eq(get("Type"), Type),
-            ])
-          )
-        ),
-        filter(not(isEmpty)),
-        tap((records) => {
-          logger.debug(
-            `findRecordId ${JSON.stringify({ Type, Name })} #records ${size(
-              records
-            )}`
-          );
-        }),
-      ])();
-
-  const findDependencies = ({ live, lives }) => [
-    {
-      type: "Route53Record",
-      ids: pipe([
-        () => live,
-        get("DomainValidationOptions"),
-        filter(eq(get("ValidationMethod"), "DNS")),
-        map(
-          pipe([
-            get("ResourceRecord"),
-            tap((xxx) => {
-              logger.debug(``);
-            }),
-            findRecordId({ config, lives }),
-          ])
-        ),
-        filter(not(isEmpty)),
-        tap((xxx) => {
-          logger.debug(``);
-        }),
-      ])(),
-    },
-  ];
+  const findDependencies = ({ live, lives }) => [];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#listCertificates-property
   const getList = async ({ params } = {}) =>

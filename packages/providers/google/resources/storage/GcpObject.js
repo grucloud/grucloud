@@ -68,7 +68,12 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
         get("bucket"),
         (bucket) => [
           pipe([
-            () => lives.getByType({ type: "Bucket", providerName }),
+            () =>
+              lives.getByType({
+                type: "Bucket",
+                group: "storage",
+                providerName,
+              }),
             find(eq(get("live.name"), bucket)),
             get("id"),
           ])(),

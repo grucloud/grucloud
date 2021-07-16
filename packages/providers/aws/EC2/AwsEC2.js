@@ -51,6 +51,8 @@ const {
   findEksCluster,
 } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { hasKeyInTags } = require("../AwsCommon");
+
 const { CheckAwsTags } = require("../AwsTagCheck");
 
 const StateRunning = "running";
@@ -71,20 +73,30 @@ exports.AwsEC2 = ({ spec, config }) => {
 
   const ec2 = Ec2New(config);
 
+  const managedByOther = hasKeyInTags({
+    key: "eks:cluster-name",
+  });
+
   const findDependencies = ({ live, lives }) => [
     {
       type: "Image",
+      group: "ec2",
       ids: pipe([
-        () => lives.getByType({ type: "Image", providerName }),
+        () => lives.getByType({ type: "Image", group: "ec2", providerName }),
         filter(eq(get("id"), live.ImageId)),
         pluck("id"),
       ])(),
     },
-    { type: "KeyPair", ids: filter(not(isEmpty))([live.KeyName]) },
-    { type: "Vpc", ids: [live.VpcId] },
-    { type: "Subnet", ids: [live.SubnetId] },
+    {
+      type: "KeyPair",
+      group: "ec2",
+      ids: filter(not(isEmpty))([live.KeyName]),
+    },
+    { type: "Vpc", group: "ec2", ids: [live.VpcId] },
+    { type: "Subnet", group: "ec2", ids: [live.SubnetId] },
     {
       type: "Volume",
+      group: "ec2",
       ids: pipe([
         () => live,
         get("BlockDeviceMappings"),
@@ -93,6 +105,7 @@ exports.AwsEC2 = ({ spec, config }) => {
     },
     {
       type: "NetworkInterface",
+      group: "ec2",
       ids: pipe([
         () => live,
         get("NetworkInterfaces"),
@@ -101,12 +114,18 @@ exports.AwsEC2 = ({ spec, config }) => {
     },
     {
       type: "ElasticIpAddress",
+      group: "ec2",
       ids: pipe([
         () => live,
         get("PublicIpAddress"),
         (PublicIpAddress) =>
           pipe([
-            () => lives.getByType({ type: "ElasticIpAddress", providerName }),
+            () =>
+              lives.getByType({
+                type: "ElasticIpAddress",
+                group: "ec2",
+                providerName,
+              }),
             filter(eq(get("live.PublicIp"), PublicIpAddress)),
             pluck("id"),
           ])(),
@@ -114,10 +133,12 @@ exports.AwsEC2 = ({ spec, config }) => {
     },
     {
       type: "SecurityGroup",
+      group: "ec2",
       ids: pipe([() => live, get("SecurityGroups"), pluck("GroupId")])(),
     },
     {
-      type: "IamInstanceProfile",
+      type: "InstanceProfile",
+      group: "iam",
       ids: pipe([
         () => live,
         get("IamInstanceProfile.Arn"),
@@ -548,6 +569,7 @@ exports.AwsEC2 = ({ spec, config }) => {
     destroy,
     getList,
     configDefault,
+    managedByOther,
   };
 };
 
