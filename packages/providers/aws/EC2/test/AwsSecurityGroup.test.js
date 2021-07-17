@@ -114,7 +114,7 @@ describe("AwsSecurityGroup", async function () {
       }),
     });
     provider.ec2.makeSecurityGroup({
-      name: "sg-empty-ingress",
+      name: "sec-group-empty-ingress",
       dependencies: { vpc },
       properties: () => ({
         create: {
