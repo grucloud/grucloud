@@ -10,8 +10,17 @@ const {
   tryCatch,
   not,
   map,
+  pick,
 } = require("rubico");
-const { size, includes, defaultsDeep, isEmpty, identity } = require("rubico/x");
+const {
+  size,
+  includes,
+  defaultsDeep,
+  isEmpty,
+  find,
+  identity,
+  first,
+} = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecGroupRule" });
 const { tos } = require("@grucloud/core/tos");
 
@@ -25,12 +34,86 @@ const {
   findNameInTags,
 } = require("../AwsCommon");
 
-exports.createResource = ({}) =>
+const findIpv6Ranges = ({ Tags, rules }) =>
   pipe([
+    tap(() => {
+      assert(Tags);
+      assert(rules);
+    }),
+    () => Tags,
+    find(eq(get("Key"), "Name")),
+    get("Value"),
+    (Name) =>
+      pipe([
+        () => rules,
+        filter(get("CidrIpv6")),
+        find(
+          pipe([
+            get("Tags"),
+            find(eq(get("Key"), "Name")),
+            get("Value"),
+            eq(identity, Name),
+          ])
+        ),
+      ])(),
+    switchCase([isEmpty, () => undefined, ({ CidrIpv6 }) => [{ CidrIpv6 }]]),
     tap((params) => {
       assert(true);
     }),
   ])();
+
+const mergeSecurityGroupRules = (rules) =>
+  pipe([
+    tap(() => {
+      assert(true);
+    }),
+    () => rules,
+    filter(not(get("CidrIpv6"))),
+    map(
+      ({
+        SecurityGroupRuleId,
+        GroupId,
+        IpProtocol,
+        FromPort,
+        ToPort,
+        CidrIpv4,
+        Tags,
+        ReferencedGroupInfo,
+      }) =>
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          () => findIpv6Ranges({ Tags, rules }),
+          (Ipv6Ranges) => ({
+            GroupId,
+            SecurityGroupRuleId,
+            IpPermission: {
+              IpProtocol,
+              FromPort,
+              ToPort,
+              ...(CidrIpv4 && {
+                IpRanges: [
+                  {
+                    CidrIp: CidrIpv4,
+                  },
+                ],
+                ...(Ipv6Ranges && { Ipv6Ranges }),
+              }),
+              ...(ReferencedGroupInfo && {
+                UserIdGroupPairs: [{ GroupId: ReferencedGroupInfo.GroupId }],
+              }),
+            },
+            Tags,
+          }),
+        ])()
+    ),
+    tap((results) => {
+      assert(true);
+    }),
+  ])();
+
+exports.mergeSecurityGroupRules = mergeSecurityGroupRules;
 
 const findId = get("live.SecurityGroupRuleId");
 
@@ -57,19 +140,20 @@ const groupNameFromId = ({ GroupId, lives, config }) =>
     get("name"),
   ])();
 
-const ipVersion = ({ CidrIpv4, CidrIpv6 }) =>
+const ipVersion = ({ IpRanges, Ipv6Ranges }) =>
   switchCase([
-    () => CidrIpv4,
+    () => IpRanges,
     () => "-v4",
-    () => CidrIpv6,
+    () => Ipv6Ranges,
     () => "-v6",
     () => "",
   ])();
 
 //TODO fetch groupName from GroupId
-const fromSecurityGroup = ({ ReferencedGroupInfo }) =>
+const fromSecurityGroup = ({ UserIdGroupPairs }) =>
   pipe([
-    () => ReferencedGroupInfo,
+    () => UserIdGroupPairs,
+    first,
     get("GroupId"),
     switchCase([not(isEmpty), (GroupId) => `-from-${GroupId}`, () => ""]),
   ])();
@@ -77,13 +161,15 @@ const fromSecurityGroup = ({ ReferencedGroupInfo }) =>
 const ruleDefaultToName = ({
   kind,
   live: {
-    IpProtocol,
-    FromPort,
-    ToPort,
     GroupId,
-    CidrIpv4,
-    CidrIpv6,
-    ReferencedGroupInfo,
+    IpPermission: {
+      IpProtocol,
+      FromPort,
+      ToPort,
+      IpRanges,
+      Ipv6Ranges,
+      UserIdGroupPairs,
+    },
   },
   lives,
   config,
@@ -96,8 +182,8 @@ const ruleDefaultToName = ({
     IpProtocol,
     FromPort,
     ToPort,
-  })}${ipVersion({ CidrIpv4, CidrIpv6 })}${fromSecurityGroup({
-    ReferencedGroupInfo,
+  })}${ipVersion({ IpRanges, Ipv6Ranges })}${fromSecurityGroup({
+    UserIdGroupPairs,
   })}`;
 
 const findSgrNameInTags = ({ live }) =>
@@ -228,8 +314,9 @@ const SecurityGroupRuleBase = ({ config }) => {
         get("SecurityGroupRules"),
         filter(eq(get("IsEgress"), IsEgress)),
         tap((items) => {
-          logger.debug(`getList sg rules ${kind}: ${tos(items)}`);
+          logger.debug(`getList raw sg rules ${kind}: ${tos(items)}`);
         }),
+        mergeSecurityGroupRules,
         (items) => ({
           total: size(items),
           items,
@@ -251,6 +338,7 @@ const SecurityGroupRuleBase = ({ config }) => {
         Filters: [{ Name: "tag:Name", Values: [name] }],
       }),
       (params) => ec2().describeSecurityGroupRules(params),
+      get("SecurityGroupRules"),
       tap((params) => {
         assert(true);
       }),
@@ -291,9 +379,11 @@ const SecurityGroupRuleBase = ({ config }) => {
           logger.debug(`${kind} ${name}: ${JSON.stringify(live)}`);
         }),
         () => live,
-        ({ GroupId, IpProtocol, FromPort, ToPort }) => ({
+        ({ GroupId, IpPermission }) => ({
           GroupId,
-          IpPermissions: [{ IpProtocol, FromPort, ToPort }],
+          ...(IpPermission && {
+            IpPermissions: [IpPermission],
+          }),
         }),
         tap((params) => {
           assert(params);
@@ -304,7 +394,7 @@ const SecurityGroupRuleBase = ({ config }) => {
               logger.error(`destroy sg rule error ${tos({ error, params })}`);
             }),
             () => {
-              throw { error, params };
+              throw Error(error.message);
             },
           ])()
         ),
@@ -327,14 +417,6 @@ const SecurityGroupRuleBase = ({ config }) => {
     ec2,
   };
 };
-
-const cannotBeDeleted = pipe([
-  get("live"),
-  tap((params) => {
-    assert(params);
-  }),
-  and([eq(get(`IpProtocol`), "-1"), pipe([get("Tags"), isEmpty])]),
-]);
 
 exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
   const {
@@ -374,8 +456,6 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
     }),
     configDefault,
     shouldRetryOnException,
-    isDefault: cannotBeDeleted,
-    cannotBeDeleted,
     managedByOther,
   };
 };
@@ -413,8 +493,6 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
     }),
     configDefault,
     shouldRetryOnException,
-    isDefault: cannotBeDeleted,
-    cannotBeDeleted,
     managedByOther,
   };
 };

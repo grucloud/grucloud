@@ -44,7 +44,7 @@ const createResources = async ({ provider, resources: {} }) => {
   });
 
   const sgClusterRuleEgress = provider.ec2.makeSecurityGroupRuleEgress({
-    name: "sg-cluster-rule-egress",
+    name: "sg-rule-egress",
     dependencies: {
       securityGroup,
     },
@@ -66,7 +66,7 @@ const createResources = async ({ provider, resources: {} }) => {
       },
     }),
   });
-  return { securityGroup, sgRuleIngressSsh };
+  return {};
 };
 exports.createResources = createResources;
 

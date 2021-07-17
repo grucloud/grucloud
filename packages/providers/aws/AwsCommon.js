@@ -41,11 +41,15 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
         shouldRetryOnException: ({ error, name }) =>
           pipe([
             tap((error) => {
-              logger.info(`${name}: ${tos(error)}`);
+              logger.info(`shouldRetryOnException ${name}: ${tos(error)}`);
             }),
+            () => error,
             //TODO add network error
             eq(get("code"), "Throttling"),
-          ])(error),
+            tap((retry) => {
+              logger.debug(`shouldRetryOnException: ${retry}`);
+            }),
+          ])(),
       });
   },
 });
@@ -454,7 +458,7 @@ exports.revokeSecurityGroupIngress =
             "InvalidGroup.NotFound",
           ]),
         (error) => {
-          throw error;
+          throw Error(error.message);
         }
       )
     )();
@@ -469,7 +473,7 @@ exports.removeRoleFromInstanceProfile =
         () => undefined,
         (error) => {
           logger.error(`iam role removeRoleFromInstanceProfile ${tos(error)}`);
-          throw error;
+          throw Error(error.message);
         },
       ])
     )();
@@ -504,7 +508,7 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
                   logger.error(
                     `deleteNetworkInterface error code: ${error.code}`
                   );
-                  throw error;
+                  throw Error(error.message);
                 },
               ])
             )
@@ -537,7 +541,7 @@ exports.destroyNetworkInterfaces = ({ ec2, Name, Values }) =>
                 logger.error(
                   `deleteNetworkInterface error code: ${error.code}`
                 );
-                throw error;
+                throw Error(error.message);
               },
             ])
           ),

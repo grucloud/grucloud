@@ -1586,39 +1586,32 @@ function CoreProvider({
         assert(lives);
         //assert(name);
       }),
-      () => client.findId({ live, lives }),
-      tap((id) => {
-        assert(id, `destroyByClient missing id in live: ${tos(live)}`);
+      () => resourcesPerType,
+      tap((params) => {
+        assert(true);
       }),
-      (id) =>
-        pipe([
-          () => resourcesPerType,
-          tap((params) => {
-            assert(true);
-          }),
-          find(eq(get("name"), name)),
-          tap((resource) => {
-            //assert(resource, `no resource for id ${id}`);
-          }),
-          tap((resource) =>
-            retryCall({
-              name: `destroy ${client.spec.type}/${id}/${name}`,
-              fn: () =>
-                client.destroy({
-                  live,
-                  id, // TODO remove id, only use live
-                  name,
-                  meta,
-                  resource,
-                  lives,
-                }),
-              isExpectedResult: () => true,
-              //TODO isExpectedException: client.isExpectedExceptionDelete
-              shouldRetryOnException: client.shouldRetryOnExceptionDelete,
-              config: provider.config,
-            })
-          ),
-        ])(),
+      find(eq(get("name"), name)),
+      tap((resource) => {
+        //assert(resource, `no resource for id ${id}`);
+      }),
+      tap((resource) =>
+        retryCall({
+          name: `destroy ${client.spec.type}/${name}`,
+          fn: () =>
+            client.destroy({
+              live,
+              id: client.findId({ live, lives }), // TODO remove id, only use live
+              name,
+              meta,
+              resource,
+              lives,
+            }),
+          isExpectedResult: () => true,
+          //TODO isExpectedException: client.isExpectedExceptionDelete
+          shouldRetryOnException: client.shouldRetryOnExceptionDelete,
+          config: provider.config,
+        })
+      ),
       tap(() => {
         logger.info(
           `destroyByClient: DONE ${JSON.stringify({
