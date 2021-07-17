@@ -95,14 +95,12 @@ module.exports = () =>
     {
       type: "SecurityGroupRuleIngress",
       dependsOn: ["ec2::SecurityGroup"],
-      //TODO makeResource
       Client: AwsSecurityGroupRuleIngress,
       isOurMinion,
     },
     {
       type: "SecurityGroupRuleEgress",
       dependsOn: ["ec2::SecurityGroup"],
-      //TODO makeResource
       Client: AwsSecurityGroupRuleEgress,
       isOurMinion,
     },
