@@ -1,5 +1,6 @@
 exports.SecurityGroupRulesFixture = [
   {
+    SecurityGroupRuleId: "sgr-1234567890",
     GroupId: "sg-08c44658ef9788a55",
     IpProtocol: "tcp",
     FromPort: 22,
@@ -13,6 +14,7 @@ exports.SecurityGroupRulesFixture = [
     ],
   },
   {
+    SecurityGroupRuleId: "sgr-2234567890",
     GroupId: "sg-f4139a96",
     IpProtocol: "-1",
     FromPort: -1,
@@ -21,6 +23,7 @@ exports.SecurityGroupRulesFixture = [
     Tags: [],
   },
   {
+    SecurityGroupRuleId: "sgr-3234567890",
     GroupId: "sg-08c44658ef9788a55",
     IpProtocol: "tcp",
     FromPort: 22,
@@ -34,6 +37,7 @@ exports.SecurityGroupRulesFixture = [
     ],
   },
   {
+    SecurityGroupRuleId: "sgr-4234567890",
     GroupId: "sg-09e37cba85cd2b978",
     IpProtocol: "-1",
     FromPort: -1,
@@ -48,6 +52,7 @@ exports.SecurityGroupRulesFixture = [
 
 exports.SecurityGroupRulesFixtureMerged = [
   {
+    SecurityGroupRuleId: "sgr-2234567890",
     GroupId: "sg-f4139a96",
     IpPermission: {
       IpProtocol: "-1",
@@ -62,6 +67,7 @@ exports.SecurityGroupRulesFixtureMerged = [
     Tags: [],
   },
   {
+    SecurityGroupRuleId: "sgr-3234567890",
     GroupId: "sg-08c44658ef9788a55",
     IpPermission: {
       IpProtocol: "tcp",
@@ -87,6 +93,7 @@ exports.SecurityGroupRulesFixtureMerged = [
   },
 
   {
+    SecurityGroupRuleId: "sgr-4234567890",
     GroupId: "sg-09e37cba85cd2b978",
     IpPermission: {
       IpProtocol: "-1",
