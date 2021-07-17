@@ -40,6 +40,7 @@ const dbCluster = provider.rds.makeDBCluster({
 ## Dependencies
 
 - [DB Subnet Group](./DBSubnetGroup)
+- [Security Group](../EC2/SecurityGroup)
 
 ## List
 

@@ -37,6 +37,18 @@ exports.ELBListener = ({ spec, config }) => {
   const elb = ELBv2New(config);
   const { providerName } = config;
 
+  const managedByOther = ({ live, lives }) =>
+    pipe([
+      () =>
+        lives.getById({
+          type: "LoadBalancer",
+          group: "elb",
+          providerName,
+          id: live.LoadBalancerArn,
+        }),
+      get("managedByOther"),
+    ])();
+
   const findNamespaceInLoadBalancer = ({ live, lives }) =>
     pipe([
       () =>
@@ -66,10 +78,12 @@ exports.ELBListener = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "LoadBalancer",
+      group: "elb",
       ids: [live.LoadBalancerArn],
     },
     {
       type: "Certificate",
+      group: "acm",
       ids: pipe([() => live, get("Certificates"), pluck("CertificateArn")])(),
     },
   ];
@@ -237,5 +251,6 @@ exports.ELBListener = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    managedByOther,
   };
 };

@@ -48,11 +48,42 @@ const { ELBListener } = require("./ELBListener");
 exports.ELBRule = ({ spec, config }) => {
   const elb = ELBv2New(config);
   const elbListener = ELBListener({ spec, config });
+  const { providerName } = config;
+  const managedByOther = ({ live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(lives);
+        assert(live.ListenerArn);
+      }),
+      () =>
+        lives.getById({
+          type: "Listener",
+          group: "elb",
+          providerName,
+          id: live.ListenerArn,
+        }),
+      tap((listener) => {
+        assert(listener);
+      }),
+      get("live.LoadBalancerArn"),
+      tap((LoadBalancerArn) => {
+        assert(LoadBalancerArn);
+      }),
+      (LoadBalancerArn) =>
+        lives.getById({
+          type: "LoadBalancer",
+          group: "elb",
+          providerName,
+          id: LoadBalancerArn,
+        }),
+      get("managedByOther"),
+    ])();
 
   const findDependencies = ({ live }) => [
-    { type: "Listener", ids: [live.ListenerArn] },
+    { type: "Listener", group: "elb", ids: [live.ListenerArn] },
     {
       type: "TargetGroup",
+      group: "elb",
       ids: pipe([
         () => live,
         get("Actions"),
@@ -61,11 +92,6 @@ exports.ELBRule = ({ spec, config }) => {
       ])(),
     },
   ];
-
-  // const findNamespace = findNamespaceInTagsOrEksCluster({
-  //   config,
-  //   key: "elbv2.k8s.aws/cluster",
-  // });
 
   const findNamespaceInListener =
     (config) =>
@@ -264,5 +290,6 @@ exports.ELBRule = ({ spec, config }) => {
     configDefault,
     shouldRetryOnException,
     cannotBeDeleted,
+    managedByOther,
   };
 };

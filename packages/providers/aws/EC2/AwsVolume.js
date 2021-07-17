@@ -27,6 +27,7 @@ const {
   getByIdCore,
   buildTags,
   findNamespaceInTags,
+  hasKeyInTags,
 } = require("../AwsCommon");
 
 exports.AwsVolume = ({ spec, config }) => {
@@ -36,6 +37,10 @@ exports.AwsVolume = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
   const awsEC2 = AwsEC2({ config, spec });
+
+  const managedByOther = hasKeyInTags({
+    key: "kubernetes.io/cluster/",
+  });
 
   const findId = get("live.VolumeId");
   const findName = findNameInTagsOrId({ findId });
@@ -140,7 +145,8 @@ exports.AwsVolume = ({ spec, config }) => {
     pipe([
       () =>
         lives.getByType({
-          type: "EC2",
+          type: "Instance",
+          group: "ec2",
           providerName: config.providerName,
         }),
       find(eq(get("live.InstanceId"), findInstanceId(live))),
@@ -179,6 +185,7 @@ exports.AwsVolume = ({ spec, config }) => {
     configDefault,
     shouldRetryOnException,
     cannotBeDeleted,
+    managedByOther,
   };
 };
 

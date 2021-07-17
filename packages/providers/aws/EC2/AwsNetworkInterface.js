@@ -54,14 +54,17 @@ exports.AwsNetworkInterface = ({ spec, config }) => {
   const findDependencies = ({ live }) => [
     {
       type: "SecurityGroup",
+      group: "ec2",
       ids: pipe([() => live, get("Groups"), pluck("GroupId")])(),
     },
     {
       type: "Vpc",
+      group: "ec2",
       ids: [live.VpcId],
     },
     {
       type: "Subnet",
+      group: "ec2",
       ids: [live.SubnetId],
     },
   ];

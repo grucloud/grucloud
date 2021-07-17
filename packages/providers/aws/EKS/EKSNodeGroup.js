@@ -44,13 +44,14 @@ exports.EKSNodeGroup = ({ spec, config }) => {
   const eks = EKSNew(config);
 
   const findDependencies = ({ live }) => [
-    { type: "EKSCluster", ids: [live.clusterName] },
-    { type: "Subnet", ids: live.subnets },
+    { type: "Cluster", group: "eks", ids: [live.clusterName] },
+    { type: "Subnet", group: "ec2", ids: live.subnets },
     {
       type: "AutoScalingGroup",
+      group: "autoscaling",
       ids: pipe([get("resources.autoScalingGroups"), pluck("name")])(live),
     },
-    { type: "IamRole", ids: [live.nodeRole] },
+    { type: "Role", group: "iam", ids: [live.nodeRole] },
   ];
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#listNodegroups-property

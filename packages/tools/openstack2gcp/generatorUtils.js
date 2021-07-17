@@ -96,7 +96,10 @@ const buildProperties = ({ resource: { live }, pickProperties }) =>
         get("Tags", []),
         filter(
           pipe([
-            get("Key"),
+            get("Key", ""),
+            tap((params) => {
+              assert(true);
+            }),
             not(or([callProp("startsWith", "gc-"), eq(identity, "Name")])),
             tap((params) => {
               assert(true);
@@ -111,14 +114,27 @@ const buildProperties = ({ resource: { live }, pickProperties }) =>
     }),
   ])();
 
-const configTpl = ({ resourceVarName, resourceName, properties }) =>
+const configBuildPropertiesDefault = ({ properties }) =>
   pipe([
-    () => `${resourceVarName}: {
-      name: "${resourceName}"${
+    tap(() => {
+      assert(true);
+    }),
+    () =>
       !isEmpty(properties)
         ? `\n,properties: ${JSON.stringify(properties, null, 4)}`
-        : ""
-    },
+        : "",
+  ])();
+
+const configTpl = ({
+  resourceVarName,
+  resourceName,
+  properties,
+  configBuildProperties = configBuildPropertiesDefault,
+  lives,
+}) =>
+  pipe([
+    () => `${resourceVarName}: {
+      name: "${resourceName}"${configBuildProperties({ properties, lives })},
     },`,
     tap((params) => {
       assert(true);
@@ -167,6 +183,35 @@ const buildDependencies = ({ resource, lives, dependencies = {} }) =>
     }),
   ])();
 
+const codeBuildName = ({ group, type, resourceVarName }) =>
+  pipe([
+    tap(() => {
+      assert(group);
+      assert(type);
+      assert(resourceVarName);
+    }),
+    () => `name: config.${group}.${type}.${resourceVarName}.name,`,
+  ])();
+
+const codeBuildNamespace = ({ namespace }) =>
+  pipe([() => (namespace ? `\nnamespace: "${namespace}",` : "")])();
+
+const codeBuildPropertiesDefault = ({
+  group,
+  type,
+  resourceVarName,
+  properties,
+}) =>
+  pipe([
+    tap(() => {
+      assert(true);
+    }),
+    () =>
+      !isEmpty(properties)
+        ? `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`
+        : "",
+  ])();
+
 const codeTpl = ({
   group,
   type,
@@ -176,19 +221,21 @@ const codeTpl = ({
   lives,
   properties,
   createPrefix = "make",
+  codeBuildProperties = codeBuildPropertiesDefault,
 }) => `(resources) =>
 set(
   "${group}.${type}.${resourceVarName}",
   provider.${group}.${
   resource.isDefault || resource.cannotBeDeleted ? "use" : createPrefix
 }${type}({
-  name: config.${group}.${type}.${resourceVarName}.name,${
-  resource.namespace ? `\nnamespace: ${resource.namespace},` : ""
-}${buildDependencies({ resource, lives, dependencies })}${
-  !isEmpty(properties)
-    ? `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`
-    : ""
-}
+  ${codeBuildName({ group, type, resourceVarName })}${codeBuildNamespace(
+  resource
+)}${buildDependencies({ resource, lives, dependencies })}${codeBuildProperties({
+  group,
+  type,
+  resourceVarName,
+  properties,
+})}
   })
 )(resources),`;
 
@@ -216,18 +263,9 @@ const readModel = (options) =>
     }),
     () => fs.readFile(path.resolve(options.input), "utf-8"),
     JSON.parse,
-    tap((xxx) => {
-      console.log("");
-    }),
     get("result.results"),
     first,
-    tap((xxx) => {
-      console.log("");
-    }),
     get("results"),
-    tap((xxx) => {
-      console.log("");
-    }),
   ]);
 
 exports.readModel = readModel;
@@ -263,29 +301,14 @@ const writeIac =
   (resourceMap) =>
     pipe([
       () => resourceMap,
-      tap(() => {
-        assert(true);
-      }),
-      tap((params) => {
-        assert(true);
-      }),
       pluck("types"),
       flatten,
-      tap((params) => {
-        assert(true);
-      }),
       pluck("resources"),
       flatten,
-      tap((params) => {
-        assert(true);
-      }),
       filter(not(isEmpty)),
       fork({
         resourcesVarNames: pluck("resourceVarName"),
         resourcesCode: pipe([pluck("code"), callProp("join", "\n")]),
-      }),
-      tap((xxx) => {
-        assert(true);
       }),
       ({ resourcesVarNames, resourcesCode }) =>
         iacTpl({ resourcesVarNames, resourcesCode }),
@@ -296,9 +319,6 @@ const writeConfig =
   ({ filename, configTpl }) =>
   (resourceMap) =>
     pipe([
-      tap(() => {
-        assert(true);
-      }),
       () => resourceMap,
       map(({ group, types }) =>
         pipe([
@@ -374,9 +394,11 @@ const writeResource =
     resourceVarName = ResourceVarNameDefault,
     resourceName = identity,
     pickProperties = always([]),
+    codeBuildProperties,
+    configBuildProperties,
     properties = always({}),
     dependencies = always({}),
-    ignoreResource = () => always(false),
+    ignoreResource = () => get("managedByOther"),
   }) =>
   ({ resource, lives, mapping }) =>
     pipe([
@@ -417,6 +439,8 @@ const writeResource =
               resourceVarName,
               resource,
               properties,
+              configBuildProperties,
+              lives,
             }),
             code: codeTpl({
               group,
@@ -427,6 +451,7 @@ const writeResource =
               lives,
               createPrefix,
               properties,
+              codeBuildProperties,
             }),
           }),
         ]),
@@ -445,6 +470,8 @@ const writeResources =
     ignoreResource,
     resourceVarName,
     resourceName,
+    codeBuildProperties,
+    configBuildProperties,
   }) =>
   ({ lives, mapping }) =>
     pipe([
@@ -473,6 +500,8 @@ const writeResources =
               ignoreResource,
               resourceVarName,
               resourceName,
+              codeBuildProperties,
+              configBuildProperties,
             })({
               resource,
               lives,

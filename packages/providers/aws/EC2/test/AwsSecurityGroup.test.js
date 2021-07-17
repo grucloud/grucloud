@@ -1,6 +1,8 @@
 const assert = require("assert");
 const { get, eq } = require("rubico");
-const { find } = require("rubico/x");
+const { size, isEmpty } = require("rubico/x");
+const { detailedDiff } = require("deep-object-diff");
+
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
 const {
@@ -8,6 +10,12 @@ const {
   testPlanDestroy,
 } = require("@grucloud/core/E2ETestUtils");
 const { CheckAwsTags } = require("../../AwsTagCheck");
+
+const {
+  SecurityGroupRulesFixture,
+  SecurityGroupRulesFixtureMerged,
+} = require("./AwsSecurityGroupFixtures");
+const { mergeSecurityGroupRules } = require("../AwsSecurityGroupRule");
 
 describe("AwsSecurityGroup", async function () {
   let config;
@@ -106,7 +114,7 @@ describe("AwsSecurityGroup", async function () {
       }),
     });
     provider.ec2.makeSecurityGroup({
-      name: "sg-empty-ingress",
+      name: "sec-group-empty-ingress",
       dependencies: { vpc },
       properties: () => ({
         create: {
@@ -131,7 +139,15 @@ describe("AwsSecurityGroup", async function () {
   });
   it("sg apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
-
     await testPlanDestroy({ provider, types });
+  });
+
+  it("merge security group rules", async function () {
+    const merged = mergeSecurityGroupRules(SecurityGroupRulesFixture);
+    assert.equal(size(merged), 3);
+    const diff = detailedDiff(merged, SecurityGroupRulesFixtureMerged);
+    assert(isEmpty(diff.added));
+    assert(isEmpty(diff.deleted));
+    assert(isEmpty(diff.updated));
   });
 });

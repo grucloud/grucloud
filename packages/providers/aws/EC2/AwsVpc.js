@@ -193,7 +193,7 @@ exports.AwsVpc = ({ spec, config }) => {
   const destroySecurityGroup = async ({ VpcId }) =>
     pipe([
       tap(() => {
-        logger.debug(`destroySecurityGroup: VpcId: ${VpcId}`);
+        logger.debug(`vpc destroySecurityGroup: VpcId: ${VpcId}`);
       }),
       // Get the security groups belonging to this Vpc
       () =>
@@ -208,6 +208,13 @@ exports.AwsVpc = ({ spec, config }) => {
       get("SecurityGroups"),
       // remove the default security groups
       filter(not(eq(get("GroupName"), "default"))),
+      tap((securityGroups) => {
+        logger.info(
+          `vpc destroySecurityGroup: VpcId: ${VpcId} #securityGroups ${size(
+            securityGroups
+          )}`
+        );
+      }),
       map(
         tryCatch(
           pipe([

@@ -18,7 +18,7 @@ const {
   isEmpty,
   forEach,
   pluck,
-  flatten,
+  size,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSCluster" });
@@ -42,14 +42,16 @@ const findName = get("live.name");
 const findId = findName;
 
 const findDependencies = ({ live }) => [
-  { type: "Vpc", ids: [get("resourcesVpcConfig.vpcId")(live)] },
-  { type: "IamRole", ids: [live.roleArn] },
+  { type: "Vpc", group: "ec2", ids: [get("resourcesVpcConfig.vpcId")(live)] },
+  { type: "Role", group: "iam", ids: [live.roleArn] },
   {
     type: "Subnet",
+    group: "ec2",
     ids: get("resourcesVpcConfig.subnetIds")(live),
   },
   {
     type: "SecurityGroup",
+    group: "ec2",
     ids: [
       get("resourcesVpcConfig.clusterSecurityGroupId")(live),
       ...get("resourcesVpcConfig.securityGroupIds")(live),
@@ -84,13 +86,15 @@ exports.EKSCluster = ({ spec, config }) => {
           get("cluster"),
         ])
       ),
-      (clusters) => ({
-        total: clusters.length,
-        items: clusters,
-      }),
       tap((clusters) => {
-        logger.info(`getList #clusters : ${clusters.length}`);
         logger.debug(`getList clusters result: ${tos(clusters)}`);
+      }),
+      (items) => ({
+        total: size(items),
+        items,
+      }),
+      tap(({ total }) => {
+        logger.info(`getList #clusters : ${total}`);
       }),
     ])();
 

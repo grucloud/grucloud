@@ -70,6 +70,34 @@
       "port": 9229
     },
     {
+      "name": "List AWS",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": [
+        "list",
+        "--json",
+        "../../../packages/tools/openstack2gcp/aws/eks-lean/inventory.json",
+        "-g",
+        "-a",
+        "--default-exclude",
+        "--types-exclude",
+        "Certificate",
+        "--types-exclude",
+        "Route53Domain",
+        "--types-exclude",
+        "NetworkInterface",
+        "--types-exclude",
+        "Key",
+        "-p",
+        "aws"
+      ],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
       "name": "Plan",
       "type": "node",
       "request": "launch",

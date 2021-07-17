@@ -66,10 +66,16 @@
 
 - doc
 
+## Aws2gc
+
+InstanceProfile managedByOther
+
 ## Aws
 
+- throw error => throw Error(error.message);
+- retry on UnknownEndpoint
+- useCertificate or make Certificate ?
 - https://aws.amazon.com/blogs/aws/easily-manage-security-group-rules-with-the-new-security-group-rule-id/
-- eks-lean gc d -f: ✖ Subnet 0/4 You are not allowed to manage 'ela-attach' attachments.
 
 - list ec2 instance in stopped state
 - ec2 update: handle UserData
@@ -78,8 +84,6 @@
 
 - Resource pages
 - delete keypair from kops
-- HostedZone => Route53HostedZon
-- Rule => ListenerRule
 
 - aws_route53_delegation_set
 

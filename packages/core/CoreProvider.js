@@ -81,7 +81,7 @@ const {
 
 const { ResourceMaker, createClient } = require("./CoreResource");
 
-const createResourceMakers = ({ specs, config: configProvider, provider }) =>
+const createResourceMakers = ({ specs, config, provider }) =>
   pipe([
     () => specs,
     filter(not(get("listOnly"))),
@@ -90,33 +90,13 @@ const createResourceMakers = ({ specs, config: configProvider, provider }) =>
       if (!acc[spec.group] && spec.group) {
         acc[spec.group] = {};
       }
-      const makeResource = ({
-        name,
-        meta,
-        namespace,
-        config: configUser = {},
-        dependencies,
-        properties,
-        attributes,
-        filterLives,
-      }) => {
-        const config = defaultsDeep(configProvider)(configUser);
-        const resource = ResourceMaker({
-          meta,
-          name,
-          namespace,
-          filterLives,
-          properties,
-          attributes,
-          dependencies,
-          spec: defaultsDeep(SpecDefault({ config }))(spec),
-          provider,
-          config,
-        });
-        provider.targetResourcesAdd(resource);
 
-        return resource;
-      };
+      const specAll = defaultsDeep(SpecDefault({ config }))(spec);
+
+      const makeResource = specAll.makeResource({
+        provider,
+        spec: specAll,
+      });
 
       //TODO remove
       acc[`make${spec.type}`] = makeResource;
@@ -1023,6 +1003,7 @@ function CoreProvider({
           type: client.spec.type,
           group: client.spec.group,
           live,
+          managedByOther: client.managedByOther({ live, lives }),
           cannotBeDeleted: client.cannotBeDeleted({
             live,
             name: client.findName({ live, lives }),
@@ -1605,39 +1586,32 @@ function CoreProvider({
         assert(lives);
         //assert(name);
       }),
-      () => client.findId({ live, lives }),
-      tap((id) => {
-        assert(id, `destroyByClient missing id in live: ${tos(live)}`);
+      () => resourcesPerType,
+      tap((params) => {
+        assert(true);
       }),
-      (id) =>
-        pipe([
-          () => resourcesPerType,
-          tap((params) => {
-            assert(true);
-          }),
-          find(eq(get("name"), name)),
-          tap((resource) => {
-            //assert(resource, `no resource for id ${id}`);
-          }),
-          tap((resource) =>
-            retryCall({
-              name: `destroy ${client.spec.type}/${id}/${name}`,
-              fn: () =>
-                client.destroy({
-                  live,
-                  id, // TODO remove id, only use live
-                  name,
-                  meta,
-                  resource,
-                  lives,
-                }),
-              isExpectedResult: () => true,
-              //TODO isExpectedException: client.isExpectedExceptionDelete
-              shouldRetryOnException: client.shouldRetryOnExceptionDelete,
-              config: provider.config,
-            })
-          ),
-        ])(),
+      find(eq(get("name"), name)),
+      tap((resource) => {
+        //assert(resource, `no resource for id ${id}`);
+      }),
+      tap((resource) =>
+        retryCall({
+          name: `destroy ${client.spec.type}/${name}`,
+          fn: () =>
+            client.destroy({
+              live,
+              id: client.findId({ live, lives }), // TODO remove id, only use live
+              name,
+              meta,
+              resource,
+              lives,
+            }),
+          isExpectedResult: () => true,
+          //TODO isExpectedException: client.isExpectedExceptionDelete
+          shouldRetryOnException: client.shouldRetryOnExceptionDelete,
+          config: provider.config,
+        })
+      ),
       tap(() => {
         logger.info(
           `destroyByClient: DONE ${JSON.stringify({

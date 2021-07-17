@@ -32,6 +32,7 @@ const {
 } = require("../AwsCommon");
 const { retryCall } = require("@grucloud/core/Retry");
 const { getField } = require("@grucloud/core/ProviderCommon");
+const { hasKeyInTags } = require("../AwsCommon");
 
 const {
   getByNameCore,
@@ -48,6 +49,15 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
 
   const ec2 = Ec2New(config);
 
+  const managedByOther = or([
+    hasKeyInTags({
+      key: "aws:eks:cluster-name",
+    }),
+    hasKeyInTags({
+      key: "elbv2.k8s.aws/cluster",
+    }),
+  ]);
+
   const findName = ({ live, lives }) =>
     pipe([
       tap(() => {
@@ -58,7 +68,7 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
       switchCase([
         eq(identity, "default"),
         pipe([
-          () => lives.getByType({ type: "Vpc", providerName }),
+          () => lives.getByType({ type: "Vpc", group: "ec2", providerName }),
           find(eq(get("live.VpcId"), live.VpcId)),
           tap((vpc) => {
             //assert(vpc);
@@ -78,9 +88,10 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
 
   const findId = get("live.GroupId");
   const findDependencies = ({ live }) => [
-    { type: "Vpc", ids: [live.VpcId] },
+    { type: "Vpc", group: "ec2", ids: [live.VpcId] },
     {
       type: "SecurityGroup",
+      group: "ec2",
       ids: pipe([
         () => live,
         get("IpPermissions"),
@@ -228,20 +239,28 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
             retryCall({
               name: `deleteSecurityGroup: ${name}`,
               fn: () => ec2().deleteSecurityGroup({ GroupId }),
-              config: { retryCount: 5, repeatDelay: 2e3 },
+              config: { retryCount: 5, repeatDelay: 5e3 },
               isExpectedException: pipe([
                 tap((ex) => {
-                  logger.error(`delete sg isExpectedException ${tos(ex)}`);
+                  logger.error(
+                    `delete sg ${name} isExpectedException ? ${tos(ex)}`
+                  );
                 }),
                 eq(get("code"), "InvalidGroup.NotFound"),
               ]),
               shouldRetryOnException: ({ error, name }) =>
                 pipe([
+                  () => error,
                   tap(() => {
-                    logger.error(`delete shouldRetry ${tos({ name, error })}`);
+                    logger.error(
+                      `delete sg ${name} shouldRetryOnException ? ${tos({
+                        name,
+                        error,
+                      })}`
+                    );
                   }),
                   eq(get("code"), "DependencyViolation"),
-                ])(error),
+                ])(),
             }),
           tap(() =>
             retryCall({
@@ -291,5 +310,6 @@ exports.AwsSecurityGroup = ({ spec, config }) => {
     destroy,
     configDefault,
     shouldRetryOnException,
+    managedByOther,
   };
 };

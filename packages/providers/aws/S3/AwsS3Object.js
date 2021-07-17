@@ -61,7 +61,8 @@ exports.AwsS3Object = ({ spec, config }) => {
 
   const findDependencies = ({ live }) => [
     {
-      type: "S3Bucket",
+      type: "Bucket",
+      group: "s3",
       ids: pipe([
         () => live,
         get("Bucket"),

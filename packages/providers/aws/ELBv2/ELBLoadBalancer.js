@@ -24,6 +24,7 @@ const {
   buildTags,
   findNamespaceInTagsOrEksCluster,
   shouldRetryOnException,
+  hasKeyInTags,
 } = require("../AwsCommon");
 
 const findName = get("live.LoadBalancerName");
@@ -34,23 +35,32 @@ const findId = get("live.LoadBalancerArn");
 exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const elb = ELBv2New(config);
   const { providerName } = config;
+
+  const managedByOther = hasKeyInTags({
+    key: "elbv2.k8s.aws/cluster",
+  });
+
   const findDependencies = ({ live, lives }) => [
     {
-      type: "Vpc",
-      ids: [live.VpcId],
-    },
-    {
       type: "Subnet",
+      group: "ec2",
       ids: pipe([() => live, get("AvailabilityZones"), pluck("SubnetId")])(),
     },
     {
       type: "SecurityGroup",
+      group: "ec2",
       ids: live.SecurityGroups,
     },
     {
       type: "NetworkInterface",
+      group: "ec2",
       ids: pipe([
-        () => lives.getByType({ type: "NetworkInterface", providerName }),
+        () =>
+          lives.getByType({
+            type: "NetworkInterface",
+            group: "ec2",
+            providerName,
+          }),
         filter(
           pipe([
             get("live.Description"),
@@ -231,5 +241,6 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    managedByOther,
   };
 };

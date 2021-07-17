@@ -26,6 +26,7 @@ const {
   shouldRetryOnException,
   findValueInTags,
   findNamespaceInTagsOrEksCluster,
+  hasKeyInTags,
 } = require("../AwsCommon");
 const { isOurMinionObject } = require("@grucloud/core/Common");
 
@@ -63,7 +64,8 @@ exports.autoScalingGroupIsOurMinion = ({ live, lives, config }) =>
         clusterName,
         clusters: lives.getByType({
           providerName: config.providerName,
-          type: "EKSCluster",
+          type: "Cluster",
+          group: "eks",
         }),
       }),
     tap((clusterLive) => {
@@ -80,18 +82,28 @@ exports.autoScalingGroupIsOurMinion = ({ live, lives, config }) =>
 exports.AwsAutoScalingGroup = ({ spec, config }) => {
   const autoScaling = AutoScalingNew(config);
 
+  const managedByOther = hasKeyInTags({
+    key: "eks:cluster-name",
+  });
+
   const findDependencies = ({ live }) => [
-    { type: "TargetGroup", ids: live.TargetGroupARNs },
+    { type: "TargetGroup", group: "elb", ids: live.TargetGroupARNs },
     {
-      type: "EC2",
+      type: "Instance",
+      group: "ec2",
       ids: pipe([() => live, get("Instances"), pluck("InstanceId")])(),
     },
   ];
 
-  const findNamespace = findNamespaceInTagsOrEksCluster({
-    config,
-    key: "eks:cluster-name",
-  });
+  const findNamespace = pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    findNamespaceInTagsOrEksCluster({
+      config,
+      key: "eks:cluster-name",
+    }),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/AutoScaling.html#describeAutoScalingGroups-property
   const getList = async ({ params } = {}) =>
@@ -159,7 +171,7 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
                 not(includes("AutoScalingGroup name not found")),
               ]),
               (error) => {
-                throw error;
+                throw Error(error.message);
               }
             )
           ),
@@ -188,5 +200,6 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    managedByOther,
   };
 };
