@@ -46,6 +46,17 @@
       "port": 9229
     },
     {
+      "name": "Destroy Plan",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["destroy"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
       "name": "Destroy",
       "type": "node",
       "request": "launch",
@@ -55,7 +66,7 @@
       "console": "integratedTerminal",
       "cwd": "${workspaceRoot}",
       "port": 9229
-    }
+    },
     {
       "name": "Destroy -a",
       "type": "node",

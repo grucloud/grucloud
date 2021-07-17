@@ -171,7 +171,7 @@ exports.AwsAutoScalingGroup = ({ spec, config }) => {
                 not(includes("AutoScalingGroup name not found")),
               ]),
               (error) => {
-                throw error;
+                throw Error(error.message);
               }
             )
           ),

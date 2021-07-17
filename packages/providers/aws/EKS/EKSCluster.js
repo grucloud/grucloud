@@ -18,7 +18,7 @@ const {
   isEmpty,
   forEach,
   pluck,
-  flatten,
+  size,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSCluster" });
@@ -86,13 +86,15 @@ exports.EKSCluster = ({ spec, config }) => {
           get("cluster"),
         ])
       ),
-      (clusters) => ({
-        total: clusters.length,
-        items: clusters,
-      }),
       tap((clusters) => {
-        logger.info(`getList #clusters : ${clusters.length}`);
         logger.debug(`getList clusters result: ${tos(clusters)}`);
+      }),
+      (items) => ({
+        total: size(items),
+        items,
+      }),
+      tap(({ total }) => {
+        logger.info(`getList #clusters : ${total}`);
       }),
     ])();
 

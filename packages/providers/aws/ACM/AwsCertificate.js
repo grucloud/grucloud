@@ -108,7 +108,7 @@ exports.AwsCertificate = ({ spec, config }) => {
         },
         (error) => {
           logger.debug(`getById error: ${tos(error)}`);
-          throw error;
+          throw Error(error.message);
         },
       ])
     ),
