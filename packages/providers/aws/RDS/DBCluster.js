@@ -12,7 +12,7 @@ const {
   omit,
   switchCase,
 } = require("rubico");
-const { find, first, defaultsDeep, isEmpty, size } = require("rubico/x");
+const { find, first, defaultsDeep, isEmpty, size, pluck } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
