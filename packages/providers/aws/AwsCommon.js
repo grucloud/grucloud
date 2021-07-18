@@ -40,14 +40,17 @@ const proxyHandler = ({ endpointName, endpoint }) => ({
         isExpectedResult: () => true,
         shouldRetryOnException: ({ error, name }) =>
           pipe([
-            tap((error) => {
-              logger.info(`shouldRetryOnException ${name}: ${tos(error)}`);
-            }),
             () => error,
-            //TODO add network error
-            eq(get("code"), "Throttling"),
+            or([
+              eq(get("code"), "Throttling"),
+              eq(get("code"), "UnknownEndpoint"),
+            ]),
             tap((retry) => {
-              logger.debug(`shouldRetryOnException: ${retry}`);
+              logger.debug(
+                `shouldRetryOnException: ${name}:  retry: ${retry}, ${tos({
+                  error,
+                })}`
+              );
             }),
           ])(),
       });

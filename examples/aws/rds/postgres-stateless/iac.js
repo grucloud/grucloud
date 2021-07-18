@@ -111,7 +111,7 @@ const createResourcesBastion = async ({
     }),
   });
 
-  assert(config.eip);
+  assert(config.rds.eip);
   const eip = provider.ec2.makeElasticIpAddress({
     name: config.rds.eip.name,
   });
