@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-volume",
-  "version": "1.29.0",
+  "version": "1.30.0",
   "private": true,
   "description": "Example of an EBS volume attached to an EC2 Instance",
   "main": "index.js",
@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.29.0",
-    "@grucloud/provider-aws": "^1.29.0",
+    "@grucloud/provider-aws": "^1.30.0",
     "ping": "^0.4.1",
     "ssh2": "^0.8.9"
   }

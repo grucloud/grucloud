@@ -1,6 +1,6 @@
 {
   "name": "@grucloud/example-aws-route53-dns-validation-record-txt-generated",
-  "version": "1.29.0",
+  "version": "1.30.0",
   "description": "Add TXT record for a website validation by DNS ",
   "private": true,
   "main": "iac.js",
@@ -11,6 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "@grucloud/core": "^1.29.0",
-    "@grucloud/provider-aws": "^1.29.0"
+    "@grucloud/provider-aws": "^1.30.0"
   }
 }
