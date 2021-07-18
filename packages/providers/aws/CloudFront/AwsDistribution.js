@@ -181,18 +181,19 @@ exports.AwsDistribution = ({ spec, config }) => {
                   })}`
                 );
               }),
+              () => error,
               eq(get("code"), "InvalidViewerCertificate"),
               tap((retry) => {
                 logger.info(
                   `createDistributionWithTags shouldRetryOnException retry: ${retry}`
                 );
               }),
-            ])(error),
+            ])(),
         }),
       tap((result) => {
         logger.debug(`created distribution: ${name}, result: ${tos(result)}`);
       }),
-      findId,
+      get("Id"),
       tap((id) =>
         retryCall({
           name: `is distribution ${name} deployed ? name: ${name}`,
