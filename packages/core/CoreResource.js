@@ -49,7 +49,7 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
       assert(providerName);
       assert(client.spec);
       assert(client.findName);
-      //assert(client.getByName);
+      assert(client.getList);
     }),
     defaultsDeep({
       resourceKey: pipe([

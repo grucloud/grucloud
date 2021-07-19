@@ -1016,26 +1016,16 @@ function CoreProvider({
         }),
       ])();
 
-  const decorateLives = async ({ result, client, lives }) =>
-    switchCase([
-      get("error"),
-      () => result,
-      pipe([
-        tap((result) => {}),
-        get("items"),
-        filter(not(get("error"))),
-        map(decorateLive({ client, lives })),
-        (resources) => ({
-          type: client.spec.type,
-          group: client.spec.group,
-          resources,
-          providerName: client.providerName,
-        }),
-        tap((xxx) => {
-          assert(true);
-        }),
-      ]),
-    ])(result);
+  const decorateLives = ({ client, lives }) =>
+    pipe([
+      tap((params) => {
+        assert(true);
+      }),
+      get("items"), // remove
+      filter(not(get("error"))),
+      map(decorateLive({ client, lives })),
+      callProp("sort", (a, b) => a.name.localeCompare(b.name)),
+    ]);
 
   const listLives = async ({
     onStateChange = identity,
@@ -1072,23 +1062,36 @@ function CoreProvider({
         )(client.spec.dependsOn),
         executor: ({ results }) =>
           pipe([
-            () =>
-              client.getList({
-                lives,
-                deep: true,
-                resources: getResourcesByType({ type: client.spec.type }),
-              }),
-            tap((result) => {
-              assert(true);
+            tryCatch(
+              pipe([
+                () =>
+                  client.getList({
+                    lives,
+                    deep: true,
+                    resources: getResourcesByType({ type: client.spec.type }),
+                  }),
+                decorateLives({
+                  client,
+                  lives,
+                }),
+                (resources) => ({ resources }),
+              ]),
+              pipe([
+                pick(["message", "code", "stack"]),
+                tap((error) => {
+                  logger.error(`list error ${tos(error)}`);
+                }),
+                (error) => ({ error }),
+              ])
+            ),
+            //TODO add client.toString()
+            ({ error, resources }) => ({
+              error,
+              resources,
+              type: client.spec.type,
+              group: client.spec.group,
+              providerName: client.providerName,
             }),
-            (result) =>
-              decorateLives({
-                result,
-                client,
-                onStateChange,
-                options,
-                lives,
-              }),
             tap((result) => {
               lives.addResources(result);
             }),
