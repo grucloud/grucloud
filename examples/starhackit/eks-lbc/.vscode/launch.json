@@ -25,7 +25,6 @@
         "aws",
         "-g",
         "-a",
-        "--default-exclude",
         "--types-exclude",
         "Route53Domain",
         "--types-exclude",

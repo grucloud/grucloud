@@ -167,7 +167,7 @@ exports.createStack = async ({ stage }) => {
       ])(),
   });
 
-  const loadBalancerRecord = await stackAws.provider.makeRecord({
+  const loadBalancerRecord = stackAws.provider.route53.makeRecord({
     name: `dns-record-alias-load-balancer-${hostedZone.name}`,
     dependencies: { hostedZone, loadBalancer },
   });
