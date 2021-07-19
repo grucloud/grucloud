@@ -143,6 +143,14 @@ const createResources = async ({ provider }) => {
       )(resources),
     (resources) =>
       set(
+        "ec2.Vpc.vpcDefault",
+        provider.ec2.useVpc({
+          name: config.ec2.Vpc.vpcDefault.name,
+          properties: () => config.ec2.Vpc.vpcDefault.properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
         "ec2.Subnet.subnetPrivateA",
         provider.ec2.makeSubnet({
           name: config.ec2.Subnet.subnetPrivateA.name,
@@ -333,6 +341,29 @@ const createResources = async ({ provider }) => {
       )(resources),
     (resources) =>
       set(
+        "ec2.SecurityGroup.sgDefaultVpc",
+        provider.ec2.useSecurityGroup({
+          name: config.ec2.SecurityGroup.sgDefaultVpc.name,
+          dependencies: {
+            vpc: resources.ec2.Vpc.vpc,
+          },
+          properties: () => config.ec2.SecurityGroup.sgDefaultVpc.properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
+        "ec2.SecurityGroup.sgDefaultVpcDefault",
+        provider.ec2.useSecurityGroup({
+          name: config.ec2.SecurityGroup.sgDefaultVpcDefault.name,
+          dependencies: {
+            vpc: resources.ec2.Vpc.vpcDefault,
+          },
+          properties: () =>
+            config.ec2.SecurityGroup.sgDefaultVpcDefault.properties,
+        })
+      )(resources),
+    (resources) =>
+      set(
         "ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps",
         provider.ec2.makeSecurityGroupRuleIngress({
           name: config.ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps
@@ -349,6 +380,10 @@ const createResources = async ({ provider }) => {
         provider.ec2.makeSecurityGroupRuleIngress({
           name: config.ec2.SecurityGroupRuleIngress
             .sgDefaultVpcRuleIngressAllFromSg_04ad99b683420e567.name,
+          dependencies: {
+            securityGroup: resources.ec2.SecurityGroup.sgDefaultVpc,
+            securityGroupFrom: resources.ec2.SecurityGroup.sgDefaultVpc,
+          },
         })
       )(resources),
     (resources) =>
@@ -425,6 +460,9 @@ const createResources = async ({ provider }) => {
         provider.ec2.makeSecurityGroupRuleEgress({
           name: config.ec2.SecurityGroupRuleEgress.sgDefaultVpcRuleEgressAllV4
             .name,
+          dependencies: {
+            securityGroup: resources.ec2.SecurityGroup.sgDefaultVpc,
+          },
         })
       )(resources),
     (resources) =>

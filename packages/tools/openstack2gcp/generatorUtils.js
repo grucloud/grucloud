@@ -116,18 +116,19 @@ const buildProperties = ({ resource: { live }, pickProperties }) =>
     }),
   ])();
 
-const configBuildPropertiesDefault = ({ properties }) =>
+const configBuildPropertiesDefault = ({ resource, properties }) =>
   pipe([
     tap(() => {
-      assert(true);
+      assert(resource);
     }),
     () =>
-      !isEmpty(properties)
+      !isEmpty(properties) && !resource.isDefault
         ? `\n,properties: ${JSON.stringify(properties, null, 4)}`
         : "",
   ])();
 
 const configTpl = ({
+  resource,
   resourceVarName,
   resourceName,
   properties,
@@ -136,7 +137,11 @@ const configTpl = ({
 }) =>
   pipe([
     () => `${resourceVarName}: {
-      name: "${resourceName}"${configBuildProperties({ properties, lives })},
+      name: "${resourceName}"${configBuildProperties({
+      resource,
+      properties,
+      lives,
+    })},
     },`,
     tap((params) => {
       assert(true);

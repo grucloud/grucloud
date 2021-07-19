@@ -324,6 +324,9 @@ module.exports = ({ stage }) => ({
           ],
         },
       },
+      vpcDefault: {
+        name: "vpc-default",
+      },
     },
     Subnet: {
       subnetPrivateA: {
@@ -472,6 +475,12 @@ module.exports = ({ stage }) => ({
             },
           ],
         },
+      },
+      sgDefaultVpc: {
+        name: "sg-default-vpc",
+      },
+      sgDefaultVpcDefault: {
+        name: "sg-default-vpc-default",
       },
     },
     SecurityGroupRuleIngress: {
