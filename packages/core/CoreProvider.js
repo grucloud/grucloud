@@ -8,6 +8,7 @@ const {
   filter,
   tryCatch,
   switchCase,
+  set,
   get,
   assign,
   any,
@@ -42,7 +43,7 @@ const {
 const logger = require("./logger")({ prefix: "CoreProvider" });
 const { tos } = require("./tos");
 const { checkConfig, checkEnv } = require("./Utils");
-const { SpecDefault } = require("./SpecDefault");
+const { createSpec } = require("./SpecDefault");
 const { retryCall } = require("./Retry");
 const {
   mapPoolSize,
@@ -80,86 +81,31 @@ const {
   providerRunning,
 } = require("./ProviderCommon");
 
-const { ResourceMaker, createClient } = require("./CoreResource");
+const { createClient } = require("./CoreResource");
 
-const createResourceMakers = ({ specs, config, provider }) =>
-  pipe([
-    () => specs,
-    filter(not(get("listOnly"))),
-    reduce((acc, spec) => {
-      assert(spec.type);
-      if (!acc[spec.group] && spec.group) {
-        acc[spec.group] = {};
-      }
-
-      const specAll = defaultsDeep(SpecDefault({ config }))(spec);
-
-      const makeResource = specAll.makeResource({
-        provider,
-        spec: specAll,
-      });
-
-      //TODO remove
-      acc[`make${spec.type}`] = makeResource;
-      if (spec.group) {
-        acc[spec.group][`make${spec.type}`] = makeResource;
-      }
-
-      return acc;
-    }, {}),
-  ])();
-
-const createResourceMakersListOnly = ({
+const createResourceMakers = ({
   specs,
-  config: configProvider,
   provider,
+  filterResource = identity,
+  prefix,
 }) =>
   pipe([
     () => specs,
-    reduce((acc, spec) => {
-      assert(spec.type);
-      if (!acc[spec.group] && spec.group) {
-        acc[spec.group] = {};
-      }
-      const useResource = ({
-        name,
-        meta,
-        namespace,
-        config: configUser = {},
-        dependencies,
-        properties,
-        attributes,
-        filterLives,
-      }) => {
-        const config = defaultsDeep(configProvider)(configUser);
-        const resource = ResourceMaker({
-          meta,
-          name,
-          namespace,
-          filterLives,
-          properties,
-          attributes,
-          dependencies,
-          readOnly: true,
-          spec: pipe([
-            () => ({ listOnly: true }),
-            defaultsDeep(SpecDefault({ config })),
-            defaultsDeep(spec),
-          ])(),
-          provider,
-          config,
-        });
-        provider.targetResourcesAdd(resource);
-
-        return resource;
-      };
-
-      acc[`use${spec.type}`] = useResource;
-      if (spec.group) {
-        acc[spec.group][`use${spec.type}`] = useResource;
-      }
-      return acc;
-    }, {}),
+    filter(filterResource),
+    reduce(
+      (acc, spec) =>
+        set(
+          `${spec.group ? `${spec.group}.` : ""}${prefix}${spec.type}`,
+          spec[`${prefix}Resource`]({
+            provider,
+            spec,
+          })
+        )(acc),
+      {}
+    ),
+    tap((params) => {
+      assert(true);
+    }),
   ])();
 
 function CoreProvider({
@@ -288,10 +234,16 @@ function CoreProvider({
     (uri) => mapNameToResource.get(uri),
   ]);
 
-  const specs = fnSpecs(providerConfig).map((spec) =>
-    defaultsDeep(SpecDefault({ config: providerConfig, providerName }))(spec)
-  );
-  const getSpecs = () => specs;
+  const getSpecs = () =>
+    pipe([
+      () => fnSpecs(providerConfig),
+      map(createSpec({ config: providerConfig })),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
+  const specs = getSpecs();
 
   const clients = specs.map((spec) =>
     createClient({
@@ -1115,7 +1067,7 @@ function CoreProvider({
             ),
             //TODO add client.toString()
             ({ error, resources }) => ({
-              error,
+              ...(error && { error }),
               resources,
               type: client.spec.type,
               group: client.spec.group,
@@ -1149,18 +1101,12 @@ function CoreProvider({
       tap((result) => {
         assert(result);
       }),
-      //TODO do we still need that ?
-      assign({
-        results: pipe([
-          get("results"),
-          filter(
-            or([
-              and([pipe([get("resources"), not(isEmpty)])]),
-              pipe([get("error"), not(isEmpty)]),
-            ])
-          ),
-        ]),
-      }),
+      // assign({
+      //   results: pipe([
+      //     get("results"),
+      //     callProp("sort", (a, b) => localeCompare)
+      //   ]),
+      // }),
       tap((result) => {
         assert(result);
       }),
@@ -1718,7 +1664,7 @@ function CoreProvider({
             onStateChange,
           }),
         }),
-      (planner) => planner.run(),
+      callProp("run"),
       tap((xxx) => {
         assert(xxx);
       }),
@@ -1793,11 +1739,14 @@ function CoreProvider({
       },
     }),
     defaultsDeep(
-      createResourceMakers({ provider, config: providerConfig, specs })
+      createResourceMakers({
+        provider,
+        specs,
+        prefix: "make",
+        filterResource: not(get("listOnly")),
+      })
     ),
-    defaultsDeep(
-      createResourceMakersListOnly({ provider, config: providerConfig, specs })
-    ),
+    defaultsDeep(createResourceMakers({ provider, specs, prefix: "use" })),
     tap((xxx) => {
       assert(true);
     }),
