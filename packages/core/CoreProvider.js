@@ -36,6 +36,7 @@ const {
   isFunction,
   identity,
   size,
+  uniq,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreProvider" });
@@ -1027,6 +1028,29 @@ function CoreProvider({
       callProp("sort", (a, b) => a.name.localeCompare(b.name)),
     ]);
 
+  const findClientByGroupType = (clients) => (groupType) =>
+    pipe([
+      tap(() => {
+        assert(clients);
+        assert(groupType);
+      }),
+      () => clients,
+      find(
+        eq((client) => `${client.spec.group}::${client.spec.type}`, groupType)
+      ),
+    ])();
+
+  const findClientDependencies = (client) =>
+    pipe([
+      () => client,
+      get("spec.dependsOn", []),
+      map(findClientByGroupType(getClients())),
+      flatMap(findClientDependencies),
+      (clients) => [client, ...clients],
+    ])();
+
+  const addDependentClients = pipe([flatMap(findClientDependencies), uniq]);
+
   const listLives = async ({
     onStateChange = identity,
     options = {},
@@ -1051,6 +1075,7 @@ function CoreProvider({
         filterReadWriteClient({ options, targetTypes: getTargetTypes() }),
         filterReadClient({ options, targetTypes: getTargetTypes() }),
       ]),
+      addDependentClients,
       tap((clients) => {
         logger.info(`listLives #clients ${size(clients)}`);
       }),
@@ -1077,7 +1102,7 @@ function CoreProvider({
                 (resources) => ({ resources }),
               ]),
               pipe([
-                pick(["message", "code", "stack"]),
+                pick(["message", "code", "stack", "config", "response"]),
                 tap((error) => {
                   logger.error(`list error ${tos(error)}`);
                 }),

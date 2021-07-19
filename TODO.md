@@ -1,6 +1,5 @@
 ## Bugs
 
-- gc l -t Record is broken, it does not fetch the dependencies
 - gc a: when an assert is thrown, it does not exit but ask for deployment confirmation.
 - check stage for all providers
 
@@ -17,6 +16,7 @@
 
 ## Common:
 
+- TODO add client.toString()
 - gc info with config for gcp and azure
 - https://stackshare.io/terraform/alternatives
 - case where provider does have any resources
