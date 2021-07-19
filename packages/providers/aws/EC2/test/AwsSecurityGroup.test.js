@@ -101,42 +101,6 @@ describe("AwsSecurityGroup", async function () {
     });
   });
   after(async () => {});
-  it("empty ingress", async function () {
-    const provider = AwsProvider({
-      config: () => ({ projectName: "gru-test" }),
-    });
-    await provider.start();
-
-    const vpc = provider.ec2.makeVpc({
-      name: "vpc-empty-ingress",
-      properties: () => ({
-        CidrBlock: "11.10.0.1/16",
-      }),
-    });
-    provider.ec2.makeSecurityGroup({
-      name: "sec-group-empty-ingress",
-      dependencies: { vpc },
-      properties: () => ({
-        create: {
-          Description: "Security Group Description",
-        },
-      }),
-    });
-    await testPlanDestroy({ provider, types });
-
-    try {
-      await testPlanDeploy({ provider, types });
-      assert(!error, "should have failed");
-    } catch (exception) {
-      assert(
-        exception.error.resultDeploy.results[0].resultCreate.results[1].error
-          .code,
-        "InvalidParameterValue"
-      );
-    }
-
-    await testPlanDestroy({ provider, types });
-  });
   it("sg apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
     await testPlanDestroy({ provider, types });
