@@ -3,6 +3,36 @@ module.exports = ({ stage }) => ({
   projectName: pkg.name,
   iam: {
     Policy: {
+      amazonEc2ContainerRegistryReadOnly: {
+        name: "AmazonEC2ContainerRegistryReadOnly",
+        properties: {
+          Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+        },
+      },
+      amazonEksCniPolicy: {
+        name: "AmazonEKS_CNI_Policy",
+        properties: {
+          Arn: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+        },
+      },
+      amazonEksClusterPolicy: {
+        name: "AmazonEKSClusterPolicy",
+        properties: {
+          Arn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+        },
+      },
+      amazonEksvpcResourceController: {
+        name: "AmazonEKSVPCResourceController",
+        properties: {
+          Arn: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
+        },
+      },
+      amazonEksWorkerNodePolicy: {
+        name: "AmazonEKSWorkerNodePolicy",
+        properties: {
+          Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+        },
+      },
       awsLoadBalancerControllerIamPolicy: {
         name: "AWSLoadBalancerControllerIAMPolicy",
         properties: {
@@ -197,36 +227,6 @@ module.exports = ({ stage }) => ({
           Description: "Load Balancer Policy",
         },
       },
-      amazonEksClusterPolicy: {
-        name: "AmazonEKSClusterPolicy",
-        properties: {
-          Arn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
-        },
-      },
-      amazonEksvpcResourceController: {
-        name: "AmazonEKSVPCResourceController",
-        properties: {
-          Arn: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
-        },
-      },
-      amazonEksWorkerNodePolicy: {
-        name: "AmazonEKSWorkerNodePolicy",
-        properties: {
-          Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-        },
-      },
-      amazonEc2ContainerRegistryReadOnly: {
-        name: "AmazonEC2ContainerRegistryReadOnly",
-        properties: {
-          Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-        },
-      },
-      amazonEksCniPolicy: {
-        name: "AmazonEKS_CNI_Policy",
-        properties: {
-          Arn: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
-        },
-      },
     },
     Role: {
       roleCluster: {
@@ -260,12 +260,12 @@ module.exports = ({ stage }) => ({
                 Effect: "Allow",
                 Principal: {
                   Federated:
-                    "arn:aws:iam::840541460064:oidc-provider/oidc.eks.eu-west-2.amazonaws.com/id/36FF899D2FFA7296225778F72B9E07B9",
+                    "arn:aws:iam::840541460064:oidc-provider/oidc.eks.eu-west-2.amazonaws.com/id/C515FB4B09AC134E3D04F72771045CF5",
                 },
                 Action: "sts:AssumeRoleWithWebIdentity",
                 Condition: {
                   StringEquals: {
-                    "oidc.eks.eu-west-2.amazonaws.com/id/36FF899D2FFA7296225778F72B9E07B9:aud":
+                    "oidc.eks.eu-west-2.amazonaws.com/id/C515FB4B09AC134E3D04F72771045CF5:aud":
                       "sts.amazonaws.com",
                   },
                 },
@@ -295,8 +295,8 @@ module.exports = ({ stage }) => ({
       },
     },
     InstanceProfile: {
-      eks_2ebd5779_066c_7078_9a82_5b430171dea7: {
-        name: "eks-2ebd5779-066c-7078-9a82-5b430171dea7",
+      eksA2bd5f29_3c87E677Fda4_26fc08e79a1d: {
+        name: "eks-a2bd5f29-3c87-e677-fda4-26fc08e79a1d",
       },
     },
     OpenIDConnectProvider: {
@@ -326,6 +326,25 @@ module.exports = ({ stage }) => ({
       },
     },
     Subnet: {
+      subnetPrivateA: {
+        name: "subnet-private-a",
+        properties: {
+          CidrBlock: "192.168.96.0/19",
+          AvailabilityZone: "eu-west-2a",
+          MapPublicIpOnLaunch: false,
+          MapCustomerOwnedIpOnLaunch: false,
+          Tags: [
+            {
+              Key: "kubernetes.io/role/internal-elb",
+              Value: "1",
+            },
+            {
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "shared",
+            },
+          ],
+        },
+      },
       subnetPrivateB: {
         name: "subnet-private-b",
         properties: {
@@ -383,25 +402,6 @@ module.exports = ({ stage }) => ({
           ],
         },
       },
-      subnetPrivateA: {
-        name: "subnet-private-a",
-        properties: {
-          CidrBlock: "192.168.96.0/19",
-          AvailabilityZone: "eu-west-2a",
-          MapPublicIpOnLaunch: false,
-          MapCustomerOwnedIpOnLaunch: false,
-          Tags: [
-            {
-              Key: "kubernetes.io/role/internal-elb",
-              Value: "1",
-            },
-            {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "shared",
-            },
-          ],
-        },
-      },
     },
     KeyPair: {
       kp: {
@@ -427,20 +427,14 @@ module.exports = ({ stage }) => ({
       routeTablePrivateA: {
         name: "route-table-private-a",
       },
-      routeTablePublic: {
-        name: "route-table-public",
-      },
       routeTablePrivateB: {
         name: "route-table-private-b",
       },
+      routeTablePublic: {
+        name: "route-table-public",
+      },
     },
     Route: {
-      routePublic: {
-        name: "route-public",
-        properties: {
-          DestinationCidrBlock: "0.0.0.0/0",
-        },
-      },
       routePrivateA: {
         name: "route-private-a",
         properties: {
@@ -449,6 +443,12 @@ module.exports = ({ stage }) => ({
       },
       routePrivateB: {
         name: "route-private-b",
+        properties: {
+          DestinationCidrBlock: "0.0.0.0/0",
+        },
+      },
+      routePublic: {
+        name: "route-public",
         properties: {
           DestinationCidrBlock: "0.0.0.0/0",
         },
@@ -475,91 +475,34 @@ module.exports = ({ stage }) => ({
       },
     },
     SecurityGroupRuleIngress: {
-      sgNodesRuleIngressAll: {
-        name: "sg-nodes-rule-ingress-all",
-        properties: {
-          IpProtocol: "-1",
-          FromPort: -1,
-          ToPort: -1,
-          CidrIpv4: "0.0.0.0/0",
-        },
+      sgClusterRuleIngressHttps: {
+        name: "sg-cluster-rule-ingress-https",
+      },
+      sgDefaultVpcRuleIngressAllFromSg_04ad99b683420e567: {
+        name: "sg-default-vpc-rule-ingress-all-from-sg-04ad99b683420e567",
       },
       sgNodesRuleIngressAll: {
         name: "sg-nodes-rule-ingress-all",
-        properties: {
-          IpProtocol: "-1",
-          FromPort: -1,
-          ToPort: -1,
-          CidrIpv6: "::/0",
-        },
-      },
-      sgClusterRuleIngressHttps: {
-        name: "sg-cluster-rule-ingress-https",
-        properties: {
-          IpProtocol: "tcp",
-          FromPort: 443,
-          ToPort: 443,
-          CidrIpv4: "0.0.0.0/0",
-        },
       },
       sgRuleNodeGroupIngressCluster: {
         name: "sg-rule-node-group-ingress-cluster",
-        properties: {
-          IpProtocol: "tcp",
-          FromPort: 1025,
-          ToPort: 65535,
-          CidrIpv4: "0.0.0.0/0",
-        },
       },
       sgRuleNodeGroupIngressCluster: {
         name: "sg-rule-node-group-ingress-cluster",
-        properties: {
-          IpProtocol: "tcp",
-          FromPort: 1025,
-          ToPort: 65535,
-          ReferencedGroupInfo: {
-            GroupId: "sg-05cd69f653e9eb6a7",
-            UserId: "840541460064",
-          },
-        },
-      },
-      sgClusterRuleIngressHttps: {
-        name: "sg-cluster-rule-ingress-https",
-        properties: {
-          IpProtocol: "tcp",
-          FromPort: 443,
-          ToPort: 443,
-          CidrIpv6: "::/0",
-        },
-      },
-      sgRuleNodeGroupIngressCluster: {
-        name: "sg-rule-node-group-ingress-cluster",
-        properties: {
-          IpProtocol: "tcp",
-          FromPort: 1025,
-          ToPort: 65535,
-          CidrIpv6: "::/0",
-        },
       },
     },
     SecurityGroupRuleEgress: {
-      sgClusterRuleEgress: {
-        name: "sg-cluster-rule-egress",
-        properties: {
-          IpProtocol: "tcp",
-          FromPort: 1024,
-          ToPort: 65535,
-          CidrIpv4: "0.0.0.0/0",
-        },
+      securityGroupClusterRuleEgressAllV4: {
+        name: "security-group-cluster-rule-egress-all-v4",
+      },
+      securityGroupNodeRuleEgressAllV4: {
+        name: "security-group-node-rule-egress-all-v4",
       },
       sgClusterRuleEgress: {
         name: "sg-cluster-rule-egress",
-        properties: {
-          IpProtocol: "tcp",
-          FromPort: 1024,
-          ToPort: 65535,
-          CidrIpv6: "::/0",
-        },
+      },
+      sgDefaultVpcRuleEgressAllV4: {
+        name: "sg-default-vpc-rule-egress-all-v4",
       },
     },
   },
@@ -586,6 +529,13 @@ module.exports = ({ stage }) => ({
         properties: {
           DomainName: "starhackit-eks-lbc.grucloud.org",
           SubjectAlternativeNames: ["starhackit-eks-lbc.grucloud.org"],
+        },
+      },
+      starhackitEksLeanGrucloudOrg: {
+        name: "starhackit-eks-lean.grucloud.org",
+        properties: {
+          DomainName: "starhackit-eks-lean.grucloud.org",
+          SubjectAlternativeNames: ["starhackit-eks-lean.grucloud.org"],
         },
       },
     },
@@ -626,28 +576,26 @@ module.exports = ({ stage }) => ({
   },
   route53: {
     HostedZone: {
+      grucloudOrg: {
+        name: "grucloud.org.",
+        properties: {
+          Name: "grucloud.org.",
+        },
+      },
       starhackitEksLbcGrucloudOrg: {
         name: "starhackit-eks-lbc.grucloud.org.",
         properties: {
           Name: "starhackit-eks-lbc.grucloud.org.",
         },
       },
-    },
-    Record: {
-      dnsRecordAliasLoadBalancerStarhackitEksLbcGrucloudOrg: {
-        name: "dns-record-alias-load-balancer-starhackit-eks-lbc.grucloud.org.",
+      testLoadBalancerGrucloudOrg: {
+        name: "test-load-balancer.grucloud.org.",
         properties: {
-          Name: "starhackit-eks-lbc.grucloud.org.",
-          Type: "A",
-          ResourceRecords: [],
-          AliasTarget: {
-            HostedZoneId: "ZHURV8PSTC4K8",
-            DNSName:
-              "k8s-default-ingress-e514cce9f1-1778706756.eu-west-2.elb.amazonaws.com.",
-            EvaluateTargetHealth: false,
-          },
+          Name: "test-load-balancer.grucloud.org.",
         },
       },
+    },
+    Record: {
       certificateValidationStarhackitEksLbcGrucloudOrg: {
         name: "certificate-validation-starhackit-eks-lbc.grucloud.org.",
         properties: {
@@ -660,6 +608,20 @@ module.exports = ({ stage }) => ({
                 "_009ebaa39ee9a4d18d0ebd96e91635bf.bbfvkzsszw.acm-validations.aws.",
             },
           ],
+        },
+      },
+      dnsRecordAliasLoadBalancerStarhackitEksLbcGrucloudOrg: {
+        name: "dns-record-alias-load-balancer-starhackit-eks-lbc.grucloud.org.",
+        properties: {
+          Name: "starhackit-eks-lbc.grucloud.org.",
+          Type: "A",
+          ResourceRecords: [],
+          AliasTarget: {
+            HostedZoneId: "ZHURV8PSTC4K8",
+            DNSName:
+              "k8s-default-ingress-e514cce9f1-1921463058.eu-west-2.elb.amazonaws.com.",
+            EvaluateTargetHealth: false,
+          },
         },
       },
     },
