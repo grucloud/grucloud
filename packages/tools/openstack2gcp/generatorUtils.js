@@ -37,6 +37,8 @@ const {
   isObject,
   flatten,
   defaultsDeep,
+  forEach,
+  size,
 } = require("rubico/x");
 
 const ResourceVarNameDefault = pipe([
@@ -378,8 +380,8 @@ const findLiveById =
       find(eq(get("type"), type)),
       get("resources"),
       find(eq(get("id"), id)),
-      tap((xxx) => {
-        //console.log(`findName`);
+      tap((live) => {
+        assert(live, `no live for ${type}, id: ${id}`);
       }),
     ])();
 
