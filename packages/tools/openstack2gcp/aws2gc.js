@@ -166,10 +166,11 @@ const writersSpec = [
               (dependency) =>
                 pipe([
                   () => resource,
-                  eq(
-                    get("live.ReferencedGroupInfo.GroupId"),
-                    dependency.live.GroupId
-                  ),
+                  get("live.IpPermission.UserIdGroupPairs[0]"),
+                  tap((params) => {
+                    assert(dependency.live.GroupId);
+                  }),
+                  eq(get("GroupId"), dependency.live.GroupId),
                 ])(),
           },
         }),
