@@ -1049,7 +1049,11 @@ function CoreProvider({
       (clients) => [client, ...clients],
     ])();
 
-  const addDependentClients = pipe([flatMap(findClientDependencies), uniq]);
+  const addDependentClients = pipe([
+    flatMap(findClientDependencies),
+    filter(not(isEmpty)),
+    uniq,
+  ]);
 
   const listLives = async ({
     onStateChange = identity,
