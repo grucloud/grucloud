@@ -1069,6 +1069,7 @@ function CoreProvider({
             ({ error, resources }) => ({
               ...(error && { error }),
               resources,
+              groupType: client.spec.groupType,
               type: client.spec.type,
               group: client.spec.group,
               providerName: client.providerName,
@@ -1101,12 +1102,12 @@ function CoreProvider({
       tap((result) => {
         assert(result);
       }),
-      // assign({
-      //   results: pipe([
-      //     get("results"),
-      //     callProp("sort", (a, b) => localeCompare)
-      //   ]),
-      // }),
+      assign({
+        results: pipe([
+          get("results"),
+          callProp("sort", (a, b) => a.groupType.localeCompare(b.groupType)),
+        ]),
+      }),
       tap((result) => {
         assert(result);
       }),
