@@ -1,0 +1,9 @@
+@startmindmap
+title Resources for project symmetric
+skinparam monochrome true
++ Infra
+++ aws
++++ kms
+++++ Key (1)
++++++ secret-key-test
+@endmindmap

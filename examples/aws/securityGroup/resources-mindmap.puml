@@ -1,0 +1,15 @@
+@startmindmap
+title Resources for project securityGroup
+skinparam monochrome true
++ Infra
+++ aws
++++ ec2
+++++ Vpc (1)
++++++ vpc-test-sg
+++++ SecurityGroup (1)
++++++ security-group-test
+++++ SecurityGroupRuleIngress (1)
++++++ sg-rule-ingress-port-22
+++++ SecurityGroupRuleEgress (1)
++++++ sg-rule-egress
+@endmindmap

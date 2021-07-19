@@ -4,8 +4,13 @@ skinparam monochrome true
 + Infra
 ++ mock
 +++ Ip (1)
+++++ myip
 +++ Image (1)
+++++ ubuntu
 +++ Volume (1)
+++++ volume1
 +++ SecurityGroup (1)
+++++ sg
 +++ Server (1)
+++++ web-server
 @endmindmap
