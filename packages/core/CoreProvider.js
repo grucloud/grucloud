@@ -1691,7 +1691,11 @@ function CoreProvider({
     ),
     defaultsDeep(createResourceMakers({ provider, specs, prefix: "use" })),
     defaultsDeep(
-      createResourceMakers({ provider, specs, prefix: "useDefault" })
+      createResourceMakers({
+        provider,
+        specs,
+        prefix: "useDefault",
+      })
     ),
 
     tap((xxx) => {
