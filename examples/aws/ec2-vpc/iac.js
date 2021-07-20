@@ -160,8 +160,8 @@ exports.createStack = async () => {
   // Create a AWS provider
   const provider = AwsProvider({ config: require("./config") });
 
-  const keyPair = provider.ec2.useKeyPair({
-    name: "kp",
+  const keyPair = provider.ec2.makeKeyPair({
+    name: "kp-ec2-vpc",
   });
 
   const resources = await createResources({ provider, resources: { keyPair } });

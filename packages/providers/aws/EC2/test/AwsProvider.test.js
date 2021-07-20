@@ -40,7 +40,7 @@ describe("AwsProvider", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    keyPair = provider.ec2.useKeyPair({
+    keyPair = provider.ec2.makeKeyPair({
       name: keyPairName,
     });
 
@@ -162,17 +162,6 @@ describe("AwsProvider", async function () {
   });
   it("aws apply plan", async function () {
     await testPlanDeploy({ provider });
-
-    const serverLive = await server.getLive();
-
-    assert(
-      CheckAwsTags({
-        config: provider.config,
-        tags: serverLive.Tags,
-        name: server.name,
-      })
-    );
-
     await testPlanDestroy({ provider });
   });
 });

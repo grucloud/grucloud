@@ -1,4 +1,5 @@
 const assert = require("assert");
+const path = require("path");
 
 const ping = require("ping");
 const Client = require("ssh2").Client;
@@ -9,9 +10,8 @@ const testPing = ({ host }) =>
     timeout: 10,
   });
 
-//const privateKey = require("fs").readFileSync(
-//  path.resolve(__dirname, "../../../secrets/kp.pem")
-//);
+const readPrivateKey = () =>
+  require("fs").readFileSync(path.resolve(__dirname, "kp-ec2-vpc.pem"));
 
 const testSsh = async ({ host, username = "ec2-user" }) =>
   await new Promise((resolve, reject) => {
@@ -23,15 +23,15 @@ const testSsh = async ({ host, username = "ec2-user" }) =>
         resolve();
       })
       .on("error", function (error) {
-        // console.log(`cannot ssh to ${host}`, error);
+        //console.log(`cannot ssh to ${host}`, error);
         reject(error);
       })
       .connect({
         host,
         port: 22,
         username,
-        agent: process.env.SSH_AUTH_SOCK,
-        //privateKey,
+        //agent: process.env.SSH_AUTH_SOCK,
+        privateKey: readPrivateKey(),
       });
   });
 

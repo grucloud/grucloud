@@ -1,13 +1,17 @@
 const assert = require("assert");
 const { ConfigLoader } = require("@grucloud/core/ConfigLoader");
 const { AwsProvider } = require("../../AwsProvider");
+const {
+  testPlanDeploy,
+  testPlanDestroy,
+} = require("@grucloud/core/E2ETestUtils");
 
 describe("AwsKeyPair", async function () {
   let config;
   let provider;
   let keyPair;
   let keyPairKo;
-
+  const types = ["KeyPair"];
   before(async function () {
     try {
       config = ConfigLoader({ path: "../../../examples/multi" });
@@ -17,21 +21,22 @@ describe("AwsKeyPair", async function () {
     provider = AwsProvider({
       config: () => ({ projectName: "gru-test" }),
     });
-
-    keyPair = provider.ec2.useKeyPair({
-      name: "kp",
-    });
   });
   after(async () => {});
-  it("keyPair name", async function () {
-    assert.equal(keyPair.name, "kp");
-  });
-  it.skip("keyPair getLive", async function () {
-    const live = await keyPair.getLive();
-    assert.equal(live.KeyName, keyPair.name);
-  });
+  it("keyPair create", async function () {
+    const keyPair = provider.ec2.makeKeyPair({
+      name: "kp",
+    });
+    try {
+      await provider.start();
 
-  it("keyPair name not found on server", async function () {
+      await testPlanDeploy({ provider, types });
+      await testPlanDestroy({ provider, types });
+    } catch (error) {
+      throw error;
+    }
+  });
+  it.skip("keyPair name not found on server", async function () {
     provider.ec2.useKeyPair({
       name: "idonotexist",
     });

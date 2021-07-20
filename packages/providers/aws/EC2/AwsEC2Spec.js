@@ -32,7 +32,6 @@ module.exports = () =>
     {
       type: "KeyPair",
       Client: AwsClientKeyPair,
-      listOnly: true,
       isOurMinion, // TODO do we need isOurMinion for listOnly ?
     },
     {

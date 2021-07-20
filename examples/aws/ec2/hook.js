@@ -9,11 +9,10 @@ const testPing = ({ host }) =>
     timeout: 10,
   });
 
-//const privateKey = require("fs").readFileSync(
-//  path.resolve(__dirname, "../../../secrets/kp.pem")
-//);
+const readPrivateKey = ({ keyName }) =>
+  require("fs").readFileSync(path.resolve(__dirname, `${keyName}.pem`));
 
-const testSsh = async ({ host, username = "ec2-user" }) =>
+const testSsh = async ({ host, username = "ec2-user", keyName }) =>
   await new Promise((resolve, reject) => {
     const conn = new Client();
     conn
@@ -23,15 +22,15 @@ const testSsh = async ({ host, username = "ec2-user" }) =>
         resolve();
       })
       .on("error", function (error) {
-        // console.log(`cannot ssh to ${host}`, error);
+        console.log(`cannot ssh to ${host}`, error);
         reject(error);
       })
       .connect({
         host,
         port: 22,
         username,
-        agent: process.env.SSH_AUTH_SOCK,
-        //privateKey,
+        //agent: process.env.SSH_AUTH_SOCK,
+        privateKey: readPrivateKey({ keyName }),
       });
   });
 
@@ -78,7 +77,7 @@ module.exports = ({ resources: { eip, ec2Instance }, provider }) => {
             await retryCall({
               name: `ssh ${host}`,
               fn: async () => {
-                await testSsh({ host });
+                await testSsh({ host, keyName: provider.config.keyPair.name });
                 return true;
               },
               shouldRetryOnException: () => true,

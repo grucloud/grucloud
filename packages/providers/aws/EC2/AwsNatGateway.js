@@ -120,6 +120,7 @@ exports.AwsNatGateway = ({ spec, config }) => {
         assert(eip, "NatGateway is missing the dependency 'eip'");
         assert(subnet, "NatGateway is missing the dependency 'subnet'");
       }),
+      //TODO move to configDefault
       () =>
         defaultsDeep({
           AllocationId: eip.live.AllocationId,
@@ -173,7 +174,7 @@ exports.AwsNatGateway = ({ spec, config }) => {
   const destroy = async ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy nat ${tos({ name, id })}`);
+        logger.info(`destroy nat ${JSON.stringify({ name, id })}`);
       }),
       () => disassociateAddress({ NatGatewayId: id }),
       () => ec2().deleteNatGateway({ NatGatewayId: id }),
@@ -185,11 +186,11 @@ exports.AwsNatGateway = ({ spec, config }) => {
         })
       ),
       tap(() => {
-        logger.debug(`destroyed nat ${tos({ name, id })}`);
+        logger.debug(`destroyed nat ${JSON.stringify({ name, id })}`);
       }),
     ])();
 
-  const configDefault = async ({ name, namespace, properties }) =>
+  const configDefault = ({ name, namespace, properties }) =>
     defaultsDeep({
       TagSpecifications: [
         {
