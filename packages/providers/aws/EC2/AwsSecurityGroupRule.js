@@ -14,6 +14,7 @@ const {
   assign,
 } = require("rubico");
 const {
+  callProp,
   size,
   includes,
   defaultsDeep,
@@ -38,7 +39,11 @@ const {
 } = require("../AwsCommon");
 
 const findProperty = (property) =>
-  pipe([get("rules"), find(get(property)), get(property)]);
+  pipe([
+    get("rules"),
+    find(callProp("hasOwnProperty", property)),
+    get(property),
+  ]);
 
 const mergeSecurityGroupRules = (rules) =>
   pipe([
@@ -59,11 +64,11 @@ const mergeSecurityGroupRules = (rules) =>
           ruleFrom: find(get("ReferencedGroupInfo")),
         }),
         assign({
-          rules: ({ ruleIpv4, ruleIpv6, ruleFrom }) => [
-            ruleIpv4,
-            ruleIpv6,
-            ruleFrom,
-          ],
+          rules: ({ ruleIpv4, ruleIpv6, ruleFrom }) =>
+            pipe([
+              () => [ruleIpv4, ruleIpv6, ruleFrom],
+              filter(not(isEmpty)),
+            ])(),
         }),
         assign({
           GroupId: findProperty("GroupId"),
@@ -316,10 +321,13 @@ const SecurityGroupRuleBase = ({ config }) => {
         () => ec2().describeSecurityGroupRules({ MaxResults: 1e3 }),
         get("SecurityGroupRules"),
         filter(eq(get("IsEgress"), IsEgress)),
-        tap((items) => {
-          logger.debug(`getList raw sg rules ${kind}: ${tos(items)}`);
+        tap((rules) => {
+          logger.debug(`getList raw sg rules ${kind}: ${tos(rules)}`);
         }),
         mergeSecurityGroupRules,
+        tap((rules) => {
+          logger.debug(`getList merged sg rules ${kind}: ${tos(rules)}`);
+        }),
         (items) => ({
           total: size(items),
           items,

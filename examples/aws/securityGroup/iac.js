@@ -85,7 +85,7 @@ const createResources = async ({ provider, resources: {} }) => {
     },
     properties: () => ({
       IpPermission: {
-        FromPort: 1025,
+        FromPort: 0,
         IpProtocol: "tcp",
         IpRanges: [
           {
