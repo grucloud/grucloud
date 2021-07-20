@@ -127,6 +127,14 @@ const configBuildPropertiesDefault = ({ resource, properties }) =>
         : "",
   ])();
 
+exports.hasDependency = ({ type }) =>
+  pipe([
+    get("dependencies"),
+    find(eq(get("type"), type)),
+    get("ids"),
+    not(isEmpty),
+  ]);
+
 const configTpl = ({
   resource,
   resourceVarName,
@@ -452,6 +460,7 @@ const writeResource =
               resourceVarName,
               resource,
               properties,
+              dependencies: dependencies(),
               configBuildProperties,
               lives,
             }),

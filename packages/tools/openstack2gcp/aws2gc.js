@@ -7,7 +7,7 @@ const { createProgramOptions, generatorMain } = require("./generatorUtils");
 const { configTpl } = require("./src/configTpl");
 const { iacTpl } = require("./src/aws/iacTpl");
 
-const { findLiveById } = require("./generatorUtils");
+const { findLiveById, hasDependency } = require("./generatorUtils");
 
 const securityGroupRulePickProperties = () => [
   "IpProtocol",
@@ -374,6 +374,18 @@ const writersSpec = [
           "ResourceRecords",
           "AliasTarget",
         ],
+        configBuildProperties: ({ properties, lives, resource }) =>
+          pipe([
+            () => resource,
+            switchCase([
+              or([
+                hasDependency({ type: "LoadBalancer" }),
+                hasDependency({ type: "Certificate" }),
+              ]),
+              () => "",
+              () => `\n,properties: ${JSON.stringify(properties, null, 4)}`,
+            ]),
+          ])(),
         dependencies: () => ({
           domain: { type: "Domain", group: "route53" },
           hostedZone: { type: "HostedZone", group: "route53" },

@@ -260,12 +260,12 @@ module.exports = ({ stage }) => ({
                 Effect: "Allow",
                 Principal: {
                   Federated:
-                    "arn:aws:iam::840541460064:oidc-provider/oidc.eks.eu-west-2.amazonaws.com/id/F601A53EF2B98F2670398D6D0F2FB408",
+                    "arn:aws:iam::840541460064:oidc-provider/oidc.eks.eu-west-2.amazonaws.com/id/7F4FE69F2A78CD0D8A51BEAF45EA4624",
                 },
                 Action: "sts:AssumeRoleWithWebIdentity",
                 Condition: {
                   StringEquals: {
-                    "oidc.eks.eu-west-2.amazonaws.com/id/F601A53EF2B98F2670398D6D0F2FB408:aud":
+                    "oidc.eks.eu-west-2.amazonaws.com/id/7F4FE69F2A78CD0D8A51BEAF45EA4624:aud":
                       "sts.amazonaws.com",
                   },
                 },
@@ -295,8 +295,8 @@ module.exports = ({ stage }) => ({
       },
     },
     InstanceProfile: {
-      eks_16bd6208_1099B21b_8cbe_90af6403d220: {
-        name: "eks-16bd6208-1099-b21b-8cbe-90af6403d220",
+      eks_42bd6266_6647_8143_7cc9_006134bf3847: {
+        name: "eks-42bd6266-6647-8143-7cc9-006134bf3847",
       },
     },
     OpenIDConnectProvider: {
@@ -376,12 +376,12 @@ module.exports = ({ stage }) => ({
           MapCustomerOwnedIpOnLaunch: false,
           Tags: [
             {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "shared",
-            },
-            {
               Key: "kubernetes.io/role/elb",
               Value: "1",
+            },
+            {
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "shared",
             },
           ],
         },
@@ -395,20 +395,15 @@ module.exports = ({ stage }) => ({
           MapCustomerOwnedIpOnLaunch: false,
           Tags: [
             {
-              Key: "kubernetes.io/role/elb",
-              Value: "1",
-            },
-            {
               Key: "kubernetes.io/cluster/cluster",
               Value: "shared",
             },
+            {
+              Key: "kubernetes.io/role/elb",
+              Value: "1",
+            },
           ],
         },
-      },
-    },
-    KeyPair: {
-      kp: {
-        name: "kp",
       },
     },
     ElasticIpAddress: {
@@ -487,14 +482,11 @@ module.exports = ({ stage }) => ({
       sgClusterRuleIngressHttps: {
         name: "sg-cluster-rule-ingress-https",
       },
-      sgDefaultVpcRuleIngressAllFromSg_0602d24f69aee9769: {
-        name: "sg-default-vpc-rule-ingress-all-from-sg-0602d24f69aee9769",
+      sgDefaultVpcRuleIngressAllFromSg_0ec916d00a01cc38a: {
+        name: "sg-default-vpc-rule-ingress-all-from-sg-0ec916d00a01cc38a",
       },
       sgNodesRuleIngressAll: {
         name: "sg-nodes-rule-ingress-all",
-      },
-      sgRuleNodeGroupIngressCluster: {
-        name: "sg-rule-node-group-ingress-cluster",
       },
       sgRuleNodeGroupIngressCluster: {
         name: "sg-rule-node-group-ingress-cluster",
@@ -595,31 +587,9 @@ module.exports = ({ stage }) => ({
     Record: {
       certificateValidationStarhackitEksLbcGrucloudOrg: {
         name: "certificate-validation-starhackit-eks-lbc.grucloud.org.",
-        properties: {
-          Name: "_b4c084392d6f4726727d69dfaf665819.starhackit-eks-lbc.grucloud.org.",
-          Type: "CNAME",
-          TTL: 300,
-          ResourceRecords: [
-            {
-              Value:
-                "_009ebaa39ee9a4d18d0ebd96e91635bf.bbfvkzsszw.acm-validations.aws.",
-            },
-          ],
-        },
       },
       dnsRecordAliasLoadBalancerStarhackitEksLbcGrucloudOrg: {
         name: "dns-record-alias-load-balancer-starhackit-eks-lbc.grucloud.org.",
-        properties: {
-          Name: "starhackit-eks-lbc.grucloud.org.",
-          Type: "A",
-          ResourceRecords: [],
-          AliasTarget: {
-            HostedZoneId: "ZHURV8PSTC4K8",
-            DNSName:
-              "k8s-default-ingress-e514cce9f1-1782783825.eu-west-2.elb.amazonaws.com.",
-            EvaluateTargetHealth: false,
-          },
-        },
       },
     },
   },

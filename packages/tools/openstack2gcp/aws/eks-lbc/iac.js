@@ -109,10 +109,10 @@ const createResources = async ({ provider }) => {
       )(resources),
     (resources) =>
       set(
-        "iam.InstanceProfile.eks_16bd6208_1099B21b_8cbe_90af6403d220",
+        "iam.InstanceProfile.eks_42bd6266_6647_8143_7cc9_006134bf3847",
         provider.iam.makeInstanceProfile({
           name: config.iam.InstanceProfile
-            .eks_16bd6208_1099B21b_8cbe_90af6403d220.name,
+            .eks_42bd6266_6647_8143_7cc9_006134bf3847.name,
           namespace: "EKS",
           dependencies: () => ({
             roles: [resources.iam.Role.roleNodeGroup],
@@ -198,13 +198,6 @@ const createResources = async ({ provider }) => {
       )(resources),
     (resources) =>
       set(
-        "ec2.KeyPair.kp",
-        provider.ec2.makeKeyPair({
-          name: config.ec2.KeyPair.kp.name,
-        })
-      )(resources),
-    (resources) =>
-      set(
         "ec2.ElasticIpAddress.iep",
         provider.ec2.makeElasticIpAddress({
           name: config.ec2.ElasticIpAddress.iep.name,
@@ -267,8 +260,8 @@ const createResources = async ({ provider }) => {
           dependencies: () => ({
             vpc: resources.ec2.Vpc.vpc,
             subnets: [
-              resources.ec2.Subnet.subnetPublicB,
               resources.ec2.Subnet.subnetPublicA,
+              resources.ec2.Subnet.subnetPublicB,
             ],
           }),
         })
@@ -372,10 +365,10 @@ const createResources = async ({ provider }) => {
       )(resources),
     (resources) =>
       set(
-        "ec2.SecurityGroupRuleIngress.sgDefaultVpcRuleIngressAllFromSg_0602d24f69aee9769",
+        "ec2.SecurityGroupRuleIngress.sgDefaultVpcRuleIngressAllFromSg_0ec916d00a01cc38a",
         provider.ec2.makeSecurityGroupRuleIngress({
           name: config.ec2.SecurityGroupRuleIngress
-            .sgDefaultVpcRuleIngressAllFromSg_0602d24f69aee9769.name,
+            .sgDefaultVpcRuleIngressAllFromSg_0ec916d00a01cc38a.name,
           dependencies: () => ({
             securityGroup: resources.ec2.SecurityGroup.sgDefaultVpc,
             securityGroupFrom: resources.ec2.SecurityGroup.sgDefaultVpc,
@@ -387,18 +380,6 @@ const createResources = async ({ provider }) => {
         "ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll",
         provider.ec2.makeSecurityGroupRuleIngress({
           name: config.ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll.name,
-          namespace: "EKS",
-          dependencies: () => ({
-            securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
-          }),
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster",
-        provider.ec2.makeSecurityGroupRuleIngress({
-          name: config.ec2.SecurityGroupRuleIngress
-            .sgRuleNodeGroupIngressCluster.name,
           namespace: "EKS",
           dependencies: () => ({
             securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
