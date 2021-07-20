@@ -64,7 +64,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
       defaultsDeep({
         role: name,
         members: map((sa) => `serviceAccount:${getField(sa, "email")}`)(
-          dependencies().serviceAccounts
+          dependencies.serviceAccounts
         ),
       }),
       tap((params) => {
