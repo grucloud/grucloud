@@ -177,12 +177,12 @@ describe("AwsLoadBalancerV2", async function () {
     assert(config.nameKey);
     const loadBalancerReadOnly = provider.elb.useLoadBalancer({
       name: "load-balancer-k8s-readonly",
-      filterLives: ({ items }) =>
+      filterLives: ({ resources }) =>
         pipe([
-          () => items,
+          () => resources,
           find(
             pipe([
-              get("Tags"),
+              get("live.Tags"),
               find(
                 and([
                   eq(get("Key"), config.nameKey),

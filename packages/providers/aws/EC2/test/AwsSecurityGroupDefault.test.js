@@ -31,28 +31,12 @@ describe("AwsSecurityGroupDefault", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    vpcDefault = provider.ec2.useVpc({
+    vpcDefault = provider.ec2.useDefaultVpc({
       name: "vpc-default",
-      filterLives: ({ items }) =>
-        pipe([
-          () => items,
-          find(get("IsDefault")),
-          tap((live) => {
-            assert(true);
-          }),
-        ])(),
     });
 
-    securityGroup = provider.ec2.useSecurityGroup({
+    securityGroup = provider.ec2.useDefaultSecurityGroup({
       name: "sgCluster-test",
-      filterLives: ({ items }) =>
-        pipe([
-          () => items,
-          find(eq(get("GroupName"), "default")),
-          tap((live) => {
-            //logger.info(`sgCluster live ${live}`);
-          }),
-        ])(),
     });
 
     sgRuleIngress = provider.ec2.makeSecurityGroupRuleIngress({

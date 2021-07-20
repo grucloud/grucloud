@@ -30,7 +30,7 @@ describe("GcpServiceAccount", async function () {
       }),
     });
 
-    serviceAccount = provider.makeServiceAccount({
+    serviceAccount = provider.iam.makeServiceAccount({
       name: serviceAccountName,
       properties: () => ({
         serviceAccount: {

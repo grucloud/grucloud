@@ -1,6 +1,6 @@
 const assert = require("assert");
-const { tap, pipe, assign } = require("rubico");
-const { defaultsDeep, identity } = require("rubico/x");
+const { tap, pipe, assign, eq, get } = require("rubico");
+const { defaultsDeep, find } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 const { ResourceMaker } = require("./CoreResource");
 
@@ -37,7 +37,6 @@ const SpecDefault = ({ providerName }) => ({
             config: defaultsDeep(provider.config)(configUser),
           }),
         tap((resource) => provider.targetResourcesAdd(resource)),
-        identity,
       ])(),
   useResource:
     ({ provider, spec }) =>
@@ -67,7 +66,41 @@ const SpecDefault = ({ providerName }) => ({
             config: defaultsDeep(provider.config)(configUser),
           }),
         tap((resource) => provider.targetResourcesAdd(resource)),
-        identity,
+      ])(),
+  useDefaultResource:
+    ({ provider, spec }) =>
+    ({
+      name,
+      meta,
+      namespace,
+      config: configUser = {},
+      dependencies,
+      properties,
+      attributes,
+    }) =>
+      pipe([
+        () =>
+          ResourceMaker({
+            name,
+            meta,
+            namespace,
+            filterLives: ({ resources }) =>
+              pipe([
+                () => resources,
+                find(eq(get("isDefault"), true)),
+                tap((live) => {
+                  assert(live, `Cannot find default resource ${spec.type}`);
+                }),
+              ])(),
+            properties,
+            attributes,
+            dependencies,
+            readOnly: true,
+            spec,
+            provider,
+            config: defaultsDeep(provider.config)(configUser),
+          }),
+        tap((resource) => provider.targetResourcesAdd(resource)),
       ])(),
 });
 

@@ -4,7 +4,6 @@ const {
   pipe,
   tap,
   map,
-  flatMap,
   filter,
   tryCatch,
   switchCase,
@@ -12,29 +11,23 @@ const {
   assign,
   any,
   reduce,
-  fork,
   eq,
   not,
   and,
   or,
   transform,
-  omit,
+  pick,
 } = require("rubico");
 
 const {
-  first,
   isEmpty,
   isString,
-  flatten,
+  callProp,
   pluck,
   forEach,
   find,
   defaultsDeep,
   isDeepEqual,
-  includes,
-  isFunction,
-  identity,
-  size,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreResources" });
@@ -42,16 +35,77 @@ const { tos } = require("./tos");
 const { retryCall } = require("./Retry");
 const { convertError } = require("./Common");
 const { displayType } = require("./ProviderCommon");
-const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
+
+const decorateLive =
+  ({ client, lives, config }) =>
+  (live) =>
+    pipe([
+      () => ({
+        name: client.findName({ live, lives }),
+        meta: client.findMeta(live),
+        id: client.findId({ live, lives }),
+        providerName: client.spec.providerName,
+        type: client.spec.type,
+        group: client.spec.group,
+        live,
+        isDefault: client.isDefault({ live, lives }),
+        managedByOther: client.managedByOther({ live, lives }),
+      }),
+      assign({
+        uri: ({ name, id, meta }) =>
+          client.resourceKey({
+            live,
+            providerName: client.spec.providerName,
+            type: client.spec.type,
+            group: client.spec.group,
+            name,
+            meta,
+            id,
+          }),
+        displayName: ({ name, meta }) => client.displayName({ name, meta }),
+        cannotBeDeleted: ({ name }) =>
+          client.cannotBeDeleted({
+            live,
+            name,
+            resources: client.getResourcesByType({ type: client.spec.type }),
+            resource: client.getResourceFromLive({ client, live, lives }),
+            config,
+          }),
+      }),
+    ])();
+
+const decorateLives = ({ client, lives, config }) =>
   pipe([
-    () => spec.Client({ providerName, spec, config, mapTypeToResources }),
+    tap((params) => {
+      assert(true);
+    }),
+    get("items"), // remove
+    filter(not(get("error"))),
+    map(decorateLive({ client, lives, config })),
+    callProp("sort", (a, b) => a.name.localeCompare(b.name)),
+  ]);
+
+const createClient = ({
+  spec,
+  providerName,
+  config,
+  getResourcesByType,
+  getResourceFromLive,
+}) =>
+  pipe([
+    () => spec.Client({ providerName, spec, config }),
     tap((client) => {
+      assert(getResourcesByType);
+      assert(getResourceFromLive);
       assert(providerName);
       assert(client.spec);
       assert(client.findName);
       assert(client.getList);
     }),
+
     defaultsDeep({
+      getResourcesByType,
+      getResourceFromLive,
       resourceKey: pipe([
         tap((resource) => {
           assert(resource.providerName);
@@ -89,9 +143,39 @@ const createClient = ({ spec, providerName, config, mapTypeToResources }) =>
       isInstanceUp: not(isEmpty),
       providerName,
     }),
+    assign({
+      getLives: (client) =>
+        pipe([
+          tryCatch(
+            ({ lives }) =>
+              pipe([
+                () =>
+                  client.getList({
+                    lives,
+                    deep: true,
+                    resources: getResourcesByType({ type: client.spec.type }),
+                  }),
+                decorateLives({
+                  client,
+                  lives,
+                  config,
+                }),
+                (resources) => ({ resources }),
+              ])(),
+            pipe([
+              pick(["message", "code", "stack", "config", "response"]),
+              tap((error) => {
+                logger.error(`list error ${tos(error)}`);
+              }),
+              (error) => ({ error }),
+            ])
+          ),
+        ]),
+    }),
   ])();
 
 exports.createClient = createClient;
+
 exports.ResourceMaker = ({
   name: resourceName,
   namespace = "",
@@ -113,7 +197,8 @@ exports.ResourceMaker = ({
 
   const client = createClient({
     providerName: provider.name,
-    provider,
+    getResourcesByType: provider.getResourcesByType,
+    getResourceFromLive: provider.getResourceFromLive,
     spec,
     config,
   });
@@ -432,17 +517,13 @@ exports.ResourceMaker = ({
           () => filterLives,
           pipe([
             () =>
-              client.getList({
-                //TODO use client.key()
-                resources: provider.getResourcesByType({
-                  type: client.spec.type,
-                }),
+              client.getLives({
                 lives,
               }),
-            ({ items }) =>
+            ({ resources }) =>
               filterLives({
                 dependencies: resolvedDependencies,
-                items,
+                resources,
                 configProvider: provider.config,
                 live,
                 lives,

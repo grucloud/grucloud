@@ -31,7 +31,7 @@ describe("GcpIamBinding", async function () {
     });
 
     const saName = `sa-${chance.guid().slice(0, 15)}`;
-    serviceAccount = provider.makeServiceAccount({
+    serviceAccount = provider.iam.makeServiceAccount({
       name: saName,
       properties: () => ({
         accountId: saName,
@@ -69,7 +69,7 @@ describe("GcpIamBinding", async function () {
       });
 
       const saName = `sa-${chance.guid().slice(0, 15)}`;
-      const serviceAccount = provider.makeServiceAccount({
+      const serviceAccount = provider.iam.makeServiceAccount({
         name: saName,
         properties: () => ({
           accountId: saName,

@@ -4,6 +4,8 @@ const {
   tap,
   map,
   get,
+  eq,
+  any,
   filter,
   tryCatch,
   switchCase,
@@ -12,7 +14,7 @@ const {
   omit,
 } = require("rubico");
 
-const { first, find, defaultsDeep, isDeepEqual, uniq } = require("rubico/x");
+const { find, defaultsDeep, isDeepEqual, uniq, identity } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
 const { retryCallOnError } = require("@grucloud/core/Retry");
@@ -29,16 +31,14 @@ const {
 const findName = get("live.role");
 const findId = findName;
 
-// TODO use resources instead of resourceNames
-
-const isOurMinionIamBinding = ({ name, live, resourceNames }) =>
+const isOurMinionIamBinding = ({ name, live, resources }) =>
   pipe([
     tap(() => {
       assert(live, "live");
-      assert(Array.isArray(resourceNames), "resourceNames");
+      assert(Array.isArray(resources), "resources");
     }),
-    () => resourceNames,
-    find((item) => isDeepEqual(item, findName({ live }))),
+    () => resources,
+    any(pipe([get("name"), (name) => isDeepEqual(name, findName({ live }))])),
     tap((isOur) => {
       logger.debug(`isOurMinionIamBinding: ${name}: ${isOur}`);
     }),
@@ -60,15 +60,15 @@ exports.GcpIamBinding = ({ spec, config }) => {
 
   const configDefault = ({ name, properties, dependencies }) =>
     pipe([
-      () =>
-        defaultsDeep({
-          role: name,
-          members: map((sa) => `serviceAccount:${getField(sa, "email")}`)(
-            dependencies.serviceAccounts
-          ),
-        })(properties),
-      tap((xx) => {
-        //logger.debug(`configDefault`);
+      () => properties,
+      defaultsDeep({
+        role: name,
+        members: map((sa) => `serviceAccount:${getField(sa, "email")}`)(
+          dependencies.serviceAccounts
+        ),
+      }),
+      tap((params) => {
+        assert(true);
       }),
     ])();
 
@@ -112,7 +112,7 @@ exports.GcpIamBinding = ({ spec, config }) => {
       }),
       getList,
       get("items"),
-      find((binding) => binding.role === name),
+      find(eq(get("role"), name)),
       tap((binding) => {
         logger.debug(`getByName result: ${tos(binding)}`);
       }),
@@ -143,16 +143,19 @@ exports.GcpIamBinding = ({ spec, config }) => {
     ])();
 
   const updateBinding = ({ currentBindings, newBinding }) =>
-    map(
-      switchCase([
-        (binding) => binding.role === newBinding.role,
-        ({ role, members }) => ({
-          role,
-          members: uniq([...members, ...newBinding.members]),
-        }),
-        (binding) => binding,
-      ])
-    )(currentBindings);
+    pipe([
+      () => currentBindings,
+      map(
+        switchCase([
+          eq(get("role"), newBinding.role),
+          ({ role, members }) => ({
+            role,
+            members: uniq([...members, ...newBinding.members]),
+          }),
+          identity,
+        ])
+      ),
+    ])();
 
   const update = ({ payload }) =>
     pipe([
@@ -160,12 +163,12 @@ exports.GcpIamBinding = ({ spec, config }) => {
         logger.info(`update new binding ${tos(payload)}`);
       }),
       getIamPolicy,
-      ({ bindings, etag }) => ({
-        etag,
-        bindings: updateBinding({
-          currentBindings: bindings,
-          newBinding: payload,
-        }),
+      assign({
+        bindings: ({ bindings }) =>
+          updateBinding({
+            currentBindings: bindings,
+            newBinding: payload,
+          }),
       }),
       tap((policy) => {
         logger.debug(`update policy: ${tos(policy)}`);
@@ -189,12 +192,11 @@ exports.GcpIamBinding = ({ spec, config }) => {
   const destroy = async ({ id }) =>
     pipe([
       tap(() => {
-        logger.debug(`destroy ${id}`);
+        logger.debug(`destroy iam binding ${id}`);
       }),
       getIamPolicy,
-      ({ bindings, etag }) => ({
-        etag,
-        bindings: filter(({ role }) => role !== id)(bindings),
+      assign({
+        bindings: pipe([get("bindings"), filter(not(eq(get("role"), id)))]),
       }),
       (policy) =>
         retryCallOnError({

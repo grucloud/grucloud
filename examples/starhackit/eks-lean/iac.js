@@ -66,12 +66,12 @@ const createAwsStack = async ({ stage }) => {
   const securityGroupEKSCluster = provider.ec2.useSecurityGroup({
     name: "sg-eks-cluster",
     namespace: "EKS",
-    filterLives: ({ items }) =>
+    filterLives: ({ resources }) =>
       pipe([
-        () => items,
+        () => resources,
         find(
           pipe([
-            get("Tags"),
+            get("live.Tags"),
             find(
               and([
                 eq(get("Key"), "aws:eks:cluster-name"),

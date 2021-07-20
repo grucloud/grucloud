@@ -36,16 +36,8 @@ describe("AwsVpc", async function () {
         Tags: [{ Key: k8sClusterTagKey, Value: "shared" }],
       }),
     });
-    vpcDefault = provider.ec2.useVpc({
+    vpcDefault = provider.ec2.useDefaultVpc({
       name: "vpc-default",
-      filterLives: ({ items }) =>
-        pipe([
-          () => items,
-          find(get("IsDefault")),
-          tap((live) => {
-            assert(true);
-          }),
-        ])(),
     });
   });
   after(async () => {});
@@ -65,31 +57,6 @@ describe("AwsVpc", async function () {
 
   it("vpc apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
-    const vpcLive = await vpc.getLive({ deep: true });
-
-    //TODO
-    {
-      const vpcLiveDefault = await vpcDefault.resolveConfig();
-      assert(vpcLiveDefault);
-    }
-    {
-      const vpcLiveDefault = await vpcDefault.getLive();
-      assert(vpcLiveDefault);
-      assert(vpcLiveDefault.IsDefault);
-    }
-    const { VpcId, Tags } = vpcLive;
-    assert(VpcId);
-    assert(Tags);
-
-    assert(find(eq(get("Key"), k8sClusterTagKey))(vpcLive.Tags));
-
-    assert(
-      CheckAwsTags({
-        config: provider.config,
-        tags: vpcLive.Tags,
-        name: vpc.name,
-      })
-    );
-    await testPlanDestroy({ provider, types, full: false });
+    await testPlanDestroy({ provider, types });
   });
 });

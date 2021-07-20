@@ -339,8 +339,6 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
                   }),
                   live: resource.live,
                   lives,
-                  //TODO remove resourceNames
-                  resourceNames: provider.resourceNames(),
                   resources: provider.getResourcesByType({
                     type: client.spec.type,
                   }),

@@ -77,7 +77,6 @@ const {
   contextFromResource,
   contextFromHook,
   contextFromHookAction,
-  liveToUri,
   providerRunning,
 } = require("./ProviderCommon");
 
@@ -224,7 +223,6 @@ function CoreProvider({
   };
 
   const getTargetResources = () => [...mapNameToResource.values()];
-  const resourceNames = () => pluck(["name"])([...mapNameToResource.values()]);
 
   const getResource = pipe([
     get("uri"),
@@ -245,9 +243,12 @@ function CoreProvider({
 
   const specs = getSpecs();
 
+  const getResourcesByType = ({ type }) => mapTypeToResources.get(type) || [];
+
   const clients = specs.map((spec) =>
     createClient({
-      mapTypeToResources,
+      getResourcesByType,
+      getResourceFromLive,
       spec,
       config: providerConfig,
       providerName,
@@ -260,25 +261,27 @@ function CoreProvider({
 
   const listTargets = () =>
     pipe([
+      () => getTargetResources(),
       map(async (resource) => ({
         ...resource.toJSON(),
         data: await resource.getLive(),
       })),
-      filter((x) => x.data),
+      filter(get("data")),
       tap((list) => {
         logger.debug(`listTargets ${tos(list)}`);
       }),
-    ])(getTargetResources());
+    ])();
 
   const listConfig = () =>
     pipe([
-      map(async (resource) => ({
+      () => getTargetResources(),
+      map((resource) => ({
         resource: resource.toJSON(),
       })),
       tap((list) => {
         logger.debug(`listConfig ${tos(list)}`);
       }),
-    ])(getTargetResources());
+    ])();
 
   const runScriptCommands = ({ onStateChange, hookType, hookName }) =>
     pipe([
@@ -863,8 +866,6 @@ function CoreProvider({
       }),
     ])();
 
-  const getResourcesByType = ({ type }) => mapTypeToResources.get(type) || [];
-
   const validate = pipe([
     () => [...mapTypeToResources.values()],
     flatten,
@@ -938,48 +939,6 @@ function CoreProvider({
       }
     )();
 
-  const decorateLive =
-    ({ client, lives }) =>
-    (live) =>
-      pipe([
-        () => live,
-        () => ({
-          uri: liveToUri({ client, live, lives }),
-          name: client.findName({ live, lives }),
-          displayName: client.displayName({
-            name: client.findName({ live, lives }),
-            meta: client.findMeta(live),
-          }),
-          meta: client.findMeta(live),
-          id: client.findId({ live, lives }),
-          providerName: client.spec.providerName,
-          type: client.spec.type,
-          group: client.spec.group,
-          live,
-          managedByOther: client.managedByOther({ live, lives }),
-          cannotBeDeleted: client.cannotBeDeleted({
-            live,
-            name: client.findName({ live, lives }),
-            //TODO remove resourceNames
-            resourceNames: resourceNames(),
-            resources: getResourcesByType({ type: client.spec.type }),
-            resource: getResourceFromLive({ client, live, lives }),
-            config: providerConfig,
-          }),
-        }),
-      ])();
-
-  const decorateLives = ({ client, lives }) =>
-    pipe([
-      tap((params) => {
-        assert(true);
-      }),
-      get("items"), // remove
-      filter(not(get("error"))),
-      map(decorateLive({ client, lives })),
-      callProp("sort", (a, b) => a.name.localeCompare(b.name)),
-    ]);
-
   const findClientByGroupType = (clients) => (groupType) =>
     pipe([
       tap(() => {
@@ -1043,28 +1002,12 @@ function CoreProvider({
         )(client.spec.dependsOn),
         executor: ({ results }) =>
           pipe([
-            tryCatch(
-              pipe([
-                () =>
-                  client.getList({
-                    lives,
-                    deep: true,
-                    resources: getResourcesByType({ type: client.spec.type }),
-                  }),
-                decorateLives({
-                  client,
-                  lives,
-                }),
-                (resources) => ({ resources }),
-              ]),
-              pipe([
-                pick(["message", "code", "stack", "config", "response"]),
-                tap((error) => {
-                  logger.error(`list error ${tos(error)}`);
-                }),
-                (error) => ({ error }),
-              ])
-            ),
+            () =>
+              client.getLives({
+                lives,
+                deep: true,
+                resources: getResourcesByType({ type: client.spec.type }),
+              }),
             //TODO add client.toString()
             ({ error, resources }) => ({
               ...(error && { error }),
@@ -1707,7 +1650,6 @@ function CoreProvider({
     targetResourcesAdd,
     clientByType,
     getResource,
-    resourceNames,
     getResourcesByType,
     getTargetResources,
     getClients,
@@ -1748,6 +1690,10 @@ function CoreProvider({
       })
     ),
     defaultsDeep(createResourceMakers({ provider, specs, prefix: "use" })),
+    defaultsDeep(
+      createResourceMakers({ provider, specs, prefix: "useDefault" })
+    ),
+
     tap((xxx) => {
       assert(true);
     }),
