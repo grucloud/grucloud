@@ -144,9 +144,8 @@ const createResources = async ({ provider }) => {
     (resources) =>
       set(
         "ec2.Vpc.vpcDefault",
-        provider.ec2.useVpc({
+        provider.ec2.useDefaultVpc({
           name: config.ec2.Vpc.vpcDefault.name,
-          properties: () => config.ec2.Vpc.vpcDefault.properties,
         })
       )(resources),
     (resources) =>
@@ -200,7 +199,7 @@ const createResources = async ({ provider }) => {
     (resources) =>
       set(
         "ec2.KeyPair.kp",
-        provider.ec2.useKeyPair({
+        provider.ec2.makeKeyPair({
           name: config.ec2.KeyPair.kp.name,
         })
       )(resources),
@@ -342,24 +341,21 @@ const createResources = async ({ provider }) => {
     (resources) =>
       set(
         "ec2.SecurityGroup.sgDefaultVpc",
-        provider.ec2.useSecurityGroup({
+        provider.ec2.useDefaultSecurityGroup({
           name: config.ec2.SecurityGroup.sgDefaultVpc.name,
           dependencies: {
             vpc: resources.ec2.Vpc.vpc,
           },
-          properties: () => config.ec2.SecurityGroup.sgDefaultVpc.properties,
         })
       )(resources),
     (resources) =>
       set(
         "ec2.SecurityGroup.sgDefaultVpcDefault",
-        provider.ec2.useSecurityGroup({
+        provider.ec2.useDefaultSecurityGroup({
           name: config.ec2.SecurityGroup.sgDefaultVpcDefault.name,
           dependencies: {
             vpc: resources.ec2.Vpc.vpcDefault,
           },
-          properties: () =>
-            config.ec2.SecurityGroup.sgDefaultVpcDefault.properties,
         })
       )(resources),
     (resources) =>

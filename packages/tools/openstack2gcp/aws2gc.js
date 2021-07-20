@@ -74,7 +74,6 @@ const writersSpec = [
       },
       {
         type: "KeyPair",
-        createPrefix: "use",
       },
       {
         type: "Volume",

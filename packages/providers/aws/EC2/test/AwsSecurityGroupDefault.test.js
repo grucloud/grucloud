@@ -86,8 +86,6 @@ describe("AwsSecurityGroupDefault", async function () {
   it("sg default apply and destroy", async function () {
     try {
       await testPlanDeploy({ provider, types });
-      const vpcDefaultLive = await vpcDefault.getLive();
-      assert(vpcDefaultLive);
       await testPlanDestroy({ provider, types });
     } catch (error) {
       throw error;

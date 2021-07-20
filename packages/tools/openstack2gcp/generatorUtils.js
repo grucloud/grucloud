@@ -208,16 +208,25 @@ const codeBuildPropertiesDefault = ({
   type,
   resourceVarName,
   properties,
+  resource,
 }) =>
   pipe([
     tap(() => {
       assert(true);
     }),
     () =>
-      !isEmpty(properties)
+      !isEmpty(properties) && !resource.isDefault
         ? `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`
         : "",
   ])();
+
+const buildPrefix = switchCase([
+  get("isDefault"),
+  () => "useDefault",
+  get("cannotBeDeleted"),
+  () => "use",
+  () => "make",
+]);
 
 const codeTpl = ({
   group,
@@ -227,19 +236,17 @@ const codeTpl = ({
   resource,
   lives,
   properties,
-  createPrefix = "make",
   codeBuildProperties = codeBuildPropertiesDefault,
 }) => `(resources) =>
 set(
   "${group}.${type}.${resourceVarName}",
-  provider.${group}.${
-  resource.isDefault || resource.cannotBeDeleted ? "use" : createPrefix
-}${type}({
+  provider.${group}.${buildPrefix(resource)}${type}({
   ${codeBuildName({ group, type, resourceVarName })}${codeBuildNamespace(
   resource
 )}${buildDependencies({ resource, lives, dependencies })}${codeBuildProperties({
   group,
   type,
+  resource,
   resourceVarName,
   properties,
 })}
@@ -397,7 +404,6 @@ const writeResource =
     type,
     typeTarget,
     group,
-    createPrefix,
     resourceVarName = ResourceVarNameDefault,
     resourceName = identity,
     pickProperties = always([]),
@@ -456,7 +462,7 @@ const writeResource =
               resourceVarName,
               dependencies: dependencies(),
               lives,
-              createPrefix,
+
               properties,
               codeBuildProperties,
             }),
@@ -473,7 +479,7 @@ const writeResources =
     pickProperties,
     properties,
     dependencies,
-    createPrefix,
+
     ignoreResource,
     resourceVarName,
     resourceName,
@@ -503,7 +509,7 @@ const writeResources =
               properties,
               pickProperties,
               dependencies,
-              createPrefix,
+
               ignoreResource,
               resourceVarName,
               resourceName,
