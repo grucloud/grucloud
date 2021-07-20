@@ -403,7 +403,7 @@ exports.ResourceMaker = ({
             () =>
               resolveDependencies({
                 lives,
-                dependencies: dependency,
+                dependencies: () => dependency,
                 dependenciesMustBeUp,
               }),
             (error) => {

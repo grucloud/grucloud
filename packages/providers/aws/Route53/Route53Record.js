@@ -67,9 +67,12 @@ const findNameInTags = pipe([
 
 const findId = pipe([get("live"), buildRecordTagValue]);
 
-const getHostedZone = ({ name, dependencies = {} }) =>
+const getHostedZone = ({ name, dependencies }) =>
   pipe([
-    () => dependencies,
+    tap(() => {
+      assert(dependencies);
+    }),
+    () => dependencies(),
     get("hostedZone"),
     switchCase([
       isEmpty,
@@ -541,7 +544,7 @@ exports.Route53Record = ({ spec, config }) => {
           Type: "A",
           AliasTarget: {
             HostedZoneId: getField(loadBalancer, "CanonicalHostedZoneId"),
-            DNSName: getField(loadBalancer, "DNSName"),
+            DNSName: `${getField(loadBalancer, "DNSName")}.`,
             EvaluateTargetHealth: false,
           },
         }),
