@@ -84,7 +84,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
 
   const getBucket = ({ name, dependencies = {} }) => {
     assert(name);
-    const { bucket } = dependencies;
+    const { bucket } = dependencies();
     if (!bucket) {
       throw {
         code: 422,
