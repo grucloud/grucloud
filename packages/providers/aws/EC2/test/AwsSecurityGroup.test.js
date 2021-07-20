@@ -108,7 +108,7 @@ describe("AwsSecurityGroup", async function () {
 
   it("merge security group rules", async function () {
     const merged = mergeSecurityGroupRules(SecurityGroupRulesFixture);
-    assert.equal(size(merged), 3);
+    assert.equal(size(merged), 2);
     const diff = detailedDiff(merged, SecurityGroupRulesFixtureMerged);
     assert(isEmpty(diff.added));
     assert(isEmpty(diff.deleted));

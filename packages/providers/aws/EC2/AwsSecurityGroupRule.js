@@ -10,7 +10,8 @@ const {
   tryCatch,
   not,
   map,
-  pick,
+  fork,
+  assign,
 } = require("rubico");
 const {
   size,
@@ -20,10 +21,12 @@ const {
   find,
   identity,
   first,
+  groupBy,
+  values,
 } = require("rubico/x");
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecGroupRule" });
 const { tos } = require("@grucloud/core/tos");
-
+const { findValueInTags } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const {
@@ -34,83 +37,83 @@ const {
   findNameInTags,
 } = require("../AwsCommon");
 
-const findIpv6Ranges = ({ Tags, rules }) =>
-  pipe([
-    tap(() => {
-      assert(Tags);
-      assert(rules);
-    }),
-    () => Tags,
-    find(eq(get("Key"), "Name")),
-    get("Value"),
-    (Name) =>
-      pipe([
-        () => rules,
-        filter(get("CidrIpv6")),
-        find(
-          pipe([
-            get("Tags"),
-            find(eq(get("Key"), "Name")),
-            get("Value"),
-            eq(identity, Name),
-          ])
-        ),
-      ])(),
-    switchCase([isEmpty, () => undefined, ({ CidrIpv6 }) => [{ CidrIpv6 }]]),
-    tap((params) => {
-      assert(true);
-    }),
-  ])();
+const findProperty = (property) =>
+  pipe([get("rules"), find(get(property)), get(property)]);
 
 const mergeSecurityGroupRules = (rules) =>
   pipe([
-    tap(() => {
-      assert(true);
-    }),
     () => rules,
-    filter(not(get("CidrIpv6"))),
+    groupBy((rule) =>
+      pipe([
+        () => rule,
+        findValueInTags({ key: "Name" }),
+        switchCase([isEmpty, () => get("SecurityGroupRuleId")(rule), identity]),
+      ])()
+    ),
+    values,
     map(
-      ({
-        SecurityGroupRuleId,
-        GroupId,
-        IpProtocol,
-        FromPort,
-        ToPort,
-        CidrIpv4,
-        Tags,
-        ReferencedGroupInfo,
-      }) =>
-        pipe([
-          tap((params) => {
-            assert(true);
-          }),
-          () => findIpv6Ranges({ Tags, rules }),
-          (Ipv6Ranges) => ({
-            GroupId,
-            SecurityGroupRuleId,
-            IpPermission: {
-              IpProtocol,
-              FromPort,
-              ToPort,
-              ...(CidrIpv4 && {
-                IpRanges: [
+      pipe([
+        fork({
+          ruleIpv4: find(get("CidrIpv4")),
+          ruleIpv6: find(get("CidrIpv6")),
+          ruleFrom: find(get("ReferencedGroupInfo")),
+        }),
+        assign({
+          rules: ({ ruleIpv4, ruleIpv6, ruleFrom }) => [
+            ruleIpv4,
+            ruleIpv6,
+            ruleFrom,
+          ],
+        }),
+        assign({
+          GroupId: findProperty("GroupId"),
+          SecurityGroupRuleId: findProperty("SecurityGroupRuleId"),
+          Tags: findProperty("Tags"),
+          IpProtocol: findProperty("IpProtocol"),
+          FromPort: findProperty("FromPort"),
+          ToPort: findProperty("ToPort"),
+        }),
+        ({
+          ruleIpv4,
+          ruleIpv6,
+          ruleFrom,
+          GroupId,
+          SecurityGroupRuleId,
+          Tags,
+          IpProtocol,
+          FromPort,
+          ToPort,
+        }) => ({
+          GroupId,
+          SecurityGroupRuleId,
+          IpPermission: {
+            IpProtocol,
+            FromPort,
+            ToPort,
+            ...(ruleIpv4 && {
+              IpRanges: [
+                {
+                  CidrIp: ruleIpv4.CidrIpv4,
+                },
+              ],
+              ...(ruleIpv6 && {
+                Ipv6Ranges: [
                   {
-                    CidrIp: CidrIpv4,
+                    CidrIpv6: ruleIpv6.CidrIpv6,
                   },
                 ],
-                ...(Ipv6Ranges && { Ipv6Ranges }),
               }),
-              ...(ReferencedGroupInfo && {
-                UserIdGroupPairs: [{ GroupId: ReferencedGroupInfo.GroupId }],
-              }),
-            },
-            Tags,
-          }),
-        ])()
+            }),
+            ...(ruleFrom && {
+              UserIdGroupPairs: [
+                { GroupId: ruleFrom.ReferencedGroupInfo.GroupId },
+              ],
+            }),
+          },
+          Tags,
+        }),
+      ])
     ),
-    tap((results) => {
-      assert(true);
-    }),
   ])();
 
 exports.mergeSecurityGroupRules = mergeSecurityGroupRules;

@@ -38,7 +38,7 @@ exports.SecurityGroupRulesFixture = [
   },
   {
     SecurityGroupRuleId: "sgr-4234567890",
-    GroupId: "sg-09e37cba85cd2b978",
+    GroupId: "sg-08c44658ef9788a55",
     IpProtocol: "-1",
     FromPort: -1,
     ToPort: -1,
@@ -46,26 +46,16 @@ exports.SecurityGroupRulesFixture = [
       GroupId: "sg-09e37cba85cd2b978",
       UserId: "840541460064",
     },
-    Tags: [],
+    Tags: [
+      {
+        Key: "Name",
+        Value: "sg-rule-ingress-port-22",
+      },
+    ],
   },
 ];
 
 exports.SecurityGroupRulesFixtureMerged = [
-  {
-    SecurityGroupRuleId: "sgr-2234567890",
-    GroupId: "sg-f4139a96",
-    IpPermission: {
-      IpProtocol: "-1",
-      FromPort: -1,
-      ToPort: -1,
-      IpRanges: [
-        {
-          CidrIp: "0.0.0.0/0",
-        },
-      ],
-    },
-    Tags: [],
-  },
   {
     SecurityGroupRuleId: "sgr-3234567890",
     GroupId: "sg-08c44658ef9788a55",
@@ -83,6 +73,7 @@ exports.SecurityGroupRulesFixtureMerged = [
           CidrIpv6: "::/0",
         },
       ],
+      UserIdGroupPairs: [{ GroupId: "sg-09e37cba85cd2b978" }],
     },
     Tags: [
       {
@@ -91,15 +82,18 @@ exports.SecurityGroupRulesFixtureMerged = [
       },
     ],
   },
-
   {
-    SecurityGroupRuleId: "sgr-4234567890",
-    GroupId: "sg-09e37cba85cd2b978",
+    SecurityGroupRuleId: "sgr-2234567890",
+    GroupId: "sg-f4139a96",
     IpPermission: {
       IpProtocol: "-1",
       FromPort: -1,
       ToPort: -1,
-      UserIdGroupPairs: [{ GroupId: "sg-09e37cba85cd2b978" }],
+      IpRanges: [
+        {
+          CidrIp: "0.0.0.0/0",
+        },
+      ],
     },
     Tags: [],
   },
