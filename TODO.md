@@ -68,12 +68,9 @@
 
 ## Aws2gc
 
-InstanceProfile managedByOther
-
 ## Aws
 
 - throw error => throw Error(error.message);
-- retry on UnknownEndpoint
 - useCertificate or make Certificate ?
 - https://aws.amazon.com/blogs/aws/easily-manage-security-group-rules-with-the-new-security-group-rule-id/
 
@@ -83,7 +80,6 @@ InstanceProfile managedByOther
 - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
 
 - Resource pages
-- delete keypair from kops
 
 - aws_route53_delegation_set
 

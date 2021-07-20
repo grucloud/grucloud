@@ -19,6 +19,7 @@ const {
   first,
   flatten,
   pluck,
+  callProp,
 } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({
@@ -49,6 +50,19 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
 
   const findName = get("live.InstanceProfileName");
   const findId = get("live.Arn");
+
+  const managedByOther = ({ live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(live.InstanceProfileName);
+      }),
+      () => live,
+      get("InstanceProfileName"),
+      callProp("startsWith", "eks-"),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
 
   const findDependencies = ({ live }) => [
     {
@@ -259,6 +273,7 @@ exports.AwsIamInstanceProfile = ({ spec, config }) => {
     configDefault,
     shouldRetryOnException,
     shouldRetryOnExceptionDelete,
+    managedByOther,
   };
 };
 exports.isOurMinionInstanceProfile = ({ live, config: { projectName } }) =>

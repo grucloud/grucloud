@@ -109,18 +109,6 @@ const createResources = async ({ provider }) => {
       )(resources),
     (resources) =>
       set(
-        "iam.InstanceProfile.eks_42bd6266_6647_8143_7cc9_006134bf3847",
-        provider.iam.makeInstanceProfile({
-          name: config.iam.InstanceProfile
-            .eks_42bd6266_6647_8143_7cc9_006134bf3847.name,
-          namespace: "EKS",
-          dependencies: () => ({
-            roles: [resources.iam.Role.roleNodeGroup],
-          }),
-        })
-      )(resources),
-    (resources) =>
-      set(
         "iam.OpenIDConnectProvider.oidcEks",
         provider.iam.makeOpenIDConnectProvider({
           name: config.iam.OpenIDConnectProvider.oidcEks.name,
@@ -543,36 +531,11 @@ const createResources = async ({ provider }) => {
       )(resources),
     (resources) =>
       set(
-        "route53.Record.certificateValidationStarhackitEksLbcGrucloudOrg",
-        provider.route53.makeRecord({
-          name: config.route53.Record
-            .certificateValidationStarhackitEksLbcGrucloudOrg.name,
-          namespace: "Certificate",
-          dependencies: () => ({
-            hostedZone:
-              resources.route53.HostedZone.starhackitEksLbcGrucloudOrg,
-            certificate: resources.acm.Certificate.starhackitEksLbcGrucloudOrg,
-          }),
+        "route53.HostedZone.testLoadBalancerGrucloudOrg",
+        provider.route53.makeHostedZone({
+          name: config.route53.HostedZone.testLoadBalancerGrucloudOrg.name,
           properties: () =>
-            config.route53.Record
-              .certificateValidationStarhackitEksLbcGrucloudOrg.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "route53.Record.dnsRecordAliasLoadBalancerStarhackitEksLbcGrucloudOrg",
-        provider.route53.makeRecord({
-          name: config.route53.Record
-            .dnsRecordAliasLoadBalancerStarhackitEksLbcGrucloudOrg.name,
-          dependencies: () => ({
-            hostedZone:
-              resources.route53.HostedZone.starhackitEksLbcGrucloudOrg,
-            loadBalancer:
-              resources.elb.LoadBalancer.k8sDefaultIngressE514cce9f1,
-          }),
-          properties: () =>
-            config.route53.Record
-              .dnsRecordAliasLoadBalancerStarhackitEksLbcGrucloudOrg.properties,
+            config.route53.HostedZone.testLoadBalancerGrucloudOrg.properties,
         })
       )(resources),
   ])();

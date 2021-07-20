@@ -294,11 +294,6 @@ module.exports = ({ stage }) => ({
         },
       },
     },
-    InstanceProfile: {
-      eks_42bd6266_6647_8143_7cc9_006134bf3847: {
-        name: "eks-42bd6266-6647-8143-7cc9-006134bf3847",
-      },
-    },
     OpenIDConnectProvider: {
       oidcEks: {
         name: "oidc-eks",
@@ -583,13 +578,11 @@ module.exports = ({ stage }) => ({
           Name: "starhackit-eks-lbc.grucloud.org.",
         },
       },
-    },
-    Record: {
-      certificateValidationStarhackitEksLbcGrucloudOrg: {
-        name: "certificate-validation-starhackit-eks-lbc.grucloud.org.",
-      },
-      dnsRecordAliasLoadBalancerStarhackitEksLbcGrucloudOrg: {
-        name: "dns-record-alias-load-balancer-starhackit-eks-lbc.grucloud.org.",
+      testLoadBalancerGrucloudOrg: {
+        name: "test-load-balancer.grucloud.org.",
+        properties: {
+          Name: "test-load-balancer.grucloud.org.",
+        },
       },
     },
   },
