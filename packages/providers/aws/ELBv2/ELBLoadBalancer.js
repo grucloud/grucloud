@@ -9,8 +9,17 @@ const {
   tryCatch,
   switchCase,
   filter,
+  not,
 } = require("rubico");
-const { includes, first, defaultsDeep, pluck, callProp } = require("rubico/x");
+const {
+  isEmpty,
+  includes,
+  first,
+  defaultsDeep,
+  pluck,
+  callProp,
+  identity,
+} = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const logger = require("@grucloud/core/logger")({
@@ -78,6 +87,20 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     key: "elbv2.k8s.aws/cluster",
   });
 
+  const assignTags = switchCase([
+    not(isEmpty),
+    assign({
+      Tags: pipe([
+        ({ LoadBalancerArn }) =>
+          elb().describeTags({ ResourceArns: [LoadBalancerArn] }),
+        get("TagDescriptions"),
+        first,
+        get("Tags"),
+      ]),
+    }),
+    identity,
+  ]);
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeLoadBalancers-property
   const getList = async () =>
     pipe([
@@ -89,17 +112,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
       tap((results) => {
         logger.debug(`getList: result: ${tos(results)}`);
       }),
-      map(
-        assign({
-          Tags: pipe([
-            ({ LoadBalancerArn }) =>
-              elb().describeTags({ ResourceArns: [LoadBalancerArn] }),
-            get("TagDescriptions"),
-            first,
-            get("Tags"),
-          ]),
-        })
-      ),
+      map(assignTags),
       (items = []) => ({
         total: items.length,
         items,
@@ -119,6 +132,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
       (params) => elb().describeLoadBalancers(params),
       get("LoadBalancers"),
       first,
+      assignTags,
       tap((result) => {
         logger.debug(`getByName result: ${tos(result)}`);
       }),
@@ -134,6 +148,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
         (params) => elb().describeLoadBalancers(params),
         get("LoadBalancers"),
         first,
+        assignTags,
         tap((result) => {
           logger.debug(`getById result: ${tos(result)}`);
         }),

@@ -167,7 +167,7 @@ function CoreProvider({
   const getResourceFromLive = ({ live, lives, client }) =>
     pipe([
       tap(() => {
-        assert(lives);
+        assert(live);
       }),
       () => ({
         providerName: provider.name,
@@ -974,6 +974,9 @@ function CoreProvider({
     lives,
   } = {}) =>
     pipe([
+      tap(() => {
+        assert(lives);
+      }),
       () => getClients(),
       tap((clients) => {
         logger.info(
@@ -1414,6 +1417,9 @@ function CoreProvider({
       const { resource, live, action, diff } = item;
       const engine = getResource(resource);
       assert(engine, `Cannot find resource ${tos(resource)}`);
+      logger.debug(
+        `upsertResources: executor ${resource.type} ${resource.name}`
+      );
       const resolvedDependencies = await engine.resolveDependencies({
         lives,
         dependenciesMustBeUp: true,

@@ -422,7 +422,9 @@ exports.Planner = ({
             }),
             tap((dependsOn) => {
               logger.debug(
-                `onEnd  ${tos({ name: entry.item.resource.name, dependsOn })}`
+                `onEnd ${entry.item.resource.name} #dependsOn: ${size(
+                  dependsOn
+                )}`
               );
             }),
             switchCase([

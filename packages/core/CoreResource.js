@@ -28,6 +28,7 @@ const {
   find,
   defaultsDeep,
   isDeepEqual,
+  size,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreResources" });
@@ -77,7 +78,7 @@ const decorateLive =
 const decorateLives = ({ client, lives, config }) =>
   pipe([
     tap((params) => {
-      assert(true);
+      //assert(lives, "decorateLives mssing lives");
     }),
     get("items"), // remove
     filter(not(get("error"))),
@@ -149,6 +150,9 @@ const createClient = ({
           tryCatch(
             ({ lives }) =>
               pipe([
+                tap((params) => {
+                  assert(true);
+                }),
                 () =>
                   client.getList({
                     lives,
@@ -159,6 +163,11 @@ const createClient = ({
                   client,
                   lives,
                   config,
+                }),
+                tap((resources) => {
+                  logger.debug(
+                    `getLives ${client.spec.type} #resources ${size(resources)}`
+                  );
                 }),
                 (resources) => ({ resources }),
               ])(),
@@ -406,7 +415,7 @@ exports.ResourceMaker = ({
               }),
               switchCase([
                 () => dependency.filterLives,
-                () => dependency.resolveConfig(),
+                () => dependency.resolveConfig({ lives }),
                 switchCase([
                   () => isEmpty(lives),
                   () => dependency.getLive({ deep: true }),
@@ -474,9 +483,9 @@ exports.ResourceMaker = ({
         };
       }),
       tap((result) => {
-        /*logger.debug(
+        logger.debug(
           `resolveDependencies for ${toString()}, result: ${tos(result)}`
-        );*/
+        );
       }),
     ])();
 
@@ -512,15 +521,20 @@ exports.ResourceMaker = ({
             lives,
           }),
       ]),
-      async (resolvedDependencies) =>
+      (resolvedDependencies) =>
         switchCase([
           () => filterLives,
           pipe([
-            () =>
-              client.getLives({
-                lives,
-              }),
-            ({ resources }) =>
+            tap(() => {
+              assert(lives);
+            }),
+            () => lives.getByType({ type, group, providerName: provider.name }),
+            tap((resources) => {
+              logger.debug(
+                `resolveConfig ${type} #resources ${size(resources)}`
+              );
+            }),
+            (resources) =>
               filterLives({
                 dependencies: resolvedDependencies,
                 resources,
@@ -528,18 +542,31 @@ exports.ResourceMaker = ({
                 live,
                 lives,
               }),
-          ]),
-          async () =>
-            client.configDefault({
-              name: resourceName,
-              meta,
-              namespace,
-              properties: defaultsDeep(spec.propertiesDefault)(
-                await properties({ dependencies: resolvedDependencies })
-              ),
-              dependencies: resolvedDependencies,
-              live,
+            get("live"),
+            tap((live) => {
+              logger.debug(
+                `resolveConfig filterLives ${resourceName}: ${tos(live)}`
+              );
             }),
+          ]),
+          pipe([
+            () => properties({ dependencies: resolvedDependencies }),
+            (properties) =>
+              client.configDefault({
+                name: resourceName,
+                meta,
+                namespace,
+                properties: defaultsDeep(spec.propertiesDefault)(properties),
+                dependencies: resolvedDependencies,
+                live,
+                lives,
+              }),
+            tap((result) => {
+              logger.debug(
+                `resolveConfig configDefault ${resourceName}: ${tos(result)}`
+              );
+            }),
+          ]),
         ])(),
     ])();
 

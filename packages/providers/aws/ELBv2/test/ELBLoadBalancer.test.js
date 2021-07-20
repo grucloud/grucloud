@@ -206,26 +206,10 @@ describe("AwsLoadBalancerV2", async function () {
 
     const loadBalancerRecord = provider.route53.makeRecord({
       name: `dns-record-alias-load-balancer-${hostedZoneName}`,
-      dependencies: { hostedZone, loadBalancerReadOnly, loadBalancer },
-      properties: ({ dependencies }) => {
-        const hostname = dependencies.loadBalancerReadOnly.live?.DNSName;
-        if (!hostname) {
-          return {
-            message: "loadBalancer not up yet",
-            Type: "A",
-            Name: hostedZone.name,
-          };
-        }
-        return {
-          Name: hostedZone.name,
-          Type: "A",
-          AliasTarget: {
-            HostedZoneId:
-              dependencies.loadBalancerReadOnly?.live.CanonicalHostedZoneId,
-            DNSName: `${hostname}.`,
-            EvaluateTargetHealth: false,
-          },
-        };
+      dependencies: {
+        hostedZone,
+        loadBalancer: loadBalancerReadOnly,
+        loadBalancerDep: loadBalancer, // Only for the load record to kick off when the balancer is up
       },
     });
 
