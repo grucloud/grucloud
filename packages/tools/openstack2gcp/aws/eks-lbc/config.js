@@ -260,12 +260,12 @@ module.exports = ({ stage }) => ({
                 Effect: "Allow",
                 Principal: {
                   Federated:
-                    "arn:aws:iam::840541460064:oidc-provider/oidc.eks.eu-west-2.amazonaws.com/id/C515FB4B09AC134E3D04F72771045CF5",
+                    "arn:aws:iam::840541460064:oidc-provider/oidc.eks.eu-west-2.amazonaws.com/id/F601A53EF2B98F2670398D6D0F2FB408",
                 },
                 Action: "sts:AssumeRoleWithWebIdentity",
                 Condition: {
                   StringEquals: {
-                    "oidc.eks.eu-west-2.amazonaws.com/id/C515FB4B09AC134E3D04F72771045CF5:aud":
+                    "oidc.eks.eu-west-2.amazonaws.com/id/F601A53EF2B98F2670398D6D0F2FB408:aud":
                       "sts.amazonaws.com",
                   },
                 },
@@ -295,8 +295,8 @@ module.exports = ({ stage }) => ({
       },
     },
     InstanceProfile: {
-      eksA2bd5f29_3c87E677Fda4_26fc08e79a1d: {
-        name: "eks-a2bd5f29-3c87-e677-fda4-26fc08e79a1d",
+      eks_16bd6208_1099B21b_8cbe_90af6403d220: {
+        name: "eks-16bd6208-1099-b21b-8cbe-90af6403d220",
       },
     },
     OpenIDConnectProvider: {
@@ -357,12 +357,12 @@ module.exports = ({ stage }) => ({
           MapCustomerOwnedIpOnLaunch: false,
           Tags: [
             {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "shared",
-            },
-            {
               Key: "kubernetes.io/role/internal-elb",
               Value: "1",
+            },
+            {
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "shared",
             },
           ],
         },
@@ -395,12 +395,12 @@ module.exports = ({ stage }) => ({
           MapCustomerOwnedIpOnLaunch: false,
           Tags: [
             {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "shared",
-            },
-            {
               Key: "kubernetes.io/role/elb",
               Value: "1",
+            },
+            {
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "shared",
             },
           ],
         },
@@ -487,8 +487,8 @@ module.exports = ({ stage }) => ({
       sgClusterRuleIngressHttps: {
         name: "sg-cluster-rule-ingress-https",
       },
-      sgDefaultVpcRuleIngressAllFromSg_04ad99b683420e567: {
-        name: "sg-default-vpc-rule-ingress-all-from-sg-04ad99b683420e567",
+      sgDefaultVpcRuleIngressAllFromSg_0602d24f69aee9769: {
+        name: "sg-default-vpc-rule-ingress-all-from-sg-0602d24f69aee9769",
       },
       sgNodesRuleIngressAll: {
         name: "sg-nodes-rule-ingress-all",
@@ -585,22 +585,10 @@ module.exports = ({ stage }) => ({
   },
   route53: {
     HostedZone: {
-      grucloudOrg: {
-        name: "grucloud.org.",
-        properties: {
-          Name: "grucloud.org.",
-        },
-      },
       starhackitEksLbcGrucloudOrg: {
         name: "starhackit-eks-lbc.grucloud.org.",
         properties: {
           Name: "starhackit-eks-lbc.grucloud.org.",
-        },
-      },
-      testLoadBalancerGrucloudOrg: {
-        name: "test-load-balancer.grucloud.org.",
-        properties: {
-          Name: "test-load-balancer.grucloud.org.",
         },
       },
     },
@@ -628,7 +616,7 @@ module.exports = ({ stage }) => ({
           AliasTarget: {
             HostedZoneId: "ZHURV8PSTC4K8",
             DNSName:
-              "k8s-default-ingress-e514cce9f1-1921463058.eu-west-2.elb.amazonaws.com.",
+              "k8s-default-ingress-e514cce9f1-1782783825.eu-west-2.elb.amazonaws.com.",
             EvaluateTargetHealth: false,
           },
         },

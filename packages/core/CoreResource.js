@@ -22,6 +22,8 @@ const {
 const {
   isEmpty,
   isString,
+  isFunction,
+  isObject,
   callProp,
   pluck,
   forEach,
@@ -29,6 +31,7 @@ const {
   defaultsDeep,
   isDeepEqual,
   size,
+  identity,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreResources" });
@@ -189,7 +192,7 @@ exports.ResourceMaker = ({
   name: resourceName,
   namespace = "",
   meta,
-  dependencies = {},
+  dependencies = () => ({}),
   filterLives,
   readOnly,
   properties = () => ({}),
@@ -203,6 +206,15 @@ exports.ResourceMaker = ({
   logger.debug(
     `ResourceMaker: ${tos({ type, resourceName, namespace, meta })}`
   );
+
+  const getDependencies = pipe([
+    () => dependencies,
+    switchCase([
+      isObject,
+      (dependencies) => () => ({ ...dependencies }),
+      identity,
+    ]),
+  ]);
 
   const client = createClient({
     providerName: provider.name,
@@ -224,7 +236,7 @@ exports.ResourceMaker = ({
           name: resourceName,
           namespace,
           meta,
-          dependencies,
+          dependencies: getDependencies(),
           properties,
           resolveConfig,
           deep,
@@ -299,7 +311,7 @@ exports.ResourceMaker = ({
           usedBySet,
           target,
           live,
-          dependencies: resource.dependencies,
+          dependencies: resource.dependencies(),
           lives,
           config,
         }),
@@ -343,6 +355,8 @@ exports.ResourceMaker = ({
   };
   const getDependencyList = () =>
     pipe([
+      getDependencies,
+      (deps) => deps(),
       filter(and([not(isString), not(isEmpty)])),
       transform(
         map((dep) => dep),
@@ -357,7 +371,7 @@ exports.ResourceMaker = ({
           assert(dep.type, "dep.type");
         })
       ),
-    ])(dependencies);
+    ])();
 
   const resolveDependencies = ({
     lives,
@@ -365,14 +379,15 @@ exports.ResourceMaker = ({
     dependenciesMustBeUp = false,
   }) =>
     pipe([
-      () => dependencies,
       tap(() => {
+        assert(isFunction(dependencies));
         logger.info(
           `resolveDependencies for ${toString()}: ${Object.keys(
-            dependencies
+            dependencies()
           )}, mustBeUp: ${dependenciesMustBeUp}`
         );
       }),
+      () => dependencies(),
       map(async (dependency) => {
         if (!dependency) {
           logger.error(`${toString()} has undefined dependencies`);
@@ -517,7 +532,7 @@ exports.ResourceMaker = ({
         () =>
           resolveDependencies({
             resourceName,
-            dependencies,
+            dependencies: getDependencies(),
             lives,
           }),
       ]),
@@ -592,7 +607,7 @@ exports.ResourceMaker = ({
           name: resourceName,
           payload,
           namespace,
-          dependencies,
+          dependencies: getDependencies(),
           attributes,
           resolvedDependencies,
         }),
@@ -622,7 +637,7 @@ exports.ResourceMaker = ({
         client.update({
           name: resourceName,
           payload,
-          dependencies,
+          dependencies: getDependencies(),
           resolvedDependencies,
           diff,
           live,
@@ -677,7 +692,7 @@ exports.ResourceMaker = ({
       group,
       name: resourceName,
       meta,
-      dependencies,
+      dependencies: getDependencies(),
       properties,
     });
 
@@ -714,7 +729,7 @@ exports.ResourceMaker = ({
     namespace,
     meta,
     readOnly,
-    dependencies,
+    dependencies: getDependencies(),
     addUsedBy,
     usedBy: () => usedBySet,
     spec,
@@ -734,7 +749,7 @@ exports.ResourceMaker = ({
     resolveDependencies: ({ lives, dependenciesMustBeUp }) =>
       resolveDependencies({
         resourceName,
-        dependencies,
+        dependencies: getDependencies(),
         lives,
         dependenciesMustBeUp,
       }),
@@ -750,26 +765,29 @@ exports.ResourceMaker = ({
       ])(),
   };
 
-  forEach((dependency) => {
-    if (isString(dependency)) {
-      return;
-    }
-    if (!dependency) {
-      logger.error(`undefined dependency for ${type}/${resourceName}`);
-      return;
-    }
-    //TODO is Array ?
-    //TODO make it recursive
-    if (!dependency.addUsedBy) {
-      forEach((item) => {
-        if (item.addUsedBy) {
-          item.addUsedBy(resourceMaker);
-        }
-      })(dependency);
-    } else {
-      dependency.addUsedBy(resourceMaker);
-    }
-  })(dependencies);
+  pipe([
+    () => getDependencies(),
+    forEach((dependency) => {
+      if (isString(dependency)) {
+        return;
+      }
+      if (!dependency) {
+        logger.error(`undefined dependency for ${type}/${resourceName}`);
+        return;
+      }
+      //TODO is Array ?
+      //TODO make it recursive
+      if (!dependency.addUsedBy) {
+        forEach((item) => {
+          if (item.addUsedBy) {
+            item.addUsedBy(resourceMaker);
+          }
+        })(dependency);
+      } else {
+        dependency.addUsedBy(resourceMaker);
+      }
+    }),
+  ])();
 
   return resourceMaker;
 };

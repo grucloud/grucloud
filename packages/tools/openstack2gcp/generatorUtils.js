@@ -181,9 +181,9 @@ const buildDependencies = ({ resource, lives, dependencies = {} }) =>
     switchCase([
       isEmpty,
       () => "",
-      (values) => `dependencies: { 
+      (values) => `dependencies: () =>({ 
        ${values.join(",\n")}
-     },`,
+     }),`,
     ]),
     tap((params) => {
       assert(true);

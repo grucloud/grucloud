@@ -1463,7 +1463,7 @@ function CoreProvider({
         () => assert("action is not handled"),
       ])();
     };
-
+    //TODO try catch
     return switchCase([
       () => !isEmpty(plans),
       pipe([
@@ -1478,7 +1478,7 @@ function CoreProvider({
               onStateChange,
             }),
           }),
-        (planner) => planner.run(),
+        callProp("run"),
         tap((result) =>
           onStateChange({
             context: contextFromPlanner({ providerName, title }),

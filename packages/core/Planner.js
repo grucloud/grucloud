@@ -41,40 +41,47 @@ const STATES = {
   DONE: "DONE",
 };
 
-exports.mapToGraph = pipe([
-  (mapResource) =>
+exports.mapToGraph = (mapResource) =>
+  pipe([
+    () => [...mapResource.values()],
     map((resource) => ({
       ...resource.toJSON(),
-      dependsOn: transform(
-        flatMap(
-          switchCase([
-            isString,
-            () => [],
-            isEmpty,
-            () => [],
-            (resource) => {
-              if (!resource.toJSON) {
-                assert(
-                  !resource.toJSON,
-                  `Dependency is not a resource ${tos(resource)}`
-                );
-              }
-              return resource.name;
-            },
-            (resource) => [resource.toJSON()],
-            transform(
-              map((dep) => dep.toJSON()),
-              () => []
-            ),
-          ])
+      dependsOn: pipe([
+        tap(() => {
+          assert(isFunction(resource.dependencies));
+        }),
+        () => resource.dependencies(),
+        transform(
+          flatMap(
+            switchCase([
+              isString,
+              () => [],
+              isEmpty,
+              () => [],
+              (resource) => {
+                if (!resource.toJSON) {
+                  assert(
+                    !resource.toJSON,
+                    `Dependency is not a resource ${tos(resource)}`
+                  );
+                }
+                return resource.name;
+              },
+              (resource) => [resource.toJSON()],
+              transform(
+                map((dep) => dep.toJSON()),
+                () => []
+              ),
+            ])
+          ),
+          () => []
         ),
-        () => []
-      )(resource.dependencies),
-    }))([...mapResource.values()]),
-  tap((graph) => {
-    logger.debug(`mapToGraph: result ${tos(graph)}`);
-  }),
-]);
+      ])(),
+    })),
+    tap((graph) => {
+      logger.debug(`mapToGraph: result ${tos(graph)}`);
+    }),
+  ])();
 
 const parseFullType = (fullType) =>
   pipe([
@@ -275,6 +282,7 @@ const DependencyTree = ({ plans, dependsOnType, dependsOnInstance, down }) => {
               plans,
               dependsOnType: dependsOnTypeForward(dependsOnType),
             }),
+
             ...findDependsOnInstance({
               uri,
               plans,

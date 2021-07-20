@@ -260,10 +260,10 @@ const displayError = ({ name, error }) => {
   assert(name);
   console.error(`ERROR running command '${name}'`);
   displayErrorResults({ name, results: error.result?.results });
-
   displayErrorResults({ name, results: error.resultQuery?.results });
-  displayErrorResults({ name, results: error.resultsDestroy });
-  displayErrorHooks({ name, resultsHook: error.resultsHook });
+  displayErrorResults({ name, results: error.resultDeploy?.results });
+  displayErrorResults({ name, results: error.resultDestroy?.results });
+  displayErrorHooks({ name, resultsHook: error.resultHook });
 
   const results =
     error.resultQuery ||
