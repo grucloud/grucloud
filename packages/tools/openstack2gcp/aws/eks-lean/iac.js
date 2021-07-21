@@ -4,708 +4,633 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = async ({ provider }) => {
   const { config } = provider;
-  return pipe([
-    () => ({}),
-    (resources) =>
-      set(
-        "iam.Policy.amazonEksClusterPolicy",
-        provider.iam.usePolicy({
-          name: config.iam.Policy.amazonEksClusterPolicy.name,
-          namespace: "EKS",
-          properties: () => config.iam.Policy.amazonEksClusterPolicy.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "iam.Policy.amazonEksvpcResourceController",
-        provider.iam.usePolicy({
-          name: config.iam.Policy.amazonEksvpcResourceController.name,
-          namespace: "EKS",
-          properties: () =>
-            config.iam.Policy.amazonEksvpcResourceController.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "iam.Policy.amazonEksWorkerNodePolicy",
-        provider.iam.usePolicy({
-          name: config.iam.Policy.amazonEksWorkerNodePolicy.name,
-          namespace: "EKS",
-          properties: () =>
-            config.iam.Policy.amazonEksWorkerNodePolicy.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "iam.Policy.amazonEc2ContainerRegistryReadOnly",
-        provider.iam.usePolicy({
-          name: config.iam.Policy.amazonEc2ContainerRegistryReadOnly.name,
-          namespace: "EKS",
-          properties: () =>
-            config.iam.Policy.amazonEc2ContainerRegistryReadOnly.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "iam.Policy.amazonEksCniPolicy",
-        provider.iam.usePolicy({
-          name: config.iam.Policy.amazonEksCniPolicy.name,
-          namespace: "EKS",
-          properties: () => config.iam.Policy.amazonEksCniPolicy.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "iam.Role.roleCluster",
-        provider.iam.makeRole({
-          name: config.iam.Role.roleCluster.name,
-          namespace: "EKS",
-          dependencies: {
-            policies: [
-              resources.iam.Policy.amazonEksClusterPolicy,
-              resources.iam.Policy.amazonEksvpcResourceController,
-            ],
-          },
-          properties: () => config.iam.Role.roleCluster.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "iam.Role.roleNodeGroup",
-        provider.iam.makeRole({
-          name: config.iam.Role.roleNodeGroup.name,
-          namespace: "EKS",
-          dependencies: {
-            policies: [
-              resources.iam.Policy.amazonEksWorkerNodePolicy,
-              resources.iam.Policy.amazonEc2ContainerRegistryReadOnly,
-              resources.iam.Policy.amazonEksCniPolicy,
-            ],
-          },
-          properties: () => config.iam.Role.roleNodeGroup.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "iam.InstanceProfile.eks_02bd57ab_07b4Fb9cC0cf_8e1ac4094640",
-        provider.iam.makeInstanceProfile({
-          name: config.iam.InstanceProfile
-            .eks_02bd57ab_07b4Fb9cC0cf_8e1ac4094640.name,
-          namespace: "EKS",
-          dependencies: {
-            roles: [resources.iam.Role.roleNodeGroup],
-          },
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.Vpc.vpc",
-        provider.ec2.makeVpc({
-          name: config.ec2.Vpc.vpc.name,
-          namespace: "VPC",
-          properties: () => config.ec2.Vpc.vpc.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.Subnet.subnetPublicA",
-        provider.ec2.makeSubnet({
-          name: config.ec2.Subnet.subnetPublicA.name,
-          namespace: "VPC",
-          dependencies: {
-            vpc: resources.ec2.Vpc.vpc,
-          },
-          properties: () => config.ec2.Subnet.subnetPublicA.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.Subnet.subnetPrivateB",
-        provider.ec2.makeSubnet({
-          name: config.ec2.Subnet.subnetPrivateB.name,
-          namespace: "VPC",
-          dependencies: {
-            vpc: resources.ec2.Vpc.vpc,
-          },
-          properties: () => config.ec2.Subnet.subnetPrivateB.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.Subnet.subnetPublicB",
-        provider.ec2.makeSubnet({
-          name: config.ec2.Subnet.subnetPublicB.name,
-          namespace: "VPC",
-          dependencies: {
-            vpc: resources.ec2.Vpc.vpc,
-          },
-          properties: () => config.ec2.Subnet.subnetPublicB.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.Subnet.subnetPrivateA",
-        provider.ec2.makeSubnet({
-          name: config.ec2.Subnet.subnetPrivateA.name,
-          namespace: "VPC",
-          dependencies: {
-            vpc: resources.ec2.Vpc.vpc,
-          },
-          properties: () => config.ec2.Subnet.subnetPrivateA.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.KeyPair.kp",
-        provider.ec2.useKeyPair({
-          name: config.ec2.KeyPair.kp.name,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.ElasticIpAddress.iep",
-        provider.ec2.makeElasticIpAddress({
-          name: config.ec2.ElasticIpAddress.iep.name,
-          namespace: "VPC",
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.InternetGateway.internetGateway",
-        provider.ec2.makeInternetGateway({
-          name: config.ec2.InternetGateway.internetGateway.name,
-          namespace: "VPC",
-          dependencies: {
-            vpc: resources.ec2.Vpc.vpc,
-          },
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.NatGateway.natGateway",
-        provider.ec2.makeNatGateway({
-          name: config.ec2.NatGateway.natGateway.name,
-          namespace: "VPC",
-          dependencies: {
-            subnet: resources.ec2.Subnet.subnetPublicA,
-            eip: resources.ec2.ElasticIpAddress.iep,
-          },
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.RouteTable.routeTablePublic",
-        provider.ec2.makeRouteTable({
-          name: config.ec2.RouteTable.routeTablePublic.name,
-          namespace: "VPC",
-          dependencies: {
-            vpc: resources.ec2.Vpc.vpc,
-            subnets: [
-              resources.ec2.Subnet.subnetPublicA,
-              resources.ec2.Subnet.subnetPublicB,
-            ],
-          },
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.RouteTable.routeTablePrivateA",
-        provider.ec2.makeRouteTable({
-          name: config.ec2.RouteTable.routeTablePrivateA.name,
-          namespace: "VPC",
-          dependencies: {
-            vpc: resources.ec2.Vpc.vpc,
-            subnets: [resources.ec2.Subnet.subnetPrivateA],
-          },
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.RouteTable.routeTablePrivateB",
-        provider.ec2.makeRouteTable({
-          name: config.ec2.RouteTable.routeTablePrivateB.name,
-          namespace: "VPC",
-          dependencies: {
-            vpc: resources.ec2.Vpc.vpc,
-            subnets: [resources.ec2.Subnet.subnetPrivateB],
-          },
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.Route.routePublic",
-        provider.ec2.makeRoute({
-          name: config.ec2.Route.routePublic.name,
-          namespace: "VPC",
-          dependencies: {
-            routeTable: resources.ec2.RouteTable.routeTablePublic,
-            ig: resources.ec2.InternetGateway.internetGateway,
-          },
-          properties: () => config.ec2.Route.routePublic.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.Route.routePrivateA",
-        provider.ec2.makeRoute({
-          name: config.ec2.Route.routePrivateA.name,
-          namespace: "VPC",
-          dependencies: {
-            routeTable: resources.ec2.RouteTable.routeTablePrivateA,
-            natGateway: resources.ec2.NatGateway.natGateway,
-          },
-          properties: () => config.ec2.Route.routePrivateA.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.Route.routePrivateB",
-        provider.ec2.makeRoute({
-          name: config.ec2.Route.routePrivateB.name,
-          namespace: "VPC",
-          dependencies: {
-            routeTable: resources.ec2.RouteTable.routeTablePrivateB,
-            natGateway: resources.ec2.NatGateway.natGateway,
-          },
-          properties: () => config.ec2.Route.routePrivateB.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.SecurityGroup.securityGroupCluster",
-        provider.ec2.makeSecurityGroup({
-          name: config.ec2.SecurityGroup.securityGroupCluster.name,
-          namespace: "EKS",
-          dependencies: {
-            vpc: resources.ec2.Vpc.vpc,
-          },
-          properties: () =>
-            config.ec2.SecurityGroup.securityGroupCluster.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.SecurityGroup.securityGroupNode",
-        provider.ec2.makeSecurityGroup({
-          name: config.ec2.SecurityGroup.securityGroupNode.name,
-          namespace: "EKS",
-          dependencies: {
-            vpc: resources.ec2.Vpc.vpc,
-          },
-          properties: () =>
-            config.ec2.SecurityGroup.securityGroupNode.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.SecurityGroup.loadBalancerSecurityGroup",
-        provider.ec2.makeSecurityGroup({
-          name: config.ec2.SecurityGroup.loadBalancerSecurityGroup.name,
-          namespace: "LoadBalancer",
-          dependencies: {
-            vpc: resources.ec2.Vpc.vpc,
-          },
-          properties: () =>
-            config.ec2.SecurityGroup.loadBalancerSecurityGroup.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttp",
-        provider.ec2.makeSecurityGroupRuleIngress({
-          name: config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttp.name,
-          namespace: "LoadBalancer",
-          dependencies: {
-            securityGroup:
-              resources.ec2.SecurityGroup.loadBalancerSecurityGroup,
-          },
-          properties: () =>
-            config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttp.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttps",
-        provider.ec2.makeSecurityGroupRuleIngress({
-          name: config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttps.name,
-          namespace: "LoadBalancer",
-          dependencies: {
-            securityGroup:
-              resources.ec2.SecurityGroup.loadBalancerSecurityGroup,
-          },
-          properties: () =>
-            config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttps.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll",
-        provider.ec2.makeSecurityGroupRuleIngress({
-          name: config.ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll.name,
-          namespace: "EKS",
-          dependencies: {
-            securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
-          },
-          properties: () =>
-            config.ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll
-              .properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttp",
-        provider.ec2.makeSecurityGroupRuleIngress({
-          name: config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttp.name,
-          namespace: "LoadBalancer",
-          dependencies: {
-            securityGroup:
-              resources.ec2.SecurityGroup.loadBalancerSecurityGroup,
-          },
-          properties: () =>
-            config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttp.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps",
-        provider.ec2.makeSecurityGroupRuleIngress({
-          name: config.ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps
-            .name,
-          namespace: "EKS",
-          dependencies: {
-            securityGroup: resources.ec2.SecurityGroup.securityGroupCluster,
-          },
-          properties: () =>
-            config.ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps
-              .properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster",
-        provider.ec2.makeSecurityGroupRuleIngress({
-          name: config.ec2.SecurityGroupRuleIngress
-            .sgRuleNodeGroupIngressCluster.name,
-          namespace: "EKS",
-          dependencies: {
-            securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
-            securityGroupFrom: resources.ec2.SecurityGroup.securityGroupCluster,
-          },
-          properties: () =>
-            config.ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster
-              .properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster",
-        provider.ec2.makeSecurityGroupRuleIngress({
-          name: config.ec2.SecurityGroupRuleIngress
-            .sgRuleNodeGroupIngressCluster.name,
-          namespace: "EKS",
-          dependencies: {
-            securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
-          },
-          properties: () =>
-            config.ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster
-              .properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttps",
-        provider.ec2.makeSecurityGroupRuleIngress({
-          name: config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttps.name,
-          namespace: "LoadBalancer",
-          dependencies: {
-            securityGroup:
-              resources.ec2.SecurityGroup.loadBalancerSecurityGroup,
-          },
-          properties: () =>
-            config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttps.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll",
-        provider.ec2.makeSecurityGroupRuleIngress({
-          name: config.ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll.name,
-          namespace: "EKS",
-          dependencies: {
-            securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
-          },
-          properties: () =>
-            config.ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll
-              .properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps",
-        provider.ec2.makeSecurityGroupRuleIngress({
-          name: config.ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps
-            .name,
-          namespace: "EKS",
-          dependencies: {
-            securityGroup: resources.ec2.SecurityGroup.securityGroupCluster,
-          },
-          properties: () =>
-            config.ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps
-              .properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster",
-        provider.ec2.makeSecurityGroupRuleIngress({
-          name: config.ec2.SecurityGroupRuleIngress
-            .sgRuleNodeGroupIngressCluster.name,
-          namespace: "EKS",
-          dependencies: {
-            securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
-          },
-          properties: () =>
-            config.ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster
-              .properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.SecurityGroupRuleEgress.sgClusterRuleEgress",
-        provider.ec2.makeSecurityGroupRuleEgress({
-          name: config.ec2.SecurityGroupRuleEgress.sgClusterRuleEgress.name,
-          namespace: "EKS",
-          dependencies: {
-            securityGroup: resources.ec2.SecurityGroup.securityGroupCluster,
-          },
-          properties: () =>
-            config.ec2.SecurityGroupRuleEgress.sgClusterRuleEgress.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "ec2.SecurityGroupRuleEgress.sgClusterRuleEgress",
-        provider.ec2.makeSecurityGroupRuleEgress({
-          name: config.ec2.SecurityGroupRuleEgress.sgClusterRuleEgress.name,
-          namespace: "EKS",
-          dependencies: {
-            securityGroup: resources.ec2.SecurityGroup.securityGroupCluster,
-          },
-          properties: () =>
-            config.ec2.SecurityGroupRuleEgress.sgClusterRuleEgress.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "elb.LoadBalancer.loadBalancer",
-        provider.elb.makeLoadBalancer({
-          name: config.elb.LoadBalancer.loadBalancer.name,
-          namespace: "LoadBalancer",
-          dependencies: {
-            subnets: [
-              resources.ec2.Subnet.subnetPublicA,
-              resources.ec2.Subnet.subnetPublicB,
-            ],
-            securityGroups: [
-              resources.ec2.SecurityGroup.loadBalancerSecurityGroup,
-            ],
-          },
-          properties: () => config.elb.LoadBalancer.loadBalancer.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "elb.TargetGroup.targetGroupRest",
-        provider.elb.makeTargetGroup({
-          name: config.elb.TargetGroup.targetGroupRest.name,
-          namespace: "LoadBalancer",
-          dependencies: {
-            vpc: resources.ec2.Vpc.vpc,
-          },
-          properties: () => config.elb.TargetGroup.targetGroupRest.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "elb.TargetGroup.targetGroupWeb",
-        provider.elb.makeTargetGroup({
-          name: config.elb.TargetGroup.targetGroupWeb.name,
-          namespace: "LoadBalancer",
-          dependencies: {
-            vpc: resources.ec2.Vpc.vpc,
-          },
-          properties: () => config.elb.TargetGroup.targetGroupWeb.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "elb.Listener.listenerHttp",
-        provider.elb.makeListener({
-          name: config.elb.Listener.listenerHttp.name,
-          namespace: "LoadBalancer",
-          dependencies: {
-            loadBalancer: resources.elb.LoadBalancer.loadBalancer,
-          },
-          properties: () => config.elb.Listener.listenerHttp.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "elb.Listener.listenerHttps",
-        provider.elb.makeListener({
-          name: config.elb.Listener.listenerHttps.name,
-          namespace: "LoadBalancer",
-          dependencies: {
-            loadBalancer: resources.elb.LoadBalancer.loadBalancer,
-          },
-          properties: () => config.elb.Listener.listenerHttps.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "kms.Key.eksKey",
-        provider.kms.makeKey({
-          name: config.kms.Key.eksKey.name,
-          properties: () => config.kms.Key.eksKey.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "kms.Key.eksKey",
-        provider.kms.useKey({
-          name: config.kms.Key.eksKey.name,
-          properties: () => config.kms.Key.eksKey.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "kms.Key.aliasAwsRds",
-        provider.kms.useKey({
-          name: config.kms.Key.aliasAwsRds.name,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "kms.Key.eksKey",
-        provider.kms.useKey({
-          name: config.kms.Key.eksKey.name,
-          properties: () => config.kms.Key.eksKey.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "kms.Key.aliasAwsAcm",
-        provider.kms.useKey({
-          name: config.kms.Key.aliasAwsAcm.name,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "kms.Key.aliasAwsEbs",
-        provider.kms.useKey({
-          name: config.kms.Key.aliasAwsEbs.name,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "kms.Key.secretKeyTest",
-        provider.kms.useKey({
-          name: config.kms.Key.secretKeyTest.name,
-          properties: () => config.kms.Key.secretKeyTest.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "eks.Cluster.cluster",
-        provider.eks.makeCluster({
-          name: config.eks.Cluster.cluster.name,
-          namespace: "EKS",
-          dependencies: {
-            subnets: [
-              resources.ec2.Subnet.subnetPublicA,
-              resources.ec2.Subnet.subnetPublicB,
-              resources.ec2.Subnet.subnetPrivateA,
-              resources.ec2.Subnet.subnetPrivateB,
-            ],
-            securityGroups: [
-              resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
-              resources.ec2.SecurityGroup.securityGroupCluster,
-              resources.ec2.SecurityGroup.securityGroupNode,
-            ],
-            role: resources.iam.Role.roleCluster,
-          },
-          properties: () => config.eks.Cluster.cluster.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "eks.NodeGroup.nodeGroupPrivateCluster",
-        provider.eks.makeNodeGroup({
-          name: config.eks.NodeGroup.nodeGroupPrivateCluster.name,
-          namespace: "EKS",
-          dependencies: {
-            cluster: resources.eks.Cluster.cluster,
-            subnets: [
-              resources.ec2.Subnet.subnetPrivateA,
-              resources.ec2.Subnet.subnetPrivateB,
-            ],
-            role: resources.iam.Role.roleNodeGroup,
-          },
-          properties: () =>
-            config.eks.NodeGroup.nodeGroupPrivateCluster.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "route53Domain.Domain.grucloudOrg",
-        provider.route53Domain.useDomain({
-          name: config.route53Domain.Domain.grucloudOrg.name,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "route53.HostedZone.starhackitEksLeanGrucloudOrg",
-        provider.route53.makeHostedZone({
-          name: config.route53.HostedZone.starhackitEksLeanGrucloudOrg.name,
-          properties: () =>
-            config.route53.HostedZone.starhackitEksLeanGrucloudOrg.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "route53.Record.loadBalancerDnsRecordAliasStarhackitEksLeanGrucloudOrg",
-        provider.route53.makeRecord({
-          name: config.route53.Record
-            .loadBalancerDnsRecordAliasStarhackitEksLeanGrucloudOrg.name,
-          namespace: "LoadBalancer",
-          dependencies: {
-            hostedZone:
-              resources.route53.HostedZone.starhackitEksLeanGrucloudOrg,
-            loadBalancer: resources.elb.LoadBalancer.loadBalancer,
-          },
-          properties: () =>
-            config.route53.Record
-              .loadBalancerDnsRecordAliasStarhackitEksLeanGrucloudOrg
-              .properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "route53.Record.certificateValidationStarhackitEksLeanGrucloudOrg",
-        provider.route53.makeRecord({
-          name: config.route53.Record
-            .certificateValidationStarhackitEksLeanGrucloudOrg.name,
-          namespace: "Certificate",
-          dependencies: {
-            hostedZone:
-              resources.route53.HostedZone.starhackitEksLeanGrucloudOrg,
-          },
-          properties: () =>
-            config.route53.Record
-              .certificateValidationStarhackitEksLeanGrucloudOrg.properties,
-        })
-      )(resources),
-  ])();
+
+  provider.iam.usePolicy({
+    name: config.iam.Policy.amazonEc2ContainerRegistryReadOnly.name,
+    namespace: "EKS",
+    properties: () =>
+      config.iam.Policy.amazonEc2ContainerRegistryReadOnly.properties,
+  });
+
+  provider.iam.usePolicy({
+    name: config.iam.Policy.amazonEksCniPolicy.name,
+    namespace: "EKS",
+    properties: () => config.iam.Policy.amazonEksCniPolicy.properties,
+  });
+
+  provider.iam.usePolicy({
+    name: config.iam.Policy.amazonEksClusterPolicy.name,
+    namespace: "EKS",
+    properties: () => config.iam.Policy.amazonEksClusterPolicy.properties,
+  });
+
+  provider.iam.usePolicy({
+    name: config.iam.Policy.amazonEksvpcResourceController.name,
+    namespace: "EKS",
+    properties: () =>
+      config.iam.Policy.amazonEksvpcResourceController.properties,
+  });
+
+  provider.iam.usePolicy({
+    name: config.iam.Policy.amazonEksWorkerNodePolicy.name,
+    namespace: "EKS",
+    properties: () => config.iam.Policy.amazonEksWorkerNodePolicy.properties,
+  });
+
+  provider.iam.makeRole({
+    name: config.iam.Role.roleCluster.name,
+    namespace: "EKS",
+    dependencies: (resources) => ({
+      policies: [
+        resources.iam.Policy.amazonEksClusterPolicy,
+        resources.iam.Policy.amazonEksvpcResourceController,
+      ],
+    }),
+    properties: () => config.iam.Role.roleCluster.properties,
+  });
+
+  provider.iam.makeRole({
+    name: config.iam.Role.roleNodeGroup.name,
+    namespace: "EKS",
+    dependencies: (resources) => ({
+      policies: [
+        resources.iam.Policy.amazonEksWorkerNodePolicy,
+        resources.iam.Policy.amazonEc2ContainerRegistryReadOnly,
+        resources.iam.Policy.amazonEksCniPolicy,
+      ],
+    }),
+    properties: () => config.iam.Role.roleNodeGroup.properties,
+  });
+
+  provider.iam.useInstanceProfile({
+    name: config.iam.InstanceProfile.eks_0ebd6544C5e9_4d31_70f3_9c0a0af85a3d
+      .name,
+    namespace: "EKS",
+    dependencies: (resources) => ({
+      roles: [resources.iam.Role.roleNodeGroup],
+    }),
+  });
+
+  provider.ec2.makeVpc({
+    name: config.ec2.Vpc.vpc.name,
+    namespace: "VPC",
+    properties: () => config.ec2.Vpc.vpc.properties,
+  });
+
+  provider.ec2.useDefaultVpc({
+    name: config.ec2.Vpc.vpcDefault.name,
+  });
+
+  provider.ec2.makeSubnet({
+    name: config.ec2.Subnet.subnetPrivateA.name,
+    namespace: "VPC",
+    dependencies: (resources) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+    properties: () => config.ec2.Subnet.subnetPrivateA.properties,
+  });
+
+  provider.ec2.makeSubnet({
+    name: config.ec2.Subnet.subnetPrivateB.name,
+    namespace: "VPC",
+    dependencies: (resources) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+    properties: () => config.ec2.Subnet.subnetPrivateB.properties,
+  });
+
+  provider.ec2.makeSubnet({
+    name: config.ec2.Subnet.subnetPublicA.name,
+    namespace: "VPC",
+    dependencies: (resources) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+    properties: () => config.ec2.Subnet.subnetPublicA.properties,
+  });
+
+  provider.ec2.makeSubnet({
+    name: config.ec2.Subnet.subnetPublicB.name,
+    namespace: "VPC",
+    dependencies: (resources) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+    properties: () => config.ec2.Subnet.subnetPublicB.properties,
+  });
+
+  provider.ec2.useVolume({
+    name: config.ec2.Volume.kubernetesPvDbPostgres_0.name,
+    namespace: "EKS",
+    properties: () => config.ec2.Volume.kubernetesPvDbPostgres_0.properties,
+  });
+
+  provider.ec2.useVolume({
+    name: config.ec2.Volume.vol_0a96f6c2a1820fa03.name,
+    namespace: "EKS",
+    properties: () => config.ec2.Volume.vol_0a96f6c2a1820fa03.properties,
+  });
+
+  provider.ec2.makeElasticIpAddress({
+    name: config.ec2.ElasticIpAddress.iep.name,
+    namespace: "VPC",
+  });
+
+  provider.ec2.makeInternetGateway({
+    name: config.ec2.InternetGateway.internetGateway.name,
+    namespace: "VPC",
+    dependencies: (resources) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+  });
+
+  provider.ec2.makeNatGateway({
+    name: config.ec2.NatGateway.natGateway.name,
+    namespace: "VPC",
+    dependencies: (resources) => ({
+      subnet: resources.ec2.Subnet.subnetPublicA,
+      eip: resources.ec2.ElasticIpAddress.iep,
+    }),
+  });
+
+  provider.ec2.makeRouteTable({
+    name: config.ec2.RouteTable.routeTablePrivateA.name,
+    namespace: "VPC",
+    dependencies: (resources) => ({
+      vpc: resources.ec2.Vpc.vpc,
+      subnets: [resources.ec2.Subnet.subnetPrivateA],
+    }),
+  });
+
+  provider.ec2.makeRouteTable({
+    name: config.ec2.RouteTable.routeTablePrivateB.name,
+    namespace: "VPC",
+    dependencies: (resources) => ({
+      vpc: resources.ec2.Vpc.vpc,
+      subnets: [resources.ec2.Subnet.subnetPrivateB],
+    }),
+  });
+
+  provider.ec2.makeRouteTable({
+    name: config.ec2.RouteTable.routeTablePublic.name,
+    namespace: "VPC",
+    dependencies: (resources) => ({
+      vpc: resources.ec2.Vpc.vpc,
+      subnets: [
+        resources.ec2.Subnet.subnetPublicB,
+        resources.ec2.Subnet.subnetPublicA,
+      ],
+    }),
+  });
+
+  provider.ec2.makeRoute({
+    name: config.ec2.Route.routePrivateA.name,
+    namespace: "VPC",
+    dependencies: (resources) => ({
+      routeTable: resources.ec2.RouteTable.routeTablePrivateA,
+      natGateway: resources.ec2.NatGateway.natGateway,
+    }),
+    properties: () => config.ec2.Route.routePrivateA.properties,
+  });
+
+  provider.ec2.makeRoute({
+    name: config.ec2.Route.routePrivateB.name,
+    namespace: "VPC",
+    dependencies: (resources) => ({
+      routeTable: resources.ec2.RouteTable.routeTablePrivateB,
+      natGateway: resources.ec2.NatGateway.natGateway,
+    }),
+    properties: () => config.ec2.Route.routePrivateB.properties,
+  });
+
+  provider.ec2.makeRoute({
+    name: config.ec2.Route.routePublic.name,
+    namespace: "VPC",
+    dependencies: (resources) => ({
+      routeTable: resources.ec2.RouteTable.routeTablePublic,
+      ig: resources.ec2.InternetGateway.internetGateway,
+    }),
+    properties: () => config.ec2.Route.routePublic.properties,
+  });
+
+  provider.ec2.useSecurityGroup({
+    name: config.ec2.SecurityGroup.eksClusterSgCluster_872092154.name,
+    namespace: "EKS",
+    dependencies: (resources) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroup.eksClusterSgCluster_872092154.properties,
+  });
+
+  provider.ec2.makeSecurityGroup({
+    name: config.ec2.SecurityGroup.loadBalancerSecurityGroup.name,
+    namespace: "LoadBalancer",
+    dependencies: (resources) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroup.loadBalancerSecurityGroup.properties,
+  });
+
+  provider.ec2.makeSecurityGroup({
+    name: config.ec2.SecurityGroup.securityGroupCluster.name,
+    namespace: "EKS",
+    dependencies: (resources) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+    properties: () => config.ec2.SecurityGroup.securityGroupCluster.properties,
+  });
+
+  provider.ec2.makeSecurityGroup({
+    name: config.ec2.SecurityGroup.securityGroupNode.name,
+    namespace: "EKS",
+    dependencies: (resources) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+    properties: () => config.ec2.SecurityGroup.securityGroupNode.properties,
+  });
+
+  provider.ec2.useDefaultSecurityGroup({
+    name: config.ec2.SecurityGroup.sgDefaultVpc.name,
+    dependencies: (resources) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+  });
+
+  provider.ec2.useDefaultSecurityGroup({
+    name: config.ec2.SecurityGroup.sgDefaultVpcDefault.name,
+    dependencies: (resources) => ({
+      vpc: resources.ec2.Vpc.vpcDefault,
+    }),
+  });
+
+  provider.ec2.useSecurityGroupRuleIngress({
+    name: config.ec2.SecurityGroupRuleIngress
+      .eksClusterSgCluster_872092154RuleIngressAllFromEksClusterSgCluster_872092154
+      .name,
+    dependencies: (resources) => ({
+      securityGroup: resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
+      securityGroupFrom:
+        resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress
+        .eksClusterSgCluster_872092154RuleIngressAllFromEksClusterSgCluster_872092154
+        .properties,
+  });
+
+  provider.ec2.makeSecurityGroupRuleIngress({
+    name: config.ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps.name,
+    namespace: "EKS",
+    dependencies: (resources) => ({
+      securityGroup: resources.ec2.SecurityGroup.securityGroupCluster,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps.properties,
+  });
+
+  provider.ec2.makeSecurityGroupRuleIngress({
+    name: config.ec2.SecurityGroupRuleIngress
+      .sgDefaultVpcRuleIngressAllFromSgDefaultVpc.name,
+    dependencies: (resources) => ({
+      securityGroup: resources.ec2.SecurityGroup.sgDefaultVpc,
+      securityGroupFrom: resources.ec2.SecurityGroup.sgDefaultVpc,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress
+        .sgDefaultVpcRuleIngressAllFromSgDefaultVpc.properties,
+  });
+
+  provider.ec2.makeSecurityGroupRuleIngress({
+    name: config.ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll.name,
+    namespace: "EKS",
+    dependencies: (resources) => ({
+      securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll.properties,
+  });
+
+  provider.ec2.useSecurityGroupRuleIngress({
+    name: config.ec2.SecurityGroupRuleIngress
+      .sgRuleIngresEksClusterFromLoadBalancer.name,
+    namespace: "EKS",
+    dependencies: (resources) => ({
+      securityGroup: resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress.sgRuleIngresEksClusterFromLoadBalancer
+        .properties,
+  });
+
+  provider.ec2.makeSecurityGroupRuleIngress({
+    name: config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttp.name,
+    namespace: "LoadBalancer",
+    dependencies: (resources) => ({
+      securityGroup: resources.ec2.SecurityGroup.loadBalancerSecurityGroup,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttp.properties,
+  });
+
+  provider.ec2.makeSecurityGroupRuleIngress({
+    name: config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttps.name,
+    namespace: "LoadBalancer",
+    dependencies: (resources) => ({
+      securityGroup: resources.ec2.SecurityGroup.loadBalancerSecurityGroup,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress.sgRuleIngressLbHttps.properties,
+  });
+
+  provider.ec2.makeSecurityGroupRuleIngress({
+    name: config.ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster
+      .name,
+    namespace: "EKS",
+    dependencies: (resources) => ({
+      securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster
+        .properties,
+  });
+
+  provider.ec2.useSecurityGroupRuleEgress({
+    name: config.ec2.SecurityGroupRuleEgress
+      .eksClusterSgCluster_872092154RuleEgressAllV4.name,
+    dependencies: (resources) => ({
+      securityGroup: resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleEgress
+        .eksClusterSgCluster_872092154RuleEgressAllV4.properties,
+  });
+
+  provider.ec2.makeSecurityGroupRuleEgress({
+    name: config.ec2.SecurityGroupRuleEgress
+      .loadBalancerSecurityGroupRuleEgressAllV4.name,
+    dependencies: (resources) => ({
+      securityGroup: resources.ec2.SecurityGroup.loadBalancerSecurityGroup,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleEgress
+        .loadBalancerSecurityGroupRuleEgressAllV4.properties,
+  });
+
+  provider.ec2.makeSecurityGroupRuleEgress({
+    name: config.ec2.SecurityGroupRuleEgress.securityGroupClusterRuleEgressAllV4
+      .name,
+    dependencies: (resources) => ({
+      securityGroup: resources.ec2.SecurityGroup.securityGroupCluster,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleEgress.securityGroupClusterRuleEgressAllV4
+        .properties,
+  });
+
+  provider.ec2.makeSecurityGroupRuleEgress({
+    name: config.ec2.SecurityGroupRuleEgress.securityGroupNodeRuleEgressAllV4
+      .name,
+    dependencies: (resources) => ({
+      securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleEgress.securityGroupNodeRuleEgressAllV4
+        .properties,
+  });
+
+  provider.ec2.makeSecurityGroupRuleEgress({
+    name: config.ec2.SecurityGroupRuleEgress.sgClusterRuleEgress.name,
+    namespace: "EKS",
+    dependencies: (resources) => ({
+      securityGroup: resources.ec2.SecurityGroup.securityGroupCluster,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleEgress.sgClusterRuleEgress.properties,
+  });
+
+  provider.ec2.makeSecurityGroupRuleEgress({
+    name: config.ec2.SecurityGroupRuleEgress.sgDefaultVpcRuleEgressAllV4.name,
+    dependencies: (resources) => ({
+      securityGroup: resources.ec2.SecurityGroup.sgDefaultVpc,
+    }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleEgress.sgDefaultVpcRuleEgressAllV4.properties,
+  });
+
+  provider.ec2.useInstance({
+    name: config.ec2.Instance.nodeGroupPrivateClusterI_0903f67c96843dc09.name,
+    namespace: "EKS",
+    dependencies: (resources) => ({
+      subnet: resources.ec2.Subnet.subnetPrivateA,
+      iamInstanceProfile:
+        resources.iam.InstanceProfile.eks_0ebd6544C5e9_4d31_70f3_9c0a0af85a3d,
+      securityGroups: [
+        resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
+      ],
+      volumes: [resources.ec2.Volume.kubernetesPvDbPostgres_0],
+    }),
+    properties: () =>
+      config.ec2.Instance.nodeGroupPrivateClusterI_0903f67c96843dc09.properties,
+  });
+
+  provider.acm.useCertificate({
+    name: config.acm.Certificate.exampleModuleAwsCertificateGrucloudOrg.name,
+    namespace: "Certificate",
+    properties: () =>
+      config.acm.Certificate.exampleModuleAwsCertificateGrucloudOrg.properties,
+  });
+
+  provider.acm.useCertificate({
+    name: config.acm.Certificate.modAwsLoadBalancerGrucloudOrg.name,
+    namespace: "Certificate",
+    properties: () =>
+      config.acm.Certificate.modAwsLoadBalancerGrucloudOrg.properties,
+  });
+
+  provider.acm.useCertificate({
+    name: config.acm.Certificate.starhackitEksLbcGrucloudOrg.name,
+    namespace: "Certificate",
+    properties: () =>
+      config.acm.Certificate.starhackitEksLbcGrucloudOrg.properties,
+  });
+
+  provider.acm.useCertificate({
+    name: config.acm.Certificate.starhackitEksLeanGrucloudOrg.name,
+    namespace: "Certificate",
+    properties: () =>
+      config.acm.Certificate.starhackitEksLeanGrucloudOrg.properties,
+  });
+
+  provider.autoscaling.useAutoScalingGroup({
+    name: config.autoscaling.AutoScalingGroup
+      .eks_0ebd6544C5e9_4d31_70f3_9c0a0af85a3d.name,
+    namespace: "EKS",
+    properties: () =>
+      config.autoscaling.AutoScalingGroup
+        .eks_0ebd6544C5e9_4d31_70f3_9c0a0af85a3d.properties,
+  });
+
+  provider.elb.makeLoadBalancer({
+    name: config.elb.LoadBalancer.loadBalancer.name,
+    namespace: "LoadBalancer",
+    dependencies: (resources) => ({
+      subnets: [
+        resources.ec2.Subnet.subnetPublicA,
+        resources.ec2.Subnet.subnetPublicB,
+      ],
+      securityGroups: [resources.ec2.SecurityGroup.loadBalancerSecurityGroup],
+    }),
+    properties: () => config.elb.LoadBalancer.loadBalancer.properties,
+  });
+
+  provider.elb.makeTargetGroup({
+    name: config.elb.TargetGroup.targetGroupRest.name,
+    namespace: "LoadBalancer",
+    dependencies: (resources) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+    properties: () => config.elb.TargetGroup.targetGroupRest.properties,
+  });
+
+  provider.elb.makeTargetGroup({
+    name: config.elb.TargetGroup.targetGroupWeb.name,
+    namespace: "LoadBalancer",
+    dependencies: (resources) => ({
+      vpc: resources.ec2.Vpc.vpc,
+    }),
+    properties: () => config.elb.TargetGroup.targetGroupWeb.properties,
+  });
+
+  provider.elb.makeListener({
+    name: config.elb.Listener.listenerHttp.name,
+    namespace: "LoadBalancer",
+    dependencies: (resources) => ({
+      loadBalancer: resources.elb.LoadBalancer.loadBalancer,
+    }),
+    properties: () => config.elb.Listener.listenerHttp.properties,
+  });
+
+  provider.elb.makeListener({
+    name: config.elb.Listener.listenerHttps.name,
+    namespace: "LoadBalancer",
+    dependencies: (resources) => ({
+      loadBalancer: resources.elb.LoadBalancer.loadBalancer,
+      certificate: resources.acm.Certificate.starhackitEksLeanGrucloudOrg,
+    }),
+    properties: () => config.elb.Listener.listenerHttps.properties,
+  });
+
+  provider.elb.useRule({
+    name: config.elb.Rule.default.name,
+    namespace: "LoadBalancer",
+    dependencies: (resources) => ({
+      listener: resources.elb.Listener.listenerHttp,
+      targetGroup: resources.elb.TargetGroup.targetGroupWeb,
+    }),
+    properties: () => config.elb.Rule.default.properties,
+  });
+
+  provider.elb.useRule({
+    name: config.elb.Rule.default.name,
+    namespace: "LoadBalancer",
+    dependencies: (resources) => ({
+      listener: resources.elb.Listener.listenerHttps,
+      targetGroup: resources.elb.TargetGroup.targetGroupWeb,
+    }),
+    properties: () => config.elb.Rule.default.properties,
+  });
+
+  provider.elb.makeRule({
+    name: config.elb.Rule.ruleHttpRedirectHttps.name,
+    namespace: "LoadBalancer",
+    dependencies: (resources) => ({
+      listener: resources.elb.Listener.listenerHttp,
+    }),
+    properties: () => config.elb.Rule.ruleHttpRedirectHttps.properties,
+  });
+
+  provider.elb.makeRule({
+    name: config.elb.Rule.ruleRestHttps.name,
+    namespace: "LoadBalancer",
+    dependencies: (resources) => ({
+      listener: resources.elb.Listener.listenerHttps,
+      targetGroup: resources.elb.TargetGroup.targetGroupRest,
+    }),
+    properties: () => config.elb.Rule.ruleRestHttps.properties,
+  });
+
+  provider.elb.makeRule({
+    name: config.elb.Rule.ruleWebHttps.name,
+    namespace: "LoadBalancer",
+    dependencies: (resources) => ({
+      listener: resources.elb.Listener.listenerHttps,
+      targetGroup: resources.elb.TargetGroup.targetGroupWeb,
+    }),
+    properties: () => config.elb.Rule.ruleWebHttps.properties,
+  });
+
+  provider.eks.makeCluster({
+    name: config.eks.Cluster.cluster.name,
+    namespace: "EKS",
+    dependencies: (resources) => ({
+      subnets: [
+        resources.ec2.Subnet.subnetPublicA,
+        resources.ec2.Subnet.subnetPublicB,
+        resources.ec2.Subnet.subnetPrivateA,
+        resources.ec2.Subnet.subnetPrivateB,
+      ],
+      securityGroups: [
+        resources.ec2.SecurityGroup.securityGroupCluster,
+        resources.ec2.SecurityGroup.securityGroupNode,
+      ],
+      role: resources.iam.Role.roleCluster,
+    }),
+    properties: () => config.eks.Cluster.cluster.properties,
+  });
+
+  provider.eks.makeNodeGroup({
+    name: config.eks.NodeGroup.nodeGroupPrivateCluster.name,
+    namespace: "EKS",
+    dependencies: (resources) => ({
+      cluster: resources.eks.Cluster.cluster,
+      subnets: [
+        resources.ec2.Subnet.subnetPrivateA,
+        resources.ec2.Subnet.subnetPrivateB,
+      ],
+      role: resources.iam.Role.roleNodeGroup,
+    }),
+    properties: () => config.eks.NodeGroup.nodeGroupPrivateCluster.properties,
+  });
+
+  provider.route53Domain.useDomain({
+    name: config.route53Domain.Domain.grucloudOrg.name,
+  });
+
+  provider.route53.makeHostedZone({
+    name: config.route53.HostedZone.starhackitEksLeanGrucloudOrg.name,
+    properties: () =>
+      config.route53.HostedZone.starhackitEksLeanGrucloudOrg.properties,
+  });
+
+  provider.route53.makeRecord({
+    name: config.route53.Record
+      .certificateValidationStarhackitEksLeanGrucloudOrg.name,
+    namespace: "Certificate",
+    dependencies: (resources) => ({
+      hostedZone: resources.route53.HostedZone.starhackitEksLeanGrucloudOrg,
+      certificate: resources.acm.Certificate.starhackitEksLeanGrucloudOrg,
+    }),
+  });
+
+  provider.route53.makeRecord({
+    name: config.route53.Record
+      .loadBalancerDnsRecordAliasStarhackitEksLeanGrucloudOrg.name,
+    namespace: "LoadBalancer",
+    dependencies: (resources) => ({
+      hostedZone: resources.route53.HostedZone.starhackitEksLeanGrucloudOrg,
+      loadBalancer: resources.elb.LoadBalancer.loadBalancer,
+    }),
+  });
 };
 
 exports.createResources = createResources;

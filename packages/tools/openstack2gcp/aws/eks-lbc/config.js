@@ -532,11 +532,6 @@ module.exports = ({ stage }) => ({
               IpProtocol: "-1",
               FromPort: -1,
               ToPort: -1,
-              UserIdGroupPairs: [
-                {
-                  GroupId: "sg-03a4812f7eb700b24",
-                },
-              ],
             },
           },
         },
@@ -548,11 +543,6 @@ module.exports = ({ stage }) => ({
               IpProtocol: "tcp",
               FromPort: 0,
               ToPort: 65535,
-              UserIdGroupPairs: [
-                {
-                  GroupId: "sg-05c211b927fe7ed05",
-                },
-              ],
             },
           },
         },
@@ -613,11 +603,6 @@ module.exports = ({ stage }) => ({
             IpProtocol: "-1",
             FromPort: -1,
             ToPort: -1,
-            UserIdGroupPairs: [
-              {
-                GroupId: "sg-0015d63686cc9b879",
-              },
-            ],
           },
         },
       },
@@ -656,11 +641,6 @@ module.exports = ({ stage }) => ({
             Ipv6Ranges: [
               {
                 CidrIpv6: "::/0",
-              },
-            ],
-            UserIdGroupPairs: [
-              {
-                GroupId: "sg-05c6519717006914f",
               },
             ],
           },

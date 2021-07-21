@@ -83,19 +83,25 @@ const findDependencyNames = ({
     }),
   ])();
 
-const buildProperties = ({ resource: { live }, pickProperties }) =>
+const buildProperties = ({
+  resource,
+  dependencies,
+  filterLive = () => identity,
+}) =>
   pipe([
     tap(() => {
       assert(true);
     }),
-    () => live,
-    pick([...pickProperties, "Tags"]),
+    () => resource,
+    get("live"),
+    filterLive({ resource, dependencies }),
     tap((params) => {
       assert(true);
     }),
     assign({
       Tags: pipe([
-        get("Tags", []),
+        () => resource,
+        get("live.Tags", []),
         filter(
           pipe([
             get("Key", ""),
@@ -147,6 +153,7 @@ const configTpl = ({
   hasNoProperty,
   configBuildProperties = configBuildPropertiesDefault,
   lives,
+  dependencies,
 }) =>
   pipe([
     () => `${resourceVarName}: {
@@ -154,6 +161,7 @@ const configTpl = ({
       resource,
       properties,
       lives,
+      dependencies,
       hasNoProperty: hasNoProperty({ resource }),
     })},
     },`,
@@ -410,7 +418,9 @@ const findLiveById =
       get("resources"),
       find(eq(get("id"), id)),
       tap((live) => {
-        assert(live, `no live for ${type}, id: ${id}`);
+        if (!live) {
+          assert(live, `no live for ${type}, id: ${id},`);
+        }
       }),
     ])();
 
@@ -423,7 +433,7 @@ const writeResource =
     group,
     resourceVarName = ResourceVarNameDefault,
     resourceName = identity,
-    pickProperties = always([]),
+    filterLive,
     codeBuildProperties,
     configBuildProperties,
     hasNoProperty,
@@ -454,7 +464,8 @@ const writeResource =
               defaultsDeep(
                 buildProperties({
                   resource,
-                  pickProperties: pickProperties({ resource }),
+                  filterLive,
+                  dependencies: dependencies(),
                 })
               ),
             ]),
@@ -496,10 +507,9 @@ const writeResources =
     type,
     typeTarget,
     group,
-    pickProperties,
+    filterLive,
     properties,
     dependencies,
-
     ignoreResource,
     resourceVarName,
     resourceName,
@@ -512,7 +522,6 @@ const writeResources =
       tap(() => {
         assert(type);
         assert(group);
-        //assert(isFunction(pickProperties));
       }),
       () => lives,
       find(eq(get("type"), type)),
@@ -528,7 +537,7 @@ const writeResources =
               typeTarget,
               group,
               properties,
-              pickProperties,
+              filterLive,
               dependencies,
               ignoreResource,
               resourceVarName,
