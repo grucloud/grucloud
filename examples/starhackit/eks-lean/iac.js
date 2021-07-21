@@ -68,6 +68,9 @@ const createAwsStack = async ({ stage }) => {
     namespace: "EKS",
     filterLives: ({ resources }) =>
       pipe([
+        tap(() => {
+          assert(true);
+        }),
         () => resources,
         find(
           pipe([
@@ -81,21 +84,10 @@ const createAwsStack = async ({ stage }) => {
           ])
         ),
         tap((live) => {
-          //logger.info(`securityGroupEKSCluster live ${live}`);
+          //console.log(`securityGroupEKSCluster live ${live}`);
         }),
       ])(),
   });
-
-  const findGroupIdFromSecurityGroup = ({ securityGroupEKSCluster }) =>
-    pipe([
-      tap(() => {}),
-      //TODO getLive instead ?
-      () => securityGroupEKSCluster.resolveConfig(),
-      get("GroupId"),
-      tap((GroupId) => {
-        assert(true);
-      }),
-    ])();
 
   // Attach an Ingress Rule to the eks security group to allow traffic from the load balancer
   const sgRuleIngressEks = provider.ec2.makeSecurityGroupRuleIngress({
@@ -106,8 +98,7 @@ const createAwsStack = async ({ stage }) => {
       securityGroup: securityGroupEKSCluster,
       securityGroupFrom: resourcesLb.securityGroupLoadBalancer,
     },
-    properties: async ({ dependencies: { securityGroupLoadBalancer } }) => ({
-      GroupId: await findGroupIdFromSecurityGroup({ securityGroupEKSCluster }),
+    properties: async () => ({
       IpPermission: {
         FromPort: 1025,
         IpProtocol: "tcp",
