@@ -81,11 +81,14 @@ const decorateLive =
 const decorateLives = ({ client, lives, config }) =>
   pipe([
     tap((params) => {
-      //assert(lives, "decorateLives mssing lives");
+      assert(true);
     }),
-    get("items"), // remove
+    get("items", []), // remove
     filter(not(get("error"))),
     map(decorateLive({ client, lives, config })),
+    tap((params) => {
+      assert(params);
+    }),
     callProp("sort", (a, b) => a.name.localeCompare(b.name)),
   ]);
 
@@ -177,7 +180,7 @@ const createClient = ({
             pipe([
               pick(["message", "code", "stack", "config", "response"]),
               tap((error) => {
-                logger.error(`list error ${tos(error)}`);
+                logger.error(`list error ${error.stack} `);
               }),
               (error) => ({ error }),
             ])

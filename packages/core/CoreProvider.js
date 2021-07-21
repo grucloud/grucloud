@@ -1075,67 +1075,75 @@ function CoreProvider({
       }),
     ])();
 
-  const filterDestroyResources = ({
-    client,
-    resource,
-    options: {
-      all = false,
-      name: nameToDelete = "",
-      id: idToDelete = "",
-      types = [],
-    } = {},
-    direction,
-  }) => {
-    const { spec } = client;
-    const { type } = spec;
-    const { name, id, cannotBeDeleted, managedByUs } = resource;
+  const filterDestroyResources =
+    ({
+      client,
+      options: {
+        all = false,
+        name: nameToDelete = "",
+        id: idToDelete = "",
+        types = [],
+      } = {},
+      direction,
+    }) =>
+    (resource) => {
+      const { spec } = client;
+      const { type } = spec;
+      const { name, id, cannotBeDeleted, managedByUs, managedByOther } =
+        resource;
 
-    assert(direction);
-    logger.debug(
-      `filterDestroyResources ${JSON.stringify({
-        name,
-        all,
-        types,
-        id,
-        managedByUs,
-      })}`
-    );
-    return switchCase([
-      // Resource that cannot be deleted
-      () => cannotBeDeleted,
-      () => {
-        logger.debug(
-          `filterDestroyResources ${type}/${name}, default resource cannot be deleted`
-        );
-        return false;
-      },
-      // Delete all resources
-      () => all,
-      () => {
-        logger.debug(`filterDestroyResources ${type}/${name}, delete all`);
-        return true;
-      },
-      // Delete by id
-      () => !isEmpty(idToDelete),
-      () => id === idToDelete,
-      // Delete by name
-      () => !isEmpty(nameToDelete),
-      () => name === nameToDelete,
-      // Not our minion
-      () => !managedByUs,
-      () => {
-        logger.debug(`filterDestroyResources ${type}/${name}, not our minion`);
-        return false;
-      },
-      // Delete by type
-      () => !isEmpty(types),
-      () => any((type) => isTypeMatch({ type, typeToMatch: spec.type }))(types),
-      // PlanDirection
-      () => direction == PlanDirection.UP,
-      () => false,
-      () => true,
-    ])();
-  };
+      assert(direction);
+      logger.debug(
+        `filterDestroyResources ${JSON.stringify({
+          name,
+          all,
+          types,
+          id,
+          managedByUs,
+        })}`
+      );
+      return switchCase([
+        // Resource that cannot be deleted
+        () => cannotBeDeleted,
+        () => {
+          logger.debug(
+            `filterDestroyResources ${type}/${name}, default resource cannot be deleted`
+          );
+          return false;
+        },
+        // Delete all resources
+        () => all,
+        () => {
+          logger.debug(`filterDestroyResources ${type}/${name}, delete all`);
+          return true;
+        },
+        // ManagedByOther
+        () => managedByOther,
+        () => false,
+        // Delete by id
+        () => !isEmpty(idToDelete),
+        () => id === idToDelete,
+        // Delete by name
+        () => !isEmpty(nameToDelete),
+        () => name === nameToDelete,
+        // Not our minion
+        () => !managedByUs,
+        () => {
+          logger.debug(
+            `filterDestroyResources ${type}/${name}, not our minion`
+          );
+          return false;
+        },
+        // Delete by type
+        () => !isEmpty(types),
+        () =>
+          any((type) => isTypeMatch({ type, typeToMatch: spec.type }))(types),
+        // PlanDirection
+        () => direction == PlanDirection.UP,
+        () => false,
+        () => true,
+      ])();
+    };
 
   const planFindDestroy = async ({
     options = {},
@@ -1164,10 +1172,9 @@ function CoreProvider({
           (client) =>
             pipe([
               () => resources,
-              filter((resource) =>
+              filter(
                 filterDestroyResources({
                   client,
-                  resource,
                   options,
                   direction,
                 })
@@ -1420,56 +1427,72 @@ function CoreProvider({
     assert(Array.isArray(plans));
     assert(lives);
 
-    const executor = async ({ item }) => {
-      const { resource, live, action, diff } = item;
-      const engine = getResource(resource);
-      assert(engine, `Cannot find resource ${tos(resource)}`);
-      logger.debug(
-        `upsertResources: executor ${resource.type} ${resource.name}`
-      );
-      const resolvedDependencies = await engine.resolveDependencies({
-        lives,
-        dependenciesMustBeUp: true,
-      });
-      const input = await engine.resolveConfig({
-        live,
-        resolvedDependencies,
-        lives,
-        deep: true,
-      });
-      return switchCase([
-        () => action === "UPDATE",
-        async () => ({
-          input,
-          output: await engine.update({
-            payload: input,
-            live,
-            diff,
-            resolvedDependencies,
-            lives,
-          }),
+    const executor = async ({ item: { resource, live, action, diff } }) =>
+      pipe([
+        tap(() => {
+          assert(resource);
+          logger.debug(
+            `upsertResources: executor ${resource.type} ${resource.name}`
+          );
         }),
-        () => action === "CREATE",
-        pipe([
-          async () => ({
-            input,
-            output: await engine.create({
-              payload: input,
+        () => ({}),
+        assign({ engine: () => getResource(resource) }),
+        tap(({ engine }) => {
+          assert(engine, `Cannot find resource ${tos(resource)}`);
+        }),
+        assign({
+          resolvedDependencies: ({ engine }) =>
+            engine.resolveDependencies({
+              lives,
+              dependenciesMustBeUp: true,
+            }),
+        }),
+        assign({
+          input: ({ engine, resolvedDependencies }) =>
+            engine.resolveConfig({
+              live,
               resolvedDependencies,
               lives,
+              deep: true,
             }),
-          }),
-          tap(({ output }) => {
-            lives.addResource({
-              providerName,
-              type: engine.type,
-              live: output,
-            });
-          }),
-        ]),
-        () => assert("action is not handled"),
+        }),
+        assign({
+          output: switchCase([
+            eq(action, "UPDATE"),
+            ({ engine, input, resolvedDependencies }) =>
+              engine.update({
+                payload: input,
+                live,
+                diff,
+                resolvedDependencies,
+                lives,
+              }),
+            eq(action, "CREATE"),
+            ({ engine, input, resolvedDependencies }) =>
+              pipe([
+                () =>
+                  engine.create({
+                    payload: input,
+                    resolvedDependencies,
+                    lives,
+                  }),
+                tap((output) => {
+                  lives.addResource({
+                    providerName,
+                    type: engine.type,
+                    live: output,
+                  });
+                }),
+              ])(),
+            () => assert("action is not handled"),
+          ]),
+        }),
+        pick(["input", "output"]),
+        tap((params) => {
+          assert(true);
+        }),
       ])();
-    };
+
     //TODO try catch
     return switchCase([
       () => !isEmpty(plans),
@@ -1711,10 +1734,6 @@ function CoreProvider({
         prefix: "useDefault",
       })
     ),
-
-    tap((xxx) => {
-      assert(true);
-    }),
   ])();
 }
 

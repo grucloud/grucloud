@@ -185,26 +185,19 @@ const findDependsOnType = ({
   ])();
 
 const dependsOnInstanceReverse = (dependsOnInstance) =>
-  map(({ uri, type, group, providerName }) => ({
-    uri,
-    providerName,
-    group,
-    type,
-    dependsOn: pipe([
-      () => dependsOnInstance,
-      map((resource) =>
-        pipe([
-          get("dependsOn"),
-          find(eq(get("uri"), uri)),
-          switchCase([isEmpty, () => undefined, () => resource]),
-        ])(resource)
-      ),
-      filter(not(isEmpty)),
-      tap((xxx) => {
-        assert(xxx);
-      }),
-    ])(),
-  }))(dependsOnInstance);
+  pipe([
+    () => dependsOnInstance,
+    map(({ uri, type, group, providerName }) => ({
+      uri,
+      providerName,
+      group,
+      type,
+      dependsOn: pipe([
+        () => dependsOnInstance,
+        filter(pipe([get("dependsOn"), find(eq(get("uri"), uri))])),
+      ])(),
+    })),
+  ])();
 
 const findDependsOnInstance = ({ uri, plans, dependsOnInstance }) =>
   pipe([
@@ -469,9 +462,12 @@ exports.Planner = ({
       return { error: false, results: [], plans: [] };
     }
 
-    const isDependsOnInPlan = find((dependOn) =>
-      find(eq(get("resource.uri"), dependOn.uri))(plans)
-    );
+    const isDependsOnInPlan = pipe([
+      get("dependsOn"),
+      find((dependOn) =>
+        pipe([() => plans, find(eq(get("resource.uri"), dependOn.uri))])()
+      ),
+    ]);
 
     await pipe([
       () => statusValues(),
@@ -480,14 +476,14 @@ exports.Planner = ({
           tap((x) => {
             logger.debug(`Planner run #resource ${x.length}`);
           }),
-          filter(({ dependsOn }) => !isDependsOnInPlan(dependsOn)),
+          filter(not(isDependsOnInPlan)),
           tap((x) => {
             logger.debug(
               `Planner run: start ${x.length} resource(s) in parallel`
             );
             assert(
               x.length > 0,
-              `all resources has dependsOn, plan: ${tos({ statuses, plans })}`
+              `all resources has dependsOn, plan: ${tos({ statuses })}`
             );
           }),
           map(
