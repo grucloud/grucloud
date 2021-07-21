@@ -311,10 +311,28 @@ const writersSpec = [
       },
       {
         type: "Listener",
-        filterLive: () => pick(["Port", "Protocol", "DefaultActions"]),
+        filterLive: pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          ({ resource }) =>
+            (live) =>
+              pipe([
+                () => live,
+                switchCase([
+                  () => hasDependency({ type: "TargetGroup" })(resource),
+                  omit(["DefaultActions"]),
+                  identity,
+                ]),
+                tap((params) => {
+                  assert(true);
+                }),
+                pick(["Port", "Protocol", "DefaultActions"]),
+              ])(),
+        ]),
         dependencies: () => ({
           loadBalancer: { type: "LoadBalancer", group: "elb" },
-          targetGroups: { type: "TargetGroup", group: "elb" },
+          targetGroup: { type: "TargetGroup", group: "elb" },
           certificate: { type: "Certificate", group: "acm" },
         }),
       },

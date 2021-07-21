@@ -139,21 +139,11 @@ exports.createResources = async ({
       namespace,
       dependencies: {
         loadBalancer,
-        targetGroups: [targetGroups.web],
+        targetGroup: targetGroups.web,
       },
-      properties: ({
-        dependencies: {
-          targetGroups: [targetGroup],
-        },
-      }) => ({
+      properties: () => ({
         Port: 80,
         Protocol: "HTTP",
-        DefaultActions: [
-          {
-            TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
-            Type: "forward",
-          },
-        ],
       }),
     }),
     https: provider.elb.makeListener({
@@ -161,28 +151,12 @@ exports.createResources = async ({
       namespace,
       dependencies: {
         loadBalancer,
-        targetGroups: [targetGroups.web],
+        targetGroup: targetGroups.web,
         certificate,
       },
-      properties: ({
-        dependencies: {
-          targetGroups: [targetGroup],
-          certificate,
-        },
-      }) => ({
+      properties: ({}) => ({
         Port: 443,
         Protocol: "HTTPS",
-        Certificates: [
-          {
-            CertificateArn: getField(certificate, "CertificateArn"),
-          },
-        ],
-        DefaultActions: [
-          {
-            TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
-            Type: "forward",
-          },
-        ],
       }),
     }),
   };

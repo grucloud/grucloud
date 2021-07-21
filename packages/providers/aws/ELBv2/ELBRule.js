@@ -37,18 +37,48 @@ const {
 
 const findId = get("live.RuleArn");
 
-const findName = switchCase([
-  get("live.IsDefault"),
-  () => "default",
-  findNameInTagsOrId({ findId }),
-]);
-
 const { ELBListener } = require("./ELBListener");
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html
 exports.ELBRule = ({ spec, config }) => {
   const elb = ELBv2New(config);
   const elbListener = ELBListener({ spec, config });
   const { providerName } = config;
+
+  const findName = ({ live, lives }) =>
+    pipe([
+      tap((params) => {
+        assert(lives);
+      }),
+      () => ({ live, lives }),
+      switchCase([
+        get("live.IsDefault"),
+        pipe([
+          tap((params) => {
+            assert(true);
+          }),
+          () =>
+            lives.getById({
+              type: "Listener",
+              group: "elb",
+              id: live.ListenerArn,
+              providerName,
+            }),
+          tap((params) => {
+            assert(true);
+          }),
+          get("name"),
+          tap((listenerName) => {
+            assert(listenerName);
+          }),
+          (listenerName) => `rule-default-${listenerName}`,
+        ]),
+        findNameInTagsOrId({ findId }),
+      ]),
+      tap((params) => {
+        assert(true);
+      }),
+    ])();
+
   const managedByOther = ({ live, lives }) =>
     pipe([
       tap(() => {

@@ -153,21 +153,11 @@ describe("AwsLoadBalancerV2", async function () {
       name: formatName(listenerHttpName),
       dependencies: {
         loadBalancer,
-        targetGroups: { targetGroup },
+        targetGroup: targetGroup,
       },
-      properties: ({
-        dependencies: {
-          targetGroups: { targetGroup },
-        },
-      }) => ({
+      properties: () => ({
         Port: 80,
         Protocol: "HTTP",
-        DefaultActions: [
-          {
-            TargetGroupArn: targetGroup?.live?.TargetGroupArn,
-            Type: "forward",
-          },
-        ],
       }),
     });
   });
@@ -204,7 +194,7 @@ describe("AwsLoadBalancerV2", async function () {
       name: `${domainName}.`,
     });
 
-    const loadBalancerRecord = provider.route53.makeRecord({
+    provider.route53.makeRecord({
       name: `dns-record-alias-load-balancer-${hostedZoneName}`,
       dependencies: {
         hostedZone,

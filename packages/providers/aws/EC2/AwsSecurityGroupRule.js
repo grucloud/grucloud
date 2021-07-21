@@ -354,12 +354,10 @@ const SecurityGroupRuleBase = ({ config }) => {
         }),
       ])();
 
-  const getByName = async ({ name, dependencies, lives }) =>
+  const getByName = async ({ name }) =>
     pipe([
       tap(() => {
         logger.info(`getByName ${name}`);
-        assert(dependencies, "dependencies");
-        assert(lives, "lives");
       }),
       () => ({
         MaxResults: 1e3,

@@ -75,8 +75,8 @@ module.exports = ({ stage }) => ({
       },
     },
     InstanceProfile: {
-      eks_0ebd6544C5e9_4d31_70f3_9c0a0af85a3d: {
-        name: "eks-0ebd6544-c5e9-4d31-70f3-9c0a0af85a3d",
+      eksEabd6596Db9a_09ba_1f03_2929e57f627e: {
+        name: "eks-eabd6596-db9a-09ba-1f03-2929e57f627e",
       },
     },
   },
@@ -167,12 +167,12 @@ module.exports = ({ stage }) => ({
           MapCustomerOwnedIpOnLaunch: false,
           Tags: [
             {
-              Key: "kubernetes.io/role/elb",
-              Value: "1",
-            },
-            {
               Key: "kubernetes.io/cluster/cluster",
               Value: "shared",
+            },
+            {
+              Key: "kubernetes.io/role/elb",
+              Value: "1",
             },
           ],
         },
@@ -186,12 +186,12 @@ module.exports = ({ stage }) => ({
           VolumeType: "gp2",
           Tags: [
             {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "owned",
+              Key: "kubernetes.io/created-for/pv/name",
+              Value: "pvc-0a71f77b-19b4-422b-8573-d018cb3a8345",
             },
             {
-              Key: "kubernetes.io/created-for/pv/name",
-              Value: "pvc-e5379553-f096-40df-95f4-8c14fd3ff030",
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "owned",
             },
             {
               Key: "kubernetes.io/created-for/pvc/name",
@@ -204,8 +204,8 @@ module.exports = ({ stage }) => ({
           ],
         },
       },
-      vol_0a96f6c2a1820fa03: {
-        name: "vol-0a96f6c2a1820fa03",
+      vol_0e1c35c9ae3b7e3ff: {
+        name: "vol-0e1c35c9ae3b7e3ff",
         properties: {
           Size: 20,
           VolumeType: "gp2",
@@ -266,12 +266,12 @@ module.exports = ({ stage }) => ({
             "EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.",
           Tags: [
             {
-              Key: "aws:eks:cluster-name",
-              Value: "cluster",
-            },
-            {
               Key: "kubernetes.io/cluster/cluster",
               Value: "owned",
+            },
+            {
+              Key: "aws:eks:cluster-name",
+              Value: "cluster",
             },
           ],
         },
@@ -548,8 +548,8 @@ module.exports = ({ stage }) => ({
       },
     },
     Instance: {
-      nodeGroupPrivateClusterI_0903f67c96843dc09: {
-        name: "node-group-private-cluster::i-0903f67c96843dc09",
+      nodeGroupPrivateClusterI_09cb18fa937eaf3da: {
+        name: "node-group-private-cluster::i-09cb18fa937eaf3da",
         properties: {
           InstanceType: "t2.medium",
           ImageId: "ami-037de68840c2c5e3b",
@@ -558,20 +558,12 @@ module.exports = ({ stage }) => ({
           },
           Tags: [
             {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "owned",
-            },
-            {
               Key: "aws:autoscaling:groupName",
-              Value: "eks-0ebd6544-c5e9-4d31-70f3-9c0a0af85a3d",
+              Value: "eks-eabd6596-db9a-09ba-1f03-2929e57f627e",
             },
             {
               Key: "eks:cluster-name",
               Value: "cluster",
-            },
-            {
-              Key: "k8s.io/cluster-autoscaler/cluster",
-              Value: "owned",
             },
             {
               Key: "k8s.io/cluster-autoscaler/enabled",
@@ -579,11 +571,7 @@ module.exports = ({ stage }) => ({
             },
             {
               Key: "aws:ec2:fleet-id",
-              Value: "fleet-657de2b0-6135-51f5-0490-2988d2b562b5",
-            },
-            {
-              Key: "aws:ec2launchtemplate:id",
-              Value: "lt-05c5e0e97a6482bfb",
+              Value: "fleet-cf5d42ba-4115-d9d7-2c9a-0982aa1d53f3",
             },
             {
               Key: "aws:ec2launchtemplate:version",
@@ -592,6 +580,18 @@ module.exports = ({ stage }) => ({
             {
               Key: "eks:nodegroup-name",
               Value: "node-group-private-cluster",
+            },
+            {
+              Key: "k8s.io/cluster-autoscaler/cluster",
+              Value: "owned",
+            },
+            {
+              Key: "aws:ec2launchtemplate:id",
+              Value: "lt-02bf3a1b5c3debc1b",
+            },
+            {
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "owned",
             },
           ],
         },
@@ -634,40 +634,40 @@ module.exports = ({ stage }) => ({
   },
   autoscaling: {
     AutoScalingGroup: {
-      eks_0ebd6544C5e9_4d31_70f3_9c0a0af85a3d: {
-        name: "eks-0ebd6544-c5e9-4d31-70f3-9c0a0af85a3d",
+      eksEabd6596Db9a_09ba_1f03_2929e57f627e: {
+        name: "eks-eabd6596-db9a-09ba-1f03-2929e57f627e",
         properties: {
           Tags: [
             {
-              ResourceId: "eks-0ebd6544-c5e9-4d31-70f3-9c0a0af85a3d",
+              ResourceId: "eks-eabd6596-db9a-09ba-1f03-2929e57f627e",
               ResourceType: "auto-scaling-group",
               Key: "eks:cluster-name",
               Value: "cluster",
               PropagateAtLaunch: true,
             },
             {
-              ResourceId: "eks-0ebd6544-c5e9-4d31-70f3-9c0a0af85a3d",
+              ResourceId: "eks-eabd6596-db9a-09ba-1f03-2929e57f627e",
               ResourceType: "auto-scaling-group",
               Key: "eks:nodegroup-name",
               Value: "node-group-private-cluster",
               PropagateAtLaunch: true,
             },
             {
-              ResourceId: "eks-0ebd6544-c5e9-4d31-70f3-9c0a0af85a3d",
+              ResourceId: "eks-eabd6596-db9a-09ba-1f03-2929e57f627e",
               ResourceType: "auto-scaling-group",
               Key: "k8s.io/cluster-autoscaler/cluster",
               Value: "owned",
               PropagateAtLaunch: true,
             },
             {
-              ResourceId: "eks-0ebd6544-c5e9-4d31-70f3-9c0a0af85a3d",
+              ResourceId: "eks-eabd6596-db9a-09ba-1f03-2929e57f627e",
               ResourceType: "auto-scaling-group",
               Key: "k8s.io/cluster-autoscaler/enabled",
               Value: "true",
               PropagateAtLaunch: true,
             },
             {
-              ResourceId: "eks-0ebd6544-c5e9-4d31-70f3-9c0a0af85a3d",
+              ResourceId: "eks-eabd6596-db9a-09ba-1f03-2929e57f627e",
               ResourceType: "auto-scaling-group",
               Key: "kubernetes.io/cluster/cluster",
               Value: "owned",
@@ -735,25 +735,6 @@ module.exports = ({ stage }) => ({
         properties: {
           Port: 80,
           Protocol: "HTTP",
-          DefaultActions: [
-            {
-              Type: "forward",
-              TargetGroupArn:
-                "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/f70f0b960d8ca4ce",
-              ForwardConfig: {
-                TargetGroups: [
-                  {
-                    TargetGroupArn:
-                      "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/f70f0b960d8ca4ce",
-                    Weight: 1,
-                  },
-                ],
-                TargetGroupStickinessConfig: {
-                  Enabled: false,
-                },
-              },
-            },
-          ],
         },
       },
       listenerHttps: {
@@ -761,31 +742,12 @@ module.exports = ({ stage }) => ({
         properties: {
           Port: 443,
           Protocol: "HTTPS",
-          DefaultActions: [
-            {
-              Type: "forward",
-              TargetGroupArn:
-                "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/f70f0b960d8ca4ce",
-              ForwardConfig: {
-                TargetGroups: [
-                  {
-                    TargetGroupArn:
-                      "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/f70f0b960d8ca4ce",
-                    Weight: 1,
-                  },
-                ],
-                TargetGroupStickinessConfig: {
-                  Enabled: false,
-                },
-              },
-            },
-          ],
         },
       },
     },
     Rule: {
-      default: {
-        name: "default",
+      ruleDefaultListenerHttp: {
+        name: "rule-default-listener-http",
         properties: {
           Priority: "default",
           Conditions: [],
@@ -793,12 +755,12 @@ module.exports = ({ stage }) => ({
             {
               Type: "forward",
               TargetGroupArn:
-                "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/f70f0b960d8ca4ce",
+                "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/c3e944e2a222cfae",
               ForwardConfig: {
                 TargetGroups: [
                   {
                     TargetGroupArn:
-                      "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/f70f0b960d8ca4ce",
+                      "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/c3e944e2a222cfae",
                     Weight: 1,
                   },
                 ],
@@ -810,8 +772,8 @@ module.exports = ({ stage }) => ({
           ],
         },
       },
-      default: {
-        name: "default",
+      ruleDefaultListenerHttps: {
+        name: "rule-default-listener-https",
         properties: {
           Priority: "default",
           Conditions: [],
@@ -819,12 +781,12 @@ module.exports = ({ stage }) => ({
             {
               Type: "forward",
               TargetGroupArn:
-                "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/f70f0b960d8ca4ce",
+                "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/c3e944e2a222cfae",
               ForwardConfig: {
                 TargetGroups: [
                   {
                     TargetGroupArn:
-                      "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/f70f0b960d8ca4ce",
+                      "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/c3e944e2a222cfae",
                     Weight: 1,
                   },
                 ],
@@ -882,12 +844,12 @@ module.exports = ({ stage }) => ({
             {
               Type: "forward",
               TargetGroupArn:
-                "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-rest/c350910852aa332f",
+                "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-rest/48ca3ed0373eef24",
               ForwardConfig: {
                 TargetGroups: [
                   {
                     TargetGroupArn:
-                      "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-rest/c350910852aa332f",
+                      "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-rest/48ca3ed0373eef24",
                     Weight: 1,
                   },
                 ],
@@ -916,12 +878,12 @@ module.exports = ({ stage }) => ({
             {
               Type: "forward",
               TargetGroupArn:
-                "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/f70f0b960d8ca4ce",
+                "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/c3e944e2a222cfae",
               ForwardConfig: {
                 TargetGroups: [
                   {
                     TargetGroupArn:
-                      "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/f70f0b960d8ca4ce",
+                      "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/c3e944e2a222cfae",
                     Weight: 1,
                   },
                 ],
@@ -975,6 +937,12 @@ module.exports = ({ stage }) => ({
         name: "starhackit-eks-lean.grucloud.org.",
         properties: {
           Name: "starhackit-eks-lean.grucloud.org.",
+        },
+      },
+      testLoadBalancerGrucloudOrg: {
+        name: "test-load-balancer.grucloud.org.",
+        properties: {
+          Name: "test-load-balancer.grucloud.org.",
         },
       },
     },

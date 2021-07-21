@@ -63,7 +63,7 @@ const createResources = async ({ provider }) => {
   });
 
   provider.iam.useInstanceProfile({
-    name: config.iam.InstanceProfile.eks_0ebd6544C5e9_4d31_70f3_9c0a0af85a3d
+    name: config.iam.InstanceProfile.eksEabd6596Db9a_09ba_1f03_2929e57f627e
       .name,
     namespace: "EKS",
     dependencies: (resources) => ({
@@ -124,9 +124,9 @@ const createResources = async ({ provider }) => {
   });
 
   provider.ec2.useVolume({
-    name: config.ec2.Volume.vol_0a96f6c2a1820fa03.name,
+    name: config.ec2.Volume.vol_0e1c35c9ae3b7e3ff.name,
     namespace: "EKS",
-    properties: () => config.ec2.Volume.vol_0a96f6c2a1820fa03.properties,
+    properties: () => config.ec2.Volume.vol_0e1c35c9ae3b7e3ff.properties,
   });
 
   provider.ec2.makeElasticIpAddress({
@@ -175,8 +175,8 @@ const createResources = async ({ provider }) => {
     dependencies: (resources) => ({
       vpc: resources.ec2.Vpc.vpc,
       subnets: [
-        resources.ec2.Subnet.subnetPublicB,
         resources.ec2.Subnet.subnetPublicA,
+        resources.ec2.Subnet.subnetPublicB,
       ],
     }),
   });
@@ -418,19 +418,19 @@ const createResources = async ({ provider }) => {
   });
 
   provider.ec2.useInstance({
-    name: config.ec2.Instance.nodeGroupPrivateClusterI_0903f67c96843dc09.name,
+    name: config.ec2.Instance.nodeGroupPrivateClusterI_09cb18fa937eaf3da.name,
     namespace: "EKS",
     dependencies: (resources) => ({
       subnet: resources.ec2.Subnet.subnetPrivateA,
       iamInstanceProfile:
-        resources.iam.InstanceProfile.eks_0ebd6544C5e9_4d31_70f3_9c0a0af85a3d,
+        resources.iam.InstanceProfile.eksEabd6596Db9a_09ba_1f03_2929e57f627e,
       securityGroups: [
         resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
       ],
       volumes: [resources.ec2.Volume.kubernetesPvDbPostgres_0],
     }),
     properties: () =>
-      config.ec2.Instance.nodeGroupPrivateClusterI_0903f67c96843dc09.properties,
+      config.ec2.Instance.nodeGroupPrivateClusterI_09cb18fa937eaf3da.properties,
   });
 
   provider.acm.useCertificate({
@@ -463,11 +463,11 @@ const createResources = async ({ provider }) => {
 
   provider.autoscaling.useAutoScalingGroup({
     name: config.autoscaling.AutoScalingGroup
-      .eks_0ebd6544C5e9_4d31_70f3_9c0a0af85a3d.name,
+      .eksEabd6596Db9a_09ba_1f03_2929e57f627e.name,
     namespace: "EKS",
     properties: () =>
-      config.autoscaling.AutoScalingGroup
-        .eks_0ebd6544C5e9_4d31_70f3_9c0a0af85a3d.properties,
+      config.autoscaling.AutoScalingGroup.eksEabd6596Db9a_09ba_1f03_2929e57f627e
+        .properties,
   });
 
   provider.elb.makeLoadBalancer({
@@ -475,8 +475,8 @@ const createResources = async ({ provider }) => {
     namespace: "LoadBalancer",
     dependencies: (resources) => ({
       subnets: [
-        resources.ec2.Subnet.subnetPublicA,
         resources.ec2.Subnet.subnetPublicB,
+        resources.ec2.Subnet.subnetPublicA,
       ],
       securityGroups: [resources.ec2.SecurityGroup.loadBalancerSecurityGroup],
     }),
@@ -506,6 +506,7 @@ const createResources = async ({ provider }) => {
     namespace: "LoadBalancer",
     dependencies: (resources) => ({
       loadBalancer: resources.elb.LoadBalancer.loadBalancer,
+      targetGroup: resources.elb.TargetGroup.targetGroupWeb,
     }),
     properties: () => config.elb.Listener.listenerHttp.properties,
   });
@@ -515,29 +516,30 @@ const createResources = async ({ provider }) => {
     namespace: "LoadBalancer",
     dependencies: (resources) => ({
       loadBalancer: resources.elb.LoadBalancer.loadBalancer,
+      targetGroup: resources.elb.TargetGroup.targetGroupWeb,
       certificate: resources.acm.Certificate.starhackitEksLeanGrucloudOrg,
     }),
     properties: () => config.elb.Listener.listenerHttps.properties,
   });
 
   provider.elb.useRule({
-    name: config.elb.Rule.default.name,
+    name: config.elb.Rule.ruleDefaultListenerHttp.name,
     namespace: "LoadBalancer",
     dependencies: (resources) => ({
       listener: resources.elb.Listener.listenerHttp,
       targetGroup: resources.elb.TargetGroup.targetGroupWeb,
     }),
-    properties: () => config.elb.Rule.default.properties,
+    properties: () => config.elb.Rule.ruleDefaultListenerHttp.properties,
   });
 
   provider.elb.useRule({
-    name: config.elb.Rule.default.name,
+    name: config.elb.Rule.ruleDefaultListenerHttps.name,
     namespace: "LoadBalancer",
     dependencies: (resources) => ({
       listener: resources.elb.Listener.listenerHttps,
       targetGroup: resources.elb.TargetGroup.targetGroupWeb,
     }),
-    properties: () => config.elb.Rule.default.properties,
+    properties: () => config.elb.Rule.ruleDefaultListenerHttps.properties,
   });
 
   provider.elb.makeRule({
@@ -610,6 +612,12 @@ const createResources = async ({ provider }) => {
     name: config.route53.HostedZone.starhackitEksLeanGrucloudOrg.name,
     properties: () =>
       config.route53.HostedZone.starhackitEksLeanGrucloudOrg.properties,
+  });
+
+  provider.route53.makeHostedZone({
+    name: config.route53.HostedZone.testLoadBalancerGrucloudOrg.name,
+    properties: () =>
+      config.route53.HostedZone.testLoadBalancerGrucloudOrg.properties,
   });
 
   provider.route53.makeRecord({
