@@ -189,7 +189,7 @@ const buildDependencies = ({ resource, lives, dependencies = {} }) =>
     switchCase([
       isEmpty,
       () => "",
-      (values) => `dependencies: () =>({ 
+      (values) => `dependencies: (resources) =>({ 
        ${values.join(",\n")}
      }),`,
     ]),
@@ -233,6 +233,8 @@ const buildPrefix = switchCase([
   () => "useDefault",
   get("cannotBeDeleted"),
   () => "use",
+  get("managedByOther"),
+  () => "use",
   () => "make",
 ]);
 
@@ -245,9 +247,7 @@ const codeTpl = ({
   lives,
   properties,
   codeBuildProperties = codeBuildPropertiesDefault,
-}) => `(resources) =>
-set(
-  "${group}.${type}.${resourceVarName}",
+}) => `
   provider.${group}.${buildPrefix(resource)}${type}({
   ${codeBuildName({ group, type, resourceVarName })}${codeBuildNamespace(
   resource
@@ -258,8 +258,8 @@ set(
   resourceVarName,
   properties,
 })}
-  })
-)(resources),`;
+  });
+`;
 
 const writeToFile =
   ({ filename }) =>
@@ -419,7 +419,7 @@ const writeResource =
     configBuildProperties,
     properties = always({}),
     dependencies = always({}),
-    ignoreResource = () => get("managedByOther"),
+    ignoreResource = () => () => false,
   }) =>
   ({ resource, lives, mapping }) =>
     pipe([

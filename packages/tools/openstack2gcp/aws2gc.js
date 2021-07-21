@@ -78,26 +78,26 @@ const writersSpec = [
       {
         type: "Volume",
         pickProperties: () => ["Size", "VolumeType", "Device"],
-        ignoreResource:
-          ({ lives }) =>
-          (resource) =>
-            pipe([
-              () => resource,
-              or([
-                get("managedByOther"),
-                pipe([
-                  get("live.Attachments"),
-                  map(({ Device, InstanceId }) =>
-                    pipe([
-                      () => InstanceId,
-                      findLiveById({ type: "Instance", lives }),
-                      eq(get("live.RootDeviceName"), Device),
-                    ])()
-                  ),
-                  any(identity),
-                ]),
-              ]),
-            ])(),
+        // ignoreResource:
+        //   ({ lives }) =>
+        //   (resource) =>
+        //     pipe([
+        //       () => resource,
+        //       or([
+        //         get("managedByOther"),
+        //         pipe([
+        //           get("live.Attachments"),
+        //           map(({ Device, InstanceId }) =>
+        //             pipe([
+        //               () => InstanceId,
+        //               findLiveById({ type: "Instance", lives }),
+        //               eq(get("live.RootDeviceName"), Device),
+        //             ])()
+        //           ),
+        //           any(identity),
+        //         ]),
+        //       ]),
+        //     ])(),
       },
       {
         type: "ElasticIpAddress",

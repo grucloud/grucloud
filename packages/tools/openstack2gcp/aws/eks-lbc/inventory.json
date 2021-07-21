@@ -3724,8 +3724,8 @@
                                             "Value": "vpc"
                                         }
                                     ],
-                                    "DnsSupport": true,
-                                    "DnsHostnames": true
+                                    "DnsHostnames": true,
+                                    "DnsSupport": true
                                 },
                                 "isDefault": false,
                                 "managedByOther": false,
@@ -3928,7 +3928,7 @@
                                     "version": "1.20",
                                     "releaseVersion": "1.20.4-20210716",
                                     "createdAt": "2021-07-20T16:43:15.776Z",
-                                    "modifiedAt": "2021-07-20T17:14:10.804Z",
+                                    "modifiedAt": "2021-07-20T18:04:09.872Z",
                                     "status": "ACTIVE",
                                     "capacityType": "ON_DEMAND",
                                     "scalingConfig": {
@@ -4790,7 +4790,7 @@
                                     "Tags": []
                                 },
                                 "isDefault": false,
-                                "managedByOther": false,
+                                "managedByOther": true,
                                 "uri": "aws::iam::InstanceProfile::eks-42bd6266-6647-8143-7cc9-006134bf3847",
                                 "displayName": "eks-42bd6266-6647-8143-7cc9-006134bf3847",
                                 "cannotBeDeleted": false,
@@ -5629,14 +5629,6 @@
                                         }
                                     ],
                                     "Policies": [],
-                                    "InstanceProfiles": [
-                                        {
-                                            "InstanceProfileName": "eks-42bd6266-6647-8143-7cc9-006134bf3847",
-                                            "InstanceProfileId": "AIPA4HNBM2ZQAS7QTTRP7",
-                                            "Arn": "arn:aws:iam::840541460064:instance-profile/eks-42bd6266-6647-8143-7cc9-006134bf3847",
-                                            "Path": "/"
-                                        }
-                                    ],
                                     "AttachedPolicies": [
                                         {
                                             "PolicyName": "AmazonEKSWorkerNodePolicy",
@@ -5649,6 +5641,14 @@
                                         {
                                             "PolicyName": "AmazonEKS_CNI_Policy",
                                             "PolicyArn": "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+                                        }
+                                    ],
+                                    "InstanceProfiles": [
+                                        {
+                                            "InstanceProfileName": "eks-42bd6266-6647-8143-7cc9-006134bf3847",
+                                            "InstanceProfileId": "AIPA4HNBM2ZQAS7QTTRP7",
+                                            "Arn": "arn:aws:iam::840541460064:instance-profile/eks-42bd6266-6647-8143-7cc9-006134bf3847",
+                                            "Path": "/"
                                         }
                                     ]
                                 },
@@ -5721,18 +5721,38 @@
                                     "Config": {
                                         "PrivateZone": false
                                     },
-                                    "ResourceRecordSetCount": 4,
-                                    "RecordSet": [
+                                    "ResourceRecordSetCount": 2,
+                                    "Tags": [
                                         {
-                                            "Name": "starhackit-eks-lbc.grucloud.org.",
-                                            "Type": "A",
-                                            "ResourceRecords": [],
-                                            "AliasTarget": {
-                                                "HostedZoneId": "ZHURV8PSTC4K8",
-                                                "DNSName": "k8s-default-ingress-e514cce9f1-1134064847.eu-west-2.elb.amazonaws.com.",
-                                                "EvaluateTargetHealth": false
-                                            }
+                                            "Key": "gc-project-name",
+                                            "Value": "starhackit-eks-lbc"
                                         },
+                                        {
+                                            "Key": "gc-record-certificate-validation-starhackit-eks-lbc.grucloud.org.",
+                                            "Value": "_b4c084392d6f4726727d69dfaf665819.starhackit-eks-lbc.grucloud.org.::CNAME"
+                                        },
+                                        {
+                                            "Key": "gc-record-dns-record-alias-load-balancer-starhackit-eks-lbc.grucloud.org.",
+                                            "Value": "starhackit-eks-lbc.grucloud.org.::A"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "starhackit-eks-lbc.grucloud.org."
+                                        }
+                                    ],
+                                    "RecordSet": [
                                         {
                                             "Name": "starhackit-eks-lbc.grucloud.org.",
                                             "Type": "NS",
@@ -5761,46 +5781,6 @@
                                                     "Value": "ns-1470.awsdns-55.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
                                                 }
                                             ]
-                                        },
-                                        {
-                                            "Name": "_b4c084392d6f4726727d69dfaf665819.starhackit-eks-lbc.grucloud.org.",
-                                            "Type": "CNAME",
-                                            "TTL": 300,
-                                            "ResourceRecords": [
-                                                {
-                                                    "Value": "_009ebaa39ee9a4d18d0ebd96e91635bf.bbfvkzsszw.acm-validations.aws."
-                                                }
-                                            ]
-                                        }
-                                    ],
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "starhackit-eks-lbc"
-                                        },
-                                        {
-                                            "Key": "gc-record-certificate-validation-starhackit-eks-lbc.grucloud.org.",
-                                            "Value": "_b4c084392d6f4726727d69dfaf665819.starhackit-eks-lbc.grucloud.org.::CNAME"
-                                        },
-                                        {
-                                            "Key": "gc-record-dns-record-alias-load-balancer-starhackit-eks-lbc.grucloud.org.",
-                                            "Value": "starhackit-eks-lbc.grucloud.org.::A"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "starhackit-eks-lbc.grucloud.org."
                                         }
                                     ]
                                 },
@@ -5824,6 +5804,95 @@
                                 ],
                                 "managedByUs": true,
                                 "show": true
+                            },
+                            {
+                                "name": "test-load-balancer.grucloud.org.",
+                                "id": "/hostedzone/Z05478762D32BJMUBN74W",
+                                "providerName": "aws",
+                                "type": "HostedZone",
+                                "group": "route53",
+                                "live": {
+                                    "Id": "/hostedzone/Z05478762D32BJMUBN74W",
+                                    "Name": "test-load-balancer.grucloud.org.",
+                                    "CallerReference": "grucloud-Tue Jul 20 2021 14:37:53 GMT-0300 (Brasilia Standard Time)",
+                                    "Config": {
+                                        "PrivateZone": false
+                                    },
+                                    "ResourceRecordSetCount": 2,
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "elb-test"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "test-load-balancer.grucloud.org."
+                                        }
+                                    ],
+                                    "RecordSet": [
+                                        {
+                                            "Name": "test-load-balancer.grucloud.org.",
+                                            "Type": "NS",
+                                            "TTL": 172800,
+                                            "ResourceRecords": [
+                                                {
+                                                    "Value": "ns-1737.awsdns-25.co.uk."
+                                                },
+                                                {
+                                                    "Value": "ns-1321.awsdns-37.org."
+                                                },
+                                                {
+                                                    "Value": "ns-535.awsdns-02.net."
+                                                },
+                                                {
+                                                    "Value": "ns-436.awsdns-54.com."
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "Name": "test-load-balancer.grucloud.org.",
+                                            "Type": "SOA",
+                                            "TTL": 900,
+                                            "ResourceRecords": [
+                                                {
+                                                    "Value": "ns-1737.awsdns-25.co.uk. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "isDefault": false,
+                                "managedByOther": false,
+                                "uri": "aws::route53::HostedZone::test-load-balancer.grucloud.org.",
+                                "displayName": "test-load-balancer.grucloud.org.",
+                                "cannotBeDeleted": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Domain",
+                                        "group": "route53Domain",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "HostedZone",
+                                        "group": "route53",
+                                        "ids": []
+                                    }
+                                ],
+                                "managedByUs": false,
+                                "show": true
                             }
                         ]
                     },
@@ -5831,162 +5900,6 @@
                         "type": "Record",
                         "group": "route53",
                         "resources": [
-                            {
-                                "name": "certificate-validation-starhackit-eks-lbc.grucloud.org.",
-                                "id": "_b4c084392d6f4726727d69dfaf665819.starhackit-eks-lbc.grucloud.org.::CNAME",
-                                "providerName": "aws",
-                                "type": "Record",
-                                "group": "route53",
-                                "live": {
-                                    "Name": "_b4c084392d6f4726727d69dfaf665819.starhackit-eks-lbc.grucloud.org.",
-                                    "Type": "CNAME",
-                                    "TTL": 300,
-                                    "ResourceRecords": [
-                                        {
-                                            "Value": "_009ebaa39ee9a4d18d0ebd96e91635bf.bbfvkzsszw.acm-validations.aws."
-                                        }
-                                    ],
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "starhackit-eks-lbc"
-                                        },
-                                        {
-                                            "Key": "gc-record-certificate-validation-starhackit-eks-lbc.grucloud.org.",
-                                            "Value": "_b4c084392d6f4726727d69dfaf665819.starhackit-eks-lbc.grucloud.org.::CNAME"
-                                        },
-                                        {
-                                            "Key": "gc-record-dns-record-alias-load-balancer-starhackit-eks-lbc.grucloud.org.",
-                                            "Value": "starhackit-eks-lbc.grucloud.org.::A"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "starhackit-eks-lbc.grucloud.org."
-                                        }
-                                    ],
-                                    "HostedZoneId": "/hostedzone/Z0344318GV6GBTZUAURZ",
-                                    "namespace": "Certificate"
-                                },
-                                "isDefault": false,
-                                "managedByOther": false,
-                                "uri": "aws::route53::Record::certificate-validation-starhackit-eks-lbc.grucloud.org.",
-                                "displayName": "certificate-validation-starhackit-eks-lbc.grucloud.org.",
-                                "cannotBeDeleted": false,
-                                "namespace": "Certificate",
-                                "dependencies": [
-                                    {
-                                        "type": "HostedZone",
-                                        "group": "route53",
-                                        "ids": [
-                                            "/hostedzone/Z0344318GV6GBTZUAURZ"
-                                        ]
-                                    },
-                                    {
-                                        "type": "LoadBalancer",
-                                        "group": "elb",
-                                        "ids": []
-                                    },
-                                    {
-                                        "type": "Certificate",
-                                        "group": "acm",
-                                        "ids": [
-                                            "arn:aws:acm:eu-west-2:840541460064:certificate/172a1643-7ba7-4891-beb0-b530821f58ab"
-                                        ]
-                                    }
-                                ],
-                                "managedByUs": true,
-                                "show": true
-                            },
-                            {
-                                "name": "dns-record-alias-load-balancer-starhackit-eks-lbc.grucloud.org.",
-                                "id": "starhackit-eks-lbc.grucloud.org.::A",
-                                "providerName": "aws",
-                                "type": "Record",
-                                "group": "route53",
-                                "live": {
-                                    "Name": "starhackit-eks-lbc.grucloud.org.",
-                                    "Type": "A",
-                                    "ResourceRecords": [],
-                                    "AliasTarget": {
-                                        "HostedZoneId": "ZHURV8PSTC4K8",
-                                        "DNSName": "k8s-default-ingress-e514cce9f1-1134064847.eu-west-2.elb.amazonaws.com.",
-                                        "EvaluateTargetHealth": false
-                                    },
-                                    "Tags": [
-                                        {
-                                            "Key": "gc-project-name",
-                                            "Value": "starhackit-eks-lbc"
-                                        },
-                                        {
-                                            "Key": "gc-record-certificate-validation-starhackit-eks-lbc.grucloud.org.",
-                                            "Value": "_b4c084392d6f4726727d69dfaf665819.starhackit-eks-lbc.grucloud.org.::CNAME"
-                                        },
-                                        {
-                                            "Key": "gc-record-dns-record-alias-load-balancer-starhackit-eks-lbc.grucloud.org.",
-                                            "Value": "starhackit-eks-lbc.grucloud.org.::A"
-                                        },
-                                        {
-                                            "Key": "gc-managed-by",
-                                            "Value": "grucloud"
-                                        },
-                                        {
-                                            "Key": "gc-stage",
-                                            "Value": "dev"
-                                        },
-                                        {
-                                            "Key": "gc-created-by-provider",
-                                            "Value": "aws"
-                                        },
-                                        {
-                                            "Key": "Name",
-                                            "Value": "starhackit-eks-lbc.grucloud.org."
-                                        }
-                                    ],
-                                    "HostedZoneId": "/hostedzone/Z0344318GV6GBTZUAURZ",
-                                    "namespace": ""
-                                },
-                                "isDefault": false,
-                                "managedByOther": false,
-                                "uri": "aws::route53::Record::dns-record-alias-load-balancer-starhackit-eks-lbc.grucloud.org.",
-                                "displayName": "dns-record-alias-load-balancer-starhackit-eks-lbc.grucloud.org.",
-                                "cannotBeDeleted": false,
-                                "namespace": "",
-                                "dependencies": [
-                                    {
-                                        "type": "HostedZone",
-                                        "group": "route53",
-                                        "ids": [
-                                            "/hostedzone/Z0344318GV6GBTZUAURZ"
-                                        ]
-                                    },
-                                    {
-                                        "type": "LoadBalancer",
-                                        "group": "elb",
-                                        "ids": [
-                                            "arn:aws:elasticloadbalancing:eu-west-2:840541460064:loadbalancer/app/k8s-default-ingress-e514cce9f1/4e442221b91d3ae6"
-                                        ]
-                                    },
-                                    {
-                                        "type": "Certificate",
-                                        "group": "acm",
-                                        "ids": []
-                                    }
-                                ],
-                                "managedByUs": true,
-                                "show": true
-                            },
                             {
                                 "name": "starhackit-eks-lbc.grucloud.org.::NS",
                                 "id": "starhackit-eks-lbc.grucloud.org.::NS",
@@ -6085,6 +5998,105 @@
                                 ],
                                 "managedByUs": true,
                                 "show": true
+                            },
+                            {
+                                "name": "test-load-balancer.grucloud.org.::NS",
+                                "id": "test-load-balancer.grucloud.org.::NS",
+                                "providerName": "aws",
+                                "type": "Record",
+                                "group": "route53",
+                                "live": {
+                                    "Name": "test-load-balancer.grucloud.org.",
+                                    "Type": "NS",
+                                    "TTL": 172800,
+                                    "ResourceRecords": [
+                                        {
+                                            "Value": "ns-1737.awsdns-25.co.uk."
+                                        },
+                                        {
+                                            "Value": "ns-1321.awsdns-37.org."
+                                        },
+                                        {
+                                            "Value": "ns-535.awsdns-02.net."
+                                        },
+                                        {
+                                            "Value": "ns-436.awsdns-54.com."
+                                        }
+                                    ],
+                                    "HostedZoneId": "/hostedzone/Z05478762D32BJMUBN74W"
+                                },
+                                "isDefault": false,
+                                "managedByOther": false,
+                                "uri": "aws::route53::Record::test-load-balancer.grucloud.org.::NS",
+                                "displayName": "test-load-balancer.grucloud.org.::NS",
+                                "cannotBeDeleted": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "HostedZone",
+                                        "group": "route53",
+                                        "ids": [
+                                            "/hostedzone/Z05478762D32BJMUBN74W"
+                                        ]
+                                    },
+                                    {
+                                        "type": "LoadBalancer",
+                                        "group": "elb",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "Certificate",
+                                        "group": "acm",
+                                        "ids": []
+                                    }
+                                ],
+                                "managedByUs": true,
+                                "show": true
+                            },
+                            {
+                                "name": "test-load-balancer.grucloud.org.::SOA",
+                                "id": "test-load-balancer.grucloud.org.::SOA",
+                                "providerName": "aws",
+                                "type": "Record",
+                                "group": "route53",
+                                "live": {
+                                    "Name": "test-load-balancer.grucloud.org.",
+                                    "Type": "SOA",
+                                    "TTL": 900,
+                                    "ResourceRecords": [
+                                        {
+                                            "Value": "ns-1737.awsdns-25.co.uk. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"
+                                        }
+                                    ],
+                                    "HostedZoneId": "/hostedzone/Z05478762D32BJMUBN74W"
+                                },
+                                "isDefault": false,
+                                "managedByOther": false,
+                                "uri": "aws::route53::Record::test-load-balancer.grucloud.org.::SOA",
+                                "displayName": "test-load-balancer.grucloud.org.::SOA",
+                                "cannotBeDeleted": true,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "HostedZone",
+                                        "group": "route53",
+                                        "ids": [
+                                            "/hostedzone/Z05478762D32BJMUBN74W"
+                                        ]
+                                    },
+                                    {
+                                        "type": "LoadBalancer",
+                                        "group": "elb",
+                                        "ids": []
+                                    },
+                                    {
+                                        "type": "Certificate",
+                                        "group": "acm",
+                                        "ids": []
+                                    }
+                                ],
+                                "managedByUs": true,
+                                "show": true
                             }
                         ]
                     },
@@ -6102,19 +6114,19 @@
                                     "DomainName": "grucloud.org",
                                     "Nameservers": [
                                         {
-                                            "Name": "ns-1470.awsdns-55.org",
+                                            "Name": "ns-1796.awsdns-32.co.uk",
                                             "GlueIps": []
                                         },
                                         {
-                                            "Name": "ns-1907.awsdns-46.co.uk",
+                                            "Name": "ns-217.awsdns-27.com",
                                             "GlueIps": []
                                         },
                                         {
-                                            "Name": "ns-305.awsdns-38.com",
+                                            "Name": "ns-949.awsdns-54.net",
                                             "GlueIps": []
                                         },
                                         {
-                                            "Name": "ns-685.awsdns-21.net",
+                                            "Name": "ns-1183.awsdns-19.org",
                                             "GlueIps": []
                                         }
                                     ],
@@ -6188,7 +6200,51 @@
                     {
                         "type": "Bucket",
                         "group": "s3",
-                        "resources": []
+                        "resources": [
+                            {
+                                "name": "grucloud-s3bucket-test-update",
+                                "id": "grucloud-s3bucket-test-update",
+                                "providerName": "aws",
+                                "type": "Bucket",
+                                "group": "s3",
+                                "live": {
+                                    "Name": "grucloud-s3bucket-test-update",
+                                    "CreationDate": "2021-07-20T18:08:34.000Z",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "gru-test"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "grucloud-s3bucket-test-update"
+                                        }
+                                    ],
+                                    "LocationConstraint": ""
+                                },
+                                "isDefault": false,
+                                "managedByOther": false,
+                                "uri": "aws::s3::Bucket::grucloud-s3bucket-test-update",
+                                "displayName": "grucloud-s3bucket-test-update",
+                                "cannotBeDeleted": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByUs": false,
+                                "show": true
+                            }
+                        ]
                     },
                     {
                         "type": "Object",
