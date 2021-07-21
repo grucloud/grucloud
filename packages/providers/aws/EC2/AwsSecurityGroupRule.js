@@ -12,6 +12,7 @@ const {
   map,
   fork,
   assign,
+  omit,
 } = require("rubico");
 const {
   callProp,
@@ -25,6 +26,8 @@ const {
   groupBy,
   values,
 } = require("rubico/x");
+const { detailedDiff } = require("deep-object-diff");
+
 const logger = require("@grucloud/core/logger")({ prefix: "AwsSecGroupRule" });
 const { tos } = require("@grucloud/core/tos");
 const { findValueInTags } = require("../AwsCommon");
@@ -157,13 +160,25 @@ const ipVersion = ({ IpRanges, Ipv6Ranges }) =>
     () => "",
   ])();
 
-//TODO fetch groupName from GroupId
-const fromSecurityGroup = ({ UserIdGroupPairs }) =>
+const fromSecurityGroup = ({ UserIdGroupPairs, lives, config }) =>
   pipe([
+    tap((params) => {
+      assert(true);
+    }),
     () => UserIdGroupPairs,
     first,
     get("GroupId"),
-    switchCase([not(isEmpty), (GroupId) => `-from-${GroupId}`, () => ""]),
+    (GroupId) =>
+      pipe([
+        () =>
+          lives.getByType({
+            type: "SecurityGroup",
+            providerName: config.providerName,
+          }),
+        find(eq(get("id"), GroupId)),
+        get("name"),
+        switchCase([not(isEmpty), (name) => `-from-${name}`, () => ""]),
+      ])(),
   ])();
 
 const ruleDefaultToName = ({
@@ -192,6 +207,8 @@ const ruleDefaultToName = ({
     ToPort,
   })}${ipVersion({ IpRanges, Ipv6Ranges })}${fromSecurityGroup({
     UserIdGroupPairs,
+    lives,
+    config,
   })}`;
 
 const findSgrNameInTags = ({ live }) =>
@@ -286,8 +303,8 @@ const SecurityGroupRuleBase = ({ config }) => {
       tap(() => {
         assert(securityGroup, "missing securityGroup dependency");
       }),
-      () => otherProps,
-      defaultsDeep(securityFromConfig({ securityGroupFrom })),
+      () => securityFromConfig({ securityGroupFrom }),
+      defaultsDeep(otherProps),
       defaultsDeep({
         GroupId: getField(securityGroup, "GroupId"),
         IpPermissions: [IpPermission],
@@ -507,3 +524,44 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
     managedByOther,
   };
 };
+
+const filterTarget = ({ target }) =>
+  pipe([
+    () => target,
+    //omit(["IpP", "TagSpecifications", "MinCount", "MaxCount"]),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
+
+const filterLive = ({ live }) =>
+  pipe([
+    () => live, //
+    //omit(["NetworkInterfaces"]),
+    tap((params) => {
+      assert(true);
+    }),
+  ])();
+
+exports.compareSecurityGroupRule = pipe([
+  tap((xxx) => {
+    assert(true);
+  }),
+  assign({
+    target: filterTarget,
+    live: filterLive,
+  }),
+  ({ target, live }) => ({
+    targetDiff: pipe([
+      () => detailedDiff(target, live),
+      omit(["added", "deleted"]),
+    ])(),
+    liveDiff: pipe([
+      () => detailedDiff(live, target),
+      omit(["added", "deleted"]),
+    ])(),
+  }),
+  tap((diff) => {
+    logger.debug(`compareSecurityGroupRule ${tos(diff)}`);
+  }),
+]);

@@ -266,9 +266,6 @@ exports.ResourceMaker = ({
       switchCase([
         not(isEmpty),
         pipe([
-          tap((xxx) => {
-            logger.debug(`findLive`);
-          }),
           (resources) =>
             pipe([
               () => resources,
@@ -278,10 +275,7 @@ exports.ResourceMaker = ({
                     provider.clientByType({ type }).findName({ live, lives }),
                   tap((liveName) => {
                     logger.debug(
-                      `findLive ${type} ${JSON.stringify({
-                        resourceName,
-                        liveName,
-                      })}`
+                      `findLive ${type} resourceName: ${resourceName} liveName: ${liveName}`
                     );
                   }),
                   (liveName) => isDeepEqual(resourceName, liveName),
@@ -296,7 +290,7 @@ exports.ResourceMaker = ({
       get("live"),
       tap((live) => {
         logger.debug(
-          `findLive ${tos({ type, resourceName, hasLive: !!live })}`
+          `findLive ${JSON.stringify({ type, resourceName, hasLive: !!live })}`
         );
       }),
     ])();
