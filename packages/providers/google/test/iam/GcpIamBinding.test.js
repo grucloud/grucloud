@@ -46,12 +46,6 @@ describe("GcpIamBinding", async function () {
     await provider.start();
   });
   after(async () => {});
-  it("iamBinding config", async function () {
-    const iamBindingLive = await iamBindingServiceAccount.getLive();
-    const config = await iamBindingServiceAccount.resolveConfig({
-      live: iamBindingLive,
-    });
-  });
   it("iamBinding apply and destroy", async function () {
     const resultApply = await cliCommands.planApply({
       infra: { provider },

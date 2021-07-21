@@ -67,11 +67,6 @@ describe("GcpBucket", async function () {
     });
   });
   after(async () => {});
-  it("bucket config", async function () {
-    const config = await bucket.resolveConfig();
-    assert(config);
-    assert.equal(config.name, bucketName);
-  });
   it("gcp bucket apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
     const bucketLive = await bucket.getLive();

@@ -40,16 +40,6 @@ describe("GcpServiceAccount", async function () {
     });
   });
   after(async () => {});
-  it("serviceAccount config", async function () {
-    const config = await serviceAccount.resolveConfig();
-    assert(config);
-    assert.equal(config.accountId, serviceAccountName);
-    assert.equal(
-      config.serviceAccount.description,
-      provider.config.managedByDescription
-    );
-    assert.equal(config.serviceAccount.displayName, serviceAccountDisplayName);
-  });
 
   it("serviceAccount apply and destroy", async function () {
     await testPlanDeploy({

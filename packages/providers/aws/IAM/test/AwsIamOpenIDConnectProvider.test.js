@@ -46,10 +46,6 @@ describe("AwsIamOpenIDConnectProvider", async function () {
       },
     ])();
   });
-  it("iamOpenIdConnectProvider resolveConfig", async function () {
-    assert.equal(iamOpenIdConnectProvider.name, iamOpenIdConnectProviderName);
-    const config = await iamOpenIdConnectProvider.resolveConfig();
-  });
   it("iamOpenIdConnectProvider apply plan", async function () {
     await testPlanDeploy({
       provider,

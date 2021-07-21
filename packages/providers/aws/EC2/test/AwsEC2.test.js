@@ -75,23 +75,6 @@ describe("AwsEC2", async function () {
     }
   });
   after(async () => {});
-  it("ec2 server resolveConfig", async function () {
-    const {
-      provider,
-      resources: { server },
-    } = await createStack({
-      imageProperties: imageUbuntu,
-      serverProperties: () => ({}),
-    });
-
-    assert.equal(server.name, serverName);
-
-    const config = await server.resolveConfig();
-    assert.equal(config.InstanceType, "t2.micro");
-    assert.equal(config.MaxCount, 1);
-    assert.equal(config.MinCount, 1);
-    //assert.equal(config.nameKey, keyPair.name);
-  });
 
   it("ec2 apply plan", async function () {
     // Step 1

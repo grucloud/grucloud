@@ -86,12 +86,6 @@ describe.skip("GcpWebSiteHttps", async function () {
     await provider.start();
   });
   after(async () => {});
-  it("ssl certificate config", async function () {
-    const config = await sslCertificate.resolveConfig();
-    assert(config);
-    assert.equal(config.name, certificateName);
-    assert.equal(config.description, provider.config.managedByDescription);
-  });
   it("website https apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
 

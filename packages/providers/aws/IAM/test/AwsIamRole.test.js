@@ -46,10 +46,6 @@ describe("AwsIamRole", async function () {
     await provider.start();
   });
   after(async () => {});
-  it("iamRole resolveConfig", async function () {
-    assert.equal(iamRole.name, iamRoleName);
-    const config = await iamRole.resolveConfig();
-  });
   it.skip("iamRole apply plan", async function () {
     await testPlanDeploy({
       provider,

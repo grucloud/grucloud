@@ -31,12 +31,6 @@ describe("GoogleAddress", async function () {
     await provider.start();
   });
   after(async () => {});
-  it("address config", async function () {
-    const config = await address.resolveConfig();
-    assert(config);
-    assert.equal(config.name, addressName);
-    assert.equal(config.description, provider.config.managedByDescription);
-  });
   it.skip("apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
     await testPlanDestroy({ provider, types });

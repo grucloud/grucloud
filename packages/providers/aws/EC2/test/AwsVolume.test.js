@@ -65,12 +65,6 @@ describe("AwsVolume", async function () {
   });
 
   after(async () => {});
-  it.skip("volume resolveConfig", async function () {
-    const config = await volume.resolveConfig();
-    assert(config.Size);
-    assert(config.AvailabilityZone);
-    assert(config.VolumeType);
-  });
   it("volume apply and destroy", async function () {
     try {
       await testPlanDeploy({ provider, types });

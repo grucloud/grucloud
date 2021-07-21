@@ -57,12 +57,6 @@ describe("AwsIamInstanceProfile", async function () {
     await provider.start();
   });
   after(async () => {});
-  it("iamInstanceProfile resolveConfig", async function () {
-    assert.equal(iamInstanceProfile.name, iamInstanceProfileName);
-    const config = await iamInstanceProfile.resolveConfig();
-    assert(config.InstanceProfileName);
-    assert(config.Path);
-  });
   it.skip("iamInstanceProfile apply plan", async function () {
     await testPlanDeploy({
       provider,

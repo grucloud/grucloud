@@ -73,16 +73,6 @@ describe("GoogleProvider", async function () {
     assert(info.projectId);
     assert(info.config);
   });
-  it("gcp server resolveConfig ", async function () {
-    const config = await server.resolveConfig();
-    const { projectId, zone } = provider.config;
-    assert.equal(
-      config.machineType,
-      `https://www.googleapis.com/compute/v1/projects/${projectId}/zones/${zone}/machineTypes/f1-micro`
-    );
-    assert.equal(config.disks[0].initializeParams.diskSizeGb, "20");
-    assert.equal(config.name, "web-server");
-  });
 
   it("gcp apply and destroy", async function () {
     try {

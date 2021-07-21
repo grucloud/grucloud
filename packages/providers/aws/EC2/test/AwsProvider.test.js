@@ -136,14 +136,6 @@ describe("AwsProvider", async function () {
     });
   });
   after(async () => {});
-  it("aws server resolveConfig", async function () {
-    assert.equal(server.name, formatName(serverName));
-    const config = await server.resolveConfig({ deep: false });
-    assert.equal(config.InstanceType, "t2.micro");
-    assert.equal(config.MaxCount, 1);
-    assert.equal(config.MinCount, 1);
-    //assert.equal(config.KeyName, keyPair.name);
-  });
   it("aws info", async function () {
     const info = provider.info();
     assert(info.stage);

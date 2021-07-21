@@ -25,11 +25,6 @@ describe("AzResourceGroup", async function () {
     rg = provider.makeResourceGroup({ name: rgName });
   });
   after(async () => {});
-  it("config", async function () {
-    const config = await rg.resolveConfig();
-    assert(config);
-    assert.equal(config.location, provider.config.location);
-  });
   it.skip("az rg apply and destroy", async function () {
     await testPlanDeploy({ provider });
     await testPlanDestroy({ provider });
