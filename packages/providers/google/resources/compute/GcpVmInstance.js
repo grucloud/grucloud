@@ -326,7 +326,7 @@ exports.GoogleVmInstance = ({ spec, config: configProvider }) => {
           logger.debug(`create ${name}, payload: ${tos({ payload })}`);
         }),
         () => client.create({ name, payload, dependencies }),
-        tap(() => disksAttach({ disks: dependencies.disks, name })),
+        tap(() => disksAttach({ disks: dependencies().disks, name })),
         tap(({ id }) => {
           logger.debug(`created vm ${name}, id: ${id}`);
         }),

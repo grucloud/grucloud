@@ -210,10 +210,11 @@ exports.ResourceMaker = ({
   const getDependencies = pipe([
     () => dependencies,
     switchCase([
-      isObject,
-      (dependencies) => () => ({ ...dependencies }),
+      isFunction,
       identity,
+      (dependencies) => () => ({ ...dependencies }),
     ]),
+    (dep) => () => dep(provider.resources()),
   ]);
 
   const client = createClient({
@@ -311,7 +312,7 @@ exports.ResourceMaker = ({
           usedBySet,
           target,
           live,
-          dependencies: resource.dependencies(),
+          dependencies: resource.dependencies(), //TODO
           lives,
           config,
         }),
@@ -355,19 +356,22 @@ exports.ResourceMaker = ({
   };
   const getDependencyList = () =>
     pipe([
-      getDependencies,
-      (deps) => deps(),
+      tap((result) => {
+        logger.info(`getDependencyList ${type} `);
+      }),
+      getDependencies(),
       filter(and([not(isString), not(isEmpty)])),
       transform(
         map((dep) => dep),
         () => []
       ),
+      //TODO filter(not(isEmpty))
       tap((result) => {
-        logger.info(`getDependencyList `);
+        logger.info(`getDependencyList ${type} `);
       }),
       tap(
         forEach((dep) => {
-          assert(dep, "dep");
+          assert(dep, `dep ${type}`);
           assert(dep.type, "dep.type");
         })
       ),
@@ -388,6 +392,9 @@ exports.ResourceMaker = ({
         );
       }),
       () => dependencies(),
+      tap((params) => {
+        assert(true);
+      }),
       map(async (dependency) => {
         if (!dependency) {
           logger.error(`${toString()} has undefined dependencies`);
@@ -708,7 +715,7 @@ exports.ResourceMaker = ({
         name: resourceName,
         meta,
         properties,
-        dependencies,
+        dependencies: getDependencies(),
       }),
       uri: toString(),
     }),
@@ -716,7 +723,7 @@ exports.ResourceMaker = ({
       assert(json);
     }),
   ]);
-
+  //TODO remove
   const addUsedBy = (usedBy) => {
     usedBySet.add(usedBy);
   };
@@ -731,6 +738,7 @@ exports.ResourceMaker = ({
     readOnly,
     dependencies: getDependencies(),
     addUsedBy,
+    //TODO remove
     usedBy: () => usedBySet,
     spec,
     client,
@@ -764,30 +772,6 @@ exports.ResourceMaker = ({
         }),
       ])(),
   };
-
-  pipe([
-    () => getDependencies(),
-    forEach((dependency) => {
-      if (isString(dependency)) {
-        return;
-      }
-      if (!dependency) {
-        logger.error(`undefined dependency for ${type}/${resourceName}`);
-        return;
-      }
-      //TODO is Array ?
-      //TODO make it recursive
-      if (!dependency.addUsedBy) {
-        forEach((item) => {
-          if (item.addUsedBy) {
-            item.addUsedBy(resourceMaker);
-          }
-        })(dependency);
-      } else {
-        dependency.addUsedBy(resourceMaker);
-      }
-    }),
-  ])();
 
   return resourceMaker;
 };

@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { camelCase } = require("change-case");
 
 const {
   pipe,
@@ -191,22 +192,28 @@ function CoreProvider({
     ])();
 
   const mapTypeToResources = new Map();
-
+  let resourcesObj = {};
   const getTargetTypes = () => [...mapTypeToResources.keys()];
 
   const targetResourcesAdd = (resource) => {
-    assert(resource.name);
-    assert(resource.type);
     assert(resource.spec.providerName);
-
+    const { type, group, name, spec } = resource;
+    assert(name);
+    assert(type);
     const resourceKey = resource.toString();
     logger.debug(`targetResourcesAdd ${resourceKey}`);
-    if (mapNameToResource.has(resourceKey) && !resource.spec.listOnly) {
+    if (mapNameToResource.has(resourceKey) && !spec.listOnly) {
       throw {
         code: 400,
         message: `resource '${resourceKey}' already exists`,
       };
     }
+    const resourceVarName = camelCase(name);
+    resourcesObj = set(
+      `${group ? `${group}.` : ""}${type}.${resourceVarName}`,
+      resource
+    )(resourcesObj);
+
     mapNameToResource.set(resourceKey, resource);
 
     mapTypeToResources.set(resource.type, [
@@ -1633,6 +1640,7 @@ function CoreProvider({
     get config() {
       return providerConfig;
     },
+    resources: () => resourcesObj,
     name: providerName,
     dependencies,
     type: toType,

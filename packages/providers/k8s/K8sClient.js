@@ -219,7 +219,7 @@ module.exports = K8sClient = ({
             apiVersion: payload.apiVersion,
             namespace:
               payload.metadata.namespace ||
-              getNamespace(dependencies.namespace),
+              getNamespace(dependencies().namespace),
           }),
         tap((path) => {
           logger.info(`create ${type}/${name}, path: ${path}`);
@@ -279,7 +279,7 @@ module.exports = K8sClient = ({
                 name,
                 namespace:
                   payload.metadata.namespace ||
-                  getNamespace(dependencies.namespace),
+                  getNamespace(dependencies().namespace),
               }),
             tap((path) => {
               logger.info(`update ${type}/${name}, path: ${path}`);

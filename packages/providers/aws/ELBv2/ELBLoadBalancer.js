@@ -169,7 +169,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createLoadBalancer-property
-  const create = async ({ name, payload, dependencies }) =>
+  const create = async ({ name, payload }) =>
     pipe([
       tap(() => {
         logger.info(`create: lbv2 ${name}`);

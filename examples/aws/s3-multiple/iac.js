@@ -14,7 +14,7 @@ const createResources = async ({ provider }) => {
         ),
     (buckets) =>
       map((bucket) =>
-        provider.makeBucket({
+        provider.s3.makeBucket({
           name: bucket,
           properties: () => ({}),
         })

@@ -48,7 +48,7 @@ const createAws = async ({}) => {
     ],
   });
 
-  const keyPair = provider.ec2.useKeyPair({
+  const keyPair = provider.ec2.makeKeyPair({
     name: "kp",
   });
 
