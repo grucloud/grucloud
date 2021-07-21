@@ -9,15 +9,7 @@ const { iacTpl } = require("./src/aws/iacTpl");
 
 const { findLiveById, hasDependency } = require("./generatorUtils");
 
-const securityGroupRulePickProperties = () => [
-  "IpProtocol",
-  "FromPort",
-  "ToPort",
-  "CidrIpv4",
-  "CidrIpv6",
-  "ReferencedGroupInfo",
-  "Description",
-];
+const securityGroupRulePickProperties = () => ["IpPermission", "Tags"];
 
 const writersSpec = [
   {
@@ -34,7 +26,18 @@ const writersSpec = [
       {
         type: "Role",
         pickProperties: () => ["RoleName", "Path", "AssumeRolePolicyDocument"],
-        dependencies: () => ({ policies: { type: "Policy", group: "iam" } }),
+        dependencies: () => ({
+          policies: { type: "Policy", group: "iam" },
+          openIdConnectProvider: {
+            type: "OpenIDConnectProvider",
+            group: "iam",
+          },
+        }),
+        hasNoProperty: ({ lives, resource }) =>
+          pipe([
+            () => resource,
+            or([hasDependency({ type: "OpenIDConnectProvider" })]),
+          ])(),
       },
       {
         type: "InstanceProfile",
@@ -48,6 +51,8 @@ const writersSpec = [
           cluster: { type: "Cluster", group: "eks" },
           role: { type: "Role", group: "iam" },
         }),
+        hasNoProperty: ({ lives, resource }) =>
+          pipe([() => resource, or([hasDependency({ type: "Cluster" })])])(),
       },
     ],
   },
@@ -326,7 +331,23 @@ const writersSpec = [
         pickProperties: () => ["version"],
         dependencies: () => ({
           subnets: { type: "Subnet", group: "ec2" },
-          securityGroups: { type: "SecurityGroup", group: "ec2" },
+          securityGroups: {
+            type: "SecurityGroup",
+            group: "ec2",
+            filterDependency:
+              ({ resource }) =>
+              (dependency) =>
+                pipe([
+                  tap(() => {
+                    assert(dependency);
+                  }),
+                  () => dependency,
+                  not(get("managedByOther")),
+                  tap((result) => {
+                    assert(true);
+                  }),
+                ])(),
+          },
           role: { type: "Role", group: "iam" },
           key: { type: "Key", group: "kms" },
         }),
@@ -374,16 +395,12 @@ const writersSpec = [
           "ResourceRecords",
           "AliasTarget",
         ],
-        configBuildProperties: ({ properties, lives, resource }) =>
+        hasNoProperty: ({ lives, resource }) =>
           pipe([
             () => resource,
-            switchCase([
-              or([
-                hasDependency({ type: "LoadBalancer" }),
-                hasDependency({ type: "Certificate" }),
-              ]),
-              () => "",
-              () => `\n,properties: ${JSON.stringify(properties, null, 4)}`,
+            or([
+              hasDependency({ type: "LoadBalancer" }),
+              hasDependency({ type: "Certificate" }),
             ]),
           ])(),
         dependencies: () => ({

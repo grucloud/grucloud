@@ -116,13 +116,17 @@ const buildProperties = ({ resource: { live }, pickProperties }) =>
     }),
   ])();
 
-const configBuildPropertiesDefault = ({ resource, properties }) =>
+const configBuildPropertiesDefault = ({
+  resource,
+  properties,
+  hasNoProperty,
+}) =>
   pipe([
     tap(() => {
       assert(resource);
     }),
     () =>
-      !isEmpty(properties) && !resource.isDefault
+      !isEmpty(properties) && !resource.isDefault && !hasNoProperty
         ? `\n,properties: ${JSON.stringify(properties, null, 4)}`
         : "",
   ])();
@@ -140,6 +144,7 @@ const configTpl = ({
   resourceVarName,
   resourceName,
   properties,
+  hasNoProperty,
   configBuildProperties = configBuildPropertiesDefault,
   lives,
 }) =>
@@ -149,6 +154,7 @@ const configTpl = ({
       resource,
       properties,
       lives,
+      hasNoProperty: hasNoProperty({ resource }),
     })},
     },`,
     tap((params) => {
@@ -217,13 +223,14 @@ const codeBuildPropertiesDefault = ({
   resourceVarName,
   properties,
   resource,
+  hasNoProperty,
 }) =>
   pipe([
     tap(() => {
       assert(true);
     }),
     () =>
-      !isEmpty(properties) && !resource.isDefault
+      !isEmpty(properties) && !resource.isDefault && !hasNoProperty
         ? `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`
         : "",
   ])();
@@ -246,6 +253,7 @@ const codeTpl = ({
   resource,
   lives,
   properties,
+  hasNoProperty,
   codeBuildProperties = codeBuildPropertiesDefault,
 }) => `
   provider.${group}.${buildPrefix(resource)}${type}({
@@ -257,6 +265,7 @@ const codeTpl = ({
   resource,
   resourceVarName,
   properties,
+  hasNoProperty: hasNoProperty({ resource }),
 })}
   });
 `;
@@ -417,6 +426,7 @@ const writeResource =
     pickProperties = always([]),
     codeBuildProperties,
     configBuildProperties,
+    hasNoProperty,
     properties = always({}),
     dependencies = always({}),
     ignoreResource = () => () => false,
@@ -462,6 +472,7 @@ const writeResource =
               properties,
               dependencies: dependencies(),
               configBuildProperties,
+              hasNoProperty,
               lives,
             }),
             code: codeTpl({
@@ -471,7 +482,7 @@ const writeResource =
               resourceVarName,
               dependencies: dependencies(),
               lives,
-
+              hasNoProperty,
               properties,
               codeBuildProperties,
             }),
@@ -494,6 +505,7 @@ const writeResources =
     resourceName,
     codeBuildProperties,
     configBuildProperties,
+    hasNoProperty = () => false,
   }) =>
   ({ lives, mapping }) =>
     pipe([
@@ -518,12 +530,12 @@ const writeResources =
               properties,
               pickProperties,
               dependencies,
-
               ignoreResource,
               resourceVarName,
               resourceName,
               codeBuildProperties,
               configBuildProperties,
+              hasNoProperty,
             })({
               resource,
               lives,

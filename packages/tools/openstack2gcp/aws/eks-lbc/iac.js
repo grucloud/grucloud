@@ -61,8 +61,8 @@ const createResources = async ({ provider }) => {
     namespace: "LoadBalancerControllerRole",
     dependencies: (resources) => ({
       policies: [resources.iam.Policy.awsLoadBalancerControllerIamPolicy],
+      openIdConnectProvider: resources.iam.OpenIDConnectProvider.oidcEks,
     }),
-    properties: () => config.iam.Role.roleLoadBalancer.properties,
   });
 
   provider.iam.makeRole({
@@ -79,7 +79,7 @@ const createResources = async ({ provider }) => {
   });
 
   provider.iam.useInstanceProfile({
-    name: config.iam.InstanceProfile.eks_42bd6266_6647_8143_7cc9_006134bf3847
+    name: config.iam.InstanceProfile.eks_8cbd64cdB37a_9adaEa21_9e0c74a02794
       .name,
     namespace: "EKS",
     dependencies: (resources) => ({
@@ -92,9 +92,7 @@ const createResources = async ({ provider }) => {
     namespace: "LoadBalancerControllerRole",
     dependencies: (resources) => ({
       cluster: resources.eks.Cluster.cluster,
-      role: resources.iam.Role.roleLoadBalancer,
     }),
-    properties: () => config.iam.OpenIDConnectProvider.oidcEks.properties,
   });
 
   provider.ec2.makeVpc({
@@ -144,18 +142,15 @@ const createResources = async ({ provider }) => {
   });
 
   provider.ec2.useVolume({
-    name: config.ec2.Volume
-      .kubernetesDynamicPvcA56cf2f6E57e_4fd5_8018_066a95a4ccbe.name,
+    name: config.ec2.Volume.kubernetesPvDbPostgres_0.name,
     namespace: "EKS",
-    properties: () =>
-      config.ec2.Volume.kubernetesDynamicPvcA56cf2f6E57e_4fd5_8018_066a95a4ccbe
-        .properties,
+    properties: () => config.ec2.Volume.kubernetesPvDbPostgres_0.properties,
   });
 
   provider.ec2.useVolume({
-    name: config.ec2.Volume.vol_03b4742517a22e2bd.name,
+    name: config.ec2.Volume.vol_0b1fab46f936e8234.name,
     namespace: "EKS",
-    properties: () => config.ec2.Volume.vol_03b4742517a22e2bd.properties,
+    properties: () => config.ec2.Volume.vol_0b1fab46f936e8234.properties,
   });
 
   provider.ec2.makeElasticIpAddress({
@@ -294,21 +289,29 @@ const createResources = async ({ provider }) => {
 
   provider.ec2.useSecurityGroupRuleIngress({
     name: config.ec2.SecurityGroupRuleIngress
-      .eksClusterSgCluster_872092154RuleIngressAllFromSg_02b6b68e685308154.name,
+      .eksClusterSgCluster_872092154RuleIngressAllFromSg_01e704d059c08f2cc.name,
     dependencies: (resources) => ({
       securityGroup: resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
       securityGroupFrom:
         resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
     }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress
+        .eksClusterSgCluster_872092154RuleIngressAllFromSg_01e704d059c08f2cc
+        .properties,
   });
 
   provider.ec2.useSecurityGroupRuleIngress({
     name: config.ec2.SecurityGroupRuleIngress
-      .eksClusterSgCluster_872092154RuleIngressTcpUndefined_65535FromSg_0f3d9ff97c184492f
+      .eksClusterSgCluster_872092154RuleIngressTcp_0_65535FromSg_07607c5501b4f5664
       .name,
     dependencies: (resources) => ({
       securityGroup: resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
     }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress
+        .eksClusterSgCluster_872092154RuleIngressTcp_0_65535FromSg_07607c5501b4f5664
+        .properties,
   });
 
   provider.ec2.useSecurityGroupRuleIngress({
@@ -317,6 +320,9 @@ const createResources = async ({ provider }) => {
     dependencies: (resources) => ({
       securityGroup: resources.ec2.SecurityGroup.k8sDefaultIngress_05be0614e6,
     }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress
+        .k8sDefaultIngress_05be0614e6RuleIngressTcp_443V4.properties,
   });
 
   provider.ec2.useSecurityGroupRuleIngress({
@@ -325,6 +331,9 @@ const createResources = async ({ provider }) => {
     dependencies: (resources) => ({
       securityGroup: resources.ec2.SecurityGroup.k8sDefaultIngress_05be0614e6,
     }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress
+        .k8sDefaultIngress_05be0614e6RuleIngressTcp_80V4.properties,
   });
 
   provider.ec2.makeSecurityGroupRuleIngress({
@@ -333,15 +342,20 @@ const createResources = async ({ provider }) => {
     dependencies: (resources) => ({
       securityGroup: resources.ec2.SecurityGroup.securityGroupCluster,
     }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps.properties,
   });
 
   provider.ec2.makeSecurityGroupRuleIngress({
     name: config.ec2.SecurityGroupRuleIngress
-      .sgDefaultVpcRuleIngressAllFromSg_0ec916d00a01cc38a.name,
+      .sgDefaultVpcRuleIngressAllFromSg_0d994418045a63e02.name,
     dependencies: (resources) => ({
       securityGroup: resources.ec2.SecurityGroup.sgDefaultVpc,
       securityGroupFrom: resources.ec2.SecurityGroup.sgDefaultVpc,
     }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress
+        .sgDefaultVpcRuleIngressAllFromSg_0d994418045a63e02.properties,
   });
 
   provider.ec2.makeSecurityGroupRuleIngress({
@@ -350,6 +364,8 @@ const createResources = async ({ provider }) => {
     dependencies: (resources) => ({
       securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
     }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll.properties,
   });
 
   provider.ec2.makeSecurityGroupRuleIngress({
@@ -359,6 +375,9 @@ const createResources = async ({ provider }) => {
     dependencies: (resources) => ({
       securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
     }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster
+        .properties,
   });
 
   provider.ec2.useSecurityGroupRuleEgress({
@@ -367,6 +386,9 @@ const createResources = async ({ provider }) => {
     dependencies: (resources) => ({
       securityGroup: resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
     }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleEgress
+        .eksClusterSgCluster_872092154RuleEgressAllV4.properties,
   });
 
   provider.ec2.useSecurityGroupRuleEgress({
@@ -375,6 +397,9 @@ const createResources = async ({ provider }) => {
     dependencies: (resources) => ({
       securityGroup: resources.ec2.SecurityGroup.k8sDefaultIngress_05be0614e6,
     }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleEgress
+        .k8sDefaultIngress_05be0614e6RuleEgressAllV4.properties,
   });
 
   provider.ec2.makeSecurityGroupRuleEgress({
@@ -383,6 +408,9 @@ const createResources = async ({ provider }) => {
     dependencies: (resources) => ({
       securityGroup: resources.ec2.SecurityGroup.securityGroupCluster,
     }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleEgress.securityGroupClusterRuleEgressAllV4
+        .properties,
   });
 
   provider.ec2.makeSecurityGroupRuleEgress({
@@ -391,6 +419,9 @@ const createResources = async ({ provider }) => {
     dependencies: (resources) => ({
       securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
     }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleEgress.securityGroupNodeRuleEgressAllV4
+        .properties,
   });
 
   provider.ec2.makeSecurityGroupRuleEgress({
@@ -399,6 +430,8 @@ const createResources = async ({ provider }) => {
     dependencies: (resources) => ({
       securityGroup: resources.ec2.SecurityGroup.securityGroupCluster,
     }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleEgress.sgClusterRuleEgress.properties,
   });
 
   provider.ec2.makeSecurityGroupRuleEgress({
@@ -406,25 +439,24 @@ const createResources = async ({ provider }) => {
     dependencies: (resources) => ({
       securityGroup: resources.ec2.SecurityGroup.sgDefaultVpc,
     }),
+    properties: () =>
+      config.ec2.SecurityGroupRuleEgress.sgDefaultVpcRuleEgressAllV4.properties,
   });
 
   provider.ec2.useInstance({
-    name: config.ec2.Instance.nodeGroupPrivateClusterI_032110c0bc9027ae3.name,
+    name: config.ec2.Instance.nodeGroupPrivateClusterI_0d56869a5d1972ca0.name,
     namespace: "EKS",
     dependencies: (resources) => ({
-      subnet: resources.ec2.Subnet.subnetPrivateB,
+      subnet: resources.ec2.Subnet.subnetPrivateA,
       iamInstanceProfile:
-        resources.iam.InstanceProfile.eks_42bd6266_6647_8143_7cc9_006134bf3847,
+        resources.iam.InstanceProfile.eks_8cbd64cdB37a_9adaEa21_9e0c74a02794,
       securityGroups: [
         resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
       ],
-      volumes: [
-        resources.ec2.Volume
-          .kubernetesDynamicPvcA56cf2f6E57e_4fd5_8018_066a95a4ccbe,
-      ],
+      volumes: [resources.ec2.Volume.kubernetesPvDbPostgres_0],
     }),
     properties: () =>
-      config.ec2.Instance.nodeGroupPrivateClusterI_032110c0bc9027ae3.properties,
+      config.ec2.Instance.nodeGroupPrivateClusterI_0d56869a5d1972ca0.properties,
   });
 
   provider.acm.useCertificate({
@@ -457,11 +489,11 @@ const createResources = async ({ provider }) => {
 
   provider.autoscaling.useAutoScalingGroup({
     name: config.autoscaling.AutoScalingGroup
-      .eks_42bd6266_6647_8143_7cc9_006134bf3847.name,
+      .eks_8cbd64cdB37a_9adaEa21_9e0c74a02794.name,
     namespace: "EKS",
     properties: () =>
-      config.autoscaling.AutoScalingGroup
-        .eks_42bd6266_6647_8143_7cc9_006134bf3847.properties,
+      config.autoscaling.AutoScalingGroup.eks_8cbd64cdB37a_9adaEa21_9e0c74a02794
+        .properties,
   });
 
   provider.elb.useLoadBalancer({
@@ -469,8 +501,8 @@ const createResources = async ({ provider }) => {
     namespace: "EKS",
     dependencies: (resources) => ({
       subnets: [
-        resources.ec2.Subnet.subnetPublicB,
         resources.ec2.Subnet.subnetPublicA,
+        resources.ec2.Subnet.subnetPublicB,
       ],
       securityGroups: [
         resources.ec2.SecurityGroup.k8sDefaultIngress_05be0614e6,
@@ -481,42 +513,28 @@ const createResources = async ({ provider }) => {
   });
 
   provider.elb.useTargetGroup({
-    name: config.elb.TargetGroup.k8sDefaultRestE1156778ad.name,
+    name: config.elb.TargetGroup.k8sDefaultRest_1df8d2bf10.name,
     namespace: "EKS",
     dependencies: (resources) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
     properties: () =>
-      config.elb.TargetGroup.k8sDefaultRestE1156778ad.properties,
+      config.elb.TargetGroup.k8sDefaultRest_1df8d2bf10.properties,
   });
 
   provider.elb.useTargetGroup({
-    name: config.elb.TargetGroup.k8sDefaultWeb_885663bcad.name,
+    name: config.elb.TargetGroup.k8sDefaultWeb_8afa78f1d8.name,
     namespace: "EKS",
     dependencies: (resources) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
     properties: () =>
-      config.elb.TargetGroup.k8sDefaultWeb_885663bcad.properties,
+      config.elb.TargetGroup.k8sDefaultWeb_8afa78f1d8.properties,
   });
 
   provider.elb.useListener({
     name: config.elb.Listener
-      .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6_96683803ab6613f5
-      .name,
-    namespace: "EKS",
-    dependencies: (resources) => ({
-      loadBalancer: resources.elb.LoadBalancer.k8sDefaultIngressE514cce9f1,
-    }),
-    properties: () =>
-      config.elb.Listener
-        .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6_96683803ab6613f5
-        .properties,
-  });
-
-  provider.elb.useListener({
-    name: config.elb.Listener
-      .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6B820f6f4811d8417
+      .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Caaa126029073b48_173bb4b8734fc83b
       .name,
     namespace: "EKS",
     dependencies: (resources) => ({
@@ -525,75 +543,89 @@ const createResources = async ({ provider }) => {
     }),
     properties: () =>
       config.elb.Listener
-        .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6B820f6f4811d8417
+        .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Caaa126029073b48_173bb4b8734fc83b
+        .properties,
+  });
+
+  provider.elb.useListener({
+    name: config.elb.Listener
+      .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Caaa126029073b48_2d48e6d0c2f12817
+      .name,
+    namespace: "EKS",
+    dependencies: (resources) => ({
+      loadBalancer: resources.elb.LoadBalancer.k8sDefaultIngressE514cce9f1,
+    }),
+    properties: () =>
+      config.elb.Listener
+        .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Caaa126029073b48_2d48e6d0c2f12817
         .properties,
   });
 
   provider.elb.useRule({
     name: config.elb.Rule
-      .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6_96683803ab6613f5_2f93cc43a9af0feb
+      .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1Caaa126029073b48_173bb4b8734fc83b_45c41b005158d72e
       .name,
     namespace: "EKS",
     dependencies: (resources) => ({
       listener:
         resources.elb.Listener
-          .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6_96683803ab6613f5,
-      targetGroup: resources.elb.TargetGroup.k8sDefaultWeb_885663bcad,
+          .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Caaa126029073b48_173bb4b8734fc83b,
+      targetGroup: resources.elb.TargetGroup.k8sDefaultRest_1df8d2bf10,
     }),
     properties: () =>
       config.elb.Rule
-        .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6_96683803ab6613f5_2f93cc43a9af0feb
+        .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1Caaa126029073b48_173bb4b8734fc83b_45c41b005158d72e
         .properties,
   });
 
   provider.elb.useRule({
     name: config.elb.Rule
-      .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6_96683803ab6613f5Db38044ea172ec30
+      .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1Caaa126029073b48_173bb4b8734fc83bA8dde58184f177f0
       .name,
     namespace: "EKS",
     dependencies: (resources) => ({
       listener:
         resources.elb.Listener
-          .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6_96683803ab6613f5,
-      targetGroup: resources.elb.TargetGroup.k8sDefaultRestE1156778ad,
+          .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Caaa126029073b48_173bb4b8734fc83b,
+      targetGroup: resources.elb.TargetGroup.k8sDefaultWeb_8afa78f1d8,
     }),
     properties: () =>
       config.elb.Rule
-        .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6_96683803ab6613f5Db38044ea172ec30
+        .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1Caaa126029073b48_173bb4b8734fc83bA8dde58184f177f0
         .properties,
   });
 
   provider.elb.useRule({
     name: config.elb.Rule
-      .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6B820f6f4811d8417_069eb0ea41d31cab
+      .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1Caaa126029073b48_2d48e6d0c2f12817_23f638591c25a683
       .name,
     namespace: "EKS",
     dependencies: (resources) => ({
       listener:
         resources.elb.Listener
-          .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6B820f6f4811d8417,
-      targetGroup: resources.elb.TargetGroup.k8sDefaultWeb_885663bcad,
+          .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Caaa126029073b48_2d48e6d0c2f12817,
+      targetGroup: resources.elb.TargetGroup.k8sDefaultWeb_8afa78f1d8,
     }),
     properties: () =>
       config.elb.Rule
-        .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6B820f6f4811d8417_069eb0ea41d31cab
+        .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1Caaa126029073b48_2d48e6d0c2f12817_23f638591c25a683
         .properties,
   });
 
   provider.elb.useRule({
     name: config.elb.Rule
-      .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6B820f6f4811d8417_7bc41ee78eb3fc8c
+      .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1Caaa126029073b48_2d48e6d0c2f12817Db0c262ab28c02d7
       .name,
     namespace: "EKS",
     dependencies: (resources) => ({
       listener:
         resources.elb.Listener
-          .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6B820f6f4811d8417,
-      targetGroup: resources.elb.TargetGroup.k8sDefaultRestE1156778ad,
+          .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Caaa126029073b48_2d48e6d0c2f12817,
+      targetGroup: resources.elb.TargetGroup.k8sDefaultRest_1df8d2bf10,
     }),
     properties: () =>
       config.elb.Rule
-        .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6B820f6f4811d8417_7bc41ee78eb3fc8c
+        .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1Caaa126029073b48_2d48e6d0c2f12817Db0c262ab28c02d7
         .properties,
   });
 
@@ -603,7 +635,7 @@ const createResources = async ({ provider }) => {
     dependencies: (resources) => ({
       listener:
         resources.elb.Listener
-          .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6_96683803ab6613f5,
+          .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Caaa126029073b48_173bb4b8734fc83b,
     }),
     properties: () => config.elb.Rule.default.properties,
   });
@@ -614,7 +646,7 @@ const createResources = async ({ provider }) => {
     dependencies: (resources) => ({
       listener:
         resources.elb.Listener
-          .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1_4e442221b91d3ae6B820f6f4811d8417,
+          .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Caaa126029073b48_2d48e6d0c2f12817,
     }),
     properties: () => config.elb.Rule.default.properties,
   });
@@ -630,7 +662,6 @@ const createResources = async ({ provider }) => {
         resources.ec2.Subnet.subnetPrivateB,
       ],
       securityGroups: [
-        resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
         resources.ec2.SecurityGroup.securityGroupCluster,
         resources.ec2.SecurityGroup.securityGroupNode,
       ],
@@ -663,10 +694,23 @@ const createResources = async ({ provider }) => {
       config.route53.HostedZone.starhackitEksLbcGrucloudOrg.properties,
   });
 
-  provider.route53.makeHostedZone({
-    name: config.route53.HostedZone.testLoadBalancerGrucloudOrg.name,
-    properties: () =>
-      config.route53.HostedZone.testLoadBalancerGrucloudOrg.properties,
+  provider.route53.makeRecord({
+    name: config.route53.Record.certificateValidationStarhackitEksLbcGrucloudOrg
+      .name,
+    namespace: "Certificate",
+    dependencies: (resources) => ({
+      hostedZone: resources.route53.HostedZone.starhackitEksLbcGrucloudOrg,
+      certificate: resources.acm.Certificate.starhackitEksLbcGrucloudOrg,
+    }),
+  });
+
+  provider.route53.makeRecord({
+    name: config.route53.Record
+      .dnsRecordAliasLoadBalancerStarhackitEksLbcGrucloudOrg.name,
+    dependencies: (resources) => ({
+      hostedZone: resources.route53.HostedZone.starhackitEksLbcGrucloudOrg,
+      loadBalancer: resources.elb.LoadBalancer.k8sDefaultIngressE514cce9f1,
+    }),
   });
 };
 
