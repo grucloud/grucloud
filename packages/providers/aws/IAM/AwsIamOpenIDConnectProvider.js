@@ -34,6 +34,7 @@ const {
   isUpByIdCore,
   isDownByIdCore,
 } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 const formatThumbPrint = pipe([
   get("fingerprint"),
@@ -114,26 +115,6 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
           get("id"),
         ])(),
       ],
-    },
-    {
-      type: "Role",
-      group: "iam",
-      ids: pipe([
-        () =>
-          lives.getByType({
-            type: "Role",
-            group: "iam",
-            providerName,
-          }),
-        filter((role) =>
-          pipe([
-            () => role,
-            get("live.AssumeRolePolicyDocument.Statement"),
-            find(eq(get("Principal.Federated"), live.Arn)),
-          ])()
-        ),
-        pluck("id"),
-      ])(),
     },
   ];
 
@@ -312,10 +293,29 @@ exports.AwsIamOpenIDConnectProvider = ({ spec, config }) => {
         ])(),
     ])();
 
-  const configDefault = async ({ name, properties, dependencies }) =>
-    defaultsDeep({
-      ClientIDList: ["sts.amazonaws.com"],
-    })(properties);
+  const clusterProperties = ({ cluster }) =>
+    pipe([
+      () => cluster,
+      switchCase([
+        isEmpty,
+        () => ({}),
+        pipe([
+          () => ({
+            Url: getField(cluster, "identity.oidc.issuer"),
+          }),
+        ]),
+      ]),
+    ])();
+
+  const configDefault = ({ name, properties, dependencies: { cluster } }) =>
+    pipe([
+      tap(() => {
+        assert(name);
+      }),
+      () => properties,
+      defaultsDeep(clusterProperties({ cluster })),
+      defaultsDeep({ ClientIDList: ["sts.amazonaws.com"] }),
+    ])();
 
   return {
     spec,

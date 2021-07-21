@@ -91,14 +91,14 @@ const createAwsStack = async ({ stage }) => {
 
   // Attach an Ingress Rule to the eks security group to allow traffic from the load balancer
   const sgRuleIngressEks = provider.ec2.makeSecurityGroupRuleIngress({
-    name: "sg-rule-ingress-eks",
+    name: "sg-rule-ingres-eks-cluster-from-load-balancer",
     namespace: "EKS",
     dependencies: {
       cluster: resourcesEks.cluster, // Wait until the cluster is up
       securityGroup: securityGroupEKSCluster,
       securityGroupFrom: resourcesLb.securityGroupLoadBalancer,
     },
-    properties: async () => ({
+    properties: () => ({
       IpPermission: {
         FromPort: 1025,
         IpProtocol: "tcp",
