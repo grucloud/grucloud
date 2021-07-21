@@ -232,9 +232,9 @@ exports.EKSNodeGroup = ({ spec, config }) => {
     dependencies: { cluster, role, subnets },
   }) =>
     defaultsDeep({
-      subnets: pluck("live.SubnetId")(subnets),
+      subnets: map((subnet) => getField(subnet, "SubnetId"))(subnets),
       nodeRole: getField(role, "Arn"),
-      clusterName: getField(cluster, "name"),
+      clusterName: cluster.config.name,
       nodegroupName: name,
       amiType: "AL2_x86_64",
       capacityType: "ON_DEMAND",
