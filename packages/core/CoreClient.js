@@ -125,7 +125,7 @@ module.exports = CoreClient = ({
   const isUpById = isUpByIdFactory({ getById, getList, findId });
   const isDownById = isDownByIdFactory({ getById, getList, findId });
 
-  const create = async ({ name, payload, dependencies }) =>
+  const create = async ({ name, payload, dependencies = () => ({}) }) =>
     tryCatch(
       pipe([
         tap(() => {
