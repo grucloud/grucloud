@@ -144,23 +144,7 @@ exports.EKSCluster = ({ spec, config }) => {
         assert(role, "role");
         assert(role.live.Arn, "role.live.Arn");
       }),
-      () =>
-        defaultsDeep({
-          resourcesVpcConfig: {
-            securityGroupIds: pluck("live.GroupId")(securityGroups),
-            subnetIds: pluck("live.SubnetId")(subnets),
-          },
-          roleArn: role.live.Arn,
-          ...(key && {
-            encryptionConfig: [
-              { provider: { keyArn: key.live.Arn }, resources: ["secrets"] },
-            ],
-          }),
-        })(payload),
-      tap((params) => {
-        logger.debug(`create cluster: ${name}, params: ${tos(params)}`);
-      }),
-      (params) => eks().createCluster(params),
+      () => eks().createCluster(payload),
       get("cluster"),
       () =>
         retryCall({
