@@ -78,6 +78,8 @@ const decorateLive =
       }),
     ])();
 
+exports.decorateLive = decorateLive;
+
 const decorateLives = ({ client, lives, config }) =>
   pipe([
     tap((params) => {
@@ -382,11 +384,11 @@ exports.ResourceMaker = ({
     pipe([
       tap(() => {
         assert(isFunction(dependencies));
-        logger.info(
-          `resolveDependencies for ${toString()}: ${Object.keys(
-            dependencies()
-          )}, mustBeUp: ${dependenciesMustBeUp}`
-        );
+        // logger.info(
+        //   `resolveDependencies for ${toString()}: ${Object.keys(
+        //     dependencies()
+        //   )}, mustBeUp: ${dependenciesMustBeUp}`
+        // );
       }),
       () => dependencies(),
       tap((params) => {
@@ -488,6 +490,7 @@ exports.ResourceMaker = ({
 
         throw {
           message: pipe([
+            () => results,
             pluck("error"),
             reduce((acc, value) => [...acc, value.message], []),
             (messages) => messages.join("\n"),
@@ -496,15 +499,15 @@ exports.ResourceMaker = ({
                 `resolveDependencies ${toString()}, error message: ${message}`
               );
             }),
-          ])(results),
+          ])(),
           errorClass: "Dependency",
           results,
         };
       }),
       tap((result) => {
-        logger.debug(
-          `resolveDependencies for ${toString()}, result: ${tos(result)}`
-        );
+        // logger.debug(
+        //   `resolveDependencies for ${toString()}, result: ${tos(result)}`
+        // );
       }),
     ])();
 
@@ -581,9 +584,9 @@ exports.ResourceMaker = ({
                 lives,
               }),
             tap((result) => {
-              logger.debug(
-                `resolveConfig configDefault ${resourceName}: ${tos(result)}`
-              );
+              // logger.debug(
+              //   `resolveConfig configDefault ${resourceName}: ${tos(result)}`
+              // );
             }),
           ]),
         ])(),
@@ -617,6 +620,10 @@ exports.ResourceMaker = ({
         }),
       () => getLive({ deep: true, lives }),
       tap((live) => {
+        //assert(live);
+        if (!live) {
+          assert(true, `no live after create ${resourceName}`);
+        }
         logger.info(`created: ${toString()}`);
         logger.debug(`created: live: ${tos(live)}`);
       }),

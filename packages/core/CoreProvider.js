@@ -81,7 +81,7 @@ const {
   providerRunning,
 } = require("./ProviderCommon");
 
-const { createClient } = require("./CoreResource");
+const { createClient, decorateLive } = require("./CoreResource");
 
 const createResourceMakers = ({
   specs,
@@ -1431,8 +1431,10 @@ function CoreProvider({
       pipe([
         tap(() => {
           assert(resource);
+          assert(resource.type);
+          assert(resource.name);
           logger.debug(
-            `upsertResources: executor ${resource.type} ${resource.name}`
+            `upsertResources: executor ${resource.type} ${resource.name}, action: ${action}`
           );
         }),
         () => ({}),
@@ -1446,6 +1448,13 @@ function CoreProvider({
               lives,
               dependenciesMustBeUp: true,
             }),
+        }),
+        tap(({ resolvedDependencies }) => {
+          logger.debug(
+            `upsertResources: ${resource.name} ${tos({
+              resolvedDependencies,
+            })}`
+          );
         }),
         assign({
           input: ({ engine, resolvedDependencies }) =>
@@ -1476,16 +1485,25 @@ function CoreProvider({
                     resolvedDependencies,
                     lives,
                   }),
-                tap((output) => {
-                  lives.addResource({
-                    providerName,
-                    type: engine.type,
-                    live: output,
-                  });
+                tap((live) => {
+                  //assert(live);
                 }),
               ])(),
             () => assert("action is not handled"),
           ]),
+        }),
+        tap(({ engine, output }) => {
+          lives.addResource({
+            providerName,
+            type: engine.type,
+            live: { live: output },
+            //TODO
+            // live: decorateLive({
+            //   client: engine.client,
+            //   lives,
+            //   config: provider.config,
+            // })(output),
+          });
         }),
         pick(["input", "output"]),
         tap((params) => {
