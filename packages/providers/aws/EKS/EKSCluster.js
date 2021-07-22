@@ -12,14 +12,7 @@ const {
   filter,
   eq,
 } = require("rubico");
-const {
-  first,
-  defaultsDeep,
-  isEmpty,
-  forEach,
-  pluck,
-  size,
-} = require("rubico/x");
+const { defaultsDeep, includes, size } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSCluster" });
 const { retryCall } = require("@grucloud/core/Retry");
@@ -101,27 +94,28 @@ exports.EKSCluster = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeCluster-property
-  const getById = pipe([
-    tap(({ id }) => {
-      logger.info(`getById cluster: ${id}`);
-    }),
-    tryCatch(
-      pipe([({ id }) => eks().describeCluster({ name: id }), get("cluster")]),
-      switchCase([
-        eq(get("code"), "ResourceNotFoundException"),
-        (error, { id }) => {
-          logger.debug(`getById ${id} ResourceNotFoundException`);
-        },
-        (error) => {
-          logger.debug(`getById error: ${tos(error)}`);
-          throw error;
-        },
-      ])
-    ),
-    tap((result) => {
-      logger.debug(`getById cluster result: ${tos(result)}`);
-    }),
-  ]);
+  const getById = ({ id }) =>
+    pipe([
+      tap(() => {
+        logger.info(`getById cluster: ${id}`);
+      }),
+      tryCatch(
+        pipe([() => eks().describeCluster({ name: id }), get("cluster")]),
+        switchCase([
+          eq(get("code"), "ResourceNotFoundException"),
+          () => {
+            logger.debug(`getById ${id} ResourceNotFoundException`);
+          },
+          (error) => {
+            logger.debug(`getById error: ${tos(error)}`);
+            throw error;
+          },
+        ])
+      ),
+      tap((result) => {
+        logger.debug(`getById cluster result: ${tos(result)}`);
+      }),
+    ])();
 
   const isInstanceUp = eq(get("status"), "ACTIVE");
 
@@ -144,7 +138,21 @@ exports.EKSCluster = ({ spec, config }) => {
         assert(role, "role");
         assert(role.live.Arn, "role.live.Arn");
       }),
-      () => eks().createCluster(payload),
+      () =>
+        retryCall({
+          name: `eks createCluster: ${name}`,
+          fn: () => eks().createCluster(payload),
+          config: { retryCount: 4, retryDelay: 5e3 },
+          isExpectedException: pipe([
+            tap((ex) => {
+              logger.error(
+                `createCluster isExpectedException ${name} ? ${tos(ex)}`
+              );
+            }),
+            get("message"),
+            includes("The KeyArn in encryptionConfig provider"),
+          ]),
+        }),
       get("cluster"),
       () =>
         retryCall({
