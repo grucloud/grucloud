@@ -14,10 +14,11 @@ const {
 const logger = require("./logger")({ prefix: "Retry" });
 const { tos } = require("./tos");
 const { convertError } = require("./Common");
+
 const retryCall = async ({
   name = "",
   fn,
-  isExpectedResult = (result) => result,
+  isExpectedResult = identity,
   isExpectedException = () => false,
   shouldRetryOnException = ({ error, name }) => {
     logger.info(
