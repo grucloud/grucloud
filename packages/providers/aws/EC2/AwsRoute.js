@@ -18,6 +18,8 @@ const { isEmpty, defaultsDeep, find } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsRoute" });
 const { tos } = require("@grucloud/core/tos");
+const { retryCall } = require("@grucloud/core/Retry");
+
 const { findNamespaceInTags, buildTags } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { Ec2New, shouldRetryOnException } = require("../AwsCommon");
@@ -132,37 +134,76 @@ exports.AwsRoute = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   const createRouteInternetGateway = ({ ig, RouteTableId, payload }) =>
-    switchCase([
+    pipe([
       () => ig,
-      pipe([
-        tap(() => {
-          assert(ig.live.InternetGatewayId, "ig.live.InternetGatewayId");
-        }),
-        () =>
-          ec2().createRoute({
-            ...payload,
-            RouteTableId,
-            GatewayId: ig.live.InternetGatewayId,
-          }),
+      get("live.InternetGatewayId"),
+      //TODO ribico unless
+      switchCase([
+        isEmpty,
+        () => undefined,
+        (GatewayId) =>
+          pipe([
+            () =>
+              ec2().createRoute({
+                ...payload,
+                RouteTableId,
+                GatewayId,
+              }),
+            () =>
+              retryCall({
+                name: `createRouteInternetGateway: GatewayId: ${GatewayId}`,
+                fn: pipe([
+                  () =>
+                    ec2().describeRouteTables({
+                      RouteTableIds: [RouteTableId],
+                    }),
+                  get("RouteTables"),
+                  find(
+                    pipe([get("Routes"), find(eq(get("GatewayId"), GatewayId))])
+                  ),
+                ]),
+                config,
+              }),
+          ])(),
       ]),
-      () => undefined,
     ]);
 
   const createRouteNatGateway = ({ natGateway, RouteTableId, payload }) =>
-    switchCase([
+    pipe([
       () => natGateway,
-      pipe([
-        tap(() => {
-          assert(natGateway.live.NatGatewayId, "natGateway.live.NatGatewayId");
-        }),
-        () =>
-          ec2().createRoute({
-            ...payload,
-            RouteTableId,
-            NatGatewayId: natGateway.live.NatGatewayId,
-          }),
+      get("live.NatGatewayId"),
+      //TODO ribico unless
+      switchCase([
+        isEmpty,
+        () => undefined,
+        (NatGatewayId) =>
+          pipe([
+            () =>
+              ec2().createRoute({
+                ...payload,
+                RouteTableId,
+                NatGatewayId,
+              }),
+            () =>
+              retryCall({
+                name: `createRouteNatGateway: NatGatewayId: ${NatGatewayId}`,
+                fn: pipe([
+                  () =>
+                    ec2().describeRouteTables({
+                      RouteTableIds: [RouteTableId],
+                    }),
+                  get("RouteTables"),
+                  find(
+                    pipe([
+                      get("Routes"),
+                      find(eq(get("NatGatewayId"), NatGatewayId)),
+                    ])
+                  ),
+                ]),
+                config,
+              }),
+          ])(),
       ]),
-      () => undefined,
     ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createRouteTable-property
