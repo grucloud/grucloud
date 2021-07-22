@@ -13,6 +13,7 @@ const {
   fork,
   assign,
   omit,
+  pick,
 } = require("rubico");
 const {
   callProp,
@@ -25,6 +26,7 @@ const {
   first,
   groupBy,
   values,
+  isDeepEqual,
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
@@ -227,6 +229,7 @@ const findName =
     pipe([
       tap(() => {
         assert(true);
+        assert(live.IpPermission, `no IpPermission in ${tos(live)}`);
       }),
       () => {
         for (fn of [findSgrNameInTags, ruleDefaultToName]) {
@@ -252,6 +255,18 @@ const findDependencies = ({ live }) => [
     ])(),
   },
 ];
+
+const isDefault = ({ live, lives }) =>
+  pipe([
+    () => live,
+    get("IpPermission"),
+    pick(["IpProtocol", "FromPort", "ToPort"]),
+    (IpPermission) =>
+      isDeepEqual(IpPermission, { IpProtocol: "-1", FromPort: -1, ToPort: -1 }),
+    tap((result) => {
+      logger.debug(`isDefault ${result}`);
+    }),
+  ])();
 
 const SecurityGroupRuleBase = ({ config }) => {
   const ec2 = Ec2New(config);
@@ -365,6 +380,8 @@ const SecurityGroupRuleBase = ({ config }) => {
       }),
       (params) => ec2().describeSecurityGroupRules(params),
       get("SecurityGroupRules"),
+      mergeSecurityGroupRules,
+      first,
       tap((params) => {
         assert(true);
       }),
@@ -375,7 +392,7 @@ const SecurityGroupRuleBase = ({ config }) => {
 
   const create =
     ({ kind, authorizeSecurityGroup }) =>
-    ({ payload, name, namespace, resolvedDependencies: { securityGroup } }) =>
+    ({ payload, name, namespace }) =>
       pipe([
         tap(() => {
           logger.info(
@@ -483,6 +500,7 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
     configDefault,
     shouldRetryOnException,
     managedByOther,
+    isDefault,
   };
 };
 
@@ -520,6 +538,7 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
     configDefault,
     shouldRetryOnException,
     managedByOther,
+    isDefault,
   };
 };
 
