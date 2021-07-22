@@ -8,6 +8,7 @@ const {
   switchCase,
   not,
   tryCatch,
+  any,
 } = require("rubico");
 const {
   find,
@@ -164,30 +165,60 @@ exports.AwsInternetGateway = ({ spec, config }) => {
             }),
           shouldRetryOnException: ({ error, name }) =>
             pipe([
-              tap((error) => {
+              () => error,
+              tap(() => {
                 // "Network vpc-xxxxxxx has some mapped public address(es). Please unmap those public address(es) before detaching the gateway."
                 logger.error(`detachInternetGateway ${name}: ${tos(error)}`);
               }),
               eq(get("code"), "DependencyViolation"),
-            ])(error),
+            ])(),
           config: { retryCount: 10, retryDelay: 5e3 },
         }),
     ])();
 
-  const destroy = async ({ id, name }) =>
+  const detachInternetGateways = ({ InternetGatewayId }) =>
     pipe([
       tap(() => {
-        logger.debug(`destroy ig ${tos({ name, id })}`);
+        assert(InternetGatewayId);
       }),
-      () => getById({ id }),
+      () => getById({ id: InternetGatewayId }),
       get("Attachments"),
-      first, //TODO forEach
-      tap((Attachments) => {
-        logger.debug(`destroy ig ${tos({ Attachments })}`);
-      }),
-      tap.if(not(isEmpty), ({ VpcId }) =>
-        detachInternetGateway({ InternetGatewayId: id, VpcId })
+      map(
+        tryCatch(
+          pipe([
+            get("VpcId"),
+            tap((VpcId) => {
+              assert(VpcId);
+            }),
+            (VpcId) => detachInternetGateway({ InternetGatewayId, VpcId }),
+          ]),
+          (error, Attachment) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `error associateRouteTable ${tos({
+                    Attachment,
+                    error,
+                  })}`
+                );
+              }),
+              () => ({ error, InternetGatewayId, Attachment }),
+            ])()
+        )
       ),
+      tap.if(any(get("error")), (results) => {
+        throw results;
+      }),
+    ])();
+
+  const destroy = async ({ id, name, live }) =>
+    pipe([
+      tap(() => {
+        logger.debug(`destroy ig ${JSON.stringify({ name, id })}`);
+        assert(live);
+        assert(id);
+      }),
+      () => detachInternetGateways({ InternetGatewayId: id }),
       tryCatch(
         pipe([
           () => ec2().deleteInternetGateway({ InternetGatewayId: id }),
@@ -198,16 +229,23 @@ exports.AwsInternetGateway = ({ spec, config }) => {
               config,
             }),
         ]),
-        tap.if(
-          ({ code }) => !includes(code)(["AuthFailure"]),
-          (error) => {
-            logger.error(`error destroying ig ${tos({ name, id, error })}`);
-            throw error;
-          }
-        )
+        (error) =>
+          pipe([
+            tap(() => {
+              logger.error(`error destroying ig ${tos({ name, id, error })}`);
+            }),
+            () => error,
+            switchCase([
+              eq(get("code"), "AuthFailure"),
+              () => undefined,
+              (error) => {
+                throw error;
+              },
+            ]),
+          ])()
       ),
       tap(() => {
-        logger.debug(`destroyed ig ${tos({ name, id })}`);
+        logger.debug(`destroyed ig ${JSON.stringify({ name, id })}`);
       }),
     ])();
 
