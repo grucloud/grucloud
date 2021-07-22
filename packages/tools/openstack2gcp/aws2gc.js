@@ -10,6 +10,8 @@ const {
   omit,
   not,
   or,
+  assign,
+  map,
 } = require("rubico");
 const { identity, pluck, includes } = require("rubico/x");
 const { createProgramOptions, generatorMain } = require("./generatorUtils");
@@ -338,7 +340,26 @@ const writersSpec = [
       },
       {
         type: "Rule",
-        filterLive: () => pick(["Priority", "Conditions", "Actions"]),
+        filterLive: pipe([
+          ({ resource }) =>
+            (live) =>
+              pipe([
+                () => live,
+                switchCase([
+                  () => hasDependency({ type: "TargetGroup" })(resource),
+                  omit(["Actions"]),
+                  identity,
+                ]),
+                pick(["Priority", "Conditions", "Actions"]),
+                assign({
+                  Conditions: pipe([
+                    get("Conditions"),
+                    map(omit(["PathPatternConfig"])),
+                  ]),
+                }),
+              ])(),
+        ]),
+        //TODO do we need this ?
         configBuildProperties: ({ properties, lives }) =>
           pipe([
             tap(() => {

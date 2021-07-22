@@ -1016,29 +1016,6 @@ module.exports = ({ stage }) => ({
               {
                 Field: "path-pattern",
                 Values: ["/*"],
-                PathPatternConfig: {
-                  Values: ["/*"],
-                },
-              },
-            ],
-            Actions: [
-              {
-                Type: "forward",
-                TargetGroupArn:
-                  "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/k8s-default-web-10ffe66b7f/73a6fbb730a400dd",
-                Order: 1,
-                ForwardConfig: {
-                  TargetGroups: [
-                    {
-                      TargetGroupArn:
-                        "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/k8s-default-web-10ffe66b7f/73a6fbb730a400dd",
-                      Weight: 1,
-                    },
-                  ],
-                  TargetGroupStickinessConfig: {
-                    Enabled: false,
-                  },
-                },
               },
             ],
           },
@@ -1052,29 +1029,6 @@ module.exports = ({ stage }) => ({
               {
                 Field: "path-pattern",
                 Values: ["/api/*"],
-                PathPatternConfig: {
-                  Values: ["/api/*"],
-                },
-              },
-            ],
-            Actions: [
-              {
-                Type: "forward",
-                TargetGroupArn:
-                  "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/k8s-default-rest-e3631743bc/38a4dc13e9fc5dc0",
-                Order: 1,
-                ForwardConfig: {
-                  TargetGroups: [
-                    {
-                      TargetGroupArn:
-                        "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/k8s-default-rest-e3631743bc/38a4dc13e9fc5dc0",
-                      Weight: 1,
-                    },
-                  ],
-                  TargetGroupStickinessConfig: {
-                    Enabled: false,
-                  },
-                },
               },
             ],
           },
@@ -1088,29 +1042,6 @@ module.exports = ({ stage }) => ({
               {
                 Field: "path-pattern",
                 Values: ["/*"],
-                PathPatternConfig: {
-                  Values: ["/*"],
-                },
-              },
-            ],
-            Actions: [
-              {
-                Type: "forward",
-                TargetGroupArn:
-                  "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/k8s-default-web-10ffe66b7f/73a6fbb730a400dd",
-                Order: 1,
-                ForwardConfig: {
-                  TargetGroups: [
-                    {
-                      TargetGroupArn:
-                        "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/k8s-default-web-10ffe66b7f/73a6fbb730a400dd",
-                      Weight: 1,
-                    },
-                  ],
-                  TargetGroupStickinessConfig: {
-                    Enabled: false,
-                  },
-                },
               },
             ],
           },
@@ -1124,29 +1055,6 @@ module.exports = ({ stage }) => ({
               {
                 Field: "path-pattern",
                 Values: ["/api/*"],
-                PathPatternConfig: {
-                  Values: ["/api/*"],
-                },
-              },
-            ],
-            Actions: [
-              {
-                Type: "forward",
-                TargetGroupArn:
-                  "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/k8s-default-rest-e3631743bc/38a4dc13e9fc5dc0",
-                Order: 1,
-                ForwardConfig: {
-                  TargetGroups: [
-                    {
-                      TargetGroupArn:
-                        "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/k8s-default-rest-e3631743bc/38a4dc13e9fc5dc0",
-                      Weight: 1,
-                    },
-                  ],
-                  TargetGroupStickinessConfig: {
-                    Enabled: false,
-                  },
-                },
               },
             ],
           },

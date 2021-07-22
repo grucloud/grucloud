@@ -64,6 +64,9 @@ const findDependencyNames = ({
     () => resource.dependencies,
     find(eq(get("type"), type)),
     get("ids"),
+    tap((params) => {
+      assert(true);
+    }),
     map(findLiveById({ type, lives })),
     tap((xxx) => {
       assert(true);
@@ -411,7 +414,7 @@ const findLiveById =
       tap(() => {
         assert(lives);
         assert(type);
-        assert(id);
+        assert(id, `no id for ${type}, id: ${id},`);
       }),
       () => lives,
       find(eq(get("type"), type)),

@@ -75,8 +75,8 @@ module.exports = ({ stage }) => ({
       },
     },
     InstanceProfile: {
-      eksEabd6596Db9a_09ba_1f03_2929e57f627e: {
-        name: "eks-eabd6596-db9a-09ba-1f03-2929e57f627e",
+      eksC8bd65b8B0ca_0c54_53eaBa934cd36731: {
+        name: "eks-c8bd65b8-b0ca-0c54-53ea-ba934cd36731",
       },
     },
   },
@@ -167,45 +167,20 @@ module.exports = ({ stage }) => ({
           MapCustomerOwnedIpOnLaunch: false,
           Tags: [
             {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "shared",
-            },
-            {
               Key: "kubernetes.io/role/elb",
               Value: "1",
+            },
+            {
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "shared",
             },
           ],
         },
       },
     },
     Volume: {
-      kubernetesPvDbPostgres_0: {
-        name: "kubernetes-pv-db-postgres-0",
-        properties: {
-          Size: 1,
-          VolumeType: "gp2",
-          Tags: [
-            {
-              Key: "kubernetes.io/created-for/pv/name",
-              Value: "pvc-0a71f77b-19b4-422b-8573-d018cb3a8345",
-            },
-            {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "owned",
-            },
-            {
-              Key: "kubernetes.io/created-for/pvc/name",
-              Value: "pv-db-postgres-0",
-            },
-            {
-              Key: "kubernetes.io/created-for/pvc/namespace",
-              Value: "default",
-            },
-          ],
-        },
-      },
-      vol_0e1c35c9ae3b7e3ff: {
-        name: "vol-0e1c35c9ae3b7e3ff",
+      vol_04776df05f77ef98f: {
+        name: "vol-04776df05f77ef98f",
         properties: {
           Size: 20,
           VolumeType: "gp2",
@@ -279,19 +254,19 @@ module.exports = ({ stage }) => ({
       loadBalancerSecurityGroup: {
         name: "load-balancer-security-group",
         properties: {
-          Description: "Load Balancer HTTP HTTPS Security Group",
+          Description: "Managed By GruCloud",
         },
       },
       securityGroupCluster: {
         name: "security-group-cluster",
         properties: {
-          Description: "EKS Cluster Security Group",
+          Description: "Managed By GruCloud",
         },
       },
       securityGroupNode: {
         name: "security-group-node",
         properties: {
-          Description: "SG for the EKS Nodes",
+          Description: "Managed By GruCloud",
           Tags: [
             {
               Key: "kubernetes.io/cluster/cluster",
@@ -311,13 +286,6 @@ module.exports = ({ stage }) => ({
       eksClusterSgCluster_872092154RuleIngressAllFromEksClusterSgCluster_872092154:
         {
           name: "eks-cluster-sg-cluster-872092154-rule-ingress-all-from-eks-cluster-sg-cluster-872092154",
-          properties: {
-            IpPermission: {
-              IpProtocol: "-1",
-              FromPort: -1,
-              ToPort: -1,
-            },
-          },
         },
       sgClusterRuleIngressHttps: {
         name: "sg-cluster-rule-ingress-https",
@@ -341,53 +309,12 @@ module.exports = ({ stage }) => ({
       },
       sgDefaultVpcRuleIngressAllFromSgDefaultVpc: {
         name: "sg-default-vpc-rule-ingress-all-from-sg-default-vpc",
-        properties: {
-          IpPermission: {
-            IpProtocol: "-1",
-            FromPort: -1,
-            ToPort: -1,
-          },
-        },
+      },
+      sgDefaultVpcRuleIngressAllFromSgDefaultVpc: {
+        name: "sg-default-vpc-rule-ingress-all-from-sg-default-vpc",
       },
       sgNodesRuleIngressAll: {
         name: "sg-nodes-rule-ingress-all",
-        properties: {
-          IpPermission: {
-            IpProtocol: "-1",
-            FromPort: -1,
-            ToPort: -1,
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-            Ipv6Ranges: [
-              {
-                CidrIpv6: "::/0",
-              },
-            ],
-          },
-        },
-      },
-      sgRuleIngresEksClusterFromLoadBalancer: {
-        name: "sg-rule-ingres-eks-cluster-from-load-balancer",
-        properties: {
-          IpPermission: {
-            IpProtocol: "tcp",
-            FromPort: 1025,
-            ToPort: 65535,
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-            Ipv6Ranges: [
-              {
-                CidrIpv6: "::/0",
-              },
-            ],
-          },
-        },
       },
       sgRuleIngressLbHttp: {
         name: "sg-rule-ingress-lb-http",
@@ -453,63 +380,15 @@ module.exports = ({ stage }) => ({
     SecurityGroupRuleEgress: {
       eksClusterSgCluster_872092154RuleEgressAllV4: {
         name: "eks-cluster-sg-cluster-872092154-rule-egress-all-v4",
-        properties: {
-          IpPermission: {
-            IpProtocol: "-1",
-            FromPort: -1,
-            ToPort: -1,
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-          },
-        },
       },
       loadBalancerSecurityGroupRuleEgressAllV4: {
         name: "load-balancer-security-group-rule-egress-all-v4",
-        properties: {
-          IpPermission: {
-            IpProtocol: "-1",
-            FromPort: -1,
-            ToPort: -1,
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-          },
-        },
       },
       securityGroupClusterRuleEgressAllV4: {
         name: "security-group-cluster-rule-egress-all-v4",
-        properties: {
-          IpPermission: {
-            IpProtocol: "-1",
-            FromPort: -1,
-            ToPort: -1,
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-          },
-        },
       },
       securityGroupNodeRuleEgressAllV4: {
         name: "security-group-node-rule-egress-all-v4",
-        properties: {
-          IpPermission: {
-            IpProtocol: "-1",
-            FromPort: -1,
-            ToPort: -1,
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-          },
-        },
       },
       sgClusterRuleEgress: {
         name: "sg-cluster-rule-egress",
@@ -533,23 +412,14 @@ module.exports = ({ stage }) => ({
       },
       sgDefaultVpcRuleEgressAllV4: {
         name: "sg-default-vpc-rule-egress-all-v4",
-        properties: {
-          IpPermission: {
-            IpProtocol: "-1",
-            FromPort: -1,
-            ToPort: -1,
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-          },
-        },
+      },
+      sgDefaultVpcRuleEgressAllV4: {
+        name: "sg-default-vpc-rule-egress-all-v4",
       },
     },
     Instance: {
-      nodeGroupPrivateClusterI_09cb18fa937eaf3da: {
-        name: "node-group-private-cluster::i-09cb18fa937eaf3da",
+      nodeGroupPrivateClusterI_0e34849e51bc9c2b0: {
+        name: "node-group-private-cluster::i-0e34849e51bc9c2b0",
         properties: {
           InstanceType: "t2.medium",
           ImageId: "ami-037de68840c2c5e3b",
@@ -558,20 +428,12 @@ module.exports = ({ stage }) => ({
           },
           Tags: [
             {
-              Key: "aws:autoscaling:groupName",
-              Value: "eks-eabd6596-db9a-09ba-1f03-2929e57f627e",
-            },
-            {
-              Key: "eks:cluster-name",
-              Value: "cluster",
-            },
-            {
-              Key: "k8s.io/cluster-autoscaler/enabled",
-              Value: "true",
-            },
-            {
               Key: "aws:ec2:fleet-id",
-              Value: "fleet-cf5d42ba-4115-d9d7-2c9a-0982aa1d53f3",
+              Value: "fleet-cdf76a30-eb9f-5977-2498-23a831a45d54",
+            },
+            {
+              Key: "k8s.io/cluster-autoscaler/cluster",
+              Value: "owned",
             },
             {
               Key: "aws:ec2launchtemplate:version",
@@ -582,16 +444,24 @@ module.exports = ({ stage }) => ({
               Value: "node-group-private-cluster",
             },
             {
-              Key: "k8s.io/cluster-autoscaler/cluster",
-              Value: "owned",
+              Key: "k8s.io/cluster-autoscaler/enabled",
+              Value: "true",
             },
             {
               Key: "aws:ec2launchtemplate:id",
-              Value: "lt-02bf3a1b5c3debc1b",
+              Value: "lt-02fc324a4401d1813",
+            },
+            {
+              Key: "aws:autoscaling:groupName",
+              Value: "eks-c8bd65b8-b0ca-0c54-53ea-ba934cd36731",
             },
             {
               Key: "kubernetes.io/cluster/cluster",
               Value: "owned",
+            },
+            {
+              Key: "eks:cluster-name",
+              Value: "cluster",
             },
           ],
         },
@@ -634,40 +504,40 @@ module.exports = ({ stage }) => ({
   },
   autoscaling: {
     AutoScalingGroup: {
-      eksEabd6596Db9a_09ba_1f03_2929e57f627e: {
-        name: "eks-eabd6596-db9a-09ba-1f03-2929e57f627e",
+      eksC8bd65b8B0ca_0c54_53eaBa934cd36731: {
+        name: "eks-c8bd65b8-b0ca-0c54-53ea-ba934cd36731",
         properties: {
           Tags: [
             {
-              ResourceId: "eks-eabd6596-db9a-09ba-1f03-2929e57f627e",
+              ResourceId: "eks-c8bd65b8-b0ca-0c54-53ea-ba934cd36731",
               ResourceType: "auto-scaling-group",
               Key: "eks:cluster-name",
               Value: "cluster",
               PropagateAtLaunch: true,
             },
             {
-              ResourceId: "eks-eabd6596-db9a-09ba-1f03-2929e57f627e",
+              ResourceId: "eks-c8bd65b8-b0ca-0c54-53ea-ba934cd36731",
               ResourceType: "auto-scaling-group",
               Key: "eks:nodegroup-name",
               Value: "node-group-private-cluster",
               PropagateAtLaunch: true,
             },
             {
-              ResourceId: "eks-eabd6596-db9a-09ba-1f03-2929e57f627e",
+              ResourceId: "eks-c8bd65b8-b0ca-0c54-53ea-ba934cd36731",
               ResourceType: "auto-scaling-group",
               Key: "k8s.io/cluster-autoscaler/cluster",
               Value: "owned",
               PropagateAtLaunch: true,
             },
             {
-              ResourceId: "eks-eabd6596-db9a-09ba-1f03-2929e57f627e",
+              ResourceId: "eks-c8bd65b8-b0ca-0c54-53ea-ba934cd36731",
               ResourceType: "auto-scaling-group",
               Key: "k8s.io/cluster-autoscaler/enabled",
               Value: "true",
               PropagateAtLaunch: true,
             },
             {
-              ResourceId: "eks-eabd6596-db9a-09ba-1f03-2929e57f627e",
+              ResourceId: "eks-c8bd65b8-b0ca-0c54-53ea-ba934cd36731",
               ResourceType: "auto-scaling-group",
               Key: "kubernetes.io/cluster/cluster",
               Value: "owned",
@@ -751,25 +621,6 @@ module.exports = ({ stage }) => ({
         properties: {
           Priority: "default",
           Conditions: [],
-          Actions: [
-            {
-              Type: "forward",
-              TargetGroupArn:
-                "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/c3e944e2a222cfae",
-              ForwardConfig: {
-                TargetGroups: [
-                  {
-                    TargetGroupArn:
-                      "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/c3e944e2a222cfae",
-                    Weight: 1,
-                  },
-                ],
-                TargetGroupStickinessConfig: {
-                  Enabled: false,
-                },
-              },
-            },
-          ],
         },
       },
       ruleDefaultListenerHttps: {
@@ -777,122 +628,6 @@ module.exports = ({ stage }) => ({
         properties: {
           Priority: "default",
           Conditions: [],
-          Actions: [
-            {
-              Type: "forward",
-              TargetGroupArn:
-                "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/c3e944e2a222cfae",
-              ForwardConfig: {
-                TargetGroups: [
-                  {
-                    TargetGroupArn:
-                      "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/c3e944e2a222cfae",
-                    Weight: 1,
-                  },
-                ],
-                TargetGroupStickinessConfig: {
-                  Enabled: false,
-                },
-              },
-            },
-          ],
-        },
-      },
-      ruleHttpRedirectHttps: {
-        name: "rule-http-redirect-https",
-        properties: {
-          Priority: "1",
-          Conditions: [
-            {
-              Field: "path-pattern",
-              Values: ["/*"],
-              PathPatternConfig: {
-                Values: ["/*"],
-              },
-            },
-          ],
-          Actions: [
-            {
-              Type: "redirect",
-              Order: 1,
-              RedirectConfig: {
-                Protocol: "HTTPS",
-                Port: "443",
-                Host: "#{host}",
-                Path: "/#{path}",
-                Query: "#{query}",
-                StatusCode: "HTTP_301",
-              },
-            },
-          ],
-        },
-      },
-      ruleRestHttps: {
-        name: "rule-rest-https",
-        properties: {
-          Priority: "10",
-          Conditions: [
-            {
-              Field: "path-pattern",
-              Values: ["/api/*"],
-              PathPatternConfig: {
-                Values: ["/api/*"],
-              },
-            },
-          ],
-          Actions: [
-            {
-              Type: "forward",
-              TargetGroupArn:
-                "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-rest/48ca3ed0373eef24",
-              ForwardConfig: {
-                TargetGroups: [
-                  {
-                    TargetGroupArn:
-                      "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-rest/48ca3ed0373eef24",
-                    Weight: 1,
-                  },
-                ],
-                TargetGroupStickinessConfig: {
-                  Enabled: false,
-                },
-              },
-            },
-          ],
-        },
-      },
-      ruleWebHttps: {
-        name: "rule-web-https",
-        properties: {
-          Priority: "11",
-          Conditions: [
-            {
-              Field: "path-pattern",
-              Values: ["/*"],
-              PathPatternConfig: {
-                Values: ["/*"],
-              },
-            },
-          ],
-          Actions: [
-            {
-              Type: "forward",
-              TargetGroupArn:
-                "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/c3e944e2a222cfae",
-              ForwardConfig: {
-                TargetGroups: [
-                  {
-                    TargetGroupArn:
-                      "arn:aws:elasticloadbalancing:eu-west-2:840541460064:targetgroup/target-group-web/c3e944e2a222cfae",
-                    Weight: 1,
-                  },
-                ],
-                TargetGroupStickinessConfig: {
-                  Enabled: false,
-                },
-              },
-            },
-          ],
         },
       },
     },
