@@ -38,7 +38,7 @@ exports.createResources = async ({
   // Load Balancer Security Group,
   // HTTP and HTTPS Ingress rule
   const securityGroupLoadBalancer = provider.ec2.makeSecurityGroup({
-    name: "load-balancer-security-group",
+    name: "security-group-load-balancer",
     namespace,
     dependencies: { vpc },
     properties: () => ({
