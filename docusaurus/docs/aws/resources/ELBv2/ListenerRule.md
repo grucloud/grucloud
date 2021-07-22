@@ -54,13 +54,7 @@ const ruleHttps = provider.elb.makeRule({
     listener: listeners.https,
     targetGroup: targetGroups.rest,
   },
-  properties: ({ dependencies: { targetGroup } }) => ({
-    Actions: [
-      {
-        TargetGroupArn: targetGroup.live?.TargetGroupArn,
-        Type: "forward",
-      },
-    ],
+  properties: () => ({
     Conditions: [
       {
         Field: "path-pattern",

@@ -19,7 +19,7 @@ const {
   pluck,
   find,
   identity,
-  flatten,
+  size,
 } = require("rubico/x");
 
 const { getField } = require("@grucloud/core/ProviderCommon");
@@ -48,6 +48,7 @@ exports.ELBRule = ({ spec, config }) => {
     pipe([
       tap((params) => {
         assert(lives);
+        assert(live.ListenerArn);
       }),
       () => ({ live, lives }),
       switchCase([
@@ -63,8 +64,8 @@ exports.ELBRule = ({ spec, config }) => {
               id: live.ListenerArn,
               providerName,
             }),
-          tap((params) => {
-            assert(true);
+          tap((listener) => {
+            assert(listener);
           }),
           get("name"),
           tap((listenerName) => {
@@ -169,6 +170,16 @@ exports.ELBRule = ({ spec, config }) => {
       ])()
     ),
     filter(not(isEmpty)),
+    map(
+      assign({
+        Tags: pipe([
+          ({ RuleArn }) => elb().describeTags({ ResourceArns: [RuleArn] }),
+          get("TagDescriptions"),
+          first,
+          get("Tags"),
+        ]),
+      })
+    ),
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeRules-property
@@ -181,16 +192,6 @@ exports.ELBRule = ({ spec, config }) => {
       tap((results) => {
         logger.debug(`getList rule result: ${tos(results)}`);
       }),
-      map(
-        assign({
-          Tags: pipe([
-            ({ RuleArn }) => elb().describeTags({ ResourceArns: [RuleArn] }),
-            get("TagDescriptions"),
-            first,
-            get("Tags"),
-          ]),
-        })
-      ),
       (items = []) => ({
         total: items.length,
         items,
@@ -200,13 +201,16 @@ exports.ELBRule = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = ({ name }) =>
+  const getByName = ({ name, lives }) =>
     pipe([
       tap(() => {
         logger.info(`getByName ${name}`);
       }),
       describeAllRules,
-      find(eq((live) => findName({ live }), name)),
+      tap((rules) => {
+        logger.debug(`getByName rules ${name}, #rules: ${tos(rules)}`);
+      }),
+      find(eq((live) => findName({ live, lives }), name)),
       tap((result) => {
         logger.debug(`getByName ${name}, result: ${tos(result)}`);
       }),
@@ -262,9 +266,9 @@ exports.ELBRule = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#deleteRule-property
-  const destroy = async ({ live }) =>
+  const destroy = async ({ live, lives }) =>
     pipe([
-      () => ({ id: findId({ live }), name: findName({ live }) }),
+      () => ({ id: findId({ live }), name: findName({ live, lives }) }),
       ({ id, name }) =>
         pipe([
           tap(() => {
@@ -287,18 +291,45 @@ exports.ELBRule = ({ spec, config }) => {
         ])(),
     ])();
 
+  const targetGroupProperties = ({ targetGroup }) =>
+    switchCase([
+      () => targetGroup,
+      () => ({
+        Actions: [
+          {
+            Type: "forward",
+            TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
+            ForwardConfig: {
+              TargetGroups: [
+                {
+                  TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
+                  Weight: 1,
+                },
+              ],
+              TargetGroupStickinessConfig: {
+                Enabled: false,
+              },
+            },
+          },
+        ],
+      }),
+      identity,
+    ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createRule-property
   const configDefault = async ({
     name,
     namespace,
     properties,
-    dependencies: { listener },
+    dependencies: { listener, targetGroup },
   }) =>
     pipe([
       tap(() => {
         assert(listener);
       }),
-      () => properties,
+      () => ({}),
+      defaultsDeep(targetGroupProperties({ targetGroup })),
+      defaultsDeep(properties),
       defaultsDeep({
         ListenerArn: getField(listener, "ListenerArn"),
         Tags: buildTags({ name, namespace, config }),

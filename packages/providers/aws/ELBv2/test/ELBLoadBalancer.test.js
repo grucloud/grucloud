@@ -52,7 +52,7 @@ describe("AwsLoadBalancerV2", async function () {
       }),
     });
     const securityGroupLoadBalancer = provider.ec2.makeSecurityGroup({
-      name: formatName("load-balancer-security-group-test"),
+      name: formatName("security-group-load-balancer-test"),
       dependencies: { vpc },
       properties: () => ({
         create: {
