@@ -25,7 +25,15 @@ const { Ec2New, shouldRetryOnException } = require("../AwsCommon");
 exports.AwsRoute = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
-  const findId = get("live.name");
+  const findId = pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    get("live.name"),
+    tap(isEmpty, () => {
+      logger.error("route findId cannot find name");
+    }),
+  ]);
   const findName = findId;
 
   const findDependencies = ({ live }) => [
@@ -50,7 +58,7 @@ exports.AwsRoute = ({ spec, config }) => {
     pipe([
       tap(() => {
         assert(Array.isArray(resources));
-        logger.info(`getList route ${resources.length}`);
+        logger.info(`getList #routes ${resources.length}`);
       }),
       () => resources,
       map((resource) =>
@@ -60,7 +68,9 @@ exports.AwsRoute = ({ spec, config }) => {
           }),
           () => resource.resolveDependencies({ lives }),
           tap((resolvedDependencies) => {
-            logger.debug(`getList resource ${resolvedDependencies}`);
+            logger.debug(
+              `getList route resolvedDependencies ${tos(resolvedDependencies)}`
+            );
           }),
           ({ routeTable, ig, natGateway }) =>
             switchCase([

@@ -5,7 +5,6 @@ const {
   testPlanDeploy,
   testPlanDestroy,
 } = require("@grucloud/core/E2ETestUtils");
-const { CheckAwsTags } = require("../../AwsTagCheck");
 const cliCommands = require("@grucloud/core/cli/cliCommands");
 
 const testName = "rt";
@@ -68,17 +67,6 @@ describe("AwsRouteTable", async function () {
   it("rt apply and destroy", async function () {
     try {
       await testPlanDeploy({ provider });
-      const rtLive = await routeTable.getLive();
-      const subnetLive = await subnet.getLive();
-      const vpcLive = await vpc.getLive();
-
-      assert(
-        CheckAwsTags({
-          config: provider.config,
-          tags: rtLive.Tags,
-          name: routeTable.name,
-        })
-      );
 
       const result = await cliCommands.list({
         infra: { provider },
@@ -86,18 +74,7 @@ describe("AwsRouteTable", async function () {
       });
       assert(!result.error);
       assert(result.results);
-      /*
-    const {
-      results: [rts],
-    } = provider.listLives({ options: { types: ["RouteTable"] } });
-    assert.equal(rts.type, "RouteTable");
-    {
-      const { data: routeTable } = rts.resources.find(
-        (resource) => resource.managedByUs
-      );
-      assert.equal(routeTable.Associations[0].SubnetId, subnetLive.SubnetId);
-      assert.equal(routeTable.VpcId, vpcLive.VpcId);
-    }*/
+
       await testPlanDestroy({ provider });
     } catch (error) {
       throw error;
