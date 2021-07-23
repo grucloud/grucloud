@@ -172,6 +172,7 @@ describe("K8sProvider", async function () {
 
     serviceWeb = provider.makeService({
       name: serviceWebName,
+      dependencies: { namespace },
       properties: () => ({
         spec: {
           selector: {
