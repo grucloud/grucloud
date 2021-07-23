@@ -1485,26 +1485,28 @@ function CoreProvider({
                     resolvedDependencies,
                     lives,
                   }),
+
                 tap((live) => {
                   //assert(live);
+                }),
+                tap((output) => {
+                  lives.addResource({
+                    providerName,
+                    type: engine.type,
+                    live: { live: output },
+                    //TODO
+                    // live: decorateLive({
+                    //   client: engine.client,
+                    //   lives,
+                    //   config: provider.config,
+                    // })(output),
+                  });
                 }),
               ])(),
             () => assert("action is not handled"),
           ]),
         }),
-        tap(({ engine, output }) => {
-          lives.addResource({
-            providerName,
-            type: engine.type,
-            live: { live: output },
-            //TODO
-            // live: decorateLive({
-            //   client: engine.client,
-            //   lives,
-            //   config: provider.config,
-            // })(output),
-          });
-        }),
+
         pick(["input", "output"]),
         tap((params) => {
           assert(true);

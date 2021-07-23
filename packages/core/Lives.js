@@ -90,8 +90,9 @@ exports.createLives = (livesRaw = []) => {
       assert(providerName);
       assert(type);
 
-      if (!live) {
-        logger.debug(`live addResource no live for ${type}`);
+      if (isEmpty(live.live)) {
+        logger.error(`live addResource no live for ${type}`);
+        assert(true);
         return;
       }
 
