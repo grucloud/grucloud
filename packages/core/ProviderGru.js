@@ -146,105 +146,15 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
       }),
     ])();
 
-  // Add namespace and dependencies.
-  const resourceDecorate =
-    ({ lives, commandOptions }) =>
-    (resource) =>
-      pipe([
-        tap(() => {
-          assert(resource.providerName);
-          assert(resource.type);
-          assert(lives);
-        }),
-        // Use Lister
-        () => getProvider({ providerName: resource.providerName }),
-        (provider) =>
-          pipe([
-            () => provider.clientByType({ type: resource.type }),
-            (client) => ({
-              ...resource,
-              get isDefault() {
-                return client.isDefault({ live: resource.live, lives });
-              },
-              get namespace() {
-                return client.findNamespace({ live: resource.live, lives });
-              },
-              get dependencies() {
-                return client.findDependencies({
-                  live: resource.live,
-                  lives,
-                });
-              },
-              get managedByOther() {
-                return client.managedByOther({ live: resource.live, lives });
-              },
-              get managedByUs() {
-                return client.spec.isOurMinion({
-                  resource: provider.getResourceFromLive({
-                    client,
-                    live: resource.live,
-                    lives,
-                  }),
-                  live: resource.live,
-                  lives,
-                  resources: provider.getResourcesByType({
-                    type: client.spec.type,
-                  }),
-                  config: provider.config,
-                });
-              },
-            }),
-            tap((resource) =>
-              Object.defineProperty(resource, "show", {
-                enumerable: true,
-                get: () => showLive({ commandOptions })(resource),
-              })
-            ),
-          ])(),
-        tap((resource) => {
-          assert(true);
-        }),
-      ])();
-
-  const showLive =
-    ({ commandOptions = {} } = {}) =>
-    (resource) =>
-      pipe([
-        () => resource,
-        and([
-          (resource) =>
-            switchCase([not(isEmpty), includes(resource.type), () => true])(
-              commandOptions.types
-            ),
-          (resource) => !includes(resource.type)(commandOptions.typesExclude),
-          (resource) =>
-            commandOptions.defaultExclude ? !resource.isDefault : true,
-          (resource) => (commandOptions.our ? resource.managedByUs : true),
-          (resource) =>
-            commandOptions.name ? resource.name === commandOptions.name : true,
-          (resource) =>
-            commandOptions.id ? resource.id === commandOptions.id : true,
-          (resource) =>
-            commandOptions.providerName &&
-            !isEmpty(commandOptions.providerNames)
-              ? includes(resource.providerName)(commandOptions.providerNames)
-              : true,
-          (resource) =>
-            commandOptions.canBeDeleted ? !resource.cannotBeDeleted : true,
-        ]),
-        tap((show) => {
-          logger.debug(`showLive ${resource.name} show: ${show}`);
-        }),
-      ])();
-
+  //TODO
   const decorateListResult =
-    ({}) =>
+    ({ lives }) =>
     (perProvider) =>
       pipe([
         tap((xxx) => {
           assert(true);
         }),
-        () => createLives(),
+        () => createLives(), // Pass from outside
         tap((lives) =>
           map(
             assign({
@@ -264,7 +174,6 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
                     }) =>
                       pipe([
                         () => resources,
-                        map(resourceDecorate({ lives, commandOptions })),
                         tap((resources) => {
                           lives.addResources({
                             providerName,
@@ -322,6 +231,9 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
             ])()
           ),
           decorateListResult({ lives }),
+          tap((params) => {
+            assert(true);
+          }),
         ])(),
     ])();
 

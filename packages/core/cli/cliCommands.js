@@ -1134,8 +1134,8 @@ const listDoOk = ({ commandOptions, programOptions }) =>
                   }),
               ])({}),
           }),
-        tap((xxx) => {
-          assert(true);
+        tap((lives) => {
+          assert(lives);
         }),
         (lives) => lives.json,
         tap((lives) => {

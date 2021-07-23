@@ -54,9 +54,9 @@
 
 ## Kubernetes
 
+- APIService problem deleting some
 - gc graph: wrong namespace, it is default, should be myapp
 - minikite gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404
-- cert-manager example
 - kubectl cluster-info
 
 ## Azure

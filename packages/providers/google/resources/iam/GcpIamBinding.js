@@ -31,7 +31,7 @@ const {
 const findName = get("live.role");
 const findId = findName;
 
-const isOurMinionIamBinding = ({ name, live, resources }) =>
+const isOurMinionIamBinding = ({ resource, live, resources }) =>
   pipe([
     tap(() => {
       assert(live, "live");
@@ -40,7 +40,7 @@ const isOurMinionIamBinding = ({ name, live, resources }) =>
     () => resources,
     any(pipe([get("name"), (name) => isDeepEqual(name, findName({ live }))])),
     tap((isOur) => {
-      logger.debug(`isOurMinionIamBinding: ${name}: ${isOur}`);
+      logger.debug(`isOurMinionIamBinding: ${resource.name}: ${isOur}`);
     }),
   ])();
 

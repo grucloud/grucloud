@@ -337,7 +337,8 @@ exports.ELBRule = ({ spec, config }) => {
       }),
     ])();
 
-  const cannotBeDeleted = get("live.IsDefault");
+  const isDefault = get("live.IsDefault");
+  const cannotBeDeleted = isDefault;
 
   return {
     spec,

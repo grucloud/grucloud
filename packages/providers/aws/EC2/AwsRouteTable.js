@@ -11,8 +11,9 @@ const {
   any,
   all,
   tryCatch,
+  switchCase,
 } = require("rubico");
-const { isEmpty, first, defaultsDeep, pluck } = require("rubico/x");
+const { isEmpty, first, defaultsDeep, pluck, find } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsRouteTable" });
 const { tos } = require("@grucloud/core/tos");
@@ -34,10 +35,9 @@ const { getField } = require("@grucloud/core/ProviderCommon");
 exports.AwsRouteTable = ({ spec, config }) => {
   assert(spec);
   assert(config);
-
+  const { providerName } = config;
   const ec2 = Ec2New(config);
   const findId = get("live.RouteTableId");
-  const findName = findNameInTagsOrId({ findId });
 
   const isDefault = ({ live, lives }) =>
     pipe([
@@ -49,6 +49,35 @@ exports.AwsRouteTable = ({ spec, config }) => {
         logger.debug(`isDefault ${live.RouteTableId} : ${result}`);
       }),
     ])();
+
+  const findDefaultName = ({ live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(live.VpcId);
+      }),
+      () =>
+        lives.getById({
+          type: "Vpc",
+          group: "ec2",
+          providerName,
+          id: live.VpcId,
+        }),
+      tap((params) => {
+        assert(true);
+      }),
+      get("name"),
+      tap((name) => {
+        //TODO
+        //assert(name);
+      }),
+      (name) => `rt-default-${name}`,
+    ])();
+
+  const findName = switchCase([
+    isDefault,
+    findDefaultName,
+    findNameInTagsOrId({ findId }),
+  ]);
 
   const findDependencies = ({ live }) => [
     { type: "Vpc", group: "ec2", ids: [live.VpcId] },
@@ -145,6 +174,43 @@ exports.AwsRouteTable = ({ spec, config }) => {
       }),
     ])();
 
+  const routesDelete = ({ live }) =>
+    pipe([
+      tap(() => {
+        assert(true);
+      }),
+      () => live,
+      get("Routes"),
+      filter(eq(get("State"), "blackhole")),
+      tap((Routes) => {
+        assert(true);
+      }),
+      map(
+        tryCatch(
+          pipe([
+            tap((Route) => {
+              assert(Route);
+            }),
+            (Route) =>
+              ec2().deleteRoute({
+                RouteTableId: live.RouteTableId,
+                DestinationCidrBlock: Route.DestinationCidrBlock,
+              }),
+          ]),
+          (error, Route) =>
+            pipe([
+              tap(() => {
+                logger.error(`error deleteRoute ${tos({ Route, error })}`);
+              }),
+              () => ({ error, Route }),
+            ])()
+        )
+      ),
+      tap.if(any(get("error")), (result) => {
+        throw result;
+      }),
+    ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeRouteTables-property
   const getList = ({ params } = {}) =>
     pipe([
@@ -211,6 +277,7 @@ exports.AwsRouteTable = ({ spec, config }) => {
         assert(id);
       }),
       () => routeTableDisassociate({ live }),
+      () => routesDelete({ live }),
       () => ec2().deleteRouteTable({ RouteTableId: id }),
       tap(() =>
         retryCall({
@@ -250,8 +317,7 @@ exports.AwsRouteTable = ({ spec, config }) => {
       }),
     ])();
 
-  const cannotBeDeleted = ({ live, name }) =>
-    pipe([() => live, eq(get("RouteTableId"), name)])();
+  const cannotBeDeleted = isDefault;
 
   return {
     spec,

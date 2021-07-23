@@ -165,29 +165,14 @@ function CoreProvider({
   const mapNameToResource = new Map();
   const getMapNameToResource = () => mapNameToResource;
 
-  const getResourceFromLive = ({ live, lives, client }) =>
+  const getResourceFromLive = ({ uri }) =>
     pipe([
       tap(() => {
-        assert(live);
+        assert(uri);
       }),
-      () => ({
-        providerName: provider.name,
-        type: client.spec.type,
-        group: client.spec.group,
-        name: client.findName({ live, lives }),
-        id: client.findId({ live, lives }),
-        meta: client.findMeta(live),
-      }),
-      tap((params) => {
-        logger.debug(`getResourceFromLive ${JSON.stringify(params)}`);
-      }),
-      (params) => client.resourceKey(params),
-      tap((key) => {
-        logger.debug(`${key}`);
-      }),
-      (key) => mapNameToResource.get(key),
+      () => mapNameToResource.get(uri),
       tap((resource) => {
-        logger.debug(`getResourceFromLive: ${!!resource}`);
+        logger.debug(`getResourceFromLive: uri: ${!!resource}`);
       }),
     ])();
 
@@ -1016,6 +1001,7 @@ function CoreProvider({
               client.getLives({
                 lives,
                 deep: true,
+                options,
                 resources: getResourcesByType({ type: client.spec.type }),
               }),
             //TODO add client.toString()
@@ -1502,6 +1488,18 @@ function CoreProvider({
                     // })(output),
                   });
                 }),
+                // decorateLive({
+                //   client: engine.client,
+                //   lives,
+                //   config: provider.config,
+                // }),
+                // tap((resource) => {
+                //   lives.addResource({
+                //     providerName,
+                //     type: engine.type,
+                //     resource,
+                //   });
+                // }),
               ])(),
             () => assert("action is not handled"),
           ]),

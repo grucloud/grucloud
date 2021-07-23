@@ -16,7 +16,7 @@ const findName = pipe([
   first,
 ]);
 
-const isOurMinionServiceAccount = ({ name, config, live }) =>
+const isOurMinionServiceAccount = ({ resource, config, live }) =>
   pipe([
     tap(() => {
       assert(config.managedByDescription, config);
@@ -25,7 +25,7 @@ const isOurMinionServiceAccount = ({ name, config, live }) =>
     () => live,
     eq(get("description"), config.managedByDescription),
     tap((isOur) => {
-      logger.info(`isOurMinionServiceAccount: name: ${name} ${isOur}`);
+      logger.info(`isOurMinionServiceAccount: name: ${resource.name} ${isOur}`);
     }),
   ])();
 

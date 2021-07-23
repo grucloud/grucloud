@@ -15,6 +15,8 @@ const {
   or,
 } = require("rubico");
 const {
+  callProp,
+
   defaultsDeep,
   find,
   size,
@@ -329,13 +331,18 @@ exports.AwsIamPolicy = ({ spec, config }) => {
     configDefault,
     shouldRetryOnException,
     shouldRetryOnExceptionDelete,
-    cannotBeDeleted: pipe([
-      tap((params) => {
-        //TODO
-        //assert(params.resource);
-      }),
-      get("resource.readOnly"),
-    ]),
+    cannotBeDeleted: ({ live, resource }) =>
+      pipe([
+        tap(() => {
+          assert(resource);
+        }),
+        () => resource,
+        get("name"),
+        tap((name) => {
+          assert(name);
+        }),
+        callProp("startsWith", "Amazon"),
+      ])(),
   };
 };
 
@@ -343,8 +350,7 @@ exports.isOurMinionIamPolicy = (item) =>
   pipe([
     () => item,
     tap(({ resource }) => {
-      //TODO
-      //assert(resource);
+      assert(resource);
     }),
     or([get("resource.readOnly"), isOurMinion]),
     tap((isOurMinion) => {

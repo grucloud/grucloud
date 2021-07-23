@@ -23,7 +23,6 @@ const {
   isEmpty,
   isString,
   isFunction,
-  isObject,
   callProp,
   pluck,
   forEach,
@@ -32,6 +31,7 @@ const {
   isDeepEqual,
   size,
   identity,
+  includes,
 } = require("rubico/x");
 
 const logger = require("./logger")({ prefix: "CoreResources" });
@@ -40,10 +40,42 @@ const { retryCall } = require("./Retry");
 const { convertError } = require("./Common");
 const { displayType } = require("./ProviderCommon");
 
+const showLive =
+  ({ options = {} } = {}) =>
+  (resource) =>
+    pipe([
+      () => resource,
+      and([
+        (resource) =>
+          switchCase([not(isEmpty), includes(resource.type), () => true])(
+            options.types
+          ),
+        (resource) => !includes(resource.type)(options.typesExclude),
+        (resource) => (options.defaultExclude ? !resource.isDefault : true),
+        (resource) => (options.our ? resource.managedByUs : true),
+        (resource) => (options.name ? resource.name === options.name : true),
+        (resource) => (options.id ? resource.id === options.id : true),
+        (resource) =>
+          options.providerName && !isEmpty(options.providerNames)
+            ? includes(resource.providerName)(options.providerNames)
+            : true,
+        (resource) => (options.canBeDeleted ? !resource.cannotBeDeleted : true),
+      ]),
+      tap((show) => {
+        logger.debug(`showLive ${resource.name} show: ${show}`);
+      }),
+    ])();
+
 const decorateLive =
-  ({ client, lives, config }) =>
+  ({ client, lives, config, options, readOnly }) =>
   (live) =>
     pipe([
+      tap((params) => {
+        assert(lives);
+        if (client.spec.listOnly) {
+          assert(true);
+        }
+      }),
       () => ({
         name: client.findName({ live, lives }),
         meta: client.findMeta(live),
@@ -67,27 +99,56 @@ const decorateLive =
             id,
           }),
         displayName: ({ name, meta }) => client.displayName({ name, meta }),
-        cannotBeDeleted: ({ name }) =>
-          client.cannotBeDeleted({
-            live,
-            name,
-            resources: client.getResourcesByType({ type: client.spec.type }),
-            resource: client.getResourceFromLive({ client, live, lives }),
-            config,
-          }),
       }),
+      (resource) => ({
+        ...resource,
+        get cannotBeDeleted() {
+          return client.cannotBeDeleted({
+            resource,
+            live,
+            lives,
+          });
+        },
+        get isOurMinion() {
+          return client.isOurMinion({ uri: resource.uri, live, lives });
+        },
+        get managedByUs() {
+          return client.isOurMinion({ uri: resource.uri, live, lives });
+        },
+        get isDefault() {
+          return client.isDefault({ live, lives });
+        },
+        get namespace() {
+          return client.findNamespace({ live, lives });
+        },
+        get dependencies() {
+          return client.findDependencies({
+            live,
+            lives,
+          });
+        },
+        get managedByOther() {
+          return client.managedByOther({ live, lives });
+        },
+      }),
+      tap((resource) =>
+        Object.defineProperty(resource, "show", {
+          enumerable: true,
+          get: () => showLive({ options: options })(resource),
+        })
+      ),
     ])();
 
 exports.decorateLive = decorateLive;
 
-const decorateLives = ({ client, lives, config }) =>
+const decorateLives = ({ client, lives, config, options, readOnly }) =>
   pipe([
     tap((params) => {
       assert(true);
     }),
     get("items", []), // remove
     filter(not(get("error"))),
-    map(decorateLive({ client, lives, config })),
+    map(decorateLive({ client, lives, config, options, readOnly })),
     tap((params) => {
       assert(params);
     }),
@@ -113,8 +174,6 @@ const createClient = ({
     }),
 
     defaultsDeep({
-      getResourcesByType,
-      getResourceFromLive,
       resourceKey: pipe([
         tap((resource) => {
           assert(resource.providerName);
@@ -148,15 +207,41 @@ const createClient = ({
       cannotBeDeleted: () => false,
       isDefault: () => false,
       managedByOther: () => false,
+      isOurMinion: ({ uri, live, lives }) =>
+        spec.isOurMinion({
+          resource: getResourceFromLive({
+            uri,
+            live,
+            lives,
+          }),
+          live,
+          lives,
+          resources: getResourcesByType({
+            type: spec.type,
+          }),
+          config,
+        }),
       configDefault: () => ({}),
       isInstanceUp: not(isEmpty),
       providerName,
     }),
     assign({
+      cannotBeDeleted:
+        ({ cannotBeDeleted }) =>
+        ({ live, resource, lives }) =>
+          cannotBeDeleted({
+            live,
+            lives,
+            resources: getResourcesByType({ type: spec.type }),
+            resource,
+            config,
+          }),
+    }),
+    assign({
       getLives: (client) =>
         pipe([
           tryCatch(
-            ({ lives }) =>
+            ({ lives, options }) =>
               pipe([
                 tap((params) => {
                   assert(true);
@@ -171,6 +256,7 @@ const createClient = ({
                   client,
                   lives,
                   config,
+                  options,
                 }),
                 tap((resources) => {
                   logger.debug(
@@ -188,6 +274,9 @@ const createClient = ({
             ])
           ),
         ]),
+    }),
+    tap((params) => {
+      assert(true);
     }),
   ])();
 
@@ -250,6 +339,8 @@ exports.ResourceMaker = ({
           properties,
           lives,
         }),
+      // Decorate
+      //TODO lives.addResource
       tap((live) => {
         logger.info(`getLive ${toString()} hasLive: ${!!live}`);
         logger.debug(`getLive ${toString()} live: ${tos(live)}`);
@@ -715,6 +806,7 @@ exports.ResourceMaker = ({
       namespace: client.findNamespaceFromTarget({ namespace, properties }),
       name: resourceName,
       meta,
+      readOnly,
       displayName: client.displayNameResource({
         name: resourceName,
         meta,

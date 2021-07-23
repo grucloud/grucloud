@@ -137,7 +137,7 @@ exports.AwsRoute = ({ spec, config }) => {
     pipe([
       () => ig,
       get("live.InternetGatewayId"),
-      //TODO ribico unless
+      //TODO rubico unless
       switchCase([
         isEmpty,
         () => undefined,

@@ -69,6 +69,7 @@ exports.AwsInternetGateway = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
   const findId = get("live.InternetGatewayId");
+  //TODO use default
   const findName = findNameInTagsOrId({ findId });
 
   const findDependencies = ({ live }) => [
@@ -259,18 +260,15 @@ exports.AwsInternetGateway = ({ spec, config }) => {
       ],
     })(properties);
 
-  const cannotBeDeleted = ({ live, name }) =>
-    pipe([() => live, eq(get("InternetGatewayId"), name)])();
-
   return {
     spec,
-    isDefault: isDefault(config),
     findId,
     findName,
     findDependencies,
     findNamespace: findNamespaceInTags(config),
     getByName,
-    cannotBeDeleted,
+    isDefault: isDefault(config),
+    cannotBeDeleted: isDefault(config),
     getList,
     create,
     destroy,
