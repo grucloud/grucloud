@@ -48,12 +48,6 @@ describe("GcpSubNetwork", async function () {
   after(async () => {});
   it.skip("subNetwork apply and destroy", async function () {
     await testPlanDeploy({ provider });
-
-    const networkLive = await network.getLive();
-    const subnetworkLive = await subNetwork.getLive();
-    assert(subnetworkLive.gatewayAddress);
-    assert.equal(subnetworkLive.network, networkLive.selfLink);
-
     await testPlanDestroy({ provider });
   });
 });

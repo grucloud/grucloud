@@ -1475,31 +1475,18 @@ function CoreProvider({
                 tap((live) => {
                   //assert(live);
                 }),
-                tap((output) => {
+                decorateLive({
+                  client: engine.client,
+                  lives,
+                  config: provider.config,
+                }),
+                tap((resource) => {
                   lives.addResource({
                     providerName,
                     type: engine.type,
-                    live: { live: output },
-                    //TODO
-                    // live: decorateLive({
-                    //   client: engine.client,
-                    //   lives,
-                    //   config: provider.config,
-                    // })(output),
+                    resource,
                   });
                 }),
-                // decorateLive({
-                //   client: engine.client,
-                //   lives,
-                //   config: provider.config,
-                // }),
-                // tap((resource) => {
-                //   lives.addResource({
-                //     providerName,
-                //     type: engine.type,
-                //     resource,
-                //   });
-                // }),
               ])(),
             () => assert("action is not handled"),
           ]),

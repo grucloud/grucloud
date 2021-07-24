@@ -41,11 +41,6 @@ describe("ScalewayImage", async function () {
   it("targetResources size ", async function () {
     assert.equal(provider.getTargetResources().length, 1);
   });
-  it("live ", async function () {
-    const instance = await image.getLive();
-    // Image is a readonly resource,
-    assert(!instance);
-  });
   it.skip("apply and destroy", async function () {
     await testPlanDeploy({ provider });
     //await testPlanDestroy({ provider });

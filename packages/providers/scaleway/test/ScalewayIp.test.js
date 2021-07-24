@@ -28,11 +28,6 @@ describe("ScalewayIp", async function () {
 
   it.skip("apply and destroy", async function () {
     await testPlanDeploy({ provider });
-
-    const live = await ip.getLive();
-    assert(live);
-    assert(live.id);
-
     await testPlanDestroy({ provider });
   });
 });

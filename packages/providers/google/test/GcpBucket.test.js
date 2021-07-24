@@ -69,12 +69,6 @@ describe("GcpBucket", async function () {
   after(async () => {});
   it("gcp bucket apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
-    const bucketLive = await bucket.getLive();
-
-    const bucketPublicLive = await bucketPublic.getLive({ deep: true });
-    assert(bucketPublicLive.iam);
-    assert(bucketPublicLive.iamConfiguration);
-    assert(bucketPublicLive.website);
 
     {
       const provider = GoogleProvider({

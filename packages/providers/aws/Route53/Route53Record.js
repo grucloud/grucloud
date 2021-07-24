@@ -61,16 +61,17 @@ const findNameInTags = pipe([
   get("Key"),
   getNameFromTagKey,
   tap((Key) => {
-    logger.info(`findName name: ${tos(Key)}`);
+    logger.debug(`findName name: ${tos(Key)}`);
   }),
 ]);
 
 const findId = pipe([get("live"), buildRecordTagValue]);
 
-const getHostedZone = ({ name, dependencies }) =>
+const getHostedZone = ({ resource: { name, dependencies }, lives }) =>
   pipe([
     tap(() => {
       assert(dependencies);
+      assert(lives);
     }),
     () => dependencies(),
     get("hostedZone"),
@@ -83,7 +84,7 @@ const getHostedZone = ({ name, dependencies }) =>
         };
       },
       pipe([
-        (hostedZone) => hostedZone.getLive(),
+        (hostedZone) => hostedZone.getLive({ lives }),
         tap((live) => {
           logger.debug(`getHostedZone live ${tos(live)}`);
         }),
@@ -105,12 +106,9 @@ exports.Route53Record = ({ spec, config }) => {
       group: "elb",
       ids: pipe([
         () => live,
-        get("AliasTarget.DNSName"),
-        tap((params) => {
-          assert(true);
-        }),
+        get("AliasTarget.DNSName", ""),
         // Remove last dot
-        (DNSName = "") => DNSName.slice(0, -1),
+        callProp("slice", 0, -1),
         (DNSName) =>
           pipe([
             () =>
@@ -119,13 +117,7 @@ exports.Route53Record = ({ spec, config }) => {
                 group: "elb",
                 providerName,
               }),
-            tap((params) => {
-              assert(true);
-            }),
             filter(eq(get("live.DNSName"), DNSName)),
-            tap((params) => {
-              assert(true);
-            }),
             pluck("id"),
           ])(),
       ])(),
@@ -136,9 +128,6 @@ exports.Route53Record = ({ spec, config }) => {
       ids: pipe([
         () =>
           lives.getByType({ type: "Certificate", group: "acm", providerName }),
-        tap((params) => {
-          assert(true);
-        }),
         filter(
           and([
             eq(
@@ -148,9 +137,6 @@ exports.Route53Record = ({ spec, config }) => {
             () => eq(get("Type"), "CNAME")(live),
           ])
         ),
-        tap((params) => {
-          assert(true);
-        }),
         pluck("id"),
       ])(),
     },
@@ -158,9 +144,6 @@ exports.Route53Record = ({ spec, config }) => {
 
   const findName = ({ live, lives }) =>
     pipe([
-      tap(() => {
-        assert(true);
-      }),
       () => {
         for (fn of [findNameInTags, findId]) {
           const name = fn({ live, lives, config });
@@ -169,9 +152,6 @@ exports.Route53Record = ({ spec, config }) => {
           }
         }
       },
-      tap((name) => {
-        assert(true);
-      }),
     ])();
 
   const findNamespace = get("live.namespace", "");
@@ -185,15 +165,9 @@ exports.Route53Record = ({ spec, config }) => {
       get("Tags", []),
       find(eq(get("Key"), buildRecordTagKey(name))),
       get("Value"),
-      tap((xxx) => {
-        assert(true);
-      }),
       tryCatch(
         pipe([
           callProp("split", "::"),
-          tap((xxx) => {
-            logger.debug(`findRecordInZone ${xxx}`);
-          }),
           ([Name, Type] = []) =>
             find(
               and([
@@ -208,9 +182,6 @@ exports.Route53Record = ({ spec, config }) => {
         }
       ),
 
-      tap((xxx) => {
-        assert(true);
-      }),
       switchCase([
         isEmpty,
         () => undefined,
@@ -226,7 +197,7 @@ exports.Route53Record = ({ spec, config }) => {
       }),
     ])();
 
-  const getListFromLive = async ({ lives }) =>
+  const getListFromLive = ({ lives }) =>
     pipe([
       tap(() => {
         logger.info(`getListFromLive`);
@@ -246,10 +217,11 @@ exports.Route53Record = ({ spec, config }) => {
       }),
     ])();
 
-  const getListFromTarget = async ({ resources = [] } = {}) =>
+  const getListFromTarget = ({ resources = [], lives } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getListFromTarget #resources ${size(resources)}`);
+        assert(lives);
       }),
       () => resources,
       map((resource) =>
@@ -257,7 +229,7 @@ exports.Route53Record = ({ spec, config }) => {
           tap(() => {
             logger.debug(`getListFromTarget resource ${resource.name}`);
           }),
-          () => getHostedZone(resource),
+          () => getHostedZone({ resource, lives }),
           tap((hostedZone) => {
             logger.debug(`getListFromTarget, hostedZone: ${hostedZone}`);
           }),
@@ -280,14 +252,14 @@ exports.Route53Record = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#listHostedZones-property
-  const getList = async ({ resources = [], lives }) =>
+  const getList = ({ resources = [], lives }) =>
     pipe([
       tap(() => {
         logger.info(`getList Route53Record #resources ${resources.length}`);
       }),
       fork({
         recordsLive: () => getListFromLive({ lives }),
-        recordsTarget: () => getListFromTarget({ resources }),
+        recordsTarget: () => getListFromTarget({ resources, lives }),
       }),
       tap(({ recordsLive, recordsTarget }) => {
         logger.debug(
@@ -331,13 +303,13 @@ exports.Route53Record = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = async ({ name, namespace, dependencies }) =>
+  const getByName = ({ name, namespace, dependencies, lives }) =>
     pipe([
       tap(() => {
         logger.info(`getByName ${name}`);
         assert(dependencies, "dependencies");
       }),
-      () => getHostedZone({ dependencies, name }),
+      () => getHostedZone({ resource: { dependencies, name }, lives }),
       switchCase([
         not(isEmpty),
         (hostedZone) => findRecordInZone({ name, namespace, hostedZone }),
@@ -348,7 +320,7 @@ exports.Route53Record = ({ spec, config }) => {
       }),
     ])();
 
-  const create = async ({
+  const create = ({
     name,
     payload = {},
     resolvedDependencies: { hostedZone },
@@ -395,7 +367,7 @@ exports.Route53Record = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Route53.html#deleteHostedZone-property
-  const destroy = async ({ id, name, live, lives, resource }) =>
+  const destroy = ({ id, name, live, lives, resource }) =>
     pipe([
       tap(() => {
         logger.info(`destroy Route53Record ${name}, ${id} ${tos({ live })}`);
@@ -458,7 +430,7 @@ exports.Route53Record = ({ spec, config }) => {
       }),
     ])();
 
-  const update = async ({
+  const update = ({
     name,
     payload,
     live,
@@ -551,7 +523,7 @@ exports.Route53Record = ({ spec, config }) => {
       ]),
     ])();
 
-  const configDefault = async ({
+  const configDefault = ({
     name,
     properties,
     dependencies: { certificate, loadBalancer, hostedZone },

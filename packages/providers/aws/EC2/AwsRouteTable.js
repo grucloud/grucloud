@@ -46,7 +46,7 @@ exports.AwsRouteTable = ({ spec, config }) => {
       first,
       get("Main"),
       tap((result) => {
-        logger.debug(`isDefault ${live.RouteTableId} : ${result}`);
+        assert(true);
       }),
     ])();
 

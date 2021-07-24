@@ -1,7 +1,8 @@
 const assert = require("assert");
-const { pipe, tap, map, get, any, eq } = require("rubico");
+const { pipe, tap, map, get, any, eq, filter, not } = require("rubico");
 const { size, isEmpty, find } = require("rubico/x");
 const { tos } = require("./tos");
+//const initSqlJs = require("sql.js");
 
 const logger = require("./logger")({ prefix: "Lives" });
 
@@ -86,11 +87,11 @@ exports.createLives = (livesRaw = []) => {
     get error() {
       return any(get("error"))(toJSON());
     },
-    addResource: ({ providerName, type, live }) => {
+    addResource: ({ providerName, type, resource }) => {
       assert(providerName);
       assert(type);
 
-      if (isEmpty(live.live)) {
+      if (isEmpty(resource.live)) {
         logger.error(`live addResource no live for ${type}`);
         assert(true);
         return;
@@ -105,20 +106,27 @@ exports.createLives = (livesRaw = []) => {
           mapPerTypeSize: mapPerType.size,
         })}`
       );
-      logger.debug(`live addResource ${JSON.stringify(live)}`);
-      const resources = mapPerType.get(type) || { type, resources: [] };
-      assert(
-        Array.isArray(resources.resources),
-        `no an array: ${tos(resources)}`
-      );
-      mapPerType.set(type, {
-        type,
-        providerName,
-        resources: [...resources.resources, live],
-      });
+      logger.debug(`live addResource ${JSON.stringify(resource)}`);
 
-      mapPerProvider.set(providerName, mapPerType);
-      //logger.debug(`live addResource all: ${tos(toJSON())}`);
+      pipe([
+        () => mapPerType.get(type) || { type, resources: [] },
+        get("resources"),
+        tap((resources) => {
+          assert(Array.isArray(resources));
+        }),
+        filter(not(eq(get("id", ""), resource.id))),
+        (resources) => [...resources, resource],
+        tap((resources) => {
+          mapPerType.set(type, {
+            type,
+            providerName,
+            resources,
+          });
+        }),
+        tap(() => {
+          mapPerProvider.set(providerName, mapPerType);
+        }),
+      ])();
     },
     addResources: ({
       providerName,

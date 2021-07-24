@@ -20,15 +20,11 @@
 - TODO add client.toString()
 - gc info with config for gcp and azure
 - https://stackshare.io/terraform/alternatives
-- case where provider does have any resources
 -
 - add projectName and use it as the title of the graph
 - destroy: use live instead of id
-- gc d : EC2 │ web, web-iam, , web-server
-  empty name !
 - const getById = getByIdCore({ fieldIds: "AllocationIds", getList });
 
-- gcp: projectName function to field
 - PROMPT='%4~ %# '
 - iam deal with deleted user
 

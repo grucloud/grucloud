@@ -77,20 +77,6 @@ describe("GoogleProvider", async function () {
   it("gcp apply and destroy", async function () {
     try {
       await testPlanDeploy({ provider, types, full: false });
-
-      const serverLive = await server.getLive();
-      const { status, labels } = serverLive;
-      assert(status, "RUNNING");
-      const { managedByKey, managedByValue, stageTagKey } = provider.config;
-      assert(labels[managedByKey], managedByValue);
-      assert(labels[stageTagKey], provider.config.stage);
-
-      const ipLive = await ip.getLive();
-      assert.equal(
-        serverLive.networkInterfaces[0].accessConfigs[0].natIP,
-        ipLive.address
-      );
-
       await testPlanDestroy({ provider, types, full: false });
     } catch (error) {
       throw error;

@@ -88,18 +88,6 @@ describe.skip("GcpWebSiteHttps", async function () {
   after(async () => {});
   it("website https apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
-
-    // SSL Certificate
-    const sslCertificateLive = await sslCertificate.getLive();
-    assert(sslCertificateLive);
-    assert.equal(
-      sslCertificateLive.description,
-      provider.config.managedByDescription
-    );
-    assert(sslCertificateLive.managed.status);
-    assert(sslCertificateLive.managed.domains[0], domain);
-    assert(sslCertificateLive.type, "MANAGED");
-
     await testPlanDestroy({ provider, types });
   });
 });

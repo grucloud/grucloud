@@ -64,10 +64,6 @@ describe("AwsIamInstanceProfile", async function () {
       planResult: { create: 2, destroy: 0 },
     });
 
-    const iamInstanceProfileLive = await iamInstanceProfile.getLive();
-    assert(iamInstanceProfileLive);
-    assert.equal(iamInstanceProfileLive.Roles[0].RoleName, iamRole.name);
-
     await testPlanDestroy({ provider, types });
   });
 });

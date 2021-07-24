@@ -156,6 +156,9 @@ const hasKeyInTags =
       }),
       () => live,
       get("Tags"),
+      tap((Tags) => {
+        assert(Tags, `not Tags in ${tos(live)}`);
+      }),
       any((tag) => new RegExp(`^${key}*`, "i").test(tag.Key)),
       tap((result) => {
         assert(true);
@@ -385,7 +388,6 @@ const findNameInTags = ({ live }) =>
         );
       },
       (Value) => {
-        logger.debug(`findNameInTags found name: ${Value}`);
         return Value;
       },
     ]),

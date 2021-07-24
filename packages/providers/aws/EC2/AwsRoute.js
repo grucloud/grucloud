@@ -207,14 +207,20 @@ exports.AwsRoute = ({ spec, config }) => {
     ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createRouteTable-property
-  const create = async ({
+  const create = ({
     payload,
     name,
+    dependencies,
     resolvedDependencies: { routeTable, ig, natGateway },
+    lives,
   }) =>
     pipe([
       tap(() => {
+        assert(lives);
         logger.info(`create route ${tos({ name })}`);
+        assert(dependencies);
+        assert(dependencies().routeTable);
+
         assert(routeTable, "Route is missing the dependency 'routeTable'");
         assert(routeTable.live.RouteTableId, "routeTable.live.RouteTableId");
         assert(
@@ -239,6 +245,8 @@ exports.AwsRoute = ({ spec, config }) => {
           }),
         ])()
       ),
+      // Refresh the route table
+      () => dependencies().routeTable.getLive({ lives }),
       tap((RouteTableId) => {
         logger.info(`created route ${tos({ name, RouteTableId })}`);
       }),

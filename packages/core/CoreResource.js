@@ -17,6 +17,7 @@ const {
   or,
   transform,
   pick,
+  fork,
 } = require("rubico");
 
 const {
@@ -67,11 +68,14 @@ const showLive =
     ])();
 
 const decorateLive =
-  ({ client, lives, config, options, readOnly }) =>
+  ({ client, lives, options }) =>
   (live) =>
     pipe([
       tap((params) => {
-        assert(lives);
+        assert(live);
+        if (!lives) {
+          assert(lives);
+        }
         if (client.spec.listOnly) {
           assert(true);
         }
@@ -84,8 +88,6 @@ const decorateLive =
         type: client.spec.type,
         group: client.spec.group,
         live,
-        isDefault: client.isDefault({ live, lives }),
-        managedByOther: client.managedByOther({ live, lives }),
       }),
       assign({
         uri: ({ name, id, meta }) =>
@@ -208,19 +210,29 @@ const createClient = ({
       isDefault: () => false,
       managedByOther: () => false,
       isOurMinion: ({ uri, live, lives }) =>
-        spec.isOurMinion({
-          resource: getResourceFromLive({
-            uri,
-            live,
-            lives,
+        pipe([
+          fork({
+            resource: () =>
+              getResourceFromLive({
+                uri,
+                live,
+                lives,
+              }),
+            resources: () =>
+              getResourcesByType({
+                type: spec.type,
+              }),
           }),
-          live,
-          lives,
-          resources: getResourcesByType({
-            type: spec.type,
-          }),
-          config,
-        }),
+          ({ resource, resources }) =>
+            spec.isOurMinion({
+              resource,
+              resources,
+              live,
+              lives,
+              config,
+            }),
+        ])(),
+
       configDefault: () => ({}),
       isInstanceUp: not(isEmpty),
       providerName,
@@ -320,10 +332,11 @@ exports.ResourceMaker = ({
   });
   const usedBySet = new Set();
 
-  const getLive = async ({ deep = true, lives } = {}) =>
+  const getLive = ({ deep = true, lives, options = {} } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getLive ${toString()}, deep: ${deep}`);
+        //assert(lives);
       }),
       () =>
         client.getByName({
@@ -339,8 +352,23 @@ exports.ResourceMaker = ({
           properties,
           lives,
         }),
-      // Decorate
-      //TODO lives.addResource
+      // TODO rubico unless
+      switchCase([
+        and([not(isEmpty), () => !isEmpty(lives)]),
+        tap(
+          pipe([
+            decorateLive({ client, lives, config, options }),
+            tap((resource) => {
+              lives.addResource({
+                providerName: config.providerName,
+                type,
+                resource,
+              });
+            }),
+          ])
+        ),
+        identity,
+      ]),
       tap((live) => {
         logger.info(`getLive ${toString()} hasLive: ${!!live}`);
         logger.debug(`getLive ${toString()} live: ${tos(live)}`);
@@ -374,6 +402,13 @@ exports.ResourceMaker = ({
                   (liveName) => isDeepEqual(resourceName, liveName),
                 ])()
               ),
+              tap.if(isEmpty, () => {
+                logger.info(
+                  `findLive ${type} resourceName: ${resourceName} not in resources: ${tos(
+                    resources
+                  )}`
+                );
+              }),
             ])(),
         ]),
         () => {
@@ -520,9 +555,7 @@ exports.ResourceMaker = ({
             pipe([
               tap((live) => {
                 logger.debug(
-                  `resolveDependencies ${toString()}, dep ${dependency.toString()}, has live: ${isEmpty(
-                    lives
-                  )}`
+                  `resolveDependencies ${toString()}, dep ${dependency.toString()}, has lives: ${!!lives}`
                 );
               }),
               switchCase([
@@ -611,7 +644,7 @@ exports.ResourceMaker = ({
     pipe([
       tap(() => {
         logger.debug(
-          `resolveConfig ${toString()}, ${tos({
+          `resolveConfig ${toString()}, ${JSON.stringify({
             deep,
             hasLive: !!live, //TODO
           })}`
@@ -708,6 +741,7 @@ exports.ResourceMaker = ({
           dependencies: getDependencies(),
           attributes,
           resolvedDependencies,
+          lives,
         }),
       () => getLive({ deep: true, lives }),
       tap((live) => {
@@ -720,41 +754,35 @@ exports.ResourceMaker = ({
       }),
     ])();
 
-  const update = async ({
-    payload,
-    diff,
-    live,
-    lives,
-    resolvedDependencies,
-  }) => {
-    logger.info(`update ${tos({ resourceName, type, payload })}`);
-    if (!(await getLive())) {
-      throw Error(`Resource ${toString()} does not exist`);
-    }
-
-    // Update now
-    const instance = await retryCall({
-      name: `update ${toString()}`,
-      fn: () =>
-        client.update({
-          name: resourceName,
-          payload,
-          dependencies: getDependencies(),
-          resolvedDependencies,
-          diff,
-          live,
-          lives,
-          id: client.findId({ live }),
+  const update = async ({ payload, diff, live, lives, resolvedDependencies }) =>
+    pipe([
+      () => getLive({ lives }),
+      tap.if(isEmpty, () => {
+        throw Error(`Resource ${toString()} does not exist`);
+      }),
+      () =>
+        retryCall({
+          name: `update ${toString()}`,
+          fn: () =>
+            client.update({
+              name: resourceName,
+              payload,
+              dependencies: getDependencies(),
+              resolvedDependencies,
+              diff,
+              live,
+              lives,
+              id: client.findId({ live }),
+            }),
+          shouldRetryOnException: client.shouldRetryOnException,
+          config: provider.config,
         }),
-      shouldRetryOnException: client.shouldRetryOnException,
-      config: provider.config,
-    });
+      tap((params) => {
+        logger.info(`updated: ${toString()}`);
+      }),
+    ]);
 
-    logger.info(`updated: ${toString()}`);
-    return instance;
-  };
-
-  const planUpsert = async ({ resource, lives }) =>
+  const planUpsert = ({ resource, lives }) =>
     pipe([
       tap(() => {
         assert(lives);
@@ -864,7 +892,9 @@ exports.ResourceMaker = ({
         }),
         () => client.isInstanceUp(live),
         tap((isUp) => {
-          logger.debug(`isUp ${type}/${resourceName}: ${!!isUp}`);
+          logger.debug(
+            `isUp ${type}/${resourceName}: ${!!isUp}, hasLive: ${!!live}`
+          );
         }),
       ])(),
   };
