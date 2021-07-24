@@ -402,13 +402,13 @@ exports.ResourceMaker = ({
                   (liveName) => isDeepEqual(resourceName, liveName),
                 ])()
               ),
-              tap.if(isEmpty, () => {
-                logger.info(
-                  `findLive ${type} resourceName: ${resourceName} not in resources: ${tos(
-                    resources
-                  )}`
-                );
-              }),
+              // tap.if(isEmpty, () => {
+              //   logger.info(
+              //     `findLive ${type} resourceName: ${resourceName} not in resources: ${tos(
+              //       resources
+              //     )}`
+              //   );
+              // }),
             ])(),
         ]),
         () => {
@@ -754,7 +754,7 @@ exports.ResourceMaker = ({
       }),
     ])();
 
-  const update = async ({ payload, diff, live, lives, resolvedDependencies }) =>
+  const update = ({ payload, diff, live, lives, resolvedDependencies }) =>
     pipe([
       () => getLive({ lives }),
       tap.if(isEmpty, () => {
@@ -780,7 +780,7 @@ exports.ResourceMaker = ({
       tap((params) => {
         logger.info(`updated: ${toString()}`);
       }),
-    ]);
+    ])();
 
   const planUpsert = ({ resource, lives }) =>
     pipe([
@@ -791,14 +791,13 @@ exports.ResourceMaker = ({
       assign({
         live: () => resource.findLive({ lives }),
       }),
-      tap(({ live }) => {}),
       assign({
         target: pipe([
           ({ live }) => resource.resolveConfig({ live, lives, deep: true }),
         ]),
       }),
       tap(({ live, target }) => {
-        logger.info(`planUpsert resource: ${resource.toString()}`);
+        assert(true);
       }),
       switchCase([
         pipe([get("live"), isEmpty]),
