@@ -566,7 +566,7 @@ const displayDeploySuccess = pipe([
 
 const doPlansDeploy =
   ({ commandOptions, programOptions, providerGru }) =>
-  ({ resultQuery, lives }) =>
+  ({ resultQuery }) =>
     pipe([
       tap(() => {
         logger.debug("doPlansDeploy ");
@@ -599,7 +599,6 @@ const doPlansDeploy =
                 providerGru.planApply({
                   onStateChange,
                   plan: resultQuery,
-                  lives,
                   onProviderEnd: ({ provider, error }) =>
                     provider.spinnersStopProvider({
                       onStateChange,
@@ -860,7 +859,6 @@ exports.planDestroy = async ({
     commandOptions,
     providerGru,
     resultQueryDestroy,
-    lives,
   }) =>
     pipe([
       tap(() => {
@@ -894,7 +892,6 @@ exports.planDestroy = async ({
                 providerGru.planDestroy({
                   onStateChange,
                   plan: resultQueryDestroy,
-                  lives,
                 }),
             ])(),
         }),
@@ -914,7 +911,7 @@ exports.planDestroy = async ({
       }),
     ])();
 
-  const processDestroyPlans = ({ providerGru, resultQueryDestroy, lives }) =>
+  const processDestroyPlans = ({ providerGru, resultQueryDestroy }) =>
     pipe([
       tap(() => {
         assert(Array.isArray(resultQueryDestroy.results));
@@ -928,7 +925,6 @@ exports.planDestroy = async ({
             commandOptions,
             providerGru,
             resultQueryDestroy,
-            lives,
           }),
         tap(() => {
           console.log("Abort destroying plan");
@@ -988,7 +984,7 @@ exports.planDestroy = async ({
             assert(xxx);
           }),
           assign({
-            resultDestroy: ({ resultQueryDestroy, lives }) =>
+            resultDestroy: ({ resultQueryDestroy }) =>
               pipe([
                 () => resultQueryDestroy.results,
                 switchCase([
@@ -997,7 +993,6 @@ exports.planDestroy = async ({
                     processDestroyPlans({
                       providerGru,
                       resultQueryDestroy,
-                      lives,
                     }),
                   processHasNoPlan,
                 ]),
@@ -1075,22 +1070,13 @@ const filterShow = map(
       map(
         assign({
           resources: ({ providerName, resources, type, error }) =>
-            pipe([
-              () => resources,
-              filter(get("show")),
-              tap((xxx) => {
-                logger.debug(``);
-              }),
-            ])(),
+            pipe([() => resources, filter(get("show"))])(),
         })
       ),
     ]),
   })
 );
 const displayListResult = pipe([
-  tap((xxx) => {
-    logger.debug(`displayListResult`);
-  }),
   tap((xxx) => {
     logger.debug(`displayListResult`);
   }),

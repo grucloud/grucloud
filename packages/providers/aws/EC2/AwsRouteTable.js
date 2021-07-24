@@ -54,6 +54,7 @@ exports.AwsRouteTable = ({ spec, config }) => {
     pipe([
       tap(() => {
         assert(live.VpcId);
+        assert(lives);
       }),
       () =>
         lives.getById({

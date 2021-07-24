@@ -99,8 +99,7 @@ describe("MockProvider errors", async function () {
         mockCloud,
       });
       const providersGru = ProviderGru({ stacks: [{ provider }] });
-
-      const { error } = providersGru.planQueryAndApply();
+      const { error } = providersGru.planQuery();
       assert(!error);
     }
   });

@@ -68,14 +68,12 @@ const showLive =
     ])();
 
 const decorateLive =
-  ({ client, lives, options }) =>
+  ({ client, options, lives }) =>
   (live) =>
     pipe([
       tap((params) => {
         assert(live);
-        if (!lives) {
-          assert(lives);
-        }
+        assert(lives);
         if (client.spec.listOnly) {
           assert(true);
         }
@@ -143,14 +141,14 @@ const decorateLive =
 
 exports.decorateLive = decorateLive;
 
-const decorateLives = ({ client, lives, config, options, readOnly }) =>
+const decorateLives = ({ client, config, options, readOnly, lives }) =>
   pipe([
     tap((params) => {
       assert(true);
     }),
     get("items", []), // remove
     filter(not(get("error"))),
-    map(decorateLive({ client, lives, config, options, readOnly })),
+    map(decorateLive({ client, config, options, readOnly, lives })),
     tap((params) => {
       assert(params);
     }),
@@ -266,9 +264,9 @@ const createClient = ({
                   }),
                 decorateLives({
                   client,
-                  lives,
                   config,
                   options,
+                  lives,
                 }),
                 tap((resources) => {
                   logger.debug(
@@ -332,11 +330,10 @@ exports.ResourceMaker = ({
   });
   const usedBySet = new Set();
 
-  const getLive = ({ deep = true, lives, options = {} } = {}) =>
+  const getLive = ({ deep = true, options = {} } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getLive ${toString()}, deep: ${deep}`);
-        //assert(lives);
       }),
       () =>
         client.getByName({
@@ -350,16 +347,16 @@ exports.ResourceMaker = ({
           deep,
           resources: provider.getResourcesByType({ type }),
           properties,
-          lives,
+          lives: provider.lives,
         }),
       // TODO rubico unless
       switchCase([
-        and([not(isEmpty), () => !isEmpty(lives)]),
+        and([not(isEmpty), () => !isEmpty(provider.lives)]),
         tap(
           pipe([
-            decorateLive({ client, lives, config, options }),
+            decorateLive({ client, lives: provider.lives, config, options }),
             tap((resource) => {
-              lives.addResource({
+              provider.lives.addResource({
                 providerName: config.providerName,
                 type,
                 resource,
@@ -375,12 +372,10 @@ exports.ResourceMaker = ({
       }),
     ])();
 
-  const findLive = ({ lives }) =>
+  const findLive = ({}) =>
     pipe([
-      tap(() => {
-        assert(lives);
-      }),
-      () => lives.getByType({ providerName: provider.name, type, group }),
+      () =>
+        provider.lives.getByType({ providerName: provider.name, type, group }),
       tap((xxx) => {
         assert(true);
       }),
@@ -393,7 +388,9 @@ exports.ResourceMaker = ({
               find(({ live }) =>
                 pipe([
                   () =>
-                    provider.clientByType({ type }).findName({ live, lives }),
+                    provider
+                      .clientByType({ type })
+                      .findName({ live, lives: provider.lives }),
                   tap((liveName) => {
                     logger.debug(
                       `findLive ${type} resourceName: ${resourceName} liveName: ${liveName}`
@@ -423,8 +420,8 @@ exports.ResourceMaker = ({
       }),
     ])();
 
-  const planUpdate = async ({ resource, target, live, lives }) => {
-    return pipe([
+  const planUpdate = async ({ resource, target, live }) =>
+    pipe([
       tap(() => {
         logger.debug(
           `planUpdate resource: ${tos(resource.toJSON())}, target: ${tos(
@@ -438,7 +435,7 @@ exports.ResourceMaker = ({
           target,
           live,
           dependencies: resource.dependencies(), //TODO
-          lives,
+          lives: provider.lives,
           config,
         }),
       tap((diff) => {
@@ -478,7 +475,7 @@ exports.ResourceMaker = ({
           ]),
         ])(),
     ])();
-  };
+
   const getDependencyList = () =>
     pipe([
       tap((result) => {
@@ -503,7 +500,6 @@ exports.ResourceMaker = ({
     ])();
 
   const resolveDependencies = ({
-    lives,
     dependencies,
     dependenciesMustBeUp = false,
   }) =>
@@ -533,7 +529,6 @@ exports.ResourceMaker = ({
           tryCatch(
             (dependency) =>
               resolveDependencies({
-                lives,
                 dependencies: () => dependency,
                 dependenciesMustBeUp,
               }),
@@ -553,24 +548,21 @@ exports.ResourceMaker = ({
               pipe([
                 tap(() => {
                   logger.debug(
-                    `resolveDependencies ${toString()}, dep ${dependency.toString()}, has lives: ${!!lives}`
+                    `resolveDependencies ${toString()}, dep ${dependency.toString()}`
                   );
                 }),
                 () => dependency,
                 switchCase([
                   () => dependency.filterLives,
-                  () => dependency.resolveConfig({ lives }),
-                  switchCase([
-                    () => isEmpty(lives),
-                    () => dependency.getLive({ deep: true }),
-                    pipe([
-                      () => dependency.findLive({ lives }),
-                      switchCase([
-                        isEmpty,
-                        () => dependency.getLive({ deep: true }),
-                        identity,
-                      ]),
-                    ]),
+                  () => dependency.resolveConfig({}),
+                  pipe([
+                    () => dependency.findLive({}),
+                    //TODO
+                    // switchCase([
+                    //   isEmpty,
+                    //   () => dependency.getLive({ deep: true }),
+                    //   identity,
+                    // ]),
                   ]),
                 ]),
                 tap.if(
@@ -591,7 +583,6 @@ exports.ResourceMaker = ({
                   config: await dependency.resolveConfig({
                     deep: true,
                     live,
-                    lives,
                   }),
                   live,
                 }),
@@ -640,12 +631,7 @@ exports.ResourceMaker = ({
       }),
     ])();
 
-  const resolveConfig = ({
-    live,
-    lives,
-    resolvedDependencies,
-    deep = false,
-  } = {}) =>
+  const resolveConfig = ({ live, resolvedDependencies, deep = false } = {}) =>
     pipe([
       tap(() => {
         logger.debug(
@@ -669,17 +655,18 @@ exports.ResourceMaker = ({
           resolveDependencies({
             resourceName,
             dependencies: getDependencies(),
-            lives,
           }),
       ]),
       (resolvedDependencies) =>
         switchCase([
           () => filterLives,
           pipe([
-            tap(() => {
-              assert(lives);
-            }),
-            () => lives.getByType({ type, group, providerName: provider.name }),
+            () =>
+              provider.lives.getByType({
+                type,
+                group,
+                providerName: provider.name,
+              }),
             tap((resources) => {
               logger.debug(
                 `resolveConfig ${type} #resources ${size(resources)}`
@@ -691,7 +678,7 @@ exports.ResourceMaker = ({
                 resources,
                 configProvider: provider.config,
                 live,
-                lives,
+                lives: provider.lives,
               }),
             get("live"),
             tap((live) => {
@@ -710,7 +697,7 @@ exports.ResourceMaker = ({
                 properties: defaultsDeep(spec.propertiesDefault)(properties),
                 dependencies: resolvedDependencies,
                 live,
-                lives,
+                lives: provider.lives,
               }),
             tap((result) => {
               // logger.debug(
@@ -721,14 +708,13 @@ exports.ResourceMaker = ({
         ])(),
     ])();
 
-  const create = async ({ payload, resolvedDependencies, lives }) =>
+  const create = ({ payload, resolvedDependencies }) =>
     pipe([
       tap(() => {
         logger.info(`create ${tos({ resourceName, type })}`);
         logger.debug(`create ${tos({ payload })}`);
         assert(payload);
         assert(resolvedDependencies);
-        assert(lives);
       }),
       //TODO
       /*tap.if(
@@ -746,9 +732,9 @@ exports.ResourceMaker = ({
           dependencies: getDependencies(),
           attributes,
           resolvedDependencies,
-          lives,
+          lives: provider.lives,
         }),
-      () => getLive({ deep: true, lives }),
+      () => getLive({ deep: true }),
       tap((live) => {
         //assert(live);
         if (!live) {
@@ -759,9 +745,9 @@ exports.ResourceMaker = ({
       }),
     ])();
 
-  const update = ({ payload, diff, live, lives, resolvedDependencies }) =>
+  const update = ({ payload, diff, live, resolvedDependencies }) =>
     pipe([
-      () => getLive({ lives }),
+      () => getLive(),
       tap.if(isEmpty, () => {
         throw Error(`Resource ${toString()} does not exist`);
       }),
@@ -776,7 +762,7 @@ exports.ResourceMaker = ({
               resolvedDependencies,
               diff,
               live,
-              lives,
+              lives: provider.lives,
               id: client.findId({ live }),
             }),
           shouldRetryOnException: client.shouldRetryOnException,
@@ -787,18 +773,17 @@ exports.ResourceMaker = ({
       }),
     ])();
 
-  const planUpsert = ({ resource, lives }) =>
+  const planUpsert = ({ resource }) =>
     pipe([
       tap(() => {
-        assert(lives);
         logger.info(`planUpsert resource: ${resource.toString()}`);
       }),
       assign({
-        live: () => resource.findLive({ lives }),
+        live: () => resource.findLive({}),
       }),
       assign({
         target: pipe([
-          ({ live }) => resource.resolveConfig({ live, lives, deep: true }),
+          ({ live }) => resource.resolveConfig({ live, deep: true }),
         ]),
       }),
       tap(({ live, target }) => {
@@ -815,7 +800,7 @@ exports.ResourceMaker = ({
             providerName: resource.toJSON().providerName,
           },
         ],
-        ({ live, target }) => planUpdate({ live, target, resource, lives }),
+        ({ live, target }) => planUpdate({ live, target, resource }),
       ]),
     ])({});
 
@@ -856,7 +841,7 @@ exports.ResourceMaker = ({
     usedBySet.add(usedBy);
   };
 
-  const resourceMaker = {
+  return {
     type,
     group,
     provider,
@@ -882,11 +867,10 @@ exports.ResourceMaker = ({
     getLive: filterLives ? resolveConfig : getLive,
     findLive,
     getDependencyList,
-    resolveDependencies: ({ lives, dependenciesMustBeUp }) =>
+    resolveDependencies: ({ dependenciesMustBeUp }) =>
       resolveDependencies({
         resourceName,
         dependencies: getDependencies(),
-        lives,
         dependenciesMustBeUp,
       }),
     isUp: ({ live }) =>
@@ -902,6 +886,4 @@ exports.ResourceMaker = ({
         }),
       ])(),
   };
-
-  return resourceMaker;
 };
