@@ -520,25 +520,24 @@ exports.ResourceMaker = ({
       tap((params) => {
         assert(true);
       }),
-      map(async (dependency) => {
-        if (!dependency) {
-          logger.error(`${toString()} has undefined dependencies`);
-          return;
-        }
-        if (isString(dependency)) {
-          return dependency;
-        }
-
-        //TODO isArray
-        if (!dependency.getLive) {
-          return tryCatch(
-            () =>
+      map(
+        switchCase([
+          isEmpty,
+          () => {
+            logger.error(`${toString()} has undefined dependencies`);
+          },
+          isString,
+          identity,
+          // Recursive
+          not(get("getLive")),
+          tryCatch(
+            (dependency) =>
               resolveDependencies({
                 lives,
                 dependencies: () => dependency,
                 dependenciesMustBeUp,
               }),
-            (error) => {
+            (error, dependency) => {
               logger.error(
                 `resolveDependencies: ${toString()}, dep ${dependency.toString()}, error: ${tos(
                   error
@@ -548,59 +547,60 @@ exports.ResourceMaker = ({
                 error: convertError({ error }),
               };
             }
-          )();
-        }
-        return tryCatch(
+          ),
           (dependency) =>
-            pipe([
-              tap((live) => {
-                logger.debug(
-                  `resolveDependencies ${toString()}, dep ${dependency.toString()}, has lives: ${!!lives}`
-                );
-              }),
-              switchCase([
-                () => dependency.filterLives,
-                () => dependency.resolveConfig({ lives }),
-                switchCase([
-                  () => isEmpty(lives),
-                  () => dependency.getLive({ deep: true }),
-                  () => dependency.findLive({ lives }),
-                ]),
-              ]),
-              tap.if(
-                (live) => {
-                  if (dependenciesMustBeUp) {
-                    if (!dependency.isUp({ live })) {
-                      return true;
-                    }
-                    return false;
-                  }
-                },
-                () => {
-                  throw {
-                    message: `${toString()} dependency ${dependency.toString()} is not up`,
-                  };
-                }
-              ),
-              async (live) => ({
-                resource: dependency,
-                config: await dependency.resolveConfig({
-                  deep: true,
-                  live,
-                  lives,
+            tryCatch(
+              pipe([
+                tap(() => {
+                  logger.debug(
+                    `resolveDependencies ${toString()}, dep ${dependency.toString()}, has lives: ${!!lives}`
+                  );
                 }),
-                live,
-              }),
-            ])(),
-          (error, dependency) => {
-            logger.error(`resolveDependencies: ${tos(error)}`);
-            return {
-              item: { resource: dependency.toString() },
-              error: convertError({ error }),
-            };
-          }
-        )(dependency);
-      }),
+                () => dependency,
+                switchCase([
+                  () => dependency.filterLives,
+                  () => dependency.resolveConfig({ lives }),
+                  switchCase([
+                    () => isEmpty(lives),
+                    () => dependency.getLive({ deep: true }),
+                    () => dependency.findLive({ lives }),
+                  ]),
+                ]),
+                tap.if(
+                  (live) => {
+                    if (dependenciesMustBeUp) {
+                      if (!dependency.isUp({ live })) {
+                        return true;
+                      }
+                      return false;
+                    }
+                  },
+                  () => {
+                    throw {
+                      message: `${toString()} dependency ${dependency.toString()} is not up`,
+                    };
+                  }
+                ),
+                async (live) => ({
+                  resource: dependency,
+                  config: await dependency.resolveConfig({
+                    deep: true,
+                    live,
+                    lives,
+                  }),
+                  live,
+                }),
+              ]),
+              (error, dependency) => {
+                logger.error(`resolveDependencies: ${tos(error)}`);
+                return {
+                  item: { resource: dependency.toString() },
+                  error: convertError({ error }),
+                };
+              }
+            )(),
+        ])
+      ),
       tap((result) => {
         /*logger.debug(
           `resolveDependencies for ${()}, result: ${tos(result)}`
@@ -635,7 +635,7 @@ exports.ResourceMaker = ({
       }),
     ])();
 
-  const resolveConfig = async ({
+  const resolveConfig = ({
     live,
     lives,
     resolvedDependencies,
