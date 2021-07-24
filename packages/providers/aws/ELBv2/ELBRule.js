@@ -52,8 +52,8 @@ exports.ELBRule = ({ spec, config }) => {
       }),
       () => ({ live, lives }),
       switchCase([
-        //get("live.IsDefault"),
-        () => false,
+        get("live.IsDefault"),
+        //() => false,
         pipe([
           tap((params) => {
             assert(true);
