@@ -352,6 +352,7 @@ exports.ELBRule = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    isDefault,
     cannotBeDeleted,
     managedByOther,
   };
