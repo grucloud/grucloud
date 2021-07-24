@@ -237,6 +237,43 @@ exports.findNamespaceInTagsOrEksCluster =
       ]),
     ])();
 
+exports.isOurMinionObject = ({ tags, config }) => {
+  const {
+    stage,
+    projectName,
+    stageTagKey,
+    projectNameKey,
+    providerName,
+    createdByProviderKey,
+  } = config;
+  return pipe([
+    () => tags,
+    tap(() => {
+      assert(stage);
+      assert(projectName);
+      assert(providerName);
+    }),
+    switchCase([
+      and([
+        eq(get(projectNameKey), projectName),
+        eq(get(stageTagKey), stage),
+        eq(get(createdByProviderKey), providerName),
+      ]),
+      () => true,
+      () => false,
+    ]),
+    tap((minion) => {
+      // logger.debug(
+      //   `isOurMinionObject ${minion}, ${JSON.stringify({
+      //     stage,
+      //     projectName,
+      //     tags,
+      //   })}`
+      // );
+    }),
+  ])();
+};
+
 exports.buildTags = ({
   name,
   config,

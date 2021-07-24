@@ -10,15 +10,17 @@ const {
   and,
   eq,
   pick,
+  tryCatch,
 } = require("rubico");
 const {
   find,
-  isEmpty,
+  callProp,
   groupBy,
   values,
   first,
   pluck,
   isDeepEqual,
+  identity,
 } = require("rubico/x");
 const logger = require("./logger")({ prefix: "Common" });
 const { tos } = require("./tos");
@@ -91,13 +93,7 @@ exports.axiosErrorToJSON = (error) => ({
   },
 });
 
-const safeJsonParse = (json) => {
-  try {
-    return JSON.parse(json);
-  } catch (error) {
-    return json;
-  }
-};
+const safeJsonParse = tryCatch(JSON.parse, identity);
 
 exports.convertError = ({ error, name, procedure, params }) => {
   assert(error, "error");
@@ -180,7 +176,7 @@ const getByIdCore = ({ type, name, id, findId, getList }) =>
       assert(findId, "getByIdCore findId");
       assert(getList, "getByIdCore getList");
     }),
-    () => getList(),
+    getList,
     tap((xxx) => {
       assert(true);
     }),
@@ -249,14 +245,7 @@ exports.isDownByIdCore =
     );
     return down;
   };
-
-const errorToString = (error) => {
-  try {
-    return JSON.stringify(error);
-  } catch (error) {
-    return error.toString();
-  }
-};
+const errorToString = tryCatch(JSON.stringify, callProp("toString"));
 
 exports.logError = (prefix, error) => {
   logger.error(`${prefix} error:${errorToString(error)}`);
@@ -278,7 +267,7 @@ exports.logError = (prefix, error) => {
 };
 
 exports.md5FileBase64 = pipe([
-  (source) => md5File(source),
+  md5File,
   (md5) => new Buffer.from(md5, "hex").toString("base64"),
 ]);
 
@@ -326,13 +315,10 @@ exports.isOurMinionObject = ({ tags, config }) => {
     () => tags,
     tap(() => {
       assert(stage);
-      //TODO
-      //assert(projectName);
       assert(providerName);
     }),
     switchCase([
       and([
-        //eq(get("projectName"), projectName),
         eq(get(stageTagKey), stage),
         eq(get(createdByProviderKey), providerName),
       ]),
@@ -340,13 +326,13 @@ exports.isOurMinionObject = ({ tags, config }) => {
       () => false,
     ]),
     tap((minion) => {
-      logger.debug(
-        `isOurMinionObject ${minion}, ${JSON.stringify({
-          stage,
-          projectName,
-          tags,
-        })}`
-      );
+      // logger.debug(
+      //   `isOurMinionObject ${minion}, ${JSON.stringify({
+      //     stage,
+      //     projectName,
+      //     tags,
+      //   })}`
+      // );
     }),
   ])();
 };

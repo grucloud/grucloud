@@ -28,7 +28,7 @@ const {
   findNamespaceInTagsOrEksCluster,
   hasKeyInTags,
 } = require("../AwsCommon");
-const { isOurMinionObject } = require("@grucloud/core/Common");
+const { isOurMinionObject } = require("../AwsCommon");
 
 const findName = get("live.AutoScalingGroupName");
 const findId = findName;

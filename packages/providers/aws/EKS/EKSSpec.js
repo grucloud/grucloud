@@ -1,5 +1,5 @@
 const { pipe, assign, map } = require("rubico");
-const { isOurMinionObject } = require("@grucloud/core/Common");
+const { isOurMinionObject } = require("../AwsCommon");
 const { EKSCluster } = require("./EKSCluster");
 const { EKSNodeGroup, compareNodeGroup } = require("./EKSNodeGroup");
 
