@@ -172,7 +172,9 @@ function CoreProvider({
       }),
       () => mapNameToResource.get(uri),
       tap((resource) => {
-        logger.debug(`getResourceFromLive: uri: ${!!resource}`);
+        logger.debug(
+          `getResourceFromLive uri: ${uri}, hasResource: ${!!resource}`
+        );
       }),
     ])();
 
@@ -640,9 +642,19 @@ function CoreProvider({
     pipe([
       () => [...mapTypeToResources.values()],
       tap((resourcesPerType) => {
-        logger.debug("spinnersStartQuery");
+        logger.debug(
+          `spinnersStartQuery #resourcesPerType ${size(resourcesPerType)}`
+        );
       }),
-      filter(pipe([first, not(get("spec.listOnly"))])),
+      map(filter(not(get("spec.listOnly")))),
+      filter(not(isEmpty)),
+      tap((resourcesPerType) => {
+        logger.debug(
+          `spinnersStartQuery #resourcesPerType no listOnly ${size(
+            resourcesPerType
+          )}`
+        );
+      }),
       map((resources) => ({
         provider: providerName,
         type: typeFromResources(resources),

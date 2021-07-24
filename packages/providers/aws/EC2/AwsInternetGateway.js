@@ -44,21 +44,12 @@ const isDefault =
   ({ live, lives }) =>
     pipe([
       () => lives.getByType({ type: "Vpc", group: "ec2", providerName }),
-      tap((result) => {
-        logger.debug(`isDefault ${result}`);
-      }),
       find(get("isDefault")),
-      tap((result) => {
-        logger.debug(`isDefault ${result}`);
-      }),
       switchCase([
         eq(get("live.VpcId"), findVpcId(live)),
         () => true,
         () => false,
       ]),
-      tap((result) => {
-        logger.debug(`isDefault ${result}`);
-      }),
     ])();
 
 exports.isDefault = isDefault;

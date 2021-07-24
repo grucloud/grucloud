@@ -195,7 +195,7 @@ const findEksCluster =
         }),
       find(eq(get("name"), findValueInTags({ key })(live))),
       tap((cluster) => {
-        logger.debug(`findEksCluster ${!!cluster}`);
+        //logger.debug(`findEksCluster ${!!cluster}`);
       }),
     ])();
 
@@ -324,12 +324,12 @@ const isOurMinionFactory =
         find(and([eq(get(key), stageTagKey), eq(get(value), stage)])),
       ]),
       tap((minion) => {
-        logger.debug(
-          `isOurMinion ${minion}, ${JSON.stringify({
-            stage,
-            projectName,
-          })}`
-        );
+        // logger.debug(
+        //   `isOurMinion ${minion}, ${JSON.stringify({
+        //     stage,
+        //     projectName,
+        //   })}`
+        // );
       }),
     ])();
   };
