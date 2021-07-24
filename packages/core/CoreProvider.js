@@ -1393,9 +1393,9 @@ function CoreProvider({
 
   const onStateChangeResource = ({ operation, onStateChange }) => {
     return ({ resource, error, ...other }) => {
-      logger.debug(
-        `onStateChangeResource resource:${tos(resource)}, ${tos(other)}`
-      );
+      // logger.debug(
+      //   `onStateChangeResource resource:${tos(resource)}, ${tos(other)}`
+      // );
 
       assert(resource, "no resource");
       assert(resource.type, "no resource.type");

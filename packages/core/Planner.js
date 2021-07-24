@@ -501,7 +501,7 @@ exports.Planner = ({
     const error = any((entry) => entry.state === STATES.ERROR)(statusValues());
 
     const results = statusValues();
-    logger.debug(`Planner ${error && "error"}, result: ${tos(results)}`);
+    //logger.debug(`Planner ${error && "error"}, result: ${tos(results)}`);
 
     return {
       error,

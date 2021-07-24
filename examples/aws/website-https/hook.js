@@ -17,6 +17,7 @@ const checkDig = async ({ nameServer, domain, type = "A" }) => {
 
   await retryCall({
     name: `dig ${commandParam}`,
+    // TODO rubico when
     fn: switchCase([
       () => type === "A",
       () => resolver.resolve4(domain),

@@ -69,6 +69,7 @@ const envFromStage = ({ configDir, stage }) => {
   logger.info(`envFromStage: ${(configDir, stage)}`);
   pipe([
     () => npath.join(configDir, `${stage}.env`),
+    // TODO rubico when
     switchCase([
       (envFile) => fs.existsSync(envFile),
       (envFile) => envFromFile({ envFile }),
