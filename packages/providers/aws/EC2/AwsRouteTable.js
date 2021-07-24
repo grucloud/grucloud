@@ -67,8 +67,7 @@ exports.AwsRouteTable = ({ spec, config }) => {
       }),
       get("name"),
       tap((name) => {
-        //TODO
-        //assert(name);
+        assert(name);
       }),
       (name) => `rt-default-${name}`,
     ])();
