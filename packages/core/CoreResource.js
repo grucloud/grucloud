@@ -563,18 +563,23 @@ exports.ResourceMaker = ({
                   switchCase([
                     () => isEmpty(lives),
                     () => dependency.getLive({ deep: true }),
-                    () => dependency.findLive({ lives }),
+                    pipe([
+                      () => dependency.findLive({ lives }),
+                      switchCase([
+                        isEmpty,
+                        () => dependency.getLive({ deep: true }),
+                        identity,
+                      ]),
+                    ]),
                   ]),
                 ]),
                 tap.if(
-                  (live) => {
-                    if (dependenciesMustBeUp) {
-                      if (!dependency.isUp({ live })) {
-                        return true;
-                      }
-                      return false;
-                    }
-                  },
+                  switchCase([
+                    (live) =>
+                      dependenciesMustBeUp && !dependency.isUp({ live }),
+                    () => true,
+                    () => false,
+                  ]),
                   () => {
                     throw {
                       message: `${toString()} dependency ${dependency.toString()} is not up`,
@@ -591,7 +596,7 @@ exports.ResourceMaker = ({
                   live,
                 }),
               ]),
-              (error, dependency) => {
+              (error) => {
                 logger.error(`resolveDependencies: ${tos(error)}`);
                 return {
                   item: { resource: dependency.toString() },
