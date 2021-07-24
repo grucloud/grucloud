@@ -75,8 +75,8 @@ module.exports = ({ stage }) => ({
       },
     },
     InstanceProfile: {
-      eksC8bd65b8B0ca_0c54_53eaBa934cd36731: {
-        name: "eks-c8bd65b8-b0ca-0c54-53ea-ba934cd36731",
+      eksE8bd6d03A4a6_04ddA352D1e91e3c768c: {
+        name: "eks-e8bd6d03-a4a6-04dd-a352-d1e91e3c768c",
       },
     },
   },
@@ -179,8 +179,33 @@ module.exports = ({ stage }) => ({
       },
     },
     Volume: {
-      vol_04776df05f77ef98f: {
-        name: "vol-04776df05f77ef98f",
+      kubernetesPvDbPostgres_0: {
+        name: "kubernetes-pv-db-postgres-0",
+        properties: {
+          Size: 1,
+          VolumeType: "gp2",
+          Tags: [
+            {
+              Key: "kubernetes.io/created-for/pv/name",
+              Value: "pvc-0e8ce067-ecdb-4e27-884f-de4a568f4857",
+            },
+            {
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "owned",
+            },
+            {
+              Key: "kubernetes.io/created-for/pvc/namespace",
+              Value: "default",
+            },
+            {
+              Key: "kubernetes.io/created-for/pvc/name",
+              Value: "pv-db-postgres-0",
+            },
+          ],
+        },
+      },
+      vol_08fae5d784f26967b: {
+        name: "vol-08fae5d784f26967b",
         properties: {
           Size: 20,
           VolumeType: "gp2",
@@ -241,32 +266,32 @@ module.exports = ({ stage }) => ({
             "EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.",
           Tags: [
             {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "owned",
-            },
-            {
               Key: "aws:eks:cluster-name",
               Value: "cluster",
             },
+            {
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "owned",
+            },
           ],
-        },
-      },
-      loadBalancerSecurityGroup: {
-        name: "load-balancer-security-group",
-        properties: {
-          Description: "Managed By GruCloud",
         },
       },
       securityGroupCluster: {
         name: "security-group-cluster",
         properties: {
-          Description: "Managed By GruCloud",
+          Description: "EKS Cluster Security Group",
+        },
+      },
+      securityGroupLoadBalancer: {
+        name: "security-group-load-balancer",
+        properties: {
+          Description: "Load Balancer HTTP HTTPS Security Group",
         },
       },
       securityGroupNode: {
         name: "security-group-node",
         properties: {
-          Description: "Managed By GruCloud",
+          Description: "SG for the EKS Nodes",
           Tags: [
             {
               Key: "kubernetes.io/cluster/cluster",
@@ -310,11 +335,28 @@ module.exports = ({ stage }) => ({
       sgDefaultVpcRuleIngressAllFromSgDefaultVpc: {
         name: "sg-default-vpc-rule-ingress-all-from-sg-default-vpc",
       },
-      sgDefaultVpcRuleIngressAllFromSgDefaultVpc: {
-        name: "sg-default-vpc-rule-ingress-all-from-sg-default-vpc",
-      },
       sgNodesRuleIngressAll: {
         name: "sg-nodes-rule-ingress-all",
+      },
+      sgRuleIngresEksClusterFromLoadBalancer: {
+        name: "sg-rule-ingres-eks-cluster-from-load-balancer",
+        properties: {
+          IpPermission: {
+            IpProtocol: "tcp",
+            FromPort: 1025,
+            ToPort: 65535,
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+          },
+        },
       },
       sgRuleIngressLbHttp: {
         name: "sg-rule-ingress-lb-http",
@@ -381,11 +423,11 @@ module.exports = ({ stage }) => ({
       eksClusterSgCluster_872092154RuleEgressAllV4: {
         name: "eks-cluster-sg-cluster-872092154-rule-egress-all-v4",
       },
-      loadBalancerSecurityGroupRuleEgressAllV4: {
-        name: "load-balancer-security-group-rule-egress-all-v4",
-      },
       securityGroupClusterRuleEgressAllV4: {
         name: "security-group-cluster-rule-egress-all-v4",
+      },
+      securityGroupLoadBalancerRuleEgressAllV4: {
+        name: "security-group-load-balancer-rule-egress-all-v4",
       },
       securityGroupNodeRuleEgressAllV4: {
         name: "security-group-node-rule-egress-all-v4",
@@ -413,27 +455,36 @@ module.exports = ({ stage }) => ({
       sgDefaultVpcRuleEgressAllV4: {
         name: "sg-default-vpc-rule-egress-all-v4",
       },
-      sgDefaultVpcRuleEgressAllV4: {
-        name: "sg-default-vpc-rule-egress-all-v4",
-      },
     },
     Instance: {
-      nodeGroupPrivateClusterI_0e34849e51bc9c2b0: {
-        name: "node-group-private-cluster::i-0e34849e51bc9c2b0",
+      nodeGroupPrivateClusterI_06f89e9b4bb1d2fbe: {
+        name: "node-group-private-cluster::i-06f89e9b4bb1d2fbe",
         properties: {
           InstanceType: "t2.medium",
-          ImageId: "ami-037de68840c2c5e3b",
+          ImageId: "ami-0ee353797c2e5f904",
           Placement: {
             AvailabilityZone: "eu-west-2a",
           },
           Tags: [
             {
-              Key: "aws:ec2:fleet-id",
-              Value: "fleet-cdf76a30-eb9f-5977-2498-23a831a45d54",
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "owned",
             },
             {
-              Key: "k8s.io/cluster-autoscaler/cluster",
-              Value: "owned",
+              Key: "aws:autoscaling:groupName",
+              Value: "eks-e8bd6d03-a4a6-04dd-a352-d1e91e3c768c",
+            },
+            {
+              Key: "aws:ec2:fleet-id",
+              Value: "fleet-6df7c21a-c1b5-f3d5-8c12-032048a48c36",
+            },
+            {
+              Key: "eks:cluster-name",
+              Value: "cluster",
+            },
+            {
+              Key: "k8s.io/cluster-autoscaler/enabled",
+              Value: "true",
             },
             {
               Key: "aws:ec2launchtemplate:version",
@@ -444,24 +495,12 @@ module.exports = ({ stage }) => ({
               Value: "node-group-private-cluster",
             },
             {
-              Key: "k8s.io/cluster-autoscaler/enabled",
-              Value: "true",
-            },
-            {
               Key: "aws:ec2launchtemplate:id",
-              Value: "lt-02fc324a4401d1813",
+              Value: "lt-0741f39aa9003255d",
             },
             {
-              Key: "aws:autoscaling:groupName",
-              Value: "eks-c8bd65b8-b0ca-0c54-53ea-ba934cd36731",
-            },
-            {
-              Key: "kubernetes.io/cluster/cluster",
+              Key: "k8s.io/cluster-autoscaler/cluster",
               Value: "owned",
-            },
-            {
-              Key: "eks:cluster-name",
-              Value: "cluster",
             },
           ],
         },
@@ -504,40 +543,40 @@ module.exports = ({ stage }) => ({
   },
   autoscaling: {
     AutoScalingGroup: {
-      eksC8bd65b8B0ca_0c54_53eaBa934cd36731: {
-        name: "eks-c8bd65b8-b0ca-0c54-53ea-ba934cd36731",
+      eksE8bd6d03A4a6_04ddA352D1e91e3c768c: {
+        name: "eks-e8bd6d03-a4a6-04dd-a352-d1e91e3c768c",
         properties: {
           Tags: [
             {
-              ResourceId: "eks-c8bd65b8-b0ca-0c54-53ea-ba934cd36731",
+              ResourceId: "eks-e8bd6d03-a4a6-04dd-a352-d1e91e3c768c",
               ResourceType: "auto-scaling-group",
               Key: "eks:cluster-name",
               Value: "cluster",
               PropagateAtLaunch: true,
             },
             {
-              ResourceId: "eks-c8bd65b8-b0ca-0c54-53ea-ba934cd36731",
+              ResourceId: "eks-e8bd6d03-a4a6-04dd-a352-d1e91e3c768c",
               ResourceType: "auto-scaling-group",
               Key: "eks:nodegroup-name",
               Value: "node-group-private-cluster",
               PropagateAtLaunch: true,
             },
             {
-              ResourceId: "eks-c8bd65b8-b0ca-0c54-53ea-ba934cd36731",
+              ResourceId: "eks-e8bd6d03-a4a6-04dd-a352-d1e91e3c768c",
               ResourceType: "auto-scaling-group",
               Key: "k8s.io/cluster-autoscaler/cluster",
               Value: "owned",
               PropagateAtLaunch: true,
             },
             {
-              ResourceId: "eks-c8bd65b8-b0ca-0c54-53ea-ba934cd36731",
+              ResourceId: "eks-e8bd6d03-a4a6-04dd-a352-d1e91e3c768c",
               ResourceType: "auto-scaling-group",
               Key: "k8s.io/cluster-autoscaler/enabled",
               Value: "true",
               PropagateAtLaunch: true,
             },
             {
-              ResourceId: "eks-c8bd65b8-b0ca-0c54-53ea-ba934cd36731",
+              ResourceId: "eks-e8bd6d03-a4a6-04dd-a352-d1e91e3c768c",
               ResourceType: "auto-scaling-group",
               Key: "kubernetes.io/cluster/cluster",
               Value: "owned",
@@ -630,6 +669,56 @@ module.exports = ({ stage }) => ({
           Conditions: [],
         },
       },
+      ruleHttpRedirectHttps: {
+        name: "rule-http-redirect-https",
+        properties: {
+          Priority: "1",
+          Conditions: [
+            {
+              Field: "path-pattern",
+              Values: ["/*"],
+            },
+          ],
+          Actions: [
+            {
+              Type: "redirect",
+              Order: 1,
+              RedirectConfig: {
+                Protocol: "HTTPS",
+                Port: "443",
+                Host: "#{host}",
+                Path: "/#{path}",
+                Query: "#{query}",
+                StatusCode: "HTTP_301",
+              },
+            },
+          ],
+        },
+      },
+      ruleRestHttps: {
+        name: "rule-rest-https",
+        properties: {
+          Priority: "10",
+          Conditions: [
+            {
+              Field: "path-pattern",
+              Values: ["/api/*"],
+            },
+          ],
+        },
+      },
+      ruleWebHttps: {
+        name: "rule-web-https",
+        properties: {
+          Priority: "11",
+          Conditions: [
+            {
+              Field: "path-pattern",
+              Values: ["/*"],
+            },
+          ],
+        },
+      },
     },
   },
   eks: {
@@ -672,12 +761,6 @@ module.exports = ({ stage }) => ({
         name: "starhackit-eks-lean.grucloud.org.",
         properties: {
           Name: "starhackit-eks-lean.grucloud.org.",
-        },
-      },
-      testLoadBalancerGrucloudOrg: {
-        name: "test-load-balancer.grucloud.org.",
-        properties: {
-          Name: "test-load-balancer.grucloud.org.",
         },
       },
     },
