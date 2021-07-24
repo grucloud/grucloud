@@ -143,15 +143,15 @@ exports.EKSCluster = ({ spec, config }) => {
           name: `eks createCluster: ${name}`,
           fn: () => eks().createCluster(payload),
           config: { retryCount: 4, retryDelay: 5e3 },
-          isExpectedException: pipe([
-            tap((ex) => {
-              logger.error(
-                `createCluster isExpectedException ${name} ? ${tos(ex)}`
-              );
-            }),
-            get("message"),
-            includes("The KeyArn in encryptionConfig provider"),
-          ]),
+          shouldRetryOnException: ({ error }) =>
+            pipe([
+              tap(() => {
+                logger.error(`createCluster isExpectedException ${tos(error)}`);
+              }),
+              () => error,
+              get("message"),
+              includes("The KeyArn in encryptionConfig provider"),
+            ])(),
         }),
       get("cluster"),
       () =>
