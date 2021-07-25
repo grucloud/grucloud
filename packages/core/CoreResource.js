@@ -318,7 +318,7 @@ exports.ResourceMaker = ({
       identity,
       (dependencies) => () => ({ ...dependencies }),
     ]),
-    (dep) => () => dep(provider.resources()),
+    (dep) => () => dep({ resources: provider.resources() }),
   ]);
 
   const client = createClient({

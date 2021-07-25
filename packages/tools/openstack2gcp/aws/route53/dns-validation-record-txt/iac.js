@@ -4,28 +4,19 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = async ({ provider }) => {
   const { config } = provider;
-  return pipe([
-    () => ({}),
-    (resources) =>
-      set(
-        "route53.HostedZone.grucloudOrg",
-        provider.route53.makeHostedZone({
-          name: config.route53.HostedZone.grucloudOrg.name,
-          properties: () => config.route53.HostedZone.grucloudOrg.properties,
-        })
-      )(resources),
-    (resources) =>
-      set(
-        "route53.Record.txtGrucloudOrg",
-        provider.route53.makeRecord({
-          name: config.route53.Record.txtGrucloudOrg.name,
-          dependencies: {
-            hostedZone: resources.route53.HostedZone.grucloudOrg,
-          },
-          properties: () => config.route53.Record.txtGrucloudOrg.properties,
-        })
-      )(resources),
-  ])();
+
+  provider.route53.makeHostedZone({
+    name: config.route53.HostedZone.grucloudOrg.name,
+    properties: () => config.route53.HostedZone.grucloudOrg.properties,
+  });
+
+  provider.route53.makeRecord({
+    name: config.route53.Record.txtGrucloudOrg.name,
+    dependencies: ({ resources }) => ({
+      hostedZone: resources.route53.HostedZone.grucloudOrg,
+    }),
+    properties: () => config.route53.Record.txtGrucloudOrg.properties,
+  });
 };
 
 exports.createResources = createResources;

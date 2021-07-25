@@ -206,7 +206,7 @@ const buildDependencies = ({ resource, lives, dependencies = {} }) =>
     switchCase([
       isEmpty,
       () => "",
-      (values) => `dependencies: (resources) =>({ 
+      (values) => `dependencies: ({resources}) =>({ 
        ${values.join(",\n")}
      }),`,
     ]),

@@ -47,7 +47,7 @@ const createResources = async ({ provider }) => {
   provider.iam.makeRole({
     name: config.iam.Role.roleCluster.name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       policies: [
         resources.iam.Policy.amazonEksClusterPolicy,
         resources.iam.Policy.amazonEksvpcResourceController,
@@ -59,7 +59,7 @@ const createResources = async ({ provider }) => {
   provider.iam.makeRole({
     name: config.iam.Role.roleLoadBalancer.name,
     namespace: "LoadBalancerControllerRole",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       policies: [resources.iam.Policy.awsLoadBalancerControllerIamPolicy],
       openIdConnectProvider: resources.iam.OpenIDConnectProvider.oidcEks,
     }),
@@ -68,7 +68,7 @@ const createResources = async ({ provider }) => {
   provider.iam.makeRole({
     name: config.iam.Role.roleNodeGroup.name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       policies: [
         resources.iam.Policy.amazonEksWorkerNodePolicy,
         resources.iam.Policy.amazonEc2ContainerRegistryReadOnly,
@@ -82,7 +82,7 @@ const createResources = async ({ provider }) => {
     name: config.iam.InstanceProfile.eks_1abd6da8_68d5_84a6_7af4_30618ba3c23a
       .name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       roles: [resources.iam.Role.roleNodeGroup],
     }),
   });
@@ -90,7 +90,7 @@ const createResources = async ({ provider }) => {
   provider.iam.makeOpenIDConnectProvider({
     name: config.iam.OpenIDConnectProvider.oidcEks.name,
     namespace: "LoadBalancerControllerRole",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       cluster: resources.eks.Cluster.cluster,
     }),
   });
@@ -108,7 +108,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.makeSubnet({
     name: config.ec2.Subnet.subnetPrivateA.name,
     namespace: "VPC",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
     properties: () => config.ec2.Subnet.subnetPrivateA.properties,
@@ -117,7 +117,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.makeSubnet({
     name: config.ec2.Subnet.subnetPrivateB.name,
     namespace: "VPC",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
     properties: () => config.ec2.Subnet.subnetPrivateB.properties,
@@ -126,7 +126,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.makeSubnet({
     name: config.ec2.Subnet.subnetPublicA.name,
     namespace: "VPC",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
     properties: () => config.ec2.Subnet.subnetPublicA.properties,
@@ -135,7 +135,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.makeSubnet({
     name: config.ec2.Subnet.subnetPublicB.name,
     namespace: "VPC",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
     properties: () => config.ec2.Subnet.subnetPublicB.properties,
@@ -161,7 +161,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.makeInternetGateway({
     name: config.ec2.InternetGateway.internetGateway.name,
     namespace: "VPC",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
   });
@@ -169,7 +169,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.makeNatGateway({
     name: config.ec2.NatGateway.natGateway.name,
     namespace: "VPC",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       subnet: resources.ec2.Subnet.subnetPublicA,
       eip: resources.ec2.ElasticIpAddress.iep,
     }),
@@ -178,7 +178,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.makeRouteTable({
     name: config.ec2.RouteTable.routeTablePrivateA.name,
     namespace: "VPC",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
       subnets: [resources.ec2.Subnet.subnetPrivateA],
     }),
@@ -187,7 +187,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.makeRouteTable({
     name: config.ec2.RouteTable.routeTablePrivateB.name,
     namespace: "VPC",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
       subnets: [resources.ec2.Subnet.subnetPrivateB],
     }),
@@ -196,7 +196,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.makeRouteTable({
     name: config.ec2.RouteTable.routeTablePublic.name,
     namespace: "VPC",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
       subnets: [
         resources.ec2.Subnet.subnetPublicB,
@@ -208,7 +208,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.makeRoute({
     name: config.ec2.Route.routePrivateA.name,
     namespace: "VPC",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       routeTable: resources.ec2.RouteTable.routeTablePrivateA,
       natGateway: resources.ec2.NatGateway.natGateway,
     }),
@@ -218,7 +218,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.makeRoute({
     name: config.ec2.Route.routePrivateB.name,
     namespace: "VPC",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       routeTable: resources.ec2.RouteTable.routeTablePrivateB,
       natGateway: resources.ec2.NatGateway.natGateway,
     }),
@@ -228,7 +228,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.makeRoute({
     name: config.ec2.Route.routePublic.name,
     namespace: "VPC",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       routeTable: resources.ec2.RouteTable.routeTablePublic,
       ig: resources.ec2.InternetGateway.internetGateway,
     }),
@@ -238,7 +238,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.useSecurityGroup({
     name: config.ec2.SecurityGroup.eksClusterSgCluster_872092154.name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
     properties: () =>
@@ -248,7 +248,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.useSecurityGroup({
     name: config.ec2.SecurityGroup.k8sDefaultIngress_05be0614e6.name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
     properties: () =>
@@ -258,7 +258,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.makeSecurityGroup({
     name: config.ec2.SecurityGroup.securityGroupCluster.name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
     properties: () => config.ec2.SecurityGroup.securityGroupCluster.properties,
@@ -267,7 +267,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.makeSecurityGroup({
     name: config.ec2.SecurityGroup.securityGroupNode.name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
     properties: () => config.ec2.SecurityGroup.securityGroupNode.properties,
@@ -275,14 +275,14 @@ const createResources = async ({ provider }) => {
 
   provider.ec2.useDefaultSecurityGroup({
     name: config.ec2.SecurityGroup.sgDefaultVpc.name,
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
   });
 
   provider.ec2.useDefaultSecurityGroup({
     name: config.ec2.SecurityGroup.sgDefaultVpcDefault.name,
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpcDefault,
     }),
   });
@@ -291,7 +291,7 @@ const createResources = async ({ provider }) => {
     name: config.ec2.SecurityGroupRuleIngress
       .eksClusterSgCluster_872092154RuleIngressAllFromEksClusterSgCluster_872092154
       .name,
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       securityGroup: resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
       securityGroupFrom:
         resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
@@ -302,7 +302,7 @@ const createResources = async ({ provider }) => {
     name: config.ec2.SecurityGroupRuleIngress
       .eksClusterSgCluster_872092154RuleIngressTcp_0_65535FromK8sDefaultIngress_05be0614e6
       .name,
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       securityGroup: resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
     }),
     properties: () =>
@@ -314,7 +314,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.useSecurityGroupRuleIngress({
     name: config.ec2.SecurityGroupRuleIngress
       .k8sDefaultIngress_05be0614e6RuleIngressTcp_443V4.name,
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       securityGroup: resources.ec2.SecurityGroup.k8sDefaultIngress_05be0614e6,
     }),
     properties: () =>
@@ -325,7 +325,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.useSecurityGroupRuleIngress({
     name: config.ec2.SecurityGroupRuleIngress
       .k8sDefaultIngress_05be0614e6RuleIngressTcp_80V4.name,
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       securityGroup: resources.ec2.SecurityGroup.k8sDefaultIngress_05be0614e6,
     }),
     properties: () =>
@@ -336,7 +336,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.makeSecurityGroupRuleIngress({
     name: config.ec2.SecurityGroupRuleIngress.sgClusterRuleIngressHttps.name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       securityGroup: resources.ec2.SecurityGroup.securityGroupCluster,
     }),
     properties: () =>
@@ -346,7 +346,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.useDefaultSecurityGroupRuleIngress({
     name: config.ec2.SecurityGroupRuleIngress
       .sgDefaultVpcRuleIngressAllFromSgDefaultVpc.name,
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       securityGroup: resources.ec2.SecurityGroup.sgDefaultVpc,
       securityGroupFrom: resources.ec2.SecurityGroup.sgDefaultVpc,
     }),
@@ -355,7 +355,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.useDefaultSecurityGroupRuleIngress({
     name: config.ec2.SecurityGroupRuleIngress.sgNodesRuleIngressAll.name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
     }),
   });
@@ -364,7 +364,7 @@ const createResources = async ({ provider }) => {
     name: config.ec2.SecurityGroupRuleIngress.sgRuleNodeGroupIngressCluster
       .name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
     }),
     properties: () =>
@@ -375,7 +375,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.useDefaultSecurityGroupRuleEgress({
     name: config.ec2.SecurityGroupRuleEgress
       .eksClusterSgCluster_872092154RuleEgressAllV4.name,
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       securityGroup: resources.ec2.SecurityGroup.eksClusterSgCluster_872092154,
     }),
   });
@@ -383,7 +383,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.useDefaultSecurityGroupRuleEgress({
     name: config.ec2.SecurityGroupRuleEgress
       .k8sDefaultIngress_05be0614e6RuleEgressAllV4.name,
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       securityGroup: resources.ec2.SecurityGroup.k8sDefaultIngress_05be0614e6,
     }),
   });
@@ -391,7 +391,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.useDefaultSecurityGroupRuleEgress({
     name: config.ec2.SecurityGroupRuleEgress.securityGroupClusterRuleEgressAllV4
       .name,
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       securityGroup: resources.ec2.SecurityGroup.securityGroupCluster,
     }),
   });
@@ -399,7 +399,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.useDefaultSecurityGroupRuleEgress({
     name: config.ec2.SecurityGroupRuleEgress.securityGroupNodeRuleEgressAllV4
       .name,
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       securityGroup: resources.ec2.SecurityGroup.securityGroupNode,
     }),
   });
@@ -407,7 +407,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.makeSecurityGroupRuleEgress({
     name: config.ec2.SecurityGroupRuleEgress.sgClusterRuleEgress.name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       securityGroup: resources.ec2.SecurityGroup.securityGroupCluster,
     }),
     properties: () =>
@@ -416,7 +416,7 @@ const createResources = async ({ provider }) => {
 
   provider.ec2.useDefaultSecurityGroupRuleEgress({
     name: config.ec2.SecurityGroupRuleEgress.sgDefaultVpcRuleEgressAllV4.name,
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       securityGroup: resources.ec2.SecurityGroup.sgDefaultVpc,
     }),
   });
@@ -424,7 +424,7 @@ const createResources = async ({ provider }) => {
   provider.ec2.useInstance({
     name: config.ec2.Instance.nodeGroupPrivateClusterI_0b83ed3973287c57e.name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       subnet: resources.ec2.Subnet.subnetPrivateB,
       iamInstanceProfile:
         resources.iam.InstanceProfile.eks_1abd6da8_68d5_84a6_7af4_30618ba3c23a,
@@ -477,7 +477,7 @@ const createResources = async ({ provider }) => {
   provider.elb.useLoadBalancer({
     name: config.elb.LoadBalancer.k8sDefaultIngressE514cce9f1.name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       subnets: [
         resources.ec2.Subnet.subnetPublicB,
         resources.ec2.Subnet.subnetPublicA,
@@ -493,7 +493,7 @@ const createResources = async ({ provider }) => {
   provider.elb.useTargetGroup({
     name: config.elb.TargetGroup.k8sDefaultRestF2d39b1bea.name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
     properties: () =>
@@ -503,7 +503,7 @@ const createResources = async ({ provider }) => {
   provider.elb.useTargetGroup({
     name: config.elb.TargetGroup.k8sDefaultWebC7d57981c9.name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       vpc: resources.ec2.Vpc.vpc,
     }),
     properties: () => config.elb.TargetGroup.k8sDefaultWebC7d57981c9.properties,
@@ -514,7 +514,7 @@ const createResources = async ({ provider }) => {
       .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277a_81b987253d9c289f
       .name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       loadBalancer: resources.elb.LoadBalancer.k8sDefaultIngressE514cce9f1,
       certificate: resources.acm.Certificate.starhackitEksLbcGrucloudOrg,
     }),
@@ -529,7 +529,7 @@ const createResources = async ({ provider }) => {
       .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277aEc89cb412dae7637
       .name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       loadBalancer: resources.elb.LoadBalancer.k8sDefaultIngressE514cce9f1,
     }),
     properties: () =>
@@ -543,7 +543,7 @@ const createResources = async ({ provider }) => {
       .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277a_81b987253d9c289f_4bea3f1f090d25dc
       .name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       listener:
         resources.elb.Listener
           .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277a_81b987253d9c289f,
@@ -560,7 +560,7 @@ const createResources = async ({ provider }) => {
       .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277a_81b987253d9c289f_75d1cc3e15ae481b
       .name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       listener:
         resources.elb.Listener
           .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277a_81b987253d9c289f,
@@ -577,7 +577,7 @@ const createResources = async ({ provider }) => {
       .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277aEc89cb412dae7637_06881494aa16f0c2
       .name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       listener:
         resources.elb.Listener
           .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277aEc89cb412dae7637,
@@ -594,7 +594,7 @@ const createResources = async ({ provider }) => {
       .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277aEc89cb412dae7637_5d97d397c4531bab
       .name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       listener:
         resources.elb.Listener
           .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277aEc89cb412dae7637,
@@ -611,7 +611,7 @@ const createResources = async ({ provider }) => {
       .ruleDefaultArnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277a_81b987253d9c289f
       .name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       listener:
         resources.elb.Listener
           .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277a_81b987253d9c289f,
@@ -627,7 +627,7 @@ const createResources = async ({ provider }) => {
       .ruleDefaultArnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277aEc89cb412dae7637
       .name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       listener:
         resources.elb.Listener
           .arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277aEc89cb412dae7637,
@@ -641,7 +641,7 @@ const createResources = async ({ provider }) => {
   provider.eks.makeCluster({
     name: config.eks.Cluster.cluster.name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       subnets: [
         resources.ec2.Subnet.subnetPublicA,
         resources.ec2.Subnet.subnetPublicB,
@@ -660,7 +660,7 @@ const createResources = async ({ provider }) => {
   provider.eks.makeNodeGroup({
     name: config.eks.NodeGroup.nodeGroupPrivateCluster.name,
     namespace: "EKS",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       cluster: resources.eks.Cluster.cluster,
       subnets: [
         resources.ec2.Subnet.subnetPrivateA,
@@ -685,7 +685,7 @@ const createResources = async ({ provider }) => {
     name: config.route53.Record.certificateValidationStarhackitEksLbcGrucloudOrg
       .name,
     namespace: "Certificate",
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       hostedZone: resources.route53.HostedZone.starhackitEksLbcGrucloudOrg,
       certificate: resources.acm.Certificate.starhackitEksLbcGrucloudOrg,
     }),
@@ -694,7 +694,7 @@ const createResources = async ({ provider }) => {
   provider.route53.makeRecord({
     name: config.route53.Record
       .dnsRecordAliasLoadBalancerStarhackitEksLbcGrucloudOrg.name,
-    dependencies: (resources) => ({
+    dependencies: ({ resources }) => ({
       hostedZone: resources.route53.HostedZone.starhackitEksLbcGrucloudOrg,
       loadBalancer: resources.elb.LoadBalancer.k8sDefaultIngressE514cce9f1,
     }),
