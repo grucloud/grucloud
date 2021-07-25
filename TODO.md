@@ -1,8 +1,8 @@
 ## Bugs
 
-- gc a: when an assert is thrown, it does not exit but ask for deployment confirmation.
 - check stage for all providers
 - compare refactor
+- compare Tags
 
 ## Diagram
 
@@ -67,6 +67,7 @@
 
 ## Aws
 
+- document create key pair
 - throw error => throw Error(error.message);
 - useCertificate or make Certificate ?
 - https://aws.amazon.com/blogs/aws/easily-manage-security-group-rules-with-the-new-security-group-rule-id/
@@ -94,7 +95,6 @@
 - https://medium.com/dev-genius/create-an-amazon-eks-cluster-with-managed-node-group-using-terraform-a3b50d276b13
 - security group update
 
-- ssh should use use kp.pem instead of ssh-add
 - aws.config.loadFromPath('./AwsConfig.json');
 
 - error padend
