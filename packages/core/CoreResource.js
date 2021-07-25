@@ -483,10 +483,7 @@ exports.ResourceMaker = ({
       }),
       getDependencies(),
       filter(and([not(isString), not(isEmpty)])),
-      transform(
-        map((dep) => dep),
-        () => []
-      ),
+      transform(map(identity), () => []),
       //TODO filter(not(isEmpty))
       tap((result) => {
         logger.info(`getDependencyList ${type} `);

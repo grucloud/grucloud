@@ -134,9 +134,11 @@ function CoreProvider({
   ]);
 
   const providerConfig = pipe([
+    () => config,
     defaultsDeep({ providerName }),
     defaultsDeep(configProviderDefault),
-  ])(config);
+  ])();
+
   logger.debug(
     `CoreProvider name: ${providerName}, type ${type}, config: ${tos(
       providerConfig
