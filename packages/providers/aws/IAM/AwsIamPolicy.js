@@ -349,11 +349,11 @@ exports.AwsIamPolicy = ({ spec, config }) => {
 exports.isOurMinionIamPolicy = (item) =>
   pipe([
     () => item,
-    tap(({ resource }) => {
-      assert(resource);
+    tap(({ live }) => {
+      assert(live);
     }),
     or([get("resource.readOnly"), isOurMinion]),
     tap((isOurMinion) => {
-      logger.debug(`isOurMinionIamPolicy '${item.live.name}' ${isOurMinion}`);
+      //logger.debug(`isOurMinionIamPolicy '${item.live.name}' ${isOurMinion}`);
     }),
   ])();
