@@ -75,8 +75,8 @@ module.exports = ({ stage }) => ({
       },
     },
     InstanceProfile: {
-      eksE8bd6d03A4a6_04ddA352D1e91e3c768c: {
-        name: "eks-e8bd6d03-a4a6-04dd-a352-d1e91e3c768c",
+      eks_5abd6ec8_6bfaB582_9a57_975f586ae231: {
+        name: "eks-5abd6ec8-6bfa-b582-9a57-975f586ae231",
       },
     },
   },
@@ -178,6 +178,17 @@ module.exports = ({ stage }) => ({
         },
       },
     },
+    KeyPair: {
+      kpTestEc2: {
+        name: "kp-test-ec2",
+        properties: {
+          KeyPairId: "key-09b774dead6f75aeb",
+          KeyFingerprint:
+            "c2:c3:28:89:c4:eb:b8:15:f0:43:78:6c:dd:8a:0e:2f:8f:17:de:4a",
+          KeyName: "kp-test-ec2",
+        },
+      },
+    },
     Volume: {
       kubernetesPvDbPostgres_0: {
         name: "kubernetes-pv-db-postgres-0",
@@ -186,26 +197,26 @@ module.exports = ({ stage }) => ({
           VolumeType: "gp2",
           Tags: [
             {
-              Key: "kubernetes.io/created-for/pv/name",
-              Value: "pvc-0e8ce067-ecdb-4e27-884f-de4a568f4857",
-            },
-            {
               Key: "kubernetes.io/cluster/cluster",
               Value: "owned",
+            },
+            {
+              Key: "kubernetes.io/created-for/pvc/name",
+              Value: "pv-db-postgres-0",
             },
             {
               Key: "kubernetes.io/created-for/pvc/namespace",
               Value: "default",
             },
             {
-              Key: "kubernetes.io/created-for/pvc/name",
-              Value: "pv-db-postgres-0",
+              Key: "kubernetes.io/created-for/pv/name",
+              Value: "pvc-316e0de0-4a95-47ef-870d-4a5bb257167a",
             },
           ],
         },
       },
-      vol_08fae5d784f26967b: {
-        name: "vol-08fae5d784f26967b",
+      vol_0d2d3221a5fdb6745: {
+        name: "vol-0d2d3221a5fdb6745",
         properties: {
           Size: 20,
           VolumeType: "gp2",
@@ -457,8 +468,8 @@ module.exports = ({ stage }) => ({
       },
     },
     Instance: {
-      nodeGroupPrivateClusterI_06f89e9b4bb1d2fbe: {
-        name: "node-group-private-cluster::i-06f89e9b4bb1d2fbe",
+      nodeGroupPrivateClusterI_0745e3491469614b7: {
+        name: "node-group-private-cluster::i-0745e3491469614b7",
         properties: {
           InstanceType: "t2.medium",
           ImageId: "ami-0ee353797c2e5f904",
@@ -467,36 +478,36 @@ module.exports = ({ stage }) => ({
           },
           Tags: [
             {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "owned",
-            },
-            {
-              Key: "aws:autoscaling:groupName",
-              Value: "eks-e8bd6d03-a4a6-04dd-a352-d1e91e3c768c",
-            },
-            {
-              Key: "aws:ec2:fleet-id",
-              Value: "fleet-6df7c21a-c1b5-f3d5-8c12-032048a48c36",
-            },
-            {
-              Key: "eks:cluster-name",
-              Value: "cluster",
-            },
-            {
               Key: "k8s.io/cluster-autoscaler/enabled",
               Value: "true",
-            },
-            {
-              Key: "aws:ec2launchtemplate:version",
-              Value: "1",
             },
             {
               Key: "eks:nodegroup-name",
               Value: "node-group-private-cluster",
             },
             {
+              Key: "aws:ec2:fleet-id",
+              Value: "fleet-6d5fca30-4b17-71dd-0498-0baa8a444671",
+            },
+            {
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "owned",
+            },
+            {
               Key: "aws:ec2launchtemplate:id",
-              Value: "lt-0741f39aa9003255d",
+              Value: "lt-014e6cdab310dedf5",
+            },
+            {
+              Key: "aws:autoscaling:groupName",
+              Value: "eks-5abd6ec8-6bfa-b582-9a57-975f586ae231",
+            },
+            {
+              Key: "aws:ec2launchtemplate:version",
+              Value: "1",
+            },
+            {
+              Key: "eks:cluster-name",
+              Value: "cluster",
             },
             {
               Key: "k8s.io/cluster-autoscaler/cluster",
@@ -543,40 +554,40 @@ module.exports = ({ stage }) => ({
   },
   autoscaling: {
     AutoScalingGroup: {
-      eksE8bd6d03A4a6_04ddA352D1e91e3c768c: {
-        name: "eks-e8bd6d03-a4a6-04dd-a352-d1e91e3c768c",
+      eks_5abd6ec8_6bfaB582_9a57_975f586ae231: {
+        name: "eks-5abd6ec8-6bfa-b582-9a57-975f586ae231",
         properties: {
           Tags: [
             {
-              ResourceId: "eks-e8bd6d03-a4a6-04dd-a352-d1e91e3c768c",
+              ResourceId: "eks-5abd6ec8-6bfa-b582-9a57-975f586ae231",
               ResourceType: "auto-scaling-group",
               Key: "eks:cluster-name",
               Value: "cluster",
               PropagateAtLaunch: true,
             },
             {
-              ResourceId: "eks-e8bd6d03-a4a6-04dd-a352-d1e91e3c768c",
+              ResourceId: "eks-5abd6ec8-6bfa-b582-9a57-975f586ae231",
               ResourceType: "auto-scaling-group",
               Key: "eks:nodegroup-name",
               Value: "node-group-private-cluster",
               PropagateAtLaunch: true,
             },
             {
-              ResourceId: "eks-e8bd6d03-a4a6-04dd-a352-d1e91e3c768c",
+              ResourceId: "eks-5abd6ec8-6bfa-b582-9a57-975f586ae231",
               ResourceType: "auto-scaling-group",
               Key: "k8s.io/cluster-autoscaler/cluster",
               Value: "owned",
               PropagateAtLaunch: true,
             },
             {
-              ResourceId: "eks-e8bd6d03-a4a6-04dd-a352-d1e91e3c768c",
+              ResourceId: "eks-5abd6ec8-6bfa-b582-9a57-975f586ae231",
               ResourceType: "auto-scaling-group",
               Key: "k8s.io/cluster-autoscaler/enabled",
               Value: "true",
               PropagateAtLaunch: true,
             },
             {
-              ResourceId: "eks-e8bd6d03-a4a6-04dd-a352-d1e91e3c768c",
+              ResourceId: "eks-5abd6ec8-6bfa-b582-9a57-975f586ae231",
               ResourceType: "auto-scaling-group",
               Key: "kubernetes.io/cluster/cluster",
               Value: "owned",
@@ -761,6 +772,12 @@ module.exports = ({ stage }) => ({
         name: "starhackit-eks-lean.grucloud.org.",
         properties: {
           Name: "starhackit-eks-lean.grucloud.org.",
+        },
+      },
+      testLoadBalancerGrucloudOrg: {
+        name: "test-load-balancer.grucloud.org.",
+        properties: {
+          Name: "test-load-balancer.grucloud.org.",
         },
       },
     },
