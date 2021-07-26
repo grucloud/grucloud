@@ -205,28 +205,6 @@ const createResources = async ({
     }),
   });
 
-  const sgNodesRuleIngressAll = provider.ec2.makeSecurityGroupRuleIngress({
-    name: formatName("sg-nodes-rule-ingress-all", config),
-    namespace,
-    dependencies: {
-      securityGroup: securityGroupNodes,
-    },
-    properties: () => ({
-      IpPermission: {
-        IpProtocol: "-1",
-        IpRanges: [
-          {
-            CidrIp: "0.0.0.0/0",
-          },
-        ],
-        Ipv6Ranges: [
-          {
-            CidrIpv6: "::/0",
-          },
-        ],
-      },
-    }),
-  });
   const sgNodesRuleIngressCluster = provider.ec2.makeSecurityGroupRuleIngress({
     name: formatName("sg-rule-node-group-ingress-cluster", config),
     namespace,
