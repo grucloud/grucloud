@@ -94,9 +94,10 @@ exports.displayNameResourceNamespace = ({ name, dependencies, properties }) =>
     tap(() => {
       assert(name);
       assert(isFunction(properties));
+      assert(isFunction(dependencies));
     }),
     () => ({
-      namespaceDependencies: get("namespace.name")(dependencies),
+      namespaceDependencies: get("namespace.name")(dependencies()),
       namespaceProperties: get("metadata.namespace")(
         properties({ dependencies: {} })
       ),

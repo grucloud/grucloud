@@ -13,11 +13,6 @@ module.exports = ({ stage }) => ({
       },
       vpcDefault: {
         name: "vpc-default",
-        properties: {
-          CidrBlock: "172.31.0.0/16",
-          DnsSupport: true,
-          DnsHostnames: true,
-        },
       },
     },
     Subnet: {
@@ -34,6 +29,12 @@ module.exports = ({ stage }) => ({
     KeyPair: {
       kp: {
         name: "kp",
+        properties: {
+          KeyPairId: "key-03d67e8e3990df776",
+          KeyFingerprint:
+            "29:88:c1:d1:9a:6b:05:66:65:fe:cd:1d:be:30:ee:6c:08:95:d5:ae",
+          KeyName: "kp",
+        },
       },
     },
     Volume: {
@@ -41,6 +42,13 @@ module.exports = ({ stage }) => ({
         name: "volume",
         properties: {
           Size: 5,
+          VolumeType: "standard",
+        },
+      },
+      vol_06724d6a9e89eb755: {
+        name: "vol-06724d6a9e89eb755",
+        properties: {
+          Size: 2,
           VolumeType: "standard",
         },
       },
@@ -77,15 +85,9 @@ module.exports = ({ stage }) => ({
       },
       sgDefaultVpcEc2Example: {
         name: "sg-default-vpc-ec2-example",
-        properties: {
-          Description: "default VPC security group",
-        },
       },
       sgDefaultVpcDefault: {
         name: "sg-default-vpc-default",
-        properties: {
-          Description: "default VPC security group",
-        },
       },
     },
     SecurityGroupRuleIngress: {
@@ -131,76 +133,20 @@ module.exports = ({ stage }) => ({
       },
       sgDefaultVpcEc2ExampleRuleIngressAll: {
         name: "sg-default-vpc-ec2-example-rule-ingress-all",
-        properties: {
-          IpPermission: {
-            IpProtocol: "-1",
-            IpRanges: [],
-            Ipv6Ranges: [],
-            UserIdGroupPairs: [
-              {
-                GroupId: "sg-083566611ce48f8f7",
-              },
-            ],
-          },
-        },
       },
       sgDefaultVpcDefaultRuleIngressAll: {
         name: "sg-default-vpc-default-rule-ingress-all",
-        properties: {
-          IpPermission: {
-            IpProtocol: "-1",
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-            Ipv6Ranges: [],
-          },
-        },
       },
     },
     SecurityGroupRuleEgress: {
       securityGroupRuleEgressAll: {
         name: "security-group-rule-egress-all",
-        properties: {
-          IpPermission: {
-            IpProtocol: "-1",
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-            Ipv6Ranges: [],
-          },
-        },
       },
       sgDefaultVpcEc2ExampleRuleEgressAll: {
         name: "sg-default-vpc-ec2-example-rule-egress-all",
-        properties: {
-          IpPermission: {
-            IpProtocol: "-1",
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-            Ipv6Ranges: [],
-          },
-        },
       },
       sgDefaultVpcDefaultRuleEgressAll: {
         name: "sg-default-vpc-default-rule-egress-all",
-        properties: {
-          IpPermission: {
-            IpProtocol: "-1",
-            IpRanges: [
-              {
-                CidrIp: "0.0.0.0/0",
-              },
-            ],
-            Ipv6Ranges: [],
-          },
-        },
       },
     },
     Instance: {

@@ -70,20 +70,6 @@ exports.getField = ({ resource = {}, live } = {}, field) =>
 //TODO group
 exports.clientByType = ({ type }) => find(eq(get("spec.type"), type));
 
-//TODO provide name and id as input
-const liveToUri = ({ client, live, lives }) =>
-  client.resourceKey({
-    live,
-    providerName: client.spec.providerName,
-    type: client.spec.type,
-    group: client.spec.group,
-    name: client.findName({ live, lives }),
-    meta: client.findMeta(live),
-    id: client.findId({ live, lives }),
-  });
-
-exports.liveToUri = liveToUri;
-
 const isTypesMatch = ({ typeToMatch }) =>
   switchCase([
     isEmpty,

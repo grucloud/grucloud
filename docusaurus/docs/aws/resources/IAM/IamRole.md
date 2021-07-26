@@ -98,9 +98,41 @@ const iamInstanceProfile = provider.iam.makeInstanceProfile({
 });
 ```
 
+### Link to an OpenIdConnectProvider
+
+The **AssumeRolePolicyDocument** will be filled with the **openIdConnectProvider** dependency.
+
+```js
+
+const loadBalancerPolicy = require("./load-balancer-policy.json");
+
+const iamOpenIdConnectProvider = provider.iam.makeOpenIDConnectProvider({
+  name: "oidc",
+  dependencies: { cluster },
+});
+
+const iamLoadBalancerPolicy = provider.iam.makePolicy({
+  name: "AWSLoadBalancerControllerIAMPolicy",
+  properties: () => ({
+    PolicyDocument: loadBalancerPolicy,
+    Description: "Load Balancer Policy",
+  }),
+});
+
+const roleLoadBalancer = provider.iam.makeRole({
+  name: "roleLoadBalancer"
+  dependencies: {
+    openIdConnectProvider: iamOpenIdConnectProvider,
+    policies: [iamLoadBalancerPolicy],
+  },
+});
+```
+
 ### Examples
 
 - [simple example](https://github.com/grucloud/grucloud/blob/main/examples/aws/iam/iac.js)
+
+- [load balancer controller module](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/load-balancer-controller/iac.js#)
 
 ### Properties
 
@@ -108,12 +140,12 @@ const iamInstanceProfile = provider.iam.makeInstanceProfile({
 
 ### Dependencies
 
-- [IamInstanceProfile](./IamInstanceProfile)
+- [Iam Policy](./IamPolicy)
+- [Iam OpenIDConnectProvider](./IamOpenIDConnectProvider)
 
 ### Used By
 
-- [IamPolicy](./IamPolicy)
-- [IamPolicyReadOnly](./IamPolicyReadOnly)
+- [IamInstanceProfile](./IamInstanceProfile)
 
 ### List
 
@@ -125,59 +157,144 @@ gc list -t IamRole
 Listing resources on 1 provider: aws
 ✓ aws
   ✓ Initialising
-  ✓ Listing 2/2
-┌──────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 1 IamRole from aws                                                                           │
-├────────────────────────┬──────────────────────────────────────────────────────────────┬──────┤
-│ Name                   │ Data                                                         │ Our  │
-├────────────────────────┼──────────────────────────────────────────────────────────────┼──────┤
-│ role-allow-assume-role │ Path: /                                                      │ Yes  │
-│                        │ RoleName: role-allow-assume-role                             │      │
-│                        │ RoleId: AROA4HNBM2ZQAT5MU5E5F                                │      │
-│                        │ Arn: arn:aws:iam::840541460064:role/role-allow-assume-role   │      │
-│                        │ CreateDate: 2021-04-19T17:38:37.000Z                         │      │
-│                        │ AssumeRolePolicyDocument:                                    │      │
-│                        │   Version: 2012-10-17                                        │      │
-│                        │   Statement:                                                 │      │
-│                        │     - Sid:                                                   │      │
-│                        │       Effect: Allow                                          │      │
-│                        │       Principal:                                             │      │
-│                        │         Service: ec2.amazonaws.com                           │      │
-│                        │       Action: sts:AssumeRole                                 │      │
-│                        │ MaxSessionDuration: 3600                                     │      │
-│                        │ Tags:                                                        │      │
-│                        │   - Key: Name                                                │      │
-│                        │     Value: role-allow-assume-role                            │      │
-│                        │   - Key: ManagedBy                                           │      │
-│                        │     Value: GruCloud                                          │      │
-│                        │   - Key: CreatedByProvider                                   │      │
-│                        │     Value: aws                                               │      │
-│                        │   - Key: stage                                               │      │
-│                        │     Value: dev                                               │      │
-│                        │   - Key: projectName                                         │      │
-│                        │     Value: @grucloud/example-aws-iam                         │      │
-│                        │ Policies: []                                                 │      │
-│                        │ InstanceProfiles:                                            │      │
-│                        │   - InstanceProfileName: my-profile                          │      │
-│                        │     InstanceProfileId: AIPA4HNBM2ZQN3SFYOLNT                 │      │
-│                        │     Arn: arn:aws:iam::840541460064:instance-profile/my-prof… │      │
-│                        │     Path: /                                                  │      │
-│                        │ AttachedPolicies:                                            │      │
-│                        │   - PolicyName: myPolicy-to-role                             │      │
-│                        │     PolicyArn: arn:aws:iam::840541460064:policy/myPolicy-to… │      │
-│                        │                                                              │      │
-└────────────────────────┴──────────────────────────────────────────────────────────────┴──────┘
+  ✓ Listing 1/1
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│ 3 iam::Role from aws                                                                   │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ name: role-cluster                                                                     │
+│ managedByUs: Yes                                                                       │
+│ live:                                                                                  │
+│   Path: /                                                                              │
+│   RoleName: role-cluster                                                               │
+│   RoleId: AROA4HNBM2ZQBIII7KZ4Z                                                        │
+│   Arn: arn:aws:iam::840541460064:role/role-cluster                                     │
+│   CreateDate: 2021-07-21T13:29:11.000Z                                                 │
+│   AssumeRolePolicyDocument:                                                            │
+│     Version: 2012-10-17                                                                │
+│     Statement:                                                                         │
+│       - Effect: Allow                                                                  │
+│         Principal:                                                                     │
+│           Service: eks.amazonaws.com                                                   │
+│         Action: sts:AssumeRole                                                         │
+│   MaxSessionDuration: 3600                                                             │
+│   Tags:                                                                                │
+│     - Key: Name                                                                        │
+│       Value: role-cluster                                                              │
+│     - Key: gc-managed-by                                                               │
+│       Value: grucloud                                                                  │
+│     - Key: gc-created-by-provider                                                      │
+│       Value: aws                                                                       │
+│     - Key: gc-stage                                                                    │
+│       Value: dev                                                                       │
+│     - Key: gc-project-name                                                             │
+│       Value: @grucloud/example-module-aws-load-balancer-controller                     │
+│     - Key: gc-namespace                                                                │
+│       Value: EKS                                                                       │
+│   InstanceProfiles: []                                                                 │
+│   AttachedPolicies:                                                                    │
+│     - PolicyName: AmazonEKSClusterPolicy                                               │
+│       PolicyArn: arn:aws:iam::aws:policy/AmazonEKSClusterPolicy                        │
+│     - PolicyName: AmazonEKSVPCResourceController                                       │
+│       PolicyArn: arn:aws:iam::aws:policy/AmazonEKSVPCResourceController                │
+│   Policies: []                                                                         │
+│                                                                                        │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ name: role-load-balancer                                                               │
+│ managedByUs: Yes                                                                       │
+│ live:                                                                                  │
+│   Path: /                                                                              │
+│   RoleName: role-load-balancer                                                         │
+│   RoleId: AROA4HNBM2ZQH2RLTJRCD                                                        │
+│   Arn: arn:aws:iam::840541460064:role/role-load-balancer                               │
+│   CreateDate: 2021-07-21T13:39:48.000Z                                                 │
+│   AssumeRolePolicyDocument:                                                            │
+│     Version: 2012-10-17                                                                │
+│     Statement:                                                                         │
+│       - Effect: Allow                                                                  │
+│         Principal:                                                                     │
+│           Federated: arn:aws:iam::840541460064:oidc-provider/oidc.eks.eu-west-2.amazo… │
+│         Action: sts:AssumeRoleWithWebIdentity                                          │
+│         Condition:                                                                     │
+│           StringEquals:                                                                │
+│             oidc.eks.eu-west-2.amazonaws.com/id/9377E3CCC52850A5BC4BEF6D012643E6:aud:… │
+│   MaxSessionDuration: 3600                                                             │
+│   Tags:                                                                                │
+│     - Key: Name                                                                        │
+│       Value: role-load-balancer                                                        │
+│     - Key: gc-managed-by                                                               │
+│       Value: grucloud                                                                  │
+│     - Key: gc-created-by-provider                                                      │
+│       Value: aws                                                                       │
+│     - Key: gc-stage                                                                    │
+│       Value: dev                                                                       │
+│     - Key: gc-project-name                                                             │
+│       Value: @grucloud/example-module-aws-load-balancer-controller                     │
+│     - Key: gc-namespace                                                                │
+│       Value: LoadBalancerControllerRole                                                │
+│   AttachedPolicies:                                                                    │
+│     - PolicyName: AWSLoadBalancerControllerIAMPolicy                                   │
+│       PolicyArn: arn:aws:iam::840541460064:policy/AWSLoadBalancerControllerIAMPolicy   │
+│   InstanceProfiles: []                                                                 │
+│   Policies: []                                                                         │
+│                                                                                        │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ name: role-node-group                                                                  │
+│ managedByUs: Yes                                                                       │
+│ live:                                                                                  │
+│   Path: /                                                                              │
+│   RoleName: role-node-group                                                            │
+│   RoleId: AROA4HNBM2ZQAQEEDNKMM                                                        │
+│   Arn: arn:aws:iam::840541460064:role/role-node-group                                  │
+│   CreateDate: 2021-07-21T13:29:11.000Z                                                 │
+│   AssumeRolePolicyDocument:                                                            │
+│     Version: 2012-10-17                                                                │
+│     Statement:                                                                         │
+│       - Effect: Allow                                                                  │
+│         Principal:                                                                     │
+│           Service: ec2.amazonaws.com                                                   │
+│         Action: sts:AssumeRole                                                         │
+│   MaxSessionDuration: 3600                                                             │
+│   Tags:                                                                                │
+│     - Key: Name                                                                        │
+│       Value: role-node-group                                                           │
+│     - Key: gc-managed-by                                                               │
+│       Value: grucloud                                                                  │
+│     - Key: gc-created-by-provider                                                      │
+│       Value: aws                                                                       │
+│     - Key: gc-stage                                                                    │
+│       Value: dev                                                                       │
+│     - Key: gc-project-name                                                             │
+│       Value: @grucloud/example-module-aws-load-balancer-controller                     │
+│     - Key: gc-namespace                                                                │
+│       Value: EKS                                                                       │
+│   AttachedPolicies:                                                                    │
+│     - PolicyName: AmazonEKSWorkerNodePolicy                                            │
+│       PolicyArn: arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy                     │
+│     - PolicyName: AmazonEC2ContainerRegistryReadOnly                                   │
+│       PolicyArn: arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly            │
+│     - PolicyName: AmazonEKS_CNI_Policy                                                 │
+│       PolicyArn: arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy                          │
+│   Policies: []                                                                         │
+│   InstanceProfiles:                                                                    │
+│     - InstanceProfileName: eks-b6bd64a5-a3dc-30a8-b4a5-f6a7fd37e90d                    │
+│       InstanceProfileId: AIPA4HNBM2ZQACXAPZ3H7                                         │
+│       Arn: arn:aws:iam::840541460064:instance-profile/eks-b6bd64a5-a3dc-30a8-b4a5-f6a… │
+│       Path: /                                                                          │
+│                                                                                        │
+└────────────────────────────────────────────────────────────────────────────────────────┘
 
 
 List Summary:
 Provider: aws
-┌─────────────────────────────────────────────────────────────────────────────────────────────┐
-│ aws                                                                                         │
-├────────────────────┬────────────────────────────────────────────────────────────────────────┤
-│ IamRole            │ role-allow-assume-role                                                 │
-└────────────────────┴────────────────────────────────────────────────────────────────────────┘
-1 resource, 1 type, 1 provider
-Command "gc l -t IamRole" executed in 3s
+┌───────────────────────────────────────────────────────────────────────────────────┐
+│ aws                                                                               │
+├────────────────────────────────┬──────────────────────────────────────────────────┤
+│ iam::Role                      │ role-cluster                                     │
+│                                │ role-load-balancer                               │
+│                                │ role-node-group                                  │
+└────────────────────────────────┴──────────────────────────────────────────────────┘
+3 resources, 2 types, 1 provider
+Command "gc l -t Role" executed in 5s
 ```
 
 ### AWS CLI

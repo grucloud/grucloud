@@ -1,0 +1,12 @@
+@startmindmap
+title Resources for project iam-policy
+skinparam monochrome true
++ Infra
+++ aws
++++ iam
+++++ Policy (2)
++++++ policy-allow-ec2
++++++ AmazonEKSWorkerNodePolicy
+++++ Role (1)
++++++ role-4-policies
+@endmindmap

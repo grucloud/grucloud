@@ -6,6 +6,7 @@ const {
   tryCatch,
   filter,
   get,
+  any,
   switchCase,
   eq,
   not,
@@ -19,6 +20,7 @@ const {
   pluck,
   find,
   includes,
+  identity,
 } = require("rubico/x");
 const moment = require("moment");
 const querystring = require("querystring");
@@ -35,6 +37,7 @@ const {
   removeRoleFromInstanceProfile,
 } = require("../AwsCommon");
 const { mapPoolSize, getByNameCore } = require("@grucloud/core/Common");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/IAM.html
 exports.AwsIamRole = ({ spec, config }) => {
@@ -51,6 +54,29 @@ exports.AwsIamRole = ({ spec, config }) => {
       type: "Policy",
       group: "iam",
       ids: pipe([() => live, get("AttachedPolicies"), pluck("PolicyArn")])(),
+    },
+    {
+      type: "OpenIDConnectProvider",
+      group: "iam",
+      ids: pipe([
+        () => live,
+        get("AssumeRolePolicyDocument.Statement"),
+        pluck("Principal.Federated"),
+        filter(not(isEmpty)),
+        (oidps) =>
+          pipe([
+            () =>
+              lives.getByType({
+                type: "OpenIDConnectProvider",
+                group: "iam",
+                providerName,
+              }),
+            filter((connectProvider) =>
+              pipe([() => oidps, includes(connectProvider.id)])()
+            ),
+            pluck("id"),
+          ])(),
+      ])(),
     },
   ];
 
@@ -248,17 +274,17 @@ exports.AwsIamRole = ({ spec, config }) => {
       ),
       () => iam().listAttachedRolePolicies({ RoleName, MaxItems: 1e3 }),
       get("AttachedPolicies"),
-      forEach((policy) => {
+      forEach(({ PolicyArn }) => {
         iam().detachRolePolicy({
-          PolicyArn: policy.PolicyArn,
+          PolicyArn,
           RoleName,
         });
       }),
       () => iam().listRolePolicies({ RoleName, MaxItems: 1e3 }),
       get("PolicyNames"),
-      forEach((policyName) => {
+      forEach((PolicyName) => {
         iam().deleteRolePolicy({
-          PolicyName: policyName,
+          PolicyName,
           RoleName,
         });
       }),
@@ -278,13 +304,56 @@ exports.AwsIamRole = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = ({ name, properties }) =>
-    defaultsDeep({ RoleName: name, Path: "/" })(properties);
+  const openIdConnectProviderProperties = ({ openIdConnectProvider }) =>
+    pipe([
+      () => openIdConnectProvider,
+      switchCase([
+        isEmpty,
+        () => ({}),
+        pipe([
+          () => ({
+            AssumeRolePolicyDocument: {
+              Version: "2012-10-17",
+              Statement: [
+                {
+                  Effect: "Allow",
+                  Principal: {
+                    Federated: getField(openIdConnectProvider, "Arn"),
+                  },
+                  Action: "sts:AssumeRoleWithWebIdentity",
+                  Condition: {
+                    StringEquals: {
+                      [`${getField(openIdConnectProvider, "Url")}:aud`]:
+                        "sts.amazonaws.com",
+                    },
+                  },
+                },
+              ],
+            },
+          }),
+        ]),
+      ]),
+    ])();
+
+  const configDefault = ({
+    name,
+    properties,
+    dependencies: { openIdConnectProvider },
+  }) =>
+    pipe([
+      tap(() => {
+        assert(name);
+      }),
+      () => properties,
+      defaultsDeep(openIdConnectProviderProperties({ openIdConnectProvider })),
+      defaultsDeep({ RoleName: name, Path: "/" }),
+    ])();
 
   const cannotBeDeleted = pipe([
     get("live.Path"),
     includes("/aws-service-role"),
   ]);
+
   return {
     spec,
     findDependencies,

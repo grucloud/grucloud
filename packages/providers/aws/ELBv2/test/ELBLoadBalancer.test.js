@@ -52,7 +52,7 @@ describe("AwsLoadBalancerV2", async function () {
       }),
     });
     const securityGroupLoadBalancer = provider.ec2.makeSecurityGroup({
-      name: formatName("load-balancer-security-group-test"),
+      name: formatName("security-group-load-balancer-test"),
       dependencies: { vpc },
       properties: () => ({
         create: {
@@ -153,21 +153,11 @@ describe("AwsLoadBalancerV2", async function () {
       name: formatName(listenerHttpName),
       dependencies: {
         loadBalancer,
-        targetGroups: { targetGroup },
+        targetGroup: targetGroup,
       },
-      properties: ({
-        dependencies: {
-          targetGroups: { targetGroup },
-        },
-      }) => ({
+      properties: () => ({
         Port: 80,
         Protocol: "HTTP",
-        DefaultActions: [
-          {
-            TargetGroupArn: targetGroup?.live?.TargetGroupArn,
-            Type: "forward",
-          },
-        ],
       }),
     });
   });
@@ -177,12 +167,12 @@ describe("AwsLoadBalancerV2", async function () {
     assert(config.nameKey);
     const loadBalancerReadOnly = provider.elb.useLoadBalancer({
       name: "load-balancer-k8s-readonly",
-      filterLives: ({ items }) =>
+      filterLives: ({ resources }) =>
         pipe([
-          () => items,
+          () => resources,
           find(
             pipe([
-              get("Tags"),
+              get("live.Tags"),
               find(
                 and([
                   eq(get("Key"), config.nameKey),
@@ -204,28 +194,12 @@ describe("AwsLoadBalancerV2", async function () {
       name: `${domainName}.`,
     });
 
-    const loadBalancerRecord = provider.route53.makeRecord({
+    provider.route53.makeRecord({
       name: `dns-record-alias-load-balancer-${hostedZoneName}`,
-      dependencies: { hostedZone, loadBalancerReadOnly, loadBalancer },
-      properties: ({ dependencies }) => {
-        const hostname = dependencies.loadBalancerReadOnly.live?.DNSName;
-        if (!hostname) {
-          return {
-            message: "loadBalancer not up yet",
-            Type: "A",
-            Name: hostedZone.name,
-          };
-        }
-        return {
-          Name: hostedZone.name,
-          Type: "A",
-          AliasTarget: {
-            HostedZoneId:
-              dependencies.loadBalancerReadOnly?.live.CanonicalHostedZoneId,
-            DNSName: `${hostname}.`,
-            EvaluateTargetHealth: false,
-          },
-        };
+      dependencies: {
+        hostedZone,
+        loadBalancer: loadBalancerReadOnly,
+        loadBalancerDep: loadBalancer, // Only for the load record to kick off when the balancer is up
       },
     });
 

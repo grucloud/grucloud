@@ -8,30 +8,18 @@ const {
   tryCatch,
   get,
   switchCase,
-  pick,
+  not,
   filter,
   eq,
 } = require("rubico");
-const {
-  first,
-  defaultsDeep,
-  isEmpty,
-  forEach,
-  pluck,
-  size,
-} = require("rubico/x");
+const { defaultsDeep, includes, size, isEmpty } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "EKSCluster" });
 const { retryCall } = require("@grucloud/core/Retry");
 const { tos } = require("@grucloud/core/tos");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const {
-  getByNameCore,
-  isUpByIdCore,
-  isDownByIdCore,
-  buildTagsObject,
-} = require("@grucloud/core/Common");
+const { buildTagsObject } = require("@grucloud/core/Common");
 const {
   EKSNew,
   shouldRetryOnException,
@@ -67,7 +55,7 @@ exports.EKSCluster = ({ spec, config }) => {
   const eks = EKSNew(config);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#listClusters-property
-  const getList = async ({ params } = {}) =>
+  const getList = ({ params } = {}) =>
     pipe([
       tap(() => {
         logger.info(`getList cluster ${JSON.stringify({ params })}`);
@@ -98,38 +86,95 @@ exports.EKSCluster = ({ spec, config }) => {
       }),
     ])();
 
-  const getByName = getByNameCore({ getList, findName });
+  const getByName = ({ name }) =>
+    pipe([
+      tap(() => {
+        logger.info(`getByName cluster: ${name}`);
+      }),
+      tryCatch(
+        pipe([() => eks().describeCluster({ name }), get("cluster")]),
+        switchCase([
+          eq(get("code"), "ResourceNotFoundException"),
+          () => {
+            logger.debug(`getByName ${name} ResourceNotFoundException`);
+          },
+          (error) => {
+            logger.debug(`getByName error: ${tos(error)}`);
+            throw error;
+          },
+        ])
+      ),
+      tap((result) => {
+        logger.debug(`getByName cluster result: ${tos(result)}`);
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#describeCluster-property
-  const getById = pipe([
-    tap(({ id }) => {
-      logger.info(`getById cluster: ${id}`);
-    }),
-    tryCatch(
-      pipe([({ id }) => eks().describeCluster({ name: id }), get("cluster")]),
-      switchCase([
-        eq(get("code"), "ResourceNotFoundException"),
-        (error, { id }) => {
-          logger.debug(`getById ${id} ResourceNotFoundException`);
-        },
-        (error) => {
-          logger.debug(`getById error: ${tos(error)}`);
-          throw error;
-        },
-      ])
-    ),
-    tap((result) => {
-      logger.debug(`getById cluster result: ${tos(result)}`);
-    }),
-  ]);
-
   const isInstanceUp = eq(get("status"), "ACTIVE");
 
-  const isUpById = isUpByIdCore({ isInstanceUp, getById });
-  const isDownById = isDownByIdCore({ getById });
+  const isUpByName = pipe([getByName, isInstanceUp]);
+  const isDownByName = pipe([getByName, isEmpty]);
+
+  const kubeConfigUpdate = ({ name }) =>
+    pipe([
+      tap(() => {
+        assert(name);
+        logger.debug(`kubeConfigUpdate: ${name}`);
+      }),
+      tap.if(
+        () => !process.env.CONTINUOUS_INTEGRATION,
+        pipe([
+          () => `aws eks update-kubeconfig --name ${name}`,
+          (command) =>
+            pipe([
+              () =>
+                shell.exec(command, {
+                  silent: true,
+                }),
+              tap.if(not(eq(get("code"), 0)), (result) => {
+                throw {
+                  message: `command '${command}' failed`,
+                  ...result,
+                };
+              }),
+            ])(),
+        ])
+      ),
+    ])();
+
+  const kubeConfigRemove = ({ arn }) =>
+    pipe([
+      tap(() => {
+        assert(arn);
+        logger.debug(`kubeConfigRemove: ${arn}`);
+      }),
+      tap.if(
+        () => !process.env.CONTINUOUS_INTEGRATION,
+        pipe([
+          () =>
+            `kubectl config delete-context ${arn}; kubectl config delete-cluster ${arn}`,
+          (command) =>
+            pipe([
+              () =>
+                shell.exec(command, {
+                  silent: true,
+                }),
+              tap.if(not(eq(get("code"), 0)), (result) => {
+                logger.error(
+                  `command '${command}' failed, ${JSON.stringify(
+                    result,
+                    4,
+                    null
+                  )}`
+                );
+              }),
+            ])(),
+        ])
+      ),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#createCluster-property
-  const create = async ({
+  const create = ({
     name,
     payload = {},
     resolvedDependencies: { subnets, securityGroups, role, key },
@@ -145,57 +190,57 @@ exports.EKSCluster = ({ spec, config }) => {
         assert(role.live.Arn, "role.live.Arn");
       }),
       () =>
-        defaultsDeep({
-          resourcesVpcConfig: {
-            securityGroupIds: pluck("live.GroupId")(securityGroups),
-            subnetIds: pluck("live.SubnetId")(subnets),
-          },
-          roleArn: role.live.Arn,
-          ...(key && {
-            encryptionConfig: [
-              { provider: { keyArn: key.live.Arn }, resources: ["secrets"] },
-            ],
-          }),
-        })(payload),
-      tap((params) => {
-        logger.debug(`create cluster: ${name}, params: ${tos(params)}`);
-      }),
-      (params) => eks().createCluster(params),
+        retryCall({
+          name: `eks createCluster: ${name}`,
+          fn: () => eks().createCluster(payload),
+          config: { retryCount: 4, retryDelay: 5e3 },
+          shouldRetryOnException: ({ error }) =>
+            pipe([
+              tap(() => {
+                logger.error(`createCluster isExpectedException ${tos(error)}`);
+              }),
+              () => error,
+              get("message"),
+              includes("The KeyArn in encryptionConfig provider"),
+            ])(),
+        }),
       get("cluster"),
       () =>
         retryCall({
           name: `cluster create isUpById: ${name}`,
-          fn: () => isUpById({ name, id: name }),
+          fn: () => isUpByName({ name }),
           config: { retryCount: 12 * 20, retryDelay: 5e3 },
         }),
+      () => kubeConfigUpdate({ name }),
       tap(() => {
         logger.info(`cluster created: ${name}`);
       }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EKS.html#deleteCluster-property
-  const destroy = async ({ id }) =>
+  const destroy = ({ id, name, live }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy cluster ${JSON.stringify({ id })}`);
+        logger.info(`destroy cluster ${name}`);
       }),
+      () => kubeConfigRemove(live),
       () =>
         eks().deleteCluster({
-          name: id,
+          name,
         }),
       tap(() =>
         retryCall({
-          name: `cluster isDownById:  id: ${id}`,
-          fn: () => isDownById({ id }),
+          name: `cluster isDownByName: ${name}`,
+          fn: () => isDownByName({ name }),
           config,
         })
       ),
       tap(() => {
-        logger.info(`cluster destroyed ${JSON.stringify({ id })}`);
+        logger.info(`cluster destroyed ${name}`);
       }),
     ])();
 
-  const configDefault = async ({
+  const configDefault = ({
     name,
     namespace,
     properties,
@@ -219,69 +264,6 @@ exports.EKSCluster = ({ spec, config }) => {
       tags: buildTagsObject({ config, namespace, name }),
     })(properties);
 
-  const hook = ({ resource }) => ({
-    name: "cluster",
-    onDeployed: {
-      init: () => {
-        logger.info(`cluster onDeployed hook init ${resource.name}`);
-        return {};
-      },
-      actions: [
-        {
-          name: "Update kubeconfig",
-          command: async () => {
-            const command = `aws eks update-kubeconfig --name ${resource.name}`;
-            logger.info(`running ${command}`);
-            if (process.env.CONTINUOUS_INTEGRATION) {
-              //aws cli not installed on circleci
-              return;
-            }
-            const { stdout, stderr, code } = shell.exec(command, {
-              silent: true,
-            });
-            if (code !== 0) {
-              throw {
-                message: `command '${command}' failed`,
-                stdout,
-                stderr,
-                code,
-              };
-            }
-          },
-        },
-      ],
-    },
-    onDestroyed: {
-      init: async () => {
-        logger.info(`cluster onDestroyed hook init ${resource.name}`);
-        const clusterLive = await resource.getLive();
-        return { clusterLive };
-      },
-      actions: [
-        {
-          name: `Remove cluster from kubeconfig`,
-          command: async ({ clusterLive }) => {
-            if (!clusterLive) {
-              return;
-            }
-            const command = `kubectl config delete-context ${clusterLive.arn}; kubectl config delete-cluster ${clusterLive.arn}`;
-            logger.info(`running ${command}`);
-            if (process.env.CONTINUOUS_INTEGRATION) {
-              //kubectl not installed on circleci
-              return;
-            }
-            const { stdout, stderr, code } = shell.exec(command, {
-              silent: true,
-            });
-            logger.info(`code: ${code}`);
-            logger.info(`stderr: ${stderr}`);
-            logger.info(`stdout: ${stdout}`);
-          },
-        },
-      ],
-    },
-  });
-
   return {
     spec,
     findId,
@@ -294,6 +276,5 @@ exports.EKSCluster = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
-    hook,
   };
 };

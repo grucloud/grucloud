@@ -57,22 +57,12 @@ describe("AwsIamInstanceProfile", async function () {
     await provider.start();
   });
   after(async () => {});
-  it("iamInstanceProfile resolveConfig", async function () {
-    assert.equal(iamInstanceProfile.name, iamInstanceProfileName);
-    const config = await iamInstanceProfile.resolveConfig();
-    assert(config.InstanceProfileName);
-    assert(config.Path);
-  });
   it.skip("iamInstanceProfile apply plan", async function () {
     await testPlanDeploy({
       provider,
       types,
       planResult: { create: 2, destroy: 0 },
     });
-
-    const iamInstanceProfileLive = await iamInstanceProfile.getLive();
-    assert(iamInstanceProfileLive);
-    assert.equal(iamInstanceProfileLive.Roles[0].RoleName, iamRole.name);
 
     await testPlanDestroy({ provider, types });
   });

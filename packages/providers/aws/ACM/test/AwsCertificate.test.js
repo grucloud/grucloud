@@ -32,11 +32,6 @@ describe.skip("AwsCertificate", async function () {
     await provider.start();
   });
   after(async () => {});
-  it("certificate resolveConfig", async function () {
-    assert.equal(certificate.name, certificateName);
-    const config = await certificate.resolveConfig();
-    assert.equal(config.DomainName, domainName);
-  });
   it("certificate apply plan", async function () {
     await testPlanDeploy({
       provider,

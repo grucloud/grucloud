@@ -6,10 +6,11 @@ const {
   get,
   filter,
   tryCatch,
+
   switchCase,
   assign,
 } = require("rubico");
-const { defaultsDeep } = require("rubico/x");
+const { defaultsDeep, identity } = require("rubico/x");
 
 const GoogleClient = require("../../GoogleClient");
 const { GCP_STORAGE_BASE_URL } = require("./GcpStorageCommon");
@@ -77,7 +78,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
         logger.info(`getById ${JSON.stringify({ id, name })}`);
       }),
       () => client.getById({ id, name }),
-      switchCase([(result) => result && deep, assignIam, (result) => result]),
+      switchCase([(result) => result && deep, assignIam, identity]),
       tap((result) => {
         logger.debug(`getById result: ${tos(result)}`);
       }),
@@ -104,6 +105,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
             logger.info(`create bucket ${name}`);
             logger.debug(`bucket ${name} assignIam ${tos(iamCurrent)}`);
           }),
+          //TODO assign
           (iamCurrent) => ({
             ...iamCurrent,
             bindings: [...iamCurrent.bindings, ...payload.iam.bindings],
@@ -122,7 +124,7 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
       ),
     ])();
 
-  const getList = async ({ deep }) =>
+  const getList = ({ deep }) =>
     pipe([
       tap(() => {
         logger.info(`getList bucket, deep: ${deep}`);
@@ -138,14 +140,14 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
           map.pool(mapPoolSize, assignIam),
           (items) => ({ items, total: items.length }),
         ]),
-        (result) => result,
+        identity,
       ]),
       tap((result) => {
         logger.debug(`getList bucket result: ${tos(result)}`);
       }),
     ])();
 
-  const destroy = async ({ id: bucketName }) =>
+  const destroy = ({ id: bucketName }) =>
     pipe([
       tap(() => {
         assert(bucketName, `destroy invalid id`);
@@ -157,18 +159,16 @@ exports.GcpBucket = ({ spec, config: configProvider }) => {
           fn: () => axios.get(`/${bucketName}/o`),
           config: configProvider,
         }),
-      get("data.items"),
+      get("data.items", []),
       tap((items = []) => {
         logger.debug(`destroy objects in bucket: ${items.length}`);
       }),
-      tap((items = []) =>
-        map.pool(mapPoolSize, (item) =>
-          retryCallOnError({
-            name: `destroy objects in ${bucketName}`,
-            fn: () => axios.delete(item.selfLink),
-            config: configProvider,
-          })
-        )(items)
+      map.pool(mapPoolSize, (item) =>
+        retryCallOnError({
+          name: `destroy objects in ${bucketName}`,
+          fn: () => axios.delete(item.selfLink),
+          config: configProvider,
+        })
       ),
       () =>
         retryCallOnError({

@@ -86,8 +86,7 @@ const writersSpec = [
         type: "Volume",
         typeTarget: "Disk",
         resourceName: pipe([(name) => name]),
-        //TODO
-        pickProperties: () => [],
+        filterLive: () => pick([]),
       },
       {
         type: "Server",

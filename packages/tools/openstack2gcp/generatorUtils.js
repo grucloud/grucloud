@@ -37,6 +37,8 @@ const {
   isObject,
   flatten,
   defaultsDeep,
+  forEach,
+  size,
 } = require("rubico/x");
 
 const ResourceVarNameDefault = pipe([
@@ -62,6 +64,9 @@ const findDependencyNames = ({
     () => resource.dependencies,
     find(eq(get("type"), type)),
     get("ids"),
+    tap((params) => {
+      assert(true);
+    }),
     map(findLiveById({ type, lives })),
     tap((xxx) => {
       assert(true);
@@ -81,19 +86,25 @@ const findDependencyNames = ({
     }),
   ])();
 
-const buildProperties = ({ resource: { live }, pickProperties }) =>
+const buildProperties = ({
+  resource,
+  dependencies,
+  filterLive = () => identity,
+}) =>
   pipe([
     tap(() => {
       assert(true);
     }),
-    () => live,
-    pick([...pickProperties, "Tags"]),
+    () => resource,
+    get("live"),
+    filterLive({ resource, dependencies }),
     tap((params) => {
       assert(true);
     }),
     assign({
       Tags: pipe([
-        get("Tags", []),
+        () => resource,
+        get("live.Tags", []),
         filter(
           pipe([
             get("Key", ""),
@@ -114,27 +125,48 @@ const buildProperties = ({ resource: { live }, pickProperties }) =>
     }),
   ])();
 
-const configBuildPropertiesDefault = ({ properties }) =>
+const configBuildPropertiesDefault = ({
+  resource,
+  properties,
+  hasNoProperty,
+}) =>
   pipe([
     tap(() => {
-      assert(true);
+      assert(resource);
     }),
     () =>
-      !isEmpty(properties)
+      !isEmpty(properties) && !resource.isDefault && !hasNoProperty
         ? `\n,properties: ${JSON.stringify(properties, null, 4)}`
         : "",
   ])();
 
+exports.hasDependency = ({ type }) =>
+  pipe([
+    get("dependencies"),
+    find(eq(get("type"), type)),
+    get("ids"),
+    not(isEmpty),
+  ]);
+
 const configTpl = ({
+  resource,
   resourceVarName,
   resourceName,
   properties,
+  hasNoProperty,
   configBuildProperties = configBuildPropertiesDefault,
   lives,
+  dependencies,
 }) =>
   pipe([
     () => `${resourceVarName}: {
-      name: "${resourceName}"${configBuildProperties({ properties, lives })},
+      name: "${resourceName}"${configBuildProperties({
+      resource,
+      properties,
+      lives,
+      dependencies,
+      hasNoProperty: hasNoProperty({ resource }),
+    })},
     },`,
     tap((params) => {
       assert(true);
@@ -174,9 +206,9 @@ const buildDependencies = ({ resource, lives, dependencies = {} }) =>
     switchCase([
       isEmpty,
       () => "",
-      (values) => `dependencies: { 
+      (values) => `dependencies: ({resources}) =>({ 
        ${values.join(",\n")}
-     },`,
+     }),`,
     ]),
     tap((params) => {
       assert(true);
@@ -201,16 +233,28 @@ const codeBuildPropertiesDefault = ({
   type,
   resourceVarName,
   properties,
+  resource,
+  hasNoProperty,
 }) =>
   pipe([
     tap(() => {
       assert(true);
     }),
     () =>
-      !isEmpty(properties)
+      !isEmpty(properties) && !resource.isDefault && !hasNoProperty
         ? `\nproperties: () => config.${group}.${type}.${resourceVarName}.properties,`
         : "",
   ])();
+
+const buildPrefix = switchCase([
+  get("isDefault"),
+  () => "useDefault",
+  get("cannotBeDeleted"),
+  () => "use",
+  get("managedByOther"),
+  () => "use",
+  () => "make",
+]);
 
 const codeTpl = ({
   group,
@@ -220,24 +264,22 @@ const codeTpl = ({
   resource,
   lives,
   properties,
-  createPrefix = "make",
+  hasNoProperty,
   codeBuildProperties = codeBuildPropertiesDefault,
-}) => `(resources) =>
-set(
-  "${group}.${type}.${resourceVarName}",
-  provider.${group}.${
-  resource.isDefault || resource.cannotBeDeleted ? "use" : createPrefix
-}${type}({
+}) => `
+  provider.${group}.${buildPrefix(resource)}${type}({
   ${codeBuildName({ group, type, resourceVarName })}${codeBuildNamespace(
   resource
 )}${buildDependencies({ resource, lives, dependencies })}${codeBuildProperties({
   group,
   type,
+  resource,
   resourceVarName,
   properties,
+  hasNoProperty: hasNoProperty({ resource }),
 })}
-  })
-)(resources),`;
+  });
+`;
 
 const writeToFile =
   ({ filename }) =>
@@ -372,14 +414,16 @@ const findLiveById =
       tap(() => {
         assert(lives);
         assert(type);
-        assert(id);
+        assert(id, `no id for ${type}, id: ${id},`);
       }),
       () => lives,
       find(eq(get("type"), type)),
       get("resources"),
       find(eq(get("id"), id)),
-      tap((xxx) => {
-        //console.log(`findName`);
+      tap((live) => {
+        if (!live) {
+          assert(live, `no live for ${type}, id: ${id},`);
+        }
       }),
     ])();
 
@@ -390,15 +434,15 @@ const writeResource =
     type,
     typeTarget,
     group,
-    createPrefix,
     resourceVarName = ResourceVarNameDefault,
     resourceName = identity,
-    pickProperties = always([]),
+    filterLive,
     codeBuildProperties,
     configBuildProperties,
+    hasNoProperty,
     properties = always({}),
     dependencies = always({}),
-    ignoreResource = () => get("managedByOther"),
+    ignoreResource = () => () => false,
   }) =>
   ({ resource, lives, mapping }) =>
     pipe([
@@ -423,7 +467,8 @@ const writeResource =
               defaultsDeep(
                 buildProperties({
                   resource,
-                  pickProperties: pickProperties({ resource }),
+                  filterLive,
+                  dependencies: dependencies(),
                 })
               ),
             ]),
@@ -439,7 +484,9 @@ const writeResource =
               resourceVarName,
               resource,
               properties,
+              dependencies: dependencies(),
               configBuildProperties,
+              hasNoProperty,
               lives,
             }),
             code: codeTpl({
@@ -449,7 +496,7 @@ const writeResource =
               resourceVarName,
               dependencies: dependencies(),
               lives,
-              createPrefix,
+              hasNoProperty,
               properties,
               codeBuildProperties,
             }),
@@ -463,22 +510,21 @@ const writeResources =
     type,
     typeTarget,
     group,
-    pickProperties,
+    filterLive,
     properties,
     dependencies,
-    createPrefix,
     ignoreResource,
     resourceVarName,
     resourceName,
     codeBuildProperties,
     configBuildProperties,
+    hasNoProperty = () => false,
   }) =>
   ({ lives, mapping }) =>
     pipe([
       tap(() => {
         assert(type);
         assert(group);
-        //assert(isFunction(pickProperties));
       }),
       () => lives,
       find(eq(get("type"), type)),
@@ -494,14 +540,14 @@ const writeResources =
               typeTarget,
               group,
               properties,
-              pickProperties,
+              filterLive,
               dependencies,
-              createPrefix,
               ignoreResource,
               resourceVarName,
               resourceName,
               codeBuildProperties,
               configBuildProperties,
+              hasNoProperty,
             })({
               resource,
               lives,

@@ -32,11 +32,6 @@ describe("EKSCluster", async function () {
     });
   });
   after(async () => {});
-  it("cluster resolveConfig", async function () {
-    assert.equal(cluster.name, clusterName);
-    const config = await cluster.resolveConfig();
-    assert.equal(config.name, clusterName);
-  });
   it.skip("cluster apply plan", async function () {
     await testPlanDeploy({
       provider,

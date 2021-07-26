@@ -130,12 +130,12 @@ exports.createStack = async () => {
   const { domainName } = k8sStack.provider.config;
   assert(domainName);
 
-  const hostedZone = await awsStack.provider.makeHostedZone({
+  const hostedZone = await awsStack.provider.route53.makeHostedZone({
     name: `${domainName}.`,
   });
   const { ingress } = k8sStack.resources;
 
-  const loadBalancerRecord = await awsStack.provider.makeRoute53Record({
+  const loadBalancerRecord = await awsStack.provider.route53.makeRoute53Record({
     name: `record-alias-load-balancer-${domainName}.`,
     dependencies: { hostedZone, ingress },
     properties: ({ dependencies: { ingress } }) => {

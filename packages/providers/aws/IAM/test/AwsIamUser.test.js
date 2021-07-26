@@ -33,12 +33,6 @@ describe("AwsIamUser", async function () {
     await provider.start();
   });
   after(async () => {});
-  it("iamUser resolveConfig", async function () {
-    assert.equal(iamUser.name, iamUserName);
-    const config = await iamUser.resolveConfig();
-    assert(config.UserName);
-    assert(config.Path);
-  });
   it.skip("iamUser apply plan", async function () {
     await testPlanDeploy({
       provider,

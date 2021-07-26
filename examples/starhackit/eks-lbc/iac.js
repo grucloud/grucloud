@@ -144,15 +144,15 @@ exports.createStack = async ({ stage }) => {
 
   const loadBalancer = await stackAws.provider.elb.useLoadBalancer({
     name: "load-balancer",
-    filterLives: ({ items }) =>
+    filterLives: ({ resources }) =>
       pipe([
-        () => items,
+        () => resources,
         find(
           pipe([
             tap((xxx) => {
               assert(true);
             }),
-            get("Tags"),
+            get("live.Tags"),
             find(
               and([
                 eq(get("Key"), "elbv2.k8s.aws/cluster"),
@@ -167,7 +167,7 @@ exports.createStack = async ({ stage }) => {
       ])(),
   });
 
-  const loadBalancerRecord = await stackAws.provider.makeRecord({
+  const loadBalancerRecord = stackAws.provider.route53.makeRecord({
     name: `dns-record-alias-load-balancer-${hostedZone.name}`,
     dependencies: { hostedZone, loadBalancer },
   });

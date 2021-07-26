@@ -1,0 +1,11 @@
+@startmindmap
+title Resources for project simple
+skinparam monochrome true
++ Infra
+++ google
++++ storage
+++++ Bucket (1)
++++++ grucloud-test
+++++ Object (1)
++++++ myfile
+@endmindmap

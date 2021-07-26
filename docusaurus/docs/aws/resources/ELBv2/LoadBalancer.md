@@ -79,12 +79,12 @@ const domainName = "test-load-balancer.grucloud.org";
 
 const loadBalancer = provider.elb.useLoadBalancer({
   name: "load-balancer",
-  filterLives: ({ items }) =>
+  filterLives: ({ resources }) =>
     pipe([
-      () => items,
+      () => resources,
       find(
         pipe([
-          get("Tags"),
+          get("live.Tags"),
           find(
             and([
               eq(get("Key"), "elbv2.k8s.aws/cluster"),

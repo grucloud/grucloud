@@ -22,6 +22,6 @@
     "@grucloud/provider-aws": "^1.30.0",
     "@grucloud/provider-k8s": "^1.29.0",
     "axios": "^0.21.1",
-    "rubico": "^1.6.23"
+    "rubico": "^1.6.27"
   }
 }

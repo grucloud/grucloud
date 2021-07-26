@@ -42,7 +42,7 @@ const imageAmazon2 = {
 describe("AwsEC2", async function () {
   let config;
   const types = ["Instance"];
-  const keyPairName = "kp";
+  const keyPairName = "kp-test-ec2";
   const serverName = "web-server";
 
   const createStack = async ({ imageProperties, serverProperties }) => {
@@ -50,7 +50,7 @@ describe("AwsEC2", async function () {
       config: () => ({ projectName: "ec2-test" }),
     });
 
-    const keyPair = provider.ec2.useKeyPair({
+    const keyPair = provider.ec2.makeKeyPair({
       name: keyPairName,
     });
 
@@ -75,23 +75,6 @@ describe("AwsEC2", async function () {
     }
   });
   after(async () => {});
-  it("ec2 server resolveConfig", async function () {
-    const {
-      provider,
-      resources: { server },
-    } = await createStack({
-      imageProperties: imageUbuntu,
-      serverProperties: () => ({}),
-    });
-
-    assert.equal(server.name, serverName);
-
-    const config = await server.resolveConfig();
-    assert.equal(config.InstanceType, "t2.micro");
-    assert.equal(config.MaxCount, 1);
-    assert.equal(config.MinCount, 1);
-    //assert.equal(config.nameKey, keyPair.name);
-  });
 
   it("ec2 apply plan", async function () {
     // Step 1
@@ -121,9 +104,6 @@ describe("AwsEC2", async function () {
       });
 
       await testPlanDeploy({ provider, types, destroy: false });
-
-      const serverLive = await server.getLive();
-      assert.equal(serverLive.InstanceType, "t3.micro");
     }
 
     // Step 3: Change the ImageId
@@ -139,9 +119,6 @@ describe("AwsEC2", async function () {
       });
 
       await testPlanDeploy({ provider, types, destroy: false });
-      const imageLive = await image.getLive();
-      const serverLive = await server.getLive();
-      assert.equal(serverLive.ImageId, imageLive.ImageId);
       await testPlanDestroy({ provider, types });
     }
   });

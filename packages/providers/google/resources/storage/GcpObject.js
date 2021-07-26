@@ -84,7 +84,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
 
   const getBucket = ({ name, dependencies = {} }) => {
     assert(name);
-    const { bucket } = dependencies;
+    const { bucket } = dependencies();
     if (!bucket) {
       throw {
         code: 422,
@@ -193,7 +193,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
       tap((obj) => {
         logger.info(`create ${name}`);
         assert(name, "missing name");
-        assert(dependencies.bucket, "missing bucket dependencies");
+        assert(dependencies().bucket, "missing bucket dependencies");
       }),
       () =>
         retryCallOnError({
@@ -201,7 +201,7 @@ exports.GcpObject = ({ spec, config: configProvider }) => {
           fn: async () =>
             await axios.request(
               `/b/${
-                dependencies.bucket.name
+                dependencies().bucket.name
               }/o?uploadType=resumable&name=${querystring.escape(name)}`,
               {
                 baseURL: GCP_STORAGE_UPLOAD_URL,

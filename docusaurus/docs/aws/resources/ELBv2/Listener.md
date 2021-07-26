@@ -21,21 +21,11 @@ const listenerHttp = provider.elb.makeListener({
   name: config.elb.listeners.http.name,
   dependencies: {
     loadBalancer,
-    targetGroups: [targetGroups.web],
+    targetGroup: targetGroups.web,
   },
-  properties: ({
-    dependencies: {
-      targetGroups: [targetGroup],
-    },
-  }) => ({
+  properties: () => ({
     Port: 80,
     Protocol: "HTTP",
-    DefaultActions: [
-      {
-        TargetGroupArn: targetGroup?.live?.TargetGroupArn,
-        Type: "forward",
-      },
-    ],
   }),
 });
 ```
@@ -52,6 +42,7 @@ The list of properties are the parameter of [createTargetGroup](https://docs.aws
 
 - [LoadBalancer](./LoadBalancer.md)
 - [TargetGroup](./TargetGroup.md)
+- [Certificate](./ACM/AcmCertificate.md)
 
 ## List
 

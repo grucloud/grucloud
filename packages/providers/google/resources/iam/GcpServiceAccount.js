@@ -16,16 +16,16 @@ const findName = pipe([
   first,
 ]);
 
-const isOurMinionServiceAccount = ({ name, config, live }) =>
+const isOurMinionServiceAccount = ({ config, live }) =>
   pipe([
     tap(() => {
-      assert(config.managedByDescription, config);
+      assert(config.managedByDescription, `missing managedByDescription`);
       assert(live, "live");
     }),
     () => live,
     eq(get("description"), config.managedByDescription),
     tap((isOur) => {
-      logger.info(`isOurMinionServiceAccount: name: ${name} ${isOur}`);
+      logger.info(`isOurMinionServiceAccount: name: ${live.email} ${isOur}`);
     }),
   ])();
 

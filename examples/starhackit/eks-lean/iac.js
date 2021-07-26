@@ -66,12 +66,15 @@ const createAwsStack = async ({ stage }) => {
   const securityGroupEKSCluster = provider.ec2.useSecurityGroup({
     name: "sg-eks-cluster",
     namespace: "EKS",
-    filterLives: ({ items }) =>
+    filterLives: ({ resources }) =>
       pipe([
-        () => items,
+        tap(() => {
+          assert(true);
+        }),
+        () => resources,
         find(
           pipe([
-            get("Tags"),
+            get("live.Tags"),
             find(
               and([
                 eq(get("Key"), "aws:eks:cluster-name"),
@@ -81,33 +84,21 @@ const createAwsStack = async ({ stage }) => {
           ])
         ),
         tap((live) => {
-          //logger.info(`securityGroupEKSCluster live ${live}`);
+          //console.log(`securityGroupEKSCluster live ${live}`);
         }),
       ])(),
   });
 
-  const findGroupIdFromSecurityGroup = ({ securityGroupEKSCluster }) =>
-    pipe([
-      tap(() => {}),
-      //TODO getLive instead ?
-      () => securityGroupEKSCluster.resolveConfig(),
-      get("GroupId"),
-      tap((GroupId) => {
-        assert(true);
-      }),
-    ])();
-
   // Attach an Ingress Rule to the eks security group to allow traffic from the load balancer
   const sgRuleIngressEks = provider.ec2.makeSecurityGroupRuleIngress({
-    name: "sg-rule-ingress-eks",
+    name: "sg-rule-ingres-eks-cluster-from-load-balancer",
     namespace: "EKS",
     dependencies: {
       cluster: resourcesEks.cluster, // Wait until the cluster is up
       securityGroup: securityGroupEKSCluster,
       securityGroupFrom: resourcesLb.securityGroupLoadBalancer,
     },
-    properties: async ({ dependencies: { securityGroupLoadBalancer } }) => ({
-      GroupId: await findGroupIdFromSecurityGroup({ securityGroupEKSCluster }),
+    properties: () => ({
       IpPermission: {
         FromPort: 1025,
         IpProtocol: "tcp",

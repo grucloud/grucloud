@@ -53,6 +53,24 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     key: "elbv2.k8s.aws/cluster",
   });
 
+  //TODO rubico unless
+  const assignTags = switchCase([
+    not(isEmpty),
+    assign({
+      Tags: pipe([
+        tap(({ TargetGroupArn }) => {
+          assert(TargetGroupArn);
+        }),
+        ({ TargetGroupArn }) =>
+          elb().describeTags({ ResourceArns: [TargetGroupArn] }),
+        get("TagDescriptions"),
+        first,
+        get("Tags"),
+      ]),
+    }),
+    identity,
+  ]);
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeTargetGroups-property
   const getList = async () =>
     pipe([
@@ -61,17 +79,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
       }),
       () => elb().describeTargetGroups({}),
       get("TargetGroups"),
-      map(
-        assign({
-          Tags: pipe([
-            ({ TargetGroupArn }) =>
-              elb().describeTags({ ResourceArns: [TargetGroupArn] }),
-            get("TagDescriptions"),
-            first,
-            get("Tags"),
-          ]),
-        })
-      ),
+      map(assignTags),
       tap((results) => {
         logger.debug(`getList target group result: ${tos(results)}`);
       }),
@@ -93,6 +101,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
       () => elb().describeTargetGroups({}),
       get("TargetGroups"),
       find(eq((live) => findName({ live }), name)),
+      assignTags,
       tap((result) => {
         logger.debug(`getByName ${name}, result: ${tos(result)}`);
       }),
@@ -168,11 +177,7 @@ exports.ELBTargetGroup = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createTargetGroup-property
-  const create = async ({
-    name,
-    payload,
-    dependencies: { nodeGroup, autoScalingGroup },
-  }) =>
+  const create = async ({ name, payload, dependencies }) =>
     pipe([
       tap(() => {
         logger.info(`create target group : ${name}`);
@@ -188,35 +193,43 @@ exports.ELBTargetGroup = ({ spec, config }) => {
           config,
         })
       ),
-      switchCase([
-        // NodeGroup Case
-        () => !isEmpty(nodeGroup),
-        ({ TargetGroupArn }) =>
-          pipe([
-            () => findAutoScalingGroup({ nodeGroup }),
-            ({ AutoScalingGroupName }) => ({
-              AutoScalingGroupName,
-              TargetGroupARNs: [TargetGroupArn],
-            }),
-            tap(({ AutoScalingGroupName }) => {
-              logger.info(
-                `attachLoadBalancerTargetGroups ${AutoScalingGroupName}`
-              );
-            }),
-            (params) => autoScaling().attachLoadBalancerTargetGroups(params),
-          ])(),
-        // AutoScaling Group Case
-        () => !isEmpty(autoScalingGroup),
-        ({ TargetGroupArn }) =>
-          pipe([
-            () => ({
-              AutoScalingGroupName: autoScalingGroup.live?.AutoScalingGroupName,
-              TargetGroupARNs: [TargetGroupArn],
-            }),
-            (params) => autoScaling().attachLoadBalancerTargetGroups(params),
-          ])(),
-        identity,
-      ]),
+      ({ TargetGroupArn }) =>
+        pipe([
+          dependencies,
+          switchCase([
+            // NodeGroup Case
+            get("nodeGroup"),
+            ({ nodeGroup }) =>
+              pipe([
+                () => findAutoScalingGroup({ nodeGroup }),
+                ({ AutoScalingGroupName }) => ({
+                  AutoScalingGroupName,
+                  TargetGroupARNs: [TargetGroupArn],
+                }),
+                tap(({ AutoScalingGroupName }) => {
+                  logger.info(
+                    `attachLoadBalancerTargetGroups ${AutoScalingGroupName}`
+                  );
+                }),
+                (params) =>
+                  autoScaling().attachLoadBalancerTargetGroups(params),
+              ])(),
+            // AutoScaling Group Case
+            get("autoScalingGroup"),
+            ({ autoScalingGroup }) =>
+              pipe([
+                () => ({
+                  AutoScalingGroupName:
+                    autoScalingGroup.live?.AutoScalingGroupName,
+                  TargetGroupARNs: [TargetGroupArn],
+                }),
+                (params) =>
+                  autoScaling().attachLoadBalancerTargetGroups(params),
+              ])(),
+            identity,
+          ]),
+        ])(),
+
       tap((result) => {
         logger.info(`created target group ${name}`);
       }),

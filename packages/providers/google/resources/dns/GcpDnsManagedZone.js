@@ -180,7 +180,7 @@ exports.GcpDnsManagedZone = ({ spec, config }) => {
       }
     )();
 
-  const create = async ({ name, payload }) =>
+  const create = ({ name, payload }) =>
     pipe([
       tap(() => {
         logger.debug(`create ${name}, payload: ${tos(payload)}`);

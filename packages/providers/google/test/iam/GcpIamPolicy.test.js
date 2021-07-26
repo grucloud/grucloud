@@ -61,14 +61,6 @@ describe.skip("GcpIamPolicy", async function () {
     await provider.start();
   });
   after(async () => {});
-  it.skip("iamPolicy config", async function () {
-    const iamPolicyLive = await iamPolicy.getLive();
-    const target = await iamPolicy.resolveConfig({ live: iamPolicyLive });
-    assert(
-      find((binding) => binding.role === "roles/owner")(target.policy.bindings)
-    );
-    assert(target.policy.etag);
-  });
 
   it.skip("plan", async function () {
     const plan = provider.planQuery();
@@ -91,12 +83,6 @@ describe.skip("GcpIamPolicy", async function () {
     assert(
       find((binding) => isDeepEqual(binding, bindingEditor))(live.bindings)
     );
-
-    const target = await iamPolicy.resolveConfig({ live: iamPolicyLive });
-    assert(
-      find((binding) => binding.role === "roles/owner")(target.policy.bindings)
-    );
-    assert(target.policy.etag);
 
     await testPlanDestroy({ provider, types });
   });

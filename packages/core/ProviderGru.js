@@ -3,7 +3,6 @@ const {
   pipe,
   tap,
   map,
-  flatMap,
   filter,
   tryCatch,
   switchCase,
@@ -11,32 +10,22 @@ const {
   assign,
   any,
   reduce,
-  fork,
   eq,
   not,
-  and,
-  or,
-  all,
-  transform,
   omit,
-  pick,
+  transform,
 } = require("rubico");
 
 const {
-  first,
   size,
   isEmpty,
   callProp,
-  isString,
-  flatten,
   pluck,
   forEach,
   find,
   defaultsDeep,
-  isDeepEqual,
   includes,
-  groupBy,
-  values,
+  identity,
   isFunction,
 } = require("rubico/x");
 const { Lister } = require("./Lister");
@@ -56,8 +45,7 @@ const { buildGraphTarget } = require("./GraphTarget");
 const { buildGraphTree } = require("./GraphTree");
 
 const GraphCommon = require("./GraphCommon");
-
-const identity = (x) => x;
+const { createLives } = require("./Lives");
 
 const dependenciesTodependsOn = ({ dependencies, stacks }) =>
   pipe([
@@ -65,8 +53,13 @@ const dependenciesTodependsOn = ({ dependencies, stacks }) =>
       assert(Array.isArray(stacks));
     }),
     () => dependencies,
-    reduce((acc, deps) => [...acc, deps.name], []),
-    filter((name) => find(eq(get("provider.name"), name))(stacks)),
+    transform(
+      map(({ name }) => [name]),
+      () => []
+    ),
+    filter((name) =>
+      pipe([() => stacks, find(eq(get("provider.name"), name))])()
+    ),
   ])();
 
 const runnerParams = ({ provider, isProviderUp, stacks }) => ({
@@ -81,6 +74,7 @@ const runnerParams = ({ provider, isProviderUp, stacks }) => ({
 
 const buildDependsOnReverse = (stacks) =>
   pipe([
+    () => stacks,
     map(
       pipe([
         get("provider"),
@@ -91,33 +85,46 @@ const buildDependsOnReverse = (stacks) =>
       ])
     ),
     (specDependsOn) =>
-      map(({ name }) => ({
-        name,
-        dependsOn: pipe([
-          filter(pipe([get("dependsOn"), includes(name)])),
-          map(get("name")),
-        ])(specDependsOn),
-      }))(specDependsOn),
+      pipe([
+        () => specDependsOn,
+        map(({ name }) => ({
+          name,
+          dependsOn: pipe([
+            () => specDependsOn,
+            filter(pipe([get("dependsOn"), includes(name)])),
+            map(get("name")),
+          ])(),
+        })),
+      ])(),
     tap((specDependsOn) => {
       logger.info(`buildDependsOnReverse: ${tos(specDependsOn)}`);
     }),
-  ])(stacks);
+  ])();
 
 exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
   assert(Array.isArray(stacks));
 
-  const getProviders = () => pipe([map(get("provider"))])(stacks);
+  const lives = createLives();
 
-  forEach(({ provider, resources, hooks }) =>
-    provider.register({ resources, hooks })
-  )(stacks);
+  const getProviders = () => pipe([() => stacks, pluck("provider")])();
+
+  pipe([
+    () => stacks,
+    forEach(({ provider, resources, hooks }) =>
+      pipe([
+        //TODO no longer required
+        () => provider.register({ resources, hooks }),
+        () => provider.setLives(lives),
+      ])()
+    ),
+  ])();
 
   const onStateChangeDefault =
     ({ onStateChange }) =>
     ({ key, error, result, nextState }) =>
       pipe([
         tap.if(
-          () => includes(nextState)(["DONE", "ERROR"]),
+          pipe([() => ["DONE", "ERROR"], includes(nextState)]),
           pipe([
             () => getProvider({ providerName: key }),
             (provider) =>
@@ -140,307 +147,14 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
 
   const getProvider = ({ providerName }) =>
     pipe([
+      () => getProviders(),
       find(eq(get("name"), providerName)),
       tap.if(isEmpty, () => {
         assert(`no provider with name: '${providerName}'`);
       }),
-    ])(getProviders());
+    ])();
 
-  const createLives = (livesRaw = []) => {
-    const livesToMap = map(({ providerName, results }) => [
-      providerName,
-      new Map(map((perProvider) => [perProvider.type, perProvider])(results)),
-    ]);
-
-    const mapPerProvider = new Map(livesToMap(livesRaw));
-
-    const toJSON = () =>
-      pipe([
-        () => mapPerProvider,
-        tap((results) => {
-          logger.debug(`toJSON `);
-        }),
-        map.entries(([providerName, mapPerType]) => [
-          providerName,
-          {
-            providerName,
-            kind: "livesPerType",
-            error: any(get("error"))([...mapPerType.values()]),
-            results: [...mapPerType.values()],
-          },
-        ]),
-        (resultMap) => [...resultMap.values()],
-        tap((results) => {
-          logger.debug(`toJSON `);
-        }),
-      ])();
-
-    const getByType = ({ providerName, type }) =>
-      pipe([
-        () => mapPerProvider.get(providerName) || new Map(),
-        (mapPerType) => mapPerType.get(type),
-        tap.if(isEmpty, () => {
-          logger.error(`cannot find type ${type} on provider ${providerName}`);
-        }),
-        get("resources", []),
-        tap((resources) => {
-          logger.debug(
-            `getByType ${JSON.stringify({
-              providerName,
-              type,
-              count: size(resources),
-            })}`
-          );
-        }),
-      ])();
-
-    const getById = ({ providerName, type, id }) =>
-      pipe([
-        () => getByType({ providerName, type }),
-        tap.if(isEmpty, () => {
-          logger.error(`cannot find type ${type} on provider ${providerName}`);
-        }),
-        find(eq(get("id"), id)),
-        tap((result) => {
-          assert(true);
-        }),
-      ])();
-    const getByName = ({ providerName, type, name }) =>
-      pipe([
-        () => getByType({ providerName, type }),
-        tap.if(isEmpty, () => {
-          logger.error(`cannot find type ${type} on provider ${providerName}`);
-        }),
-        find(eq(get("name"), name)),
-        tap((result) => {
-          assert(true);
-        }),
-      ])();
-    return {
-      get error() {
-        return any(get("error"))(toJSON());
-      },
-      addResource: ({ providerName, type, live }) => {
-        assert(providerName);
-        assert(type);
-
-        if (!live) {
-          logger.debug(`live addResource no live for ${type}`);
-          return;
-        }
-
-        const mapPerType = mapPerProvider.get(providerName) || new Map();
-
-        logger.debug(
-          `live addResource ${JSON.stringify({
-            providerName,
-            type,
-            mapPerTypeSize: mapPerType.size,
-          })}`
-        );
-
-        const resources = mapPerType.get(type) || { type, resources: [] };
-        assert(
-          Array.isArray(resources.resources),
-          `no an array: ${tos(resources)}`
-        );
-        mapPerType.set(type, {
-          type,
-          providerName,
-          resources: [...resources.resources, { live }],
-        });
-
-        mapPerProvider.set(providerName, mapPerType);
-        //logger.debug(`live addResource all: ${tos(toJSON())}`);
-      },
-      addResources: ({
-        providerName,
-        type,
-        group,
-        resources = [],
-        error: latestError,
-      }) => {
-        assert(providerName);
-        assert(type);
-        assert(Array.isArray(resources) || latestError);
-        logger.debug(
-          `live addResources ${JSON.stringify({
-            providerName,
-            group,
-            type,
-            resourceCount: resources.length,
-          })}`
-        );
-
-        const mapPerType = mapPerProvider.get(providerName) || new Map();
-        mapPerType.set(type, { type, group, resources, error: latestError });
-        mapPerProvider.set(providerName, mapPerType);
-      },
-      get json() {
-        return toJSON();
-      },
-      toJSON,
-      getByProvider: ({ providerName }) => {
-        const mapPerType = mapPerProvider.get(providerName) || new Map();
-        return [...mapPerType.values()];
-      },
-      setByProvider: ({ providerName, livesPerProvider }) => {
-        const mapPerType = new Map(
-          map((livesPerProvider) => [livesPerProvider.type, livesPerProvider])(
-            livesPerProvider
-          )
-        );
-        mapPerProvider.set(providerName, mapPerType);
-      },
-      getByType,
-      getById,
-      getByName,
-    };
-  };
-
-  // Add namespace and dependencies.
-  const resourceDecorate =
-    ({ lives, commandOptions }) =>
-    (resource) =>
-      pipe([
-        tap(() => {
-          assert(resource.providerName);
-          assert(resource.type);
-          assert(lives);
-        }),
-        // Use Lister
-        () => getProvider({ providerName: resource.providerName }),
-        (provider) =>
-          pipe([
-            () => provider.clientByType({ type: resource.type }),
-            (client) => ({
-              ...resource,
-              get isDefault() {
-                return client.isDefault({ live: resource.live, lives });
-              },
-              get namespace() {
-                return client.findNamespace({ live: resource.live, lives });
-              },
-              get dependencies() {
-                return client.findDependencies({
-                  live: resource.live,
-                  lives,
-                });
-              },
-              get managedByOther() {
-                return client.managedByOther({ live: resource.live, lives });
-              },
-              get managedByUs() {
-                return client.spec.isOurMinion({
-                  resource: provider.getResourceFromLive({
-                    client,
-                    live: resource.live,
-                    lives,
-                  }),
-                  live: resource.live,
-                  lives,
-                  //TODO remove resourceNames
-                  resourceNames: provider.resourceNames(),
-                  resources: provider.getResourcesByType({
-                    type: client.spec.type,
-                  }),
-                  config: provider.config,
-                });
-              },
-            }),
-            tap((resource) =>
-              Object.defineProperty(resource, "show", {
-                enumerable: true,
-                get: () => showLive({ commandOptions })(resource),
-              })
-            ),
-          ])(),
-        tap((resource) => {
-          assert(true);
-        }),
-      ])();
-
-  const showLive =
-    ({ commandOptions = {} } = {}) =>
-    (resource) =>
-      pipe([
-        () => resource,
-        and([
-          (resource) =>
-            switchCase([not(isEmpty), includes(resource.type), () => true])(
-              commandOptions.types
-            ),
-          (resource) => !includes(resource.type)(commandOptions.typesExclude),
-          (resource) =>
-            commandOptions.defaultExclude ? !resource.isDefault : true,
-          (resource) => (commandOptions.our ? resource.managedByUs : true),
-          (resource) =>
-            commandOptions.name ? resource.name === commandOptions.name : true,
-          (resource) =>
-            commandOptions.id ? resource.id === commandOptions.id : true,
-          (resource) =>
-            commandOptions.providerName &&
-            !isEmpty(commandOptions.providerNames)
-              ? includes(resource.providerName)(commandOptions.providerNames)
-              : true,
-          (resource) =>
-            commandOptions.canBeDeleted ? !resource.cannotBeDeleted : true,
-        ]),
-        tap((show) => {
-          logger.debug(`showLive ${resource.name} show: ${show}`);
-        }),
-      ])();
-
-  const decorateListResult =
-    ({}) =>
-    (perProvider) =>
-      pipe([
-        tap((xxx) => {
-          assert(true);
-        }),
-        () => createLives(),
-        tap((lives) =>
-          map(
-            assign({
-              results: pipe([
-                get("results"),
-                tap((results) => {
-                  logger.debug(`decorateListResult #types: ${size(results)}`);
-                }),
-                map(
-                  assign({
-                    resources: ({
-                      providerName,
-                      resources,
-                      type,
-                      group,
-                      error,
-                    }) =>
-                      pipe([
-                        () => resources,
-                        map(resourceDecorate({ lives, commandOptions })),
-                        tap((resources) => {
-                          lives.addResources({
-                            providerName,
-                            type,
-                            group,
-                            resources,
-                            error,
-                          });
-                        }),
-                      ])(),
-                  })
-                ),
-              ]),
-            })
-          )(perProvider)
-        ),
-        tap((lives) => {
-          assert(true);
-        }),
-      ])();
-
-  const listLives = async ({
+  const listLives = ({
     onStateChange,
     onProviderEnd = () => {},
     options,
@@ -451,32 +165,30 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
         logger.info(`listLives ${JSON.stringify({ options, readWrite })}`);
         assert(onStateChange);
       }),
-      () => createLives(),
-      (lives) =>
+      () => filterProviderUp({ stacks, onStateChange }),
+      map(({ provider }) =>
         pipe([
-          () => filterProviderUp({ stacks, onStateChange }),
-          map(({ provider }) =>
-            pipe([
-              () =>
-                provider.listLives({
-                  onStateChange,
-                  options,
-                  readWrite,
-                  lives,
-                }),
-              tap(({ error }) =>
-                provider.spinnersStopListLives({
-                  onStateChange,
-                  error,
-                })
-              ),
-              tap(({ error }) => {
-                onProviderEnd({ provider, error });
-              }),
-            ])()
+          () =>
+            provider.listLives({
+              onStateChange,
+              options,
+              readWrite,
+            }),
+          tap(({ error }) =>
+            provider.spinnersStopListLives({
+              onStateChange,
+              error,
+            })
           ),
-          decorateListResult({ lives }),
-        ])(),
+          tap(({ error }) => {
+            onProviderEnd({ provider, error });
+          }),
+        ])()
+      ),
+      tap((params) => {
+        assert(true);
+      }),
+      () => lives,
     ])();
 
   const displayLives = (lives) =>
@@ -500,10 +212,7 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
         logger.info(`planQuery`);
       }),
       () => listLives({ onStateChange }),
-      tap((lives) => {
-        logger.info(`planQuery`);
-      }),
-      (lives) =>
+      () =>
         pipe([
           () => stacks,
           map(({ provider, isProviderUp }) => ({
@@ -516,7 +225,6 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
                 () =>
                   provider.planQuery({
                     onStateChange,
-                    lives,
                   }),
               ])(),
           })),
@@ -537,7 +245,7 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
                 ])(),
             }),
           (result) => ({
-            lives,
+            lives: lives,
             resultQuery: result,
           }),
           assign({ error: any(get("error")) }),
@@ -547,16 +255,10 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
         ])(),
     ])();
 
-  const planApply = ({
-    plan,
-    lives,
-    onStateChange,
-    onProviderEnd = () => {},
-  }) =>
+  const planApply = ({ plan, onStateChange, onProviderEnd = () => {} }) =>
     pipe([
       tap(() => {
         logger.info(`planApply`);
-        assert(lives);
         assert(Array.isArray(plan.results));
       }),
       () => plan.results,
@@ -594,56 +296,52 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
           ),
         ]),
       }),
-
-      ({ results }) =>
-        map(
-          tryCatch(
-            (planPerProvider) =>
-              pipe([
-                () =>
-                  getProvider({
-                    providerName: planPerProvider.providerName,
-                  }),
-                (provider) =>
-                  pipe([
-                    () =>
-                      provider.planApply({
-                        plan: planPerProvider,
-                        onStateChange,
-                        lives,
+      assign({
+        results: pipe([
+          get("results"),
+          map(
+            tryCatch(
+              (planPerProvider) =>
+                pipe([
+                  () =>
+                    getProvider({
+                      providerName: planPerProvider.providerName,
+                    }),
+                  (provider) =>
+                    pipe([
+                      () =>
+                        provider.planApply({
+                          plan: planPerProvider,
+                          onStateChange,
+                        }),
+                      assign({
+                        resultHooks: () =>
+                          provider.runOnDeployed({ onStateChange }),
                       }),
-                    tap((xxx) => {
-                      assert(xxx);
-                    }),
-                    assign({
-                      resultHooks: () =>
-                        provider.runOnDeployed({ onStateChange }),
-                    }),
-                    assign({
-                      error: pipe([omit(["lives"]), any(get("error"))]),
-                    }),
-                    tap((xxx) => {
-                      assert(xxx);
-                    }),
-                    tap(({ error }) => {
-                      onProviderEnd({ provider, error });
-                    }),
-                  ])(),
-              ])(),
-            (error, { providerName }) =>
-              pipe([
-                () => convertError({ error, name: "Apply" }),
-                tap((error) => {
-                  logger.error(`planApply ${tos(error)}`);
-                }),
-                (error) => ({
-                  error,
-                  providerName,
-                }),
-              ])()
-          )
-        )(results),
-      (results) => ({ error: any(get("error"))(results), results }),
+                      assign({
+                        error: pipe([omit(["lives"]), any(get("error"))]),
+                      }),
+                      tap(({ error }) => {
+                        onProviderEnd({ provider, error });
+                      }),
+                    ])(),
+                ])(),
+              (error, { providerName }) =>
+                pipe([
+                  () => convertError({ error, name: "Apply" }),
+                  tap((error) => {
+                    logger.error(`planApply ${tos(error)}`);
+                  }),
+                  (error) => ({
+                    error,
+                    providerName,
+                  }),
+                ])()
+            )
+          ),
+        ]),
+      }),
+      assign({ error: pipe([get("results"), any(get("error"))]) }),
       tap((result) => {
         logger.info(`planApply done`);
       }),
@@ -654,7 +352,6 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
       tap(() => {
         logger.info(`filterProviderUp`);
       }),
-
       () => stacks,
       map(({ provider, isProviderUp }) => ({
         ...runnerParams({ provider, isProviderUp, stacks }),
@@ -696,14 +393,11 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
         }),
       get("results"),
       tap((results) => {
-        assert(true);
-      }),
-      tap((results) => {
         logger.info(`filterProviderUp #providers ${size(results)}`);
       }),
     ])();
 
-  const planQueryDestroy = async ({ onStateChange, options }) =>
+  const planQueryDestroy = ({ onStateChange, options }) =>
     pipe([
       tap(() => {
         logger.info(`planQueryDestroy ${JSON.stringify(options)}`);
@@ -711,7 +405,7 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
         assert(stacks);
       }),
       () => listLives({ onStateChange, options, readWrite: true }),
-      (lives) =>
+      () =>
         pipe([
           () => filterProviderUp({ stacks, onStateChange }),
           map(({ provider, isProviderUp }) =>
@@ -720,7 +414,6 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
                 provider.planQueryDestroy({
                   onStateChange,
                   options,
-                  lives,
                 }),
               tap(({ error }) => {
                 provider.spinnersStopProvider({
@@ -730,8 +423,11 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
               }),
             ])()
           ),
+          tap((params) => {
+            assert(true);
+          }),
           (results) => ({ error: any(get("error"))(results), results }),
-          (resultQueryDestroy) => ({ lives, resultQueryDestroy }),
+          (resultQueryDestroy) => ({ lives: lives, resultQueryDestroy }),
           assign({ error: any(get("error")) }),
           tap((results) => {
             logger.info(`planQueryDestroy done`);
@@ -739,17 +435,11 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
         ])(),
     ])();
 
-  const planDestroy = async ({
-    plan,
-    onStateChange = identity,
-    lives,
-    options,
-  }) =>
+  const planDestroy = ({ plan, onStateChange = identity, options }) =>
     pipe([
       tap(() => {
         logger.info(`planDestroy`);
         assert(plan);
-        assert(lives);
       }),
       () => plan.results,
       filter(not(get("error"))),
@@ -773,7 +463,6 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
                   resultDestroy: () =>
                     provider.planDestroy({
                       plans: plans,
-                      lives,
                       onStateChange,
                       options,
                     }),
@@ -826,7 +515,6 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
               provider[functionName]({
                 onStateChange,
                 options,
-                // TODO lives,
               }),
             assign({ providerName: () => provider.name }),
             tap((xxx) => {
@@ -844,16 +532,6 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
       }),
     ])();
 
-  const planQueryAndApply = async ({ onStateChange = identity } = {}) => {
-    const plan = await planQuery({ onStateChange });
-    if (plan.error) return { error: true, plan };
-    return await planApply({
-      plan: plan.resultQuery,
-      lives: plan.lives,
-      onStateChange,
-    });
-  };
-
   const startHookGlobalSpinners = ({ hookType, onStateChange, hookInstance }) =>
     pipe([
       () => {
@@ -868,7 +546,8 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
           nextState: "WAITING",
           indent: 2,
         }),
-      () => hookInstance[hookType],
+      () => hookInstance,
+      get(hookType),
       get("actions"),
       forEach((action) =>
         onStateChange({
@@ -940,9 +619,6 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
           ),
         ])()
       ),
-      tap((result) => {
-        assert(true);
-      }),
       (results) => ({
         error: any(get("error"))(results),
         results,
@@ -973,7 +649,9 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
       ),
       tryCatch(
         pipe([
-          () => hookInstance[hookType].init(),
+          () => hookInstance,
+          get(hookType),
+          callProp("init"),
           tap((actionPayload) => {
             logger.debug(`init result: ${actionPayload}`);
           }),
@@ -995,7 +673,7 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
           }),
           assign({ error: any(get("error")) }),
           tap((result) => {
-            logger.debug(``);
+            assert(true);
           }),
         ]),
         pipe([
@@ -1028,7 +706,6 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
           `runCommandGlobal ${hookType}, hashookGlobal: ${!!hookGlobal}`
         );
       }),
-
       switchCase([
         () => hookGlobal,
         pipe([
@@ -1104,7 +781,6 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
     planApply,
     planQueryDestroy,
     planDestroy,
-    planQueryAndApply,
     displayLives,
     getProvider,
     getProviders,

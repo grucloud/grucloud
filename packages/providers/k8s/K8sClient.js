@@ -26,6 +26,7 @@ const {
   pluck,
   flatten,
   includes,
+  isFunction,
 } = require("rubico/x");
 
 const { retryCall, retryCallOnError } = require("@grucloud/core/Retry");
@@ -79,12 +80,14 @@ module.exports = K8sClient = ({
 
   assert(providerName);
 
-  const findName = pipe([
-    get("live.metadata.name"),
-    tap((name) => {
-      assert(name);
-    }),
-  ]);
+  const findName = ({ live }) =>
+    pipe([
+      tap(() => {
+        assert(live, `findName: no live`);
+      }),
+      () => live,
+      get("metadata.name"),
+    ])();
 
   const findMeta = pipe([
     get("metadata"),
@@ -94,7 +97,16 @@ module.exports = K8sClient = ({
   ]);
 
   const findId = findName;
-  const findNamespace = get("live.metadata.namespace", "default");
+
+  const findNamespace = ({ live }) =>
+    pipe([
+      tap(() => {
+        assert(live, `findNamespace: no live`);
+      }),
+      () => live,
+      get("metadata.namespace", "default"),
+    ])();
+
   const findNamespaceFromTarget = ({ properties }) =>
     get("live.metadata.namespace", "default")(properties({ dependencies: {} }));
 
@@ -184,6 +196,9 @@ module.exports = K8sClient = ({
 
   const getByName = ({ name, dependencies, properties = ({}) => ({}) }) =>
     pipe([
+      tap(() => {
+        assert(isFunction(dependencies));
+      }),
       () => properties({ dependencies: {} }),
       (props) =>
         getByKey({
@@ -191,7 +206,7 @@ module.exports = K8sClient = ({
           name,
           namespace:
             get("metadata.namespace")(props) ||
-            getNamespace(dependencies.namespace),
+            getNamespace(dependencies().namespace),
         }),
     ])();
 
@@ -219,7 +234,7 @@ module.exports = K8sClient = ({
             apiVersion: payload.apiVersion,
             namespace:
               payload.metadata.namespace ||
-              getNamespace(dependencies.namespace),
+              getNamespace(dependencies().namespace),
           }),
         tap((path) => {
           logger.info(`create ${type}/${name}, path: ${path}`);
@@ -279,7 +294,7 @@ module.exports = K8sClient = ({
                 name,
                 namespace:
                   payload.metadata.namespace ||
-                  getNamespace(dependencies.namespace),
+                  getNamespace(dependencies().namespace),
               }),
             tap((path) => {
               logger.info(`update ${type}/${name}, path: ${path}`);

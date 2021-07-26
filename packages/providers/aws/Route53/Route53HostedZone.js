@@ -387,7 +387,7 @@ exports.Route53HostedZone = ({ spec, config }) => {
 };
 
 exports.compareHostedZone = async ({
-  usedBySet,
+  usedBySet, //TODO remove
   target,
   live,
   dependencies,

@@ -2,7 +2,7 @@ const assert = require("assert");
 const { defaultsDeep } = require("rubico/x");
 
 const MockClient = require("../MockClient");
-const { SpecDefault } = require("../../../core/SpecDefault");
+const { createSpec } = require("../../../core/SpecDefault");
 const { createAxiosMock } = require("../MockAxios");
 const MockCloud = require("../MockCloud");
 
@@ -12,7 +12,7 @@ describe("MockClient", function () {
   let mockClient;
   const config = { mockCloud: MockCloud(), createAxios: createAxiosMock };
 
-  const spec = defaultsDeep(SpecDefault({}))({
+  const spec = createSpec({ config })({
     type: "Server",
   });
 

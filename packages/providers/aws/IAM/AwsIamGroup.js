@@ -7,6 +7,7 @@ const {
   get,
   switchCase,
   eq,
+  any,
   assign,
 } = require("rubico");
 const { defaultsDeep, isEmpty, forEach, pluck } = require("rubico/x");
@@ -234,11 +235,16 @@ exports.AwsIamGroup = ({ spec, config }) => {
     shouldRetryOnExceptionDelete,
   };
 };
-// TODO use resources instead of resourceNames
-exports.isOurMinionIamGroup = ({ live, resourceNames }) => {
-  assert(live);
-  assert(resourceNames, "resourceNames");
-  const isOur = resourceNames.includes(live.GroupName);
-  logger.debug(`isOurMinionIamGroup: ${isOur}`);
-  return isOur;
-};
+
+exports.isOurMinionIamGroup = ({ name, live, resources }) =>
+  pipe([
+    tap(() => {
+      assert(live);
+      assert(resources, "resources");
+    }),
+    () => resources,
+    any(eq(get("name"), live.GroupName)),
+    tap((isOur) => {
+      logger.debug(`isOurMinionIamGroup: ${name}, isOur:${isOur}`);
+    }),
+  ])();

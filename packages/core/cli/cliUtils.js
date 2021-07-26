@@ -41,16 +41,12 @@ exports.runAsyncCommand = async ({ text, command }) => {
     ...other
   }) => {
     logger.info(
-      `onStateChange: ${JSON.stringify(
-        {
-          context,
-          previousState,
-          nextState,
-          //other,
-        },
-        null,
-        4
-      )}`
+      `onStateChange: ${JSON.stringify({
+        context,
+        previousState,
+        nextState,
+        //other,
+      })}`
     );
     assert(context, "onStateChange: missing context");
     const onDoneDefault = ({ state, spinnerMap }) => {
@@ -211,53 +207,55 @@ const displayProviderList = pipe([
 ]);
 exports.displayProviderList = displayProviderList;
 
-const filterProvider = ({
-  commandOptions: { provider: providerOptions = [] },
-}) => ({ provider }) =>
-  pipe([
-    tap(() => {
-      assert(provider);
-    }),
-    () => provider,
-    or([
-      () => isEmpty(providerOptions),
-      (provider) =>
-        any((providerName) =>
-          new RegExp(`${providerName}`, "i").test(provider.name)
-        )(providerOptions),
-    ]),
-    tap((keep) => {
-      logger.debug(
-        `filterProvider ${provider.name}: ${providerOptions}, keep: ${keep}`
-      );
-    }),
-  ])();
+const filterProvider =
+  ({ commandOptions: { provider: providerOptions = [] } }) =>
+  ({ provider }) =>
+    pipe([
+      tap(() => {
+        assert(provider);
+      }),
+      () => provider,
+      or([
+        () => isEmpty(providerOptions),
+        (provider) =>
+          any((providerName) =>
+            new RegExp(`${providerName}`, "i").test(provider.name)
+          )(providerOptions),
+      ]),
+      tap((keep) => {
+        logger.debug(
+          `filterProvider ${provider.name}: ${providerOptions}, keep: ${keep}`
+        );
+      }),
+    ])();
 
 exports.filterProvider = filterProvider;
 
-exports.setupProviders = ({ commandOptions = {} } = {}) => (infra) =>
-  pipe([
-    tap(() => {
-      logger.debug(`setupProviders ${JSON.stringify(commandOptions)}`);
-      assert(infra);
-    }),
-    () => infra,
-    assign({
-      stacks: pipe([
-        get("stacks"),
-        switchCase([isEmpty, () => [infra], identity]),
-        //TODO infra validation, has provider ?
-        filter(not(isEmpty)),
-        filter(filterProvider({ commandOptions })),
-        tap.if(isEmpty, () => {
-          throw { code: 422, message: `no provider provided` };
-        }),
-      ]),
-    }),
-    (infraNew) => ({
-      providerGru: ProviderGru({ commandOptions, ...infraNew }),
-    }),
-    tap((xx) => {
-      //logger.debug("setupProviders");
-    }),
-  ])();
+exports.setupProviders =
+  ({ commandOptions = {} } = {}) =>
+  (infra) =>
+    pipe([
+      tap(() => {
+        logger.debug(`setupProviders ${JSON.stringify(commandOptions)}`);
+        assert(infra);
+      }),
+      () => infra,
+      assign({
+        stacks: pipe([
+          get("stacks"),
+          switchCase([isEmpty, () => [infra], identity]),
+          //TODO infra validation, has provider ?
+          filter(not(isEmpty)),
+          filter(filterProvider({ commandOptions })),
+          tap.if(isEmpty, () => {
+            throw { code: 422, message: `no provider provided` };
+          }),
+        ]),
+      }),
+      (infraNew) => ({
+        providerGru: ProviderGru({ commandOptions, ...infraNew }),
+      }),
+      tap((xx) => {
+        //logger.debug("setupProviders");
+      }),
+    ])();

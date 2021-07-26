@@ -32,13 +32,6 @@ const createResources = async ({
     ),
     namespace,
     dependencies: { cluster },
-    properties: ({ dependencies: { cluster } }) => ({
-      Url: get(
-        "live.identity.oidc.issuer",
-        "oidc.issuer not available yet"
-      )(cluster),
-      ClientIDList: ["sts.amazonaws.com"],
-    }),
   });
 
   const iamLoadBalancerPolicy = provider.iam.makePolicy({
@@ -54,34 +47,9 @@ const createResources = async ({
     name: formatName(awsLoadBalancerController.role.name, config),
     namespace,
     dependencies: {
-      iamOpenIdConnectProvider,
+      openIdConnectProvider: iamOpenIdConnectProvider,
       policies: [iamLoadBalancerPolicy],
     },
-    properties: ({ dependencies: { iamOpenIdConnectProvider } }) => ({
-      AssumeRolePolicyDocument: {
-        Version: "2012-10-17",
-        Statement: [
-          {
-            Effect: "Allow",
-            Principal: {
-              Federated: get(
-                "live.Arn",
-                "iamOpenIdConnectProvider.Arn not yet known"
-              )(iamOpenIdConnectProvider),
-            },
-            Action: "sts:AssumeRoleWithWebIdentity",
-            Condition: {
-              StringEquals: {
-                [`${get(
-                  "live.Url",
-                  "iamOpenIdConnectProvider.Url not yet known"
-                )(iamOpenIdConnectProvider)}:aud`]: "sts.amazonaws.com",
-              },
-            },
-          },
-        ],
-      },
-    }),
   });
 
   return { roleLoadBalancer };

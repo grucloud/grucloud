@@ -52,11 +52,6 @@ describe("AwsSubnet", async function () {
   it("subnet name", async function () {
     assert.equal(subnet.name, subnetName);
   });
-  it("subnet resolveConfig", async function () {
-    const config = await subnet.resolveConfig();
-    assert(config.CidrBlock);
-  });
-
   it("subnet apply and destroy", async function () {
     await testPlanDeploy({ provider, types });
 

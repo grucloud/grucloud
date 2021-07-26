@@ -1,7 +1,7 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
 const hook = require("./hook");
 
-const createResources = async ({ provider, resources: { keyPair } }) => {
+const createResources = async ({ provider }) => {
   const userName = "Alice";
   const groupName = "Admin";
   const roleName = "role-allow-assume-role";
@@ -110,7 +110,7 @@ const createResources = async ({ provider, resources: { keyPair } }) => {
 
   const server = provider.ec2.makeInstance({
     name: "web-iam",
-    dependencies: { image, keyPair, iamInstanceProfile },
+    dependencies: { image, iamInstanceProfile },
     properties: () => ({
       InstanceType: "t2.micro",
     }),
@@ -132,10 +132,6 @@ exports.createResources = createResources;
 exports.createStack = async () => {
   // Create a AWS provider
   const provider = AwsProvider({ config: require("./config") });
-  const keyPair = provider.ec2.useKeyPair({
-    name: "kp",
-  });
-
   const resources = await createResources({ provider, resources: { keyPair } });
 
   return {

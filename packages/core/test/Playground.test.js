@@ -6,7 +6,7 @@ const {
   unionWith,
   differenceWith,
 } = require("rubico/x");
-const { get, switchCase, all } = require("rubico");
+const { get, switchCase, all, transform, map, tap, pipe } = require("rubico");
 const { copyDeep } = require("rubico/monad/Struct");
 
 const list = {
@@ -20,6 +20,16 @@ const list = {
 };
 
 describe("Playground", function () {
+  it("transform", async function () {
+    const deps = { instance: { name: "server" }, record: { name: "record-A" } };
+    const expectedResult = ["server", "record-A"];
+
+    const result = transform(
+      map(({ name }) => [name]),
+      () => []
+    )(deps);
+    assert.deepStrictEqual(expectedResult, result);
+  });
   it.skip("urljoin", async function () {
     const result = urljoin("", "/test");
     assert.equal(result, "/test");

@@ -8,19 +8,12 @@ const {
   not,
   eq,
   or,
-  fork,
-  switchCase,
+  any,
   all,
+  tryCatch,
+  switchCase,
 } = require("rubico");
-const {
-  isEmpty,
-  find,
-  first,
-  forEach,
-  defaultsDeep,
-  pluck,
-  includes,
-} = require("rubico/x");
+const { isEmpty, first, defaultsDeep, pluck, find } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsRouteTable" });
 const { tos } = require("@grucloud/core/tos");
@@ -37,13 +30,14 @@ const {
   shouldRetryOnException,
   findNamespaceInTags,
 } = require("../AwsCommon");
+const { getField } = require("@grucloud/core/ProviderCommon");
+
 exports.AwsRouteTable = ({ spec, config }) => {
   assert(spec);
   assert(config);
-
+  const { providerName } = config;
   const ec2 = Ec2New(config);
   const findId = get("live.RouteTableId");
-  const findName = findNameInTagsOrId({ findId });
 
   const isDefault = ({ live, lives }) =>
     pipe([
@@ -52,9 +46,38 @@ exports.AwsRouteTable = ({ spec, config }) => {
       first,
       get("Main"),
       tap((result) => {
-        logger.debug(`isDefault ${live.RouteTableId} : ${result}`);
+        assert(true);
       }),
     ])();
+
+  const findDefaultName = ({ live, lives }) =>
+    pipe([
+      tap(() => {
+        assert(live.VpcId);
+        assert(lives);
+      }),
+      () =>
+        lives.getById({
+          type: "Vpc",
+          group: "ec2",
+          providerName,
+          id: live.VpcId,
+        }),
+      tap((params) => {
+        assert(true);
+      }),
+      get("name"),
+      tap((name) => {
+        assert(name);
+      }),
+      (name) => `rt-default-${name}`,
+    ])();
+
+  const findName = switchCase([
+    isDefault,
+    findDefaultName,
+    findNameInTagsOrId({ findId }),
+  ]);
 
   const findDependencies = ({ live }) => [
     { type: "Vpc", group: "ec2", ids: [live.VpcId] },
@@ -69,6 +92,124 @@ exports.AwsRouteTable = ({ spec, config }) => {
       ])(),
     },
   ];
+
+  const routeTableAssociate = ({ RouteTableId, subnets }) =>
+    pipe([
+      tap(() => {
+        assert(RouteTableId);
+        assert(subnets);
+      }),
+      () => subnets,
+      pluck("live.SubnetId"),
+      map(
+        tryCatch(
+          pipe([
+            tap((SubnetId) => {
+              logger.info(
+                `associateRouteTable ${JSON.stringify({
+                  RouteTableId,
+                  SubnetId,
+                })}`
+              );
+              assert(SubnetId, "SubnetId");
+            }),
+            (SubnetId) =>
+              ec2().associateRouteTable({
+                RouteTableId,
+                SubnetId,
+              }),
+          ]),
+          (error, SubnetId) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `error associateRouteTable ${tos({
+                    RouteTableId,
+                    SubnetId,
+                    error,
+                  })}`
+                );
+              }),
+              () => ({ error, RouteTableId, SubnetId }),
+            ])()
+        )
+      ),
+      tap.if(any(get("error")), (results) => {
+        throw results;
+      }),
+    ])();
+
+  const routeTableDisassociate = ({ live }) =>
+    pipe([
+      tap(() => {
+        assert(true);
+      }),
+      () => live,
+      get("Associations"),
+      filter(not(get("Main"))),
+      map(
+        tryCatch(
+          pipe([
+            tap(({ RouteTableAssociationId }) => {
+              assert(RouteTableAssociationId);
+            }),
+            ({ RouteTableAssociationId }) =>
+              ec2().disassociateRouteTable({
+                AssociationId: RouteTableAssociationId,
+              }),
+          ]),
+          (error, association) =>
+            pipe([
+              tap(() => {
+                logger.error(
+                  `error disassociateRouteTable ${tos({ association, error })}`
+                );
+              }),
+              () => ({ error, association }),
+            ])()
+        )
+      ),
+      tap.if(any(get("error")), (result) => {
+        throw result;
+      }),
+    ])();
+
+  const routesDelete = ({ live }) =>
+    pipe([
+      tap(() => {
+        assert(true);
+      }),
+      () => live,
+      get("Routes"),
+      filter(eq(get("State"), "blackhole")),
+      tap((Routes) => {
+        assert(true);
+      }),
+      map(
+        tryCatch(
+          pipe([
+            tap((Route) => {
+              assert(Route);
+            }),
+            (Route) =>
+              ec2().deleteRoute({
+                RouteTableId: live.RouteTableId,
+                DestinationCidrBlock: Route.DestinationCidrBlock,
+              }),
+          ]),
+          (error, Route) =>
+            pipe([
+              tap(() => {
+                logger.error(`error deleteRoute ${tos({ Route, error })}`);
+              }),
+              () => ({ error, Route }),
+            ])()
+        )
+      ),
+      tap.if(any(get("error")), (result) => {
+        throw result;
+      }),
+    ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeRouteTables-property
   const getList = ({ params } = {}) =>
@@ -92,83 +233,51 @@ exports.AwsRouteTable = ({ spec, config }) => {
 
   const getByName = getByNameCore({ getList, findName });
   const getById = getByIdCore({ fieldIds: "RouteTableIds", getList });
+  const isUpById = isUpByIdCore({ getById });
 
-  // const isUpById = isUpByIdCore({
-  //   getById,
-  // });
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createRouteTable-property
   const create = async ({
     payload,
     name,
-    resolvedDependencies: { vpc, subnets },
+    dependencies,
+    resolvedDependencies: { subnets },
   }) =>
     pipe([
       tap(() => {
         logger.info(`create rt ${tos({ name })}`);
-        assert(vpc, "RouteTable is missing the dependency 'vpc'");
-        assert(
-          Array.isArray(subnets),
-          "RouteTable is missing the dependency 'subnets' array"
-        );
         assert(
           all(get("live.SubnetId"))(subnets),
           "one of the subnet is not up"
         );
       }),
-      () =>
-        defaultsDeep({
-          VpcId: vpc.live.VpcId,
-        })(payload),
-      (params) => ec2().createRouteTable(params),
-      get("RouteTable.RouteTableId"),
-      tap((RouteTableId) =>
-        forEach(
-          pipe([
-            get("live.SubnetId"),
-            tap((SubnetId) => {
-              logger.info(
-                `associateRouteTable ${tos({ name, SubnetId, SubnetId })}`
-              );
-              assert(SubnetId, "SubnetId");
-            }),
-            (SubnetId) =>
-              ec2().associateRouteTable({
-                RouteTableId,
-                SubnetId,
-              }),
-          ])
-        )(subnets)
+      () => ec2().createRouteTable(payload),
+      get("RouteTable"),
+      tap(({ RouteTableId }) =>
+        retryCall({
+          name: `create rt isUpById: ${name} id: ${RouteTableId}`,
+          fn: () => isUpById({ id: RouteTableId, name }),
+          config,
+        })
       ),
-      tap((RouteTableId) => {
+      ({ RouteTableId }) => routeTableAssociate({ RouteTableId, subnets }),
+      tap(({ RouteTableId }) => {
         logger.info(`created rt ${JSON.stringify({ name, RouteTableId })}`);
       }),
-      (RouteTableId) => ({ id: RouteTableId }),
+      ({ RouteTableId }) => ({ id: RouteTableId }),
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#disassociateRouteTable-property
-  const destroy = async ({ id, name }) =>
+  const destroy = async ({ id, name, live }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy route table ${tos({ name, id })}`);
+        logger.info(`destroy route table ${JSON.stringify({ name, id })}`);
+        assert(live);
+        assert(id);
       }),
-      () => getById({ id }),
-      tap.if(isEmpty, () => {
-        throw Error(`Cannot get route tables: ${id}`);
-      }),
-      get("Associations"),
-      filter(not(get("Main"))),
-      map(async (association) => {
-        logger.debug(`destroy disassociate ${tos({ association })}`);
-        //TODO tryCatch
-        await ec2().disassociateRouteTable({
-          AssociationId: association.RouteTableAssociationId,
-        });
-      }),
-      tap(() => {
-        logger.debug(`deleting rt ${JSON.stringify({ RouteTableId: id })}`);
-      }),
+      () => routeTableDisassociate({ live }),
+      () => routesDelete({ live }),
       () => ec2().deleteRouteTable({ RouteTableId: id }),
       tap(() =>
         retryCall({
@@ -182,18 +291,33 @@ exports.AwsRouteTable = ({ spec, config }) => {
       }),
     ])();
 
-  const configDefault = async ({ name, namespace, properties }) =>
-    defaultsDeep({
-      TagSpecifications: [
-        {
-          ResourceType: "route-table",
-          Tags: buildTags({ config, namespace, name }),
-        },
-      ],
-    })(properties);
+  const configDefault = ({
+    name,
+    namespace,
+    properties,
+    dependencies: { vpc, subnets },
+  }) =>
+    pipe([
+      tap(() => {
+        assert(vpc, "RouteTable is missing the dependency 'vpc'");
+        assert(
+          Array.isArray(subnets),
+          "RouteTable is missing the dependency 'subnets' array"
+        );
+      }),
+      () => properties,
+      defaultsDeep({
+        VpcId: getField(vpc, "VpcId"),
+        TagSpecifications: [
+          {
+            ResourceType: "route-table",
+            Tags: buildTags({ config, namespace, name }),
+          },
+        ],
+      }),
+    ])();
 
-  const cannotBeDeleted = ({ live, name }) =>
-    pipe([() => live, eq(get("RouteTableId"), name)])();
+  const cannotBeDeleted = isDefault;
 
   return {
     spec,

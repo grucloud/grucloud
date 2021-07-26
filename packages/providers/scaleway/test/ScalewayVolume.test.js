@@ -31,11 +31,6 @@ describe("ScalewayVolume", async function () {
 
   after(async () => {});
 
-  it("volume config", async function () {
-    const config = await volume.resolveConfig();
-    assert(config.volume_type);
-    assert(config.name);
-  });
   it.skip("apply and destroy", async function () {
     await testPlanDeploy({ provider });
     await testPlanDestroy({ provider });

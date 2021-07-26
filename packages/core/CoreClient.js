@@ -125,7 +125,7 @@ module.exports = CoreClient = ({
   const isUpById = isUpByIdFactory({ getById, getList, findId });
   const isDownById = isDownByIdFactory({ getById, getList, findId });
 
-  const create = async ({ name, payload, dependencies }) =>
+  const create = async ({ name, payload, dependencies = () => ({}) }) =>
     tryCatch(
       pipe([
         tap(() => {
@@ -135,7 +135,7 @@ module.exports = CoreClient = ({
           assert(!spec.singleton);
           assert(!spec.listOnly);
         }),
-        () => pathCreate({ dependencies, name }),
+        () => pathCreate({ dependencies: dependencies(), name }),
         tap((path) => {
           logger.info(`create ${spec.type}/${name}, path: ${path}`);
         }),

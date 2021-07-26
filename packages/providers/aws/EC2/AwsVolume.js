@@ -28,6 +28,7 @@ const {
   buildTags,
   findNamespaceInTags,
   hasKeyInTags,
+  findValueInTags,
 } = require("../AwsCommon");
 
 exports.AwsVolume = ({ spec, config }) => {
@@ -43,7 +44,23 @@ exports.AwsVolume = ({ spec, config }) => {
   });
 
   const findId = get("live.VolumeId");
-  const findName = findNameInTagsOrId({ findId });
+  const findName = pipe([
+    switchCase([
+      managedByOther,
+      pipe([
+        tap((params) => {
+          assert(true);
+        }),
+        get("live"),
+        findValueInTags({ key: "kubernetes.io/created-for/pvc/name" }),
+        tap((pvcName) => {
+          assert(pvcName);
+        }),
+        (pvcName) => `kubernetes-${pvcName}`,
+      ]),
+      findNameInTagsOrId({ findId }),
+    ]),
+  ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVolumes-property
   const getList = ({ params } = {}) =>

@@ -24,6 +24,17 @@
       "port": 9229
     },
     {
+      "name": "Plan AWS",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["plan", "-p", "aws"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    },
+    {
       "name": "Plan",
       "type": "node",
       "request": "launch",
@@ -45,6 +56,17 @@
       "cwd": "${workspaceRoot}",
       "port": 9229
     },
+    {
+      "name": "Destroy AWS",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "gc",
+      "runtimeArgs": ["destroy", "-f", "-p", "aws"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}",
+      "port": 9229
+    }
     {
       "name": "Destroy",
       "type": "node",

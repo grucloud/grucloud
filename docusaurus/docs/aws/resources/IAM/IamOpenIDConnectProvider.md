@@ -7,23 +7,18 @@ Provides an Iam Open ID Connect Provider.
 
 The following example creates a Open ID Connect Provider for an EKS Cluster.
 
+Upon creation, the SSL certicate chain is fetched from the `identity.oidc.issuer` URL provided by the EKS cluster. The thumbprint of the last certificate is formatted, it is required as an input for the creation of the OpenIDConnectProvider resource.
+
 ```js
 const iamOpenIdConnectProvider = provider.iam.makeOpenIDConnectProvider({
   name: "oidp-eks",
   dependencies: { cluster },
-  properties: ({ dependencies: { cluster } }) => ({
-    Url: get(
-      "live.identity.oidc.issuer",
-      "oidc.issuer not available yet"
-    )(cluster),
-    ClientIDList: ["sts.amazonaws.com"],
-  }),
 });
 ```
 
 ### Examples
 
-- [eks example](https://github.com/grucloud/grucloud/blob/main/examples/aws/eks/iac.js)
+- [load balancer controller module](https://github.com/grucloud/grucloud/blob/main/packages/modules/aws/load-balancer-controller/iac.js#)
 
 ### Properties
 
@@ -31,7 +26,7 @@ const iamOpenIdConnectProvider = provider.iam.makeOpenIDConnectProvider({
 
 ### Dependencies
 
-- [EKSCluster](../EKS/EksCluster)
+- [EKS Cluster](../EKS/EksCluster)
 
 ### Aws Docs
 

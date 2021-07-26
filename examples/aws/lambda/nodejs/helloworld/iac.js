@@ -21,7 +21,7 @@ const createResources = async ({ provider }) => {
   const zip = new AdmZip();
   zip.addLocalFile("helloworld.js");
 
-  const lambda = provider.makeFunction({
+  const lambda = provider.lambda.makeFunction({
     name: "lambda-hello-world-1",
     dependencies: { role: iamRole },
     properties: () => ({

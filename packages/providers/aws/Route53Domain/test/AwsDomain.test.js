@@ -32,15 +32,4 @@ describe("AwsDomain", async function () {
     provider = await createProvider({ config });
   });
   after(async () => {});
-  it("Domain resolveConfig", async function () {
-    assert.equal(domain.name, domainName);
-    const config = await domain.resolveConfig();
-    assert.equal(config.DomainName, domainName);
-  });
-
-  it("Domain apply plan", async function () {
-    const domainLive = await domain.getLive();
-    assert(domainLive);
-    assert(domainLive.Nameservers);
-  });
 });

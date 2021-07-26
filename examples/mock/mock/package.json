@@ -14,7 +14,7 @@
     "@grucloud/provider-mock": "^1.29.0",
     "bluebird": "^3.7.2",
     "ping": "^0.4.1",
-    "rubico": "^1.6.23",
+    "rubico": "^1.6.27",
     "url-join": "^4.0.1"
   }
 }

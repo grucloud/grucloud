@@ -12,7 +12,14 @@ const {
   tryCatch,
   switchCase,
 } = require("rubico");
-const { first, defaultsDeep, isEmpty, pluck, find } = require("rubico/x");
+const {
+  first,
+  defaultsDeep,
+  isEmpty,
+  pluck,
+  find,
+  identity,
+} = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const logger = require("@grucloud/core/logger")({ prefix: "ELBListener" });
@@ -80,6 +87,16 @@ exports.ELBListener = ({ spec, config }) => {
       type: "LoadBalancer",
       group: "elb",
       ids: [live.LoadBalancerArn],
+    },
+    {
+      type: "TargetGroup",
+      group: "elb",
+      ids: pipe([
+        () => live,
+        get("DefaultActions"),
+        pluck("TargetGroupArn"),
+        filter(not(isEmpty)),
+      ])(),
     },
     {
       type: "Certificate",
@@ -196,7 +213,7 @@ exports.ELBListener = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#deleteListener-property
-  const destroy = async ({ live }) =>
+  const destroy = ({ live }) =>
     pipe([
       () => ({ id: findId({ live }), name: findName({ live }) }),
       ({ id, name }) =>
@@ -221,21 +238,68 @@ exports.ELBListener = ({ spec, config }) => {
         ])(),
     ])();
 
+  const certificateProperties = ({ certificate }) =>
+    switchCase([
+      () => certificate,
+      () => ({
+        Certificates: [
+          {
+            CertificateArn: getField(certificate, "CertificateArn"),
+          },
+        ],
+      }),
+      identity,
+    ])();
+
+  const targetGroupProperties = ({ targetGroup }) =>
+    switchCase([
+      () => targetGroup,
+      () => ({
+        DefaultActions: [
+          {
+            Type: "forward",
+            TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
+            ForwardConfig: {
+              TargetGroups: [
+                {
+                  TargetGroupArn: getField(targetGroup, "TargetGroupArn"),
+                  Weight: 1,
+                },
+              ],
+              TargetGroupStickinessConfig: {
+                Enabled: false,
+              },
+            },
+          },
+        ],
+      }),
+      identity,
+    ])();
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createListener-property
   const configDefault = async ({
     name,
     namespace,
     properties,
-    dependencies: { loadBalancer },
+    dependencies: { loadBalancer, certificate, targetGroup },
   }) =>
     pipe([
       tap(() => {
         assert(loadBalancer);
       }),
-      () => properties,
+      () => ({}),
+      defaultsDeep(certificateProperties({ certificate })),
+      defaultsDeep(targetGroupProperties({ targetGroup })),
+      tap((params) => {
+        assert(true);
+      }),
+      defaultsDeep(properties),
       defaultsDeep({
         LoadBalancerArn: getField(loadBalancer, "LoadBalancerArn"),
         Tags: buildTags({ name, namespace, config }),
+      }),
+      tap((params) => {
+        assert(true);
       }),
     ])();
 

@@ -156,6 +156,9 @@ const hasKeyInTags =
       }),
       () => live,
       get("Tags"),
+      tap((Tags) => {
+        assert(Tags, `not Tags in ${tos(live)}`);
+      }),
       any((tag) => new RegExp(`^${key}*`, "i").test(tag.Key)),
       tap((result) => {
         assert(true);
@@ -192,7 +195,7 @@ const findEksCluster =
         }),
       find(eq(get("name"), findValueInTags({ key })(live))),
       tap((cluster) => {
-        logger.debug(`findEksCluster ${!!cluster}`);
+        //logger.debug(`findEksCluster ${!!cluster}`);
       }),
     ])();
 
@@ -233,6 +236,43 @@ exports.findNamespaceInTagsOrEksCluster =
         identity,
       ]),
     ])();
+
+exports.isOurMinionObject = ({ tags, config }) => {
+  const {
+    stage,
+    projectName,
+    stageTagKey,
+    projectNameKey,
+    providerName,
+    createdByProviderKey,
+  } = config;
+  return pipe([
+    () => tags,
+    tap(() => {
+      assert(stage);
+      assert(projectName);
+      assert(providerName);
+    }),
+    switchCase([
+      and([
+        eq(get(projectNameKey), projectName),
+        eq(get(stageTagKey), stage),
+        eq(get(createdByProviderKey), providerName),
+      ]),
+      () => true,
+      () => false,
+    ]),
+    tap((minion) => {
+      // logger.debug(
+      //   `isOurMinionObject ${minion}, ${JSON.stringify({
+      //     stage,
+      //     projectName,
+      //     tags,
+      //   })}`
+      // );
+    }),
+  ])();
+};
 
 exports.buildTags = ({
   name,
@@ -321,12 +361,12 @@ const isOurMinionFactory =
         find(and([eq(get(key), stageTagKey), eq(get(value), stage)])),
       ]),
       tap((minion) => {
-        logger.debug(
-          `isOurMinion ${minion}, ${JSON.stringify({
-            stage,
-            projectName,
-          })}`
-        );
+        // logger.debug(
+        //   `isOurMinion ${minion}, ${JSON.stringify({
+        //     stage,
+        //     projectName,
+        //   })}`
+        // );
       }),
     ])();
   };
@@ -385,7 +425,6 @@ const findNameInTags = ({ live }) =>
         );
       },
       (Value) => {
-        logger.debug(`findNameInTags found name: ${Value}`);
         return Value;
       },
     ]),

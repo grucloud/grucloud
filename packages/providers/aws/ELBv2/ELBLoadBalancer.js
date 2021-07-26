@@ -9,8 +9,18 @@ const {
   tryCatch,
   switchCase,
   filter,
+  not,
 } = require("rubico");
-const { includes, first, defaultsDeep, pluck, callProp } = require("rubico/x");
+const {
+  size,
+  isEmpty,
+  includes,
+  first,
+  defaultsDeep,
+  pluck,
+  callProp,
+  identity,
+} = require("rubico/x");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
 const logger = require("@grucloud/core/logger")({
@@ -78,34 +88,59 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
     key: "elbv2.k8s.aws/cluster",
   });
 
+  const assignTags = switchCase([
+    not(isEmpty),
+    assign({
+      Tags: pipe([
+        ({ LoadBalancerArn }) =>
+          elb().describeTags({ ResourceArns: [LoadBalancerArn] }),
+        get("TagDescriptions"),
+        first,
+        get("Tags"),
+      ]),
+    }),
+    identity,
+  ]);
+
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeLoadBalancers-property
-  const getList = async () =>
+
+  const describeLoadBalancers = (params) =>
+    tryCatch(
+      pipe([
+        tap(() => {
+          logger.info(`describeLoadBalancers ${JSON.stringify(params)}`);
+        }),
+        () => elb().describeLoadBalancers(params),
+        get("LoadBalancers"),
+        tap((results) => {
+          logger.debug(`describeLoadBalancers: result: ${tos(results)}`);
+        }),
+        map(assignTags),
+      ]),
+      switchCase([
+        eq(get("code"), "LoadBalancerNotFound"),
+        () => [],
+        (error) => {
+          logger.error(
+            `describeLoadBalancers, ${params}, error: ${tos(error)}`
+          );
+          throw error;
+        },
+      ])
+    )();
+
+  const getList = () =>
     pipe([
       tap(() => {
-        logger.info(`getList lbv2`);
+        logger.info(`getList load balancer`);
       }),
-      () => elb().describeLoadBalancers({}),
-      get("LoadBalancers"),
-      tap((results) => {
-        logger.debug(`getList: result: ${tos(results)}`);
-      }),
-      map(
-        assign({
-          Tags: pipe([
-            ({ LoadBalancerArn }) =>
-              elb().describeTags({ ResourceArns: [LoadBalancerArn] }),
-            get("TagDescriptions"),
-            first,
-            get("Tags"),
-          ]),
-        })
-      ),
+      () => describeLoadBalancers(),
       (items = []) => ({
-        total: items.length,
+        total: size(items),
         items,
       }),
       tap(({ total }) => {
-        logger.info(`getList: #total: ${total}`);
+        logger.info(`getList: load balancer #total: ${total}`);
       }),
     ])();
 
@@ -116,37 +151,25 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
         logger.info(`getByName ${name}`);
       }),
       () => ({ Names: [name] }),
-      (params) => elb().describeLoadBalancers(params),
-      get("LoadBalancers"),
+      describeLoadBalancers,
       first,
       tap((result) => {
-        logger.debug(`getByName result: ${tos(result)}`);
+        logger.debug(`getByName ${name}: ${tos(result)}`);
       }),
     ])();
 
   const getById = ({ id }) =>
-    tryCatch(
-      pipe([
-        tap(() => {
-          logger.info(`getById ${id}`);
-        }),
-        () => ({ LoadBalancerArns: [id] }),
-        (params) => elb().describeLoadBalancers(params),
-        get("LoadBalancers"),
-        first,
-        tap((result) => {
-          logger.debug(`getById result: ${tos(result)}`);
-        }),
-      ]),
-      switchCase([
-        eq(get("code"), "LoadBalancerNotFound"),
-        () => false,
-        (error) => {
-          logger.error(`getById ${id}, error: ${tos(error)}`);
-          throw error;
-        },
-      ])
-    )();
+    pipe([
+      tap(() => {
+        logger.info(`getById ${id}`);
+      }),
+      () => ({ LoadBalancerArns: [id] }),
+      describeLoadBalancers,
+      first,
+      tap((result) => {
+        logger.debug(`getById ${id} result: ${tos(result)}`);
+      }),
+    ])();
 
   const isInstanceUp = eq(get("State.Code"), "active");
 
@@ -154,7 +177,7 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   const isDownById = isDownByIdCore({ getById });
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#createLoadBalancer-property
-  const create = async ({ name, payload, dependencies }) =>
+  const create = async ({ name, payload }) =>
     pipe([
       tap(() => {
         logger.info(`create: lbv2 ${name}`);

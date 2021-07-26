@@ -14,7 +14,7 @@
   "dependencies": {
     "@grucloud/core": "^1.29.0",
     "@grucloud/provider-mock": "^1.29.0",
-    "rubico": "^1.6.23",
+    "rubico": "^1.6.27",
     "url-join": "^4.0.1"
   }
 }

@@ -592,7 +592,7 @@ exports.isOurMinionEC2Instance = (item) =>
     () => item,
     or([isInOurCluster({ config: item.config }), isOurMinion]),
     tap((isOurMinion) => {
-      logger.debug(`isOurMinionEC2Instance ${isOurMinion}`);
+      //logger.debug(`isOurMinionEC2Instance ${isOurMinion}`);
     }),
   ])();
 

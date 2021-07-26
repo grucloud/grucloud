@@ -3,6 +3,36 @@ module.exports = ({ stage }) => ({
   projectName: pkg.name,
   iam: {
     Policy: {
+      amazonEc2ContainerRegistryReadOnly: {
+        name: "AmazonEC2ContainerRegistryReadOnly",
+        properties: {
+          Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+        },
+      },
+      amazonEksCniPolicy: {
+        name: "AmazonEKS_CNI_Policy",
+        properties: {
+          Arn: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+        },
+      },
+      amazonEksClusterPolicy: {
+        name: "AmazonEKSClusterPolicy",
+        properties: {
+          Arn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+        },
+      },
+      amazonEksvpcResourceController: {
+        name: "AmazonEKSVPCResourceController",
+        properties: {
+          Arn: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
+        },
+      },
+      amazonEksWorkerNodePolicy: {
+        name: "AmazonEKSWorkerNodePolicy",
+        properties: {
+          Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+        },
+      },
       awsLoadBalancerControllerIamPolicy: {
         name: "AWSLoadBalancerControllerIAMPolicy",
         properties: {
@@ -197,36 +227,6 @@ module.exports = ({ stage }) => ({
           Description: "Load Balancer Policy",
         },
       },
-      amazonEksClusterPolicy: {
-        name: "AmazonEKSClusterPolicy",
-        properties: {
-          Arn: "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
-        },
-      },
-      amazonEksvpcResourceController: {
-        name: "AmazonEKSVPCResourceController",
-        properties: {
-          Arn: "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController",
-        },
-      },
-      amazonEksWorkerNodePolicy: {
-        name: "AmazonEKSWorkerNodePolicy",
-        properties: {
-          Arn: "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-        },
-      },
-      amazonEc2ContainerRegistryReadOnly: {
-        name: "AmazonEC2ContainerRegistryReadOnly",
-        properties: {
-          Arn: "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-        },
-      },
-      amazonEksCniPolicy: {
-        name: "AmazonEKS_CNI_Policy",
-        properties: {
-          Arn: "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
-        },
-      },
     },
     Role: {
       roleCluster: {
@@ -250,29 +250,6 @@ module.exports = ({ stage }) => ({
       },
       roleLoadBalancer: {
         name: "role-load-balancer",
-        properties: {
-          RoleName: "role-load-balancer",
-          Path: "/",
-          AssumeRolePolicyDocument: {
-            Version: "2012-10-17",
-            Statement: [
-              {
-                Effect: "Allow",
-                Principal: {
-                  Federated:
-                    "arn:aws:iam::840541460064:oidc-provider/oidc.eks.eu-west-2.amazonaws.com/id/36FF899D2FFA7296225778F72B9E07B9",
-                },
-                Action: "sts:AssumeRoleWithWebIdentity",
-                Condition: {
-                  StringEquals: {
-                    "oidc.eks.eu-west-2.amazonaws.com/id/36FF899D2FFA7296225778F72B9E07B9:aud":
-                      "sts.amazonaws.com",
-                  },
-                },
-              },
-            ],
-          },
-        },
       },
       roleNodeGroup: {
         name: "role-node-group",
@@ -295,16 +272,13 @@ module.exports = ({ stage }) => ({
       },
     },
     InstanceProfile: {
-      eks_2ebd5779_066c_7078_9a82_5b430171dea7: {
-        name: "eks-2ebd5779-066c-7078-9a82-5b430171dea7",
+      eks_1abd6da8_68d5_84a6_7af4_30618ba3c23a: {
+        name: "eks-1abd6da8-68d5-84a6-7af4-30618ba3c23a",
       },
     },
     OpenIDConnectProvider: {
       oidcEks: {
         name: "oidc-eks",
-        properties: {
-          ClientIDList: ["sts.amazonaws.com"],
-        },
       },
     },
   },
@@ -324,8 +298,30 @@ module.exports = ({ stage }) => ({
           ],
         },
       },
+      vpcDefault: {
+        name: "vpc-default",
+      },
     },
     Subnet: {
+      subnetPrivateA: {
+        name: "subnet-private-a",
+        properties: {
+          CidrBlock: "192.168.96.0/19",
+          AvailabilityZone: "eu-west-2a",
+          MapPublicIpOnLaunch: false,
+          MapCustomerOwnedIpOnLaunch: false,
+          Tags: [
+            {
+              Key: "kubernetes.io/role/internal-elb",
+              Value: "1",
+            },
+            {
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "shared",
+            },
+          ],
+        },
+      },
       subnetPrivateB: {
         name: "subnet-private-b",
         properties: {
@@ -335,12 +331,12 @@ module.exports = ({ stage }) => ({
           MapCustomerOwnedIpOnLaunch: false,
           Tags: [
             {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "shared",
-            },
-            {
               Key: "kubernetes.io/role/internal-elb",
               Value: "1",
+            },
+            {
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "shared",
             },
           ],
         },
@@ -354,12 +350,12 @@ module.exports = ({ stage }) => ({
           MapCustomerOwnedIpOnLaunch: false,
           Tags: [
             {
-              Key: "kubernetes.io/cluster/cluster",
-              Value: "shared",
-            },
-            {
               Key: "kubernetes.io/role/elb",
               Value: "1",
+            },
+            {
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "shared",
             },
           ],
         },
@@ -383,29 +379,39 @@ module.exports = ({ stage }) => ({
           ],
         },
       },
-      subnetPrivateA: {
-        name: "subnet-private-a",
+    },
+    Volume: {
+      kubernetesPvDbPostgres_0: {
+        name: "kubernetes-pv-db-postgres-0",
         properties: {
-          CidrBlock: "192.168.96.0/19",
-          AvailabilityZone: "eu-west-2a",
-          MapPublicIpOnLaunch: false,
-          MapCustomerOwnedIpOnLaunch: false,
+          Size: 1,
+          VolumeType: "gp2",
           Tags: [
             {
-              Key: "kubernetes.io/role/internal-elb",
-              Value: "1",
+              Key: "kubernetes.io/created-for/pvc/namespace",
+              Value: "default",
+            },
+            {
+              Key: "kubernetes.io/created-for/pv/name",
+              Value: "pvc-f0d4b9fa-7882-493e-8145-70998d150247",
+            },
+            {
+              Key: "kubernetes.io/created-for/pvc/name",
+              Value: "pv-db-postgres-0",
             },
             {
               Key: "kubernetes.io/cluster/cluster",
-              Value: "shared",
+              Value: "owned",
             },
           ],
         },
       },
-    },
-    KeyPair: {
-      kp: {
-        name: "kp",
+      vol_0f1087128099b1ce7: {
+        name: "vol-0f1087128099b1ce7",
+        properties: {
+          Size: 20,
+          VolumeType: "gp2",
+        },
       },
     },
     ElasticIpAddress: {
@@ -427,20 +433,14 @@ module.exports = ({ stage }) => ({
       routeTablePrivateA: {
         name: "route-table-private-a",
       },
-      routeTablePublic: {
-        name: "route-table-public",
-      },
       routeTablePrivateB: {
         name: "route-table-private-b",
       },
+      routeTablePublic: {
+        name: "route-table-public",
+      },
     },
     Route: {
-      routePublic: {
-        name: "route-public",
-        properties: {
-          DestinationCidrBlock: "0.0.0.0/0",
-        },
-      },
       routePrivateA: {
         name: "route-private-a",
         properties: {
@@ -453,8 +453,51 @@ module.exports = ({ stage }) => ({
           DestinationCidrBlock: "0.0.0.0/0",
         },
       },
+      routePublic: {
+        name: "route-public",
+        properties: {
+          DestinationCidrBlock: "0.0.0.0/0",
+        },
+      },
     },
     SecurityGroup: {
+      eksClusterSgCluster_872092154: {
+        name: "eks-cluster-sg-cluster-872092154",
+        properties: {
+          Description:
+            "EKS created security group applied to ENI that is attached to EKS Control Plane master nodes, as well as any managed workloads.",
+          Tags: [
+            {
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "owned",
+            },
+            {
+              Key: "aws:eks:cluster-name",
+              Value: "cluster",
+            },
+          ],
+        },
+      },
+      k8sDefaultIngress_05be0614e6: {
+        name: "k8s-default-ingress-05be0614e6",
+        properties: {
+          Description: "[k8s] Managed SecurityGroup for LoadBalancer",
+          Tags: [
+            {
+              Key: "ingress.k8s.aws/stack",
+              Value: "default/ingress",
+            },
+            {
+              Key: "ingress.k8s.aws/resource",
+              Value: "ManagedLBSecurityGroup",
+            },
+            {
+              Key: "elbv2.k8s.aws/cluster",
+              Value: "cluster",
+            },
+          ],
+        },
+      },
       securityGroupCluster: {
         name: "security-group-cluster",
         properties: {
@@ -473,92 +516,190 @@ module.exports = ({ stage }) => ({
           ],
         },
       },
+      sgDefaultVpc: {
+        name: "sg-default-vpc",
+      },
+      sgDefaultVpcDefault: {
+        name: "sg-default-vpc-default",
+      },
     },
     SecurityGroupRuleIngress: {
-      sgNodesRuleIngressAll: {
-        name: "sg-nodes-rule-ingress-all",
+      eksClusterSgCluster_872092154RuleIngressAllFromEksClusterSgCluster_872092154:
+        {
+          name: "eks-cluster-sg-cluster-872092154-rule-ingress-all-from-eks-cluster-sg-cluster-872092154",
+        },
+      eksClusterSgCluster_872092154RuleIngressTcp_0_65535FromK8sDefaultIngress_05be0614e6:
+        {
+          name: "eks-cluster-sg-cluster-872092154-rule-ingress-tcp-0-65535-from-k8s-default-ingress-05be0614e6",
+          properties: {
+            IpPermission: {
+              IpProtocol: "tcp",
+              FromPort: 0,
+              ToPort: 65535,
+            },
+          },
+        },
+      k8sDefaultIngress_05be0614e6RuleIngressTcp_443V4: {
+        name: "k8s-default-ingress-05be0614e6-rule-ingress-tcp-443-v4",
         properties: {
-          IpProtocol: "-1",
-          FromPort: -1,
-          ToPort: -1,
-          CidrIpv4: "0.0.0.0/0",
+          IpPermission: {
+            IpProtocol: "tcp",
+            FromPort: 443,
+            ToPort: 443,
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+          },
         },
       },
-      sgNodesRuleIngressAll: {
-        name: "sg-nodes-rule-ingress-all",
+      k8sDefaultIngress_05be0614e6RuleIngressTcp_80V4: {
+        name: "k8s-default-ingress-05be0614e6-rule-ingress-tcp-80-v4",
         properties: {
-          IpProtocol: "-1",
-          FromPort: -1,
-          ToPort: -1,
-          CidrIpv6: "::/0",
-        },
-      },
-      sgClusterRuleIngressHttps: {
-        name: "sg-cluster-rule-ingress-https",
-        properties: {
-          IpProtocol: "tcp",
-          FromPort: 443,
-          ToPort: 443,
-          CidrIpv4: "0.0.0.0/0",
-        },
-      },
-      sgRuleNodeGroupIngressCluster: {
-        name: "sg-rule-node-group-ingress-cluster",
-        properties: {
-          IpProtocol: "tcp",
-          FromPort: 1025,
-          ToPort: 65535,
-          CidrIpv4: "0.0.0.0/0",
-        },
-      },
-      sgRuleNodeGroupIngressCluster: {
-        name: "sg-rule-node-group-ingress-cluster",
-        properties: {
-          IpProtocol: "tcp",
-          FromPort: 1025,
-          ToPort: 65535,
-          ReferencedGroupInfo: {
-            GroupId: "sg-05cd69f653e9eb6a7",
-            UserId: "840541460064",
+          IpPermission: {
+            IpProtocol: "tcp",
+            FromPort: 80,
+            ToPort: 80,
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
           },
         },
       },
       sgClusterRuleIngressHttps: {
         name: "sg-cluster-rule-ingress-https",
         properties: {
-          IpProtocol: "tcp",
-          FromPort: 443,
-          ToPort: 443,
-          CidrIpv6: "::/0",
+          IpPermission: {
+            IpProtocol: "tcp",
+            FromPort: 443,
+            ToPort: 443,
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+          },
         },
+      },
+      sgDefaultVpcRuleIngressAllFromSgDefaultVpc: {
+        name: "sg-default-vpc-rule-ingress-all-from-sg-default-vpc",
+      },
+      sgNodesRuleIngressAll: {
+        name: "sg-nodes-rule-ingress-all",
       },
       sgRuleNodeGroupIngressCluster: {
         name: "sg-rule-node-group-ingress-cluster",
         properties: {
-          IpProtocol: "tcp",
-          FromPort: 1025,
-          ToPort: 65535,
-          CidrIpv6: "::/0",
+          IpPermission: {
+            IpProtocol: "tcp",
+            FromPort: 1025,
+            ToPort: 65535,
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+          },
         },
       },
     },
     SecurityGroupRuleEgress: {
-      sgClusterRuleEgress: {
-        name: "sg-cluster-rule-egress",
-        properties: {
-          IpProtocol: "tcp",
-          FromPort: 1024,
-          ToPort: 65535,
-          CidrIpv4: "0.0.0.0/0",
-        },
+      eksClusterSgCluster_872092154RuleEgressAllV4: {
+        name: "eks-cluster-sg-cluster-872092154-rule-egress-all-v4",
+      },
+      k8sDefaultIngress_05be0614e6RuleEgressAllV4: {
+        name: "k8s-default-ingress-05be0614e6-rule-egress-all-v4",
+      },
+      securityGroupClusterRuleEgressAllV4: {
+        name: "security-group-cluster-rule-egress-all-v4",
+      },
+      securityGroupNodeRuleEgressAllV4: {
+        name: "security-group-node-rule-egress-all-v4",
       },
       sgClusterRuleEgress: {
         name: "sg-cluster-rule-egress",
         properties: {
-          IpProtocol: "tcp",
-          FromPort: 1024,
-          ToPort: 65535,
-          CidrIpv6: "::/0",
+          IpPermission: {
+            IpProtocol: "tcp",
+            FromPort: 1024,
+            ToPort: 65535,
+            IpRanges: [
+              {
+                CidrIp: "0.0.0.0/0",
+              },
+            ],
+            Ipv6Ranges: [
+              {
+                CidrIpv6: "::/0",
+              },
+            ],
+          },
+        },
+      },
+      sgDefaultVpcRuleEgressAllV4: {
+        name: "sg-default-vpc-rule-egress-all-v4",
+      },
+    },
+    Instance: {
+      nodeGroupPrivateClusterI_0b83ed3973287c57e: {
+        name: "node-group-private-cluster::i-0b83ed3973287c57e",
+        properties: {
+          InstanceType: "t2.medium",
+          ImageId: "ami-0ee353797c2e5f904",
+          Placement: {
+            AvailabilityZone: "eu-west-2b",
+          },
+          Tags: [
+            {
+              Key: "k8s.io/cluster-autoscaler/enabled",
+              Value: "true",
+            },
+            {
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "owned",
+            },
+            {
+              Key: "aws:ec2:fleet-id",
+              Value: "fleet-c7fde09a-6b3f-73dd-8492-29a869005bf1",
+            },
+            {
+              Key: "eks:cluster-name",
+              Value: "cluster",
+            },
+            {
+              Key: "aws:ec2launchtemplate:id",
+              Value: "lt-079c554824686b9a7",
+            },
+            {
+              Key: "aws:autoscaling:groupName",
+              Value: "eks-1abd6da8-68d5-84a6-7af4-30618ba3c23a",
+            },
+            {
+              Key: "k8s.io/cluster-autoscaler/cluster",
+              Value: "owned",
+            },
+            {
+              Key: "aws:ec2launchtemplate:version",
+              Value: "1",
+            },
+            {
+              Key: "eks:nodegroup-name",
+              Value: "node-group-private-cluster",
+            },
+          ],
         },
       },
     },
@@ -588,6 +729,281 @@ module.exports = ({ stage }) => ({
           SubjectAlternativeNames: ["starhackit-eks-lbc.grucloud.org"],
         },
       },
+      starhackitEksLeanGrucloudOrg: {
+        name: "starhackit-eks-lean.grucloud.org",
+        properties: {
+          DomainName: "starhackit-eks-lean.grucloud.org",
+          SubjectAlternativeNames: ["starhackit-eks-lean.grucloud.org"],
+        },
+      },
+    },
+  },
+  autoscaling: {
+    AutoScalingGroup: {
+      eks_1abd6da8_68d5_84a6_7af4_30618ba3c23a: {
+        name: "eks-1abd6da8-68d5-84a6-7af4-30618ba3c23a",
+        properties: {
+          Tags: [
+            {
+              ResourceId: "eks-1abd6da8-68d5-84a6-7af4-30618ba3c23a",
+              ResourceType: "auto-scaling-group",
+              Key: "eks:cluster-name",
+              Value: "cluster",
+              PropagateAtLaunch: true,
+            },
+            {
+              ResourceId: "eks-1abd6da8-68d5-84a6-7af4-30618ba3c23a",
+              ResourceType: "auto-scaling-group",
+              Key: "eks:nodegroup-name",
+              Value: "node-group-private-cluster",
+              PropagateAtLaunch: true,
+            },
+            {
+              ResourceId: "eks-1abd6da8-68d5-84a6-7af4-30618ba3c23a",
+              ResourceType: "auto-scaling-group",
+              Key: "k8s.io/cluster-autoscaler/cluster",
+              Value: "owned",
+              PropagateAtLaunch: true,
+            },
+            {
+              ResourceId: "eks-1abd6da8-68d5-84a6-7af4-30618ba3c23a",
+              ResourceType: "auto-scaling-group",
+              Key: "k8s.io/cluster-autoscaler/enabled",
+              Value: "true",
+              PropagateAtLaunch: true,
+            },
+            {
+              ResourceId: "eks-1abd6da8-68d5-84a6-7af4-30618ba3c23a",
+              ResourceType: "auto-scaling-group",
+              Key: "kubernetes.io/cluster/cluster",
+              Value: "owned",
+              PropagateAtLaunch: true,
+            },
+          ],
+        },
+      },
+    },
+  },
+  elb: {
+    LoadBalancer: {
+      k8sDefaultIngressE514cce9f1: {
+        name: "k8s-default-ingress-e514cce9f1",
+        properties: {
+          Scheme: "internet-facing",
+          Type: "application",
+          IpAddressType: "ipv4",
+          Tags: [
+            {
+              Key: "ingress.k8s.aws/resource",
+              Value: "LoadBalancer",
+            },
+            {
+              Key: "ingress.k8s.aws/stack",
+              Value: "default/ingress",
+            },
+            {
+              Key: "elbv2.k8s.aws/cluster",
+              Value: "cluster",
+            },
+          ],
+        },
+      },
+    },
+    TargetGroup: {
+      k8sDefaultRestF2d39b1bea: {
+        name: "k8s-default-rest-f2d39b1bea",
+        properties: {
+          Protocol: "HTTP",
+          Port: 30020,
+          HealthCheckProtocol: "HTTP",
+          HealthCheckPort: "traffic-port",
+          HealthCheckEnabled: true,
+          HealthCheckIntervalSeconds: 15,
+          HealthCheckTimeoutSeconds: 5,
+          HealthyThresholdCount: 2,
+          HealthCheckPath: "/",
+          Matcher: {
+            HttpCode: "200",
+          },
+          TargetType: "instance",
+          ProtocolVersion: "HTTP1",
+          Tags: [
+            {
+              Key: "ingress.k8s.aws/resource",
+              Value: "default/ingress-rest:9000",
+            },
+            {
+              Key: "ingress.k8s.aws/stack",
+              Value: "default/ingress",
+            },
+            {
+              Key: "elbv2.k8s.aws/cluster",
+              Value: "cluster",
+            },
+          ],
+        },
+      },
+      k8sDefaultWebC7d57981c9: {
+        name: "k8s-default-web-c7d57981c9",
+        properties: {
+          Protocol: "HTTP",
+          Port: 30010,
+          HealthCheckProtocol: "HTTP",
+          HealthCheckPort: "traffic-port",
+          HealthCheckEnabled: true,
+          HealthCheckIntervalSeconds: 15,
+          HealthCheckTimeoutSeconds: 5,
+          HealthyThresholdCount: 2,
+          HealthCheckPath: "/",
+          Matcher: {
+            HttpCode: "200",
+          },
+          TargetType: "instance",
+          ProtocolVersion: "HTTP1",
+          Tags: [
+            {
+              Key: "ingress.k8s.aws/resource",
+              Value: "default/ingress-web:80",
+            },
+            {
+              Key: "ingress.k8s.aws/stack",
+              Value: "default/ingress",
+            },
+            {
+              Key: "elbv2.k8s.aws/cluster",
+              Value: "cluster",
+            },
+          ],
+        },
+      },
+    },
+    Listener: {
+      arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277a_81b987253d9c289f:
+        {
+          name: "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/ca2e2a5dc510277a/81b987253d9c289f",
+          properties: {
+            Port: 443,
+            Protocol: "HTTPS",
+            DefaultActions: [
+              {
+                Type: "fixed-response",
+                Order: 1,
+                FixedResponseConfig: {
+                  StatusCode: "404",
+                  ContentType: "text/plain",
+                },
+              },
+            ],
+          },
+        },
+      arnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277aEc89cb412dae7637:
+        {
+          name: "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/ca2e2a5dc510277a/ec89cb412dae7637",
+          properties: {
+            Port: 80,
+            Protocol: "HTTP",
+            DefaultActions: [
+              {
+                Type: "fixed-response",
+                Order: 1,
+                FixedResponseConfig: {
+                  StatusCode: "404",
+                  ContentType: "text/plain",
+                },
+              },
+            ],
+          },
+        },
+    },
+    Rule: {
+      arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277a_81b987253d9c289f_4bea3f1f090d25dc:
+        {
+          name: "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener-rule/app/k8s-default-ingress-e514cce9f1/ca2e2a5dc510277a/81b987253d9c289f/4bea3f1f090d25dc",
+          properties: {
+            Priority: "2",
+            Conditions: [
+              {
+                Field: "path-pattern",
+                Values: ["/*"],
+              },
+            ],
+          },
+        },
+      arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277a_81b987253d9c289f_75d1cc3e15ae481b:
+        {
+          name: "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener-rule/app/k8s-default-ingress-e514cce9f1/ca2e2a5dc510277a/81b987253d9c289f/75d1cc3e15ae481b",
+          properties: {
+            Priority: "1",
+            Conditions: [
+              {
+                Field: "path-pattern",
+                Values: ["/api/*"],
+              },
+            ],
+          },
+        },
+      arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277aEc89cb412dae7637_06881494aa16f0c2:
+        {
+          name: "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener-rule/app/k8s-default-ingress-e514cce9f1/ca2e2a5dc510277a/ec89cb412dae7637/06881494aa16f0c2",
+          properties: {
+            Priority: "1",
+            Conditions: [
+              {
+                Field: "path-pattern",
+                Values: ["/api/*"],
+              },
+            ],
+          },
+        },
+      arnAwsElasticloadbalancingEuWest_2_840541460064ListenerRuleAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277aEc89cb412dae7637_5d97d397c4531bab:
+        {
+          name: "arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener-rule/app/k8s-default-ingress-e514cce9f1/ca2e2a5dc510277a/ec89cb412dae7637/5d97d397c4531bab",
+          properties: {
+            Priority: "2",
+            Conditions: [
+              {
+                Field: "path-pattern",
+                Values: ["/*"],
+              },
+            ],
+          },
+        },
+      ruleDefaultArnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277a_81b987253d9c289f:
+        {
+          name: "rule-default-arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/ca2e2a5dc510277a/81b987253d9c289f",
+          properties: {
+            Priority: "default",
+            Conditions: [],
+            Actions: [
+              {
+                Type: "fixed-response",
+                Order: 1,
+                FixedResponseConfig: {
+                  StatusCode: "404",
+                  ContentType: "text/plain",
+                },
+              },
+            ],
+          },
+        },
+      ruleDefaultArnAwsElasticloadbalancingEuWest_2_840541460064ListenerAppK8sDefaultIngressE514cce9f1Ca2e2a5dc510277aEc89cb412dae7637:
+        {
+          name: "rule-default-arn:aws:elasticloadbalancing:eu-west-2:840541460064:listener/app/k8s-default-ingress-e514cce9f1/ca2e2a5dc510277a/ec89cb412dae7637",
+          properties: {
+            Priority: "default",
+            Conditions: [],
+            Actions: [
+              {
+                Type: "fixed-response",
+                Order: 1,
+                FixedResponseConfig: {
+                  StatusCode: "404",
+                  ContentType: "text/plain",
+                },
+              },
+            ],
+          },
+        },
     },
   },
   eks: {
@@ -634,33 +1050,11 @@ module.exports = ({ stage }) => ({
       },
     },
     Record: {
-      dnsRecordAliasLoadBalancerStarhackitEksLbcGrucloudOrg: {
-        name: "dns-record-alias-load-balancer-starhackit-eks-lbc.grucloud.org.",
-        properties: {
-          Name: "starhackit-eks-lbc.grucloud.org.",
-          Type: "A",
-          ResourceRecords: [],
-          AliasTarget: {
-            HostedZoneId: "ZHURV8PSTC4K8",
-            DNSName:
-              "k8s-default-ingress-e514cce9f1-1778706756.eu-west-2.elb.amazonaws.com.",
-            EvaluateTargetHealth: false,
-          },
-        },
-      },
       certificateValidationStarhackitEksLbcGrucloudOrg: {
         name: "certificate-validation-starhackit-eks-lbc.grucloud.org.",
-        properties: {
-          Name: "_b4c084392d6f4726727d69dfaf665819.starhackit-eks-lbc.grucloud.org.",
-          Type: "CNAME",
-          TTL: 300,
-          ResourceRecords: [
-            {
-              Value:
-                "_009ebaa39ee9a4d18d0ebd96e91635bf.bbfvkzsszw.acm-validations.aws.",
-            },
-          ],
-        },
+      },
+      dnsRecordAliasLoadBalancerStarhackitEksLbcGrucloudOrg: {
+        name: "dns-record-alias-load-balancer-starhackit-eks-lbc.grucloud.org.",
       },
     },
   },

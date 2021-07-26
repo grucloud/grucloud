@@ -357,7 +357,7 @@ exports.AwsDistribution = ({ spec, config }) => {
     pipe([
       tap(() => {
         logger.info(`onDeployed`);
-        logger.debug(`onDeployed ${tos({ resultCreate })}`);
+        //logger.debug(`onDeployed ${tos({ resultCreate })}`);
         assert(resultCreate);
         assert(lives);
       }),

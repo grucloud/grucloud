@@ -6,9 +6,9 @@ const createResources = async ({ provider }) => {
   // Choose an image
   const image = provider.useImage({
     name: "ubuntu",
-    filterLives: ({ items: images }) => {
-      const image = images.find(
-        ({ name, arch, default_bootscript }) =>
+    filterLives: ({ resources }) => {
+      const image = resources.find(
+        ({ live: { name, arch, default_bootscript } }) =>
           name.includes("Ubuntu") && arch === "x86_64" /*&& default_bootscript*/
       );
       assert(image, "missing image");

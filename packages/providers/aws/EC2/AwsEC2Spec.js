@@ -18,6 +18,7 @@ const { AwsSecurityGroup } = require("./AwsSecurityGroup");
 const {
   AwsSecurityGroupRuleIngress,
   AwsSecurityGroupRuleEgress,
+  compareSecurityGroupRule,
 } = require("./AwsSecurityGroupRule");
 const { AwsElasticIpAddress } = require("./AwsElasticIpAddress");
 const { AwsVolume, setupEbsVolume } = require("./AwsVolume");
@@ -32,7 +33,6 @@ module.exports = () =>
     {
       type: "KeyPair",
       Client: AwsClientKeyPair,
-      listOnly: true,
       isOurMinion, // TODO do we need isOurMinion for listOnly ?
     },
     {
@@ -96,12 +96,14 @@ module.exports = () =>
       type: "SecurityGroupRuleIngress",
       dependsOn: ["ec2::SecurityGroup"],
       Client: AwsSecurityGroupRuleIngress,
+      compare: compareSecurityGroupRule,
       isOurMinion,
     },
     {
       type: "SecurityGroupRuleEgress",
       dependsOn: ["ec2::SecurityGroup"],
       Client: AwsSecurityGroupRuleEgress,
+      compare: compareSecurityGroupRule,
       isOurMinion,
     },
     {

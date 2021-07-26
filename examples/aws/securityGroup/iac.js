@@ -11,19 +11,19 @@ const createResources = async ({ provider, resources: {} }) => {
       CidrBlock: "10.1.0.1/16",
     }),
   });
-  const securityGroup = provider.ec2.makeSecurityGroup({
-    name: "security-group-test",
+  const securityGroupCluster = provider.ec2.makeSecurityGroup({
+    name: "security-group-cluster-test",
     dependencies: { vpc },
     properties: () => ({
       create: {
-        Description: "Security Group Description",
+        Description: "SG for the EKS Cluster",
       },
     }),
   });
 
-  sgRuleIngressSsh = provider.ec2.makeSecurityGroupRuleIngress({
-    name: "sg-rule-ingress-port-22",
-    dependencies: { securityGroup },
+  const sgRuleClusterIngressSsh = provider.ec2.makeSecurityGroupRuleIngress({
+    name: "sg-rule-cluster-ingress-port-22",
+    dependencies: { securityGroup: securityGroupCluster },
     properties: () => ({
       IpPermission: {
         FromPort: 22,
@@ -43,10 +43,10 @@ const createResources = async ({ provider, resources: {} }) => {
     }),
   });
 
-  const sgClusterRuleEgress = provider.ec2.makeSecurityGroupRuleEgress({
-    name: "sg-rule-egress",
+  const sgRuleClusterEgress = provider.ec2.makeSecurityGroupRuleEgress({
+    name: "sg-rule-cluster-egress",
     dependencies: {
-      securityGroup,
+      securityGroup: securityGroupCluster,
     },
     properties: () => ({
       IpPermission: {
@@ -66,6 +66,42 @@ const createResources = async ({ provider, resources: {} }) => {
       },
     }),
   });
+
+  const securityGroupNodes = provider.ec2.makeSecurityGroup({
+    name: "security-group-node-group-test",
+    dependencies: { vpc },
+    properties: () => ({
+      create: {
+        Description: "SG for the EKS Nodes",
+      },
+    }),
+  });
+
+  const sgRuleNodesIngressCluster = provider.ec2.makeSecurityGroupRuleIngress({
+    name: "sg-rule-node-group-ingress-cluster",
+    dependencies: {
+      securityGroup: securityGroupNodes,
+      securityGroupFrom: securityGroupCluster,
+    },
+    properties: () => ({
+      IpPermission: {
+        FromPort: 0,
+        IpProtocol: "tcp",
+        IpRanges: [
+          {
+            CidrIp: "0.0.0.0/0",
+          },
+        ],
+        Ipv6Ranges: [
+          {
+            CidrIpv6: "::/0",
+          },
+        ],
+        ToPort: 65535,
+      },
+    }),
+  });
+
   return {};
 };
 exports.createResources = createResources;

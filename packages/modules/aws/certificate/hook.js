@@ -16,8 +16,6 @@ module.exports = ({ resources, provider }) => {
     onDeployed: {
       init: async () => {
         const hostedZoneLive = await hostedZone.getLive();
-        const certificateRecordValidationLive = await certificate.certificateRecordValidation.getLive();
-        assert(certificateRecordValidationLive);
         return { hostedZoneLive };
       },
       actions: [

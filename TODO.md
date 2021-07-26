@@ -1,8 +1,8 @@
 ## Bugs
 
-- gc l -t Record is broken, it does not fetch the dependencies
-- gc a: when an assert is thrown, it does not exit but ask for deployment confirmation.
 - check stage for all providers
+- compare refactor
+- compare Tags
 
 ## Diagram
 
@@ -17,17 +17,14 @@
 
 ## Common:
 
+- TODO add client.toString()
 - gc info with config for gcp and azure
 - https://stackshare.io/terraform/alternatives
-- case where provider does have any resources
 -
 - add projectName and use it as the title of the graph
 - destroy: use live instead of id
-- gc d : EC2 │ web, web-iam, , web-server
-  empty name !
 - const getById = getByIdCore({ fieldIds: "AllocationIds", getList });
 
-- gcp: projectName function to field
 - PROMPT='%4~ %# '
 - iam deal with deleted user
 
@@ -53,9 +50,9 @@
 
 ## Kubernetes
 
+- APIService problem deleting some
 - gc graph: wrong namespace, it is default, should be myapp
 - minikite gc d -a: ✖ PersistentVolume 0/2 Request failed with status code 404
-- cert-manager example
 - kubectl cluster-info
 
 ## Azure
@@ -68,12 +65,10 @@
 
 ## Aws2gc
 
-InstanceProfile managedByOther
-
 ## Aws
 
+- document create key pair
 - throw error => throw Error(error.message);
-- retry on UnknownEndpoint
 - useCertificate or make Certificate ?
 - https://aws.amazon.com/blogs/aws/easily-manage-security-group-rules-with-the-new-security-group-rule-id/
 
@@ -83,7 +78,6 @@ InstanceProfile managedByOther
 - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ECR.html
 
 - Resource pages
-- delete keypair from kops
 
 - aws_route53_delegation_set
 
@@ -101,7 +95,6 @@ InstanceProfile managedByOther
 - https://medium.com/dev-genius/create-an-amazon-eks-cluster-with-managed-node-group-using-terraform-a3b50d276b13
 - security group update
 
-- ssh should use use kp.pem instead of ssh-add
 - aws.config.loadFromPath('./AwsConfig.json');
 
 - error padend

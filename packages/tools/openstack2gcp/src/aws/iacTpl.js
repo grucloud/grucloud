@@ -5,10 +5,7 @@ const { AwsProvider } = require("@grucloud/provider-aws");
 
 const createResources = async ({ provider }) => {
   const {config} = provider;
-  return pipe([
-    () => ({}),
-    ${resourcesCode}
-  ])();
+  ${resourcesCode}
 };
 
 exports.createResources = createResources;

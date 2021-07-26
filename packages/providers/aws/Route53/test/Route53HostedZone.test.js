@@ -112,10 +112,6 @@ describe("Route53HostedZone", async function () {
       planResult: { create: 3, destroy: 0 },
     });
 
-    const hostedZoneLive = await hostedZone.getLive();
-    assert(hostedZoneLive);
-    assert(find((record) => record.Type === "A")(hostedZoneLive.RecordSet));
-
     const { provider: providerNext } = await createStackNext({ config });
 
     const { error, resultQuery } = await cliCommands.planQuery({

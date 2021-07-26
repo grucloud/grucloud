@@ -18,6 +18,8 @@ const { isEmpty, defaultsDeep, find } = require("rubico/x");
 
 const logger = require("@grucloud/core/logger")({ prefix: "AwsRoute" });
 const { tos } = require("@grucloud/core/tos");
+const { retryCall } = require("@grucloud/core/Retry");
+
 const { findNamespaceInTags, buildTags } = require("../AwsCommon");
 const { getByNameCore } = require("@grucloud/core/Common");
 const { Ec2New, shouldRetryOnException } = require("../AwsCommon");
@@ -25,7 +27,15 @@ const { Ec2New, shouldRetryOnException } = require("../AwsCommon");
 exports.AwsRoute = ({ spec, config }) => {
   const ec2 = Ec2New(config);
 
-  const findId = get("live.name");
+  const findId = pipe([
+    tap((params) => {
+      assert(true);
+    }),
+    get("live.name"),
+    tap(isEmpty, () => {
+      logger.error("route findId cannot find name");
+    }),
+  ]);
   const findName = findId;
 
   const findDependencies = ({ live }) => [
@@ -50,7 +60,7 @@ exports.AwsRoute = ({ spec, config }) => {
     pipe([
       tap(() => {
         assert(Array.isArray(resources));
-        logger.info(`getList route ${resources.length}`);
+        logger.info(`getList #routes ${resources.length}`);
       }),
       () => resources,
       map((resource) =>
@@ -60,7 +70,9 @@ exports.AwsRoute = ({ spec, config }) => {
           }),
           () => resource.resolveDependencies({ lives }),
           tap((resolvedDependencies) => {
-            logger.debug(`getList resource ${resolvedDependencies}`);
+            logger.debug(
+              `getList route resolvedDependencies ${tos(resolvedDependencies)}`
+            );
           }),
           ({ routeTable, ig, natGateway }) =>
             switchCase([
@@ -122,48 +134,93 @@ exports.AwsRoute = ({ spec, config }) => {
   const getByName = getByNameCore({ getList, findName });
 
   const createRouteInternetGateway = ({ ig, RouteTableId, payload }) =>
-    switchCase([
+    pipe([
       () => ig,
-      pipe([
-        tap(() => {
-          assert(ig.live.InternetGatewayId, "ig.live.InternetGatewayId");
-        }),
-        () =>
-          ec2().createRoute({
-            ...payload,
-            RouteTableId,
-            GatewayId: ig.live.InternetGatewayId,
-          }),
+      get("live.InternetGatewayId"),
+      //TODO rubico unless
+      switchCase([
+        isEmpty,
+        () => undefined,
+        (GatewayId) =>
+          pipe([
+            () =>
+              ec2().createRoute({
+                ...payload,
+                RouteTableId,
+                GatewayId,
+              }),
+            () =>
+              retryCall({
+                name: `createRouteInternetGateway: GatewayId: ${GatewayId}`,
+                fn: pipe([
+                  () =>
+                    ec2().describeRouteTables({
+                      RouteTableIds: [RouteTableId],
+                    }),
+                  get("RouteTables"),
+                  find(
+                    pipe([get("Routes"), find(eq(get("GatewayId"), GatewayId))])
+                  ),
+                ]),
+                config,
+              }),
+          ])(),
       ]),
-      () => undefined,
     ]);
 
   const createRouteNatGateway = ({ natGateway, RouteTableId, payload }) =>
-    switchCase([
+    pipe([
       () => natGateway,
-      pipe([
-        tap(() => {
-          assert(natGateway.live.NatGatewayId, "natGateway.live.NatGatewayId");
-        }),
-        () =>
-          ec2().createRoute({
-            ...payload,
-            RouteTableId,
-            NatGatewayId: natGateway.live.NatGatewayId,
-          }),
+      get("live.NatGatewayId"),
+      //TODO ribico unless
+      switchCase([
+        isEmpty,
+        () => undefined,
+        (NatGatewayId) =>
+          pipe([
+            () =>
+              ec2().createRoute({
+                ...payload,
+                RouteTableId,
+                NatGatewayId,
+              }),
+            () =>
+              retryCall({
+                name: `createRouteNatGateway: NatGatewayId: ${NatGatewayId}`,
+                fn: pipe([
+                  () =>
+                    ec2().describeRouteTables({
+                      RouteTableIds: [RouteTableId],
+                    }),
+                  get("RouteTables"),
+                  find(
+                    pipe([
+                      get("Routes"),
+                      find(eq(get("NatGatewayId"), NatGatewayId)),
+                    ])
+                  ),
+                ]),
+                config,
+              }),
+          ])(),
       ]),
-      () => undefined,
     ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createRouteTable-property
-  const create = async ({
+  const create = ({
     payload,
     name,
+    dependencies,
     resolvedDependencies: { routeTable, ig, natGateway },
+    lives,
   }) =>
     pipe([
       tap(() => {
+        assert(lives);
         logger.info(`create route ${tos({ name })}`);
+        assert(dependencies);
+        assert(dependencies().routeTable);
+
         assert(routeTable, "Route is missing the dependency 'routeTable'");
         assert(routeTable.live.RouteTableId, "routeTable.live.RouteTableId");
         assert(
@@ -188,6 +245,8 @@ exports.AwsRoute = ({ spec, config }) => {
           }),
         ])()
       ),
+      // Refresh the route table
+      () => dependencies().routeTable.getLive({ lives }),
       tap((RouteTableId) => {
         logger.info(`created route ${tos({ name, RouteTableId })}`);
       }),

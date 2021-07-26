@@ -98,11 +98,6 @@ describe("AwsIamPolicy", async function () {
     });
   });
   after(async () => {});
-  it("iamPolicy resolveConfig", async function () {
-    assert.equal(iamPolicyToUser.name, iamPolicyName);
-    const config = await iamPolicyToUser.resolveConfig();
-    //TODO
-  });
   it.skip("iamPolicy apply plan", async function () {
     await testPlanDeploy({
       provider,

@@ -40,7 +40,7 @@ describe("AwsProvider", async function () {
       config: () => ({ projectName: "gru-test" }),
     });
 
-    keyPair = provider.ec2.useKeyPair({
+    keyPair = provider.ec2.makeKeyPair({
       name: keyPairName,
     });
 
@@ -136,14 +136,6 @@ describe("AwsProvider", async function () {
     });
   });
   after(async () => {});
-  it("aws server resolveConfig", async function () {
-    assert.equal(server.name, formatName(serverName));
-    const config = await server.resolveConfig({ deep: false });
-    assert.equal(config.InstanceType, "t2.micro");
-    assert.equal(config.MaxCount, 1);
-    assert.equal(config.MinCount, 1);
-    //assert.equal(config.KeyName, keyPair.name);
-  });
   it("aws info", async function () {
     const info = provider.info();
     assert(info.stage);
@@ -162,17 +154,6 @@ describe("AwsProvider", async function () {
   });
   it("aws apply plan", async function () {
     await testPlanDeploy({ provider });
-
-    const serverLive = await server.getLive();
-
-    assert(
-      CheckAwsTags({
-        config: provider.config,
-        tags: serverLive.Tags,
-        name: server.name,
-      })
-    );
-
     await testPlanDestroy({ provider });
   });
 });

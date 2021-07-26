@@ -26,19 +26,8 @@ describe("ScalewayIp", async function () {
   });
   after(async () => {});
 
-  it("ip resolveConfig", async function () {
-    const config = await ip.resolveConfig();
-    assert(config.tags);
-    assert(config.tags.find((tag) => tag === provider.config.tag));
-  });
-
   it.skip("apply and destroy", async function () {
     await testPlanDeploy({ provider });
-
-    const live = await ip.getLive();
-    assert(live);
-    assert(live.id);
-
     await testPlanDestroy({ provider });
   });
 });

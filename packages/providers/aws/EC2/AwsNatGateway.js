@@ -18,6 +18,7 @@ const {
   buildTags,
   findNamespaceInTags,
 } = require("../AwsCommon");
+const { getField } = require("@grucloud/core/ProviderCommon");
 
 exports.AwsNatGateway = ({ spec, config }) => {
   const ec2 = Ec2New(config);
@@ -51,9 +52,6 @@ exports.AwsNatGateway = ({ spec, config }) => {
         map(
           (AllocationId) =>
             pipe([
-              tap(() => {
-                logger.debug(``);
-              }),
               () =>
                 lives.getByType({
                   type: "ElasticIpAddress",
@@ -61,9 +59,6 @@ exports.AwsNatGateway = ({ spec, config }) => {
                   providerName: config.providerName,
                 }),
               find(eq(get("live.AllocationId"), AllocationId)),
-              tap((eips) => {
-                logger.debug(eips);
-              }),
               get("id"),
             ])(),
           filter(not(isEmpty))
@@ -109,23 +104,12 @@ exports.AwsNatGateway = ({ spec, config }) => {
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#createNatGateway-property
 
-  const create = async ({
-    payload,
-    name,
-    resolvedDependencies: { eip, subnet },
-  }) =>
+  const create = ({ payload, name }) =>
     pipe([
       tap(() => {
         logger.info(`create nat ${tos({ name })}`);
-        assert(eip, "NatGateway is missing the dependency 'eip'");
-        assert(subnet, "NatGateway is missing the dependency 'subnet'");
       }),
-      () =>
-        defaultsDeep({
-          AllocationId: eip.live.AllocationId,
-          SubnetId: subnet.live.SubnetId,
-        })(payload),
-      (params) => ec2().createNatGateway(params),
+      () => ec2().createNatGateway(payload),
       get("NatGateway"),
       tap((NatGateway) => {
         logger.info(`nat created ${tos(NatGateway)}`);
@@ -134,6 +118,7 @@ exports.AwsNatGateway = ({ spec, config }) => {
         retryCall({
           name: `nat isUpById: ${name} id: ${NatGatewayId}`,
           fn: () => isUpById({ name, id: NatGatewayId }),
+          config: { retryCount: 12 * 5, repeatDelay: 5e3 },
         }),
       ({ NatGatewayId }) => ({ id: NatGatewayId }),
     ])();
@@ -170,10 +155,10 @@ exports.AwsNatGateway = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#deleteNatGateway-property
-  const destroy = async ({ id, name }) =>
+  const destroy = ({ id, name }) =>
     pipe([
       tap(() => {
-        logger.info(`destroy nat ${tos({ name, id })}`);
+        logger.info(`destroy nat ${JSON.stringify({ name, id })}`);
       }),
       () => disassociateAddress({ NatGatewayId: id }),
       () => ec2().deleteNatGateway({ NatGatewayId: id }),
@@ -185,19 +170,33 @@ exports.AwsNatGateway = ({ spec, config }) => {
         })
       ),
       tap(() => {
-        logger.debug(`destroyed nat ${tos({ name, id })}`);
+        logger.debug(`destroyed nat ${JSON.stringify({ name, id })}`);
       }),
     ])();
 
-  const configDefault = async ({ name, namespace, properties }) =>
-    defaultsDeep({
-      TagSpecifications: [
-        {
-          ResourceType: "natgateway",
-          Tags: buildTags({ config, namespace, name }),
-        },
-      ],
-    })(properties);
+  const configDefault = ({
+    name,
+    namespace,
+    properties,
+    dependencies: { eip, subnet },
+  }) =>
+    pipe([
+      tap(() => {
+        assert(eip, "NatGateway is missing the dependency 'eip'");
+        assert(subnet, "NatGateway is missing the dependency 'subnet'");
+      }),
+      () => properties,
+      defaultsDeep({
+        AllocationId: getField(eip, "AllocationId"),
+        SubnetId: getField(subnet, "SubnetId"),
+        TagSpecifications: [
+          {
+            ResourceType: "natgateway",
+            Tags: buildTags({ config, namespace, name }),
+          },
+        ],
+      }),
+    ])();
 
   return {
     spec,
