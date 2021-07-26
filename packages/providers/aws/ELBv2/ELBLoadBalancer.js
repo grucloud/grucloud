@@ -12,6 +12,7 @@ const {
   not,
 } = require("rubico");
 const {
+  size,
   isEmpty,
   includes,
   first,
@@ -102,23 +103,44 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
   ]);
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ELBv2.html#describeLoadBalancers-property
-  const getList = async () =>
+
+  const describeLoadBalancers = (params) =>
+    tryCatch(
+      pipe([
+        tap(() => {
+          logger.info(`describeLoadBalancers ${JSON.stringify(params)}`);
+        }),
+        () => elb().describeLoadBalancers(params),
+        get("LoadBalancers"),
+        tap((results) => {
+          logger.debug(`describeLoadBalancers: result: ${tos(results)}`);
+        }),
+        map(assignTags),
+      ]),
+      switchCase([
+        eq(get("code"), "LoadBalancerNotFound"),
+        () => [],
+        (error) => {
+          logger.error(
+            `describeLoadBalancers, ${params}, error: ${tos(error)}`
+          );
+          throw error;
+        },
+      ])
+    )();
+
+  const getList = () =>
     pipe([
       tap(() => {
-        logger.info(`getList lbv2`);
+        logger.info(`getList load balancer`);
       }),
-      () => elb().describeLoadBalancers({}),
-      get("LoadBalancers"),
-      tap((results) => {
-        logger.debug(`getList: result: ${tos(results)}`);
-      }),
-      map(assignTags),
+      () => describeLoadBalancers(),
       (items = []) => ({
-        total: items.length,
+        total: size(items),
         items,
       }),
       tap(({ total }) => {
-        logger.info(`getList: #total: ${total}`);
+        logger.info(`getList: load balancer #total: ${total}`);
       }),
     ])();
 
@@ -129,39 +151,25 @@ exports.ELBLoadBalancerV2 = ({ spec, config }) => {
         logger.info(`getByName ${name}`);
       }),
       () => ({ Names: [name] }),
-      (params) => elb().describeLoadBalancers(params),
-      get("LoadBalancers"),
+      describeLoadBalancers,
       first,
-      assignTags,
       tap((result) => {
-        logger.debug(`getByName result: ${tos(result)}`);
+        logger.debug(`getByName ${name}: ${tos(result)}`);
       }),
     ])();
 
   const getById = ({ id }) =>
-    tryCatch(
-      pipe([
-        tap(() => {
-          logger.info(`getById ${id}`);
-        }),
-        () => ({ LoadBalancerArns: [id] }),
-        (params) => elb().describeLoadBalancers(params),
-        get("LoadBalancers"),
-        first,
-        assignTags,
-        tap((result) => {
-          logger.debug(`getById result: ${tos(result)}`);
-        }),
-      ]),
-      switchCase([
-        eq(get("code"), "LoadBalancerNotFound"),
-        () => false,
-        (error) => {
-          logger.error(`getById ${id}, error: ${tos(error)}`);
-          throw error;
-        },
-      ])
-    )();
+    pipe([
+      tap(() => {
+        logger.info(`getById ${id}`);
+      }),
+      () => ({ LoadBalancerArns: [id] }),
+      describeLoadBalancers,
+      first,
+      tap((result) => {
+        logger.debug(`getById ${id} result: ${tos(result)}`);
+      }),
+    ])();
 
   const isInstanceUp = eq(get("State.Code"), "active");
 
