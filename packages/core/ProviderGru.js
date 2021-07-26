@@ -154,7 +154,7 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
       }),
     ])();
 
-  const listLives = async ({
+  const listLives = ({
     onStateChange,
     onProviderEnd = () => {},
     options,
@@ -245,7 +245,7 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
                 ])(),
             }),
           (result) => ({
-            lives: lives.json,
+            lives: lives,
             resultQuery: result,
           }),
           assign({ error: any(get("error")) }),
@@ -397,7 +397,7 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
       }),
     ])();
 
-  const planQueryDestroy = async ({ onStateChange, options }) =>
+  const planQueryDestroy = ({ onStateChange, options }) =>
     pipe([
       tap(() => {
         logger.info(`planQueryDestroy ${JSON.stringify(options)}`);
@@ -423,8 +423,11 @@ exports.ProviderGru = ({ commandOptions, hookGlobal, stacks }) => {
               }),
             ])()
           ),
+          tap((params) => {
+            assert(true);
+          }),
           (results) => ({ error: any(get("error"))(results), results }),
-          (resultQueryDestroy) => ({ lives: lives.json, resultQueryDestroy }),
+          (resultQueryDestroy) => ({ lives: lives, resultQueryDestroy }),
           assign({ error: any(get("error")) }),
           tap((results) => {
             logger.info(`planQueryDestroy done`);
