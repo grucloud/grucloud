@@ -5,7 +5,7 @@ const logger = require("../logger")({ prefix: "GraphLive" });
 //const gcList = require("./fixture/gc-list.json");
 const initSqlJs = require("sql.js");
 
-describe("sql lite", function () {
+describe.skip("sql lite", function () {
   it("workflow", async function () {
     assert(true);
 
