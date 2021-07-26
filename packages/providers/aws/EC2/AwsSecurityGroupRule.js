@@ -27,6 +27,7 @@ const {
   groupBy,
   values,
   isDeepEqual,
+  uniq,
 } = require("rubico/x");
 const { detailedDiff } = require("deep-object-diff");
 
@@ -249,46 +250,56 @@ const findDependencies = ({ live }) => [
     type: "SecurityGroup",
     group: "ec2",
     ids: pipe([
-      () => [get("GroupId"), get("ReferencedGroupInfo.GroupId")],
+      () => [get("GroupId"), get("IpPermission.UserIdGroupPairs[0].GroupId")],
       map((fn) => fn(live)),
+      uniq,
       filter(not(isEmpty)),
     ])(),
   },
 ];
 
-const isDefault = ({ live, lives }) =>
-  pipe([
-    () => live,
-    get("IpPermission"),
-    pick(["IpProtocol", "FromPort", "ToPort"]),
-    (IpPermission) =>
-      isDeepEqual(IpPermission, { IpProtocol: "-1", FromPort: -1, ToPort: -1 }),
-    tap((result) => {
-      logger.debug(`isDefault ${result}`);
-    }),
-  ])();
-
 const SecurityGroupRuleBase = ({ config }) => {
   const ec2 = Ec2New(config);
   const { providerName } = config;
 
-  const managedByOther = ({ live, lives }) =>
+  const isDefault = ({ live, lives }) =>
     pipe([
       tap(() => {
-        assert(lives);
         assert(live.GroupId);
+        assert(lives.getById);
       }),
-      () =>
-        lives.getById({
-          type: "SecurityGroup",
-          providerName,
-          id: live.GroupId,
-        }),
-      tap((securityGroup) => {
-        assert(securityGroup);
+      and([
+        pipe([
+          () =>
+            lives.getById({
+              type: "SecurityGroup",
+              group: "ec2",
+              providerName,
+              id: live.GroupId,
+            }),
+          tap((params) => {
+            assert(true);
+          }),
+          get("isDefault"),
+        ]),
+        pipe([
+          () => live,
+          get("IpPermission"),
+          pick(["IpProtocol", "FromPort", "ToPort"]),
+          (IpPermission) =>
+            isDeepEqual(IpPermission, {
+              IpProtocol: "-1",
+              FromPort: -1,
+              ToPort: -1,
+            }),
+        ]),
+      ]),
+      tap((result) => {
+        logger.debug(`securityGroup ${live.GroupId} isDefault ${result}`);
       }),
-      get("managedByOther"),
     ])();
+
+  const managedByOther = isDefault;
 
   const securityFromConfig = ({ securityGroupFrom }) =>
     pipe([
@@ -457,6 +468,7 @@ const SecurityGroupRuleBase = ({ config }) => {
     create,
     destroy,
     managedByOther,
+    isDefault,
     ec2,
   };
 };
@@ -471,6 +483,7 @@ exports.AwsSecurityGroupRuleIngress = ({ spec, config }) => {
     findNamespace,
     ec2,
     managedByOther,
+    isDefault,
   } = SecurityGroupRuleBase({
     config,
   });
@@ -513,6 +526,7 @@ exports.AwsSecurityGroupRuleEgress = ({ spec, config }) => {
     destroy,
     findNamespace,
     managedByOther,
+    isDefault,
     ec2,
   } = SecurityGroupRuleBase({
     config,
