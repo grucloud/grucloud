@@ -10,6 +10,7 @@ const {
   omit,
   not,
   or,
+  and,
   assign,
   map,
 } = require("rubico");
@@ -202,11 +203,14 @@ const writersSpec = [
               (dependency) =>
                 pipe([
                   () => resource,
-                  get("live.IpPermission.UserIdGroupPairs[0]"),
-                  tap((params) => {
+                  tap(() => {
                     assert(dependency.live.GroupId);
                   }),
-                  eq(get("GroupId"), dependency.live.GroupId),
+                  get("live.IpPermission.UserIdGroupPairs[0].GroupId", ""),
+                  and([
+                    eq(identity, dependency.live.GroupId),
+                    not(eq(resource.live.GroupId, dependency.live.GroupId)),
+                  ]),
                 ])(),
           },
         }),
