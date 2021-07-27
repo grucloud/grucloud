@@ -483,6 +483,45 @@ const writersSpec = [
     ],
   },
   {
+    group: "lambda",
+    types: [
+      {
+        type: "Layer",
+        filterLive: (input) =>
+          pipe([
+            tap((params) => {
+              assert(true);
+            }),
+            pick([
+              "LayerName",
+              "Description",
+              "CompatibleRuntimes",
+              "LicenseInfo",
+            ]),
+            tap((params) => {
+              assert(true);
+            }),
+          ]),
+      },
+      {
+        type: "Function",
+        filterLive: () =>
+          pick([
+            "FunctionName",
+            "Handler",
+            "PackageType",
+            "Runtime",
+            "Description",
+            "LicenseInfo",
+          ]),
+        dependencies: () => ({
+          layers: { type: "Layer", group: "lambda" },
+          role: { type: "Role", group: "iam" },
+        }),
+      },
+    ],
+  },
+  {
     group: "rds",
     types: [
       {

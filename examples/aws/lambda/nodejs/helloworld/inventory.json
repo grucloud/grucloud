@@ -1,0 +1,325 @@
+{
+    "command": "list",
+    "commandOptions": {
+        "dotFile": "diagram-live.dot",
+        "title": "helloworld",
+        "graph": true
+    },
+    "programOptions": {
+        "json": "inventory.json"
+    },
+    "result": {
+        "error": false,
+        "results": [
+            {
+                "providerName": "aws",
+                "kind": "livesPerType",
+                "error": false,
+                "results": [
+                    {
+                        "resources": [
+                            {
+                                "name": "lambda-policy",
+                                "id": "arn:aws:iam::840541460064:policy/lambda-policy",
+                                "providerName": "aws",
+                                "type": "Policy",
+                                "group": "iam",
+                                "live": {
+                                    "PolicyName": "lambda-policy",
+                                    "PolicyId": "ANPA4HNBM2ZQAOSQTXWV4",
+                                    "Arn": "arn:aws:iam::840541460064:policy/lambda-policy",
+                                    "Path": "/",
+                                    "DefaultVersionId": "v1",
+                                    "AttachmentCount": 1,
+                                    "PermissionsBoundaryUsageCount": 0,
+                                    "IsAttachable": true,
+                                    "Description": "Allow ec2:Describe",
+                                    "CreateDate": "2021-07-27T20:49:34.000Z",
+                                    "UpdateDate": "2021-07-27T20:49:34.000Z",
+                                    "Tags": [
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "lambda-nodejs-helloworld"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "Name",
+                                            "Value": "lambda-policy"
+                                        }
+                                    ],
+                                    "EntitiesForPolicy": {
+                                        "PolicyGroups": [],
+                                        "PolicyUsers": [],
+                                        "PolicyRoles": [
+                                            {
+                                                "RoleName": "lambda-role",
+                                                "RoleId": "AROA4HNBM2ZQBYM2MXLWK"
+                                            }
+                                        ]
+                                    },
+                                    "PolicyDocument": {
+                                        "Version": "2012-10-17",
+                                        "Statement": [
+                                            {
+                                                "Action": [
+                                                    "logs:*"
+                                                ],
+                                                "Effect": "Allow",
+                                                "Resource": "*"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "uri": "aws::iam::Policy::lambda-policy",
+                                "displayName": "lambda-policy",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "iam::Policy",
+                        "type": "Policy",
+                        "group": "iam",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "name": "lambda-role",
+                                "id": "arn:aws:iam::840541460064:role/lambda-role",
+                                "providerName": "aws",
+                                "type": "Role",
+                                "group": "iam",
+                                "live": {
+                                    "Path": "/",
+                                    "RoleName": "lambda-role",
+                                    "RoleId": "AROA4HNBM2ZQBYM2MXLWK",
+                                    "Arn": "arn:aws:iam::840541460064:role/lambda-role",
+                                    "CreateDate": "2021-07-27T20:49:37.000Z",
+                                    "AssumeRolePolicyDocument": {
+                                        "Version": "2012-10-17",
+                                        "Statement": [
+                                            {
+                                                "Sid": "",
+                                                "Effect": "Allow",
+                                                "Principal": {
+                                                    "Service": "lambda.amazonaws.com"
+                                                },
+                                                "Action": "sts:AssumeRole"
+                                            }
+                                        ]
+                                    },
+                                    "MaxSessionDuration": 3600,
+                                    "Tags": [
+                                        {
+                                            "Key": "Name",
+                                            "Value": "lambda-role"
+                                        },
+                                        {
+                                            "Key": "gc-managed-by",
+                                            "Value": "grucloud"
+                                        },
+                                        {
+                                            "Key": "gc-created-by-provider",
+                                            "Value": "aws"
+                                        },
+                                        {
+                                            "Key": "gc-stage",
+                                            "Value": "dev"
+                                        },
+                                        {
+                                            "Key": "gc-project-name",
+                                            "Value": "lambda-nodejs-helloworld"
+                                        }
+                                    ],
+                                    "InstanceProfiles": [],
+                                    "AttachedPolicies": [
+                                        {
+                                            "PolicyName": "lambda-policy",
+                                            "PolicyArn": "arn:aws:iam::840541460064:policy/lambda-policy"
+                                        }
+                                    ],
+                                    "Policies": []
+                                },
+                                "uri": "aws::iam::Role::lambda-role",
+                                "displayName": "lambda-role",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Policy",
+                                        "group": "iam",
+                                        "ids": [
+                                            "arn:aws:iam::840541460064:policy/lambda-policy"
+                                        ]
+                                    },
+                                    {
+                                        "type": "OpenIDConnectProvider",
+                                        "group": "iam",
+                                        "ids": []
+                                    }
+                                ],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "iam::Role",
+                        "type": "Role",
+                        "group": "iam",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "name": "lambda-hello-world-1",
+                                "id": "arn:aws:lambda:eu-west-2:840541460064:function:lambda-hello-world-1",
+                                "providerName": "aws",
+                                "type": "Function",
+                                "group": "lambda",
+                                "live": {
+                                    "FunctionName": "lambda-hello-world-1",
+                                    "FunctionArn": "arn:aws:lambda:eu-west-2:840541460064:function:lambda-hello-world-1",
+                                    "Runtime": "nodejs14.x",
+                                    "Role": "arn:aws:iam::840541460064:role/lambda-role",
+                                    "Handler": "helloworld.handler",
+                                    "CodeSize": 340,
+                                    "Description": "",
+                                    "Timeout": 3,
+                                    "MemorySize": 128,
+                                    "LastModified": "2021-07-27T20:50:43.429+0000",
+                                    "CodeSha256": "wzqi5VtfcfvFCeMbngeTe/dxTX0hTj8uCy6MAeAlybM=",
+                                    "Version": "$LATEST",
+                                    "KMSKeyArn": null,
+                                    "TracingConfig": {
+                                        "Mode": "PassThrough"
+                                    },
+                                    "MasterArn": null,
+                                    "RevisionId": "8f0d5607-ad40-4c5a-83d9-1b9cdc582d16",
+                                    "Layers": [
+                                        "arn:aws:lambda:eu-west-2:840541460064:layer:lambda-layer:7"
+                                    ],
+                                    "State": null,
+                                    "StateReason": null,
+                                    "StateReasonCode": null,
+                                    "LastUpdateStatus": null,
+                                    "LastUpdateStatusReason": null,
+                                    "LastUpdateStatusReasonCode": null,
+                                    "PackageType": "Zip",
+                                    "SigningProfileVersionArn": null,
+                                    "SigningJobArn": null,
+                                    "Tags": {
+                                        "Name": "lambda-hello-world-1",
+                                        "gc-created-by-provider": "aws",
+                                        "gc-managed-by": "grucloud",
+                                        "gc-project-name": "lambda-nodejs-helloworld",
+                                        "gc-stage": "dev"
+                                    }
+                                },
+                                "uri": "aws::lambda::Function::lambda-hello-world-1",
+                                "displayName": "lambda-hello-world-1",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [
+                                    {
+                                        "type": "Role",
+                                        "group": "iam",
+                                        "ids": [
+                                            "arn:aws:iam::840541460064:role/lambda-role"
+                                        ]
+                                    },
+                                    {
+                                        "type": "Layer",
+                                        "group": "lambda",
+                                        "ids": [
+                                            "arn:aws:lambda:eu-west-2:840541460064:layer:lambda-layer"
+                                        ]
+                                    }
+                                ],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "lambda::Function",
+                        "type": "Function",
+                        "group": "lambda",
+                        "providerName": "aws"
+                    },
+                    {
+                        "resources": [
+                            {
+                                "name": "lambda-layer",
+                                "id": "arn:aws:lambda:eu-west-2:840541460064:layer:lambda-layer",
+                                "providerName": "aws",
+                                "type": "Layer",
+                                "group": "lambda",
+                                "live": {
+                                    "LayerVersionArn": "arn:aws:lambda:eu-west-2:840541460064:layer:lambda-layer:7",
+                                    "Version": 7,
+                                    "Description": "My Layer",
+                                    "CreatedDate": "2021-07-27T20:50:41.152+0000",
+                                    "CompatibleRuntimes": [
+                                        "nodejs"
+                                    ],
+                                    "LicenseInfo": null,
+                                    "LayerName": "lambda-layer",
+                                    "LayerArn": "arn:aws:lambda:eu-west-2:840541460064:layer:lambda-layer",
+                                    "Tags": {
+                                        "Name": "lambda-layer",
+                                        "gc-managed-by": "grucloud",
+                                        "gc-created-by-provider": "aws",
+                                        "gc-stage": "dev",
+                                        "gc-project-name": "lambda-nodejs-helloworld"
+                                    },
+                                    "Content": {
+                                        "Location": "https://awslambda-eu-west-2-layers.s3.eu-west-2.amazonaws.com/snapshots/840541460064/lambda-layer-4717dbff-6c1e-4df3-9553-c0b69899d587?versionId=m6xDINHYqCL4EoxSFUqa.xM_yd7p9Qrp&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEFwaCWV1LXdlc3QtMiJHMEUCIQDcmxW9j7j4M%2BAREwnHIk92Zcrxru%2BCEYbhxDUZw96YdQIgDetD6Cuyv6d2Q7JLpTHhGpuI%2Bv0VOLGefg7Gw%2F0rfSQq%2BgMIZRACGgw0NzIwMzg4NjQxODgiDNoatBBPpzj%2FNjHHhSrXA%2BJYhsYnG6S7ZEPtSz4yQyVOg%2Fbj3hKymxAfjAWBN6OTYzLs6wDkIJrtCnLL6EIPyXikHjBm3Qav67QwHVWDIbZHZRJofuRROReB0jwSj4DYxWSaGRdKUTvVzteitR8uC0EAGqK38%2BHkZa%2B8o1QFmhiSjI7v6lr4PWAgiGUL9A6aWEc5Xm9G4FbhLmnzxv4%2F65ybm%2FpfRMAS8AIlTxWEdj6EbLvrfWWwvXGIE7SjXLc4utDW5H2Xp5R0E5GAAT6XLkSNa8eti45wUECPMB%2FXcq%2F719Qbz4lWfegf%2Bcf05ixaq9QIlphUimKKZotvcGqo3eX8vj9B8096MEuZLl2I0irNFbTeHZAHmAs00SamHDkdnuBFaKGLKiKVrObl4bH3tZQ3pmzOkt1vnc37iFDvJl8PRZa1WqoNtoMw9olubVs7KYXoF%2FSxSGc7vUTJoE3stgFRfvsY%2BYPHMZ6elhkM%2FgpXJgC0DsyzjT68HidzFi0xLn%2BNJVZyl6qV0%2Bd3iogOt2fXYwaQwULOvr3kKZwvz2Dq9Wz06kvmtafHXgSDQz%2FMYR8HM5aM0qU6r%2FyPzK9IRmHGFSbjSIdmYZgRel1eKrJBZixVYtHUKN5uu9dRDH5BeznESUe79DDKx4GIBjqlASY9nxzgD5ZB3MgnC58RThmzo35g9qu5znA8LM5kJk4SYy19j%2FXiDE3WPCm6QOD6dtFFW10KLwX2JUHdtF1LqQ3r6aXxgm%2Bx8KT2QGx5GlYpxK4tcyAQKvY7AgstBDWtgzuQhbztfdJJCU5aeFiUSGDaF%2BtyDzoD1uXZw9W9gOqoz2aacmDnYwDF3oNwQQBzkXEjztik4SBmQ%2FxvHLS%2FqDTdo4%2FvHg%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20210727T210027Z&X-Amz-SignedHeaders=host&X-Amz-Expires=600&X-Amz-Credential=ASIAW3Z5VOU6DH6V6LMC%2F20210727%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Signature=5b11b5422e2b1b75eefe6c0af0af6f611e9dbe0a1ccd2931c467067051030d7c",
+                                        "CodeSha256": "yZA3UZjKbNSn23nKTXQ1FrjXW4mnkkGFhOTuvNsstyY=",
+                                        "CodeSize": 145,
+                                        "SigningProfileVersionArn": null,
+                                        "SigningJobArn": null
+                                    }
+                                },
+                                "uri": "aws::lambda::Layer::lambda-layer",
+                                "displayName": "lambda-layer",
+                                "cannotBeDeleted": false,
+                                "isOurMinion": true,
+                                "managedByUs": true,
+                                "isDefault": false,
+                                "namespace": "",
+                                "dependencies": [],
+                                "managedByOther": false,
+                                "show": true
+                            }
+                        ],
+                        "groupType": "lambda::Layer",
+                        "type": "Layer",
+                        "group": "lambda",
+                        "providerName": "aws"
+                    }
+                ]
+            }
+        ],
+        "kind": "livesPerProvider"
+    }
+}

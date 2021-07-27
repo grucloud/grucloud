@@ -7,12 +7,13 @@ const {
   eq,
   not,
   assign,
-  tryCatch,
-  or,
+  filter,
   omit,
+  tryCatch,
   switchCase,
 } = require("rubico");
 const {
+  pluck,
   first,
   identity,
   defaultsDeep,
@@ -34,11 +35,44 @@ const { buildTagsObject } = require("@grucloud/core/Common");
 const { createEndpoint, shouldRetryOnException } = require("../AwsCommon");
 const { getField } = require("@grucloud/core/ProviderCommon");
 
-const findId = get("live.FunctionName");
-const findName = findId;
+const findId = get("live.FunctionArn");
+const findName = get("live.FunctionName");
 
 exports.Function = ({ spec, config }) => {
   const lambda = () => createEndpoint({ endpointName: "Lambda" })(config);
+
+  const findDependencies = ({ live, lives }) => [
+    {
+      type: "Role",
+      group: "iam",
+      ids: [live.Role],
+    },
+    {
+      type: "Layer",
+      group: "lambda",
+      ids: pipe([
+        () => live,
+        get("Layers"),
+        (layersFunction) =>
+          pipe([
+            () =>
+              lives.getByType({
+                providerName: config.providerName,
+                type: "Layer",
+                group: "lambda",
+              }),
+            filter(
+              pipe([
+                get("live.LayerVersionArn"),
+                (layerVersionArn) =>
+                  pipe([() => layersFunction, includes(layerVersionArn)])(),
+              ])
+            ),
+          ])(),
+        pluck("id"),
+      ])(),
+    },
+  ];
 
   const listFunctions = ({ params } = {}) =>
     pipe([
@@ -49,6 +83,7 @@ exports.Function = ({ spec, config }) => {
       get("Functions"),
       map(
         assign({
+          Layers: pipe([get("Layers"), pluck("Arn")]),
           Tags: pipe([
             ({ FunctionArn }) => lambda().listTags({ Resource: FunctionArn }),
             get("Tags"),
@@ -63,6 +98,23 @@ exports.Function = ({ spec, config }) => {
               lambda().getFunctionConcurrency({ FunctionName }),
             get("ReservedConcurrentExecutions"),
           ]),
+          Policy: tryCatch(
+            pipe([
+              ({ FunctionName }) => lambda().getPolicy({ FunctionName }),
+              tap((params) => {
+                assert(true);
+              }),
+            ]),
+            pipe([
+              switchCase([
+                eq(get("code"), "ResourceNotFoundException"),
+                () => undefined,
+                (error) => {
+                  throw error;
+                },
+              ]),
+            ])
+          ),
         })
       ),
       tap((results) => {
@@ -71,10 +123,10 @@ exports.Function = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#listFunctions-property
-  const getList = ({ params } = {}) =>
+  const getList = () =>
     pipe([
       tap(() => {
-        logger.info(`getList ${tos(params)}`);
+        logger.info(`getList function`);
       }),
       listFunctions,
       (items = []) => ({
@@ -82,7 +134,7 @@ exports.Function = ({ spec, config }) => {
         items,
       }),
       tap(({ total }) => {
-        logger.info(`getList: #total: ${total}`);
+        logger.info(`getList function #total: ${total}`);
       }),
     ])();
 
@@ -126,16 +178,15 @@ exports.Function = ({ spec, config }) => {
               ),
             ])(),
         }),
-
       get("Function"),
-      // tap((fun) =>
-      //   retryCall({
-      //     name: `key isUpByName: ${name}`,
-      //     fn: () => isUpByName({ name, FunctionName }),
-      //     config,
-      //   })
-      // ),
-      tap((xxx) => {
+      tap((FunctionName) =>
+        retryCall({
+          name: `key isUpByName: ${name}`,
+          fn: () => isUpByName({ name: FunctionName }),
+          config,
+        })
+      ),
+      tap(() => {
         logger.info(`created`);
       }),
     ])();
@@ -157,7 +208,6 @@ exports.Function = ({ spec, config }) => {
     ])();
 
   // https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Lambda.html#deleteFunction-property
-
   const destroy = ({ live }) =>
     pipe([
       () => ({ id: findId({ live }) }),
@@ -177,17 +227,22 @@ exports.Function = ({ spec, config }) => {
     name,
     namespace,
     properties,
-    dependencies: { role },
+    dependencies: { role, layers = [] },
   }) =>
     pipe([
       tap(() => {
         assert(role, "missing role dependencies");
+        assert(Array.isArray(layers), "layers must be an array");
       }),
       () => properties,
       defaultsDeep({
         FunctionName: name,
         Role: getField(role, "Arn"),
         Tags: buildTagsObject({ config, namespace, name }),
+        Layers: pipe([
+          () => layers,
+          map((layer) => getField(layer, "LayerVersionArn")),
+        ])(),
       }),
     ])();
 
@@ -202,6 +257,7 @@ exports.Function = ({ spec, config }) => {
     getList,
     configDefault,
     shouldRetryOnException,
+    findDependencies,
   };
 };
 

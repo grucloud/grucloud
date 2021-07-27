@@ -13,7 +13,9 @@ const {
   not,
 } = require("rubico");
 const {
+  callProp,
   first,
+  last,
   find,
   isEmpty,
   forEach,
@@ -247,7 +249,7 @@ exports.isOurMinionObject = ({ tags, config }) => {
     providerName,
     createdByProviderKey,
   } = config;
-  assert(tags);
+  //assert(tags);
   return pipe([
     () => tags,
     tap(() => {
@@ -376,6 +378,16 @@ const isOurMinionFactory =
 exports.isOurMinionFactory = isOurMinionFactory;
 exports.isOurMinion = isOurMinionFactory({});
 
+exports.tagsExtract = pipe([
+  get("Description", ""),
+  callProp("split", "tags:"),
+  last,
+  tryCatch(JSON.parse, () => ({})),
+  tap((Tags) => {
+    assert(true);
+  }),
+]);
+
 const findNamespaceInTags =
   (config) =>
   ({ live }) =>
@@ -452,25 +464,6 @@ exports.findNameInTagsOrId =
         }
       }),
     ])();
-
-exports.findNameInDescription = ({ Description = "" }) => {
-  const tags = Description.split("tags:")[1];
-  if (tags) {
-    try {
-      const tagsJson = JSON.parse(tags);
-      const tag = tagsJson.find(
-        (tag) => tag.Key === configProviderDefault.nameKey
-      );
-      if (tag?.Value) {
-        logger.debug(`findNameInDescription ${tag.Value}`);
-        return tag.Value;
-      }
-    } catch (error) {
-      logger.error(`findNameInDescription ${error}`);
-    }
-  }
-  logger.debug(`findNameInDescription: cannot find name`);
-};
 
 exports.getByIdCore = ({ fieldIds, getList }) =>
   tryCatch(

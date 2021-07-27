@@ -14,6 +14,7 @@
     "aws2gc-eks-lean": "node aws2gc.js --input aws/eks-lean/inventory.json --outputCode aws/eks-lean/iac.js --outputConfig aws/eks-lean/config.js",
     "aws2gc-route53-record-txt": "node aws2gc.js --input aws/route53/dns-validation-record-txt/inventory.json --outputCode aws/route53/dns-validation-record-txt/iac.js --outputConfig aws/route53/dns-validation-record-txt/config.js",
     "aws2gc-iam": "node aws2gc.js --input aws/iam/inventory.json --outputCode aws/iam/iac.js --outputConfig aws/iam/config.js",
+    "aws2gc-lambda": "node aws2gc.js --input ../../../examples/aws/lambda/nodejs/helloworld/inventory.json --outputCode aws/lambda/iac.js --outputConfig aws/lambda/config.js",
     "openstack2gcp": "node os2gcp.js --input openstack-inventory/gc-list.json --outputCode gcp-infra/iac.js --outputConfig gcp-infra/config.js --mapping mapping.json"
   },
   "author": "Frederic Heem",

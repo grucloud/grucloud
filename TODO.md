@@ -65,6 +65,8 @@
 
 ## Aws2gc
 
+- EKS cluster tags
+
 ## Aws
 
 - document create key pair

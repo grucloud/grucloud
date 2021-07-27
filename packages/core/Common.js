@@ -271,7 +271,7 @@ exports.md5FileBase64 = pipe([
   (md5) => new Buffer.from(md5, "hex").toString("base64"),
 ]);
 
-exports.buildTagsObject = ({ name, namespace, config }) => {
+exports.buildTagsObject = ({ name, namespace, config, userTags = {} }) => {
   const {
     nameKey,
     managedByKey,
@@ -299,6 +299,7 @@ exports.buildTagsObject = ({ name, namespace, config }) => {
     ...(projectName && {
       [projectNameKey]: projectName,
     }),
+    ...userTags,
   };
 };
 

@@ -23,6 +23,7 @@ const {
 } = require("rubico");
 
 const pick = require("rubico/pick");
+const { keys } = require("rubico/x");
 
 const {
   first,
@@ -105,18 +106,24 @@ const buildProperties = ({
       Tags: pipe([
         () => resource,
         get("live.Tags", []),
-        filter(
+        tap((params) => {
+          assert(true);
+        }),
+        switchCase([
+          Array.isArray,
+          filter(
+            pipe([
+              get("Key", ""),
+              not(or([callProp("startsWith", "gc-"), eq(identity, "Name")])),
+            ])
+          ),
           pipe([
-            get("Key", ""),
-            tap((params) => {
-              assert(true);
-            }),
-            not(or([callProp("startsWith", "gc-"), eq(identity, "Name")])),
-            tap((params) => {
-              assert(true);
-            }),
-          ])
-        ),
+            keys,
+            filter(
+              not(or([callProp("startsWith", "gc-"), eq(identity, "Name")]))
+            ),
+          ]),
+        ]),
       ]),
     }),
     switchCase([pipe([get("Tags"), isEmpty]), omit(["Tags"]), identity]),
