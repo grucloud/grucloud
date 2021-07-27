@@ -1,6 +1,6 @@
 const { pipe, assign, map } = require("rubico");
-const { isOurMinionFactory, isOurMinion } = require("../AwsCommon");
-const { Function } = require("./Function");
+const { isOurMinionObject } = require("../AwsCommon");
+const { Function, compareFunction } = require("./Function");
 
 const GROUP = "lambda";
 
@@ -10,7 +10,8 @@ module.exports = () =>
       type: "Function",
       dependsOn: ["iam::Role"],
       Client: Function,
-      isOurMinion,
-      //TODO compare:
+      isOurMinion: ({ live, config }) =>
+        isOurMinionObject({ tags: live.Tags, config }),
+      compare: compareFunction,
     },
   ]);

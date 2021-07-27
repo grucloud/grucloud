@@ -110,6 +110,7 @@ exports.shouldRetryOnException = ({ error, name }) =>
       logger.error(`aws shouldRetryOnException ${tos({ name, error })}`);
       error.stack && logger.error(error.stack);
     }),
+    () => error,
     //TODO find out error code we can retry on
     or([
       () => [503].includes(error.statusCode),
@@ -118,7 +119,7 @@ exports.shouldRetryOnException = ({ error, name }) =>
     tap((retry) => {
       logger.error(`aws shouldRetryOnException retry: ${retry}`);
     }),
-  ])(error);
+  ])();
 
 //TODO use pipe
 exports.shouldRetryOnExceptionDelete = ({ error, name }) => {
@@ -246,6 +247,7 @@ exports.isOurMinionObject = ({ tags, config }) => {
     providerName,
     createdByProviderKey,
   } = config;
+  assert(tags);
   return pipe([
     () => tags,
     tap(() => {
