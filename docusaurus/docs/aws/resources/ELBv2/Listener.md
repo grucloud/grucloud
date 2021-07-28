@@ -42,7 +42,7 @@ The list of properties are the parameter of [createTargetGroup](https://docs.aws
 
 - [LoadBalancer](./LoadBalancer.md)
 - [TargetGroup](./TargetGroup.md)
-- [Certificate](./ACM/AcmCertificate.md)
+- [Certificate](../ACM/AcmCertificate.md)
 
 ## List
 
