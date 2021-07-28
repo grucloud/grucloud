@@ -1,14 +1,7 @@
 const { AwsProvider } = require("@grucloud/provider-aws");
-const AdmZip = require("adm-zip");
 
 const lambdaPolicy = require("./lambdaPolicy.json");
 const lambdaAssumePolicy = require("./lambdaAssumePolicy.json");
-
-const createZipBuffer = ({ files = [] }) => {
-  const zip = new AdmZip();
-  files.forEach((file) => zip.addLocalFile(file));
-  return zip.toBuffer();
-};
 
 const createResources = async ({ provider }) => {
   const { config } = provider;
@@ -28,17 +21,15 @@ const createResources = async ({ provider }) => {
     name: "lambda-layer",
     dependencies: { role: iamRole },
     properties: () => ({
-      Content: { ZipFile: createZipBuffer({ files: ["layer.js"] }) },
       CompatibleRuntimes: ["nodejs"],
       Description: "My Layer",
     }),
   });
 
   const lambda = provider.lambda.makeFunction({
-    name: "lambda-hello-world-1",
+    name: "lambda-hello-world",
     dependencies: { role: iamRole, layers: [layer] },
     properties: () => ({
-      Code: { ZipFile: createZipBuffer({ files: ["helloworld.js"] }) },
       PackageType: "Zip",
       Handler: "helloworld.handler",
       Runtime: "nodejs14.x",

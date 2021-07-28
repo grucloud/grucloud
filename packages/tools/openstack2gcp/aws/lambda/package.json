@@ -7,7 +7,8 @@
   "scripts": {
     "graph-target": "gc graph",
     "graph-live": "gc list --graph --types-exclude KeyPair",
-    "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o"
+    "e2e": "gc d -a -f && gc d -a && gc l && gc a -f && gc a && gc d -f && gc d && gc l -o",
+    "aws2gc": "node ../../aws2gc.js --input ../../../../../examples/aws/lambda/nodejs/helloworld/inventory.json --outputCode iac.js --outputConfig config.js"
   },
   "author": "",
   "license": "ISC",

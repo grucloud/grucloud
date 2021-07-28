@@ -15,12 +15,14 @@ const {
   map,
 } = require("rubico");
 const { identity, pluck, includes } = require("rubico/x");
+const AdmZip = require("adm-zip");
+const path = require("path");
 const { createProgramOptions, generatorMain } = require("./generatorUtils");
 
 const { configTpl } = require("./src/configTpl");
 const { iacTpl } = require("./src/aws/iacTpl");
 
-const { findLiveById, hasDependency } = require("./generatorUtils");
+const { hasDependency } = require("./generatorUtils");
 
 const securityGroupRulePickProperties = pipe([
   tap((params) => {
@@ -487,33 +489,60 @@ const writersSpec = [
     types: [
       {
         type: "Layer",
-        filterLive: (input) =>
-          pipe([
-            tap((params) => {
-              assert(true);
-            }),
-            pick([
-              "LayerName",
-              "Description",
-              "CompatibleRuntimes",
-              "LicenseInfo",
-            ]),
-            tap((params) => {
-              assert(true);
-            }),
-          ]),
+        filterLive:
+          ({ resource }) =>
+          (live) =>
+            pipe([
+              tap(() => {
+                assert(resource.name);
+                assert(live.Content.Data);
+              }),
+              () => live,
+              pick([
+                "LayerName",
+                "Description",
+                "CompatibleRuntimes",
+                "LicenseInfo",
+              ]),
+              tap((params) => {
+                assert(true);
+              }),
+              tap(
+                pipe([
+                  () => new AdmZip(Buffer.from(live.Content.Data, "base64")),
+                  (zip) => zip.extractAllTo(path.resolve(resource.name), true),
+                ])
+              ),
+            ])(),
       },
       {
         type: "Function",
-        filterLive: () =>
-          pick([
-            "FunctionName",
-            "Handler",
-            "PackageType",
-            "Runtime",
-            "Description",
-            "LicenseInfo",
-          ]),
+        filterLive:
+          ({ resource }) =>
+          (live) =>
+            pipe([
+              tap(() => {
+                assert(resource.name);
+                assert(live.Code.Data);
+              }),
+              () => live,
+              pick([
+                "FunctionName",
+                "Handler",
+                "PackageType",
+                "Runtime",
+                "Description",
+                "LicenseInfo",
+                "Timeout",
+                "MemorySize",
+              ]),
+              tap(
+                pipe([
+                  () => new AdmZip(Buffer.from(live.Code.Data, "base64")),
+                  (zip) => zip.extractAllTo(path.resolve(resource.name), true),
+                ])
+              ),
+            ])(),
         dependencies: () => ({
           layers: { type: "Layer", group: "lambda" },
           role: { type: "Role", group: "iam" },

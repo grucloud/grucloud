@@ -27,7 +27,7 @@ const {
 const crypto = require("crypto");
 
 const { detailedDiff } = require("deep-object-diff");
-const { fetchZip } = require("./LambdaCommon");
+const { fetchZip, createZipBuffer } = require("./LambdaCommon");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "Function",
@@ -223,7 +223,7 @@ exports.Function = ({ spec, config }) => {
         FunctionName: payload.FunctionName,
         ZipFile: payload.Code.ZipFile,
       }),
-      (params) => lambda().updateFunctionCode(params),
+      lambda().updateFunctionCode,
       tap(() => {
         logger.info(`updated function ${name}`);
       }),
@@ -256,15 +256,23 @@ exports.Function = ({ spec, config }) => {
         assert(role, "missing role dependencies");
         assert(Array.isArray(layers), "layers must be an array");
       }),
-      () => properties,
-      defaultsDeep({
-        FunctionName: name,
-        Role: getField(role, "Arn"),
-        Tags: buildTagsObject({ config, namespace, name }),
-        Layers: pipe([
-          () => layers,
-          map((layer) => getField(layer, "LayerVersionArn")),
+      () => createZipBuffer({ localPath: name }),
+      (ZipFile) =>
+        pipe([
+          () => properties,
+          defaultsDeep({
+            FunctionName: name,
+            Role: getField(role, "Arn"),
+            Tags: buildTagsObject({ config, namespace, name }),
+            Layers: pipe([
+              () => layers,
+              map((layer) => getField(layer, "LayerVersionArn")),
+            ])(),
+            Code: { ZipFile },
+          }),
         ])(),
+      tap((params) => {
+        assert(true);
       }),
     ])();
 

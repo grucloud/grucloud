@@ -43,7 +43,7 @@ const {
 const findId = get("live.LayerArn");
 const findName = get("live.LayerName");
 
-const { fetchZip } = require("./LambdaCommon");
+const { fetchZip, createZipBuffer } = require("./LambdaCommon");
 
 exports.Layer = ({ spec, config }) => {
   const lambda = () => createEndpoint({ endpointName: "Lambda" })(config);
@@ -197,11 +197,16 @@ exports.Layer = ({ spec, config }) => {
   }) =>
     pipe([
       tap(() => {}),
-      () => otherProps,
-      defaultsDeep({
-        LayerName: name,
-        Tags: buildTagsObject({ name, namespace, config, userTags: Tags }),
-      }),
+      () => createZipBuffer({ localPath: name }),
+      (ZipFile) =>
+        pipe([
+          () => otherProps,
+          defaultsDeep({
+            LayerName: name,
+            Tags: buildTagsObject({ name, namespace, config, userTags: Tags }),
+            Content: { ZipFile },
+          }),
+        ])(),
     ])();
 
   return {

@@ -1,7 +1,10 @@
 const assert = require("assert");
-const { pipe, tap, get } = require("rubico");
+const { pipe, tap, eq, get, tryCatch, not } = require("rubico");
 const { callProp } = require("rubico/x");
 const Axios = require("axios");
+const path = require("path");
+const fs = require("fs").promises;
+const AdmZip = require("adm-zip");
 
 exports.fetchZip =
   () =>
@@ -11,7 +14,24 @@ exports.fetchZip =
         assert(Location);
       }),
       () => Axios.create({}),
-      (axios) => axios.get(Location, { responseType: "arraybuffer" }),
+      callProp("get", Location, { responseType: "arraybuffer" }),
       get("data"),
       callProp("toString", "base64"),
     ])();
+
+const fileExist = (path) =>
+  tryCatch(
+    pipe([() => fs.stat(path)]),
+    tap.if(eq(get("code"), "ENOENT"), (error) => {
+      throw Error(`The directory '${path}' does not exist`);
+    })
+  )();
+
+exports.createZipBuffer = ({ localPath }) =>
+  pipe([
+    () => path.resolve(localPath),
+    fileExist,
+    () => new AdmZip(),
+    tap(callProp("addLocalFolder", localPath, "/")),
+    callProp("toBuffer"),
+  ])();

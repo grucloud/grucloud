@@ -13,7 +13,7 @@ const {
   map,
   fork,
   filter,
-  flatMap,
+  tryCatch,
   switchCase,
   assign,
   not,
@@ -320,13 +320,16 @@ const readModel = (options) =>
 exports.readModel = readModel;
 
 const readMapping = (options) =>
-  pipe([
-    tap(() => {
-      console.log("readMapping", options.mapping);
-    }),
-    () => fs.readFile(path.resolve(options.mapping), "utf-8"),
-    JSON.parse,
-  ]);
+  tryCatch(
+    pipe([
+      tap(() => {
+        console.log("readMapping", options.mapping);
+      }),
+      () => fs.readFile(path.resolve(options.mapping), "utf-8"),
+      JSON.parse,
+    ]),
+    () => ({})
+  );
 
 exports.readMapping = readMapping;
 

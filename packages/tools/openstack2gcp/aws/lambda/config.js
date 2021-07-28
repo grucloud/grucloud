@@ -65,6 +65,8 @@ module.exports = ({ stage }) => ({
           PackageType: "Zip",
           Runtime: "nodejs14.x",
           Description: "",
+          Timeout: 3,
+          MemorySize: 128,
         },
       },
     },

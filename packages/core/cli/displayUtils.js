@@ -465,6 +465,8 @@ const displayPlanItemDestroy =
         ]),
     ])();
 
+const displayError = switchCase([get("stack"), identity, YAML.stringify]);
+
 const displayPlanItem = ({ table, resource }) => {
   assert(resource);
   const columnsWidth = Math.floor(((process.stdout.columns || 80) - 8) / 2);
@@ -479,7 +481,7 @@ const displayPlanItem = ({ table, resource }) => {
     () =>
       table.push([
         {
-          content: colors.red(YAML.stringify(resource)),
+          content: colors.red(displayError(resource.error)),
         },
       ]),
     pipe([
