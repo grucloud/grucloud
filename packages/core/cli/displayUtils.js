@@ -16,7 +16,7 @@ const {
   and,
   fork,
 } = require("rubico");
-const { isEmpty, forEach, pluck, size, find } = require("rubico/x");
+const { isEmpty, forEach, pluck, size, find, identity } = require("rubico/x");
 
 const { planToResourcesPerType } = require("../Common");
 
