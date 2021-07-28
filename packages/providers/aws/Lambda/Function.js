@@ -3,6 +3,7 @@ const {
   map,
   pipe,
   tap,
+  set,
   get,
   eq,
   not,
@@ -11,6 +12,7 @@ const {
   omit,
   tryCatch,
   switchCase,
+  pick,
 } = require("rubico");
 const {
   pluck,
@@ -25,6 +27,7 @@ const {
 const crypto = require("crypto");
 
 const { detailedDiff } = require("deep-object-diff");
+const { fetchZip } = require("./LambdaCommon");
 
 const logger = require("@grucloud/core/logger")({
   prefix: "Function",
@@ -81,26 +84,45 @@ exports.Function = ({ spec, config }) => {
       }),
       () => lambda().listFunctions(params),
       get("Functions"),
+      map((fun) =>
+        pipe([
+          () => fun,
+          tryCatch(
+            pipe([
+              pick(["FunctionName"]),
+              lambda().getFunction,
+              pick(["Code", "Tags"]),
+              assign({
+                Code: pipe([
+                  get("Code"),
+                  assign({
+                    Data: pipe([fetchZip()]),
+                  }),
+                ]),
+              }),
+            ]),
+            (error) => pipe([() => ({ error })])()
+          ),
+          defaultsDeep(fun),
+        ])()
+      ),
       map(
         assign({
           Layers: pipe([get("Layers"), pluck("Arn")]),
-          Tags: pipe([
-            ({ FunctionArn }) => lambda().listTags({ Resource: FunctionArn }),
-            get("Tags"),
-          ]),
           CodeSigningConfigArn: pipe([
-            ({ FunctionName }) =>
-              lambda().getFunctionCodeSigningConfig({ FunctionName }),
+            pick(["FunctionName"]),
+            lambda().getFunctionCodeSigningConfig,
             get("CodeSigningConfigArn"),
           ]),
           ReservedConcurrentExecutions: pipe([
-            ({ FunctionName }) =>
-              lambda().getFunctionConcurrency({ FunctionName }),
+            pick(["FunctionName"]),
+            lambda().getFunctionConcurrency,
             get("ReservedConcurrentExecutions"),
           ]),
           Policy: tryCatch(
             pipe([
-              ({ FunctionName }) => lambda().getPolicy({ FunctionName }),
+              pick(["FunctionName"]),
+              lambda().getPolicy,
               tap((params) => {
                 assert(true);
               }),

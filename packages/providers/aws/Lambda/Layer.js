@@ -43,6 +43,8 @@ const {
 const findId = get("live.LayerArn");
 const findName = get("live.LayerName");
 
+const { fetchZip } = require("./LambdaCommon");
+
 exports.Layer = ({ spec, config }) => {
   const lambda = () => createEndpoint({ endpointName: "Lambda" })(config);
 
@@ -72,11 +74,14 @@ exports.Layer = ({ spec, config }) => {
               assert(Description);
             }),
           ]),
-          Content: pipe([
-            ({ LayerVersionArn }) =>
-              lambda().getLayerVersionByArn({ Arn: LayerVersionArn }),
-            get("Content"),
-          ]),
+          Content: ({ LayerVersionArn }) =>
+            pipe([
+              () => lambda().getLayerVersionByArn({ Arn: LayerVersionArn }),
+              get("Content"),
+              assign({
+                Data: fetchZip(),
+              }),
+            ])(),
           Policy: tryCatch(
             pipe([
               ({ LayerName, Version }) =>
